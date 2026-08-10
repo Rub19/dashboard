@@ -26,6 +26,8 @@ const ROUTES = [
   "/team/",
   "/brain/",
   "/changelog/",
+  "/share/",
+  "/drop/",
 ];
 
 for (const route of ROUTES) {

@@ -2,6 +2,26 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v329] - 2026-08-20
+
+**Fichiers avancés, partage public et drop**
+
+### Ajoute
+- `lib/hooks/useCloudFiles.ts` : recherche, navigation dossier, favoris, corbeille, renommage, déplacement, suppression, restauration, quota et upload Google Drive.
+- `lib/hooks/useShares.ts` et `lib/hooks/useDrops.ts` pour créer, lister et révoquer partages/drops.
+- Refonte complète de `app/files/page.tsx` avec upload, nouveaux dossiers, actions contextuelles (renommer, déplacer, partager, supprimer/corbeille/restaurer), barre de recherche, filtre favoris/corbeille et quota.
+- Page publique `app/share/page.tsx` : résolution par slug, mot de passe et téléchargement.
+- Page publique `app/drop/page.tsx` : dépôt de fichiers public par slug, avec limite de taille/nombre.
+- `lib/api.ts` : `uploadWorker` et `uploadPublic` pour l'envoi de fichiers binaires.
+- Clés i18n pour upload, partage, drop, quota, actions fichiers et états publics.
+- Routes `/share/` et `/drop/` dans les tests E2E, a11y et responsive.
+
+### Corrige
+- Suppression du point-virgule résiduel dans `app/files/page.tsx`.
+
+### Version PWA
+- `experience-v329`.
+
 ## [v328] - 2026-08-20
 
 **Tests E2E, audit responsive/accessibilité**

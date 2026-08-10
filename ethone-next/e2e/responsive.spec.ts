@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const ROUTES = ["/", "/login/", "/settings/", "/notes/", "/tasks/"];
+const ROUTES = ["/", "/login/", "/settings/", "/notes/", "/tasks/", "/files/", "/share/", "/drop/"];
 
 const VIEWPORTS = [
   { name: "mobile-375", width: 375, height: 667 },

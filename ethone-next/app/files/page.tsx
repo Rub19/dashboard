@@ -1,98 +1,405 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useWorker } from "@/lib/hooks/useWorker";
+import { useMemo, useRef, useState } from "react";
+import { useCloudFiles, type CloudFile } from "@/lib/hooks/useCloudFiles";
+import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { useShares } from "@/lib/hooks/useShares";
+import { useDrops } from "@/lib/hooks/useDrops";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { useDriveFiles } from "@/lib/hooks/useDriveFiles";
-import { buildAuthUrl } from "@/lib/oauth";
+import { useToast } from "@/components/ToastProvider";
+import { fetchWorker } from "@/lib/api";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
-;
 
 function formatBytes(bytes = 0) {
   if (bytes === 0) return "0 B";
   const k = 1024;
   const sizes = ["B", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  const i = Math.min(sizes.length - 1, Math.floor(Math.log(bytes) / Math.log(k)));
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
 }
 
-type CloudFile = {
-  id?: string;
-  name?: string;
-  size?: number;
-  mimeType?: string;
-  isFavorite?: boolean;
-};
+function mimeIcon(mimeType: string, isFolder: boolean) {
+  if (isFolder) return "folder";
+  if (mimeType?.startsWith("image/")) return "image";
+  if (mimeType?.startsWith("video/")) return "video";
+  if (mimeType?.startsWith("audio/")) return "music";
+  if (mimeType?.includes("pdf")) return "file-text";
+  if (mimeType?.includes("json") || mimeType?.includes("javascript") || mimeType?.includes("html")) return "file-code-2";
+  return "file";
+}
 
-type DisplayFile = CloudFile & {
-  source: "worker" | "google";
-  webViewLink?: string;
-  modifiedAt?: string;
-};
+function folderPath(files: CloudFile[], folderId: string | null) {
+  const path: CloudFile[] = [];
+  const seen = new Set<string>();
+  let cursor = folderId;
+  while (cursor) {
+    if (seen.has(cursor)) break;
+    seen.add(cursor);
+    const folder = files.find((f) => f.driveFileId === cursor && f.isFolder);
+    if (!folder) break;
+    path.unshift(folder);
+    cursor = folder.driveParentId;
+  }
+  return path;
+}
+
+function descendantFolderIds(files: CloudFile[], folderId: string) {
+  const ids = new Set<string>();
+  const queue = [folderId];
+  while (queue.length) {
+    const current = queue.shift()!;
+    files.forEach((f) => {
+      if (f.isFolder && f.driveParentId === current && !ids.has(f.driveFileId)) {
+        ids.add(f.driveFileId);
+        queue.push(f.driveFileId);
+      }
+    });
+  }
+  return ids;
+}
+
+type Modal =
+  | { type: "share"; file: CloudFile }
+  | { type: "drop" }
+  | { type: "rename"; file: CloudFile }
+  | { type: "move"; file: CloudFile }
+  | { type: "create-folder" }
+  | null;
 
 export default function FilesPage() {
-  const { data, loading: workerLoading, error: workerError } = useWorker<{
-    data: { files: CloudFile[] };
-  }>("/api/cloud/files");
   const i18n = useI18n();
-  const [clientId, setClientId] = useState("");
-  const { files: driveFiles, loading: driveLoading, error: driveError } = useDriveFiles(clientId);
+  const { success, error: toastError } = useToast();
+  const [clientId, setClientId] = useLocalStorage<string>("ethone:clientId:google-drive", "");
+  const {
+    files,
+    loading,
+    error,
+    quota,
+    parentId,
+    setParentId,
+    trashed,
+    setTrashed,
+    favorites,
+    setFavorites,
+    query,
+    setQuery,
+    reload,
+    renameFile,
+    moveFile,
+    trashFile,
+    restoreFile,
+    deleteFile,
+    favoriteFile,
+    createFolder,
+    uploadFile,
+  } = useCloudFiles(clientId || undefined);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    setClientId(localStorage.getItem("ethone:clientId:google-drive") || "");
-  }, []);
+  const { create: createShare } = useShares();
+  const { create: createDrop } = useDrops();
 
-  const files = useMemo<DisplayFile[]>(() => {
-    const workerFiles = data?.data?.files || [];
-    const all: DisplayFile[] = workerFiles.map((f) => ({ ...f, source: "worker" as const }));
-    all.push(...driveFiles.map((f) => ({ ...f, source: "google" as const })));
-    return all.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
-  }, [data, driveFiles]);
+  const [modal, setModal] = useState<Modal>(null);
+  const [form, setForm] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const loading = workerLoading || driveLoading;
-  const error = workerError || driveError;
+  const filteredFiles = useMemo(() => {
+    if (favorites) return files;
+    let list = files.filter((f) => f.isFolder || (trashed ? f.trashed : !f.trashed));
+    if (parentId) {
+      list = list.filter((f) => (f.driveParentId || null) === parentId || (f.driveFileId === parentId && f.isFolder));
+    } else {
+      list = list.filter((f) => !f.driveParentId);
+    }
+    if (query.trim()) {
+      const q = query.toLowerCase();
+      list = list.filter((f) => f.name.toLowerCase().includes(q));
+    }
+    return list;
+  }, [files, favorites, parentId, trashed, query]);
+
+  const path = useMemo(() => folderPath(files, parentId), [files, parentId]);
+
+  const quotaPercent = quota && quota.total ? Math.min(100, Math.round((quota.used / quota.total) * 100)) : 0;
 
   function connectDrive() {
     const id = prompt(i18n("clientId"));
     if (!id) return;
-    localStorage.setItem("ethone:clientId:google-drive", id);
     setClientId(id);
-    window.location.href = buildAuthUrl("google-drive", id, { provider: "google-drive", clientId: id });
+  }
+
+  async function handleUpload(input: FileList | null) {
+    if (!clientId || !input?.length) return;
+    setSubmitting(true);
+    try {
+      for (const file of Array.from(input)) {
+        await uploadFile(file, parentId);
+      }
+      success(i18n("uploadFile"));
+      await reload();
+    } catch (err) {
+      toastError(String(err));
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleCreateFolder(e: React.FormEvent) {
+    e.preventDefault();
+    if (!form.folderName || !clientId) return;
+    setSubmitting(true);
+    try {
+      await createFolder(form.folderName, parentId);
+      setModal(null);
+      setForm({});
+      success(i18n("createFolder"));
+      await reload();
+    } catch (err) {
+      toastError(String(err));
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleRename(e: React.FormEvent) {
+    e.preventDefault();
+    if (!modal || modal.type !== "rename" || !form.name) return;
+    setSubmitting(true);
+    try {
+      await renameFile(modal.file.driveFileId, form.name);
+      setModal(null);
+      setForm({});
+      success(i18n("rename"));
+      await reload();
+    } catch (err) {
+      toastError(String(err));
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleMove(targetId: string | null) {
+    if (!modal || modal.type !== "move") return;
+    setSubmitting(true);
+    try {
+      await moveFile(modal.file.driveFileId, targetId, modal.file.driveParentId);
+      setModal(null);
+      success(i18n("move"));
+      await reload();
+    } catch (err) {
+      toastError(String(err));
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleShare(e: React.FormEvent) {
+    e.preventDefault();
+    if (!modal || modal.type !== "share") return;
+    setSubmitting(true);
+    try {
+      const share = await createShare({
+        fileId: modal.file.id,
+        visibility: (form.visibility as "public" | "private" | "password") || "public",
+        password: form.password || undefined,
+        expiresAt: form.expiresAt || undefined,
+        maxDownloads: form.maxDownloads ? Number(form.maxDownloads) : undefined,
+      });
+      if (share?.slug) {
+        const link = `${window.location.origin}/share/${share.slug}`;
+        await navigator.clipboard.writeText(link).catch(() => {});
+        success(`${i18n("shareThis")}: ${link}`);
+      }
+      setModal(null);
+      setForm({});
+    } catch (err) {
+      toastError(String(err));
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleDrop(e: React.FormEvent) {
+    e.preventDefault();
+    if (!modal || modal.type !== "drop" || !form.title) return;
+    setSubmitting(true);
+    try {
+      const drop = await createDrop({
+        title: form.title,
+        description: form.description,
+        visibility: (form.visibility as "public" | "password") || "public",
+        password: form.password || undefined,
+        expiresAt: form.expiresAt || undefined,
+        maxFiles: form.maxFiles ? Number(form.maxFiles) : undefined,
+        maxSize: form.maxSize ? Number(form.maxSize) : undefined,
+      });
+      if (drop?.slug) {
+        const link = `${window.location.origin}/drop/${drop.slug}`;
+        await navigator.clipboard.writeText(link).catch(() => {});
+        success(`${i18n("drop")}: ${link}`);
+      }
+      setModal(null);
+      setForm({});
+    } catch (err) {
+      toastError(String(err));
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function downloadDriveFile(file: CloudFile) {
+    if (!clientId) return;
+    try {
+      const res = await fetchWorker(`/api/google-drive/download?clientId=${encodeURIComponent(clientId)}&fileId=${encodeURIComponent(file.driveFileId)}`);
+      if (res?.data?.url) {
+        window.open(res.data.url, "_blank");
+      } else if (res?.data) {
+        const blob = await (await fetch(res.data)).blob();
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = file.name;
+        a.click();
+      }
+    } catch (err) {
+      toastError(String(err));
+    }
+  }
+
+  const moveTargets = useMemo(() => {
+    if (!modal || modal.type !== "move" || modal.file.isFolder) return [];
+    const blocked = descendantFolderIds(files, modal.file.driveFileId);
+    return files.filter((f) => f.isFolder && f.driveFileId !== modal.file.driveFileId && !blocked.has(f.driveFileId));
+  }, [files, modal]);
+
+  function openShare(file: CloudFile) {
+    setForm({ visibility: "public" });
+    setModal({ type: "share", file });
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">{i18n("filesTitle")}</h1>
-        {!clientId ? (
+        <div className="flex flex-wrap items-center gap-2">
+          {!clientId ? (
+            <button
+              type="button"
+              onClick={connectDrive}
+              className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm font-medium hover:bg-[var(--surface)]"
+            >
+              <Icon name="cloud" className="h-4 w-4" /> {i18n("connectDrive")}
+            </button>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={submitting}
+                className="flex items-center gap-2 rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
+              >
+                <Icon name="upload-cloud" className="h-4 w-4" /> {i18n("upload")}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setForm({}); setModal({ type: "create-folder" }); }}
+                className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm font-medium hover:bg-[var(--surface)]"
+              >
+                <Icon name="folder-plus" className="h-4 w-4" /> {i18n("createFolder")}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setForm({ visibility: "public" }); setModal({ type: "drop" }); }}
+                className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm font-medium hover:bg-[var(--surface)]"
+              >
+                <Icon name="inbox" className="h-4 w-4" /> {i18n("createDrop")}
+              </button>
+            </>
+          )}
           <button
             type="button"
-            onClick={connectDrive}
-            className="flex shrink-0 items-center gap-1.5 rounded-lg bg-[var(--surface-raised)] px-2 py-1 text-xs font-medium text-[var(--foreground)] hover:bg-[var(--accent)]/20"
+            onClick={reload}
+            className="rounded-xl border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+            aria-label={i18n("refresh")}
           >
-            <Icon name="cloud" className="h-3 w-3" />
-            {i18n("connectDrive")}
+            <Icon name="refresh-cw" className="h-4 w-4" />
           </button>
-        ) : (
-          <span className="text-xs text-emerald-400">{i18n("googleDrive")} {i18n("connected")}</span>
-        )}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <input
+        ref={fileInputRef}
+        type="file"
+        multiple
+        aria-label={i18n("uploadFile")}
+        className="hidden"
+        onChange={(e) => handleUpload(e.target.files)}
+      />
+
+      {quota && (
         <Card3D>
-          <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
-              <Icon name="hard-drive" className="h-5 w-5" />
-            </span>
-            <div className="min-w-0">
-              <p className="text-2xl font-bold">{loading ? "-" : files.length}</p>
-              <p className="text-xs text-[var(--muted)]">{i18n("totalFiles")}</p>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-[var(--muted)]">{i18n("storageUsed")}</span>
+              <span className="font-medium">{formatBytes(quota.used)} / {formatBytes(quota.total)}</span>
+            </div>
+            <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--border)]">
+              <div className="h-full rounded-full bg-violet-500" style={{ width: `${quotaPercent}%` }} />
             </div>
           </div>
         </Card3D>
+      )}
+
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap gap-2">
+          {[
+            { id: "all", label: i18n("all"), onClick: () => { setFavorites(false); setTrashed(false); } },
+            { id: "folders", label: i18n("folders"), onClick: () => { setFavorites(false); setTrashed(false); } },
+            { id: "favorites", label: i18n("favorites"), onClick: () => { setFavorites(true); setTrashed(false); } },
+            { id: "trash", label: i18n("trash"), onClick: () => { setFavorites(false); setTrashed(true); } },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={tab.onClick}
+              className={`rounded-xl border px-3 py-1.5 text-sm font-medium transition-colors ${
+                (tab.id === "favorites" && favorites) || (tab.id === "trash" && trashed) || (tab.id === "all" && !favorites && !trashed)
+                  ? "border-[var(--accent)] bg-[var(--accent)] text-white"
+                  : "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted)] hover:text-[var(--foreground)]"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+        <input
+          type="search"
+          aria-label={i18n("searchFiles")}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={i18n("searchFiles")}
+          className="min-w-0 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+        />
       </div>
+
+      {parentId !== null && (
+        <nav aria-label={i18n("folders")} className="flex flex-wrap items-center gap-2 text-sm text-[var(--muted)]">
+          <button type="button" onClick={() => setParentId(null)} className="hover:text-[var(--foreground)]">{i18n("filesTitle")}</button>
+          {path.map((folder) => (
+            <span key={folder.driveFileId} className="flex items-center gap-2">
+              <Icon name="chevron-right" className="h-3 w-3" />
+              <button
+                type="button"
+                onClick={() => setParentId(folder.driveFileId)}
+                className="hover:text-[var(--foreground)]"
+              >
+                {folder.name}
+              </button>
+            </span>
+          ))}
+          <Icon name="chevron-right" className="h-3 w-3" />
+          <span className="text-[var(--foreground)]">{files.find((f) => f.driveFileId === parentId)?.name}</span>
+        </nav>
+      )}
 
       {error && (
         <Card3D>
@@ -100,56 +407,289 @@ export default function FilesPage() {
         </Card3D>
       )}
 
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 gap-3">
         {loading ? (
           <Card3D>
             <div className="h-4 w-1/3 animate-pulse rounded bg-[var(--border)]" />
           </Card3D>
-        ) : files.length === 0 ? (
+        ) : filteredFiles.length === 0 ? (
           <Card3D>
             <p className="text-sm text-[var(--muted)]">{i18n("noFiles")}</p>
           </Card3D>
         ) : (
-          files.slice(0, 20).map((file, i) => (
-            <Card3D key={file.id || i}>
+          filteredFiles.map((file) => (
+            <Card3D key={file.id}>
               <div className="flex items-center gap-3">
-                <span
-                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
-                    file.source === "google"
-                      ? "bg-blue-500/10 text-blue-400"
-                      : "bg-[var(--surface-raised)] text-[var(--muted)]"
-                  }`}
+                <button
+                  type="button"
+                  onClick={() => file.isFolder ? setParentId(file.driveFileId) : null}
+                  className="flex min-w-0 flex-1 items-center gap-3 text-left"
                 >
-                  {file.mimeType === "application/vnd.google-apps.folder" ? (
-                    <Icon name="folder" className="h-5 w-5" />
-                  ) : (
-                    <Icon name="file-text" className="h-5 w-5" />
-                  )}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium">{file.name}</p>
-                  <p className="truncate text-xs text-[var(--muted)]">
-                    {formatBytes(file.size)} · {file.mimeType || "-"}
-                    {file.source === "google" && ` · ${i18n("googleDrive")}`}
-                  </p>
-                </div>
-                {file.source === "worker" && file.isFavorite && <Icon name="heart" className="h-4 w-4 text-red-400" />}
-                {file.webViewLink && (
-                  <a
-                    href={file.webViewLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="shrink-0 text-[var(--muted)] hover:text-[var(--accent)]"
-                    aria-label={i18n("googleDrive")}
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-raised)] text-[var(--muted)]">
+                    <Icon name={mimeIcon(file.mimeType, file.isFolder)} className="h-5 w-5" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium">{file.name}</p>
+                    <p className="truncate text-xs text-[var(--muted)]">
+                      {file.isFolder ? i18n("folders") : `${formatBytes(file.size)} · ${file.mimeType || "-"}`}
+                    </p>
+                  </div>
+                </button>
+
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    aria-label={file.isFavorite ? i18n("removeFromFavorites") : i18n("addToFavorites")}
+                    onClick={() => favoriteFile(file.driveFileId, !file.isFavorite)}
+                    className={`rounded p-1.5 ${file.isFavorite ? "text-red-400" : "text-[var(--muted)]"} hover:bg-[var(--surface-raised)]`}
                   >
-                    <Icon name="external-link" className="h-4 w-4" />
-                  </a>
-                )}
+                    <Icon name={file.isFavorite ? "heart" : "heart-off"} className="h-4 w-4" />
+                  </button>
+
+                  {!file.isFolder && clientId && (
+                    <button
+                      type="button"
+                      aria-label={i18n("download")}
+                      onClick={() => downloadDriveFile(file)}
+                      className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+                    >
+                      <Icon name="download" className="h-4 w-4" />
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    aria-label={i18n("share")}
+                    onClick={() => openShare(file)}
+                    className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+                  >
+                    <Icon name="share-2" className="h-4 w-4" />
+                  </button>
+
+                  <button
+                    type="button"
+                    aria-label={i18n("rename")}
+                    onClick={() => { setForm({ name: file.name }); setModal({ type: "rename", file }); }}
+                    className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+                  >
+                    <Icon name="pencil" className="h-4 w-4" />
+                  </button>
+
+                  <button
+                    type="button"
+                    aria-label={i18n("move")}
+                    onClick={() => { setModal({ type: "move", file }); }}
+                    className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+                  >
+                    <Icon name="folder-input" className="h-4 w-4" />
+                  </button>
+
+                  {trashed ? (
+                    <button
+                      type="button"
+                      aria-label={i18n("restore")}
+                      onClick={() => restoreFile(file.driveFileId)}
+                      className="rounded p-1.5 text-emerald-400 hover:bg-emerald-500/10"
+                    >
+                      <Icon name="rotate-ccw" className="h-4 w-4" />
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      aria-label={i18n("trash")}
+                      onClick={() => trashFile(file.driveFileId)}
+                      className="rounded p-1.5 text-[var(--muted)] hover:text-red-400"
+                    >
+                      <Icon name="trash-2" className="h-4 w-4" />
+                    </button>
+                  )}
+
+                  {trashed && (
+                    <button
+                      type="button"
+                      aria-label={i18n("delete")}
+                      onClick={() => deleteFile(file.driveFileId)}
+                      className="rounded p-1.5 text-red-400 hover:bg-red-500/10"
+                    >
+                      <Icon name="trash" className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
               </div>
             </Card3D>
           ))
         )}
       </div>
+
+      {modal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setModal(null)}>
+          <div className="w-full max-w-md rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            {modal.type === "create-folder" && (
+              <form onSubmit={handleCreateFolder} className="space-y-4">
+                <h2 className="text-lg font-semibold">{i18n("createFolder")}</h2>
+                <input
+                  autoFocus
+                  type="text"
+                  value={form.folderName || ""}
+                  onChange={(e) => setForm({ ...form, folderName: e.target.value })}
+                  placeholder={i18n("newFolder")}
+                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                />
+                <div className="flex justify-end gap-2">
+                  <button type="button" onClick={() => setModal(null)} className="rounded-xl px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--surface)]">{i18n("cancel")}</button>
+                  <button type="submit" disabled={submitting} className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{i18n("create")}</button>
+                </div>
+              </form>
+            )}
+
+            {modal.type === "rename" && (
+              <form onSubmit={handleRename} className="space-y-4">
+                <h2 className="text-lg font-semibold">{i18n("renameFile")}</h2>
+                <input
+                  autoFocus
+                  type="text"
+                  value={form.name || ""}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                />
+                <div className="flex justify-end gap-2">
+                  <button type="button" onClick={() => setModal(null)} className="rounded-xl px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--surface)]">{i18n("cancel")}</button>
+                  <button type="submit" disabled={submitting} className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{i18n("save")}</button>
+                </div>
+              </form>
+            )}
+
+            {modal.type === "move" && (
+              <div className="space-y-4">
+                <h2 className="text-lg font-semibold">{i18n("moveTo")}</h2>
+                <div className="max-h-60 space-y-1 overflow-auto">
+                  <button
+                    type="button"
+                    onClick={() => handleMove(null)}
+                    className="w-full rounded-xl px-3 py-2 text-left text-sm hover:bg-[var(--surface)]"
+                  >
+                    {i18n("filesTitle")}
+                  </button>
+                  {moveTargets.map((folder) => (
+                    <button
+                      key={folder.driveFileId}
+                      type="button"
+                      onClick={() => handleMove(folder.driveFileId)}
+                      className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm hover:bg-[var(--surface)]"
+                    >
+                      <Icon name="folder" className="h-4 w-4" /> {folder.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {modal.type === "share" && (
+              <form onSubmit={handleShare} className="space-y-4">
+                <h2 className="text-lg font-semibold">{i18n("shareFile")}</h2>
+                <p className="text-sm text-[var(--muted)]">{modal.file.name}</p>
+                <select
+                  value={form.visibility || "public"}
+                  onChange={(e) => setForm({ ...form, visibility: e.target.value })}
+                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                >
+                  <option value="public">{i18n("public")}</option>
+                  <option value="private">{i18n("private")}</option>
+                  <option value="password">{i18n("password")}</option>
+                </select>
+                {form.visibility === "password" && (
+                  <input
+                    type="password"
+                    value={form.password || ""}
+                    onChange={(e) => setForm({ ...form, password: e.target.value })}
+                    placeholder={i18n("password")}
+                    className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                  />
+                )}
+                <input
+                  type="datetime-local"
+                  value={form.expiresAt || ""}
+                  onChange={(e) => setForm({ ...form, expiresAt: e.target.value })}
+                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                />
+                <input
+                  type="number"
+                  value={form.maxDownloads || ""}
+                  onChange={(e) => setForm({ ...form, maxDownloads: e.target.value })}
+                  placeholder={i18n("maxDownloads")}
+                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                />
+                <div className="flex justify-end gap-2">
+                  <button type="button" onClick={() => setModal(null)} className="rounded-xl px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--surface)]">{i18n("cancel")}</button>
+                  <button type="submit" disabled={submitting} className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{i18n("shareThis")}</button>
+                </div>
+              </form>
+            )}
+
+            {modal.type === "drop" && (
+              <form onSubmit={handleDrop} className="space-y-4">
+                <h2 className="text-lg font-semibold">{i18n("createDrop")}</h2>
+                <input
+                  autoFocus
+                  type="text"
+                  value={form.title || ""}
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  placeholder={i18n("title")}
+                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                />
+                <input
+                  type="text"
+                  value={form.description || ""}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  placeholder={i18n("description")}
+                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                />
+                <select
+                  value={form.visibility || "public"}
+                  onChange={(e) => setForm({ ...form, visibility: e.target.value })}
+                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                >
+                  <option value="public">{i18n("public")}</option>
+                  <option value="password">{i18n("password")}</option>
+                </select>
+                {form.visibility === "password" && (
+                  <input
+                    type="password"
+                    value={form.password || ""}
+                    onChange={(e) => setForm({ ...form, password: e.target.value })}
+                    placeholder={i18n("password")}
+                    className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                  />
+                )}
+                <input
+                  type="datetime-local"
+                  value={form.expiresAt || ""}
+                  onChange={(e) => setForm({ ...form, expiresAt: e.target.value })}
+                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                />
+                <input
+                  type="number"
+                  value={form.maxFiles || ""}
+                  onChange={(e) => setForm({ ...form, maxFiles: e.target.value })}
+                  placeholder={i18n("maxFiles")}
+                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                />
+                <input
+                  type="number"
+                  value={form.maxSize || ""}
+                  onChange={(e) => setForm({ ...form, maxSize: e.target.value })}
+                  placeholder={i18n("maxSize")}
+                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                />
+                <div className="flex justify-end gap-2">
+                  <button type="button" onClick={() => setModal(null)} className="rounded-xl px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--surface)]">{i18n("cancel")}</button>
+                  <button type="submit" disabled={submitting} className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{i18n("create")}</button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

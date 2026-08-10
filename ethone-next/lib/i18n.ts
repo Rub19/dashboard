@@ -61,6 +61,7 @@ export const CATALOG: Record<string, Record<string, string>> = {
     newNote: "Nouvelle note",
     newTask: "Nouvelle tâche",
     newInteraction: "Nouvelle interaction",
+    liveOverlay: "Overlay live",
 
   },
   en: {
@@ -125,6 +126,7 @@ export const CATALOG: Record<string, Record<string, string>> = {
     newNote: "New note",
     newTask: "New task",
     newInteraction: "New interaction",
+    liveOverlay: "Live overlay",
 
   },
   es: {
@@ -189,6 +191,7 @@ export const CATALOG: Record<string, Record<string, string>> = {
     newNote: "Nueva nota",
     newTask: "Nueva tarea",
     newInteraction: "Nueva interacción",
+    liveOverlay: "Overlay en vivo",
 
   },
   de: {
@@ -253,6 +256,7 @@ export const CATALOG: Record<string, Record<string, string>> = {
     newNote: "Neue Notiz",
     newTask: "Neue Aufgabe",
     newInteraction: "Neue Interaktion",
+    liveOverlay: "Live-Overlay",
 
   },
 };

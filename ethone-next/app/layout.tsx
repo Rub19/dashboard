@@ -13,6 +13,7 @@ import SkipLink from "@/components/SkipLink";
 import OfflineIndicator from "@/components/OfflineIndicator";
 import CommandPaletteProvider from "@/components/CommandPaletteProvider";
 import OAuthHandler from "@/components/OAuthHandler";
+import LiveOverlay from "@/components/LiveOverlay";
 import PageTransition from "@/components/PageTransition";
 
 const geistSans = Geist({
@@ -59,6 +60,7 @@ export default function RootLayout({
             </header>
             <ServiceWorker />
             <OAuthHandler />
+            <LiveOverlay />
             <main id="main-content" className="p-6 pb-24 md:pb-6" tabIndex={-1}>
               <PageTransition>{children}</PageTransition>
             </main>

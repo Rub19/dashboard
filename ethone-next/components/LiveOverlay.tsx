@@ -1,0 +1,95 @@
+"use client";
+
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Disc3, Monitor, X, Radio, ChevronUp } from "lucide-react";
+import { useLiveData } from "@/lib/hooks/useLiveData";
+import { useSettings } from "@/components/SettingsProvider";
+
+export default function LiveOverlay() {
+  const { nowPlaying, lanyard, loading } = useLiveData();
+  const { settings, update } = useSettings();
+  const [minimized, setMinimized] = useState(false);
+  const enabled = settings.liveOverlay !== false;
+
+  if (!enabled) return null;
+
+  const activity = lanyard?.activities?.[0];
+
+  return (
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2">
+      <AnimatePresence>
+        {!minimized && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            className="w-64 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]/95 p-3 shadow-2xl backdrop-blur-md"
+          >
+            <div className="mb-2 flex items-center justify-between">
+              <span className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--muted)]">
+                <Radio className="h-3 w-3 text-emerald-400" /> Live
+              </span>
+              <div className="flex gap-1">
+                <button type="button" onClick={() => setMinimized(true)} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface)]">
+                  <ChevronUp className="h-3.5 w-3.5" />
+                </button>
+                <button type="button" onClick={() => update({ liveOverlay: false })} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface)] hover:text-red-400">
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              {nowPlaying?.isPlaying ? (
+                <div className="flex items-center gap-3">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-500/10 text-violet-400">
+                    <Disc3 className={`h-5 w-5 ${nowPlaying.isPlaying ? "animate-spin" : ""}`} />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{nowPlaying.title}</p>
+                    <p className="truncate text-xs text-[var(--muted)]">{nowPlaying.artist}</p>
+                  </div>
+                </div>
+              ) : loading ? (
+                <div className="h-8 w-2/3 animate-pulse rounded bg-[var(--border)]" />
+              ) : null}
+
+              {lanyard?.discord_status && (
+                <div className="flex items-center gap-3">
+                  <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
+                    lanyard.discord_status === "online" ? "bg-emerald-500/10 text-emerald-400" :
+                    lanyard.discord_status === "idle" ? "bg-amber-500/10 text-amber-400" :
+                    lanyard.discord_status === "dnd" ? "bg-rose-500/10 text-rose-400" :
+                    "bg-zinc-500/10 text-zinc-400"
+                  }`}>
+                    <Monitor className="h-5 w-5" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium capitalize">{lanyard.discord_status}</p>
+                    {activity && (
+                      <p className="truncate text-xs text-[var(--muted)]">
+                        {activity.name}{activity.details ? ` — ${activity.details}` : ""}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {minimized && (
+        <motion.button
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          onClick={() => setMinimized(false)}
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-raised)] text-[var(--foreground)] shadow-lg hover:border-[var(--accent)]"
+        >
+          <Radio className="h-4 w-4 text-emerald-400" />
+        </motion.button>
+      )}
+    </div>
+  );
+}

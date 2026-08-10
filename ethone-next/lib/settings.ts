@@ -11,6 +11,7 @@ export type Settings = {
   securityAlerts: boolean;
   pushNotifications: boolean;
   brainEnabled: boolean;
+  liveOverlay: boolean;
   language: string;
 };
 
@@ -27,6 +28,7 @@ export const DEFAULTS: Settings = {
   securityAlerts: true,
   pushNotifications: false,
   brainEnabled: true,
+  liveOverlay: true,
   language: "fr",
 };
 

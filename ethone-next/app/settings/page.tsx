@@ -151,6 +151,7 @@ export default function SettingsPage() {
           <Toggle label={i18n("trackerNotifications")} checked={settings.trackerNotifications} onChange={(v) => update({ trackerNotifications: v })} />
           <Toggle label={i18n("securityAlerts")} checked={settings.securityAlerts} onChange={(v) => update({ securityAlerts: v })} />
           <Toggle label={i18n("brain")} checked={settings.brainEnabled} onChange={(v) => update({ brainEnabled: v })} />
+          <Toggle label={i18n("liveOverlay")} checked={settings.liveOverlay} onChange={(v) => update({ liveOverlay: v })} />
         </div>
       ),
     },

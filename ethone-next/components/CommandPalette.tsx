@@ -3,8 +3,9 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Command, ArrowRight, Moon, Sun, Brain, LogOut, Flame, StickyNote, CirclePlus, Timer } from "lucide-react";
+import { Search, Command, ArrowRight, Moon, Sun, Brain, LogOut, Flame, StickyNote, CirclePlus, Timer, Workflow, Users } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useUserData } from "@/lib/hooks/useUserData";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useSettings } from "@/components/SettingsProvider";
 import { useAuth } from "@/components/AuthProvider";
@@ -26,6 +27,7 @@ export default function CommandPalette() {
   const { open, setOpen } = useCommandPalette();
   const { settings, update } = useSettings();
   const { signOut } = useAuth();
+  const { items: macros } = useUserData("macro");
 
   const run = useCallback(
     (cmd: CommandItem) => {
@@ -35,6 +37,23 @@ export default function CommandPalette() {
     },
     [setOpen]
   );
+
+  const macroCommands: CommandItem[] = macros.map((m) => {
+    const data = m.data as { action?: string; href?: string; setting?: string };
+    return {
+      id: `macro-${m.id}`,
+      label: m.label,
+      category: i18n("macros"),
+      icon: <Workflow className="h-4 w-4" />,
+      action: () => {
+        if (data.action === "navigate" && data.href) router.push(data.href);
+        if (data.action === "toggle" && data.setting) {
+          if (data.setting === "brainEnabled") update({ brainEnabled: !settings.brainEnabled });
+          if (data.setting === "darkMode") update({ darkMode: !settings.darkMode });
+        }
+      },
+    };
+  });
 
   const COMMANDS = useMemo<CommandItem[]>(
     () => [
@@ -59,10 +78,14 @@ export default function CommandPalette() {
       { id: "new-note", label: i18n("newNote"), category: i18n("create"), icon: <StickyNote className="h-4 w-4" />, action: () => router.push("/notes/") },
       { id: "new-task", label: i18n("newTask"), category: i18n("create"), icon: <CirclePlus className="h-4 w-4" />, action: () => router.push("/tasks/") },
       { id: "new-interaction", label: i18n("newInteraction"), category: i18n("create"), icon: <Flame className="h-4 w-4" />, action: () => router.push("/interactions/") },
+      { id: "macros", label: i18n("macros"), category: i18n("create"), icon: <Workflow className="h-4 w-4" />, action: () => router.push("/macros/") },
+      { id: "personas", label: i18n("personas"), category: i18n("create"), icon: <Users className="h-4 w-4" />, action: () => router.push("/personas/") },
+
+      ...macroCommands,
 
       { id: "signout", label: i18n("signOut"), category: i18n("account"), icon: <LogOut className="h-4 w-4" />, action: () => signOut().then(() => router.push("/login")) },
     ],
-    [i18n, router, settings, update, signOut]
+    [i18n, router, settings, update, signOut, macroCommands]
   );
 
   const filtered = useMemo(() => {

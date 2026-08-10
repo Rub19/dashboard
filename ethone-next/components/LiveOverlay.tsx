@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Disc3, Monitor, X, Radio, ChevronUp } from "lucide-react";
+import { Disc3, Monitor, X, Radio, ChevronUp, GripHorizontal } from "lucide-react";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useSettings } from "@/components/SettingsProvider";
 
@@ -21,13 +21,17 @@ export default function LiveOverlay() {
       <AnimatePresence>
         {!minimized && (
           <motion.div
+            drag
+            dragMomentum={false}
+            dragConstraints={typeof window !== "undefined" ? { left: -window.innerWidth + 280, right: 0, top: -window.innerHeight + 160, bottom: 0 } : undefined}
             initial={{ opacity: 0, y: 20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            className="w-64 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]/95 p-3 shadow-2xl backdrop-blur-md"
+            className="w-64 cursor-grab overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]/95 p-3 shadow-2xl backdrop-blur-md active:cursor-grabbing"
           >
             <div className="mb-2 flex items-center justify-between">
               <span className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--muted)]">
+                <GripHorizontal className="h-3.5 w-3.5 text-[var(--muted)]" />
                 <Radio className="h-3 w-3 text-emerald-400" /> Live
               </span>
               <div className="flex gap-1">

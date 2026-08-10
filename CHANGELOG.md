@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v319] - 2026-08-18
+
+**QA : i18n Settings, breadcrumb et bouton Nouveau**
+
+### Corrige
+- Traductions manquantes de `Settings` ajoutees au catalogue i18n.
+- Comportement du breadcrumb contextuel et troncature sur les petits viewports.
+- Declaration manquante de `newBtn` dans `v8/pages/mail.mjs`.
+
+### Version PWA
+- `experience-v319`.
+
 ## [v318] - 2026-08-18
 
 **Mail : refonte premium Phase 4 — fils groupés dans la liste, recherche enrichie, glisser-déposer**

@@ -24,6 +24,12 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v319", "2026-08-18", "QA : i18n Settings, breadcrumb et bouton Nouveau", [
+    { kind: "fix", text: "Traductions manquantes de Settings ajoutees au catalogue i18n." },
+    { kind: "fix", text: "Correction du breadcrumb contextuel ( comportement du flex et troncature)." },
+    { kind: "fix", text: "Declaration manquante de newBtn dans v8/pages/mail.mjs." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v319." }
+  ]),
   entry("v318", "2026-08-18", "Mail : refonte premium Phase 4", [
     { kind: "feature", text: "Regroupement des fils de conversation dans la liste avec badge du nombre de messages." },
     { kind: "feature", text: "Recherche mise en avant : surlignage des termes trouves et badge du dossier d'origine." },

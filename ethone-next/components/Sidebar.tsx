@@ -40,6 +40,7 @@ export default function Sidebar() {
     { id: "activity", label: i18n("activity"), href: "/activity/", icon: Activity },
     { id: "interactions", label: i18n("interactions"), href: "/interactions/", icon: Flame },
     { id: "connections", label: i18n("connections"), href: "/connections/", icon: Plug },
+    { id: "plugins", label: i18n("plugins"), href: "/plugins/", icon: Plug },
     { id: "spaces", label: i18n("spaces"), href: "/spaces/", icon: LayoutGrid },
     { id: "flows", label: i18n("flows"), href: "/flows/", icon: Workflow },
     { id: "brain", label: i18n("brain"), href: "/brain/", icon: Brain },

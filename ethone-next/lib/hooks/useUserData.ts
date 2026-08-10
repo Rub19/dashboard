@@ -14,7 +14,7 @@ export type UserDataRecord = {
   updated_at: string;
 };
 
-export function useUserData(kind: "space" | "flow" | "interaction" | "macro" | "persona" | "bill") {
+export function useUserData(kind: "space" | "flow" | "interaction" | "macro" | "persona" | "bill" | "plugin") {
   const [items, setItems] = useState<UserDataRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);

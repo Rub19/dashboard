@@ -2,7 +2,7 @@ import { httpError } from "../middleware/errors.js";
 import { requestExternal } from "../utils/external-request.js";
 import { safeText } from "../utils/normalize.js";
 
-const KINDS = new Set(["space", "flow", "interaction", "macro", "persona", "bill"]);
+const KINDS = new Set(["space", "flow", "interaction", "macro", "persona", "bill", "plugin"]);
 
 function projectOrigin(env) {
   try {

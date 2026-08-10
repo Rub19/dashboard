@@ -65,6 +65,8 @@ const THEMES = [
 const LANGUAGES = [
   { id: "fr", label: "Français" },
   { id: "en", label: "English" },
+  { id: "es", label: "Español" },
+  { id: "de", label: "Deutsch" },
 ];
 
 export default function SettingsPage() {

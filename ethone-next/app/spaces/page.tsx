@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Card3D from "@/components/Card3D";
-import { LayoutGrid, Plus, Trash2 } from "lucide-react";
+import { useI18n } from "@/lib/hooks/useI18n";
+import { LayoutGrid, Plus, Trash2, Layers, Sparkles, ArrowRight } from "lucide-react";
 
 const PRESETS = [
   { id: "focus", label: "Focus", color: "bg-violet-500/20 text-violet-400" },
@@ -12,6 +13,7 @@ const PRESETS = [
 ];
 
 export default function SpacesPage() {
+  const i18n = useI18n();
   const [spaces, setSpaces] = useState(PRESETS);
   const [name, setName] = useState("");
 
@@ -27,11 +29,73 @@ export default function SpacesPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Spaces</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">{i18n("spaces")}</h1>
+        <span className="rounded-full bg-[var(--surface-raised)] px-3 py-1 text-sm text-[var(--muted)]">
+          {spaces.length} actif{spaces.length > 1 ? "s" : ""}
+        </span>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <Card3D>
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
+              <LayoutGrid className="h-5 w-5" />
+            </span>
+            <div>
+              <p className="text-2xl font-bold">{spaces.length}</p>
+              <p className="text-xs text-[var(--muted)]">Espaces actifs</p>
+            </div>
+          </div>
+        </Card3D>
+
+        <Card3D>
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
+              <Layers className="h-5 w-5" />
+            </span>
+            <div>
+              <p className="text-2xl font-bold">{PRESETS.length}</p>
+              <p className="text-xs text-[var(--muted)]">Modèles intégrés</p>
+            </div>
+          </div>
+        </Card3D>
+
+        <Card3D>
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
+              <Sparkles className="h-5 w-5" />
+            </span>
+            <div>
+              <p className="text-2xl font-bold">0</p>
+              <p className="text-xs text-[var(--muted)]">Intégrations à venir</p>
+            </div>
+          </div>
+        </Card3D>
+      </div>
+
+      <Card3D>
+        <div className="space-y-4">
+          <div>
+            <h2 className="font-semibold">Environnements dédiés</h2>
+            <p className="text-sm leading-relaxed text-[var(--muted)]">
+              Spaces regroupe vos contextes de travail personnalisés (Focus, Studio, Gaming…). Créez un espace, associez-y des widgets et des raccourcis, et basculez d’un univers à l’autre en un clic.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => document.getElementById("space-input")?.focus()}
+            className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          >
+            {i18n("add")} <ArrowRight className="h-4 w-4" />
+          </button>
+        </div>
+      </Card3D>
 
       <Card3D>
         <div className="flex gap-2">
           <input
+            id="space-input"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -42,7 +106,7 @@ export default function SpacesPage() {
           <button
             type="button"
             onClick={add}
-            className="flex shrink-0 items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white"
+            className="flex shrink-0 items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
           >
             <Plus className="h-4 w-4" />
           </button>

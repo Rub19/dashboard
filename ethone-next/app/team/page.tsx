@@ -1,27 +1,56 @@
 "use client";
 
 import { useState } from "react";
+import { fetchWorker } from "@/lib/api";
 import Card3D from "@/components/Card3D";
-import { Users, Plus } from "lucide-react";
+import { useI18n } from "@/lib/hooks/useI18n";
+import { Users, Plus, Loader2, Check, AlertCircle } from "lucide-react";
 
 const ROLES = ["owner", "admin", "member"] as const;
 
+type Member = {
+  id: number;
+  email: string;
+  role: (typeof ROLES)[number];
+  status: "active" | "pending";
+};
+
 export default function TeamPage() {
-  const [members, setMembers] = useState([
+  const i18n = useI18n();
+  const [members, setMembers] = useState<Member[]>([
     { id: 1, email: "rub19.mailpro@gmail.com", role: "owner", status: "active" },
   ]);
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<typeof ROLES[number]>("member");
+  const [role, setRole] = useState<(typeof ROLES)[number]>("member");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
-  function invite() {
+  async function invite() {
     if (!email.trim()) return;
-    setMembers([...members, { id: Date.now(), email, role, status: "pending" }]);
-    setEmail("");
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
+
+    try {
+      await fetchWorker("/api/team/invite", {
+        method: "POST",
+        body: JSON.stringify({ email, role }),
+      });
+
+      setMembers([...members, { id: Date.now(), email, role, status: "pending" }]);
+      setEmail("");
+      setSuccess(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "L'invitation a échoué.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Équipe</h1>
+      <h1 className="text-2xl font-bold">{i18n("team")}</h1>
 
       <Card3D>
         <div className="space-y-3">
@@ -31,13 +60,16 @@ export default function TeamPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && invite()}
               placeholder="email@exemple.com"
-              className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+              disabled={loading}
+              className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] disabled:opacity-50"
             />
             <select
               value={role}
-              onChange={(e) => setRole(e.target.value as typeof ROLES[number])}
-              className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm"
+              onChange={(e) => setRole(e.target.value as (typeof ROLES)[number])}
+              disabled={loading}
+              className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm disabled:opacity-50"
             >
               {ROLES.map((r) => (
                 <option key={r} value={r}>
@@ -48,11 +80,26 @@ export default function TeamPage() {
             <button
               type="button"
               onClick={invite}
-              className="flex shrink-0 items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white"
+              disabled={loading}
+              className="flex shrink-0 items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
             >
-              <Plus className="h-4 w-4" />
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
             </button>
           </div>
+
+          {error && (
+            <p className="flex items-center gap-2 text-sm text-red-400">
+              <AlertCircle className="h-4 w-4" />
+              {error}
+            </p>
+          )}
+
+          {success && (
+            <p className="flex items-center gap-2 text-sm text-emerald-400">
+              <Check className="h-4 w-4" />
+              Invitation envoyée.
+            </p>
+          )}
         </div>
       </Card3D>
 

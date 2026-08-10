@@ -25,6 +25,26 @@ const PREFIXES: Record<IconPack, string> = {
   radix: "radix-icons",
 };
 
+const LIBRARIES: Record<IconPack, IconifyJSON> = {
+  lucide,
+  phosphor,
+  tabler,
+  heroicons,
+  radix,
+};
+
+const EXISTS = Object.fromEntries(
+  (Object.keys(LIBRARIES) as IconPack[]).map((pack) => {
+    const lib = LIBRARIES[pack];
+    const set = new Set([...Object.keys(lib.icons || {}), ...Object.keys(lib.aliases || {})]);
+    return [pack, set];
+  })
+) as Record<IconPack, Set<string>>;
+
+function iconExists(pack: IconPack, name: string) {
+  return EXISTS[pack].has(name);
+}
+
 const MAP: Record<string, Partial<Record<IconPack, string>>> = {
   home: { lucide: "home", phosphor: "house", tabler: "home", heroicons: "home-outline", radix: "home" },
   notes: { lucide: "notebook-pen", phosphor: "notebook", tabler: "notebook", heroicons: "book-open", radix: "file-text" },
@@ -86,12 +106,52 @@ const MAP: Record<string, Partial<Record<IconPack, string>>> = {
   appWindow: { lucide: "app-window", phosphor: "app-window", tabler: "app-window", heroicons: "window", radix: "window" },
   layoutGrid: { lucide: "layout-grid", phosphor: "squares-four", tabler: "layout-grid", heroicons: "squares-2x2", radix: "grid" },
   workflow: { lucide: "workflow", phosphor: "tree-structure", tabler: "git-branch", heroicons: "arrow-path", radix: "mixer-horizontal" },
+  // Common raw names that appear in components
+  "chevron-left": { lucide: "chevron-left", phosphor: "caret-left", tabler: "chevron-left", heroicons: "chevron-left", radix: "chevron-left" },
+  "chevron-right": { lucide: "chevron-right", phosphor: "caret-right", tabler: "chevron-right", heroicons: "chevron-right", radix: "chevron-right" },
+  "trash-2": { lucide: "trash-2", phosphor: "trash", tabler: "trash", heroicons: "trash", radix: "trash" },
+  "file-edit": { lucide: "file-edit", phosphor: "pencil-simple", tabler: "pencil", heroicons: "pencil", radix: "pencil-2" },
+  "loader-2": { lucide: "loader-2", phosphor: "spinner", tabler: "loader-2", heroicons: "arrow-path", radix: "reload" },
+  "key-round": { lucide: "key-round", phosphor: "key", tabler: "key", heroicons: "key", radix: "key" },
+  "rotate-ccw": { lucide: "rotate-ccw", phosphor: "arrow-counter-clockwise", tabler: "rotate-2", heroicons: "arrow-uturn-left", radix: "rotate-counter-clockwise" },
+  "refresh-cw": { lucide: "refresh-cw", phosphor: "arrows-clockwise", tabler: "refresh", heroicons: "arrow-path", radix: "reload" },
+  "share-2": { lucide: "share-2", phosphor: "share-network", tabler: "share-3", heroicons: "share", radix: "share-2" },
+  "gamepad-2": { lucide: "gamepad-2", phosphor: "gamepad", tabler: "device-gamepad", heroicons: "device-phone-mobile", radix: "magic-wand" },
+  swords: { lucide: "swords", phosphor: "sword", tabler: "swords", heroicons: "bolt", radix: "lightning-bolt" },
+  layers: { lucide: "layers", phosphor: "stack", tabler: "stack-2", heroicons: "squares-2x2", radix: "layers" },
+  smartphone: { lucide: "smartphone", phosphor: "device-mobile", tabler: "device-mobile", heroicons: "device-phone-mobile", radix: "mobile" },
+  "wifi-off": { lucide: "wifi-off", phosphor: "wifi-slash", tabler: "wifi-off", heroicons: "wifi", radix: "cross-1" },
+  "circle-check": { lucide: "circle-check", phosphor: "check-circle", tabler: "circle-check", heroicons: "check-circle", radix: "check" },
+  "notebook-pen": { lucide: "notebook-pen", phosphor: "notebook", tabler: "notebook", heroicons: "book-open", radix: "file-text" },
+  "maximize-2": { lucide: "maximize-2", phosphor: "arrows-out", tabler: "maximize", heroicons: "arrows-pointing-out", radix: "zoom-in" },
+  zap: { lucide: "zap", phosphor: "lightning", tabler: "bolt", heroicons: "bolt", radix: "lightning-bolt" },
+  users: { lucide: "users", phosphor: "users", tabler: "users", heroicons: "users", radix: "people" },
+  alert: { lucide: "alert-circle", phosphor: "warning-circle", tabler: "alert-circle", heroicons: "exclamation-circle", radix: "info-circled" },
+  x: { lucide: "x", phosphor: "x", tabler: "x", heroicons: "x-mark", radix: "cross-1" },
+  send: { lucide: "send", phosphor: "paper-plane", tabler: "send", heroicons: "paper-airplane", radix: "paper-plane" },
+  inbox: { lucide: "inbox", phosphor: "tray", tabler: "inbox", heroicons: "inbox", radix: "inbox" },
+  archive: { lucide: "archive", phosphor: "archive", tabler: "archive", heroicons: "archive-box", radix: "archive" },
+  "alert-triangle": { lucide: "alert-triangle", phosphor: "warning", tabler: "alert-triangle", heroicons: "exclamation-triangle", radix: "triangle-alert" },
+  "alert-circle": { lucide: "alert-circle", phosphor: "warning-circle", tabler: "alert-circle", heroicons: "exclamation-circle", radix: "info-circled" },
+  receipt: { lucide: "receipt", phosphor: "receipt", tabler: "receipt", heroicons: "receipt-percent", radix: "file-text" },
+  ghost: { lucide: "ghost", phosphor: "ghost", tabler: "ghost", heroicons: "sparkles", radix: "ghost" },
+  coffee: { lucide: "coffee", phosphor: "coffee", tabler: "coffee", heroicons: "mug", radix: "mug" },
+  trophy: { lucide: "trophy", phosphor: "trophy", tabler: "trophy", heroicons: "trophy", radix: "trophy" },
+  "hard-drive": { lucide: "hard-drive", phosphor: "hard-drives", tabler: "device-floppy", heroicons: "server", radix: "stack" },
+  "external-link": { lucide: "external-link", phosphor: "arrow-up-right", tabler: "external-link", heroicons: "arrow-top-right-on-square", radix: "external-link" },
 };
 
 export function useIconName(name: string, pack: IconPack = "lucide") {
   const entry = MAP[name];
-  const iconName = entry?.[pack] || entry?.lucide || name;
-  return `${PREFIXES[pack]}:${iconName}`;
+  // Try the pack-specific mapping, then the lucide fallback, then the raw name if it exists in the pack.
+  const candidates: (string | undefined)[] = [entry?.[pack], entry?.lucide, iconExists(pack, name) ? name : undefined, entry?.lucide, name];
+  for (const candidate of candidates) {
+    if (candidate && (pack === "lucide" || iconExists(pack, candidate))) {
+      return `${PREFIXES[pack]}:${candidate}`;
+    }
+  }
+  // Last resort: always valid in lucide.
+  return `${PREFIXES.lucide}:${entry?.lucide || name}`;
 }
 
 export function Icon({ name, ...props }: { name: string } & Omit<IconProps, "icon">) {

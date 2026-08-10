@@ -12,29 +12,37 @@ const SoundContext = createContext({
 
 export const useSound = () => useContext(SoundContext);
 
-function packConfig(pack: string) {
+type SoundConfig = { freq: number; type: OscillatorType; duration: number; sweep: number; volume?: number };
+
+function packConfig(pack: string): Record<SoundType, SoundConfig> {
   switch (pack) {
     case "mechanical":
-      return { click: { freq: 220, type: "square" as const, duration: 0.06, sweep: -80 },
-               hover: { freq: 880, type: "sine" as const, duration: 0.04, sweep: 0 },
-               success: { freq: 660, type: "sine" as const, duration: 0.15, sweep: 220 },
-               error: { freq: 180, type: "sawtooth" as const, duration: 0.2, sweep: -60 },
-               toggle: { freq: 440, type: "triangle" as const, duration: 0.08, sweep: 110 },
-               notification: { freq: 1200, type: "sine" as const, duration: 0.12, sweep: -300 } };
+      return {
+        click: { freq: 180, type: "square", duration: 0.03, sweep: -40, volume: 0.12 },
+        hover: { freq: 1200, type: "sine", duration: 0.02, sweep: 0, volume: 0.06 },
+        success: { freq: 720, type: "square", duration: 0.1, sweep: 240, volume: 0.1 },
+        error: { freq: 140, type: "sawtooth", duration: 0.18, sweep: -70, volume: 0.14 },
+        toggle: { freq: 380, type: "square", duration: 0.05, sweep: 80, volume: 0.1 },
+        notification: { freq: 1400, type: "sine", duration: 0.08, sweep: -400, volume: 0.08 },
+      };
     case "liquid":
-      return { click: { freq: 320, type: "sine" as const, duration: 0.1, sweep: 60 },
-               hover: { freq: 600, type: "sine" as const, duration: 0.08, sweep: -120 },
-               success: { freq: 520, type: "sine" as const, duration: 0.25, sweep: 180 },
-               error: { freq: 150, type: "sine" as const, duration: 0.3, sweep: -40 },
-               toggle: { freq: 360, type: "sine" as const, duration: 0.12, sweep: 90 },
-               notification: { freq: 900, type: "sine" as const, duration: 0.2, sweep: 200 } };
+      return {
+        click: { freq: 420, type: "sine", duration: 0.12, sweep: -80, volume: 0.12 },
+        hover: { freq: 760, type: "sine", duration: 0.07, sweep: 160, volume: 0.05 },
+        success: { freq: 560, type: "sine", duration: 0.28, sweep: 220, volume: 0.12 },
+        error: { freq: 180, type: "sine", duration: 0.35, sweep: -50, volume: 0.12 },
+        toggle: { freq: 340, type: "sine", duration: 0.14, sweep: 120, volume: 0.1 },
+        notification: { freq: 880, type: "sine", duration: 0.22, sweep: 180, volume: 0.1 },
+      };
     default: // minimal
-      return { click: { freq: 400, type: "sine" as const, duration: 0.05, sweep: 0 },
-               hover: { freq: 800, type: "sine" as const, duration: 0.03, sweep: 0 },
-               success: { freq: 700, type: "sine" as const, duration: 0.12, sweep: 200 },
-               error: { freq: 200, type: "triangle" as const, duration: 0.15, sweep: -50 },
-               toggle: { freq: 500, type: "sine" as const, duration: 0.06, sweep: 100 },
-               notification: { freq: 1000, type: "sine" as const, duration: 0.1, sweep: 0 } };
+      return {
+        click: { freq: 480, type: "sine", duration: 0.04, sweep: 0, volume: 0.1 },
+        hover: { freq: 880, type: "sine", duration: 0.025, sweep: 0, volume: 0.04 },
+        success: { freq: 640, type: "sine", duration: 0.14, sweep: 260, volume: 0.12 },
+        error: { freq: 220, type: "triangle", duration: 0.18, sweep: -60, volume: 0.12 },
+        toggle: { freq: 540, type: "sine", duration: 0.05, sweep: 120, volume: 0.1 },
+        notification: { freq: 1040, type: "sine", duration: 0.12, sweep: 0, volume: 0.09 },
+      };
   }
 }
 
@@ -63,8 +71,9 @@ export function SoundProvider({ children }: { children: React.ReactNode }) {
         osc.frequency.exponentialRampToValueAtTime(Math.max(60, cfg.freq + cfg.sweep), ctx.currentTime + cfg.duration);
       }
 
+      const peak = volume * (cfg.volume ?? 0.15);
       gain.gain.setValueAtTime(0.001, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(volume * 0.15, ctx.currentTime + 0.01);
+      gain.gain.exponentialRampToValueAtTime(peak, ctx.currentTime + 0.01);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + cfg.duration);
 
       osc.connect(gain);

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Card3D from "@/components/Card3D";
 import { fetchWorker } from "@/lib/api";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { buildAuthUrl } from "@/lib/oauth";
 import {
   Music,
   MessageSquare,
@@ -56,6 +57,7 @@ const CATEGORIES = [
 export default function ConnectionsPage() {
   const [filter, setFilter] = useState("all");
   const [connected, setConnected] = useState<Record<string, boolean>>({});
+  const [clientIds, setClientIds] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const i18n = useI18n();
 
@@ -113,6 +115,21 @@ export default function ConnectionsPage() {
         {filtered.map((integration) => {
           const Icon = icons[integration.category] || Blocks;
           const isConnected = connected[integration.id] === true;
+          const isOauth = integration.status === "oauth";
+          const clientId = clientIds[integration.id] || "";
+
+          function handleConnect() {
+            if (!clientId.trim()) return;
+            window.location.href = buildAuthUrl(integration.id, clientId.trim(), { provider: integration.id, clientId: clientId.trim() });
+          }
+
+          async function handleDisconnect() {
+            try {
+              await fetchWorker(`/api/${integration.id}/oauth/disconnect`, { method: "POST", body: JSON.stringify({}) });
+              setConnected((c) => ({ ...c, [integration.id]: false }));
+            } catch {}
+          }
+
           return (
             <Card3D key={integration.id}>
               <div className="flex items-start gap-3">
@@ -127,7 +144,7 @@ export default function ConnectionsPage() {
                   className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${
                     isConnected
                       ? "bg-emerald-500/10 text-emerald-400"
-                      : integration.status === "oauth"
+                      : isOauth
                         ? "bg-violet-500/10 text-violet-400"
                         : "bg-sky-500/10 text-sky-400"
                   }`}
@@ -135,6 +152,34 @@ export default function ConnectionsPage() {
                   {isConnected ? "connecté" : integration.status}
                 </span>
               </div>
+              {isOauth && !isConnected && (
+                <div className="mt-3 flex flex-col gap-2">
+                  <input
+                    type="text"
+                    value={clientId}
+                    onChange={(e) => setClientIds((c) => ({ ...c, [integration.id]: e.target.value }))}
+                    placeholder="Client ID"
+                    className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-1.5 text-xs text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleConnect}
+                    disabled={!clientId.trim()}
+                    className="w-full rounded-lg bg-[var(--accent)] px-2 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                  >
+                    Connecter
+                  </button>
+                </div>
+              )}
+              {isOauth && isConnected && (
+                <button
+                  type="button"
+                  onClick={handleDisconnect}
+                  className="mt-3 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-1.5 text-xs text-[var(--foreground)] transition-colors hover:bg-red-500/10 hover:text-red-400"
+                >
+                  Déconnecter
+                </button>
+              )}
             </Card3D>
           );
         })}

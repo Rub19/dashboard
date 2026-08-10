@@ -17,6 +17,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Command Center v1 : navigation, actions, création rapide, déconnexion.",
       "Live Overlay v4 : cartes riche Spotify/Discord/YouTube, equalizer, controles, avatars.",
       "Personnalisation v2 : Dock personnalisable + Live cards flip + glass/tilt.",
+      "ProfileDropdown : avatar/icone personne, plus de lettre.",
       "Plugins tiers v1 : page /plugins avec statut live et ouverture fenêtre.",
       "Macros persistantes : page /macros, exécution depuis Command Center.",
       "Personas : page /personas avec thèmes.",

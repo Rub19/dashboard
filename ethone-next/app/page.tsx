@@ -1,6 +1,7 @@
 "use client";
 
 import Card3D from "@/components/Card3D";
+import LiveWidgets from "@/components/LiveWidgets";
 import { useHomeData } from "@/lib/hooks/useDashboard";
 import {
   Zap,
@@ -202,6 +203,8 @@ export default function Home() {
           </div>
         </Card3D>
       )}
+
+      <LiveWidgets />
     </div>
   );
 }

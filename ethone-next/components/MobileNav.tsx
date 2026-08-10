@@ -3,18 +3,20 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Home, NotebookPen, CircleCheck, CalendarDays, Mail, Settings } from "lucide-react";
-
-const items = [
-  { id: "home", label: "Accueil", href: "/", icon: Home },
-  { id: "notes", label: "Notes", href: "/notes/", icon: NotebookPen },
-  { id: "tasks", label: "Tâches", href: "/tasks/", icon: CircleCheck },
-  { id: "calendar", label: "Agenda", href: "/calendar/", icon: CalendarDays },
-  { id: "mail", label: "Mail", href: "/mail/", icon: Mail },
-  { id: "settings", label: "Réglages", href: "/settings/", icon: Settings },
-];
+import { useI18n } from "@/lib/hooks/useI18n";
 
 export default function MobileNav() {
   const pathname = usePathname();
+  const i18n = useI18n();
+
+  const items = [
+    { id: "home", label: i18n("home"), href: "/", icon: Home },
+    { id: "notes", label: i18n("notes"), href: "/notes/", icon: NotebookPen },
+    { id: "tasks", label: i18n("tasks"), href: "/tasks/", icon: CircleCheck },
+    { id: "calendar", label: i18n("calendar"), href: "/calendar/", icon: CalendarDays },
+    { id: "mail", label: i18n("mail"), href: "/mail/", icon: Mail },
+    { id: "settings", label: i18n("settings"), href: "/settings/", icon: Settings },
+  ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-[var(--border)] bg-[var(--surface)] px-2 pb-safe md:hidden">

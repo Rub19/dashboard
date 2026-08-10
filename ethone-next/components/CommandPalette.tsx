@@ -4,31 +4,36 @@ import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Command, ArrowRight } from "lucide-react";
-
-const COMMANDS = [
-  { id: "home", label: "Accueil", shortcut: "H", href: "/" },
-  { id: "mail", label: "Mail", shortcut: "M", href: "/mail/" },
-  { id: "notes", label: "Notes", shortcut: "N", href: "/notes/" },
-  { id: "tasks", label: "Tâches", shortcut: "T", href: "/tasks/" },
-  { id: "calendar", label: "Calendrier", shortcut: "C", href: "/calendar/" },
-  { id: "files", label: "Fichiers", shortcut: "F", href: "/files/" },
-  { id: "brain", label: "Brain", shortcut: "B", href: "/brain/" },
-  { id: "focus", label: "Focus", shortcut: "P", href: "/focus/" },
-  { id: "matches", label: "Matches", shortcut: "G", href: "/matches/" },
-  { id: "connections", label: "Connexions", shortcut: "O", href: "/connections/" },
-  { id: "settings", label: "Réglages", shortcut: "S", href: "/settings/" },
-];
+import { useI18n } from "@/lib/hooks/useI18n";
 
 export default function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [index, setIndex] = useState(0);
   const router = useRouter();
+  const i18n = useI18n();
+
+  const COMMANDS = useMemo(
+    () => [
+      { id: "home", label: i18n("home"), shortcut: "H", href: "/" },
+      { id: "mail", label: i18n("mail"), shortcut: "M", href: "/mail/" },
+      { id: "notes", label: i18n("notes"), shortcut: "N", href: "/notes/" },
+      { id: "tasks", label: i18n("tasks"), shortcut: "T", href: "/tasks/" },
+      { id: "calendar", label: i18n("calendar"), shortcut: "C", href: "/calendar/" },
+      { id: "files", label: i18n("files"), shortcut: "F", href: "/files/" },
+      { id: "brain", label: i18n("brain"), shortcut: "B", href: "/brain/" },
+      { id: "focus", label: i18n("focus"), shortcut: "P", href: "/focus/" },
+      { id: "matches", label: i18n("matches"), shortcut: "G", href: "/matches/" },
+      { id: "connections", label: i18n("connections"), shortcut: "O", href: "/connections/" },
+      { id: "settings", label: i18n("settings"), shortcut: "S", href: "/settings/" },
+    ],
+    [i18n]
+  );
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return q ? COMMANDS.filter((c) => c.label.toLowerCase().includes(q)) : COMMANDS;
-  }, [query]);
+  }, [query, COMMANDS]);
 
   useEffect(() => {
     setIndex(0);
@@ -72,7 +77,7 @@ export default function CommandPalette() {
         className="hidden items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--muted)] transition-colors hover:border-[var(--accent)] hover:text-[var(--foreground)] lg:flex"
       >
         <Search className="h-3.5 w-3.5" />
-        <span>Commandes</span>
+        <span>{i18n("commands")}</span>
         <kbd className="rounded bg-[var(--surface-raised)] px-1 py-0.5 text-[10px]">
           <Command className="inline h-3 w-3" />K
         </kbd>
@@ -102,7 +107,7 @@ export default function CommandPalette() {
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Rechercher une page ou une action..."
+                  placeholder={i18n("search")}
                   className="flex-1 bg-transparent text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted)]"
                 />
                 <kbd className="rounded bg-[var(--surface)] px-1.5 py-0.5 text-[10px] text-[var(--muted)]">ESC</kbd>
@@ -110,7 +115,7 @@ export default function CommandPalette() {
 
               <div className="max-h-80 overflow-y-auto p-2">
                 {filtered.length === 0 ? (
-                  <p className="p-4 text-center text-sm text-[var(--muted)]">Aucun résultat</p>
+                  <p className="p-4 text-center text-sm text-[var(--muted)]">{i18n("noResults")}</p>
                 ) : (
                   filtered.map((cmd, i) => (
                     <button

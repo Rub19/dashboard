@@ -1,6 +1,7 @@
 "use client";
 
 import { useSettings } from "@/components/SettingsProvider";
+import { useI18n } from "@/lib/hooks/useI18n";
 import Card3D from "@/components/Card3D";
 import {
   Palette,
@@ -68,15 +69,16 @@ const LANGUAGES = [
 
 export default function SettingsPage() {
   const { settings, update } = useSettings();
+  const i18n = useI18n();
 
   const sections = [
     {
       id: "appearance",
-      label: "Apparence",
+      label: i18n("appearance"),
       icon: Palette,
       children: (
         <div className="space-y-4">
-          <Toggle label="Mode sombre" checked={settings.darkMode} onChange={(v) => update({ darkMode: v })} />
+          <Toggle label={i18n("darkMode")} checked={settings.darkMode} onChange={(v) => update({ darkMode: v })} />
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {THEMES.map((theme) => (
               <button
@@ -96,51 +98,51 @@ export default function SettingsPage() {
     },
     {
       id: "typography",
-      label: "Typographie",
+      label: i18n("typography"),
       icon: Type,
       children: (
         <div className="space-y-4">
-          <Range label="Taille du texte" value={settings.fontSize} onChange={(v) => update({ fontSize: v })} />
+          <Range label={i18n("fontSize")} value={settings.fontSize} onChange={(v) => update({ fontSize: v })} />
         </div>
       ),
     },
     {
       id: "density",
-      label: "Density Engine",
+      label: i18n("density"),
       icon: Gauge,
       children: (
         <div className="space-y-4">
-          <Range label="Densité des listes" value={settings.density} onChange={(v) => update({ density: v })} />
+          <Range label={i18n("listDensity")} value={settings.density} onChange={(v) => update({ density: v })} />
         </div>
       ),
     },
     {
       id: "sound",
-      label: "Son",
+      label: i18n("sound"),
       icon: Volume2,
       children: (
         <div className="space-y-4">
-          <Toggle label="Volume général" checked={settings.masterVolume} onChange={(v) => update({ masterVolume: v })} />
-          <Toggle label="Effets sonores" checked={settings.soundEffects} onChange={(v) => update({ soundEffects: v })} />
+          <Toggle label={i18n("masterVolume")} checked={settings.masterVolume} onChange={(v) => update({ masterVolume: v })} />
+          <Toggle label={i18n("soundEffects")} checked={settings.soundEffects} onChange={(v) => update({ soundEffects: v })} />
         </div>
       ),
     },
     {
       id: "notifications",
-      label: "Notifications",
+      label: i18n("notifications"),
       icon: Bell,
       children: (
         <div className="space-y-4">
-          <Toggle label="Notifications" checked={settings.notifications} onChange={(v) => update({ notifications: v })} />
-          <Toggle label="Notifications mail" checked={settings.mailNotifications} onChange={(v) => update({ mailNotifications: v })} />
-          <Toggle label="Notifications tracker" checked={settings.trackerNotifications} onChange={(v) => update({ trackerNotifications: v })} />
-          <Toggle label="Alertes sécurité" checked={settings.securityAlerts} onChange={(v) => update({ securityAlerts: v })} />
+          <Toggle label={i18n("notifications")} checked={settings.notifications} onChange={(v) => update({ notifications: v })} />
+          <Toggle label={i18n("mailNotifications")} checked={settings.mailNotifications} onChange={(v) => update({ mailNotifications: v })} />
+          <Toggle label={i18n("trackerNotifications")} checked={settings.trackerNotifications} onChange={(v) => update({ trackerNotifications: v })} />
+          <Toggle label={i18n("securityAlerts")} checked={settings.securityAlerts} onChange={(v) => update({ securityAlerts: v })} />
         </div>
       ),
     },
     {
       id: "account",
-      label: "Compte",
+      label: i18n("account"),
       icon: User,
       children: (
         <div className="space-y-4">
@@ -148,24 +150,24 @@ export default function SettingsPage() {
             type="button"
             className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-2 text-sm transition-colors hover:border-[var(--accent)]"
           >
-            Modifier l’email
+            {i18n("modifyEmail")}
           </button>
         </div>
       ),
     },
     {
       id: "security",
-      label: "Sécurité",
+      label: i18n("security"),
       icon: Shield,
       children: (
         <div className="space-y-4">
-          <Toggle label="Vérification OTP à chaque connexion" checked={true} onChange={() => {}} />
+          <Toggle label="OTP à chaque connexion" checked={true} onChange={() => {}} />
         </div>
       ),
     },
     {
       id: "language",
-      label: "Langue",
+      label: i18n("language"),
       icon: Globe,
       children: (
         <div className="grid grid-cols-2 gap-2">
@@ -188,7 +190,7 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Réglages</h1>
+      <h1 className="text-2xl font-bold">{i18n("settings")}</h1>
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {sections.map((section) => {
           const Icon = section.icon;

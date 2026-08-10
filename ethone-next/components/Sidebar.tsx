@@ -22,28 +22,30 @@ import {
   Menu,
 } from "lucide-react";
 import Link from "next/link";
-
-const navItems = [
-  { id: "home", label: "Accueil", href: "/", icon: Home },
-  { id: "notes", label: "Notes", href: "/notes/", icon: NotebookPen },
-  { id: "tasks", label: "Tâches", href: "/tasks/", icon: CircleCheck },
-  { id: "calendar", label: "Calendrier", href: "/calendar/", icon: CalendarDays },
-  { id: "files", label: "Fichiers", href: "/files/", icon: Folder },
-  { id: "activity", label: "Activity", href: "/activity/", icon: Activity },
-  { id: "interactions", label: "Interactions", href: "/interactions/", icon: Flame },
-  { id: "connections", label: "Connections", href: "/connections/", icon: Plug },
-  { id: "spaces", label: "Spaces", href: "/spaces/", icon: LayoutGrid },
-  { id: "flows", label: "Flows", href: "/flows/", icon: Workflow },
-  { id: "brain", label: "Brain", href: "/brain/", icon: Brain },
-  { id: "focus", label: "Focus", href: "/focus/", icon: Timer },
-  { id: "team", label: "Équipe", href: "/team/", icon: Users },
-  { id: "mail", label: "Mail", href: "/mail/", icon: Mail },
-  { id: "settings", label: "Réglages", href: "/settings/", icon: Settings },
-];
+import { useI18n } from "@/lib/hooks/useI18n";
 
 export default function Sidebar() {
   const [expanded, setExpanded] = useState(false);
   const pathname = usePathname();
+  const i18n = useI18n();
+
+  const navItems = [
+    { id: "home", label: i18n("home"), href: "/", icon: Home },
+    { id: "notes", label: i18n("notes"), href: "/notes/", icon: NotebookPen },
+    { id: "tasks", label: i18n("tasks"), href: "/tasks/", icon: CircleCheck },
+    { id: "calendar", label: i18n("calendar"), href: "/calendar/", icon: CalendarDays },
+    { id: "files", label: i18n("files"), href: "/files/", icon: Folder },
+    { id: "activity", label: i18n("activity"), href: "/activity/", icon: Activity },
+    { id: "interactions", label: i18n("interactions"), href: "/interactions/", icon: Flame },
+    { id: "connections", label: i18n("connections"), href: "/connections/", icon: Plug },
+    { id: "spaces", label: i18n("spaces"), href: "/spaces/", icon: LayoutGrid },
+    { id: "flows", label: i18n("flows"), href: "/flows/", icon: Workflow },
+    { id: "brain", label: i18n("brain"), href: "/brain/", icon: Brain },
+    { id: "focus", label: i18n("focus"), href: "/focus/", icon: Timer },
+    { id: "team", label: i18n("team"), href: "/team/", icon: Users },
+    { id: "mail", label: i18n("mail"), href: "/mail/", icon: Mail },
+    { id: "settings", label: i18n("settings"), href: "/settings/", icon: Settings },
+  ];
 
   return (
     <motion.aside

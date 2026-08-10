@@ -57,6 +57,7 @@ import { youtubeActivityRoute, youtubeOAuthDisconnectRoute, youtubeOAuthExchange
 import { signOutRoute } from "./routes/signout.js";
 import { teamMembersRoute } from "./routes/team.js";
 import { userDataRoute } from "./routes/user-data.js";
+import { profileRoute } from "./routes/profile.js";
 import itemsRoute from "./routes/items.js";
 import { connectionsListRoute } from "./routes/connections.js";
 import {
@@ -228,6 +229,11 @@ export const ROUTES = Object.freeze([
   route("user-data.interactions.post", "/api/user-data/interactions", userDataRoute, { method: "POST", service: "user-data", action: "interaction", rateLimit: "strict" }),
   route("user-data.interactions.patch", "/api/user-data/interactions", userDataRoute, { method: "PATCH", service: "user-data", action: "interaction", rateLimit: "strict" }),
   route("user-data.interactions.delete", "/api/user-data/interactions", userDataRoute, { method: "DELETE", service: "user-data", action: "interaction", rateLimit: "strict" }),
+
+  // Profile
+  route("profile.get", "/api/profile", profileRoute, { service: "profile" }),
+  route("profile.post", "/api/profile", profileRoute, { method: "POST", service: "profile", rateLimit: "strict" }),
+  route("profile.patch", "/api/profile", profileRoute, { method: "PATCH", service: "profile", rateLimit: "strict" }),
 
   // Mail
   route("mail.alias", "/api/mail/alias", mailAliasRoute, { service: "mail", rateLimit: "standard" }),

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Settings, LogOut, Sparkles } from "lucide-react";
+import { ChevronDown, Settings, LogOut, Sparkles, User } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 
@@ -58,6 +58,17 @@ export default function ProfileDropdown() {
               </div>
             </div>
             <nav className="p-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setOpen(false);
+                  router.push("/profile");
+                }}
+                className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--surface)]"
+              >
+                <User className="h-4 w-4 text-[var(--muted)]" />
+                {i18n("profile")}
+              </button>
               <button
                 type="button"
                 onClick={() => {

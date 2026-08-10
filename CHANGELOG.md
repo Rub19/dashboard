@@ -2,6 +2,21 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v324] - 2026-08-10
+
+**Plan B + Command Center + Live Overlay**
+
+### Ajoute
+- Backend `team` (invitation, liste, suppression) connecté à Supabase.
+- Backend `spaces`, `flows`, `interactions` via `ethone_user_data`.
+- `Command Center v1` : palette enrichie avec navigation, actions (theme/Brain/focus), création rapide, déconnexion.
+- `Live Overlay v1` : widget flottant Spotify / Discord avec polling, réduire/fermer.
+- Setting `liveOverlay` avec toggle.
+- `Profil avancé` : page `/profile`, route worker `/api/profile` (GET/POST/PATCH) connectée à `ethone_public_profiles`.
+
+### Version PWA
+- `experience-v324`.
+
 ## [v323] - 2026-08-18
 
 **Fix UI : bouton collapse, profil/help Mail, bills i18n, PWA v323**

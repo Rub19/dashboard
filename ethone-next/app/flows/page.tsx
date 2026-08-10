@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Card3D from "@/components/Card3D";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { useUserData } from "@/lib/hooks/useUserData";
 import { Workflow, Timer, Zap, User, Target, Palette, Gamepad2, Play, Trash2, Plus } from "lucide-react";
 
 const TEMPLATES = [
@@ -13,38 +13,34 @@ const TEMPLATES = [
   { id: "gaming", label: "Gaming", desc: "Stats, trackers et sessions en direct.", icon: Gamepad2, color: "bg-amber-500/10 text-amber-400" },
 ];
 
-type Flow = { id: string; label: string; templateId: string; runs: number };
-
 export default function FlowsPage() {
   const i18n = useI18n();
-  const [flows, setFlows] = useLocalStorage<Flow[]>("ethone:flows", []);
-  const [executions, setExecutions] = useLocalStorage<number>("ethone:flow-executions", 0);
+  const { items: flows, loading, error, create, update, remove } = useUserData("flow");
   const [selectedTemplate, setSelectedTemplate] = useState<string>(TEMPLATES[0].id);
   const [newLabel, setNewLabel] = useState("");
 
-  const activeCount = flows.filter((f) => f.runs > 0).length;
+  const activeCount = flows.filter((f) => f.count > 0).length;
+  const executions = flows.reduce((sum, f) => sum + f.count, 0);
 
   const templateStats = useMemo(() => {
     const counts: Record<string, number> = {};
     TEMPLATES.forEach((t) => (counts[t.id] = 0));
-    flows.forEach((f) => (counts[f.templateId] = (counts[f.templateId] || 0) + 1));
+    flows.forEach((f) => {
+      const templateId = typeof f.data === "object" && (f.data as { templateId?: string }).templateId;
+      if (templateId) counts[templateId] = (counts[templateId] || 0) + 1;
+    });
     return counts;
   }, [flows]);
 
   function addFlow() {
     const template = TEMPLATES.find((t) => t.id === selectedTemplate) || TEMPLATES[0];
     const label = newLabel.trim() || template.label;
-    setFlows([...flows, { id: String(Date.now()), label, templateId: template.id, runs: 0 }]);
+    create(label, "", { templateId: template.id });
     setNewLabel("");
   }
 
-  function runFlow(id: string) {
-    setFlows(flows.map((f) => (f.id === id ? { ...f, runs: f.runs + 1 } : f)));
-    setExecutions(executions + 1);
-  }
-
-  function removeFlow(id: string) {
-    setFlows(flows.filter((f) => f.id !== id));
+  function runFlow(id: string, current: number) {
+    update(id, { count: current + 1 });
   }
 
   return (
@@ -86,11 +82,17 @@ export default function FlowsPage() {
             </span>
             <div>
               <p className="text-2xl font-bold">{executions}</p>
-              <p className="text-xs text-[var(--muted)]">Exécutions aujourd’hui</p>
+              <p className="text-xs text-[var(--muted)]">Exécutions</p>
             </div>
           </div>
         </Card3D>
       </div>
+
+      {error && (
+        <Card3D>
+          <p className="text-sm text-red-400">{error.message}</p>
+        </Card3D>
+      )}
 
       <Card3D>
         <div className="space-y-4">
@@ -119,7 +121,8 @@ export default function FlowsPage() {
             <button
               type="button"
               onClick={addFlow}
-              className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              disabled={loading}
+              className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
             >
               <Plus className="h-4 w-4" /> {i18n("add")}
             </button>
@@ -155,7 +158,8 @@ export default function FlowsPage() {
         <div className="space-y-3">
           <h2 className="text-sm font-semibold">Vos flows</h2>
           {flows.map((flow) => {
-            const template = TEMPLATES.find((t) => t.id === flow.templateId) || TEMPLATES[0];
+            const templateId = typeof flow.data === "object" ? (flow.data as { templateId?: string }).templateId : undefined;
+            const template = TEMPLATES.find((t) => t.id === templateId) || TEMPLATES[0];
             return (
               <Card3D key={flow.id}>
                 <div className="flex items-center justify-between gap-3">
@@ -165,14 +169,14 @@ export default function FlowsPage() {
                     </span>
                     <div>
                       <p className="font-medium">{flow.label}</p>
-                      <p className="text-xs text-[var(--muted)]">{flow.runs} exécution{flow.runs > 1 ? "s" : ""}</p>
+                      <p className="text-xs text-[var(--muted)]">{flow.count} exécution{flow.count > 1 ? "s" : ""}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <button type="button" onClick={() => runFlow(flow.id)} className="rounded-xl bg-emerald-500/10 p-2 text-emerald-400 hover:bg-emerald-500/20">
+                    <button type="button" onClick={() => runFlow(flow.id, flow.count)} className="rounded-xl bg-emerald-500/10 p-2 text-emerald-400 hover:bg-emerald-500/20">
                       <Play className="h-4 w-4" />
                     </button>
-                    <button type="button" onClick={() => removeFlow(flow.id)} className="rounded-xl p-2 text-[var(--muted)] hover:text-red-400">
+                    <button type="button" onClick={() => remove(flow.id)} className="rounded-xl p-2 text-[var(--muted)] hover:text-red-400">
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>

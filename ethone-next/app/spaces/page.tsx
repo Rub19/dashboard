@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Card3D from "@/components/Card3D";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { useUserData } from "@/lib/hooks/useUserData";
 import { LayoutGrid, Plus, Trash2, Layers, ArrowRight } from "lucide-react";
 
 const PRESETS = [
@@ -13,21 +13,22 @@ const PRESETS = [
   { id: "personal", label: "Personnel", color: "bg-sky-500/20 text-sky-400" },
 ];
 
-type Space = { id: string; label: string; color: string };
-
 export default function SpacesPage() {
   const i18n = useI18n();
-  const [spaces, setSpaces] = useLocalStorage<Space[]>("ethone:spaces", PRESETS);
+  const { items: spaces, loading, error, create, remove } = useUserData("space");
   const [name, setName] = useState("");
 
   function add() {
     if (!name.trim()) return;
-    setSpaces([...spaces, { id: String(Date.now()), label: name, color: "bg-zinc-500/20 text-zinc-400" }]);
+    create(name, "", { color: "bg-zinc-500/20 text-zinc-400" });
     setName("");
   }
 
-  function remove(id: string) {
-    setSpaces(spaces.filter((s) => s.id !== id));
+  function colorFor(label: string) {
+    const preset = PRESETS.find((p) => p.label.toLowerCase() === label.toLowerCase());
+    if (preset) return preset.color;
+    const data = (spaces.find((s) => s.label === label)?.data || {}) as { color?: string };
+    return data.color || "bg-zinc-500/20 text-zinc-400";
   }
 
   return (
@@ -65,13 +66,17 @@ export default function SpacesPage() {
         </Card3D>
       </div>
 
+      {error && (
+        <Card3D>
+          <p className="text-sm text-red-400">{error.message}</p>
+        </Card3D>
+      )}
+
       <Card3D>
         <div className="space-y-4">
           <div>
             <h2 className="font-semibold">Environnements dédiés</h2>
-            <p className="text-sm leading-relaxed text-[var(--muted)]">
-              Spaces regroupe vos contextes de travail personnalisés. Créez un espace, associez-y des widgets et des raccourcis, et basculez d’un univers à l’autre en un clic.
-            </p>
+            <p className="text-sm leading-relaxed text-[var(--muted)]">Spaces regroupe vos contextes de travail personnalisés. Créez un espace, associez-y des widgets et des raccourcis.</p>
           </div>
           <button
             type="button"
@@ -97,7 +102,8 @@ export default function SpacesPage() {
           <button
             type="button"
             onClick={add}
-            className="flex shrink-0 items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            disabled={loading}
+            className="flex shrink-0 items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
           >
             <Plus className="h-4 w-4" />
           </button>
@@ -109,20 +115,18 @@ export default function SpacesPage() {
           <Card3D key={space.id}>
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${space.color}`}>
+                <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${colorFor(space.label)}`}>
                   <LayoutGrid className="h-5 w-5" />
                 </span>
                 <p className="font-medium">{space.label}</p>
               </div>
-              {space.id.length > 10 && (
-                <button
-                  type="button"
-                  onClick={() => remove(space.id)}
-                  className="text-[var(--muted)] hover:text-red-400"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => remove(space.id)}
+                className="text-[var(--muted)] hover:text-red-400"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
             </div>
           </Card3D>
         ))}

@@ -3,44 +3,49 @@
 import { useMemo, useState } from "react";
 import Card3D from "@/components/Card3D";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
-import { Flame, Heart, MessageCircle, Share2, Radio, ArrowRight, Plus } from "lucide-react";
+import { useUserData } from "@/lib/hooks/useUserData";
+import { Heart, MessageCircle, Share2, Radio, Plus, Flame } from "lucide-react";
 
 const DAYS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
-
-type Interaction = { id: string; kind: "like" | "comment" | "share"; target: string; at: string };
-type Weekly = number[];
+type InteractionKind = "like" | "comment" | "share";
 
 export default function InteractionsPage() {
   const i18n = useI18n();
-  const [reactions, setReactions] = useLocalStorage<Interaction[]>("ethone:interactions", [
-    { id: "1", kind: "like", target: "Note Spotify", at: "il y a 2 h" },
-  ]);
-  const [heatmap, setHeatmap] = useLocalStorage<Weekly>("ethone:interactions-heatmap", [1, 2, 1, 3, 2, 0, 1]);
-  const [live, setLive] = useLocalStorage<boolean>("ethone:interactions-live", false);
+  const { items: reactions, loading, error, create, remove } = useUserData("interaction");
   const [newTarget, setNewTarget] = useState("");
-  const [newKind, setNewKind] = useState<"like" | "comment" | "share">("like");
+  const [newKind, setNewKind] = useState<InteractionKind>("like");
+  const [live, setLive] = useState(false);
 
   const counts = useMemo(() => {
     return {
-      like: reactions.filter((r) => r.kind === "like").length,
-      comment: reactions.filter((r) => r.kind === "comment").length,
-      share: reactions.filter((r) => r.kind === "share").length,
+      like: reactions.filter((r) => (r.data as { kind?: InteractionKind }).kind === "like").length,
+      comment: reactions.filter((r) => (r.data as { kind?: InteractionKind }).kind === "comment").length,
+      share: reactions.filter((r) => (r.data as { kind?: InteractionKind }).kind === "share").length,
     };
+  }, [reactions]);
+
+  const heatmap = useMemo(() => {
+    const arr = [0, 0, 0, 0, 0, 0, 0];
+    reactions.forEach((r) => {
+      const at = new Date(r.created_at);
+      const day = at.getDay(); // 0 = dim
+      const index = day === 0 ? 6 : day - 1;
+      arr[index] += 1;
+    });
+    return arr;
   }, [reactions]);
 
   function addReaction() {
     if (!newTarget.trim()) return;
-    const next: Interaction = { id: String(Date.now()), kind: newKind, target: newTarget, at: "à l’instant" };
-    setReactions([next, ...reactions]);
-    const today = new Date().getDay(); // 0 = dim
-    const index = today === 0 ? 6 : today - 1;
-    setHeatmap(heatmap.map((v, i) => (i === index ? Math.min(v + 1, 8) : v)));
+    create(newTarget, "", { kind: newKind, target: newTarget });
     setNewTarget("");
   }
 
-  function removeReaction(id: string) {
-    setReactions(reactions.filter((r) => r.id !== id));
+  function iconFor(kind: string) {
+    if (kind === "like") return <Heart className="h-5 w-5 text-rose-400" />;
+    if (kind === "comment") return <MessageCircle className="h-5 w-5 text-sky-400" />;
+    if (kind === "share") return <Share2 className="h-5 w-5 text-emerald-400" />;
+    return <Flame className="h-5 w-5 text-amber-400" />;
   }
 
   const maxHeat = Math.max(...heatmap, 1);
@@ -88,16 +93,22 @@ export default function InteractionsPage() {
         </Card3D>
       </div>
 
+      {error && (
+        <Card3D>
+          <p className="text-sm text-red-400">{error.message}</p>
+        </Card3D>
+      )}
+
       <Card3D>
         <div className="space-y-4">
           <div>
             <h2 className="font-semibold">Feed d’interactions</h2>
-            <p className="text-sm leading-relaxed text-[var(--muted)]">Ajoutez vos réactions. Le flux enregistre likes, commentaires et partages localement pour l’instant.</p>
+            <p className="text-sm leading-relaxed text-[var(--muted)]">Ajoutez vos réactions. Elles sont synchronisées avec le backend.</p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
             <select
               value={newKind}
-              onChange={(e) => setNewKind(e.target.value as "like" | "comment" | "share")}
+              onChange={(e) => setNewKind(e.target.value as InteractionKind)}
               className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             >
               <option value="like">J’aime</option>
@@ -115,7 +126,8 @@ export default function InteractionsPage() {
             <button
               type="button"
               onClick={addReaction}
-              className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              disabled={loading}
+              className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
             >
               <Plus className="h-4 w-4" />
             </button>
@@ -124,7 +136,7 @@ export default function InteractionsPage() {
               onClick={() => setLive(!live)}
               className="inline-flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-2 text-sm font-semibold transition-colors hover:border-[var(--accent)]"
             >
-              {live ? "Stop" : "Live"} <ArrowRight className="h-4 w-4" />
+              {live ? "Stop" : "Live"}
             </button>
           </div>
         </div>
@@ -146,23 +158,24 @@ export default function InteractionsPage() {
       </Card3D>
 
       <div className="space-y-3">
-        {reactions.map((r) => (
-          <Card3D key={r.id}>
-            <div className="flex items-center gap-3">
-              {r.kind === "like" && <Heart className="h-5 w-5 text-rose-400" />}
-              {r.kind === "comment" && <MessageCircle className="h-5 w-5 text-sky-400" />}
-              {r.kind === "share" && <Share2 className="h-5 w-5 text-emerald-400" />}
-              <div className="min-w-0 flex-1">
-                <p className="font-medium capitalize">{r.kind}</p>
-                <p className="text-xs text-[var(--muted)]">{r.target}</p>
+        {reactions.map((r) => {
+          const data = r.data as { kind: InteractionKind; target?: string };
+          return (
+            <Card3D key={r.id}>
+              <div className="flex items-center gap-3">
+                {iconFor(data.kind)}
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium capitalize">{data.kind}</p>
+                  <p className="text-xs text-[var(--muted)]">{data.target || r.label}</p>
+                </div>
+                <span className="text-xs text-[var(--muted)]">{new Date(r.created_at).toLocaleDateString("fr-FR")}</span>
+                <button type="button" onClick={() => remove(r.id)} className="text-[var(--muted)] hover:text-red-400">
+                  <Flame className="h-4 w-4" />
+                </button>
               </div>
-              <span className="text-xs text-[var(--muted)]">{r.at}</span>
-              <button type="button" onClick={() => removeReaction(r.id)} className="text-[var(--muted)] hover:text-red-400">
-                <Flame className="h-4 w-4" />
-              </button>
-            </div>
-          </Card3D>
-        ))}
+            </Card3D>
+          );
+        })}
       </div>
     </div>
   );

@@ -56,6 +56,7 @@ import { weatherRoute } from "./routes/weather.js";
 import { youtubeActivityRoute, youtubeOAuthDisconnectRoute, youtubeOAuthExchangeRoute } from "./routes/youtube-oauth.js";
 import { signOutRoute } from "./routes/signout.js";
 import { teamMembersRoute } from "./routes/team.js";
+import { userDataRoute } from "./routes/user-data.js";
 import itemsRoute from "./routes/items.js";
 import { connectionsListRoute } from "./routes/connections.js";
 import {
@@ -213,6 +214,20 @@ export const ROUTES = Object.freeze([
   route("team.members.get", "/api/team/members", teamMembersRoute, { service: "team" }),
   route("team.members.post", "/api/team/members", teamMembersRoute, { method: "POST", service: "team", rateLimit: "strict" }),
   route("team.members.delete", "/api/team/members", teamMembersRoute, { method: "DELETE", service: "team", rateLimit: "strict" }),
+
+  // User data (spaces, flows, interactions)
+  route("user-data.spaces", "/api/user-data/spaces", userDataRoute, { service: "user-data", action: "space" }),
+  route("user-data.spaces.post", "/api/user-data/spaces", userDataRoute, { method: "POST", service: "user-data", action: "space", rateLimit: "strict" }),
+  route("user-data.spaces.patch", "/api/user-data/spaces", userDataRoute, { method: "PATCH", service: "user-data", action: "space", rateLimit: "strict" }),
+  route("user-data.spaces.delete", "/api/user-data/spaces", userDataRoute, { method: "DELETE", service: "user-data", action: "space", rateLimit: "strict" }),
+  route("user-data.flows", "/api/user-data/flows", userDataRoute, { service: "user-data", action: "flow" }),
+  route("user-data.flows.post", "/api/user-data/flows", userDataRoute, { method: "POST", service: "user-data", action: "flow", rateLimit: "strict" }),
+  route("user-data.flows.patch", "/api/user-data/flows", userDataRoute, { method: "PATCH", service: "user-data", action: "flow", rateLimit: "strict" }),
+  route("user-data.flows.delete", "/api/user-data/flows", userDataRoute, { method: "DELETE", service: "user-data", action: "flow", rateLimit: "strict" }),
+  route("user-data.interactions", "/api/user-data/interactions", userDataRoute, { service: "user-data", action: "interaction" }),
+  route("user-data.interactions.post", "/api/user-data/interactions", userDataRoute, { method: "POST", service: "user-data", action: "interaction", rateLimit: "strict" }),
+  route("user-data.interactions.patch", "/api/user-data/interactions", userDataRoute, { method: "PATCH", service: "user-data", action: "interaction", rateLimit: "strict" }),
+  route("user-data.interactions.delete", "/api/user-data/interactions", userDataRoute, { method: "DELETE", service: "user-data", action: "interaction", rateLimit: "strict" }),
 
   // Mail
   route("mail.alias", "/api/mail/alias", mailAliasRoute, { service: "mail", rateLimit: "standard" }),

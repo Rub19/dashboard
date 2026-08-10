@@ -5,18 +5,34 @@ import { useItems } from "@/lib/hooks/useItems";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useToast } from "@/components/ToastProvider";
 
 export default function NotesPage() {
   const i18n = useI18n();
+  const { success, error: showError } = useToast();
   const { items, loading, error, create, remove } = useItems("notes");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
 
   async function addNote() {
     if (!title.trim()) return;
-    await create({ title, body });
-    setTitle("");
-    setBody("");
+    try {
+      await create({ title, body });
+      setTitle("");
+      setBody("");
+      success(i18n("created"));
+    } catch {
+      showError(i18n("error"));
+    }
+  }
+
+  async function deleteNote(id: string) {
+    try {
+      await remove(id);
+      success(i18n("deleted"));
+    } catch {
+      showError(i18n("error"));
+    }
   }
 
   return (
@@ -74,7 +90,7 @@ export default function NotesPage() {
               </div>
               <button
                 type="button"
-                onClick={() => remove(note.id)}
+                onClick={() => deleteNote(note.id)}
                 disabled={loading}
                 className="shrink-0 text-[var(--muted)] hover:text-red-400 disabled:opacity-50"
               >

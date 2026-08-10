@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v326] - 2026-08-20
+
+**Toasts sur toutes les actions et pages**
+
+### Ajoute
+- Toast de notification sur toutes les pages et actions (ajout, suppression, sauvegarde, connexion, déconnexion, synchronisation, invitation, etc.).
+- Messages de toast traduits en français, anglais, espagnol et allemand.
+
+### Version PWA
+- `experience-v326`.
+
 ## [v325] - 2026-08-20
 
 **Polish : timbres, icons cross-pack, changelog i18n**

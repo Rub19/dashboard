@@ -5,7 +5,7 @@ import Card3D from "@/components/Card3D";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useUserData } from "@/lib/hooks/useUserData";
 import { Icon } from "@/lib/icons";
-;
+import { useToast } from "@/components/ToastProvider";
 
 const TEMPLATES = [
   { id: "personal", label: "Personnel", desc: "Essentiel. Une seule source de vérité pour la journée.", icon: "user", color: "bg-sky-500/10 text-sky-400" },
@@ -16,6 +16,7 @@ const TEMPLATES = [
 
 export default function FlowsPage() {
   const i18n = useI18n();
+  const { success, error: showError } = useToast();
   const { items: flows, loading, error, create, update, remove } = useUserData("flow");
   const [selectedTemplate, setSelectedTemplate] = useState<string>(TEMPLATES[0].id);
   const [newLabel, setNewLabel] = useState("");
@@ -33,15 +34,34 @@ export default function FlowsPage() {
     return counts;
   }, [flows]);
 
-  function addFlow() {
+  async function addFlow() {
     const template = TEMPLATES.find((t) => t.id === selectedTemplate) || TEMPLATES[0];
     const label = newLabel.trim() || template.label;
-    create(label, "", { templateId: template.id });
-    setNewLabel("");
+    try {
+      await create(label, "", { templateId: template.id });
+      setNewLabel("");
+      success(i18n("created"));
+    } catch {
+      showError(i18n("error"));
+    }
   }
 
-  function runFlow(id: string, current: number) {
-    update(id, { count: current + 1 });
+  async function runFlow(id: string, current: number) {
+    try {
+      await update(id, { count: current + 1 });
+      success(i18n("started"));
+    } catch {
+      showError(i18n("error"));
+    }
+  }
+
+  async function deleteFlow(id: string) {
+    try {
+      await remove(id);
+      success(i18n("deleted"));
+    } catch {
+      showError(i18n("error"));
+    }
   }
 
   return (
@@ -174,7 +194,7 @@ export default function FlowsPage() {
                     <button type="button" onClick={() => runFlow(flow.id, flow.count)} className="rounded-xl bg-emerald-500/10 p-2 text-emerald-400 hover:bg-emerald-500/20">
                       <Icon name="play" className="h-4 w-4" />
                     </button>
-                    <button type="button" onClick={() => remove(flow.id)} className="rounded-xl p-2 text-[var(--muted)] hover:text-red-400">
+                    <button type="button" onClick={() => deleteFlow(flow.id)} className="rounded-xl p-2 text-[var(--muted)] hover:text-red-400">
                       <Icon name="trash-2" className="h-4 w-4" />
                     </button>
                   </div>

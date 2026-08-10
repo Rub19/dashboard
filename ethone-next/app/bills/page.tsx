@@ -6,6 +6,7 @@ import { useUserData } from "@/lib/hooks/useUserData";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
+import { useToast } from "@/components/ToastProvider";
 
 const TODAY = new Date();
 const WEEK = Array.from({ length: 7 }, (_, i) => {
@@ -16,6 +17,7 @@ const WEEK = Array.from({ length: 7 }, (_, i) => {
 
 export default function BillsPage() {
   const i18n = useI18n();
+  const { success, error: showError } = useToast();
   const { settings } = useSettings();
   const { items: bills, create, remove } = useUserData("bill");
   const [label, setLabel] = useState("");
@@ -25,11 +27,25 @@ export default function BillsPage() {
 
   const totalDue = useMemo(() => bills.reduce((sum, b) => sum + Number((b.data as { amount?: number }).amount || 0), 0), [bills]);
 
-  function add() {
+  async function add() {
     if (!label.trim() || !amount) return;
-    create(label, "", { amount: Number(amount), date, currency, paid: false });
-    setLabel("");
-    setAmount("");
+    try {
+      await create(label, "", { amount: Number(amount), date, currency, paid: false });
+      setLabel("");
+      setAmount("");
+      success(i18n("created"));
+    } catch {
+      showError(i18n("error"));
+    }
+  }
+
+  async function deleteBill(id: string) {
+    try {
+      await remove(id);
+      success(i18n("deleted"));
+    } catch {
+      showError(i18n("error"));
+    }
   }
 
   function formatCurrency(amount: number, curr: string) {
@@ -115,7 +131,7 @@ export default function BillsPage() {
                     {formatCurrency(data.amount || 0, data.currency || "EUR")}
                   </span>
                   {due && <Icon name="alert-circle" className="h-4 w-4 text-red-400" />}
-                  <button onClick={() => remove(b.id)} className="text-[var(--muted)] hover:text-red-400">
+                  <button onClick={() => deleteBill(b.id)} className="text-[var(--muted)] hover:text-red-400">
                     <Icon name="trash-2" className="h-4 w-4" />
                   </button>
                 </div>

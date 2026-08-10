@@ -5,12 +5,13 @@ import { fetchWorker } from "@/lib/api";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
-;
+import { useToast } from "@/components/ToastProvider";
 
 type Message = { role: "user" | "assistant"; content: string };
 
 export default function BrainPage() {
   const i18n = useI18n();
+  const { success, error: showError } = useToast();
   const [prompt, setPrompt] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
@@ -43,8 +44,10 @@ export default function BrainPage() {
       const content =
         res?.data?.content || res?.data?.text || i18n("emptyResponse");
       setMessages((prev) => [...prev, { role: "assistant", content }]);
+      success(i18n("sent"));
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
+      showError(i18n("error"));
     } finally {
       setLoading(false);
     }
@@ -65,6 +68,7 @@ export default function BrainPage() {
   function handleClear() {
     setMessages([]);
     setError(null);
+    success(i18n("deleted"));
   }
 
   return (

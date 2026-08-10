@@ -6,7 +6,7 @@ import { fetchWorker } from "@/lib/api";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { buildAuthUrl } from "@/lib/oauth";
 import { Icon } from "@/lib/icons";
-;
+import { useToast } from "@/components/ToastProvider";
 
 const categoryIcons: Record<string, string> = {
   media: "music",
@@ -50,6 +50,7 @@ export default function ConnectionsPage() {
   const [clientIds, setClientIds] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const i18n = useI18n();
+  const { success, error: showError } = useToast();
 
   useEffect(() => {
     fetchWorker("/api/connections")
@@ -107,6 +108,7 @@ export default function ConnectionsPage() {
 
           function handleConnect() {
             if (!clientId.trim()) return;
+            success(i18n("connectSuccess"));
             window.location.href = buildAuthUrl(integration.id, clientId.trim(), { provider: integration.id, clientId: clientId.trim() });
           }
 
@@ -114,7 +116,10 @@ export default function ConnectionsPage() {
             try {
               await fetchWorker(`/api/${integration.id}/oauth/disconnect`, { method: "POST", body: JSON.stringify({}) });
               setConnected((c) => ({ ...c, [integration.id]: false }));
-            } catch {}
+              success(i18n("disconnectSuccess"));
+            } catch {
+              showError(i18n("error"));
+            }
           }
 
           return (

@@ -5,7 +5,7 @@ import Card3D from "@/components/Card3D";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useUserData } from "@/lib/hooks/useUserData";
 import { Icon } from "@/lib/icons";
-;
+import { useToast } from "@/components/ToastProvider";
 
 const PRESETS = [
   { id: "focus", label: "Focus", color: "bg-violet-500/20 text-violet-400" },
@@ -16,13 +16,28 @@ const PRESETS = [
 
 export default function SpacesPage() {
   const i18n = useI18n();
+  const { success, error: showError } = useToast();
   const { items: spaces, loading, error, create, remove } = useUserData("space");
   const [name, setName] = useState("");
 
-  function add() {
+  async function add() {
     if (!name.trim()) return;
-    create(name, "", { color: "bg-zinc-500/20 text-zinc-400" });
-    setName("");
+    try {
+      await create(name, "", { color: "bg-zinc-500/20 text-zinc-400" });
+      setName("");
+      success(i18n("created"));
+    } catch {
+      showError(i18n("error"));
+    }
+  }
+
+  async function deleteSpace(id: string) {
+    try {
+      await remove(id);
+      success(i18n("deleted"));
+    } catch {
+      showError(i18n("error"));
+    }
   }
 
   function colorFor(label: string) {
@@ -123,7 +138,7 @@ export default function SpacesPage() {
               </div>
               <button
                 type="button"
-                onClick={() => remove(space.id)}
+                onClick={() => deleteSpace(space.id)}
                 className="text-[var(--muted)] hover:text-red-400"
               >
                 <Icon name="trash-2" className="h-4 w-4" />

@@ -5,12 +5,13 @@ import Card3D from "@/components/Card3D";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useTeam } from "@/lib/hooks/useTeam";
 import { Icon } from "@/lib/icons";
-;
+import { useToast } from "@/components/ToastProvider";
 
 const ROLES = ["owner", "admin", "member"] as const;
 
 export default function TeamPage() {
   const i18n = useI18n();
+  const { success: toastSuccess, error: showError } = useToast();
   const { members, loading, error, invite, remove } = useTeam();
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<(typeof ROLES)[number]>("member");
@@ -28,10 +29,21 @@ export default function TeamPage() {
       await invite(email, role);
       setEmail("");
       setSuccess(true);
+      toastSuccess(i18n("invited"));
     } catch (err) {
       setInviteError(err instanceof Error ? err.message : i18n("inviteError"));
+      showError(i18n("error"));
     } finally {
       setInviting(false);
+    }
+  }
+
+  async function deleteMember(id: string) {
+    try {
+      await remove(id);
+      toastSuccess(i18n("deleted"));
+    } catch {
+      showError(i18n("error"));
     }
   }
 
@@ -122,7 +134,7 @@ export default function TeamPage() {
                   {i18n(m.role)}
                 </span>
                 {m.role !== "owner" && (
-                  <button type="button" onClick={() => remove(m.id)} className="text-[var(--muted)] hover:text-red-400">
+                  <button type="button" onClick={() => deleteMember(m.id)} className="text-[var(--muted)] hover:text-red-400">
                     <Icon name="trash-2" className="h-4 w-4" />
                   </button>
                 )}

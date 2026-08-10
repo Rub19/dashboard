@@ -7,10 +7,11 @@ import { useAuth } from "@/components/AuthProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useProfile } from "@/lib/hooks/useProfile";
 import { Icon } from "@/lib/icons";
-;
+import { useToast } from "@/components/ToastProvider";
 
 export default function ProfilePage() {
   const i18n = useI18n();
+  const { success, error: showError } = useToast();
   const { user } = useAuth();
   const { profile, loading, save } = useProfile();
   const router = useRouter();
@@ -38,6 +39,9 @@ export default function ProfilePage() {
     try {
       await save(form);
       setSaved(true);
+      success(i18n("saved"));
+    } catch {
+      showError(i18n("error"));
     } finally {
       setSaving(false);
     }

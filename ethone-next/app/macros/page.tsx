@@ -5,6 +5,7 @@ import Card3D from "@/components/Card3D";
 import { useUserData } from "@/lib/hooks/useUserData";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useToast } from "@/components/ToastProvider";
 
 const ACTIONS = [
   { id: "navigate", i18nKey: "openPage", label: "Ouvrir page", defaults: { href: "/" } },
@@ -13,16 +14,31 @@ const ACTIONS = [
 
 export default function MacrosPage() {
   const i18n = useI18n();
+  const { success, error: showError } = useToast();
   const { items: macros, create, remove } = useUserData("macro");
   const [label, setLabel] = useState("");
   const [action, setAction] = useState("navigate");
   const [href, setHref] = useState("/");
 
-  function add() {
+  async function add() {
     if (!label.trim()) return;
     const data = action === "navigate" ? { action, href } : { action, setting: "brainEnabled" };
-    create(label, "", data);
-    setLabel("");
+    try {
+      await create(label, "", data);
+      setLabel("");
+      success(i18n("created"));
+    } catch {
+      showError(i18n("error"));
+    }
+  }
+
+  async function deleteMacro(id: string) {
+    try {
+      await remove(id);
+      success(i18n("deleted"));
+    } catch {
+      showError(i18n("error"));
+    }
   }
 
   return (
@@ -85,7 +101,7 @@ export default function MacrosPage() {
                     <p className="text-xs text-[var(--muted)]">{i18n(data.action === "navigate" ? "openPage" : "toggle")} {data.href || data.setting}</p>
                   </div>
                 </div>
-                <button type="button" onClick={() => remove(m.id)} className="text-[var(--muted)] hover:text-red-400">
+                <button type="button" onClick={() => deleteMacro(m.id)} className="text-[var(--muted)] hover:text-red-400">
                   <Icon name="trash-2" className="h-4 w-4" />
                 </button>
               </div>

@@ -8,11 +8,13 @@ import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
+import { useToast } from "@/components/ToastProvider";
 
 const DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
 export default function CalendarPage() {
   const i18n = useI18n();
+  const { success, error: showError } = useToast();
   const { settings } = useSettings();
   const { items, loading: itemsLoading, error: itemsError, create, remove } = useItems("events");
   const [date, setDate] = useState(new Date());
@@ -62,9 +64,23 @@ export default function CalendarPage() {
 
   async function addEvent() {
     if (!newTitle.trim()) return;
-    const start = new Date(year, month, date.getDate());
-    await create({ title: newTitle, body: "", startAt: start.toISOString() });
-    setNewTitle("");
+    try {
+      const start = new Date(year, month, date.getDate());
+      await create({ title: newTitle, body: "", startAt: start.toISOString() });
+      setNewTitle("");
+      success(i18n("created"));
+    } catch {
+      showError(i18n("error"));
+    }
+  }
+
+  async function deleteEvent(id: string) {
+    try {
+      await remove(id);
+      success(i18n("deleted"));
+    } catch {
+      showError(i18n("error"));
+    }
   }
 
   const monthName = new Date(year, month, 1).toLocaleString(settings.language, { month: "long", year: "numeric" });
@@ -74,6 +90,7 @@ export default function CalendarPage() {
     if (!id) return;
     localStorage.setItem("ethone:clientId:google-calendar", id);
     setClientId(id);
+    success(i18n("connectSuccess"));
     window.location.href = buildAuthUrl("google-calendar", id, { provider: "google-calendar", clientId: id });
   }
 
@@ -193,7 +210,7 @@ export default function CalendarPage() {
                 {e.source === "local" && (
                   <button
                     type="button"
-                    onClick={() => remove(e.id)}
+                    onClick={() => deleteEvent(e.id)}
                     disabled={itemsLoading}
                     className="text-[var(--muted)] hover:text-red-400 disabled:opacity-50"
                   >

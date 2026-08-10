@@ -5,6 +5,46 @@ export type ChangelogEntry = {
   items: string[];
 };
 
+const v326_fr: ChangelogEntry = {
+  version: "v326",
+  date: "2026-08-20",
+  title: "Toasts sur toutes les actions et pages",
+  items: [
+    "Notifications toast sur les actions de toutes les pages (ajout, suppression, sauvegarde, connexion, sync, etc.).",
+    "Messages de toast traduits en français, anglais, espagnol, allemand.",
+  ],
+};
+
+const v326_en: ChangelogEntry = {
+  version: "v326",
+  date: "2026-08-20",
+  title: "Toasts on every action and page",
+  items: [
+    "Toast notifications for actions on every page (add, delete, save, connect, sync, etc.).",
+    "Toast messages translated to French, English, Spanish and German.",
+  ],
+};
+
+const v326_es: ChangelogEntry = {
+  version: "v326",
+  date: "2026-08-20",
+  title: "Toasts en todas las acciones y páginas",
+  items: [
+    "Notificaciones toast para acciones en todas las páginas (añadir, eliminar, guardar, conectar, sincronizar, etc.).",
+    "Mensajes de toast traducidos al francés, inglés, español y alemán.",
+  ],
+};
+
+const v326_de: ChangelogEntry = {
+  version: "v326",
+  date: "2026-08-20",
+  title: "Toasts für jede Aktion und Seite",
+  items: [
+    "Toast-Benachrichtigungen für Aktionen auf jeder Seite (hinzufügen, löschen, speichern, verbinden, synchronisieren, etc.).",
+    "Toast-Nachrichten ins Französische, Englische, Spanische und Deutsche übersetzt.",
+  ],
+};
+
 const v325_fr: ChangelogEntry = {
   version: "v325",
   date: "2026-08-20",
@@ -97,8 +137,8 @@ const v322_fr: ChangelogEntry = {
 };
 
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v325_fr, v324_fr, v323_fr, v322_fr],
-  en: [v325_en,
+  fr: [v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -144,7 +184,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [v325_es,
+  es: [v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -190,7 +230,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [v325_de,
+  de: [v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

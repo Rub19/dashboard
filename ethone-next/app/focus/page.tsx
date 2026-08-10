@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useToast } from "@/components/ToastProvider";
 
 const MODES = {
   pomodoro: { label: "Pomodoro", minutes: 25, color: "text-rose-400" },
@@ -21,6 +22,7 @@ function formatTime(seconds: number) {
 
 export default function FocusPage() {
   const i18n = useI18n();
+  const { success } = useToast();
   const [mode, setMode] = useState<Mode>("pomodoro");
   const [time, setTime] = useState(MODES.pomodoro.minutes * 60);
   const [running, setRunning] = useState(false);
@@ -40,6 +42,25 @@ export default function FocusPage() {
     return () => clearInterval(id);
   }, [running, time]);
 
+  function switchMode(m: Mode) {
+    setMode(m);
+    success(i18n("switched"));
+  }
+
+  function toggleTimer() {
+    setRunning((r) => {
+      const next = !r;
+      success(i18n(next ? "started" : "stopped"));
+      return next;
+    });
+  }
+
+  function resetTimer() {
+    setRunning(false);
+    setTime(MODES[mode].minutes * 60);
+    success(i18n("reseted"));
+  }
+
   const progress = 100 - (time / (MODES[mode].minutes * 60)) * 100;
 
   return (
@@ -52,7 +73,7 @@ export default function FocusPage() {
             <button
               key={m}
               type="button"
-              onClick={() => setMode(m)}
+              onClick={() => switchMode(m)}
               className={`rounded-xl px-3 py-1.5 text-xs font-medium transition-colors ${
                 mode === m
                   ? "bg-[var(--accent)] text-white"
@@ -97,17 +118,14 @@ export default function FocusPage() {
         <div className="flex items-center justify-center gap-3">
           <button
             type="button"
-            onClick={() => setRunning(!running)}
+            onClick={toggleTimer}
             className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--accent)] text-white transition-opacity hover:opacity-90"
           >
             {running ? <Icon name="pause" className="h-5 w-5" /> : <Icon name="play" className="h-5 w-5" />}
           </button>
           <button
             type="button"
-            onClick={() => {
-              setRunning(false);
-              setTime(MODES[mode].minutes * 60);
-            }}
+            onClick={resetTimer}
             className="flex h-12 w-12 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
           >
             <Icon name="rotate-ccw" className="h-5 w-5" />

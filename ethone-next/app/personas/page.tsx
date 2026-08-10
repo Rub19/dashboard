@@ -6,23 +6,42 @@ import { useUserData } from "@/lib/hooks/useUserData";
 import { useSettings } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useToast } from "@/components/ToastProvider";
 
 export default function PersonasPage() {
   const i18n = useI18n();
+  const { success, error: showError } = useToast();
   const { items: personas, create, remove } = useUserData("persona");
   const { update } = useSettings();
   const [label, setLabel] = useState("");
   const [theme, setTheme] = useState<"default" | "boreal" | "cyberpunk" | "eclipse" | "emerald">("default");
 
-  function add() {
+  async function add() {
     if (!label.trim()) return;
-    create(label, "", { theme });
-    setLabel("");
+    try {
+      await create(label, "", { theme });
+      setLabel("");
+      success(i18n("created"));
+    } catch {
+      showError(i18n("error"));
+    }
   }
 
   function apply(persona: typeof personas[0]) {
     const data = persona.data as { theme?: typeof theme };
-    if (data.theme) update({ theme: data.theme });
+    if (data.theme) {
+      update({ theme: data.theme });
+      success(i18n("applied"));
+    }
+  }
+
+  async function deletePersona(id: string) {
+    try {
+      await remove(id);
+      success(i18n("deleted"));
+    } catch {
+      showError(i18n("error"));
+    }
   }
 
   return (
@@ -78,7 +97,7 @@ export default function PersonasPage() {
                   <button type="button" onClick={() => apply(p)} className="rounded p-1.5 text-emerald-400 hover:bg-emerald-500/10">
                     <Icon name="check" className="h-4 w-4" />
                   </button>
-                  <button type="button" onClick={() => remove(p.id)} className="rounded p-1.5 text-[var(--muted)] hover:text-red-400">
+                  <button type="button" onClick={() => deletePersona(p.id)} className="rounded p-1.5 text-[var(--muted)] hover:text-red-400">
                     <Icon name="trash-2" className="h-4 w-4" />
                   </button>
                 </div>

@@ -6,6 +6,7 @@ import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useWindowManager } from "@/components/WindowManagerProvider";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useToast } from "@/components/ToastProvider";
 
 const PLUGINS = [
   { id: "spotify", label: "Spotify", icon: "music", route: "/notes/" },
@@ -19,6 +20,7 @@ const PLUGINS = [
 
 export default function PluginsPage() {
   const i18n = useI18n();
+  const { success } = useToast();
   const { records } = useLiveData();
   const { openWindow } = useWindowManager();
   const router = useRouter();
@@ -56,7 +58,10 @@ export default function PluginsPage() {
                     <Icon name="plug" className="h-4 w-4" />
                   </button>
                   <button
-                    onClick={() => openWindow(p.route, p.label)}
+                    onClick={() => {
+                      openWindow(p.route, p.label);
+                      success(i18n("open"));
+                    }}
                     className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
                     title={i18n("openAction")}
                   >

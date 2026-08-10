@@ -6,6 +6,7 @@ import Card3D from "@/components/Card3D";
 import LiquidSidebar from "@/components/LiquidSidebar";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useToast } from "@/components/ToastProvider";
 
 const tabs = [
   { id: "valorant", label: "Valorant", icon: <Icon name="swords" className="h-4 w-4" /> },
@@ -34,6 +35,7 @@ function MatchCard({ match }: { match: Record<string, string | number | undefine
 
 export default function MatchesPage() {
   const i18n = useI18n();
+  const { success, error: showError } = useToast();
   const [tab, setTab] = useState("valorant");
   const { items, loading, syncing, sync } = useTracker(
     tab === "valorant" ? "/api/tracker/valorant/matches" : "/api/tracker/lol/matches",
@@ -53,7 +55,14 @@ export default function MatchesPage() {
           <h1 className="min-w-0 truncate text-2xl font-bold">{i18n("matchesTitle")}</h1>
           <button
             type="button"
-            onClick={sync}
+            onClick={async () => {
+              try {
+                await sync();
+                success(i18n("synced"));
+              } catch {
+                showError(i18n("error"));
+              }
+            }}
             disabled={syncing}
             className="flex shrink-0 items-center gap-2 rounded-xl bg-[var(--surface-raised)] px-3 py-2 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--accent)]/20 disabled:opacity-50"
           >

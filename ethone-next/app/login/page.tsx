@@ -5,12 +5,13 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
-;
 import { signInWithOtp, verifyEmailOtp } from "@/lib/auth";
+import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 
 export default function LoginPage() {
   const i18n = useI18n();
+  const { success, error: showError } = useToast();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
@@ -26,9 +27,11 @@ export default function LoginPage() {
     setLoading(false);
     if (err) {
       setError(err.message);
+      showError(i18n("error"));
       return;
     }
     setStep("code");
+    success(i18n("sent"));
   }
 
   async function handleVerify(e: React.FormEvent) {
@@ -39,8 +42,10 @@ export default function LoginPage() {
     setLoading(false);
     if (!ok || err) {
       setError(err?.message || i18n("invalidCode"));
+      showError(i18n("error"));
       return;
     }
+    success(i18n("saved"));
     router.push("/");
   }
 

@@ -6,12 +6,14 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useUserData } from "@/lib/hooks/useUserData";
 import { Icon } from "@/lib/icons";
 import { useSettings } from "@/components/SettingsProvider";
+import { useToast } from "@/components/ToastProvider";
 
 const DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 type InteractionKind = "like" | "comment" | "share";
 
 export default function InteractionsPage() {
   const i18n = useI18n();
+  const { success, error: showError } = useToast();
   const { settings } = useSettings();
   const { items: reactions, loading, error, create, remove } = useUserData("interaction");
   const [newTarget, setNewTarget] = useState("");
@@ -37,10 +39,30 @@ export default function InteractionsPage() {
     return arr;
   }, [reactions]);
 
-  function addReaction() {
+  async function addReaction() {
     if (!newTarget.trim()) return;
-    create(newTarget, "", { kind: newKind, target: newTarget });
-    setNewTarget("");
+    try {
+      await create(newTarget, "", { kind: newKind, target: newTarget });
+      setNewTarget("");
+      success(i18n("created"));
+    } catch {
+      showError(i18n("error"));
+    }
+  }
+
+  async function deleteReaction(id: string) {
+    try {
+      await remove(id);
+      success(i18n("deleted"));
+    } catch {
+      showError(i18n("error"));
+    }
+  }
+
+  function toggleLive() {
+    const next = !live;
+    setLive(next);
+    success(i18n(next ? "connected" : "disconnected"));
   }
 
   function iconFor(kind: string) {
@@ -135,7 +157,7 @@ export default function InteractionsPage() {
             </button>
             <button
               type="button"
-              onClick={() => setLive(!live)}
+              onClick={toggleLive}
               className="inline-flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-2 text-sm font-semibold transition-colors hover:border-[var(--accent)]"
             >
               {live ? i18n("stop") : i18n("live")}
@@ -171,7 +193,7 @@ export default function InteractionsPage() {
                   <p className="text-xs text-[var(--muted)]">{data.target || r.label}</p>
                 </div>
                 <span className="text-xs text-[var(--muted)]">{new Date(r.created_at).toLocaleDateString(settings.language)}</span>
-                <button type="button" onClick={() => remove(r.id)} className="text-[var(--muted)] hover:text-red-400">
+                <button type="button" onClick={() => deleteReaction(r.id)} className="text-[var(--muted)] hover:text-red-400">
                   <Icon name="flame" className="h-4 w-4" />
                 </button>
               </div>

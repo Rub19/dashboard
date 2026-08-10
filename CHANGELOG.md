@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v323] - 2026-08-18
+
+**Fix UI : bouton collapse, profil/help Mail, bills i18n, PWA v323**
+
+### Corrige
+- Bouton de collapse Mail : icône seule, plus de texte tronqué.
+- Bouton Profil dans Mail ouvre le panneau profil.
+- Bouton Aide dans Mail ouvre la fenêtre de raccourcis clavier.
+- Bills : date et montant localisés avec `Intl`, correction overflow montant.
+
+### Version PWA
+- `experience-v323`.
+
 ## [v322] - 2026-08-18
 
 **Audit i18n : batch settings, Brain, home, PWA v322**

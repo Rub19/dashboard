@@ -1,10 +1,7 @@
 import { brandIcon, element, icon } from "./dom.mjs";
 import { refreshIcons } from "./icons.mjs";
 import { showBottomSheet } from "./bottom-sheet.mjs";
-import { translateSource } from "../i18n/catalog.mjs";
-
-const WEEKDAYS = ["L", "M", "M", "J", "V", "S", "D"];
-const MONTH_NAMES = ["Jan", "Fev", "Mar", "Avr", "Mai", "Juin", "Juil", "Aout", "Sept", "Oct", "Nov", "Dec"];
+import { currentLocale, translateSource } from "../i18n/catalog.mjs";
 
 function startOfDay(date) {
   const d = new Date(date);
@@ -17,8 +14,7 @@ function isSameDay(a, b) {
 }
 
 function formatDate(date) {
-  const d = new Date(date);
-  return `${d.getDate()} ${MONTH_NAMES[d.getMonth()]}`;
+  return new Intl.DateTimeFormat(currentLocale(), { day: "numeric", month: "short" }).format(new Date(date));
 }
 
 function toISODate(date) {
@@ -29,13 +25,25 @@ function toISODate(date) {
   return `${year}-${month}-${day}`;
 }
 
+function currencyCode(symbol) {
+  if (symbol === "$" || symbol === "USD") return "USD";
+  if (symbol === "€" || symbol === "EUR") return "EUR";
+  if (symbol === "£" || symbol === "GBP") return "GBP";
+  return "EUR";
+}
+
 function formatCurrency(amount, currency) {
-  return `${currency}${Number(amount).toFixed(2)}`;
+  try {
+    return new Intl.NumberFormat(currentLocale(), { style: "currency", currency: currencyCode(currency) }).format(Number(amount));
+  } catch {
+    return `${currency}${Number(amount).toFixed(2)}`;
+  }
 }
 
 function buildWeek(manager, selected, onSelect, today) {
   const days = [];
   const base = startOfDay(new Date());
+  const weekdayFormatter = new Intl.DateTimeFormat(currentLocale(), { weekday: "narrow" });
   for (let i = 0; i < 7; i += 1) {
     const d = new Date(today);
     d.setDate(d.getDate() + i);
@@ -52,7 +60,7 @@ function buildWeek(manager, selected, onSelect, today) {
       attributes: { type: "button", "aria-label": `${formatDate(d)}, ${billCountLabel}`, "aria-pressed": isSelected ? "true" : "false" },
       events: { click: () => onSelect(d) }
     }, [
-      element("small", { text: WEEKDAYS[d.getDay() === 0 ? 6 : d.getDay() - 1] }),
+      element("small", { text: weekdayFormatter.format(d) }),
       element("strong", { text: String(d.getDate()) }),
       dot
     ]);

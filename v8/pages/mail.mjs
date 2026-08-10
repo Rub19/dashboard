@@ -350,7 +350,8 @@ export function mountMail(stage, options = {}) {
   }, [icon("circle-help")]);
   profileBtn = element("button", {
     className: "v8-icon-button v8-mail-profile",
-    attributes: { type: "button", "aria-label": translateSource("Profil"), "data-tooltip": translateSource("Profil") }
+    attributes: { type: "button", "aria-label": translateSource("Profil"), "data-tooltip": translateSource("Profil") },
+    dataset: { action: "v8.profile.open" }
   }, [icon("user")]);
   const headerActions = element("div", { className: "v8-mail-header__actions" }, [onlineStatus, bellBtn, helpBtn, profileBtn]);
   header.append(brand, searchWrap, headerActions);
@@ -439,8 +440,7 @@ export function mountMail(stage, options = {}) {
   filterBtn.addEventListener("click", toggleFilters);
   applyFiltersBtn.addEventListener("click", applyFilters);
   resetFiltersBtn.addEventListener("click", resetFilters);
-  helpBtn.addEventListener("click", () => mailNotify({ type: "info", title: translateSource("Aide"), message: translateSource("Documentation ETHONE Mail à venir.") }));
-  profileBtn.addEventListener("click", () => mailNotify({ type: "info", title: translateSource("Profil"), message: translateSource("Options du profil à venir.") }));
+  helpBtn.addEventListener("click", () => showKeyboardHelp());
   sortBtn.addEventListener("click", openSortBottomSheet);
 
   searchInput.addEventListener("input", () => {
@@ -1818,7 +1818,7 @@ export function mountMail(stage, options = {}) {
     });
 
     const collapseLabel = state.sidebarCollapsed ? translateSource("Étendre") : translateSource("Réduire");
-    const collapseBtn = element("button", { className: "v8-icon-button v8-mail-sidebar__collapse", attributes: { type: "button", "aria-label": collapseLabel, "data-tooltip": collapseLabel } }, [icon(state.sidebarCollapsed ? "chevrons-right" : "chevrons-left"), element("span", { text: collapseLabel })]);
+    const collapseBtn = element("button", { className: "v8-icon-button v8-mail-sidebar__collapse", attributes: { type: "button", "aria-label": collapseLabel, "data-tooltip": collapseLabel } }, [icon(state.sidebarCollapsed ? "chevrons-right" : "chevrons-left")]);
     collapseBtn.addEventListener("click", () => { state.sidebarCollapsed = !state.sidebarCollapsed; sidebar.classList.toggle("is-collapsed", state.sidebarCollapsed); main.classList.toggle("is-sidebar-collapsed", state.sidebarCollapsed); });
 
     if (state.morePanelOpen) {

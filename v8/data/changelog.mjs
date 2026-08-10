@@ -24,6 +24,13 @@ export const CHANGELOG_KIND_LABELS = Object.freeze({
 });
 
 export const CHANGELOG = Object.freeze([
+  entry("v323", "2026-08-18", "Fix UI : bouton collapse, profil/help Mail, bills i18n, PWA v323", [
+    { kind: "fix", text: "Bouton de collapse Mail : icone seule, plus de texte tronque." },
+    { kind: "fix", text: "Bouton Profil dans Mail ouvre le panneau profil." },
+    { kind: "fix", text: "Bouton Aide dans Mail ouvre la fenetre de raccourcis clavier." },
+    { kind: "fix", text: "Bills : date et montant localises avec Intl, correction overflow montant." },
+    { kind: "improvement", text: "Bordereau PWA mis a jour vers experience-v323." }
+  ]),
   entry("v322", "2026-08-18", "Audit i18n : batch settings, Brain, home, PWA v322", [
     { kind: "fix", text: "Ajout de 30+ entrees i18n pour settings, Brain et home." },
     { kind: "fix", text: "Suppression des variables locales .dev.vars." },

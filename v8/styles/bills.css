@@ -15,13 +15,13 @@
 .v8-bills-day__icon svg { width: 14px; height: 14px; }
 .v8-bills-details { min-height: 80px; }
 .v8-bills-details__list { display: grid; gap: var(--v8-space-2); animation: v8-bills-detail-enter var(--v8-motion-base) var(--v8-ease-window) both; }
-.v8-bills-detail { display: grid; grid-template-columns: 40px 1fr auto; align-items: center; gap: var(--v8-space-3); padding: var(--v8-space-3); border: 1px solid var(--v8-border); border-radius: var(--v8-radius-md); background: var(--v8-surface-sunken); }
+.v8-bills-detail { display: grid; grid-template-columns: 40px 1fr minmax(0, max-content); align-items: center; gap: var(--v8-space-3); padding: var(--v8-space-3); border: 1px solid var(--v8-border); border-radius: var(--v8-radius-md); background: var(--v8-surface-sunken); overflow: hidden; }
 .v8-bills-detail__icon { display: grid; width: 36px; height: 36px; place-items: center; border-radius: var(--v8-radius-md); color: #fff; }
 .v8-bills-detail__icon svg { width: 18px; height: 18px; }
 .v8-bills-detail__copy { display: grid; min-width: 0; gap: 2px; }
 .v8-bills-detail__copy strong { font-size: var(--v8-font-sm); font-weight: var(--v8-weight-semibold); }
 .v8-bills-detail__copy small { font-size: var(--v8-font-micro); color: var(--v8-muted); }
-.v8-bills-detail b { font-size: var(--v8-font-md); font-weight: var(--v8-weight-bold); }
+.v8-bills-detail b { font-size: var(--v8-font-md); font-weight: var(--v8-weight-bold); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .v8-bills-empty { display: grid; place-items: center; gap: var(--v8-space-2); padding: var(--v8-space-5); text-align: center; color: var(--v8-muted); }
 .v8-bills-empty svg { width: 28px; height: 28px; color: var(--v8-muted); }
 .v8-bills-empty p { font-size: var(--v8-font-sm); }

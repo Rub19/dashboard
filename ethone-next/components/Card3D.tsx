@@ -32,7 +32,7 @@ export default function Card3D({ children }: { children: ReactNode }) {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{ rotateX, rotateY, transformStyle: "preserve-3d", perspective: 1000 }}
-      className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm transition-colors hover:border-[var(--accent)]/30"
+      className="min-w-0 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm transition-colors hover:border-[var(--accent)]/30"
     >
       {children}
     </motion.div>

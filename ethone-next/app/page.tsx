@@ -62,7 +62,7 @@ export default function Home() {
         </Card3D>
         <Card3D>
           <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">Flows</h2>
-          <p className="text-sm text-[var(--muted)] min-w-0 truncate">
+          <p className="min-w-0 truncate text-sm text-[var(--muted)]">
             Le contexte essentiel reste au premier plan pour une journée calme et efficace.
           </p>
         </Card3D>

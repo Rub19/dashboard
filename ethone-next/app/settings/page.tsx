@@ -275,6 +275,22 @@ export default function SettingsPage() {
         <div className="space-y-4">
           <Toggle label={i18n("masterVolume")} checked={settings.masterVolume} onChange={(v) => update({ masterVolume: v })} />
           <Toggle label={i18n("soundEffects")} checked={settings.soundEffects} onChange={(v) => update({ soundEffects: v })} />
+          <Range label="Volume des effets" value={settings.soundVolume} onChange={(v) => update({ soundVolume: v })} />
+          <p className="text-xs text-[var(--muted)]">Pack sonore</p>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {(["none", "minimal", "mechanical", "liquid"] as const).map((pack) => (
+              <button
+                key={pack}
+                type="button"
+                onClick={() => update({ soundPack: pack })}
+                className={`rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
+                  settings.soundPack === pack ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                }`}
+              >
+                {pack === "none" ? "Aucun" : pack === "minimal" ? "Minimal" : pack === "mechanical" ? "Méca" : "Liquide"}
+              </button>
+            ))}
+          </div>
         </div>
       ),
     },

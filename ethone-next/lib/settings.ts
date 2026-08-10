@@ -18,6 +18,8 @@ export type Settings = {
   sidebarVisible: boolean;
   masterVolume: boolean;
   soundEffects: boolean;
+  soundPack: "none" | "minimal" | "mechanical" | "liquid";
+  soundVolume: number;
   notifications: boolean;
   mailNotifications: boolean;
   trackerNotifications: boolean;
@@ -47,7 +49,9 @@ export const DEFAULTS: Settings = {
   layoutPreset: "default",
   sidebarVisible: true,
   masterVolume: true,
-  soundEffects: false,
+  soundEffects: true,
+  soundPack: "minimal",
+  soundVolume: 50,
   notifications: true,
   mailNotifications: true,
   trackerNotifications: false,

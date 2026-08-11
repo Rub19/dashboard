@@ -30,7 +30,7 @@ export default function ProfileSelectionPage() {
     );
   }
 
-  function handleCreate() {
+  async function handleCreate() {
     if (!name.trim()) return;
     setCreating(true);
     const selectedType = type;
@@ -44,14 +44,14 @@ export default function ProfileSelectionPage() {
       creative: ["notes", "files", "brain"],
     };
     try {
-      create({
+      const created = await create({
         name: name.trim(),
         type: selectedType,
         accent: "violet",
         widgets: suggestedWidgets[selectedType] || ["today", "notes", "calendar"],
         integrations: [],
       });
-      updateSettings({ dockItems: suggestedWidgets[selectedType] });
+      updateSettings({ dockItems: created.widgets, accentColor: created.accent as never });
       success(i18n("created"));
       setName("");
     } catch (err) {
@@ -61,8 +61,8 @@ export default function ProfileSelectionPage() {
     }
   }
 
-  function handleSelect(id: string) {
-    select(id);
+  async function handleSelect(id: string) {
+    await select(id);
     const p = profiles.find((x) => x.id === id);
     if (p) updateSettings({ dockItems: p.widgets, accentColor: p.accent as never });
     success(i18n("selected"));

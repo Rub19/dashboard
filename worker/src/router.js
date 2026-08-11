@@ -59,6 +59,7 @@ import { signOutRoute } from "./routes/signout.js";
 import { teamMembersRoute } from "./routes/team.js";
 import { userDataRoute } from "./routes/user-data.js";
 import { profileRoute } from "./routes/profile.js";
+import { profilesRoute } from "./routes/profiles.js";
 import itemsRoute from "./routes/items.js";
 import { connectionsListRoute } from "./routes/connections.js";
 import {
@@ -238,6 +239,13 @@ export const ROUTES = Object.freeze([
   route("profile.get", "/api/profile", profileRoute, { service: "profile" }),
   route("profile.post", "/api/profile", profileRoute, { method: "POST", service: "profile", rateLimit: "strict" }),
   route("profile.patch", "/api/profile", profileRoute, { method: "PATCH", service: "profile", rateLimit: "strict" }),
+
+  // Workspace profiles (tied to user account)
+  route("profiles.get", "/api/profiles", profilesRoute, { service: "profile" }),
+  route("profiles.create", "/api/profiles", profilesRoute, { method: "POST", service: "profile", rateLimit: "strict" }),
+  route("profiles.activate", "/api/profiles/activate", profilesRoute, { method: "POST", action: "activate", service: "profile", rateLimit: "strict" }),
+  route("profiles.patch", "/api/profiles", profilesRoute, { method: "PATCH", service: "profile", rateLimit: "strict" }),
+  route("profiles.delete", "/api/profiles", profilesRoute, { method: "DELETE", service: "profile", rateLimit: "strict" }),
 
   // Mail
   route("mail.alias", "/api/mail/alias", mailAliasRoute, { service: "mail", rateLimit: "standard" }),

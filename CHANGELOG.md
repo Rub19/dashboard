@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v338] - 2026-08-20
+
+**Profils liés au compte utilisateur**
+
+### Ajoute
+- Migration Supabase `ethone_profiles` avec `user_id`, RLS, index unique sur le profil actif par utilisateur, et fonction `ethone_set_active_profile` pour garantir un seul profil actif à la fois.
+- Routes Worker `/api/profiles` (CRUD + activation) avec scoping par `auth.userId`.
+- Hook `useProfiles` migré de `localStorage` vers l’API Worker : les profils sont maintenant synchronisés par compte et isolés entre utilisateurs.
+- `ProfileSync` dans `app/layout.tsx` applique automatiquement le profil actif (`dockItems`, `accentColor`) au chargement.
+
+### Version PWA
+- `experience-v338`.
+
 ## [v337] - 2026-08-20
 
 **Passkey : renouvellement de session via Supabase**

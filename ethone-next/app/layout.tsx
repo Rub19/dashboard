@@ -22,6 +22,7 @@ import Dock from "@/components/Dock";
 import PageTransition from "@/components/PageTransition";
 import { WindowManagerProvider } from "@/components/WindowManagerProvider";
 import { WindowRenderer } from "@/components/WindowRenderer";
+import ProfileSync from "@/components/ProfileSync";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -55,6 +56,7 @@ export default function RootLayout({
           <OfflineIndicator />
           <SettingsProvider>
             <HtmlLang />
+            <ProfileSync />
             <SoundProvider>
               <ToastProvider>
                 <SkipLink />

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { fetchWorker } from "@/lib/api";
 
 export type Profile = {
   id: string;
@@ -12,63 +13,99 @@ export type Profile = {
   createdAt: string;
 };
 
-const KEY = "ethone-profiles-v1";
-const ACTIVE_KEY = "ethone-active-profile-v1";
+function mapProfile(p: Record<string, unknown>): Profile {
+  return {
+    id: String(p.id),
+    name: String(p.name),
+    type: String(p.type) as Profile["type"],
+    accent: String(p.accent || "violet"),
+    widgets: Array.isArray(p.widgets) ? p.widgets.map((x) => String(x)) : [],
+    integrations: Array.isArray(p.integrations) ? p.integrations.map((x) => String(x)) : [],
+    createdAt: String(p.created_at || p.createdAt || new Date().toISOString()),
+  };
+}
 
 export function useProfiles() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [active, setActive] = useState<string>("");
   const [loaded, setLoaded] = useState(false);
 
-  useEffect(() => {
+  const fetchAll = useCallback(async () => {
     try {
-      const raw = localStorage.getItem(KEY);
-      const parsed = raw ? JSON.parse(raw) : [];
-      setProfiles(Array.isArray(parsed) ? parsed : []);
-      setActive(localStorage.getItem(ACTIVE_KEY) || "");
+      const res = await fetchWorker("/api/profiles");
+      const list = Array.isArray(res?.data?.list) ? res.data.list.map(mapProfile) : [];
+      const activeProfile = res?.data?.active ? mapProfile(res.data.active) : list[0] || null;
+      setProfiles(list);
+      setActive(activeProfile?.id || "");
     } catch {
       setProfiles([]);
+      setActive("");
     } finally {
       setLoaded(true);
     }
   }, []);
 
   useEffect(() => {
-    if (!loaded) return;
-    localStorage.setItem(KEY, JSON.stringify(profiles));
-  }, [profiles, loaded]);
+    fetchAll();
+  }, [fetchAll]);
 
-  useEffect(() => {
-    if (!loaded) return;
-    localStorage.setItem(ACTIVE_KEY, active);
-  }, [active, loaded]);
-
-  function create(input: Omit<Profile, "id" | "createdAt">) {
-    const profile: Profile = { ...input, id: crypto.randomUUID(), createdAt: new Date().toISOString() };
-    setProfiles((prev) => [...prev, profile]);
-    setActive(profile.id);
-    return profile;
+  async function create(input: Omit<Profile, "id" | "createdAt">) {
+    const res = await fetchWorker("/api/profiles", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+    const created = res?.data ? mapProfile(res.data) : null;
+    if (!created) throw new Error("Profile creation failed");
+    await fetchAll();
+    return created;
   }
 
-  function update(id: string, patch: Partial<Omit<Profile, "id" | "createdAt">>) {
-    setProfiles((prev) => prev.map((p) => (p.id === id ? { ...p, ...patch } : p)));
+  async function update(id: string, patch: Partial<Omit<Profile, "id" | "createdAt">>) {
+    const existing = profiles.find((p) => p.id === id);
+    if (!existing) throw new Error("Profile not found");
+    const body = { id, ...patch };
+    await fetchWorker("/api/profiles", {
+      method: "PATCH",
+      body: JSON.stringify(body),
+    });
+    await fetchAll();
   }
 
-  function remove(id: string) {
-    setProfiles((prev) => prev.filter((p) => p.id !== id));
-    if (active === id) setActive("");
+  async function remove(id: string) {
+    await fetchWorker("/api/profiles", {
+      method: "DELETE",
+      body: JSON.stringify({ id }),
+    });
+    await fetchAll();
   }
 
-  function select(id: string) {
-    if (profiles.find((p) => p.id === id)) setActive(id);
+  async function select(id: string) {
+    const p = profiles.find((x) => x.id === id);
+    if (!p) throw new Error("Profile not found");
+    setActive(id);
+    try {
+      await fetchWorker("/api/profiles/activate", {
+        method: "POST",
+        body: JSON.stringify({ id }),
+      });
+      await fetchAll();
+    } catch {
+      setActive((prev) => (prev === id ? "" : prev));
+      throw new Error("Failed to activate profile");
+    }
   }
 
-  function duplicate(id: string) {
+  async function duplicate(id: string) {
     const source = profiles.find((p) => p.id === id);
-    if (!source) return;
-    const copy: Profile = { ...source, id: crypto.randomUUID(), name: `${source.name} (copy)`, createdAt: new Date().toISOString() };
-    setProfiles((prev) => [...prev, copy]);
+    if (!source) throw new Error("Profile not found");
+    return create({
+      name: `${source.name} (copy)`,
+      type: source.type,
+      accent: source.accent,
+      widgets: [...source.widgets],
+      integrations: [...source.integrations],
+    });
   }
 
-  return { profiles, active, loaded, create, update, remove, select, duplicate };
+  return { profiles, active, loaded, reload: fetchAll, create, update, remove, select, duplicate };
 }

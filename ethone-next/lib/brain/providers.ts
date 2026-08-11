@@ -14,11 +14,11 @@ export const BRAIN_PROVIDERS = Object.freeze([
 export function brainProviderList() {
   return BRAIN_PROVIDERS.map((provider) => ({
     ...provider,
-    available: ["context", "groq", "ollama", "lm-studio"].includes(provider.id),
+    available: ["context", "groq", "openai", "anthropic", "gemini", "ollama", "lm-studio"].includes(provider.id),
     status:
       provider.id === "context"
         ? "ready"
-        : provider.id === "groq" || provider.id === "ollama" || provider.id === "lm-studio"
+        : ["groq", "openai", "anthropic", "gemini", "ollama", "lm-studio"].includes(provider.id)
         ? "backend-ready"
         : "backend-required",
   }));

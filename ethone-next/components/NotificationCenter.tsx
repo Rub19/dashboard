@@ -6,6 +6,7 @@ import { useNotifications, SNOOZE_OPTIONS, type Notification, type NotificationC
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useIsMobile } from "@/lib/hooks/useMediaQuery";
 import { Icon } from "@/lib/icons";
+import { usePresence } from "@/components/PresenceProvider";
 import BottomSheet from "@/components/BottomSheet";
 
 const CATEGORY_ICONS: Record<NotificationCategory, string> = {
@@ -72,6 +73,7 @@ export default function NotificationCenter() {
   const i18n = useI18n();
   const router = useRouter();
   const isMobile = useIsMobile();
+  const { setNotification } = usePresence();
   const {
     activeItems,
     unreadCount,
@@ -98,6 +100,12 @@ export default function NotificationCenter() {
       setTimeout(() => searchRef.current?.focus(), 50);
     }
   }, [open]);
+
+  useEffect(() => {
+    if (unreadCount > 0) setNotification("important", 5000);
+    else if (importantCount > 0) setNotification("important");
+    else setNotification("idle");
+  }, [unreadCount, importantCount, setNotification]);
 
   const categories = useMemo(
     () => [
@@ -376,7 +384,7 @@ export default function NotificationCenter() {
       >
         <Icon name="bell" className="h-5 w-5" />
         {unreadCount > 0 && (
-          <span className="absolute right-1 top-1 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-[var(--accent)] px-1 text-[10px] font-bold text-white">
+          <span data-notification-badge className="absolute right-1 top-1 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-[var(--accent)] px-1 text-[10px] font-bold text-white">
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}

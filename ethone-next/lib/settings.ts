@@ -37,7 +37,7 @@ export type Settings = {
   dockItems: string[];
   dockRadius: number;
   shadow: "none" | "sm" | "md" | "glow";
-  backgroundEffect: "solid" | "gradient" | "mesh" | "aurora";
+  backgroundEffect: "solid" | "gradient" | "mesh" | "aurora" | "nebula" | "noise";
   backgroundSpeed: number;
   wallpaper: "none" | "aurora" | "nebula" | "mesh" | "noise";
   layoutPreset: "default" | "minimal" | "dock-only" | "sidebar-only";

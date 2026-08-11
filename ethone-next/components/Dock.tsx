@@ -51,8 +51,9 @@ export default function Dock() {
   }
 
   return (
-    <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2">
+    <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2" data-dock-magnify="true" data-dock-pulse="true">
       <div
+        data-dock
         className={`flex items-end gap-1 border border-[var(--border)] bg-[var(--surface-raised)]/95 p-2 shadow-2xl backdrop-blur-md transition-all ${
           expanded ? "min-w-[320px] flex-wrap justify-center" : ""
         }`}
@@ -67,7 +68,9 @@ export default function Dock() {
                 aria-label={item.label}
                 data-tooltip={item.label}
                 data-haptic
-                className={`flex h-11 w-11 items-center justify-center rounded-xl border border-transparent text-[var(--foreground)] transition-all hover:-translate-y-1 hover:scale-110 hover:border-[var(--accent)]/30 hover:bg-[var(--surface)] hover:shadow-lg ${
+                data-dock-item
+                data-dock-item-active={active ? "true" : "false"}
+                className={`flex h-11 w-11 items-center justify-center rounded-xl border border-transparent text-[var(--foreground)] transition-all hover:border-[var(--accent)]/30 hover:bg-[var(--surface)] hover:shadow-lg ${
                   active ? "bg-[var(--accent)]/10 text-[var(--accent)]" : ""
                 }`}
               >

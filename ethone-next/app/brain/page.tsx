@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useBrain } from "@/lib/hooks/useBrain";
+import { usePresence } from "@/components/PresenceProvider";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
 import { useToast } from "@/components/ToastProvider";
@@ -31,6 +32,7 @@ export default function BrainPage() {
   const i18n = useI18n();
   const { success, error: showError } = useToast();
   const brain = useBrain();
+  const { setBrain } = usePresence();
   const [activeTab, setActiveTab] = useState<Tab>("chat");
   const [prompt, setPrompt] = useState("");
   const [memoryCategory, setMemoryCategory] = useState<BrainMemoryCategory>("interface");
@@ -47,6 +49,20 @@ export default function BrainPage() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [brain.messages, brain.loading]);
+
+  useEffect(() => {
+    if (brain.loading) {
+      setBrain("thinking");
+      return;
+    }
+    const hasAssistant = brain.messages.some((m) => m.role === "assistant");
+    if (hasAssistant) {
+      setBrain("responding");
+      const t = setTimeout(() => setBrain("ready"), 1400);
+      return () => clearTimeout(t);
+    }
+    setBrain("ready");
+  }, [brain.loading, brain.messages, setBrain]);
 
   function handleSend(e: React.FormEvent) {
     e.preventDefault();
@@ -113,9 +129,9 @@ export default function BrainPage() {
           )}
           {brain.loading && (
             <div className="flex justify-start">
-              <div className="flex items-center gap-2 rounded-2xl bg-[var(--surface-raised)] px-4 py-2.5 text-sm text-[var(--muted)]">
+              <div className="flex items-center gap-2 rounded-2xl bg-[var(--surface-raised)] px-4 py-2.5 text-sm text-[var(--muted)]" data-brain-aura>
                 <Icon name="loader-2" className="h-4 w-4 animate-spin" />
-                <Icon name="brain" className="h-4 w-4 text-[var(--accent)]" />
+                <Icon name="brain" className="h-4 w-4 text-[var(--accent)]" data-brain-dot />
               </div>
             </div>
           )}

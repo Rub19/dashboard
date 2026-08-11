@@ -25,6 +25,7 @@ import { WindowManagerProvider } from "@/components/WindowManagerProvider";
 import { WindowRenderer } from "@/components/WindowRenderer";
 import ProfileSync from "@/components/ProfileSync";
 import ShortcutsOverlay from "@/components/ShortcutsOverlay";
+import PresenceProvider from "@/components/PresenceProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -57,6 +58,7 @@ export default function RootLayout({
           <WindowManagerProvider>
           <OfflineIndicator />
           <SettingsProvider>
+            <PresenceProvider>
             <UIProvider>
               <HtmlLang />
               <ProfileSync />
@@ -88,6 +90,7 @@ export default function RootLayout({
                 </ToastProvider>
               </SoundProvider>
             </UIProvider>
+            </PresenceProvider>
           </SettingsProvider>
           <WindowRenderer />
         </WindowManagerProvider>

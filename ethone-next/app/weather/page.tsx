@@ -7,6 +7,8 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
 import { fetchWorker } from "@/lib/api";
 import Card3D from "@/components/Card3D";
+import FormField from "@/components/FormField";
+import Input from "@/components/Input";
 
 type Forecast = {
   date?: string;
@@ -76,17 +78,19 @@ export default function WeatherPage() {
     <div className="p-6">
       <header className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">{i18n("weather")}</h1>
-        <form onSubmit={handleSubmit} className="flex items-center gap-2">
-          <input
-            type="text"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            placeholder={i18n("city")}
-            className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 text-sm outline-none focus:border-[var(--accent)]"
-          />
+        <form onSubmit={handleSubmit} className="flex items-end gap-2">
+          <FormField label={i18n("city")} help={error ? i18n("weatherError") : undefined}>
+            <Input
+              type="text"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              placeholder={i18n("city")}
+              icon="map-pin"
+            />
+          </FormField>
           <button
             type="submit"
-            className="rounded-xl bg-[var(--accent)] px-3 py-1.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
           >
             {i18n("search")}
           </button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { fetchWorker } from "@/lib/api";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -136,6 +136,7 @@ export function useLiveData(pollMs = 15000) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
+  const lastRefreshRef = useRef<number>(0);
 
   const nowPlayingPath =
     liveNowPlayingSource === "lanyard" && liveNowPlayingIdentity
@@ -387,9 +388,23 @@ export function useLiveData(pollMs = 15000) {
 
     load();
     const interval = setInterval(load, pollMs);
+
+    function maybeRefresh() {
+      if (document.hidden) return;
+      const now = Date.now();
+      if (now - lastRefreshRef.current < 30000) return;
+      lastRefreshRef.current = now;
+      load();
+    }
+
+    document.addEventListener("visibilitychange", maybeRefresh);
+    window.addEventListener("focus", maybeRefresh);
+
     return () => {
       cancelled = true;
       clearInterval(interval);
+      document.removeEventListener("visibilitychange", maybeRefresh);
+      window.removeEventListener("focus", maybeRefresh);
     };
   }, [
     pollMs,

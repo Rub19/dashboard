@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Card3D from "@/components/Card3D";
 import BottomSheet from "@/components/BottomSheet";
+import FormField from "@/components/FormField";
+import Textarea from "@/components/Textarea";
 import { useHaptics } from "@/lib/hooks/useHaptics";
 import { getUserState, setUserState } from "@/lib/user-state";
 
@@ -62,32 +64,17 @@ export default function ScratchpadPage() {
       </div>
 
       <Card3D>
-        <label htmlFor="scratchpad" className="sr-only">{i18n("scratchpadPlaceholder")}</label>
-        <textarea
-          id="scratchpad"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          placeholder={i18n("scratchpadPlaceholder")}
-          className="min-h-[50vh] w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm leading-relaxed text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
-        />
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--muted)]">
-          <span className="flex items-center gap-2">
-            <span>{charCount} {i18n("characters")}</span>
-            <span>·</span>
-            <span>{wordCount} {i18n("words")}</span>
-          </span>
-          <span className="flex items-center gap-1.5" data-status={status}>
-            {status === "saving" && <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--accent)]" />}
-            {status !== "saving" && (
-              <span
-                className={`h-2 w-2 rounded-full ${
-                  status === "saved" ? "bg-emerald-400" : "bg-amber-400"
-                }`}
-              />
-            )}
-            {statusLabel[status]}
-          </span>
-        </div>
+        <FormField
+          label={i18n("scratchpadTitle")}
+          help={`${charCount} ${i18n("characters")} · ${wordCount} ${i18n("words")} · ${statusLabel[status]}`}
+        >
+          <Textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder={i18n("scratchpadPlaceholder")}
+            className="min-h-[50vh] resize-none p-4 leading-relaxed"
+          />
+        </FormField>
       </Card3D>
 
       <BottomSheet open={sheetOpen} onClose={() => setSheetOpen(false)} title={i18n("scratchpadOptions")}>

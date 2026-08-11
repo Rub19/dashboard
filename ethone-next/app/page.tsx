@@ -5,6 +5,7 @@ import Card3D from "@/components/Card3D";
 import LiveWidgets from "@/components/LiveWidgets";
 import LiveStats from "@/components/LiveStats";
 import BillsWidget from "@/components/BillsWidget";
+import DailyBriefing from "@/components/DailyBriefing";
 import { useHomeData } from "@/lib/hooks/useDashboard";
 import { useMail } from "@/lib/hooks/useMail";
 import { useSettings } from "@/components/SettingsProvider";
@@ -39,10 +40,7 @@ export default function Home() {
 
   return (
     <div className="space-y-6">
-      <div className="min-w-0">
-        <h1 className="text-3xl font-bold">{greeting.label}</h1>
-        <p className="text-[var(--muted)]">{greeting.tone}</p>
-      </div>
+      <DailyBriefing greeting={greeting} dashboard={dashboard} nowPlaying={nowPlaying} loading={loading} />
 
       <Card3D>
         <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">{i18n("sessionMode")}</h2>

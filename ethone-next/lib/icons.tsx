@@ -95,6 +95,7 @@ const MAP: Record<string, Partial<Record<IconPack, string>>> = {
   loader: { lucide: "loader-2", phosphor: "spinner", tabler: "loader-2", heroicons: "arrow-path", radix: "reload" },
   pin: { lucide: "pin", phosphor: "push-pin", tabler: "pin", heroicons: "bookmark", radix: "pin-left" },
   pinOff: { lucide: "pin-off", phosphor: "push-pin-slash", tabler: "pin-off", heroicons: "bookmark-slash", radix: "pin-right" },
+  mapPin: { lucide: "map-pin", phosphor: "map-pin", tabler: "map-pin", heroicons: "map-pin", radix: "drawing-pin" },
   palette: { lucide: "palette", phosphor: "palette", tabler: "palette", heroicons: "swatch", radix: "mixer-vertical" },
   type: { lucide: "type", phosphor: "text-t", tabler: "typography", heroicons: "pencil-square", radix: "text" },
   gauge: { lucide: "gauge", phosphor: "gauge", tabler: "dashboard", heroicons: "chart-pie", radix: "dashboard" },

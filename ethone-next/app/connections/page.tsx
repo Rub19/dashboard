@@ -31,6 +31,10 @@ const INTEGRATIONS = [
   { id: "youtube", name: "YouTube", category: "media", description: "descYoutube", status: "oauth" },
   { id: "reddit", name: "Reddit", category: "social", description: "descReddit", status: "oauth" },
   { id: "openai", name: "OpenAI", category: "ai", description: "descOpenai", status: "api" },
+  { id: "rss", name: "RSS", category: "media", description: "descRss", status: "api" },
+  { id: "bluesky", name: "Bluesky", category: "social", description: "descBluesky", status: "comingSoon" },
+  { id: "linear", name: "Linear", category: "productivity", description: "descLinear", status: "comingSoon" },
+  { id: "plex", name: "Plex", category: "media", description: "descPlex", status: "comingSoon" },
 ];
 
 const CATEGORIES = [

@@ -54,6 +54,7 @@ import { trackerLolRoute, trackerRoute, trackerValorantRoute, trackerValorantMat
 import { twitchRoute } from "./routes/twitch.js";
 import { weatherRoute } from "./routes/weather.js";
 import { youtubeActivityRoute, youtubeOAuthDisconnectRoute, youtubeOAuthExchangeRoute } from "./routes/youtube-oauth.js";
+import { rssRoute } from "./routes/rss.js";
 import { signOutRoute } from "./routes/signout.js";
 import { teamMembersRoute } from "./routes/team.js";
 import { userDataRoute } from "./routes/user-data.js";
@@ -113,6 +114,7 @@ function route(id, path, handler, options = {}) {
 export const ROUTES = Object.freeze([
   route("health", "/health", healthRoute, { public: true, rateLimit: "edge" }),
   route("diagnostic", "/api/diagnostic", diagnosticRoute, { rateLimit: "strict" }),
+  route("rss.feed", "/api/rss", rssRoute, { service: "rss" }),
   route("brain.complete", "/api/brain/complete", brainCompleteRoute, { method: "POST", service: "brain", rateLimit: "strict" }),
   route("steam.player", "/api/steam/player", steamRoute, { service: "steam", action: "player" }),
   route("steam.recent-games", "/api/steam/recent-games", steamRoute, { service: "steam", action: "recent-games" }),

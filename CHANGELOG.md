@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v334] - 2026-08-20
+
+**Intégrations manquantes (RSS, Bluesky, Linear, Plex, Steam)**
+
+### Ajoute
+- `worker/src/routes/rss.js` et route `/api/rss` : lecteur de flux RSS/Atom avec validation d'URL, timeout et parsing défensif.
+- `app/rss/page.tsx` : interface de lecture de flux RSS.
+- `app/connections/page.tsx` : cartes pour RSS, Bluesky, Linear et Plex en plus des intégrations existantes.
+- Clés i18n pour les intégrations et le lecteur RSS.
+
+### Version PWA
+- `experience-v334`.
+
 ## [v333] - 2026-08-20
 
 **Profils, récupération de mot de passe et feature-fallback**

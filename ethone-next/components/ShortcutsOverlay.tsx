@@ -1,23 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "@/lib/icons";
 import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
+import { useSettings } from "@/components/SettingsProvider";
 
-const GROUPS = [
-  {
-    label: "Navigation",
-    icon: "navigation",
-    shortcuts: [
-      { keys: ["1", "…", "9"], label: "Aller à la page correspondante (Accueil → Fichiers)" },
-      { keys: ["Ctrl", "K"], label: "Ouvrir le Command Center" },
-      { keys: ["/"], label: "Ouvrir le Command Center (alternative)" },
-      { keys: ["F2"], label: "Ouvrir Mission Control" },
-      { keys: ["?"], label: "Ouvrir Mission Control (alternative)" },
-      { keys: ["Esc"], label: "Fermer panneau / dialog ouvert" },
-    ],
-  },
+const DOCK_LABELS: Record<string, string> = {
+  home: "Accueil",
+  notes: "Notes",
+  tasks: "Tâches",
+  calendar: "Calendrier",
+  files: "Fichiers",
+  bills: "Factures",
+  activity: "Activité",
+  interactions: "Interactions",
+  connections: "Connexions",
+  plugins: "Plugins",
+  spaces: "Spaces",
+  flows: "Flows",
+  brain: "Brain",
+  focus: "Focus",
+  team: "Équipe",
+  mail: "Mail",
+  settings: "Paramètres",
+};
+
+const STATIC_GROUPS = [
   {
     label: "Création rapide",
     icon: "plus-circle",
@@ -32,10 +41,7 @@ const GROUPS = [
     label: "Interface & Affichage",
     icon: "layout-dashboard",
     shortcuts: [
-      { keys: ["Alt", "Z"], label: "Basculer le Mode Zen" },
-      { keys: ["Ctrl", "S"], label: "Synchronisation manuelle Cloud" },
-      { keys: ["PageDown"], label: "Défiler vers le bas" },
-      { keys: ["PageUp"], label: "Défiler vers le haut" },
+      { keys: ["Alt", "Z"], label: "Basculer le Mode minimal / par défaut" },
       { keys: ["Home"], label: "Aller en haut de la page" },
       { keys: ["End"], label: "Aller en bas de la page" },
     ],
@@ -45,8 +51,9 @@ const GROUPS = [
     icon: "panels-right-bottom",
     shortcuts: [
       { keys: ["Ctrl", "/"], label: "Raccourcis clavier (cette fenêtre)" },
-      { keys: ["Clic avatar"], label: "Ouvrir le panneau Profil / Comptes" },
-      { keys: ["Clic 🔔"], label: "Ouvrir le panneau Notifications" },
+      { keys: ["?"], label: "Ouvrir cette vue" },
+      { keys: ["F2"], label: "Ouvrir Mission Control" },
+      { keys: ["Esc"], label: "Fermer panneau / dialog ouvert" },
     ],
   },
 ];
@@ -63,6 +70,27 @@ function isEditable(target: EventTarget | null) {
 export default function ShortcutsOverlay() {
   const [open, setOpen] = useState(false);
   const trapRef = useFocusTrap<HTMLElement>(open);
+  const { settings } = useSettings();
+
+  const groups = useMemo(() => {
+    const dockShortcuts = settings.dockItems
+      .map((id, i) => (DOCK_LABELS[id] ? { keys: [String(i + 1)], label: `Aller à ${DOCK_LABELS[id]}` } : null))
+      .filter(Boolean) as { keys: string[]; label: string }[];
+
+    const navigation = {
+      label: "Navigation",
+      icon: "navigation",
+      shortcuts: [
+        ...dockShortcuts,
+        { keys: ["Ctrl", "K"], label: "Ouvrir le Command Center" },
+        { keys: ["/"], label: "Ouvrir le Command Center (alternative)" },
+        { keys: ["F2"], label: "Ouvrir Mission Control" },
+        { keys: ["?"], label: "Ouvrir Mission Control (alternative)" },
+      ],
+    };
+
+    return [navigation, ...STATIC_GROUPS];
+  }, [settings.dockItems]);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -123,7 +151,7 @@ export default function ShortcutsOverlay() {
               </button>
             </header>
             <div className="grid max-h-[60vh] gap-4 overflow-y-auto p-5 sm:grid-cols-2">
-              {GROUPS.map((group) => (
+              {groups.map((group) => (
                 <section
                   key={group.label}
                   className="space-y-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4"

@@ -38,6 +38,8 @@ export default function VisualHaptics() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) return;
 
+    const timers = timersRef.current;
+
     function findControl(event: Event) {
       const target = (event.target as HTMLElement)?.closest(CONTROL_SELECTOR);
       if (!target) return null;
@@ -52,16 +54,16 @@ export default function VisualHaptics() {
       const released = active.target;
       if (holdRef.current) { clearTimeout(holdRef.current); holdRef.current = null; }
       activeRef.current = null;
-      const existing = timersRef.current.get(released);
+      const existing = timers.get(released);
       if (existing) clearTimeout(existing);
       setHapticState(released, "released");
       const t = setTimeout(() => {
         if (released.getAttribute("data-haptic-state") === "released") {
           setHapticState(released, "");
         }
-        timersRef.current.delete(released);
+        timers.delete(released);
       }, RELEASE_DURATION);
-      timersRef.current.set(released, t);
+      timers.set(released, t);
     }
 
     function press(target: Element, source: string, id: string | number) {
@@ -70,8 +72,8 @@ export default function VisualHaptics() {
         if (active.target === target) return;
         setHapticState(active.target, "");
       }
-      const existing = timersRef.current.get(target);
-      if (existing) { clearTimeout(existing); timersRef.current.delete(target); }
+      const existing = timers.get(target);
+      if (existing) { clearTimeout(existing); timers.delete(target); }
       activeRef.current = { target, source, id };
       setHapticState(target, "pressed");
       holdRef.current = setTimeout(() => release(source, id), HOLD_LIMIT);
@@ -125,7 +127,6 @@ export default function VisualHaptics() {
       window.removeEventListener("blur", onBlur);
       delete root.dataset.v8Haptics;
       if (activeRef.current) setHapticState(activeRef.current.target, "");
-      const timers = timersRef.current;
       timers.forEach((t) => clearTimeout(t));
       timers.clear();
       if (holdRef.current) clearTimeout(holdRef.current);

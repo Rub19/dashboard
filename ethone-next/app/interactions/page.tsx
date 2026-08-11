@@ -38,11 +38,11 @@ function intensity(count: number) {
 
 function intensityBg(level: number) {
   const map = [
-    "bg-[#1e232a]",
-    "bg-[#0f5b3e]",
-    "bg-[#1a9b68]",
-    "bg-[#39d695]",
-    "bg-[#7be5c3]",
+    "bg-[var(--heatmap-0)]",
+    "bg-[var(--heatmap-1)]",
+    "bg-[var(--heatmap-2)]",
+    "bg-[var(--heatmap-3)]",
+    "bg-[var(--heatmap-4)]",
   ];
   return map[level] || map[0];
 }
@@ -187,14 +187,14 @@ export default function InteractionsPage() {
       sync: "refresh-cw",
       uiCustomize: "sliders-horizontal",
     };
-    return <Icon name={map[kind] || "flame"} className={`h-5 w-5 text-${kind === "like" ? "rose" : kind === "comment" ? "sky" : kind === "share" ? "emerald" : "violet"}-400`} />;
+    return <Icon name={map[kind] || "flame"} className={`h-5 w-5 ${colorFor(kind)}`} />;
   }
 
   function colorFor(kind: string) {
-    if (kind === "like") return "text-rose-400";
-    if (kind === "comment") return "text-sky-400";
-    if (kind === "share") return "text-emerald-400";
-    return "text-violet-400";
+    if (kind === "like") return "text-[var(--interaction-like)]";
+    if (kind === "comment") return "text-[var(--interaction-comment)]";
+    if (kind === "share") return "text-[var(--interaction-share)]";
+    return "text-[var(--interaction-default)]";
   }
 
   const firstWeekday = heatmap[0]?.weekday ?? 0;

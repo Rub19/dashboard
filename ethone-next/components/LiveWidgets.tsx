@@ -38,6 +38,7 @@ const GRADIENTS: Record<string, string> = {
   minecraft: "from-emerald-950/30 via-green-900/10 to-black/20 border-emerald-600/20",
   steam: "from-sky-950/30 via-blue-900/10 to-black/20 border-sky-600/20",
   rss: "from-amber-950/30 via-orange-900/10 to-black/20 border-amber-600/20",
+  bluesky: "from-sky-950/30 via-cyan-900/10 to-black/20 border-sky-600/20",
   bills: "from-lime-950/30 via-yellow-900/10 to-black/20 border-lime-600/20",
   valorant: "from-rose-950/30 via-red-900/10 to-black/20 border-rose-600/20",
   lol: "from-yellow-950/30 via-amber-900/10 to-black/20 border-yellow-600/20",

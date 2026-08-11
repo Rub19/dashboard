@@ -7,6 +7,7 @@ import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import ContextMenu from "@/components/ContextMenu";
+import RichTextEditor from "@/components/RichTextEditor";
 
 export default function NotesPage() {
   const i18n = useI18n();
@@ -89,13 +90,10 @@ export default function NotesPage() {
             aria-label={i18n("notesPlaceholder")} placeholder={i18n("notesPlaceholder")}
             className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
           />
-          <textarea
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-            aria-label={i18n("description")}
+          <RichTextEditor
+            defaultValue={body}
+            onChange={setBody}
             placeholder={i18n("description")}
-            rows={3}
-            className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
           />
           <button
             type="button"
@@ -129,7 +127,10 @@ export default function NotesPage() {
                     <Icon name="notebook-pen" className="h-4 w-4 text-[var(--accent)]" />
                     <p className="font-medium">{note.title}</p>
                   </div>
-                  <p className="whitespace-pre-wrap text-sm text-[var(--muted)]">{note.body}</p>
+                  <div
+                    className="rich-text-content text-sm text-[var(--muted)]"
+                    dangerouslySetInnerHTML={{ __html: note.body }}
+                  />
                 </div>
                 <button
                   type="button"

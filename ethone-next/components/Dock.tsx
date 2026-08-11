@@ -67,7 +67,7 @@ export default function Dock() {
                 aria-label={item.label}
                 data-tooltip={item.label}
                 data-haptic
-                className={`flex h-11 w-11 items-center justify-center rounded-xl border border-transparent text-[var(--foreground)] transition-all hover:-translate-y-1 hover:border-[var(--accent)]/30 hover:bg-[var(--surface)] hover:shadow-lg ${
+                className={`flex h-11 w-11 items-center justify-center rounded-xl border border-transparent text-[var(--foreground)] transition-all hover:-translate-y-1 hover:scale-110 hover:border-[var(--accent)]/30 hover:bg-[var(--surface)] hover:shadow-lg ${
                   active ? "bg-[var(--accent)]/10 text-[var(--accent)]" : ""
                 }`}
               >

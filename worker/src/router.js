@@ -41,6 +41,7 @@ import {
 } from "./routes/google-drive-oauth.js";
 import { healthRoute } from "./routes/health.js";
 import { lanyardRoute } from "./routes/lanyard.js";
+import { blueskyProfileRoute } from "./routes/bluesky.js";
 import { lastFmRoute } from "./routes/lastfm.js";
 import { minecraftRoute } from "./routes/minecraft.js";
 import { notionOAuthDisconnectRoute, notionOAuthExchangeRoute, notionPagesRoute } from "./routes/notion-oauth.js";
@@ -134,6 +135,7 @@ export const ROUTES = Object.freeze([
   route("lastfm.top-tracks", "/api/lastfm/top-tracks", lastFmRoute, { service: "lastfm", action: "top-tracks" }),
   route("lanyard.presence", "/api/lanyard/presence", lanyardRoute, { service: "lanyard" }),
   route("now-playing", "/api/now-playing", nowPlayingRoute, { service: "nowplaying" }),
+  route("bluesky.profile", "/api/bluesky/profile", blueskyProfileRoute, { service: "bluesky" }),
   route("supabase.public-profile", "/api/supabase/public-profile", supabaseRoute, { service: "supabase", rateLimit: "strict" }),
   route("weather.forecast", "/api/weather", weatherRoute, { service: "weather" }),
   route("rss", "/api/rss", rssRoute, { service: "rss" }),

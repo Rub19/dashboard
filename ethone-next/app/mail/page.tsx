@@ -10,6 +10,7 @@ import LiquidSidebar from "@/components/LiquidSidebar";
 import MailAdvancedPanel from "@/components/MailAdvancedPanel";
 import BottomSheet from "@/components/BottomSheet";
 import ContextMenu from "@/components/ContextMenu";
+import RichTextEditor from "@/components/RichTextEditor";
 
 const FOLDERS = ["inbox", "starred", "sent", "drafts", "archive", "trash", "spam"];
 
@@ -1011,10 +1012,9 @@ export default function MailPage() {
                   {templates.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
                 </select>
               )}
-              <textarea
-                value={composeBody}
-                onChange={(e) => setComposeBody(e.target.value)}
-                className="h-48 w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 text-sm outline-none focus:border-[var(--accent)]"
+              <RichTextEditor
+                defaultValue={composeBody}
+                onChange={setComposeBody}
               />
               <div className="flex flex-wrap gap-2">
                 {composeAttachments.map((a) => (

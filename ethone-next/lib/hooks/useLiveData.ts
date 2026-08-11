@@ -93,6 +93,7 @@ export function useLiveData(pollMs = 15000) {
     liveMinecraftUsername,
     liveSteamId,
     liveRssUrl,
+    liveBlueskyHandle,
     liveTrackerRiotName,
     liveTrackerRiotTag,
     liveTrackerApexPlatform,
@@ -115,6 +116,7 @@ export function useLiveData(pollMs = 15000) {
   const [minecraft, setMinecraft] = useState<ApiData | null>(null);
   const [steam, setSteam] = useState<ApiData | null>(null);
   const [rss, setRss] = useState<ApiData | null>(null);
+  const [bluesky, setBluesky] = useState<ApiData | null>(null);
   const [bills, setBills] = useState<ApiData[] | null>(null);
   const [valorant, setValorant] = useState<ApiData[] | null>(null);
   const [lol, setLol] = useState<ApiData[] | null>(null);
@@ -194,6 +196,10 @@ export function useLiveData(pollMs = 15000) {
 
   const rssPath = liveRssUrl ? `/api/rss?url=${encodeURIComponent(liveRssUrl)}` : null;
 
+  const blueskyPath = liveBlueskyHandle
+    ? `/api/bluesky/profile?handle=${encodeURIComponent(liveBlueskyHandle)}`
+    : null;
+
   const hasRiotId = liveTrackerRiotName && liveTrackerRiotTag;
   const valorantPath = hasRiotId
     ? `/api/tracker/valorant-matches?name=${encodeURIComponent(liveTrackerRiotName)}&tag=${encodeURIComponent(
@@ -253,6 +259,7 @@ export function useLiveData(pollMs = 15000) {
           stRecent,
           stOwned,
           rs,
+          bs,
           bl,
           va,
           lo,
@@ -278,6 +285,7 @@ export function useLiveData(pollMs = 15000) {
           steamRecentGamesPath ? fetchOptional(steamRecentGamesPath) : Promise.resolve(null),
           steamOwnedGamesPath ? fetchOptional(steamOwnedGamesPath) : Promise.resolve(null),
           rssPath ? fetchOptional(rssPath) : Promise.resolve(null),
+          blueskyPath ? fetchOptional(blueskyPath) : Promise.resolve(null),
           fetchOptional("/api/user-data/bills"),
           valorantPath ? fetchOptional(valorantPath) : Promise.resolve(null),
           lolPath ? fetchOptional(lolPath) : Promise.resolve(null),
@@ -357,6 +365,7 @@ export function useLiveData(pollMs = 15000) {
           setSteamOwnedGames(Array.isArray(d) ? (d as ApiData[]) : null);
         }
         if (rs.status === "fulfilled") setRss(rs.value);
+        if (bs.status === "fulfilled") setBluesky(bs.value);
         if (bl.status === "fulfilled") setBills((bl.value as ApiData[] | null) ?? null);
         if (va.status === "fulfilled") setValorant((va.value as ApiData[] | null) ?? null);
         if (lo.status === "fulfilled") setLol((lo.value as ApiData[] | null) ?? null);
@@ -394,6 +403,7 @@ export function useLiveData(pollMs = 15000) {
     steamRecentGamesPath,
     steamOwnedGamesPath,
     rssPath,
+    blueskyPath,
     valorantPath,
     lolPath,
     calendarPath,
@@ -677,6 +687,17 @@ export function useLiveData(pollMs = 15000) {
     status: latestNotionPage ? "connected" : loading ? "loading" : error ? "error" : "empty",
   });
 
+  records.push({
+    id: "bluesky",
+    source: "bluesky",
+    label: "Bluesky",
+    title: asStr((bluesky as ApiData)?.displayName) || asStr((bluesky as ApiData)?.handle) || (liveBlueskyHandle ? i18n("notFound") : "—"),
+    subtitle: `@${asStr((bluesky as ApiData)?.handle)}`,
+    meta: `${asNum((bluesky as ApiData)?.followers)} followers · ${asNum((bluesky as ApiData)?.posts)} posts`,
+    image: asStr((bluesky as ApiData)?.avatarUrl),
+    status: (bluesky as ApiData)?.handle ? "connected" : loading ? "loading" : liveBlueskyHandle ? (error ? "error" : "empty") : (error ? "error" : "empty"),
+  });
+
   const apexSegments = (apexProfile?.segments as ApiData[] | undefined) ?? [];
   const topApexSegment = apexSegments[0];
   records.push({
@@ -719,5 +740,6 @@ export function useLiveData(pollMs = 15000) {
     steamOwnedGames,
     minecraft,
     minecraftNameHistory,
+    bluesky,
   };
 }

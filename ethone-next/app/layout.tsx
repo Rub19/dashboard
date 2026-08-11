@@ -24,6 +24,7 @@ import PageTransition from "@/components/PageTransition";
 import { WindowManagerProvider } from "@/components/WindowManagerProvider";
 import { WindowRenderer } from "@/components/WindowRenderer";
 import ProfileSync from "@/components/ProfileSync";
+import ShortcutsOverlay from "@/components/ShortcutsOverlay";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -83,6 +84,7 @@ export default function RootLayout({
                 </div>
                 <MobileNav />
                 <Dock />
+                <ShortcutsOverlay />
                 </ToastProvider>
               </SoundProvider>
             </UIProvider>

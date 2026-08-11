@@ -30,6 +30,7 @@ export default function Sidebar() {
     { id: "flows", label: i18n("flowsTitle"), href: "/flows/", icon: "flows" },
     { id: "system", label: i18n("systemTitle"), href: "/system/", icon: "settings-2" },
     { id: "brain", label: i18n("brain"), href: "/brain/", icon: "brain" },
+    { id: "weather", label: i18n("weather"), href: "/weather/", icon: "cloudSun" },
     { id: "focus", label: i18n("focus"), href: "/focus/", icon: "focus" },
     { id: "team", label: i18n("team"), href: "/team/", icon: "team" },
     { id: "mail", label: i18n("mail"), href: "/mail/", icon: "mail" },

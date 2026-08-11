@@ -16,6 +16,7 @@ export default function MobileNav() {
     { id: "calendar", label: i18n("calendar"), href: "/calendar/", icon: "calendar" },
     { id: "mail", label: i18n("mail"), href: "/mail/", icon: "mail" },
     { id: "brain", label: i18n("brain"), href: "/brain/", icon: "brain" },
+    { id: "weather", label: i18n("weather"), href: "/weather/", icon: "cloudSun" },
     { id: "files", label: i18n("files"), href: "/files/", icon: "folder" },
     { id: "connections", label: i18n("connections"), href: "/connections/", icon: "plug" },
     { id: "team", label: i18n("team"), href: "/team/", icon: "users" },

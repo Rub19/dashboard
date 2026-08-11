@@ -142,6 +142,8 @@ export type Settings = {
   liveLastfmUsername: string;
   liveTwitchLogin: string;
   liveMinecraftUsername: string;
+  commandHistory: string[];
+  pinnedCommands: string[];
 };
 
 export const DEFAULTS: Settings = {
@@ -160,7 +162,7 @@ export const DEFAULTS: Settings = {
   glassEnabled: true,
   cardTilt: true,
   dockVisible: true,
-  dockItems: ["home", "brain", "notes", "tasks", "calendar", "activity", "connections", "settings"],
+  dockItems: ["home", "brain", "notes", "tasks", "calendar", "weather", "activity", "connections", "settings"],
   dockRadius: 50,
   dockScale: "normal",
   dockAlign: "center",
@@ -246,6 +248,8 @@ export const DEFAULTS: Settings = {
   liveOllamaUrl: "",
   liveObsidianUrl: "",
   liveVscodeUrl: "",
+  commandHistory: [],
+  pinnedCommands: [],
 };
 
 import { getUserState, setUserState } from "@/lib/user-state";

@@ -23,6 +23,7 @@ const ICONS: Record<string, string> = {
   spaces: "spaces",
   flows: "flows",
   brain: "brain",
+  weather: "cloudSun",
   focus: "focus",
   team: "team",
   mail: "mail",

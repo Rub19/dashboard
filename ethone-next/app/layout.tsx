@@ -27,6 +27,10 @@ import { WindowManagerProvider } from "@/components/WindowManagerProvider";
 import { WindowRenderer } from "@/components/WindowRenderer";
 import ProfileSync from "@/components/ProfileSync";
 import ShortcutsOverlay from "@/components/ShortcutsOverlay";
+import { FocusProvider } from "@/components/FocusProvider";
+import FocusIsland from "@/components/FocusIsland";
+import VisualHaptics from "@/components/VisualHaptics";
+import SidePanel from "@/components/SidePanel";
 import PresenceProvider from "@/components/PresenceProvider";
 
 const geistSans = Geist({
@@ -58,6 +62,7 @@ export default function RootLayout({
       <body className="min-h-full bg-[var(--background)] text-[var(--foreground)]">
         <AuthProvider>
           <WindowManagerProvider>
+          <FocusProvider>
           <OfflineIndicator />
           <SettingsProvider>
             <PresenceProvider>
@@ -74,6 +79,7 @@ export default function RootLayout({
                       <SearchBar />
                       <div className="flex items-center gap-3">
                         <NotificationCenter />
+                        <SidePanel />
                         <CommandPalette />
                         <ProfileDropdown />
                       </div>
@@ -84,6 +90,8 @@ export default function RootLayout({
                   <LiveOverlay />
                   <AmbientParticles />
                   <Spotlight />
+                  <VisualHaptics />
+                  <FocusIsland />
                   <main id="main-content" className="p-6 pb-24 md:pb-6" tabIndex={-1}>
                     <PageTransition>{children}</PageTransition>
                   </main>
@@ -96,6 +104,7 @@ export default function RootLayout({
             </UIProvider>
             </PresenceProvider>
           </SettingsProvider>
+          </FocusProvider>
           <WindowRenderer />
         </WindowManagerProvider>
         </AuthProvider>

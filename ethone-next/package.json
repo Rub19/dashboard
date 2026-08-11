@@ -15,6 +15,7 @@
     "audit:responsive": "node scripts/responsive-audit.mjs"
   },
   "dependencies": {
+    "@floating-ui/react": "^0.27.20",
     "@heroicons/react": "^2.2.0",
     "@iconify-json/heroicons": "^1.2.3",
     "@iconify-json/lucide": "^1.2.123",

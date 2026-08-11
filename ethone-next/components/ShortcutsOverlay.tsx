@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "@/lib/icons";
+import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 
 const GROUPS = [
   {
@@ -61,6 +62,7 @@ function isEditable(target: EventTarget | null) {
 
 export default function ShortcutsOverlay() {
   const [open, setOpen] = useState(false);
+  const trapRef = useFocusTrap<HTMLElement>(open);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -95,6 +97,7 @@ export default function ShortcutsOverlay() {
             onClick={() => setOpen(false)}
           />
           <motion.aside
+            ref={trapRef}
             role="dialog"
             aria-label="Raccourcis clavier ETHONE"
             aria-modal="true"

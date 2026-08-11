@@ -118,6 +118,7 @@ const MAP: Record<string, Partial<Record<IconPack, string>>> = {
   "file-edit": { lucide: "file-edit", phosphor: "pencil-simple", tabler: "pencil", heroicons: "pencil", radix: "pencil-2" },
   "loader-2": { lucide: "loader-2", phosphor: "spinner", tabler: "loader-2", heroicons: "arrow-path", radix: "reload" },
   "key-round": { lucide: "key-round", phosphor: "key", tabler: "key", heroicons: "key", radix: "key" },
+  "lock": { lucide: "lock", phosphor: "lock-key", tabler: "lock", heroicons: "lock-closed", radix: "lock-closed" },
   "rotate-ccw": { lucide: "rotate-ccw", phosphor: "arrow-counter-clockwise", tabler: "rotate-2", heroicons: "arrow-uturn-left", radix: "rotate-counter-clockwise" },
   "refresh-cw": { lucide: "refresh-cw", phosphor: "arrows-clockwise", tabler: "refresh", heroicons: "arrow-path", radix: "reload" },
   "share-2": { lucide: "share-2", phosphor: "share-network", tabler: "share-3", heroicons: "share", radix: "share-2" },

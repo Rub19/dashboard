@@ -6,16 +6,27 @@ import { motion } from "framer-motion";
 import Card3D from "@/components/Card3D";
 import LoginEight from "@/components/LoginEight";
 import { Icon } from "@/lib/icons";
-import { signInWithOtp, verifyEmailOtp, signInWithOAuth, signInWithPasskey } from "@/lib/auth";
+import {
+  signInWithOtp,
+  verifyEmailOtp,
+  signInWithPassword,
+  signInWithOAuth,
+  signInWithPasskey,
+} from "@/lib/auth";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
+
+type AuthMode = "otp" | "password";
 
 export default function LoginPage() {
   const i18n = useI18n();
   const { success, error: showError } = useToast();
   const router = useRouter();
+
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
+  const [mode, setMode] = useState<AuthMode>("otp");
   const [step, setStep] = useState<"email" | "code">("email");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,6 +54,21 @@ export default function LoginPage() {
     setLoading(false);
     if (!ok || err) {
       setError(err?.message || i18n("invalidCode"));
+      showError(i18n("error"));
+      return;
+    }
+    success(i18n("saved"));
+    router.push("/");
+  }
+
+  async function handlePassword(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    const { ok, error: err } = await signInWithPassword(email, password);
+    setLoading(false);
+    if (!ok || err) {
+      setError(err?.message || i18n("invalidCredentials"));
       showError(i18n("error"));
       return;
     }
@@ -84,6 +110,9 @@ export default function LoginPage() {
     }
   }
 
+  const isOtp = mode === "otp";
+  const onSubmit = isOtp ? (step === "email" ? handleSend : handleVerify) : handlePassword;
+
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-6">
       <motion.div
@@ -101,72 +130,46 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {step === "email" ? (
-            <form onSubmit={handleSend} className="space-y-4">
-              <label className="block text-sm font-medium" htmlFor="email">
-                {i18n("email")}
-              </label>
-              <div className="relative">
-                <Icon name="mail" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
-                <input
-                  id="email"
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] py-2.5 pl-10 pr-3 text-sm text-[var(--foreground)] outline-none transition-colors focus:border-[var(--accent)]"
-                  aria-label={i18n("emailPlaceholderLogin")} placeholder={i18n("emailPlaceholderLogin")}
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
-              >
-                {loading ? (
-                  <Icon name="loader-2" className="h-4 w-4 animate-spin" />
-                ) : (
-                  <>
-                    {i18n("sendCode")} <Icon name="arrow-right" className="h-4 w-4" />
-                  </>
-                )}
-              </button>
+          <div className="mb-4 flex rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1">
+            <button
+              type="button"
+              onClick={() => {
+                setMode("otp");
+                setStep("email");
+                setError(null);
+              }}
+              className={`flex-1 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+                isOtp
+                  ? "bg-[var(--accent)] text-white"
+                  : "text-[var(--muted)] hover:text-[var(--foreground)]"
+              }`}
+            >
+              {i18n("otp")}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMode("password");
+                setStep("email");
+                setError(null);
+              }}
+              className={`flex-1 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+                !isOtp
+                  ? "bg-[var(--accent)] text-white"
+                  : "text-[var(--muted)] hover:text-[var(--foreground)]"
+              }`}
+            >
+              {i18n("password")}
+            </button>
+          </div>
 
-              <div className="relative flex items-center py-2">
-                <div className="flex-1 border-t border-[var(--border)]" />
-                <span className="px-2 text-xs text-[var(--muted)]">{i18n("orContinueWith")}</span>
-                <div className="flex-1 border-t border-[var(--border)]" />
-              </div>
+          {error && (
+            <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-400">
+              {error}
+            </div>
+          )}
 
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleOAuth("google")}
-                  disabled={loading}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--surface-raised)] disabled:opacity-50"
-                >
-                  <Icon name="chrome" className="h-4 w-4" /> {i18n("signInWithGoogle")}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleOAuth("github")}
-                  disabled={loading}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--surface-raised)] disabled:opacity-50"
-                >
-                  <Icon name="github" className="h-4 w-4" /> {i18n("signInWithGithub")}
-                </button>
-              </div>
-
-              <button
-                type="button"
-                onClick={handlePasskey}
-                disabled={loading}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--surface-raised)] disabled:opacity-50"
-              >
-                <Icon name="key-round" className="h-4 w-4" /> {i18n("signInWithPasskey")}
-              </button>
-            </form>
-          ) : (
+          {isOtp && step === "code" ? (
             <form onSubmit={handleVerify} className="space-y-4">
               <label className="block text-sm font-medium" htmlFor="code">
                 {i18n("codeReceived")}
@@ -204,10 +207,88 @@ export default function LoginPage() {
                 {i18n("modifyEmail")}
               </button>
             </form>
-          )}
+          ) : (
+            <form onSubmit={onSubmit} className="space-y-4">
+              <label className="block text-sm font-medium" htmlFor="email">
+                {i18n("email")}
+              </label>
+              <div className="relative">
+                <Icon name="mail" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] py-2.5 pl-10 pr-3 text-sm text-[var(--foreground)] outline-none transition-colors focus:border-[var(--accent)]"
+                  aria-label={i18n("emailPlaceholderLogin")} placeholder={i18n("emailPlaceholderLogin")}
+                />
+              </div>
 
-          {error && (
-            <p className="mt-4 text-center text-sm text-red-400">{error}</p>
+              {!isOtp && (
+                <div className="relative">
+                  <Icon name="lock" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
+                  <input
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] py-2.5 pl-10 pr-3 text-sm text-[var(--foreground)] outline-none transition-colors focus:border-[var(--accent)]"
+                    aria-label={i18n("password")} placeholder={i18n("password")}
+                  />
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+              >
+                {loading ? (
+                  <Icon name="loader-2" className="h-4 w-4 animate-spin" />
+                ) : isOtp ? (
+                  <>
+                    {i18n("sendCode")} <Icon name="arrow-right" className="h-4 w-4" />
+                  </>
+                ) : (
+                  i18n("signIn")
+                )}
+              </button>
+
+              <div className="relative flex items-center py-2">
+                <div className="flex-1 border-t border-[var(--border)]" />
+                <span className="px-2 text-xs text-[var(--muted)]">{i18n("orContinueWith")}</span>
+                <div className="flex-1 border-t border-[var(--border)]" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleOAuth("google")}
+                  disabled={loading}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--surface-raised)] disabled:opacity-50"
+                >
+                  <Icon name="chrome" className="h-4 w-4" /> {i18n("signInWithGoogle")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleOAuth("github")}
+                  disabled={loading}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--surface-raised)] disabled:opacity-50"
+                >
+                  <Icon name="github" className="h-4 w-4" /> {i18n("signInWithGithub")}
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={handlePasskey}
+                disabled={loading}
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--surface-raised)] disabled:opacity-50"
+              >
+                <Icon name="key-round" className="h-4 w-4" /> {i18n("signInWithPasskey")}
+              </button>
+            </form>
           )}
         </Card3D>
       </motion.div>

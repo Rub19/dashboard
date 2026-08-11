@@ -22,20 +22,64 @@ export type BrainMemoryCategories = {
   goals: boolean;
 };
 
+export type ThemeMode =
+  | "default"
+  | "boreal"
+  | "cyberpunk"
+  | "eclipse"
+  | "emerald"
+  | "night"
+  | "graphite"
+  | "day"
+  | "auto"
+  | "midnight"
+  | "obsidian"
+  | "aurora"
+  | "minimal"
+  | "focus"
+  | "glass"
+  | "oled";
+
+export type DensityMode =
+  | "spacious"
+  | "comfortable"
+  | "compact"
+  | "dense"
+  | "ultra-compact"
+  | "ultra"
+  | "normal"
+  | "airy"
+  | "automatic"
+  | "custom";
+
+export type RadiusStyle = "rounded" | "soft" | "sharp";
+
+export type DockScale = "compact" | "normal" | "large";
+export type DockAlign = "center" | "stretch" | "left" | "right";
+export type DockGlass = "default" | "ultra" | "opaque";
+
+export type UiAnimationStyle = "smooth" | "snappy" | "reduced";
+
 export type Settings = {
   darkMode: boolean;
-  theme: "default" | "boreal" | "cyberpunk" | "eclipse" | "emerald";
+  theme: ThemeMode;
   iconPack: "lucide" | "phosphor" | "tabler" | "heroicons" | "radix";
-  densityMode: "compact" | "normal" | "airy" | "spacious" | "comfortable" | "ultra" | "automatic" | "custom";
+  densityMode: DensityMode;
   fontSize: number;
   fontFamily: "sans" | "outfit" | "mono" | "serif";
   density: number;
   radius: number;
+  radiusStyle: RadiusStyle;
   glassEnabled: boolean;
   cardTilt: boolean;
   dockVisible: boolean;
   dockItems: string[];
   dockRadius: number;
+  dockScale: DockScale;
+  dockAlign: DockAlign;
+  dockGlass: DockGlass;
+  dockAutoHide: boolean;
+  dockMagnify: boolean;
   shadow: "none" | "sm" | "md" | "glow";
   backgroundEffect: "solid" | "gradient" | "mesh" | "aurora" | "nebula" | "noise";
   backgroundSpeed: number;
@@ -63,6 +107,12 @@ export type Settings = {
   lowData: boolean;
   performanceMode: "normal" | "low";
   status: "online" | "busy" | "focus" | "away" | "invisible";
+  uiAnimations: UiAnimationStyle;
+  uiGlow: boolean;
+  uiSoundFeedback: boolean;
+  spotlightEnabled: boolean;
+  ambientEffectsEnabled: boolean;
+  interfaceBlurEnabled: boolean;
   liveNowPlayingSource: "lanyard" | "lastfm";
   liveNowPlayingIdentity: string;
   liveLanyardUserId: string;
@@ -100,11 +150,17 @@ export const DEFAULTS: Settings = {
   fontFamily: "sans",
   density: 50,
   radius: 50,
+  radiusStyle: "rounded",
   glassEnabled: true,
   cardTilt: true,
   dockVisible: true,
   dockItems: ["home", "brain", "notes", "tasks", "calendar", "activity", "connections", "settings"],
   dockRadius: 50,
+  dockScale: "normal",
+  dockAlign: "center",
+  dockGlass: "default",
+  dockAutoHide: false,
+  dockMagnify: true,
   shadow: "glow",
   backgroundEffect: "gradient",
   backgroundSpeed: 50,
@@ -151,6 +207,12 @@ export const DEFAULTS: Settings = {
   haptics: true,
   lowData: false,
   performanceMode: "normal",
+  uiAnimations: "smooth",
+  uiGlow: true,
+  uiSoundFeedback: true,
+  spotlightEnabled: true,
+  ambientEffectsEnabled: true,
+  interfaceBlurEnabled: true,
   status: "online",
   liveNowPlayingSource: "lanyard",
   liveNowPlayingIdentity: "",

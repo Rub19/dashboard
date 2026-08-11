@@ -1374,3 +1374,184 @@ a:focus:not(:focus-visible) {
 [data-heat="4"] { background-color: var(--heatmap-4); }
 [data-heat="5"] { background-color: var(--heatmap-5); }
 
+/* ============================================================
+   Density tokens applied
+   ============================================================ */
+
+html {
+  --density-font-scale: 1;
+  --density-line-height: 1.55;
+  --density-card-padding: 22px;
+  --density-section-gap: 24px;
+  --density-control-height: 38px;
+  --density-panel-width: 360px;
+  --density-icon-size: 20px;
+  --density-row-height: 50px;
+  --density-table-row-height: 46px;
+  --density-widget-scale: 1;
+  --density-toolbar-height: 52px;
+}
+
+[data-density] { font-size: calc(1rem * var(--density-font-scale)); line-height: var(--density-line-height); }
+[data-density] .control { min-height: var(--density-control-height); }
+[data-density] .row { min-height: var(--density-row-height); }
+[data-density] [data-icon] { width: var(--density-icon-size); height: var(--density-icon-size); }
+
+/* ============================================================
+   Radius styles
+   ============================================================ */
+
+:root { --radius-style: var(--card-radius); }
+
+[data-radius-style="rounded"] {
+  --card-radius: 1rem;
+  --dock-radius: 1rem;
+  --control-radius: 0.75rem;
+}
+
+[data-radius-style="soft"] {
+  --card-radius: 0.625rem;
+  --dock-radius: 0.75rem;
+  --control-radius: 0.5rem;
+}
+
+[data-radius-style="sharp"] {
+  --card-radius: 0.25rem;
+  --dock-radius: 0.25rem;
+  --control-radius: 0.125rem;
+}
+
+/* ============================================================
+   Dock scale / align / glass / magnify
+   ============================================================ */
+
+[data-dock] {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--density-section-gap);
+}
+
+[data-dock-scale="compact"] [data-dock-item] {
+  height: 2.25rem;
+  width: 2.25rem;
+}
+[data-dock-scale="normal"] [data-dock-item] {
+  height: 2.75rem;
+  width: 2.75rem;
+}
+[data-dock-scale="large"] [data-dock-item] {
+  height: 3.5rem;
+  width: 3.5rem;
+}
+
+[data-dock-align="center"] [data-dock] {
+  justify-content: center;
+}
+[data-dock-align="left"] [data-dock] {
+  justify-content: flex-start;
+}
+[data-dock-align="right"] [data-dock] {
+  justify-content: flex-end;
+}
+[data-dock-align="stretch"] [data-dock] {
+  justify-content: space-between;
+  width: 100%;
+}
+
+[data-dock-glass="default"] [data-dock] {
+  background-color: color-mix(in srgb, var(--surface-raised) 90%, transparent);
+  backdrop-filter: blur(12px);
+}
+[data-dock-glass="ultra"] [data-dock] {
+  background-color: color-mix(in srgb, var(--surface-raised) 70%, transparent);
+  backdrop-filter: blur(24px);
+}
+[data-dock-glass="opaque"] [data-dock] {
+  background-color: var(--surface-2);
+  backdrop-filter: none;
+}
+
+[data-dock-auto-hide="true"] [data-dock] {
+  transform: translateY(calc(100% + 1rem));
+  opacity: 0;
+  transition: transform 300ms var(--ease-spring), opacity 300ms ease;
+}
+[data-dock-auto-hide="true"]:hover [data-dock],
+[data-dock-auto-hide="true"]:focus-within [data-dock] {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* ============================================================
+   UI animations / glow / sound / spotlight
+   ============================================================ */
+
+[data-ui-animations="smooth"] * {
+  transition-duration: 200ms;
+  transition-timing-function: var(--ease-out);
+}
+[data-ui-animations="snappy"] * {
+  transition-duration: 120ms;
+  transition-timing-function: var(--ease-snap);
+}
+[data-ui-animations="reduced"] * {
+  transition-duration: 0.01ms !important;
+  animation-duration: 0.01ms !important;
+}
+
+[data-ui-glow="true"] [data-glow] {
+  box-shadow: 0 0 24px -8px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+[data-spotlight="true"] [data-spotlight-surface]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    600px circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+    color-mix(in srgb, var(--accent) 8%, transparent),
+    transparent 40%
+  );
+  opacity: 0.6;
+}
+
+[data-ambient-effects="true"][data-background="aurora"] body::before,
+[data-ambient-effects="true"][data-background="nebula"] body::before,
+[data-ambient-effects="true"][data-background="mesh"] body::before {
+  animation-play-state: running;
+}
+
+[data-ambient-effects="false"] [data-ambient],
+[data-ambient-effects="false"] [data-ambient-shell],
+[data-ambient-effects="false"] [data-ambient-particle],
+[data-ambient-effects="false"] [data-ambient-wash],
+[data-ambient-effects="false"] [data-ambient-light] {
+  animation: none !important;
+}
+
+[data-interface-blur="true"] .glass,
+[data-interface-blur="true"] [data-glass] {
+  backdrop-filter: blur(12px);
+}
+[data-interface-blur="false"] .glass,
+[data-interface-blur="false"] [data-glass] {
+  backdrop-filter: none;
+}
+
+/* ============================================================
+   Sound feedback visual indicator
+   ============================================================ */
+
+[data-ui-sound-feedback="true"] button[data-haptic]:active::after,
+[data-ui-sound-feedback="true"] [role="button"][data-haptic]:active::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 40%, transparent);
+  opacity: 0.5;
+  pointer-events: none;
+}
+

@@ -56,6 +56,17 @@ const THEMES = [
   { id: "cyberpunk", label: "Cyberpunk" },
   { id: "eclipse", label: "Éclipse" },
   { id: "emerald", label: "Émeraude" },
+  { id: "night", label: "Nuit" },
+  { id: "graphite", label: "Graphite" },
+  { id: "day", label: "Jour" },
+  { id: "auto", label: "Auto" },
+  { id: "midnight", label: "Minuit" },
+  { id: "obsidian", label: "Obsidienne" },
+  { id: "aurora", label: "Aurore" },
+  { id: "minimal", label: "Minimal" },
+  { id: "focus", label: "Focus" },
+  { id: "glass", label: "Verre" },
+  { id: "oled", label: "OLED" },
 ] as const;
 
 const LANGUAGES = [
@@ -100,10 +111,12 @@ export default function SettingsPage() {
   const DENSITY_MODES = [
     { id: "spacious", label: "Spacieux" },
     { id: "comfortable", label: "Confortable" },
+    { id: "compact", label: "Compact" },
+    { id: "dense", label: "Dense" },
+    { id: "ultra-compact", label: "Ultra-compact" },
     { id: "normal", label: "Normal" },
     { id: "airy", label: "Aéré" },
-    { id: "compact", label: "Compact" },
-    { id: "ultra", label: "Ultra-compact" },
+    { id: "ultra", label: "Ultra" },
     { id: "automatic", label: "Automatique" },
     { id: "custom", label: "Personnalisé" },
   ] as const;
@@ -146,6 +159,37 @@ export default function SettingsPage() {
     { id: "outfit", label: i18n("fontOutfit") },
     { id: "mono", label: i18n("fontMono") },
     { id: "serif", label: i18n("fontSerif") },
+  ] as const;
+
+  const RADIUS_STYLES = [
+    { id: "rounded", label: "Arrondi" },
+    { id: "soft", label: "Doux" },
+    { id: "sharp", label: "Net" },
+  ] as const;
+
+  const DOCK_SCALES = [
+    { id: "compact", label: "Compact" },
+    { id: "normal", label: "Normal" },
+    { id: "large", label: "Large" },
+  ] as const;
+
+  const DOCK_ALIGNS = [
+    { id: "center", label: "Centre" },
+    { id: "left", label: "Gauche" },
+    { id: "right", label: "Droite" },
+    { id: "stretch", label: "Étiré" },
+  ] as const;
+
+  const DOCK_GLASS = [
+    { id: "default", label: "Défaut" },
+    { id: "ultra", label: "Ultra" },
+    { id: "opaque", label: "Opaque" },
+  ] as const;
+
+  const UI_ANIMATION_STYLES = [
+    { id: "smooth", label: "Fluide" },
+    { id: "snappy", label: "Rapide" },
+    { id: "reduced", label: "Réduit" },
   ] as const;
 
   const PERFORMANCE_MODES = [
@@ -244,7 +288,7 @@ export default function SettingsPage() {
                   settings.theme === theme.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
                 }`}
               >
-                {i18n(`theme${theme.id.charAt(0).toUpperCase() + theme.id.slice(1)}`)}
+                {theme.label}
               </button>
             ))}
           </div>
@@ -340,6 +384,21 @@ export default function SettingsPage() {
           </div>
           <Range label={i18n("listDensity")} value={settings.density} onChange={(v) => update({ density: v })} />
           <Range label={i18n("cardRadius")} value={settings.radius} onChange={(v) => update({ radius: v })} />
+          <p className="text-xs text-[var(--muted)]">Style de radius</p>
+          <div className="grid grid-cols-3 gap-2">
+            {RADIUS_STYLES.map((r) => (
+              <button
+                key={r.id}
+                type="button"
+                onClick={() => update({ radiusStyle: r.id })}
+                className={`rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
+                  settings.radiusStyle === r.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                }`}
+              >
+                {r.label}
+              </button>
+            ))}
+          </div>
           <Toggle label={i18n("glassmorphism")} checked={settings.glassEnabled} onChange={(v) => update({ glassEnabled: v })} />
           <Toggle label={i18n("cardTilt3d")} checked={settings.cardTilt} onChange={(v) => update({ cardTilt: v })} />
           <p className="text-xs text-[var(--muted)]">{i18n("shadow")}</p>
@@ -388,6 +447,28 @@ export default function SettingsPage() {
               </button>
             ))}
           </div>
+          <p className="text-xs text-[var(--muted)]">Style d’animations</p>
+          <div className="grid grid-cols-3 gap-2">
+            {UI_ANIMATION_STYLES.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => update({ uiAnimations: s.id })}
+                className={`rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
+                  settings.uiAnimations === s.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                }`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <Toggle label="Lueur UI" checked={settings.uiGlow} onChange={(v) => update({ uiGlow: v })} />
+            <Toggle label="Spotlight" checked={settings.spotlightEnabled} onChange={(v) => update({ spotlightEnabled: v })} />
+            <Toggle label="Effets sonores" checked={settings.uiSoundFeedback} onChange={(v) => update({ uiSoundFeedback: v })} />
+            <Toggle label="Ambiance" checked={settings.ambientEffectsEnabled} onChange={(v) => update({ ambientEffectsEnabled: v })} />
+            <Toggle label="Flou interface" checked={settings.interfaceBlurEnabled} onChange={(v) => update({ interfaceBlurEnabled: v })} />
+          </div>
           <Range label={i18n("dockRadius")} value={settings.dockRadius} onChange={(v) => update({ dockRadius: v })} />
           <div className="border-t border-[var(--border)] pt-4">
             <Toggle label={i18n("reducedMotion")} checked={settings.reducedMotion} onChange={(v) => update({ reducedMotion: v })} />
@@ -434,6 +515,53 @@ export default function SettingsPage() {
       children: (
         <div className="space-y-4">
           <Toggle label={i18n("dockVisible")} checked={settings.dockVisible} onChange={(v) => update({ dockVisible: v })} />
+          <Toggle label="Masquage auto" checked={settings.dockAutoHide} onChange={(v) => update({ dockAutoHide: v })} />
+          <Toggle label="Magnification" checked={settings.dockMagnify} onChange={(v) => update({ dockMagnify: v })} />
+          <p className="text-xs text-[var(--muted)]">Taille du dock</p>
+          <div className="grid grid-cols-3 gap-2">
+            {DOCK_SCALES.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => update({ dockScale: s.id })}
+                className={`rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
+                  settings.dockScale === s.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                }`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-[var(--muted)]">Alignement</p>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {DOCK_ALIGNS.map((a) => (
+              <button
+                key={a.id}
+                type="button"
+                onClick={() => update({ dockAlign: a.id })}
+                className={`rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
+                  settings.dockAlign === a.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                }`}
+              >
+                {a.label}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-[var(--muted)]">Verre du dock</p>
+          <div className="grid grid-cols-3 gap-2">
+            {DOCK_GLASS.map((g) => (
+              <button
+                key={g.id}
+                type="button"
+                onClick={() => update({ dockGlass: g.id })}
+                className={`rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
+                  settings.dockGlass === g.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                }`}
+              >
+                {g.label}
+              </button>
+            ))}
+          </div>
           <p className="text-xs text-[var(--muted)]">{i18n("dockItems")}:</p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {NAV_ITEMS.map((item) => (

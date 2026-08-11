@@ -180,6 +180,8 @@ export default function ContextMenu({
           style={{ left: adjusted.x, top: adjusted.y }}
           role="menu"
           aria-label={i18n("actions")}
+          aria-orientation="vertical"
+          aria-activedescendant={activeId ? `ctx-item-${activeId}` : undefined}
           tabIndex={-1}
         >
           {items.map((item) =>
@@ -189,6 +191,7 @@ export default function ContextMenu({
               <button
                 key={item.id}
                 type="button"
+                id={`ctx-item-${item.id}`}
                 role="menuitem"
                 data-context-item={item.id}
                 disabled={item.disabled}

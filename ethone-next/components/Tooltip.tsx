@@ -21,7 +21,7 @@ export default function Tooltip({
     });
   }
   return (
-    <span data-tooltip={label} data-tooltip-position={position}>
+    <span data-tooltip={label} data-tooltip-position={position} tabIndex={0} data-interactive>
       {children}
     </span>
   );

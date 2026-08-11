@@ -135,6 +135,7 @@ export function useLiveData(pollMs = 15000) {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
 
   const nowPlayingPath =
     liveNowPlayingSource === "lanyard" && liveNowPlayingIdentity
@@ -377,7 +378,10 @@ export function useLiveData(pollMs = 15000) {
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err : new Error(String(err)));
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+          setUpdatedAt(new Date());
+        }
       }
     }
 
@@ -731,6 +735,7 @@ export function useLiveData(pollMs = 15000) {
     records,
     loading,
     error,
+    updatedAt,
     lastfmPeriod,
     setLastfmPeriod,
     lastfmTopArtists,

@@ -44,9 +44,9 @@ export function SkeletonCard({ children }: { children?: React.ReactNode }) {
   );
 }
 
-export function SkeletonList({ count = 4 }: { count?: number }) {
+export function SkeletonList({ count = 4, label = "Chargement..." }: { count?: number; label?: string }) {
   return (
-    <div className="space-y-2" aria-hidden="true">
+    <div className="space-y-2" role="status" aria-busy="true" aria-label={label}>
       {Array.from({ length: count }).map((_, i) => (
         <div key={i} className="flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3">
           <Skeleton width="2rem" height="2rem" circle />

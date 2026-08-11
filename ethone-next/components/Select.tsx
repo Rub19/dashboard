@@ -124,7 +124,7 @@ export default function Select({ options, value, onChange, placeholder = "Sélec
   const activeLabel = enabledOptions.find((o) => o.value === value)?.label || placeholder;
 
   return (
-    <div className="relative inline-block w-full">
+    <div className="v8-select relative inline-block w-full" data-v8-kind="select" data-value={value}>
       {label && (
         <label className="mb-1.5 block text-xs font-medium text-[var(--muted)]" id={`${id}-label`}>
           {label}
@@ -171,10 +171,11 @@ export default function Select({ options, value, onChange, placeholder = "Sélec
                   type="button"
                   role="option"
                   aria-selected={selected}
+                  data-value={option.value}
                   tabIndex={-1}
                   onClick={() => select(option)}
                   onMouseEnter={() => setActiveIndex(i)}
-                  className={`flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-sm transition-colors ${
+                  className={`v8-select__option flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-sm transition-colors ${
                     active ? "bg-[var(--accent)]/10 text-[var(--accent)]" : "hover:bg-[var(--surface)]"
                   } ${selected ? "font-medium" : ""}`}
                 >

@@ -31,17 +31,23 @@ export default function LiquidSidebar({
   }
 
   return (
-    <div className="w-56 space-y-1 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-2">
+    <div
+      className="v8-panel w-56 space-y-1 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-2"
+      role="tablist"
+      aria-label="Panneau latéral"
+    >
       {items.map((item) => {
         const isCurrent = current === item.id;
         return (
           <button
             key={item.id}
             type="button"
+            role="tab"
+            aria-selected={currentActive === item.id}
             onClick={() => handleClick(item.id)}
             onMouseEnter={() => setHovered(item.id)}
             onMouseLeave={() => setHovered(null)}
-            className="relative flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors"
+            className="v8-panel__item relative flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors"
           >
             {isCurrent && (
               <motion.div

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import ErrorState from "@/components/ErrorState";
 import { useI18n } from "@/lib/hooks/useI18n";
 
 export default function GlobalError({
@@ -18,19 +19,13 @@ export default function GlobalError({
   return (
     <html>
       <body className="flex min-h-screen items-center justify-center bg-[var(--background)] text-[var(--foreground)]">
-        <div className="max-w-md rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] p-8 text-center">
-          <h2 className="mb-2 text-2xl font-bold">{i18n("globalErrorTitle")}</h2>
-          <p className="mb-6 text-sm text-[var(--muted)]">
-            {i18n("unexpectedError")}
-          </p>
-          <button
-            type="button"
-            onClick={reset}
-            className="rounded-xl bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          >
-            {i18n("globalErrorRetry")}
-          </button>
-        </div>
+        <ErrorState
+          title={i18n("globalErrorTitle")}
+          reason={i18n("unexpectedError")}
+          actionText={i18n("globalErrorRetry")}
+          onAction={reset}
+          className="max-w-md rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] p-8"
+        />
       </body>
     </html>
   );

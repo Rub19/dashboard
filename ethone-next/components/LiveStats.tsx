@@ -1,6 +1,7 @@
 "use client";
 
 import Card3D from "@/components/Card3D";
+import LiveFreshness from "@/components/LiveFreshness";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 
@@ -9,6 +10,7 @@ export default function LiveStats() {
   const {
     records,
     loading,
+    updatedAt,
     lastfmTopArtists,
     lastfmTopTracks,
     steamRecentGames,
@@ -35,7 +37,10 @@ export default function LiveStats() {
 
   return (
     <Card3D>
-      <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">{i18n("liveStats")}</h2>
+      <div className="mb-3 flex items-center justify-between">
+        <h2 className="text-sm font-semibold text-[var(--foreground)]">{i18n("liveStats")}</h2>
+        <LiveFreshness updatedAt={updatedAt} />
+      </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="rounded-xl bg-emerald-500/10 p-3 text-emerald-400">
           <p className="text-2xl font-bold">{loading ? "-" : byStatus.connected}</p>

@@ -2,6 +2,8 @@
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useHaptics } from "@/lib/hooks/useHaptics";
+import { useNativeBehavior } from "@/lib/hooks/useNativeBehavior";
+import { useTouchInteractions } from "@/lib/hooks/useTouchInteractions";
 
 const CONTROL_SELECTOR = [
   "button:not(:disabled)",
@@ -79,6 +81,8 @@ function computeTooltipPosition(
 }
 
 export default function UIProvider({ children }: { children: React.ReactNode }) {
+  useNativeBehavior();
+  useTouchInteractions();
   const haptics = useHaptics();
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const [tooltip, setTooltip] = useState<TooltipState>(null);

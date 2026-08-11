@@ -11,6 +11,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - Routes Worker `/api/profiles` (CRUD + activation) avec scoping par `auth.userId`.
 - Hook `useProfiles` migré de `localStorage` vers l’API Worker : les profils sont maintenant synchronisés par compte et isolés entre utilisateurs.
 - `ProfileSync` dans `app/layout.tsx` applique automatiquement le profil actif (`dockItems`, `accentColor`) au chargement.
+- Fix : activation d'un profil faite par requêtes PATCH directes côté Worker, sans dépendre d'une RPC Supabase (plus compatible avec la clé service du Worker).
 
 ### Version PWA
 - `experience-v338`.

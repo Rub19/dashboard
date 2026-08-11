@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { motion, AnimatePresence, type PanInfo } from "framer-motion";
 
@@ -21,16 +21,55 @@ export default function BottomSheet({
 }) {
   const i18n = useI18n();
   const [isClosing, setIsClosing] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const previousFocus = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    if (open) setIsClosing(false);
+    if (open) {
+      setIsClosing(false);
+      previousFocus.current = document.activeElement as HTMLElement;
+    } else {
+      if (previousFocus.current && typeof previousFocus.current.focus === "function") {
+        queueMicrotask(() => previousFocus.current?.focus({ preventScroll: true }));
+      }
+      previousFocus.current = null;
+    }
   }, [open]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || !panelRef.current) return;
+
+    const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusable[0] || panelRef.current;
+    queueMicrotask(() => first.focus({ preventScroll: true }));
+
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
+      if (e.key === "Tab" && panelRef.current) {
+        const all = Array.from(
+          panelRef.current.querySelectorAll<HTMLElement>(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          )
+        ).filter((el) => !el.hasAttribute("disabled") && !el.getAttribute("aria-disabled"));
+        if (all.length === 0) return;
+        const first = all[0];
+        const last = all[all.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
     }
+
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
@@ -51,6 +90,7 @@ export default function BottomSheet({
   }
 
   const isCenter = position === "center";
+  const titleId = title ? "ethone-bottom-sheet-title" : undefined;
 
   return (
     <AnimatePresence>
@@ -64,6 +104,10 @@ export default function BottomSheet({
             className="fixed inset-0 z-40 bg-black/50"
           />
           <motion.div
+            ref={panelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={titleId}
             initial={isCenter ? { opacity: 0, scale: 0.96, y: 20 } : { y: "100%" }}
             animate={
               isClosing
@@ -84,7 +128,7 @@ export default function BottomSheet({
                 : { top: 0, bottom: 0 }
             }
             dragElastic={0.2}
-            className={`fixed z-50 max-h-[80vh] overflow-y-auto rounded-t-2xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl ${
+            className={`fixed z-50 max-h-[80vh] overflow-y-auto rounded-t-2xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl outline-none ${
               isCenter
                 ? "left-1/2 top-1/2 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-2xl"
                 : "bottom-0 left-0 right-0"
@@ -100,7 +144,9 @@ export default function BottomSheet({
 
             {title && (
               <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[var(--border)] bg-[var(--surface)] px-4 py-3">
-                <h3 className="text-lg font-semibold">{title}</h3>
+                <h3 id={titleId} className="text-lg font-semibold">
+                  {title}
+                </h3>
                 <button
                   type="button"
                   onClick={onClose}

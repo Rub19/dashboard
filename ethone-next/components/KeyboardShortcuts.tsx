@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useSettings } from "@/components/SettingsProvider";
 import { useWindowManager } from "@/components/WindowManagerProvider";
 import { useHaptics } from "@/lib/hooks/useHaptics";
+import { useShortcuts } from "@/components/ShortcutsProvider";
 
 const DOCK_ROUTES: Record<string, string> = {
   home: "/",
@@ -35,12 +36,29 @@ function isEditable(target: EventTarget | null) {
   );
 }
 
+function matchesShortcut(event: KeyboardEvent, keys: string[]) {
+  const last = keys[keys.length - 1].toLowerCase();
+  const wantsCtrl = keys.includes("Ctrl") || keys.includes("Cmd");
+  const wantsShift = keys.includes("Shift");
+  const wantsAlt = keys.includes("Alt");
+
+  if (wantsCtrl && !(event.ctrlKey || event.metaKey)) return false;
+  if (wantsShift && !event.shiftKey) return false;
+  if (wantsAlt && !event.altKey) return false;
+
+  const eventKey = event.key.toLowerCase();
+  if (last === "esc") return eventKey === "escape";
+  if (last === "del") return eventKey === "delete";
+  return eventKey === last;
+}
+
 export default function KeyboardShortcuts() {
   const router = useRouter();
   const pathname = usePathname();
   const { settings, update } = useSettings();
   const { toggleMissionControl } = useWindowManager();
   const haptics = useHaptics();
+  const { shortcuts } = useShortcuts();
 
   useEffect(() => {
     function scrollTo(top?: boolean) {
@@ -104,11 +122,21 @@ export default function KeyboardShortcuts() {
         event.preventDefault();
         scrollTo(false);
       }
+
+      // Dynamic registered shortcuts.
+      for (const sc of shortcuts) {
+        if (matchesShortcut(event, sc.keys) && sc.handler) {
+          event.preventDefault();
+          haptics.trigger(10);
+          sc.handler(event);
+          return;
+        }
+      }
     }
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [router, pathname, settings.dockItems, settings.layoutPreset, update, toggleMissionControl, haptics]);
+  }, [router, pathname, settings.dockItems, settings.layoutPreset, update, toggleMissionControl, haptics, shortcuts]);
 
   return null;
 }

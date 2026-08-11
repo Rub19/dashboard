@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "@/lib/icons";
 import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 import { useSettings } from "@/components/SettingsProvider";
+import { useShortcuts } from "@/components/ShortcutsProvider";
 
 const DOCK_LABELS: Record<string, string> = {
   home: "Accueil",
@@ -71,6 +72,7 @@ export default function ShortcutsOverlay() {
   const [open, setOpen] = useState(false);
   const trapRef = useFocusTrap<HTMLElement>(open);
   const { settings } = useSettings();
+  const { shortcuts } = useShortcuts();
 
   const groups = useMemo(() => {
     const dockShortcuts = settings.dockItems
@@ -89,8 +91,22 @@ export default function ShortcutsOverlay() {
       ],
     };
 
-    return [navigation, ...STATIC_GROUPS];
-  }, [settings.dockItems]);
+    const dynamicGroups = new Map<string, { label: string; icon: string; shortcuts: { keys: string[]; label: string }[] }>();
+    for (const sc of shortcuts) {
+      const existing = dynamicGroups.get(sc.group);
+      if (existing) {
+        existing.shortcuts.push({ keys: sc.keys, label: sc.label });
+      } else {
+        dynamicGroups.set(sc.group, {
+          label: sc.group,
+          icon: sc.groupIcon || sc.icon || "command",
+          shortcuts: [{ keys: sc.keys, label: sc.label }],
+        });
+      }
+    }
+
+    return [navigation, ...STATIC_GROUPS, ...dynamicGroups.values()];
+  }, [settings.dockItems, shortcuts]);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {

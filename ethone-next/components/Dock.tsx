@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useSettings } from "@/components/SettingsProvider";
+import { useWindowManager } from "@/components/WindowManagerProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
+import ContextMenu from "@/components/ContextMenu";
 
 const ICONS: Record<string, string> = {
   home: "home",
@@ -30,6 +32,8 @@ const ICONS: Record<string, string> = {
 export default function Dock() {
   const { settings, update } = useSettings();
   const pathname = usePathname();
+  const router = useRouter();
+  const { openWindow } = useWindowManager();
   const i18n = useI18n();
   const [expanded, setExpanded] = useState(false);
 
@@ -61,21 +65,29 @@ export default function Dock() {
       >
         {visibleItems().map((item) => {
           const active = pathname === item.href || pathname.startsWith(item.href);
+          const contextItems = [
+            { id: "open", label: i18n("openHere"), icon: "arrow-right", onClick: () => router.push(item.href) },
+            { id: "window", label: i18n("openInWindow"), icon: "maximize", onClick: () => openWindow(item.href, item.label) },
+          ];
+          const link = (
+            <Link
+              href={item.href}
+              aria-label={item.label}
+              data-tooltip={item.label}
+              data-haptic
+              data-dock-item
+              data-dock-item-active={active ? "true" : "false"}
+              className={`flex h-11 w-11 items-center justify-center rounded-xl border border-transparent text-[var(--foreground)] transition-all hover:border-[var(--accent)]/30 hover:bg-[var(--surface)] hover:shadow-lg ${
+                active ? "bg-[var(--accent)]/10 text-[var(--accent)]" : ""
+              }`}
+            >
+              <Icon name={item.icon} className="h-5 w-5" />
+            </Link>
+          );
           return (
-            <div key={item.id} className="group relative flex flex-col items-center">
-              <Link
-                href={item.href}
-                aria-label={item.label}
-                data-tooltip={item.label}
-                data-haptic
-                data-dock-item
-                data-dock-item-active={active ? "true" : "false"}
-                className={`flex h-11 w-11 items-center justify-center rounded-xl border border-transparent text-[var(--foreground)] transition-all hover:border-[var(--accent)]/30 hover:bg-[var(--surface)] hover:shadow-lg ${
-                  active ? "bg-[var(--accent)]/10 text-[var(--accent)]" : ""
-                }`}
-              >
-                <Icon name={item.icon} className="h-5 w-5" />
-              </Link>
+            <ContextMenu key={item.id} items={contextItems}>
+              <div className="group relative flex flex-col items-center">
+                {link}
               {expanded && (
                 <div className="mt-1 flex gap-0.5">
                   <button onClick={() => move(item.id, -1)} className="rounded p-0.5 text-[10px] text-[var(--muted)] hover:bg-[var(--surface)]">◀</button>
@@ -83,6 +95,7 @@ export default function Dock() {
                 </div>
               )}
             </div>
+            </ContextMenu>
           );
         })}
         <button

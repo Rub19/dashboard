@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFocus } from "./FocusProvider";
+import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
 
 export default function FocusIsland() {
+  const i18n = useI18n();
   const { state, pause, resume, stop } = useFocus();
   const [expanded, setExpanded] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -29,10 +31,10 @@ export default function FocusIsland() {
   if (state.phase === "idle" && !hidden) return null;
 
   const phaseLabels: Record<string, string> = {
-    focus: "Focus",
-    shortBreak: "Pause Courte",
-    longBreak: "Pause Longue",
-    idle: "Prêt",
+    focus: i18n("focus"),
+    shortBreak: i18n("shortBreak"),
+    longBreak: i18n("longBreak"),
+    idle: i18n("ready"),
   };
 
   return (
@@ -59,7 +61,8 @@ export default function FocusIsland() {
                   type="button"
                   onClick={() => (state.paused ? resume() : pause())}
                   className="rounded-full bg-[var(--surface)] p-2 hover:bg-[var(--surface-raised)]"
-                  aria-label={state.paused ? "Reprendre" : "Pause"}
+                  aria-label={state.paused ? i18n("resume") : i18n("pause")}
+                  data-tooltip={state.paused ? i18n("resume") : i18n("pause")}
                 >
                   <Icon name={state.paused ? "play" : "pause"} className="h-4 w-4" />
                 </button>
@@ -67,7 +70,8 @@ export default function FocusIsland() {
                   type="button"
                   onClick={stop}
                   className="rounded-full bg-[var(--surface)] p-2 hover:bg-[var(--surface-raised)]"
-                  aria-label="Arrêter"
+                  aria-label={i18n("stop")}
+                  data-tooltip={i18n("stop")}
                 >
                   <Icon name="square" className="h-4 w-4" />
                 </button>

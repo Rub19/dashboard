@@ -33,6 +33,7 @@ import VisualHaptics from "@/components/VisualHaptics";
 import SidePanel from "@/components/SidePanel";
 import KeyboardShortcuts from "@/components/KeyboardShortcuts";
 import PresenceProvider from "@/components/PresenceProvider";
+import { ShortcutsProvider } from "@/components/ShortcutsProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -67,6 +68,7 @@ export default function RootLayout({
           <OfflineIndicator />
           <SettingsProvider>
             <PresenceProvider>
+            <ShortcutsProvider>
             <UIProvider>
               <HtmlLang />
               <ProfileSync />
@@ -104,6 +106,7 @@ export default function RootLayout({
                 </ToastProvider>
               </SoundProvider>
             </UIProvider>
+            </ShortcutsProvider>
             </PresenceProvider>
           </SettingsProvider>
           </FocusProvider>

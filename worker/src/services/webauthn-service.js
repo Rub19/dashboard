@@ -15,9 +15,10 @@ import {
   getPasskeyByCredential,
   getPasskeyById,
   insertSecurityEvent,
-  getPasskeyByCredential as getPasskeyByCredentialGlobal
+  getPasskeyByCredential as getPasskeyByCredentialGlobal,
+  getUserEmailById,
+  generateMagicLinkToken
 } from "./security-identity-client.js";
-import { signServiceToken } from "../utils/jwt.js";
 
 const RP_NAME = "ETHONE";
 const CHALLENGE_TTL_MS = 120_000;
@@ -232,8 +233,10 @@ export async function verifyAuthentication(env, requestOrigin, response) {
     metadata: { credential_id: passkey.credential_id.slice(0, 8) + "..." }
   });
 
-  const token = await signServiceToken(env, userId, null, 3600);
-  return { userId, passkeyId: passkey.id, token };
+  const email = await getUserEmailById(env, userId);
+  if (!email) throw new Error("User email not found");
+  const tokenHash = await generateMagicLinkToken(env, email);
+  return { userId, passkeyId: passkey.id, email, token_hash: tokenHash };
 }
 
 export async function renamePasskey(env, userId, passkeyId, name) {

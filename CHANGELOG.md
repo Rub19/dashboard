@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v337] - 2026-08-20
+
+**Passkey : renouvellement de session via Supabase**
+
+### Corrige
+- La connexion par passkey ne signe plus un JWT côté Worker avec `refresh_token: ""`.
+- Le Worker récupère l’email de l’utilisateur et appelle `auth/v1/admin/generate_link` pour obtenir un `hashed_token`.
+- Le front utilise `supabase.auth.verifyOtp({ token_hash, type: "magiclink" })` pour obtenir une vraie session Supabase avec `access_token` et `refresh_token`.
+- Le cycle de renouvellement natif de Supabase est ainsi pleinement fonctionnel après une connexion passkey.
+
+### Version PWA
+- `experience-v337`.
+
 ## [v336] - 2026-08-20
 
 **Mail avancé : comptes externes, PGP, push, listes de diffusion**

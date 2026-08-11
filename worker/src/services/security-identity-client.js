@@ -305,6 +305,41 @@ export async function getUserIdByEmail(env, email) {
   return user ? safeText(user.id, 120) : null;
 }
 
+export async function getUserEmailById(env, userId) {
+  const origin = projectOrigin(env);
+  const secret = requireSecret(env, "SUPABASE_SECRET_KEY");
+  const response = await requestExternal(new URL(`/auth/v1/admin/users/${encodeURIComponent(userId)}`, origin), {
+    env,
+    expectedOrigin: origin,
+    service: "supabase",
+    method: "GET",
+    headers: serviceHeaders(secret),
+    retries: 0,
+    maxBytes: 65536
+  });
+  const user = response.data || null;
+  return user?.email ? safeText(user.email, 240) : null;
+}
+
+export async function generateMagicLinkToken(env, email) {
+  const origin = projectOrigin(env);
+  const secret = requireSecret(env, "SUPABASE_SECRET_KEY");
+  const response = await requestExternal(new URL(`/auth/v1/admin/generate_link`, origin), {
+    env,
+    expectedOrigin: origin,
+    service: "supabase",
+    method: "POST",
+    headers: serviceHeaders(secret),
+    body: JSON.stringify({ type: "magiclink", email }),
+    retries: 0,
+    maxBytes: 8192
+  });
+  const properties = response.data?.properties || {};
+  const tokenHash = properties.hashed_token || properties.token_hash || properties.email_otp || null;
+  if (!tokenHash) throw new Error("Magic link token not generated");
+  return tokenHash;
+}
+
 export async function deleteExpiredOtpCodes(env) {
   await supabaseRequest(env, `/rest/v1/ethone_otp_codes?expires_at=lt.${encodeURIComponent(new Date().toISOString())}`, { method: "DELETE" });
   return true;

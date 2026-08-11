@@ -144,7 +144,7 @@ export function useSecurity() {
         },
       }),
     });
-    return authRes?.data as { userId: string; token: string } | undefined;
+    return authRes?.data as { userId: string; email: string; token_hash: string } | undefined;
   }
 
   async function revokePasskey(id: string) {

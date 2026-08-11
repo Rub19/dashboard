@@ -24,6 +24,14 @@ function createMockSupabaseFetch() {
       return json({ users: [{ id: "4a8ad6a5-7f6e-4d41-9d07-28f6dca8719a", email: "qa@ethone.dev" }] });
     }
 
+    if (url.pathname.startsWith("/auth/v1/admin/users/")) {
+      return json({ id: "4a8ad6a5-7f6e-4d41-9d07-28f6dca8719a", email: "qa@ethone.dev" });
+    }
+
+    if (url.pathname === "/auth/v1/admin/generate_link") {
+      return json({ properties: { hashed_token: "test-magic-link-token-hash", action_link: "https://example.com/auth/v1/verify?token=test-magic-link-token-hash&type=magiclink" } });
+    }
+
     if (url.pathname.startsWith("/rest/v1/ethone_")) {
       return json([]);
     }

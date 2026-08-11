@@ -69,12 +69,12 @@ export async function signInWithPasskey(email?: string) {
       },
     }),
   });
-  const token = authRes?.data?.token;
-  if (!token) throw new Error("Passkey authentication failed");
+  const tokenHash = authRes?.data?.token_hash;
+  if (!tokenHash) throw new Error("Passkey authentication failed");
 
-  const { data, error } = await supabase.auth.setSession({
-    access_token: token,
-    refresh_token: "",
+  const { data, error } = await supabase.auth.verifyOtp({
+    token_hash: tokenHash,
+    type: "magiclink",
   });
   return { ok: !error && !!data.session, session: data.session, error };
 }

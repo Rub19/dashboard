@@ -26,7 +26,7 @@ export default function ContextMenu({
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [adjusted, setAdjusted] = useState({ x: 0, y: 0 });
   const menuRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLElement | null>(null);
+  const previousFocus = useRef<HTMLElement | null>(null);
 
   const focusableItems = items.filter((item) => !item.separator);
 
@@ -34,95 +34,126 @@ export default function ContextMenu({
     focusableItems.find((item) => !item.disabled)?.id ?? null
   );
 
-  function handleContextMenu(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    triggerRef.current = (e.target as HTMLElement) || null;
-    setPos({ x: e.clientX, y: e.clientY });
-    setAdjusted({ x: e.clientX, y: e.clientY });
-    setActiveId(focusableItems.find((item) => !item.disabled)?.id ?? null);
-    setOpen(true);
-  }
-
   const close = useCallback(() => {
     setOpen(false);
   }, []);
 
+  const activeIndex = focusableItems.findIndex((item) => item.id === activeId);
+
+  const setNext = useCallback(
+    (direction: "next" | "prev") => {
+      if (focusableItems.length === 0) return;
+      const start = activeIndex >= 0 ? activeIndex : -1;
+      for (let i = 1; i <= focusableItems.length; i++) {
+        const idx =
+          direction === "next"
+            ? (start + i) % focusableItems.length
+            : (start - i + focusableItems.length) % focusableItems.length;
+        const item = focusableItems[idx];
+        if (item && !item.disabled) {
+          setActiveId(item.id);
+          return;
+        }
+      }
+    },
+    [activeIndex, focusableItems, setActiveId]
+  );
+
+  const setFirst = useCallback(() => {
+    const first = focusableItems.find((item) => !item.disabled);
+    if (first) setActiveId(first.id);
+  }, [focusableItems, setActiveId]);
+
+  const setLast = useCallback(() => {
+    const last = [...focusableItems].reverse().find((item) => !item.disabled);
+    if (last) setActiveId(last.id);
+  }, [focusableItems, setActiveId]);
+
+  const activate = useCallback(() => {
+    const item = focusableItems.find((i) => i.id === activeId);
+    if (item && !item.disabled) {
+      close();
+      item.onClick?.();
+    }
+  }, [activeId, close, focusableItems]);
+
+  const handleContextMenu = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      previousFocus.current = document.activeElement as HTMLElement;
+      setPos({ x: e.clientX, y: e.clientY });
+      setAdjusted({ x: e.clientX, y: e.clientY });
+      setActiveId(focusableItems.find((item) => !item.disabled)?.id ?? null);
+      setOpen(true);
+    },
+    [focusableItems, setActiveId]
+  );
+
   useEffect(() => {
     if (!open) {
-      const trigger = triggerRef.current;
+      const trigger = previousFocus.current;
       if (trigger && typeof trigger.focus === "function") {
         queueMicrotask(() => trigger.focus({ preventScroll: true }));
       }
+      previousFocus.current = null;
       return;
     }
 
+    queueMicrotask(() => menuRef.current?.focus({ preventScroll: true }));
+
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        close();
-        return;
-      }
-
-      const currentIndex = focusableItems.findIndex((item) => item.id === activeId);
-      let nextIndex = currentIndex;
-
       switch (e.key) {
+        case "Escape":
+          e.preventDefault();
+          close();
+          return;
         case "ArrowDown":
         case "Down":
           e.preventDefault();
-          for (let i = 1; i <= focusableItems.length; i++) {
-            const idx = (currentIndex + i) % focusableItems.length;
-            if (!focusableItems[idx]?.disabled) {
-              nextIndex = idx;
-              break;
-            }
-          }
-          break;
+          setNext("next");
+          return;
         case "ArrowUp":
         case "Up":
           e.preventDefault();
-          for (let i = 1; i <= focusableItems.length; i++) {
-            const idx = (currentIndex - i + focusableItems.length) % focusableItems.length;
-            if (!focusableItems[idx]?.disabled) {
-              nextIndex = idx;
-              break;
-            }
-          }
-          break;
+          setNext("prev");
+          return;
         case "Home":
           e.preventDefault();
-          for (let i = 0; i < focusableItems.length; i++) {
-            if (!focusableItems[i]?.disabled) {
-              nextIndex = i;
-              break;
-            }
-          }
-          break;
+          setFirst();
+          return;
         case "End":
           e.preventDefault();
-          for (let i = focusableItems.length - 1; i >= 0; i--) {
-            if (!focusableItems[i]?.disabled) {
-              nextIndex = i;
-              break;
-            }
-          }
-          break;
+          setLast();
+          return;
         case "Enter":
         case " ":
           e.preventDefault();
-          if (currentIndex >= 0) {
-            const item = focusableItems[currentIndex];
-            if (item && !item.disabled) {
-              close();
-              item.onClick?.();
-            }
-          }
+          activate();
           return;
       }
 
-      if (nextIndex !== currentIndex) {
-        setActiveId(focusableItems[nextIndex]?.id ?? null);
+      if (e.key.length === 1 && /[\p{L}\p{N}]/u.test(e.key)) {
+        const match = focusableItems.find(
+          (item, idx) =>
+            idx > (activeIndex >= 0 ? activeIndex : -1) &&
+            !item.disabled &&
+            item.label.toLowerCase().startsWith(e.key.toLowerCase())
+        );
+        if (match) {
+          e.preventDefault();
+          setActiveId(match.id);
+          return;
+        }
+        const wrap = focusableItems.find(
+          (item) =>
+            !item.disabled &&
+            item.label.toLowerCase().startsWith(e.key.toLowerCase())
+        );
+        if (wrap) {
+          e.preventDefault();
+          setActiveId(wrap.id);
+        }
       }
     }
 
@@ -147,16 +178,7 @@ export default function ContextMenu({
       window.removeEventListener("scroll", onResize, true);
       window.removeEventListener("click", onClick, true);
     };
-  }, [open, close, activeId, focusableItems]);
-
-  useEffect(() => {
-    if (open && menuRef.current) {
-      const activeButton = menuRef.current.querySelector<HTMLButtonElement>(
-        `[data-context-item="${activeId}"]`
-      );
-      activeButton?.focus({ preventScroll: true });
-    }
-  }, [open, activeId]);
+  }, [open, close, setNext, setFirst, setLast, activate, focusableItems, activeIndex]);
 
   useEffect(() => {
     if (!open || !menuRef.current) return;
@@ -182,7 +204,14 @@ export default function ContextMenu({
           aria-label={i18n("actions")}
           aria-orientation="vertical"
           aria-activedescendant={activeId ? `ctx-item-${activeId}` : undefined}
-          tabIndex={-1}
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Tab") {
+              e.preventDefault();
+              if (e.shiftKey) setNext("prev");
+              else setNext("next");
+            }
+          }}
         >
           {items.map((item) =>
             item.separator ? (
@@ -195,16 +224,17 @@ export default function ContextMenu({
                 role="menuitem"
                 data-context-item={item.id}
                 disabled={item.disabled}
-                tabIndex={item.id === activeId ? 0 : -1}
+                tabIndex={-1}
                 onClick={() => {
                   if (item.disabled) return;
                   close();
                   item.onClick?.();
                 }}
                 onMouseEnter={() => setActiveId(item.id)}
+                onPointerEnter={() => setActiveId(item.id)}
                 className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors hover:bg-[var(--surface-raised)] focus:bg-[var(--surface-raised)] disabled:opacity-40 disabled:hover:bg-transparent ${
-                  item.danger ? "text-red-400" : "text-[var(--foreground)]"
-                }`}
+                  item.id === activeId ? "bg-[var(--surface-raised)]" : ""
+                } ${item.danger ? "text-red-400" : "text-[var(--foreground)]"}`}
               >
                 {item.icon && <Icon name={item.icon} className="h-4 w-4 text-[var(--muted)]" />}
                 <span className="flex-1 truncate">{item.label}</span>

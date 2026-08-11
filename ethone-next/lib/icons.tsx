@@ -144,6 +144,7 @@ const MAP: Record<string, Partial<Record<IconPack, string>>> = {
   receipt: { lucide: "receipt", phosphor: "receipt", tabler: "receipt", heroicons: "receipt-percent", radix: "file-text" },
   ghost: { lucide: "ghost", phosphor: "ghost", tabler: "ghost", heroicons: "sparkles", radix: "ghost" },
   coffee: { lucide: "coffee", phosphor: "coffee", tabler: "coffee", heroicons: "mug", radix: "mug" },
+  armchair: { lucide: "armchair", phosphor: "armchair", tabler: "armchair", heroicons: "cube", radix: "armchair" },
   trophy: { lucide: "trophy", phosphor: "trophy", tabler: "trophy", heroicons: "trophy", radix: "trophy" },
   "heading-2": { lucide: "heading-2", phosphor: "text-h-two", tabler: "h-2", heroicons: "bars-2", radix: "text" },
   "heading-3": { lucide: "heading-3", phosphor: "text-h-three", tabler: "h-3", heroicons: "bars-3", radix: "text" },

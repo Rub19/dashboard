@@ -45,6 +45,7 @@ export default function MailPage() {
     setFlags,
     bulkAction,
     snoozeMessage,
+    scheduleMail,
     createLabel,
     deleteLabel,
     createSignature,
@@ -74,6 +75,7 @@ export default function MailPage() {
   const [composeSubject, setComposeSubject] = useState("");
   const [composeBody, setComposeBody] = useState("");
   const [composeAttachments, setComposeAttachments] = useState<{ filename: string; size: number; mime_type: string; content: string }[]>([]);
+  const [composeScheduledAt, setComposeScheduledAt] = useState<string>("");
   const [composeDraftId, setComposeDraftId] = useState<string | undefined>();
   const [composeInReplyTo, setComposeInReplyTo] = useState<string | undefined>();
   const [composeReferences, setComposeReferences] = useState<string[] | undefined>();
@@ -180,6 +182,7 @@ export default function MailPage() {
       if (defaultSignature) setComposeBody((b) => `${b}\n\n${defaultSignature.content}`);
     }
     setComposeDraftId(undefined);
+    setComposeScheduledAt("");
     setComposeAttachments([]);
     setComposeOpen(true);
   }
@@ -225,6 +228,31 @@ export default function MailPage() {
       });
       if (draft?.id) setComposeDraftId(draft.id);
       success(i18n("saved"));
+    } catch (err) {
+      toastError(String(err));
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleSchedule() {
+    if (!composeTo.length && !composeCc.length && !composeBcc.length) return;
+    if (!composeSubject && !composeBody) return;
+    if (!composeScheduledAt) return;
+    setSubmitting(true);
+    try {
+      await scheduleMail({
+        to: composeTo,
+        cc: composeCc,
+        bcc: composeBcc,
+        subject: composeSubject,
+        text: composeBody,
+        html: composeBody.replace(/\n/g, "<br>"),
+        attachments: composeAttachments.map((a) => ({ filename: a.filename, size: a.size, mime_type: a.mime_type })),
+        scheduled_at: new Date(composeScheduledAt).toISOString(),
+      });
+      success(i18n("schedule"));
+      setComposeOpen(false);
     } catch (err) {
       toastError(String(err));
     } finally {
@@ -639,16 +667,28 @@ export default function MailPage() {
               <input ref={fileInputRef} type="file" multiple className="hidden" onChange={(e) => addAttachment(e.target.files)} />
             </div>
             <div className="flex items-center justify-between border-t border-[var(--border)] p-4">
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="flex items-center gap-2 rounded-xl border border-[var(--border)] px-3 py-2 text-sm hover:bg-[var(--surface)]"
-              >
-                <Icon name="paperclip" className="h-4 w-4" /> {i18n("addAttachment")}
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex items-center gap-2 rounded-xl border border-[var(--border)] px-3 py-2 text-sm hover:bg-[var(--surface)]"
+                >
+                  <Icon name="paperclip" className="h-4 w-4" /> {i18n("addAttachment")}
+                </button>
+                <input
+                  type="datetime-local"
+                  aria-label={i18n("schedule")}
+                  value={composeScheduledAt}
+                  onChange={(e) => setComposeScheduledAt(e.target.value)}
+                  className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm"
+                />
+              </div>
               <div className="flex gap-2">
                 <button type="button" onClick={() => setComposeOpen(false)} className="rounded-xl px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--surface)]">{i18n("discard")}</button>
                 <button type="button" onClick={handleSaveDraft} disabled={submitting} className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm hover:bg-[var(--surface)] disabled:opacity-50">{i18n("save")}</button>
+                {composeScheduledAt && (
+                  <button type="button" onClick={handleSchedule} disabled={submitting} className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm hover:bg-[var(--surface)] disabled:opacity-50">{i18n("schedule")}</button>
+                )}
                 <button type="button" onClick={handleSend} disabled={submitting} className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{i18n("send")}</button>
               </div>
             </div>

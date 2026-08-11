@@ -263,6 +263,21 @@ export function useMail() {
     await fetchMessages();
   }
 
+  async function scheduleMail(input: {
+    to: string[];
+    cc?: string[];
+    bcc?: string[];
+    subject: string;
+    text?: string;
+    html?: string;
+    attachments?: MailAttachment[];
+    scheduled_at: string;
+  }) {
+    const res = await fetchWorker("/api/mail/schedule", { method: "POST", body: JSON.stringify(input) });
+    await fetchMessages();
+    return res?.data;
+  }
+
   async function createLabel(name: string, color?: string) {
     const res = await fetchWorker("/api/mail/labels", { method: "POST", body: JSON.stringify({ name, color }) });
     await fetchLabels();
@@ -396,6 +411,7 @@ export function useMail() {
     moveMessages,
     bulkAction,
     snoozeMessage,
+    scheduleMail,
     createLabel,
     assignLabel,
     deleteLabel,

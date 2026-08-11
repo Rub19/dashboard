@@ -5,6 +5,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import Card3D from "@/components/Card3D";
 import BottomSheet from "@/components/BottomSheet";
 import { useHaptics } from "@/lib/hooks/useHaptics";
+import { getUserState, setUserState } from "@/lib/user-state";
 
 export default function ScratchpadPage() {
   const i18n = useI18n();
@@ -15,10 +16,14 @@ export default function ScratchpadPage() {
   useEffect(() => {
     const saved = typeof window !== "undefined" ? localStorage.getItem("ethone-scratchpad") : "";
     if (saved) setNote(saved);
+    getUserState<string>("scratchpad", "").then((remote) => {
+      if (typeof remote === "string") setNote(remote);
+    });
   }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") localStorage.setItem("ethone-scratchpad", note);
+    setUserState("scratchpad", note).catch(() => {});
   }, [note]);
 
   return (

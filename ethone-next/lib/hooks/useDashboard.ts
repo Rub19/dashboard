@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { fetchWorker } from "../api";
+import { useSettings } from "@/components/SettingsProvider";
 
 export type CloudDashboard = {
   totalFiles: number;
@@ -53,6 +54,15 @@ export type TrackerMatch = {
 };
 
 export function useHomeData() {
+  const { settings } = useSettings();
+  const {
+    liveNowPlayingSource,
+    liveNowPlayingIdentity,
+    liveLanyardUserId,
+    liveTrackerRiotName,
+    liveTrackerRiotTag,
+  } = settings;
+
   const [dashboard, setDashboard] = useState<CloudDashboard | null>(null);
   const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null);
   const [lanyard, setLanyard] = useState<LanyardPresence | null>(null);
@@ -60,6 +70,25 @@ export function useHomeData() {
   const [lol, setLol] = useState<TrackerMatch[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+
+  const nowPlayingPath =
+    liveNowPlayingSource === "lanyard" && liveNowPlayingIdentity
+      ? `/api/now-playing?source=lanyard&userId=${encodeURIComponent(liveNowPlayingIdentity)}`
+      : liveNowPlayingSource === "lastfm" && liveNowPlayingIdentity
+      ? `/api/now-playing?source=lastfm&username=${encodeURIComponent(liveNowPlayingIdentity)}`
+      : null;
+
+  const lanyardPath = liveLanyardUserId
+    ? `/api/lanyard/presence?userId=${encodeURIComponent(liveLanyardUserId)}`
+    : null;
+
+  const hasRiotId = liveTrackerRiotName && liveTrackerRiotTag;
+  const valorantPath = hasRiotId
+    ? `/api/tracker/valorant-matches?name=${encodeURIComponent(liveTrackerRiotName)}&tag=${encodeURIComponent(liveTrackerRiotTag)}`
+    : null;
+  const lolPath = hasRiotId
+    ? `/api/tracker/lol-matches?name=${encodeURIComponent(liveTrackerRiotName)}&tag=${encodeURIComponent(liveTrackerRiotTag)}`
+    : null;
 
   const greeting = useMemo(() => {
     const hour = new Date().getHours();
@@ -78,10 +107,10 @@ export function useHomeData() {
       try {
         const [dash, np, la, val, lo] = await Promise.allSettled([
           fetchWorker("/api/cloud/dashboard"),
-          fetchWorker("/api/now-playing"),
-          fetchWorker("/api/lanyard/presence"),
-          fetchWorker("/api/tracker/valorant-matches"),
-          fetchWorker("/api/tracker/lol-matches"),
+          nowPlayingPath ? fetchWorker(nowPlayingPath) : Promise.resolve(null),
+          lanyardPath ? fetchWorker(lanyardPath) : Promise.resolve(null),
+          valorantPath ? fetchWorker(valorantPath) : Promise.resolve(null),
+          lolPath ? fetchWorker(lolPath) : Promise.resolve(null),
         ]);
 
         if (cancelled) return;
@@ -107,7 +136,7 @@ export function useHomeData() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [nowPlayingPath, lanyardPath, valorantPath, lolPath]);
 
   return { greeting, dashboard, nowPlaying, lanyard, valorant, lol, loading, error };
 }

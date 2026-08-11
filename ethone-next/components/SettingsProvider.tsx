@@ -1,7 +1,8 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
-import { loadSettings, saveSettings, Settings, DEFAULTS } from "@/lib/settings";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { useProfiles, type Profile } from "@/lib/hooks/useProfiles";
+import { loadSettings, saveSettings, saveSettingsAsync, loadSettingsAsync, Settings, DEFAULTS } from "@/lib/settings";
 
 const THEMES: Record<string, { background: string; foreground: string; accent: string }> = {
   default: { background: "#0a0a0a", foreground: "#ededed", accent: "#8b5cf6" },
@@ -11,6 +12,16 @@ const THEMES: Record<string, { background: string; foreground: string; accent: s
   emerald: { background: "#05140f", foreground: "#d1fae5", accent: "#10b981" },
 };
 
+const ACCENTS: Record<string, string> = {
+  violet: "#8b5cf6",
+  mint: "#34d399",
+  sky: "#38bdf8",
+  amber: "#f59e0b",
+  rose: "#f43f5e",
+  teal: "#14b8a6",
+  coral: "#f97316",
+};
+
 const SettingsContext = createContext<{
   settings: Settings;
   update: (s: Partial<Settings>) => void;
@@ -18,16 +29,43 @@ const SettingsContext = createContext<{
 
 export const useSettings = () => useContext(SettingsContext);
 
+type ActiveProfileValue = {
+  active: string;
+  activeProfile: Profile | null;
+  loaded: boolean;
+  reload: () => Promise<void>;
+};
+
+const ActiveProfileContext = createContext<ActiveProfileValue>({
+  active: "",
+  activeProfile: null,
+  loaded: false,
+  reload: async () => {},
+});
+
+export const useActiveProfile = () => useContext(ActiveProfileContext);
+
 export default function SettingsProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [settings, setSettings] = useState<Settings>(DEFAULTS);
+  const { active, activeProfile, loaded, reload } = useProfiles();
+  const [settings, setSettings] = useState<Settings>(() => loadSettings());
+
+  const activeContext = useMemo<ActiveProfileValue>(
+    () => ({ active, activeProfile, loaded, reload }),
+    [active, activeProfile, loaded, reload]
+  );
 
   useEffect(() => {
-    setSettings(loadSettings());
-  }, []);
+    if (!loaded) return;
+    const local = loadSettings(active || undefined);
+    setSettings(local);
+    loadSettingsAsync(active || undefined).then((remote) => {
+      setSettings({ ...local, ...remote });
+    });
+  }, [loaded, active]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -39,15 +77,6 @@ export default function SettingsProvider({
     root.style.setProperty("--border", settings.darkMode ? "#27272a" : "#e4e4e7");
     root.style.setProperty("--muted", settings.darkMode ? "#a1a1aa" : "#71717a");
 
-    const ACCENTS: Record<string, string> = {
-      violet: "#8b5cf6",
-      mint: "#34d399",
-      sky: "#38bdf8",
-      amber: "#f59e0b",
-      rose: "#f43f5e",
-      teal: "#14b8a6",
-      coral: "#f97316",
-    };
     const accent = settings.accentColor === "custom" ? settings.customAccent : (ACCENTS[settings.accentColor] || theme.accent);
     root.style.setProperty("--accent", accent);
     root.style.setProperty("--accent-soft", accent + "33");
@@ -76,12 +105,15 @@ export default function SettingsProvider({
   function update(partial: Partial<Settings>) {
     const next = { ...settings, ...partial };
     setSettings(next);
-    saveSettings(next);
+    saveSettings(next, active || undefined);
+    saveSettingsAsync(next, active || undefined);
   }
 
   return (
-    <SettingsContext.Provider value={{ settings, update }}>
-      {children}
-    </SettingsContext.Provider>
+    <ActiveProfileContext.Provider value={activeContext}>
+      <SettingsContext.Provider value={{ settings, update }}>
+        {children}
+      </SettingsContext.Provider>
+    </ActiveProfileContext.Provider>
   );
 }

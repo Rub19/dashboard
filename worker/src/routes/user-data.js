@@ -34,6 +34,22 @@ async function supabaseRequest(env, path, options = {}) {
   return response.data;
 }
 
+async function getActiveProfile(env, userId) {
+  const data = await supabaseRequest(
+    env,
+    `/rest/v1/ethone_profiles?user_id=eq.${encodeURIComponent(userId)}&is_active=eq.true&limit=1&select=id,workspace_id`
+  );
+  const row = Array.isArray(data) ? data[0] : null;
+  if (!row || !row.id) return null;
+  return { id: row.id, workspace: String(row.workspace_id || "") };
+}
+
+function appendProfileFilter(path, active) {
+  if (!active?.id) return path;
+  const separator = path.includes("?") ? "&" : "?";
+  return `${path}${separator}profile_id=eq.${encodeURIComponent(active.id)}`;
+}
+
 export async function userDataRoute({ request, env, auth, route }) {
   if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
   const kind = route?.action;
@@ -42,7 +58,10 @@ export async function userDataRoute({ request, env, auth, route }) {
   const method = String(request.method || "GET").toUpperCase();
 
   if (method === "GET") {
-    const data = await supabaseRequest(env, `/rest/v1/ethone_user_data?user_id=eq.${encodeURIComponent(auth.userId)}&kind=eq.${encodeURIComponent(kind)}&order=created_at.desc`);
+    const active = await getActiveProfile(env, auth.userId);
+    let path = `/rest/v1/ethone_user_data?user_id=eq.${encodeURIComponent(auth.userId)}&kind=eq.${encodeURIComponent(kind)}&order=created_at.desc`;
+    path = appendProfileFilter(path, active);
+    const data = await supabaseRequest(env, path);
     return { data: Array.isArray(data) ? data : [] };
   }
 
@@ -51,6 +70,18 @@ export async function userDataRoute({ request, env, auth, route }) {
     const slug = safeText(body.slug, 64);
     const label = safeText(body.label, 120);
     if (!label) throw httpError("INVALID_PARAMETER", 400, { detail: "label" });
+
+    let profileId = safeText(body.profile_id, 64) || "";
+    let workspaceId = safeText(body.workspace_id, 32) || "";
+
+    if (!profileId) {
+      const active = await getActiveProfile(env, auth.userId);
+      if (active) {
+        profileId = active.id;
+        workspaceId = active.workspace;
+      }
+    }
+
     const insert = await supabaseRequest(env, "/rest/v1/ethone_user_data", {
       method: "POST",
       body: JSON.stringify({
@@ -59,7 +90,9 @@ export async function userDataRoute({ request, env, auth, route }) {
         slug,
         label,
         data: body.data || {},
-        count: Number(body.count) || 0
+        count: Number(body.count) || 0,
+        profile_id: profileId || null,
+        workspace_id: workspaceId || ""
       })
     });
     return { data: insert?.[0] || insert };
@@ -69,12 +102,19 @@ export async function userDataRoute({ request, env, auth, route }) {
     const body = await request.json().catch(() => ({}));
     const id = safeText(body.id, 64);
     if (!id) throw httpError("INVALID_PARAMETER", 400);
+
+    const active = await getActiveProfile(env, auth.userId);
     const updates = {};
     if (body.label !== undefined) updates.label = safeText(body.label, 120);
     if (body.data !== undefined) updates.data = body.data;
     if (body.count !== undefined) updates.count = Number(body.count) || 0;
+    if (body.profile_id !== undefined) updates.profile_id = safeText(body.profile_id, 64) || null;
+    if (body.workspace_id !== undefined) updates.workspace_id = safeText(body.workspace_id, 32) || "";
     updates.updated_at = new Date().toISOString();
-    const update = await supabaseRequest(env, `/rest/v1/ethone_user_data?id=eq.${encodeURIComponent(id)}&user_id=eq.${encodeURIComponent(auth.userId)}&kind=eq.${encodeURIComponent(kind)}`, {
+
+    let path = `/rest/v1/ethone_user_data?id=eq.${encodeURIComponent(id)}&user_id=eq.${encodeURIComponent(auth.userId)}&kind=eq.${encodeURIComponent(kind)}`;
+    path = appendProfileFilter(path, active);
+    const update = await supabaseRequest(env, path, {
       method: "PATCH",
       body: JSON.stringify(updates)
     });
@@ -85,7 +125,11 @@ export async function userDataRoute({ request, env, auth, route }) {
     const body = await request.json().catch(() => ({}));
     const id = safeText(body.id, 64);
     if (!id) throw httpError("INVALID_PARAMETER", 400);
-    await supabaseRequest(env, `/rest/v1/ethone_user_data?id=eq.${encodeURIComponent(id)}&user_id=eq.${encodeURIComponent(auth.userId)}&kind=eq.${encodeURIComponent(kind)}`, { method: "DELETE", maxBytes: 2048 });
+
+    const active = await getActiveProfile(env, auth.userId);
+    let path = `/rest/v1/ethone_user_data?id=eq.${encodeURIComponent(id)}&user_id=eq.${encodeURIComponent(auth.userId)}&kind=eq.${encodeURIComponent(kind)}`;
+    path = appendProfileFilter(path, active);
+    await supabaseRequest(env, path, { method: "DELETE", maxBytes: 2048 });
     return { data: { deleted: true } };
   }
 

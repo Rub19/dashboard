@@ -65,6 +65,8 @@ export default function Dock() {
               <Link
                 href={item.href}
                 aria-label={item.label}
+                data-tooltip={item.label}
+                data-haptic
                 className={`flex h-11 w-11 items-center justify-center rounded-xl border border-transparent text-[var(--foreground)] transition-all hover:-translate-y-1 hover:border-[var(--accent)]/30 hover:bg-[var(--surface)] hover:shadow-lg ${
                   active ? "bg-[var(--accent)]/10 text-[var(--accent)]" : ""
                 }`}
@@ -84,6 +86,8 @@ export default function Dock() {
           type="button"
           onClick={() => setExpanded((v) => !v)}
           aria-label={i18n("expand")}
+          data-tooltip={i18n("expand")}
+          data-haptic
           className={`flex h-11 w-11 items-center justify-center rounded-xl text-[var(--muted)] transition-all hover:bg-[var(--surface)] ${
             expanded ? "rotate-180" : ""
           }`}

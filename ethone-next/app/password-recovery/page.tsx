@@ -17,7 +17,7 @@ export default function PasswordRecoveryPage() {
     e.preventDefault();
     if (!email) return;
     setLoading(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/profile/` });
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/reset-password/` });
     setLoading(false);
     if (error) {
       showError(error.message);

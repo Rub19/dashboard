@@ -6,18 +6,25 @@ import { useBrain } from "@/lib/hooks/useBrain";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
 import { useToast } from "@/components/ToastProvider";
+import BottomSheet from "@/components/BottomSheet";
+import { useItems } from "@/lib/hooks/useItems";
 import { BRAIN_MEMORY_CATEGORIES, BRAIN_PERSONAS, BRAIN_TONES, BRAIN_DETAIL, BRAIN_PROVIDERS, BRAIN_PERMISSION_CATEGORIES, type BrainMemoryCategory } from "@/lib/brain/preferences";
 import { AUTOMATION_ACTIONS } from "@/lib/brain/automation";
 
-type Tab = "chat" | "memory" | "actions" | "automations" | "providers" | "preferences";
+type Tab = "chat" | "context" | "memory" | "actions" | "automations" | "providers" | "preferences" | "privacy" | "history" | "diagnostics" | "wrapup";
 
 const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: "chat", label: "chat", icon: "message-circle" },
+  { id: "context", label: "brainContext", icon: "scan-search" },
   { id: "memory", label: "memory", icon: "database" },
   { id: "actions", label: "actions", icon: "zap" },
   { id: "automations", label: "automations", icon: "workflow" },
   { id: "providers", label: "providers", icon: "cpu" },
   { id: "preferences", label: "preferences", icon: "settings" },
+  { id: "privacy", label: "brainPrivacy", icon: "shield-check" },
+  { id: "history", label: "brainHistory", icon: "history" },
+  { id: "diagnostics", label: "brainDiagnostics", icon: "activity" },
+  { id: "wrapup", label: "brainWrapup", icon: "sunset" },
 ];
 
 export default function BrainPage() {
@@ -32,6 +39,9 @@ export default function BrainPage() {
   const [actionParams, setActionParams] = useState<Record<string, Record<string, unknown>>>({});
   const [autoTrigger, setAutoTrigger] = useState<{ type: string; value: string }>({ type: "route", value: "home" });
   const [autoAction, setAutoAction] = useState<string>(AUTOMATION_ACTIONS[0].id);
+  const [wrapupOpen, setWrapupOpen] = useState(false);
+  const tasks = useItems("tasks");
+  const events = useItems("events");
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -273,6 +283,198 @@ export default function BrainPage() {
     );
   }
 
+  function renderContext() {
+    return (
+      <div className="space-y-4">
+        <p className="text-sm text-[var(--muted)]">{i18n("brainContextTitle")}</p>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <Card3D><p className="text-sm text-[var(--muted)]">{i18n("persona")}</p><p className="font-medium">{brain.preferences.persona}</p></Card3D>
+          <Card3D><p className="text-sm text-[var(--muted)]">{i18n("tone")}</p><p className="font-medium">{brain.preferences.tone}</p></Card3D>
+          <Card3D><p className="text-sm text-[var(--muted)]">{i18n("detail")}</p><p className="font-medium">{brain.preferences.detail}</p></Card3D>
+          <Card3D><p className="text-sm text-[var(--muted)]">{i18n("language")}</p><p className="font-medium">{brain.preferences.language}</p></Card3D>
+          <Card3D><p className="text-sm text-[var(--muted)]">{i18n("activeProvider")}</p><p className="font-medium">{brain.preferences.provider.active}</p></Card3D>
+          <Card3D><p className="text-sm text-[var(--muted)]">{i18n("model")}</p><p className="font-medium">{brain.preferences.provider.model}</p></Card3D>
+        </div>
+      </div>
+    );
+  }
+
+  function renderPrivacy() {
+    return (
+      <div className="space-y-4">
+        <p className="text-sm text-[var(--muted)]">{i18n("brainPrivacyTitle")}</p>
+        <Card3D>
+          <div className="grid grid-cols-2 gap-2">
+            {BRAIN_PERMISSION_CATEGORIES.map((p) => (
+              <label key={p} className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={brain.preferences.permissions[p]}
+                  onChange={(e) => brain.patch(`permissions.${p}`, e.target.checked)}
+                />
+                {p}
+              </label>
+            ))}
+          </div>
+        </Card3D>
+      </div>
+    );
+  }
+
+  function renderHistory() {
+    if (brain.messages.length === 0) {
+      return <p className="text-sm text-[var(--muted)]">{i18n("brainNoHistory")}</p>;
+    }
+    return (
+      <div className="max-h-[60vh] space-y-3 overflow-y-auto pr-1">
+        {brain.messages.map((m, i) => (
+          <div key={i} className={`rounded-xl border border-[var(--border)] p-3 ${m.role === "user" ? "bg-[var(--surface)]" : "bg-[var(--surface-raised)]"}`}>
+            <p className="text-xs text-[var(--muted)]">{m.role === "user" ? i18n("you") : i18n("brainTitle")}</p>
+            <p className="text-sm">{m.content}</p>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  function renderDiagnostics() {
+    return (
+      <div className="space-y-4">
+        <p className="text-sm text-[var(--muted)]">{i18n("brainDiagnosticsTitle")}</p>
+        <div className="space-y-2">
+          {brain.providers.map((p) => (
+            <Card3D key={p.id}>
+              <div className="flex items-center justify-between">
+                <span className="font-medium">{p.label}</span>
+                <button
+                  type="button"
+                  onClick={() => brain.testProvider(p.id).then((res) => {
+                    if (res?.data?.latencyMs) success(`${p.label} — ${res.data.latencyMs}ms`);
+                    else showError(i18n("error"));
+                  })}
+                  disabled={p.status !== "backend-ready" && p.status !== "ready"}
+                  className="rounded-xl bg-[var(--accent)] px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
+                >
+                  {i18n("brainRunDiagnostics")}
+                </button>
+              </div>
+              {brain.providerStatus?.provider === p.id && (
+                <p className="text-xs text-[var(--muted)]">{i18n("brainLatency")}: {brain.providerStatus.latencyMs}ms</p>
+              )}
+              <p className="text-xs text-[var(--muted)]">{p.status} — {p.privacy}</p>
+            </Card3D>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  function renderWrapup() {
+    return (
+      <div className="space-y-4">
+        <p className="text-sm text-[var(--muted)]">{i18n("brainWrapupTitle")}</p>
+        {brain.messages.length === 0 ? (
+          <p className="text-sm text-[var(--muted)]">{i18n("brainNoWrapup")}</p>
+        ) : (
+          <Card3D>
+            <p className="text-sm">{brain.messages.length} messages</p>
+            <p className="text-xs text-[var(--muted)]">{i18n("brainNoWrapup")}</p>
+          </Card3D>
+        )}
+        <button
+          type="button"
+          onClick={() => brain.send(i18n("wrapupPrompt"))}
+          data-haptic
+          className="rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white"
+        >
+          {i18n("brainWrapup")}
+        </button>
+        <button
+          type="button"
+          onClick={() => setWrapupOpen(true)}
+          data-haptic
+          className="flex w-full items-center gap-2 rounded-xl border border-[var(--border)] px-4 py-2 text-sm hover:bg-[var(--surface-raised)]"
+        >
+          <Icon name="sunset" className="h-4 w-4" /> {i18n("prepareTomorrow")}
+        </button>
+      </div>
+    );
+  }
+
+  function renderWrapupSheet() {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+    const tomorrowEnd = new Date(tomorrow);
+    tomorrowEnd.setDate(tomorrowEnd.getDate() + 1);
+
+    function isTomorrow(iso?: string) {
+      if (!iso) return false;
+      const d = new Date(iso);
+      return d >= tomorrow && d < tomorrowEnd;
+    }
+
+    const pendingTasks = tasks.items.filter((t) => !t.done);
+    const tomorrowTasks = pendingTasks.filter((t) => isTomorrow(t.endAt));
+    const tomorrowEvents = events.items.filter((e) => isTomorrow(e.startAt));
+
+    return (
+      <BottomSheet open={wrapupOpen} onClose={() => setWrapupOpen(false)} title={i18n("prepareTomorrow")} position="bottom" draggable>
+        <div className="space-y-4">
+          <p className="text-sm text-[var(--muted)]">{i18n("brainWrapupTitle")}</p>
+
+          <div>
+            <h4 className="mb-2 flex items-center gap-2 text-sm font-medium">
+              <Icon name="tasks" className="h-4 w-4 text-[var(--accent)]" />
+              {i18n("tasks")} ({tomorrowTasks.length})
+            </h4>
+            {tomorrowTasks.length === 0 ? (
+              <p className="text-sm text-[var(--muted)]">{i18n("noTasks")}</p>
+            ) : (
+              <ul className="space-y-2">
+                {tomorrowTasks.map((t) => (
+                  <li key={t.id} className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] p-2 text-sm">
+                    <Icon name="circle" className="h-3 w-3 text-[var(--muted)]" />
+                    {t.title}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <div>
+            <h4 className="mb-2 flex items-center gap-2 text-sm font-medium">
+              <Icon name="calendar" className="h-4 w-4 text-[var(--accent)]" />
+              {i18n("events")} ({tomorrowEvents.length})
+            </h4>
+            {tomorrowEvents.length === 0 ? (
+              <p className="text-sm text-[var(--muted)]">{i18n("noEvents")}</p>
+            ) : (
+              <ul className="space-y-2">
+                {tomorrowEvents.map((e) => (
+                  <li key={e.id} className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] p-2 text-sm">
+                    <Icon name="clock-3" className="h-3 w-3 text-[var(--muted)]" />
+                    {e.title}
+                    {e.startAt && <span className="ml-auto text-xs text-[var(--muted)]">{new Date(e.startAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => { brain.send(i18n("wrapupPrompt")); setWrapupOpen(false); }}
+            data-haptic
+            className="w-full rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white"
+          >
+            {i18n("brainWrapup")}
+          </button>
+        </div>
+      </BottomSheet>
+    );
+  }
+
   function renderPreferences() {
     return (
       <div className="space-y-4">
@@ -365,12 +567,18 @@ export default function BrainPage() {
       </div>
       <Card3D>
         {activeTab === "chat" && renderChat()}
+        {activeTab === "context" && renderContext()}
         {activeTab === "memory" && renderMemory()}
         {activeTab === "actions" && renderActions()}
         {activeTab === "automations" && renderAutomations()}
         {activeTab === "providers" && renderProviders()}
         {activeTab === "preferences" && renderPreferences()}
+        {activeTab === "privacy" && renderPrivacy()}
+        {activeTab === "history" && renderHistory()}
+        {activeTab === "diagnostics" && renderDiagnostics()}
+        {activeTab === "wrapup" && renderWrapup()}
       </Card3D>
+      {renderWrapupSheet()}
     </div>
   );
 }

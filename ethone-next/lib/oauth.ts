@@ -2,7 +2,7 @@ import { fetchWorker } from "./api";
 
 export const REDIRECT_URI = typeof window !== "undefined" ? window.location.origin + "/" : "https://ethone.dev/";
 
-const PROVIDERS: Record<string, { authUrl: string; exchangePath: string; scopes: string }> = {
+export const PROVIDERS: Record<string, { authUrl: string; exchangePath: string; scopes: string }> = {
   github: {
     authUrl: "https://github.com/login/oauth/authorize",
     exchangePath: "/api/github/oauth/exchange",

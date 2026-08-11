@@ -1,3 +1,5 @@
+import { getUserState, setUserState } from "@/lib/user-state";
+
 export const BRAIN_MEMORY_CATEGORIES = [
   "interface",
   "habits",
@@ -112,6 +114,7 @@ export const DEFAULT_BRAIN_PREFERENCES: BrainPreferences = Object.freeze({
 });
 
 const KEY = "ethone-brain-preferences-v1";
+const STATE_KEY = "brainPreferences";
 
 function safeText(value: unknown, fallback = "", limit = 200): string {
   const clean = String(value ?? "")
@@ -213,4 +216,22 @@ export function loadBrainPreferences(): BrainPreferences {
 export function saveBrainPreferences(preferences: BrainPreferences) {
   if (typeof window === "undefined") return;
   localStorage.setItem(KEY, JSON.stringify(preferences));
+}
+
+export async function loadBrainPreferencesAsync(): Promise<BrainPreferences> {
+  try {
+    const remote = await getUserState<Partial<BrainPreferences>>(STATE_KEY, {});
+    return sanitizeBrainPreferences({ ...DEFAULT_BRAIN_PREFERENCES, ...remote });
+  } catch {
+    return loadBrainPreferences();
+  }
+}
+
+export async function saveBrainPreferencesAsync(preferences: BrainPreferences): Promise<void> {
+  saveBrainPreferences(preferences);
+  try {
+    await setUserState(STATE_KEY, preferences);
+  } catch {
+    // localStorage fallback
+  }
 }

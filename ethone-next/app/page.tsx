@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Card3D from "@/components/Card3D";
 import LiveWidgets from "@/components/LiveWidgets";
+import LiveStats from "@/components/LiveStats";
 import { useHomeData } from "@/lib/hooks/useDashboard";
 import { useMail } from "@/lib/hooks/useMail";
 import { useSettings } from "@/components/SettingsProvider";
@@ -21,9 +23,18 @@ export default function Home() {
   const { greeting, dashboard, nowPlaying, lanyard, valorant, lol, loading, error } =
     useHomeData();
   const { unread: unreadMail, loading: mailLoading } = useMail();
-  const { settings } = useSettings();
+  const { settings, update: updateSettings } = useSettings();
+  const [customizing, setCustomizing] = useState(false);
 
   const matches = [...(valorant || []), ...(lol || [])].slice(0, 6);
+
+  const STATUSES = [
+    { id: "online", label: i18n("statusOnline"), icon: "circle" },
+    { id: "busy", label: i18n("statusBusy"), icon: "minus-circle" },
+    { id: "focus", label: i18n("statusFocus"), icon: "target" },
+    { id: "away", label: i18n("statusAway"), icon: "moon" },
+    { id: "invisible", label: i18n("statusInvisible"), icon: "eye-off" },
+  ] as const;
 
   return (
     <div className="space-y-6">
@@ -31,6 +42,27 @@ export default function Home() {
         <h1 className="text-3xl font-bold">{greeting.label}</h1>
         <p className="text-[var(--muted)]">{greeting.tone}</p>
       </div>
+
+      <Card3D>
+        <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">{i18n("sessionMode")}</h2>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+          {STATUSES.map((s) => (
+            <button
+              key={s.id}
+              type="button"
+              onClick={() => updateSettings({ status: s.id })}
+              className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition-colors ${
+                settings.status === s.id
+                  ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
+                  : "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--foreground)]"
+              }`}
+            >
+              <Icon name={s.icon} className="h-3.5 w-3.5" />
+              {s.label}
+            </button>
+          ))}
+        </div>
+      </Card3D>
 
       {error && (
         <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
@@ -197,7 +229,22 @@ export default function Home() {
         </Card3D>
       )}
 
-      <LiveWidgets />
+      <LiveStats />
+
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-[var(--foreground)]">{i18n("live")}</h2>
+          <button
+            type="button"
+            onClick={() => setCustomizing((v) => !v)}
+            className="flex items-center gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+          >
+            <Icon name={customizing ? "x" : "settings"} className="h-3.5 w-3.5" />
+            {customizing ? i18n("done") : i18n("customize")}
+          </button>
+        </div>
+        <LiveWidgets showHeader={false} customizing={customizing} />
+      </section>
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import { useCloudFiles, type CloudFile } from "@/lib/hooks/useCloudFiles";
-import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { useUserState } from "@/lib/hooks/useUserState";
 import { useShares } from "@/lib/hooks/useShares";
 import { useDrops } from "@/lib/hooks/useDrops";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -10,6 +10,7 @@ import { useToast } from "@/components/ToastProvider";
 import { fetchWorker } from "@/lib/api";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
+import ContextMenu from "@/components/ContextMenu";
 
 function formatBytes(bytes = 0) {
   if (bytes === 0) return "0 B";
@@ -70,7 +71,7 @@ type Modal =
 export default function FilesPage() {
   const i18n = useI18n();
   const { success, error: toastError } = useToast();
-  const [clientId, setClientId] = useLocalStorage<string>("ethone:clientId:google-drive", "");
+  const [clientId, setClientId] = useUserState<string>("clientId:google-drive", "");
   const {
     files,
     loading,
@@ -276,6 +277,34 @@ export default function FilesPage() {
     setModal({ type: "share", file });
   }
 
+  function openFile(file: CloudFile) {
+    if (file.isFolder) {
+      setParentId(file.driveFileId);
+    } else if (clientId) {
+      downloadDriveFile(file);
+    }
+  }
+
+  function fileContextItems(file: CloudFile) {
+    return [
+      { id: "open", label: file.isFolder ? i18n("open") : i18n("download"), icon: file.isFolder ? "folder-open" : "download", onClick: () => openFile(file) },
+      { id: "share", label: i18n("share"), icon: "share-2", onClick: () => openShare(file) },
+      { id: "rename", label: i18n("rename"), icon: "pencil", onClick: () => { setForm({ name: file.name }); setModal({ type: "rename", file }); } },
+      { id: "move", label: i18n("move"), icon: "folder-input", onClick: () => setModal({ type: "move", file }) },
+      { id: "favorite", label: file.isFavorite ? i18n("removeFromFavorites") : i18n("addToFavorites"), icon: file.isFavorite ? "heart-off" : "heart", onClick: () => favoriteFile(file.driveFileId, !file.isFavorite) },
+      { id: "copy-name", label: i18n("copyName"), icon: "copy", onClick: () => navigator.clipboard.writeText(file.name).then(() => success(i18n("copied"))).catch(() => {}) },
+      { id: "sep", label: "", separator: true },
+      ...(trashed
+        ? [
+            { id: "restore", label: i18n("restore"), icon: "rotate-ccw", onClick: () => restoreFile(file.driveFileId) },
+            { id: "delete", label: i18n("delete"), icon: "trash", danger: true, onClick: () => deleteFile(file.driveFileId) },
+          ]
+        : [
+            { id: "trash", label: i18n("trash"), icon: "trash-2", danger: true, onClick: () => trashFile(file.driveFileId) },
+          ]),
+    ];
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -418,13 +447,15 @@ export default function FilesPage() {
           </Card3D>
         ) : (
           filteredFiles.map((file) => (
-            <Card3D key={file.id}>
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => file.isFolder ? setParentId(file.driveFileId) : null}
-                  className="flex min-w-0 flex-1 items-center gap-3 text-left"
-                >
+            <ContextMenu key={file.id} items={fileContextItems(file)}>
+              <Card3D>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => openFile(file)}
+                    data-haptic
+                    className="flex min-w-0 flex-1 items-center gap-3 text-left"
+                  >
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-raised)] text-[var(--muted)]">
                     <Icon name={mimeIcon(file.mimeType, file.isFolder)} className="h-5 w-5" />
                   </span>
@@ -440,6 +471,8 @@ export default function FilesPage() {
                   <button
                     type="button"
                     aria-label={file.isFavorite ? i18n("removeFromFavorites") : i18n("addToFavorites")}
+                    data-tooltip={file.isFavorite ? i18n("removeFromFavorites") : i18n("addToFavorites")}
+                    data-haptic
                     onClick={() => favoriteFile(file.driveFileId, !file.isFavorite)}
                     className={`rounded p-1.5 ${file.isFavorite ? "text-red-400" : "text-[var(--muted)]"} hover:bg-[var(--surface-raised)]`}
                   >
@@ -450,6 +483,8 @@ export default function FilesPage() {
                     <button
                       type="button"
                       aria-label={i18n("download")}
+                      data-tooltip={i18n("download")}
+                      data-haptic
                       onClick={() => downloadDriveFile(file)}
                       className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
                     >
@@ -460,6 +495,8 @@ export default function FilesPage() {
                   <button
                     type="button"
                     aria-label={i18n("share")}
+                    data-tooltip={i18n("share")}
+                    data-haptic
                     onClick={() => openShare(file)}
                     className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
                   >
@@ -469,6 +506,8 @@ export default function FilesPage() {
                   <button
                     type="button"
                     aria-label={i18n("rename")}
+                    data-tooltip={i18n("rename")}
+                    data-haptic
                     onClick={() => { setForm({ name: file.name }); setModal({ type: "rename", file }); }}
                     className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
                   >
@@ -478,6 +517,8 @@ export default function FilesPage() {
                   <button
                     type="button"
                     aria-label={i18n("move")}
+                    data-tooltip={i18n("move")}
+                    data-haptic
                     onClick={() => { setModal({ type: "move", file }); }}
                     className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
                   >
@@ -488,6 +529,8 @@ export default function FilesPage() {
                     <button
                       type="button"
                       aria-label={i18n("restore")}
+                      data-tooltip={i18n("restore")}
+                      data-haptic
                       onClick={() => restoreFile(file.driveFileId)}
                       className="rounded p-1.5 text-emerald-400 hover:bg-emerald-500/10"
                     >
@@ -497,6 +540,8 @@ export default function FilesPage() {
                     <button
                       type="button"
                       aria-label={i18n("trash")}
+                      data-tooltip={i18n("trash")}
+                      data-haptic
                       onClick={() => trashFile(file.driveFileId)}
                       className="rounded p-1.5 text-[var(--muted)] hover:text-red-400"
                     >
@@ -508,6 +553,8 @@ export default function FilesPage() {
                     <button
                       type="button"
                       aria-label={i18n("delete")}
+                      data-tooltip={i18n("delete")}
+                      data-haptic
                       onClick={() => deleteFile(file.driveFileId)}
                       className="rounded p-1.5 text-red-400 hover:bg-red-500/10"
                     >
@@ -517,6 +564,7 @@ export default function FilesPage() {
                 </div>
               </div>
             </Card3D>
+          </ContextMenu>
           ))
         )}
       </div>

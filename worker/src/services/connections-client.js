@@ -37,21 +37,38 @@ async function supabaseRequest(env, path, options = {}) {
 
 const PROVIDERS = [
   "spotify",
-  "github",
+  "youtube",
+  "twitch",
+  "discord",
+  "reddit",
+  "minecraft",
   "google-calendar",
+  "google-drive",
   "notion",
   "todoist",
-  "google-drive",
-  "youtube",
-  "reddit",
+  "linear",
+  "clickup",
+  "jira",
+  "email",
+  "github",
+  "gitlab",
+  "fitbit",
 ];
 
 export async function listConnections(env, userId) {
   if (!userId) return [];
-  const path = `/rest/v1/user_oauth_tokens?owner_id=eq.${encodeURIComponent(userId)}&select=provider`;
-  const data = await supabaseRequest(env, path);
-  const connected = new Set(Array.isArray(data) ? data.map((row) => row.provider) : []);
-  return PROVIDERS.map((provider) => ({
+
+  const [oauthRows, credentialRows] = await Promise.all([
+    supabaseRequest(env, `/rest/v1/user_oauth_tokens?owner_id=eq.${encodeURIComponent(userId)}&select=provider`),
+    supabaseRequest(env, `/rest/v1/user_provider_credentials?owner_id=eq.${encodeURIComponent(userId)}&select=provider`),
+  ]);
+
+  const connected = new Set();
+  if (Array.isArray(oauthRows)) oauthRows.forEach((row) => connected.add(row.provider));
+  if (Array.isArray(credentialRows)) credentialRows.forEach((row) => connected.add(row.provider));
+
+  const providers = [...new Set([...PROVIDERS, ...connected])];
+  return providers.map((provider) => ({
     provider,
     connected: connected.has(provider),
   }));

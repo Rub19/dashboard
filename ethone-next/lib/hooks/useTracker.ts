@@ -47,6 +47,13 @@ export function useTracker<T extends TrackerGame>(
         return;
       }
 
+      if (!path) {
+        setItems([]);
+        setLoading(false);
+        setSyncing(false);
+        return;
+      }
+
       if (force) setSyncing(true);
       else setLoading(true);
       setError(null);

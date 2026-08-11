@@ -9,6 +9,7 @@ import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
+import { getUserState, setUserState } from "@/lib/user-state";
 
 const DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
@@ -25,7 +26,14 @@ export default function CalendarPage() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    setClientId(localStorage.getItem("ethone:clientId:google-calendar") || "");
+    const saved = localStorage.getItem("ethone:clientId:google-calendar") || "";
+    setClientId(saved);
+    getUserState<string>("clientId:google-calendar", "").then((remote) => {
+      if (remote) {
+        setClientId(remote);
+        localStorage.setItem("ethone:clientId:google-calendar", remote);
+      }
+    });
   }, []);
 
   const { events: googleEvents, loading: googleLoading, error: googleError } = useCalendarEvents(clientId);
@@ -97,6 +105,7 @@ export default function CalendarPage() {
     const id = prompt(i18n("clientId"));
     if (!id) return;
     localStorage.setItem("ethone:clientId:google-calendar", id);
+    setUserState("clientId:google-calendar", id).catch(() => {});
     setClientId(id);
     success(i18n("connectSuccess"));
     window.location.href = buildAuthUrl("google-calendar", id, { provider: "google-calendar", clientId: id });

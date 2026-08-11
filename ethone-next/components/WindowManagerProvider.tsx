@@ -11,6 +11,8 @@ export type WindowState = {
   width: number;
   height: number;
   z: number;
+  maximized?: boolean;
+  prev?: { x: number; y: number; width: number; height: number };
 };
 
 type WindowManagerContext = {

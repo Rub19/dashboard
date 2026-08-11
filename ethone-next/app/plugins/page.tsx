@@ -7,16 +7,7 @@ import { useWindowManager } from "@/components/WindowManagerProvider";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
-
-const PLUGINS = [
-  { id: "spotify", label: "Spotify", icon: "music", route: "/notes/" },
-  { id: "discord", label: "Discord", icon: "message-square", route: "/notes/" },
-  { id: "github", label: "GitHub", icon: "code", route: "/notes/" },
-  { id: "todoist", label: "Todoist", icon: "circle-check", route: "/notes/" },
-  { id: "youtube", label: "YouTube", icon: "play", route: "/notes/" },
-  { id: "reddit", label: "Reddit", icon: "message-circle", route: "/notes/" },
-  { id: "weather", label: "Weather", icon: "cloud-sun", route: "/notes/" },
-];
+import { PLUGINS, getPluginRecord } from "@/lib/plugins";
 
 export default function PluginsPage() {
   const i18n = useI18n();
@@ -32,7 +23,7 @@ export default function PluginsPage() {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {PLUGINS.map((p) => {
-          const live = records.find((r) => r.source === p.id);
+          const live = getPluginRecord(records, p);
           const connected = live?.status === "connected";
 
           return (

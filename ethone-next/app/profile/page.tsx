@@ -77,6 +77,29 @@ export default function ProfilePage() {
         </div>
       </Card3D>
 
+      {profile?.public_id && (
+        <Card3D>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">{i18n("publicId")}</label>
+            <div className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm">
+              <code className="text-xs text-[var(--muted)]">{profile.public_id}</code>
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(profile.public_id || "");
+                  success(i18n("copied"));
+                }}
+                className="ml-auto rounded p-1 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+                aria-label={i18n("copy")}
+              >
+                <Icon name="copy" className="h-4 w-4" />
+              </button>
+            </div>
+            <p className="text-xs text-[var(--muted)]">{i18n("publicIdHint")}</p>
+          </div>
+        </Card3D>
+      )}
+
       <Card3D>
         <div className="space-y-4">
           <div className="space-y-1">
@@ -113,7 +136,7 @@ export default function ProfilePage() {
             />
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <button
               type="button"
               onClick={submit}
@@ -130,6 +153,15 @@ export default function ProfilePage() {
               className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm font-medium transition-colors hover:border-[var(--accent)]"
             >
               {i18n("cancel")}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => router.push("/profile-selection")}
+              className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm font-medium transition-colors hover:border-[var(--accent)]"
+            >
+              <Icon name="users" className="h-4 w-4" />
+              {i18n("manageProfiles")}
             </button>
 
             {saved && (

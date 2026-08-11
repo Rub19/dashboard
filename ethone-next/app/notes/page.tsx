@@ -6,6 +6,7 @@ import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
+import ContextMenu from "@/components/ContextMenu";
 
 export default function NotesPage() {
   const i18n = useI18n();
@@ -33,6 +34,46 @@ export default function NotesPage() {
     } catch {
       showError(i18n("error"));
     }
+  }
+
+  async function duplicateNote(note: { id: string; title: string; body: string }) {
+    try {
+      await create({ title: `${note.title} (${i18n("copy")})`, body: note.body });
+      success(i18n("created"));
+    } catch {
+      showError(i18n("error"));
+    }
+  }
+
+  function noteContextItems(note: { id: string; title: string; body: string }) {
+    return [
+      {
+        id: "copy-title",
+        label: i18n("copyTitle"),
+        icon: "copy",
+        onClick: () => navigator.clipboard.writeText(note.title).then(() => success(i18n("copied"))).catch(() => showError(i18n("error"))),
+      },
+      {
+        id: "copy-body",
+        label: i18n("copyBody"),
+        icon: "copy",
+        onClick: () => navigator.clipboard.writeText(note.body).then(() => success(i18n("copied"))).catch(() => showError(i18n("error"))),
+      },
+      {
+        id: "duplicate",
+        label: i18n("duplicate"),
+        icon: "copy-plus",
+        onClick: () => duplicateNote(note),
+      },
+      { id: "sep", label: "", separator: true },
+      {
+        id: "delete",
+        label: i18n("delete"),
+        icon: "trash-2",
+        danger: true,
+        onClick: () => deleteNote(note.id),
+      },
+    ];
   }
 
   return (
@@ -80,25 +121,29 @@ export default function NotesPage() {
           </Card3D>
         )}
         {items.map((note) => (
-          <Card3D key={note.id}>
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="mb-1 flex items-center gap-2">
-                  <Icon name="notebook-pen" className="h-4 w-4 text-[var(--accent)]" />
-                  <p className="font-medium">{note.title}</p>
+          <ContextMenu key={note.id} items={noteContextItems(note)}>
+            <Card3D>
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="mb-1 flex items-center gap-2">
+                    <Icon name="notebook-pen" className="h-4 w-4 text-[var(--accent)]" />
+                    <p className="font-medium">{note.title}</p>
+                  </div>
+                  <p className="whitespace-pre-wrap text-sm text-[var(--muted)]">{note.body}</p>
                 </div>
-                <p className="whitespace-pre-wrap text-sm text-[var(--muted)]">{note.body}</p>
+                <button
+                  type="button"
+                  onClick={() => deleteNote(note.id)}
+                  disabled={loading}
+                  data-tooltip={i18n("delete")}
+                  data-haptic
+                  className="shrink-0 text-[var(--muted)] hover:text-red-400 disabled:opacity-50"
+                >
+                  <Icon name="trash-2" className="h-4 w-4" />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => deleteNote(note.id)}
-                disabled={loading}
-                className="shrink-0 text-[var(--muted)] hover:text-red-400 disabled:opacity-50"
-              >
-                <Icon name="trash-2" className="h-4 w-4" />
-              </button>
-            </div>
-          </Card3D>
+            </Card3D>
+          </ContextMenu>
         ))}
       </div>
     </div>

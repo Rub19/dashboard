@@ -3,14 +3,16 @@
 import { useEffect, useState } from "react";
 import { fetchWorker } from "@/lib/api";
 
+type GoogleTime = { dateTime?: string; date?: string };
+
 type GoogleEvent = {
   id?: string;
   title?: string;
   summary?: string;
   startAt?: string;
-  start?: string;
+  start?: string | GoogleTime;
   endAt?: string;
-  end?: string;
+  end?: string | GoogleTime;
 };
 
 export type CalendarEvent = {
@@ -20,6 +22,12 @@ export type CalendarEvent = {
   endAt?: string;
   source: "google" | "local";
 };
+
+function toIso(value: string | GoogleTime | undefined): string | undefined {
+  if (!value) return undefined;
+  if (typeof value === "string") return value || undefined;
+  return value.dateTime || value.date || undefined;
+}
 
 export function useCalendarEvents(clientId?: string) {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -42,8 +50,8 @@ export function useCalendarEvents(clientId?: string) {
           data.map((e) => ({
             id: e.id || `${Date.now()}-${Math.random()}`,
             title: e.title || e.summary || "Événement",
-            startAt: e.startAt || e.start,
-            endAt: e.endAt || e.end,
+            startAt: e.startAt || toIso(e.start),
+            endAt: e.endAt || toIso(e.end),
             source: "google" as const,
           }))
         );

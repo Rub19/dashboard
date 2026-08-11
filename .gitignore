@@ -15,6 +15,7 @@ secrets/
 development-only/
 credentials/
 .agents/
+.worktree/
 
 # Provider and platform state
 .wrangler/

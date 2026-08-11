@@ -19,6 +19,7 @@ import CommandPaletteProvider from "@/components/CommandPaletteProvider";
 import OAuthHandler from "@/components/OAuthHandler";
 import LiveOverlay from "@/components/LiveOverlay";
 import Dock from "@/components/Dock";
+import UIProvider from "@/components/UIProvider";
 import PageTransition from "@/components/PageTransition";
 import { WindowManagerProvider } from "@/components/WindowManagerProvider";
 import { WindowRenderer } from "@/components/WindowRenderer";
@@ -55,34 +56,36 @@ export default function RootLayout({
           <WindowManagerProvider>
           <OfflineIndicator />
           <SettingsProvider>
-            <HtmlLang />
-            <ProfileSync />
-            <SoundProvider>
-              <ToastProvider>
-                <SkipLink />
-              <Sidebar />
-              <div className="min-h-screen transition-all duration-300 md:ml-[72px]">
-                <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[var(--border)] bg-[var(--background)]/80 px-6 backdrop-blur-md">
-                  <CommandPaletteProvider>
-                    <SearchBar />
-                    <div className="flex items-center gap-3">
-                      <NotificationCenter />
-                      <CommandPalette />
-                      <ProfileDropdown />
-                    </div>
-                  </CommandPaletteProvider>
-                </header>
-                <ServiceWorker />
-                <OAuthHandler />
-                <LiveOverlay />
-                <main id="main-content" className="p-6 pb-24 md:pb-6" tabIndex={-1}>
-                  <PageTransition>{children}</PageTransition>
-                </main>
-              </div>
-              <MobileNav />
-              <Dock />
-              </ToastProvider>
-            </SoundProvider>
+            <UIProvider>
+              <HtmlLang />
+              <ProfileSync />
+              <SoundProvider>
+                <ToastProvider>
+                  <SkipLink />
+                <Sidebar />
+                <div className="min-h-screen transition-all duration-300 md:ml-[72px]">
+                  <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[var(--border)] bg-[var(--background)]/80 px-6 backdrop-blur-md">
+                    <CommandPaletteProvider>
+                      <SearchBar />
+                      <div className="flex items-center gap-3">
+                        <NotificationCenter />
+                        <CommandPalette />
+                        <ProfileDropdown />
+                      </div>
+                    </CommandPaletteProvider>
+                  </header>
+                  <ServiceWorker />
+                  <OAuthHandler />
+                  <LiveOverlay />
+                  <main id="main-content" className="p-6 pb-24 md:pb-6" tabIndex={-1}>
+                    <PageTransition>{children}</PageTransition>
+                  </main>
+                </div>
+                <MobileNav />
+                <Dock />
+                </ToastProvider>
+              </SoundProvider>
+            </UIProvider>
           </SettingsProvider>
           <WindowRenderer />
         </WindowManagerProvider>

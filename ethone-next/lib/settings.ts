@@ -63,6 +63,32 @@ export type Settings = {
   lowData: boolean;
   performanceMode: "normal" | "low";
   status: "online" | "busy" | "focus" | "away" | "invisible";
+  liveNowPlayingSource: "lanyard" | "lastfm";
+  liveNowPlayingIdentity: string;
+  liveLanyardUserId: string;
+  liveSpotifyClientId: string;
+  liveYoutubeClientId: string;
+  liveRedditClientId: string;
+  liveTrackerRiotName: string;
+  liveTrackerRiotTag: string;
+  liveTrackerApexPlatform: "origin" | "xbl" | "psn";
+  liveTrackerApexIdentifier: string;
+  calendarClientId: string;
+  driveClientId: string;
+  liveWeatherCity: string;
+  homeHiddenLiveCards: string[];
+  liveSteamId: string;
+  liveRssUrl: string;
+  liveBlueskyHandle: string;
+  liveJellyfinUrl: string;
+  liveEmbyUrl: string;
+  liveLmStudioUrl: string;
+  liveOllamaUrl: string;
+  liveObsidianUrl: string;
+  liveVscodeUrl: string;
+  liveLastfmUsername: string;
+  liveTwitchLogin: string;
+  liveMinecraftUsername: string;
 };
 
 export const DEFAULTS: Settings = {
@@ -126,14 +152,51 @@ export const DEFAULTS: Settings = {
   lowData: false,
   performanceMode: "normal",
   status: "online",
+  liveNowPlayingSource: "lanyard",
+  liveNowPlayingIdentity: "",
+  liveLanyardUserId: "",
+  liveSpotifyClientId: "",
+  liveYoutubeClientId: "",
+  liveRedditClientId: "",
+  liveTrackerRiotName: "",
+  liveTrackerRiotTag: "",
+  liveTrackerApexPlatform: "origin",
+  liveTrackerApexIdentifier: "",
+  calendarClientId: "",
+  driveClientId: "",
+  liveWeatherCity: "Paris",
+  homeHiddenLiveCards: [],
+  liveSteamId: "",
+  liveRssUrl: "",
+  liveLastfmUsername: "",
+  liveTwitchLogin: "",
+  liveMinecraftUsername: "",
+  liveBlueskyHandle: "",
+  liveJellyfinUrl: "",
+  liveEmbyUrl: "",
+  liveLmStudioUrl: "",
+  liveOllamaUrl: "",
+  liveObsidianUrl: "",
+  liveVscodeUrl: "",
 };
 
-const KEY = "ethone-settings-v1";
+import { getUserState, setUserState } from "@/lib/user-state";
 
-export function loadSettings(): Settings {
+const KEY = "ethone-settings-v1";
+const STATE_KEY = "settings";
+
+function localSettingsKey(profileId?: string): string {
+  return profileId ? `${KEY}:${profileId}` : KEY;
+}
+
+function remoteSettingsKey(profileId?: string): string {
+  return profileId ? `${STATE_KEY}:${profileId}` : STATE_KEY;
+}
+
+export function loadSettings(profileId?: string): Settings {
   if (typeof window === "undefined") return DEFAULTS;
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(localSettingsKey(profileId));
     if (!raw) return DEFAULTS;
     const parsed = JSON.parse(raw);
     return { ...DEFAULTS, ...parsed };
@@ -142,7 +205,29 @@ export function loadSettings(): Settings {
   }
 }
 
-export function saveSettings(settings: Settings) {
+export function saveSettings(settings: Settings, profileId?: string) {
   if (typeof window === "undefined") return;
-  localStorage.setItem(KEY, JSON.stringify(settings));
+  localStorage.setItem(localSettingsKey(profileId), JSON.stringify(settings));
+}
+
+export async function loadSettingsAsync(profileId?: string): Promise<Settings> {
+  try {
+    const scopedKey = remoteSettingsKey(profileId);
+    let remote = await getUserState<Partial<Settings> | null>(scopedKey, null);
+    if (profileId && !remote) {
+      remote = await getUserState<Partial<Settings> | null>(STATE_KEY, null);
+    }
+    return { ...DEFAULTS, ...(remote || {}) };
+  } catch {
+    return loadSettings(profileId);
+  }
+}
+
+export async function saveSettingsAsync(settings: Settings, profileId?: string): Promise<void> {
+  saveSettings(settings, profileId);
+  try {
+    await setUserState(remoteSettingsKey(profileId), settings);
+  } catch {
+    // localStorage already holds the fallback
+  }
 }

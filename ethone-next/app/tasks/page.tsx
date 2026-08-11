@@ -6,6 +6,7 @@ import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
+import ContextMenu from "@/components/ContextMenu";
 
 export default function TasksPage() {
   const i18n = useI18n();
@@ -40,6 +41,46 @@ export default function TasksPage() {
     } catch {
       showError(i18n("error"));
     }
+  }
+
+  async function duplicateTask(task: { id: string; title: string }) {
+    try {
+      await create({ title: `${task.title} (${i18n("copy")})`, body: "", done: false });
+      success(i18n("created"));
+    } catch {
+      showError(i18n("error"));
+    }
+  }
+
+  function taskContextItems(task: { id: string; title: string; done?: boolean }) {
+    return [
+      {
+        id: "copy-title",
+        label: i18n("copyTitle"),
+        icon: "copy",
+        onClick: () => navigator.clipboard.writeText(task.title).then(() => success(i18n("copied"))).catch(() => showError(i18n("error"))),
+      },
+      {
+        id: "toggle",
+        label: task.done ? i18n("markUndone") : i18n("markDone"),
+        icon: task.done ? "circle" : "circle-check",
+        onClick: () => toggleTask(task.id, !!task.done),
+      },
+      {
+        id: "duplicate",
+        label: i18n("duplicate"),
+        icon: "copy-plus",
+        onClick: () => duplicateTask(task),
+      },
+      { id: "sep", label: "", separator: true },
+      {
+        id: "delete",
+        label: i18n("delete"),
+        icon: "trash-2",
+        danger: true,
+        onClick: () => deleteTask(task.id),
+      },
+    ];
   }
 
   const open = items.filter((t) => !t.done).length;
@@ -88,39 +129,44 @@ export default function TasksPage() {
           </Card3D>
         )}
         {items.map((task) => (
-          <Card3D key={task.id}>
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                aria-label={task.done ? i18n("markUndone") : i18n("markDone")}
-                onClick={() => toggleTask(task.id, !!task.done)}
-                disabled={loading}
-                className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
-                  task.done
-                    ? "border-[var(--accent)] bg-[var(--accent)] text-white"
-                    : "border-[var(--border)]"
-                }`}
-              >
-                {task.done && <Icon name="circle-check" className="h-4 w-4" />}
-              </button>
-              <span
-                className={`min-w-0 flex-1 truncate ${
-                  task.done ? "text-[var(--muted)] line-through" : ""
-                }`}
-              >
-                {task.title}
-              </span>
-              <button
-                type="button"
-                aria-label={i18n("delete")}
-                onClick={() => deleteTask(task.id)}
-                disabled={loading}
-                className="text-[var(--muted)] hover:text-red-400 disabled:opacity-50"
-              >
-                <Icon name="trash-2" className="h-4 w-4" />
-              </button>
-            </div>
-          </Card3D>
+          <ContextMenu key={task.id} items={taskContextItems(task)}>
+            <Card3D>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  aria-label={task.done ? i18n("markUndone") : i18n("markDone")}
+                  onClick={() => toggleTask(task.id, !!task.done)}
+                  disabled={loading}
+                  data-haptic
+                  className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
+                    task.done
+                      ? "border-[var(--accent)] bg-[var(--accent)] text-white"
+                      : "border-[var(--border)]"
+                  }`}
+                >
+                  {task.done && <Icon name="circle-check" className="h-4 w-4" />}
+                </button>
+                <span
+                  className={`min-w-0 flex-1 truncate ${
+                    task.done ? "text-[var(--muted)] line-through" : ""
+                  }`}
+                >
+                  {task.title}
+                </span>
+                <button
+                  type="button"
+                  aria-label={i18n("delete")}
+                  onClick={() => deleteTask(task.id)}
+                  disabled={loading}
+                  data-tooltip={i18n("delete")}
+                  data-haptic
+                  className="text-[var(--muted)] hover:text-red-400 disabled:opacity-50"
+                >
+                  <Icon name="trash-2" className="h-4 w-4" />
+                </button>
+              </div>
+            </Card3D>
+          </ContextMenu>
         ))}
       </div>
     </div>

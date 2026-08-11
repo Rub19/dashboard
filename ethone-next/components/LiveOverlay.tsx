@@ -6,6 +6,7 @@ import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useSettings } from "@/components/SettingsProvider";
+import { useToast } from "@/components/ToastProvider";
 import { fetchWorker } from "@/lib/api";
 import LiveWidgets from "./LiveWidgets";
 
@@ -13,6 +14,7 @@ export default function LiveOverlay() {
   const i18n = useI18n();
   const { nowPlaying, lanyard, loading } = useLiveData();
   const { settings, update } = useSettings();
+  const { error: showError } = useToast();
   const [minimized, setMinimized] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const enabled = settings.liveOverlay !== false;
@@ -22,10 +24,14 @@ export default function LiveOverlay() {
   const activity = lanyard?.activities?.[0];
 
   async function controlSpotify(action: "play" | "pause" | "next" | "previous") {
+    if (!settings.liveSpotifyClientId) {
+      showError(i18n("configureToEnable"));
+      return;
+    }
     try {
       await fetchWorker("/api/spotify/control", {
         method: "POST",
-        body: JSON.stringify({ action }),
+        body: JSON.stringify({ action, clientId: settings.liveSpotifyClientId }),
       });
     } catch {
       // ignore

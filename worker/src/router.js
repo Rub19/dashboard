@@ -62,6 +62,7 @@ import { profileRoute } from "./routes/profile.js";
 import { profilesRoute } from "./routes/profiles.js";
 import itemsRoute from "./routes/items.js";
 import { connectionsListRoute } from "./routes/connections.js";
+import { providerCredentialsRoute } from "./routes/provider-credentials.js";
 import {
   mailAliasRoute, mailBulkActionRoute, mailContactsRoute, mailDraftsRoute, mailInboxRoute,
   mailLabelsRoute, mailMoveRoute, mailReadRoute, mailScheduleRoute, mailSearchRoute,
@@ -135,6 +136,7 @@ export const ROUTES = Object.freeze([
   route("now-playing", "/api/now-playing", nowPlayingRoute, { service: "nowplaying" }),
   route("supabase.public-profile", "/api/supabase/public-profile", supabaseRoute, { service: "supabase", rateLimit: "strict" }),
   route("weather.forecast", "/api/weather", weatherRoute, { service: "weather" }),
+  route("rss", "/api/rss", rssRoute, { service: "rss" }),
   route("minecraft.profile", "/api/minecraft/profile", minecraftRoute, { service: "minecraft" }),
   route("spotify.oauth.exchange", "/api/spotify/oauth/exchange", spotifyOAuthExchangeRoute, { method: "POST", service: "spotify", rateLimit: "strict" }),
   route("spotify.now-playing", "/api/spotify/now-playing", spotifyNowPlayingRoute, { service: "spotify" }),
@@ -219,6 +221,7 @@ export const ROUTES = Object.freeze([
   // Team
   route("team.members.get", "/api/team/members", teamMembersRoute, { service: "team" }),
   route("team.members.post", "/api/team/members", teamMembersRoute, { method: "POST", service: "team", rateLimit: "strict" }),
+  route("team.members.patch", "/api/team/members", teamMembersRoute, { method: "PATCH", service: "team", rateLimit: "strict" }),
   route("team.members.delete", "/api/team/members", teamMembersRoute, { method: "DELETE", service: "team", rateLimit: "strict" }),
 
   // User data (spaces, flows, interactions)
@@ -234,6 +237,20 @@ export const ROUTES = Object.freeze([
   route("user-data.interactions.post", "/api/user-data/interactions", userDataRoute, { method: "POST", service: "user-data", action: "interaction", rateLimit: "strict" }),
   route("user-data.interactions.patch", "/api/user-data/interactions", userDataRoute, { method: "PATCH", service: "user-data", action: "interaction", rateLimit: "strict" }),
   route("user-data.interactions.delete", "/api/user-data/interactions", userDataRoute, { method: "DELETE", service: "user-data", action: "interaction", rateLimit: "strict" }),
+
+  // User data (macros, personas, bills)
+  route("user-data.macros", "/api/user-data/macros", userDataRoute, { service: "user-data", action: "macro" }),
+  route("user-data.macros.post", "/api/user-data/macros", userDataRoute, { method: "POST", service: "user-data", action: "macro", rateLimit: "strict" }),
+  route("user-data.macros.patch", "/api/user-data/macros", userDataRoute, { method: "PATCH", service: "user-data", action: "macro", rateLimit: "strict" }),
+  route("user-data.macros.delete", "/api/user-data/macros", userDataRoute, { method: "DELETE", service: "user-data", action: "macro", rateLimit: "strict" }),
+  route("user-data.personas", "/api/user-data/personas", userDataRoute, { service: "user-data", action: "persona" }),
+  route("user-data.personas.post", "/api/user-data/personas", userDataRoute, { method: "POST", service: "user-data", action: "persona", rateLimit: "strict" }),
+  route("user-data.personas.patch", "/api/user-data/personas", userDataRoute, { method: "PATCH", service: "user-data", action: "persona", rateLimit: "strict" }),
+  route("user-data.personas.delete", "/api/user-data/personas", userDataRoute, { method: "DELETE", service: "user-data", action: "persona", rateLimit: "strict" }),
+  route("user-data.bills", "/api/user-data/bills", userDataRoute, { service: "user-data", action: "bill" }),
+  route("user-data.bills.post", "/api/user-data/bills", userDataRoute, { method: "POST", service: "user-data", action: "bill", rateLimit: "strict" }),
+  route("user-data.bills.patch", "/api/user-data/bills", userDataRoute, { method: "PATCH", service: "user-data", action: "bill", rateLimit: "strict" }),
+  route("user-data.bills.delete", "/api/user-data/bills", userDataRoute, { method: "DELETE", service: "user-data", action: "bill", rateLimit: "strict" }),
 
   // Profile
   route("profile.get", "/api/profile", profileRoute, { service: "profile" }),
@@ -329,6 +346,9 @@ export const ROUTES = Object.freeze([
 
   // Connections
   route("connections.list", "/api/connections", connectionsListRoute, { service: "sync" }),
+  route("provider-credentials", "/api/provider-credentials", providerCredentialsRoute, { service: "sync" }),
+  route("provider-credentials.post", "/api/provider-credentials", providerCredentialsRoute, { method: "POST", service: "sync", rateLimit: "strict" }),
+  route("provider-credentials.delete", "/api/provider-credentials", providerCredentialsRoute, { method: "DELETE", service: "sync", rateLimit: "strict" }),
 
   // Sync (notes, tasks, events)
   route("items.notes", "/api/notes", itemsRoute, { service: "sync" }),

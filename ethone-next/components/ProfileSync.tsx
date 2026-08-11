@@ -3,26 +3,26 @@
 import { useEffect } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { useSettings } from "@/components/SettingsProvider";
-import { useProfiles } from "@/lib/hooks/useProfiles";
+import { useActiveProfile } from "@/components/SettingsProvider";
+import type { Settings } from "@/lib/settings";
 
 export default function ProfileSync() {
   const { user } = useAuth();
   const { settings, update } = useSettings();
-  const { active, profiles, loaded } = useProfiles();
+  const { activeProfile, loaded } = useActiveProfile();
 
   useEffect(() => {
-    if (!user || !loaded || !active) return;
-    const profile = profiles.find((p) => p.id === active);
-    if (!profile) return;
-    const next: Partial<typeof settings> = {};
-    if (JSON.stringify(settings.dockItems) !== JSON.stringify(profile.widgets)) {
-      next.dockItems = profile.widgets;
+    if (!user || !loaded || !activeProfile) return;
+
+    const next: Partial<Settings> = {};
+    if (JSON.stringify(settings.dockItems) !== JSON.stringify(activeProfile.widgets)) {
+      next.dockItems = activeProfile.widgets;
     }
-    if (settings.accentColor !== profile.accent) {
-      next.accentColor = profile.accent as never;
+    if (settings.accentColor !== activeProfile.accent) {
+      next.accentColor = activeProfile.accent as Settings["accentColor"];
     }
     if (Object.keys(next).length) update(next);
-  }, [user, loaded, active, profiles, settings, update]);
+  }, [user, loaded, activeProfile, settings, update]);
 
   return null;
 }

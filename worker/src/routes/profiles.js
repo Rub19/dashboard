@@ -1,8 +1,9 @@
 import { httpError } from "../middleware/errors.js";
-import { requestExternal } from "../utils/external-request.js";
 import { safeText } from "../utils/normalize.js";
 
+
 const TYPES = new Set(["personal", "work", "development", "study", "gaming", "streaming", "creative"]);
+const WORKSPACES = new Set(["personal", "focus", "studio"]);
 
 function projectOrigin(env) {
   try {
@@ -34,15 +35,41 @@ async function supabaseRequest(env, path, options = {}) {
   return response.data;
 }
 
-function normalizeProfile(body) {
+function normalizeProfile(body, strict = true) {
   const name = safeText(body.name, 120);
   const type = safeText(body.type, 32);
   const accent = safeText(body.accent, 32) || "violet";
-  const widgets = Array.isArray(body.widgets) ? body.widgets.filter((x) => typeof x === "string") : [];
-  const integrations = Array.isArray(body.integrations) ? body.integrations.filter((x) => typeof x === "string") : [];
-  if (!name) throw httpError("INVALID_PARAMETER", 400, { detail: "name" });
-  if (!TYPES.has(type)) throw httpError("INVALID_PARAMETER", 400, { detail: "type" });
-  return { name, type, accent, widgets, integrations };
+  const workspace = safeText(body.workspace_id || body.workspace, 32) || "personal";
+  const rawWidgets = body.widgets;
+  const rawIntegrations = body.integrations;
+  const widgets = Array.isArray(rawWidgets) ? rawWidgets.filter((x) => typeof x === "string") : (strict ? [] : undefined);
+  const integrations = Array.isArray(rawIntegrations) ? rawIntegrations.filter((x) => typeof x === "string") : (strict ? [] : undefined);
+  if (strict && !name) throw httpError("INVALID_PARAMETER", 400, { detail: "name" });
+  if (type && !TYPES.has(type)) throw httpError("INVALID_PARAMETER", 400, { detail: "type" });
+  if (workspace && !WORKSPACES.has(workspace)) throw httpError("INVALID_PARAMETER", 400, { detail: "workspace" });
+  const result = {};
+  if (name) result.name = name;
+  if (type) result.type = type;
+  if (body.accent !== undefined || strict) result.accent = accent;
+  if (body.workspace_id !== undefined || body.workspace !== undefined || strict) result.workspace = workspace;
+  if (widgets !== undefined) result.widgets = widgets;
+  if (integrations !== undefined) result.integrations = integrations;
+  return result;
+}
+
+function profileView(profile) {
+  return {
+    id: profile.id,
+    name: profile.name,
+    type: profile.type,
+    accent: profile.accent,
+    workspace_id: profile.workspace_id,
+    widgets: profile.widgets,
+    integrations: profile.integrations,
+    is_active: profile.is_active,
+    created_at: profile.created_at,
+    updated_at: profile.updated_at
+  };
 }
 
 export async function profilesRoute({ request, env, auth, route }) {
@@ -54,14 +81,20 @@ export async function profilesRoute({ request, env, auth, route }) {
     const data = await supabaseRequest(env, `/rest/v1/ethone_profiles?user_id=eq.${encodeURIComponent(auth.userId)}&order=created_at.asc`);
     const list = Array.isArray(data) ? data : [];
     const active = list.find((p) => p.is_active) || list[0] || null;
-    return { data: { list, active: active ? { id: active.id, name: active.name, type: active.type, accent: active.accent, widgets: active.widgets, integrations: active.integrations } : null } };
+    return {
+      data: {
+        list: list.map(profileView),
+        active: active ? profileView(active) : null
+      }
+    };
   }
 
   if (method === "POST" && action === "") {
     const body = await request.json().catch(() => ({}));
-    const { name, type, accent, widgets, integrations } = normalizeProfile(body);
+    const { name, type, accent, workspace, widgets, integrations } = normalizeProfile(body, true);
     const existing = await supabaseRequest(env, `/rest/v1/ethone_profiles?user_id=eq.${encodeURIComponent(auth.userId)}&select=id&limit=1`);
     const isFirst = !Array.isArray(existing) || existing.length === 0;
+    const now = new Date().toISOString();
     const insert = await supabaseRequest(env, "/rest/v1/ethone_profiles", {
       method: "POST",
       body: JSON.stringify({
@@ -69,13 +102,16 @@ export async function profilesRoute({ request, env, auth, route }) {
         name,
         type,
         accent,
+        workspace_id: workspace,
         widgets,
         integrations,
-        is_active: isFirst
+        is_active: isFirst,
+        created_at: now,
+        updated_at: now
       })
     });
     const created = Array.isArray(insert) ? insert[0] : insert;
-    return { data: created };
+    return { data: profileView(created) };
   }
 
   if (method === "POST" && action === "activate") {
@@ -91,20 +127,26 @@ export async function profilesRoute({ request, env, auth, route }) {
       method: "PATCH",
       body: JSON.stringify({ is_active: true, updated_at: now })
     });
-    return { data: Array.isArray(result) ? result[0] : result };
+    const activated = Array.isArray(result) ? result[0] : result;
+    return { data: activated ? profileView(activated) : null };
   }
 
   if (method === "PATCH") {
     const body = await request.json().catch(() => ({}));
     const profileId = safeText(body.id, 64);
     if (!profileId) throw httpError("INVALID_PARAMETER", 400, { detail: "id" });
-    const { name, type, accent, widgets, integrations } = normalizeProfile(body);
-    const updates = { name, type, accent, widgets, integrations, updated_at: new Date().toISOString() };
+    const patch = normalizeProfile(body, false);
+    const updates = { ...patch, updated_at: new Date().toISOString() };
+    if (updates.workspace !== undefined) {
+      updates.workspace_id = updates.workspace;
+      delete updates.workspace;
+    }
     const update = await supabaseRequest(env, `/rest/v1/ethone_profiles?id=eq.${encodeURIComponent(profileId)}&user_id=eq.${encodeURIComponent(auth.userId)}`, {
       method: "PATCH",
       body: JSON.stringify(updates)
     });
-    return { data: Array.isArray(update) ? update[0] : update };
+    const updated = Array.isArray(update) ? update[0] : update;
+    return { data: updated ? profileView(updated) : null };
   }
 
   if (method === "DELETE") {

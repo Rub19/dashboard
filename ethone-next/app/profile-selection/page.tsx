@@ -6,19 +6,37 @@ import Card3D from "@/components/Card3D";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useProfiles, type Profile } from "@/lib/hooks/useProfiles";
 import { useToast } from "@/components/ToastProvider";
-import { useSettings } from "@/components/SettingsProvider";
+import { useActiveProfile } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
 
 const TYPES = ["personal", "work", "development", "study", "gaming", "streaming", "creative"] as const;
+const WORKSPACES = ["personal", "focus", "studio"] as const;
+const ACCENTS = ["mint", "sky", "amber", "violet", "rose"] as const;
+
+const ACCENT_CLASSES: Record<string, string> = {
+  mint: "bg-emerald-400",
+  sky: "bg-sky-400",
+  amber: "bg-amber-400",
+  violet: "bg-violet-500",
+  rose: "bg-rose-400",
+};
+
+const WORKSPACE_ICONS: Record<string, string> = {
+  personal: "user-round",
+  focus: "focus",
+  studio: "sparkles",
+};
 
 export default function ProfileSelectionPage() {
   const i18n = useI18n();
   const { success, error: showError } = useToast();
   const router = useRouter();
-  const { update: updateSettings } = useSettings();
-  const { profiles, active, loaded, create, select, remove, duplicate } = useProfiles();
+  const { reload } = useActiveProfile();
+  const { profiles, active, activeProfile, loaded, create, select, remove, duplicate } = useProfiles();
   const [name, setName] = useState("");
   const [type, setType] = useState<Profile["type"]>("personal");
+  const [workspace, setWorkspace] = useState<Profile["workspace"]>("personal");
+  const [accent, setAccent] = useState<string>("violet");
   const [creating, setCreating] = useState(false);
 
   if (!loaded) {
@@ -34,6 +52,8 @@ export default function ProfileSelectionPage() {
     if (!name.trim()) return;
     setCreating(true);
     const selectedType = type;
+    const selectedWorkspace = workspace;
+    const selectedAccent = accent;
     const suggestedWidgets: Record<string, string[]> = {
       personal: ["today", "notes", "calendar"],
       work: ["tasks", "calendar", "focus"],
@@ -44,16 +64,19 @@ export default function ProfileSelectionPage() {
       creative: ["notes", "files", "brain"],
     };
     try {
-      const created = await create({
+      await create({
         name: name.trim(),
         type: selectedType,
-        accent: "violet",
+        accent: selectedAccent,
+        workspace: selectedWorkspace,
         widgets: suggestedWidgets[selectedType] || ["today", "notes", "calendar"],
         integrations: [],
       });
-      updateSettings({ dockItems: created.widgets, accentColor: created.accent as never });
+      await reload();
       success(i18n("created"));
       setName("");
+      setWorkspace("personal");
+      setAccent("violet");
     } catch (err) {
       showError(String(err));
     } finally {
@@ -63,8 +86,7 @@ export default function ProfileSelectionPage() {
 
   async function handleSelect(id: string) {
     await select(id);
-    const p = profiles.find((x) => x.id === id);
-    if (p) updateSettings({ dockItems: p.widgets, accentColor: p.accent as never });
+    await reload();
     success(i18n("selected"));
     router.push("/");
   }
@@ -74,7 +96,7 @@ export default function ProfileSelectionPage() {
       <h1 className="text-2xl font-bold">{i18n("profileSelectionTitle")}</h1>
 
       <Card3D>
-        <div className="space-y-3">
+        <div className="space-y-4">
           <label className="text-sm font-medium">{i18n("newProfile")}</label>
           <input
             type="text"
@@ -83,18 +105,57 @@ export default function ProfileSelectionPage() {
             placeholder={i18n("profileNamePlaceholder")}
             className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
           />
-          <div className="flex flex-wrap gap-2">
-            {TYPES.map((t) => (
-              <button
-                key={t}
-                type="button"
-                onClick={() => setType(t)}
-                className={`rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs ${type === t ? "bg-[var(--accent)] text-white" : "hover:bg-[var(--surface-raised)]"}`}
-              >
-                {i18n(t)}
-              </button>
-            ))}
+
+          <div className="space-y-1">
+            <p className="text-xs font-medium text-[var(--muted)]">{i18n("kind")}</p>
+            <div className="flex flex-wrap gap-2">
+              {TYPES.map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setType(t)}
+                  className={`rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs ${type === t ? "bg-[var(--accent)] text-white" : "hover:bg-[var(--surface-raised)]"}`}
+                >
+                  {i18n(t)}
+                </button>
+              ))}
+            </div>
           </div>
+
+          <div className="space-y-1">
+            <p className="text-xs font-medium text-[var(--muted)]">{i18n("workspace")}</p>
+            <div className="flex flex-wrap gap-2">
+              {WORKSPACES.map((w) => (
+                <button
+                  key={w}
+                  type="button"
+                  onClick={() => setWorkspace(w)}
+                  className={`flex items-center gap-1.5 rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs ${workspace === w ? "bg-[var(--accent)] text-white" : "hover:bg-[var(--surface-raised)]"}`}
+                >
+                  <Icon name={WORKSPACE_ICONS[w]} className="h-3.5 w-3.5" />
+                  {i18n(w)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <p className="text-xs font-medium text-[var(--muted)]">{i18n("accent")}</p>
+            <div className="flex flex-wrap gap-2">
+              {ACCENTS.map((a) => (
+                <button
+                  key={a}
+                  type="button"
+                  onClick={() => setAccent(a)}
+                  aria-label={i18n(`accent${a.charAt(0).toUpperCase() + a.slice(1)}` as `${string}`)}
+                  className={`flex h-8 w-8 items-center justify-center rounded-full border border-[var(--border)] ${accent === a ? "ring-2 ring-white" : "hover:opacity-80"}`}
+                >
+                  <span className={`h-5 w-5 rounded-full ${ACCENT_CLASSES[a]}`} />
+                </button>
+              ))}
+            </div>
+          </div>
+
           <button
             type="button"
             onClick={handleCreate}
@@ -111,14 +172,29 @@ export default function ProfileSelectionPage() {
           <Card3D key={p.id}>
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
-                <p className="font-medium">{p.name}</p>
-                <p className="text-xs text-[var(--muted)]">{i18n(p.type)} • {p.widgets.length} widgets</p>
+                <div className="flex items-center gap-2">
+                  <p className="font-medium">{p.name}</p>
+                  {active === p.id && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
+                      <Icon name="check" className="h-3 w-3" /> {i18n("active")}
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-[var(--muted)]">
+                  {i18n(p.type)} • {i18n(p.workspace)} • {p.widgets.length} widgets
+                </p>
               </div>
               <div className="flex items-center gap-1">
                 <button type="button" onClick={() => duplicate(p.id)} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface-raised)]"><Icon name="copy" className="h-4 w-4" /></button>
                 <button type="button" onClick={() => remove(p.id)} className="rounded p-1 text-red-400 hover:bg-[var(--surface-raised)]"><Icon name="trash-2" className="h-4 w-4" /></button>
               </div>
             </div>
+
+            <div className="mt-3 flex items-center gap-2">
+              <span className={`inline-block h-3 w-3 rounded-full ${ACCENT_CLASSES[p.accent] || "bg-violet-500"}`} />
+              <span className="text-xs text-[var(--muted)]">{i18n(`accent${p.accent.charAt(0).toUpperCase() + p.accent.slice(1)}` as `${string}`)}</span>
+            </div>
+
             <button
               type="button"
               onClick={() => handleSelect(p.id)}
@@ -129,6 +205,20 @@ export default function ProfileSelectionPage() {
           </Card3D>
         ))}
       </div>
+
+      {activeProfile && (
+        <Card3D>
+          <div className="flex items-center gap-3">
+            <span className={`flex h-8 w-8 items-center justify-center rounded-full ${ACCENT_CLASSES[activeProfile.accent] || "bg-violet-500"}`}>
+              <Icon name={WORKSPACE_ICONS[activeProfile.workspace] || "user-round"} className="h-4 w-4 text-white" />
+            </span>
+            <div>
+              <p className="text-sm font-medium">{activeProfile.name}</p>
+              <p className="text-xs text-[var(--muted)]">{i18n("profileSelectionHint")}</p>
+            </div>
+          </div>
+        </Card3D>
+      )}
 
       <Card3D>
         <p className="text-sm text-[var(--muted)]">{i18n("profileSelectionHint")}</p>

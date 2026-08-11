@@ -8,6 +8,8 @@ import {
   type BrainPreferences,
   loadBrainPreferences,
   saveBrainPreferences,
+  saveBrainPreferencesAsync,
+  loadBrainPreferencesAsync,
   patchBrainPreferences,
   DEFAULT_BRAIN_PREFERENCES,
   BRAIN_PROVIDERS,
@@ -35,11 +37,16 @@ export function useBrain() {
   const [providerStatus, setProviderStatus] = useState<{ provider: string; latencyMs: number } | null>(null);
 
   useEffect(() => {
-    setPreferences(loadBrainPreferences());
+    const local = loadBrainPreferences();
+    setPreferences(local);
+    loadBrainPreferencesAsync().then((remote) => {
+      if (remote) setPreferences((prev) => ({ ...prev, ...remote }));
+    });
   }, []);
 
   useEffect(() => {
     saveBrainPreferences(preferences);
+    saveBrainPreferencesAsync(preferences);
   }, [preferences]);
 
   const registry = useMemo(() => {

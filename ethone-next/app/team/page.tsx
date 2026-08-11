@@ -7,12 +7,12 @@ import { useTeam } from "@/lib/hooks/useTeam";
 import { Icon } from "@/lib/icons";
 import { useToast } from "@/components/ToastProvider";
 
-const ROLES = ["owner", "admin", "member"] as const;
+const ROLES = ["owner", "admin", "member", "viewer", "editor", "billing"] as const;
 
 export default function TeamPage() {
   const i18n = useI18n();
   const { success: toastSuccess, error: showError } = useToast();
-  const { members, loading, error, invite, remove } = useTeam();
+  const { members, loading, error, invite, remove, update } = useTeam();
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<(typeof ROLES)[number]>("member");
   const [inviting, setInviting] = useState(false);
@@ -44,6 +44,29 @@ export default function TeamPage() {
       toastSuccess(i18n("deleted"));
     } catch {
       showError(i18n("error"));
+    }
+  }
+
+  async function changeRole(id: string, role: string) {
+    try {
+      await update(id, role);
+      toastSuccess(i18n("updated"));
+    } catch {
+      showError(i18n("error"));
+    }
+  }
+
+  function statusClass(status: string) {
+    switch (status) {
+      case "active":
+        return "bg-emerald-500/10 text-emerald-400";
+      case "pending":
+        return "bg-amber-500/10 text-amber-400";
+      case "declined":
+      case "revoked":
+        return "bg-red-500/10 text-red-400";
+      default:
+        return "bg-[var(--surface-raised)] text-[var(--muted)]";
     }
   }
 
@@ -116,30 +139,42 @@ export default function TeamPage() {
         <div className="space-y-3">
           {members.map((m) => (
             <Card3D key={m.id}>
-              <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-raised)] text-[var(--muted)]">
-                  <Icon name="users" className="h-5 w-5" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium">{m.email}</p>
-                  <p className="text-xs text-[var(--muted)] capitalize">{m.status}</p>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-raised)] text-[var(--muted)]">
+                    <Icon name="users" className="h-5 w-5" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="truncate font-medium">{m.email}</p>
+                    <p className="text-xs text-[var(--muted)]">{m.display_name || "—"}</p>
+                  </div>
                 </div>
-                <span
-                  className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                    m.role === "owner"
-                      ? "bg-violet-500/10 text-violet-400"
-                      : m.role === "admin"
-                      ? "bg-amber-500/10 text-amber-400"
-                      : "bg-sky-500/10 text-sky-400"
-                  }`}
-                >
-                  {i18n(m.role)}
-                </span>
-                {m.role !== "owner" && (
-                  <button type="button" onClick={() => deleteMember(m.id)} className="text-[var(--muted)] hover:text-red-400">
-                    <Icon name="trash-2" className="h-4 w-4" />
-                  </button>
-                )}
+                <div className="flex items-center gap-2">
+                  <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium capitalize ${statusClass(m.status)}`}>
+                    {i18n(m.status)}
+                  </span>
+                  {m.role === "owner" ? (
+                    <span className="shrink-0 rounded-full bg-violet-500/10 px-2 py-0.5 text-[10px] font-medium text-violet-400">
+                      {i18n(m.role)}
+                    </span>
+                  ) : (
+                    <select
+                      aria-label={i18n("role")}
+                      value={m.role}
+                      onChange={(e) => changeRole(m.id, e.target.value)}
+                      className="shrink-0 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-xs"
+                    >
+                      {ROLES.map((r) => (
+                        <option key={r} value={r}>{i18n(r)}</option>
+                      ))}
+                    </select>
+                  )}
+                  {m.role !== "owner" && (
+                    <button type="button" onClick={() => deleteMember(m.id)} className="rounded p-1 text-[var(--muted)] hover:bg-red-500/10 hover:text-red-400">
+                      <Icon name="trash-2" className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
               </div>
             </Card3D>
           ))}

@@ -4,6 +4,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import type { BrainPermissions, BrainMemoryCategories } from "@/lib/settings";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Card3D from "@/components/Card3D";
+import LiveSettings from "@/components/LiveSettings";
 import { subscribePush, unsubscribePush } from "@/lib/push";
 import { Icon } from "@/lib/icons";
 
@@ -504,6 +505,12 @@ export default function SettingsPage() {
           </div>
         </div>
       ),
+    },
+    {
+      id: "live",
+      label: i18n("liveIntegrations"),
+      icon: "plug",
+      children: <LiveSettings />,
     },
     {
       id: "account",

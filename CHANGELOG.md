@@ -2,6 +2,198 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [Unreleased]
+
+**Modernisation UI Next.js : notifications, haptics, tooltips, context-menus et bottom-sheets**
+
+### Ajoute
+- `lib/hooks/useNotifications.ts` : état des notifications enrichi (priorités `critical/important/normal/silent`, snooze 10m/1h/ce soir/demain, archive, recherche, mute par catégorie, compteur important, déduplication, données de démo).
+- `components/NotificationCenter.tsx` : centre de notifications mobile en bottom-sheet avec filtre, recherche, snooze, archive et marquage important.
+- `public/sw.js` : persistance des push notifications dans IndexedDB et synchronisation bidirectionnelle avec le client.
+- `lib/hooks/useHaptics.ts` + `components/UIProvider.tsx` : retour haptique global et états visuels `data-haptic-state`, respect du réduit-mouvement.
+- `components/Tooltip.tsx` + `components/UIProvider.tsx` : infobulles globales `data-tooltip` avec positionnement viewport-safe et support focus/clavier.
+- `components/BottomSheet.tsx` : retrait de `md:hidden`, support `position` (bottom/center), drag, swipe et en-tête draggable.
+- `components/ContextMenu.tsx` : menus contextuels robustes (clavier, Escape, clic extérieur, positionnement écran).
+- `app/mail/page.tsx` : bottom-sheets trier/déplacer/étiquetter, menu contextuel par message.
+- `app/brain/page.tsx` : bottom-sheet wrap-up "Préparer demain" avec tâches et événements du lendemain.
+- `app/notes/page.tsx`, `app/tasks/page.tsx`, `app/files/page.tsx`, `components/LiveWidgets.tsx` : menus contextuels par carte/ligne.
+- `components/Dock.tsx`, `components/MobileNav.tsx` : tooltips et retours haptiques sur les contrôles iconiques.
+- `app/system/page.tsx` : Mission Control consolidant Spaces, Flows et workspaces actifs.
+- `app/spaces/page.tsx` + `app/flows/page.tsx` : création, persistance et activation de workspaces/flows côté Worker, templates prédéfinis.
+- `lib/hooks/useLiveData.ts` + `components/LiveWidgets.tsx` + `components/LiveStats.tsx` : historiques Last.fm (top artistes/titres par période), jeux Steam récents/possédés, historique de noms Minecraft, paramètre météo `city`.
+- `app/interactions/page.tsx` : heatmap 30 jours, bouton Live, polling 5 s, statistiques et filtres par type.
+- `lib/hooks/useUserData.ts` + `worker/src/routes/user-data.js` + `supabase/migrations/202608280001_profile_workspace_parity.sql` : scoping strict par `profile_id`/`workspace_id` et propriété utilisateur.
+- `lib/hooks/useProfiles.ts` + `components/SettingsProvider.tsx` + `components/ProfileSync.tsx` : profils actifs, workspace/accent, paramètres par profil.
+- `lib/i18n-extras.ts` : catalogues fr/en/es/de pour les nouvelles clés UI.
+
+### Version PWA
+- `ethone-next-v339` (cache et service worker mis à jour).
+
+## [v349] - 2026-08-11
+
+**Catalogue v8 complet dans Connections, credentials étendues et ajustements finaux**
+
+### Corrige
+- `app/connections/page.tsx` : catalogue v8 complet (35 providers) avec les statuts `auth` d’origine, champs publics/credentials par intégration, et badges `oauth` / `api` / `local` / `feed` / `restricted` / `limited`.
+- `lib/hooks/useProviderCredentials.ts` + `worker/src/routes/provider-credentials.js` : extension de l’allowlist à `openai`, `anthropic`, `gemini`, `groq`, `plex`.
+- `worker/src/services/connections-client.js` : `listConnections` retourne désormais l’union des connexions OAuth et des providers avec credentials sécurisés.
+- `lib/settings.ts` + `lib/i18n.ts` : nouvelles clés `liveBlueskyHandle`, `liveJellyfinUrl`, `liveEmbyUrl`, `liveLmStudioUrl`, `liveOllamaUrl`, `liveObsidianUrl`, `liveVscodeUrl` et labels de statut `local`, `feed`, `restricted`, `limited` en fr/en/es/de.
+- `supabase/migrations/202608070001_provider_credentials_extended.sql` (nouveau) : étend la contrainte `user_provider_credentials` aux providers `openai`, `anthropic`, `gemini`, `groq`, `plex`.
+- `lib/hooks/useLiveData.ts` : météo enrichie avec prévisions journalières dans les métadonnées des cartes live.
+- `app/brain/page.tsx` : affichage correct de la latence diagnostics selon le provider retourné.
+- Vérification complète : build Next.js 43 routes, lint, 27 tests unitaires, 136 tests Worker, 528 tests Playwright, `precommit-upload-check` et `audit-security` passent.
+
+### Version PWA
+- `experience-v323` (aucun changement d'asset PWA).
+
+## [v348] - 2026-08-11
+
+**Home live cards v8 : Google Calendar, Google Drive, Notion, Apex Tracker**
+
+### Corrige
+- `lib/hooks/useLiveData.ts` : ajout des sources live `google-calendar` (`/api/google-calendar/events`), `google-drive` (`/api/google-drive/files`), `notion` (`/api/notion/pages`), `tracker` et `apex` (`/api/tracker/apex-profile` + `/api/tracker/apex-matches`). Chaque appel est conditionné par `connected.has(...)` ou la présence des identifiants.
+- `lib/settings.ts` : nouveaux champs `calendarClientId`, `driveClientId` et `homeHiddenLiveCards`.
+- `components/LiveWidgets.tsx` : dégradés et rendu pour les nouvelles sources, affichage du `subtitle` généralisé, mode "Personnaliser" pour masquer/afficher les cartes via `settings.homeHiddenLiveCards`.
+- `app/page.tsx` : section `Live` avec titre et bouton "Personnaliser" qui pilote le mode de personnalisation des cartes.
+- `lib/i18n.ts` : nouvelles clés `googleCalendar`, `notion`, `trackerApex`, `customize`, `done` en fr/en/es/de.
+- `components/OAuthHandler.tsx` + `app/connections/page.tsx` : persistance des `clientId` Google Calendar / Google Drive dans les settings lors de la connexion OAuth.
+
+### Version PWA
+- `experience-v323` (aucun changement d'asset PWA).
+
+## [v347] - 2026-08-11
+
+**Interactions 30 jours, Team/MobileNav, Worker credentials, météo détaillée**
+
+### Corrige
+- `app/interactions/page.tsx` : heatmap 30 jours au lieu de 7, bouton Live active un polling toutes les 5 secondes.
+- `worker/src/routes/provider-credentials.js` (nouveau) + `worker/src/routes/team.js` : endpoints pour sauvegarder les credentials API (`/api/provider-credentials`) et mettre à jour un rôle d’équipe (PATCH `/api/team/members`).
+- `lib/hooks/useProviderCredentials.ts` et `lib/hooks/useTeam.ts` : exposent `save/remove` pour credentials et `update` pour les rôles.
+- `components/MobileNav.tsx` : navigation mobile scrollable avec Brain, Files, Connections, Team.
+- `app/team/page.tsx` : sélecteur de rôle par membre, badges de statut (active/pending/declined/revoked), affichage du nom d’affichage.
+- `lib/hooks/useLiveData.ts` : météo enrichie avec humidité, vent et condition.
+- `lib/i18n.ts` : nouvelles clés `pending`, `declined`, `revoked`.
+
+### Version PWA
+- `experience-v323` (aucun changement d’asset PWA).
+
+## [v346] - 2026-08-11
+
+**Connections : credentials sécurisées et catalogue v8**
+
+### Corrige
+- `app/connections/page.tsx` : les secrets API des providers supportés (Steam, Last.fm, Twitch, Riot, Tracker) sont stockés dans la table sécurisée `public.user_provider_credentials` via `/api/provider-credentials` ; les identifiants publics restent dans les live settings.
+- `app/connections/page.tsx` : ajout des cartes Tracker (Apex) et Weather, et du catalogue v8 (Plex, Jellyfin, Emby, Bluesky, Linear, ClickUp, Jira, Email, GitLab, Obsidian, VS Code, Fitbit, LM Studio, Ollama, Anthropic, Gemini, Groq).
+- `lib/i18n.ts` : nouvelles clés `apiKey`, `clientSecret`, `henrikApiKey`, `riotApiKey` et descriptions des nouvelles intégrations (en/fr/es/de).
+
+### Version PWA
+- `experience-v323` (aucun changement d'asset PWA).
+
+## [v345] - 2026-08-11
+
+**Vérification des pages /macros, /personas, /bills et tests d’intégration user-data**
+
+### Corrige
+- `app/macros/page.tsx`, `app/personas/page.tsx`, `app/bills/page.tsx` : utilisent déjà `useUserData("macro" | "persona" | "bill")` qui consomme les endpoints `/api/user-data/{kind}s` du Worker.
+- `lib/hooks/useUserData.test.ts` (nouveau) : tests couvrant le chargement, la création et la suppression pour `macros`, `personas` et `bills`.
+
+### Version PWA
+- `experience-v323` (aucun changement d’asset PWA).
+
+## [v344] - 2026-08-11
+
+**Risques de déploiement, persistance, rôles et tests d'intégration**
+
+### Corrige
+- `lib/hooks/useConnections.ts` (nouveau) + `lib/hooks/useLiveData.ts` : le hook live charge d’abord `/api/connections` et n’appelle un provider OAuth (GitHub, Todoist, YouTube, Reddit) que s’il est connecté. Météo sans ville, now-playing sans identité, et tracker sans Riot ID ne génèrent plus d’appels 400/401.
+- `lib/hooks/useCalendarEvents.ts` : normalisation défensive des champs `start`/`end` (objets `dateTime`/`date` ou strings) en `startAt`/`endAt`.
+- `.gitignore` : ajout de `.worktree/` pour empêcher tout déploiement du worktree legacy et du `audit-security.mjs` copié.
+- `app/team/page.tsx` + `lib/i18n.ts` : les rôles d’équipe étendus à `owner`, `admin`, `member`, `viewer`, `editor`, `billing`.
+- `lib/hooks/useLiveData.test.ts` et `lib/hooks/useTracker.test.ts` (nouveaux) : tests d’intégration React ↔ Worker pour les appels live et les routes de tracker tronçonnées.
+
+### Version PWA
+- `experience-v323` (aucun changement d’asset PWA).
+
+## [v343] - 2026-08-11
+
+**Connections, live cards étendues et session modes**
+
+### Corrige
+- `lib/settings.ts` : nouveaux champs `liveSteamId`, `liveRssUrl`, `liveLastfmUsername`, `liveTwitchLogin`, `liveMinecraftUsername`.
+- `app/connections/page.tsx` : saisie des clés API / identifiants pour Discord (Lanyard ID), Steam, Riot, OpenAI, RSS, Last.fm, Twitch, Minecraft. Mapping direct sur les live settings.
+- `lib/hooks/useLiveData.ts` : nouvelles sources live — Last.fm, Twitch, Minecraft, Steam, RSS, bills, Valorant, LoL. Appels conditionnés par la présence des identifiants.
+- `worker/src/router.js` : enregistrement de la route `/api/rss` (existante mais non branchée).
+- `components/LiveWidgets.tsx` : dégradés et styles pour les nouvelles sources.
+- `app/page.tsx` : sélecteur de **mode de session** (online / busy / focus / away / invisible) lié à `settings.status`.
+- `lib/i18n.ts` : nouvelles clés pour les champs API et le mode de session.
+
+### Version PWA
+- `experience-v323` (aucun changement d’asset PWA).
+
+## [v342] - 2026-08-11
+
+**Correction des incompatibilités et synchronisation cloud**
+
+### Corrige
+- Vérification : plugins, tracker, live data, dashboard, macros/personas/bills et récupération de mot de passe étaient déjà corrigés dans les passes précédentes.
+- `lib/user-state.ts` + `lib/hooks/useUserState.ts` : nouvelle couche générique de persistance synchronisée dans `ethone_user_state` (Supabase).
+- `lib/settings.ts` + `components/SettingsProvider.tsx` : charge et sauvegarde les paramètres en Supabase, conserve localStorage comme cache offline.
+- `lib/brain/preferences.ts` + `lib/hooks/useBrain.ts` : synchronisation des préférences Brain avec Supabase.
+- `lib/hooks/useNotifications.ts` : historique de notifications synchronisé avec Supabase.
+- `app/scratchpad/page.tsx` : note du scratchpad synchronisée avec Supabase.
+- `app/calendar/page.tsx` : `clientId` Google Calendar synchronisé via `user-state`.
+- `app/files/page.tsx` : `clientId` Google Drive migré vers `useUserState`.
+- `components/OAuthHandler.tsx` : les `clientId` OAuth sont persistés dans `user-state` et dans les live settings.
+- `v8_bills_manager.mjs` et `v8_bills_widget.mjs` : conversion UTF-16 → UTF-8 (fichiers conservés sans suppression).
+
+### Version PWA
+- `experience-v323` (aucun changement d’asset PWA).
+
+## [v341] - 2026-08-11
+
+**Migration des fonctionnalités manquantes — passe 1**
+
+### Corrige
+- `components/FloatingWindow.tsx` + `WindowManagerProvider.tsx` : maximize restaurable, plein écran et réduction drag/redimensionnement quand maximisé.
+- `app/password-recovery/page.tsx` : redirige vers `/reset-password/`.
+- `app/reset-password/page.tsx` : nouvelle page pour saisir et mettre à jour le mot de passe avec validation (12 caractères, majuscule, minuscule, chiffre, symbole).
+- `lib/i18n.ts` : clés pour la récupération de mot de passe, le plein écran et les nouveaux onglets Brain.
+- `app/brain/page.tsx` : ajout des onglets manquants `context`, `privacy`, `history`, `diagnostics`, `wrapup`.
+- `lib/icons.tsx` : nouvelles icônes `expand`, `shrink`, `scan-search`, `history`, `sunset`, `shield-check`.
+
+### Version PWA
+- `experience-v323` (aucun changement d’asset PWA).
+
+## [v340] - 2026-08-11
+
+**Paramètres obligatoires des intégrations live + routes Worker user-data**
+
+### Corrige
+- `lib/hooks/useLiveData.ts` : construit les URLs avec les paramètres requis (`source`/`userId`/`username` pour now-playing, `userId` pour Lanyard, `clientId` pour YouTube/Reddit, ville pour la météo) et saute les appels si la configuration est manquante.
+- `lib/hooks/useDashboard.ts` : idem pour now-playing, Lanyard, et les routes tracker Valorant/LoL avec `name`/`tag`.
+- `app/matches/page.tsx` : corrige les chemins tracker (`/api/tracker/valorant-matches` et `/api/tracker/lol-matches`) et ajoute les champs `name`/`tag` Riot.
+- `lib/hooks/useTracker.ts` : ne tente pas de charger si le chemin est vide.
+- `app/settings/page.tsx` + `components/LiveSettings.tsx` : nouveau panneau "Intégrations live" pour renseigner source, identités, client IDs, Riot ID et ville météo.
+- `components/LiveWidgets.tsx` et `components/LiveOverlay.tsx` : incluent `clientId` dans les requêtes de contrôle Spotify et affichent un message si manquant.
+- `worker/src/router.js` : ajoute les routes `/api/user-data/{macros,personas,bills}` (GET/POST/PATCH/DELETE).
+- `app/connections/page.tsx` : persiste les `clientId` Spotify/YouTube/Reddit dans les settings lors de la connexion OAuth.
+
+### Version PWA
+- `experience-v323` (aucun changement d’asset PWA).
+
+## [v339] - 2026-08-11
+
+**Correction des routes plugins**
+
+### Corrige
+- `app/plugins/page.tsx` : les 7 plugins (Spotify, Discord, GitHub, Todoist, YouTube, Reddit, Weather) pointaient tous sur `/notes/`. Chacun ouvre maintenant une page dédiée `/plugins/{id}/` avec son statut live.
+- Création de `app/plugins/[id]/page.tsx` et `app/plugins/[id]/PluginClient.tsx` : page de plugin dynamique qui affiche l’état live et un lien vers `/connections/`.
+- Création de `lib/plugins.ts` : configuration et helpers partagés pour les plugins.
+- Mise à jour des E2E (`routes.spec.ts`, `a11y.spec.ts`, `responsive.spec.ts`) pour couvrir les nouvelles routes `/plugins/{id}/`.
+
+### Version PWA
+- `experience-v323` (aucun changement d’asset PWA).
+
 ## [v338] - 2026-08-20
 
 **Profils liés au compte utilisateur + migration des profils v8**

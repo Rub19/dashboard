@@ -1,18 +1,28 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import React, { Children, cloneElement, isValidElement } from "react";
 
-export default function Tooltip({ children, label }: { children: ReactNode; label: string }) {
-  const [open, setOpen] = useState(false);
+type TooltipPosition = "top" | "bottom" | "left" | "right";
 
+export default function Tooltip({
+  children,
+  label,
+  position = "top",
+}: {
+  children: React.ReactNode;
+  label: string;
+  position?: TooltipPosition;
+}) {
+  const child = Children.only(children);
+  if (isValidElement(child)) {
+    return cloneElement(child as React.ReactElement<{ "data-tooltip"?: string; "data-tooltip-position"?: TooltipPosition }>, {
+      "data-tooltip": label,
+      "data-tooltip-position": position,
+    });
+  }
   return (
-    <span className="relative inline-block" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)} onFocus={() => setOpen(true)} onBlur={() => setOpen(false)}>
+    <span data-tooltip={label} data-tooltip-position={position}>
       {children}
-      {open && label && (
-        <span className="absolute left-1/2 top-full z-50 mt-1 w-max max-w-[10rem] -translate-x-1/2 rounded-lg bg-[var(--foreground)] px-2 py-1 text-center text-xs text-[var(--background)] shadow">
-          {label}
-        </span>
-      )}
     </span>
   );
 }

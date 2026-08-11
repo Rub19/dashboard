@@ -1,12 +1,13 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTracker } from "@/lib/hooks/useTracker";
 import Card3D from "@/components/Card3D";
 import LiquidSidebar from "@/components/LiquidSidebar";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
+import { useSettings } from "@/components/SettingsProvider";
 
 const tabs = [
   { id: "valorant", label: "Valorant", icon: <Icon name="swords" className="h-4 w-4" /> },
@@ -35,12 +36,20 @@ function MatchCard({ match }: { match: Record<string, string | number | undefine
 
 export default function MatchesPage() {
   const i18n = useI18n();
+  const { settings, update } = useSettings();
   const { success, error: showError } = useToast();
   const [tab, setTab] = useState("valorant");
-  const { items, loading, syncing, sync } = useTracker(
-    tab === "valorant" ? "/api/tracker/valorant/matches" : "/api/tracker/lol/matches",
-    tab === "valorant" ? "tracker-valorant" : "tracker-lol"
-  );
+  const [name, setName] = useState(settings.liveTrackerRiotName);
+  const [tag, setTag] = useState(settings.liveTrackerRiotTag);
+
+  const path = useMemo(() => {
+    if (!settings.liveTrackerRiotName || !settings.liveTrackerRiotTag) return "";
+    return tab === "valorant"
+      ? `/api/tracker/valorant-matches?name=${encodeURIComponent(settings.liveTrackerRiotName)}&tag=${encodeURIComponent(settings.liveTrackerRiotTag)}`
+      : `/api/tracker/lol-matches?name=${encodeURIComponent(settings.liveTrackerRiotName)}&tag=${encodeURIComponent(settings.liveTrackerRiotTag)}`;
+  }, [tab, settings.liveTrackerRiotName, settings.liveTrackerRiotTag]);
+
+  const { items, loading, syncing, sync } = useTracker(path, tab === "valorant" ? "tracker-valorant" : "tracker-lol");
 
   return (
     <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-[14rem_1fr]">
@@ -70,6 +79,40 @@ export default function MatchesPage() {
             {i18n("sync")}
           </button>
         </div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+          <div className="flex-1 min-w-0">
+            <label htmlFor="riot-name" className="mb-1 block text-xs text-[var(--muted)]">{i18n("liveTrackerRiotName")}</label>
+            <input
+              id="riot-name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder={i18n("liveTrackerRiotName")}
+              className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)]"
+            />
+          </div>
+          <div className="flex-1 min-w-0">
+            <label htmlFor="riot-tag" className="mb-1 block text-xs text-[var(--muted)]">{i18n("liveTrackerRiotTag")}</label>
+            <input
+              id="riot-tag"
+              type="text"
+              value={tag}
+              onChange={(e) => setTag(e.target.value)}
+              placeholder="#1234"
+              className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)]"
+            />
+          </div>
+          <button
+            type="button"
+            onClick={() => update({ liveTrackerRiotName: name, liveTrackerRiotTag: tag })}
+            className="shrink-0 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          >
+            {i18n("apply")}
+          </button>
+        </div>
+        {!settings.liveTrackerRiotName || !settings.liveTrackerRiotTag ? (
+          <p className="text-sm text-[var(--muted)]">{i18n("trackerMissingRiotId")}</p>
+        ) : null}
         {loading && !items ? (
           <div className="space-y-3">
             <div className="h-20 animate-pulse rounded-2xl bg-[var(--border)]" />

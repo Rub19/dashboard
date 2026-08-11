@@ -3,7 +3,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 const TEXT_EXTENSIONS = new Set([".css", ".html", ".js", ".json", ".mjs", ".ps1", ".sql", ".toml", ".ts", ".tsx", ".webmanifest", ".yaml", ".yml"]);
-const SKIPPED_DIRECTORIES = new Set([".git", ".next", "dist", "docs", "node_modules"]);
+const SKIPPED_DIRECTORIES = new Set([".git", ".main-worktree", ".next", ".worktree", "dist", "docs", "node_modules"]);
 const APPROVED_INNER_HTML = new Set(["ethone-next/app/layout.tsx"]);
 const APPROVED_SERVICE_ROLE_REFERENCES = new Set([
   "scripts/audit-security.mjs",

@@ -8,8 +8,17 @@ import { Icon } from "@/lib/icons";
 import Card3D from "@/components/Card3D";
 import LiquidSidebar from "@/components/LiquidSidebar";
 import MailAdvancedPanel from "@/components/MailAdvancedPanel";
+import BottomSheet from "@/components/BottomSheet";
+import ContextMenu from "@/components/ContextMenu";
 
 const FOLDERS = ["inbox", "starred", "sent", "drafts", "archive", "trash", "spam"];
+
+const SNOOZE_KEYS: Record<string, string> = {
+  "10m": "snooze10m",
+  "1h": "snooze1h",
+  tonight: "snoozeTonight",
+  tomorrow: "snoozeTomorrow",
+};
 
 function formatMailDate(iso: string) {
   try {
@@ -17,6 +26,26 @@ function formatMailDate(iso: string) {
   } catch {
     return iso;
   }
+}
+
+function threadSnoozeUntil(duration: string, now = Date.now()) {
+  const map: Record<string, () => number> = {
+    "10m": () => now + 10 * 60 * 1000,
+    "1h": () => now + 60 * 60 * 1000,
+    tonight: () => {
+      const d = new Date();
+      d.setHours(22, 0, 0, 0);
+      if (d.getTime() <= now) d.setDate(d.getDate() + 1);
+      return d.getTime();
+    },
+    tomorrow: () => {
+      const d = new Date();
+      d.setDate(d.getDate() + 1);
+      d.setHours(9, 0, 0, 0);
+      return d.getTime();
+    },
+  };
+  return new Date(map[duration]?.() ?? now + 60 * 60 * 1000).toISOString();
 }
 
 export default function MailPage() {
@@ -45,6 +74,8 @@ export default function MailPage() {
     saveDraft,
     setFlags,
     bulkAction,
+    moveMessages,
+    assignLabel,
     snoozeMessage,
     scheduleMail,
     createLabel,
@@ -86,6 +117,13 @@ export default function MailPage() {
   const [analytics, setAnalytics] = useState<Record<string, unknown> | null>(null);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [brainSummary, setBrainSummary] = useState<string | null>(null);
+  const [sort, setSort] = useState<"newest" | "oldest" | "sender" | "unread">("newest");
+  const [sortOpen, setSortOpen] = useState(false);
+  const [moveOpen, setMoveOpen] = useState(false);
+  const [labelOpen, setLabelOpen] = useState(false);
+  const [actionsOpen, setActionsOpen] = useState(false);
+  const [actionsTarget, setActionsTarget] = useState<MailMessage | null>(null);
+  const [newLabel, setNewLabel] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const folders = useMemo(() => {
@@ -117,30 +155,49 @@ export default function MailPage() {
     return Array.from(map.values()).map((list) => list.sort((a, b) => new Date(a.received_at).getTime() - new Date(b.received_at).getTime()));
   }, [messages]);
 
+  const sortedGroupedMessages = useMemo(() => {
+    const list = [...groupedMessages];
+    if (sort === "oldest") {
+      list.sort((a, b) => new Date(a[a.length - 1].received_at).getTime() - new Date(b[b.length - 1].received_at).getTime());
+    } else if (sort === "sender") {
+      list.sort((a, b) => {
+        const fromA = (a[0].from_name || a[0].from_address || "").toLowerCase();
+        const fromB = (b[0].from_name || b[0].from_address || "").toLowerCase();
+        return fromA.localeCompare(fromB);
+      });
+    } else if (sort === "unread") {
+      list.sort((a, b) => Number(b[0].is_read) - Number(a[0].is_read));
+    }
+    return list;
+  }, [groupedMessages, sort]);
+
   function toggleSelect(id: string) {
     setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   }
 
   function selectAll() {
-    const ids = groupedMessages.map((g) => (g[0]?.id));
-    setSelected(ids);
+    const ids = sortedGroupedMessages.map((g) => g[0]?.id).filter(Boolean);
+    setSelected(ids as string[]);
   }
 
   function deselectAll() {
     setSelected([]);
   }
 
-  async function openThread(msg: MailMessage) {
-    if (!msg.is_read) {
-      await setFlags([msg.id], { is_read: true });
-    }
-    if (msg.thread_id) {
-      const thread = await getThread(msg.thread_id);
-      setActiveThread(thread);
-    } else {
-      setActiveThread([msg]);
-    }
-  }
+  const openThread = useCallback(
+    async (msg: MailMessage) => {
+      if (!msg.is_read) {
+        await setFlags([msg.id], { is_read: true });
+      }
+      if (msg.thread_id) {
+        const thread = await getThread(msg.thread_id);
+        setActiveThread(thread);
+      } else {
+        setActiveThread([msg]);
+      }
+    },
+    [setFlags, getThread, setActiveThread]
+  );
 
   function closeThread() {
     setActiveThread(null);
@@ -288,17 +345,6 @@ export default function MailPage() {
     }
   }
 
-  async function handleSnooze(hours: number) {
-    if (!activeThread?.length) return;
-    const until = new Date(Date.now() + hours * 3600000).toISOString();
-    try {
-      await snoozeMessage(activeThread[activeThread.length - 1].id, until);
-      success(i18n("snooze"));
-    } catch (err) {
-      toastError(String(err));
-    }
-  }
-
   async function handleAnalyze() {
     if (!activeThread?.length) return;
     try {
@@ -318,6 +364,98 @@ export default function MailPage() {
       toastError(String(err));
     }
   }
+
+  async function handleThreadSnooze(duration: string) {
+    if (!activeThread?.length) return;
+    try {
+      await snoozeMessage(activeThread[activeThread.length - 1].id, threadSnoozeUntil(duration));
+      success(i18n("snooze"));
+    } catch (err) {
+      toastError(String(err));
+    }
+  }
+
+  async function handleMoveSelected(target: string) {
+    if (!selected.length) return;
+    try {
+      await moveMessages(selected, target);
+      success(i18n("moveTo"));
+      setSelected([]);
+      setMoveOpen(false);
+    } catch (err) {
+      toastError(String(err));
+    }
+  }
+
+  const handleMoveMessage = useCallback(
+    async (msg: MailMessage, target: string) => {
+      try {
+        await moveMessages([msg.id], target);
+        success(i18n("moveTo"));
+        setActionsOpen(false);
+      } catch (err) {
+        toastError(String(err));
+      }
+    },
+    [moveMessages, success, i18n, setActionsOpen, toastError]
+  );
+
+  function messageHasLabel(msg: MailMessage, labelName: string) {
+    return (msg.labels || []).some((l) => l === labelName);
+  }
+
+  async function handleToggleSelectedLabel(labelId: string) {
+    const label = labels.find((l) => l.id === labelId);
+    if (!label || !selected.length) return;
+    const hasIt = selected.every((id) => {
+      const msg = messages.find((m) => m.id === id);
+      return msg && messageHasLabel(msg, label.name);
+    });
+    try {
+      await assignLabel(selected, label.id, hasIt);
+      success(i18n("saved"));
+      setLabelOpen(false);
+    } catch (err) {
+      toastError(String(err));
+    }
+  }
+
+  async function handleCreateLabelFromSheet() {
+    if (!newLabel.trim()) return;
+    try {
+      const created = (await createLabel(newLabel.trim())) as { id?: string } | undefined;
+      if (created?.id && selected.length) {
+        await assignLabel(selected, created.id, false);
+      }
+      setNewLabel("");
+      success(i18n("saved"));
+      setLabelOpen(false);
+    } catch (err) {
+      toastError(String(err));
+    }
+  }
+
+  function openMessageActions(msg: MailMessage) {
+    setActionsTarget(msg);
+    setActionsOpen(true);
+  }
+
+  const messageContextItems = useCallback(
+    (msg: MailMessage) => [
+      { id: "open", label: i18n("open"), icon: "mail-open", onClick: () => openThread(msg) },
+      {
+        id: "read",
+        label: msg.is_read ? i18n("markAsUnread") : i18n("markAsRead"),
+        icon: msg.is_read ? "mail" : "mail-open",
+        onClick: () => setFlags([msg.id], { is_read: !msg.is_read }),
+      },
+      { id: "star", label: msg.is_starred ? i18n("removeFromFavorites") : i18n("addToFavorites"), icon: msg.is_starred ? "star-off" : "star", onClick: () => setFlags([msg.id], { is_starred: !msg.is_starred }) },
+      { id: "important", label: msg.is_important ? i18n("important") : i18n("markImportant"), icon: msg.is_important ? "circle" : "alert-circle", onClick: () => setFlags([msg.id], { is_important: !msg.is_important }) },
+      { id: "archive", label: i18n("archive"), icon: "archive", onClick: () => handleMoveMessage(msg, "archive") },
+      { id: "trash", label: i18n("delete"), icon: "trash-2", danger: true, onClick: () => handleMoveMessage(msg, "trash") },
+    ],
+    [i18n, openThread, setFlags, handleMoveMessage]
+  );
 
   const loadAnalytics = useCallback(async () => {
     try {
@@ -411,10 +549,42 @@ export default function MailPage() {
             <button
               type="button"
               onClick={reload}
+              data-tooltip={i18n("refresh")}
+              data-haptic
               aria-label={i18n("refresh")}
               className="rounded-xl border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
             >
               <Icon name="refresh-cw" className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setSortOpen(true)}
+              data-tooltip={i18n("sort")}
+              data-haptic
+              aria-label={i18n("sort")}
+              className="rounded-xl border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+            >
+              <Icon name="arrow-up-down" className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setMoveOpen(true)}
+              data-tooltip={i18n("moveTo")}
+              data-haptic
+              aria-label={i18n("moveTo")}
+              className="rounded-xl border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+            >
+              <Icon name="folder-input" className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setLabelOpen(true)}
+              data-tooltip={i18n("labels")}
+              data-haptic
+              aria-label={i18n("labels")}
+              className="rounded-xl border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+            >
+              <Icon name="tag" className="h-4 w-4" />
             </button>
             <div className="relative">
               <button
@@ -497,7 +667,13 @@ export default function MailPage() {
                   <button type="button" onClick={() => openCompose("reply", activeThread)} className="rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("reply")}</button>
                   <button type="button" onClick={() => openCompose("replyAll", activeThread)} className="rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("replyAll")}</button>
                   <button type="button" onClick={() => openCompose("forward", activeThread)} className="rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("forward")}</button>
-                  <button type="button" onClick={() => handleSnooze(24)} className="rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("snooze")}</button>
+                  <button
+                    type="button"
+                    onClick={() => { setActionsTarget(activeThread[activeThread.length - 1]); setActionsOpen(true); }}
+                    className="rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs hover:bg-[var(--surface-raised)]"
+                  >
+                    {i18n("actions")}
+                  </button>
                   <button type="button" onClick={handleAnalyze} className="rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("brain")}</button>
                   <button type="button" onClick={handleSuggest} className="rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("suggest")}</button>
                 </div>
@@ -552,7 +728,7 @@ export default function MailPage() {
               <div className="h-3 w-5/6 animate-pulse rounded bg-[var(--border)]" />
             </div>
           </Card3D>
-        ) : groupedMessages.length === 0 ? (
+        ) : sortedGroupedMessages.length === 0 ? (
           <Card3D>
             <div className="flex items-center gap-2 text-sm text-[var(--muted)]">
               <Icon name="mail" className="h-4 w-4" />
@@ -561,66 +737,241 @@ export default function MailPage() {
           </Card3D>
         ) : (
           <div className="space-y-2">
-            {groupedMessages.map((group) => {
+            {sortedGroupedMessages.map((group) => {
               const msg = group[group.length - 1];
               const checked = selected.includes(msg.id);
+              const contextItems = messageContextItems(msg);
               return (
-                <Card3D key={msg.id}>
-                  <div className="flex items-start gap-3">
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() => toggleSelect(msg.id)}
-                      aria-label={i18n("selectAll")}
-                      className="mt-1 h-4 w-4 rounded border-[var(--border)]"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => openThread(msg)}
-                      className={`min-w-0 flex-1 text-left ${msg.is_read ? "opacity-70" : ""}`}
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="min-w-0 truncate text-sm font-semibold">{msg.from_name || msg.from_address}</span>
-                        <span className="shrink-0 text-[10px] text-[var(--muted)]">{formatMailDate(msg.received_at)}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <p className="min-w-0 flex-1 truncate text-sm text-[var(--foreground)]">{msg.subject || i18n("noResults")}</p>
-                        {group.length > 1 && <span className="shrink-0 rounded-full bg-[var(--border)] px-1.5 py-0.5 text-[10px]">{group.length}</span>}
-                      </div>
-                      <p className="min-w-0 truncate text-xs text-[var(--muted)]">{msg.snippet}</p>
-                      {msg.labels?.length > 0 && (
-                        <div className="mt-1 flex flex-wrap gap-1">
-                          {msg.labels.map((l) => (
-                            <span key={l} className="rounded bg-violet-500/10 px-1.5 py-0.5 text-[10px] text-violet-400">{l}</span>
-                          ))}
+                <ContextMenu key={msg.id} items={contextItems}>
+                  <Card3D>
+                    <div className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleSelect(msg.id)}
+                        aria-label={i18n("selectAll")}
+                        className="mt-1 h-4 w-4 rounded border-[var(--border)]"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => openThread(msg)}
+                        className={`min-w-0 flex-1 text-left ${msg.is_read ? "opacity-70" : ""}`}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="min-w-0 truncate text-sm font-semibold">{msg.from_name || msg.from_address}</span>
+                          <span className="shrink-0 text-[10px] text-[var(--muted)]">{formatMailDate(msg.received_at)}</span>
                         </div>
-                      )}
-                    </button>
-                    <div className="flex flex-col gap-1">
-                      <button
-                        type="button"
-                        aria-label={i18n("starred")}
-                        onClick={() => setFlags([msg.id], { is_starred: !msg.is_starred })}
-                        className={`rounded p-1 ${msg.is_starred ? "text-amber-400" : "text-[var(--muted)]"} hover:bg-[var(--surface-raised)]`}
-                      >
-                        <Icon name={msg.is_starred ? "star" : "star-off"} className="h-4 w-4" />
+                        <div className="flex items-center gap-2">
+                          <p className="min-w-0 flex-1 truncate text-sm text-[var(--foreground)]">{msg.subject || i18n("noResults")}</p>
+                          {group.length > 1 && <span className="shrink-0 rounded-full bg-[var(--border)] px-1.5 py-0.5 text-[10px]">{group.length}</span>}
+                        </div>
+                        <p className="min-w-0 truncate text-xs text-[var(--muted)]">{msg.snippet}</p>
+                        {msg.labels?.length > 0 && (
+                          <div className="mt-1 flex flex-wrap gap-1">
+                            {msg.labels.map((l) => (
+                              <span key={l} className="rounded bg-violet-500/10 px-1.5 py-0.5 text-[10px] text-violet-400">{l}</span>
+                            ))}
+                          </div>
+                        )}
                       </button>
-                      <button
-                        type="button"
-                        aria-label={i18n("important")}
-                        onClick={() => setFlags([msg.id], { is_important: !msg.is_important })}
-                        className={`rounded p-1 ${msg.is_important ? "text-red-400" : "text-[var(--muted)]"} hover:bg-[var(--surface-raised)]`}
-                      >
-                        <Icon name={msg.is_important ? "alert-circle" : "circle"} className="h-4 w-4" />
-                      </button>
+                      <div className="flex flex-col gap-1">
+                        <button
+                          type="button"
+                          aria-label={i18n("starred")}
+                          data-tooltip={i18n("starred")}
+                          data-haptic
+                          onClick={() => setFlags([msg.id], { is_starred: !msg.is_starred })}
+                          className={`rounded p-1 ${msg.is_starred ? "text-amber-400" : "text-[var(--muted)]"} hover:bg-[var(--surface-raised)]`}
+                        >
+                          <Icon name={msg.is_starred ? "star" : "star-off"} className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          aria-label={i18n("important")}
+                          data-tooltip={i18n("important")}
+                          data-haptic
+                          onClick={() => setFlags([msg.id], { is_important: !msg.is_important })}
+                          className={`rounded p-1 ${msg.is_important ? "text-red-400" : "text-[var(--muted)]"} hover:bg-[var(--surface-raised)]`}
+                        >
+                          <Icon name={msg.is_important ? "alert-circle" : "circle"} className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          aria-label={i18n("actions")}
+                          data-tooltip={i18n("actions")}
+                          data-haptic
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openMessageActions(msg);
+                          }}
+                          className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+                        >
+                          <Icon name="more-vertical" className="h-4 w-4" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </Card3D>
+                  </Card3D>
+                </ContextMenu>
               );
             })}
           </div>
         )}
       </div>
+
+      <BottomSheet open={sortOpen} onClose={() => setSortOpen(false)} title={i18n("sort")} position="bottom" draggable>
+        <div className="space-y-1">
+          {[
+            { id: "newest", icon: "arrow-down" },
+            { id: "oldest", icon: "arrow-up" },
+            { id: "sender", icon: "at-sign" },
+            { id: "unread", icon: "mail" },
+          ].map((opt) => (
+            <button
+              key={opt.id}
+              type="button"
+              onClick={() => { setSort(opt.id as typeof sort); setSortOpen(false); }}
+              data-haptic
+              className={`flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-colors ${
+                sort === opt.id ? "bg-[var(--accent)] text-white" : "hover:bg-[var(--surface-raised)]"
+              }`}
+            >
+              <Icon name={opt.icon} className="h-4 w-4" />
+              {i18n(opt.id)}
+              {sort === opt.id && <Icon name="check" className="ml-auto h-4 w-4" />}
+            </button>
+          ))}
+        </div>
+      </BottomSheet>
+
+      <BottomSheet open={moveOpen} onClose={() => setMoveOpen(false)} title={i18n("moveTo")} position="bottom" draggable>
+        <div className="space-y-1">
+          {FOLDERS.filter((f) => f !== folder).map((f) => (
+            <button
+              key={f}
+              type="button"
+              onClick={() => handleMoveSelected(f)}
+              data-haptic
+              className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-raised)]"
+            >
+              <Icon name={folderIcon(f)} className="h-4 w-4" />
+              {i18n(f)}
+            </button>
+          ))}
+        </div>
+      </BottomSheet>
+
+      <BottomSheet open={labelOpen} onClose={() => setLabelOpen(false)} title={i18n("labels")} position="bottom" draggable>
+        <div className="space-y-3">
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={newLabel}
+              onChange={(e) => setNewLabel(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleCreateLabelFromSheet()}
+              placeholder={i18n("newLabel")}
+              className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+            />
+            <button type="button" onClick={handleCreateLabelFromSheet} data-haptic className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">
+              {i18n("create")}
+            </button>
+          </div>
+          <div className="space-y-1">
+            {labels.length === 0 && <p className="py-4 text-center text-sm text-[var(--muted)]">{i18n("noResults")}</p>}
+            {labels.map((l) => {
+              const hasIt = selected.length > 0 && selected.every((id) => {
+                const msg = messages.find((m) => m.id === id);
+                return msg && (msg.labels || []).includes(l.name);
+              });
+              return (
+                <button
+                  key={l.id}
+                  type="button"
+                  onClick={() => handleToggleSelectedLabel(l.id)}
+                  data-haptic
+                  className={`flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-raised)] ${hasIt ? "text-[var(--accent)]" : ""}`}
+                >
+                  <Icon name={hasIt ? "x" : "tag"} className="h-4 w-4" />
+                  <span style={{ color: l.color }}>{l.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </BottomSheet>
+
+      <BottomSheet open={actionsOpen} onClose={() => { setActionsOpen(false); setActionsTarget(null); }} title={i18n("actions")} position="bottom" draggable>
+        <div className="space-y-1">
+          {actionsTarget && (
+            <>
+              <button
+                type="button"
+                onClick={() => { openThread(actionsTarget); setActionsOpen(false); }}
+                data-haptic
+                className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-raised)]"
+              >
+                <Icon name="mail-open" className="h-4 w-4" /> {i18n("open")}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setFlags([actionsTarget.id], { is_read: !actionsTarget.is_read }); setActionsOpen(false); }}
+                data-haptic
+                className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-raised)]"
+              >
+                <Icon name={actionsTarget.is_read ? "mail" : "mail-open"} className="h-4 w-4" />
+                {i18n(actionsTarget.is_read ? "markAsUnread" : "markAsRead")}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setFlags([actionsTarget.id], { is_starred: !actionsTarget.is_starred }); setActionsOpen(false); }}
+                data-haptic
+                className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-raised)]"
+              >
+                <Icon name={actionsTarget.is_starred ? "star-off" : "star"} className="h-4 w-4" />
+                {actionsTarget.is_starred ? i18n("removeFromFavorites") : i18n("addToFavorites")}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setFlags([actionsTarget.id], { is_important: !actionsTarget.is_important }); setActionsOpen(false); }}
+                data-haptic
+                className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-raised)]"
+              >
+                <Icon name={actionsTarget.is_important ? "circle" : "alert-circle"} className="h-4 w-4" />
+                {i18n(actionsTarget.is_important ? "important" : "markImportant")}
+              </button>
+              <div className="my-2 border-t border-[var(--border)]" />
+              <p className="px-3 py-1 text-[10px] uppercase tracking-wide text-[var(--muted)]">{i18n("snooze")}</p>
+              {Object.entries(SNOOZE_KEYS).map(([id, key]) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => handleThreadSnooze(id)}
+                  data-haptic
+                  className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-raised)]"
+                >
+                  <Icon name="clock-3" className="h-4 w-4" /> {i18n(key)}
+                </button>
+              ))}
+              <div className="my-2 border-t border-[var(--border)]" />
+              <button
+                type="button"
+                onClick={() => handleMoveMessage(actionsTarget, "archive")}
+                data-haptic
+                className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-raised)]"
+              >
+                <Icon name="archive" className="h-4 w-4" /> {i18n("archive")}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleMoveMessage(actionsTarget, "trash")}
+                data-haptic
+                className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm text-red-400 transition-colors hover:bg-red-500/10"
+              >
+                <Icon name="trash-2" className="h-4 w-4" /> {i18n("delete")}
+              </button>
+            </>
+          )}
+        </div>
+      </BottomSheet>
 
       {composeOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setComposeOpen(false)}>

@@ -15,22 +15,28 @@ export default function MobileNav() {
     { id: "tasks", label: i18n("tasks"), href: "/tasks/", icon: "tasks" },
     { id: "calendar", label: i18n("calendar"), href: "/calendar/", icon: "calendar" },
     { id: "mail", label: i18n("mail"), href: "/mail/", icon: "mail" },
+    { id: "brain", label: i18n("brain"), href: "/brain/", icon: "brain" },
+    { id: "files", label: i18n("files"), href: "/files/", icon: "folder" },
+    { id: "connections", label: i18n("connections"), href: "/connections/", icon: "plug" },
+    { id: "team", label: i18n("team"), href: "/team/", icon: "users" },
     { id: "settings", label: i18n("settings"), href: "/settings/", icon: "settings" },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-[var(--border)] bg-[var(--surface)] px-2 pb-safe md:hidden">
-      <div className="flex items-center justify-around py-2">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-[var(--border)] bg-[var(--surface)] pb-safe md:hidden">
+      <div className="flex items-center gap-1 overflow-x-auto px-2 py-2 [scrollbar-width:none]">
         {items.map((item) => {
           const isActive = pathname === item.href;
           return (
             <Link
               key={item.id}
               href={item.href}
-              className={`flex flex-col items-center gap-0.5 rounded-xl px-2 py-1 text-[10px] transition-colors ${
+              aria-current={isActive ? "page" : undefined}
+              data-haptic
+              className={`flex shrink-0 flex-col items-center gap-0.5 rounded-xl px-3 py-1.5 text-[10px] transition-colors ${
                 isActive
-                  ? "text-[var(--accent)]"
-                  : "text-[var(--muted)]"
+                  ? "bg-[var(--accent)]/10 text-[var(--accent)]"
+                  : "text-[var(--muted)] hover:bg-[var(--surface-raised)]"
               }`}
             >
               <Icon name={item.icon} className="h-5 w-5" />

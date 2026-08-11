@@ -51,5 +51,13 @@ export function useTeam() {
     setMembers(members.filter((m) => m.id !== id));
   }
 
-  return { members, loading, error, reload: load, invite, remove };
+  async function update(id: string, role: string) {
+    await fetchWorker("/api/team/members", {
+      method: "PATCH",
+      body: JSON.stringify({ id, role }),
+    });
+    setMembers(members.map((m) => (m.id === id ? { ...m, role } : m)));
+  }
+
+  return { members, loading, error, reload: load, invite, remove, update };
 }

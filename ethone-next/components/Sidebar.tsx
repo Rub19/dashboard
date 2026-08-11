@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
+import Tooltip from "@/components/Tooltip";
 
 export default function Sidebar() {
   const [expanded, setExpanded] = useState(false);
@@ -27,6 +28,7 @@ export default function Sidebar() {
     { id: "plugins", label: i18n("plugins"), href: "/plugins/", icon: "plugins" },
     { id: "spaces", label: i18n("spaces"), href: "/spaces/", icon: "spaces" },
     { id: "flows", label: i18n("flowsTitle"), href: "/flows/", icon: "flows" },
+    { id: "system", label: i18n("systemTitle"), href: "/system/", icon: "settings-2" },
     { id: "brain", label: i18n("brain"), href: "/brain/", icon: "brain" },
     { id: "focus", label: i18n("focus"), href: "/focus/", icon: "focus" },
     { id: "team", label: i18n("team"), href: "/team/", icon: "team" },
@@ -73,7 +75,7 @@ export default function Sidebar() {
       <nav className="flex-1 space-y-1 px-3 py-2">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
-          return (
+          const link = (
             <Link
               key={item.id}
               href={item.href}
@@ -102,6 +104,7 @@ export default function Sidebar() {
               </AnimatePresence>
             </Link>
           );
+          return expanded ? link : <Tooltip key={item.id} label={item.label} position="right">{link}</Tooltip>;
         })}
       </nav>
     </motion.aside>

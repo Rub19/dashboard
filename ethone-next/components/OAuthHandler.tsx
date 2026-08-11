@@ -2,10 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { exchangeCode, parseOAuthState } from "@/lib/oauth";
+import { setUserState } from "@/lib/user-state";
+import { useSettings } from "@/components/SettingsProvider";
 
 export default function OAuthHandler() {
   const [status, setStatus] = useState<string | null>(null);
   const handled = useRef(false);
+  const { update } = useSettings();
 
   useEffect(() => {
     if (handled.current) return;
@@ -22,6 +25,12 @@ export default function OAuthHandler() {
     exchangeCode(provider, code, clientId)
       .then(() => {
         localStorage.setItem(`ethone:clientId:${provider}`, clientId);
+        setUserState(`clientId:${provider}`, clientId).catch(() => {});
+        if (provider === "spotify") update({ liveSpotifyClientId: clientId });
+        if (provider === "youtube") update({ liveYoutubeClientId: clientId });
+        if (provider === "reddit") update({ liveRedditClientId: clientId });
+        if (provider === "google-calendar") update({ calendarClientId: clientId });
+        if (provider === "google-drive") update({ driveClientId: clientId });
         setStatus("Connecté avec succès.");
       })
       .catch((err) => setStatus(err.message || "Échec de connexion"))
@@ -31,7 +40,7 @@ export default function OAuthHandler() {
         window.history.replaceState({}, "", url);
         setTimeout(() => setStatus(null), 3000);
       });
-  }, []);
+  }, [update]);
 
   if (!status) return null;
 

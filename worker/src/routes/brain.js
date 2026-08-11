@@ -1,5 +1,6 @@
 import { httpError } from "../middleware/errors.js";
 import { askGroq, pingGroq } from "../services/groq-client.js";
+import { askLocalLlm, pingLocalLlm } from "../services/local-llm-client.js";
 
 const PROVIDER_RE = /^[a-z-]{2,32}$/;
 
@@ -21,14 +22,32 @@ export async function brainCompleteRoute({ request, env, auth }) {
   const body = await readJsonBody(request, 5);
   const provider = String(body.provider || "");
   if (!PROVIDER_RE.test(provider)) throw httpError("INVALID_PARAMETER", 400);
-  if (provider !== "groq") throw httpError("SERVICE_NOT_CONFIGURED", 501);
+  if (!["groq", "ollama", "lm-studio"].includes(provider)) throw httpError("SERVICE_NOT_CONFIGURED", 501);
 
   if (body.operation === "diagnostic") {
-    const result = await pingGroq(env);
+    if (provider === "groq") {
+      const result = await pingGroq(env);
+      return { data: result };
+    }
+    if (!body.baseUrl) throw httpError("INVALID_REQUEST", 400, { detail: "base_url_required" });
+    const result = await pingLocalLlm(env, { provider, baseUrl: body.baseUrl });
     return { data: result };
   }
 
   if (!Array.isArray(body.messages) || !body.messages.length) throw httpError("INVALID_REQUEST", 400);
-  const result = await askGroq(env, { model: body.model, messages: body.messages, context: body.context });
+
+  if (provider === "groq") {
+    const result = await askGroq(env, { model: body.model, messages: body.messages, context: body.context });
+    return { data: result };
+  }
+
+  if (!body.baseUrl) throw httpError("INVALID_REQUEST", 400, { detail: "base_url_required" });
+  const result = await askLocalLlm(env, {
+    provider,
+    model: body.model,
+    messages: body.messages,
+    context: body.context,
+    baseUrl: body.baseUrl
+  });
   return { data: result };
 }

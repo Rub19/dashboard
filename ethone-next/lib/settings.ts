@@ -26,7 +26,7 @@ export type Settings = {
   darkMode: boolean;
   theme: "default" | "boreal" | "cyberpunk" | "eclipse" | "emerald";
   iconPack: "lucide" | "phosphor" | "tabler" | "heroicons" | "radix";
-  densityMode: "compact" | "normal" | "airy";
+  densityMode: "compact" | "normal" | "airy" | "spacious" | "comfortable" | "ultra" | "automatic" | "custom";
   fontSize: number;
   fontFamily: "sans" | "outfit" | "mono" | "serif";
   density: number;
@@ -95,7 +95,7 @@ export const DEFAULTS: Settings = {
   darkMode: true,
   theme: "default",
   iconPack: "lucide",
-  densityMode: "normal",
+  densityMode: "comfortable",
   fontSize: 100,
   fontFamily: "sans",
   density: 50,

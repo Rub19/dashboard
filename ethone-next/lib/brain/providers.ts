@@ -14,8 +14,13 @@ export const BRAIN_PROVIDERS = Object.freeze([
 export function brainProviderList() {
   return BRAIN_PROVIDERS.map((provider) => ({
     ...provider,
-    available: provider.id === "context" || provider.id === "groq",
-    status: provider.id === "context" ? "ready" : provider.id === "groq" ? "backend-ready" : "backend-required",
+    available: ["context", "groq", "ollama", "lm-studio"].includes(provider.id),
+    status:
+      provider.id === "context"
+        ? "ready"
+        : provider.id === "groq" || provider.id === "ollama" || provider.id === "lm-studio"
+        ? "backend-ready"
+        : "backend-required",
   }));
 }
 
@@ -24,6 +29,7 @@ export async function brainComplete(input: {
   model?: string;
   messages: { role: "user" | "assistant" | "system"; content: string }[];
   context?: Record<string, unknown>;
+  baseUrl?: string;
 }) {
   return fetchWorker("/api/brain/complete", {
     method: "POST",
@@ -32,16 +38,18 @@ export async function brainComplete(input: {
       model: input.model,
       messages: input.messages,
       context: input.context,
+      baseUrl: input.baseUrl,
     }),
   });
 }
 
-export async function brainDiagnostic(provider: BrainProvider) {
+export async function brainDiagnostic(provider: BrainProvider, baseUrl?: string) {
   return fetchWorker("/api/brain/complete", {
     method: "POST",
     body: JSON.stringify({
       provider: provider === "context" ? "groq" : provider,
       operation: "diagnostic",
+      baseUrl,
     }),
   });
 }

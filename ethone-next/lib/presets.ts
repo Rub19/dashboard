@@ -1,0 +1,158 @@
+import type { Settings } from "@/lib/settings";
+
+export type PresetId = "productivity" | "focus" | "gaming" | "creative" | "minimal" | "developer";
+
+export type Preset = {
+  id: PresetId;
+  name: string;
+  description: string;
+  icon: string;
+  settings: Partial<Settings>;
+};
+
+export const PRESETS: Preset[] = [
+  {
+    id: "productivity",
+    name: "Productivité",
+    description: "Clair, structuré, calme.",
+    icon: "circle-check-big",
+    settings: {
+      theme: "default",
+      accentColor: "mint",
+      customAccent: "#7be5c3",
+      densityMode: "comfortable",
+      fontFamily: "sans",
+      radius: 50,
+      dockRadius: 50,
+      glassEnabled: true,
+      soundEffects: true,
+      backgroundEffect: "gradient",
+      wallpaper: "none",
+      shadow: "glow",
+      layoutPreset: "default",
+      brainEnabled: true,
+      reducedMotion: false,
+    },
+  },
+  {
+    id: "focus",
+    name: "Focus",
+    description: "Minimum, calme, sans distraction.",
+    icon: "focus",
+    settings: {
+      theme: "default",
+      accentColor: "sky",
+      customAccent: "#7dd3fc",
+      densityMode: "compact",
+      fontFamily: "outfit",
+      radius: 70,
+      dockRadius: 30,
+      glassEnabled: true,
+      soundEffects: false,
+      backgroundEffect: "solid",
+      wallpaper: "none",
+      shadow: "sm",
+      layoutPreset: "minimal",
+      sidebarVisible: false,
+      brainEnabled: false,
+      reducedMotion: true,
+    },
+  },
+  {
+    id: "gaming",
+    name: "Gaming",
+    description: "Néon, énergie, contraste.",
+    icon: "gamepad-2",
+    settings: {
+      theme: "cyberpunk",
+      accentColor: "rose",
+      customAccent: "#fb7185",
+      densityMode: "compact",
+      fontFamily: "mono",
+      radius: 10,
+      dockRadius: 70,
+      glassEnabled: true,
+      soundEffects: true,
+      backgroundEffect: "aurora",
+      wallpaper: "nebula",
+      shadow: "glow",
+      layoutPreset: "default",
+      brainEnabled: true,
+      reducedMotion: false,
+    },
+  },
+  {
+    id: "creative",
+    name: "Créatif",
+    description: "Chaleur, espace, inspiration.",
+    icon: "sparkles",
+    settings: {
+      theme: "emerald",
+      accentColor: "violet",
+      customAccent: "#a78bfa",
+      densityMode: "spacious",
+      fontFamily: "serif",
+      radius: 70,
+      dockRadius: 50,
+      glassEnabled: true,
+      soundEffects: true,
+      backgroundEffect: "mesh",
+      wallpaper: "aurora",
+      shadow: "glow",
+      layoutPreset: "default",
+      brainEnabled: true,
+      reducedMotion: false,
+    },
+  },
+  {
+    id: "minimal",
+    name: "Minimal",
+    description: "Léger, épuré, silencieux.",
+    icon: "minimize-2",
+    settings: {
+      theme: "eclipse",
+      accentColor: "mint",
+      customAccent: "#7be5c3",
+      densityMode: "spacious",
+      fontFamily: "sans",
+      radius: 50,
+      dockRadius: 20,
+      glassEnabled: false,
+      soundEffects: false,
+      backgroundEffect: "solid",
+      wallpaper: "none",
+      shadow: "none",
+      layoutPreset: "minimal",
+      sidebarVisible: false,
+      brainEnabled: false,
+      reducedMotion: true,
+    },
+  },
+  {
+    id: "developer",
+    name: "Développement",
+    description: "Compact, lisible, technique.",
+    icon: "code",
+    settings: {
+      theme: "boreal",
+      accentColor: "amber",
+      customAccent: "#fbbf24",
+      densityMode: "compact",
+      fontFamily: "mono",
+      radius: 10,
+      dockRadius: 50,
+      glassEnabled: true,
+      soundEffects: true,
+      backgroundEffect: "mesh",
+      wallpaper: "none",
+      shadow: "md",
+      layoutPreset: "default",
+      brainEnabled: true,
+      reducedMotion: false,
+    },
+  },
+];
+
+export function getPresetById(id: string): Preset | undefined {
+  return PRESETS.find((p) => p.id === id);
+}

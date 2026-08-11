@@ -44,6 +44,8 @@ export default function Card3D({ children }: { children: ReactNode }) {
         transformStyle: "preserve-3d",
         perspective: 1000,
         borderRadius: "var(--card-radius)",
+        willChange: "transform",
+        backfaceVisibility: "hidden",
         boxShadow: settings.shadow === "glow" ? "var(--shadow)" : settings.shadow === "md" ? "0 4px 20px -4px rgba(0,0,0,0.3)" : settings.shadow === "sm" ? "0 1px 3px rgba(0,0,0,0.2)" : "none",
       }}
     >

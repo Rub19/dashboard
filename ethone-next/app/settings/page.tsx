@@ -7,6 +7,7 @@ import Card3D from "@/components/Card3D";
 import LiveSettings from "@/components/LiveSettings";
 import { subscribePush, unsubscribePush } from "@/lib/push";
 import { Icon } from "@/lib/icons";
+import { PRESETS } from "@/lib/presets";
 
 function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -97,9 +98,14 @@ export default function SettingsPage() {
   ] as const;
 
   const DENSITY_MODES = [
-    { id: "compact", label: "Compact" },
+    { id: "spacious", label: "Spacieux" },
+    { id: "comfortable", label: "Confortable" },
     { id: "normal", label: "Normal" },
     { id: "airy", label: "Aéré" },
+    { id: "compact", label: "Compact" },
+    { id: "ultra", label: "Ultra-compact" },
+    { id: "automatic", label: "Automatique" },
+    { id: "custom", label: "Personnalisé" },
   ] as const;
 
   const BACKGROUNDS = [
@@ -180,6 +186,32 @@ export default function SettingsPage() {
   ];
 
   const sections = [
+    {
+      id: "presets",
+      label: "Presets",
+      icon: "layers",
+      children: (
+        <div className="space-y-4">
+          <p className="text-xs text-[var(--muted)]">Appliquer une ambiance prédéfinie en un clic.</p>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {PRESETS.map((preset) => (
+              <button
+                key={preset.id}
+                type="button"
+                onClick={() => update({ ...preset.settings })}
+                className="rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] p-3 text-left transition-colors hover:border-[var(--accent)]"
+              >
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <Icon name={preset.icon} className="h-4 w-4 text-[var(--accent)]" />
+                  {preset.name}
+                </div>
+                <div className="mt-1 text-xs text-[var(--muted)]">{preset.description}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      ),
+    },
     {
       id: "appearance",
       label: i18n("appearance"),
@@ -302,7 +334,7 @@ export default function SettingsPage() {
                   settings.densityMode === mode.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
                 }`}
               >
-                {i18n(`density${mode.id.charAt(0).toUpperCase() + mode.id.slice(1)}`)}
+                {mode.label}
               </button>
             ))}
           </div>

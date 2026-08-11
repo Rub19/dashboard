@@ -425,7 +425,7 @@ export function useLiveData(pollMs = 15000) {
       source: "nowplaying",
       label: "Spotify",
       title: loading ? i18n("loading") : i18n("noLive"),
-      status: loading ? "loading" : "empty",
+      status: loading ? "loading" : error ? "error" : "empty",
     });
   }
 
@@ -439,7 +439,7 @@ export function useLiveData(pollMs = 15000) {
       subtitle: activity?.name,
       meta: activity?.details,
       image: lanyard.avatarUrl,
-      status: lanyard.discord_status === "offline" ? "empty" : "connected",
+      status: error ? "error" : lanyard.discord_status === "offline" ? "empty" : "connected",
     });
   } else {
     records.push({
@@ -447,7 +447,7 @@ export function useLiveData(pollMs = 15000) {
       source: "lanyard",
       label: "Discord",
       title: loading ? i18n("loading") : i18n("notConnected"),
-      status: loading ? "loading" : "empty",
+      status: loading ? "loading" : error ? "error" : "empty",
     });
   }
 
@@ -478,7 +478,7 @@ export function useLiveData(pollMs = 15000) {
     subtitle: details.join(" · ") || undefined,
     meta: forecastText || asStr(weather?.location) || asStr(weather?.city),
     image: asStr(weather?.iconUrl),
-    status: weather ? "connected" : loading ? "loading" : "empty",
+    status: weather ? "connected" : loading ? "loading" : error ? "error" : "empty",
   });
 
   const githubLogin = asStr(github?.login);
@@ -490,7 +490,7 @@ export function useLiveData(pollMs = 15000) {
     subtitle: githubLogin ? `${asNum(github?.publicRepos) ?? 0} repos · ${asNum(github?.followers) ?? 0} followers` : undefined,
     meta: asStr((github?.recentEvent as ApiData)?.type),
     image: asStr(github?.avatarUrl),
-    status: githubLogin ? "connected" : loading ? "loading" : "empty",
+    status: githubLogin ? "connected" : loading ? "loading" : error ? "error" : "empty",
   });
 
   const todoistTask = asStr(todoist?.task);
@@ -500,7 +500,7 @@ export function useLiveData(pollMs = 15000) {
     label: "Todoist",
     title: todoistTask || i18n("noTasks"),
     subtitle: asStr(todoist?.project),
-    status: todoistTask ? "connected" : loading ? "loading" : "empty",
+    status: todoistTask ? "connected" : loading ? "loading" : error ? "error" : "empty",
   });
 
   const youtubeChannel = asStr((youtube?.channel as ApiData)?.title) || asStr(youtube?.channelTitle);
@@ -513,7 +513,7 @@ export function useLiveData(pollMs = 15000) {
     title: youtubeChannel || "YouTube",
     subtitle: youtubeVideoTitle,
     image: asStr(youtubeVideo?.thumbnailUrl) || asStr(youtube?.latestVideoThumbnailUrl),
-    status: youtubeChannel ? "connected" : loading ? "loading" : "empty",
+    status: youtubeChannel ? "connected" : loading ? "loading" : error ? "error" : "empty",
   });
 
   const redditProfile = reddit?.profile as ApiData;
@@ -529,7 +529,7 @@ export function useLiveData(pollMs = 15000) {
     subtitle: redditKarma !== undefined ? `${redditKarma} karma` : undefined,
     meta: redditPostTitle,
     image: asStr(redditProfile?.avatarUrl) || asStr(reddit?.avatarUrl),
-    status: redditName ? "connected" : loading ? "loading" : "empty",
+    status: redditName ? "connected" : loading ? "loading" : error ? "error" : "empty",
   });
 
   const lastfmData = lastfm as ApiData | null;
@@ -546,7 +546,7 @@ export function useLiveData(pollMs = 15000) {
     title: asStr(lastfmTrack?.name) || (liveLastfmUsername ? i18n("noLive") : "—"),
     subtitle: asStr(lastfmTrack?.artist) || asStr(lastfmTrack?.title),
     image: getArtworkUrl(lastfmTrack),
-    status: lastfmTrack?.name ? "connected" : loading ? "loading" : liveLastfmUsername ? "empty" : "empty",
+    status: lastfmTrack?.name ? "connected" : loading ? "loading" : liveLastfmUsername ? (error ? "error" : "empty") : (error ? "error" : "empty"),
   });
 
   const twitchChannel = twitch?.channel as ApiData | undefined;
@@ -558,7 +558,7 @@ export function useLiveData(pollMs = 15000) {
     subtitle: twitchChannel?.isLive ? i18n("live") : i18n("notConnected"),
     meta: asStr(twitchChannel?.gameName),
     image: asStr(twitchChannel?.profileImageUrl) || asStr(twitch?.profileImageUrl),
-    status: twitchChannel?.isLive ? "connected" : loading ? "loading" : liveTwitchLogin ? "empty" : "empty",
+    status: twitchChannel?.isLive ? "connected" : loading ? "loading" : liveTwitchLogin ? (error ? "error" : "empty") : (error ? "error" : "empty"),
   });
 
   const mc = (minecraft as ApiData) || {};
@@ -570,7 +570,7 @@ export function useLiveData(pollMs = 15000) {
     title: mcName || (liveMinecraftUsername ? i18n("notFound") : "—"),
     subtitle: asStr(mc?.uuid) ? `ID: ${asStr(mc?.uuid)?.slice(0, 8)}…` : undefined,
     image: asStr(mc?.skinUrl),
-    status: mcName ? "connected" : loading ? "loading" : liveMinecraftUsername ? "empty" : "empty",
+    status: mcName ? "connected" : loading ? "loading" : liveMinecraftUsername ? (error ? "error" : "empty") : (error ? "error" : "empty"),
   });
 
   const st = (steam as ApiData) || {};
@@ -583,7 +583,7 @@ export function useLiveData(pollMs = 15000) {
     subtitle: asStr(st?.gameName),
     meta: asStr(st?.status),
     image: asStr(st?.avatarUrl),
-    status: steamName ? "connected" : loading ? "loading" : liveSteamId ? "empty" : "empty",
+    status: steamName ? "connected" : loading ? "loading" : liveSteamId ? (error ? "error" : "empty") : (error ? "error" : "empty"),
   });
 
   const rssFeed = rss?.feed as ApiData | undefined;
@@ -595,7 +595,7 @@ export function useLiveData(pollMs = 15000) {
     title: asStr(rssFeed?.title) || asStr(rss?.title) || (liveRssUrl ? i18n("noResults") : "—"),
     subtitle: asStr(rssItem?.title),
     meta: asStr(rssFeed?.link),
-    status: rssItem?.title ? "connected" : loading ? "loading" : liveRssUrl ? "empty" : "empty",
+    status: rssItem?.title ? "connected" : loading ? "loading" : liveRssUrl ? (error ? "error" : "empty") : (error ? "error" : "empty"),
   });
 
   const billItems = Array.isArray(bills) ? (bills as ApiData[]) : [];
@@ -612,7 +612,7 @@ export function useLiveData(pollMs = 15000) {
     title: upcomingData ? `${asStr(upcomingData.amount)} ${asStr(upcomingData.currency) || ""}`.trim() : i18n("noBills"),
     subtitle: asStr(upcomingBill?.label) || asStr(upcomingData?.title),
     meta: asStr(upcomingData?.dueAt) || asStr(upcomingData?.date) || asStr(upcomingData?.due),
-    status: upcomingData ? "connected" : loading ? "loading" : "empty",
+    status: upcomingData ? "connected" : loading ? "loading" : error ? "error" : "empty",
   });
 
   const valorantMatch = (valorant || [])[0];
@@ -626,7 +626,7 @@ export function useLiveData(pollMs = 15000) {
     ) ?? 0}`,
     meta: asStr(valorantMatch?.agent),
     image: asStr(valorantMatch?.agentImageUrl),
-    status: valorantMatch ? "connected" : loading ? "loading" : hasRiotId ? "empty" : "empty",
+    status: valorantMatch ? "connected" : loading ? "loading" : hasRiotId ? (error ? "error" : "empty") : (error ? "error" : "empty"),
   });
 
   const lolMatch = (lol || [])[0];
@@ -637,7 +637,7 @@ export function useLiveData(pollMs = 15000) {
     title: asStr(lolMatch?.champion) || (hasRiotId ? i18n("noMatches") : "—"),
     subtitle: asStr(lolMatch?.result),
     meta: asStr(lolMatch?.mode),
-    status: lolMatch ? "connected" : loading ? "loading" : hasRiotId ? "empty" : "empty",
+    status: lolMatch ? "connected" : loading ? "loading" : hasRiotId ? (error ? "error" : "empty") : (error ? "error" : "empty"),
   });
 
   const calendarEvents = (calendar?.events as ApiData[] | undefined) ?? [];
@@ -649,7 +649,7 @@ export function useLiveData(pollMs = 15000) {
     title: asStr(nextCalendarEvent?.title) || (calendarClientId ? i18n("noEvents") : "—"),
     subtitle: asStr(nextCalendarEvent?.start),
     meta: asStr(nextCalendarEvent?.location),
-    status: nextCalendarEvent ? "connected" : loading ? "loading" : calendarClientId ? "empty" : "empty",
+    status: nextCalendarEvent ? "connected" : loading ? "loading" : calendarClientId ? (error ? "error" : "empty") : (error ? "error" : "empty"),
   });
 
   const driveFiles = (drive?.files as ApiData[] | undefined) ?? [];
@@ -662,7 +662,7 @@ export function useLiveData(pollMs = 15000) {
     subtitle: `${driveFiles.length} ${i18n("items")}`,
     meta: asStr(latestDriveFile?.modifiedTime) || asStr(latestDriveFile?.createdTime),
     image: asStr(latestDriveFile?.thumbnailLink) || asStr(latestDriveFile?.iconUrl),
-    status: latestDriveFile ? "connected" : loading ? "loading" : driveClientId ? "empty" : "empty",
+    status: latestDriveFile ? "connected" : loading ? "loading" : driveClientId ? (error ? "error" : "empty") : (error ? "error" : "empty"),
   });
 
   const notionPages = (notion?.pages as ApiData[] | undefined) ?? [];
@@ -674,7 +674,7 @@ export function useLiveData(pollMs = 15000) {
     title: asStr(latestNotionPage?.title) || (connected.has("notion") ? i18n("noResults") : "—"),
     subtitle: asStr(latestNotionPage?.kind),
     meta: asStr(latestNotionPage?.lastEditedTime),
-    status: latestNotionPage ? "connected" : loading ? "loading" : "empty",
+    status: latestNotionPage ? "connected" : loading ? "loading" : error ? "error" : "empty",
   });
 
   const apexSegments = (apexProfile?.segments as ApiData[] | undefined) ?? [];
@@ -687,7 +687,7 @@ export function useLiveData(pollMs = 15000) {
     subtitle: asStr(apexProfile?.platform),
     meta: asStr(topApexSegment?.name),
     image: asStr(apexProfile?.avatarUrl),
-    status: apexProfile?.handle ? "connected" : loading ? "loading" : hasApexId ? "empty" : "empty",
+    status: apexProfile?.handle ? "connected" : loading ? "loading" : hasApexId ? (error ? "error" : "empty") : (error ? "error" : "empty"),
   });
 
   const apexMatch = (apexMatches || [])[0];
@@ -700,7 +700,7 @@ export function useLiveData(pollMs = 15000) {
     subtitle: asStr(matchMetadata?.result),
     meta: asStr(matchMetadata?.agentName),
     image: asStr(matchMetadata?.agentImageUrl),
-    status: apexMatch ? "connected" : loading ? "loading" : hasApexId ? "empty" : "empty",
+    status: apexMatch ? "connected" : loading ? "loading" : hasApexId ? (error ? "error" : "empty") : (error ? "error" : "empty"),
   });
 
   return {

@@ -6,11 +6,17 @@ const VIEWPORTS = [
   { name: "mobile-320", width: 320, height: 568 },
   { name: "mobile-375", width: 375, height: 667 },
   { name: "mobile-430", width: 430, height: 932 },
+  { name: "mobile-540", width: 540, height: 960 },
+  { name: "tablet-640", width: 640, height: 960 },
   { name: "tablet-768", width: 768, height: 1024 },
+  { name: "tablet-820", width: 820, height: 1180 },
   { name: "tablet-1024", width: 1024, height: 768 },
   { name: "desktop-1280", width: 1280, height: 720 },
+  { name: "desktop-1366", width: 1366, height: 768 },
+  { name: "desktop-1600", width: 1600, height: 900 },
   { name: "ultrawide-1920", width: 1920, height: 1080 },
   { name: "ultrawide-2560", width: 2560, height: 1440 },
+  { name: "ultrawide-3440", width: 3440, height: 1440 },
 ];
 
 for (const route of ROUTES) {

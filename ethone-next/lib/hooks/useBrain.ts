@@ -24,7 +24,7 @@ export type BrainMessage = { role: "user" | "assistant"; content: string; create
 
 export function useBrain() {
   const router = useRouter();
-  const { update: updateSettings } = useSettings();
+  const { settings, update: updateSettings } = useSettings();
   const notes = useItems("notes");
   const tasks = useItems("tasks");
   const events = useItems("events");
@@ -80,12 +80,19 @@ export function useBrain() {
     const userMessage: BrainMessage = { role: "user", content: prompt.trim(), createdAt: Date.now() };
     const nextMessages = [...messages, userMessage];
     setMessages(nextMessages);
+    const baseUrl =
+      preferences.provider.active === "ollama"
+        ? settings.liveOllamaUrl
+        : preferences.provider.active === "lm-studio"
+        ? settings.liveLmStudioUrl
+        : undefined;
     try {
       const res = await brainComplete({
         provider: preferences.provider.active,
         model: preferences.provider.model,
         messages: nextMessages.map((m) => ({ role: m.role, content: m.content })),
         context: { persona: preferences.persona, tone: preferences.tone, detail: preferences.detail, language: preferences.language },
+        baseUrl,
       });
       const content = res?.data?.content || res?.data?.text || "Réponse vide.";
       setMessages((prev) => [...prev, { role: "assistant", content, createdAt: Date.now() }]);
@@ -136,7 +143,9 @@ export function useBrain() {
   }
 
   async function testProvider(id: string) {
-    const res = await brainDiagnostic(id as (typeof BRAIN_PROVIDERS)[number]);
+    const baseUrl =
+      id === "ollama" ? settings.liveOllamaUrl : id === "lm-studio" ? settings.liveLmStudioUrl : undefined;
+    const res = await brainDiagnostic(id as (typeof BRAIN_PROVIDERS)[number], baseUrl);
     if (res?.data?.latencyMs) setProviderStatus({ provider: id, latencyMs: res.data.latencyMs });
     return res;
   }

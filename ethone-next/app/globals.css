@@ -16,6 +16,19 @@
   --glass: 0.95;
   --shadow: 0 0 40px -12px rgba(139, 92, 246, 0.15);
   --aurora-speed: 30s;
+
+  /* Legacy semantic tokens */
+  --surface-1: var(--surface);
+  --surface-2: var(--surface-raised);
+  --surface-3: #202024;
+  --success: #34d399;
+  --success-soft: #d1fae5;
+  --warning: #f59e0b;
+  --warning-soft: #fef3c7;
+  --danger: #f43f5e;
+  --danger-soft: #ffe4e6;
+  --info: #38bdf8;
+  --info-soft: #e0f2fe;
 }
 
 @theme inline {
@@ -27,6 +40,10 @@
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -121,29 +138,58 @@ body {
   100% { transform: rotate(360deg) scale(1.2); }
 }
 
+[data-density="spacious"] {
+  --density-gap: 1.75rem;
+  --density-pad: 3rem;
+}
+
+[data-density="comfortable"] {
+  --density-gap: 1rem;
+  --density-pad: 1.5rem;
+}
+
+[data-density="normal"] {
+  --density-gap: 1rem;
+  --density-pad: 1.25rem;
+}
+
+[data-density="airy"] {
+  --density-gap: 1.5rem;
+  --density-pad: 2.5rem;
+}
+
 [data-density="compact"] {
   --density-gap: 0.5rem;
   --density-pad: 0.75rem;
 }
 
-[data-density="normal"] {
+[data-density="ultra"] {
+  --density-gap: 0.25rem;
+  --density-pad: 0.5rem;
+}
+
+[data-density="automatic"] {
   --density-gap: 1rem;
   --density-pad: 1.5rem;
 }
 
-[data-density="airy"] {
-  --density-gap: 1.5rem;
-  --density-pad: 2.5rem;
-}
-
-[data-density="normal"] {
+[data-density="custom"] {
   --density-gap: 1rem;
   --density-pad: 1.5rem;
 }
 
-[data-density="airy"] {
-  --density-gap: 1.5rem;
-  --density-pad: 2.5rem;
+@media (max-width: 640px) {
+  [data-density="automatic"] {
+    --density-gap: 0.5rem;
+    --density-pad: 0.75rem;
+  }
+}
+
+@media (min-width: 1920px) {
+  [data-density="automatic"] {
+    --density-gap: 1.5rem;
+    --density-pad: 2.5rem;
+  }
 }
 
 *:focus-visible {

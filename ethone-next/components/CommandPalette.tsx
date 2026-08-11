@@ -1,35 +1,18 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { useUserData } from "@/lib/hooks/useUserData";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
-import { useSettings } from "@/components/SettingsProvider";
-import { useAuth } from "@/components/AuthProvider";
-import { useWindowManager } from "@/components/WindowManagerProvider";
-
-type CommandItem = {
-  id: string;
-  label: string;
-  category: string;
-  icon?: React.ReactNode;
-  shortcut?: string;
-  action: () => void;
-};
+import { useCommandItems, type CommandItem } from "@/lib/commands";
 
 export default function CommandPalette() {
   const [query, setQuery] = useState("");
   const [index, setIndex] = useState(0);
-  const router = useRouter();
   const i18n = useI18n();
   const { open, setOpen } = useCommandPalette();
-  const { settings, update } = useSettings();
-  const { signOut } = useAuth();
-  const { items: macros } = useUserData("macro");
-  const { openWindow, toggleMissionControl } = useWindowManager();
+  const COMMANDS = useCommandItems(setOpen);
 
   const run = useCallback(
     (cmd: CommandItem) => {
@@ -38,62 +21,6 @@ export default function CommandPalette() {
       setQuery("");
     },
     [setOpen]
-  );
-
-  const macroCommands: CommandItem[] = macros.map((m) => {
-    const data = m.data as { action?: string; href?: string; setting?: string };
-    return {
-      id: `macro-${m.id}`,
-      label: m.label,
-      category: i18n("macros"),
-      icon: <Icon name="workflow" className="h-4 w-4" />,
-      action: () => {
-        if (data.action === "navigate" && data.href) router.push(data.href);
-        if (data.action === "toggle" && data.setting) {
-          if (data.setting === "brainEnabled") update({ brainEnabled: !settings.brainEnabled });
-          if (data.setting === "darkMode") update({ darkMode: !settings.darkMode });
-        }
-      },
-    };
-  });
-
-  const COMMANDS = useMemo<CommandItem[]>(
-    () => [
-      { id: "home", label: i18n("home"), category: i18n("navigate"), shortcut: "H", icon: <Icon name="arrowRight" className="h-4 w-4" />, action: () => router.push("/") },
-      { id: "mail", label: i18n("mail"), category: i18n("navigate"), shortcut: "M", action: () => router.push("/mail/") },
-      { id: "notes", label: i18n("notes"), category: i18n("navigate"), shortcut: "N", action: () => router.push("/notes/") },
-      { id: "tasks", label: i18n("tasks"), category: i18n("navigate"), shortcut: "T", action: () => router.push("/tasks/") },
-      { id: "calendar", label: i18n("calendar"), category: i18n("navigate"), shortcut: "C", action: () => router.push("/calendar/") },
-      { id: "files", label: i18n("files"), category: i18n("navigate"), shortcut: "F", action: () => router.push("/files/") },
-      { id: "brain", label: i18n("brain"), category: i18n("navigate"), shortcut: "B", action: () => router.push("/brain/") },
-      { id: "focus", label: i18n("focus"), category: i18n("navigate"), shortcut: "P", action: () => router.push("/focus/") },
-      { id: "matches", label: i18n("matches"), category: i18n("navigate"), shortcut: "G", action: () => router.push("/matches/") },
-      { id: "connections", label: i18n("connections"), category: i18n("navigate"), shortcut: "O", action: () => router.push("/connections/") },
-      { id: "spaces", label: i18n("spaces"), category: i18n("navigate"), action: () => router.push("/spaces/") },
-      { id: "flows", label: i18n("flowsTitle"), category: i18n("navigate"), action: () => router.push("/flows/") },
-      { id: "interactions", label: i18n("interactions"), category: i18n("navigate"), action: () => router.push("/interactions/") },
-      { id: "settings", label: i18n("settings"), category: i18n("navigate"), shortcut: "S", action: () => router.push("/settings/") },
-
-      { id: "toggle-theme", label: settings.darkMode ? i18n("lightMode") : i18n("darkMode"), category: i18n("actions"), icon: settings.darkMode ? <Icon name="sun" className="h-4 w-4" /> : <Icon name="moon" className="h-4 w-4" />, action: () => update({ darkMode: !settings.darkMode }) },
-      { id: "toggle-brain", label: settings.brainEnabled ? i18n("disableBrain") : i18n("enableBrain"), category: i18n("actions"), icon: <Icon name="brain" className="h-4 w-4" />, action: () => update({ brainEnabled: !settings.brainEnabled }) },
-      { id: "focus-timer", label: i18n("startFocus"), category: i18n("actions"), icon: <Icon name="focus" className="h-4 w-4" />, action: () => router.push("/focus/") },
-      { id: "mission-control", label: i18n("missionControl"), category: i18n("actions"), shortcut: "M", icon: <Icon name="layoutGrid" className="h-4 w-4" />, action: () => { toggleMissionControl(); } },
-
-      { id: "new-note", label: i18n("newNote"), category: i18n("create"), icon: <Icon name="stickyNote" className="h-4 w-4" />, action: () => router.push("/notes/") },
-      { id: "new-task", label: i18n("newTask"), category: i18n("create"), icon: <Icon name="plus" className="h-4 w-4" />, action: () => router.push("/tasks/") },
-      { id: "new-interaction", label: i18n("newInteraction"), category: i18n("create"), icon: <Icon name="interactions" className="h-4 w-4" />, action: () => router.push("/interactions/") },
-      { id: "macros", label: i18n("macros"), category: i18n("create"), icon: <Icon name="workflow" className="h-4 w-4" />, action: () => router.push("/macros/") },
-      { id: "personas", label: i18n("personas"), category: i18n("create"), icon: <Icon name="team" className="h-4 w-4" />, action: () => router.push("/personas/") },
-      { id: "open-notes", label: "Notes (fenêtre)", category: i18n("windows"), icon: <Icon name="appWindow" className="h-4 w-4" />, action: () => { openWindow("/notes/", "Notes"); } },
-      { id: "open-tasks", label: "Tâches (fenêtre)", category: i18n("windows"), icon: <Icon name="appWindow" className="h-4 w-4" />, action: () => { openWindow("/tasks/", "Tâches"); } },
-      { id: "open-mail", label: "Mail (fenêtre)", category: i18n("windows"), icon: <Icon name="appWindow" className="h-4 w-4" />, action: () => { openWindow("/mail/", "Mail"); } },
-      { id: "open-bills", label: "Factures (fenêtre)", category: i18n("windows"), icon: <Icon name="appWindow" className="h-4 w-4" />, action: () => { openWindow("/bills/", "Factures"); } },
-
-      ...macroCommands,
-
-      { id: "signout", label: i18n("signOut"), category: i18n("account"), icon: <Icon name="logout" className="h-4 w-4" />, action: () => signOut().then(() => router.push("/login")) },
-    ],
-    [i18n, router, settings, update, signOut, macroCommands, openWindow, toggleMissionControl]
   );
 
   const filtered = useMemo(() => {

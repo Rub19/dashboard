@@ -18,7 +18,9 @@ export default function CalendarPage() {
   const { settings } = useSettings();
   const { items, loading: itemsLoading, error: itemsError, create, remove } = useItems("events");
   const [date, setDate] = useState(new Date());
+  const [selectedDay, setSelectedDay] = useState<number>(date.getDate());
   const [newTitle, setNewTitle] = useState("");
+  const [newTime, setNewTime] = useState("09:00");
   const [clientId, setClientId] = useState("");
 
   useEffect(() => {
@@ -62,10 +64,16 @@ export default function CalendarPage() {
     return start && start.getMonth() === month && start.getFullYear() === year;
   });
 
+  const selectedDayEvents = monthEvents.filter((e) => {
+    const start = e.startAt ? new Date(e.startAt) : null;
+    return start && start.getDate() === selectedDay;
+  });
+
   async function addEvent() {
     if (!newTitle.trim()) return;
     try {
-      const start = new Date(year, month, date.getDate());
+      const [hours, minutes] = newTime.split(":").map(Number);
+      const start = new Date(year, month, selectedDay, hours, minutes);
       await create({ title: newTitle, body: "", startAt: start.toISOString() });
       setNewTitle("");
       success(i18n("created"));
@@ -129,6 +137,13 @@ export default function CalendarPage() {
             aria-label={i18n("newEvent")} placeholder={i18n("newEvent")}
             className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
           />
+          <input
+            type="time"
+            value={newTime}
+            onChange={(e) => setNewTime(e.target.value)}
+            aria-label={i18n("time")}
+            className="w-28 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm outline-none focus:border-[var(--accent)]"
+          />
           <button
             type="button"
             aria-label={i18n("add")}
@@ -154,16 +169,23 @@ export default function CalendarPage() {
             const event = hasEvent(day);
             const isToday =
               new Date().getDate() === day && new Date().getMonth() === month && new Date().getFullYear() === year;
+            const isSelected = selectedDay === day;
             return (
-              <div
+              <button
                 key={day}
-                className={`relative flex aspect-square items-center justify-center rounded-xl text-sm ${
-                  isToday ? "bg-[var(--accent)] text-white" : "bg-[var(--surface-raised)] text-[var(--foreground)]"
+                type="button"
+                onClick={() => setSelectedDay(day)}
+                className={`relative flex aspect-square items-center justify-center rounded-xl text-sm transition-colors ${
+                  isToday
+                    ? "bg-[var(--accent)] text-white"
+                    : isSelected
+                      ? "bg-[var(--accent)]/20 text-[var(--accent)] ring-1 ring-[var(--accent)]"
+                      : "bg-[var(--surface-raised)] text-[var(--foreground)] hover:bg-[var(--surface)]"
                 }`}
               >
                 {day}
-                {event && <span className="absolute bottom-1 h-1.5 w-1.5 rounded-full bg-violet-400" />}
-              </div>
+                {event && <span className={`absolute bottom-1 h-1.5 w-1.5 rounded-full ${isToday || isSelected ? "bg-white" : "bg-violet-400"}`} />}
+              </button>
             );
           })}
         </div>
@@ -194,13 +216,14 @@ export default function CalendarPage() {
             <span className="text-xs text-emerald-400">{i18n("google")} {i18n("connected")}</span>
           )}
         </div>
+        <p className="text-sm text-[var(--muted)]">{new Date(year, month, selectedDay).toLocaleDateString(settings.language, { weekday: "long", day: "numeric", month: "long" })}</p>
         {itemsLoading || googleLoading ? (
           <Icon name="loader-2" className="h-5 w-5 animate-spin text-[var(--muted)]" />
-        ) : monthEvents.length === 0 ? (
-          <p className="text-sm text-[var(--muted)]">{i18n("noEvents")}</p>
+        ) : selectedDayEvents.length === 0 ? (
+          <p className="text-sm text-[var(--muted)]">{i18n("noEventsDay")}</p>
         ) : (
           <div className="space-y-2">
-            {monthEvents.map((e) => (
+            {selectedDayEvents.map((e) => (
               <div key={e.id} className="flex items-center justify-between gap-2">
                 <div className="min-w-0">
                   <p className="font-medium">

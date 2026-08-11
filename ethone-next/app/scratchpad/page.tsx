@@ -35,7 +35,9 @@ export default function ScratchpadPage() {
       </div>
 
       <Card3D>
+        <label htmlFor="scratchpad" className="sr-only">{i18n("scratchpadPlaceholder")}</label>
         <textarea
+          id="scratchpad"
           value={note}
           onChange={(e) => setNote(e.target.value)}
           placeholder={i18n("scratchpadPlaceholder")}

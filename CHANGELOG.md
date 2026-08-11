@@ -4,6 +4,22 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [v335] - 2026-08-20
 
+**Phase 15 : Calendrier avancé + UI système (tooltip, bottom sheet, context menu, scratchpad, haptics)**
+
+### Ajoute
+- `components/Tooltip.tsx` : info-bulle accessible au survol/focus.
+- `components/BottomSheet.tsx` : panneau inférieur avec animation.
+- `components/ContextMenu.tsx` : menu contextuel positionné.
+- `app/scratchpad/page.tsx` : bloc-notes éphémère avec persistance locale.
+- `lib/hooks/useHaptics.ts` : déclenchement des vibrations tactiles via `navigator.vibrate`.
+- Calendrier avancé : sélection d'un jour, saisie d'heure, affichage des événements du jour sélectionné.
+- Clés i18n pour le scratchpad et le calendrier.
+
+### Version PWA
+- `experience-v335`.
+
+## [v334] - 2026-08-20
+
 **UI système : tooltip, bottom sheet, context menu, scratchpad, haptics**
 
 ### Ajoute

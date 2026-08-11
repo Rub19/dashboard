@@ -36,8 +36,9 @@ export default function PasswordRecoveryPage() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1">
-              <label className="text-sm font-medium">{i18n("email")}</label>
+              <label htmlFor="recovery-email" className="text-sm font-medium">{i18n("email")}</label>
               <input
+                id="recovery-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}

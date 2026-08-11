@@ -35,14 +35,17 @@ export default function RssPage() {
 
       <Card3D>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <input
-            type="url"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") handleLoad(); }}
-            placeholder={i18n("rssUrlPlaceholder")}
-            className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
-          />
+          <label className="min-w-0 flex-1">
+            <span className="sr-only">{i18n("rssUrlPlaceholder")}</span>
+            <input
+              type="url"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") handleLoad(); }}
+              placeholder={i18n("rssUrlPlaceholder")}
+              className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+            />
+          </label>
           <button
             type="button"
             onClick={handleLoad}

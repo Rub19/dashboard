@@ -2,6 +2,20 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v332] - 2026-08-20
+
+**Brain avancé (mémoire, providers, préférences, actions, automatisation, planning)**
+
+### Ajoute
+- `lib/brain/preferences.ts`, `lib/brain/memory.ts`, `lib/brain/providers.ts`, `lib/brain/action-registry.ts`, `lib/brain/automation.ts` : gestion des préférences Brain, mémoire Supabase, providers, actions et règles d'automatisation.
+- `lib/hooks/useBrain.ts` : hook unifiant chat, mémoire, providers, actions, automations et planning.
+- Refonte complète de `app/brain/page.tsx` avec onglets Chat, Mémoire, Actions, Automations, Providers, Préférences.
+- Intégration des actions Brain avec les endpoints `/api/notes`, `/api/tasks`, `/api/events`.
+- Clés i18n pour le module Brain.
+
+### Version PWA
+- `experience-v332`.
+
 ## [v331] - 2026-08-20
 
 **Sécurité, authentification OAuth/passkey et tests runtime**

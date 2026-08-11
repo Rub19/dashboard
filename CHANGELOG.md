@@ -2,6 +2,20 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v333] - 2026-08-20
+
+**Profils, récupération de mot de passe et feature-fallback**
+
+### Ajoute
+- `app/profile-selection/page.tsx` : page de sélection et création d'environnements de profil.
+- `lib/hooks/useProfiles.ts` : gestion locale multi-profil avec création, duplication, suppression, sélection.
+- `app/password-recovery/page.tsx` : formulaire de récupération via `supabase.auth.resetPasswordForEmail`.
+- `app/feature-fallback/page.tsx` : page de repli expliquant une fonctionnalité indisponible.
+- Clés i18n pour profils, récupération et fallback.
+
+### Version PWA
+- `experience-v333`.
+
 ## [v332] - 2026-08-20
 
 **Brain avancé (mémoire, providers, préférences, actions, automatisation, planning)**

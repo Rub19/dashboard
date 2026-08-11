@@ -4,7 +4,15 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [v338] - 2026-08-20
 
-**Profils liés au compte utilisateur**
+**Profils liés au compte utilisateur + migration des profils v8**
+
+### Ajoute
+- Migration Supabase `ethone_profiles` avec `user_id`, RLS, index unique sur le profil actif par utilisateur.
+- Routes Worker `/api/profiles` (CRUD + activation) avec scoping par `auth.userId`.
+- Hook `useProfiles` migré de `localStorage` vers l’API Worker : les profils sont maintenant synchronisés par compte et isolés entre utilisateurs.
+- `ProfileSync` dans `app/layout.tsx` applique automatiquement le profil actif (`dockItems`, `accentColor`) au chargement.
+- Fix : activation d'un profil faite par requêtes PATCH directes côté Worker, sans dépendre d'une RPC Supabase.
+- Migration `202608270001_migrate_v8_profiles.sql` qui lit les profils stockés dans `ethone_user_state.payload.repository.profiles` et les insère dans `ethone_profiles` (type, accent, widgets, intégrations, profil actif). Ne touche que les utilisateurs sans profils dans la nouvelle table.
 
 ### Ajoute
 - Migration Supabase `ethone_profiles` avec `user_id`, RLS, index unique sur le profil actif par utilisateur, et fonction `ethone_set_active_profile` pour garantir un seul profil actif à la fois.

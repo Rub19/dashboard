@@ -16,7 +16,7 @@ import {
   removeDevice,
   listUserDevices
 } from "../services/device-service.js";
-import { listSecurityEvents, getUserIdByEmail } from "../services/security-identity-client.js";
+import { listSecurityEvents, getUserIdByEmail, listPasskeys } from "../services/security-identity-client.js";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -195,4 +195,10 @@ export async function securityEventsRoute({ url, env, auth }) {
   const limit = limitParam ? Number(limitParam) : 100;
   const events = await listSecurityEvents(env, auth.userId, limit);
   return { data: events };
+}
+
+export async function passkeyListRoute({ env, auth }) {
+  if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
+  const passkeys = await listPasskeys(env, auth.userId);
+  return { data: passkeys };
 }

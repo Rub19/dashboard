@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
-import { signInWithOtp, verifyEmailOtp } from "@/lib/auth";
+import { signInWithOtp, verifyEmailOtp, signInWithOAuth, signInWithPasskey } from "@/lib/auth";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 
@@ -47,6 +47,40 @@ export default function LoginPage() {
     }
     success(i18n("saved"));
     router.push("/");
+  }
+
+  async function handleOAuth(provider: "google" | "github") {
+    setLoading(true);
+    setError(null);
+    const { ok, url, error: err } = await signInWithOAuth(provider);
+    setLoading(false);
+    if (!ok || err || !url) {
+      setError(err?.message || i18n("error"));
+      showError(i18n("error"));
+      return;
+    }
+    window.location.href = url;
+  }
+
+  async function handlePasskey() {
+    setLoading(true);
+    setError(null);
+    try {
+      const { ok, error: err } = await signInWithPasskey(email);
+      setLoading(false);
+      if (!ok || err) {
+        setError(err?.message || i18n("error"));
+        showError(i18n("error"));
+        return;
+      }
+      success(i18n("saved"));
+      router.push("/");
+    } catch (err) {
+      setLoading(false);
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg);
+      showError(msg);
+    }
   }
 
   return (
@@ -94,6 +128,40 @@ export default function LoginPage() {
                     {i18n("sendCode")} <Icon name="arrow-right" className="h-4 w-4" />
                   </>
                 )}
+              </button>
+
+              <div className="relative flex items-center py-2">
+                <div className="flex-1 border-t border-[var(--border)]" />
+                <span className="px-2 text-xs text-[var(--muted)]">{i18n("orContinueWith")}</span>
+                <div className="flex-1 border-t border-[var(--border)]" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleOAuth("google")}
+                  disabled={loading}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--surface-raised)] disabled:opacity-50"
+                >
+                  <Icon name="chrome" className="h-4 w-4" /> {i18n("signInWithGoogle")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleOAuth("github")}
+                  disabled={loading}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--surface-raised)] disabled:opacity-50"
+                >
+                  <Icon name="github" className="h-4 w-4" /> {i18n("signInWithGithub")}
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={handlePasskey}
+                disabled={loading}
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--surface-raised)] disabled:opacity-50"
+              >
+                <Icon name="key-round" className="h-4 w-4" /> {i18n("signInWithPasskey")}
               </button>
             </form>
           ) : (

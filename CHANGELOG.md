@@ -2,6 +2,22 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v331] - 2026-08-20
+
+**Sécurité, authentification OAuth/passkey et tests runtime**
+
+### Ajoute
+- `lib/hooks/useSecurity.ts` : devices, passkeys, événements de sécurité, enregistrement/authentification WebAuthn.
+- Refonte de `app/security/page.tsx` : appareils, passkeys, historique, actions de confiance/révocation/signature.
+- Route Worker `/api/auth/passkeys` pour lister les passkeys (`passkeyListRoute`).
+- `lib/auth.ts` : `signInWithOAuth`, `signInWithPasskey` avec WebAuthn.
+- Refonte de `app/login/page.tsx` : boutons Google/GitHub, connexion par passkey, reste du formulaire OTP.
+- `lib/hooks/useMail.test.ts` : tests runtime fonctionnels pour `useMail`.
+- Clés i18n pour passkey, OAuth et actions de sécurité.
+
+### Version PWA
+- `experience-v331`.
+
 ## [v330] - 2026-08-20
 
 **Mail complet**

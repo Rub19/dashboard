@@ -4,6 +4,7 @@ import { useState } from "react";
 import Card3D from "@/components/Card3D";
 import LiveWidgets from "@/components/LiveWidgets";
 import LiveStats from "@/components/LiveStats";
+import BillsWidget from "@/components/BillsWidget";
 import { useHomeData } from "@/lib/hooks/useDashboard";
 import { useMail } from "@/lib/hooks/useMail";
 import { useSettings } from "@/components/SettingsProvider";
@@ -230,6 +231,10 @@ export default function Home() {
       )}
 
       <LiveStats />
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <BillsWidget />
+      </div>
 
       <section className="space-y-4">
         <div className="flex items-center justify-between">

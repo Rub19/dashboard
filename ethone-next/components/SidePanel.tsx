@@ -10,6 +10,8 @@ import { useNotifications } from "@/lib/hooks/useNotifications";
 import { useAuth } from "@/components/AuthProvider";
 import { useProfile } from "@/lib/hooks/useProfile";
 import { useFocus } from "./FocusProvider";
+import { useSettings } from "@/components/SettingsProvider";
+import { usePresence } from "./PresenceProvider";
 
 const HUBS = [
   { city: "Paris", zone: "Europe/Paris", label: "CET" },
@@ -149,22 +151,46 @@ export default function SidePanel() {
 function WidgetsTab({ now }: { now: Date }) {
   const i18n = useI18n();
   const { state } = useFocus();
+  const { settings } = useSettings();
+  const { unreadCount, importantCount } = useNotifications();
+  const { state: presence } = usePresence();
   const progress = state.total > 0 ? ((state.total - state.remaining) / state.total) * 100 : 0;
+
+  const statusMap: Record<string, string> = {
+    online: "statusOnline",
+    busy: "statusBusy",
+    focus: "statusFocus",
+    away: "statusAway",
+    invisible: "statusInvisible",
+  };
+
+  const statusIconMap: Record<string, string> = {
+    online: "circle",
+    busy: "minus-circle",
+    focus: "target",
+    away: "moon",
+    invisible: "eye-off",
+  };
+
+  const presenceMap: Record<string, string> = {
+    online: "presenceOnline",
+    away: "presenceAway",
+    dnd: "presenceDnd",
+    offline: "presenceOffline",
+  };
+
+  const statusIcon = statusIconMap[settings.status] || "circle";
+  const presenceLabel = presenceMap[presence.status || "online"] || "presenceOnline";
 
   return (
     <div className="space-y-4">
-      <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-        <div className="mb-2 flex items-center gap-2 text-sm text-[var(--muted)]">
-          <Icon name="layers-3" className="h-4 w-4" />
-          <span>Space</span>
-        </div>
-        <p className="text-lg font-semibold">Essentiel</p>
-      </section>
-
       <section className="grid grid-cols-3 gap-2">
-        <Metric icon="notebook-pen" value={0} label={i18n("notes")} />
-        <Metric icon="circle-check-big" value={0} label={i18n("tasks")} />
-        <Metric icon="folder" value={0} label={i18n("files")} />
+        <Metric icon="bell" value={unreadCount} label={i18n("unread")} />
+        <Metric icon="alert-triangle" value={importantCount} label={i18n("important")} />
+        <Metric icon="timer" value={state.remaining} label={state.phase === "idle" ? i18n("focus") : i18n("remaining")} />
+        <Metric icon="brain" value={settings.brainEnabled ? i18n("on") : i18n("off")} label={i18n("brain")} />
+        <Metric icon={statusIcon} value={i18n(statusMap[settings.status] || "statusOnline")} label={i18n("sessionMode")} />
+        <Metric icon="radio" value={i18n(presenceLabel)} label={i18n("presence")} />
       </section>
 
       <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
@@ -212,7 +238,7 @@ function WidgetsTab({ now }: { now: Date }) {
   );
 }
 
-function Metric({ icon, value, label }: { icon: string; value: number; label: string }) {
+function Metric({ icon, value, label }: { icon: string; value: string | number; label: string }) {
   return (
     <div className="flex flex-col items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3 text-center" data-live-widget="metric" data-live-kind="metric">
       <Icon name={icon} className="h-5 w-5 text-[var(--accent)]" />

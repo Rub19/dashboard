@@ -1,6 +1,6 @@
 "use client";
 
-/* eslint-disable react-hooks/refs */
+
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -38,8 +38,8 @@ export default function Select({ options, value, onChange, placeholder = "Sélec
   const [activeIndex, setActiveIndex] = useState(0);
   const [search, setSearch] = useState("");
   const optionRefs = useRef<(HTMLButtonElement | null)[]>([]);
-
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { refs, floatingStyles } = useFloating({
     open,
@@ -64,24 +64,68 @@ export default function Select({ options, value, onChange, placeholder = "Sélec
 
   const mergedRef = mergeRefs(triggerRef, refs.setReference);
 
-  const enabledOptions = useMemo(() => options.filter((o) => !o.disabled), [options]);
-  const selectedIndex = useMemo(
-    () => enabledOptions.findIndex((o) => o.value === value),
-    [enabledOptions, value]
+  const enabledIndexes = useMemo(
+    () => options.map((o, i) => (o.disabled ? -1 : i)).filter((i) => i >= 0),
+    [options]
   );
+
+  const selectedAllIndex = useMemo(() => options.findIndex((o) => o.value === value), [options, value]);
+  const selectedEnabledIndex = enabledIndexes.indexOf(selectedAllIndex);
+
+  function enabledIndexToAllIndex(enabledIdx: number) {
+    return enabledIndexes[enabledIdx] ?? -1;
+  }
+
+  function allIndexToEnabledIndex(allIdx: number) {
+    return enabledIndexes.indexOf(allIdx);
+  }
 
   useEffect(() => {
     if (open) {
-      setActiveIndex(selectedIndex >= 0 ? selectedIndex : 0);
+      const initialEnabled = selectedEnabledIndex >= 0 ? selectedEnabledIndex : 0;
+      setActiveIndex(enabledIndexToAllIndex(initialEnabled));
       setSearch("");
     }
-  }, [open, selectedIndex]);
+  }, [open, selectedEnabledIndex]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    const active = optionRefs.current[activeIndex];
-    active?.focus({ preventScroll: true });
-    active?.scrollIntoView({ block: "nearest" });
-  }, [activeIndex]);
+    if (!open) {
+      triggerRef.current?.focus();
+    }
+  }, [open]);
+
+  useEffect(() => {
+    const allIdx = activeIndex;
+    const el = optionRefs.current[allIdx];
+    if (open && el) {
+      el.focus({ preventScroll: true });
+      el.scrollIntoView({ block: "nearest" });
+    }
+  }, [activeIndex, open]);
+
+  function setActiveEnabledIndex(enabledIdx: number) {
+    setActiveIndex(enabledIndexToAllIndex(enabledIdx));
+  }
+
+  function adjustEnabledIndex(delta: number) {
+    if (enabledIndexes.length === 0) return;
+    const currentEnabled = allIndexToEnabledIndex(activeIndex);
+    const next = (currentEnabled + delta + enabledIndexes.length) % enabledIndexes.length;
+    setActiveEnabledIndex(next);
+  }
+
+  function findTypeahead(term: string) {
+    if (enabledIndexes.length === 0) return;
+    const currentEnabled = allIndexToEnabledIndex(activeIndex);
+    const next = enabledIndexes.findIndex(
+      (allIdx, i) => i > currentEnabled && options[allIdx].label.toLowerCase().startsWith(term)
+    );
+    const fallback = enabledIndexes.findIndex((allIdx) =>
+      options[allIdx].label.toLowerCase().startsWith(term)
+    );
+    const index = next >= 0 ? next : fallback >= 0 ? fallback : currentEnabled;
+    setActiveEnabledIndex(index);
+  }
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLButtonElement | HTMLDivElement>) {
     if (event.key === "ArrowDown" || event.key === "ArrowUp") {
@@ -89,46 +133,31 @@ export default function Select({ options, value, onChange, placeholder = "Sélec
       if (!open) {
         setOpen(true);
       } else {
-        const next =
-          event.key === "ArrowDown"
-            ? (activeIndex + 1) % enabledOptions.length
-            : (activeIndex - 1 + enabledOptions.length) % enabledOptions.length;
-        setActiveIndex(next);
+        adjustEnabledIndex(event.key === "ArrowDown" ? 1 : -1);
       }
     } else if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       if (!open) {
         setOpen(true);
       } else {
-        const option = enabledOptions[activeIndex];
-        if (option) {
-          onChange?.(option.value);
-          setOpen(false);
-        }
+        select(options[activeIndex]);
       }
     } else if (event.key === "Escape") {
       event.preventDefault();
       setOpen(false);
     } else if (event.key === "Home") {
       event.preventDefault();
-      setActiveIndex(0);
+      if (open) setActiveEnabledIndex(0);
     } else if (event.key === "End") {
       event.preventDefault();
-      setActiveIndex(enabledOptions.length - 1);
-    } else if (event.key.length === 1) {
+      if (open) setActiveEnabledIndex(enabledIndexes.length - 1);
+    } else if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      event.preventDefault();
+      if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
       const term = (search + event.key).toLowerCase();
-      const next = enabledOptions.findIndex(
-        (o, i) => i > activeIndex && o.label.toLowerCase().startsWith(term)
-      );
-      const fallback = enabledOptions.findIndex(
-        (o) => o.label.toLowerCase().startsWith(term)
-      );
-      const index = next >= 0 ? next : fallback >= 0 ? fallback : activeIndex;
-      if (index >= 0) {
-        setActiveIndex(index);
-        setSearch((s) => s + event.key);
-        setTimeout(() => setSearch(""), 500);
-      }
+      setSearch(term);
+      findTypeahead(term);
+      searchTimeoutRef.current = setTimeout(() => setSearch(""), 600);
     }
   }
 
@@ -136,10 +165,15 @@ export default function Select({ options, value, onChange, placeholder = "Sélec
     if (option.disabled) return;
     onChange?.(option.value);
     setOpen(false);
-    triggerRef.current?.focus();
   }
 
-  const activeLabel = enabledOptions.find((o) => o.value === value)?.label || placeholder;
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    };
+  }, []);
+
+  const activeLabel = options.find((o) => o.value === value)?.label || placeholder;
 
   return (
     <div className="v8-select relative inline-block w-full" data-v8-kind="select" data-value={value}>
@@ -155,7 +189,7 @@ export default function Select({ options, value, onChange, placeholder = "Sélec
         aria-expanded={open}
         aria-haspopup="listbox"
         aria-controls={listId}
-        aria-activedescendant={open ? `${id}-option-${activeIndex}` : undefined}
+        aria-activedescendant={open && enabledIndexes.length > 0 ? `${id}-option-${activeIndex}` : undefined}
         disabled={disabled}
         onClick={() => setOpen((v) => !v)}
         onKeyDown={handleKeyDown}
@@ -171,6 +205,8 @@ export default function Select({ options, value, onChange, placeholder = "Sélec
               ref={refs.setFloating}
               id={listId}
               role="listbox"
+              aria-multiselectable={false}
+              aria-label={label}
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
@@ -179,7 +215,7 @@ export default function Select({ options, value, onChange, placeholder = "Sélec
               className="z-50 overflow-auto rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] p-1 shadow-xl outline-none"
               style={floatingStyles}
             >
-              {enabledOptions.map((option, i) => {
+              {options.map((option, i) => {
                 const selected = option.value === value;
                 const active = i === activeIndex;
                 return (
@@ -190,13 +226,17 @@ export default function Select({ options, value, onChange, placeholder = "Sélec
                     type="button"
                     role="option"
                     aria-selected={selected}
+                    aria-disabled={option.disabled || undefined}
                     data-value={option.value}
                     tabIndex={-1}
+                    disabled={option.disabled}
                     onClick={() => select(option)}
-                    onMouseEnter={() => setActiveIndex(i)}
+                    onMouseEnter={() => !option.disabled && setActiveIndex(i)}
                     className={`v8-select__option flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-sm transition-colors ${
                       active ? "bg-[var(--accent)]/10 text-[var(--accent)]" : "hover:bg-[var(--surface)]"
-                    } ${selected ? "font-medium" : ""}`}
+                    } ${selected ? "font-medium" : ""} ${
+                      option.disabled ? "cursor-not-allowed opacity-40" : ""
+                    }`}
                   >
                     <span className="h-4 w-4 text-[var(--accent)]">
                       {selected ? <Icon name="check" className="h-4 w-4" /> : null}

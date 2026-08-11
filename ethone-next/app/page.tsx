@@ -20,7 +20,7 @@ export default function Home() {
   const i18n = useI18n();
   const { greeting, dashboard, nowPlaying, lanyard, valorant, lol, loading, error } =
     useHomeData();
-  const { unread: unreadMail, loading: mailLoading } = useMail("inbox", 1);
+  const { unread: unreadMail, loading: mailLoading } = useMail();
   const { settings } = useSettings();
 
   const matches = [...(valorant || []), ...(lol || [])].slice(0, 6);

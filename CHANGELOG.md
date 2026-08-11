@@ -2,6 +2,21 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v330] - 2026-08-20
+
+**Mail complet**
+
+### Ajoute
+- `lib/hooks/useMail.ts` : inbox, recherche, fils, envoi, réponse, transfert, brouillons, pièces jointes, labels, signatures, modèles, règles, snooze, analytics, expéditeurs bloqués/de confiance, alias, analyse Brain.
+- Refonte complète de `app/mail/page.tsx` : navigation dossiers, liste par fils, barre de recherche, composition avec pièces jointes, panneaux labels/signatures/modèles/règles/bloqués/confiance/alias/analytics, actions en masse et analyse Brain.
+- Clés i18n pour compose, reply, forward, subject, body, to, cc, bcc, attachments, labels, signatures, templates, rules, blocked, trusted, aliases, analytics, snooze, schedule, etc.
+
+### Corrige
+- Tous les tests Worker passent (136/136), y compris le test JWT tampered.
+
+### Version PWA
+- `experience-v330`.
+
 ## [v329] - 2026-08-20
 
 **Fichiers avancés, partage public et drop**

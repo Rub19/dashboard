@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Card3D from "@/components/Card3D";
+import LoginEight from "@/components/LoginEight";
 import { Icon } from "@/lib/icons";
 import { signInWithOtp, verifyEmailOtp, signInWithOAuth, signInWithPasskey } from "@/lib/auth";
 import { useToast } from "@/components/ToastProvider";
@@ -92,7 +93,8 @@ export default function LoginPage() {
         className="w-full max-w-sm"
       >
         <Card3D>
-          <div className="mb-6 text-center">
+          <div className="mb-6 flex flex-col items-center text-center">
+            <LoginEight className="mb-3 h-24 w-16" />
             <h1 className="text-2xl font-bold">ETHONE</h1>
             <p className="mt-1 text-sm text-[var(--muted)]">
               {i18n("loginDescription")}

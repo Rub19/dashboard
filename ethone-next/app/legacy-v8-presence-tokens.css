@@ -1,0 +1,25 @@
+/* Source: .worktree/main/v8/styles/presence.css */
+
+@property --v8-live-number-value {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+:root {
+  --v8-presence-brain-cycle: 1600ms;
+  --v8-presence-thinking-cycle: 2.4s;
+  --v8-presence-sync-cycle: 2.2s;
+  --v8-presence-notification-cycle: 900ms;
+  --v8-presence-dock-cycle: 1200ms;
+  --v8-live-duration: 260ms;
+  --v8-live-stagger: 24ms;
+}
+
+[data-live-widget] {
+  --v8-live-index: 0;
+}
+
+[data-live-number] {
+  --v8-live-number-value: var(--v8-live-number-to, 0);
+}

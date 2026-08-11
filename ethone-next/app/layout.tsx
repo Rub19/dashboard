@@ -31,6 +31,7 @@ import { FocusProvider } from "@/components/FocusProvider";
 import FocusIsland from "@/components/FocusIsland";
 import VisualHaptics from "@/components/VisualHaptics";
 import SidePanel from "@/components/SidePanel";
+import KeyboardShortcuts from "@/components/KeyboardShortcuts";
 import PresenceProvider from "@/components/PresenceProvider";
 
 const geistSans = Geist({
@@ -99,6 +100,7 @@ export default function RootLayout({
                 <MobileNav />
                 <Dock />
                 <ShortcutsOverlay />
+                <KeyboardShortcuts />
                 </ToastProvider>
               </SoundProvider>
             </UIProvider>

@@ -2,7 +2,7 @@
 
 import { useSettings } from "@/components/SettingsProvider";
 
-type SkeletonProps = {
+export type SkeletonProps = {
   className?: string;
   width?: string;
   height?: string;
@@ -56,6 +56,47 @@ export function SkeletonList({ count = 4, label = "Chargement..." }: { count?: n
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+export function SkeletonText({ lines = 3, widths = ["100%", "92%", "60%"] }: { lines?: number; widths?: string[] }) {
+  return (
+    <div className="space-y-2" aria-hidden="true">
+      {Array.from({ length: lines }).map((_, i) => (
+        <Skeleton key={i} width={widths[i % widths.length] || "100%"} height="0.875rem" />
+      ))}
+    </div>
+  );
+}
+
+export function SkeletonGrid({ columns = 3, rows = 2 }: { columns?: number; rows?: number }) {
+  return (
+    <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }} aria-hidden="true">
+      {Array.from({ length: columns * rows }).map((_, i) => (
+        <SkeletonCard key={i} />
+      ))}
+    </div>
+  );
+}
+
+export function SkeletonAvatar({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
+  const map = { sm: "2rem", md: "2.5rem", lg: "4rem" };
+  return <Skeleton width={map[size]} height={map[size]} circle />;
+}
+
+export function SkeletonPage() {
+  return (
+    <div className="space-y-6" role="status" aria-busy="true" aria-label="Chargement de la page">
+      <div className="flex items-center justify-between gap-4">
+        <div className="space-y-2">
+          <Skeleton width="240px" height="1.75rem" />
+          <Skeleton width="160px" height="0.875rem" />
+        </div>
+        <Skeleton width="120px" height="2.5rem" />
+      </div>
+      <SkeletonGrid columns={3} rows={2} />
+      <SkeletonList count={5} />
     </div>
   );
 }

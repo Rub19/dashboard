@@ -9,6 +9,8 @@ export type PresenceState = {
   notification?: "idle" | "important" | "new";
   media?: "idle" | "playing";
   mail?: "idle" | "new";
+  status?: "online" | "away" | "dnd" | "offline";
+  typing?: boolean;
 };
 
 type PresenceContextType = {
@@ -18,6 +20,8 @@ type PresenceContextType = {
   setNotification: (value?: PresenceState["notification"], autoClearMs?: number) => void;
   setMedia: (value?: PresenceState["media"]) => void;
   setMail: (value?: PresenceState["mail"], autoClearMs?: number) => void;
+  setStatus: (value?: PresenceState["status"]) => void;
+  setTyping: (value?: boolean) => void;
 };
 
 const PresenceContext = createContext<PresenceContextType | null>(null);
@@ -44,6 +48,12 @@ function applyPresenceToHtml(state: PresenceState) {
 
   if (state.mail) html.setAttribute("data-presence-mail", state.mail);
   else html.removeAttribute("data-presence-mail");
+
+  if (state.status) html.setAttribute("data-presence-status", state.status);
+  else html.removeAttribute("data-presence-status");
+
+  if (state.typing) html.setAttribute("data-presence-typing", "true");
+  else html.removeAttribute("data-presence-typing");
 }
 
 export default function PresenceProvider({ children }: { children: ReactNode }) {
@@ -90,6 +100,20 @@ export default function PresenceProvider({ children }: { children: ReactNode }) 
     }
   }, [clearActiveTimeout]);
 
+  const setStatus = useCallback((value?: PresenceState["status"]) => {
+    setState((s) => ({ ...s, status: value }));
+  }, []);
+
+  const setTyping = useCallback((value?: boolean) => {
+    setState((s) => ({ ...s, typing: value }));
+    clearActiveTimeout("typing");
+    if (value) {
+      timeouts.current.typing = setTimeout(() => {
+        setState((s) => ({ ...s, typing: undefined }));
+      }, 2000);
+    }
+  }, [clearActiveTimeout]);
+
   useEffect(() => {
     const html = document.documentElement;
     if (settings.reducedMotion) {
@@ -107,7 +131,7 @@ export default function PresenceProvider({ children }: { children: ReactNode }) 
   }, [state]);
 
   return (
-    <PresenceContext.Provider value={{ state, setBrain, setSync, setNotification, setMedia, setMail }}>
+    <PresenceContext.Provider value={{ state, setBrain, setSync, setNotification, setMedia, setMail, setStatus, setTyping }}>
       {children}
     </PresenceContext.Provider>
   );

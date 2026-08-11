@@ -1,0 +1,35 @@
+/* Source: .worktree/main/v8/styles/components.css */
+
+.v8-tooltip[data-placement="right"] {
+  --v8-tooltip-shift-x: -4px;
+  --v8-tooltip-shift-y: 0;
+}
+
+.v8-tooltip[data-placement="bottom"] {
+  --v8-tooltip-shift-y: -4px;
+}
+
+.v8-tooltip[data-placement="left"] {
+  --v8-tooltip-shift-x: 4px;
+  --v8-tooltip-shift-y: 0;
+}
+
+[data-v8-layer="panel"] {
+  --v8-layer-base: var(--v8-z-panel);
+}
+
+[data-v8-layer="popover"] {
+  --v8-layer-base: var(--v8-z-popover);
+}
+
+[data-v8-layer="toast"] {
+  --v8-layer-base: var(--v8-z-toast);
+}
+
+[data-v8-layer="dialog"] {
+  --v8-layer-base: var(--v8-z-dialog);
+}
+
+[data-v8-layer="tooltip"] {
+  --v8-layer-base: var(--v8-z-tooltip);
+}

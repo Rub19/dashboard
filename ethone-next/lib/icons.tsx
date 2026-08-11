@@ -149,6 +149,8 @@ const MAP: Record<string, Partial<Record<IconPack, string>>> = {
   quote: { lucide: "quote", phosphor: "quotes", tabler: "quote", heroicons: "chat-bubble-left-ellipsis", radix: "quote" },
   unlink: { lucide: "unlink", phosphor: "link-break", tabler: "link-off", heroicons: "link-slash", radix: "link-break" },
   "remove-formatting": { lucide: "remove-formatting", phosphor: "eraser", tabler: "clear-formatting", heroicons: "no-symbol", radix: "cross-1" },
+  strikethrough: { lucide: "strikethrough", phosphor: "strikethrough", tabler: "strikethrough", heroicons: "minus", radix: "strikethrough" },
+  text: { lucide: "text", phosphor: "text-t", tabler: "typography", heroicons: "pencil-square", radix: "text" },
   "hard-drive": { lucide: "hard-drive", phosphor: "hard-drives", tabler: "device-floppy", heroicons: "server", radix: "stack" },
   "external-link": { lucide: "external-link", phosphor: "arrow-up-right", tabler: "external-link", heroicons: "arrow-top-right-on-square", radix: "external-link" },
 };

@@ -11,11 +11,12 @@ export default function ProfileSync() {
   const { user } = useAuth();
   const { settings, update } = useSettings();
   const { activeProfile, loaded } = useActiveProfile();
-  const { setSync } = usePresence();
+  const { setSync, setStatus } = usePresence();
 
   useEffect(() => {
     if (!user || !loaded || !activeProfile) return;
 
+    setStatus(user ? "online" : "offline");
     setSync("syncing");
     const t = setTimeout(() => setSync(), 1200);
 
@@ -29,7 +30,7 @@ export default function ProfileSync() {
     if (Object.keys(next).length) update(next);
 
     return () => clearTimeout(t);
-  }, [user, loaded, activeProfile, settings, update, setSync]);
+  }, [user, loaded, activeProfile, settings, update, setSync, setStatus]);
 
   return null;
 }

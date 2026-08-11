@@ -304,32 +304,79 @@ export default function LiveWidgets({
     );
   }
 
-  function renderBack(record: (typeof records)[number]) {
+  function renderBillsBack(record: LiveRecord) {
+    return (
+      <div className="flex h-full flex-col justify-between">
+        <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
+        <div className="space-y-2 text-sm text-[var(--foreground)]">
+          <p className="text-2xl font-bold">{record.title || "—"}</p>
+          {record.subtitle && <p className="text-[var(--muted)]">{record.subtitle}</p>}
+          {record.meta && (
+            <p className="flex items-center gap-2 text-xs text-[var(--muted)]">
+              <Icon name="calendar" className="h-3.5 w-3.5" /> {record.meta}
+            </p>
+          )}
+        </div>
+        <p className="text-[10px] text-[var(--muted)]">{i18n("flipCard")}</p>
+      </div>
+    );
+  }
+
+  function renderWeatherBack(record: LiveRecord) {
+    const details = record.subtitle ? record.subtitle.split(" · ") : [];
+    return (
+      <div className="flex h-full flex-col justify-between">
+        <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
+        <div className="space-y-2 text-sm text-[var(--foreground)]">
+          {record.title && (
+            <p className="text-2xl font-bold">{record.title}</p>
+          )}
+          {details.length > 0 && (
+            <ul className="space-y-1 text-xs text-[var(--muted)]">
+              {details.map((d, i) => (
+                <li key={i} className="flex items-center gap-2">
+                  <Icon name="cloud" className="h-3.5 w-3.5" /> {d}
+                </li>
+              ))}
+            </ul>
+          )}
+          {record.meta && (
+            <p className="text-xs text-[var(--muted)]">{record.meta}</p>
+          )}
+        </div>
+        <p className="text-[10px] text-[var(--muted)]">{i18n("flipCard")}</p>
+      </div>
+    );
+  }
+
+  function renderBack(record: LiveRecord) {
     if (record.source === "lastfm") return renderLastfmBack();
     if (record.source === "steam") return renderSteamBack();
     if (record.source === "minecraft") return renderMinecraftBack();
+    if (record.source === "bills") return renderBillsBack(record);
+    if (record.source === "weather") return renderWeatherBack(record);
     return (
       <div className="flex h-full flex-col justify-between">
         <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
         <div className="space-y-1 text-sm text-[var(--foreground)]">
           <p>
-            <span className="text-[var(--muted)]">Source :</span> {record.source}
+            <span className="text-[var(--muted)]">{i18n("source")}:</span> {record.source}
           </p>
           <p>
-            <span className="text-[var(--muted)]">{i18n("status")} :</span> {record.status}
+            <span className="text-[var(--muted)]">{i18n("status")}:</span> {record.status}
           </p>
           {record.subtitle && (
             <p>
-              <span className="text-[var(--muted)]">{i18n("detail")} :</span> {record.subtitle}
+              <span className="text-[var(--muted)]">{i18n("detail")}:</span> {record.subtitle}
             </p>
           )}
           {record.meta && (
             <p>
-              <span className="text-[var(--muted)]">Meta :</span> {record.meta}
+              <span className="text-[var(--muted)]">{i18n("meta")}:</span> {record.meta}
             </p>
           )}
         </div>
-        <p className="text-[10px] text-[var(--muted)]">Cliquez pour retourner</p>
+        <p className="text-[10px] text-[var(--muted)]">{i18n("flipCard")}</p>
       </div>
     );
   }

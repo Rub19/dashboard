@@ -166,15 +166,17 @@ async function getClickupProfile(env, userId) {
 async function getJiraProfile(env, userId) {
   const credential = await credentialForProvider(env, userId, "jira");
   const token = safeText(credential.apiKey, 4000);
+  const email = safeText(credential.email, 120);
   const domain = safeText(credential.domain, 120).replace(/^https?:\/\//, "").replace(/\/+$/, "");
   if (!domain) throw httpError("INVALID_PARAMETER", 400, { detail: "domain" });
+  const basic = btoa(`${email || ""}:${token}`);
   const response = await requestExternal(new URL(`https://${domain}/rest/api/2/myself`), {
     env,
     expectedOrigin: `https://${domain}`,
     service: "jira",
     headers: {
       accept: "application/json",
-      authorization: `Bearer ${token}`,
+      authorization: `Basic ${basic}`,
       "user-agent": USER_AGENT,
     },
     retries: 0,

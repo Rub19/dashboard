@@ -144,6 +144,11 @@ const MAP: Record<string, Partial<Record<IconPack, string>>> = {
   ghost: { lucide: "ghost", phosphor: "ghost", tabler: "ghost", heroicons: "sparkles", radix: "ghost" },
   coffee: { lucide: "coffee", phosphor: "coffee", tabler: "coffee", heroicons: "mug", radix: "mug" },
   trophy: { lucide: "trophy", phosphor: "trophy", tabler: "trophy", heroicons: "trophy", radix: "trophy" },
+  "heading-2": { lucide: "heading-2", phosphor: "text-h-two", tabler: "h-2", heroicons: "bars-2", radix: "text" },
+  "heading-3": { lucide: "heading-3", phosphor: "text-h-three", tabler: "h-3", heroicons: "bars-3", radix: "text" },
+  quote: { lucide: "quote", phosphor: "quotes", tabler: "quote", heroicons: "chat-bubble-left-ellipsis", radix: "quote" },
+  unlink: { lucide: "unlink", phosphor: "link-break", tabler: "link-off", heroicons: "link-slash", radix: "link-break" },
+  "remove-formatting": { lucide: "remove-formatting", phosphor: "eraser", tabler: "clear-formatting", heroicons: "no-symbol", radix: "cross-1" },
   "hard-drive": { lucide: "hard-drive", phosphor: "hard-drives", tabler: "device-floppy", heroicons: "server", radix: "stack" },
   "external-link": { lucide: "external-link", phosphor: "arrow-up-right", tabler: "external-link", heroicons: "arrow-top-right-on-square", radix: "external-link" },
 };

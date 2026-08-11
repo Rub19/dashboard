@@ -18,6 +18,8 @@ import HtmlLang from "@/components/HtmlLang";
 import CommandPaletteProvider from "@/components/CommandPaletteProvider";
 import OAuthHandler from "@/components/OAuthHandler";
 import LiveOverlay from "@/components/LiveOverlay";
+import AmbientParticles from "@/components/AmbientParticles";
+import Spotlight from "@/components/Spotlight";
 import Dock from "@/components/Dock";
 import UIProvider from "@/components/UIProvider";
 import PageTransition from "@/components/PageTransition";
@@ -80,6 +82,8 @@ export default function RootLayout({
                   <ServiceWorker />
                   <OAuthHandler />
                   <LiveOverlay />
+                  <AmbientParticles />
+                  <Spotlight />
                   <main id="main-content" className="p-6 pb-24 md:pb-6" tabIndex={-1}>
                     <PageTransition>{children}</PageTransition>
                   </main>

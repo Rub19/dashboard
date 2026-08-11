@@ -136,6 +136,7 @@ export default function SettingsProvider({
     root.style.setProperty("--card-radius", `${settings.radius / 16}rem`);
     root.style.setProperty("--dock-radius", `${settings.dockRadius / 16}rem`);
     root.style.setProperty("--glass", settings.glassEnabled ? "0.85" : "1");
+    root.dataset.glassEnabled = settings.glassEnabled ? "true" : "false";
     root.dataset.cardTilt = settings.cardTilt ? "on" : "off";
     root.dataset.theme = settings.theme;
     root.dataset.density = settings.densityMode;
@@ -151,6 +152,9 @@ export default function SettingsProvider({
     root.dataset.dockGlass = settings.dockGlass;
     root.dataset.dockAutoHide = settings.dockAutoHide ? "true" : "false";
     root.dataset.dockMagnify = settings.dockMagnify ? "true" : "false";
+    root.dataset.aura = settings.aura;
+    root.dataset.homeGrid = settings.homeGrid;
+    root.dataset.homeHero = settings.homeHero;
     root.dataset.uiAnimations = settings.uiAnimations;
     root.dataset.uiGlow = settings.uiGlow ? "true" : "false";
     root.dataset.uiSoundFeedback = settings.uiSoundFeedback ? "true" : "false";

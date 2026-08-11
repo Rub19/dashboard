@@ -137,6 +137,7 @@ const CREDENTIAL_FIELDS: Record<string, CredentialFieldDef[]> = {
   clickup: [{ key: "apiKey", label: "Token personnel ClickUp", type: "password" }],
   jira: [
     { key: "domain", label: "Domaine (ex: mondomaine.atlassian.net)" },
+    { key: "email", label: "Email Atlassian" },
     { key: "apiKey", label: "Token API Jira", type: "password" },
   ],
   gitlab: [{ key: "apiKey", label: "Token personnel GitLab", type: "password" }],

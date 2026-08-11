@@ -11,6 +11,7 @@ export type ProviderCredential = {
   riotApiKey?: string;
   url?: string;
   domain?: string;
+  email?: string;
   token?: string;
 };
 

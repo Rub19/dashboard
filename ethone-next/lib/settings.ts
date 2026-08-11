@@ -70,6 +70,9 @@ export type Settings = {
   density: number;
   radius: number;
   radiusStyle: RadiusStyle;
+  aura: string;
+  homeGrid: "2" | "3" | "4";
+  homeHero: "hidden" | "compact" | "full";
   glassEnabled: boolean;
   cardTilt: boolean;
   dockVisible: boolean;
@@ -151,6 +154,9 @@ export const DEFAULTS: Settings = {
   density: 50,
   radius: 50,
   radiusStyle: "rounded",
+  aura: "classic",
+  homeGrid: "4",
+  homeHero: "full",
   glassEnabled: true,
   cardTilt: true,
   dockVisible: true,

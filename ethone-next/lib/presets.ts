@@ -1,4 +1,4 @@
-import type { Settings } from "@/lib/settings";
+import { Settings } from "./settings";
 
 export type Preset = {
   id: string;
@@ -8,7 +8,7 @@ export type Preset = {
   settings: Partial<Settings>;
 };
 
-export const PRESETS: Preset[] = [
+export const BUILT_IN_PRESETS: Preset[] = [
   {
     id: "productivity",
     name: "Productivité",
@@ -18,7 +18,7 @@ export const PRESETS: Preset[] = [
       theme: "night",
       accentColor: "mint",
       customAccent: "#7be5c3",
-      backgroundEffect: "gradient",
+      aura: "classic",
       densityMode: "comfortable",
       fontFamily: "sans",
       radiusStyle: "rounded",
@@ -27,6 +27,8 @@ export const PRESETS: Preset[] = [
       dockGlass: "default",
       dockAutoHide: false,
       dockMagnify: true,
+      homeGrid: "4",
+      homeHero: "full",
       uiAnimations: "smooth",
       uiGlow: true,
       uiSoundFeedback: true,
@@ -41,10 +43,10 @@ export const PRESETS: Preset[] = [
     description: "Minimum, calme, sans distraction.",
     icon: "focus",
     settings: {
-      theme: "focus",
+      theme: "night",
       accentColor: "sky",
       customAccent: "#7dd3fc",
-      backgroundEffect: "solid",
+      aura: "eclipse",
       densityMode: "compact",
       fontFamily: "outfit",
       radiusStyle: "soft",
@@ -53,6 +55,8 @@ export const PRESETS: Preset[] = [
       dockGlass: "ultra",
       dockAutoHide: true,
       dockMagnify: false,
+      homeGrid: "2",
+      homeHero: "compact",
       uiAnimations: "snappy",
       uiGlow: false,
       uiSoundFeedback: false,
@@ -67,10 +71,10 @@ export const PRESETS: Preset[] = [
     description: "Néon, énergie, contraste.",
     icon: "gamepad-2",
     settings: {
-      theme: "cyberpunk",
+      theme: "graphite",
       accentColor: "rose",
       customAccent: "#fb7185",
-      backgroundEffect: "nebula",
+      aura: "cyberpunk",
       densityMode: "compact",
       fontFamily: "mono",
       radiusStyle: "sharp",
@@ -79,6 +83,8 @@ export const PRESETS: Preset[] = [
       dockGlass: "default",
       dockAutoHide: false,
       dockMagnify: true,
+      homeGrid: "4",
+      homeHero: "full",
       uiAnimations: "smooth",
       uiGlow: true,
       uiSoundFeedback: true,
@@ -93,10 +99,10 @@ export const PRESETS: Preset[] = [
     description: "Chaleur, espace, inspiration.",
     icon: "sparkles",
     settings: {
-      theme: "aurora",
+      theme: "night",
       accentColor: "violet",
       customAccent: "#a78bfa",
-      backgroundEffect: "aurora",
+      aura: "emeraude",
       densityMode: "spacious",
       fontFamily: "serif",
       radiusStyle: "soft",
@@ -105,6 +111,8 @@ export const PRESETS: Preset[] = [
       dockGlass: "default",
       dockAutoHide: false,
       dockMagnify: true,
+      homeGrid: "3",
+      homeHero: "full",
       uiAnimations: "smooth",
       uiGlow: true,
       uiSoundFeedback: true,
@@ -119,10 +127,10 @@ export const PRESETS: Preset[] = [
     description: "Léger, épuré, silencieux.",
     icon: "minimize-2",
     settings: {
-      theme: "minimal",
+      theme: "graphite",
       accentColor: "mint",
       customAccent: "#7be5c3",
-      backgroundEffect: "solid",
+      aura: "minerale",
       densityMode: "spacious",
       fontFamily: "sans",
       radiusStyle: "rounded",
@@ -131,6 +139,8 @@ export const PRESETS: Preset[] = [
       dockGlass: "opaque",
       dockAutoHide: true,
       dockMagnify: false,
+      homeGrid: "2",
+      homeHero: "hidden",
       uiAnimations: "reduced",
       uiGlow: false,
       uiSoundFeedback: false,
@@ -145,10 +155,10 @@ export const PRESETS: Preset[] = [
     description: "Compact, lisible, technique.",
     icon: "code",
     settings: {
-      theme: "obsidian",
+      theme: "night",
       accentColor: "amber",
       customAccent: "#fbbf24",
-      backgroundEffect: "mesh",
+      aura: "boreale",
       densityMode: "compact",
       fontFamily: "mono",
       radiusStyle: "sharp",
@@ -157,6 +167,8 @@ export const PRESETS: Preset[] = [
       dockGlass: "default",
       dockAutoHide: false,
       dockMagnify: true,
+      homeGrid: "4",
+      homeHero: "compact",
       uiAnimations: "snappy",
       uiGlow: true,
       uiSoundFeedback: true,
@@ -167,6 +179,10 @@ export const PRESETS: Preset[] = [
   },
 ];
 
+export const PRESETS = BUILT_IN_PRESETS;
+
+export const PRESET_IDS = BUILT_IN_PRESETS.map((p) => p.id);
+
 export function builtInPresetById(id: string): Preset | null {
-  return PRESETS.find((p) => p.id === id) || null;
+  return BUILT_IN_PRESETS.find((p) => p.id === id) || null;
 }

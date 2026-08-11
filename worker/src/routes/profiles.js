@@ -82,11 +82,16 @@ export async function profilesRoute({ request, env, auth, route }) {
     const body = await request.json().catch(() => ({}));
     const profileId = safeText(body.id, 64);
     if (!profileId) throw httpError("INVALID_PARAMETER", 400, { detail: "id" });
-    const result = await supabaseRequest(env, "/rpc/ethone_set_active_profile", {
-      method: "POST",
-      body: JSON.stringify({ profile_id: profileId })
+    const now = new Date().toISOString();
+    await supabaseRequest(env, `/rest/v1/ethone_profiles?user_id=eq.${encodeURIComponent(auth.userId)}`, {
+      method: "PATCH",
+      body: JSON.stringify({ is_active: false, updated_at: now })
     });
-    return { data: result };
+    const result = await supabaseRequest(env, `/rest/v1/ethone_profiles?id=eq.${encodeURIComponent(profileId)}&user_id=eq.${encodeURIComponent(auth.userId)}`, {
+      method: "PATCH",
+      body: JSON.stringify({ is_active: true, updated_at: now })
+    });
+    return { data: Array.isArray(result) ? result[0] : result };
   }
 
   if (method === "PATCH") {
@@ -112,9 +117,10 @@ export async function profilesRoute({ request, env, auth, route }) {
     if (wasActive) {
       const remaining = await supabaseRequest(env, `/rest/v1/ethone_profiles?user_id=eq.${encodeURIComponent(auth.userId)}&order=created_at.asc&limit=1`);
       if (Array.isArray(remaining) && remaining[0]) {
-        await supabaseRequest(env, "/rpc/ethone_set_active_profile", {
-          method: "POST",
-          body: JSON.stringify({ profile_id: remaining[0].id })
+        const now = new Date().toISOString();
+        await supabaseRequest(env, `/rest/v1/ethone_profiles?id=eq.${encodeURIComponent(remaining[0].id)}&user_id=eq.${encodeURIComponent(auth.userId)}`, {
+          method: "PATCH",
+          body: JSON.stringify({ is_active: true, updated_at: now })
         });
       }
     }

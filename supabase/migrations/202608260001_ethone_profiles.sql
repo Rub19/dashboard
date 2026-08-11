@@ -53,41 +53,4 @@ revoke all on public.ethone_profiles from anon;
 revoke truncate, references, trigger on public.ethone_profiles from authenticated;
 grant select, insert, update, delete on public.ethone_profiles to authenticated;
 
--- Helper to maintain a single active profile per user.
-create or replace function public.ethone_set_active_profile(profile_id uuid)
-returns public.ethone_profiles
-language plpgsql
-security definer
-set search_path = pg_catalog, public
-as $$
-declare
-  result public.ethone_profiles;
-  target_user_id uuid;
-begin
-  select user_id into target_user_id
-  from public.ethone_profiles
-  where id = profile_id;
-
-  if target_user_id is null or target_user_id <> (select auth.uid()) then
-    raise exception 'Profile not found';
-  end if;
-
-  update public.ethone_profiles
-  set is_active = false
-  where user_id = target_user_id;
-
-  update public.ethone_profiles
-  set is_active = true, updated_at = now()
-  where id = profile_id
-  returning * into result;
-
-  return result;
-end;
-$$;
-
-revoke all on function public.ethone_set_active_profile(uuid) from public;
-revoke all on function public.ethone_set_active_profile(uuid) from anon;
-revoke all on function public.ethone_set_active_profile(uuid) from authenticated;
-grant execute on function public.ethone_set_active_profile(uuid) to authenticated;
-
 commit;

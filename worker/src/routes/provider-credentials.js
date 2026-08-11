@@ -3,7 +3,7 @@ import { safeText } from "../utils/normalize.js";
 import { requestExternal } from "../utils/external-request.js";
 import { requireSecret } from "../middleware/validation.js";
 
-const ALLOWED = new Set(["steam", "twitch", "lastfm", "henrik", "tracker", "riot", "openai", "anthropic", "gemini", "groq", "plex"]);
+const ALLOWED = new Set(["steam", "twitch", "lastfm", "henrik", "tracker", "riot", "openai", "anthropic", "gemini", "groq", "plex", "jellyfin", "emby", "bluesky", "linear", "clickup", "jira", "gitlab", "obsidian", "vscode", "fitbit"]);
 
 function projectOrigin(env) {
   let url;

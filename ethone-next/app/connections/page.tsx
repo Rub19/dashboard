@@ -101,12 +101,8 @@ const PUBLIC_FIELDS: Record<string, PublicFieldDef[]> = {
   rss: [{ key: "liveRssUrl", label: "liveRssUrl" }],
   minecraft: [{ key: "liveMinecraftUsername", label: "liveMinecraftUsername" }],
   bluesky: [{ key: "liveBlueskyHandle", label: "liveBlueskyHandle" }],
-  jellyfin: [{ key: "liveJellyfinUrl", label: "liveJellyfinUrl" }],
-  emby: [{ key: "liveEmbyUrl", label: "liveEmbyUrl" }],
   "lm-studio": [{ key: "liveLmStudioUrl", label: "liveLmStudioUrl" }],
   ollama: [{ key: "liveOllamaUrl", label: "liveOllamaUrl" }],
-  obsidian: [{ key: "liveObsidianUrl", label: "liveObsidianUrl" }],
-  vscode: [{ key: "liveVscodeUrl", label: "liveVscodeUrl" }],
 };
 
 const CREDENTIAL_FIELDS: Record<string, CredentialFieldDef[]> = {
@@ -125,7 +121,34 @@ const CREDENTIAL_FIELDS: Record<string, CredentialFieldDef[]> = {
   anthropic: [{ key: "apiKey", label: "apiKey", type: "password" }],
   gemini: [{ key: "apiKey", label: "apiKey", type: "password" }],
   groq: [{ key: "apiKey", label: "apiKey", type: "password" }],
-  plex: [{ key: "apiKey", label: "apiKey", type: "password" }],
+  plex: [
+    { key: "url", label: "URL Plex (optionnel)" },
+    { key: "apiKey", label: "Token Plex", type: "password" },
+  ],
+  jellyfin: [
+    { key: "url", label: "URL Jellyfin" },
+    { key: "apiKey", label: "Clé API Jellyfin", type: "password" },
+  ],
+  emby: [
+    { key: "url", label: "URL Emby" },
+    { key: "apiKey", label: "Clé API Emby", type: "password" },
+  ],
+  linear: [{ key: "apiKey", label: "Token personnel Linear", type: "password" }],
+  clickup: [{ key: "apiKey", label: "Token personnel ClickUp", type: "password" }],
+  jira: [
+    { key: "domain", label: "Domaine (ex: mondomaine.atlassian.net)" },
+    { key: "apiKey", label: "Token API Jira", type: "password" },
+  ],
+  gitlab: [{ key: "apiKey", label: "Token personnel GitLab", type: "password" }],
+  obsidian: [
+    { key: "url", label: "URL API locale (ex: http://localhost:27123)" },
+    { key: "apiKey", label: "Token Obsidian", type: "password" },
+  ],
+  vscode: [
+    { key: "url", label: "URL VS Code Server / locale" },
+    { key: "apiKey", label: "Token (optionnel)", type: "password" },
+  ],
+  fitbit: [{ key: "apiKey", label: "Token Fitbit", type: "password" }],
 };
 
 function isApiConfigured(

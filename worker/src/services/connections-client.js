@@ -53,6 +53,12 @@ const PROVIDERS = [
   "github",
   "gitlab",
   "fitbit",
+  "plex",
+  "jellyfin",
+  "emby",
+  "bluesky",
+  "obsidian",
+  "vscode",
 ];
 
 export async function listConnections(env, userId) {

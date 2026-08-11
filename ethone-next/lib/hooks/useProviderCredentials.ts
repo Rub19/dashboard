@@ -9,9 +9,12 @@ export type ProviderCredential = {
   clientSecret?: string;
   henrikApiKey?: string;
   riotApiKey?: string;
+  url?: string;
+  domain?: string;
+  token?: string;
 };
 
-const ALLOWED = new Set(["steam", "twitch", "lastfm", "henrik", "tracker", "riot", "openai", "anthropic", "gemini", "groq", "plex"]);
+const ALLOWED = new Set(["steam", "twitch", "lastfm", "henrik", "tracker", "riot", "openai", "anthropic", "gemini", "groq", "plex", "jellyfin", "emby", "bluesky", "linear", "clickup", "jira", "gitlab", "obsidian", "vscode", "fitbit"]);
 
 export function useProviderCredentials() {
   const [connected, setConnected] = useState<Record<string, boolean>>({});

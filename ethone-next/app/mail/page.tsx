@@ -7,6 +7,7 @@ import { useToast } from "@/components/ToastProvider";
 import { Icon } from "@/lib/icons";
 import Card3D from "@/components/Card3D";
 import LiquidSidebar from "@/components/LiquidSidebar";
+import MailAdvancedPanel from "@/components/MailAdvancedPanel";
 
 const FOLDERS = ["inbox", "starred", "sent", "drafts", "archive", "trash", "spam"];
 
@@ -80,7 +81,7 @@ export default function MailPage() {
   const [composeInReplyTo, setComposeInReplyTo] = useState<string | undefined>();
   const [composeReferences, setComposeReferences] = useState<string[] | undefined>();
   const [submitting, setSubmitting] = useState(false);
-  const [panel, setPanel] = useState<"labels" | "signatures" | "templates" | "rules" | "blocked" | "trusted" | "aliases" | "analytics" | null>(null);
+  const [panel, setPanel] = useState<"labels" | "signatures" | "templates" | "rules" | "blocked" | "trusted" | "aliases" | "analytics" | "accounts" | "pgp" | "push" | "lists" | null>(null);
   const [form, setForm] = useState<Record<string, string>>({});
   const [analytics, setAnalytics] = useState<Record<string, unknown> | null>(null);
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -440,6 +441,14 @@ export default function MailPage() {
               aria-label={i18n("more")}
             >
               <Icon name="more-horizontal" className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setPanel("accounts")}
+              className="rounded-xl border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+              aria-label={i18n("accounts")}
+            >
+              <Icon name="cog" className="h-4 w-4" />
             </button>
           </div>
         </Card3D>
@@ -855,6 +864,10 @@ export default function MailPage() {
                   ))}
                 </div>
               </div>
+            )}
+
+            {(panel === "accounts" || panel === "pgp" || panel === "push" || panel === "lists") && (
+              <MailAdvancedPanel initialTab={panel} />
             )}
 
             {panel === "analytics" && analytics && (

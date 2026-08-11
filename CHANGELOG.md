@@ -2,6 +2,23 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [v336] - 2026-08-20
+
+**Mail avancé : comptes externes, PGP, push, listes de diffusion**
+
+### Ajoute
+- `lib/hooks/useMail.ts` : méthodes pour comptes IMAP/OAuth, PGP, abonnements push, listes de diffusion.
+- `components/MailAdvancedPanel.tsx` : onglets Comptes/PGP/Push/Listes dans l'interface Mail.
+- Page `/mail` : bouton d'accès aux fonctionnalités avancées (icône cog).
+- Génération, import et suppression de clés PGP.
+- Abonnement/désabonnement Web Push avec `PushManager` et envoi de test.
+- Création/synchronisation/suppression de comptes IMAP, Gmail et Outlook.
+- Création et gestion de listes de diffusion avec membres et envoi de messages.
+- Clés i18n associées pour FR/EN/ES/DE.
+
+### Version PWA
+- `experience-v336`.
+
 ## [v335] - 2026-08-20
 
 **Phase 15 : Calendrier avancé + UI système (tooltip, bottom sheet, context menu, scratchpad, haptics)**

@@ -317,6 +317,121 @@ upload check       ✅
 
 ---
 
+## Vérification des points d'attention
+
+Cette section détaille les résultats des vérifications demandées.
+
+### 1. RichTextEditor
+
+**Statut : PARTIEL / AVANCÉ**
+
+- Le Next.js `RichTextEditor` est **plus complet que v8** :
+  - barré, alignement, bloc code, raccourcis clavier Ctrl+B/I/U/K, unlink, code inline.
+- Les deux versions manquent des fonctionnalités avancées (mentions, embeds, images, undo/redo, tableaux, couleurs).
+- **Conclusion** : pas de régression, le Next est au moins équivalent.
+
+### 2. SearchBar / ProfileDropdown
+
+**Statut : GAPS CONFIRMÉS**
+
+- **SearchBar v8 manquant dans Next** :
+  - algorithme flou avec scoring (subsequence, bonus début de mot, streaks),
+  - fréquence d'usage pour booster les résultats,
+  - syntaxe `/category` (Next utilise `>category`),
+  - contexte actif affiché (route/space/flow),
+  - commandes additionnelles injectables,
+  - footer avec raccourcis clavier,
+  - navigation Home/End/PageUp/PageDown.
+- **ProfileDropdown v8 manquant dans Next** :
+  - sélection/switch de profil multiple,
+  - switch Workspace/Space dans le dropdown,
+  - actions profil (rename, edit, avatar, export, duplicate, delete),
+  - team management,
+  - quick actions topbar (focus, brain, language, FAB).
+- **Impact** : expérience utilisateur sensiblement moins riche.
+
+### 3. Schéma Supabase
+
+**Statut : ARCHITECTURE DIFFÉRENTE MAIS COUVERTE**
+
+- `ethone_user_state` : présent des deux côtés.
+- `ethone_brain_memories` : présent des deux côtés.
+- `ethone_team_members` : v8 accès direct, Next via Worker `/api/team/members`.
+- `user_provider_credentials` : v8 direct, Next via Worker `/api/provider-credentials`.
+- Tables v8 non directement utilisées dans Next (via Worker) : `ethone_files`, `ethone_file_collaborators`, `ethone_mail_aliases`.
+- **Conclusion** : pas de données oubliées, mais architecture déportée côté Worker.
+
+### 4. Endpoints Worker historiques
+
+**Statut : ENDPOINTS EXISTANTS MAIS NON TOUS APPELÉS**
+
+- **~123 endpoints v8** identifiés, **~130 appels Next** via `fetchWorker`.
+- Endpoints v8 **non appelés dans Next** (potentiellement non exposés UI) :
+  - `/api/steam/achievements`
+  - `/api/spotify/track-saved`
+  - `/api/{service}/oauth/disconnect` (GitHub, Spotify, Google, Notion, Todoist, Drive, YouTube, Reddit)
+  - `/api/supabase/public-profile`
+  - `/api/auth/otp/send` et `/api/auth/otp/verify`
+  - `/api/team/invite`
+  - `/api/mail/contacts`, `/api/mail/extract`, `/api/mail/notifications`
+  - `/api/mail/pgp/decrypt`
+  - `/api/mail/push/vapidkey`
+  - `/api/signout`
+- **Conclusion** : la déconnexion OAuth, les OTP, certaines fonctionnalités mail/team/steam ne sont pas câblées dans le nouveau client.
+
+### 5. Live cards — dos personnalisés
+
+**Statut : GAPS CONFIRMÉS, 18 SERVICES À ENRICHIR**
+
+v8 affichait des dos/overlay riches pour :
+
+- **Haute priorité** : Spotify, Weather, Discord, Minecraft, Bills.
+- **Moyenne priorité** : GitHub, Todoist, Twitch, Reddit, YouTube, Steam, Google Calendar, Google Drive, Notion, Valorant, LoL, Tracker, Last.fm.
+- **Déjà générique dans v8** : RSS, Bluesky, Apex.
+
+Next.js `LiveWidgets` affiche actuellement des cartes génériques pour la plupart.
+
+### 6. Mobile overflow / responsive
+
+**Statut : MIXTE**
+
+- **E2E responsive** (`responsive.spec.ts`) : **tous les tests passent** sur mobile 320–430, tablet 640–1024, desktop 1280–3440. Aucun overflow horizontal détecté.
+- **Audit script `responsive-audit.mjs`** : 14 pages n'ont pas de classes Tailwind responsives (`sm:`, `md:`, `lg:`) :
+  `calendar, changelog, drop, feature-fallback, focus, login, notes, password-recovery, plugins/[id], profile, reset-password, scratchpad, share, tasks`.
+- Viewport meta non présent directement dans `layout.tsx` (injecté par Next.js metadata, acceptable).
+
+### 7. Direct URL refresh
+
+**Statut : OK**
+
+- `next.config.ts` : `output: "export"`, `trailingSlash: true`.
+- Aucun middleware.
+- Toutes les routes sont statiquement pré-renderisées (51 pages) : direct URL refresh fonctionne.
+- `plugins/[id]` utilise `generateStaticParams`.
+- `/share/` et `/drop/` supportent les query params côté client.
+
+### 8. Tests E2E
+
+**Statut : EXÉCUTÉS — 791 passed, 40 failed**
+
+- **a11y** : échecs sur `/notes/`, `/calendar/`, `/files/`, `/system/` (desktop + mobile + tablet).
+  - Cause : `select` sans nom accessible (`aria-label`/`label` manquant).
+  - Exemple : `<select>` tri Notes, filtre Calendrier, tri Fichiers, selects de `FlowAutomations` sur Système.
+- **/activity/** : erreur React `Minified React error #418` (hydration mismatch) sur Tablet Chrome.
+- **auth-audit** : échec car variables d'environnement `TEST_EMAIL` / `TEST_PASSWORD` manquantes (non configuré).
+- **responsive** : tous les tests de largeurs passent (pas d'overflow).
+- **routes** : `/activity/` échoue à cause de l'erreur React, les autres passent.
+
+### Synthèse des nouvelles régressions découvertes
+
+1. Accessibilité : nombreux `<select>` sans `aria-label`.
+2. Hydratation `/activity/` : erreur React 418.
+3. UX shell : command palette et dropdown profil bien moins riches que v8.
+4. Endpoints historiques non câblés (déconnexions, OTP, mail avancé).
+5. Live cards : dos personnalisés largement manquants.
+
+---
+
 ## Conclusion
 
 La migration atteint un haut niveau de parité. Les fonctionnalités v8 principales (pages, shell, intégrations, Brain, Mail, Activity, Settings, Live cards) sont migrées et validées. Les principaux écarts restants sont l'**inscription**, le **QR code / brainSummary de Share** et quelques enrichissements UI des live cards. Tant que ces points ne sont pas couverts, le legacy ne doit pas être supprimé.

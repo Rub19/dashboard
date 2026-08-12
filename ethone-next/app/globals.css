@@ -1655,3 +1655,25 @@ html {
   pointer-events: none;
 }
 
+/* ============================================================
+   Zen mode
+   ============================================================ */
+
+html[data-zen-mode="true"] [data-v8-rail],
+html[data-zen-mode="true"] header[data-v8-topbar],
+html[data-zen-mode="true"] .v8-floating-dock,
+html[data-zen-mode="true"] [data-dock],
+html[data-zen-mode="true"] [data-v8-status-bar],
+html[data-zen-mode="true"] [data-zen-hidden] {
+  display: none !important;
+}
+
+html[data-zen-mode="true"] [data-v8-shell] {
+  margin-left: 0 !important;
+  transition: none;
+}
+
+html[data-zen-mode="true"] [data-v8-main] {
+  padding-bottom: 1.5rem !important;
+}
+

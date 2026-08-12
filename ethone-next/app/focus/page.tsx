@@ -6,17 +6,26 @@ import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { useFocus } from "@/components/FocusProvider";
+import { useSettings } from "@/components/SettingsProvider";
+import { useZenMode } from "@/lib/hooks/useZenMode";
 
-const MODES: Record<"pomodoro" | "shortBreak" | "longBreak", { label: string; color: string }> = {
-  pomodoro: { label: "Pomodoro", color: "text-rose-400" },
-  shortBreak: { label: "Pause courte", color: "text-sky-400" },
-  longBreak: { label: "Pause longue", color: "text-emerald-400" },
-};
+const FOCUS_PRESETS: { id: string; color: string }[] = [
+  { id: "pomodoro", color: "text-rose-400" },
+  { id: "deep", color: "text-violet-400" },
+  { id: "sprint", color: "text-orange-400" },
+];
+
+const BREAK_PRESETS: { id: string; color: string }[] = [
+  { id: "shortBreak", color: "text-sky-400" },
+  { id: "longBreak", color: "text-emerald-400" },
+];
 
 export default function FocusPage() {
   const i18n = useI18n();
   const { success } = useToast();
   const { state, start, pause, resume, stop, format } = useFocus();
+  const { settings, update } = useSettings();
+  const { zenMode, toggle } = useZenMode();
 
   useEffect(() => {
     if (state.remaining <= 0 && !state.paused && state.phase !== "idle") {
@@ -24,28 +33,64 @@ export default function FocusPage() {
     }
   }, [state.remaining, state.paused, state.phase, success, i18n]);
 
-  const currentMode = state.phase === "focus" ? "pomodoro" : state.phase === "shortBreak" ? "shortBreak" : state.phase === "longBreak" ? "longBreak" : "pomodoro";
-  const mode = MODES[currentMode];
+  const activePreset = state.activePreset || settings.focusPreset || "pomodoro";
+
+  const currentMode =
+    state.phase === "focus"
+      ? activePreset
+      : state.phase === "shortBreak"
+      ? "shortBreak"
+      : state.phase === "longBreak"
+      ? "longBreak"
+      : activePreset;
+
+  const modeColor =
+    FOCUS_PRESETS.find((p) => p.id === currentMode)?.color ||
+    BREAK_PRESETS.find((p) => p.id === currentMode)?.color ||
+    "text-[var(--accent)]";
+
   const progress = state.total > 0 ? 100 - (state.remaining / state.total) * 100 : 0;
+
+  function select(preset: string) {
+    start(preset);
+    if (FOCUS_PRESETS.some((p) => p.id === preset)) {
+      update({ focusPreset: preset });
+    }
+  }
 
   return (
     <div className="mx-auto max-w-md space-y-6">
-      <h1 className="text-2xl font-bold">{i18n("focusTitle")}</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">{i18n("focusTitle")}</h1>
+        <button
+          type="button"
+          onClick={toggle}
+          className={`flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors ${
+            zenMode
+              ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
+              : "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--foreground)]"
+          }`}
+        >
+          <Icon name={zenMode ? "shrink" : "expand"} className="h-3.5 w-3.5" />
+          {zenMode ? i18n("disableZen") : i18n("enableZen")}
+        </button>
+      </div>
 
       <Card3D>
+        <p className="mb-2 text-center text-xs text-[var(--muted)]">{i18n("focusPresets")}</p>
         <div className="flex justify-center gap-2">
-          {(Object.keys(MODES) as Array<keyof typeof MODES>).map((m) => (
+          {FOCUS_PRESETS.map((p) => (
             <button
-              key={m}
+              key={p.id}
               type="button"
-              onClick={() => { start(m as "pomodoro" | "shortBreak" | "longBreak"); }}
+              onClick={() => select(p.id)}
               className={`rounded-xl px-3 py-1.5 text-xs font-medium transition-colors ${
-                currentMode === m
+                activePreset === p.id && state.phase === "focus"
                   ? "bg-[var(--accent)] text-white"
                   : "bg-[var(--surface-raised)] text-[var(--muted)] hover:text-[var(--foreground)]"
               }`}
             >
-              {MODES[m].label}
+              {i18n(p.id)}
             </button>
           ))}
         </div>
@@ -69,14 +114,14 @@ export default function FocusPage() {
               strokeWidth="8"
               strokeLinecap="round"
               strokeDasharray={`${progress * 2.83} 283`}
-              className={`transition-all duration-1000 ${mode.color}`}
+              className={`transition-all duration-1000 ${modeColor}`}
             />
           </svg>
           <div className="absolute text-center">
-            <p className={`text-5xl font-bold tabular-nums ${mode.color}`}>
+            <p className={`text-5xl font-bold tabular-nums ${modeColor}`}>
               {format(state.remaining)}
             </p>
-            <p className="text-sm text-[var(--muted)]">{mode.label}</p>
+            <p className="text-sm text-[var(--muted)]">{i18n(currentMode)}</p>
           </div>
         </div>
 
@@ -91,13 +136,35 @@ export default function FocusPage() {
           </button>
           <button
             type="button"
-            aria-label={i18n("reset")}
+            aria-label={i18n("stop")}
             onClick={stop}
             className="flex h-12 w-12 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
           >
             <Icon name="square" className="h-5 w-5" />
           </button>
         </div>
+
+        <p className="mb-2 mt-6 text-center text-xs text-[var(--muted)]">{i18n("breaks")}</p>
+        <div className="flex justify-center gap-2">
+          {BREAK_PRESETS.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => start(p.id)}
+              className={`rounded-xl px-3 py-1.5 text-xs font-medium transition-colors ${
+                currentMode === p.id
+                  ? "bg-[var(--accent)] text-white"
+                  : "bg-[var(--surface-raised)] text-[var(--muted)] hover:text-[var(--foreground)]"
+              }`}
+            >
+              {i18n(p.id)}
+            </button>
+          ))}
+        </div>
+      </Card3D>
+
+      <Card3D>
+        <p className="text-center text-sm text-[var(--muted)]">{i18n("zenModeDesc")}</p>
       </Card3D>
 
       <div className="grid grid-cols-3 gap-3">

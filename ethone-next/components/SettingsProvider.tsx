@@ -161,6 +161,7 @@ export default function SettingsProvider({
     root.dataset.spotlight = settings.spotlightEnabled ? "true" : "false";
     root.dataset.ambientEffects = settings.ambientEffectsEnabled ? "true" : "false";
     root.dataset.interfaceBlur = settings.interfaceBlurEnabled ? "true" : "false";
+    root.dataset.zenMode = settings.zenMode ? "true" : "false";
     root.style.fontSize = `${settings.fontSize}%`;
     root.style.setProperty("--aurora-speed", `${60 - settings.backgroundSpeed}s`);
     if (settings.reducedMotion) {

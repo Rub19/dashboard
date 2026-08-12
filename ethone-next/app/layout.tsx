@@ -82,7 +82,7 @@ export default function RootLayout({
                 <ToastProvider>
                   <SkipLink />
                 <Sidebar />
-                <div className="min-h-screen transition-all duration-300 md:ml-[72px]">
+                <div data-v8-shell className="min-h-screen transition-all duration-300 md:ml-[72px]">
                   <header data-v8-topbar className="v8-topbar sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[var(--border)] bg-[var(--background)]/80 px-6 backdrop-blur-md">
                     <V8Breadcrumbs />
                     <CommandPaletteProvider>
@@ -103,7 +103,7 @@ export default function RootLayout({
                   <Spotlight />
                   <VisualHaptics />
                   <FocusIsland />
-                  <main id="main-content" className="p-6 pb-24 md:pb-10" tabIndex={-1}>
+                  <main data-v8-main id="main-content" className="p-6 pb-24 md:pb-10" tabIndex={-1}>
                     <PageTransition>{children}</PageTransition>
                     <AutomationRuntime />
                   </main>

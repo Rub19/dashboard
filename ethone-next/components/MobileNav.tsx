@@ -24,7 +24,7 @@ export default function MobileNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-[var(--border)] bg-[var(--surface)] pb-safe md:hidden">
+    <nav data-zen-hidden className="fixed bottom-0 left-0 right-0 z-40 border-t border-[var(--border)] bg-[var(--surface)] pb-safe md:hidden">
       <div className="flex items-center gap-1 overflow-x-auto px-2 py-2 [scrollbar-width:none]">
         {items.map((item) => {
           const isActive = pathname === item.href;

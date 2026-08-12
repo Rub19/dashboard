@@ -147,7 +147,10 @@ export type Settings = {
   driveClientId: string;
   liveWeatherCity: string;
   homeHiddenLiveCards: string[];
+  homeHiddenSections: string[];
   activityLiveLayout: string[];
+  focusPreset: string;
+  zenMode: boolean;
   liveSteamId: string;
   liveRssUrl: string;
   liveBlueskyHandle: string;
@@ -271,7 +274,10 @@ export const DEFAULTS: Settings = {
   driveClientId: "",
   liveWeatherCity: "Paris",
   homeHiddenLiveCards: [],
+  homeHiddenSections: [],
   activityLiveLayout: [],
+  focusPreset: "pomodoro",
+  zenMode: false,
   liveSteamId: "",
   liveRssUrl: "",
   liveLastfmUsername: "",

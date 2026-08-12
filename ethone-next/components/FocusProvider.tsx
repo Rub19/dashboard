@@ -9,6 +9,7 @@ type FocusState = {
   remaining: number;
   total: number;
   paused: boolean;
+  activePreset: string;
   format: (seconds: number) => string;
 };
 
@@ -25,6 +26,7 @@ type FocusContext = {
 const PRESETS: Record<string, { phase: FocusPhase; minutes: number }> = {
   pomodoro: { phase: "focus", minutes: 25 },
   deep: { phase: "focus", minutes: 50 },
+  sprint: { phase: "focus", minutes: 10 },
   quick: { phase: "focus", minutes: 15 },
   shortBreak: { phase: "shortBreak", minutes: 5 },
   longBreak: { phase: "longBreak", minutes: 15 },
@@ -43,6 +45,7 @@ export function FocusProvider({ children }: { children: React.ReactNode }) {
   const [remaining, setRemaining] = useState(25 * 60);
   const [total, setTotal] = useState(25 * 60);
   const [paused, setPaused] = useState(false);
+  const [activePreset, setActivePreset] = useState("");
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const clear = useCallback(() => {
@@ -57,6 +60,7 @@ export function FocusProvider({ children }: { children: React.ReactNode }) {
     if (!config) return;
     clear();
     const seconds = config.minutes * 60;
+    setActivePreset(preset);
     setPhase(config.phase);
     setRemaining(seconds);
     setTotal(seconds);
@@ -97,6 +101,7 @@ export function FocusProvider({ children }: { children: React.ReactNode }) {
 
   const stop = useCallback(() => {
     clear();
+    setActivePreset("");
     setPhase("idle");
     setPaused(false);
     setRemaining(25 * 60);
@@ -115,7 +120,7 @@ export function FocusProvider({ children }: { children: React.ReactNode }) {
   return (
     <FocusCtx.Provider
       value={{
-        state: { phase, remaining, total, paused, format: formatTime },
+        state: { phase, remaining, total, paused, activePreset, format: formatTime },
         start,
         pause,
         resume,

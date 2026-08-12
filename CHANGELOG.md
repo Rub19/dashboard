@@ -24,6 +24,9 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `app/globals.css` + `app/legacy-v8-tokens.css` + `components/HtmlLang.tsx` : tokens CSS Houdini `@property`, `color-mix`, animations `breathe`, thématisation par aura/session/densité.
 - `components/Dock.tsx` + `components/DockControlCenter.tsx` : Control Center dans le Dock (animations UI, toggles visuels/sonores, pack sonore, volume, ambiance, actions rapides).
 - `lib/sound.tsx` + `lib/settings.ts` + `app/settings/page.tsx` : sonorités ambiantes (`pink/brown/white/rain/drone`), media ducking, throttling par type de son, mapping `v8.*` -> `SoundType`, export WAV.
+- `components/Dock.tsx` : indicateur Spotify live, contrôles Spotlight/Command, Pomodoro/Focus (avec `FocusPopover`), Mission Control, Notifications.
+- `components/V8StatusBar.tsx` + `components/V8Breadcrumbs.tsx` + `lib/activity-journal.ts` : états sync/save/session, quick action sync.
+- `app/legacy-v8-tokens.css` + `components/HtmlLang.tsx` : variantes de thème `obsidian`, `aurora`, `minimal`, `focus`, `glass`, `oled`.
 
 ### Corrige
 - Migration des packs audio legacy `mechanical`/`liquid`/`none` vers les équivalents v8 pour compatibilité ascendante.

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useLiveData, LASTFM_PERIODS, type LastfmPeriod, type LiveRecord } from "@/lib/hooks/useLiveData";
 import { fetchWorker } from "@/lib/api";
@@ -124,6 +124,8 @@ export default function LiveWidgets({
   const [flipped, setFlipped] = useState<Record<string, boolean>>({});
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<"all" | (typeof CATEGORY_ORDER)[number]>("all");
+  const [saved, setSaved] = useState(nowPlaying?.isSaved ?? false);
+  useEffect(() => { setSaved(nowPlaying?.isSaved ?? false); }, [nowPlaying?.id, nowPlaying?.isSaved]);
 
   const hidden = new Set(settings.homeHiddenLiveCards || []);
   const layout = settings.activityLiveLayout || [];
@@ -145,15 +147,17 @@ export default function LiveWidgets({
     groups[cat] = list;
   }
 
-  async function controlSpotify(action: "play" | "pause" | "next" | "previous") {
+  async function controlSpotify(action: "play" | "pause" | "next" | "previous" | "save" | "unsave", trackId?: string) {
     if (!settings.liveSpotifyClientId) {
       showError(i18n("configureToEnable"));
       return;
     }
     try {
+      const body: Record<string, string> = { action, clientId: settings.liveSpotifyClientId };
+      if (trackId) body.trackId = trackId;
       await fetchWorker("/api/spotify/control", {
         method: "POST",
-        body: JSON.stringify({ action, clientId: settings.liveSpotifyClientId }),
+        body: JSON.stringify(body),
       });
     } catch {}
   }
@@ -598,8 +602,16 @@ export default function LiveWidgets({
                     <button onClick={() => controlSpotify("next")} className="rounded-full p-1.5 text-[var(--foreground)] hover:bg-white/10">
                       <Icon name="skipForward" className="h-4 w-4" />
                     </button>
-                    <button className="ml-auto rounded-full p-1.5 text-rose-400 hover:bg-rose-500/10">
-                      <Icon name="heart" className="h-4 w-4" />
+                    <button
+                      onClick={async () => {
+                        const next = !saved;
+                        setSaved(next);
+                        await controlSpotify(next ? "save" : "unsave", nowPlaying?.id);
+                      }}
+                      className={`ml-auto rounded-full p-1.5 ${saved ? "text-emerald-400" : "text-rose-400"} hover:bg-rose-500/10`}
+                      aria-label={saved ? i18n("unlike") : i18n("like")}
+                    >
+                      <Icon name={saved ? "heart-off" : "heart"} className="h-4 w-4" />
                     </button>
                   </div>
                 </div>

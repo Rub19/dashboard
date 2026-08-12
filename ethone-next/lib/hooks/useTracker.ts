@@ -18,6 +18,15 @@ export type TrackerPlayer = {
   champion?: string;
   legend?: string;
   partySize?: number;
+  hsPercent?: number;
+  cs?: number;
+  gold?: number;
+  vision?: number;
+  damage?: number;
+  healing?: number;
+  kda?: number;
+  headshots?: number;
+  placement?: number;
 };
 
 export type TrackerGame = {

@@ -23,6 +23,19 @@ function PartyBadge({ partySize }: { partySize?: number }) {
   return <span className="rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold text-amber-400">{label}</span>;
 }
 
+function Kda({ kills, deaths, assists }: { kills?: number; deaths?: number; assists?: number }) {
+  const k = kills ?? 0;
+  const d = deaths ?? 0;
+  const a = assists ?? 0;
+  const kda = d === 0 ? k + a : Number(((k + a) / d).toFixed(2));
+  return <span className="font-mono text-[var(--foreground)]">{kda} KDA</span>;
+}
+
+function StatBadge({ label, value, color = "text-[var(--muted)]" }: { label: string; value?: number | string; color?: string }) {
+  if (value === undefined || value === null || value === "") return null;
+  return <span className="rounded bg-[var(--surface)] px-1.5 py-0.5 text-[10px] text-[var(--muted)]"><span className={`font-semibold ${color}`}>{value}</span> {label}</span>;
+}
+
 function MatchCard({ match, game }: { match: Record<string, string | number | undefined>; game: TrackerGame }) {
   const [open, setOpen] = useState(false);
   const i18n = useI18n();
@@ -32,7 +45,6 @@ function MatchCard({ match, game }: { match: Record<string, string | number | un
   const hasScoreboard = players.length > 0;
   const teamIds = [...new Set(players.map((p) => p.team || "unknown"))];
 
-  // Minimal party detection: group by consecutive shared partyId in same team.
   const partiesByTeam = teamIds.map((team) => {
     const members = players.filter((p) => (p.team || "unknown") === team);
     const partyGroups: Record<string, TrackerPlayer[]> = {};
@@ -87,16 +99,29 @@ function MatchCard({ match, game }: { match: Record<string, string | number | un
                         className="divide-y divide-[var(--border)] rounded-lg border border-[var(--border)] bg-[var(--surface-raised)]"
                       >
                         {group.map((p, pi) => (
-                          <div key={pi} className="flex items-center gap-2 px-2 py-1.5">
-                            <span className="min-w-0 flex-1 truncate font-medium">{p.name}</span>
-                            {partySize > 1 && <PartyBadge partySize={partySize} />}
-                            {p.agent && <span className="text-[var(--muted)]">{p.agent}</span>}
-                            {p.champion && <span className="text-[var(--muted)]">{p.champion}</span>}
-                            {p.legend && <span className="text-[var(--muted)]">{p.legend}</span>}
-                            {p.rank && <span className="rounded bg-[var(--surface)] px-1.5 text-[var(--muted)]">{p.rank}</span>}
-                            <span className="ml-auto shrink-0 font-mono">
-                              {p.kills ?? "-"}/{p.deaths ?? "-"}/{p.assists ?? "-"}
-                            </span>
+                          <div key={pi} className="space-y-1 px-2 py-1.5">
+                            <div className="flex items-center gap-2">
+                              <span className="min-w-0 flex-1 truncate font-medium">{p.name}</span>
+                              {partySize > 1 && <PartyBadge partySize={partySize} />}
+                              {p.rank && <span className="rounded bg-[var(--surface)] px-1.5 text-[var(--muted)]">{p.rank}</span>}
+                              <span className="ml-auto shrink-0 font-mono text-[var(--foreground)]">
+                                {p.kills ?? "-"}/{p.deaths ?? "-"}/{p.assists ?? "-"}
+                              </span>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              {p.agent && <StatBadge label="Agent" value={p.agent} />}
+                              {p.champion && <StatBadge label="Champion" value={p.champion} />}
+                              {p.legend && <StatBadge label="Légende" value={p.legend} />}
+                              <Kda kills={p.kills} deaths={p.deaths} assists={p.assists} />
+                              {p.hsPercent !== undefined && <StatBadge label="HS" value={`${p.hsPercent}%`} color="text-rose-400" />}
+                              {p.cs !== undefined && <StatBadge label="CS" value={p.cs} />}
+                              {p.gold !== undefined && <StatBadge label="Or" value={p.gold} color="text-amber-400" />}
+                              {p.vision !== undefined && <StatBadge label="Vision" value={p.vision} />}
+                              {p.damage !== undefined && <StatBadge label="Dégâts" value={p.damage} color="text-red-400" />}
+                              {p.healing !== undefined && <StatBadge label="Soins" value={p.healing} color="text-emerald-400" />}
+                              {p.headshots !== undefined && <StatBadge label="Headshots" value={p.headshots} />}
+                              {p.placement !== undefined && <StatBadge label="Place" value={`#${p.placement}`} color="text-violet-400" />}
+                            </div>
                           </div>
                         ))}
                       </div>

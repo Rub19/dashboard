@@ -115,6 +115,8 @@ export const EXTRAS: Record<string, Record<string, string>> = {
     private: "Privé",
     unlisted: "Non listé",
     search: "Rechercher",
+    like: "Aimer",
+    unlike: "Retirer",
   },
   en: {
     dayShortMon: "Mon",
@@ -232,6 +234,8 @@ export const EXTRAS: Record<string, Record<string, string>> = {
     private: "Private",
     unlisted: "Unlisted",
     search: "Search",
+    like: "Like",
+    unlike: "Unlike",
   },
   es: {
     dayShortMon: "Lun",
@@ -349,6 +353,8 @@ export const EXTRAS: Record<string, Record<string, string>> = {
     private: "Privado",
     unlisted: "No listado",
     search: "Buscar",
+    like: "Me gusta",
+    unlike: "Quitar",
   },
   de: {
     dayShortMon: "Mo",
@@ -466,5 +472,7 @@ export const EXTRAS: Record<string, Record<string, string>> = {
     private: "Privat",
     unlisted: "Nicht gelistet",
     search: "Suchen",
+    like: "Gefällt mir",
+    unlike: "Gefällt mir nicht",
   },
 };

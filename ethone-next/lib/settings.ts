@@ -149,7 +149,7 @@ export type Settings = {
   spotlightEnabled: boolean;
   ambientEffectsEnabled: boolean;
   interfaceBlurEnabled: boolean;
-  liveNowPlayingSource: "lanyard" | "lastfm";
+  liveNowPlayingSource: "lanyard" | "lastfm" | "spotify";
   liveNowPlayingIdentity: string;
   liveLanyardUserId: string;
   liveSpotifyClientId: string;

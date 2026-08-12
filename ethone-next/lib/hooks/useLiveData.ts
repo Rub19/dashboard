@@ -8,6 +8,7 @@ import { useConnections } from "./useConnections";
 import { listBills, getNextDueDate } from "@/lib/bills-manager";
 
 export type NowPlaying = {
+  id?: string;
   source?: string;
   title?: string;
   artist?: string;
@@ -17,6 +18,7 @@ export type NowPlaying = {
   progressMs?: number;
   durationMs?: number;
   isPlaying?: boolean;
+  isSaved?: boolean;
 };
 
 export type LanyardPresence = {
@@ -165,6 +167,8 @@ export function useLiveData(pollMs = 60000) {
       ? `/api/now-playing?source=lanyard&userId=${encodeURIComponent(liveNowPlayingIdentity)}`
       : liveNowPlayingSource === "lastfm" && liveNowPlayingIdentity
       ? `/api/now-playing?source=lastfm&username=${encodeURIComponent(liveNowPlayingIdentity)}`
+      : liveNowPlayingSource === "spotify" && settings.liveSpotifyClientId
+      ? `/api/spotify/now-playing?clientId=${encodeURIComponent(settings.liveSpotifyClientId)}`
       : null;
 
   const lanyardPath = liveLanyardUserId
@@ -323,6 +327,7 @@ export function useLiveData(pollMs = 60000) {
         if (np.status === "fulfilled") {
           const d = np.value || {};
           setNowPlaying({
+            id: asStr(d.id),
             source: asStr(d.source) || "Spotify",
             title: asStr(d.title),
             artist: asStr(d.artist),
@@ -332,6 +337,7 @@ export function useLiveData(pollMs = 60000) {
             progressMs: asNum(d.progressMs),
             durationMs: asNum(d.durationMs),
             isPlaying: Boolean(d.isPlaying ?? d.playing),
+            isSaved: d.isSaved === true,
           });
         }
         if (la.status === "fulfilled") {

@@ -87,6 +87,7 @@ const MAP: Record<string, Partial<Record<IconPack, string>>> = {
   skipBack: { lucide: "skip-back", phosphor: "skip-back", tabler: "player-skip-back", heroicons: "backward", radix: "track-previous" },
   skipForward: { lucide: "skip-forward", phosphor: "skip-forward", tabler: "player-skip-forward", heroicons: "forward", radix: "track-next" },
   heart: { lucide: "heart", phosphor: "heart", tabler: "heart", heroicons: "heart", radix: "heart" },
+  heartOff: { lucide: "heart-off", phosphor: "heart-break", tabler: "heart-off", heroicons: "heart", radix: "heart" },
   grip: { lucide: "grip-horizontal", phosphor: "dots-nine", tabler: "grip-horizontal", heroicons: "bars-4", radix: "drag-handle-dots-2" },
   radio: { lucide: "radio", phosphor: "radio", tabler: "radio", heroicons: "signal", radix: "dot" },
   monitor: { lucide: "monitor", phosphor: "monitor", tabler: "device-desktop", heroicons: "computer-desktop", radix: "desktop" },

@@ -200,7 +200,7 @@ export default function ContextMenu({
       {open && (
         <div
           ref={menuRef}
-          className="ethone-context-menu fixed z-50 min-w-[10rem] max-w-[18rem] rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1 shadow-[var(--shadow)] outline-none"
+          className="v8-context-menu ethone-context-menu fixed z-50 min-w-[10rem] max-w-[18rem] rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1 shadow-[var(--shadow)] outline-none"
           style={{ left: adjusted.x, top: adjusted.y }}
           role="menu"
           aria-label={i18n("actions")}

@@ -1,16 +1,16 @@
 "use client";
 
-import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
+import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { Icon } from "@/lib/icons";
 import Tooltip from "@/components/Tooltip";
 
 export default function Sidebar() {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useLocalStorage<boolean>("ethone-rail-expanded", false);
   const pathname = usePathname();
   const i18n = useI18n();
   const { settings } = useSettings();
@@ -41,10 +41,11 @@ export default function Sidebar() {
 
   return (
     <motion.aside
+      data-v8-rail
       initial={false}
       animate={{ width: expanded ? 240 : 72 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className={`fixed left-0 top-0 z-40 hidden h-screen flex-col border-r border-[var(--border)] md:flex ${
+      className={`v8-rail fixed left-0 top-0 z-40 hidden h-screen flex-col border-r border-[var(--border)] md:flex ${
         settings.glassEnabled ? "bg-[var(--surface)]/80 backdrop-blur-xl" : "bg-[var(--surface)]"
       }`}
     >

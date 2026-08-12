@@ -2,9 +2,12 @@
 
 import { useEffect } from "react";
 import { useSettings } from "@/components/SettingsProvider";
+import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 
 export default function HtmlLang() {
   const { settings } = useSettings();
+  const [activeSpace] = useLocalStorage<string>("ethone-active-workspace", "personal");
+  const [railExpanded] = useLocalStorage<boolean>("ethone-rail-expanded", false);
   useEffect(() => {
     const html = document.documentElement;
     html.lang = settings.language;
@@ -29,6 +32,9 @@ export default function HtmlLang() {
       html.style.removeProperty("--density-row-height");
       html.style.removeProperty("--density-toolbar-height");
     }
+    html.dataset.space = activeSpace;
+    html.dataset.rail = railExpanded ? "expanded" : "compact";
+    html.style.setProperty("--dock-offset", railExpanded ? "122px" : "0px");
     html.dataset.wallpaper = settings.wallpaper;
     html.dataset.font = settings.fontFamily;
     html.dataset.accent = settings.accentColor;
@@ -54,6 +60,8 @@ export default function HtmlLang() {
     settings.wallpaper,
     settings.fontFamily,
     settings.aura,
+    activeSpace,
+    railExpanded,
     settings.accentColor,
     settings.customAccent,
     settings.reducedMotion,

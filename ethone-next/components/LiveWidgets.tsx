@@ -96,6 +96,7 @@ export default function LiveWidgets({
   const { error: showError } = useToast();
   const i18n = useI18n();
   const [flipped, setFlipped] = useState<Record<string, boolean>>({});
+  const [draggingId, setDraggingId] = useState<string | null>(null);
 
   const hidden = new Set(settings.homeHiddenLiveCards || []);
   const layout = settings.activityLiveLayout || [];
@@ -135,6 +136,17 @@ export default function LiveWidgets({
     if (newIdx < 0 || newIdx >= ids.length) return;
     const nextIds = [...ids];
     [nextIds[idx], nextIds[newIdx]] = [nextIds[newIdx], nextIds[idx]];
+    update({ activityLiveLayout: nextIds });
+  }
+
+  function moveRecordTo(draggedId: string, targetId: string) {
+    const ids = visibleRecords.map((r) => r.id);
+    const from = ids.indexOf(draggedId);
+    const to = ids.indexOf(targetId);
+    if (from === -1 || to === -1) return;
+    const nextIds = ids.filter((id) => id !== draggedId);
+    const insertAt = from < to ? to : to;
+    nextIds.splice(insertAt, 0, draggedId);
     update({ activityLiveLayout: nextIds });
   }
 
@@ -418,8 +430,29 @@ export default function LiveWidgets({
           return (
             <ContextMenu key={record.id} items={liveContextItems(record)}>
               <div
-                onClick={() => toggleFlip(record.id)}
-                className="group relative cursor-pointer"
+                onClick={customizing ? undefined : () => toggleFlip(record.id)}
+                draggable={customizing}
+                onDragStart={(e) => {
+                  setDraggingId(record.id);
+                  e.dataTransfer.setData("text/plain", record.id);
+                  e.dataTransfer.effectAllowed = "move";
+                }}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  if (draggingId && draggingId !== record.id) {
+                    e.dataTransfer.dropEffect = "move";
+                  }
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const draggedId = e.dataTransfer.getData("text/plain");
+                  if (draggedId && draggedId !== record.id) {
+                    moveRecordTo(draggedId, record.id);
+                  }
+                  setDraggingId(null);
+                }}
+                onDragEnd={() => setDraggingId(null)}
+                className={`group relative ${customizing ? "cursor-grab" : "cursor-pointer"}`}
                 style={{ perspective: 1000 }}
               >
               <div

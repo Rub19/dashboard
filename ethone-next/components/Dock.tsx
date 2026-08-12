@@ -37,6 +37,7 @@ export default function Dock() {
   const { openWindow } = useWindowManager();
   const i18n = useI18n();
   const [expanded, setExpanded] = useState(false);
+  const [draggingId, setDraggingId] = useState<string | null>(null);
 
   if (!settings.dockVisible || settings.layoutPreset === "sidebar-only" || settings.layoutPreset === "minimal") return null;
 
@@ -55,8 +56,19 @@ export default function Dock() {
     update({ dockItems: order });
   }
 
+  function moveTo(draggedId: string, targetId: string) {
+    const order = [...settings.dockItems];
+    const from = order.indexOf(draggedId);
+    const to = order.indexOf(targetId);
+    if (from < 0 || to < 0) return;
+    const next = order.filter((id) => id !== draggedId);
+    const insertAt = from < to ? to : to;
+    next.splice(insertAt, 0, draggedId);
+    update({ dockItems: next });
+  }
+
   return (
-    <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2" data-dock-magnify="true" data-dock-pulse="true">
+    <div className="v8-floating-dock fixed bottom-4 z-50" style={{ left: "calc(50% + var(--dock-offset))", transform: "translateX(-50%)" }} data-dock-magnify="true" data-dock-pulse="true">
       <div
         data-dock
         className={`flex items-end gap-1 border border-[var(--border)] bg-[var(--surface-raised)]/95 p-2 shadow-2xl backdrop-blur-md transition-all ${
@@ -73,6 +85,7 @@ export default function Dock() {
           const link = (
             <Link
               href={item.href}
+              onClick={(e) => { if (draggingId) e.preventDefault(); }}
               aria-label={item.label}
               data-tooltip={item.label}
               data-haptic
@@ -87,7 +100,30 @@ export default function Dock() {
           );
           return (
             <ContextMenu key={item.id} items={contextItems}>
-              <div className="group relative flex flex-col items-center">
+              <div
+                className="group relative flex flex-col items-center"
+                draggable={expanded}
+                onDragStart={(e) => {
+                  setDraggingId(item.id);
+                  e.dataTransfer.setData("text/plain", item.id);
+                  e.dataTransfer.effectAllowed = "move";
+                }}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  if (draggingId && draggingId !== item.id) {
+                    e.dataTransfer.dropEffect = "move";
+                  }
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const draggedId = e.dataTransfer.getData("text/plain");
+                  if (draggedId && draggedId !== item.id) {
+                    moveTo(draggedId, item.id);
+                  }
+                  setDraggingId(null);
+                }}
+                onDragEnd={() => setDraggingId(null)}
+              >
                 {link}
               {expanded && (
                 <div className="mt-1 flex gap-0.5">

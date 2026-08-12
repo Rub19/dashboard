@@ -6,6 +6,7 @@ import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
+import { useLayer } from "@/components/LayerProvider";
 import { useCommandItems, type CommandItem } from "@/lib/commands";
 
 export default function CommandPalette() {
@@ -14,6 +15,7 @@ export default function CommandPalette() {
   const i18n = useI18n();
   const { settings, update } = useSettings();
   const { open, setOpen } = useCommandPalette();
+  useLayer(open, () => setOpen(false));
   const COMMANDS = useCommandItems(setOpen);
 
   const pinned = useMemo(() => new Set(settings.pinnedCommands || []), [settings.pinnedCommands]);

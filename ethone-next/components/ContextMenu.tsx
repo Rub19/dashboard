@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback, type ReactNode } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useLayer } from "@/components/LayerProvider";
 import { Icon } from "@/lib/icons";
 
 export type ContextMenuItem = {
@@ -23,6 +24,7 @@ export default function ContextMenu({
 }) {
   const i18n = useI18n();
   const [open, setOpen] = useState(false);
+  useLayer(open, () => setOpen(false));
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [adjusted, setAdjusted] = useState({ x: 0, y: 0 });
   const menuRef = useRef<HTMLDivElement>(null);

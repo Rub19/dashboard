@@ -22,6 +22,7 @@ import AmbientParticles from "@/components/AmbientParticles";
 import Spotlight from "@/components/Spotlight";
 import Dock from "@/components/Dock";
 import UIProvider from "@/components/UIProvider";
+import { LayerProvider } from "@/components/LayerProvider";
 import PageTransition from "@/components/PageTransition";
 import { WindowManagerProvider } from "@/components/WindowManagerProvider";
 import { WindowRenderer } from "@/components/WindowRenderer";
@@ -70,6 +71,7 @@ export default function RootLayout({
             <PresenceProvider>
             <ShortcutsProvider>
             <UIProvider>
+            <LayerProvider>
               <HtmlLang />
               <ProfileSync />
               <SoundProvider>
@@ -105,6 +107,7 @@ export default function RootLayout({
                 <KeyboardShortcuts />
                 </ToastProvider>
               </SoundProvider>
+            </LayerProvider>
             </UIProvider>
             </ShortcutsProvider>
             </PresenceProvider>

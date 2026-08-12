@@ -78,8 +78,10 @@ function getArtworkUrl(np: ApiData | null): string | undefined {
   return asStr(np?.artworkUrl || np?.cover || np?.artwork);
 }
 
-export function useLiveData(pollMs = 15000) {
+export function useLiveData(pollMs = 60000) {
   const { settings } = useSettings();
+  const { performanceMode = "normal" } = settings;
+  const effectivePollMs = performanceMode === "low" ? 300000 : pollMs;
   const { connected } = useConnections();
   const {
     liveNowPlayingSource,
@@ -386,28 +388,42 @@ export function useLiveData(pollMs = 15000) {
       }
     }
 
-    load();
-    const interval = setInterval(load, pollMs);
+    function start() {
+      return setInterval(load, effectivePollMs);
+    }
+
+    let interval = document.hidden ? undefined : start();
 
     function maybeRefresh() {
       if (document.hidden) return;
       const now = Date.now();
-      if (now - lastRefreshRef.current < 30000) return;
+      if (now - lastRefreshRef.current < effectivePollMs) return;
       lastRefreshRef.current = now;
       load();
     }
 
-    document.addEventListener("visibilitychange", maybeRefresh);
+    function handleVisibility() {
+      if (document.hidden) {
+        if (interval) clearInterval(interval);
+        interval = undefined;
+      } else {
+        if (!interval) interval = start();
+        maybeRefresh();
+      }
+    }
+
+    load();
+    document.addEventListener("visibilitychange", handleVisibility);
     window.addEventListener("focus", maybeRefresh);
 
     return () => {
       cancelled = true;
-      clearInterval(interval);
-      document.removeEventListener("visibilitychange", maybeRefresh);
+      if (interval) clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibility);
       window.removeEventListener("focus", maybeRefresh);
     };
   }, [
-    pollMs,
+    effectivePollMs,
     nowPlayingPath,
     lanyardPath,
     weatherPath,

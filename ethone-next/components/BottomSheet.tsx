@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback, type ReactNode } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useLayer } from "@/components/LayerProvider";
 import { motion, AnimatePresence, type PanInfo } from "framer-motion";
 
 export default function BottomSheet({
@@ -20,6 +21,7 @@ export default function BottomSheet({
   draggable?: boolean;
 }) {
   const i18n = useI18n();
+  useLayer(open, onClose);
   const [isClosing, setIsClosing] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const previousFocus = useRef<HTMLElement | null>(null);

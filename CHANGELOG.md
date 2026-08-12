@@ -12,6 +12,9 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `components/MailAnalyticsPanel.tsx` + `app/mail/page.tsx` : analytics Mail avancé (périodes 7/30/90j, graphiques barres, top expéditeurs avec barres, top étiquettes).
 - `lib/brain/automation.ts` + `components/FlowAutomations.tsx` : automation triggers `route`/`space`/`time` avec actions étendues (Space, density, thème).
 - `components/LiveWidgets.tsx` : filtres par catégorie (`gaming`/`social`/`productivity`) pour les Live cards multi-services.
+- `app/matches/page.tsx` + `lib/hooks/useTracker.ts` : scoreboard détaillé (KDA, HS%, CS, or, vision, dégâts, soins, placement).
+- `lib/settings.ts` + `lib/hooks/useLiveData.ts` + `components/LiveWidgets.tsx` : source Now Playing `spotify` native, contrôle like/unlike via Worker.
+- `lib/brain/action-registry.ts` + `lib/brain/preferences.ts` + `app/brain/page.tsx` : actions Brain Mail avancées (summarize, suggestReply, draft, search, move, analytics, block, trust).
 - `public/icons/` + `public/legacy/` : copie de tous les assets visuels legacy (favicons, PWA icons, 404, manifest, SW, index, headers) et mise à jour du manifest PWA.
 
 ### Ajoute

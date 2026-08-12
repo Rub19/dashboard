@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Card3D from "@/components/Card3D";
+import Input from "@/components/Input";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useTeam } from "@/lib/hooks/useTeam";
 import { Icon } from "@/lib/icons";
@@ -18,6 +19,7 @@ export default function TeamPage() {
   const [inviting, setInviting] = useState(false);
   const [inviteError, setInviteError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [query, setQuery] = useState("");
 
   async function submit() {
     if (!email.trim()) return;
@@ -56,6 +58,20 @@ export default function TeamPage() {
     }
   }
 
+  const filtered = useMemo(() => {
+    if (!query.trim()) return members;
+    const q = query.toLowerCase();
+    return members.filter(
+      (m) => m.email.toLowerCase().includes(q) || (m.display_name || "").toLowerCase().includes(q)
+    );
+  }, [members, query]);
+
+  const stats = useMemo(() => ({
+    total: members.length,
+    active: members.filter((m) => m.status === "active").length,
+    pending: members.filter((m) => m.status === "pending").length,
+  }), [members]);
+
   function statusClass(status: string) {
     switch (status) {
       case "active":
@@ -74,18 +90,34 @@ export default function TeamPage() {
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">{i18n("teamTitle")}</h1>
 
+      <div className="grid grid-cols-3 gap-3">
+        <Card3D>
+          <p className="text-xs text-[var(--muted)]">{i18n("total")}</p>
+          <p className="text-2xl font-bold">{loading ? "-" : stats.total}</p>
+        </Card3D>
+        <Card3D>
+          <p className="text-xs text-[var(--muted)]">{i18n("active")}</p>
+          <p className="text-2xl font-bold text-emerald-400">{loading ? "-" : stats.active}</p>
+        </Card3D>
+        <Card3D>
+          <p className="text-xs text-[var(--muted)]">{i18n("pending")}</p>
+          <p className="text-2xl font-bold text-amber-400">{loading ? "-" : stats.pending}</p>
+        </Card3D>
+      </div>
+
       <Card3D>
         <div className="space-y-3">
           <label className="text-sm font-medium">{i18n("inviteMember")}</label>
           <div className="flex gap-2">
-            <input
+            <Input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && submit()}
-              aria-label={i18n("emailPlaceholder")} placeholder={i18n("emailPlaceholder")}
+              aria-label={i18n("emailPlaceholder")}
+              placeholder={i18n("emailPlaceholder")}
               disabled={inviting}
-              className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] disabled:opacity-50"
+              className="min-w-0 flex-1"
             />
             <select
               aria-label={i18n("role")}
@@ -127,6 +159,13 @@ export default function TeamPage() {
         </div>
       </Card3D>
 
+      <Input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder={i18n("search")}
+        icon="search"
+      />
+
       {loading ? (
         <Card3D>
           <div className="h-4 w-1/3 animate-pulse rounded bg-[var(--border)]" />
@@ -137,7 +176,7 @@ export default function TeamPage() {
         </Card3D>
       ) : (
         <div className="space-y-3">
-          {members.map((m) => (
+          {filtered.map((m) => (
             <Card3D key={m.id}>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">

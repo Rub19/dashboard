@@ -2,19 +2,30 @@
 
 import { useState } from "react";
 import Card3D from "@/components/Card3D";
+import Input from "@/components/Input";
 import { useUserData } from "@/lib/hooks/useUserData";
 import { useSettings } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 
+const THEMES = ["default", "boreal", "cyberpunk", "eclipse", "emerald"] as const;
+
+function themeLabel(theme: string, i18n: (k: string) => string) {
+  const key = `theme${theme.charAt(0).toUpperCase() + theme.slice(1)}`;
+  return i18n(key);
+}
+
 export default function PersonasPage() {
   const i18n = useI18n();
   const { success, error: showError } = useToast();
-  const { items: personas, create, remove } = useUserData("persona");
-  const { update } = useSettings();
+  const { items: personas, create, update, remove } = useUserData("persona");
+  const { update: updateSettings } = useSettings();
   const [label, setLabel] = useState("");
-  const [theme, setTheme] = useState<"default" | "boreal" | "cyberpunk" | "eclipse" | "emerald">("default");
+  const [theme, setTheme] = useState<(typeof THEMES)[number]>("default");
+  const [editing, setEditing] = useState<string | null>(null);
+  const [editLabel, setEditLabel] = useState("");
+  const [editTheme, setEditTheme] = useState<(typeof THEMES)[number]>("default");
 
   async function add() {
     if (!label.trim()) return;
@@ -27,10 +38,31 @@ export default function PersonasPage() {
     }
   }
 
-  function apply(persona: typeof personas[0]) {
-    const data = persona.data as { theme?: typeof theme };
+  function startEdit(p: (typeof personas)[0]) {
+    setEditing(p.id);
+    setEditLabel(p.label);
+    setEditTheme((p.data as { theme?: (typeof THEMES)[number] }).theme || "default");
+  }
+
+  function cancelEdit() {
+    setEditing(null);
+    setEditLabel("");
+  }
+
+  async function saveEdit(id: string) {
+    try {
+      await update(id, { label: editLabel, data: { theme: editTheme } });
+      setEditing(null);
+      success(i18n("saved"));
+    } catch {
+      showError(i18n("error"));
+    }
+  }
+
+  function apply(persona: (typeof personas)[0]) {
+    const data = persona.data as { theme?: (typeof THEMES)[number] };
     if (data.theme) {
-      update({ theme: data.theme });
+      updateSettings({ theme: data.theme });
       success(i18n("applied"));
     }
   }
@@ -52,25 +84,23 @@ export default function PersonasPage() {
         <div className="space-y-4">
           <p className="text-sm text-[var(--muted)]">{i18n("personasDescription")}</p>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <input
-              type="text"
+            <Input
               value={label}
               onChange={(e) => setLabel(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && add()}
-              aria-label={i18n("create")} placeholder={i18n("create")}
-              className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+              aria-label={i18n("create")}
+              placeholder={i18n("create")}
+              className="min-w-0 flex-1"
             />
             <select
               aria-label={i18n("theme")}
               value={theme}
-              onChange={(e) => setTheme(e.target.value as typeof theme)}
+              onChange={(e) => setTheme(e.target.value as (typeof THEMES)[number])}
               className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm"
             >
-              <option value="default">{i18n("themeDefault")}</option>
-              <option value="boreal">{i18n("themeBoreal")}</option>
-              <option value="cyberpunk">{i18n("themeCyberpunk")}</option>
-              <option value="eclipse">{i18n("themeEclipse")}</option>
-              <option value="emerald">{i18n("themeEmerald")}</option>
+              {THEMES.map((t) => (
+                <option key={t} value={t}>{themeLabel(t, i18n)}</option>
+              ))}
             </select>
             <button type="button" aria-label={i18n("add")} onClick={add} className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white">
               <Icon name="plus" className="h-4 w-4" />
@@ -82,27 +112,56 @@ export default function PersonasPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {personas.map((p) => {
           const data = p.data as { theme?: string };
+          const isEditing = editing === p.id;
           return (
             <Card3D key={p.id}>
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
-                    <Icon name="users" className="h-5 w-5" />
-                  </span>
-                  <div>
-                    <p className="font-medium">{p.label}</p>
-                    <p className="text-xs capitalize text-[var(--muted)]">{data.theme ? i18n(`theme${data.theme.charAt(0).toUpperCase() + data.theme.slice(1)}`) : i18n("themeDefault")}</p>
+              {isEditing ? (
+                <div className="space-y-3">
+                  <Input
+                    value={editLabel}
+                    onChange={(e) => setEditLabel(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") saveEdit(p.id); if (e.key === "Escape") cancelEdit(); }}
+                    aria-label={i18n("label")}
+                  />
+                  <select
+                    aria-label={i18n("theme")}
+                    value={editTheme}
+                    onChange={(e) => setEditTheme(e.target.value as (typeof THEMES)[number])}
+                    className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm"
+                  >
+                    {THEMES.map((t) => (
+                      <option key={t} value={t}>{themeLabel(t, i18n)}</option>
+                    ))}
+                  </select>
+                  <div className="flex gap-2">
+                    <button type="button" onClick={() => saveEdit(p.id)} className="flex-1 rounded-xl bg-[var(--accent)] py-2 text-sm font-semibold text-white">{i18n("save")}</button>
+                    <button type="button" onClick={cancelEdit} className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm text-[var(--muted)] hover:text-[var(--foreground)]">{i18n("cancel")}</button>
                   </div>
                 </div>
-                <div className="flex items-center gap-1">
-                  <button type="button" aria-label={i18n("apply")} onClick={() => apply(p)} className="rounded p-1.5 text-emerald-400 hover:bg-emerald-500/10">
-                    <Icon name="check" className="h-4 w-4" />
-                  </button>
-                  <button type="button" aria-label={i18n("delete")} onClick={() => deletePersona(p.id)} className="rounded p-1.5 text-[var(--muted)] hover:text-red-400">
-                    <Icon name="trash-2" className="h-4 w-4" />
-                  </button>
+              ) : (
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
+                      <Icon name="users" className="h-5 w-5" />
+                    </span>
+                    <div>
+                      <p className="font-medium">{p.label}</p>
+                      <p className="text-xs capitalize text-[var(--muted)]">{data.theme ? themeLabel(data.theme, i18n) : i18n("themeDefault")}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button type="button" aria-label={i18n("edit")} onClick={() => startEdit(p)} className="rounded p-1.5 text-[var(--muted)] hover:text-[var(--accent)]">
+                      <Icon name="pencil" className="h-4 w-4" />
+                    </button>
+                    <button type="button" aria-label={i18n("apply")} onClick={() => apply(p)} className="rounded p-1.5 text-emerald-400 hover:bg-emerald-500/10">
+                      <Icon name="check" className="h-4 w-4" />
+                    </button>
+                    <button type="button" aria-label={i18n("delete")} onClick={() => deletePersona(p.id)} className="rounded p-1.5 text-[var(--muted)] hover:text-red-400">
+                      <Icon name="trash-2" className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
             </Card3D>
           );
         })}

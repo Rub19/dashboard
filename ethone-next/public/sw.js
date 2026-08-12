@@ -1,5 +1,6 @@
-const CACHE_NAME = "ethone-next-v339";
-const PRECACHE = ["/", "/login/"];
+const CACHE_NAME = "ethone-next-v340";
+const PRECACHE = ["/", "/login/", "/offline.html"];
+const STATIC_EXTENSIONS = [".js", ".css", ".png", ".jpg", ".jpeg", ".webp", ".svg", ".woff", ".woff2", ".ico"];
 
 const DB_NAME = "ethone-notifications";
 const DB_STORE = "inbox";
@@ -110,6 +111,16 @@ async function normalizeRecord(data) {
     timestamp: data.timestamp || now,
     createdAt: data.createdAt || new Date(now).toISOString(),
   };
+}
+
+function isStaticAsset(url) {
+  const pathname = new URL(url).pathname;
+  return STATIC_EXTENSIONS.some((ext) => pathname.endsWith(ext)) || pathname.startsWith("/_next/");
+}
+
+async function offlineFallback() {
+  const cache = await caches.open(CACHE_NAME);
+  return (await cache.match("/offline.html")) || new Response("Offline", { status: 503, headers: { "Content-Type": "text/plain" } });
 }
 
 self.addEventListener("install", (event) => {
@@ -226,17 +237,55 @@ self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   if (event.request.url.includes("/api/")) return;
 
+  if (isStaticAsset(event.request.url)) {
+    event.respondWith(
+      caches.match(event.request).then((cached) => {
+        if (cached) return cached;
+        return fetch(event.request)
+          .then((response) => {
+            if (!response || response.status !== 200 || response.type !== "basic") return response;
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+            return response;
+          })
+          .catch(() => cached || offlineFallback());
+      })
+    );
+    return;
+  }
+
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (!response || response.status !== 200 || response.type !== "basic") return response;
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          return response;
+        })
+        .catch(() => caches.match(event.request).then((cached) => cached || offlineFallback()))
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request).then((response) => {
-        if (!response || response.status !== 200 || response.type !== "basic") {
+      if (cached) {
+        fetch(event.request).then((response) => {
+          if (response && response.status === 200 && response.type === "basic") {
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, response.clone()));
+          }
+        });
+        return cached;
+      }
+      return fetch(event.request)
+        .then((response) => {
+          if (!response || response.status !== 200 || response.type !== "basic") return response;
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
           return response;
-        }
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-        return response;
-      });
+        })
+        .catch(() => offlineFallback());
     })
   );
 });

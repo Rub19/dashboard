@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ETHONE · Offline</title>
+  <link rel="icon" href="/favicon.ico" />
+  <style>
+    :root { color-scheme: dark; --bg: #0b0c0f; --fg: #e2e4e8; --muted: #6d7482; --accent: #7c3aed; }
+    body { margin: 0; display: grid; place-items: center; min-height: 100vh; background: var(--bg); color: var(--fg); font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .card { text-align: center; padding: 2rem; border: 1px solid #222; border-radius: 1.5rem; background: #15171c; max-width: 24rem; }
+    h1 { margin: 0 0 0.5rem; font-size: 1.5rem; }
+    p { margin: 0 0 1.5rem; color: var(--muted); }
+    button { border: none; border-radius: 1rem; padding: 0.75rem 1.25rem; font-size: 0.875rem; font-weight: 600; color: white; background: var(--accent); cursor: pointer; }
+    button:hover { opacity: 0.9; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Connectivité perdue</h1>
+    <p>ETHONE n'est pas accessible sans connexion. Cette page est en cache.</p>
+    <button onclick="location.reload()">Réessayer</button>
+  </div>
+</body>
+</html>

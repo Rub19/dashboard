@@ -11,24 +11,9 @@ import { fetchWorker } from "@/lib/api";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
 import ContextMenu from "@/components/ContextMenu";
-
-function formatBytes(bytes = 0) {
-  if (bytes === 0) return "0 B";
-  const k = 1024;
-  const sizes = ["B", "KB", "MB", "GB"];
-  const i = Math.min(sizes.length - 1, Math.floor(Math.log(bytes) / Math.log(k)));
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
-}
-
-function mimeIcon(mimeType: string, isFolder: boolean) {
-  if (isFolder) return "folder";
-  if (mimeType?.startsWith("image/")) return "image";
-  if (mimeType?.startsWith("video/")) return "video";
-  if (mimeType?.startsWith("audio/")) return "music";
-  if (mimeType?.includes("pdf")) return "file-text";
-  if (mimeType?.includes("json") || mimeType?.includes("javascript") || mimeType?.includes("html")) return "file-code-2";
-  return "file";
-}
+import { useSelection } from "@/lib/hooks/useSelection";
+import BulkActionBar from "@/components/BulkActionBar";
+import { formatBytes, mimeIcon, sortFiles } from "@/lib/files";
 
 function folderPath(files: CloudFile[], folderId: string | null) {
   const path: CloudFile[] = [];
@@ -102,10 +87,11 @@ export default function FilesPage() {
   const [modal, setModal] = useState<Modal>(null);
   const [form, setForm] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [sort, setSort] = useState<"name" | "size" | "date">("name");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const filteredFiles = useMemo(() => {
-    if (favorites) return files;
+    if (favorites) return sortFiles(files, sort);
     let list = files.filter((f) => f.isFolder || (trashed ? f.trashed : !f.trashed));
     if (parentId) {
       list = list.filter((f) => (f.driveParentId || null) === parentId || (f.driveFileId === parentId && f.isFolder));
@@ -116,8 +102,10 @@ export default function FilesPage() {
       const q = query.toLowerCase();
       list = list.filter((f) => f.name.toLowerCase().includes(q));
     }
-    return list;
-  }, [files, favorites, parentId, trashed, query]);
+    return sortFiles(list, sort);
+  }, [files, favorites, parentId, trashed, query, sort]);
+
+  const { selected, selectedItems, hasSelection, isAllSelected, toggle, selectAll, clear, isSelected } = useSelection<CloudFile>(filteredFiles);
 
   const path = useMemo(() => folderPath(files, parentId), [files, parentId]);
 
@@ -266,6 +254,36 @@ export default function FilesPage() {
     }
   }
 
+  async function bulkTrash() {
+    try {
+      await Promise.all(selectedItems.map((f) => trashFile(f.driveFileId)));
+      clear();
+      success(i18n("trash"));
+    } catch (err) {
+      toastError(String(err));
+    }
+  }
+
+  async function bulkDelete() {
+    try {
+      await Promise.all(selectedItems.map((f) => deleteFile(f.driveFileId)));
+      clear();
+      success(i18n("deleted"));
+    } catch (err) {
+      toastError(String(err));
+    }
+  }
+
+  async function bulkFavorite() {
+    try {
+      await Promise.all(selectedItems.map((f) => favoriteFile(f.driveFileId, !f.isFavorite)));
+      clear();
+      success(i18n("saved"));
+    } catch (err) {
+      toastError(String(err));
+    }
+  }
+
   const moveTargets = useMemo(() => {
     if (!modal || modal.type !== "move" || modal.file.isFolder) return [];
     const blocked = descendantFolderIds(files, modal.file.driveFileId);
@@ -408,6 +426,35 @@ export default function FilesPage() {
           placeholder={i18n("searchFiles")}
           className="min-w-0 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
         />
+        <select
+          value={sort}
+          onChange={(e) => setSort(e.target.value as typeof sort)}
+          className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none"
+        >
+          <option value="name">{i18n("sortByName")}</option>
+          <option value="size">{i18n("sortBySize")}</option>
+          <option value="date">{i18n("sortByDate")}</option>
+        </select>
+      </div>
+
+      {hasSelection && (
+        <BulkActionBar
+          count={selected.size}
+          onFavorite={trashed ? undefined : bulkFavorite}
+          onDelete={trashed ? bulkDelete : bulkTrash}
+          onClear={clear}
+        />
+      )}
+
+      <div className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          checked={isAllSelected}
+          onChange={() => (isAllSelected ? clear() : selectAll())}
+          className="accent-[var(--accent)]"
+          aria-label={i18n("selectAll")}
+        />
+        <span className="text-sm text-[var(--muted)]">{i18n("selectAll")}</span>
       </div>
 
       {parentId !== null && (
@@ -450,6 +497,14 @@ export default function FilesPage() {
             <ContextMenu key={file.id} items={fileContextItems(file)}>
               <Card3D>
                 <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={isSelected(file.id)}
+                    onChange={() => toggle(file.id)}
+                    className="accent-[var(--accent)]"
+                    aria-label={i18n("select")}
+                    onClick={(e) => e.stopPropagation()}
+                  />
                   <button
                     type="button"
                     onClick={() => openFile(file)}

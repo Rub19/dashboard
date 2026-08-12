@@ -8,6 +8,7 @@ export default function BulkActionBar({
   onDone,
   onUndone,
   onDelete,
+  onFavorite,
   onClear,
   children,
 }: {
@@ -15,6 +16,7 @@ export default function BulkActionBar({
   onDone?: () => void;
   onUndone?: () => void;
   onDelete?: () => void;
+  onFavorite?: () => void;
   onClear: () => void;
   children?: React.ReactNode;
 }) {
@@ -37,6 +39,11 @@ export default function BulkActionBar({
         {onUndone && (
           <button type="button" onClick={onUndone} className="flex items-center gap-1.5 rounded-xl bg-[var(--surface)] px-3 py-1.5 text-xs hover:bg-[var(--accent)]/10">
             <Icon name="circle" className="h-3.5 w-3.5" /> {i18n("markUndone")}
+          </button>
+        )}
+        {onFavorite && (
+          <button type="button" onClick={onFavorite} className="flex items-center gap-1.5 rounded-xl bg-[var(--surface)] px-3 py-1.5 text-xs hover:bg-[var(--accent)]/10">
+            <Icon name="heart" className="h-3.5 w-3.5" /> {i18n("favorite")}
           </button>
         )}
         {onDelete && (

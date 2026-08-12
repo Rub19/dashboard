@@ -9,6 +9,7 @@ import { Icon } from "@/lib/icons";
 import { useToast } from "@/components/ToastProvider";
 import BottomSheet from "@/components/BottomSheet";
 import { useItems } from "@/lib/hooks/useItems";
+import BrainContextPanel from "@/components/BrainContextPanel";
 import { BRAIN_MEMORY_CATEGORIES, BRAIN_PERSONAS, BRAIN_TONES, BRAIN_DETAIL, BRAIN_PROVIDERS, BRAIN_PERMISSION_CATEGORIES, type BrainMemoryCategory } from "@/lib/brain/preferences";
 import { AUTOMATION_ACTIONS } from "@/lib/brain/automation";
 
@@ -300,19 +301,7 @@ export default function BrainPage() {
   }
 
   function renderContext() {
-    return (
-      <div className="space-y-4">
-        <p className="text-sm text-[var(--muted)]">{i18n("brainContextTitle")}</p>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Card3D><p className="text-sm text-[var(--muted)]">{i18n("persona")}</p><p className="font-medium">{brain.preferences.persona}</p></Card3D>
-          <Card3D><p className="text-sm text-[var(--muted)]">{i18n("tone")}</p><p className="font-medium">{brain.preferences.tone}</p></Card3D>
-          <Card3D><p className="text-sm text-[var(--muted)]">{i18n("detail")}</p><p className="font-medium">{brain.preferences.detail}</p></Card3D>
-          <Card3D><p className="text-sm text-[var(--muted)]">{i18n("language")}</p><p className="font-medium">{brain.preferences.language}</p></Card3D>
-          <Card3D><p className="text-sm text-[var(--muted)]">{i18n("activeProvider")}</p><p className="font-medium">{brain.preferences.provider.active}</p></Card3D>
-          <Card3D><p className="text-sm text-[var(--muted)]">{i18n("model")}</p><p className="font-medium">{brain.preferences.provider.model}</p></Card3D>
-        </div>
-      </div>
-    );
+    return <BrainContextPanel />;
   }
 
   function renderPrivacy() {

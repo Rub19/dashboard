@@ -5,11 +5,13 @@ import { useItems } from "@/lib/hooks/useItems";
 import { useCalendarEvents } from "@/lib/hooks/useCalendarEvents";
 import { buildAuthUrl } from "@/lib/oauth";
 import Card3D from "@/components/Card3D";
+import Input from "@/components/Input";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { getUserState, setUserState } from "@/lib/user-state";
+import { buildMonth, eventsForDate } from "@/lib/calendar";
 
 const DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
@@ -23,6 +25,7 @@ export default function CalendarPage() {
   const [newTitle, setNewTitle] = useState("");
   const [newTime, setNewTime] = useState("09:00");
   const [clientId, setClientId] = useState("");
+  const [filter, setFilter] = useState<"all" | "local" | "google">("all");
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -46,11 +49,25 @@ export default function CalendarPage() {
     [items, googleEvents]
   );
 
+  const filteredEvents = useMemo(() => {
+    if (filter === "all") return allEvents;
+    return allEvents.filter((e) => e.source === filter);
+  }, [allEvents, filter]);
+
   const year = date.getFullYear();
   const month = date.getMonth();
-  const firstDay = new Date(year, month, 1).getDay();
-  const offset = (firstDay + 6) % 7;
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const monthName = new Date(year, month, 1).toLocaleString(settings.language, { month: "long", year: "numeric" });
+  const days = useMemo(() => buildMonth(year, month), [year, month]);
+
+  function eventsForDay(day: number) {
+    if (day === 0) return [];
+    return eventsForDate(filteredEvents, new Date(year, month, day));
+  }
+
+  const selectedDayEvents = useMemo(
+    () => eventsForDate(filteredEvents, new Date(year, month, selectedDay)),
+    [filteredEvents, selectedDay, year, month]
+  );
 
   function prev() {
     setDate(new Date(year, month - 1, 1));
@@ -60,22 +77,11 @@ export default function CalendarPage() {
     setDate(new Date(year, month + 1, 1));
   }
 
-  function hasEvent(day: number) {
-    return allEvents.some((e) => {
-      const start = e.startAt ? new Date(e.startAt) : null;
-      return start && start.getDate() === day && start.getMonth() === month && start.getFullYear() === year;
-    });
+  function today() {
+    const now = new Date();
+    setDate(now);
+    setSelectedDay(now.getDate());
   }
-
-  const monthEvents = allEvents.filter((e) => {
-    const start = e.startAt ? new Date(e.startAt) : null;
-    return start && start.getMonth() === month && start.getFullYear() === year;
-  });
-
-  const selectedDayEvents = monthEvents.filter((e) => {
-    const start = e.startAt ? new Date(e.startAt) : null;
-    return start && start.getDate() === selectedDay;
-  });
 
   async function addEvent() {
     if (!newTitle.trim()) return;
@@ -98,8 +104,6 @@ export default function CalendarPage() {
       showError(i18n("error"));
     }
   }
-
-  const monthName = new Date(year, month, 1).toLocaleString(settings.language, { month: "long", year: "numeric" });
 
   function connectGoogle() {
     const id = prompt(i18n("clientId"));
@@ -133,18 +137,25 @@ export default function CalendarPage() {
           >
             <Icon name="chevron-right" className="h-4 w-4" />
           </button>
+          <button
+            type="button"
+            onClick={today}
+            className="rounded-xl bg-[var(--accent)] px-3 py-2 text-xs font-semibold text-white hover:opacity-90"
+          >
+            {i18n("today")}
+          </button>
         </div>
       </div>
 
       <Card3D>
-        <div className="mb-3 flex gap-2">
-          <input
-            type="text"
+        <div className="mb-3 flex flex-wrap gap-2">
+          <Input
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addEvent()}
-            aria-label={i18n("newEvent")} placeholder={i18n("newEvent")}
-            className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+            aria-label={i18n("newEvent")}
+            placeholder={i18n("newEvent")}
+            className="min-w-0 flex-1"
           />
           <input
             type="time"
@@ -170,30 +181,33 @@ export default function CalendarPage() {
           ))}
         </div>
         <div className="mt-2 grid grid-cols-7 gap-2">
-          {Array.from({ length: offset }).map((_, i) => (
-            <div key={`empty-${i}`} />
-          ))}
-          {Array.from({ length: daysInMonth }).map((_, i) => {
-            const day = i + 1;
-            const event = hasEvent(day);
-            const isToday =
-              new Date().getDate() === day && new Date().getMonth() === month && new Date().getFullYear() === year;
-            const isSelected = selectedDay === day;
+          {days.map((day, i) => {
+            const dayEvents = day.date ? eventsForDay(day.day) : [];
+            const isSelected = day.day === selectedDay;
             return (
               <button
-                key={day}
+                key={`${day.date}-${i}`}
                 type="button"
-                onClick={() => setSelectedDay(day)}
+                onClick={() => day.date && setSelectedDay(day.day)}
+                disabled={day.date === 0}
                 className={`relative flex aspect-square items-center justify-center rounded-xl text-sm transition-colors ${
-                  isToday
-                    ? "bg-[var(--accent)] text-white"
-                    : isSelected
-                      ? "bg-[var(--accent)]/20 text-[var(--accent)] ring-1 ring-[var(--accent)]"
-                      : "bg-[var(--surface-raised)] text-[var(--foreground)] hover:bg-[var(--surface)]"
+                  day.date === 0
+                    ? "pointer-events-none bg-transparent"
+                    : day.isToday
+                      ? "bg-[var(--accent)] text-white"
+                      : isSelected
+                        ? "bg-[var(--accent)]/20 text-[var(--accent)] ring-1 ring-[var(--accent)]"
+                        : "bg-[var(--surface-raised)] text-[var(--foreground)] hover:bg-[var(--surface)]"
                 }`}
               >
-                {day}
-                {event && <span className={`absolute bottom-1 h-1.5 w-1.5 rounded-full ${isToday || isSelected ? "bg-white" : "bg-violet-400"}`} />}
+                {day.date ? day.day : ""}
+                {day.date && dayEvents.length > 0 && (
+                  <span
+                    className={`absolute bottom-1 h-1.5 w-1.5 rounded-full ${
+                      day.isToday || isSelected ? "bg-white" : "bg-violet-400"
+                    }`}
+                  />
+                )}
               </button>
             );
           })}
@@ -207,25 +221,38 @@ export default function CalendarPage() {
       )}
 
       <Card3D>
-        <div className="mb-2 flex items-center justify-between gap-2">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Icon name="calendar-days" className="h-5 w-5 text-[var(--accent)]" />
             <p className="font-medium">{i18n("event")}</p>
           </div>
-          {!clientId ? (
-            <button
-              type="button"
-              onClick={connectGoogle}
-              className="flex shrink-0 items-center gap-1.5 rounded-lg bg-[var(--surface-raised)] px-2 py-1 text-xs font-medium text-[var(--foreground)] hover:bg-[var(--accent)]/20"
+          <div className="flex items-center gap-2">
+            {!clientId ? (
+              <button
+                type="button"
+                onClick={connectGoogle}
+                className="flex shrink-0 items-center gap-1.5 rounded-lg bg-[var(--surface-raised)] px-2 py-1 text-xs font-medium text-[var(--foreground)] hover:bg-[var(--accent)]/20"
+              >
+                <Icon name="cloud" className="h-3 w-3" />
+                {i18n("google")}
+              </button>
+            ) : (
+              <span className="text-xs text-emerald-400">{i18n("google")} {i18n("connected")}</span>
+            )}
+            <select
+              value={filter}
+              onChange={(e) => setFilter(e.target.value as typeof filter)}
+              className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-xs outline-none"
             >
-              <Icon name="cloud" className="h-3 w-3" />
-              {i18n("google")}
-            </button>
-          ) : (
-            <span className="text-xs text-emerald-400">{i18n("google")} {i18n("connected")}</span>
-          )}
+              <option value="all">{i18n("allSources")}</option>
+              <option value="local">{i18n("local")}</option>
+              <option value="google">{i18n("google")}</option>
+            </select>
+          </div>
         </div>
-        <p className="text-sm text-[var(--muted)]">{new Date(year, month, selectedDay).toLocaleDateString(settings.language, { weekday: "long", day: "numeric", month: "long" })}</p>
+        <p className="text-sm text-[var(--muted)]">
+          {new Date(year, month, selectedDay).toLocaleDateString(settings.language, { weekday: "long", day: "numeric", month: "long" })}
+        </p>
         {itemsLoading || googleLoading ? (
           <Icon name="loader-2" className="h-5 w-5 animate-spin text-[var(--muted)]" />
         ) : selectedDayEvents.length === 0 ? (

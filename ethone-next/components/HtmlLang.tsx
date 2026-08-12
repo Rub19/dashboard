@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { resolveDensity, applyDensityVariables, getViewportSnapshot } from "@/lib/density-engine";
+import { useAmbientEngine } from "@/lib/hooks/useAmbientEngine";
 
 export default function HtmlLang() {
+  useAmbientEngine();
   const { settings } = useSettings();
   const [activeSpace] = useLocalStorage<string>("ethone-active-workspace", "personal");
   const [railExpanded] = useLocalStorage<boolean>("ethone-rail-expanded", false);

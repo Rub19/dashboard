@@ -37,6 +37,8 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `lib/commands.tsx` + `components/CommandPalette.tsx` : extension du catalogue de commandes avec plus de 60 entrées, historique, favoris, recherche contextuelle.
 - `components/BrandMark.tsx` + `app/loading.tsx` + `components/Loading.tsx` : logo ETHONE v8 (SVG mark + gradients) et écran de chargement avec barre de progression et badge OS.
 - `components/Sidebar.tsx` + `components/V8Breadcrumbs.tsx` + `app/login/page.tsx` : intégration du BrandMark ETHONE dans le rail, les breadcrumbs et la page de connexion.
+- `public/icons/` + `public/legacy/` : copie de tous les assets visuels legacy (favicons, PWA icons, mask-icon, apple-touch, 404, `sw.js`, `manifest.webmanifest`, `index.html`, `_headers`).
+- `public/manifest.json` + `app/layout.tsx` : mise à jour du manifest PWA avec les icons ETHONE legacy et metadata `theme-color`, `apple-mobile-web-app`.
 
 ### Corrige
 - Migration des packs audio legacy `mechanical`/`liquid`/`none` vers les équivalents v8 pour compatibilité ascendante.

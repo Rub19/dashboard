@@ -577,6 +577,26 @@ export function useMail() {
     return fetchWorker("/api/mail/lists/send", { method: "POST", body: JSON.stringify({ list_id: listId, message }) });
   }
 
+  async function getContacts(limit = 50) {
+    const res = await fetchWorker(`/api/mail/contacts?limit=${encodeURIComponent(limit)}`);
+    return Array.isArray(res?.data) ? (res.data as MailContact[]) : [];
+  }
+
+  async function extractEntities(messageId: string) {
+    const res = await fetchWorker("/api/mail/extract", { method: "POST", body: JSON.stringify({ id: messageId }) });
+    return res?.data;
+  }
+
+  async function getNotifications({ limit = 20, unreadOnly = false }: { limit?: number; unreadOnly?: boolean } = {}) {
+    const res = await fetchWorker(`/api/mail/notifications?limit=${encodeURIComponent(limit)}&unread=${unreadOnly}`);
+    return Array.isArray(res?.data) ? res.data : [];
+  }
+
+  async function markNotificationRead(notificationId: string, isRead = true) {
+    const res = await fetchWorker("/api/mail/notifications", { method: "PATCH", body: JSON.stringify({ id: notificationId, is_read: isRead }) });
+    return res?.data;
+  }
+
   const defaultSignature = useMemo(() => signatures.find((s) => s.is_default) || signatures[0], [signatures]);
   const defaultTemplate = useMemo(() => templates.find((t) => t.is_default), [templates]);
 
@@ -653,5 +673,9 @@ export function useMail() {
     addListMember,
     removeListMember,
     sendToList,
+    getContacts,
+    extractEntities,
+    getNotifications,
+    markNotificationRead,
   };
 }

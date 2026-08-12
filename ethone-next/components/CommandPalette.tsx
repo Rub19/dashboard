@@ -9,8 +9,8 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useLayer } from "@/components/LayerProvider";
 import { useCommandItems, type CommandItem } from "@/lib/commands";
-import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
-import { searchCommands, commandScore } from "@/lib/command-search";
+import { searchCommands, commandScore, createCommandHistory } from "@/lib/command-search";
+import { useActiveProfile } from "@/components/SettingsProvider";
 
 const ROUTE_CATEGORIES: Record<string, string> = {
   "/bills/": "Facturation",
@@ -54,6 +54,7 @@ export default function CommandPalette() {
   const [index, setIndex] = useState(0);
   const i18n = useI18n();
   const { settings, update } = useSettings();
+  const { activeProfile } = useActiveProfile();
   const { open, setOpen } = useCommandPalette();
   const dialogRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname() ?? "/";
@@ -74,18 +75,21 @@ export default function CommandPalette() {
 
   const pinned = useMemo(() => new Set(settings.pinnedCommands || []), [settings.pinnedCommands]);
   const recent = useMemo(() => new Set(settings.commandHistory || []), [settings.commandHistory]);
-  const [frequency, setFrequency] = useLocalStorage<Record<string, number>>("ethone-command-frequency", {});
+  const space = activeProfile?.workspace ?? "personal";
+  const commandHistory = useMemo(() => createCommandHistory(), []);
+  const [frequency, setFrequency] = useState(() => commandHistory.frequency());
 
   const run = useCallback(
     (cmd: CommandItem) => {
       cmd.action();
       const history = [cmd.id, ...(settings.commandHistory || []).filter((id) => id !== cmd.id)].slice(0, 10);
       update({ commandHistory: history });
-      setFrequency((prev) => ({ ...prev, [cmd.id]: (prev[cmd.id] || 0) + 1 }));
+      commandHistory.record(cmd.id);
+      setFrequency(commandHistory.frequency());
       setOpen(false);
       setQuery("");
     },
-    [setOpen, settings.commandHistory, update, setFrequency]
+    [setOpen, settings.commandHistory, update, commandHistory, setFrequency]
   );
 
   const togglePin = useCallback(
@@ -95,8 +99,10 @@ export default function CommandPalette() {
         ? (settings.pinnedCommands || []).filter((id) => id !== cmd.id)
         : [...(settings.pinnedCommands || []), cmd.id];
       update({ pinnedCommands: next });
+      commandHistory.togglePin(cmd.id);
+      setFrequency(commandHistory.frequency());
     },
-    [pinned, settings.pinnedCommands, update]
+    [pinned, settings.pinnedCommands, update, commandHistory]
   );
 
   const { pinnedItems, recentItems, otherItems } = useMemo(() => {
@@ -115,19 +121,19 @@ export default function CommandPalette() {
     const otherItems = [...rest]
       .map((cmd) => ({
         cmd,
-        score: commandScore(cmd, "", { routeCategory, pinned, recent, frequency }),
+        score: commandScore(cmd, "", { routeCategory, route: pathname, space, pinned, recent, frequency }),
       }))
       .sort((a, b) => b.score - a.score || a.cmd.label.localeCompare(b.cmd.label, "fr"))
       .map((s) => s.cmd);
 
     return { pinnedItems, recentItems, otherItems };
-  }, [COMMANDS, settings.commandHistory, settings.pinnedCommands, pinned, recent, routeCategory, frequency]);
+  }, [COMMANDS, settings.commandHistory, settings.pinnedCommands, pinned, recent, routeCategory, pathname, space, frequency]);
 
   const filtered = useMemo<CommandItem[]>(() => {
     const active = query.trim() !== "";
     if (!active) return [...pinnedItems, ...recentItems, ...otherItems];
-    return searchCommands(COMMANDS, query, { routeCategory, pinned, recent, frequency }) as CommandItem[];
-  }, [query, COMMANDS, pinnedItems, recentItems, otherItems, routeCategory, pinned, recent, frequency]);
+    return searchCommands(COMMANDS, query, { routeCategory, route: pathname, space, pinned, recent, frequency }) as CommandItem[];
+  }, [query, COMMANDS, pinnedItems, recentItems, otherItems, routeCategory, pathname, space, pinned, recent, frequency]);
 
   const sections = useMemo(() => {
     if (query.trim()) return [{ title: i18n("results"), items: filtered }];

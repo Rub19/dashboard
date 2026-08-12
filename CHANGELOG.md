@@ -4,20 +4,35 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
-**Migration React + Tailwind : corrections des régressions et parité legacy v8 (fallback legacy, live data errors, signout Worker, marketplace, Spotify like sync, recherche mail, RichTextEditor)**
+**Migration Next.js : parité legacy v8 complète (rate-limiter, OTP Worker, profil public, Steam, Spotify, mail, marketplace, dense-content, depth-effect, form validation, command history/search)**
+
+### Ajoute
+- `lib/rate-limiter.ts` : portage du rate-limiter v8 avec `createRateLimiter`, politiques d'authentification, fenêtres temporelles, blocage temporaire, `reset`, `destroy` et `size`.
+- `lib/auth.ts` : OTP via Worker (`sendOtp`/`verifyOtp` sur `/api/auth/otp/send` et `/api/auth/otp/verify`), rate-limiting sur `sign-in`, `sign-up`, `password-reset`, `password-update` et `oauth`, et notification Worker `/api/signout` avant déconnexion Supabase.
+- `lib/hooks/usePublicProfile.ts` + `app/profile/page.tsx` : appel à `/api/supabase/public-profile`, champ public identifier, aperçu du profil public et copie du lien.
+- `lib/hooks/useLiveData.ts` + `components/LiveWidgets.tsx` : appel à `/api/steam/achievements` et affichage des succès Steam (recent/owned games, achievements, pourcentage de déblocage, icônes).
+- `components/LiveWidgets.tsx` : synchronisation de l'état "like" Spotify via `/api/spotify/track-saved` pour refléter l'état réel de la bibliothèque.
+- `lib/hooks/useMail.ts` : endpoints mail Worker `/api/mail/contacts`, `/api/mail/extract`, `/api/mail/notifications` (GET/PATCH) ; la recherche continue d'utiliser `/api/mail/search?q=...` tandis que l'affichage d'un dossier conserve `/api/mail/inbox`.
+- `lib/plugins.ts` + `app/plugins/[id]/page.tsx` : marketplace complet couvrant les 35 intégrations du catalogue v8 et les 38 routes statiques générées.
+- `components/DenseContent.tsx` : composant React équivalent à `v8/ui/dense-content.mjs` (sélection stateful, contrôle de densité, bulk action bar, row menu) avec classes v8 mappées sur Tailwind.
+- `components/DepthEffect.tsx` + `app/layout.tsx` : effet de profondeur v8 par survol, respect de `cardTilt`, `reducedMotion`, `performanceMode`, et désactivé sur tactile.
+- `lib/form-validation.ts` : validateurs v8 (`required`, `email`, `minLength`, `maxLength`, `pattern`, `match`, `passwordStrength`, `oneOf`) et hook `useForm`.
+- `lib/command-search.ts` : `createCommandHistory` (persistance localStorage `ethone:v8-command-history` avec recent/pinned/frequency), contexte `route`/`space` et scoring amélioré (context tags, category scoring, fallback ranking).
+- `lib/i18n-extras.ts` : clés `fieldRequired` et `emailInvalid` pour les 4 langues.
+- `public/legacy/v8/` + `sw-v8.js` : copie du runtime v8 complet dans `public/legacy/` et des icônes afin que le fallback legacy fonctionne sans 404.
+- `app/page.tsx` : ajout du `BrandMark` et du nom `ETHONE` en haut du dashboard home.
+- `components/LanguageSwitcher.tsx` + `app/layout.tsx` : bouton de changement de langue dans la topbar (icône globe + code langue), qui fait défiler `fr/en/es/de` comme en v8.
 
 ### Corrige
-- `public/legacy/index-v8.html` + `sw-v8.js` : copie du runtime v8 complet dans `public/legacy/v8/` et des icônes dans `public/legacy/icons/` afin que le fallback legacy fonctionne sans 404.
 - `lib/hooks/useLiveData.ts` : `fetchOptional` propage désormais les erreurs ; `Promise.allSettled` collecte les échecs par source et expose `error` au lieu de masquer les problèmes derrière des états vides.
+- `app/login/page.tsx` et `app/reset-password/page.tsx` : validation avancée par `lib/form-validation.ts` sans casser le comportement existant.
+- `components/CommandPalette.tsx` : utilisation de `createCommandHistory` pour la persistance fréquence et intégration du contexte `space` dans le scoring.
 - `components/AuthProvider.tsx` + `lib/auth.ts` : `signOut` appelle `/api/signout` sur le Worker avant de supprimer la session Supabase côté client.
-- `lib/plugins.ts` + `app/plugins/[id]/page.tsx` : marketplace complété avec `google-calendar`, `google-drive`, `bluesky`, `rss`, `minecraft` et `apex` (Tracker), suppression du plugin `google` générique.
 - `components/LiveWidgets.tsx` : synchronisation de l'état "like" Spotify via l'endpoint `/api/spotify/track-saved` pour refléter l'état réel de la bibliothèque.
 - `lib/hooks/useMail.ts` : la recherche mail utilise `/api/mail/search?q=...` quand un terme est saisi, tandis que l'affichage d'un dossier conserve `/api/mail/inbox`.
 - `components/RichTextEditor.tsx` : parité améliorée avec v8 (`toEditableHtml`, `plainTextToHtml`, `stripHtml`, `safeHref`, suppression des balises interdites et des commentaires, conservation de la classe `code`).
 - `ethone-next/eslint.config.mjs` : `public/legacy/**` ignoré par le lint pour éviter le bruit des fichiers v8 copiés.
-- `app/page.tsx` : ajout du `BrandMark` et du nom `ETHONE` en haut du dashboard home.
 - `components/Loading.tsx` : retrait du badge "OS" sur l'écran de chargement pour correspondre au boot v8.
-- `components/LanguageSwitcher.tsx` + `app/layout.tsx` : bouton de changement de langue dans la topbar (icône globe + code langue), qui fait défiler `fr/en/es/de` comme en v8.
 
 ## [Unreleased]
 

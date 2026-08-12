@@ -3,20 +3,12 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { updatePassword } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ToastProvider";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
-
-function validatePassword(value: string) {
-  return (
-    value.length >= 12 &&
-    /[A-Z]/.test(value) &&
-    /[a-z]/.test(value) &&
-    /\d/.test(value) &&
-    /[^A-Za-z0-9]/.test(value)
-  );
-}
+import { required, passwordStrength, match, validate } from "@/lib/form-validation";
 
 export default function ResetPasswordPage() {
   const i18n = useI18n();
@@ -41,16 +33,21 @@ export default function ResetPasswordPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (password !== confirm) {
-      showError(i18n("passwordMismatch"));
-      return;
-    }
-    if (!validatePassword(password)) {
-      showError(i18n("passwordRequirement"));
+    const passwordError = validate(password, [
+      required(i18n("fieldRequired")),
+      passwordStrength(i18n("passwordRequirement")),
+    ]);
+    const confirmError = validate(confirm, [
+      required(i18n("fieldRequired")),
+      match(() => password, i18n("passwordMismatch")),
+    ]);
+    const firstError = passwordError || confirmError;
+    if (firstError) {
+      showError(firstError);
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.updateUser({ password });
+    const { error } = await updatePassword(password);
     setLoading(false);
     if (error) {
       showError(error.message);

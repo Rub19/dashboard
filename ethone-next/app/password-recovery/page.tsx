@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { supabase } from "@/lib/supabase";
+import { resetPassword } from "@/lib/auth";
 import { useToast } from "@/components/ToastProvider";
 import Card3D from "@/components/Card3D";
 
@@ -17,7 +17,7 @@ export default function PasswordRecoveryPage() {
     e.preventDefault();
     if (!email) return;
     setLoading(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/reset-password/` });
+    const { error } = await resetPassword(email);
     setLoading(false);
     if (error) {
       showError(error.message);

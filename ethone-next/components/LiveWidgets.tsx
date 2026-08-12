@@ -144,6 +144,7 @@ export default function LiveWidgets({
     steam,
     steamRecentGames,
     steamOwnedGames,
+    steamAchievements,
     minecraft,
     minecraftNameHistory,
   } = useLiveData();
@@ -415,6 +416,29 @@ export default function LiveWidgets({
                     )}
                     <span className="min-w-0 flex-1 truncate">{String(g.name ?? "—")}</span>
                     <span className="text-[10px] text-[var(--muted)]">{formatMinutes(Number(g.playtimeMinutes ?? 0))}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-xs text-[var(--muted)]">{i18n("noResults")}</p>
+            )}
+          </div>
+
+          <div>
+            <p className="mb-1 text-xs font-medium text-[var(--muted)]">
+              {i18n("achievements")} · {steamAchievements?.length ?? 0}
+            </p>
+            {steamAchievements && steamAchievements.length > 0 ? (
+              <ul className="space-y-1.5">
+                {steamAchievements.slice(0, 5).map((a, i) => (
+                  <li key={i} className="flex items-center gap-2 text-sm">
+                    {a.iconUrl ? (
+                      <Image src={String(a.iconUrl)} alt="" width={24} height={24} unoptimized className="h-6 w-6 rounded object-cover" />
+                    ) : (
+                      <span className="flex h-6 w-6 items-center justify-center rounded bg-[var(--surface)] text-[10px]">#</span>
+                    )}
+                    <span className="min-w-0 flex-1 truncate">{String(a.name ?? "—")}</span>
+                    <span className="text-[10px] text-[var(--muted)]">{a.achieved ? "✓" : "·"}</span>
                   </li>
                 ))}
               </ul>

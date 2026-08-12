@@ -29,6 +29,7 @@ import ShortcutsOverlay from "@/components/ShortcutsOverlay";
 import { FocusProvider } from "@/components/FocusProvider";
 import FocusIsland from "@/components/FocusIsland";
 import VisualHaptics from "@/components/VisualHaptics";
+import DepthEffect from "@/components/DepthEffect";
 import SidePanel from "@/components/SidePanel";
 import KeyboardShortcuts from "@/components/KeyboardShortcuts";
 import PresenceProvider from "@/components/PresenceProvider";
@@ -118,6 +119,7 @@ export default function RootLayout({
                   <AmbientParticles />
                   <Spotlight />
                   <VisualHaptics />
+                  <DepthEffect />
                   <FocusIsland />
                   <main data-v8-main id="main-content" className="p-6 pb-24 md:pb-10" tabIndex={-1}>
                     <ActivityJournalProvider>

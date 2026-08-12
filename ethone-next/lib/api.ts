@@ -84,3 +84,7 @@ export async function uploadWorker(
 
   return res.json().catch(() => null);
 }
+
+export async function getPublicProfile(username: string) {
+  return fetchWorker(`/api/supabase/public-profile?username=${encodeURIComponent(username)}`);
+}

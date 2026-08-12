@@ -112,6 +112,7 @@ export function useLiveData(pollMs = 60000) {
     liveTwitchLogin,
     liveMinecraftUsername,
     liveSteamId,
+    liveSteamAppId,
     liveRssUrl,
     liveBlueskyHandle,
     liveTrackerRiotName,
@@ -151,6 +152,7 @@ export function useLiveData(pollMs = 60000) {
   const [lastfmTopTracks, setLastfmTopTracks] = useState<ApiData[] | null>(null);
   const [steamRecentGames, setSteamRecentGames] = useState<ApiData[] | null>(null);
   const [steamOwnedGames, setSteamOwnedGames] = useState<ApiData[] | null>(null);
+  const [steamAchievements, setSteamAchievements] = useState<ApiData[] | null>(null);
   const [minecraftNameHistory, setMinecraftNameHistory] = useState<ApiData[] | null>(null);
 
   const [loading, setLoading] = useState(true);
@@ -218,6 +220,10 @@ export function useLiveData(pollMs = 60000) {
     ? `/api/steam/owned-games?steamId=${encodeURIComponent(liveSteamId)}&limit=20`
     : null;
 
+  const steamAchievementsPath = liveSteamId && liveSteamAppId
+    ? `/api/steam/achievements?steamId=${encodeURIComponent(liveSteamId)}&appId=${encodeURIComponent(liveSteamAppId)}`
+    : null;
+
   const rssPath = liveRssUrl ? `/api/rss?url=${encodeURIComponent(liveRssUrl)}` : null;
 
   const blueskyPath = liveBlueskyHandle
@@ -283,6 +289,7 @@ export function useLiveData(pollMs = 60000) {
           st,
           stRecent,
           stOwned,
+          stAchievements,
           rs,
           bs,
           bl,
@@ -309,6 +316,7 @@ export function useLiveData(pollMs = 60000) {
           steamPath ? fetchOptional(steamPath) : Promise.resolve(null),
           steamRecentGamesPath ? fetchOptional(steamRecentGamesPath) : Promise.resolve(null),
           steamOwnedGamesPath ? fetchOptional(steamOwnedGamesPath) : Promise.resolve(null),
+          steamAchievementsPath ? fetchOptional(steamAchievementsPath) : Promise.resolve(null),
           rssPath ? fetchOptional(rssPath) : Promise.resolve(null),
           blueskyPath ? fetchOptional(blueskyPath) : Promise.resolve(null),
           Promise.resolve(mapLocalBills()),
@@ -321,7 +329,7 @@ export function useLiveData(pollMs = 60000) {
           apexMatchesPath ? fetchOptional(apexMatchesPath) : Promise.resolve(null),
         ]);
         if (cancelled) return;
-        const failures = [np, la, we, gh, td, yt, rd, lf, lfArt, lfTrk, tw, mc, st, stRecent, stOwned, rs, bs, bl, va, lo, ca, dr, no, ap, am].filter(
+        const failures = [np, la, we, gh, td, yt, rd, lf, lfArt, lfTrk, tw, mc, st, stRecent, stOwned, stAchievements, rs, bs, bl, va, lo, ca, dr, no, ap, am].filter(
           (r): r is PromiseRejectedResult => r.status === "rejected"
         );
         if (failures.length) {
@@ -401,6 +409,10 @@ export function useLiveData(pollMs = 60000) {
           const d = stOwned.value;
           setSteamOwnedGames(Array.isArray(d) ? (d as ApiData[]) : null);
         }
+        if (stAchievements.status === "fulfilled") {
+          const d = stAchievements.value;
+          setSteamAchievements(Array.isArray(d) ? (d as ApiData[]) : null);
+        }
         if (rs.status === "fulfilled") setRss(rs.value);
         if (bs.status === "fulfilled") setBluesky(bs.value);
         if (bl.status === "fulfilled") setBills((bl.value as ApiData[] | null) ?? null);
@@ -471,6 +483,7 @@ export function useLiveData(pollMs = 60000) {
     steamPath,
     steamRecentGamesPath,
     steamOwnedGamesPath,
+    steamAchievementsPath,
     rssPath,
     blueskyPath,
     valorantPath,
@@ -664,6 +677,18 @@ export function useLiveData(pollMs = 60000) {
     status: steamName ? "connected" : loading ? "loading" : liveSteamId ? (error ? "error" : "empty") : (error ? "error" : "empty"),
   });
 
+  const firstAchievement = (steamAchievements?.[0] as ApiData) || {};
+  records.push({
+    id: "steam-achievements",
+    source: "steam-achievements",
+    label: "Steam",
+    title: asStr(firstAchievement?.name) || (liveSteamAppId ? i18n("noResults") : "—"),
+    subtitle: asStr(firstAchievement?.gameName) || asStr(firstAchievement?.description),
+    meta: `${steamAchievements?.length ?? 0} succès`,
+    image: asStr(firstAchievement?.iconUrl),
+    status: firstAchievement?.name ? "connected" : loading ? "loading" : liveSteamAppId ? (error ? "error" : "empty") : (error ? "error" : "empty"),
+  });
+
   const rssFeed = rss?.feed as ApiData | undefined;
   const rssItem = (rssFeed?.items as ApiData[] | undefined)?.[0];
   records.push({
@@ -809,6 +834,7 @@ export function useLiveData(pollMs = 60000) {
     steam,
     steamRecentGames,
     steamOwnedGames,
+    steamAchievements,
     minecraft,
     minecraftNameHistory,
     bluesky,

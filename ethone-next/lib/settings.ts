@@ -168,6 +168,7 @@ export type Settings = {
   focusPreset: string;
   zenMode: boolean;
   liveSteamId: string;
+  liveSteamAppId: string;
   liveRssUrl: string;
   liveBlueskyHandle: string;
   liveJellyfinUrl: string;
@@ -301,6 +302,7 @@ export const DEFAULTS: Settings = {
   focusPreset: "pomodoro",
   zenMode: false,
   liveSteamId: "",
+  liveSteamAppId: "",
   liveRssUrl: "",
   liveLastfmUsername: "",
   liveTwitchLogin: "",

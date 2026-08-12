@@ -16,6 +16,15 @@ import {
 } from "@/lib/auth";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
+import {
+  required,
+  email as emailValidator,
+  minLength,
+  maxLength,
+  passwordStrength,
+  match,
+  validate,
+} from "@/lib/form-validation";
 
 type AuthMode = "otp" | "password" | "register";
 
@@ -38,6 +47,16 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    const emailError = validate(email, [
+      required(i18n("fieldRequired")),
+      emailValidator(i18n("emailInvalid")),
+    ]);
+    if (emailError) {
+      setLoading(false);
+      setError(emailError);
+      showError(i18n("error"));
+      return;
+    }
     const { error: err } = await signInWithOtp(email);
     setLoading(false);
     if (err) {
@@ -53,6 +72,16 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    const codeError = validate(code, [
+      required(i18n("fieldRequired")),
+      minLength(6, i18n("invalidCode")),
+    ]);
+    if (codeError) {
+      setLoading(false);
+      setError(codeError);
+      showError(i18n("error"));
+      return;
+    }
     const { ok, error: err } = await verifyEmailOtp(email, code);
     setLoading(false);
     if (!ok || err) {
@@ -68,6 +97,18 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    const emailError = validate(email, [
+      required(i18n("fieldRequired")),
+      emailValidator(i18n("emailInvalid")),
+    ]);
+    const passwordError = validate(password, [required(i18n("fieldRequired"))]);
+    const firstError = emailError || passwordError;
+    if (firstError) {
+      setLoading(false);
+      setError(firstError);
+      showError(i18n("error"));
+      return;
+    }
     const { ok, error: err } = await signInWithPassword(email, password);
     setLoading(false);
     if (!ok || err) {
@@ -83,15 +124,27 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    if (username.trim().length < 2 || username.trim().length > 64) {
+    const usernameError = validate(username.trim(), [
+      required(i18n("fieldRequired")),
+      minLength(2, i18n("usernameInvalid")),
+      maxLength(64, i18n("usernameInvalid")),
+    ]);
+    const emailError = validate(email, [
+      required(i18n("fieldRequired")),
+      emailValidator(i18n("emailInvalid")),
+    ]);
+    const passwordError = validate(password, [
+      required(i18n("fieldRequired")),
+      passwordStrength(i18n("passwordRequirement")),
+    ]);
+    const confirmError = validate(confirmPassword, [
+      required(i18n("fieldRequired")),
+      match(() => password, i18n("passwordMismatch")),
+    ]);
+    const firstError = usernameError || emailError || passwordError || confirmError;
+    if (firstError) {
       setLoading(false);
-      setError(i18n("usernameInvalid"));
-      showError(i18n("error"));
-      return;
-    }
-    if (password !== confirmPassword) {
-      setLoading(false);
-      setError(i18n("passwordMismatch"));
+      setError(firstError);
       showError(i18n("error"));
       return;
     }

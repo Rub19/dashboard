@@ -6,8 +6,10 @@ import Card3D from "@/components/Card3D";
 import { useAuth } from "@/components/AuthProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useProfile } from "@/lib/hooks/useProfile";
+import { usePublicProfile } from "@/lib/hooks/usePublicProfile";
 import { Icon } from "@/lib/icons";
 import { useToast } from "@/components/ToastProvider";
+import Image from "next/image";
 
 export default function ProfilePage() {
   const i18n = useI18n();
@@ -20,6 +22,7 @@ export default function ProfilePage() {
     display_name: "",
     avatar_url: "",
   });
+  const publicProfile = usePublicProfile(form.username || profile?.username);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -172,6 +175,27 @@ export default function ProfilePage() {
           </div>
         </div>
       </Card3D>
+
+      {form.username && publicProfile.profile && (
+        <Card3D>
+          <div className="space-y-2">
+            <h2 className="text-sm font-medium">{i18n("publicProfilePreview")}</h2>
+            <div className="flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3">
+              {publicProfile.profile.avatarUrl ? (
+                <Image src={publicProfile.profile.avatarUrl} alt="" width={48} height={48} unoptimized className="h-12 w-12 rounded-full object-cover" />
+              ) : (
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--accent)] text-lg font-bold text-white">
+                  {publicProfile.profile.displayName?.[0]?.toUpperCase() || "?"}
+                </span>
+              )}
+              <div className="min-w-0">
+                <p className="break-words font-semibold">{publicProfile.profile.displayName}</p>
+                <p className="break-words text-sm text-[var(--muted)]">@{publicProfile.profile.username}</p>
+              </div>
+            </div>
+          </div>
+        </Card3D>
+      )}
     </div>
   );
 }

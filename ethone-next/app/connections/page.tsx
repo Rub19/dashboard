@@ -88,7 +88,10 @@ type CredentialFieldDef = {
 
 const PUBLIC_FIELDS: Record<string, PublicFieldDef[]> = {
   discord: [{ key: "liveLanyardUserId", label: "liveLanyardUserId" }],
-  steam: [{ key: "liveSteamId", label: "liveSteamId" }],
+  steam: [
+    { key: "liveSteamId", label: "liveSteamId" },
+    { key: "liveSteamAppId", label: "liveSteamAppId" },
+  ],
   lastfm: [{ key: "liveLastfmUsername", label: "liveLastfmUsername" }],
   twitch: [{ key: "liveTwitchLogin", label: "liveTwitchLogin" }],
   riot: [

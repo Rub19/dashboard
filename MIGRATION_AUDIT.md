@@ -10,9 +10,9 @@ Branche : `migration-react-tailwind`
 L'inventaire comparatif a été réalisé sur l'ancien ETHONE v8 (`\.worktree\main\v8`) et le nouveau Next.js (`\ethone-next`).
 
 - **État global** : la grande majorité des pages, composants shell, connexions externes, paramètres et comportements sont migrés et fonctionnent.
-- **Dernières corrections** : fallback legacy auto-hébergé (`public/legacy/v8/`), propagation des erreurs live data, signout Worker notifié, marketplace étendu (Calendar, Drive, Bluesky, RSS, Minecraft, Apex), like Spotify synchronisé, recherche mail via `/api/mail/search`, parité RichTextEditor renforcie, logo ETHONE sur le dashboard home, badge "OS" retiré de l'écran de chargement, sélecteur de langue dans la topbar.
+- **Dernières corrections** : fallback legacy auto-hébergé (`public/legacy/v8/`), propagation des erreurs live data, signout Worker notifié, marketplace complet (35 intégrations v8 couvertes dans `lib/plugins.ts`, 38 routes de plugin générées), rate-limiter client v8 porté dans `lib/rate-limiter.ts` et `lib/auth.ts`, OTP Worker (`/api/auth/otp/send` et `/api/auth/otp/verify`), profil public Supabase (`/api/supabase/public-profile`) avec aperçu profil, succès Steam via `/api/steam/achievements`, endpoints mail contacts/extract/notifications, validateurs de formulaires avancés v8 portés dans `lib/form-validation.ts`, command search/history enrichi, composants `DenseContent` et `DepthEffect` portés, like Spotify synchronisé, recherche mail via `/api/mail/search`, parité RichTextEditor renforcie, logo ETHONE sur le dashboard home, badge "OS" retiré de l'écran de chargement, sélecteur de langue dans la topbar.
 - **Différences principales** : Next.js ajoute de nombreuses fonctionnalités absentes de v8 (Bills, Flows, Focus, Weather, Plugins, Personas, Spaces, Macros, RSS, Scratchpad, etc.). Quelques écarts mineurs subsistent (tests authentifiés, refresh direct sur hébergement statique).
-- **Validation technique** : build (56 pages), lint, tests unitaires (38 tests), audit sécurité (601 fichiers) et upload-check passent.
+- **Validation technique** : build (75 pages), lint, tests unitaires (38 tests), `audit-security` (607 fichiers) et `precommit-upload-check` passent. E2E et Worker deploy non exécutés.
 
 ---
 
@@ -69,6 +69,14 @@ Ces fonctionnalités sont des ajouts du nouveau Dashboard, pas des régressions 
 
 - /bills, /flows, /focus, /weather, /changelog, /spaces, /plugins, /plugins/[id], /personas, /macros, /rss, /scratchpad, /profile, /reset-password.
 
+### Marketplace / Plugins
+
+| Élément | Statut | Remarque |
+|---------|--------|----------|
+| Catalogue v8 complet | ✅ | `lib/plugins.ts` couvre les 35 intégrations du catalogue v8 (`v8/data/integrations.mjs`) ; 38 routes statiques `/plugins/[id]` générées |
+| Fiches plugin dédiées | ✅ | `app/plugins/[id]/page.tsx` + `PluginClient.tsx` |
+| Mappings live corrigés | ✅ | `recordSource` pour `google-calendar`, `google-drive`, et intégrations dérivées (Valorant, LoL, Apex) |
+
 ### Authentification & session
 
 | Élément | Statut | Remarque |
@@ -80,6 +88,9 @@ Ces fonctionnalités sont des ajouts du nouveau Dashboard, pas des régressions 
 | Passkey | ✅ | `lib/hooks/useSecurity.ts` |
 | Device verification | ✅ | logique présente dans le flow auth |
 | Password reset | ✅ | `/password-recovery` + `/reset-password` |
+| Rate limiter | ✅ | `lib/rate-limiter.ts` (bucket v8, fenêtres, blocage, politiques auth) |
+| OTP Worker | ✅ | `lib/auth.ts` : `sendOtp`/`verifyOtp` via Worker `/api/auth/otp/send` & `/api/auth/otp/verify` |
+| Public profile | ✅ | `lib/hooks/usePublicProfile.ts` + `app/profile/page.tsx` via `/api/supabase/public-profile` |
 
 ### Supabase
 
@@ -101,7 +112,7 @@ Ces fonctionnalités sont des ajouts du nouveau Dashboard, pas des régressions 
 
 Toutes les intégrations v8 sont présentes dans Next.js (settings + endpoints Worker) :
 
-Discord (Lanyard), Spotify, GitHub, Google Calendar, Google Drive, Notion, Todoist, Reddit, Twitch, YouTube, Steam, Minecraft, Valorant, LoL, Apex, Last.fm, Bluesky, Tracker.gg.
+Spotify, Plex, Jellyfin, Emby, YouTube, Twitch, Last.fm, Discord (Lanyard), Reddit, Bluesky, Steam, Riot Games (Valorant, LoL, TFT), Minecraft, Tracker.gg (Apex), Google Calendar, Google Drive, Notion, Todoist, Linear, ClickUp, Jira, Email, RSS, Météo, GitHub, GitLab, Obsidian, VS Code, Fitbit, LM Studio, Ollama, OpenAI, Anthropic, Gemini, Groq.
 
 ### Composants UI
 
@@ -114,7 +125,11 @@ Discord (Lanyard), Spotify, GitHub, Google Calendar, Google Drive, Notion, Todoi
 | Forms / Inputs / Select | ✅ | `FormField`, `Input`, `Select`, `SelectMulti` |
 | ContextMenu | ✅ | `components/ContextMenu.tsx` |
 | Equalizer | ✅ | `components/Equalizer.tsx` |
-| RichTextEditor | ⚠️ | `components/RichTextEditor.tsx` (partiel) |
+| RichTextEditor | ✅ | `components/RichTextEditor.tsx` (parité v8 améliorée) |
+| DenseContent | ✅ | `components/DenseContent.tsx` (sélection, densité, bulk bar, row menu) |
+| DepthEffect | ✅ | `components/DepthEffect.tsx` (effet de profondeur v8) |
+| Form validation | ✅ | `lib/form-validation.ts` (required, email, min/max, pattern, match, passwordStrength, oneOf) |
+| Command search / history | ✅ | `lib/command-search.ts` + `components/CommandPalette.tsx` (fréquence, recency, pinned, contexte route/space) |
 
 ### Dashboard / Home widgets
 
@@ -145,7 +160,7 @@ Discord (Lanyard), Spotify, GitHub, Google Calendar, Google Drive, Notion, Todoi
 | YouTube | ✅ | dernières vidéos |
 | Reddit | ✅ | activité |
 | Minecraft | ✅ | profil, historique de noms |
-| Steam | ✅ | profil, jeux récents / possédés |
+| Steam | ✅ | profil, jeux récents / possédés, succès (`/api/steam/achievements`) |
 | Tracker.gg | ✅ | profil Apex |
 
 ### Brain
@@ -188,6 +203,7 @@ Discord (Lanyard), Spotify, GitHub, Google Calendar, Google Drive, Notion, Todoi
 | Search | ✅ | recherche + filtres |
 | Bulk actions | ✅ | `bulkAction` |
 | Analytics | ✅ | `MailAnalyticsPanel` |
+| Contacts / Extract / Notifications | ✅ | `useMail` : `/api/mail/contacts`, `/api/mail/extract`, `/api/mail/notifications` |
 
 ### Settings / personnalisation
 
@@ -290,7 +306,7 @@ Ces éléments nécessitent encore une validation manuelle ou approfondie :
 12. **Fallback legacy** — copie du runtime v8 complet (`public/legacy/v8/`) et des icônes (`public/legacy/icons/`) pour résoudre les 404 de `index-v8.html`.
 13. **Erreurs live data** — `fetchOptional` propage les erreurs ; `useLiveData` expose `error` et loggue les échecs par source au lieu d'afficher des états vides.
 14. **Déconnexion Worker** — `AuthProvider.signOut` et `lib/auth.ts:signOut` appellent `/api/signout` avant la déconnexion Supabase locale.
-15. **Marketplace Plugins** — ajout de `google-calendar`, `google-drive`, `bluesky`, `rss`, `minecraft` et `apex` ; suppression du plugin `google` générique.
+15. **Marketplace Plugins** — `lib/plugins.ts` couvre désormais les 35 intégrations du catalogue v8, en conservant les plugins dérivés existants (Valorant, LoL, Apex) et en corrigeant `recordSource` pour `google-calendar` et `google-drive`.
 16. **Like Spotify synchronisé** — `LiveWidgets` interroge `/api/spotify/track-saved` pour refléter l'état réel de la bibliothèque utilisateur.
 17. **Recherche mail dédiée** — `useMail` utilise `/api/mail/search` quand un terme est saisi, `/api/mail/inbox` pour l'affichage dossier/étiquette.
 18. **RichTextEditor** — parité renforcée avec v8 via `toEditableHtml`, `plainTextToHtml`, `stripHtml`, `safeHref`, suppression des balises interdites/commentaires et conservation de la classe `code`.

@@ -9,7 +9,9 @@ export type SearchableCommandItem = CommandItem & {
 };
 
 export type CommandSearchContext = {
+  route?: string | null;
   routeCategory?: string | null;
+  space?: string | null;
   pinned?: Set<string>;
   recent?: Set<string>;
   frequency?: Record<string, number>;
@@ -19,6 +21,12 @@ export type CommandSearchContext = {
 const MAX_FREQUENCY_BONUS = 30;
 const CONTEXT_BONUS_QUERY = 18;
 const CONTEXT_BONUS_EMPTY = 80;
+
+export const COMMAND_HISTORY_KEY = "ethone:v8-command-history";
+const MAX_RECENT = 6;
+const MAX_PINNED = 8;
+const SAFE_ID = /^[a-z0-9.-]{1,48}$/;
+const MAX_FREQUENCY = 1_000_000;
 
 export function normalizeSearch(value: string): string {
   return String(value ?? "")
@@ -74,10 +82,17 @@ export function commandScore(
     ].join(" ")
   );
 
+  const contextTags = new Set<string>();
+  if (context.route) contextTags.add(context.route);
+  if (context.space) contextTags.add(`space-${context.space}`);
+
   let score = 0;
 
   if (!normalizedQuery) {
-    if (context.routeCategory && commandCategory === context.routeCategory) {
+    const contextMatch = command.contexts?.some((ctx) => contextTags.has(ctx));
+    if (contextMatch) {
+      score = command.contextPriority ?? CONTEXT_BONUS_EMPTY;
+    } else if (context.routeCategory && commandCategory === context.routeCategory) {
       score = CONTEXT_BONUS_EMPTY;
     } else if (command.contexts?.some((ctx) => ctx === context.routeCategory)) {
       score = command.contextPriority ?? CONTEXT_BONUS_EMPTY;
@@ -99,7 +114,8 @@ export function commandScore(
   if (context.routeCategory && commandCategory === context.routeCategory) {
     score += CONTEXT_BONUS_QUERY;
   }
-  if (command.contexts?.some((ctx) => ctx === context.routeCategory)) {
+
+  if (command.contexts?.some((ctx) => contextTags.has(ctx) || ctx === context.routeCategory)) {
     score += normalizedQuery
       ? Math.min(CONTEXT_BONUS_QUERY, (command.contextPriority ?? 40) * 0.15)
       : (command.contextPriority ?? 40);
@@ -145,4 +161,93 @@ export function searchCommands(
     .filter((entry) => entry.score >= 0)
     .sort((a, b) => b.score - a.score || a.index - b.index);
   return scored.slice(0, Math.max(1, Math.min(commands.length, limit))).map((entry) => entry.command);
+}
+
+function sanitizeList(value: unknown, max: number): string[] {
+  if (!Array.isArray(value)) return [];
+  return [...new Set(value.map(String).filter((id) => SAFE_ID.test(id)))].slice(0, max);
+}
+
+function sanitizeFrequency(value: unknown): Record<string, number> {
+  const map: Record<string, number> = {};
+  if (!value || typeof value !== "object") return map;
+  Object.keys(value as Record<string, unknown>).forEach((id) => {
+    if (!SAFE_ID.test(id)) return;
+    const count = Number.isFinite((value as Record<string, unknown>)[id])
+      ? Math.max(0, Math.min(MAX_FREQUENCY, Math.floor(Number((value as Record<string, unknown>)[id]))))
+      : 0;
+    if (count > 0) map[id] = count;
+  });
+  return map;
+}
+
+export type CommandHistory = {
+  record: (id: string) => boolean;
+  togglePin: (id: string) => boolean;
+  recent: () => string[];
+  pinned: () => string[];
+  frequency: () => Record<string, number>;
+};
+
+export function createCommandHistory(
+  storage: Pick<Storage, "getItem" | "setItem"> | undefined =
+    typeof window !== "undefined" ? window.localStorage : undefined
+): CommandHistory {
+  let state = { recent: [] as string[], pinned: [] as string[], frequency: {} as Record<string, number> };
+
+  try {
+    const raw = storage?.getItem(COMMAND_HISTORY_KEY);
+    const parsed = raw ? (JSON.parse(raw) as { recent?: unknown; pinned?: unknown; frequency?: unknown }) : {};
+    state = {
+      recent: sanitizeList(parsed.recent, MAX_RECENT),
+      pinned: sanitizeList(parsed.pinned, MAX_PINNED),
+      frequency: sanitizeFrequency(parsed.frequency),
+    };
+  } catch {
+    state = { recent: [], pinned: [], frequency: {} };
+  }
+
+  function persist() {
+    try {
+      storage?.setItem(
+        COMMAND_HISTORY_KEY,
+        JSON.stringify({
+          version: 2,
+          recent: state.recent,
+          pinned: state.pinned,
+          frequency: state.frequency,
+        })
+      );
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function record(id: string) {
+    id = String(id || "");
+    if (!SAFE_ID.test(id)) return false;
+    state.recent = [id, ...state.recent.filter((entry) => entry !== id)].slice(0, MAX_RECENT);
+    state.frequency[id] = Math.min(MAX_FREQUENCY, (state.frequency[id] || 0) + 1);
+    persist();
+    return true;
+  }
+
+  function togglePin(id: string) {
+    id = String(id || "");
+    if (!SAFE_ID.test(id)) return false;
+    state.pinned = state.pinned.includes(id)
+      ? state.pinned.filter((entry) => entry !== id)
+      : [...state.pinned, id].slice(0, MAX_PINNED);
+    persist();
+    return state.pinned.includes(id);
+  }
+
+  return {
+    record,
+    togglePin,
+    recent: () => state.recent.slice(),
+    pinned: () => state.pinned.slice(),
+    frequency: () => ({ ...state.frequency }),
+  };
 }

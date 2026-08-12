@@ -102,6 +102,14 @@ export default function NotificationCenter() {
   }, [open]);
 
   useEffect(() => {
+    function onOpen() {
+      setOpen(true);
+    }
+    window.addEventListener("v8:open-notifications", onOpen);
+    return () => window.removeEventListener("v8:open-notifications", onOpen);
+  }, []);
+
+  useEffect(() => {
     if (unreadCount > 0) setNotification("important", 5000);
     else if (importantCount > 0) setNotification("important");
     else setNotification("idle");

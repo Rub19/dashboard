@@ -649,10 +649,10 @@ export default function SettingsPage() {
           <Toggle label={i18n("masterVolume")} checked={settings.masterVolume} onChange={(v) => update({ masterVolume: v })} />
           <Toggle label={i18n("soundEffects")} checked={settings.soundEffects} onChange={(v) => update({ soundEffects: v })} />
           <Range label={i18n("soundVolume")} value={settings.soundVolume} onChange={(v) => update({ soundVolume: v })} />
+          <Toggle label={i18n("soundSpatial")} checked={settings.soundSpatial} onChange={(v) => update({ soundSpatial: v })} />
           <div className="space-y-3">
             <p className="text-xs text-[var(--muted)]">{i18n("soundVolumes")}</p>
             {[
-              { key: "master", label: i18n("masterVolume") },
               { key: "notifications", label: i18n("notifications") },
               { key: "interface", label: i18n("interfaceVolume") },
               { key: "brain", label: i18n("brainVolume") },
@@ -671,8 +671,8 @@ export default function SettingsPage() {
             ))}
           </div>
           <p className="text-xs text-[var(--muted)]">{i18n("soundPack")}</p>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            {(["none", "minimal", "mechanical", "liquid"] as const).map((pack) => (
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {(["ethone", "minimal", "classic", "apple-inspired", "cyber-pulse", "silent"] as const).map((pack) => (
               <button
                 key={pack}
                 type="button"

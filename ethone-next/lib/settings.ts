@@ -60,6 +60,19 @@ export type DockGlass = "vitrified" | "ultra-blur" | "sober";
 
 export type UiAnimationStyle = "smooth" | "snappy" | "reduced";
 
+export type SoundPack =
+  | "ethone"
+  | "minimal"
+  | "classic"
+  | "apple-inspired"
+  | "cyber-pulse"
+  | "silent"
+  | "none"
+  | "mechanical"
+  | "liquid";
+
+export type SoundVolumeCategory = "interface" | "notifications" | "brain" | "system";
+
 export type Settings = {
   darkMode: boolean;
   theme: ThemeMode;
@@ -101,15 +114,10 @@ export type Settings = {
   sidebarVisible: boolean;
   masterVolume: boolean;
   soundEffects: boolean;
-  soundPack: "none" | "minimal" | "mechanical" | "liquid";
+  soundPack: SoundPack;
   soundVolume: number;
-  soundVolumes: {
-    master: number;
-    notifications: number;
-    interface: number;
-    brain: number;
-    system: number;
-  };
+  soundSpatial: boolean;
+  soundVolumes: Record<SoundVolumeCategory, number>;
   notifications: boolean;
   mailNotifications: boolean;
   trackerNotifications: boolean;
@@ -208,10 +216,10 @@ export const DEFAULTS: Settings = {
   sidebarVisible: true,
   masterVolume: true,
   soundEffects: true,
-  soundPack: "minimal",
-  soundVolume: 50,
+  soundPack: "ethone",
+  soundVolume: 75,
+  soundSpatial: false,
   soundVolumes: {
-    master: 100,
     notifications: 100,
     interface: 100,
     brain: 100,
@@ -308,6 +316,21 @@ const DOCK_GLASS_LEGACY: Record<string, DockGlass> = {
   opaque: "sober",
 };
 
+const SOUND_PACKS: SoundPack[] = [
+  "ethone",
+  "minimal",
+  "classic",
+  "apple-inspired",
+  "cyber-pulse",
+  "silent",
+  "none",
+];
+
+const SOUND_PACK_LEGACY: Record<string, SoundPack> = {
+  mechanical: "classic",
+  liquid: "apple-inspired",
+};
+
 function migrateSettings(raw: Partial<Settings>): Partial<Settings> {
   const next: Partial<Settings> = { ...raw };
   if (typeof raw.dockGlass === "string" && !DOCK_GLASS_VALUES.includes(raw.dockGlass as DockGlass)) {
@@ -315,6 +338,21 @@ function migrateSettings(raw: Partial<Settings>): Partial<Settings> {
   }
   if (typeof raw.dockScale === "string" && !DOCK_SCALE_VALUES.includes(raw.dockScale as DockScale)) {
     next.dockScale = "normal";
+  }
+  if (typeof raw.soundPack === "string" && !SOUND_PACKS.includes(raw.soundPack as SoundPack)) {
+    next.soundPack = SOUND_PACK_LEGACY[raw.soundPack] ?? "ethone";
+  }
+  if (raw.soundPack === "none") {
+    next.soundPack = "silent";
+  }
+  if (raw.soundVolumes && typeof raw.soundVolumes === "object") {
+    const old = raw.soundVolumes as Record<string, number>;
+    next.soundVolumes = {
+      interface: old.interface ?? DEFAULTS.soundVolumes.interface,
+      notifications: old.notifications ?? DEFAULTS.soundVolumes.notifications,
+      brain: old.brain ?? DEFAULTS.soundVolumes.brain,
+      system: old.system ?? DEFAULTS.soundVolumes.system,
+    };
   }
   return next;
 }

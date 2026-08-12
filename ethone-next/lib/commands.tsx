@@ -197,7 +197,7 @@ export function useCommandItems(setOpen: (v: boolean) => void): CommandItem[] {
       { id: "focus.deep", label: "Démarrer Deep Work (50 min)", category: "Focus", icon: <IconPlaceholder name="brain" />, action: () => navigate("/focus/") },
       { id: "focus.stop", label: "Arrêter le Focus", category: "Focus", icon: <IconPlaceholder name="square" />, action: () => navigate("/focus/") },
 
-      { id: "ambience.rain", label: "Ambiance : Pluie", category: "Ambiance", icon: <IconPlaceholder name="cloud-rain" />, action: () => update({ soundPack: "liquid", soundEffects: true, masterVolume: true }) },
+      { id: "ambience.rain", label: "Ambiance : Pluie", category: "Ambiance", icon: <IconPlaceholder name="cloud-rain" />, action: () => update({ soundPack: "apple-inspired", soundEffects: true, masterVolume: true }) },
       { id: "ambience.pink", label: "Ambiance : Bruit rose", category: "Ambiance", icon: <IconPlaceholder name="sparkles" />, action: () => update({ soundPack: "minimal", soundEffects: true, masterVolume: true }) },
       { id: "ambience.stop", label: "Arrêter l'ambiance", category: "Ambiance", icon: <IconPlaceholder name="volume-x" />, action: () => update({ soundEffects: false }) },
 

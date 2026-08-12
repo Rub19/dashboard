@@ -19,6 +19,9 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `components/WeatherDetailPopover.tsx` + `components/V8Breadcrumbs.tsx` : popover météo 5 jours (température, humidité, vent, prévisions) via `useLiveData` et `@floating-ui/react`.
 - `app/page.tsx` + `lib/settings.ts` + `components/V8StatusBar.tsx` : sélecteur v8 de mode de session (`default/focus/intense/zen/night`) distinct du statut de présence, persistance et thématisation via `data-session-mode`.
 - `worker/src/routes/cloud-activity.js` + `worker/src/services/cloud-activity-client.js` + `worker/src/router.js` : endpoint Worker pour l'insertion batch d'activités.
+- `lib/preset-engine.ts` + `app/settings/page.tsx` : moteur de presets v8 (`sanitizePreset`, `applyPreset`, `extractPresetFromState`), presets intégrés, presets personnalisés, import/export JSON.
+- `components/LayerProvider.tsx` : gestion avancée de couches (focus trap, roving tabindex, Escape/clic extérieur/scroll/resize, z-index auto, subscribe).
+- `app/globals.css` + `app/legacy-v8-tokens.css` + `components/HtmlLang.tsx` : tokens CSS Houdini `@property`, `color-mix`, animations `breathe`, thématisation par aura/session/densité.
 
 ### Corrige
 - Migration des packs audio legacy `mechanical`/`liquid`/`none` vers les équivalents v8 pour compatibilité ascendante.

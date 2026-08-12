@@ -93,6 +93,7 @@ const NAV_ITEMS = [
   { id: "focus", label: "Focus" },
   { id: "team", label: "Équipe" },
   { id: "mail", label: "Mail" },
+  { id: "weather", label: "Météo" },
   { id: "settings", label: "Paramètres" },
 ];
 
@@ -182,22 +183,22 @@ export default function SettingsPage() {
   ] as const;
 
   const DOCK_SCALES = [
-    { id: "compact", label: "Compact" },
-    { id: "normal", label: "Normal" },
-    { id: "large", label: "Large" },
+    { id: "compact", label: i18n("dockScaleCompact") },
+    { id: "normal", label: i18n("dockScaleNormal") },
+    { id: "large", label: i18n("dockScaleLarge") },
   ] as const;
 
   const DOCK_ALIGNS = [
-    { id: "center", label: "Centre" },
-    { id: "left", label: "Gauche" },
-    { id: "right", label: "Droite" },
-    { id: "stretch", label: "Étiré" },
+    { id: "center", label: i18n("dockAlignCenter") },
+    { id: "left", label: i18n("dockAlignLeft") },
+    { id: "right", label: i18n("dockAlignRight") },
+    { id: "stretch", label: i18n("dockAlignStretch") },
   ] as const;
 
   const DOCK_GLASS = [
-    { id: "default", label: "Défaut" },
-    { id: "ultra", label: "Ultra" },
-    { id: "opaque", label: "Opaque" },
+    { id: "vitrified", label: i18n("dockGlassVitrified") },
+    { id: "ultra-blur", label: i18n("dockGlassUltraBlur") },
+    { id: "sober", label: i18n("dockGlassSober") },
   ] as const;
 
   const UI_ANIMATION_STYLES = [
@@ -570,9 +571,9 @@ export default function SettingsPage() {
       children: (
         <div className="space-y-4">
           <Toggle label={i18n("dockVisible")} checked={settings.dockVisible} onChange={(v) => update({ dockVisible: v })} />
-          <Toggle label="Masquage auto" checked={settings.dockAutoHide} onChange={(v) => update({ dockAutoHide: v })} />
-          <Toggle label="Magnification" checked={settings.dockMagnify} onChange={(v) => update({ dockMagnify: v })} />
-          <p className="text-xs text-[var(--muted)]">Taille du dock</p>
+          <Toggle label={i18n("dockAutoHide")} checked={settings.dockAutoHide} onChange={(v) => update({ dockAutoHide: v })} />
+          <Toggle label={i18n("dockMagnify")} checked={settings.dockMagnify} onChange={(v) => update({ dockMagnify: v })} />
+          <p className="text-xs text-[var(--muted)]">{i18n("dockScale")}</p>
           <div className="grid grid-cols-3 gap-2">
             {DOCK_SCALES.map((s) => (
               <button
@@ -587,7 +588,7 @@ export default function SettingsPage() {
               </button>
             ))}
           </div>
-          <p className="text-xs text-[var(--muted)]">Alignement</p>
+          <p className="text-xs text-[var(--muted)]">{i18n("dockAlign")}</p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {DOCK_ALIGNS.map((a) => (
               <button
@@ -602,7 +603,7 @@ export default function SettingsPage() {
               </button>
             ))}
           </div>
-          <p className="text-xs text-[var(--muted)]">Verre du dock</p>
+          <p className="text-xs text-[var(--muted)]">{i18n("dockGlass")}</p>
           <div className="grid grid-cols-3 gap-2">
             {DOCK_GLASS.map((g) => (
               <button

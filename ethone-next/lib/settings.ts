@@ -56,7 +56,7 @@ export type RadiusStyle = "rounded" | "soft" | "sharp";
 
 export type DockScale = "compact" | "normal" | "large";
 export type DockAlign = "center" | "stretch" | "left" | "right";
-export type DockGlass = "default" | "ultra" | "opaque";
+export type DockGlass = "vitrified" | "ultra-blur" | "sober";
 
 export type UiAnimationStyle = "smooth" | "snappy" | "reduced";
 
@@ -197,7 +197,7 @@ export const DEFAULTS: Settings = {
   dockRadius: 50,
   dockScale: "normal",
   dockAlign: "center",
-  dockGlass: "default",
+  dockGlass: "vitrified",
   dockAutoHide: false,
   dockMagnify: true,
   shadow: "glow",
@@ -299,6 +299,26 @@ import { getUserState, setUserState } from "@/lib/user-state";
 const KEY = "ethone-settings-v1";
 const STATE_KEY = "settings";
 
+const DOCK_GLASS_VALUES: DockGlass[] = ["vitrified", "ultra-blur", "sober"];
+const DOCK_SCALE_VALUES: DockScale[] = ["compact", "normal", "large"];
+
+const DOCK_GLASS_LEGACY: Record<string, DockGlass> = {
+  default: "vitrified",
+  ultra: "ultra-blur",
+  opaque: "sober",
+};
+
+function migrateSettings(raw: Partial<Settings>): Partial<Settings> {
+  const next: Partial<Settings> = { ...raw };
+  if (typeof raw.dockGlass === "string" && !DOCK_GLASS_VALUES.includes(raw.dockGlass as DockGlass)) {
+    next.dockGlass = DOCK_GLASS_LEGACY[raw.dockGlass] ?? "vitrified";
+  }
+  if (typeof raw.dockScale === "string" && !DOCK_SCALE_VALUES.includes(raw.dockScale as DockScale)) {
+    next.dockScale = "normal";
+  }
+  return next;
+}
+
 function localSettingsKey(profileId?: string): string {
   return profileId ? `${KEY}:${profileId}` : KEY;
 }
@@ -313,7 +333,8 @@ export function loadSettings(profileId?: string): Settings {
     const raw = localStorage.getItem(localSettingsKey(profileId));
     if (!raw) return DEFAULTS;
     const parsed = JSON.parse(raw);
-    return { ...DEFAULTS, ...parsed };
+    const migrated = migrateSettings(parsed);
+    return { ...DEFAULTS, ...migrated };
   } catch {
     return DEFAULTS;
   }
@@ -331,7 +352,7 @@ export async function loadSettingsAsync(profileId?: string): Promise<Settings> {
     if (profileId && !remote) {
       remote = await getUserState<Partial<Settings> | null>(STATE_KEY, null);
     }
-    return { ...DEFAULTS, ...(remote || {}) };
+    return { ...DEFAULTS, ...migrateSettings(remote || {}) };
   } catch {
     return loadSettings(profileId);
   }

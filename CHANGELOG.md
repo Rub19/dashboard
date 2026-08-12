@@ -4,7 +4,15 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
-**Migration React + Tailwind : Home personnalisable, Dock v8, audio spatial et shell avancé**
+**Migration React + Tailwind : parité v8 (Bills, Ambient, Mail analytics, Automations, Live cards, Assets legacy)**
+
+### Ajoute
+- `components/BillsCalendarWidget.tsx` + `app/calendar/page.tsx` : widget Bills intégré au calendrier avec mini-vue 7 jours, total 30 jours, catégories colorées et i18n.
+- `lib/ambient-engine.ts` + `lib/hooks/useAmbientEngine.ts` + `components/HtmlLang.tsx` : moteur Ambient Engine (profils jour/nuit, contexte visuel gaming/dev/study/focus, focus actif, Space, réglage des variables CSS périodique).
+- `components/MailAnalyticsPanel.tsx` + `app/mail/page.tsx` : analytics Mail avancé (périodes 7/30/90j, graphiques barres, top expéditeurs avec barres, top étiquettes).
+- `lib/brain/automation.ts` + `components/FlowAutomations.tsx` : automation triggers `route`/`space`/`time` avec actions étendues (Space, density, thème).
+- `components/LiveWidgets.tsx` : filtres par catégorie (`gaming`/`social`/`productivity`) pour les Live cards multi-services.
+- `public/icons/` + `public/legacy/` : copie de tous les assets visuels legacy (favicons, PWA icons, 404, manifest, SW, index, headers) et mise à jour du manifest PWA.
 
 ### Ajoute
 - `app/page.tsx` + `lib/settings.ts` : sections Home personnalisables (`homeHiddenSections`), mode personnalisation avec toggles et sélecteur d'Aura intégré.

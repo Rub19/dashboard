@@ -123,6 +123,7 @@ export default function LiveWidgets({
   const i18n = useI18n();
   const [flipped, setFlipped] = useState<Record<string, boolean>>({});
   const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<"all" | (typeof CATEGORY_ORDER)[number]>("all");
 
   const hidden = new Set(settings.homeHiddenLiveCards || []);
   const layout = settings.activityLiveLayout || [];
@@ -628,13 +629,38 @@ export default function LiveWidgets({
   return (
     <div className="space-y-6">
       {showHeader && (
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-[var(--foreground)]">{i18n("live")}</h2>
-          {loading && <Icon name="loader" className="h-4 w-4 animate-spin text-[var(--muted)]" />}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <h2 className="text-lg font-semibold text-[var(--foreground)]">{i18n("live")}</h2>
+            {loading && <Icon name="loader" className="h-4 w-4 animate-spin text-[var(--muted)]" />}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setActiveCategory("all")}
+              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                activeCategory === "all" ? "bg-[var(--accent)] text-white" : "bg-[var(--surface-raised)] text-[var(--muted)] hover:text-[var(--foreground)]"
+              }`}
+            >
+              {i18n("all")}
+            </button>
+            {CATEGORY_ORDER.map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setActiveCategory(cat)}
+                className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                  activeCategory === cat ? "bg-[var(--accent)] text-white" : "bg-[var(--surface-raised)] text-[var(--muted)] hover:text-[var(--foreground)]"
+                }`}
+              >
+                {i18n(categoryLabels[cat])} ({groups[cat].length})
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
-      {CATEGORY_ORDER.map((category) => {
+      {CATEGORY_ORDER.filter((category) => activeCategory === "all" || activeCategory === category).map((category) => {
         const items = groups[category];
         if (items.length === 0) return null;
         return (

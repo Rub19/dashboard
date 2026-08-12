@@ -98,7 +98,10 @@ export default function LiveWidgets({
   const [flipped, setFlipped] = useState<Record<string, boolean>>({});
 
   const hidden = new Set(settings.homeHiddenLiveCards || []);
-  const visibleRecords = customizing ? records : records.filter((r) => !hidden.has(r.id));
+  const layout = settings.activityLiveLayout || [];
+  const baseRecords = (customizing ? records : records.filter((r) => !hidden.has(r.id))).map((r) => ({ ...r }));
+  const orderMap = new Map(layout.map((id, i) => [id, i]));
+  const visibleRecords = [...baseRecords].sort((a, b) => (orderMap.get(a.id) ?? Infinity) - (orderMap.get(b.id) ?? Infinity));
 
   async function controlSpotify(action: "play" | "pause" | "next" | "previous") {
     if (!settings.liveSpotifyClientId) {
@@ -122,6 +125,17 @@ export default function LiveWidgets({
       ? (settings.homeHiddenLiveCards || []).filter((x) => x !== id)
       : [...(settings.homeHiddenLiveCards || []), id];
     update({ homeHiddenLiveCards: next });
+  }
+
+  function moveRecord(id: string, direction: "up" | "down") {
+    const ids = visibleRecords.map((r) => r.id);
+    const idx = ids.indexOf(id);
+    if (idx === -1) return;
+    const newIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (newIdx < 0 || newIdx >= ids.length) return;
+    const nextIds = [...ids];
+    [nextIds[idx], nextIds[newIdx]] = [nextIds[newIdx], nextIds[idx]];
+    update({ activityLiveLayout: nextIds });
   }
 
   function liveContextItems(record: LiveRecord) {
@@ -419,16 +433,36 @@ export default function LiveWidgets({
                     <div className={`absolute right-3 top-3 h-2.5 w-2.5 rounded-full ${STATUS_DOT[record.status]}`} />
 
                     {customizing && (
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleHidden(record.id);
-                        }}
-                        className="absolute left-3 top-3 rounded-full bg-[var(--surface-raised)] p-1.5 text-[var(--foreground)] hover:bg-[var(--surface)]"
-                      >
-                        <Icon name={hidden.has(record.id) ? "eye-off" : "eye"} className="h-3.5 w-3.5" />
-                      </button>
+                      <>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleHidden(record.id);
+                          }}
+                          className="absolute left-3 top-3 rounded-full bg-[var(--surface-raised)] p-1.5 text-[var(--foreground)] hover:bg-[var(--surface)]"
+                        >
+                          <Icon name={hidden.has(record.id) ? "eye-off" : "eye"} className="h-3.5 w-3.5" />
+                        </button>
+                        <div className="absolute right-3 bottom-3 flex gap-1.5 rounded-full bg-[var(--surface-raised)] p-1">
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); moveRecord(record.id, "up"); }}
+                            className="rounded-full p-1 hover:bg-[var(--surface)]"
+                            aria-label={i18n("moveUp")}
+                          >
+                            <Icon name="arrow-up" className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); moveRecord(record.id, "down"); }}
+                            className="rounded-full p-1 hover:bg-[var(--surface)]"
+                            aria-label={i18n("moveDown")}
+                          >
+                            <Icon name="arrow-down" className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </>
                     )}
 
                     {isSpotify && record.image && (

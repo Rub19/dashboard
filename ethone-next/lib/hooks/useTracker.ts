@@ -5,6 +5,21 @@ import { fetchWorker } from "../api";
 
 const CACHE_TTL_MS = 7 * 60 * 1000;
 
+export type TrackerPlayer = {
+  name: string;
+  team?: "red" | "blue" | "attack" | "defense" | string;
+  partyId?: string;
+  kills?: number;
+  deaths?: number;
+  assists?: number;
+  score?: number;
+  rank?: string;
+  agent?: string;
+  champion?: string;
+  legend?: string;
+  partySize?: number;
+};
+
 export type TrackerGame = {
   id: string;
   mode?: string;
@@ -12,11 +27,16 @@ export type TrackerGame = {
   result?: string;
   agent?: string;
   champion?: string;
+  legend?: string;
   kills?: number;
   deaths?: number;
   assists?: number;
   duration?: string;
   started?: string;
+  roundsWon?: number;
+  roundsLost?: number;
+  team?: "red" | "blue" | "attack" | "defense" | string;
+  players?: TrackerPlayer[];
 };
 
 type CacheEntry<T> = {

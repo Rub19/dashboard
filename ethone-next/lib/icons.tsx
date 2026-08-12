@@ -158,6 +158,8 @@ const MAP: Record<string, Partial<Record<IconPack, string>>> = {
   text: { lucide: "text", phosphor: "text-t", tabler: "typography", heroicons: "pencil-square", radix: "text" },
   "hard-drive": { lucide: "hard-drive", phosphor: "hard-drives", tabler: "device-floppy", heroicons: "server", radix: "stack" },
   "external-link": { lucide: "external-link", phosphor: "arrow-up-right", tabler: "external-link", heroicons: "arrow-top-right-on-square", radix: "external-link" },
+  "arrow-up": { lucide: "arrow-up", phosphor: "arrow-up", tabler: "arrow-up", heroicons: "arrow-up", radix: "arrow-up" },
+  "arrow-down": { lucide: "arrow-down", phosphor: "arrow-down", tabler: "arrow-down", heroicons: "arrow-down", radix: "arrow-down" },
 };
 
 export function useIconName(name: string, pack: IconPack = "lucide") {

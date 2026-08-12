@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useState, useMemo } from "react";
-import { useTracker } from "@/lib/hooks/useTracker";
+import { useTracker, type TrackerGame, type TrackerPlayer } from "@/lib/hooks/useTracker";
 import Card3D from "@/components/Card3D";
 import LiquidSidebar from "@/components/LiquidSidebar";
 import { Icon } from "@/lib/icons";
@@ -17,21 +17,96 @@ const tabs = [
 
 const APEX_PLATFORMS = ["origin", "xbl", "psn"] as const;
 
-function MatchCard({ match }: { match: Record<string, string | number | undefined> }) {
+function PartyBadge({ partySize }: { partySize?: number }) {
+  if (!partySize || partySize <= 1) return null;
+  const label = partySize === 2 ? "DUO" : partySize === 3 ? "TRIO" : "TEAM";
+  return <span className="rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold text-amber-400">{label}</span>;
+}
+
+function MatchCard({ match, game }: { match: Record<string, string | number | undefined>; game: TrackerGame }) {
+  const [open, setOpen] = useState(false);
+  const i18n = useI18n();
+  const header = match.map || match.agent || match.champion || match.mode || match.legend || "Match";
+  const score = match.result || `${match.kills ?? "-"}/${match.deaths ?? "-"}/${match.assists ?? "-"}`;
+  const players = game.players || [];
+  const hasScoreboard = players.length > 0;
+  const teamIds = [...new Set(players.map((p) => p.team || "unknown"))];
+
+  // Minimal party detection: group by consecutive shared partyId in same team.
+  const partiesByTeam = teamIds.map((team) => {
+    const members = players.filter((p) => (p.team || "unknown") === team);
+    const partyGroups: Record<string, TrackerPlayer[]> = {};
+    members.forEach((p) => {
+      const key = p.partyId || `solo-${p.name}`;
+      partyGroups[key] = partyGroups[key] || [];
+      partyGroups[key].push(p);
+    });
+    return { team, groups: Object.values(partyGroups) };
+  });
+
   return (
     <Card3D>
-      <div className="flex items-center gap-3">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
-          <Icon name="trophy" className="h-5 w-5" />
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className="truncate font-medium text-[var(--foreground)]">
-            {match.map || match.agent || match.champion || match.mode || match.legend || "Match"}
-          </p>
-          <p className="truncate text-xs text-[var(--muted)]">
-            {match.result || `${match.kills ?? "-"}/${match.deaths ?? "-"}/${match.assists ?? "-"}`}
-          </p>
+      <div className="space-y-3">
+        <div className="flex items-center gap-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
+            <Icon name="trophy" className="h-5 w-5" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-medium text-[var(--foreground)]">{header}</p>
+            <p className="truncate text-xs text-[var(--muted)]">{score}</p>
+          </div>
+          {hasScoreboard && (
+            <button
+              type="button"
+              onClick={() => setOpen((v) => !v)}
+              className="rounded-full p-1.5 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+              aria-label={i18n("scoreboard")}
+            >
+              <Icon name={open ? "chevron-up" : "chevron-down"} className="h-4 w-4" />
+            </button>
+          )}
         </div>
+
+        {open && hasScoreboard && (
+          <div className="space-y-3 rounded-xl bg-[var(--surface)] p-2 text-xs">
+            {game.roundsWon !== undefined && game.roundsLost !== undefined && (
+              <div className="flex items-center justify-between font-semibold">
+                <span>{i18n("roundsWon")}: {game.roundsWon}</span>
+                <span>{i18n("roundsLost")}: {game.roundsLost}</span>
+              </div>
+            )}
+            {partiesByTeam.map(({ team, groups }) => (
+              <div key={team}>
+                <p className="mb-1 font-semibold uppercase tracking-wider text-[var(--muted)]">{team}</p>
+                <div className="space-y-1">
+                  {groups.map((group, gi) => {
+                    const partySize = group.length;
+                    return (
+                      <div
+                        key={gi}
+                        className="divide-y divide-[var(--border)] rounded-lg border border-[var(--border)] bg-[var(--surface-raised)]"
+                      >
+                        {group.map((p, pi) => (
+                          <div key={pi} className="flex items-center gap-2 px-2 py-1.5">
+                            <span className="min-w-0 flex-1 truncate font-medium">{p.name}</span>
+                            {partySize > 1 && <PartyBadge partySize={partySize} />}
+                            {p.agent && <span className="text-[var(--muted)]">{p.agent}</span>}
+                            {p.champion && <span className="text-[var(--muted)]">{p.champion}</span>}
+                            {p.legend && <span className="text-[var(--muted)]">{p.legend}</span>}
+                            {p.rank && <span className="rounded bg-[var(--surface)] px-1.5 text-[var(--muted)]">{p.rank}</span>}
+                            <span className="ml-auto shrink-0 font-mono">
+                              {p.kills ?? "-"}/{p.deaths ?? "-"}/{p.assists ?? "-"}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </Card3D>
   );
@@ -182,7 +257,7 @@ export default function MatchesPage() {
         ) : items && items.length > 0 ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((match, i) => (
-              <MatchCard key={match.id || i} match={match} />
+              <MatchCard key={match.id || i} match={match as unknown as Record<string, string | number | undefined>} game={match} />
             ))}
           </div>
         ) : (

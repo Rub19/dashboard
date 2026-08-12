@@ -6,33 +6,31 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
-import { actionLabel } from "@/lib/brain/automation";
+import { actionLabel, triggerLabel, AUTOMATION_ACTIONS, AUTOMATION_TRIGGER_TYPES, type AutomationRule } from "@/lib/brain/automation";
+import { AUTOMATION_NAVIGATION, AUTOMATION_SPACES } from "@/lib/brain/automation";
 
-const WORKSPACES = ["personal", "focus", "studio", "gaming"] as const;
-
-const ACTIONS = [
-  { id: "v8.space.personal", label: "Space Personnel" },
-  { id: "v8.space.focus", label: "Space Focus" },
-  { id: "v8.space.studio", label: "Space Studio" },
-  { id: "v8.density.spacious", label: "Densité Spacieuse" },
-  { id: "v8.density.comfortable", label: "Densité Confortable" },
-  { id: "v8.density.compact", label: "Densité Compacte" },
-  { id: "v8.theme.night", label: "Thème Nuit" },
-  { id: "v8.theme.day", label: "Thème Jour" },
-];
+const TIME_OPTIONS = ["09:00", "12:00", "14:00", "17:00", "18:00", "21:00", "22:00"] as const;
 
 export default function FlowAutomations({ activeFlow }: { activeFlow?: string }) {
   const i18n = useI18n();
   const { success, error: showError } = useToast();
   const { preferences, addAutomationRule, toggleAutomationRule, removeAutomationRule } = useBrain();
-  const [flow, setFlow] = useState<string>(activeFlow || "personal");
-  const [action, setAction] = useState<string>(ACTIONS[0].id);
+  const [triggerType, setTriggerType] = useState<"space" | "route" | "time">("space");
+  const [triggerValue, setTriggerValue] = useState<string>(activeFlow || "personal");
+  const [action, setAction] = useState<string>(AUTOMATION_ACTIONS[0].id);
 
-  const rules = preferences.automations.filter((r) => r.trigger.type === "space");
+  const rules = preferences.automations;
+
+  function resetValue(type: "space" | "route" | "time") {
+    setTriggerType(type);
+    if (type === "space") setTriggerValue(activeFlow || "personal");
+    else if (type === "route") setTriggerValue("home");
+    else setTriggerValue("09:00");
+  }
 
   async function addAutomation() {
     try {
-      addAutomationRule({ type: "space", value: flow }, action);
+      addAutomationRule({ type: triggerType, value: triggerValue }, action);
       success(i18n("saved"));
     } catch {
       showError(i18n("error"));
@@ -48,33 +46,88 @@ export default function FlowAutomations({ activeFlow }: { activeFlow?: string })
     }
   }
 
+  function groupOptions(group: string) {
+    return AUTOMATION_ACTIONS.filter((a) => a.group === group);
+  }
+
+  const triggerOptions =
+    triggerType === "space"
+      ? AUTOMATION_SPACES
+      : triggerType === "route"
+        ? AUTOMATION_NAVIGATION
+        : TIME_OPTIONS;
+
   return (
     <Card3D>
       <h2 className="mb-3 text-sm font-semibold">{i18n("flowAutomations")}</h2>
-      <div className="space-y-2">
+      <div className="space-y-3">
         <div className="flex flex-col gap-2 sm:flex-row">
-          <select value={flow} onChange={(e) => setFlow(e.target.value)} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm">
-            {WORKSPACES.map((w) => (
-              <option key={w} value={w}>{i18n(w)}</option>
+          <select
+            value={triggerType}
+            onChange={(e) => resetValue(e.target.value as "space" | "route" | "time")}
+            className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm"
+          >
+            {AUTOMATION_TRIGGER_TYPES.map((t) => (
+              <option key={t} value={t}>{i18n(t)}</option>
             ))}
           </select>
-          <select value={action} onChange={(e) => setAction(e.target.value)} className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm">
-            {ACTIONS.map((a) => (
-              <option key={a.id} value={a.id}>{a.label}</option>
-            ))}
+          {triggerType === "time" ? (
+            <input
+              type="time"
+              value={triggerValue}
+              onChange={(e) => setTriggerValue(e.target.value)}
+              className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none"
+            />
+          ) : (
+            <select
+              value={triggerValue}
+              onChange={(e) => setTriggerValue(e.target.value)}
+              className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm"
+            >
+              {triggerOptions.map((v) => (
+                <option key={v} value={v}>{i18n(v)}</option>
+              ))}
+            </select>
+          )}
+          <select
+            value={action}
+            onChange={(e) => setAction(e.target.value)}
+            className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm"
+          >
+            <optgroup label={i18n("space")}>
+              {groupOptions("space").map((a) => (
+                <option key={a.id} value={a.id}>{a.label}</option>
+              ))}
+            </optgroup>
+            <optgroup label={i18n("densityTitle")}>
+              {groupOptions("density").map((a) => (
+                <option key={a.id} value={a.id}>{a.label}</option>
+              ))}
+            </optgroup>
+            <optgroup label={i18n("theme")}>
+              {groupOptions("theme").map((a) => (
+                <option key={a.id} value={a.id}>{a.label}</option>
+              ))}
+            </optgroup>
           </select>
-          <button type="button" onClick={addAutomation} className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{i18n("add")}</button>
+          <button
+            type="button"
+            onClick={addAutomation}
+            className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white"
+          >
+            {i18n("add")}
+          </button>
         </div>
 
         {rules.length === 0 ? (
           <p className="text-sm text-[var(--muted)]">{i18n("noAutomations")}</p>
         ) : (
           <div className="space-y-2">
-            {rules.map((rule) => {
+            {rules.map((rule: AutomationRule) => {
               const actionLabelText = actionLabel(rule.actionId);
               return (
                 <div key={rule.id} className="flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2">
-                  <span className="text-sm">{i18n(rule.trigger.value)} → {actionLabelText}</span>
+                  <span className="text-sm">{triggerLabel(rule.trigger)} → {actionLabelText}</span>
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
@@ -84,7 +137,9 @@ export default function FlowAutomations({ activeFlow }: { activeFlow?: string })
                     >
                       <Icon name={rule.enabled ? "toggle-right" : "toggle-left"} className="h-3.5 w-3.5" />
                     </button>
-                    <button type="button" onClick={() => deleteAutomation(rule.id)} className="text-red-400"><Icon name="trash-2" className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => deleteAutomation(rule.id)} className="text-red-400">
+                      <Icon name="trash-2" className="h-4 w-4" />
+                    </button>
                   </div>
                 </div>
               );

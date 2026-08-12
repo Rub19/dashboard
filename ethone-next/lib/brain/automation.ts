@@ -1,7 +1,7 @@
 export const AUTOMATION_TRIGGER_TYPES = ["route", "space", "time"] as const;
 
-const NAVIGATION = ["home", "notes", "tasks", "calendar", "files", "activity", "connections", "spaces", "flows", "brain", "settings"] as const;
-const SPACES = ["personal", "focus", "studio"] as const;
+export const AUTOMATION_NAVIGATION = ["home", "notes", "tasks", "calendar", "files", "activity", "connections", "spaces", "flows", "brain", "settings"] as const;
+export const AUTOMATION_SPACES = ["personal", "focus", "studio"] as const;
 
 export const AUTOMATION_ACTIONS = Object.freeze([
   Object.freeze({ id: "v8.space.personal", label: "Space Personnel", group: "space" }),
@@ -32,9 +32,9 @@ function normalizeTime(value: string) {
 
 export function sanitizeAutomationTrigger(input: { type?: string; value?: string }): { type: (typeof AUTOMATION_TRIGGER_TYPES)[number]; value: string } {
   const type = AUTOMATION_TRIGGER_TYPES.includes(input.type as (typeof AUTOMATION_TRIGGER_TYPES)[number]) ? (input.type as (typeof AUTOMATION_TRIGGER_TYPES)[number]) : "route";
-  if (type === "space") return { type, value: SPACES.includes(input.value as (typeof SPACES)[number]) ? (input.value as (typeof SPACES)[number]) : "focus" };
+  if (type === "space") return { type, value: AUTOMATION_SPACES.includes(input.value as (typeof AUTOMATION_SPACES)[number]) ? (input.value as (typeof AUTOMATION_SPACES)[number]) : "focus" };
   if (type === "time") return { type, value: normalizeTime(input.value || "09:00") };
-  return { type: "route", value: NAVIGATION.includes(input.value as (typeof NAVIGATION)[number]) ? (input.value as (typeof NAVIGATION)[number]) : "home" };
+  return { type: "route", value: AUTOMATION_NAVIGATION.includes(input.value as (typeof AUTOMATION_NAVIGATION)[number]) ? (input.value as (typeof AUTOMATION_NAVIGATION)[number]) : "home" };
 }
 
 export function triggerLabel(rule: AutomationRule["trigger"]) {

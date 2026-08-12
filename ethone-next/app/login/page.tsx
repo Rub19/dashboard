@@ -7,8 +7,8 @@ import Card3D from "@/components/Card3D";
 import BrandMark from "@/components/BrandMark";
 import { Icon } from "@/lib/icons";
 import {
-  signInWithOtp,
-  verifyEmailOtp,
+  sendOtp,
+  verifyOtp,
   signInWithPassword,
   signInWithOAuth,
   signInWithPasskey,
@@ -40,6 +40,7 @@ export default function LoginPage() {
   const [code, setCode] = useState("");
   const [mode, setMode] = useState<AuthMode>("otp");
   const [step, setStep] = useState<"email" | "code">("email");
+  const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -57,13 +58,14 @@ export default function LoginPage() {
       showError(i18n("error"));
       return;
     }
-    const { error: err } = await signInWithOtp(email);
+    const result = await sendOtp(email);
     setLoading(false);
-    if (err) {
-      setError(err.message);
+    if (!result.ok || result.error || !result.userId) {
+      setError(result.error?.message || i18n("error"));
       showError(i18n("error"));
       return;
     }
+    setUserId(result.userId);
     setStep("code");
     success(i18n("sent"));
   }
@@ -82,7 +84,13 @@ export default function LoginPage() {
       showError(i18n("error"));
       return;
     }
-    const { ok, error: err } = await verifyEmailOtp(email, code);
+    if (!userId) {
+      setLoading(false);
+      setError(i18n("error"));
+      showError(i18n("error"));
+      return;
+    }
+    const { ok, error: err } = await verifyOtp(userId, email, code);
     setLoading(false);
     if (!ok || err) {
       setError(err?.message || i18n("invalidCode"));

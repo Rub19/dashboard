@@ -12,6 +12,7 @@ jest.mock("./supabase", () => ({
     auth: {
       signOut: jest.fn().mockResolvedValue({ error: null }),
       verifyOtp: jest.fn().mockResolvedValue({ data: { session: { access_token: "x" } } }),
+      setSession: jest.fn().mockResolvedValue({ data: { session: { access_token: "x" } }, error: null }),
     },
   },
 }));

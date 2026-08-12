@@ -9,6 +9,7 @@ import {
   revokePasskey
 } from "../services/webauthn-service.js";
 import { sendOtp, verifyOtp } from "../services/otp-service.js";
+import { signServiceToken } from "../utils/jwt.js";
 import {
   getOrCreateDevice,
   trustDevice,
@@ -143,9 +144,10 @@ export async function otpVerifyRoute({ request, env }) {
   const userAgent = request.headers.get("user-agent") || "";
   const sessionId = null;
   const device = await getOrCreateDevice(env, userId, sessionId, userAgent, "");
-  await verifyOtp(env, userId, email, code, device.id);
+  const result = await verifyOtp(env, userId, email, code, device.id);
+  const token = await signServiceToken(env, userId, null, 8 * 60 * 60);
 
-  return { data: { verified: true, deviceId: device.id } };
+  return { data: { verified: true, deviceId: device.id, token } };
 }
 
 export async function deviceUpsertRoute({ request, env, auth }) {

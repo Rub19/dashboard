@@ -93,21 +93,20 @@ export async function verifyOtp(env, userId, email, code, deviceId) {
   if (!existing) throw new Error("No active verification code");
   if (existing.used_at) throw new Error("Code already used");
   if (new Date(existing.expires_at) < new Date()) throw new Error("Code expired");
-  if (existing.rate_limited_until && new Date(existing.rate_limited_until) > new Date()) throw new Error("Too many attempts. Please wait.");
 
   const attempts = (existing.attempts || 0) + 1;
   if (attempts > MAX_ATTEMPTS) {
-    await consumeOtpCode(env, userId, contact, { rateLimitedUntil: new Date(Date.now() + 15 * 60 * 1000).toISOString(), attempts });
+    await consumeOtpCode(env, existing.id, { rateLimitedUntil: new Date(Date.now() + 15 * 60 * 1000).toISOString(), attempts });
     throw new Error("Too many attempts. Please request a new code.");
   }
 
   const codeHash = await hashCode(rawCode);
   if (codeHash !== existing.code_hash) {
-    await consumeOtpCode(env, userId, contact, { attempts });
+    await consumeOtpCode(env, existing.id, { attempts });
     throw new Error("Invalid code");
   }
 
-  await consumeOtpCode(env, userId, contact, { usedAt: new Date().toISOString(), attempts });
+  await consumeOtpCode(env, existing.id, { usedAt: new Date().toISOString(), attempts });
 
   await insertSecurityEvent(env, {
     userId,

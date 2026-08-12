@@ -170,6 +170,7 @@ export async function insertSecurityEvent(env, event) {
   await supabaseRequest(env, "/rest/v1/ethone_security_events", {
     method: "POST",
     body,
+    headers: { Prefer: "return=representation" },
     maxBytes: 4096
   });
   return true;
@@ -274,13 +275,13 @@ export async function getActiveOtpCode(env, userId, contact) {
   return firstRow(response);
 }
 
-export async function consumeOtpCode(env, userId, contact, patch) {
+export async function consumeOtpCode(env, otpId, patch) {
   const body = {};
   if (patch.attempts !== undefined) body.attempts = Math.max(0, Number(patch.attempts) || 0);
   if (patch.usedAt !== undefined) body.used_at = patch.usedAt;
   if (patch.rateLimitedUntil !== undefined) body.rate_limited_until = patch.rateLimitedUntil;
 
-  const response = await supabaseRequest(env, `/rest/v1/ethone_otp_codes?user_id=eq.${encodeURIComponent(userId)}&contact=eq.${encodeURIComponent(contact)}&used_at=is.null&order=created_at.desc&limit=1`, {
+  const response = await supabaseRequest(env, `/rest/v1/ethone_otp_codes?id=eq.${encodeURIComponent(otpId)}`, {
     method: "PATCH",
     body,
     headers: { Prefer: "return=representation" }

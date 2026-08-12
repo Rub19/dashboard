@@ -34,11 +34,16 @@ export async function verifyOtp(userId: string, email: string, code: string) {
   });
   if (!res?.data?.token) return { ok: false, error: new Error(res?.error || "Code invalide.") };
 
-  const { data, error } = await supabase.auth.verifyOtp({
-    token_hash: res.data.token as string,
-    type: "magiclink",
+  const token = res.data.token as string;
+  const refreshToken = typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const { data, error } = await supabase.auth.setSession({
+    access_token: token,
+    refresh_token: refreshToken,
   });
   if (error) return { ok: false, error };
+  resetAuthAttempt("sign-in", `${userId}:${email}`);
   return { ok: true, session: data.session };
 }
 
@@ -156,9 +161,12 @@ export async function signInWithPasskey(email?: string) {
   const tokenHash = authRes?.data?.token_hash;
   if (!tokenHash) throw new Error("Passkey authentication failed");
 
-  const { data, error } = await supabase.auth.verifyOtp({
-    token_hash: tokenHash,
-    type: "magiclink",
+  const refreshToken = typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const { data, error } = await supabase.auth.setSession({
+    access_token: tokenHash,
+    refresh_token: refreshToken,
   });
   return { ok: !error && !!data.session, session: data.session, error };
 }

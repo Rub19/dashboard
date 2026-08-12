@@ -54,6 +54,28 @@ describe("useLiveData", () => {
     expect(calls).toContain("/api/github/profile");
   });
 
+  it("calls /api/steam/achievements when steamId and appId are set", async () => {
+    localStorage.setItem(
+      SETTINGS_KEY,
+      JSON.stringify({ liveSteamId: "12345", liveSteamAppId: "730" })
+    );
+    mockedFetchWorker.mockImplementation(async (path) => {
+      if (String(path) === "/api/connections") return { data: [{ provider: "steam", connected: true }] };
+      if (String(path) === "/api/profiles") return { data: { list: [], active: null } };
+      if (String(path).startsWith("/api/steam/achievements")) return { data: [{ name: "Winner", gameName: "CS2" }] };
+      if (String(path).startsWith("/api/steam/player")) return { data: { personaName: "SteamUser" } };
+      if (String(path).startsWith("/api/steam/recent-games")) return { data: [] };
+      if (String(path).startsWith("/api/steam/owned-games")) return { data: [] };
+      return { data: null };
+    });
+
+    const { result } = renderHook(() => useLiveData(60_000), { wrapper });
+    await waitFor(() => expect(result.current.loading).toBe(false), { timeout: 3000 });
+
+    expect(allCalls()).toContain("/api/steam/achievements?steamId=12345&appId=730");
+    expect(result.current.records.some((r) => r.source === "steam-achievements")).toBe(true);
+  });
+
   it("skips unconnected providers", async () => {
     mockedFetchWorker.mockImplementation(async (path) => {
       if (String(path) === "/api/connections") return { data: [] };

@@ -38,7 +38,9 @@ export type PluginId =
   | "groq"
   | "valorant"
   | "lol"
-  | "apex";
+  | "apex"
+  | "bills"
+  | "steam-achievements";
 
 export type Plugin = {
   id: PluginId;
@@ -100,6 +102,10 @@ export const PLUGINS: Plugin[] = [
   { id: "anthropic", label: "Anthropic", icon: "brain-circuit", route: "/plugins/anthropic/", recordSource: "anthropic" },
   { id: "gemini", label: "Gemini", icon: "gem", route: "/plugins/gemini/", recordSource: "gemini" },
   { id: "groq", label: "Groq", icon: "gauge", route: "/plugins/groq/", recordSource: "groq" },
+
+  // Extras supportés par useLiveData
+  { id: "bills", label: "Bills", icon: "receipt", route: "/plugins/bills/", recordSource: "bills" },
+  { id: "steam-achievements", label: "Steam Achievements", icon: "trophy", route: "/plugins/steam-achievements/", recordSource: "steam-achievements" },
 ];
 
 export function getPluginById(id: string): Plugin | undefined {

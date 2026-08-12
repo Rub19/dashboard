@@ -13,7 +13,8 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `lib/hooks/useLiveData.ts` + `components/LiveWidgets.tsx` : appel à `/api/steam/achievements` et affichage des succès Steam (recent/owned games, achievements, pourcentage de déblocage, icônes).
 - `components/LiveWidgets.tsx` : synchronisation de l'état "like" Spotify via `/api/spotify/track-saved` pour refléter l'état réel de la bibliothèque.
 - `lib/hooks/useMail.ts` : endpoints mail Worker `/api/mail/contacts`, `/api/mail/extract`, `/api/mail/notifications` (GET/PATCH) ; la recherche continue d'utiliser `/api/mail/search?q=...` tandis que l'affichage d'un dossier conserve `/api/mail/inbox`.
-- `lib/plugins.ts` + `app/plugins/[id]/page.tsx` : marketplace complet couvrant les 35 intégrations du catalogue v8 et les 38 routes statiques générées.
+- `lib/plugins.ts` + `app/plugins/[id]/page.tsx` : marketplace complet couvrant les 35 intégrations du catalogue v8 (40 routes statiques générées, dont `bills` et `steam-achievements`).
+- `public/legacy/` : retrait du fallback legacy et du runtime v8 copié dans `public/` (l'application Next gère désormais les 404 via `app/not-found.tsx`).
 - `components/DenseContent.tsx` : composant React équivalent à `v8/ui/dense-content.mjs` (sélection stateful, contrôle de densité, bulk action bar, row menu) avec classes v8 mappées sur Tailwind.
 - `components/DepthEffect.tsx` + `app/layout.tsx` : effet de profondeur v8 par survol, respect de `cardTilt`, `reducedMotion`, `performanceMode`, et désactivé sur tactile.
 - `lib/form-validation.ts` : validateurs v8 (`required`, `email`, `minLength`, `maxLength`, `pattern`, `match`, `passwordStrength`, `oneOf`) et hook `useForm`.
@@ -31,7 +32,6 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `components/LiveWidgets.tsx` : synchronisation de l'état "like" Spotify via l'endpoint `/api/spotify/track-saved` pour refléter l'état réel de la bibliothèque.
 - `lib/hooks/useMail.ts` : la recherche mail utilise `/api/mail/search?q=...` quand un terme est saisi, tandis que l'affichage d'un dossier conserve `/api/mail/inbox`.
 - `components/RichTextEditor.tsx` : parité améliorée avec v8 (`toEditableHtml`, `plainTextToHtml`, `stripHtml`, `safeHref`, suppression des balises interdites et des commentaires, conservation de la classe `code`).
-- `ethone-next/eslint.config.mjs` : `public/legacy/**` ignoré par le lint pour éviter le bruit des fichiers v8 copiés.
 - `components/Loading.tsx` : retrait du badge "OS" sur l'écran de chargement pour correspondre au boot v8.
 
 ## [Unreleased]

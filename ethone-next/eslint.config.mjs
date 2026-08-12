@@ -13,7 +13,6 @@ const eslintConfig = defineConfig([
     "dist/**",
     "node_modules/**",
     "next-env.d.ts",
-    "public/legacy/**",
   ]),
   {
     rules: {

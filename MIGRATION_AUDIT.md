@@ -10,9 +10,9 @@ Branche : `migration-react-tailwind`
 L'inventaire comparatif a été réalisé sur l'ancien ETHONE v8 (`\.worktree\main\v8`) et le nouveau Next.js (`\ethone-next`).
 
 - **État global** : la grande majorité des pages, composants shell, connexions externes, paramètres et comportements sont migrés et fonctionnent.
-- **Dernières corrections** : fallback legacy auto-hébergé (`public/legacy/v8/`), propagation des erreurs live data, signout Worker notifié, marketplace complet (35 intégrations v8 couvertes dans `lib/plugins.ts`, 38 routes de plugin générées), rate-limiter client v8 porté dans `lib/rate-limiter.ts` et `lib/auth.ts`, OTP Worker (`/api/auth/otp/send` et `/api/auth/otp/verify`), profil public Supabase (`/api/supabase/public-profile`) avec aperçu profil, succès Steam via `/api/steam/achievements`, endpoints mail contacts/extract/notifications, validateurs de formulaires avancés v8 portés dans `lib/form-validation.ts`, command search/history enrichi, composants `DenseContent` et `DepthEffect` portés, like Spotify synchronisé, recherche mail via `/api/mail/search`, parité RichTextEditor renforcie, logo ETHONE sur le dashboard home, badge "OS" retiré de l'écran de chargement, sélecteur de langue dans la topbar.
-- **Différences principales** : Next.js ajoute de nombreuses fonctionnalités absentes de v8 (Bills, Flows, Focus, Weather, Plugins, Personas, Spaces, Macros, RSS, Scratchpad, etc.). Quelques écarts mineurs subsistent (tests authentifiés, refresh direct sur hébergement statique).
-- **Validation technique** : build (75 pages), lint, tests unitaires (38 tests), `audit-security` (607 fichiers) et `precommit-upload-check` passent. E2E et Worker deploy non exécutés.
+- **Dernières corrections** : retrait du fallback legacy (`public/legacy` supprimé), propagation des erreurs live data, signout Worker notifié, marketplace complet (35 intégrations v8 couvertes dans `lib/plugins.ts`, 40 routes de plugin générées, dont `bills` et `steam-achievements`), rate-limiter client v8 porté dans `lib/rate-limiter.ts` et `lib/auth.ts`, OTP Worker (`/api/auth/otp/send` et `/api/auth/otp/verify`), profil public Supabase (`/api/supabase/public-profile`) avec aperçu profil, succès Steam via `/api/steam/achievements`, endpoints mail contacts/extract/notifications, validateurs de formulaires avancés v8 portés dans `lib/form-validation.ts`, command search/history enrichi, composants `DenseContent` et `DepthEffect` portés, like Spotify synchronisé, recherche mail via `/api/mail/search`, parité RichTextEditor renforcie, logo ETHONE sur le dashboard home, badge "OS" retiré de l'écran de chargement, sélecteur de langue dans la topbar.
+- **Différences principales** : Next.js ajoute de nombreuses fonctionnalités absentes de v8 (Bills, Flows, Focus, Weather, Plugins, Personas, Spaces, Macros, RSS, Scratchpad, etc.). Quelques écarts mineurs subsistent (tests authentifiés nécessitant `TEST_EMAIL/TEST_PASSWORD`).
+- **Validation technique** : build (77 pages), lint, tests unitaires (45 tests), `audit-security` (416 fichiers) et `precommit-upload-check` passent. E2E direct refresh (`/plugins/spotify/`, `/drop/?slug=...`, `/share/?slug=...`) passent. Tests E2E authentifiés en attente de credentials.
 
 ---
 
@@ -303,7 +303,7 @@ Ces éléments nécessitent encore une validation manuelle ou approfondie :
 9. **Live cards** — dos personnalisés enrichis pour Spotify/nowplaying, Discord/lanyard, Météo, Minecraft et Bills.
 10. **Hydratation React #418 sur `/activity/`** — résolu en sécurisant l'affichage des dates et en rendant le contenu client-only dans `LiveWidgets`.
 11. **Translations** — clés i18n ajoutées pour l'enregistrement, la recherche, le filtrage, le profil et la navigation Spotlight (fr/en/es/de).
-12. **Fallback legacy** — copie du runtime v8 complet (`public/legacy/v8/`) et des icônes (`public/legacy/icons/`) pour résoudre les 404 de `index-v8.html`.
+12. **Fallback legacy** — le dossier `public/legacy/` a été retiré ; l'application Next gère les 404 via `app/not-found.tsx`.
 13. **Erreurs live data** — `fetchOptional` propage les erreurs ; `useLiveData` expose `error` et loggue les échecs par source au lieu d'afficher des états vides.
 14. **Déconnexion Worker** — `AuthProvider.signOut` et `lib/auth.ts:signOut` appellent `/api/signout` avant la déconnexion Supabase locale.
 15. **Marketplace Plugins** — `lib/plugins.ts` couvre désormais les 35 intégrations du catalogue v8, en conservant les plugins dérivés existants (Valorant, LoL, Apex) et en corrigeant `recordSource` pour `google-calendar` et `google-drive`.
@@ -330,7 +330,7 @@ Ces fichiers / dossiers semblent encore présents mais non utilisés par Next.js
 
 1. **Spotify seek** — le Worker ne supporte pas le seek (`controlSpotifyPlayback` ne gère que play/pause/next/previous).
 2. **Supabase schema divergent** — si v8 utilisait encore `ethone_files`, `ethone_file_collaborators` ou `ethone_mail_aliases`, vérifier leur usage et mapping dans le Worker.
-3. **Assets legacy** — duplications entre `public/legacy/` et `.worktree/main/v8/` ; le fallback `public/legacy/index-v8.html` est maintenant fonctionnel (v8 + icônes copiés). Audit d'imports conseillé.
+3. **Assets legacy** — `public/legacy/` a été supprimé. Le worktree `.worktree/main/v8/` reste la référence legacy et n'est plus dupliqué dans `public/`.
 4. **Tests E2E authentifiés** — `auth-audit.spec.ts` nécessite `TEST_EMAIL/TEST_PASSWORD` ; ils ne sont pas exécutables sans ces credentials.
 
 ---
@@ -338,14 +338,16 @@ Ces fichiers / dossiers semblent encore présents mais non utilisés par Next.js
 ## Validation technique actuelle
 
 ```text
-npm run build                        ✅ 56 routes statiques
+npm run build                        ✅ 77 routes statiques / 40 routes plugin
 npm run lint                         ✅
-npm run test:unit                    ✅ 38 tests
-security audit                       ✅ 601 fichiers
+npm run test:unit                    ✅ 45 tests
+security audit                       ✅ 416 fichiers
 upload check                         ✅ 0 unsafe
+direct refresh E2E                   ✅ 9 tests (/plugins/spotify/, /drop/?slug=..., /share/?slug=...)
 a11y E2E                             ⚠️  non relancé (conserve le dernier PASS à 306)
 routes + responsive E2E              ⚠️  non relancé (conserve le dernier PASS à 522)
-full E2E (hors auth-audit manquant)  ⚠️  non relancé (conserve le dernier PASS à 828)
+auth-audit E2E                       ⚠️  en attente de TEST_EMAIL/TEST_PASSWORD
+full E2E                             ⚠️  non relancé
 ```
 
 ---

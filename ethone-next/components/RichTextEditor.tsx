@@ -4,50 +4,103 @@ import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/lib/icons";
 
 const ALLOWED_TAGS = new Set(["P", "BR", "STRONG", "B", "EM", "I", "U", "UL", "OL", "LI", "H2", "H3", "BLOCKQUOTE", "A", "PRE", "CODE"]);
+const STRIP_ENTIRELY = new Set(["SCRIPT", "STYLE", "IFRAME", "OBJECT", "EMBED", "SVG", "FORM", "INPUT", "BUTTON", "LINK", "META", "BASE", "IMG", "VIDEO", "AUDIO", "SOURCE", "NOSCRIPT"]);
 const ALLOWED_ATTRS: Record<string, Set<string>> = {
   A: new Set(["href", "target", "rel"]),
+  CODE: new Set(["class"]),
 };
 
-function sanitizeHtml(html: string): string {
-  if (!html) return "";
-  const doc = new DOMParser().parseFromString(`<div>${html}</div>`, "text/html");
-  const root = doc.body.firstElementChild as HTMLElement | null;
-  if (!root) return "";
-
-  function walk(node: Node) {
-    const children = Array.from(node.childNodes);
-    children.forEach((child) => {
-      if (child.nodeType === Node.TEXT_NODE) return;
-      if (child.nodeType === Node.ELEMENT_NODE) {
-        const el = child as Element;
-        const tag = el.tagName.toUpperCase();
-        if (!ALLOWED_TAGS.has(tag)) {
-          const span = document.createElement("span");
-          span.textContent = el.textContent || "";
-          el.replaceWith(span);
-          walk(span);
-          return;
-        }
-        Array.from(el.attributes).forEach((attr) => {
-          const allowed = ALLOWED_ATTRS[tag];
-          if (!allowed?.has(attr.name)) el.removeAttribute(attr.name);
-        });
-        if (tag === "A") {
-          const href = el.getAttribute("href") || "";
-          if (!/^https?:\/\//.test(href) && !/^mailto:/.test(href)) {
-            el.removeAttribute("href");
-          } else {
-            el.setAttribute("target", "_blank");
-            el.setAttribute("rel", "noopener noreferrer");
-          }
-        }
-      }
-      walk(child);
-    });
+function safeHref(value: string): string {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  try {
+    const url = new URL(raw, "https://ethone.invalid/");
+    if (!["http:", "https:", "mailto:"].includes(url.protocol)) return "";
+    return raw;
+  } catch {
+    return "";
   }
+}
 
-  walk(root);
-  return root.innerHTML;
+function looksLikeHtml(value: string): boolean {
+  return /<\/?[a-z][\s\S]*/i.test(String(value || ""));
+}
+
+function plainTextToHtml(text: string): string {
+  const container = document.createElement("div");
+  const paragraphs = String(text || "").split(/\n{2,}/);
+  paragraphs.forEach((paragraph) => {
+    const p = document.createElement("p");
+    const lines = paragraph.split("\n");
+    lines.forEach((line, index) => {
+      if (index > 0) p.append(document.createElement("br"));
+      p.append(document.createTextNode(line));
+    });
+    container.append(p);
+  });
+  return container.innerHTML;
+}
+
+function toEditableHtml(content: string): string {
+  const raw = String(content || "");
+  if (!raw) return "";
+  return sanitizeRichText(looksLikeHtml(raw) ? raw : plainTextToHtml(raw));
+}
+
+export function stripHtml(html: string): string {
+  const doc = new DOMParser().parseFromString(String(html || ""), "text/html");
+  return (doc.body.textContent || "").replace(/\s+/g, " ").trim();
+}
+
+export function sanitizeRichText(html: string): string {
+  const doc = new DOMParser().parseFromString(String(html || ""), "text/html");
+  sanitizeChildren(doc.body);
+  return doc.body.innerHTML;
+}
+
+function sanitizeChildren(node: Node) {
+  Array.from(node.childNodes).forEach((child) => {
+    if (child.nodeType === Node.COMMENT_NODE) {
+      child.remove();
+      return;
+    }
+    if (child.nodeType === Node.TEXT_NODE) return;
+    if (child.nodeType !== Node.ELEMENT_NODE) {
+      child.remove();
+      return;
+    }
+    const el = child as Element;
+    const tag = el.tagName.toUpperCase();
+    if (STRIP_ENTIRELY.has(tag)) {
+      el.remove();
+      return;
+    }
+    if (!ALLOWED_TAGS.has(tag)) {
+      sanitizeChildren(el);
+      while (el.firstChild) node.insertBefore(el.firstChild, el);
+      el.remove();
+      return;
+    }
+    const allowed = ALLOWED_ATTRS[tag];
+    Array.from(el.attributes).forEach((attr) => {
+      if (!allowed?.has(attr.name)) el.removeAttribute(attr.name);
+    });
+    if (tag === "A") {
+      const safe = safeHref(el.getAttribute("href") || "");
+      if (safe) {
+        el.setAttribute("href", safe);
+        el.setAttribute("target", "_blank");
+        el.setAttribute("rel", "noopener noreferrer");
+      } else {
+        el.removeAttribute("href");
+      }
+    }
+    sanitizeChildren(el);
+  });
+}
+
+function sanitizeHtml(html: string): string {
+  return toEditableHtml(html);
 }
 
 const INLINE_TOOLS = [

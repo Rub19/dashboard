@@ -158,8 +158,16 @@ export default function LiveWidgets({
   }, []);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<"all" | (typeof CATEGORY_ORDER)[number]>("all");
-  const [saved, setSaved] = useState(nowPlaying?.isSaved ?? false);
-  useEffect(() => { setSaved(nowPlaying?.isSaved ?? false); }, [nowPlaying?.id, nowPlaying?.isSaved]);
+  const [saved, setSaved] = useState(false);
+  useEffect(() => {
+    if (!nowPlaying?.id || !settings.liveSpotifyClientId) {
+      setSaved(nowPlaying?.isSaved ?? false);
+      return;
+    }
+    fetchWorker(`/api/spotify/track-saved?clientId=${encodeURIComponent(settings.liveSpotifyClientId)}&trackId=${encodeURIComponent(nowPlaying.id)}`)
+      .then((res) => setSaved(Boolean(res?.data?.saved)))
+      .catch(() => setSaved(nowPlaying?.isSaved ?? false));
+  }, [nowPlaying?.id, nowPlaying?.isSaved, settings.liveSpotifyClientId]);
 
   const today = useMemo(() => {
     const d = mounted ? new Date() : new Date(0);

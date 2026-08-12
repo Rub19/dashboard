@@ -1,0 +1,66 @@
+import { attachFlipBehavior, element, icon } from "./dom.mjs";
+import { liveFreshnessNode, livePulseDot } from "./live-freshness.mjs";
+
+function formatOverviewStats(presence, limit = 4) {
+  const stats = presence.overview?.stats;
+  if (!Array.isArray(stats) || stats.length === 0) return [];
+  return stats.slice(0, limit).filter(s => s.displayValue != null && s.displayValue !== "");
+}
+
+function avatar(presence) {
+  const inner = presence.avatarUrl
+    ? element("span", { className: "v8-tracker-avatar__image" }, [element("img", {
+      attributes: { src: presence.avatarUrl, alt: "", loading: "lazy", decoding: "async", referrerpolicy: "no-referrer" }
+    })])
+    : element("span", { className: "v8-tracker-avatar__image is-fallback" }, [icon("chart-no-axes-combined")]);
+  return element("span", { className: "v8-tracker-avatar" }, [inner, livePulseDot()]);
+}
+
+export function trackerLiveCard(presence = {}, options = {}) {
+  if (presence.available !== true) return null;
+  const variant = ["home", "activity"].includes(options.variant) ? options.variant : "home";
+  const onClick = typeof options.onClick === "function" ? options.onClick : null;
+
+  const quickStats = formatOverviewStats(presence, 2);
+  const allStats = formatOverviewStats(presence, 4);
+  const statSummary = quickStats.map(s => `${s.displayName}: ${s.displayValue}`).join("  ·  ");
+  const handleLine = presence.handle ? `Apex Legends · ${presence.handle}` : "Apex Legends";
+
+  const front = element("div", { className: `v8-tracker-live v8-tracker-live--${variant} v8-surface v8-live-card-front` }, [
+    avatar(presence),
+    element("div", { className: "v8-tracker-live__body" }, [
+      element("div", { className: "v8-tracker-live__meta" }, [icon("chart-no-axes-combined"), element("small", { text: "Apex Legends" })]),
+      element("strong", { text: presence.handle || "Profil Tracker", attributes: { translate: "no" } }),
+      element("p", { text: handleLine, attributes: { translate: "no" } }),
+      statSummary ? element("p", { text: statSummary, attributes: { translate: "no" } }) : null,
+      liveFreshnessNode(presence.updatedAt)
+    ])
+  ]);
+
+  const back = element("div", { className: "v8-live-card-back v8-tracker-live-back" }, [
+    element("header", { className: "v8-flip-back-header" }, [icon("chart-no-axes-combined"), element("strong", { text: "Apex Legends", attributes: { translate: "no" } })]),
+    element("div", { className: "v8-flip-back-body" }, [
+      element("p", { text: presence.handle || "Profil Tracker", attributes: { translate: "no" } }),
+      element("p", { text: `Identifiant : ${presence.handle || "—"}`, attributes: { translate: "no" } }),
+      ...allStats.map(s => element("p", { text: `${s.displayName} : ${s.displayValue}`, attributes: { translate: "no" } }))
+    ]),
+    element("footer", { className: "v8-flip-back-footer" }, [element("small", { text: "Tracker.gg" })])
+  ]);
+
+  const card = element(options.tagName || "article", {
+    className: `v8-tracker-live v8-tracker-live--${variant}`,
+    attributes: { "aria-label": "Statistiques Apex Legends" },
+    dataset: { liveWidget: "game", liveKind: "apex" }
+  }, [element("div", { className: "v8-live-card-inner" }, [front, back])]);
+
+  if (onClick) {
+    card.addEventListener("click", (event) => {
+      if (event.target.closest('button, a, input, select, textarea, [contenteditable="true"]')) return;
+      onClick(event);
+    });
+  } else {
+    attachFlipBehavior(card);
+  }
+
+  return card;
+}

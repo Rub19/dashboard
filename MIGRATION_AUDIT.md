@@ -10,8 +10,9 @@ Branche : `migration-react-tailwind`
 L'inventaire comparatif a été réalisé sur l'ancien ETHONE v8 (`\.worktree\main\v8`) et le nouveau Next.js (`\ethone-next`).
 
 - **État global** : la grande majorité des pages, composants shell, connexions externes, paramètres et comportements sont migrés et fonctionnent.
-- **Différences principales** : Next.js ajoute de nombreuses fonctionnalités absentes de v8 (Bills, Flows, Focus, Weather, Plugins, Personas, Spaces, Macros, RSS, Scratchpad, etc.). Quelques écarts réels subsistent, notamment l'inscription et quelques enrichissements UI.
-- **Validation technique** : build, lint, tests unitaires, audit sécurité et upload-check passent.
+- **Dernières corrections** : fallback legacy auto-hébergé (`public/legacy/v8/`), propagation des erreurs live data, signout Worker notifié, marketplace étendu (Calendar, Drive, Bluesky, RSS, Minecraft, Apex), like Spotify synchronisé, recherche mail via `/api/mail/search`, parité RichTextEditor renforcie.
+- **Différences principales** : Next.js ajoute de nombreuses fonctionnalités absentes de v8 (Bills, Flows, Focus, Weather, Plugins, Personas, Spaces, Macros, RSS, Scratchpad, etc.). Quelques écarts mineurs subsistent (tests authentifiés, refresh direct sur hébergement statique).
+- **Validation technique** : build (56 pages), lint, tests unitaires (38 tests), audit sécurité (601 fichiers) et upload-check passent.
 
 ---
 
@@ -269,6 +270,8 @@ Ces éléments nécessitent encore une validation manuelle ou approfondie :
 
 *Aucune régression critique signalée. Les dos de Live cards principaux (Spotify, Discord, Météo, Minecraft, Bills) sont maintenant enrichis.*
 
+*Les bugs suivants, identifiés dans le dernier audit, ont été corrigés dans ce batch : fallback legacy 404, `useLiveData` silencieux, signout partiel, marketplace incomplet, like Spotify non synchronisé, recherche mail via inbox, RichTextEditor partiel. Voir la section 🔧 CORRECTIONS EFFECTUÉES DANS CE BATCH ci-dessus.*
+
 ---
 
 ## 🔧 CORRECTIONS EFFECTUÉES DANS CE BATCH
@@ -284,6 +287,13 @@ Ces éléments nécessitent encore une validation manuelle ou approfondie :
 9. **Live cards** — dos personnalisés enrichis pour Spotify/nowplaying, Discord/lanyard, Météo, Minecraft et Bills.
 10. **Hydratation React #418 sur `/activity/`** — résolu en sécurisant l'affichage des dates et en rendant le contenu client-only dans `LiveWidgets`.
 11. **Translations** — clés i18n ajoutées pour l'enregistrement, la recherche, le filtrage, le profil et la navigation Spotlight (fr/en/es/de).
+12. **Fallback legacy** — copie du runtime v8 complet (`public/legacy/v8/`) et des icônes (`public/legacy/icons/`) pour résoudre les 404 de `index-v8.html`.
+13. **Erreurs live data** — `fetchOptional` propage les erreurs ; `useLiveData` expose `error` et loggue les échecs par source au lieu d'afficher des états vides.
+14. **Déconnexion Worker** — `AuthProvider.signOut` et `lib/auth.ts:signOut` appellent `/api/signout` avant la déconnexion Supabase locale.
+15. **Marketplace Plugins** — ajout de `google-calendar`, `google-drive`, `bluesky`, `rss`, `minecraft` et `apex` ; suppression du plugin `google` générique.
+16. **Like Spotify synchronisé** — `LiveWidgets` interroge `/api/spotify/track-saved` pour refléter l'état réel de la bibliothèque utilisateur.
+17. **Recherche mail dédiée** — `useMail` utilise `/api/mail/search` quand un terme est saisi, `/api/mail/inbox` pour l'affichage dossier/étiquette.
+18. **RichTextEditor** — parité renforcée avec v8 via `toEditableHtml`, `plainTextToHtml`, `stripHtml`, `safeHref`, suppression des balises interdites/commentaires et conservation de la classe `code`.
 
 ---
 
@@ -304,7 +314,7 @@ Ces fichiers / dossiers semblent encore présents mais non utilisés par Next.js
 
 1. **Spotify seek** — le Worker ne supporte pas le seek (`controlSpotifyPlayback` ne gère que play/pause/next/previous).
 2. **Supabase schema divergent** — si v8 utilisait encore `ethone_files`, `ethone_file_collaborators` ou `ethone_mail_aliases`, vérifier leur usage et mapping dans le Worker.
-3. **Assets legacy** — duplications possibles entre `public/` et `.worktree/main/public/`. Audit d'imports conseillé.
+3. **Assets legacy** — duplications entre `public/legacy/` et `.worktree/main/v8/` ; le fallback `public/legacy/index-v8.html` est maintenant fonctionnel (v8 + icônes copiés). Audit d'imports conseillé.
 4. **Tests E2E authentifiés** — `auth-audit.spec.ts` nécessite `TEST_EMAIL/TEST_PASSWORD` ; ils ne sont pas exécutables sans ces credentials.
 
 ---
@@ -312,14 +322,14 @@ Ces fichiers / dossiers semblent encore présents mais non utilisés par Next.js
 ## Validation technique actuelle
 
 ```text
-npm run build                        ✅ 51 routes statiques
+npm run build                        ✅ 56 routes statiques
 npm run lint                         ✅
 npm run test:unit                    ✅ 38 tests
-security audit                       ✅ 411 fichiers
+security audit                       ✅ 601 fichiers
 upload check                         ✅ 0 unsafe
-a11y E2E                             ✅ 306 passed
-routes + responsive E2E              ✅ 522 passed
-full E2E (hors auth-audit manquant)  ✅ 828 passed
+a11y E2E                             ⚠️  non relancé (conserve le dernier PASS à 306)
+routes + responsive E2E              ⚠️  non relancé (conserve le dernier PASS à 522)
+full E2E (hors auth-audit manquant)  ⚠️  non relancé (conserve le dernier PASS à 828)
 ```
 
 ---

@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { supabase } from "@/lib/supabase";
+import { fetchWorker } from "@/lib/api";
 import { Session, User } from "@supabase/supabase-js";
 
 type AuthContextValue = {
@@ -83,6 +84,11 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function signOut() {
+    try {
+      await fetchWorker("/api/signout", { method: "POST" });
+    } catch {
+      // On continue la déconnexion locale même si le Worker est injoignable.
+    }
     await supabase.auth.signOut();
     setSession(null);
     setUser(null);

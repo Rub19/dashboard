@@ -69,12 +69,8 @@ function asNum(value: unknown): number | undefined {
 }
 
 async function fetchOptional(path: string): Promise<ApiData | null> {
-  try {
-    const res = await fetchWorker(path);
-    return (res?.data as ApiData | undefined) ?? null;
-  } catch {
-    return null;
-  }
+  const res = await fetchWorker(path);
+  return (res?.data as ApiData | undefined) ?? null;
 }
 
 function getArtworkUrl(np: ApiData | null): string | undefined {
@@ -269,6 +265,7 @@ export function useLiveData(pollMs = 60000) {
     setLoading(true);
 
     async function load() {
+      if (!cancelled) setError(null);
       try {
         const [
           np,
@@ -324,6 +321,15 @@ export function useLiveData(pollMs = 60000) {
           apexMatchesPath ? fetchOptional(apexMatchesPath) : Promise.resolve(null),
         ]);
         if (cancelled) return;
+        const failures = [np, la, we, gh, td, yt, rd, lf, lfArt, lfTrk, tw, mc, st, stRecent, stOwned, rs, bs, bl, va, lo, ca, dr, no, ap, am].filter(
+          (r): r is PromiseRejectedResult => r.status === "rejected"
+        );
+        if (failures.length) {
+          setError(failures[0].reason instanceof Error ? failures[0].reason : new Error(String(failures[0].reason)));
+          for (const failure of failures) {
+            console.error("Live data source failed:", failure.reason);
+          }
+        }
         if (np.status === "fulfilled") {
           const d = np.value || {};
           const track = (d.track as ApiData) || d;

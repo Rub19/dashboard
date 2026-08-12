@@ -164,27 +164,33 @@ export function useMail() {
   const [pushSubscriptions, setPushSubscriptions] = useState<MailPushSubscription[]>([]);
   const [lists, setLists] = useState<MailList[]>([]);
 
-  const params = useMemo(() => {
-    const p = new URLSearchParams();
-    p.set("folder", folder);
-    if (label) p.set("label", label);
-    if (search.trim()) p.set("search", search.trim());
-    return p.toString();
-  }, [folder, label, search]);
-
   const fetchMessages = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetchWorker(`/api/mail/inbox?${params}`);
+      const p = new URLSearchParams();
+      p.set("folder", folder);
+      if (label) p.set("label", label);
+
+      const searchTerm = search.trim();
+      let res;
+      if (searchTerm) {
+        p.set("q", searchTerm);
+        res = await fetchWorker(`/api/mail/search?${p.toString()}`);
+      } else {
+        res = await fetchWorker(`/api/mail/inbox?${p.toString()}`);
+      }
+
       setMessages(Array.isArray(res?.data) ? res.data : []);
-      setUnread(res?.meta?.unread ?? 0);
+      if (typeof res?.meta?.unread === "number") {
+        setUnread(res.meta.unread);
+      }
     } catch (err) {
       setError(err instanceof Error ? err : new Error(String(err)));
     } finally {
       setLoading(false);
     }
-  }, [params]);
+  }, [folder, label, search]);
 
   useEffect(() => {
     fetchMessages();

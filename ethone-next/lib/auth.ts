@@ -94,6 +94,11 @@ export async function signInWithPasskey(email?: string) {
 }
 
 export async function signOut() {
+  try {
+    await fetchWorker("/api/signout", { method: "POST" });
+  } catch {
+    // Déconnexion locale quand même si le Worker est injoignable.
+  }
   await supabase.auth.signOut();
 }
 

@@ -4,6 +4,20 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration React + Tailwind : corrections des régressions et parité legacy v8 (fallback legacy, live data errors, signout Worker, marketplace, Spotify like sync, recherche mail, RichTextEditor)**
+
+### Corrige
+- `public/legacy/index-v8.html` + `sw-v8.js` : copie du runtime v8 complet dans `public/legacy/v8/` et des icônes dans `public/legacy/icons/` afin que le fallback legacy fonctionne sans 404.
+- `lib/hooks/useLiveData.ts` : `fetchOptional` propage désormais les erreurs ; `Promise.allSettled` collecte les échecs par source et expose `error` au lieu de masquer les problèmes derrière des états vides.
+- `components/AuthProvider.tsx` + `lib/auth.ts` : `signOut` appelle `/api/signout` sur le Worker avant de supprimer la session Supabase côté client.
+- `lib/plugins.ts` + `app/plugins/[id]/page.tsx` : marketplace complété avec `google-calendar`, `google-drive`, `bluesky`, `rss`, `minecraft` et `apex` (Tracker), suppression du plugin `google` générique.
+- `components/LiveWidgets.tsx` : synchronisation de l'état "like" Spotify via l'endpoint `/api/spotify/track-saved` pour refléter l'état réel de la bibliothèque.
+- `lib/hooks/useMail.ts` : la recherche mail utilise `/api/mail/search?q=...` quand un terme est saisi, tandis que l'affichage d'un dossier conserve `/api/mail/inbox`.
+- `components/RichTextEditor.tsx` : parité améliorée avec v8 (`toEditableHtml`, `plainTextToHtml`, `stripHtml`, `safeHref`, suppression des balises interdites et des commentaires, conservation de la classe `code`).
+- `ethone-next/eslint.config.mjs` : `public/legacy/**` ignoré par le lint pour éviter le bruit des fichiers v8 copiés.
+
+## [Unreleased]
+
 **Migration React + Tailwind : parité v8 (Register, Share QR, Brain summary, Spotlight, ProfileDropdown, Live cards, a11y, responsive, hydration)**
 
 ### Ajoute

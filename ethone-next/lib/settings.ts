@@ -68,6 +68,16 @@ export type Settings = {
   fontSize: number;
   fontFamily: "sans" | "outfit" | "mono" | "serif" | "inter" | "jetbrains" | "editorial";
   density: number;
+  densityCustom: {
+    fontScale: number;
+    lineHeight: number;
+    cardPadding: number;
+    sectionGap: number;
+    controlHeight: number;
+    iconSize: number;
+    rowHeight: number;
+    toolbarHeight: number;
+  };
   radius: number;
   radiusStyle: RadiusStyle;
   aura: string;
@@ -86,7 +96,7 @@ export type Settings = {
   shadow: "none" | "sm" | "md" | "glow";
   backgroundEffect: "solid" | "gradient" | "mesh" | "aurora" | "nebula" | "noise";
   backgroundSpeed: number;
-  wallpaper: "none" | "aurora" | "nebula" | "mesh" | "noise";
+  wallpaper: "none" | "aurora" | "nebula" | "mesh" | "noise" | "grain" | "mineral";
   layoutPreset: "default" | "minimal" | "dock-only" | "sidebar-only";
   sidebarVisible: boolean;
   masterVolume: boolean;
@@ -161,6 +171,16 @@ export const DEFAULTS: Settings = {
   fontSize: 100,
   fontFamily: "sans",
   density: 50,
+  densityCustom: {
+    fontScale: 100,
+    lineHeight: 150,
+    cardPadding: 16,
+    sectionGap: 16,
+    controlHeight: 40,
+    iconSize: 20,
+    rowHeight: 48,
+    toolbarHeight: 52,
+  },
   radius: 50,
   radiusStyle: "rounded",
   aura: "classic",

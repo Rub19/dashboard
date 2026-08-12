@@ -5,6 +5,7 @@ import { useWorker } from "@/lib/hooks/useWorker";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
+import LiveWidgets from "@/components/LiveWidgets";
 
 type ActivityEvent = {
   id?: string;
@@ -172,6 +173,14 @@ export default function ActivityPage() {
 
   return (
     <div className="space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">{i18n("liveWidgets")}</h1>
+          <p className="text-sm text-[var(--muted)]">{i18n("liveCardsDescription")}</p>
+        </div>
+      </div>
+      <LiveWidgets showHeader={false} />
+
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">{i18n("activityTitle")}</h1>

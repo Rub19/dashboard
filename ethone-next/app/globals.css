@@ -157,6 +157,24 @@ body {
 [data-font="serif"] body { font-family: "Source Serif 4", ui-serif, Georgia, serif; }
 [data-font="editorial"] body { font-family: "Source Serif 4", ui-serif, Georgia, serif; }
 
+[data-aura="classic"] body { background: var(--background); }
+[data-aura="boreal"] body { background: radial-gradient(ellipse at top left, rgba(52,211,153,0.08), transparent 40%), var(--background); }
+[data-aura="cyberpunk"] body { background: radial-gradient(ellipse at top right, rgba(236,72,153,0.08), transparent 40%), var(--background); }
+[data-aura="eclipse"] body { background: radial-gradient(ellipse at bottom, rgba(99,102,241,0.08), transparent 50%), var(--background); }
+[data-aura="emerald"] body { background: radial-gradient(ellipse at top, rgba(16,185,129,0.08), transparent 40%), var(--background); }
+[data-aura="mineral"] body { background: radial-gradient(circle at 50% 0%, rgba(147,197,253,0.08), transparent 50%), var(--background); }
+
+[data-density="custom"] {
+  --density-font-scale: 1;
+  --density-line-height: 1.5;
+  --density-pad: 16px;
+  --density-gap: 16px;
+  --density-control-height: 40px;
+  --density-icon-size: 20px;
+  --density-row-height: 48px;
+  --density-toolbar-height: 52px;
+}
+
 [data-background="gradient"] body {
   background: radial-gradient(ellipse at top, var(--surface-raised) 0%, var(--background) 50%), var(--background);
 }

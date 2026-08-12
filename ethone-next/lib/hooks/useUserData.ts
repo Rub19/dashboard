@@ -17,7 +17,7 @@ export type UserDataRecord = {
   workspace_id?: string;
 };
 
-export function useUserData(kind: "space" | "flow" | "interaction" | "macro" | "persona" | "bill" | "plugin") {
+export function useUserData(kind: "space" | "flow" | "interaction" | "macro" | "persona" | "bill" | "plugin" | "flow_automation") {
   const [items, setItems] = useState<UserDataRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);

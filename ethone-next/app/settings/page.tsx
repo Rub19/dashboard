@@ -152,6 +152,17 @@ export default function SettingsPage() {
     { id: "nebula", label: i18n("wallpaperNebula") },
     { id: "mesh", label: i18n("wallpaperMesh") },
     { id: "noise", label: i18n("wallpaperNoise") },
+    { id: "grain", label: i18n("wallpaperGrain") },
+    { id: "mineral", label: i18n("wallpaperMineral") },
+  ] as const;
+
+  const AURAS = [
+    { id: "classic", label: i18n("auraClassic") },
+    { id: "boreal", label: i18n("auraBoreal") },
+    { id: "cyberpunk", label: i18n("auraCyberpunk") },
+    { id: "eclipse", label: i18n("auraEclipse") },
+    { id: "emerald", label: i18n("auraEmerald") },
+    { id: "mineral", label: i18n("auraMineral") },
   ] as const;
 
   const FONTS = [
@@ -336,6 +347,21 @@ export default function SettingsPage() {
               </button>
             ))}
           </div>
+          <p className="text-xs text-[var(--muted)]">{i18n("aura")}</p>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {AURAS.map((a) => (
+              <button
+                key={a.id}
+                type="button"
+                onClick={() => update({ aura: a.id })}
+                className={`rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
+                  settings.aura === a.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                }`}
+              >
+                {a.label}
+              </button>
+            ))}
+          </div>
         </div>
       ),
     },
@@ -385,6 +411,32 @@ export default function SettingsPage() {
               </button>
             ))}
           </div>
+          {settings.densityMode === "custom" && (
+            <div className="space-y-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3">
+              <p className="text-xs font-medium text-[var(--accent)]">{i18n("densityEngineAdvanced")}</p>
+              {[
+                { key: "fontScale", min: 75, max: 125 },
+                { key: "lineHeight", min: 100, max: 200 },
+                { key: "cardPadding", min: 8, max: 32 },
+                { key: "sectionGap", min: 8, max: 32 },
+                { key: "controlHeight", min: 32, max: 56 },
+                { key: "iconSize", min: 16, max: 28 },
+                { key: "rowHeight", min: 32, max: 72 },
+                { key: "toolbarHeight", min: 40, max: 72 },
+              ].map(({ key, min, max }) => (
+                <Range
+                  key={key}
+                  label={i18n(`density${key.charAt(0).toUpperCase() + key.slice(1)}`)}
+                  value={settings.densityCustom[key as keyof typeof settings.densityCustom]}
+                  onChange={(v) =>
+                    update({
+                      densityCustom: { ...settings.densityCustom, [key]: Math.max(min, Math.min(max, v)) },
+                    })
+                  }
+                />
+              ))}
+            </div>
+          )}
           <Range label={i18n("listDensity")} value={settings.density} onChange={(v) => update({ density: v })} />
           <Range label={i18n("cardRadius")} value={settings.radius} onChange={(v) => update({ radius: v })} />
           <p className="text-xs text-[var(--muted)]">Style de radius</p>

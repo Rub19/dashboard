@@ -8,6 +8,7 @@ import { useUserData, type UserDataRecord } from "@/lib/hooks/useUserData";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { useToast } from "@/components/ToastProvider";
 import Link from "next/link";
+import FlowAutomations from "@/components/FlowAutomations";
 
 const WIDGET_ICONS: Record<string, string> = {
   notes: "notebook-pen",
@@ -359,6 +360,8 @@ export default function SystemPage() {
           </Link>
         </Card3D>
       </div>
+
+      <FlowAutomations activeFlow={activeSpace} />
     </div>
   );
 }

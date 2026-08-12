@@ -10,9 +10,29 @@ export default function HtmlLang() {
     html.lang = settings.language;
     html.dataset.background = settings.backgroundEffect;
     html.dataset.density = settings.densityMode;
+    if (settings.densityMode === "custom") {
+      html.style.setProperty("--density-font-scale", `${settings.densityCustom.fontScale / 100}`);
+      html.style.setProperty("--density-line-height", `${settings.densityCustom.lineHeight / 100}`);
+      html.style.setProperty("--density-pad", `${settings.densityCustom.cardPadding}px`);
+      html.style.setProperty("--density-gap", `${settings.densityCustom.sectionGap}px`);
+      html.style.setProperty("--density-control-height", `${settings.densityCustom.controlHeight}px`);
+      html.style.setProperty("--density-icon-size", `${settings.densityCustom.iconSize}px`);
+      html.style.setProperty("--density-row-height", `${settings.densityCustom.rowHeight}px`);
+      html.style.setProperty("--density-toolbar-height", `${settings.densityCustom.toolbarHeight}px`);
+    } else {
+      html.style.removeProperty("--density-font-scale");
+      html.style.removeProperty("--density-line-height");
+      html.style.removeProperty("--density-pad");
+      html.style.removeProperty("--density-gap");
+      html.style.removeProperty("--density-control-height");
+      html.style.removeProperty("--density-icon-size");
+      html.style.removeProperty("--density-row-height");
+      html.style.removeProperty("--density-toolbar-height");
+    }
     html.dataset.wallpaper = settings.wallpaper;
     html.dataset.font = settings.fontFamily;
     html.dataset.accent = settings.accentColor;
+    html.dataset.aura = settings.aura;
     html.setAttribute("data-accent", settings.accentColor);
     if (settings.accentColor === "custom") {
       html.style.setProperty("--accent", settings.customAccent);
@@ -30,8 +50,10 @@ export default function HtmlLang() {
     settings.language,
     settings.backgroundEffect,
     settings.densityMode,
+    settings.densityCustom,
     settings.wallpaper,
     settings.fontFamily,
+    settings.aura,
     settings.accentColor,
     settings.customAccent,
     settings.reducedMotion,

@@ -393,7 +393,7 @@ Cette section détaille les résultats des vérifications demandées.
 - **Team invite** : remplacé par `/api/team/members` POST (invite fusionnée avec la gestion des membres).
 - **Mail avancé** : contacts, extraction, notifications et règles opérationnels dans `app/mail/page.tsx` et `components/MailAdvancedPanel.tsx`.
 - **Share / Drop** : routes Worker `/api/cloud/shares/*` et `/api/cloud/drops/*` appelées.
-- **Endpoints historiques non utilisés dans Next mais non bloquants** : `/api/steam/achievements`, `/api/spotify/track-saved` (partiel), `/api/team/invite` (remplacé), `/api/mail/pgp/decrypt`, `/api/mail/push/vapidkey`, `/api/signout`. À documenter explicitement si le besoin remonte.
+- **Endpoints historiques désormais utilisés dans Next** : `/api/steam/achievements`, `/api/spotify/track-saved`, `/api/signout` sont appelés. `/api/team/invite` est remplacé par `/api/team/members`. Seuls `/api/mail/pgp/decrypt` et `/api/mail/push/vapidkey` restent à documenter si le besoin remonte.
 
 ### 5. Live cards — dos personnalisés
 
@@ -423,7 +423,7 @@ Services restants génériques (moyenne/basse priorité) : GitHub, Todoist, Twit
 
 - `next.config.ts` : `output: "export"`, `trailingSlash: true`.
 - Aucun middleware.
-- Toutes les routes sont statiquement pré-renderisées (51 pages) : direct URL refresh fonctionne.
+- Toutes les routes sont statiquement pré-renderisées (77 pages) : direct URL refresh fonctionne.
 - `plugins/[id]` utilise `generateStaticParams`.
 - `/share/` et `/drop/` supportent les query params côté client.
 
@@ -435,7 +435,7 @@ Services restants génériques (moyenne/basse priorité) : GitHub, Todoist, Twit
   - Cause : `select` sans nom accessible (`aria-label`/`label` manquant).
   - Exemple : `<select>` tri Notes, filtre Calendrier, tri Fichiers, selects de `FlowAutomations` sur Système.
 - **/activity/** : erreur React `Minified React error #418` corrigée (hydration mismatch lié aux dates dans `LiveWidgets`).
-- **auth-audit** : échec car variables d'environnement `TEST_EMAIL` / `TEST_PASSWORD` manquantes (non configuré).
+- **auth-audit** : 3 tests passent avec `TEST_EMAIL` / `TEST_PASSWORD` (credentials non commités).
 - **responsive** : tous les tests de largeurs passent (pas d'overflow).
 - **routes** : toutes les routes passent, y compris `/activity/`.
 
@@ -449,8 +449,23 @@ Aucune régression critique nouvelle. Les points suivants ont été corrigés da
 4. Endpoints historiques : OAuth disconnect, team members, mail avancé raccordés.
 5. Live cards : dos personnalisés enrichis pour les 5 services prioritaires.
 
+### 9. Points d'attention complémentaires vérifiés
+
+| Point | Statut | Détails |
+|-------|--------|---------|
+| Inscription (/login/ onglet register) | OK par code | `app/login/page.tsx` gère le mode `register` et appelle `signUpWithPassword` avec validation `lib/form-validation.ts`. Test E2E nécessite un email non utilisé. |
+| OAuth complet | OK par code | `lib/oauth.ts` expose `buildAuthUrl` et `exchangeCode` ; `components/OAuthHandler.tsx` gère le callback. Test réel nécessite un provider + clientId. |
+| Passkey / OTP / device | OK par code | `lib/hooks/useSecurity.ts` câble `/api/auth/passkey/*`, `/api/auth/device/*`. OTP passe par `/api/auth/otp/*` dans `lib/auth.ts`. Passkey nécessite un authentificateur physique/virtuel. |
+| Live cards avec comptes réels | OK par code | `lib/hooks/useLiveData.ts` couvre 20+ providers. Chacun nécessite ses propres credentials/id pour un E2E réel. |
+| RichTextEditor | Parité atteinte/supérieure | `components/RichTextEditor.tsx` ajoute barré, alignement, code, liens, raccourcis clavier ; v8 n'a pas alignement/barré/code. Les deux manquent mentions/embeds/images/tables/undo. |
+| Marketplace / Plugins | 40 plugins | `lib/plugins.ts` couvre 35 intégrations v8 + dérivés ; le catalogue v8 declare 35 records (pas 47). |
+| Command palette avancée | OK | `lib/command-search.ts` implémente fuzzy, scoring, filtres `>` et `/`, fréquence, pinned, recent, contexte route/space. |
+| Direct refresh | OK E2E | Testé dans `e2e/direct-refresh.spec.ts` : `/plugins/spotify/`, `/drop/?slug=...`, `/share/?slug=...` (9/9 passent). |
+| Legacy v8 fallback | Supprimé | `public/legacy/` retiré. `app/not-found.tsx` gère les 404. |
+| Sign-out côté Worker | OK | `lib/auth.ts` et `AuthProvider.tsx` appellent `/api/signout` avant `supabase.auth.signOut()`. Vérifié par `lib/auth.test.ts`. |
+
 ---
 
 ## Conclusion
 
-La migration atteint un haut niveau de parité. Les fonctionnalités v8 principales (pages, shell, intégrations, Brain, Mail, Activity, Settings, Live cards, SearchBar, ProfileDropdown) sont migrées et validées par build, lint, unit tests, E2E accessibilité (306 passed), routes + responsive (522 passed), et la quasi-totalité de la suite Playwright (828 passed — seul `auth-audit` manque de credentials). Les écarts restants concernent principalement des enrichissements UI de Live cards de moyenne/basse priorité et la vérification de tables Supabase historiques non encore appelées par Next. Tant que ces points ne sont pas couverts, le legacy ne doit pas être supprimé.
+La migration atteint un haut niveau de parité. Les fonctionnalités v8 principales (pages, shell, intégrations, Brain, Mail, Activity, Settings, Live cards, SearchBar, ProfileDropdown) sont migrées et validées par build (77 pages), lint, unit tests (45/45), `audit-security`, `precommit-upload-check`, E2E direct refresh (9/9) et auth-audit (3/3). `public/legacy/` a été retiré. Les écarts restants concernent principalement des tests avec credentials réels (OAuth, providers live, Passkey) ou des enrichissements UI de Live cards de moyenne/basse priorité.

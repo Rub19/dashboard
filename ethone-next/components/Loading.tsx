@@ -18,10 +18,7 @@ export default function Loading({ message = "Initialisation" }: { message?: stri
         transition={{ duration: 0.4, ease: "easeOut" }}
       >
         <BrandMark size={72} />
-        <div className="flex items-center gap-2">
-          <span className="text-2xl font-semibold tracking-tight text-[var(--foreground)]">ETHONE</span>
-          <span className="rounded border border-[var(--border)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--muted)]">OS</span>
-        </div>
+        <span className="text-2xl font-semibold tracking-tight text-[var(--foreground)]">ETHONE</span>
       </motion.div>
 
       <motion.div

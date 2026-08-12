@@ -15,6 +15,8 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `lib/hooks/useMail.ts` : la recherche mail utilise `/api/mail/search?q=...` quand un terme est saisi, tandis que l'affichage d'un dossier conserve `/api/mail/inbox`.
 - `components/RichTextEditor.tsx` : parité améliorée avec v8 (`toEditableHtml`, `plainTextToHtml`, `stripHtml`, `safeHref`, suppression des balises interdites et des commentaires, conservation de la classe `code`).
 - `ethone-next/eslint.config.mjs` : `public/legacy/**` ignoré par le lint pour éviter le bruit des fichiers v8 copiés.
+- `app/page.tsx` : ajout du `BrandMark` et du nom `ETHONE` en haut du dashboard home.
+- `components/Loading.tsx` : retrait du badge "OS" sur l'écran de chargement pour correspondre au boot v8.
 
 ## [Unreleased]
 

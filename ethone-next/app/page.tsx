@@ -7,6 +7,7 @@ import LiveStats from "@/components/LiveStats";
 import BillsWidget from "@/components/BillsWidget";
 import DailyBriefing from "@/components/DailyBriefing";
 import BrainBriefingPanel from "@/components/BrainBriefingPanel";
+import BrandMark from "@/components/BrandMark";
 import { useHomeData } from "@/lib/hooks/useDashboard";
 import { useMail } from "@/lib/hooks/useMail";
 import { useItems } from "@/lib/hooks/useItems";
@@ -371,7 +372,13 @@ export default function Home() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">{i18n("home")}</h1>
+        <div className="flex items-center gap-3">
+          <BrandMark size={36} />
+          <div>
+            <h1 className="text-2xl font-bold leading-tight text-[var(--foreground)]">ETHONE</h1>
+            <p className="text-xs text-[var(--muted)]">{i18n("home")}</p>
+          </div>
+        </div>
         <button
           type="button"
           onClick={() => setCustomizing((v) => !v)}

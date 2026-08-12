@@ -10,7 +10,7 @@ Branche : `migration-react-tailwind`
 L'inventaire comparatif a été réalisé sur l'ancien ETHONE v8 (`\.worktree\main\v8`) et le nouveau Next.js (`\ethone-next`).
 
 - **État global** : la grande majorité des pages, composants shell, connexions externes, paramètres et comportements sont migrés et fonctionnent.
-- **Dernières corrections** : fallback legacy auto-hébergé (`public/legacy/v8/`), propagation des erreurs live data, signout Worker notifié, marketplace étendu (Calendar, Drive, Bluesky, RSS, Minecraft, Apex), like Spotify synchronisé, recherche mail via `/api/mail/search`, parité RichTextEditor renforcie.
+- **Dernières corrections** : fallback legacy auto-hébergé (`public/legacy/v8/`), propagation des erreurs live data, signout Worker notifié, marketplace étendu (Calendar, Drive, Bluesky, RSS, Minecraft, Apex), like Spotify synchronisé, recherche mail via `/api/mail/search`, parité RichTextEditor renforcie, logo ETHONE sur le dashboard home, badge "OS" retiré de l'écran de chargement.
 - **Différences principales** : Next.js ajoute de nombreuses fonctionnalités absentes de v8 (Bills, Flows, Focus, Weather, Plugins, Personas, Spaces, Macros, RSS, Scratchpad, etc.). Quelques écarts mineurs subsistent (tests authentifiés, refresh direct sur hébergement statique).
 - **Validation technique** : build (56 pages), lint, tests unitaires (38 tests), audit sécurité (601 fichiers) et upload-check passent.
 

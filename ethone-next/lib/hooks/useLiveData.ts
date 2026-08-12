@@ -326,18 +326,19 @@ export function useLiveData(pollMs = 60000) {
         if (cancelled) return;
         if (np.status === "fulfilled") {
           const d = np.value || {};
+          const track = (d.track as ApiData) || d;
           setNowPlaying({
-            id: asStr(d.id),
+            id: asStr(track.id ?? d.id),
             source: asStr(d.source) || "Spotify",
-            title: asStr(d.title),
-            artist: asStr(d.artist),
-            album: asStr(d.album),
-            cover: asStr(d.cover),
-            artworkUrl: asStr(d.artworkUrl),
-            progressMs: asNum(d.progressMs),
-            durationMs: asNum(d.durationMs),
-            isPlaying: Boolean(d.isPlaying ?? d.playing),
-            isSaved: d.isSaved === true,
+            title: asStr(track.title ?? d.title),
+            artist: asStr(track.artist ?? d.artist),
+            album: asStr(track.album ?? d.album),
+            cover: asStr(track.cover ?? track.artworkUrl ?? track.artwork ?? d.cover ?? d.artworkUrl ?? d.artwork),
+            artworkUrl: asStr(track.artworkUrl ?? track.artwork ?? track.cover ?? d.artworkUrl ?? d.artwork ?? d.cover),
+            progressMs: asNum(track.progressMs ?? d.progressMs),
+            durationMs: asNum(track.durationMs ?? d.durationMs),
+            isPlaying: Boolean(d.isPlaying ?? d.playing ?? track.isPlaying ?? track.playing),
+            isSaved: track.isSaved === true,
           });
         }
         if (la.status === "fulfilled") {
@@ -789,6 +790,7 @@ export function useLiveData(pollMs = 60000) {
     nowPlaying,
     lanyard,
     weather,
+    bills,
     records,
     loading,
     error,

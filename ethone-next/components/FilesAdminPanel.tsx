@@ -208,6 +208,7 @@ export default function FilesAdminPanel() {
             <select
               value={visibility}
               onChange={(e) => setVisibility(e.target.value as typeof visibility)}
+              aria-label={i18n("visibility")}
               className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none"
             >
               <option value="all">{i18n("allVisibility")}</option>

@@ -35,6 +35,14 @@ function addDays(d: Date, days: number) {
   return copy;
 }
 
+function formatLocalDate(d: Date, mounted: boolean) {
+  return mounted ? d.toLocaleDateString() : dateKey(d.toISOString());
+}
+
+function formatLocalTime(iso: string, mounted: boolean) {
+  return mounted ? new Date(iso).toLocaleTimeString() : "";
+}
+
 const PERIODS = [7, 30, 90, 365] as const;
 
 type Level = 0 | 1 | 2 | 3 | 4;
@@ -94,9 +102,13 @@ export default function ActivityPage() {
   const [query, setQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<ActivityCategory | "all">("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
-  const [now, setNow] = useState<number>(Date.now);
+  const [mounted, setMounted] = useState(false);
+  const [now, setNow] = useState<number | null>(null);
+  const [today, setToday] = useState<Date | null>(null);
 
   useEffect(() => {
+    setMounted(true);
+    setToday(new Date());
     setNow(Date.now());
     const id = setInterval(() => setNow(Date.now()), 60000);
     return () => clearInterval(id);
@@ -161,9 +173,9 @@ export default function ActivityPage() {
     return map;
   }, [heatmapEntries]);
 
-  const today = useMemo(() => new Date(), []);
-  const gridStart = useMemo(() => startOfWeek(addDays(today, -period + 1)), [today, period]);
-  const weeks = Math.ceil((today.getTime() - gridStart.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1;
+  const activeToday = useMemo(() => today ?? new Date(0), [today]);
+  const gridStart = useMemo(() => startOfWeek(addDays(activeToday, -period + 1)), [activeToday, period]);
+  const weeks = useMemo(() => Math.ceil((activeToday.getTime() - gridStart.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1, [activeToday, gridStart]);
 
   const grid = useMemo(() => {
     const rows: { date: Date; count: number; isToday: boolean }[][] = [];
@@ -173,19 +185,19 @@ export default function ActivityPage() {
         const d = addDays(gridStart, w * 7 + day);
         const key = dateKey(d.toISOString());
         const count = counts.get(key) || 0;
-        col.push({ date: d, count, isToday: isSameDay(d, today) });
+        col.push({ date: d, count, isToday: isSameDay(d, activeToday) });
       }
       rows.push(col);
     }
     return rows;
-  }, [counts, gridStart, weeks, today]);
+  }, [counts, gridStart, weeks, activeToday]);
 
   const stats = useMemo(() => {
-    const todayKey = dateKey(new Date().toISOString());
+    const todayKey = dateKey(activeToday.toISOString());
     const todayCount = counts.get(todayKey) || 0;
 
     let streak = 0;
-    const d = new Date();
+    const d = new Date(activeToday);
     while (streak < period) {
       const key = dateKey(d.toISOString());
       if ((counts.get(key) || 0) > 0) {
@@ -198,14 +210,14 @@ export default function ActivityPage() {
       }
     }
 
-    const weekStart = startOfWeek(new Date());
+    const weekStart = startOfWeek(new Date(activeToday));
     let weekActiveDays = 0;
     for (let i = 0; i < 7; i++) {
       const key = dateKey(addDays(weekStart, i).toISOString());
       if ((counts.get(key) || 0) > 0) weekActiveDays++;
     }
 
-    const periodStart = new Date();
+    const periodStart = new Date(activeToday);
     periodStart.setDate(periodStart.getDate() - period);
     let activeDays = 0;
     for (let i = 0; i < period; i++) {
@@ -216,7 +228,7 @@ export default function ActivityPage() {
     const weekPct = Math.round((weekActiveDays / 7) * 100);
 
     return { todayCount, streak, weekPct, consistency };
-  }, [counts, period]);
+  }, [counts, period, activeToday]);
 
   const grouped = useMemo(() => {
     const map = new Map<string, typeof filteredEntries>();
@@ -314,7 +326,7 @@ export default function ActivityPage() {
                 {col.map((cell, d) => (
                   <div
                     key={d}
-                    title={`${cell.date.toLocaleDateString()} · ${cell.count} ${i18n("events")}`}
+                    title={`${formatLocalDate(cell.date, mounted)} · ${cell.count} ${i18n("events")}`}
                     className={`h-4 w-4 rounded-full ${LEVELS[colorByCount(cell.count)]} ${
                       cell.isToday ? "ring-2 ring-[var(--accent)]" : ""
                     }`}
@@ -400,7 +412,7 @@ export default function ActivityPage() {
             {grouped.map(({ key, group }) => (
               <div key={key} className="space-y-2">
                 <h3 className="text-xs font-semibold text-[var(--muted)]">
-                  {new Date(key).toLocaleDateString()}
+                  {formatLocalDate(new Date(key), mounted)}
                 </h3>
                 {group.map((event, i) => (
                   <Card3D key={event.id || i}>
@@ -421,7 +433,7 @@ export default function ActivityPage() {
                           )}
                         </div>
                         <p className="truncate text-xs text-[var(--muted)]">
-                          {new Date(event.timestamp).toLocaleTimeString()} · {event.description}
+                          {formatLocalTime(event.timestamp, mounted)}{mounted ? " · " : ""}{event.description}
                         </p>
                       </div>
                     </div>

@@ -59,19 +59,19 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="w-full sm:max-w-3xl lg:max-w-4xl mx-auto space-y-6">
       <h1 className="text-2xl font-bold">{i18n("profileTitle")}</h1>
 
       <Card3D>
-        <div className="flex items-center gap-4">
-          <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--accent)] text-2xl font-bold text-white">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+          <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[var(--accent)] text-2xl font-bold text-white">
             {profile?.display_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "?"}
           </span>
-          <div>
-            <p className="text-lg font-semibold">{profile?.display_name || user?.email || i18n("guest")}</p>
-            <p className="text-sm text-[var(--muted)]">{user?.email}</p>
+          <div className="min-w-0">
+            <p className="break-words text-lg font-semibold">{profile?.display_name || user?.email || i18n("guest")}</p>
+            <p className="break-words text-sm text-[var(--muted)]">{user?.email}</p>
             {profile?.username && (
-              <p className="text-sm text-[var(--accent)]">@{profile.username}</p>
+              <p className="break-words text-sm text-[var(--accent)]">@{profile.username}</p>
             )}
           </div>
         </div>
@@ -81,8 +81,8 @@ export default function ProfilePage() {
         <Card3D>
           <div className="space-y-2">
             <label className="text-sm font-medium">{i18n("publicId")}</label>
-            <div className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm">
-              <code className="text-xs text-[var(--muted)]">{profile.public_id}</code>
+            <div className="flex min-w-0 items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm">
+              <code className="break-all text-xs text-[var(--muted)]">{profile.public_id}</code>
               <button
                 type="button"
                 onClick={() => {
@@ -95,7 +95,7 @@ export default function ProfilePage() {
                 <Icon name="copy" className="h-4 w-4" />
               </button>
             </div>
-            <p className="text-xs text-[var(--muted)]">{i18n("publicIdHint")}</p>
+            <p className="break-words text-xs text-[var(--muted)]">{i18n("publicIdHint")}</p>
           </div>
         </Card3D>
       )}
@@ -111,7 +111,7 @@ export default function ProfilePage() {
               aria-label={i18n("usernamePlaceholder")} placeholder={i18n("usernamePlaceholder")}
               className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
-            <p className="text-xs text-[var(--muted)]">{i18n("displayNameHint")}</p>
+            <p className="break-words text-xs text-[var(--muted)]">{i18n("displayNameHint")}</p>
           </div>
 
           <div className="space-y-1">

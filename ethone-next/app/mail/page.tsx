@@ -1169,7 +1169,7 @@ export default function MailPage() {
                   <input type="text" value={form.condition_body || ""} onChange={(e) => setForm({ ...form, condition_body: e.target.value })} placeholder={i18n("body")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
                   <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.condition_has_attachments === "true"} onChange={(e) => setForm({ ...form, condition_has_attachments: e.target.checked ? "true" : "false" })} /> {i18n("hasAttachments")}</label>
                   <p className="text-xs font-medium text-[var(--muted)]">{i18n("actions")}</p>
-                  <select value={form.action_move_to || ""} onChange={(e) => setForm({ ...form, action_move_to: e.target.value })} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm">
+                  <select value={form.action_move_to || ""} onChange={(e) => setForm({ ...form, action_move_to: e.target.value })} aria-label={i18n("moveTo")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm">
                     <option value="">{i18n("moveTo")}</option>
                     {FOLDERS.map((f) => <option key={f} value={f}>{i18n(f)}</option>)}
                   </select>

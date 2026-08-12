@@ -295,6 +295,7 @@ function NotificationsTab() {
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
+          aria-label={i18n("filter")}
           className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm"
         >
           <option value="all">{i18n("all")}</option>

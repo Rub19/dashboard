@@ -128,8 +128,8 @@ export default function NotesPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="w-full sm:max-w-5xl lg:max-w-7xl mx-auto space-y-6">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">{i18n("notesTitle")}</h1>
         <span className="text-sm text-[var(--muted)]">
           {stats.total} {i18n("notes")} · {stats.totalWords} {i18n("words")}
@@ -186,11 +186,12 @@ export default function NotesPage() {
           onChange={(e) => setQuery(e.target.value)}
           placeholder={i18n("search")}
           icon="search"
-          className="w-48"
+          className="w-full sm:w-48"
         />
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value as typeof sort)}
+          aria-label={i18n("sortBy")}
           className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none"
         >
           <option value="created">{i18n("sortByDate")}</option>
@@ -201,11 +202,11 @@ export default function NotesPage() {
 
       {error && (
         <Card3D>
-          <p className="text-sm text-red-400">{error.message}</p>
+          <p className="break-words text-sm text-red-400">{error.message}</p>
         </Card3D>
       )}
 
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {loading && items.length === 0 && (
           <Card3D>
             <Icon name="loader-2" className="h-5 w-5 animate-spin text-[var(--muted)]" />
@@ -214,9 +215,9 @@ export default function NotesPage() {
         {filtered.map((note) => (
           <ContextMenu key={note.id} items={noteContextItems(note)}>
             <Card3D>
-              <div className="flex items-start justify-between gap-3">
+              <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
-                  <div className="mb-1 flex items-center gap-2">
+                  <div className="mb-1 flex flex-wrap items-center gap-2">
                     <input
                       type="checkbox"
                       checked={isSelected(note.id)}
@@ -226,10 +227,10 @@ export default function NotesPage() {
                       onClick={(e) => e.stopPropagation()}
                     />
                     <Icon name="notebook-pen" className="h-4 w-4 text-[var(--accent)]" />
-                    <p className="font-medium">{note.title}</p>
+                    <p className="break-words font-medium">{note.title}</p>
                   </div>
                   <div
-                    className="rich-text-content text-sm text-[var(--muted)]"
+                    className="rich-text-content break-words text-sm text-[var(--muted)]"
                     dangerouslySetInnerHTML={{ __html: note.body }}
                   />
                   <div className="mt-2 flex gap-3 text-[10px] text-[var(--muted)]">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useLiveData, LASTFM_PERIODS, type LastfmPeriod, type LiveRecord } from "@/lib/hooks/useLiveData";
 import { fetchWorker } from "@/lib/api";
@@ -24,6 +24,20 @@ const STATUS_DOT = {
   empty: "bg-zinc-500",
   error: "bg-red-500",
 };
+
+function formatLocalDate(value: string | number | Date, mounted: boolean) {
+  if (!mounted) return "";
+  const d = typeof value === "object" ? value : new Date(value);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleDateString();
+}
+
+function formatLocalShortDate(value: string | number | Date, mounted: boolean) {
+  if (!mounted) return "";
+  const d = typeof value === "object" ? value : new Date(value);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleDateString(undefined, { weekday: "short" });
+}
 
 const CATEGORIES: Record<string, "gaming" | "social" | "productivity"> = {
   nowplaying: "social",
@@ -85,6 +99,18 @@ function formatMinutes(minutes = 0) {
   return `${Math.floor(minutes / 60)} h ${minutes % 60} min`;
 }
 
+function toStr(value: unknown): string | undefined {
+  if (typeof value === "string") return value;
+  if (typeof value === "number") return String(value);
+  return undefined;
+}
+
+function toNum(value: unknown): number | undefined {
+  if (typeof value === "number") return value;
+  if (typeof value === "string" && /^-?\d+(\.\d+)?$/.test(value)) return Number(value);
+  return undefined;
+}
+
 function periodLabel(period: LastfmPeriod) {
   const labels: Record<LastfmPeriod, string> = {
     "7day": "7 jours",
@@ -107,6 +133,9 @@ export default function LiveWidgets({
   const {
     records,
     nowPlaying,
+    lanyard,
+    weather,
+    bills,
     loading,
     lastfmPeriod,
     setLastfmPeriod,
@@ -121,11 +150,56 @@ export default function LiveWidgets({
   const { settings, update } = useSettings();
   const { error: showError } = useToast();
   const i18n = useI18n();
+  const [mounted, setMounted] = useState(false);
   const [flipped, setFlipped] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<"all" | (typeof CATEGORY_ORDER)[number]>("all");
   const [saved, setSaved] = useState(nowPlaying?.isSaved ?? false);
   useEffect(() => { setSaved(nowPlaying?.isSaved ?? false); }, [nowPlaying?.id, nowPlaying?.isSaved]);
+
+  const today = useMemo(() => {
+    const d = mounted ? new Date() : new Date(0);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, [mounted]);
+
+  const billsSummary = useMemo(() => {
+    const fmt = (d: Date) =>
+      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    const todayIso = fmt(today);
+    const in30 = new Date(today);
+    in30.setDate(in30.getDate() + 30);
+    const in30Iso = fmt(in30);
+    const thisMonth = todayIso.slice(0, 7);
+    const all = bills || [];
+    const upcoming = all
+      .filter((b) => b.paid !== true)
+      .filter((b) => {
+        const due = toStr(b.dueAt) || toStr(b.due) || toStr(b.date);
+        return due ? due >= todayIso && due <= in30Iso : false;
+      })
+      .sort((a, b) => {
+        const aDue = toStr(a.dueAt) || toStr(a.due) || toStr(a.date) || "";
+        const bDue = toStr(b.dueAt) || toStr(b.due) || toStr(b.date) || "";
+        return aDue.localeCompare(bDue);
+      })
+      .slice(0, 5);
+    const totalThisMonth = all
+      .filter((b) => b.paid !== true)
+      .reduce((sum, b) => {
+        const due = toStr(b.dueAt) || toStr(b.due) || toStr(b.date);
+        if (due && due.slice(0, 7) === thisMonth) return sum + (toNum(b.amount) || 0);
+        return sum;
+      }, 0);
+    const currency = upcoming[0]
+      ? (toStr(upcoming[0].currency) || toStr(all[0]?.currency) || "")
+      : (toStr(all[0]?.currency) || "");
+    return { upcoming, totalThisMonth, currency, thisMonth };
+  }, [bills, today]);
 
   const hidden = new Set(settings.homeHiddenLiveCards || []);
   const layout = settings.activityLiveLayout || [];
@@ -345,13 +419,223 @@ export default function LiveWidgets({
     );
   }
 
-  function renderMinecraftBack() {
-    const profile = (minecraft as Record<string, unknown>) || {};
-    const names = minecraftNameHistory || [];
+  function renderNowPlayingBack(record: LiveRecord) {
+    const track = nowPlaying;
+    if (!track || !track.isPlaying) {
+      return (
+        <div className="flex h-full flex-col justify-between">
+          <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
+          <p className="text-sm text-[var(--foreground)]">{i18n("noLive")}</p>
+          <p className="text-[10px] text-[var(--muted)]">{i18n("flipCard")}</p>
+        </div>
+      );
+    }
     return (
       <div className="flex h-full flex-col gap-3">
-        <p className="text-sm font-semibold text-[var(--accent)]">Minecraft</p>
-        <p className="truncate text-sm">{String(profile.username ?? profile.name ?? "—")}</p>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
+            <p className="truncate text-base font-bold text-[var(--foreground)]" title={track.title || ""}>
+              {track.title || "—"}
+            </p>
+          </div>
+          {record.image && (
+            <Image src={record.image} alt="" width={48} height={48} unoptimized className="h-12 w-12 rounded-lg object-cover shadow-md" />
+          )}
+        </div>
+
+        <div className="flex-1 space-y-2 overflow-hidden">
+          {track.artist && (
+            <p className="flex items-center gap-2 truncate text-sm">
+              <Icon name="user" className="h-3.5 w-3.5 text-[var(--muted)]" />
+              <span className="shrink-0 text-[var(--muted)]">{i18n("artist")}</span>
+              <span className="min-w-0 truncate" title={track.artist}>{track.artist}</span>
+            </p>
+          )}
+          {track.album && (
+            <p className="flex items-center gap-2 truncate text-sm">
+              <Icon name="disc" className="h-3.5 w-3.5 text-[var(--muted)]" />
+              <span className="shrink-0 text-[var(--muted)]">{i18n("album")}</span>
+              <span className="min-w-0 truncate" title={track.album}>{track.album}</span>
+            </p>
+          )}
+
+          {track.progressMs !== undefined && track.durationMs ? (
+            <div className="space-y-1 pt-1">
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--border)]">
+                <div
+                  className="h-full rounded-full bg-emerald-400"
+                  style={{ width: `${Math.min(100, (track.progressMs / track.durationMs) * 100)}%` }}
+                />
+              </div>
+              <div className="flex justify-between text-[10px] text-[var(--muted)]">
+                <span>{formatTime(track.progressMs)}</span>
+                <span>{formatTime(track.durationMs)}</span>
+              </div>
+            </div>
+          ) : null}
+        </div>
+
+        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+          <button
+            type="button"
+            onClick={() => controlSpotify("previous")}
+            className="rounded-full p-1.5 text-[var(--foreground)] hover:bg-white/10"
+            aria-label={i18n("previous")}
+          >
+            <Icon name="skipBack" className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => controlSpotify(track.isPlaying ? "pause" : "play")}
+            className="rounded-full bg-emerald-500 p-2 text-white hover:bg-emerald-400"
+            aria-label={track.isPlaying ? i18n("pause") : i18n("play")}
+          >
+            {track.isPlaying ? <Icon name="pause" className="h-4 w-4" /> : <Icon name="play" className="h-4 w-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => controlSpotify("next")}
+            className="rounded-full p-1.5 text-[var(--foreground)] hover:bg-white/10"
+            aria-label={i18n("next")}
+          >
+            <Icon name="skipForward" className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={async () => {
+              const next = !saved;
+              setSaved(next);
+              if (track.id) await controlSpotify(next ? "save" : "unsave", track.id);
+            }}
+            className={`ml-auto rounded-full p-1.5 ${saved ? "text-emerald-400" : "text-rose-400"} hover:bg-rose-500/10`}
+            aria-label={saved ? i18n("unlike") : i18n("like")}
+          >
+            <Icon name={saved ? "heart-off" : "heart"} className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  function renderDiscordBack(record: LiveRecord) {
+    if (!lanyard) {
+      return (
+        <div className="flex h-full flex-col justify-between">
+          <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
+          <p className="text-sm text-[var(--foreground)]">{i18n("notConnected")}</p>
+          <p className="text-[10px] text-[var(--muted)]">{i18n("flipCard")}</p>
+        </div>
+      );
+    }
+
+    const status = lanyard.discord_status || "offline";
+    const statusColor: Record<string, string> = {
+      online: "bg-emerald-500",
+      idle: "bg-amber-500",
+      dnd: "bg-rose-500",
+      offline: "bg-zinc-500",
+    };
+    const statusLabels: Record<string, string> = {
+      online: "statusOnline",
+      idle: "statusAway",
+      dnd: "statusDnd",
+      offline: "statusOffline",
+    };
+    const activities = lanyard.activities || [];
+
+    return (
+      <div className="flex h-full flex-col gap-3">
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
+          <div className="flex items-center gap-1.5 rounded-full bg-[var(--surface)] px-2 py-1">
+            <span className={`h-2.5 w-2.5 rounded-full ${statusColor[status] || statusColor.offline}`} />
+            <span className="text-xs font-medium capitalize text-[var(--foreground)]">
+              {i18n(statusLabels[status] || "statusOffline")}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {lanyard.avatarUrl ? (
+            <Image src={lanyard.avatarUrl} alt="" width={48} height={48} unoptimized className="h-12 w-12 rounded-full border border-[var(--border)] object-cover" />
+          ) : (
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--surface)] text-[10px]">DC</span>
+          )}
+          <div className="min-w-0">
+            <p className="truncate font-medium text-[var(--foreground)]">{lanyard.displayName || record.title}</p>
+            <p className="truncate text-[10px] text-[var(--muted)]">{lanyard.userId ? `ID: ${lanyard.userId.slice(0, 8)}…` : "—"}</p>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto pr-1">
+          <p className="mb-1 text-xs font-medium text-[var(--muted)]">
+            {i18n("activities")} · {activities.length}
+          </p>
+          {activities.length > 0 ? (
+            <ul className="space-y-1.5">
+              {activities.slice(0, 6).map((a, i) => (
+                <li key={i} className="rounded-lg bg-[var(--surface)]/50 p-1.5 text-sm">
+                  <p className="truncate font-medium text-[var(--foreground)]">{a.name}</p>
+                  {a.details && <p className="truncate text-[10px] text-[var(--muted)]">{a.details}</p>}
+                  {a.state && <p className="truncate text-[10px] text-[var(--muted)]">{a.state}</p>}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-xs text-[var(--muted)]">{i18n("noResults")}</p>
+          )}
+        </div>
+
+        {lanyard.spotify?.playing && lanyard.spotify.title && (
+          <div className="rounded-lg bg-[var(--surface)]/70 p-2">
+            <p className="mb-1 text-[10px] font-medium text-emerald-400">Spotify</p>
+            <p className="truncate text-xs font-medium text-[var(--foreground)]">{lanyard.spotify.title}</p>
+            <p className="truncate text-[10px] text-[var(--muted)]">
+              {lanyard.spotify.artist}
+              {lanyard.spotify.album ? ` — ${lanyard.spotify.album}` : ""}
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  function renderMinecraftBack(record: LiveRecord) {
+    const profile = (minecraft as Record<string, unknown>) || {};
+    const names = minecraftNameHistory || [];
+    const username = toStr(profile.username) || toStr(profile.name) || record.title;
+    const uuid = toStr(profile.uuid);
+    const model = toStr(profile.model);
+    const skin = toStr(profile.skinUrl);
+    const cape = toStr(profile.capeUrl);
+
+    return (
+      <div className="flex h-full flex-col gap-3">
+        <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
+        <div className="flex items-center gap-3">
+          {skin ? (
+            <Image src={skin} alt="" width={48} height={48} unoptimized className="h-12 w-12 rounded object-cover" />
+          ) : (
+            <span className="flex h-12 w-12 items-center justify-center rounded bg-[var(--surface)] text-[10px]">MC</span>
+          )}
+          <div className="min-w-0">
+            <p className="truncate font-medium text-[var(--foreground)]">{username || "—"}</p>
+            {uuid && <p className="text-[10px] text-[var(--muted)]">ID: {uuid.slice(0, 8)}…</p>}
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          {model && (
+            <span className="rounded bg-[var(--surface)] px-1.5 py-0.5 text-xs text-[var(--muted)]">
+              {i18n("model")}: {model}
+            </span>
+          )}
+          {cape && (
+            <span className="rounded bg-[var(--surface)] px-1.5 py-0.5 text-xs text-[var(--muted)]">
+              Cape
+            </span>
+          )}
+        </div>
         <div className="flex-1 overflow-y-auto pr-1">
           <p className="mb-1 text-xs font-medium text-[var(--muted)]">
             {i18n("nameHistory")} · {names.length}
@@ -360,9 +644,11 @@ export default function LiveWidgets({
             <ul className="space-y-1.5">
               {names.slice(-8).map((n, i) => (
                 <li key={i} className="flex items-center justify-between text-sm">
-                  <span className="truncate">{String(n.name ?? "—")}</span>
+                  <span className="truncate text-[var(--foreground)]">{toStr(n.name) || "—"}</span>
                   {Boolean(n.changedAt) && (
-                    <span className="text-[10px] text-[var(--muted)]">{new Date(String(n.changedAt)).toLocaleDateString()}</span>
+                    <span className="text-[10px] text-[var(--muted)]">
+                      {formatLocalDate(String(n.changedAt), mounted)}
+                    </span>
                   )}
                 </li>
               ))}
@@ -376,54 +662,137 @@ export default function LiveWidgets({
   }
 
   function renderBillsBack(record: LiveRecord) {
+    const { upcoming, totalThisMonth, currency } = billsSummary;
     return (
-      <div className="flex h-full flex-col justify-between">
-        <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
-        <div className="space-y-2 text-sm text-[var(--foreground)]">
-          <p className="text-2xl font-bold">{record.title || "—"}</p>
-          {record.subtitle && <p className="text-[var(--muted)]">{record.subtitle}</p>}
-          {record.meta && (
-            <p className="flex items-center gap-2 text-xs text-[var(--muted)]">
-              <Icon name="calendar" className="h-3.5 w-3.5" /> {record.meta}
-            </p>
+      <div className="flex h-full flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
+          <span className="rounded-full bg-[var(--surface)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
+            {i18n("billsTotalThisMonth")}
+          </span>
+        </div>
+        <div className="flex items-baseline gap-1">
+          <span className="text-3xl font-bold text-[var(--foreground)]">{totalThisMonth > 0 ? totalThisMonth : "—"}</span>
+          {totalThisMonth > 0 && currency && <span className="text-sm text-[var(--muted)]">{currency}</span>}
+        </div>
+        <div className="flex-1 overflow-y-auto pr-1">
+          <p className="mb-1 text-xs font-medium text-[var(--muted)]">
+            {i18n("billsUpcoming")} · {upcoming.length}
+          </p>
+          {upcoming.length > 0 ? (
+            <ul className="space-y-1.5">
+              {upcoming.map((b, i) => {
+                const label = toStr(b.label) || toStr(b.title) || "—";
+                const amount = toNum(b.amount);
+                const due = toStr(b.dueAt) || toStr(b.due) || toStr(b.date);
+                const category = toStr(b.category) || "other";
+                const catKey = `billCategory${category.charAt(0).toUpperCase() + category.slice(1)}`;
+                return (
+                  <li key={i} className="rounded-lg bg-[var(--surface)]/50 p-1.5 text-sm">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="min-w-0 flex-1 truncate font-medium text-[var(--foreground)]" title={label}>{label}</span>
+                      <span className="shrink-0 text-xs font-semibold text-[var(--accent)]">
+                        {amount !== undefined ? `${amount} ${toStr(b.currency) || currency || ""}`.trim() : "—"}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between gap-2 text-[10px] text-[var(--muted)]">
+                      <span>{i18n(catKey) || category}</span>
+                      {due && <span className="flex items-center gap-1"><Icon name="calendar" className="h-3 w-3" /> {formatLocalDate(due, mounted)}</span>}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p className="text-xs text-[var(--muted)]">{i18n("noBills")}</p>
           )}
         </div>
-        <p className="text-[10px] text-[var(--muted)]">{i18n("flipCard")}</p>
       </div>
     );
   }
 
   function renderWeatherBack(record: LiveRecord) {
-    const details = record.subtitle ? record.subtitle.split(" · ") : [];
+    if (!weather) {
+      return (
+        <div className="flex h-full flex-col justify-between">
+          <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
+          <p className="text-sm text-[var(--foreground)]">{i18n("noForecast")}</p>
+          <p className="text-[10px] text-[var(--muted)]">{i18n("flipCard")}</p>
+        </div>
+      );
+    }
+    const w = weather as Record<string, unknown>;
+    const temp = toNum(w.temperature) ?? toNum(w.temperatureC);
+    const condition = toStr(w.description) || toStr(w.condition);
+    const humidity = toNum(w.humidityPercent);
+    const wind = toNum(w.windSpeedKmh);
+    const city = toStr(w.city) || toStr(w.location);
+    const forecast = (w.forecast as Array<Record<string, unknown>> | undefined) || [];
+
     return (
-      <div className="flex h-full flex-col justify-between">
-        <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
-        <div className="space-y-2 text-sm text-[var(--foreground)]">
-          {record.title && (
-            <p className="text-2xl font-bold">{record.title}</p>
-          )}
-          {details.length > 0 && (
-            <ul className="space-y-1 text-xs text-[var(--muted)]">
-              {details.map((d, i) => (
-                <li key={i} className="flex items-center gap-2">
-                  <Icon name="cloud" className="h-3.5 w-3.5" /> {d}
-                </li>
-              ))}
-            </ul>
-          )}
-          {record.meta && (
-            <p className="text-xs text-[var(--muted)]">{record.meta}</p>
+      <div className="flex h-full flex-col gap-3">
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
+          {city && (
+            <p className="truncate text-xs text-[var(--muted)]">
+              <Icon name="mapPin" className="mr-1 inline h-3 w-3" />
+              {city}
+            </p>
           )}
         </div>
-        <p className="text-[10px] text-[var(--muted)]">{i18n("flipCard")}</p>
+        <div className="flex items-center gap-3">
+          {toStr(w.iconUrl) ? (
+            <Image src={toStr(w.iconUrl) || ""} alt="" width={56} height={56} unoptimized className="h-14 w-14 object-contain" />
+          ) : (
+            <Icon name="cloudSun" className="h-14 w-14 text-amber-400" />
+          )}
+          <div className="min-w-0">
+            {temp !== undefined && <p className="text-3xl font-bold text-[var(--foreground)]">{temp}°C</p>}
+            {condition && <p className="truncate text-sm font-medium text-[var(--foreground)]">{condition}</p>}
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2 text-[10px] text-[var(--muted)]">
+          {humidity !== undefined && (
+            <span className="rounded-lg bg-[var(--surface)] px-2 py-1">{humidity}% {i18n("humidity")}</span>
+          )}
+          {wind !== undefined && (
+            <span className="rounded-lg bg-[var(--surface)] px-2 py-1">{wind} km/h {i18n("wind")}</span>
+          )}
+        </div>
+        <div className="flex-1 overflow-y-auto pr-1">
+          <p className="mb-1 text-xs font-medium text-[var(--muted)]">{i18n("forecast")}</p>
+          {forecast.length > 0 ? (
+            <ul className="space-y-1.5">
+              {forecast.slice(0, 5).map((day, i) => {
+                const date = toStr(day.date);
+                const min = toNum(day.min);
+                const max = toNum(day.max);
+                return (
+                  <li key={i} className="flex items-center justify-between rounded-lg bg-[var(--surface)]/50 px-2 py-1 text-sm">
+                    <span className="text-[var(--muted)]">
+                      {date ? formatLocalShortDate(date, mounted) : "—"}
+                    </span>
+                    <span className="font-medium text-[var(--foreground)]">
+                      {min !== undefined ? `${min}°` : "—"} / {max !== undefined ? `${max}°` : "—"}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p className="text-xs text-[var(--muted)]">{i18n("noForecast")}</p>
+          )}
+        </div>
       </div>
     );
   }
 
   function renderBack(record: LiveRecord) {
+    if (record.source === "nowplaying") return renderNowPlayingBack(record);
+    if (record.source === "lanyard") return renderDiscordBack(record);
     if (record.source === "lastfm") return renderLastfmBack();
     if (record.source === "steam") return renderSteamBack();
-    if (record.source === "minecraft") return renderMinecraftBack();
+    if (record.source === "minecraft") return renderMinecraftBack(record);
     if (record.source === "bills") return renderBillsBack(record);
     if (record.source === "weather") return renderWeatherBack(record);
     return (

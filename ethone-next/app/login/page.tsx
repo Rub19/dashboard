@@ -153,12 +153,12 @@ export default function LoginPage() {
       : handlePassword;
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-6">
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4 sm:p-6">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="w-full max-w-sm"
+        className="w-full max-w-sm sm:max-w-md lg:max-w-lg"
       >
         <Card3D>
           <div className="mb-6 flex flex-col items-center text-center">
@@ -167,7 +167,7 @@ export default function LoginPage() {
               <h1 className="text-2xl font-bold">ETHONE</h1>
               <span className="rounded border border-[var(--border)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--muted)]">OS</span>
             </div>
-            <p className="mt-1 text-sm text-[var(--muted)]">
+            <p className="mt-1 break-words text-sm text-[var(--muted)]">
               {i18n("loginDescription")}
             </p>
           </div>
@@ -180,7 +180,7 @@ export default function LoginPage() {
                 setStep("email");
                 setError(null);
               }}
-              className={`flex-1 rounded-lg px-2 py-1.5 text-xs font-medium transition-colors ${
+              className={`flex-1 rounded-lg px-1.5 py-1.5 text-[10px] font-medium transition-colors sm:px-2 sm:text-xs ${
                 isOtp
                   ? "bg-[var(--accent)] text-white"
                   : "text-[var(--muted)] hover:text-[var(--foreground)]"
@@ -195,7 +195,7 @@ export default function LoginPage() {
                 setStep("email");
                 setError(null);
               }}
-              className={`flex-1 rounded-lg px-2 py-1.5 text-xs font-medium transition-colors ${
+              className={`flex-1 rounded-lg px-1.5 py-1.5 text-[10px] font-medium transition-colors sm:px-2 sm:text-xs ${
                 mode === "password"
                   ? "bg-[var(--accent)] text-white"
                   : "text-[var(--muted)] hover:text-[var(--foreground)]"
@@ -210,7 +210,7 @@ export default function LoginPage() {
                 setStep("email");
                 setError(null);
               }}
-              className={`flex-1 rounded-lg px-2 py-1.5 text-xs font-medium transition-colors ${
+              className={`flex-1 rounded-lg px-1.5 py-1.5 text-[10px] font-medium transition-colors sm:px-2 sm:text-xs ${
                 isRegister
                   ? "bg-[var(--accent)] text-white"
                   : "text-[var(--muted)] hover:text-[var(--foreground)]"
@@ -221,7 +221,7 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-400">
+            <div className="mb-4 break-words rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-400">
               {error}
             </div>
           )}
@@ -248,7 +248,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                className="flex w-full flex-wrap items-center justify-center gap-2 break-words rounded-xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
               >
                 {loading ? (
                   <Icon name="loader-2" className="h-4 w-4 animate-spin" />
@@ -329,7 +329,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                className="flex w-full flex-wrap items-center justify-center gap-2 break-words rounded-xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
               >
                 {loading ? (
                   <Icon name="loader-2" className="h-4 w-4 animate-spin" />
@@ -354,12 +354,12 @@ export default function LoginPage() {
                     <div className="flex-1 border-t border-[var(--border)]" />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                     <button
                       type="button"
                       onClick={() => handleOAuth("google")}
                       disabled={loading}
-                      className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--surface-raised)] disabled:opacity-50"
+                      className="flex w-full flex-wrap items-center justify-center gap-2 break-words rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--surface-raised)] disabled:opacity-50"
                     >
                       <Icon name="chrome" className="h-4 w-4" /> {i18n("signInWithGoogle")}
                     </button>
@@ -367,7 +367,7 @@ export default function LoginPage() {
                       type="button"
                       onClick={() => handleOAuth("github")}
                       disabled={loading}
-                      className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--surface-raised)] disabled:opacity-50"
+                      className="flex w-full flex-wrap items-center justify-center gap-2 break-words rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--surface-raised)] disabled:opacity-50"
                     >
                       <Icon name="github" className="h-4 w-4" /> {i18n("signInWithGithub")}
                     </button>
@@ -377,7 +377,7 @@ export default function LoginPage() {
                     type="button"
                     onClick={handlePasskey}
                     disabled={loading}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--surface-raised)] disabled:opacity-50"
+                    className="flex w-full flex-wrap items-center justify-center gap-2 break-words rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--surface-raised)] disabled:opacity-50"
                   >
                     <Icon name="key-round" className="h-4 w-4" /> {i18n("signInWithPasskey")}
                   </button>

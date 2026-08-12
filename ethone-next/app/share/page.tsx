@@ -64,7 +64,7 @@ function ShareContent() {
 
   if (!slug) {
     return (
-      <div className="flex min-h-screen items-center justify-center p-6">
+      <div className="flex min-h-screen items-center justify-center p-4 sm:p-6">
         <Card3D>
           <p className="text-sm text-[var(--muted)]">{i18n("noShareLink")}</p>
         </Card3D>
@@ -76,10 +76,10 @@ function ShareContent() {
   const maxDownloads = data?.share?.maxDownloads;
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-6">
-      <div className="w-full max-w-md space-y-4">
+    <div className="flex min-h-screen items-center justify-center p-4 sm:p-6">
+      <div className="w-full max-w-sm sm:max-w-md lg:max-w-lg space-y-4">
         <Card3D>
-          <h1 className="mb-4 flex items-center gap-2 text-xl font-bold">
+          <h1 className="mb-4 flex flex-wrap items-center gap-2 break-words text-xl font-bold">
             <Icon name="share-2" className="h-6 w-6 text-violet-400" />
             {i18n("sharedFile")}
           </h1>
@@ -87,7 +87,7 @@ function ShareContent() {
           {data?.share?.visibility === "password" && (
             <div className="mb-4 space-y-2">
               <label className="text-sm font-medium">{i18n("password")}</label>
-              <div className="flex gap-2">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                 <Input
                   type="password"
                   value={password}
@@ -106,22 +106,22 @@ function ShareContent() {
             </div>
           )}
 
-          {loading && <p className="text-sm text-[var(--muted)]">{i18n("loading")}</p>}
-          {error && <p className="text-sm text-red-400">{error}</p>}
+          {loading && <p className="break-words text-sm text-[var(--muted)]">{i18n("loading")}</p>}
+          {error && <p className="break-words text-sm text-red-400">{error}</p>}
 
           {data && (
             <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
+              <div className="flex min-w-0 items-center gap-3">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
                   <Icon name="file-text" className="h-6 w-6" />
                 </span>
-                <div>
-                  <p className="font-medium">{data.file.name}</p>
-                  <p className="text-xs text-[var(--muted)]">{formatBytes(data.file.size)} · {data.file.mimeType}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="break-words font-medium">{data.file.name}</p>
+                  <p className="break-words text-xs text-[var(--muted)]">{formatBytes(data.file.size)} · {data.file.mimeType}</p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 text-xs text-[var(--muted)]">
+              <div className="grid grid-cols-1 gap-2 text-xs text-[var(--muted)] sm:grid-cols-2 sm:gap-4">
                 <div className="rounded-xl bg-[var(--surface)] p-2 text-center">
                   <p className="text-lg font-bold text-[var(--foreground)]">{downloads}</p>
                   <p>{i18n("downloads")}</p>
@@ -135,7 +135,7 @@ function ShareContent() {
               </div>
 
               {data.share.expiresAt && (
-                <p className="text-xs text-[var(--muted)]">{i18n("expiresAt")}: {new Date(data.share.expiresAt).toLocaleString()}</p>
+                <p className="break-words text-xs text-[var(--muted)]">{i18n("expiresAt")}: {new Date(data.share.expiresAt).toLocaleString()}</p>
               )}
 
               <Image
@@ -148,7 +148,7 @@ function ShareContent() {
               />
 
               {data.file.brain_summary && (
-                <blockquote className="rounded-xl border-l-4 border-[var(--accent)] bg-[var(--surface)] p-3 text-sm italic text-[var(--muted)]">
+                <blockquote className="break-words rounded-xl border-l-4 border-[var(--accent)] bg-[var(--surface)] p-3 text-sm italic text-[var(--muted)]">
                   {data.file.brain_summary}
                 </blockquote>
               )}
@@ -177,7 +177,7 @@ function ShareContent() {
 
 export default function SharePage() {
   return (
-    <Suspense fallback={<div className="flex min-h-screen items-center justify-center p-6"><Card3D><p className="text-sm text-[var(--muted)]">Loading...</p></Card3D></div>}>
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center p-4 sm:p-6"><Card3D><p className="text-sm text-[var(--muted)]">Loading...</p></Card3D></div>}>
       <ShareContent />
     </Suspense>
   );

@@ -65,6 +65,7 @@ export default function FlowAutomations({ activeFlow }: { activeFlow?: string })
           <select
             value={triggerType}
             onChange={(e) => resetValue(e.target.value as "space" | "route" | "time")}
+            aria-label={i18n("trigger")}
             className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm"
           >
             {AUTOMATION_TRIGGER_TYPES.map((t) => (
@@ -82,6 +83,7 @@ export default function FlowAutomations({ activeFlow }: { activeFlow?: string })
             <select
               value={triggerValue}
               onChange={(e) => setTriggerValue(e.target.value)}
+              aria-label={i18n("value")}
               className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm"
             >
               {triggerOptions.map((v) => (
@@ -92,6 +94,7 @@ export default function FlowAutomations({ activeFlow }: { activeFlow?: string })
           <select
             value={action}
             onChange={(e) => setAction(e.target.value)}
+            aria-label={i18n("action")}
             className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm"
           >
             <optgroup label={i18n("space")}>

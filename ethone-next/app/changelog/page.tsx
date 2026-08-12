@@ -10,15 +10,15 @@ export default function ChangelogPage() {
   const { settings } = useSettings();
   const changelog = CHANGELOG_BY_LANG[settings.language] || CHANGELOG_BY_LANG.fr;
   return (
-    <div className="space-y-6">
+    <div className="w-full sm:max-w-5xl lg:max-w-7xl mx-auto space-y-6">
       <h1 className="text-2xl font-bold">{i18n("changelog")}</h1>
 
       <div className="space-y-4">
         {changelog.map((entry) => (
           <Card3D key={entry.version}>
             <div className="space-y-3">
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="text-lg font-semibold">{entry.title}</h2>
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <h2 className="break-words text-lg font-semibold">{entry.title}</h2>
                 <span className="shrink-0 rounded-full bg-[var(--surface-raised)] px-2.5 py-0.5 text-xs font-medium text-[var(--accent)]">
                   {entry.version}
                 </span>
@@ -26,7 +26,7 @@ export default function ChangelogPage() {
               <p className="text-xs text-[var(--muted)]">{entry.date}</p>
               <ul className="list-disc space-y-1.5 pl-4 text-sm text-[var(--foreground)]">
                 {entry.items.map((item, i) => (
-                  <li key={i}>{item}</li>
+                  <li key={i} className="break-words">{item}</li>
                 ))}
               </ul>
             </div>

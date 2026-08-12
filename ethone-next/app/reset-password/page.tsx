@@ -61,7 +61,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="w-full sm:max-w-md lg:max-w-lg mx-auto space-y-6">
       <h1 className="text-2xl font-bold">{i18n("resetPasswordTitle")}</h1>
       <Card3D>
         {!session ? (
@@ -71,7 +71,7 @@ export default function ResetPasswordPage() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
-            <p className="text-xs text-[var(--muted)]">{i18n("passwordRequirement")}</p>
+            <p className="break-words text-xs text-[var(--muted)]">{i18n("passwordRequirement")}</p>
             <div className="space-y-1">
               <label htmlFor="reset-password" className="text-sm font-medium">{i18n("newPassword")}</label>
               <input

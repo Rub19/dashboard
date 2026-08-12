@@ -72,8 +72,8 @@ export default function FocusPage() {
   const isIdle = state.phase === "idle";
 
   return (
-    <div className="mx-auto max-w-md space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="mx-auto w-full max-w-sm sm:max-w-md lg:max-w-lg space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">{i18n("focusTitle")}</h1>
         <button
           type="button"
@@ -109,7 +109,7 @@ export default function FocusPage() {
         </div>
 
         <div className="relative my-8 flex items-center justify-center">
-          <svg className="h-56 w-56 -rotate-90" viewBox="0 0 100 100">
+          <svg className="h-44 w-44 -rotate-90 sm:h-56 sm:w-56" viewBox="0 0 100 100">
             <circle
               cx="50"
               cy="50"
@@ -131,7 +131,7 @@ export default function FocusPage() {
             />
           </svg>
           <div className="absolute text-center">
-            <p className={`text-5xl font-bold tabular-nums ${modeColor}`}>
+            <p className={`text-4xl font-bold tabular-nums sm:text-5xl ${modeColor}`}>
               {format(state.remaining)}
             </p>
             <p className="text-sm text-[var(--muted)]">
@@ -181,7 +181,7 @@ export default function FocusPage() {
         <p className="text-center text-sm text-[var(--muted)]">{i18n("zenModeDesc")}</p>
       </Card3D>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Card3D>
           <div className="flex flex-col items-center gap-1 text-center">
             <Icon name="brain" className="h-5 w-5 text-[var(--accent)]" />

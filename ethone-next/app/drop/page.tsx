@@ -82,7 +82,7 @@ function DropContent() {
 
   if (!slug) {
     return (
-      <div className="flex min-h-screen items-center justify-center p-6">
+      <div className="flex min-h-screen items-center justify-center p-4 sm:p-6">
         <Card3D>
           <p className="text-sm text-[var(--muted)]">{i18n("noDropLink")}</p>
         </Card3D>
@@ -91,19 +91,19 @@ function DropContent() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-6">
-      <div className="w-full max-w-md space-y-4">
+    <div className="flex min-h-screen items-center justify-center p-4 sm:p-6">
+      <div className="w-full max-w-sm sm:max-w-md lg:max-w-lg space-y-4">
         <Card3D>
-          <h1 className="mb-4 flex items-center gap-2 text-xl font-bold">
+          <h1 className="mb-4 flex flex-wrap items-center gap-2 break-words text-xl font-bold">
             <Icon name="inbox" className="h-6 w-6 text-emerald-400" />
             {drop?.title || i18n("drop")}
           </h1>
-          {drop?.description && <p className="text-sm text-[var(--muted)]">{drop.description}</p>}
+          {drop?.description && <p className="break-words text-sm text-[var(--muted)]">{drop.description}</p>}
 
           {drop?.visibility === "password" && (
             <div className="mb-4 space-y-2">
               <label className="text-sm font-medium">{i18n("password")}</label>
-              <div className="flex gap-2">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                 <Input
                   type="password"
                   value={password}
@@ -122,13 +122,13 @@ function DropContent() {
             </div>
           )}
 
-          {loading && <p className="text-sm text-[var(--muted)]">{i18n("loading")}</p>}
-          {error && <p className="text-sm text-red-400">{error}</p>}
-          {success && <p className="text-sm text-emerald-400">{success}</p>}
+          {loading && <p className="break-words text-sm text-[var(--muted)]">{i18n("loading")}</p>}
+          {error && <p className="break-words text-sm text-red-400">{error}</p>}
+          {success && <p className="break-words text-sm text-emerald-400">{success}</p>}
 
           {drop && (
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-2 text-xs text-[var(--muted)]">
+              <div className="grid grid-cols-1 gap-2 text-xs text-[var(--muted)] sm:grid-cols-2 sm:gap-4">
                 <div className="rounded-xl bg-[var(--surface)] p-2 text-center">
                   <p className="text-lg font-bold text-[var(--foreground)]">{drop.fileCount || 0}</p>
                   <p>{i18n("files")}</p>
@@ -139,7 +139,7 @@ function DropContent() {
                 </div>
               </div>
 
-              <div className="text-xs text-[var(--muted)]">
+              <div className="break-words text-xs text-[var(--muted)]">
                 {drop.maxSize ? `${i18n("maxSize")}: ${formatBytes(drop.maxSize)}` : null}
                 {drop.expiresAt ? ` · ${i18n("expiresAt")}: ${new Date(drop.expiresAt).toLocaleString()}` : null}
               </div>
@@ -174,7 +174,7 @@ function DropContent() {
 
 export default function DropPage() {
   return (
-    <Suspense fallback={<div className="flex min-h-screen items-center justify-center p-6"><Card3D><p className="text-sm text-[var(--muted)]">Loading...</p></Card3D></div>}>
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center p-4 sm:p-6"><Card3D><p className="text-sm text-[var(--muted)]">Loading...</p></Card3D></div>}>
       <DropContent />
     </Suspense>
   );

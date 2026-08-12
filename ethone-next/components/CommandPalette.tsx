@@ -9,6 +9,8 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useLayer } from "@/components/LayerProvider";
 import { useCommandItems, type CommandItem } from "@/lib/commands";
+import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { searchCommands, commandScore } from "@/lib/command-search";
 
 const ROUTE_CATEGORIES: Record<string, string> = {
   "/bills/": "Facturation",
@@ -71,16 +73,19 @@ export default function CommandPalette() {
   const COMMANDS = useCommandItems(setOpen);
 
   const pinned = useMemo(() => new Set(settings.pinnedCommands || []), [settings.pinnedCommands]);
+  const recent = useMemo(() => new Set(settings.commandHistory || []), [settings.commandHistory]);
+  const [frequency, setFrequency] = useLocalStorage<Record<string, number>>("ethone-command-frequency", {});
 
   const run = useCallback(
     (cmd: CommandItem) => {
       cmd.action();
       const history = [cmd.id, ...(settings.commandHistory || []).filter((id) => id !== cmd.id)].slice(0, 10);
       update({ commandHistory: history });
+      setFrequency((prev) => ({ ...prev, [cmd.id]: (prev[cmd.id] || 0) + 1 }));
       setOpen(false);
       setQuery("");
     },
-    [setOpen, settings.commandHistory, update]
+    [setOpen, settings.commandHistory, update, setFrequency]
   );
 
   const togglePin = useCallback(
@@ -107,44 +112,22 @@ export default function CommandPalette() {
     const used = new Set([...pinnedItems, ...recentItems].map((c) => c.id));
     const rest = COMMANDS.filter((c) => !used.has(c.id));
 
-    if (!routeCategory) return { pinnedItems, recentItems, otherItems: rest };
-
-    const otherItems = [...rest].sort((a, b) => {
-      const aMatch = a.category === routeCategory ? -1 : 0;
-      const bMatch = b.category === routeCategory ? -1 : 0;
-      if (aMatch !== bMatch) return aMatch - bMatch;
-      return a.label.localeCompare(b.label);
-    });
+    const otherItems = [...rest]
+      .map((cmd) => ({
+        cmd,
+        score: commandScore(cmd, "", { routeCategory, pinned, recent, frequency }),
+      }))
+      .sort((a, b) => b.score - a.score || a.cmd.label.localeCompare(b.cmd.label, "fr"))
+      .map((s) => s.cmd);
 
     return { pinnedItems, recentItems, otherItems };
-  }, [COMMANDS, settings.commandHistory, settings.pinnedCommands, pinned, routeCategory]);
+  }, [COMMANDS, settings.commandHistory, settings.pinnedCommands, pinned, recent, routeCategory, frequency]);
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    let base: CommandItem[];
-
-    if (!q) {
-      base = [...pinnedItems, ...recentItems, ...otherItems];
-    } else if (q.startsWith(">")) {
-      const cat = q.slice(1).trim();
-      base = COMMANDS.filter((c) => c.category.toLowerCase().includes(cat));
-    } else {
-      base = COMMANDS.filter((c) => `${c.label} ${c.category}`.toLowerCase().includes(q));
-    }
-
-    if (!routeCategory) return base;
-
-    return [...base].sort((a, b) => {
-      const score = (cmd: CommandItem) => {
-        let s = 0;
-        if (cmd.category === routeCategory) s -= 10;
-        if (pinned.has(cmd.id)) s -= 5;
-        if ((settings.commandHistory || []).includes(cmd.id)) s -= 2;
-        return s;
-      };
-      return score(a) - score(b);
-    });
-  }, [query, COMMANDS, pinnedItems, recentItems, otherItems, routeCategory, pinned, settings.commandHistory]);
+  const filtered = useMemo<CommandItem[]>(() => {
+    const active = query.trim() !== "";
+    if (!active) return [...pinnedItems, ...recentItems, ...otherItems];
+    return searchCommands(COMMANDS, query, { routeCategory, pinned, recent, frequency }) as CommandItem[];
+  }, [query, COMMANDS, pinnedItems, recentItems, otherItems, routeCategory, pinned, recent, frequency]);
 
   const sections = useMemo(() => {
     if (query.trim()) return [{ title: i18n("results"), items: filtered }];
@@ -166,15 +149,29 @@ export default function CommandPalette() {
         setOpen(!open);
       }
       if (!open) return;
-      if (event.key === "ArrowDown") {
+
+      const hasResults = filtered.length > 0;
+      const lastIndex = Math.max(0, filtered.length - 1);
+
+      if (event.key === "ArrowDown" || (event.key === "Tab" && !event.shiftKey)) {
         event.preventDefault();
-        if (filtered.length) setIndex((i) => (i + 1) % filtered.length);
-      }
-      if (event.key === "ArrowUp") {
+        if (hasResults) setIndex((i) => (i + 1) % filtered.length);
+      } else if (event.key === "ArrowUp" || (event.key === "Tab" && event.shiftKey)) {
         event.preventDefault();
-        if (filtered.length) setIndex((i) => (i - 1 + filtered.length) % filtered.length);
-      }
-      if (event.key === "Enter" && filtered[index]) {
+        if (hasResults) setIndex((i) => (i - 1 + filtered.length) % filtered.length);
+      } else if (event.key === "Home") {
+        event.preventDefault();
+        if (hasResults) setIndex(0);
+      } else if (event.key === "End") {
+        event.preventDefault();
+        if (hasResults) setIndex(lastIndex);
+      } else if (event.key === "PageDown") {
+        event.preventDefault();
+        if (hasResults) setIndex((i) => (i + 5) % filtered.length);
+      } else if (event.key === "PageUp") {
+        event.preventDefault();
+        if (hasResults) setIndex((i) => (i - 5 + filtered.length) % filtered.length);
+      } else if (event.key === "Enter" && filtered[index]) {
         event.preventDefault();
         run(filtered[index]);
       }
@@ -285,6 +282,28 @@ export default function CommandPalette() {
                     </div>
                   ))
                 )}
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[var(--border)] px-4 py-2.5 text-[10px] text-[var(--muted)]">
+                <div className="flex items-center gap-3">
+                  <span className="flex items-center gap-1">
+                    <kbd className="rounded bg-[var(--surface)] px-1.5 py-0.5 text-[10px]">Esc</kbd>
+                    <span>{i18n("close")}</span>
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <kbd className="rounded bg-[var(--surface)] px-1.5 py-0.5 text-[10px]">↑</kbd>
+                    <kbd className="rounded bg-[var(--surface)] px-1.5 py-0.5 text-[10px]">↓</kbd>
+                    <span>{i18n("spotlightNav")}</span>
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <kbd className="rounded bg-[var(--surface)] px-1.5 py-0.5 text-[10px]">Enter</kbd>
+                    <span>{i18n("openHere")}</span>
+                  </span>
+                </div>
+                <div className="flex items-center gap-1 opacity-60">
+                  <Icon name="command" className="h-3 w-3" />
+                  <span>{i18n("commands")}</span>
+                </div>
               </div>
             </motion.div>
           </motion.div>

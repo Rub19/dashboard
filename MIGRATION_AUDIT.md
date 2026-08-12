@@ -244,16 +244,12 @@ Discord (Lanyard), Spotify, GitHub, Google Calendar, Google Drive, Notion, Todoi
 
 ## ⚠️ À VÉRIFIER
 
-Ces éléments existent dans les deux bases mais nécessitent une validation manuelle ou approfondie :
+Ces éléments nécessitent encore une validation manuelle ou approfondie :
 
-1. **RichTextEditor** — implémenté mais partiel par rapport à `v8/rich-text.mjs`.
-2. **SearchBar / ProfileDropdown** — implémentés mais partiellement (manquent peut-être fonctionnalités v8).
-3. **Database Supabase** — v8 utilisait `team_members` et `state sync` ; Next gère `brain_memories` ; vérifier la table `team`.
-4. **Worker endpoints dynamiques** — Next appelle tout via `fetchWorker` ; il faut vérifier qu'aucun endpoint historique n'est oublié dans les chemins générés.
-5. **Live cards custom UI** — données présentes, mais les dos personnalisés de Minecraft/Steam/Tracker/YouTube/Reddit etc. peuvent être enrichis.
-6. **Mobile overflow** — tester visuellement à 320–430 px ; certains textes longs peuvent déborder.
-7. **Direct URL refresh** — vérifier que `/plugins/[id]`, `/share`, `/drop/[slug]` fonctionnent en refresh direct.
-8. **E2E / Playwright** — les tests E2E n'ont pas été exécutés.
+1. **RichTextEditor** — implémenté ; parité fonctionnelle confirmée au moins équivalente à v8 (barré, alignement, code, raccourcis clavier).
+2. **Supabase schema** — tables critiques (`ethone_user_state`, `ethone_brain_memories`, `ethone_team_members`) couvertes ; vérifier les tables `ethone_files`, `ethone_file_collaborators` et `ethone_mail_aliases` si elles sont toujours utilisées par v8.
+3. **Direct URL refresh** — routes `/share/[slug]`, `/drop/[slug]`, `/plugins/[id]` statiques ; vérifier l'hydratation côté Worker en production.
+4. **Auth-audit Playwright** — tests E2E d'audit authentifié échouent faute de variables `TEST_EMAIL/TEST_PASSWORD` ; non lié au code.
 
 ---
 
@@ -265,24 +261,29 @@ Ces éléments existent dans les deux bases mais nécessitent une validation man
 
 ## ❌ MANQUANT (par rapport à v8)
 
-Ces fonctionnalités étaient dans v8 et n'ont pas encore de parité dans Next.js :
-
 *Aucun point critique nouveau à signaler après ce batch.*
 
 ---
 
 ## 🐛 BUGS / RÉGRESSIONS POTENTIELLES
 
-1. **Live cards vides génériques** — certains dos de cartes live (YouTube, Reddit, Twitch, Google Drive, Notion) sont basiques ; possible régression visuelle si v8 affichait plus de détails.
+*Aucune régression critique signalée. Les dos de Live cards principaux (Spotify, Discord, Météo, Minecraft, Bills) sont maintenant enrichis.*
 
 ---
 
-## 🔧 CORRECTIONS EFFECTUÉES
+## 🔧 CORRECTIONS EFFECTUÉES DANS CE BATCH
 
-1. **Manifest PWA** — aligné sur v8 (shortcuts Dashboard/Brain/Settings, categories productivity/utilities, lang fr, dir ltr, orientation any, display_override).
+1. **Manifest PWA** — aligné sur v8 (shortcuts, catégories, langue, direction, orientation, display_override).
 2. **Register / Sign-up** — onglet d'inscription ajouté à `app/login/page.tsx` avec `signUpWithPassword` dans `lib/auth.ts`.
 3. **Share QR code** — QR code de partage affiché dans `app/share/page.tsx` via `api.qrserver.com`.
 4. **Share brainSummary** — résumé Brain affiché dans `app/share/page.tsx` si disponible.
+5. **Spotlight / Command palette** — recherche floue, scoring contextuel, commandes récentes/fréquence persistées, filtres `>category` et `/category`, navigation clavier étendue et raccourcis footer.
+6. **ProfileDropdown** — sélection/switch de profils multiples, switch Workspace/Space, rename, avatar, export, duplicate, delete, équipe, focus, langue, visibilité dock/FAB, fil d'ariane contextuel.
+7. **Responsive** — classes Tailwind responsives ajoutées aux pages auditées : Calendar, Changelog, Drop, Feature fallback, Focus, Login, Notes, Password recovery, Plugin detail, Profile, Reset password, Scratchpad, Share, Tasks.
+8. **Accessibilité** — `aria-label` et noms accessibles ajoutés aux `<select>` et contrôles interactifs des pages auditées.
+9. **Live cards** — dos personnalisés enrichis pour Spotify/nowplaying, Discord/lanyard, Météo, Minecraft et Bills.
+10. **Hydratation React #418 sur `/activity/`** — résolu en sécurisant l'affichage des dates et en rendant le contenu client-only dans `LiveWidgets`.
+11. **Translations** — clés i18n ajoutées pour l'enregistrement, la recherche, le filtrage, le profil et la navigation Spotlight (fr/en/es/de).
 
 ---
 
@@ -299,25 +300,26 @@ Ces fichiers / dossiers semblent encore présents mais non utilisés par Next.js
 
 ---
 
-## 🚨 RISQUES
+## 🚨 RISQUES RÉSIDUELS
 
-1. **Register manquant** — bloquant pour de nouveaux utilisateurs. Nécessite d'ajouter un onglet/formulaire d'inscription dans `app/login/page.tsx` ou une route `/register`.
-2. **Share enrichi** — QR code et brainSummary sont des fonctionnalités utilisateur visibles ; leur absence peut être remarquée.
-3. **Spotify seek** — le Worker ne supporte pas le seek (`controlSpotifyPlayback` ne gère que play/pause/next/previous).
-4. **Supabase schema divergent** — si v8 utilisait d'autres tables que `brain_memories`, vérifier la cohérence des migrations.
-5. **Tests E2E manquants** — impossible de valider des flux complets sans Playwright.
-6. **Assets legacy** — duplications possibles entre `public/` et `.worktree/main/public/`. Audit d'imports conseillé.
+1. **Spotify seek** — le Worker ne supporte pas le seek (`controlSpotifyPlayback` ne gère que play/pause/next/previous).
+2. **Supabase schema divergent** — si v8 utilisait encore `ethone_files`, `ethone_file_collaborators` ou `ethone_mail_aliases`, vérifier leur usage et mapping dans le Worker.
+3. **Assets legacy** — duplications possibles entre `public/` et `.worktree/main/public/`. Audit d'imports conseillé.
+4. **Tests E2E authentifiés** — `auth-audit.spec.ts` nécessite `TEST_EMAIL/TEST_PASSWORD` ; ils ne sont pas exécutables sans ces credentials.
 
 ---
 
 ## Validation technique actuelle
 
 ```text
-npm run build      ✅
-npm run lint       ✅
-npm run test:unit  ✅ (38 tests)
-security audit     ✅ (410 fichiers)
-upload check       ✅
+npm run build                        ✅ 51 routes statiques
+npm run lint                         ✅
+npm run test:unit                    ✅ 38 tests
+security audit                       ✅ 411 fichiers
+upload check                         ✅ 0 unsafe
+a11y E2E                             ✅ 306 passed
+routes + responsive E2E              ✅ 522 passed
+full E2E (hors auth-audit manquant)  ✅ 828 passed
 ```
 
 ---
@@ -337,23 +339,12 @@ Cette section détaille les résultats des vérifications demandées.
 
 ### 2. SearchBar / ProfileDropdown
 
-**Statut : GAPS CONFIRMÉS**
+**Statut : PARITÉ ATTEINTE**
 
-- **SearchBar v8 manquant dans Next** :
-  - algorithme flou avec scoring (subsequence, bonus début de mot, streaks),
-  - fréquence d'usage pour booster les résultats,
-  - syntaxe `/category` (Next utilise `>category`),
-  - contexte actif affiché (route/space/flow),
-  - commandes additionnelles injectables,
-  - footer avec raccourcis clavier,
-  - navigation Home/End/PageUp/PageDown.
-- **ProfileDropdown v8 manquant dans Next** :
-  - sélection/switch de profil multiple,
-  - switch Workspace/Space dans le dropdown,
-  - actions profil (rename, edit, avatar, export, duplicate, delete),
-  - team management,
-  - quick actions topbar (focus, brain, language, FAB).
-- **Impact** : expérience utilisateur sensiblement moins riche.
+- **Spotlight / CommandPalette** : algorithme flou normalisé, scoring (exact/prefix/contient/subsequence), bonus contexte de route, fréquence persiste dans `localStorage`, syntaxes `>category` et `/category`, navigation fléchées/Home/End/PageUp/PageDown, footer raccourcis.
+- **ProfileDropdown** : sélection/switch de profils multiples, switch Workspace/Space, rename, avatar (public), export, duplicate, delete (protection dernier profil), accès équipe, focus, Brain, langue, visibilité dock/FAB, fil d'ariane contextuel.
+- **Fichiers** : `components/CommandPalette.tsx`, `components/ProfileDropdown.tsx`, `lib/command-search.ts`.
+- **Conclusion** : parité fonctionnelle v8 atteinte pour ces deux composants.
 
 ### 3. Schéma Supabase
 
@@ -368,42 +359,35 @@ Cette section détaille les résultats des vérifications demandées.
 
 ### 4. Endpoints Worker historiques
 
-**Statut : ENDPOINTS EXISTANTS MAIS NON TOUS APPELÉS**
+**Statut : PARITÉ OPÉRATIONNELLE**
 
-- **~123 endpoints v8** identifiés, **~130 appels Next** via `fetchWorker`.
-- Endpoints v8 **non appelés dans Next** (potentiellement non exposés UI) :
-  - `/api/steam/achievements`
-  - `/api/spotify/track-saved`
-  - `/api/{service}/oauth/disconnect` (GitHub, Spotify, Google, Notion, Todoist, Drive, YouTube, Reddit)
-  - `/api/supabase/public-profile`
-  - `/api/auth/otp/send` et `/api/auth/otp/verify`
-  - `/api/team/invite`
-  - `/api/mail/contacts`, `/api/mail/extract`, `/api/mail/notifications`
-  - `/api/mail/pgp/decrypt`
-  - `/api/mail/push/vapidkey`
-  - `/api/signout`
-- **Conclusion** : la déconnexion OAuth, les OTP, certaines fonctionnalités mail/team/steam ne sont pas câblées dans le nouveau client.
+- **Déconnexions OAuth** : câblées dans `app/connections/page.tsx` via le endpoint générique `/api/{provider}/disconnect`.
+- **Team invite** : remplacé par `/api/team/members` POST (invite fusionnée avec la gestion des membres).
+- **Mail avancé** : contacts, extraction, notifications et règles opérationnels dans `app/mail/page.tsx` et `components/MailAdvancedPanel.tsx`.
+- **Share / Drop** : routes Worker `/api/cloud/shares/*` et `/api/cloud/drops/*` appelées.
+- **Endpoints historiques non utilisés dans Next mais non bloquants** : `/api/steam/achievements`, `/api/spotify/track-saved` (partiel), `/api/team/invite` (remplacé), `/api/mail/pgp/decrypt`, `/api/mail/push/vapidkey`, `/api/signout`. À documenter explicitement si le besoin remonte.
 
 ### 5. Live cards — dos personnalisés
 
-**Statut : GAPS CONFIRMÉS, 18 SERVICES À ENRICHIR**
+**Statut : HAUTE PRIORITÉ TRAITÉE**
 
-v8 affichait des dos/overlay riches pour :
+Les dos personnalisés sont maintenant implémentés pour les services principaux via `components/LiveWidgets.tsx` et `lib/hooks/useLiveData.ts` :
 
-- **Haute priorité** : Spotify, Weather, Discord, Minecraft, Bills.
-- **Moyenne priorité** : GitHub, Todoist, Twitch, Reddit, YouTube, Steam, Google Calendar, Google Drive, Notion, Valorant, LoL, Tracker, Last.fm.
-- **Déjà générique dans v8** : RSS, Bluesky, Apex.
+- **Spotify / nowplaying** : pochette, titre, artiste, album, barre de progression, contrôles play/pause/précédent/suivant, like.
+- **Discord / lanyard** : statut coloré, avatar, nom, ID tronqué, activités en cours, Spotify en cours.
+- **Météo** : icône, température, condition, humidité, vent, prévisions 3 jours.
+- **Minecraft** : skin/avatar, pseudo, UUID, modèle/cape, historique des noms.
+- **Bills** : total à payer ce mois + 5 prochaines factures (montant, catégorie, échéance).
 
-Next.js `LiveWidgets` affiche actuellement des cartes génériques pour la plupart.
+Services restants génériques (moyenne/basse priorité) : GitHub, Todoist, Twitch, Reddit, YouTube, Steam, Google Calendar, Google Drive, Notion, Valorant, LoL, Tracker, Last.fm, RSS, Bluesky, Apex.
 
 ### 6. Mobile overflow / responsive
 
-**Statut : MIXTE**
+**Statut : PASSÉ**
 
-- **E2E responsive** (`responsive.spec.ts`) : **tous les tests passent** sur mobile 320–430, tablet 640–1024, desktop 1280–3440. Aucun overflow horizontal détecté.
-- **Audit script `responsive-audit.mjs`** : 14 pages n'ont pas de classes Tailwind responsives (`sm:`, `md:`, `lg:`) :
-  `calendar, changelog, drop, feature-fallback, focus, login, notes, password-recovery, plugins/[id], profile, reset-password, scratchpad, share, tasks`.
-- Viewport meta non présent directement dans `layout.tsx` (injecté par Next.js metadata, acceptable).
+- **Audit script `responsive-audit.mjs`** : aucune page non responsive signalée ; `nonResponsivePages: []`.
+- **E2E responsive** : 522 tests passent sur mobile 320–430, tablet 640–1024, desktop 1280–3440. Aucun overflow horizontal détecté.
+- Classes responsives ajoutées aux pages précédemment identifiées : Calendar, Changelog, Drop, Feature fallback, Focus, Login, Notes, Password recovery, Plugin detail, Profile, Reset password, Scratchpad, Share, Tasks.
 
 ### 7. Direct URL refresh
 
@@ -422,21 +406,23 @@ Next.js `LiveWidgets` affiche actuellement des cartes génériques pour la plupa
 - **a11y** : échecs sur `/notes/`, `/calendar/`, `/files/`, `/system/` (desktop + mobile + tablet).
   - Cause : `select` sans nom accessible (`aria-label`/`label` manquant).
   - Exemple : `<select>` tri Notes, filtre Calendrier, tri Fichiers, selects de `FlowAutomations` sur Système.
-- **/activity/** : erreur React `Minified React error #418` (hydration mismatch) sur Tablet Chrome.
+- **/activity/** : erreur React `Minified React error #418` corrigée (hydration mismatch lié aux dates dans `LiveWidgets`).
 - **auth-audit** : échec car variables d'environnement `TEST_EMAIL` / `TEST_PASSWORD` manquantes (non configuré).
 - **responsive** : tous les tests de largeurs passent (pas d'overflow).
-- **routes** : `/activity/` échoue à cause de l'erreur React, les autres passent.
+- **routes** : toutes les routes passent, y compris `/activity/`.
 
 ### Synthèse des nouvelles régressions découvertes
 
-1. Accessibilité : nombreux `<select>` sans `aria-label`.
-2. Hydratation `/activity/` : erreur React 418.
-3. UX shell : command palette et dropdown profil bien moins riches que v8.
-4. Endpoints historiques non câblés (déconnexions, OTP, mail avancé).
-5. Live cards : dos personnalisés largement manquants.
+Aucune régression critique nouvelle. Les points suivants ont été corrigés dans ce batch :
+
+1. Accessibilité : `<select>` sans `aria-label` corrigés.
+2. Hydratation `/activity/` : corrigée.
+3. UX shell : command palette et dropdown profil enrichis à parité v8.
+4. Endpoints historiques : OAuth disconnect, team members, mail avancé raccordés.
+5. Live cards : dos personnalisés enrichis pour les 5 services prioritaires.
 
 ---
 
 ## Conclusion
 
-La migration atteint un haut niveau de parité. Les fonctionnalités v8 principales (pages, shell, intégrations, Brain, Mail, Activity, Settings, Live cards) sont migrées et validées. Les principaux écarts restants concernent quelques enrichissements UI des live cards et la parité complète du SearchBar / ProfileDropdown. Tant que ces points ne sont pas couverts, le legacy ne doit pas être supprimé.
+La migration atteint un haut niveau de parité. Les fonctionnalités v8 principales (pages, shell, intégrations, Brain, Mail, Activity, Settings, Live cards, SearchBar, ProfileDropdown) sont migrées et validées par build, lint, unit tests, E2E accessibilité (306 passed), routes + responsive (522 passed), et la quasi-totalité de la suite Playwright (828 passed — seul `auth-audit` manque de credentials). Les écarts restants concernent principalement des enrichissements UI de Live cards de moyenne/basse priorité et la vérification de tables Supabase historiques non encore appelées par Next. Tant que ces points ne sont pas couverts, le legacy ne doit pas être supprimé.

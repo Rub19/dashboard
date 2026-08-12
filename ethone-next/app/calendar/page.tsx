@@ -117,8 +117,8 @@ export default function CalendarPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="w-full sm:max-w-5xl lg:max-w-7xl mx-auto space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">{i18n("calendarTitle")}</h1>
         <div className="flex items-center gap-2">
           <button
@@ -129,7 +129,7 @@ export default function CalendarPage() {
           >
             <Icon name="chevron-left" className="h-4 w-4" />
           </button>
-          <span className="min-w-32 text-center text-sm font-medium capitalize">{monthName}</span>
+          <span className="min-w-24 text-center text-xs font-medium capitalize sm:min-w-32 sm:text-sm">{monthName}</span>
           <button
             type="button"
             aria-label={i18n("next")}
@@ -176,12 +176,12 @@ export default function CalendarPage() {
           </button>
         </div>
 
-        <div className="grid grid-cols-7 gap-2 text-center text-xs text-[var(--muted)]">
+        <div className="grid grid-cols-7 gap-1 text-center text-[10px] text-[var(--muted)] sm:gap-2 sm:text-xs">
           {DAYS.map((d) => (
             <div key={d}>{i18n(d)}</div>
           ))}
         </div>
-        <div className="mt-2 grid grid-cols-7 gap-2">
+        <div className="mt-2 grid grid-cols-7 gap-1 sm:gap-2">
           {days.map((day, i) => {
             const dayEvents = day.date ? eventsForDay(day.day) : [];
             const isSelected = day.day === selectedDay;
@@ -191,7 +191,7 @@ export default function CalendarPage() {
                 type="button"
                 onClick={() => day.date && setSelectedDay(day.day)}
                 disabled={day.date === 0}
-                className={`relative flex aspect-square items-center justify-center rounded-xl text-sm transition-colors ${
+                className={`relative flex aspect-square items-center justify-center rounded-xl text-xs sm:text-sm transition-colors ${
                   day.date === 0
                     ? "pointer-events-none bg-transparent"
                     : day.isToday
@@ -217,7 +217,7 @@ export default function CalendarPage() {
 
       {(itemsError || googleError) && (
         <Card3D>
-          <p className="text-sm text-red-400">{itemsError?.message || googleError?.message}</p>
+          <p className="break-words text-sm text-red-400">{itemsError?.message || googleError?.message}</p>
         </Card3D>
       )}
 
@@ -243,6 +243,7 @@ export default function CalendarPage() {
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value as typeof filter)}
+              aria-label={i18n("filter")}
               className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-xs outline-none"
             >
               <option value="all">{i18n("allSources")}</option>
@@ -257,16 +258,16 @@ export default function CalendarPage() {
         {itemsLoading || googleLoading ? (
           <Icon name="loader-2" className="h-5 w-5 animate-spin text-[var(--muted)]" />
         ) : selectedDayEvents.length === 0 ? (
-          <p className="text-sm text-[var(--muted)]">{i18n("noEventsDay")}</p>
+          <p className="break-words text-sm text-[var(--muted)]">{i18n("noEventsDay")}</p>
         ) : (
           <div className="space-y-2">
             {selectedDayEvents.map((e) => (
-              <div key={e.id} className="flex items-center justify-between gap-2">
+              <div key={e.id} className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
-                  <p className="font-medium">
+                  <p className="break-words font-medium">
                     {e.title} {e.source === "google" && <span className="text-[10px] text-[var(--muted)]">(G)</span>}
                   </p>
-                  <p className="text-xs text-[var(--muted)]">
+                  <p className="break-words text-xs text-[var(--muted)]">
                     {e.startAt ? new Date(e.startAt).toLocaleString(settings.language) : "-"}
                   </p>
                 </div>

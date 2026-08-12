@@ -147,12 +147,12 @@ export default function TasksPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="w-full sm:max-w-5xl lg:max-w-7xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{i18n("tasksTitle")}</h1>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         {FILTER_BUTTONS.map((f) => (
           <button
             key={f.id}
@@ -170,14 +170,14 @@ export default function TasksPage() {
       </div>
 
       <Card3D>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2 sm:flex-nowrap">
           <Input
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addTask()}
             aria-label={i18n("tasksPlaceholder")}
             placeholder={i18n("tasksPlaceholder")}
-            className="flex-1"
+            className="w-full flex-1"
           />
           <button
             type="button"
@@ -201,7 +201,7 @@ export default function TasksPage() {
         />
       )}
 
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <input
           type="checkbox"
           checked={isAllSelected}
@@ -215,13 +215,13 @@ export default function TasksPage() {
           onChange={(e) => setQuery(e.target.value)}
           placeholder={i18n("search")}
           icon="search"
-          className="ml-auto w-48"
+          className="w-full sm:ml-auto sm:w-48"
         />
       </div>
 
       {error && (
         <Card3D>
-          <p className="text-sm text-red-400">{error.message}</p>
+          <p className="break-words text-sm text-red-400">{error.message}</p>
         </Card3D>
       )}
 
@@ -258,7 +258,7 @@ export default function TasksPage() {
                   {task.done && <Icon name="circle-check" className="h-4 w-4" />}
                 </button>
                 <span
-                  className={`min-w-0 flex-1 truncate ${
+                  className={`min-w-0 flex-1 break-words ${
                     task.done ? "text-[var(--muted)] line-through" : ""
                   }`}
                 >

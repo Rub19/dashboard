@@ -218,7 +218,7 @@ export default function BrainPage() {
     return (
       <div className="space-y-4">
         <div className="flex flex-wrap items-center gap-2">
-          <select value={memoryCategory} onChange={(e) => setMemoryCategory(e.target.value as BrainMemoryCategory)} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm">
+          <select value={memoryCategory} onChange={(e) => setMemoryCategory(e.target.value as BrainMemoryCategory)} aria-label={i18n("category")} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm">
             {BRAIN_MEMORY_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
           <input type="text" value={memoryKey} onChange={(e) => setMemoryKey(e.target.value)} placeholder={i18n("key")} className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
@@ -325,13 +325,13 @@ export default function BrainPage() {
     return (
       <div className="space-y-4">
         <div className="flex flex-wrap items-center gap-2">
-          <select value={autoTrigger.type} onChange={(e) => setAutoTrigger({ type: e.target.value, value: e.target.value === "time" ? "09:00" : "home" })} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm">
+          <select value={autoTrigger.type} onChange={(e) => setAutoTrigger({ type: e.target.value, value: e.target.value === "time" ? "09:00" : "home" })} aria-label={i18n("trigger")} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm">
             <option value="route">{i18n("route")}</option>
             <option value="space">{i18n("space")}</option>
             <option value="time">{i18n("time")}</option>
           </select>
           <input type="text" value={autoTrigger.value} onChange={(e) => setAutoTrigger({ ...autoTrigger, value: e.target.value })} placeholder={i18n("value")} className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-          <select value={autoAction} onChange={(e) => setAutoAction(e.target.value)} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm">
+          <select value={autoAction} onChange={(e) => setAutoAction(e.target.value)} aria-label={i18n("action")} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm">
             {AUTOMATION_ACTIONS.map((a) => <option key={a.id} value={a.id}>{a.label}</option>)}
           </select>
           <button type="button" onClick={handleAddAutomation} className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white hover:opacity-90">{i18n("add")}</button>
@@ -610,7 +610,7 @@ export default function BrainPage() {
         </Card3D>
         <Card3D>
           <p className="mb-2 text-sm font-medium">{i18n("activeProvider")}</p>
-          <select value={brain.preferences.provider.active} onChange={(e) => brain.patch("provider.active", e.target.value)} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm">
+          <select value={brain.preferences.provider.active} onChange={(e) => brain.patch("provider.active", e.target.value)} aria-label={i18n("provider")} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm">
             {BRAIN_PROVIDERS.map((p) => <option key={p} value={p}>{p}</option>)}
           </select>
         </Card3D>

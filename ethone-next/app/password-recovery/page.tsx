@@ -28,11 +28,11 @@ export default function PasswordRecoveryPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="w-full sm:max-w-md lg:max-w-lg mx-auto space-y-6">
       <h1 className="text-2xl font-bold">{i18n("passwordRecoveryTitle")}</h1>
       <Card3D>
         {sent ? (
-          <p className="text-sm text-emerald-400">{i18n("recoverySent")}</p>
+          <p className="break-words text-sm text-emerald-400">{i18n("recoverySent")}</p>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1">

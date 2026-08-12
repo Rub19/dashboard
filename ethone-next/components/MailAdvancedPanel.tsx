@@ -284,7 +284,7 @@ export default function MailAdvancedPanel({ initialTab }: { initialTab: Tab }) {
         <div className="space-y-4">
           <form onSubmit={(e) => { e.preventDefault(); onCreateAccount(); }} className="space-y-2">
             <div className="grid gap-2 sm:grid-cols-2">
-              <select value={accountForm.provider || "gmail"} onChange={(e) => setAccountForm({ ...accountForm, provider: e.target.value })} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm">
+              <select value={accountForm.provider || "gmail"} onChange={(e) => setAccountForm({ ...accountForm, provider: e.target.value })} aria-label={i18n("provider")} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm">
                 <option value="gmail">Gmail (OAuth)</option>
                 <option value="outlook">Outlook (OAuth)</option>
                 <option value="imap">IMAP</option>

@@ -4,6 +4,24 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration React + Tailwind : parité v8 (Register, Share QR, Brain summary, Spotlight, ProfileDropdown, Live cards, a11y, responsive, hydration)**
+
+### Ajoute
+- `app/login/page.tsx` + `lib/auth.ts` : onglet d'inscription sign-up avec username, email, mot de passe, confirmation, validation et gestion de la confirmation email.
+- `app/share/page.tsx` : QR code de partage généré via `api.qrserver.com` et affichage du `brainSummary` du fichier partagé.
+- `components/CommandPalette.tsx` + `lib/command-search.ts` : recherche floue avec scoring, fréquence persistée, filtres `>category` et `/category`, contexte de route, navigation clavier étendue et footer de raccourcis.
+- `components/ProfileDropdown.tsx` : sélection/switch de profils multiples, switch Workspace/Space, actions profil (rename, avatar, export, duplicate, delete), accès équipe, focus, Brain, langue, visibilité dock/FAB.
+- `components/LiveWidgets.tsx` + `lib/hooks/useLiveData.ts` : dos personnalisés pour Spotify/nowplaying, Discord/lanyard, Météo, Minecraft et Bills.
+- `lib/i18n.ts` + `lib/i18n-extras.ts` : clés i18n pour l'enregistrement, la recherche Spotlight, le ProfileDropdown et les Live cards (fr/en/es/de).
+
+### Corrige
+- Accessibilité : ajout d'`aria-label` sur les `<select>` et contrôles interactifs des pages auditées.
+- Responsive : classes Tailwind responsives ajoutées aux 14 pages identifiées par `responsive-audit.mjs`.
+- Hydratation : correction de l'erreur React #418 sur `/activity/` liée aux dates locales dans `LiveWidgets`.
+- Mise à jour de `MIGRATION_AUDIT.md` avec le statut des points corrigés.
+
+## [Unreleased]
+
 **Migration React + Tailwind : parité v8 (Bills, Ambient, Mail analytics, Automations, Live cards, Assets legacy)**
 
 ### Ajoute

@@ -6,5 +6,9 @@ export function generateStaticParams() {
 }
 
 export default function PluginPage() {
-  return <PluginClient />;
+  return (
+    <div className="w-full sm:max-w-5xl lg:max-w-7xl mx-auto">
+      <PluginClient />
+    </div>
+  );
 }

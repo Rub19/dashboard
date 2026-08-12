@@ -18,9 +18,9 @@ export default function PluginClient() {
   if (!plugin) {
     return (
       <div className="space-y-6 p-6">
-        <h1 className="text-2xl font-bold">{i18n("pluginsTitle")}</h1>
+        <h1 className="break-words text-2xl font-bold">{i18n("pluginsTitle")}</h1>
         <Card3D>
-          <p className="text-sm text-[var(--muted)]">{i18n("notFound")}</p>
+          <p className="break-words text-sm text-[var(--muted)]">{i18n("notFound")}</p>
         </Card3D>
       </div>
     );
@@ -31,12 +31,12 @@ export default function PluginClient() {
 
   return (
     <div className="space-y-6 p-6">
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--surface-raised)] text-[var(--accent)]">
           <Icon name={plugin.icon} className="h-6 w-6" />
         </span>
         <div className="min-w-0 flex-1">
-          <h1 className="text-2xl font-bold">{plugin.label}</h1>
+          <h1 className="break-words text-2xl font-bold">{plugin.label}</h1>
           <p className={`text-sm ${connected ? "text-emerald-400" : "text-[var(--muted)]"}`}>
             {connected ? i18n("connected") : i18n("notConnected")}
           </p>
@@ -58,9 +58,9 @@ export default function PluginClient() {
             </div>
           )}
           <div className="text-center">
-            <p className="text-lg font-semibold">{live?.title || (loading ? i18n("loading") : "—")}</p>
-            {live?.subtitle && <p className="text-sm text-[var(--muted)]">{live.subtitle}</p>}
-            {live?.meta && <p className="text-xs text-[var(--muted)]">{live.meta}</p>}
+            <p className="break-words text-lg font-semibold">{live?.title || (loading ? i18n("loading") : "—")}</p>
+            {live?.subtitle && <p className="break-words text-sm text-[var(--muted)]">{live.subtitle}</p>}
+            {live?.meta && <p className="break-words text-xs text-[var(--muted)]">{live.meta}</p>}
           </div>
           <button
             type="button"

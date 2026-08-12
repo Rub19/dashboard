@@ -50,9 +50,26 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ethone.dev",
-  description: "ETHONE Dashboard — Next-gen workspace",
+  title: "ETHONE",
+  description: "ETHONE réinvente votre environnement numérique : un espace unifié pour organiser, créer et avancer.",
   manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/icons/ethone-icon.svg", sizes: "any", type: "image/svg+xml" },
+      { url: "/icons/favicon.ico", type: "image/x-icon" },
+      { url: "/icons/ethone-favicon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/icons/ethone-favicon-32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: "/icons/ethone-apple-touch-180.png",
+  },
+  other: {
+    "msapplication-TileColor": "#080a0d",
+    "msapplication-TileImage": "/icons/ethone-icon-192.png",
+    "theme-color": "#080a0d",
+    "color-scheme": "dark",
+    "apple-mobile-web-app-title": "ETHONE",
+    "apple-mobile-web-app-status-bar-style": "black-translucent",
+  },
 };
 
 export default function RootLayout({

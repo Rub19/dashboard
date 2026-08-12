@@ -27,6 +27,14 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `components/Dock.tsx` : indicateur Spotify live, contrôles Spotlight/Command, Pomodoro/Focus (avec `FocusPopover`), Mission Control, Notifications.
 - `components/V8StatusBar.tsx` + `components/V8Breadcrumbs.tsx` + `lib/activity-journal.ts` : états sync/save/session, quick action sync.
 - `app/legacy-v8-tokens.css` + `components/HtmlLang.tsx` : variantes de thème `obsidian`, `aurora`, `minimal`, `focus`, `glass`, `oled`.
+- `lib/presence-engine.ts` + `components/PresenceProvider.tsx` + `components/PresenceIndicator.tsx` : moteur de présence v8 avec signaux `brain/sync/media/calendar/mail/notification/activity`, signal dominant, indicateur animé dans la barre d'état et le SidePanel.
+- `lib/brain-context.ts` + `lib/brain-memory.ts` + `lib/hooks/useBrainContext.ts` : moteur de contexte Brain (filtrage par route, anonymisation des données sensibles) et repository de mémoire local avec TTL, purge et scan de données sensibles.
+- `lib/focus-timer.ts` + `app/focus/page.tsx` + `components/FocusIsland.tsx` : cycles Pomodoro/Deep Work/Sprint avec pauses courtes/longues, compteur de cycles, persistance du timer.
+- `lib/bills-manager.ts` + `app/bills/page.tsx` + `components/BillsWidget.tsx` : gestion de factures avec récurrence, catégories, échéance, total à venir et scan Brain pour catégorisation.
+- `lib/hooks/useDiscordLive.ts` + `lib/hooks/useMinecraftLive.ts` + `lib/hooks/useLolLive.ts` + `lib/hooks/useLiveFetch.ts` : hooks live indépendants pour Discord (Lanyard), Minecraft et League of Legends.
+- `lib/density-engine.ts` + `components/HtmlLang.tsx` : moteur de densité v8 avec presets `spacious/comfortable/compact/dense/ultra-compact/ultra/normal/airy`, détection viewport/zoom et mode `automatic`.
+- `lib/interactions-heatmap.ts` + `app/interactions/page.tsx` : moteur de heatmap d'interactions (séries, consistance, intensité relative) et intégration dans la page Interactions.
+- `lib/commands.tsx` + `components/CommandPalette.tsx` : extension du catalogue de commandes avec plus de 60 entrées, historique, favoris, recherche contextuelle.
 
 ### Corrige
 - Migration des packs audio legacy `mechanical`/`liquid`/`none` vers les équivalents v8 pour compatibilité ascendante.

@@ -274,14 +274,15 @@ Ces fonctionnalités étaient dans v8 et n'ont pas encore de parité dans Next.j
 ## 🐛 BUGS / RÉGRESSIONS POTENTIELLES
 
 1. **Live cards vides génériques** — certains dos de cartes live (YouTube, Reddit, Twitch, Google Drive, Notion) sont basiques ; possible régression visuelle si v8 affichait plus de détails.
-2. **Manifest** — corrigé dans ce batch : manquait shortcuts, categories, orientation restrictive.
-3. **Register** — manque complètement ; un nouvel utilisateur ne peut pas créer de compte depuis Next.js.
 
 ---
 
-## 🔧 CORRECTIONS EFFECTUÉES PENDANT L'AUDIT
+## 🔧 CORRECTIONS EFFECTUÉES
 
 1. **Manifest PWA** — aligné sur v8 (shortcuts Dashboard/Brain/Settings, categories productivity/utilities, lang fr, dir ltr, orientation any, display_override).
+2. **Register / Sign-up** — onglet d'inscription ajouté à `app/login/page.tsx` avec `signUpWithPassword` dans `lib/auth.ts`.
+3. **Share QR code** — QR code de partage affiché dans `app/share/page.tsx` via `api.qrserver.com`.
+4. **Share brainSummary** — résumé Brain affiché dans `app/share/page.tsx` si disponible.
 
 ---
 

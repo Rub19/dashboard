@@ -13,8 +13,16 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `lib/sound.tsx` + `lib/settings.ts` + `app/settings/page.tsx` : packs v8 (`ethone`, `minimal`, `classic`, `apple-inspired`, `cyber-pulse`, `silent`), audio spatial pan (max 0.07) et volumes par catégorie (`interface`, `notifications`, `brain`, `system`).
 - `components/V8Breadcrumbs.tsx` + `components/V8StatusBar.tsx` + `components/NotificationCenter.tsx` : fil d'Ariane contextuel (workspace, data-space, profil, météo, connexion, quick actions) et barre d'état avancée (session, sync, réseau, notifications, version).
 
+- `components/MissionControl.tsx` : Mission Control complet avec sections Spaces, Flows, Fenêtres, Dashboards, Widgets live et Activité Brain, navigation clavier (flèches, Home/End, Escape, F2).
+- `lib/activity-journal.ts` + `lib/hooks/useActivityJournal.ts` + `components/ActivityJournalProvider.tsx` : journal d'activité client avec `capture`/`captureRoute`, stockage local, synchronisation batch périodique vers `POST /api/cloud/activity`.
+- `app/activity/page.tsx` : section journal avec recherche, filtres, statistiques et périodes 7/30/90/365j en complément de la heatmap.
+- `components/WeatherDetailPopover.tsx` + `components/V8Breadcrumbs.tsx` : popover météo 5 jours (température, humidité, vent, prévisions) via `useLiveData` et `@floating-ui/react`.
+- `app/page.tsx` + `lib/settings.ts` + `components/V8StatusBar.tsx` : sélecteur v8 de mode de session (`default/focus/intense/zen/night`) distinct du statut de présence, persistance et thématisation via `data-session-mode`.
+- `worker/src/routes/cloud-activity.js` + `worker/src/services/cloud-activity-client.js` + `worker/src/router.js` : endpoint Worker pour l'insertion batch d'activités.
+
 ### Corrige
 - Migration des packs audio legacy `mechanical`/`liquid`/`none` vers les équivalents v8 pour compatibilité ascendante.
+- Test worker `worker/test/worker-security.test.mjs` : tampered JWT plus robuste (remplacement du premier caractère de la signature).
 - Réduction des appels Worker via caches existants et réutilisation des hooks Worker.
 
 **Modernisation UI Next.js : notifications, haptics, tooltips, context-menus et bottom-sheets**

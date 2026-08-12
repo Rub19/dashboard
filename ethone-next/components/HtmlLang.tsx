@@ -39,6 +39,7 @@ export default function HtmlLang() {
     html.dataset.font = settings.fontFamily;
     html.dataset.accent = settings.accentColor;
     html.dataset.aura = settings.aura;
+    html.dataset.sessionMode = settings.sessionMode;
     html.setAttribute("data-accent", settings.accentColor);
     if (settings.accentColor === "custom") {
       html.style.setProperty("--accent", settings.customAccent);
@@ -65,6 +66,7 @@ export default function HtmlLang() {
     settings.accentColor,
     settings.customAccent,
     settings.reducedMotion,
+    settings.sessionMode,
   ]);
   return null;
 }

@@ -36,6 +36,7 @@ import KeyboardShortcuts from "@/components/KeyboardShortcuts";
 import PresenceProvider from "@/components/PresenceProvider";
 import { ShortcutsProvider } from "@/components/ShortcutsProvider";
 import AutomationRuntime from "@/components/AutomationRuntime";
+import { ActivityJournalProvider } from "@/components/ActivityJournalProvider";
 import V8Breadcrumbs from "@/components/V8Breadcrumbs";
 import V8StatusBar from "@/components/V8StatusBar";
 import V8WindowControls from "@/components/V8WindowControls";
@@ -104,8 +105,10 @@ export default function RootLayout({
                   <VisualHaptics />
                   <FocusIsland />
                   <main data-v8-main id="main-content" className="p-6 pb-24 md:pb-10" tabIndex={-1}>
-                    <PageTransition>{children}</PageTransition>
-                    <AutomationRuntime />
+                    <ActivityJournalProvider>
+                      <PageTransition>{children}</PageTransition>
+                      <AutomationRuntime />
+                    </ActivityJournalProvider>
                   </main>
                   <V8StatusBar />
                 </div>

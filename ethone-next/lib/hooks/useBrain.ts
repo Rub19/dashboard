@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSettings } from "@/components/SettingsProvider";
+import { activityJournal } from "@/lib/activity-journal";
 import { useItems } from "./useItems";
 import {
   type BrainPreferences,
@@ -116,8 +117,10 @@ export function useBrain() {
       });
       const content = res?.data?.content || res?.data?.text || "Réponse vide.";
       setMessages((prev) => [...prev, { role: "assistant", content, createdAt: Date.now() }]);
+      activityJournal.capture("v8.brain.call", { ok: true, prompt: prompt.trim().slice(0, 80) });
     } catch (err) {
       setError(err instanceof Error ? err : new Error(String(err)));
+      activityJournal.capture("v8.brain.call", { ok: false });
     } finally {
       setLoading(false);
     }

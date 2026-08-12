@@ -60,6 +60,8 @@ export type DockGlass = "vitrified" | "ultra-blur" | "sober";
 
 export type UiAnimationStyle = "smooth" | "snappy" | "reduced";
 
+export type SessionMode = "default" | "focus" | "intense" | "zen" | "night";
+
 export type SoundPack =
   | "ethone"
   | "minimal"
@@ -135,6 +137,7 @@ export type Settings = {
   lowData: boolean;
   performanceMode: "normal" | "low";
   status: "online" | "busy" | "focus" | "away" | "invisible";
+  sessionMode: SessionMode;
   uiAnimations: UiAnimationStyle;
   uiGlow: boolean;
   uiSoundFeedback: boolean;
@@ -261,13 +264,14 @@ export const DEFAULTS: Settings = {
   haptics: true,
   lowData: false,
   performanceMode: "normal",
+  status: "online",
+  sessionMode: "default",
   uiAnimations: "smooth",
   uiGlow: true,
   uiSoundFeedback: true,
   spotlightEnabled: true,
   ambientEffectsEnabled: true,
   interfaceBlurEnabled: true,
-  status: "online",
   liveNowPlayingSource: "lanyard",
   liveNowPlayingIdentity: "",
   liveLanyardUserId: "",
@@ -331,8 +335,13 @@ const SOUND_PACK_LEGACY: Record<string, SoundPack> = {
   liquid: "apple-inspired",
 };
 
+const SESSION_MODE_VALUES: SessionMode[] = ["default", "focus", "intense", "zen", "night"];
+
 function migrateSettings(raw: Partial<Settings>): Partial<Settings> {
   const next: Partial<Settings> = { ...raw };
+  if (typeof raw.sessionMode === "string" && !SESSION_MODE_VALUES.includes(raw.sessionMode as SessionMode)) {
+    next.sessionMode = "default";
+  }
   if (typeof raw.dockGlass === "string" && !DOCK_GLASS_VALUES.includes(raw.dockGlass as DockGlass)) {
     next.dockGlass = DOCK_GLASS_LEGACY[raw.dockGlass] ?? "vitrified";
   }

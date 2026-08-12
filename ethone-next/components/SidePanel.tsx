@@ -156,20 +156,20 @@ function WidgetsTab({ now }: { now: Date }) {
   const { state: presence } = usePresence();
   const progress = state.total > 0 ? ((state.total - state.remaining) / state.total) * 100 : 0;
 
-  const statusMap: Record<string, string> = {
-    online: "statusOnline",
-    busy: "statusBusy",
-    focus: "statusFocus",
-    away: "statusAway",
-    invisible: "statusInvisible",
+  const sessionModeMap: Record<string, string> = {
+    default: "sessionModeDefault",
+    focus: "sessionModeFocus",
+    intense: "sessionModeIntense",
+    zen: "sessionModeZen",
+    night: "sessionModeNight",
   };
 
-  const statusIconMap: Record<string, string> = {
-    online: "circle",
-    busy: "minus-circle",
+  const sessionModeIconMap: Record<string, string> = {
+    default: "circle",
     focus: "target",
-    away: "moon",
-    invisible: "eye-off",
+    intense: "zap",
+    zen: "coffee",
+    night: "moon",
   };
 
   const presenceMap: Record<string, string> = {
@@ -179,7 +179,7 @@ function WidgetsTab({ now }: { now: Date }) {
     offline: "presenceOffline",
   };
 
-  const statusIcon = statusIconMap[settings.status] || "circle";
+  const sessionModeIcon = sessionModeIconMap[settings.sessionMode] || "circle";
   const presenceLabel = presenceMap[presence.status || "online"] || "presenceOnline";
 
   return (
@@ -189,7 +189,7 @@ function WidgetsTab({ now }: { now: Date }) {
         <Metric icon="alert-triangle" value={importantCount} label={i18n("important")} />
         <Metric icon="timer" value={state.remaining} label={state.phase === "idle" ? i18n("focus") : i18n("remaining")} />
         <Metric icon="brain" value={settings.brainEnabled ? i18n("on") : i18n("off")} label={i18n("brain")} />
-        <Metric icon={statusIcon} value={i18n(statusMap[settings.status] || "statusOnline")} label={i18n("sessionMode")} />
+        <Metric icon={sessionModeIcon} value={i18n(sessionModeMap[settings.sessionMode] || "sessionModeDefault")} label={i18n("sessionMode")} />
         <Metric icon="radio" value={i18n(presenceLabel)} label={i18n("presence")} />
       </section>
 

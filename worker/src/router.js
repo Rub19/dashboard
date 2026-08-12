@@ -18,7 +18,7 @@ import {
   cloudFilesListRoute,
   cloudFilesSyncRoute
 } from "./routes/cloud-files.js";
-import { cloudActivityListRoute, cloudActivitySummaryRoute } from "./routes/cloud-activity.js";
+import { cloudActivityCreateRoute, cloudActivityListRoute, cloudActivitySummaryRoute } from "./routes/cloud-activity.js";
 import { cloudCleanupRoute } from "./routes/cloud-cleanup.js";
 import { cloudDashboardRoute } from "./routes/cloud-dashboard.js";
 import { cloudFileBrainRoute } from "./routes/cloud-brain.js";
@@ -178,6 +178,7 @@ export const ROUTES = Object.freeze([
   route("cloud.file.favorite", "/api/cloud/file/favorite", cloudFileFavoriteRoute, { method: "POST", service: "cloud", rateLimit: "strict" }),
   route("cloud.file.brain", "/api/cloud/file/brain", cloudFileBrainRoute, { method: "POST", service: "cloud", rateLimit: "strict" }),
   route("cloud.activity", "/api/cloud/activity", cloudActivityListRoute, { service: "cloud" }),
+  route("cloud.activity.create", "/api/cloud/activity", cloudActivityCreateRoute, { method: "POST", service: "cloud", rateLimit: "strict" }),
   route("cloud.activity.summary", "/api/cloud/activity/summary", cloudActivitySummaryRoute, { service: "cloud" }),
   route("cloud.dashboard", "/api/cloud/dashboard", cloudDashboardRoute, { service: "cloud" }),
   route("cloud.cleanup", "/api/cloud/cleanup", cloudCleanupRoute, { method: "POST", service: "cloud", rateLimit: "strict" }),

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { fetchWorker } from "../api";
+import { activityJournal } from "@/lib/activity-journal";
 
 export type Item = {
   id: string;
@@ -42,8 +43,16 @@ export function useItems(kind: "notes" | "tasks" | "events") {
       method: "POST",
       body: JSON.stringify(input),
     });
+    const data = res?.data;
+    const actionMap = {
+      notes: "v8.notes.new" as const,
+      tasks: "v8.tasks.create" as const,
+      events: "v8.calendar.create" as const,
+    };
+    const actionId = actionMap[kind];
+    activityJournal.capture(actionId, { ok: !!data, title: input.title });
     await reload();
-    return res?.data;
+    return data;
   }
 
   async function update(id: string, input: Partial<Omit<Item, "id">>) {
@@ -51,6 +60,13 @@ export function useItems(kind: "notes" | "tasks" | "events") {
       method: "PATCH",
       body: JSON.stringify({ id, ...input }),
     });
+    if (kind === "notes") {
+      activityJournal.capture("v8.notes.save", { ok: true, title: input.title });
+    }
+    if (kind === "tasks" && input.done === true) {
+      const item = items.find((i) => i.id === id);
+      activityJournal.capture("v8.tasks.complete", { ok: true, title: item?.title });
+    }
     await reload();
   }
 

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { fetchWorker, uploadWorker } from "../api";
+import { activityJournal } from "@/lib/activity-journal";
 
 export type CloudFile = {
   id: string;
@@ -194,6 +195,7 @@ export function useCloudFiles(clientId?: string) {
       method: "POST",
       body: JSON.stringify({ clientId, name, parentId: parentId || null }),
     });
+    activityJournal.capture("v8.files.create", { ok: !!res?.data?.folder, name });
     await syncWithDrive();
     return res?.data?.folder;
   }
@@ -201,6 +203,7 @@ export function useCloudFiles(clientId?: string) {
   async function uploadFile(file: File, parentId?: string | null) {
     if (!clientId) return null;
     const res = await uploadWorker("/api/google-drive/upload", file, { clientId, parentId: parentId || undefined });
+    activityJournal.capture("v8.files.create", { ok: !!res?.data, name: file.name });
     await syncWithDrive();
     return res?.data;
   }

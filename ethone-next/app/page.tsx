@@ -14,6 +14,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useFocus } from "@/components/FocusProvider";
+import { type SessionMode } from "@/lib/settings";
 import Link from "next/link";
 
 function formatBytes(bytes = 0) {
@@ -32,6 +33,47 @@ const AURAS = [
   { id: "emerald", icon: "gem" },
   { id: "mineral", icon: "layers-3" },
 ] as const;
+
+const SESSION_MODES: { id: SessionMode; icon: string; label: string; copy: string }[] = [
+  { id: "default", icon: "circle", label: "sessionModeDefault", copy: "sessionModeDefaultCopy" },
+  { id: "focus", icon: "target", label: "sessionModeFocus", copy: "sessionModeFocusCopy" },
+  { id: "intense", icon: "zap", label: "sessionModeIntense", copy: "sessionModeIntenseCopy" },
+  { id: "zen", icon: "coffee", label: "sessionModeZen", copy: "sessionModeZenCopy" },
+  { id: "night", icon: "moon", label: "sessionModeNight", copy: "sessionModeNightCopy" },
+];
+
+function SessionModeSelector() {
+  const i18n = useI18n();
+  const { settings, update } = useSettings();
+  const activeIndex = SESSION_MODES.findIndex((m) => m.id === settings.sessionMode);
+  const currentIndex = activeIndex >= 0 ? activeIndex : 0;
+  const active = SESSION_MODES[currentIndex];
+
+  function cycle() {
+    const nextIndex = (currentIndex + 1) % SESSION_MODES.length;
+    update({ sessionMode: SESSION_MODES[nextIndex].id });
+  }
+
+  return (
+    <Card3D>
+      <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">{i18n("sessionMode")}</h2>
+      <button
+        type="button"
+        onClick={cycle}
+        title={i18n("changeSessionMode")}
+        aria-label={i18n("changeSessionMode")}
+        className="group flex w-full items-center justify-between gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-3 text-left text-sm font-medium transition-colors hover:border-[var(--accent)] hover:text-[var(--foreground)]"
+      >
+        <span className="flex items-center gap-2 text-[var(--foreground)]">
+          <Icon name={active.icon} className="h-4 w-4 text-[var(--accent)]" />
+          {i18n(active.label)}
+        </span>
+        <Icon name="chevron-right" className="h-4 w-4 text-[var(--muted)] transition-transform group-hover:translate-x-0.5" />
+      </button>
+      <p className="mt-2 text-xs text-[var(--muted)]">{i18n(active.copy)}</p>
+    </Card3D>
+  );
+}
 
 type SectionDef = { id: string; label: string; icon: string };
 
@@ -368,8 +410,10 @@ export default function Home() {
         </Card3D>
       )}
 
+      <SessionModeSelector />
+
       <Card3D>
-        <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">{i18n("sessionMode")}</h2>
+        <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">{i18n("presence")}</h2>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
           {STATUSES.map((s) => (
             <button

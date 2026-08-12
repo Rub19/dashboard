@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { activityJournal } from "@/lib/activity-journal";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useProfiles, type Profile } from "@/lib/hooks/useProfiles";
 import { loadSettings, saveSettings, saveSettingsAsync, loadSettingsAsync, Settings, DEFAULTS, type ThemeMode } from "@/lib/settings";
 
@@ -162,6 +163,7 @@ export default function SettingsProvider({
     root.dataset.ambientEffects = settings.ambientEffectsEnabled ? "true" : "false";
     root.dataset.interfaceBlur = settings.interfaceBlurEnabled ? "true" : "false";
     root.dataset.zenMode = settings.zenMode ? "true" : "false";
+    root.dataset.sessionMode = settings.sessionMode;
     root.style.fontSize = `${settings.fontSize}%`;
     root.style.setProperty("--aurora-speed", `${60 - settings.backgroundSpeed}s`);
     if (settings.reducedMotion) {
@@ -182,6 +184,19 @@ export default function SettingsProvider({
     saveSettings(next, active || undefined);
     saveSettingsAsync(next, active || undefined);
   }
+
+  const previousSettingsRef = useRef<Settings | null>(null);
+  useEffect(() => {
+    const prev = previousSettingsRef.current;
+    previousSettingsRef.current = settings;
+    if (!prev) return;
+    if (settings.theme !== prev.theme || settings.darkMode !== prev.darkMode) {
+      activityJournal.capture("v8.theme.toggle", { ok: true, theme: settings.theme, darkMode: settings.darkMode });
+    }
+    if (settings.accentColor !== prev.accentColor) {
+      activityJournal.capture("v8.appearance.cycle", { ok: true, accentColor: settings.accentColor });
+    }
+  }, [settings]);
 
   return (
     <ActiveProfileContext.Provider value={activeContext}>

@@ -47,6 +47,14 @@ function normalizeActivity(row) {
   });
 }
 
+function normalizeEvent(event) {
+  return {
+    event_type: safeText(event?.eventType || event?.event_type || "activity", 32),
+    details: event?.details && typeof event.details === "object" ? event.details : {},
+    created_at: safeText(event?.createdAt || event?.created_at, 40),
+  };
+}
+
 export async function listActivity(env, userId, { limit = 100, since = "" } = {}) {
   const origin = projectOrigin(env);
   if (!origin || !userId) return [];
@@ -69,4 +77,19 @@ export async function getActivitySummary(env, userId) {
     unread: 0,
     latest: rows.length ? normalizeActivity(rows[0]) : null
   });
+}
+
+export async function recordActivities(env, userId, events = []) {
+  const origin = projectOrigin(env);
+  if (!origin || !userId || !Array.isArray(events) || events.length === 0) return 0;
+  const body = events.slice(0, 100).map((event) => ({
+    user_id: userId,
+    file_id: null,
+    share_id: null,
+    drop_id: null,
+    ...normalizeEvent(event),
+    ip_hash: ""
+  }));
+  await supabaseRequest(env, "/rest/v1/ethone_file_activity", { method: "POST", body, maxBytes: 64 * 1024 });
+  return body.length;
 }

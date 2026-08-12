@@ -4,10 +4,27 @@ import { useEffect, useMemo, useState } from "react";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useNotifications } from "@/lib/hooks/useNotifications";
-import { useActiveProfile } from "@/components/SettingsProvider";
+import { useActiveProfile, useSettings } from "@/components/SettingsProvider";
 import { useAuth } from "@/components/AuthProvider";
 import { useFocus } from "@/components/FocusProvider";
 import { usePresence } from "@/components/PresenceProvider";
+import { type SessionMode } from "@/lib/settings";
+
+const SESSION_MODE_LABELS: Record<SessionMode, string> = {
+  default: "sessionModeDefault",
+  focus: "sessionModeFocus",
+  intense: "sessionModeIntense",
+  zen: "sessionModeZen",
+  night: "sessionModeNight",
+};
+
+const SESSION_MODE_ICONS: Record<SessionMode, string> = {
+  default: "circle",
+  focus: "target",
+  intense: "zap",
+  zen: "coffee",
+  night: "moon",
+};
 
 type Tone = "online" | "offline" | "syncing" | "warning" | "error" | "important" | "muted";
 
@@ -88,6 +105,7 @@ export default function V8StatusBar() {
   const i18n = useI18n();
   const { activeProfile } = useActiveProfile();
   const { user } = useAuth();
+  const { settings } = useSettings();
   const { state: presence } = usePresence();
   const focus = useFocus();
   const { unreadCount } = useNotifications();
@@ -111,6 +129,9 @@ export default function V8StatusBar() {
     return i18n("v8SessionIdle");
   }, [isFocus, focus.state, presetName, i18n]);
 
+  const sessionModeLabel = i18n(SESSION_MODE_LABELS[settings.sessionMode] || SESSION_MODE_LABELS.default);
+  const sessionModeIcon = SESSION_MODE_ICONS[settings.sessionMode] || SESSION_MODE_ICONS.default;
+
   return (
     <footer
       data-v8-status-bar
@@ -125,6 +146,12 @@ export default function V8StatusBar() {
       />
 
       <div className="flex items-center gap-3">
+        <StatusItem
+          icon={sessionModeIcon}
+          tone="muted"
+          label={i18n("sessionMode")}
+          value={sessionModeLabel}
+        />
         <StatusItem
           icon={syncing ? "refresh-cw" : "cloud"}
           tone={syncing ? "syncing" : "online"}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "@/lib/icons";
@@ -8,8 +8,10 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { useSettings, useActiveProfile } from "@/components/SettingsProvider";
 import { useAuth } from "@/components/AuthProvider";
+import { activityJournal } from "@/lib/activity-journal";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useFocus } from "@/components/FocusProvider";
+import WeatherDetailPopover from "@/components/WeatherDetailPopover";
 
 type Tone = "online" | "offline" | "syncing" | "warning" | "error" | "muted";
 
@@ -65,7 +67,7 @@ function weatherIcon(condition?: string) {
   if (c.includes("thunder")) return "cloud-lightning";
   if (c.includes("rain") || c.includes("drizzle")) return "cloud-rain";
   if (c.includes("snow")) return "snowflake";
-  if (c.includes("fog") || c.includes("mist")) return "cloud-fog";
+  if (c.includes("fog") || c.includes("mist")) return "cloud";
   if (c.includes("cloud")) return "cloud";
   if (c.includes("clear") || c.includes("sun")) return "sun";
   return "cloud-sun";
@@ -162,6 +164,43 @@ function QuickAction({
   );
 }
 
+function WeatherButton({
+  weather,
+  condition,
+  temp,
+}: {
+  weather: Record<string, unknown> | null;
+  condition: string;
+  temp: string;
+}) {
+  const i18n = useI18n();
+  const [open, setOpen] = useState(false);
+  const [ref, setRef] = useState<HTMLButtonElement | null>(null);
+
+  return (
+    <>
+      <button
+        ref={setRef}
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        data-tooltip={i18n("weather")}
+        data-interactive
+        aria-label={`${i18n("weather")} ${temp}`}
+        className="relative flex h-8 items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)]"
+      >
+        <Icon name={weatherIcon(condition)} className="h-4 w-4" />
+        <span className="text-sm font-medium tabular-nums">{temp}</span>
+      </button>
+      <WeatherDetailPopover
+        open={open}
+        onClose={() => setOpen(false)}
+        referenceRef={ref}
+        weather={weather}
+      />
+    </>
+  );
+}
+
 export default function V8Breadcrumbs() {
   const i18n = useI18n();
   const pathname = usePathname() ?? "/";
@@ -173,6 +212,22 @@ export default function V8Breadcrumbs() {
   const focus = useFocus();
   const time = useClientClock();
   const online = useOnlineStatus();
+
+  const previousSpaceRef = useRef<string | null>(null);
+  useEffect(() => {
+    const prev = previousSpaceRef.current;
+    previousSpaceRef.current = activeSpace;
+    if (!prev) return;
+    const spaceMap: Record<string, string> = {
+      personal: "v8.space.personal",
+      focus: "v8.space.focus",
+      studio: "v8.space.studio",
+    };
+    const actionId = spaceMap[activeSpace];
+    if (actionId) {
+      activityJournal.capture(actionId, { ok: true });
+    }
+  }, [activeSpace]);
 
   const page = useMemo(
     () => (pathname === "/" ? "home" : pathname.split("/").filter(Boolean)[0] || "home"),
@@ -236,12 +291,7 @@ export default function V8Breadcrumbs() {
           value={online ? i18n("v8NetworkOnline") : i18n("v8NetworkOffline")}
           tone={online ? "online" : "offline"}
         />
-        <ContextItem
-          icon={weatherIcon(weatherCondition)}
-          label={i18n("weather")}
-          value={weatherTemp}
-          title={weatherCondition}
-        />
+        {/* weather quick action moved to the right */}
         <ContextItem icon="clock" label={i18n("time")} value={time} mono />
         <ContextItem icon="user" label={i18n("profile")} value={profileName} />
       </div>
@@ -263,6 +313,11 @@ export default function V8Breadcrumbs() {
           icon="bell"
           label={i18n("notifications")}
           onClick={handleNotifications}
+        />
+        <WeatherButton
+          weather={weather}
+          condition={weatherCondition}
+          temp={weatherTemp}
         />
       </div>
     </nav>

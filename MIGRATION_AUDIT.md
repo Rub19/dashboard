@@ -11,8 +11,8 @@ L'inventaire comparatif a été réalisé sur l'ancien ETHONE v8 (`\.worktree\ma
 
 - **État global** : la grande majorité des pages, composants shell, connexions externes, paramètres et comportements sont migrés et fonctionnent.
 - **Dernières corrections** : retrait du fallback legacy (`public/legacy` supprimé), propagation des erreurs live data, signout Worker notifié, marketplace complet (35 intégrations v8 couvertes dans `lib/plugins.ts`, 40 routes de plugin générées, dont `bills` et `steam-achievements`), rate-limiter client v8 porté dans `lib/rate-limiter.ts` et `lib/auth.ts`, OTP Worker (`/api/auth/otp/send` et `/api/auth/otp/verify`), profil public Supabase (`/api/supabase/public-profile`) avec aperçu profil, succès Steam via `/api/steam/achievements`, endpoints mail contacts/extract/notifications, validateurs de formulaires avancés v8 portés dans `lib/form-validation.ts`, command search/history enrichi, composants `DenseContent` et `DepthEffect` portés, like Spotify synchronisé, recherche mail via `/api/mail/search`, parité RichTextEditor renforcie, logo ETHONE sur le dashboard home, badge "OS" retiré de l'écran de chargement, sélecteur de langue dans la topbar.
-- **Différences principales** : Next.js ajoute de nombreuses fonctionnalités absentes de v8 (Bills, Flows, Focus, Weather, Plugins, Personas, Spaces, Macros, RSS, Scratchpad, etc.). Quelques écarts mineurs subsistent (tests authentifiés nécessitant `TEST_EMAIL/TEST_PASSWORD`).
-- **Validation technique** : build (77 pages), lint, tests unitaires (45 tests), `audit-security` (416 fichiers) et `precommit-upload-check` passent. E2E direct refresh (`/plugins/spotify/`, `/drop/?slug=...`, `/share/?slug=...`) passent. Tests E2E authentifiés en attente de credentials.
+- **Différences principales** : Next.js ajoute de nombreuses fonctionnalités absentes de v8 (Bills, Flows, Focus, Weather, Plugins, Personas, Spaces, Macros, RSS, Scratchpad, etc.). Quelques écarts mineurs subsistent (tests a11y/routes/responsive non relancés pour préserver la limite Worker).
+- **Validation technique** : build (77 pages), lint, tests unitaires (45 tests), `audit-security` (416 fichiers), `precommit-upload-check`, E2E direct refresh (`/plugins/spotify/`, `/drop/?slug=...`, `/share/?slug=...`) et `auth-audit` (3 tests) passent.
 
 ---
 
@@ -331,7 +331,7 @@ Ces fichiers / dossiers semblent encore présents mais non utilisés par Next.js
 1. **Spotify seek** — le Worker ne supporte pas le seek (`controlSpotifyPlayback` ne gère que play/pause/next/previous).
 2. **Supabase schema divergent** — si v8 utilisait encore `ethone_files`, `ethone_file_collaborators` ou `ethone_mail_aliases`, vérifier leur usage et mapping dans le Worker.
 3. **Assets legacy** — `public/legacy/` a été supprimé. Le worktree `.worktree/main/v8/` reste la référence legacy et n'est plus dupliqué dans `public/`.
-4. **Tests E2E authentifiés** — `auth-audit.spec.ts` nécessite `TEST_EMAIL/TEST_PASSWORD` ; ils ne sont pas exécutables sans ces credentials.
+4. **Tests E2E authentifiés** — `auth-audit.spec.ts` passe avec `TEST_EMAIL/TEST_PASSWORD` (non conservés dans le dépôt).
 
 ---
 
@@ -346,7 +346,7 @@ upload check                         ✅ 0 unsafe
 direct refresh E2E                   ✅ 9 tests (/plugins/spotify/, /drop/?slug=..., /share/?slug=...)
 a11y E2E                             ⚠️  non relancé (conserve le dernier PASS à 306)
 routes + responsive E2E              ⚠️  non relancé (conserve le dernier PASS à 522)
-auth-audit E2E                       ⚠️  en attente de TEST_EMAIL/TEST_PASSWORD
+auth-audit E2E                       ✅ 3 tests (desktop / mobile / tablet)
 full E2E                             ⚠️  non relancé
 ```
 

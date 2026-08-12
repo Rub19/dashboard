@@ -34,6 +34,9 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `components/RichTextEditor.tsx` : parité améliorée avec v8 (`toEditableHtml`, `plainTextToHtml`, `stripHtml`, `safeHref`, suppression des balises interdites et des commentaires, conservation de la classe `code`).
 - `components/Loading.tsx` : retrait du badge "OS" sur l'écran de chargement pour correspondre au boot v8.
 
+### Validation
+- `auth-audit.spec.ts` : test E2E authentifié (desktop / mobile / tablet) passé avec `TEST_EMAIL/TEST_PASSWORD` fournis, sans persistance des credentials.
+
 ## [Unreleased]
 
 **Migration React + Tailwind : parité v8 (Register, Share QR, Brain summary, Spotlight, ProfileDropdown, Live cards, a11y, responsive, hydration)**

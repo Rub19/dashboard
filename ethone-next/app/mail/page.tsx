@@ -119,6 +119,7 @@ export default function MailPage() {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [brainSummary, setBrainSummary] = useState<string | null>(null);
   const [sort, setSort] = useState<"newest" | "oldest" | "sender" | "unread">("newest");
+  const [filter, setFilter] = useState<"all" | "unread" | "starred" | "important">("all");
   const [sortOpen, setSortOpen] = useState(false);
   const [moveOpen, setMoveOpen] = useState(false);
   const [labelOpen, setLabelOpen] = useState(false);
@@ -156,8 +157,19 @@ export default function MailPage() {
     return Array.from(map.values()).map((list) => list.sort((a, b) => new Date(a.received_at).getTime() - new Date(b.received_at).getTime()));
   }, [messages]);
 
+  const filteredGroupedMessages = useMemo(() => {
+    if (filter === "all") return groupedMessages;
+    return groupedMessages.filter((g) => {
+      const msg = g[g.length - 1];
+      if (filter === "unread") return !msg.is_read;
+      if (filter === "starred") return msg.is_starred;
+      if (filter === "important") return msg.is_important;
+      return true;
+    });
+  }, [groupedMessages, filter]);
+
   const sortedGroupedMessages = useMemo(() => {
-    const list = [...groupedMessages];
+    const list = [...filteredGroupedMessages];
     if (sort === "oldest") {
       list.sort((a, b) => new Date(a[a.length - 1].received_at).getTime() - new Date(b[b.length - 1].received_at).getTime());
     } else if (sort === "sender") {
@@ -170,7 +182,7 @@ export default function MailPage() {
       list.sort((a, b) => Number(b[0].is_read) - Number(a[0].is_read));
     }
     return list;
-  }, [groupedMessages, sort]);
+  }, [filteredGroupedMessages, sort]);
 
   function toggleSelect(id: string) {
     setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
@@ -532,6 +544,20 @@ export default function MailPage() {
                 {unread} {i18n("unread")}
               </span>
             )}
+            <div className="flex gap-1 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] p-1">
+              {(["all", "unread", "starred", "important"] as const).map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setFilter(key)}
+                  className={`rounded-lg px-2 py-1 text-xs font-medium transition-colors ${
+                    filter === key ? "bg-[var(--accent)] text-white" : "text-[var(--muted)] hover:text-[var(--foreground)]"
+                  }`}
+                >
+                  {i18n(key)}
+                </button>
+              ))}
+            </div>
             <button
               type="button"
               onClick={() => openCompose("new")}

@@ -12,6 +12,15 @@ export async function signInWithOtp(email: string) {
   return { ok: !error, error };
 }
 
+export async function signUpWithPassword(email: string, password: string, username: string) {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { data: { username } },
+  });
+  return { ok: !error && !!data.user, user: data.user, session: data.session, error };
+}
+
 export async function verifyEmailOtp(email: string, code: string) {
   const { data, error } = await supabase.auth.verifyOtp({
     email,

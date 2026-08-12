@@ -15,6 +15,8 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `app/matches/page.tsx` + `lib/hooks/useTracker.ts` : scoreboard détaillé (KDA, HS%, CS, or, vision, dégâts, soins, placement).
 - `lib/settings.ts` + `lib/hooks/useLiveData.ts` + `components/LiveWidgets.tsx` : source Now Playing `spotify` native, contrôle like/unlike via Worker.
 - `lib/brain/action-registry.ts` + `lib/brain/preferences.ts` + `app/brain/page.tsx` : actions Brain Mail avancées (summarize, suggestReply, draft, search, move, analytics, block, trust).
+- `lib/auth.ts` + `app/login/page.tsx` : onglet d'inscription/sign-up (username, email, mot de passe, confirmation).
+- `app/share/page.tsx` : QR code de partage + affichage du `brainSummary` du fichier.
 - `public/icons/` + `public/legacy/` : copie de tous les assets visuels legacy (favicons, PWA icons, 404, manifest, SW, index, headers) et mise à jour du manifest PWA.
 
 ### Ajoute

@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { fetchWorker, WORKER_URL } from "@/lib/api";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -18,7 +19,7 @@ function formatBytes(bytes = 0) {
 
 type ShareData = {
   share: { visibility: string; expiresAt?: string; maxDownloads?: number; downloadCount?: number };
-  file: { name: string; size: number; mimeType: string };
+  file: { name: string; size: number; mimeType: string; brain_summary?: string };
 };
 
 function ShareContent() {
@@ -135,6 +136,21 @@ function ShareContent() {
 
               {data.share.expiresAt && (
                 <p className="text-xs text-[var(--muted)]">{i18n("expiresAt")}: {new Date(data.share.expiresAt).toLocaleString()}</p>
+              )}
+
+              <Image
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(window.location.href)}`}
+                alt="QR code"
+                width={160}
+                height={160}
+                unoptimized
+                className="mx-auto rounded-xl bg-white p-2"
+              />
+
+              {data.file.brain_summary && (
+                <blockquote className="rounded-xl border-l-4 border-[var(--accent)] bg-[var(--surface)] p-3 text-sm italic text-[var(--muted)]">
+                  {data.file.brain_summary}
+                </blockquote>
               )}
 
               <button

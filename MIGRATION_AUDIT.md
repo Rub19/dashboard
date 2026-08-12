@@ -257,13 +257,17 @@ Ces éléments existent dans les deux bases mais nécessitent une validation man
 
 ---
 
+## ✅ MIGRÉ (corrigé dans ce batch)
+
+1. **Inscription / Sign-up** — onglet "Créer un compte" ajouté à `app/login/page.tsx` avec `signUpWithPassword` dans `lib/auth.ts`.
+2. **Share — QR code** — généré via `api.qrserver.com` et affiché dans `app/share/page.tsx`.
+3. **Share — brainSummary** — affiché sous forme de blockquote si `file.brain_summary` est présent dans la réponse Worker.
+
 ## ❌ MANQUANT (par rapport à v8)
 
 Ces fonctionnalités étaient dans v8 et n'ont pas encore de parité dans Next.js :
 
-1. **Inscription / Sign-up** — v8 `login.mjs` intègre un onglet "Créer un compte" avec `auth.signUp()`. Next.js `app/login/page.tsx` n'a qu'une page login.
-2. **Share — QR code** — v8 affiche un QR code dans la page share. Next.js non.
-3. **Share — brainSummary** — v8 affiche un résumé Brain. Next.js non.
+*Aucun point critique nouveau à signaler après ce batch.*
 
 ---
 
@@ -434,4 +438,4 @@ Next.js `LiveWidgets` affiche actuellement des cartes génériques pour la plupa
 
 ## Conclusion
 
-La migration atteint un haut niveau de parité. Les fonctionnalités v8 principales (pages, shell, intégrations, Brain, Mail, Activity, Settings, Live cards) sont migrées et validées. Les principaux écarts restants sont l'**inscription**, le **QR code / brainSummary de Share** et quelques enrichissements UI des live cards. Tant que ces points ne sont pas couverts, le legacy ne doit pas être supprimé.
+La migration atteint un haut niveau de parité. Les fonctionnalités v8 principales (pages, shell, intégrations, Brain, Mail, Activity, Settings, Live cards) sont migrées et validées. Les principaux écarts restants concernent quelques enrichissements UI des live cards et la parité complète du SearchBar / ProfileDropdown. Tant que ces points ne sont pas couverts, le legacy ne doit pas être supprimé.

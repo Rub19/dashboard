@@ -118,6 +118,9 @@ export const EXTRAS: Record<string, Record<string, string>> = {
     search: "Rechercher",
     like: "Aimer",
     unlike: "Retirer",
+    register: "Créer un compte",
+    checkEmail: "Vérifiez votre boîte mail pour activer votre compte.",
+    usernameInvalid: "Le nom d'utilisateur doit contenir entre 2 et 64 caractères.",
   },
   en: {
     dayShortMon: "Mon",
@@ -238,6 +241,9 @@ export const EXTRAS: Record<string, Record<string, string>> = {
     search: "Search",
     like: "Like",
     unlike: "Unlike",
+    register: "Create account",
+    checkEmail: "Check your email to activate your account.",
+    usernameInvalid: "Username must be between 2 and 64 characters.",
   },
   es: {
     dayShortMon: "Lun",
@@ -358,6 +364,9 @@ export const EXTRAS: Record<string, Record<string, string>> = {
     search: "Buscar",
     like: "Me gusta",
     unlike: "Quitar",
+    register: "Crear cuenta",
+    checkEmail: "Revisa tu correo para activar tu cuenta.",
+    usernameInvalid: "El nombre de usuario debe tener entre 2 y 64 caracteres.",
   },
   de: {
     dayShortMon: "Mo",
@@ -478,5 +487,8 @@ export const EXTRAS: Record<string, Record<string, string>> = {
     search: "Suchen",
     like: "Gefällt mir",
     unlike: "Gefällt mir nicht",
+    register: "Konto erstellen",
+    checkEmail: "Prüfen Sie Ihre E-Mail, um Ihr Konto zu aktivieren.",
+    usernameInvalid: "Der Benutzername muss zwischen 2 und 64 Zeichen lang sein.",
   },
 };

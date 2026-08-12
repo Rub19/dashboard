@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { fetchWorker } from "@/lib/api";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
 import { formatBytes } from "@/lib/files";
+
+const STORAGE_CAP = 10 * 1024 * 1024 * 1024;
 
 type Share = { id: string; slug: string; fileName?: string; visibility?: string; expiresAt?: string; downloadCount?: number };
 type Drop = { id: string; slug: string; title?: string; visibility?: string; expiresAt?: string; fileCount?: number };
@@ -31,6 +33,8 @@ export default function FilesAdminPanel() {
   const [dashboard, setDashboard] = useState<Dashboard | null>(null);
   const [loading, setLoading] = useState(false);
   const [cleaning, setCleaning] = useState(false);
+  const [search, setSearch] = useState("");
+  const [visibility, setVisibility] = useState<"all" | "public" | "private" | "unlisted">("all");
 
   async function load() {
     setLoading(true);
@@ -89,8 +93,18 @@ export default function FilesAdminPanel() {
   }
 
   const expiredCount = (dashboard?.expiredShares || 0) + (dashboard?.expiredDrops || 0);
+  const usagePct = Math.min(100, Math.round(((dashboard?.totalSize || 0) / STORAGE_CAP) * 100));
 
-  const items = tab === "shares" ? shares : tab === "drops" ? drops : [];
+  const items = useMemo(() => {
+    const baseItems = tab === "shares" ? shares : tab === "drops" ? drops : [];
+    return baseItems.filter((item) => {
+      const matchesSearch = (item.slug + (item as Share).fileName + (item as Drop).title || "")
+        .toLowerCase()
+        .includes(search.toLowerCase());
+      const matchesVisibility = visibility === "all" || item.visibility === visibility;
+      return matchesSearch && matchesVisibility;
+    });
+  }, [tab, shares, drops, search, visibility]);
 
   return (
     <div className="space-y-4">
@@ -112,6 +126,20 @@ export default function FilesAdminPanel() {
             <Card3D>
               <p className="text-xs text-[var(--muted)]">{i18n("storageUsed")}</p>
               <p className="text-2xl font-bold">{dashboard ? formatBytes(dashboard.totalSize) : "-"}</p>
+              {dashboard && (
+                <div className="mt-2 space-y-1">
+                  <div className="flex justify-between text-[10px] text-[var(--muted)]">
+                    <span>{usagePct}%</span>
+                    <span>{formatBytes(STORAGE_CAP)}</span>
+                  </div>
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
+                    <div
+                      className={`h-full rounded-full ${usagePct > 90 ? "bg-red-400" : usagePct > 70 ? "bg-amber-400" : "bg-emerald-400"}`}
+                      style={{ width: `${usagePct}%` }}
+                    />
+                  </div>
+                </div>
+              )}
             </Card3D>
             <Card3D>
               <p className="text-xs text-[var(--muted)]">{i18n("folders")}</p>
@@ -169,6 +197,26 @@ export default function FilesAdminPanel() {
         </div>
       ) : (
         <div className="space-y-3">
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={i18n("search")}
+              className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+            />
+            <select
+              value={visibility}
+              onChange={(e) => setVisibility(e.target.value as typeof visibility)}
+              className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none"
+            >
+              <option value="all">{i18n("allVisibility")}</option>
+              <option value="public">{i18n("public")}</option>
+              <option value="private">{i18n("private")}</option>
+              <option value="unlisted">{i18n("unlisted")}</option>
+            </select>
+          </div>
+
           {items.length === 0 ? (
             <Card3D>
               <p className="text-sm text-[var(--muted)]">{tab === "shares" ? i18n("noShares") : i18n("noDrops")}</p>

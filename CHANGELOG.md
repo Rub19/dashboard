@@ -35,6 +35,8 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `lib/density-engine.ts` + `components/HtmlLang.tsx` : moteur de densité v8 avec presets `spacious/comfortable/compact/dense/ultra-compact/ultra/normal/airy`, détection viewport/zoom et mode `automatic`.
 - `lib/interactions-heatmap.ts` + `app/interactions/page.tsx` : moteur de heatmap d'interactions (séries, consistance, intensité relative) et intégration dans la page Interactions.
 - `lib/commands.tsx` + `components/CommandPalette.tsx` : extension du catalogue de commandes avec plus de 60 entrées, historique, favoris, recherche contextuelle.
+- `components/BrandMark.tsx` + `app/loading.tsx` + `components/Loading.tsx` : logo ETHONE v8 (SVG mark + gradients) et écran de chargement avec barre de progression et badge OS.
+- `components/Sidebar.tsx` + `components/V8Breadcrumbs.tsx` + `app/login/page.tsx` : intégration du BrandMark ETHONE dans le rail, les breadcrumbs et la page de connexion.
 
 ### Corrige
 - Migration des packs audio legacy `mechanical`/`liquid`/`none` vers les équivalents v8 pour compatibilité ascendante.

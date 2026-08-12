@@ -155,8 +155,11 @@ export default function SettingsPage() {
   ] as const;
 
   const FONTS = [
+    { id: "inter", label: "Inter" },
+    { id: "outfit", label: "Outfit" },
+    { id: "jetbrains", label: "JetBrains Mono" },
+    { id: "editorial", label: "Editorial Serif" },
     { id: "sans", label: i18n("fontSans") },
-    { id: "outfit", label: i18n("fontOutfit") },
     { id: "mono", label: i18n("fontMono") },
     { id: "serif", label: i18n("fontSerif") },
   ] as const;
@@ -593,6 +596,27 @@ export default function SettingsPage() {
           <Toggle label={i18n("masterVolume")} checked={settings.masterVolume} onChange={(v) => update({ masterVolume: v })} />
           <Toggle label={i18n("soundEffects")} checked={settings.soundEffects} onChange={(v) => update({ soundEffects: v })} />
           <Range label={i18n("soundVolume")} value={settings.soundVolume} onChange={(v) => update({ soundVolume: v })} />
+          <div className="space-y-3">
+            <p className="text-xs text-[var(--muted)]">{i18n("soundVolumes")}</p>
+            {[
+              { key: "master", label: i18n("masterVolume") },
+              { key: "notifications", label: i18n("notifications") },
+              { key: "interface", label: i18n("interfaceVolume") },
+              { key: "brain", label: i18n("brainVolume") },
+              { key: "system", label: i18n("systemVolume") },
+            ].map(({ key, label }) => (
+              <Range
+                key={key}
+                label={label}
+                value={settings.soundVolumes[key as keyof typeof settings.soundVolumes]}
+                onChange={(v) =>
+                  update({
+                    soundVolumes: { ...settings.soundVolumes, [key]: v },
+                  })
+                }
+              />
+            ))}
+          </div>
           <p className="text-xs text-[var(--muted)]">{i18n("soundPack")}</p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {(["none", "minimal", "mechanical", "liquid"] as const).map((pack) => (

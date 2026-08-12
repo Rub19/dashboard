@@ -149,9 +149,13 @@ body {
   transition: background 0.3s ease, color 0.3s ease, font-family 0.3s ease;
 }
 
+[data-font="sans"] body { font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif; }
+[data-font="inter"] body { font-family: "Inter", ui-sans-serif, system-ui, sans-serif; }
 [data-font="outfit"] body { font-family: "Outfit", ui-sans-serif, system-ui, sans-serif; }
 [data-font="mono"] body { font-family: var(--font-geist-mono), ui-monospace, monospace; }
+[data-font="jetbrains"] body { font-family: "JetBrains Mono", ui-monospace, monospace; }
 [data-font="serif"] body { font-family: "Source Serif 4", ui-serif, Georgia, serif; }
+[data-font="editorial"] body { font-family: "Source Serif 4", ui-serif, Georgia, serif; }
 
 [data-background="gradient"] body {
   background: radial-gradient(ellipse at top, var(--surface-raised) 0%, var(--background) 50%), var(--background);

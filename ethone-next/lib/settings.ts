@@ -66,7 +66,7 @@ export type Settings = {
   iconPack: "lucide" | "phosphor" | "tabler" | "heroicons" | "radix";
   densityMode: DensityMode;
   fontSize: number;
-  fontFamily: "sans" | "outfit" | "mono" | "serif";
+  fontFamily: "sans" | "outfit" | "mono" | "serif" | "inter" | "jetbrains" | "editorial";
   density: number;
   radius: number;
   radiusStyle: RadiusStyle;
@@ -93,6 +93,13 @@ export type Settings = {
   soundEffects: boolean;
   soundPack: "none" | "minimal" | "mechanical" | "liquid";
   soundVolume: number;
+  soundVolumes: {
+    master: number;
+    notifications: number;
+    interface: number;
+    brain: number;
+    system: number;
+  };
   notifications: boolean;
   mailNotifications: boolean;
   trackerNotifications: boolean;
@@ -179,6 +186,13 @@ export const DEFAULTS: Settings = {
   soundEffects: true,
   soundPack: "minimal",
   soundVolume: 50,
+  soundVolumes: {
+    master: 100,
+    notifications: 100,
+    interface: 100,
+    brain: 100,
+    system: 100,
+  },
   notifications: true,
   mailNotifications: true,
   trackerNotifications: false,

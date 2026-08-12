@@ -14,6 +14,8 @@ import ContextMenu from "@/components/ContextMenu";
 import { useSelection } from "@/lib/hooks/useSelection";
 import BulkActionBar from "@/components/BulkActionBar";
 import { formatBytes, mimeIcon, sortFiles } from "@/lib/files";
+import FilesAdminPanel from "@/components/FilesAdminPanel";
+import BottomSheet from "@/components/BottomSheet";
 
 function folderPath(files: CloudFile[], folderId: string | null) {
   const path: CloudFile[] = [];
@@ -85,6 +87,7 @@ export default function FilesPage() {
   const { create: createDrop } = useDrops();
 
   const [modal, setModal] = useState<Modal>(null);
+  const [adminOpen, setAdminOpen] = useState(false);
   const [form, setForm] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [sort, setSort] = useState<"name" | "size" | "date">("name");
@@ -352,6 +355,13 @@ export default function FilesPage() {
                 className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm font-medium hover:bg-[var(--surface)]"
               >
                 <Icon name="folder-plus" className="h-4 w-4" /> {i18n("createFolder")}
+              </button>
+              <button
+                type="button"
+                onClick={() => setAdminOpen(true)}
+                className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm font-medium hover:bg-[var(--surface)]"
+              >
+                <Icon name="shield" className="h-4 w-4" /> {i18n("admin")}
               </button>
               <button
                 type="button"
@@ -793,6 +803,10 @@ export default function FilesPage() {
           </div>
         </div>
       )}
+
+      <BottomSheet open={adminOpen} onClose={() => setAdminOpen(false)} title={i18n("filesAdminPanel")}>
+        <FilesAdminPanel />
+      </BottomSheet>
     </div>
   );
 }

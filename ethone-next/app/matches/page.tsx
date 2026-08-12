@@ -12,7 +12,10 @@ import { useSettings } from "@/components/SettingsProvider";
 const tabs = [
   { id: "valorant", label: "Valorant", icon: <Icon name="swords" className="h-4 w-4" /> },
   { id: "lol", label: "League of Legends", icon: <Icon name="shield" className="h-4 w-4" /> },
+  { id: "apex", label: "Apex Legends", icon: <Icon name="gamepad-2" className="h-4 w-4" /> },
 ];
+
+const APEX_PLATFORMS = ["origin", "xbl", "psn"] as const;
 
 function MatchCard({ match }: { match: Record<string, string | number | undefined> }) {
   return (
@@ -23,7 +26,7 @@ function MatchCard({ match }: { match: Record<string, string | number | undefine
         </span>
         <div className="min-w-0 flex-1">
           <p className="truncate font-medium text-[var(--foreground)]">
-            {match.map || match.agent || match.champion || match.mode || "Match"}
+            {match.map || match.agent || match.champion || match.mode || match.legend || "Match"}
           </p>
           <p className="truncate text-xs text-[var(--muted)]">
             {match.result || `${match.kills ?? "-"}/${match.deaths ?? "-"}/${match.assists ?? "-"}`}
@@ -41,15 +44,28 @@ export default function MatchesPage() {
   const [tab, setTab] = useState("valorant");
   const [name, setName] = useState(settings.liveTrackerRiotName);
   const [tag, setTag] = useState(settings.liveTrackerRiotTag);
+  const [apexPlatform, setApexPlatform] = useState<"origin" | "xbl" | "psn">(settings.liveTrackerApexPlatform || "origin");
+  const [apexIdentifier, setApexIdentifier] = useState(settings.liveTrackerApexIdentifier);
 
   const path = useMemo(() => {
+    if (tab === "apex") {
+      if (!settings.liveTrackerApexIdentifier) return "";
+      return `/api/tracker/apex-matches?platform=${encodeURIComponent(settings.liveTrackerApexPlatform)}&identifier=${encodeURIComponent(settings.liveTrackerApexIdentifier)}&mode=all`;
+    }
     if (!settings.liveTrackerRiotName || !settings.liveTrackerRiotTag) return "";
     return tab === "valorant"
       ? `/api/tracker/valorant-matches?name=${encodeURIComponent(settings.liveTrackerRiotName)}&tag=${encodeURIComponent(settings.liveTrackerRiotTag)}`
       : `/api/tracker/lol-matches?name=${encodeURIComponent(settings.liveTrackerRiotName)}&tag=${encodeURIComponent(settings.liveTrackerRiotTag)}`;
-  }, [tab, settings.liveTrackerRiotName, settings.liveTrackerRiotTag]);
+  }, [
+    tab,
+    settings.liveTrackerRiotName,
+    settings.liveTrackerRiotTag,
+    settings.liveTrackerApexPlatform,
+    settings.liveTrackerApexIdentifier,
+  ]);
 
-  const { items, loading, syncing, sync } = useTracker(path, tab === "valorant" ? "tracker-valorant" : "tracker-lol");
+  const trackerKind = tab === "apex" ? "tracker-apex" : tab === "valorant" ? "tracker-valorant" : "tracker-lol";
+  const { items, loading, syncing, sync } = useTracker(path, trackerKind);
 
   return (
     <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-[14rem_1fr]">
@@ -79,40 +95,85 @@ export default function MatchesPage() {
             {i18n("sync")}
           </button>
         </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-          <div className="flex-1 min-w-0">
-            <label htmlFor="riot-name" className="mb-1 block text-xs text-[var(--muted)]">{i18n("liveTrackerRiotName")}</label>
-            <input
-              id="riot-name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={i18n("liveTrackerRiotName")}
-              className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)]"
-            />
+
+        {tab === "apex" ? (
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+            <div className="min-w-0 flex-1">
+              <label htmlFor="apex-platform" className="mb-1 block text-xs text-[var(--muted)]">{i18n("platform")}</label>
+              <select
+                id="apex-platform"
+                value={apexPlatform}
+                onChange={(e) => setApexPlatform(e.target.value as typeof apexPlatform)}
+                className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)]"
+              >
+                {APEX_PLATFORMS.map((p) => (
+                  <option key={p} value={p}>
+                    {p === "origin" ? "Origin (PC)" : p === "xbl" ? "Xbox Live" : "PlayStation Network"}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="min-w-0 flex-1">
+              <label htmlFor="apex-identifier" className="mb-1 block text-xs text-[var(--muted)]">{i18n("liveTrackerApexIdentifier")}</label>
+              <input
+                id="apex-identifier"
+                type="text"
+                value={apexIdentifier}
+                onChange={(e) => setApexIdentifier(e.target.value)}
+                placeholder={i18n("liveTrackerApexIdentifier")}
+                className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)]"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => update({ liveTrackerApexPlatform: apexPlatform, liveTrackerApexIdentifier: apexIdentifier })}
+              className="shrink-0 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            >
+              {i18n("apply")}
+            </button>
           </div>
-          <div className="flex-1 min-w-0">
-            <label htmlFor="riot-tag" className="mb-1 block text-xs text-[var(--muted)]">{i18n("liveTrackerRiotTag")}</label>
-            <input
-              id="riot-tag"
-              type="text"
-              value={tag}
-              onChange={(e) => setTag(e.target.value)}
-              placeholder="#1234"
-              className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)]"
-            />
+        ) : (
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+            <div className="min-w-0 flex-1">
+              <label htmlFor="riot-name" className="mb-1 block text-xs text-[var(--muted)]">{i18n("liveTrackerRiotName")}</label>
+              <input
+                id="riot-name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={i18n("liveTrackerRiotName")}
+                className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)]"
+              />
+            </div>
+            <div className="min-w-0 flex-1">
+              <label htmlFor="riot-tag" className="mb-1 block text-xs text-[var(--muted)]">{i18n("liveTrackerRiotTag")}</label>
+              <input
+                id="riot-tag"
+                type="text"
+                value={tag}
+                onChange={(e) => setTag(e.target.value)}
+                placeholder="#1234"
+                className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)]"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => update({ liveTrackerRiotName: name, liveTrackerRiotTag: tag })}
+              className="shrink-0 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            >
+              {i18n("apply")}
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => update({ liveTrackerRiotName: name, liveTrackerRiotTag: tag })}
-            className="shrink-0 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          >
-            {i18n("apply")}
-          </button>
-        </div>
-        {!settings.liveTrackerRiotName || !settings.liveTrackerRiotTag ? (
-          <p className="text-sm text-[var(--muted)]">{i18n("trackerMissingRiotId")}</p>
-        ) : null}
+        )}
+
+        {tab === "apex"
+          ? !settings.liveTrackerApexIdentifier && (
+              <p className="text-sm text-[var(--muted)]">{i18n("trackerMissingApexId")}</p>
+            )
+          : (!settings.liveTrackerRiotName || !settings.liveTrackerRiotTag) && (
+              <p className="text-sm text-[var(--muted)]">{i18n("trackerMissingRiotId")}</p>
+            )}
+
         {loading && !items ? (
           <div className="space-y-3">
             <div className="h-20 animate-pulse rounded-2xl bg-[var(--border)]" />

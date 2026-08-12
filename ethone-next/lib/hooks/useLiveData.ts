@@ -5,6 +5,7 @@ import { fetchWorker } from "@/lib/api";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useConnections } from "./useConnections";
+import { listBills, getNextDueDate } from "@/lib/bills-manager";
 
 export type NowPlaying = {
   source?: string;
@@ -76,6 +77,25 @@ async function fetchOptional(path: string): Promise<ApiData | null> {
 
 function getArtworkUrl(np: ApiData | null): string | undefined {
   return asStr(np?.artworkUrl || np?.cover || np?.artwork);
+}
+
+function mapLocalBills(): ApiData[] {
+  return listBills().map((b) => {
+    const nextDue = getNextDueDate(b);
+    return {
+      id: b.id,
+      label: b.label,
+      title: b.label,
+      amount: b.amount,
+      currency: b.currency,
+      dueAt: nextDue ?? b.dueDate,
+      date: nextDue ?? b.dueDate,
+      due: nextDue ?? b.dueDate,
+      paid: b.paid,
+      category: b.category,
+      recurrence: b.recurrence,
+    };
+  });
 }
 
 export function useLiveData(pollMs = 60000) {
@@ -290,7 +310,7 @@ export function useLiveData(pollMs = 60000) {
           steamOwnedGamesPath ? fetchOptional(steamOwnedGamesPath) : Promise.resolve(null),
           rssPath ? fetchOptional(rssPath) : Promise.resolve(null),
           blueskyPath ? fetchOptional(blueskyPath) : Promise.resolve(null),
-          fetchOptional("/api/user-data/bills"),
+          Promise.resolve(mapLocalBills()),
           valorantPath ? fetchOptional(valorantPath) : Promise.resolve(null),
           lolPath ? fetchOptional(lolPath) : Promise.resolve(null),
           calendarPath ? fetchOptional(calendarPath) : Promise.resolve(null),
@@ -425,6 +445,9 @@ export function useLiveData(pollMs = 60000) {
   }, [
     effectivePollMs,
     nowPlayingPath,
+    lanyardPath,
+    minecraftPath,
+    lolPath,
     weatherPath,
     youtubePath,
     redditPath,

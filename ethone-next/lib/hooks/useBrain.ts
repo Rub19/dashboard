@@ -19,12 +19,12 @@ import {
 } from "@/lib/brain/preferences";
 import { brainComplete, brainDiagnostic, brainProviderList } from "@/lib/brain/providers";
 import { listBrainMemories, createBrainMemory, updateBrainMemory, removeBrainMemory, clearBrainMemories, type BrainMemory } from "@/lib/brain/memory";
-import { createBrainActionRegistry } from "@/lib/brain/action-registry";
+import { createBrainActionRegistry, type BrainMailClient } from "@/lib/brain/action-registry";
 import { createAutomationWatcher, sanitizeAutomationTrigger, type AutomationRule } from "@/lib/brain/automation";
 
 export type BrainMessage = { role: "user" | "assistant"; content: string; createdAt: number };
 
-export function useBrain() {
+export function useBrain(mailClient?: BrainMailClient) {
   const router = useRouter();
   const { settings, update: updateSettings } = useSettings();
   const notes = useItems("notes");
@@ -91,8 +91,9 @@ export function useBrain() {
         if (setting === "density") updateSettings({ densityMode: value as never });
       },
       navigate: (route) => router.push(`/${route === "home" ? "" : route}`),
+      mailClient,
     });
-  }, [preferences.permissions, notes, tasks, events, router, updateSettings]);
+  }, [preferences.permissions, notes, tasks, events, router, updateSettings, mailClient]);
 
   const providers = useMemo(() => brainProviderList(), []);
 

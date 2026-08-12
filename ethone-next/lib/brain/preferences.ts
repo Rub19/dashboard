@@ -16,6 +16,7 @@ export const BRAIN_PERMISSION_CATEGORIES = [
   "notes",
   "tasks",
   "calendar",
+  "mail",
   "connections",
   "gaming",
   "activity",

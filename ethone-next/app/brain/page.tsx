@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useBrain } from "@/lib/hooks/useBrain";
+import { useMail } from "@/lib/hooks/useMail";
 import { usePresence } from "@/components/PresenceProvider";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
@@ -35,7 +36,27 @@ const TABS: { id: Tab; label: string; icon: string }[] = [
 export default function BrainPage() {
   const i18n = useI18n();
   const { success, error: showError } = useToast();
-  const brain = useBrain();
+  const mail = useMail();
+  const mailClient = useMemo(
+    () => ({
+      analyzeMessage: mail.analyzeMessage,
+      suggestReplies: mail.suggestReplies,
+      sendMail: mail.sendMail,
+      moveMessages: mail.moveMessages,
+      getAnalytics: mail.getAnalytics,
+      blockSender: mail.blockSender,
+      trustSender: mail.trustSender,
+      search: (q: string) =>
+        mail.messages
+          .filter((m) =>
+            `${m.subject} ${m.from_address} ${m.from_name || ""} ${m.snippet || ""}`.toLowerCase().includes(q.toLowerCase())
+          )
+          .slice(0, 10)
+          .map((m) => ({ id: m.id, subject: m.subject, from: m.from_address, receivedAt: m.received_at })),
+    }),
+    [mail]
+  );
+  const brain = useBrain(mailClient);
   const { setBrain } = usePresence();
   const [activeTab, setActiveTab] = useState<Tab>("chat");
   const [prompt, setPrompt] = useState("");

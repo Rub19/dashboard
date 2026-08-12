@@ -35,6 +35,17 @@ function outcome(ok: boolean, message: string) {
   return Object.freeze({ ok, message });
 }
 
+export type BrainMailClient = {
+  analyzeMessage: (id: string) => Promise<{ data?: { summary?: string; text?: string } }>;
+  suggestReplies: (id: string) => Promise<{ data?: { suggestions?: string[] } }>;
+  sendMail: (input: { to: string[]; subject: string; text?: string }) => Promise<unknown>;
+  moveMessages: (ids: string[], folder: string) => Promise<unknown>;
+  getAnalytics: (period?: number) => Promise<{ data?: Record<string, unknown> }>;
+  blockSender: (input: { email?: string; domain?: string; reason?: string }) => Promise<unknown>;
+  trustSender: (input: { email?: string; domain?: string }) => Promise<unknown>;
+  search: (q: string) => Array<{ id: string; subject?: string; from?: string; receivedAt?: string }>;
+};
+
 export function createBrainActionRegistry(options: {
   permissions: BrainPermissions;
   createNote: (input: { title: string; body: string }) => Promise<unknown>;
@@ -44,6 +55,7 @@ export function createBrainActionRegistry(options: {
   createEvent: (input: { title: string; date: string }) => Promise<unknown>;
   changeSetting: (setting: string, value: string) => Promise<unknown>;
   navigate: (route: string) => void;
+  mailClient?: BrainMailClient;
 }) {
   const definitions = new Map<string, BrainActionDefinition>();
 
@@ -180,6 +192,155 @@ export function createBrainActionRegistry(options: {
       for (const task of tasks) await options.createTask(task);
       for (const event of events) await options.createEvent(event);
       return outcome(true, `${tasks.length} tâches et ${events.length} événements créés.`);
+    }
+  );
+
+  const mail = options.mailClient;
+
+  add(
+    "mail.open",
+    "Ouvrir Mail",
+    "Ouvre la boîte ETHONE Mail.",
+    null,
+    false,
+    {},
+    async () => {
+      options.navigate("mail");
+      return outcome(true, "Mail ouvert.");
+    }
+  );
+
+  add(
+    "mail.summarize",
+    "Résumer un email",
+    "Résume le contenu d'un email.",
+    "mail",
+    false,
+    { messageId: "id" },
+    async (p) => {
+      if (!mail) return outcome(false, "Mail non configuré.");
+      const result = await mail.analyzeMessage(requireId(p.messageId));
+      const data = result?.data || {};
+      const summary = clean(data.summary || data.text, "", 2000);
+      return outcome(true, summary || "Résumé indisponible.");
+    }
+  );
+
+  add(
+    "mail.suggestReply",
+    "Répondre à un email",
+    "Suggère des réponses adaptées à un email.",
+    "mail",
+    false,
+    { messageId: "id", tone: "friendly|professional|short|detailed?" },
+    async (p) => {
+      if (!mail) return outcome(false, "Mail non configuré.");
+      const result = await mail.suggestReplies(requireId(p.messageId));
+      const data = result?.data || {};
+      const suggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
+      return outcome(true, `${suggestions.length} suggestion${suggestions.length > 1 ? "s" : ""}.`);
+    }
+  );
+
+  add(
+    "mail.draft",
+    "Rédiger un email",
+    "Prépare et envoie un email.",
+    "mail",
+    true,
+    { to: "string", subject: "string", content: "string" },
+    async (p) => {
+      if (!mail) return outcome(false, "Mail non configuré.");
+      await mail.sendMail({
+        to: [clean(p.to, "", 320)],
+        subject: clean(p.subject, "Nouveau message", 200),
+        text: clean(p.content, "", 4000),
+      });
+      return outcome(true, "Email envoyé.");
+    }
+  );
+
+  add(
+    "mail.search",
+    "Rechercher un email",
+    "Recherche dans les messages.",
+    "mail",
+    false,
+    { q: "string" },
+    async (p) => {
+      if (!mail) return outcome(false, "Mail non configuré.");
+      const q = clean(p.q, "", 120).toLowerCase();
+      const results = mail.search(q).slice(0, 10);
+      return outcome(true, `${results.length} résultat${results.length > 1 ? "s" : ""}.`);
+    }
+  );
+
+  add(
+    "mail.move",
+    "Déplacer un email",
+    "Déplace un email dans un dossier.",
+    "mail",
+    true,
+    { id: "id", folder: "string" },
+    async (p) => {
+      if (!mail) return outcome(false, "Mail non configuré.");
+      const target = ["inbox", "starred", "sent", "drafts", "archive", "spam", "trash"].includes(String(p.folder))
+        ? String(p.folder)
+        : "archive";
+      await mail.moveMessages([requireId(p.id)], target);
+      return outcome(true, `Déplacé vers ${target}.`);
+    }
+  );
+
+  add(
+    "mail.analytics",
+    "Analyser les statistiques mail",
+    "Résume l'activité ETHONE Mail sur une période.",
+    "mail",
+    false,
+    { period: "number?" },
+    async (p) => {
+      if (!mail) return outcome(false, "Mail non configuré.");
+      const period = Math.max(1, Math.min(365, Number(p.period) || 30));
+      const result = await mail.getAnalytics(period);
+      const stats = result?.data || {};
+      const total = Number(stats.total) || 0;
+      const summary = `${total} messages sur ${period} jours : ${stats.inbound || 0} reçus, ${stats.outbound || 0} envoyés, ${stats.unread || 0} non lus.`;
+      return outcome(true, summary);
+    }
+  );
+
+  add(
+    "mail.block",
+    "Bloquer un expéditeur",
+    "Bloque un email ou un domaine.",
+    "mail",
+    true,
+    { email: "string?", domain: "string?" },
+    async (p) => {
+      if (!mail) return outcome(false, "Mail non configuré.");
+      const email = clean(p.email, "", 320);
+      const domain = clean(p.domain, "", 120).toLowerCase();
+      if (!email && !domain) throw new Error("Email ou domaine requis.");
+      await mail.blockSender({ email, domain, reason: "brain" });
+      return outcome(true, "Expéditeur bloqué.");
+    }
+  );
+
+  add(
+    "mail.trust",
+    "Faire confiance à un expéditeur",
+    "Marque un email ou un domaine comme fiable.",
+    "mail",
+    true,
+    { email: "string?", domain: "string?" },
+    async (p) => {
+      if (!mail) return outcome(false, "Mail non configuré.");
+      const email = clean(p.email, "", 320);
+      const domain = clean(p.domain, "", 120).toLowerCase();
+      if (!email && !domain) throw new Error("Email ou domaine requis.");
+      await mail.trustSender({ email, domain });
+      return outcome(true, "Expéditeur fiable.");
     }
   );
 

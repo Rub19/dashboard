@@ -68,7 +68,10 @@ test("private routes reject missing, malformed, tampered and expired JWTs", asyn
   assert.equal((await payload(malformed)).error.code, "AUTH_INVALID");
 
   const valid = await accessToken();
-  const tampered = `${valid.slice(0, -1)}${valid.endsWith("a") ? "b" : "a"}`;
+  const dot = valid.lastIndexOf(".");
+  const sig = valid.slice(dot + 1);
+  const tamperedSig = `${sig[0] === "A" ? "B" : "A"}${sig.slice(1)}`;
+  const tampered = `${valid.slice(0, dot + 1)}${tamperedSig}`;
   const invalid = await invoke("/api/diagnostic", { token: tampered });
   assert.equal(invalid.status, 401);
   assert.equal((await payload(invalid)).error.code, "AUTH_INVALID");

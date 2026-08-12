@@ -8,6 +8,7 @@ import Card3D from "@/components/Card3D";
 import Input from "@/components/Input";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
+import BillsCalendarWidget from "@/components/BillsCalendarWidget";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { getUserState, setUserState } from "@/lib/user-state";
@@ -284,6 +285,8 @@ export default function CalendarPage() {
           </div>
         )}
       </Card3D>
+
+      <BillsCalendarWidget />
     </div>
   );
 }

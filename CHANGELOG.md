@@ -17,6 +17,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `ethone-next/eslint.config.mjs` : `public/legacy/**` ignoré par le lint pour éviter le bruit des fichiers v8 copiés.
 - `app/page.tsx` : ajout du `BrandMark` et du nom `ETHONE` en haut du dashboard home.
 - `components/Loading.tsx` : retrait du badge "OS" sur l'écran de chargement pour correspondre au boot v8.
+- `components/LanguageSwitcher.tsx` + `app/layout.tsx` : bouton de changement de langue dans la topbar (icône globe + code langue), qui fait défiler `fr/en/es/de` comme en v8.
 
 ## [Unreleased]
 

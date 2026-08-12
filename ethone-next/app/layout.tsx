@@ -38,6 +38,7 @@ import { ActivityJournalProvider } from "@/components/ActivityJournalProvider";
 import V8Breadcrumbs from "@/components/V8Breadcrumbs";
 import V8StatusBar from "@/components/V8StatusBar";
 import V8WindowControls from "@/components/V8WindowControls";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -106,6 +107,7 @@ export default function RootLayout({
                       <NotificationCenter />
                       <SidePanel />
                       <CommandPalette />
+                      <LanguageSwitcher />
                       <ProfileDropdown />
                       <V8WindowControls />
                     </div>

@@ -130,7 +130,7 @@ Discord (Lanyard), Spotify, GitHub, Google Calendar, Google Drive, Notion, Todoi
 
 | Service | Statut | Remarque |
 |---------|--------|----------|
-| Spotify | ✅ | lecture, contrôles, like/unlike |
+| Spotify | ✅ | lecture, contrôles, like/unlike ; **seek non supporté côté Worker (`controlSpotifyPlayback` ne gère que play/pause/next/previous)** |
 | Discord (Lanyard) | ✅ | présence, activité |
 | Weather | ✅ | météo + prévisions |
 | GitHub | ✅ | profil, repos |
@@ -298,9 +298,10 @@ Ces fichiers / dossiers semblent encore présents mais non utilisés par Next.js
 
 1. **Register manquant** — bloquant pour de nouveaux utilisateurs. Nécessite d'ajouter un onglet/formulaire d'inscription dans `app/login/page.tsx` ou une route `/register`.
 2. **Share enrichi** — QR code et brainSummary sont des fonctionnalités utilisateur visibles ; leur absence peut être remarquée.
-3. **Supabase schema divergent** — si v8 utilisait d'autres tables que `brain_memories`, vérifier la cohérence des migrations.
-4. **Tests E2E manquants** — impossible de valider des flux complets sans Playwright.
-5. **Assets legacy** — duplications possibles entre `public/` et `.worktree/main/public/`. Audit d'imports conseillé.
+3. **Spotify seek** — le Worker ne supporte pas le seek (`controlSpotifyPlayback` ne gère que play/pause/next/previous).
+4. **Supabase schema divergent** — si v8 utilisait d'autres tables que `brain_memories`, vérifier la cohérence des migrations.
+5. **Tests E2E manquants** — impossible de valider des flux complets sans Playwright.
+6. **Assets legacy** — duplications possibles entre `public/` et `.worktree/main/public/`. Audit d'imports conseillé.
 
 ---
 

@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useUserData } from "@/lib/hooks/useUserData";
+import { useBrain } from "@/lib/hooks/useBrain";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
+import { actionLabel } from "@/lib/brain/automation";
 
 const WORKSPACES = ["personal", "focus", "studio", "gaming"] as const;
+
 const ACTIONS = [
   { id: "v8.space.personal", label: "Space Personnel" },
   { id: "v8.space.focus", label: "Space Focus" },
@@ -22,13 +24,15 @@ const ACTIONS = [
 export default function FlowAutomations({ activeFlow }: { activeFlow?: string }) {
   const i18n = useI18n();
   const { success, error: showError } = useToast();
-  const { items, create, remove } = useUserData("flow_automation");
+  const { preferences, addAutomationRule, toggleAutomationRule, removeAutomationRule } = useBrain();
   const [flow, setFlow] = useState<string>(activeFlow || "personal");
   const [action, setAction] = useState<string>(ACTIONS[0].id);
 
+  const rules = preferences.automations.filter((r) => r.trigger.type === "space");
+
   async function addAutomation() {
     try {
-      await create(`${flow} → ${action}`, "", { flow, action });
+      addAutomationRule({ type: "space", value: flow }, action);
       success(i18n("saved"));
     } catch {
       showError(i18n("error"));
@@ -37,7 +41,7 @@ export default function FlowAutomations({ activeFlow }: { activeFlow?: string })
 
   async function deleteAutomation(id: string) {
     try {
-      await remove(id);
+      removeAutomationRule(id);
       success(i18n("deleted"));
     } catch {
       showError(i18n("error"));
@@ -62,17 +66,26 @@ export default function FlowAutomations({ activeFlow }: { activeFlow?: string })
           <button type="button" onClick={addAutomation} className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{i18n("add")}</button>
         </div>
 
-        {items.length === 0 ? (
+        {rules.length === 0 ? (
           <p className="text-sm text-[var(--muted)]">{i18n("noAutomations")}</p>
         ) : (
           <div className="space-y-2">
-            {items.map((item) => {
-              const data = (item.data || {}) as { flow?: string; action?: string };
-              const actionLabel = ACTIONS.find((a) => a.id === data.action)?.label || data.action;
+            {rules.map((rule) => {
+              const actionLabelText = actionLabel(rule.actionId);
               return (
-                <div key={item.id} className="flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2">
-                  <span className="text-sm">{i18n(data.flow || "personal")} → {actionLabel}</span>
-                  <button type="button" onClick={() => deleteAutomation(item.id)} className="text-red-400"><Icon name="trash-2" className="h-4 w-4" /></button>
+                <div key={rule.id} className="flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2">
+                  <span className="text-sm">{i18n(rule.trigger.value)} → {actionLabelText}</span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => toggleAutomationRule(rule.id)}
+                      className="rounded p-1 hover:bg-white/5"
+                      aria-label={rule.enabled ? i18n("disable") : i18n("enable")}
+                    >
+                      <Icon name={rule.enabled ? "toggle-right" : "toggle-left"} className="h-3.5 w-3.5" />
+                    </button>
+                    <button type="button" onClick={() => deleteAutomation(rule.id)} className="text-red-400"><Icon name="trash-2" className="h-4 w-4" /></button>
+                  </div>
                 </div>
               );
             })}

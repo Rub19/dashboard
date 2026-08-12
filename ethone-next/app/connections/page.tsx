@@ -12,6 +12,7 @@ import type { Settings } from "@/lib/settings";
 import { useProviderCredentials } from "@/lib/hooks/useProviderCredentials";
 import type { ProviderCredential } from "@/lib/hooks/useProviderCredentials";
 import ConnectionDiagnostics from "@/components/ConnectionDiagnostics";
+import ConnectionInspector, { type InspectorIntegration } from "@/components/ConnectionInspector";
 
 const categoryIcons: Record<string, string> = {
   media: "music",
@@ -203,6 +204,7 @@ export default function ConnectionsPage() {
   const [clientIds, setClientIds] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const i18n = useI18n();
+  const [inspected, setInspected] = useState<InspectorIntegration | null>(null);
   const { success, error: showError } = useToast();
   const { settings, update: updateSettings } = useSettings();
   const credentials = useProviderCredentials();
@@ -396,6 +398,14 @@ export default function ConnectionsPage() {
                 </button>
               )}
 
+              <button
+                type="button"
+                onClick={() => setInspected(integration)}
+                className="mt-3 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-1.5 text-xs text-[var(--foreground)] transition-colors hover:bg-[var(--accent)]/10 hover:text-[var(--accent)]"
+              >
+                {i18n("inspect")}
+              </button>
+
               {hasInputs && (
                 <IntegrationInputs
                   publicFields={publicFields}
@@ -417,6 +427,15 @@ export default function ConnectionsPage() {
           <p>{i18n("oauthInfo")}</p>
         </div>
       </Card3D>
+
+      {inspected && (
+        <ConnectionInspector
+          integration={inspected}
+          isOpen={!!inspected}
+          onClose={() => setInspected(null)}
+          connected={isConfigured(inspected, settings, credentials.connected, connected)}
+        />
+      )}
     </div>
   );
 }

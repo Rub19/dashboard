@@ -35,6 +35,7 @@ import SidePanel from "@/components/SidePanel";
 import KeyboardShortcuts from "@/components/KeyboardShortcuts";
 import PresenceProvider from "@/components/PresenceProvider";
 import { ShortcutsProvider } from "@/components/ShortcutsProvider";
+import AutomationRuntime from "@/components/AutomationRuntime";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -99,6 +100,7 @@ export default function RootLayout({
                   <FocusIsland />
                   <main id="main-content" className="p-6 pb-24 md:pb-6" tabIndex={-1}>
                     <PageTransition>{children}</PageTransition>
+                    <AutomationRuntime />
                   </main>
                 </div>
                 <MobileNav />

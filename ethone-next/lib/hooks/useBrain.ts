@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSettings } from "@/components/SettingsProvider";
 import { useItems } from "./useItems";
@@ -35,6 +35,26 @@ export function useBrain() {
   const [memories, setMemories] = useState<BrainMemory[]>([]);
   const [memoriesLoaded, setMemoriesLoaded] = useState(false);
   const [providerStatus, setProviderStatus] = useState<{ provider: string; latencyMs: number } | null>(null);
+  const watcherRef = useRef<ReturnType<typeof createAutomationWatcher> | null>(null);
+  const automationsRef = useRef(preferences.automations);
+
+  useEffect(() => {
+    automationsRef.current = preferences.automations;
+  });
+
+  useEffect(() => {
+    watcherRef.current = createAutomationWatcher(
+      () => automationsRef.current,
+      (rule) => {
+        if (rule.actionId.startsWith("v8.density.")) updateSettings({ densityMode: rule.actionId.replace("v8.density.", "") as never });
+        if (rule.actionId.startsWith("v8.theme.")) updateSettings({ theme: rule.actionId.replace("v8.theme.", "") as never });
+        if (rule.actionId.startsWith("v8.space.")) {
+          // spaces not persisted in settings; can be ignored or stored later
+        }
+      }
+    );
+    watcherRef.current.prime({ route: "home", space: "personal", localTime: undefined });
+  }, [updateSettings]);
 
   useEffect(() => {
     const local = loadBrainPreferences();
@@ -177,14 +197,8 @@ export function useBrain() {
   }
 
   function runAutomations(state: { route?: string; space?: string; localTime?: string }) {
-    const watcher = createAutomationWatcher(() => preferences.automations, (rule) => {
-      if (rule.actionId.startsWith("v8.density.")) updateSettings({ densityMode: rule.actionId.replace("v8.density.", "") as never });
-      if (rule.actionId.startsWith("v8.theme.")) updateSettings({ theme: rule.actionId.replace("v8.theme.", "") as never });
-      if (rule.actionId.startsWith("v8.space.")) {
-        // spaces not persisted in settings; can be ignored or stored later
-      }
-    });
-    return watcher.check(state);
+    if (!watcherRef.current) return [];
+    return watcherRef.current.check(state);
   }
 
   const suggestions = useMemo(() => {

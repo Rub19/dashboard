@@ -1,15 +1,19 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef, type DragEvent } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useSettings } from "@/components/SettingsProvider";
 import { useWindowManager } from "@/components/WindowManagerProvider";
+import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useLiveData } from "@/lib/hooks/useLiveData";
+import { useNotifications } from "@/lib/hooks/useNotifications";
 import { Icon } from "@/lib/icons";
 import ContextMenu from "@/components/ContextMenu";
 import Card3D from "@/components/Card3D";
 import DockControlCenter from "@/components/DockControlCenter";
+import FocusPopover from "@/components/FocusPopover";
 
 const ICONS: Record<string, string> = {
   home: "home",
@@ -32,17 +36,37 @@ const ICONS: Record<string, string> = {
   settings: "settings",
 };
 
+type SpotifyNow = {
+  playing: boolean;
+  title: string;
+  artist: string;
+  artwork?: string;
+};
+
 export default function Dock() {
   const { settings, update } = useSettings();
   const pathname = usePathname();
   const router = useRouter();
-  const { openWindow } = useWindowManager();
+  const { openWindow, missionControl, toggleMissionControl } = useWindowManager();
+  const { open: commandPaletteOpen, setOpen: setCommandPaletteOpen } = useCommandPalette();
   const i18n = useI18n();
+  const { nowPlaying, lanyard } = useLiveData(120_000);
+  const { unreadCount } = useNotifications();
+
   const [expanded, setExpanded] = useState(false);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [launcherOpen, setLauncherOpen] = useState(false);
   const [controlCenterOpen, setControlCenterOpen] = useState(false);
   const [controlCenterEl, setControlCenterEl] = useState<HTMLButtonElement | null>(null);
+
+  const [focusPopover, setFocusPopover] = useState<{ open: boolean; anchor: HTMLElement | null }>({
+    open: false,
+    anchor: null,
+  });
+  const [pomodoroEl, setPomodoroEl] = useState<HTMLButtonElement | null>(null);
+  const [focusAppEl, setFocusAppEl] = useState<HTMLDivElement | null>(null);
+  const focusSuppressRef = useRef(false);
+  const focusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const allApps = useMemo(
     () =>
@@ -56,6 +80,26 @@ export default function Dock() {
         .sort((a, b) => a.label.localeCompare(b.label)),
     [i18n]
   );
+
+  const spotifyNow = useMemo<SpotifyNow | null>(() => {
+    if (nowPlaying?.source?.toLowerCase() === "spotify" && nowPlaying?.isPlaying) {
+      return {
+        playing: true,
+        title: nowPlaying.title || "",
+        artist: nowPlaying.artist || "",
+        artwork: nowPlaying.cover || nowPlaying.artworkUrl,
+      };
+    }
+    if (lanyard?.spotify?.playing) {
+      return {
+        playing: true,
+        title: lanyard.spotify.title || "",
+        artist: lanyard.spotify.artist || "",
+        artwork: lanyard.spotify.artwork,
+      };
+    }
+    return null;
+  }, [nowPlaying, lanyard]);
 
   useEffect(() => {
     if (!launcherOpen) return;
@@ -101,8 +145,43 @@ export default function Dock() {
     update({ dockItems: next });
   }
 
+  function openFocus(anchor: HTMLElement | null) {
+    if (!anchor) return;
+    setFocusPopover({ open: true, anchor });
+  }
+
+  function closeFocus() {
+    setFocusPopover({ open: false, anchor: null });
+  }
+
+  function startFocusHold(anchor: HTMLElement | null) {
+    if (expanded || !anchor) return;
+    clearFocusHold();
+    focusTimerRef.current = setTimeout(() => {
+      focusSuppressRef.current = true;
+      openFocus(anchor);
+      focusTimerRef.current = null;
+    }, 520);
+  }
+
+  function clearFocusHold() {
+    if (focusTimerRef.current) {
+      clearTimeout(focusTimerRef.current);
+      focusTimerRef.current = null;
+    }
+  }
+
+  function handleOpenNotifications() {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("v8:open-notifications"));
+    }
+  }
+
   const baseControlClass =
     "flex h-11 w-11 items-center justify-center rounded-xl border border-transparent text-[var(--foreground)] transition-all hover:border-[var(--accent)]/30 hover:bg-[var(--surface)] hover:shadow-lg";
+
+  const controlInactive = "text-[var(--muted)]";
+  const controlActive = "bg-[var(--accent)]/10 text-[var(--accent)]";
 
   return (
     <div
@@ -164,51 +243,111 @@ export default function Dock() {
       >
         {visibleItems().map((item) => {
           const active = pathname === item.href || pathname.startsWith(item.href);
+          const isFocus = item.id === "focus";
+
           const contextItems = [
             { id: "open", label: i18n("openHere"), icon: "arrow-right", onClick: () => router.push(item.href) },
             { id: "window", label: i18n("openInWindow"), icon: "maximize", onClick: () => openWindow(item.label, item.href) },
           ];
+
+          if (isFocus && focusAppEl) {
+            contextItems.push({
+              id: "pomodoro",
+              label: i18n("dockPomodoro"),
+              icon: "timer",
+              onClick: () => openFocus(focusAppEl),
+            });
+          }
+
           const link = (
             <Link
               href={item.href}
               onClick={(e) => {
-                if (draggingId) e.preventDefault();
+                if (draggingId) {
+                  e.preventDefault();
+                  return;
+                }
+                if (isFocus) {
+                  if (focusSuppressRef.current) {
+                    e.preventDefault();
+                    focusSuppressRef.current = false;
+                    return;
+                  }
+                  if (focusPopover.open && focusPopover.anchor === focusAppEl) {
+                    e.preventDefault();
+                    closeFocus();
+                    return;
+                  }
+                }
               }}
               aria-label={item.label}
               data-tooltip={item.label}
               data-haptic
               data-dock-item
               data-dock-item-active={active ? "true" : "false"}
-              className={`${baseControlClass} ${active ? "bg-[var(--accent)]/10 text-[var(--accent)]" : ""}`}
+              className={`${baseControlClass} ${active ? controlActive : ""}`}
             >
               <Icon name={item.icon} className="h-5 w-5" />
             </Link>
           );
+
+          const dragHandlers = {
+            onDragStart: (e: DragEvent<HTMLDivElement>) => {
+              setDraggingId(item.id);
+              e.dataTransfer.setData("text/plain", item.id);
+              e.dataTransfer.effectAllowed = "move";
+            },
+            onDragOver: (e: DragEvent<HTMLDivElement>) => {
+              e.preventDefault();
+              if (draggingId && draggingId !== item.id) {
+                e.dataTransfer.dropEffect = "move";
+              }
+            },
+            onDrop: (e: DragEvent<HTMLDivElement>) => {
+              e.preventDefault();
+              const draggedId = e.dataTransfer.getData("text/plain");
+              if (draggedId && draggedId !== item.id) {
+                moveTo(draggedId, item.id);
+              }
+              setDraggingId(null);
+            },
+            onDragEnd: () => setDraggingId(null),
+          };
+
+          if (isFocus) {
+            return (
+              <ContextMenu key={item.id} items={contextItems}>
+                <div
+                  ref={setFocusAppEl}
+                  className="group relative flex flex-col items-center"
+                  draggable={expanded}
+                  {...dragHandlers}
+                  onPointerDown={(e) => {
+                    if (e.button !== 0 || !e.isPrimary || expanded) return;
+                    startFocusHold(focusAppEl);
+                  }}
+                  onPointerUp={clearFocusHold}
+                  onPointerLeave={clearFocusHold}
+                  onPointerCancel={clearFocusHold}
+                >
+                  {link}
+                  {expanded && (
+                    <div className="mt-1 flex gap-0.5">
+                      <button onClick={() => move(item.id, -1)} className="rounded p-0.5 text-[10px] text-[var(--muted)] hover:bg-[var(--surface)]">◀</button>
+                      <button onClick={() => move(item.id, 1)} className="rounded p-0.5 text-[10px] text-[var(--muted)] hover:bg-[var(--surface)]">▶</button>
+                    </div>
+                  )}
+                </div>
+              </ContextMenu>
+            );
+          }
+
           return (
             <ContextMenu key={item.id} items={contextItems}>
               <div
                 className="group relative flex flex-col items-center"
                 draggable={expanded}
-                onDragStart={(e) => {
-                  setDraggingId(item.id);
-                  e.dataTransfer.setData("text/plain", item.id);
-                  e.dataTransfer.effectAllowed = "move";
-                }}
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  if (draggingId && draggingId !== item.id) {
-                    e.dataTransfer.dropEffect = "move";
-                  }
-                }}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  const draggedId = e.dataTransfer.getData("text/plain");
-                  if (draggedId && draggedId !== item.id) {
-                    moveTo(draggedId, item.id);
-                  }
-                  setDraggingId(null);
-                }}
-                onDragEnd={() => setDraggingId(null)}
+                {...dragHandlers}
               >
                 {link}
                 {expanded && (
@@ -222,16 +361,120 @@ export default function Dock() {
           );
         })}
 
+        {spotifyNow && (
+          <span
+            role="img"
+            aria-label={i18n("spotifyPlaying")}
+            data-tooltip={`${spotifyNow.title} - ${spotifyNow.artist}`}
+            data-dock-item
+            className={`${baseControlClass} relative text-[#1DB954]`}
+          >
+            {spotifyNow.artwork ? (
+              <span
+                className="h-5 w-5 rounded bg-cover bg-center"
+                style={{ backgroundImage: `url(${spotifyNow.artwork})` }}
+                aria-hidden="true"
+              />
+            ) : (
+              <Icon name="music" className="h-5 w-5" />
+            )}
+            <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-[#1DB954] ring-1 ring-[var(--surface-raised)]" />
+            {spotifyNow.playing && (
+              <span className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-px" aria-hidden="true">
+                <span className="h-2 w-0.5 animate-pulse bg-[#1DB954]" />
+                <span className="h-2 w-0.5 animate-pulse bg-[#1DB954]" style={{ animationDelay: "120ms" }} />
+                <span className="h-2 w-0.5 animate-pulse bg-[#1DB954]" style={{ animationDelay: "240ms" }} />
+              </span>
+            )}
+          </span>
+        )}
+
         <button
           type="button"
-          onClick={() => setLauncherOpen((v) => !v)}
+          onClick={() => {
+            setLauncherOpen((v) => !v);
+            setControlCenterOpen(false);
+          }}
           aria-label={i18n("dockLauncher")}
+          aria-expanded={launcherOpen}
           data-tooltip={i18n("dockLauncher")}
           data-haptic
           data-dock-item
-          className={`${baseControlClass} ${launcherOpen ? "bg-[var(--accent)]/10 text-[var(--accent)]" : "text-[var(--muted)]"}`}
+          className={`${baseControlClass} ${launcherOpen ? controlActive : controlInactive}`}
         >
           <Icon name="layoutGrid" className="h-5 w-5" />
+        </button>
+
+        <span className="h-9 w-px self-center bg-[var(--border)]" aria-hidden="true" />
+
+        <button
+          type="button"
+          onClick={() => setCommandPaletteOpen(true)}
+          aria-label={i18n("dockSpotlight")}
+          aria-pressed={commandPaletteOpen}
+          data-tooltip={i18n("dockSpotlight")}
+          data-haptic
+          data-dock-item
+          className={`${baseControlClass} ${commandPaletteOpen ? controlActive : controlInactive}`}
+        >
+          <Icon name="search" className="h-5 w-5" />
+        </button>
+
+        <button
+          ref={setPomodoroEl}
+          type="button"
+          onClick={() => {
+            if (focusPopover.open && focusPopover.anchor === pomodoroEl) {
+              closeFocus();
+            } else {
+              openFocus(pomodoroEl);
+            }
+          }}
+          aria-label={i18n("dockPomodoro")}
+          aria-expanded={focusPopover.open && focusPopover.anchor === pomodoroEl}
+          data-tooltip={i18n("dockPomodoro")}
+          data-haptic
+          data-dock-item
+          className={`${baseControlClass} ${focusPopover.open && focusPopover.anchor === pomodoroEl ? controlActive : controlInactive}`}
+        >
+          <Icon name="timer" className="h-5 w-5" />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            toggleMissionControl();
+            setLauncherOpen(false);
+          }}
+          aria-label={i18n("dockMissionControl")}
+          aria-pressed={missionControl}
+          data-tooltip={i18n("dockMissionControl")}
+          data-haptic
+          data-dock-item
+          className={`${baseControlClass} ${missionControl ? controlActive : controlInactive}`}
+        >
+          <Icon name="appWindow" className="h-5 w-5" />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            handleOpenNotifications();
+            setLauncherOpen(false);
+          }}
+          aria-label={`${i18n("openNotifications")}${unreadCount > 0 ? ` (${unreadCount})` : ""}`}
+          aria-live="polite"
+          data-tooltip={i18n("openNotifications")}
+          data-haptic
+          data-dock-item
+          className={`${baseControlClass} relative ${controlInactive}`}
+        >
+          <Icon name="bell" className="h-5 w-5" />
+          {unreadCount > 0 && (
+            <span aria-hidden="true" className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold text-white">
+              {unreadCount > 99 ? "99+" : unreadCount}
+            </span>
+          )}
         </button>
 
         <button
@@ -246,7 +489,7 @@ export default function Dock() {
           data-tooltip={i18n("controlCenter")}
           data-haptic
           data-dock-item
-          className={`${baseControlClass} ${controlCenterOpen ? "bg-[var(--accent)]/10 text-[var(--accent)]" : "text-[var(--muted)]"}`}
+          className={`${baseControlClass} ${controlCenterOpen ? controlActive : controlInactive}`}
         >
           <Icon name="sliders" className="h-5 w-5" />
         </button>
@@ -258,7 +501,7 @@ export default function Dock() {
           data-tooltip={i18n("expand")}
           data-haptic
           data-dock-item
-          className={`${baseControlClass} ${expanded ? "rotate-180" : ""}`}
+          className={`${baseControlClass} ${expanded ? "rotate-180" : ""} ${controlInactive}`}
         >
           <Icon name="chevronUp" className="h-5 w-5" />
         </button>
@@ -270,6 +513,12 @@ export default function Dock() {
             referenceRef={controlCenterEl}
           />
         )}
+
+        <FocusPopover
+          open={focusPopover.open}
+          onClose={closeFocus}
+          referenceRef={focusPopover.anchor}
+        />
       </div>
     </div>
   );

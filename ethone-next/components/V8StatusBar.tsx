@@ -7,7 +7,9 @@ import { useNotifications } from "@/lib/hooks/useNotifications";
 import { useActiveProfile, useSettings } from "@/components/SettingsProvider";
 import { useAuth } from "@/components/AuthProvider";
 import { useFocus } from "@/components/FocusProvider";
-import { usePresence } from "@/components/PresenceProvider";
+import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
+import { useLiveData } from "@/lib/hooks/useLiveData";
+import { useItems } from "@/lib/hooks/useItems";
 import { type SessionMode } from "@/lib/settings";
 
 const SESSION_MODE_LABELS: Record<SessionMode, string> = {
@@ -106,15 +108,42 @@ export default function V8StatusBar() {
   const { activeProfile } = useActiveProfile();
   const { user } = useAuth();
   const { settings } = useSettings();
-  const { state: presence } = usePresence();
   const focus = useFocus();
   const { unreadCount } = useNotifications();
+  const { syncing } = useActivityJournal();
+  const { lastUpdated } = useLiveData(300000);
+  const { loading: notesLoading } = useItems("notes");
+  const { loading: tasksLoading } = useItems("tasks");
   const time = useClientClock();
   const online = useOnlineStatus();
 
   const profileName = activeProfile?.name || user?.email || i18n("guest");
-  const syncing = presence.sync === "syncing";
   const isFocus = focus.state.phase !== "idle";
+
+  const syncStatus = useMemo<"syncing" | "synced" | "offline">(() => {
+    if (!online) return "offline";
+    if (syncing) return "syncing";
+    if (lastUpdated) return "synced";
+    return "offline";
+  }, [online, syncing, lastUpdated]);
+
+  const syncMeta = useMemo(() => {
+    if (syncStatus === "syncing") {
+      return { icon: "refresh-cw", tone: "syncing" as Tone, value: i18n("v8Syncing") };
+    }
+    if (syncStatus === "offline") {
+      return { icon: "wifi-off", tone: "offline" as Tone, value: i18n("v8Offline") };
+    }
+    return { icon: "cloud", tone: "online" as Tone, value: i18n("v8Synced") };
+  }, [syncStatus, i18n]);
+
+  const savePending = notesLoading || tasksLoading;
+  const saveMeta = useMemo(() => {
+    if (savePending) {
+      return { icon: "loader-2", tone: "syncing" as Tone, value: i18n("v8Saving") };
+    }
+    return { icon: "check", tone: "online" as Tone, value: i18n("v8Saved") };
+  }, [savePending, i18n]);
 
   const presetName = useMemo(
     () => i18n(focus.state.activePreset) || focus.state.activePreset || i18n("pomodoro"),
@@ -153,10 +182,16 @@ export default function V8StatusBar() {
           value={sessionModeLabel}
         />
         <StatusItem
-          icon={syncing ? "refresh-cw" : "cloud"}
-          tone={syncing ? "syncing" : "online"}
+          icon={saveMeta.icon}
+          tone={saveMeta.tone}
+          label={i18n("v8Save")}
+          value={saveMeta.value}
+        />
+        <StatusItem
+          icon={syncMeta.icon}
+          tone={syncMeta.tone}
           label={i18n("sync")}
-          value={syncing ? i18n("v8Syncing") : i18n("v8Synced")}
+          value={syncMeta.value}
         />
         <StatusItem icon="user" tone="muted" label={i18n("profile")} value={profileName} />
         <StatusItem

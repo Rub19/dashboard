@@ -169,12 +169,16 @@ export interface ActivityJournal {
   sync: () => Promise<{ ok: boolean; count: number }>;
   pending: () => ActivityEntry[];
   pendingCount: () => number;
+  syncing: () => boolean;
+  subscribeSync: (subscriber: (syncing: boolean) => void) => () => void;
   destroy: () => void;
 }
 
 export function createActivityJournal(): ActivityJournal {
   const state = loadState();
   const subscribers = new Set<(entries: ActivityEntry[]) => void>();
+  let isSyncing = false;
+  const syncSubscribers = new Set<(syncing: boolean) => void>();
 
   function entries(snapshot?: ActivitySnapshot): ActivityEntry[] {
     const now = nowIso();
@@ -254,7 +258,29 @@ export function createActivityJournal(): ActivityJournal {
     return pending().length;
   }
 
+  function notifySync(value: boolean) {
+    syncSubscribers.forEach((subscriber) => subscriber(value));
+  }
+
+  function setSyncing(value: boolean) {
+    if (isSyncing === value) return;
+    isSyncing = value;
+    notifySync(isSyncing);
+  }
+
+  function syncing(): boolean {
+    return isSyncing;
+  }
+
+  function subscribeSync(subscriber: (syncing: boolean) => void): () => void {
+    if (typeof subscriber !== "function") return () => {};
+    syncSubscribers.add(subscriber);
+    subscriber(isSyncing);
+    return () => syncSubscribers.delete(subscriber);
+  }
+
   async function sync(): Promise<{ ok: boolean; count: number }> {
+    if (isSyncing) return { ok: true, count: 0 };
     const unsynced = pending().slice(0, SYNC_BATCH_LIMIT);
     if (unsynced.length === 0) return { ok: true, count: 0 };
 
@@ -264,6 +290,7 @@ export function createActivityJournal(): ActivityJournal {
       details: entry.details || {},
     }));
 
+    setSyncing(true);
     try {
       await fetchWorker("/api/cloud/activity", {
         method: "POST",
@@ -278,11 +305,14 @@ export function createActivityJournal(): ActivityJournal {
       return { ok: true, count: unsynced.length };
     } catch {
       return { ok: false, count: 0 };
+    } finally {
+      setSyncing(false);
     }
   }
 
   function destroy() {
     subscribers.clear();
+    syncSubscribers.clear();
   }
 
   return Object.freeze({
@@ -294,6 +324,8 @@ export function createActivityJournal(): ActivityJournal {
     sync,
     pending,
     pendingCount,
+    syncing,
+    subscribeSync,
     destroy,
   });
 }

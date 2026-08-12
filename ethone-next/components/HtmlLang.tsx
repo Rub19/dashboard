@@ -40,6 +40,7 @@ export default function HtmlLang() {
     html.dataset.wallpaper = settings.wallpaper;
     html.dataset.font = settings.fontFamily;
     html.dataset.accent = settings.accentColor;
+    html.dataset.theme = settings.theme;
     html.dataset.aura = settings.aura;
     html.dataset.sessionMode = settings.sessionMode;
     html.style.setProperty("--v8-breathe-duration", settings.ambientEffectsEnabled ? "26s" : "0s");
@@ -64,6 +65,7 @@ export default function HtmlLang() {
     settings.densityCustom,
     settings.wallpaper,
     settings.fontFamily,
+    settings.theme,
     settings.aura,
     activeSpace,
     railExpanded,

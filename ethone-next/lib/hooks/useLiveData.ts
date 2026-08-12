@@ -767,6 +767,7 @@ export function useLiveData(pollMs = 60000) {
     loading,
     error,
     updatedAt,
+    lastUpdated: updatedAt,
     lastfmPeriod,
     setLastfmPeriod,
     lastfmTopArtists,

@@ -9,11 +9,11 @@ import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { useSettings, useActiveProfile } from "@/components/SettingsProvider";
 import { useAuth } from "@/components/AuthProvider";
 import { activityJournal } from "@/lib/activity-journal";
+import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useFocus } from "@/components/FocusProvider";
+import { type SessionMode } from "@/lib/settings";
 import WeatherDetailPopover from "@/components/WeatherDetailPopover";
-
-type Tone = "online" | "offline" | "syncing" | "warning" | "error" | "muted";
 
 const ROUTE_ICONS: Record<string, string> = {
   home: "house",
@@ -44,6 +44,16 @@ const WORKSPACE_FLOWS: Record<string, string> = {
   focus: "v8FlowFocus",
   studio: "v8FlowStudio",
 };
+
+const SESSION_MODE_ICONS: Record<SessionMode, string> = {
+  default: "circle",
+  focus: "target",
+  intense: "zap",
+  zen: "coffee",
+  night: "moon",
+};
+
+type Tone = "online" | "offline" | "syncing" | "warning" | "error" | "muted";
 
 function toneClass(tone: Tone) {
   switch (tone) {
@@ -154,6 +164,7 @@ function QuickAction({
       onClick={onClick}
       data-tooltip={label}
       data-interactive
+      aria-pressed={active}
       className={`relative flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)] ${
         active ? "border-[var(--accent)] text-[var(--accent)]" : ""
       }`}
@@ -208,7 +219,8 @@ export default function V8Breadcrumbs() {
   const { activeProfile } = useActiveProfile();
   const { user } = useAuth();
   const [activeSpace] = useLocalStorage<string>("ethone-active-workspace", "personal");
-  const { weather } = useLiveData(300000);
+  const { weather, lastUpdated } = useLiveData(300000);
+  const { syncing, sync } = useActivityJournal();
   const focus = useFocus();
   const time = useClientClock();
   const online = useOnlineStatus();
@@ -247,6 +259,38 @@ export default function V8Breadcrumbs() {
   const isZen = settings.zenMode;
   const isFocus = focus.state.phase !== "idle";
 
+  const syncStatus = useMemo<"syncing" | "synced" | "offline">(() => {
+    if (!online) return "offline";
+    if (syncing) return "syncing";
+    if (lastUpdated) return "synced";
+    return "offline";
+  }, [online, syncing, lastUpdated]);
+
+  const syncMeta = useMemo(() => {
+    if (syncStatus === "syncing") {
+      return { icon: "refresh-cw", tone: "syncing" as Tone, value: i18n("v8Syncing") };
+    }
+    if (syncStatus === "offline") {
+      return { icon: "wifi-off", tone: "offline" as Tone, value: i18n("v8Offline") };
+    }
+    return { icon: "cloud", tone: "online" as Tone, value: i18n("v8Synced") };
+  }, [syncStatus, i18n]);
+
+  const presetName = useMemo(
+    () => i18n(focus.state.activePreset) || focus.state.activePreset || i18n("pomodoro"),
+    [focus.state.activePreset, i18n]
+  );
+
+  const sessionLabel = useMemo(() => {
+    if (isFocus) {
+      const base = i18n("v8SessionActive").replace("{{preset}}", presetName);
+      return `${base} · ${focus.state.format(focus.state.remaining)}`;
+    }
+    return i18n("v8SessionIdle");
+  }, [isFocus, focus.state, presetName, i18n]);
+
+  const sessionModeIcon = SESSION_MODE_ICONS[settings.sessionMode] || SESSION_MODE_ICONS.default;
+
   const handleZen = () => update({ zenMode: !isZen });
   const handleFocus = () => {
     if (isFocus) focus.stop();
@@ -256,6 +300,9 @@ export default function V8Breadcrumbs() {
     if (typeof window !== "undefined") {
       window.dispatchEvent(new CustomEvent("v8:open-notifications"));
     }
+  };
+  const handleSync = () => {
+    sync().catch(() => {});
   };
 
   return (
@@ -286,12 +333,24 @@ export default function V8Breadcrumbs() {
         <ContextItem icon="layout-grid" label={i18n("v8DataSpace")} value={spaceLabel} />
         <ContextItem icon="zap" label={i18n("v8Mode")} value={i18n(spaceFlow)} />
         <ContextItem
+          icon={syncMeta.icon}
+          label={i18n("sync")}
+          value={syncMeta.value}
+          tone={syncMeta.tone}
+          title={i18n("sync")}
+        />
+        <ContextItem
+          icon={isFocus ? "timer" : sessionModeIcon}
+          label={i18n("v8Session")}
+          value={sessionLabel}
+          tone={isFocus ? "online" : "muted"}
+        />
+        <ContextItem
           icon={online ? "wifi" : "wifi-off"}
           label={i18n("connection")}
           value={online ? i18n("v8NetworkOnline") : i18n("v8NetworkOffline")}
           tone={online ? "online" : "offline"}
         />
-        {/* weather quick action moved to the right */}
         <ContextItem icon="clock" label={i18n("time")} value={time} mono />
         <ContextItem icon="user" label={i18n("profile")} value={profileName} />
       </div>
@@ -308,6 +367,12 @@ export default function V8Breadcrumbs() {
           active={isFocus}
           label={i18n("focus")}
           onClick={handleFocus}
+        />
+        <QuickAction
+          icon={syncing ? "refresh-cw" : "cloud"}
+          active={syncing}
+          label={i18n("sync")}
+          onClick={handleSync}
         />
         <QuickAction
           icon="bell"

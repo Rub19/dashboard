@@ -74,6 +74,7 @@ export default function RootLayout({
             <PresenceProvider>
             <ShortcutsProvider>
             <UIProvider>
+              <CommandPaletteProvider>
               <HtmlLang />
               <ProfileSync />
               <SoundProvider>
@@ -83,16 +84,14 @@ export default function RootLayout({
                 <div data-v8-shell className="min-h-screen transition-all duration-300 md:ml-[72px]">
                   <header data-v8-topbar className="v8-topbar sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[var(--border)] bg-[var(--background)]/80 px-6 backdrop-blur-md">
                     <V8Breadcrumbs />
-                    <CommandPaletteProvider>
-                      <SearchBar />
-                      <div className="flex items-center gap-3">
-                        <NotificationCenter />
-                        <SidePanel />
-                        <CommandPalette />
-                        <ProfileDropdown />
-                        <V8WindowControls />
-                      </div>
-                    </CommandPaletteProvider>
+                    <SearchBar />
+                    <div className="flex items-center gap-3">
+                      <NotificationCenter />
+                      <SidePanel />
+                      <CommandPalette />
+                      <ProfileDropdown />
+                      <V8WindowControls />
+                    </div>
                   </header>
                   <ServiceWorker />
                   <OAuthHandler />
@@ -115,6 +114,7 @@ export default function RootLayout({
                 <KeyboardShortcuts />
                 </ToastProvider>
               </SoundProvider>
+              </CommandPaletteProvider>
             </UIProvider>
             </ShortcutsProvider>
             </PresenceProvider>

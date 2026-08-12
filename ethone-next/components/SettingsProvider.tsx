@@ -124,8 +124,8 @@ export default function SettingsProvider({
     const resolved = resolveTheme(settings.theme);
     const theme = THEMES[resolved.theme] || THEMES.default;
     const isDark = settings.theme === "auto" ? resolved.dark : settings.theme === "day" || settings.theme === "minimal" ? false : settings.darkMode;
-    root.style.setProperty("--background", isDark ? theme.background : "#f4f4f5");
-    root.style.setProperty("--foreground", isDark ? theme.foreground : "#18181b");
+    root.style.setProperty("--background", isDark ? theme.background : (resolved.dark ? "#f4f4f5" : theme.background));
+    root.style.setProperty("--foreground", isDark ? theme.foreground : (resolved.dark ? "#18181b" : theme.foreground));
     root.style.setProperty("--surface", isDark ? "#121214" : "#ffffff");
     root.style.setProperty("--surface-raised", isDark ? "#1a1a1e" : "#f4f4f5");
     root.style.setProperty("--border", isDark ? "#27272a" : "#e4e4e7");

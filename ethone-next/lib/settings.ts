@@ -73,6 +73,8 @@ export type SoundPack =
   | "mechanical"
   | "liquid";
 
+export type SoundAmbient = "none" | "pink" | "brown" | "white" | "rain" | "drone";
+
 export type SoundVolumeCategory = "interface" | "notifications" | "brain" | "system";
 
 export type Settings = {
@@ -120,6 +122,8 @@ export type Settings = {
   soundVolume: number;
   soundSpatial: boolean;
   soundVolumes: Record<SoundVolumeCategory, number>;
+  ambientSound: SoundAmbient;
+  mediaDucking: boolean;
   notifications: boolean;
   mailNotifications: boolean;
   trackerNotifications: boolean;
@@ -228,6 +232,8 @@ export const DEFAULTS: Settings = {
     brain: 100,
     system: 100,
   },
+  ambientSound: "none",
+  mediaDucking: true,
   notifications: true,
   mailNotifications: true,
   trackerNotifications: false,

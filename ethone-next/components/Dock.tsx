@@ -9,6 +9,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
 import ContextMenu from "@/components/ContextMenu";
 import Card3D from "@/components/Card3D";
+import DockControlCenter from "@/components/DockControlCenter";
 
 const ICONS: Record<string, string> = {
   home: "home",
@@ -40,6 +41,8 @@ export default function Dock() {
   const [expanded, setExpanded] = useState(false);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [launcherOpen, setLauncherOpen] = useState(false);
+  const [controlCenterOpen, setControlCenterOpen] = useState(false);
+  const [controlCenterEl, setControlCenterEl] = useState<HTMLButtonElement | null>(null);
 
   const allApps = useMemo(
     () =>
@@ -232,6 +235,23 @@ export default function Dock() {
         </button>
 
         <button
+          ref={setControlCenterEl}
+          type="button"
+          onClick={() => {
+            setControlCenterOpen((v) => !v);
+            setLauncherOpen(false);
+          }}
+          aria-label={i18n("controlCenter")}
+          aria-expanded={controlCenterOpen}
+          data-tooltip={i18n("controlCenter")}
+          data-haptic
+          data-dock-item
+          className={`${baseControlClass} ${controlCenterOpen ? "bg-[var(--accent)]/10 text-[var(--accent)]" : "text-[var(--muted)]"}`}
+        >
+          <Icon name="sliders" className="h-5 w-5" />
+        </button>
+
+        <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
           aria-label={i18n("expand")}
@@ -242,6 +262,14 @@ export default function Dock() {
         >
           <Icon name="chevronUp" className="h-5 w-5" />
         </button>
+
+        {controlCenterOpen && controlCenterEl && (
+          <DockControlCenter
+            open={controlCenterOpen}
+            onClose={() => setControlCenterOpen(false)}
+            referenceRef={controlCenterEl}
+          />
+        )}
       </div>
     </div>
   );

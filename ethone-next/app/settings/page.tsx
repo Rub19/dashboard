@@ -8,6 +8,7 @@ import Card3D from "@/components/Card3D";
 import LiveSettings from "@/components/LiveSettings";
 import { subscribePush, unsubscribePush } from "@/lib/push";
 import { Icon } from "@/lib/icons";
+import { useSound } from "@/lib/sound";
 import {
   BUILT_IN_PRESETS,
   applyPreset,
@@ -111,6 +112,7 @@ const NAV_ITEMS = [
 export default function SettingsPage() {
   const { settings, update, applyPreset: applyPresetFromProvider } = useSettings();
   const i18n = useI18n();
+  const { play } = useSound();
 
   const [customPresets, setCustomPresets] = useState<Preset[]>(() => loadCustomPresets());
   const [newPresetName, setNewPresetName] = useState("");
@@ -827,6 +829,7 @@ export default function SettingsPage() {
         <div className="space-y-4">
           <Toggle label={i18n("masterVolume")} checked={settings.masterVolume} onChange={(v) => update({ masterVolume: v })} />
           <Toggle label={i18n("soundEffects")} checked={settings.soundEffects} onChange={(v) => update({ soundEffects: v })} />
+          <Toggle label={i18n("mediaDucking")} checked={settings.mediaDucking} onChange={(v) => update({ mediaDucking: v })} />
           <Range label={i18n("soundVolume")} value={settings.soundVolume} onChange={(v) => update({ soundVolume: v })} />
           <Toggle label={i18n("soundSpatial")} checked={settings.soundSpatial} onChange={(v) => update({ soundSpatial: v })} />
           <div className="space-y-3">
@@ -864,6 +867,41 @@ export default function SettingsPage() {
               </button>
             ))}
           </div>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {(["ethone", "minimal", "classic", "apple-inspired", "cyber-pulse", "silent"] as const).map((pack) => (
+              <button
+                key={`preview-${pack}`}
+                type="button"
+                onClick={() => play("click", pack)}
+                className="flex items-center justify-center gap-1 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)]"
+              >
+                <Icon name="play" className="h-3 w-3" />
+                {i18n("preview")}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-[var(--muted)]">{i18n("ambientSound")}</p>
+          <Toggle
+            label={i18n("ambientSound")}
+            checked={settings.ambientSound !== "none"}
+            onChange={(v) => update({ ambientSound: v ? "rain" : "none" })}
+          />
+          {settings.ambientSound !== "none" && (
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
+              {(["pink", "brown", "white", "rain", "drone"] as const).map((type) => (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => update({ ambientSound: type })}
+                  className={`rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
+                    settings.ambientSound === type ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                  }`}
+                >
+                  {i18n(`ambientSound${type.charAt(0).toUpperCase() + type.slice(1)}`)}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       ),
     },

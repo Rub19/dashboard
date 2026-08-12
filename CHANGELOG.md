@@ -22,6 +22,8 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `lib/preset-engine.ts` + `app/settings/page.tsx` : moteur de presets v8 (`sanitizePreset`, `applyPreset`, `extractPresetFromState`), presets intégrés, presets personnalisés, import/export JSON.
 - `components/LayerProvider.tsx` : gestion avancée de couches (focus trap, roving tabindex, Escape/clic extérieur/scroll/resize, z-index auto, subscribe).
 - `app/globals.css` + `app/legacy-v8-tokens.css` + `components/HtmlLang.tsx` : tokens CSS Houdini `@property`, `color-mix`, animations `breathe`, thématisation par aura/session/densité.
+- `components/Dock.tsx` + `components/DockControlCenter.tsx` : Control Center dans le Dock (animations UI, toggles visuels/sonores, pack sonore, volume, ambiance, actions rapides).
+- `lib/sound.tsx` + `lib/settings.ts` + `app/settings/page.tsx` : sonorités ambiantes (`pink/brown/white/rain/drone`), media ducking, throttling par type de son, mapping `v8.*` -> `SoundType`, export WAV.
 
 ### Corrige
 - Migration des packs audio legacy `mechanical`/`liquid`/`none` vers les équivalents v8 pour compatibilité ascendante.

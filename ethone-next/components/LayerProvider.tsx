@@ -252,7 +252,7 @@ function resolveInitialFocus(
   return null;
 }
 
-function createLayerManager(onChange?: () => void) {
+function createLayerManager() {
   const documentRef = typeof document !== "undefined" ? document : undefined;
   const runtime = typeof window !== "undefined" ? window : undefined;
   const entries: LayerEntry[] = [];
@@ -555,11 +555,7 @@ const LayerCtx = createContext<LayerContextValue | null>(null);
 
 export function LayerProvider({ children }: { children: ReactNode }) {
   const [layers, setLayers] = useState<Layer[]>([]);
-  const [manager] = useState(() =>
-    createLayerManager(() => {
-      // state updater will be called from manager callback
-    })
-  );
+  const [manager] = useState(() => createLayerManager());
 
   useEffect(() => {
     setLayers(manager.getEntries());

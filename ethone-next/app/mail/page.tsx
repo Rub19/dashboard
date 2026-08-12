@@ -8,6 +8,7 @@ import { Icon } from "@/lib/icons";
 import Card3D from "@/components/Card3D";
 import LiquidSidebar from "@/components/LiquidSidebar";
 import MailAdvancedPanel from "@/components/MailAdvancedPanel";
+import MailAnalyticsPanel from "@/components/MailAnalyticsPanel";
 import BottomSheet from "@/components/BottomSheet";
 import ContextMenu from "@/components/ContextMenu";
 import RichTextEditor from "@/components/RichTextEditor";
@@ -116,7 +117,6 @@ export default function MailPage() {
   const [submitting, setSubmitting] = useState(false);
   const [panel, setPanel] = useState<"labels" | "signatures" | "templates" | "rules" | "blocked" | "trusted" | "aliases" | "analytics" | "accounts" | "pgp" | "push" | "lists" | null>(null);
   const [form, setForm] = useState<Record<string, string>>({});
-  const [analytics, setAnalytics] = useState<Record<string, unknown> | null>(null);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [brainSummary, setBrainSummary] = useState<string | null>(null);
   const [sort, setSort] = useState<"newest" | "oldest" | "sender" | "unread">("newest");
@@ -470,19 +470,6 @@ export default function MailPage() {
     ],
     [i18n, openThread, setFlags, handleMoveMessage]
   );
-
-  const loadAnalytics = useCallback(async () => {
-    try {
-      const res = await getAnalytics(30);
-      setAnalytics(res?.data || null);
-    } catch (err) {
-      toastError(String(err));
-    }
-  }, [getAnalytics, toastError]);
-
-  useEffect(() => {
-    if (panel === "analytics") loadAnalytics();
-  }, [panel, loadAnalytics]);
 
   function onPanelSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -1274,27 +1261,7 @@ export default function MailPage() {
               <MailAdvancedPanel initialTab={panel} />
             )}
 
-            {panel === "analytics" && analytics && (
-              <div className="space-y-3 text-sm">
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                  <Card3D><div className="text-[var(--muted)]">{i18n("total")}</div><div className="text-lg font-semibold">{Number(analytics.total) || 0}</div></Card3D>
-                  <Card3D><div className="text-[var(--muted)]">{i18n("inbound")}</div><div className="text-lg font-semibold">{Number(analytics.inbound) || 0}</div></Card3D>
-                  <Card3D><div className="text-[var(--muted)]">{i18n("outbound")}</div><div className="text-lg font-semibold">{Number(analytics.outbound) || 0}</div></Card3D>
-                  <Card3D><div className="text-[var(--muted)]">{i18n("unread")}</div><div className="text-lg font-semibold">{Number(analytics.unread) || 0}</div></Card3D>
-                </div>
-                {Array.isArray(analytics.topSenders) && (
-                  <div>
-                    <p className="font-medium">{i18n("from")}</p>
-                    {analytics.topSenders.map((s, i) => {
-                      const row = s as { email?: string; count?: number };
-                      return (
-                        <div key={i} className="flex justify-between text-xs text-[var(--muted)]"><span>{row.email}</span><span>{row.count}</span></div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            )}
+            {panel === "analytics" && <MailAnalyticsPanel getAnalytics={getAnalytics} />}
           </div>
         </div>
       )}

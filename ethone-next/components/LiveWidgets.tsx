@@ -25,6 +25,32 @@ const STATUS_DOT = {
   error: "bg-red-500",
 };
 
+const CATEGORIES: Record<string, "gaming" | "social" | "productivity"> = {
+  nowplaying: "social",
+  lanyard: "social",
+  spotify: "social",
+  discord: "social",
+  lastfm: "social",
+  youtube: "social",
+  reddit: "social",
+  twitch: "gaming",
+  steam: "gaming",
+  minecraft: "gaming",
+  rss: "productivity",
+  weather: "productivity",
+  github: "productivity",
+  todoist: "productivity",
+  bills: "productivity",
+  valorant: "gaming",
+  lol: "gaming",
+  apex: "gaming",
+  tracker: "gaming",
+  "google-calendar": "productivity",
+  "google-drive": "productivity",
+  notion: "productivity",
+  bluesky: "social",
+};
+
 const GRADIENTS: Record<string, string> = {
   nowplaying: "from-violet-900/30 via-fuchsia-900/10 to-black/20 border-violet-500/20",
   lanyard: "from-indigo-900/30 via-emerald-900/10 to-black/20 border-indigo-500/20",
@@ -103,6 +129,20 @@ export default function LiveWidgets({
   const baseRecords = (customizing ? records : records.filter((r) => !hidden.has(r.id))).map((r) => ({ ...r }));
   const orderMap = new Map(layout.map((id, i) => [id, i]));
   const visibleRecords = [...baseRecords].sort((a, b) => (orderMap.get(a.id) ?? Infinity) - (orderMap.get(b.id) ?? Infinity));
+
+  const CATEGORY_ORDER = ["gaming", "social", "productivity"] as const;
+  const groups: Record<string, LiveRecord[]> = { gaming: [], social: [], productivity: [] };
+  const categoryLabels: Record<typeof CATEGORY_ORDER[number], string> = {
+    gaming: "categoryGaming",
+    social: "categorySocial",
+    productivity: "categoryProductivity",
+  };
+  for (const record of visibleRecords) {
+    const cat = CATEGORIES[record.source] ?? "productivity";
+    const list = groups[cat] ?? [];
+    list.push(record);
+    groups[cat] = list;
+  }
 
   async function controlSpotify(action: "play" | "pause" | "next" | "previous") {
     if (!settings.liveSpotifyClientId) {
@@ -407,8 +447,186 @@ export default function LiveWidgets({
     );
   }
 
+  function renderCard(record: LiveRecord) {
+    const isFlipped = !!flipped[record.id];
+    const gradient = GRADIENTS[record.source] || "from-[var(--surface-raised)]/20 to-transparent border-[var(--border)]";
+    const isSpotify = record.source === "nowplaying";
+    const isDiscord = record.source === "lanyard";
+    const isYoutube = record.source === "youtube";
+    const isTracker = record.source === "tracker";
+    const isApex = record.source === "apex";
+    const hasImageHeader = (isDiscord || isYoutube || isTracker || isApex) && record.image;
+
+    return (
+      <ContextMenu key={record.id} items={liveContextItems(record)}>
+        <div
+          onClick={customizing ? undefined : () => toggleFlip(record.id)}
+          draggable={customizing}
+          onDragStart={(e) => {
+            setDraggingId(record.id);
+            e.dataTransfer.setData("text/plain", record.id);
+            e.dataTransfer.effectAllowed = "move";
+          }}
+          onDragOver={(e) => {
+            e.preventDefault();
+            if (draggingId && draggingId !== record.id) {
+              e.dataTransfer.dropEffect = "move";
+            }
+          }}
+          onDrop={(e) => {
+            e.preventDefault();
+            const draggedId = e.dataTransfer.getData("text/plain");
+            if (draggedId && draggedId !== record.id) {
+              moveRecordTo(draggedId, record.id);
+            }
+            setDraggingId(null);
+          }}
+          onDragEnd={() => setDraggingId(null)}
+          className={`group relative ${customizing ? "cursor-grab" : "cursor-pointer"}`}
+          style={{ perspective: 1000 }}
+        >
+        <div
+          className="relative h-64 transition-transform duration-500"
+          style={{ transformStyle: "preserve-3d", transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)" }}
+        >
+          <div className="absolute inset-0 h-full" style={{ backfaceVisibility: "hidden" }}>
+            <div
+              className={`h-full min-w-0 overflow-hidden rounded-2xl border bg-gradient-to-br p-4 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl ${gradient}`}
+            >
+              <div className={`absolute right-3 top-3 h-2.5 w-2.5 rounded-full ${STATUS_DOT[record.status]}`} />
+
+              {customizing && (
+                <>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleHidden(record.id);
+                    }}
+                    className="absolute left-3 top-3 rounded-full bg-[var(--surface-raised)] p-1.5 text-[var(--foreground)] hover:bg-[var(--surface)]"
+                  >
+                    <Icon name={hidden.has(record.id) ? "eye-off" : "eye"} className="h-3.5 w-3.5" />
+                  </button>
+                  <div className="absolute right-3 bottom-3 flex gap-1.5 rounded-full bg-[var(--surface-raised)] p-1">
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); moveRecord(record.id, "up"); }}
+                      className="rounded-full p-1 hover:bg-[var(--surface)]"
+                      aria-label={i18n("moveUp")}
+                    >
+                      <Icon name="arrow-up" className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); moveRecord(record.id, "down"); }}
+                      className="rounded-full p-1 hover:bg-[var(--surface)]"
+                      aria-label={i18n("moveDown")}
+                    >
+                      <Icon name="arrow-down" className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </>
+              )}
+
+              {isSpotify && record.image && (
+                <div className="mb-3 flex items-end gap-4">
+                  <Image src={record.image} alt="" width={96} height={96} unoptimized className="h-24 w-24 rounded-xl object-cover shadow-lg" />
+                  <div className="flex flex-col gap-1 pb-1">
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">LIVE</span>
+                    <Equalizer bars={6} className="h-5" />
+                  </div>
+                </div>
+              )}
+
+              {hasImageHeader && (
+                <div className="mb-3 flex items-center gap-3">
+                  <Image
+                    src={record.image || ""}
+                    alt=""
+                    width={56}
+                    height={56}
+                    unoptimized
+                    className="h-14 w-14 rounded-full border-2 border-[var(--border)] object-cover shadow-md"
+                  />
+                  <div>
+                    <p className="font-semibold">{record.title}</p>
+                    <p className={`text-xs ${STATUS[record.status]}`}>{record.label}</p>
+                  </div>
+                </div>
+              )}
+
+              {!isSpotify && !hasImageHeader && (
+                <div className="mb-2 flex items-center gap-2">
+                  <span className={`text-sm font-semibold uppercase tracking-wider ${STATUS[record.status]}`}>{record.label}</span>
+                </div>
+              )}
+
+              <div className="space-y-1">
+                {!isSpotify && !hasImageHeader && <p className="truncate font-medium">{record.title}</p>}
+                {isSpotify && <p className="truncate text-lg font-bold">{record.title}</p>}
+                {record.subtitle && <p className="truncate text-sm text-[var(--muted)]">{record.subtitle}</p>}
+                {record.meta && <p className="truncate text-xs text-[var(--muted)]">{record.meta}</p>}
+              </div>
+
+              {isSpotify && nowPlaying?.isPlaying && (
+                <div className="mt-3 space-y-2" onClick={(e) => e.stopPropagation()}>
+                  {nowPlaying.progressMs !== undefined && nowPlaying.durationMs && (
+                    <div className="space-y-1">
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--border)]">
+                        <div
+                          className="h-full rounded-full bg-emerald-400"
+                          style={{ width: `${Math.min(100, (nowPlaying.progressMs / nowPlaying.durationMs) * 100)}%` }}
+                        />
+                      </div>
+                      <div className="flex justify-between text-[10px] text-[var(--muted)]">
+                        <span>{formatTime(nowPlaying.progressMs)}</span>
+                        <span>{formatTime(nowPlaying.durationMs)}</span>
+                      </div>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => controlSpotify("previous")} className="rounded-full p-1.5 text-[var(--foreground)] hover:bg-white/10">
+                      <Icon name="skipBack" className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => controlSpotify(nowPlaying.isPlaying ? "pause" : "play")}
+                      className="rounded-full bg-emerald-500 p-2 text-white hover:bg-emerald-400"
+                    >
+                      {nowPlaying.isPlaying ? <Icon name="pause" className="h-4 w-4" /> : <Icon name="play" className="h-4 w-4" />}
+                    </button>
+                    <button onClick={() => controlSpotify("next")} className="rounded-full p-1.5 text-[var(--foreground)] hover:bg-white/10">
+                      <Icon name="skipForward" className="h-4 w-4" />
+                    </button>
+                    <button className="ml-auto rounded-full p-1.5 text-rose-400 hover:bg-rose-500/10">
+                      <Icon name="heart" className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {isYoutube && record.image && (
+                <div className="relative mt-3 h-32 w-full">
+                  <Image src={record.image} alt="" fill unoptimized className="rounded-xl object-cover" />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div
+            className="absolute inset-0 h-full rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] p-4"
+            style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+          >
+            {renderBack(record)}
+          </div>
+        </div>
+      </div>
+    </ContextMenu>
+    );
+
+  }
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {showHeader && (
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-[var(--foreground)]">{i18n("live")}</h2>
@@ -416,184 +634,20 @@ export default function LiveWidgets({
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {visibleRecords.map((record) => {
-          const isFlipped = !!flipped[record.id];
-          const gradient = GRADIENTS[record.source] || "from-[var(--surface-raised)]/20 to-transparent border-[var(--border)]";
-          const isSpotify = record.source === "nowplaying";
-          const isDiscord = record.source === "lanyard";
-          const isYoutube = record.source === "youtube";
-          const isTracker = record.source === "tracker";
-          const isApex = record.source === "apex";
-          const hasImageHeader = (isDiscord || isYoutube || isTracker || isApex) && record.image;
-
-          return (
-            <ContextMenu key={record.id} items={liveContextItems(record)}>
-              <div
-                onClick={customizing ? undefined : () => toggleFlip(record.id)}
-                draggable={customizing}
-                onDragStart={(e) => {
-                  setDraggingId(record.id);
-                  e.dataTransfer.setData("text/plain", record.id);
-                  e.dataTransfer.effectAllowed = "move";
-                }}
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  if (draggingId && draggingId !== record.id) {
-                    e.dataTransfer.dropEffect = "move";
-                  }
-                }}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  const draggedId = e.dataTransfer.getData("text/plain");
-                  if (draggedId && draggedId !== record.id) {
-                    moveRecordTo(draggedId, record.id);
-                  }
-                  setDraggingId(null);
-                }}
-                onDragEnd={() => setDraggingId(null)}
-                className={`group relative ${customizing ? "cursor-grab" : "cursor-pointer"}`}
-                style={{ perspective: 1000 }}
-              >
-              <div
-                className="relative h-64 transition-transform duration-500"
-                style={{ transformStyle: "preserve-3d", transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)" }}
-              >
-                <div className="absolute inset-0 h-full" style={{ backfaceVisibility: "hidden" }}>
-                  <div
-                    className={`h-full min-w-0 overflow-hidden rounded-2xl border bg-gradient-to-br p-4 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl ${gradient}`}
-                  >
-                    <div className={`absolute right-3 top-3 h-2.5 w-2.5 rounded-full ${STATUS_DOT[record.status]}`} />
-
-                    {customizing && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleHidden(record.id);
-                          }}
-                          className="absolute left-3 top-3 rounded-full bg-[var(--surface-raised)] p-1.5 text-[var(--foreground)] hover:bg-[var(--surface)]"
-                        >
-                          <Icon name={hidden.has(record.id) ? "eye-off" : "eye"} className="h-3.5 w-3.5" />
-                        </button>
-                        <div className="absolute right-3 bottom-3 flex gap-1.5 rounded-full bg-[var(--surface-raised)] p-1">
-                          <button
-                            type="button"
-                            onClick={(e) => { e.stopPropagation(); moveRecord(record.id, "up"); }}
-                            className="rounded-full p-1 hover:bg-[var(--surface)]"
-                            aria-label={i18n("moveUp")}
-                          >
-                            <Icon name="arrow-up" className="h-3.5 w-3.5" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={(e) => { e.stopPropagation(); moveRecord(record.id, "down"); }}
-                            className="rounded-full p-1 hover:bg-[var(--surface)]"
-                            aria-label={i18n("moveDown")}
-                          >
-                            <Icon name="arrow-down" className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                      </>
-                    )}
-
-                    {isSpotify && record.image && (
-                      <div className="mb-3 flex items-end gap-4">
-                        <Image src={record.image} alt="" width={96} height={96} unoptimized className="h-24 w-24 rounded-xl object-cover shadow-lg" />
-                        <div className="flex flex-col gap-1 pb-1">
-                          <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">LIVE</span>
-                          <Equalizer bars={6} className="h-5" />
-                        </div>
-                      </div>
-                    )}
-
-                    {hasImageHeader && (
-                      <div className="mb-3 flex items-center gap-3">
-                        <Image
-                          src={record.image || ""}
-                          alt=""
-                          width={56}
-                          height={56}
-                          unoptimized
-                          className="h-14 w-14 rounded-full border-2 border-[var(--border)] object-cover shadow-md"
-                        />
-                        <div>
-                          <p className="font-semibold">{record.title}</p>
-                          <p className={`text-xs ${STATUS[record.status]}`}>{record.label}</p>
-                        </div>
-                      </div>
-                    )}
-
-                    {!isSpotify && !hasImageHeader && (
-                      <div className="mb-2 flex items-center gap-2">
-                        <span className={`text-sm font-semibold uppercase tracking-wider ${STATUS[record.status]}`}>{record.label}</span>
-                      </div>
-                    )}
-
-                    <div className="space-y-1">
-                      {!isSpotify && !hasImageHeader && <p className="truncate font-medium">{record.title}</p>}
-                      {isSpotify && <p className="truncate text-lg font-bold">{record.title}</p>}
-                      {record.subtitle && <p className="truncate text-sm text-[var(--muted)]">{record.subtitle}</p>}
-                      {record.meta && <p className="truncate text-xs text-[var(--muted)]">{record.meta}</p>}
-                    </div>
-
-                    {isSpotify && nowPlaying?.isPlaying && (
-                      <div className="mt-3 space-y-2" onClick={(e) => e.stopPropagation()}>
-                        {nowPlaying.progressMs !== undefined && nowPlaying.durationMs && (
-                          <div className="space-y-1">
-                            <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--border)]">
-                              <div
-                                className="h-full rounded-full bg-emerald-400"
-                                style={{ width: `${Math.min(100, (nowPlaying.progressMs / nowPlaying.durationMs) * 100)}%` }}
-                              />
-                            </div>
-                            <div className="flex justify-between text-[10px] text-[var(--muted)]">
-                              <span>{formatTime(nowPlaying.progressMs)}</span>
-                              <span>{formatTime(nowPlaying.durationMs)}</span>
-                            </div>
-                          </div>
-                        )}
-                        <div className="flex items-center gap-2">
-                          <button onClick={() => controlSpotify("previous")} className="rounded-full p-1.5 text-[var(--foreground)] hover:bg-white/10">
-                            <Icon name="skipBack" className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => controlSpotify(nowPlaying.isPlaying ? "pause" : "play")}
-                            className="rounded-full bg-emerald-500 p-2 text-white hover:bg-emerald-400"
-                          >
-                            {nowPlaying.isPlaying ? <Icon name="pause" className="h-4 w-4" /> : <Icon name="play" className="h-4 w-4" />}
-                          </button>
-                          <button onClick={() => controlSpotify("next")} className="rounded-full p-1.5 text-[var(--foreground)] hover:bg-white/10">
-                            <Icon name="skipForward" className="h-4 w-4" />
-                          </button>
-                          <button className="ml-auto rounded-full p-1.5 text-rose-400 hover:bg-rose-500/10">
-                            <Icon name="heart" className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </div>
-                    )}
-
-                    {isYoutube && record.image && (
-                      <div className="relative mt-3 h-32 w-full">
-                        <Image src={record.image} alt="" fill unoptimized className="rounded-xl object-cover" />
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div
-                  className="absolute inset-0 h-full rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] p-4"
-                  style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
-                >
-                  {renderBack(record)}
-                </div>
-              </div>
+      {CATEGORY_ORDER.map((category) => {
+        const items = groups[category];
+        if (items.length === 0) return null;
+        return (
+          <div key={category} className="space-y-2">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
+              {i18n(categoryLabels[category])}
+            </h3>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {items.map((record) => renderCard(record))}
             </div>
-          </ContextMenu>
-          );
-        })}
-      </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

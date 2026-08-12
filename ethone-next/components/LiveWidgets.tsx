@@ -1040,7 +1040,7 @@ export default function LiveWidgets({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-testid="live-cards">
       {showHeader && (
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">

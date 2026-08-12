@@ -20,7 +20,6 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `lib/form-validation.ts` : validateurs v8 (`required`, `email`, `minLength`, `maxLength`, `pattern`, `match`, `passwordStrength`, `oneOf`) et hook `useForm`.
 - `lib/command-search.ts` : `createCommandHistory` (persistance localStorage `ethone:v8-command-history` avec recent/pinned/frequency), contexte `route`/`space` et scoring amélioré (context tags, category scoring, fallback ranking).
 - `lib/i18n-extras.ts` : clés `fieldRequired` et `emailInvalid` pour les 4 langues.
-- `public/legacy/v8/` + `sw-v8.js` : copie du runtime v8 complet dans `public/legacy/` et des icônes afin que le fallback legacy fonctionne sans 404.
 - `app/page.tsx` : ajout du `BrandMark` et du nom `ETHONE` en haut du dashboard home.
 - `components/LanguageSwitcher.tsx` + `app/layout.tsx` : bouton de changement de langue dans la topbar (icône globe + code langue), qui fait défiler `fr/en/es/de` comme en v8.
 
@@ -36,6 +35,9 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ### Validation
 - `auth-audit.spec.ts` : test E2E authentifié (desktop / mobile / tablet) passé avec `TEST_EMAIL/TEST_PASSWORD` fournis, sans persistance des credentials.
+- `e2e/live-cards.spec.ts` : dashboard authentifié, section Live chargée sans erreurs (3 viewports).
+- `lib/auth.test.ts` : tests unitaires OTP (`/api/auth/otp/send`, `/api/auth/otp/verify`) et passkey (`/api/auth/passkey/*`).
+- `lib/oauth.test.ts` : tests unitaires `buildAuthUrl`, `exchangeCode` et `parseOAuthState` pour tous les providers configurés.
 
 ## [Unreleased]
 

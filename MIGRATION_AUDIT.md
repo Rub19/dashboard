@@ -340,10 +340,11 @@ Ces fichiers / dossiers semblent encore présents mais non utilisés par Next.js
 ```text
 npm run build                        ✅ 77 routes statiques / 40 routes plugin
 npm run lint                         ✅
-npm run test:unit                    ✅ 45 tests
-security audit                       ✅ 416 fichiers
+npm run test:unit                    ✅ 52 tests
+security audit                       ✅ 418 fichiers
 upload check                         ✅ 0 unsafe
 direct refresh E2E                   ✅ 9 tests (/plugins/spotify/, /drop/?slug=..., /share/?slug=...)
+live cards E2E                       ✅ 3 tests (chargement dashboard authentifié sans erreurs)
 a11y E2E                             ⚠️  non relancé (conserve le dernier PASS à 306)
 routes + responsive E2E              ⚠️  non relancé (conserve le dernier PASS à 522)
 auth-audit E2E                       ✅ 3 tests (desktop / mobile / tablet)

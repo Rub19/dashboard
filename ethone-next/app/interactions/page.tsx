@@ -87,7 +87,7 @@ export default function InteractionsPage() {
   const [newTarget, setNewTarget] = useState("");
   const [newKind, setNewKind] = useState<string>("like");
   const [live, setLive] = useState(false);
-  const [range, setRange] = useState<30 | 90>(30);
+  const [range, setRange] = useState<30 | 90 | 365>(30);
   const [expanded, setExpanded] = useState(true);
   const [filterKind, setFilterKind] = useState<string>("all");
 
@@ -136,6 +136,15 @@ export default function InteractionsPage() {
     const total = heatmap.reduce((s, d) => s + d.count, 0);
     return { today, streak, thisWeekPercent, consistency, total };
   }, [heatmap]);
+
+  const kindStats = useMemo(() => {
+    const counts: Record<string, number> = {};
+    filteredReactions.forEach((r) => {
+      const kind = getKind(r);
+      counts[kind] = (counts[kind] || 0) + 1;
+    });
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  }, [filteredReactions]);
 
   useEffect(() => {
     if (!live) return;
@@ -215,7 +224,18 @@ export default function InteractionsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">{i18n("interactionsTitle")}</h1>
+      <div className="flex items-center justify-between gap-4">
+        <h1 className="text-2xl font-bold">{i18n("interactionsTitle")}</h1>
+        <button
+          type="button"
+          onClick={() => { reload(); success(i18n("refreshed")); }}
+          disabled={loading}
+          className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm font-medium transition-colors hover:bg-[var(--surface)] disabled:opacity-50"
+        >
+          <Icon name="refresh-cw" className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          {i18n("refresh")}
+        </button>
+      </div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <Card3D>
@@ -255,6 +275,28 @@ export default function InteractionsPage() {
           </div>
         </Card3D>
       </div>
+
+      {kindStats.length > 0 && (
+        <Card3D>
+          <p className="mb-3 text-sm font-medium">{i18n("byKind")}</p>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {kindStats.map(([kind, count]) => (
+              <button
+                key={kind}
+                type="button"
+                onClick={() => setFilterKind(kind)}
+                className={`flex items-center gap-2 rounded-xl border px-2 py-1.5 text-left text-xs transition-colors ${
+                  filterKind === kind ? "border-[var(--accent)] bg-[var(--accent)]/10" : "border-[var(--border)] bg-[var(--surface)]"
+                }`}
+              >
+                {iconFor(kind)}
+                <span className="font-medium">{i18n(kind)}</span>
+                <span className="ml-auto font-bold">{count}</span>
+              </button>
+            ))}
+          </div>
+        </Card3D>
+      )}
 
       {error && (
         <Card3D>
@@ -327,11 +369,11 @@ export default function InteractionsPage() {
               ))}
             </select>
             <div className="flex gap-1">
-              {[30, 90].map((r) => (
+              {[30, 90, 365].map((r) => (
                 <button
                   key={r}
                   type="button"
-                  onClick={() => setRange(r as 30 | 90)}
+                  onClick={() => setRange(r as 30 | 90 | 365)}
                   className={`rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors ${
                     range === r
                       ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"

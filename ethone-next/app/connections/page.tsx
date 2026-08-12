@@ -11,6 +11,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import type { Settings } from "@/lib/settings";
 import { useProviderCredentials } from "@/lib/hooks/useProviderCredentials";
 import type { ProviderCredential } from "@/lib/hooks/useProviderCredentials";
+import ConnectionDiagnostics from "@/components/ConnectionDiagnostics";
 
 const categoryIcons: Record<string, string> = {
   media: "music",
@@ -237,6 +238,8 @@ export default function ConnectionsPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">{i18n("connectionsTitle")}</h1>
+
+      <ConnectionDiagnostics />
 
       <div className="flex flex-wrap gap-2">
         {CATEGORIES.map((cat) => (

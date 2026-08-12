@@ -10,13 +10,15 @@ import { useToast } from "@/components/ToastProvider";
 import BottomSheet from "@/components/BottomSheet";
 import { useItems } from "@/lib/hooks/useItems";
 import BrainContextPanel from "@/components/BrainContextPanel";
+import BrainBriefingPanel from "@/components/BrainBriefingPanel";
 import { BRAIN_MEMORY_CATEGORIES, BRAIN_PERSONAS, BRAIN_TONES, BRAIN_DETAIL, BRAIN_PROVIDERS, BRAIN_PERMISSION_CATEGORIES, type BrainMemoryCategory } from "@/lib/brain/preferences";
 import { AUTOMATION_ACTIONS } from "@/lib/brain/automation";
 
-type Tab = "chat" | "context" | "memory" | "actions" | "automations" | "providers" | "preferences" | "privacy" | "history" | "diagnostics" | "wrapup";
+type Tab = "chat" | "briefing" | "context" | "memory" | "actions" | "automations" | "providers" | "preferences" | "privacy" | "history" | "diagnostics" | "wrapup";
 
 const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: "chat", label: "chat", icon: "message-circle" },
+  { id: "briefing", label: "brainBriefing", icon: "sun" },
   { id: "context", label: "brainContext", icon: "scan-search" },
   { id: "memory", label: "memory", icon: "database" },
   { id: "actions", label: "actions", icon: "zap" },
@@ -572,6 +574,7 @@ export default function BrainPage() {
       </div>
       <Card3D>
         {activeTab === "chat" && renderChat()}
+        {activeTab === "briefing" && <BrainBriefingPanel />}
         {activeTab === "context" && renderContext()}
         {activeTab === "memory" && renderMemory()}
         {activeTab === "actions" && renderActions()}

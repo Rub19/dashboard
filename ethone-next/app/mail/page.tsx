@@ -87,6 +87,7 @@ export default function MailPage() {
     updateTemplate,
     deleteTemplate,
     createRule,
+    updateRule,
     deleteRule,
     blockSender,
     unblockSender,
@@ -498,11 +499,11 @@ export default function MailPage() {
     } else if (action === "createTemplate") {
       createTemplate(form.name, form.subject, form.content, form.is_default === "true").then(() => setForm({})).catch((err) => toastError(String(err)));
     } else if (action === "updateTemplate") {
-      updateTemplate(form.id, { name: form.name, subject: form.subject, content: form.content }).then(() => setForm({})).catch((err) => toastError(String(err)));
+      updateTemplate(form.id, { name: form.name, subject: form.subject, content: form.content, is_default: form.is_default === "true" }).then(() => setForm({})).catch((err) => toastError(String(err)));
     } else if (action === "deleteTemplate") {
       deleteTemplate(form.id).then(() => setForm({})).catch((err) => toastError(String(err)));
-    } else if (action === "createRule") {
-      createRule({
+    } else if (action === "createRule" || action === "updateRule") {
+      const rule = {
         name: form.name,
         is_active: true,
         priority: Number(form.priority) || 0,
@@ -513,7 +514,15 @@ export default function MailPage() {
         condition_has_attachments: form.condition_has_attachments === "true",
         action_move_to: form.action_move_to,
         action_label: form.action_label,
-      }).then(() => setForm({})).catch((err) => toastError(String(err)));
+        action_forward: form.action_forward,
+        action_auto_reply: form.action_auto_reply,
+        action_mark_read: form.action_mark_read === "true",
+        action_mark_important: form.action_mark_important === "true",
+        action_mark_spam: form.action_mark_spam === "true",
+        action_archive: form.action_archive === "true",
+      };
+      const promise = action === "createRule" ? createRule(rule) : updateRule(form.id, rule);
+      promise.then(() => setForm({})).catch((err) => toastError(String(err)));
     } else if (action === "deleteRule") {
       deleteRule(form.id).then(() => setForm({})).catch((err) => toastError(String(err)));
     } else if (action === "block") {
@@ -1135,22 +1144,25 @@ export default function MailPage() {
             {panel === "templates" && (
               <div className="space-y-4">
                 <form onSubmit={onPanelSubmit} className="space-y-2">
-                  <input type="hidden" name="_action" value="createTemplate" />
-                  <input type="text" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value, _action: "createTemplate" })} placeholder={i18n("name")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                  <input type="hidden" name="_action" value={form._action || "createTemplate"} />
+                  {form.id && <input type="hidden" name="id" value={form.id} />}
+                  <input type="text" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={i18n("name")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
                   <input type="text" value={form.subject || ""} onChange={(e) => setForm({ ...form, subject: e.target.value })} placeholder={i18n("subject")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
                   <textarea value={form.content || ""} onChange={(e) => setForm({ ...form, content: e.target.value })} placeholder={i18n("body")} className="h-24 w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2 text-sm" />
-                  <button type="submit" className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{i18n("create")}</button>
+                  <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.is_default === "true"} onChange={(e) => setForm({ ...form, is_default: e.target.checked ? "true" : "false" })} /> {i18n("default")}</label>
+                  <button type="submit" className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{form._action === "updateTemplate" ? i18n("save") : i18n("create")}</button>
                 </form>
                 <div className="space-y-2">
                   {templates.map((t) => (
                     <div key={t.id} className="rounded-xl border border-[var(--border)] p-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">{t.name}</span>
+                        <span className="text-sm font-medium">{t.name} {t.is_default && <span className="text-[var(--accent)]">★</span>}</span>
                         <div className="flex gap-2">
-                          <button type="button" onClick={() => setForm({ _action: "updateTemplate", id: t.id, name: t.name, subject: t.subject, content: t.content })} className="text-[var(--muted)]"><Icon name="pencil" className="h-4 w-4" /></button>
+                          <button type="button" onClick={() => setForm({ _action: "updateTemplate", id: t.id, name: t.name, subject: t.subject, content: t.content, is_default: t.is_default ? "true" : "false" })} className="text-[var(--muted)]"><Icon name="pencil" className="h-4 w-4" /></button>
                           <button type="button" onClick={() => deleteTemplate(t.id).catch((err) => toastError(String(err)))} className="text-red-400"><Icon name="trash-2" className="h-4 w-4" /></button>
                         </div>
                       </div>
+                      <p className="truncate text-xs text-[var(--muted)]">{t.subject}</p>
                     </div>
                   ))}
                 </div>
@@ -1160,27 +1172,42 @@ export default function MailPage() {
             {panel === "rules" && (
               <div className="space-y-4">
                 <form onSubmit={onPanelSubmit} className="space-y-2">
-                  <input type="hidden" name="_action" value="createRule" />
-                  <input type="text" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value, _action: "createRule" })} placeholder={i18n("name")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                  <input type="hidden" name="_action" value={form._action || "createRule"} />
+                  {form.id && <input type="hidden" name="id" value={form.id} />}
+                  <input type="text" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={i18n("name")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
                   <input type="number" value={form.priority || ""} onChange={(e) => setForm({ ...form, priority: e.target.value })} placeholder={i18n("priority")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
                   <input type="text" value={form.condition_from || ""} onChange={(e) => setForm({ ...form, condition_from: e.target.value })} placeholder={i18n("from")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                  <input type="text" value={form.condition_domain || ""} onChange={(e) => setForm({ ...form, condition_domain: e.target.value })} placeholder="Domain" className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                  <input type="text" value={form.condition_domain || ""} onChange={(e) => setForm({ ...form, condition_domain: e.target.value })} placeholder={i18n("domain")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
                   <input type="text" value={form.condition_subject || ""} onChange={(e) => setForm({ ...form, condition_subject: e.target.value })} placeholder={i18n("subject")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
                   <input type="text" value={form.condition_body || ""} onChange={(e) => setForm({ ...form, condition_body: e.target.value })} placeholder={i18n("body")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                  <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.condition_has_attachments === "true"} onChange={(e) => setForm({ ...form, condition_has_attachments: e.target.checked ? "true" : "false" })} /> {i18n("hasAttachments")}</label>
+                  <p className="text-xs font-medium text-[var(--muted)]">{i18n("actions")}</p>
                   <select value={form.action_move_to || ""} onChange={(e) => setForm({ ...form, action_move_to: e.target.value })} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm">
                     <option value="">{i18n("moveTo")}</option>
                     {FOLDERS.map((f) => <option key={f} value={f}>{i18n(f)}</option>)}
                   </select>
                   <input type="text" value={form.action_label || ""} onChange={(e) => setForm({ ...form, action_label: e.target.value })} placeholder={i18n("labels")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                  <button type="submit" className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{i18n("create")}</button>
+                  <input type="text" value={form.action_forward || ""} onChange={(e) => setForm({ ...form, action_forward: e.target.value })} placeholder={i18n("forwardTo")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                  <textarea value={form.action_auto_reply || ""} onChange={(e) => setForm({ ...form, action_auto_reply: e.target.value })} placeholder={i18n("autoReply")} className="h-20 w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2 text-sm" />
+                  <div className="flex flex-wrap gap-3 text-sm">
+                    <label className="flex items-center gap-2"><input type="checkbox" checked={form.action_mark_read === "true"} onChange={(e) => setForm({ ...form, action_mark_read: e.target.checked ? "true" : "false" })} /> {i18n("markRead")}</label>
+                    <label className="flex items-center gap-2"><input type="checkbox" checked={form.action_mark_important === "true"} onChange={(e) => setForm({ ...form, action_mark_important: e.target.checked ? "true" : "false" })} /> {i18n("important")}</label>
+                    <label className="flex items-center gap-2"><input type="checkbox" checked={form.action_mark_spam === "true"} onChange={(e) => setForm({ ...form, action_mark_spam: e.target.checked ? "true" : "false" })} /> {i18n("markSpam")}</label>
+                    <label className="flex items-center gap-2"><input type="checkbox" checked={form.action_archive === "true"} onChange={(e) => setForm({ ...form, action_archive: e.target.checked ? "true" : "false" })} /> {i18n("archive")}</label>
+                  </div>
+                  <button type="submit" className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{form._action === "updateRule" ? i18n("save") : i18n("create")}</button>
                 </form>
                 <div className="space-y-2">
                   {rules.map((r) => (
                     <div key={r.id} className="rounded-xl border border-[var(--border)] p-2 text-sm">
                       <div className="flex items-center justify-between">
                         <span className="font-medium">{r.name} ({r.priority})</span>
-                        <button type="button" onClick={() => deleteRule(r.id).catch((err) => toastError(String(err)))} className="text-red-400"><Icon name="trash-2" className="h-4 w-4" /></button>
+                        <div className="flex gap-2">
+                          <button type="button" onClick={() => setForm({ _action: "updateRule", id: r.id, name: r.name, priority: String(r.priority), condition_from: r.condition_from || "", condition_domain: r.condition_domain || "", condition_subject: r.condition_subject || "", condition_body: r.condition_body || "", condition_has_attachments: r.condition_has_attachments ? "true" : "false", action_move_to: r.action_move_to || "", action_label: r.action_label || "", action_forward: r.action_forward || "", action_auto_reply: r.action_auto_reply || "", action_mark_read: r.action_mark_read ? "true" : "false", action_mark_important: r.action_mark_important ? "true" : "false", action_mark_spam: r.action_mark_spam ? "true" : "false", action_archive: r.action_archive ? "true" : "false" })} className="text-[var(--muted)]"><Icon name="pencil" className="h-4 w-4" /></button>
+                          <button type="button" onClick={() => deleteRule(r.id).catch((err) => toastError(String(err)))} className="text-red-400"><Icon name="trash-2" className="h-4 w-4" /></button>
+                        </div>
                       </div>
+                      <p className="truncate text-xs text-[var(--muted)]">{[r.condition_from, r.condition_domain, r.condition_subject, r.condition_body].filter(Boolean).join(" · ")}</p>
                     </div>
                   ))}
                 </div>

@@ -2,12 +2,50 @@
 
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { usePathname } from "next/navigation";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useLayer } from "@/components/LayerProvider";
 import { useCommandItems, type CommandItem } from "@/lib/commands";
+
+const ROUTE_CATEGORIES: Record<string, string> = {
+  "/bills/": "Facturation",
+  "/rss/": "RSS",
+  "/scratchpad/": "Scratchpad",
+  "/matches/": "Matchs",
+  "/drop/": "Drops",
+  "/system/": "Système",
+  "/weather/": "Météo",
+  "/plugins/": "Plugins",
+  "/macros/": "Macros",
+  "/mail/": "Mail",
+  "/focus/": "Focus",
+  "/brain/": "Brain",
+  "/notes/": "Navigation",
+  "/tasks/": "Navigation",
+  "/calendar/": "Navigation",
+  "/files/": "Navigation",
+  "/activity/": "Navigation",
+  "/interactions/": "Navigation",
+  "/connections/": "Plugins",
+  "/spaces/": "Spaces",
+  "/flows/": "Navigation",
+  "/team/": "Navigation",
+  "/settings/": "Réglages",
+  "/security/": "Compte",
+  "/profile-selection/": "Compte",
+  "/changelog/": "Navigation",
+  "/": "Navigation",
+};
+
+function getRouteCategory(path: string): string | null {
+  for (const [route, category] of Object.entries(ROUTE_CATEGORIES)) {
+    if (path.startsWith(route)) return category;
+  }
+  return null;
+}
 
 export default function CommandPalette() {
   const [query, setQuery] = useState("");
@@ -16,6 +54,9 @@ export default function CommandPalette() {
   const { settings, update } = useSettings();
   const { open, setOpen } = useCommandPalette();
   const dialogRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname() ?? "/";
+  const routeCategory = useMemo(() => getRouteCategory(pathname), [pathname]);
+
   useLayer(open, () => setOpen(false), {
     boundary: dialogRef,
     kind: "dialog",
@@ -64,16 +105,46 @@ export default function CommandPalette() {
       .filter(Boolean) as CommandItem[];
 
     const used = new Set([...pinnedItems, ...recentItems].map((c) => c.id));
-    const otherItems = COMMANDS.filter((c) => !used.has(c.id));
+    const rest = COMMANDS.filter((c) => !used.has(c.id));
+
+    if (!routeCategory) return { pinnedItems, recentItems, otherItems: rest };
+
+    const otherItems = [...rest].sort((a, b) => {
+      const aMatch = a.category === routeCategory ? -1 : 0;
+      const bMatch = b.category === routeCategory ? -1 : 0;
+      if (aMatch !== bMatch) return aMatch - bMatch;
+      return a.label.localeCompare(b.label);
+    });
 
     return { pinnedItems, recentItems, otherItems };
-  }, [COMMANDS, settings.commandHistory, settings.pinnedCommands, pinned]);
+  }, [COMMANDS, settings.commandHistory, settings.pinnedCommands, pinned, routeCategory]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return [...pinnedItems, ...recentItems, ...otherItems];
-    return COMMANDS.filter((c) => `${c.label} ${c.category}`.toLowerCase().includes(q));
-  }, [query, COMMANDS, pinnedItems, recentItems, otherItems]);
+    let base: CommandItem[];
+
+    if (!q) {
+      base = [...pinnedItems, ...recentItems, ...otherItems];
+    } else if (q.startsWith(">")) {
+      const cat = q.slice(1).trim();
+      base = COMMANDS.filter((c) => c.category.toLowerCase().includes(cat));
+    } else {
+      base = COMMANDS.filter((c) => `${c.label} ${c.category}`.toLowerCase().includes(q));
+    }
+
+    if (!routeCategory) return base;
+
+    return [...base].sort((a, b) => {
+      const score = (cmd: CommandItem) => {
+        let s = 0;
+        if (cmd.category === routeCategory) s -= 10;
+        if (pinned.has(cmd.id)) s -= 5;
+        if ((settings.commandHistory || []).includes(cmd.id)) s -= 2;
+        return s;
+      };
+      return score(a) - score(b);
+    });
+  }, [query, COMMANDS, pinnedItems, recentItems, otherItems, routeCategory, pinned, settings.commandHistory]);
 
   const sections = useMemo(() => {
     if (query.trim()) return [{ title: i18n("results"), items: filtered }];
@@ -97,11 +168,11 @@ export default function CommandPalette() {
       if (!open) return;
       if (event.key === "ArrowDown") {
         event.preventDefault();
-        setIndex((i) => (i + 1) % filtered.length);
+        if (filtered.length) setIndex((i) => (i + 1) % filtered.length);
       }
       if (event.key === "ArrowUp") {
         event.preventDefault();
-        setIndex((i) => (i - 1 + filtered.length) % filtered.length);
+        if (filtered.length) setIndex((i) => (i - 1 + filtered.length) % filtered.length);
       }
       if (event.key === "Enter" && filtered[index]) {
         event.preventDefault();

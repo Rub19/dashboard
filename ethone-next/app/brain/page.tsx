@@ -13,6 +13,7 @@ import BrainContextPanel from "@/components/BrainContextPanel";
 import BrainBriefingPanel from "@/components/BrainBriefingPanel";
 import { BRAIN_MEMORY_CATEGORIES, BRAIN_PERSONAS, BRAIN_TONES, BRAIN_DETAIL, BRAIN_PROVIDERS, BRAIN_PERMISSION_CATEGORIES, type BrainMemoryCategory } from "@/lib/brain/preferences";
 import { AUTOMATION_ACTIONS } from "@/lib/brain/automation";
+import { sanitizeMemory, type BrainMemoryItem } from "@/lib/brain-context";
 
 type Tab = "chat" | "briefing" | "context" | "memory" | "actions" | "automations" | "providers" | "preferences" | "privacy" | "history" | "diagnostics" | "wrapup";
 
@@ -90,6 +91,12 @@ export default function BrainPage() {
     } catch (err) {
       showError(String(err));
     }
+  }
+
+  async function handleClearSensitiveMemory() {
+    const count = brain.clearSensitiveMemory();
+    if (count > 0) success(`${count} ${i18n("removed")}`);
+    else showError(i18n("noResults"));
   }
 
   async function handleExecute(id: string) {
@@ -181,6 +188,12 @@ export default function BrainPage() {
   }
 
   function renderMemory() {
+    const recentMemories = brain.recentMemory.slice(0, 20).map((m) => sanitizeMemory(m));
+    const categoryCounts = brain.recentMemory.reduce<Record<string, number>>((acc, m) => {
+      acc[m.category] = (acc[m.category] || 0) + 1;
+      return acc;
+    }, {});
+
     return (
       <div className="space-y-4">
         <div className="flex flex-wrap items-center gap-2">
@@ -210,6 +223,51 @@ export default function BrainPage() {
             </Card3D>
           ))}
         </div>
+
+        <Card3D>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium">{i18n("brainMemoryCategories")}</p>
+              <button
+                type="button"
+                onClick={handleClearSensitiveMemory}
+                className="rounded-xl border border-red-400/30 px-3 py-1.5 text-xs font-medium text-red-400 hover:bg-red-400/10"
+              >
+                {i18n("brainClearSensitive")}
+              </button>
+            </div>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {Object.entries(categoryCounts).map(([category, count]) => (
+                <div key={category} className="rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] p-2">
+                  <p className="text-xs text-[var(--muted)]">{category}</p>
+                  <p className="text-lg font-bold">{count}</p>
+                </div>
+              ))}
+              {!brain.recentMemory.length && (
+                <p className="col-span-full text-sm text-[var(--muted)]">{i18n("noResults")}</p>
+              )}
+            </div>
+
+            <p className="text-sm font-medium">{i18n("recent")}</p>
+            <div className="space-y-2">
+              {recentMemories.map((m: BrainMemoryItem) => {
+                const display = typeof m.content === "string" ? m.content : JSON.stringify(m.content, null, 2);
+                return (
+                  <Card3D key={m.id}>
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-xs font-medium">{m.id}</p>
+                        <span className="text-xs text-[var(--muted)]">{m.category}</span>
+                      </div>
+                      <p className="line-clamp-3 text-xs text-[var(--foreground)]">{display.length > 200 ? `${display.slice(0, 200)}…` : display}</p>
+                    </div>
+                  </Card3D>
+                );
+              })}
+              {!recentMemories.length && <p className="text-sm text-[var(--muted)]">{i18n("noResults")}</p>}
+            </div>
+          </div>
+        </Card3D>
       </div>
     );
   }
@@ -303,7 +361,20 @@ export default function BrainPage() {
   }
 
   function renderContext() {
-    return <BrainContextPanel />;
+    return (
+      <div className="space-y-4">
+        <BrainContextPanel />
+        <Card3D>
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-medium">{i18n("brainContextTitle")}</p>
+            <span className="text-xs text-[var(--muted)]">{brain.context.route}</span>
+          </div>
+          <pre className="mt-2 max-h-[40vh] overflow-auto rounded-xl bg-[var(--surface-raised)] p-3 text-xs text-[var(--foreground)]">
+            {JSON.stringify(brain.context, null, 2)}
+          </pre>
+        </Card3D>
+      </div>
+    );
   }
 
   function renderPrivacy() {

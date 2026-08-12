@@ -1,19 +1,39 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { resolveDensity, applyDensityVariables, getViewportSnapshot } from "@/lib/density-engine";
 
 export default function HtmlLang() {
   const { settings } = useSettings();
   const [activeSpace] = useLocalStorage<string>("ethone-active-workspace", "personal");
   const [railExpanded] = useLocalStorage<boolean>("ethone-rail-expanded", false);
+  const [viewport, setViewport] = useState(getViewportSnapshot);
+  useEffect(() => {
+    const onResize = () => setViewport(getViewportSnapshot());
+    window.addEventListener("resize", onResize, { passive: true });
+    (window as unknown as { visualViewport?: EventTarget }).visualViewport?.addEventListener?.("resize", onResize, { passive: true });
+    return () => {
+      window.removeEventListener("resize", onResize);
+      (window as unknown as { visualViewport?: EventTarget }).visualViewport?.removeEventListener?.("resize", onResize);
+    };
+  }, []);
   useEffect(() => {
     const html = document.documentElement;
     html.lang = settings.language;
     html.dataset.background = settings.backgroundEffect;
-    html.dataset.density = settings.densityMode;
+
+    const resolution = resolveDensity(
+      settings.densityMode,
+      { custom: settings.densityMode === "custom" ? settings.densityCustom : undefined },
+      { ...viewport, railExpanded },
+      activeSpace
+    );
+    applyDensityVariables(html, resolution);
+
     if (settings.densityMode === "custom") {
+      // custom values override resolution custom merge
       html.style.setProperty("--density-font-scale", `${settings.densityCustom.fontScale / 100}`);
       html.style.setProperty("--density-line-height", `${settings.densityCustom.lineHeight / 100}`);
       html.style.setProperty("--density-pad", `${settings.densityCustom.cardPadding}px`);
@@ -22,15 +42,6 @@ export default function HtmlLang() {
       html.style.setProperty("--density-icon-size", `${settings.densityCustom.iconSize}px`);
       html.style.setProperty("--density-row-height", `${settings.densityCustom.rowHeight}px`);
       html.style.setProperty("--density-toolbar-height", `${settings.densityCustom.toolbarHeight}px`);
-    } else {
-      html.style.removeProperty("--density-font-scale");
-      html.style.removeProperty("--density-line-height");
-      html.style.removeProperty("--density-pad");
-      html.style.removeProperty("--density-gap");
-      html.style.removeProperty("--density-control-height");
-      html.style.removeProperty("--density-icon-size");
-      html.style.removeProperty("--density-row-height");
-      html.style.removeProperty("--density-toolbar-height");
     }
     html.dataset.space = activeSpace;
     html.dataset.dataSpace = activeSpace;
@@ -75,6 +86,7 @@ export default function HtmlLang() {
     settings.sessionMode,
     settings.ambientEffectsEnabled,
     settings.uiAnimations,
+    viewport,
   ]);
   return null;
 }

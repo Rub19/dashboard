@@ -9,6 +9,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import Tooltip from "@/components/Tooltip";
 import { useHaptics } from "@/lib/hooks/useHaptics";
+import { InteractionsHeatmap, type HeatmapRange } from "@/lib/interactions-heatmap";
 
 const WEEKDAY_KEYS = ["dayShortMon", "dayShortTue", "dayShortWed", "dayShortThu", "dayShortFri", "dayShortSat", "dayShortSun"];
 
@@ -28,14 +29,6 @@ const INTERACTION_KINDS = [
   "uiCustomize",
 ];
 
-function intensity(count: number) {
-  if (count === 0) return 0;
-  if (count < 3) return 1;
-  if (count < 6) return 2;
-  if (count < 10) return 3;
-  return 4;
-}
-
 function intensityBg(level: number) {
   const map = [
     "bg-[var(--heatmap-0)]",
@@ -45,16 +38,6 @@ function intensityBg(level: number) {
     "bg-[var(--heatmap-4)]",
   ];
   return map[level] || map[0];
-}
-
-function startOfDay(d: Date) {
-  const c = new Date(d);
-  c.setHours(0, 0, 0, 0);
-  return c;
-}
-
-function isSameDay(a: Date, b: Date) {
-  return startOfDay(a).getTime() === startOfDay(b).getTime();
 }
 
 function getKind(record: { data?: Record<string, unknown> }) {
@@ -87,7 +70,7 @@ export default function InteractionsPage() {
   const [newTarget, setNewTarget] = useState("");
   const [newKind, setNewKind] = useState<string>("like");
   const [live, setLive] = useState(false);
-  const [range, setRange] = useState<30 | 90 | 365>(30);
+  const [range, setRange] = useState<HeatmapRange>(30);
   const [expanded, setExpanded] = useState(true);
   const [filterKind, setFilterKind] = useState<string>("all");
 
@@ -96,55 +79,18 @@ export default function InteractionsPage() {
     return reactions.filter((r) => getKind(r) === filterKind);
   }, [reactions, filterKind]);
 
+  const engine = useMemo(() => new InteractionsHeatmap(), []);
 
-
-  const heatmap = useMemo(() => {
-    const days: { date: Date; label: string; count: number; weekday: number }[] = [];
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
-    for (let i = range - 1; i >= 0; i--) {
-      const d = new Date(now);
-      d.setDate(d.getDate() - i);
-      days.push({
-        date: d,
-        label: d.toLocaleDateString(settings.language, { month: "short", day: "numeric" }),
-        count: 0,
-        weekday: d.getDay() === 0 ? 6 : d.getDay() - 1,
-      });
-    }
-    filteredReactions.forEach((r) => {
-      const at = new Date(r.created_at);
-      const day = days.find((d) => isSameDay(d.date, at));
-      if (day) day.count += 1;
-    });
-    return days;
-  }, [filteredReactions, settings.language, range]);
-
-  const stats = useMemo(() => {
-    const today = heatmap[heatmap.length - 1]?.count || 0;
-    let streak = 0;
-    for (let i = heatmap.length - 1; i >= 0; i--) {
-      if (heatmap[i].count > 0) streak += 1;
-      else break;
-    }
-    const thisWeek = heatmap.slice(-7);
-    const thisWeekCount = thisWeek.reduce((s, d) => s + d.count, 0);
-    const thisWeekMax = thisWeek.length * 10;
-    const thisWeekPercent = thisWeekMax ? Math.round((thisWeekCount / thisWeekMax) * 100) : 0;
-    const activeDays = heatmap.filter((d) => d.count > 0).length;
-    const consistency = heatmap.length ? Math.round((activeDays / heatmap.length) * 100) : 0;
-    const total = heatmap.reduce((s, d) => s + d.count, 0);
-    return { today, streak, thisWeekPercent, consistency, total };
-  }, [heatmap]);
+  const { heatmap, matrix, stats } = useMemo(() => {
+    engine.setRecords(filteredReactions);
+    return engine.build(range, filterKind);
+  }, [engine, filteredReactions, range, filterKind]);
 
   const kindStats = useMemo(() => {
-    const counts: Record<string, number> = {};
-    filteredReactions.forEach((r) => {
-      const kind = getKind(r);
-      counts[kind] = (counts[kind] || 0) + 1;
-    });
-    return Object.entries(counts).sort((a, b) => b[1] - a[1]);
-  }, [filteredReactions]);
+    return Object.entries(stats.byKind).sort((a, b) => b[1] - a[1]);
+  }, [stats.byKind]);
+
+  const maxInDay = stats.maxInDay || 10;
 
   useEffect(() => {
     if (!live) return;
@@ -206,21 +152,12 @@ export default function InteractionsPage() {
     return "text-[var(--interaction-default)]";
   }
 
-  const firstWeekday = heatmap[0]?.weekday ?? 0;
-  const matrix: (typeof heatmap[0] | null)[][] = [];
-  let row: (typeof heatmap[0] | null)[] = [];
-  for (let i = 0; i < firstWeekday; i++) row.push(null);
-  heatmap.forEach((day) => {
-    if (row.length === 7) {
-      matrix.push(row);
-      row = [];
-    }
-    row.push(day);
-  });
-  while (row.length < 7) row.push(null);
-  if (row.length) matrix.push(row);
-
   const weekdays = WEEKDAY_KEYS.map((k) => i18n(k));
+
+  function formatDayLabel(dateStr?: string) {
+    if (!dateStr) return "";
+    return new Date(dateStr).toLocaleDateString(settings.language, { month: "short", day: "numeric" });
+  }
 
   return (
     <div className="space-y-6">
@@ -414,13 +351,13 @@ export default function InteractionsPage() {
             {matrix.flat().map((day, i) => (
               <div key={i}>
                 {day ? (
-                  <Tooltip label={`${day.label}: ${day.count}`} position="top">
+                  <Tooltip label={`${formatDayLabel(day.date)}: ${day.count}`} position="top">
                     <button
                       type="button"
                       onPointerDown={medium}
-                      aria-label={`${day.label}: ${day.count} ${i18n("interactions")}`}
-                      title={`${day.label}: ${day.count}`}
-                      className={`aspect-square w-full rounded-md transition-all hover:scale-125 hover:shadow-lg hover:brightness-110 ${intensityBg(intensity(day.count))}`}
+                      aria-label={`${formatDayLabel(day.date)}: ${day.count} ${i18n("interactions")}`}
+                      title={`${formatDayLabel(day.date)}: ${day.count}`}
+                      className={`aspect-square w-full rounded-md transition-all hover:scale-125 hover:shadow-lg hover:brightness-110 ${intensityBg(InteractionsHeatmap.intensity(day.count, maxInDay))}`}
                     />
                   </Tooltip>
                 ) : (
@@ -431,8 +368,8 @@ export default function InteractionsPage() {
           </div>
 
           <div className="mt-2 flex items-center justify-between text-xs text-[var(--muted)]">
-            <span>{heatmap[0]?.label}</span>
-            <span>{heatmap[heatmap.length - 1]?.label}</span>
+            <span>{formatDayLabel(heatmap[0]?.date)}</span>
+            <span>{formatDayLabel(heatmap[heatmap.length - 1]?.date)}</span>
           </div>
         </Card3D>
       )}

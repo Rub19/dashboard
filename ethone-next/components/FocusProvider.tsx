@@ -1,137 +1,52 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { FocusTimer, type FocusPhase, type FocusTimerState } from "@/lib/focus-timer";
 
-export type FocusPhase = "idle" | "focus" | "shortBreak" | "longBreak";
+export type { FocusPhase };
 
-type FocusState = {
-  phase: FocusPhase;
-  remaining: number;
-  total: number;
-  paused: boolean;
-  activePreset: string;
-  format: (seconds: number) => string;
-};
-
-type FocusContext = {
-  state: FocusState & { format: (seconds: number) => string };
+type FocusContextValue = {
+  state: FocusTimerState;
   start: (preset: string) => void;
   pause: () => void;
   resume: () => void;
   stop: () => void;
   skip: () => void;
-  format: (seconds: number) => string;
+  skipBreak: () => void;
+  format: (seconds?: number) => string;
 };
 
-const PRESETS: Record<string, { phase: FocusPhase; minutes: number }> = {
-  pomodoro: { phase: "focus", minutes: 25 },
-  deep: { phase: "focus", minutes: 50 },
-  sprint: { phase: "focus", minutes: 10 },
-  quick: { phase: "focus", minutes: 15 },
-  shortBreak: { phase: "shortBreak", minutes: 5 },
-  longBreak: { phase: "longBreak", minutes: 15 },
-};
+const focusTimer = new FocusTimer();
 
-const FocusCtx = createContext<FocusContext | null>(null);
-
-function formatTime(seconds: number) {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
-}
+const FocusCtx = createContext<FocusContextValue | null>(null);
 
 export function FocusProvider({ children }: { children: React.ReactNode }) {
-  const [phase, setPhase] = useState<FocusPhase>("idle");
-  const [remaining, setRemaining] = useState(25 * 60);
-  const [total, setTotal] = useState(25 * 60);
-  const [paused, setPaused] = useState(false);
-  const [activePreset, setActivePreset] = useState("");
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [state, setState] = useState<FocusTimerState>(() => focusTimer.getState());
+  const isRestored = useRef(false);
 
-  const clear = useCallback(() => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
+  useEffect(() => {
+    if (!isRestored.current) {
+      focusTimer.restore();
+      isRestored.current = true;
     }
+    return focusTimer.subscribe(setState);
   }, []);
 
-  const start = useCallback((preset: string) => {
-    const config = PRESETS[preset];
-    if (!config) return;
-    clear();
-    const seconds = config.minutes * 60;
-    setActivePreset(preset);
-    setPhase(config.phase);
-    setRemaining(seconds);
-    setTotal(seconds);
-    setPaused(false);
-    intervalRef.current = setInterval(() => {
-      setRemaining((prev) => {
-        if (prev <= 1) {
-          clear();
-          setPhase("idle");
-          setPaused(false);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  }, [clear]);
-
-  const pause = useCallback(() => {
-    clear();
-    setPaused(true);
-  }, [clear]);
-
-  const resume = useCallback(() => {
-    if (phase === "idle" || remaining <= 0) return;
-    setPaused(false);
-    intervalRef.current = setInterval(() => {
-      setRemaining((prev) => {
-        if (prev <= 1) {
-          clear();
-          setPhase("idle");
-          setPaused(false);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  }, [clear, phase, remaining]);
-
-  const stop = useCallback(() => {
-    clear();
-    setActivePreset("");
-    setPhase("idle");
-    setPaused(false);
-    setRemaining(25 * 60);
-    setTotal(25 * 60);
-  }, [clear]);
-
-  const skip = useCallback(() => {
-    clear();
-    setPhase("idle");
-    setPaused(false);
-    setRemaining(0);
-  }, [clear]);
-
-  useEffect(() => clear, [clear]);
-
-  return (
-    <FocusCtx.Provider
-      value={{
-        state: { phase, remaining, total, paused, activePreset, format: formatTime },
-        start,
-        pause,
-        resume,
-        stop,
-        skip,
-        format: formatTime,
-      }}
-    >
-      {children}
-    </FocusCtx.Provider>
+  const value = useMemo<FocusContextValue>(
+    () => ({
+      state,
+      start: (preset: string) => focusTimer.start(preset),
+      pause: () => focusTimer.pause(),
+      resume: () => focusTimer.resume(),
+      stop: () => focusTimer.stop(),
+      skip: () => focusTimer.skipBreak(),
+      skipBreak: () => focusTimer.skipBreak(),
+      format: (seconds?: number) => focusTimer.formatRemaining(seconds),
+    }),
+    [state]
   );
+
+  return <FocusCtx.Provider value={value}>{children}</FocusCtx.Provider>;
 }
 
 export function useFocus() {

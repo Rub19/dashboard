@@ -10,6 +10,9 @@ import { useFocus } from "@/components/FocusProvider";
 import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useItems } from "@/lib/hooks/useItems";
+import { usePresence } from "@/components/PresenceProvider";
+import PresenceIndicator from "@/components/PresenceIndicator";
+import Tooltip from "@/components/Tooltip";
 import { type SessionMode } from "@/lib/settings";
 
 const SESSION_MODE_LABELS: Record<SessionMode, string> = {
@@ -114,6 +117,7 @@ export default function V8StatusBar() {
   const { lastUpdated } = useLiveData(300000);
   const { loading: notesLoading } = useItems("notes");
   const { loading: tasksLoading } = useItems("tasks");
+  const { presence } = usePresence();
   const time = useClientClock();
   const online = useOnlineStatus();
 
@@ -194,6 +198,15 @@ export default function V8StatusBar() {
           value={syncMeta.value}
         />
         <StatusItem icon="user" tone="muted" label={i18n("profile")} value={profileName} />
+        <Tooltip
+          label={`${i18n("presence")}: ${i18n(presence.label)}${
+            presence.badge ? ` (${presence.badge})` : ""
+          }`}
+        >
+          <span className="inline-flex">
+            <PresenceIndicator size="sm" />
+          </span>
+        </Tooltip>
         <StatusItem
           icon="bell"
           tone={unreadCount > 0 ? "important" : "muted"}

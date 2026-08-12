@@ -12,6 +12,8 @@ import { useProfile } from "@/lib/hooks/useProfile";
 import { useFocus } from "./FocusProvider";
 import { useSettings } from "@/components/SettingsProvider";
 import { usePresence } from "./PresenceProvider";
+import PresenceIndicator from "./PresenceIndicator";
+import Tooltip from "./Tooltip";
 
 const HUBS = [
   { city: "Paris", zone: "Europe/Paris", label: "CET" },
@@ -379,6 +381,7 @@ function ChangelogTab() {
 function ProfileTab() {
   const { user } = useAuth();
   const { profile } = useProfile();
+  const { presence } = usePresence();
   const i18n = useI18n();
   const email = user?.email || i18n("guest");
   const name = profile?.display_name || profile?.username || email;
@@ -386,8 +389,19 @@ function ProfileTab() {
   return (
     <div className="space-y-4">
       <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 text-center">
-        <div className="mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--accent)] text-2xl text-white">
+        <div className="relative mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--accent)] text-2xl text-white">
           {name.charAt(0).toUpperCase()}
+          <div className="absolute bottom-0 right-0">
+            <Tooltip
+              label={`${i18n("presence")}: ${i18n(presence.label)}${
+                presence.badge ? ` (${presence.badge})` : ""
+              }`}
+            >
+              <span className="inline-flex rounded-full border-2 border-[var(--surface)]">
+                <PresenceIndicator size="sm" />
+              </span>
+            </Tooltip>
+          </div>
         </div>
         <strong className="block text-lg">{name}</strong>
         <span className="text-sm text-[var(--muted)]">{email}</span>

@@ -141,6 +141,7 @@ export type Settings = {
   lowData: boolean;
   performanceMode: "normal" | "low";
   status: "online" | "busy" | "focus" | "away" | "invisible";
+  presenceShowSignals?: boolean;
   sessionMode: SessionMode;
   uiAnimations: UiAnimationStyle;
   uiGlow: boolean;
@@ -180,6 +181,8 @@ export type Settings = {
   liveMinecraftUsername: string;
   commandHistory: string[];
   pinnedCommands: string[];
+  focusTimerSound: boolean;
+  billsCategories: string[];
 };
 
 export const DEFAULTS: Settings = {
@@ -271,6 +274,7 @@ export const DEFAULTS: Settings = {
   lowData: false,
   performanceMode: "normal",
   status: "online",
+  presenceShowSignals: false,
   sessionMode: "default",
   uiAnimations: "smooth",
   uiGlow: true,
@@ -310,6 +314,8 @@ export const DEFAULTS: Settings = {
   liveVscodeUrl: "",
   commandHistory: [],
   pinnedCommands: [],
+  focusTimerSound: true,
+  billsCategories: ["housing", "utilities", "transport", "health", "insurance", "subscriptions", "food", "education", "taxes", "other"],
 };
 
 import { getUserState, setUserState } from "@/lib/user-state";

@@ -29,6 +29,14 @@ const DOCK_LABELS: Record<string, string> = {
 
 const STATIC_GROUPS = [
   {
+    label: "Command Center",
+    icon: "command",
+    shortcuts: [
+      { keys: ["Ctrl", "K"], label: "Ouvrir Spotlight" },
+      { keys: ["Esc"], label: "Fermer" },
+    ],
+  },
+  {
     label: "Création rapide",
     icon: "plus-circle",
     shortcuts: [

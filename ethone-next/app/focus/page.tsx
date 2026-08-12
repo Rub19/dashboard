@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -9,47 +9,47 @@ import { useFocus } from "@/components/FocusProvider";
 import { useSettings } from "@/components/SettingsProvider";
 import { useZenMode } from "@/lib/hooks/useZenMode";
 
-const FOCUS_PRESETS: { id: string; color: string }[] = [
-  { id: "pomodoro", color: "text-rose-400" },
-  { id: "deep", color: "text-violet-400" },
-  { id: "sprint", color: "text-orange-400" },
+const FOCUS_PRESETS: { id: string; label: string; color: string }[] = [
+  { id: "pomodoro", label: "pomodoro", color: "text-rose-400" },
+  { id: "deep-work", label: "deep", color: "text-violet-400" },
+  { id: "sprint", label: "sprint", color: "text-orange-400" },
+  { id: "custom", label: "custom", color: "text-sky-400" },
 ];
 
-const BREAK_PRESETS: { id: string; color: string }[] = [
-  { id: "shortBreak", color: "text-sky-400" },
-  { id: "longBreak", color: "text-emerald-400" },
-];
+const PHASE_COLORS: Record<string, string> = {
+  focus: "text-[var(--accent)]",
+  shortBreak: "text-sky-400",
+  longBreak: "text-emerald-400",
+  idle: "text-[var(--accent)]",
+};
 
 export default function FocusPage() {
   const i18n = useI18n();
   const { success } = useToast();
-  const { state, start, pause, resume, stop, format } = useFocus();
+  const { state, start, pause, resume, stop, skipBreak, format } = useFocus();
   const { settings, update } = useSettings();
   const { zenMode, toggle } = useZenMode();
+  const prevPhase = useRef(state.phase);
 
   useEffect(() => {
-    if (state.remaining <= 0 && !state.paused && state.phase !== "idle") {
+    if (prevPhase.current === "focus" && (state.phase === "shortBreak" || state.phase === "longBreak")) {
       success(i18n("focusDone"));
     }
-  }, [state.remaining, state.paused, state.phase, success, i18n]);
+    prevPhase.current = state.phase;
+  }, [state.phase, success, i18n]);
 
   const activePreset = state.activePreset || settings.focusPreset || "pomodoro";
 
   const currentMode =
-    state.phase === "focus"
-      ? activePreset
-      : state.phase === "shortBreak"
+    state.phase === "shortBreak"
       ? "shortBreak"
       : state.phase === "longBreak"
       ? "longBreak"
       : activePreset;
 
-  const modeColor =
-    FOCUS_PRESETS.find((p) => p.id === currentMode)?.color ||
-    BREAK_PRESETS.find((p) => p.id === currentMode)?.color ||
-    "text-[var(--accent)]";
+  const modeColor = FOCUS_PRESETS.find((p) => p.id === currentMode)?.color || PHASE_COLORS[state.phase];
 
-  const progress = state.total > 0 ? 100 - (state.remaining / state.total) * 100 : 0;
+  const progress = state.total > 0 ? ((state.total - state.remaining) / state.total) * 100 : 0;
 
   function select(preset: string) {
     start(preset);
@@ -57,6 +57,19 @@ export default function FocusPage() {
       update({ focusPreset: preset });
     }
   }
+
+  function togglePlay() {
+    if (state.phase === "idle") {
+      start(activePreset);
+    } else if (state.paused) {
+      resume();
+    } else {
+      pause();
+    }
+  }
+
+  const isBreak = state.phase === "shortBreak" || state.phase === "longBreak";
+  const isIdle = state.phase === "idle";
 
   return (
     <div className="mx-auto max-w-md space-y-6">
@@ -78,7 +91,7 @@ export default function FocusPage() {
 
       <Card3D>
         <p className="mb-2 text-center text-xs text-[var(--muted)]">{i18n("focusPresets")}</p>
-        <div className="flex justify-center gap-2">
+        <div className="flex flex-wrap justify-center gap-2">
           {FOCUS_PRESETS.map((p) => (
             <button
               key={p.id}
@@ -90,7 +103,7 @@ export default function FocusPage() {
                   : "bg-[var(--surface-raised)] text-[var(--muted)] hover:text-[var(--foreground)]"
               }`}
             >
-              {i18n(p.id)}
+              {i18n(p.label)}
             </button>
           ))}
         </div>
@@ -121,18 +134,24 @@ export default function FocusPage() {
             <p className={`text-5xl font-bold tabular-nums ${modeColor}`}>
               {format(state.remaining)}
             </p>
-            <p className="text-sm text-[var(--muted)]">{i18n(currentMode)}</p>
+            <p className="text-sm text-[var(--muted)]">
+              {isBreak
+                ? i18n(state.phase)
+                : i18n("focusCycle")
+                    .replace("{{cycle}}", String(state.cycle))
+                    .replace("{{total}}", "4")}
+            </p>
           </div>
         </div>
 
         <div className="flex items-center justify-center gap-3">
           <button
             type="button"
-            aria-label={state.paused ? i18n("play") : i18n("pause")}
-            onClick={() => (state.paused ? resume() : pause())}
+            aria-label={state.paused || isIdle ? i18n("play") : i18n("pause")}
+            onClick={togglePlay}
             className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--accent)] text-white transition-opacity hover:opacity-90"
           >
-            {state.paused ? <Icon name="play" className="h-5 w-5" /> : <Icon name="pause" className="h-5 w-5" />}
+            <Icon name={state.paused || isIdle ? "play" : "pause"} className="h-5 w-5" />
           </button>
           <button
             type="button"
@@ -142,24 +161,19 @@ export default function FocusPage() {
           >
             <Icon name="square" className="h-5 w-5" />
           </button>
-        </div>
-
-        <p className="mb-2 mt-6 text-center text-xs text-[var(--muted)]">{i18n("breaks")}</p>
-        <div className="flex justify-center gap-2">
-          {BREAK_PRESETS.map((p) => (
-            <button
-              key={p.id}
-              type="button"
-              onClick={() => start(p.id)}
-              className={`rounded-xl px-3 py-1.5 text-xs font-medium transition-colors ${
-                currentMode === p.id
-                  ? "bg-[var(--accent)] text-white"
-                  : "bg-[var(--surface-raised)] text-[var(--muted)] hover:text-[var(--foreground)]"
-              }`}
-            >
-              {i18n(p.id)}
-            </button>
-          ))}
+          <button
+            type="button"
+            aria-label={i18n("skipBreak")}
+            onClick={skipBreak}
+            disabled={!isBreak}
+            className={`flex h-12 w-12 items-center justify-center rounded-full border transition-colors ${
+              isBreak
+                ? "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted)] hover:text-[var(--foreground)]"
+                : "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--border)]"
+            }`}
+          >
+            <Icon name="skipForward" className="h-5 w-5" />
+          </button>
         </div>
       </Card3D>
 
@@ -171,21 +185,21 @@ export default function FocusPage() {
         <Card3D>
           <div className="flex flex-col items-center gap-1 text-center">
             <Icon name="brain" className="h-5 w-5 text-[var(--accent)]" />
-            <p className="text-lg font-bold">0</p>
+            <p className="text-lg font-bold">{state.completedPomodoros}</p>
             <p className="text-[10px] text-[var(--muted)]">{i18n("pomodoros")}</p>
           </div>
         </Card3D>
         <Card3D>
           <div className="flex flex-col items-center gap-1 text-center">
             <Icon name="timer" className="h-5 w-5 text-amber-400" />
-            <p className="text-lg font-bold">{i18n("zeroMin")}</p>
+            <p className="text-lg font-bold">{Math.floor(state.totalFocusSeconds / 60)} {i18n("focusMinutes")}</p>
             <p className="text-[10px] text-[var(--muted)]">{i18n("totalFocus")}</p>
           </div>
         </Card3D>
         <Card3D>
           <div className="flex flex-col items-center gap-1 text-center">
             <Icon name="coffee" className="h-5 w-5 text-emerald-400" />
-            <p className="text-lg font-bold">0</p>
+            <p className="text-lg font-bold">{state.completedBreaks}</p>
             <p className="text-[10px] text-[var(--muted)]">{i18n("breaks")}</p>
           </div>
         </Card3D>

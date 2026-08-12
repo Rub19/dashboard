@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSettings } from "@/components/SettingsProvider";
 import { activityJournal } from "@/lib/activity-journal";
+import { useBrainContext } from "./useBrainContext";
 import { useItems } from "./useItems";
 import {
   type BrainPreferences,
@@ -38,6 +39,7 @@ export function useBrain() {
   const [providerStatus, setProviderStatus] = useState<{ provider: string; latencyMs: number } | null>(null);
   const watcherRef = useRef<ReturnType<typeof createAutomationWatcher> | null>(null);
   const automationsRef = useRef(preferences.automations);
+  const brainCtx = useBrainContext();
 
   useEffect(() => {
     automationsRef.current = preferences.automations;
@@ -112,7 +114,14 @@ export function useBrain() {
         provider: preferences.provider.active,
         model: preferences.provider.model,
         messages: nextMessages.map((m) => ({ role: m.role, content: m.content })),
-        context: { persona: preferences.persona, tone: preferences.tone, detail: preferences.detail, language: preferences.language },
+        context: {
+          persona: preferences.persona,
+          tone: preferences.tone,
+          detail: preferences.detail,
+          language: preferences.language,
+          systemContext: brainCtx.context,
+          recentMemory: brainCtx.recent,
+        },
         baseUrl,
       });
       const content = res?.data?.content || res?.data?.text || "Réponse vide.";
@@ -238,5 +247,13 @@ export function useBrain() {
     removeAutomationRule,
     runAutomations,
     suggestions,
+    context: brainCtx.context,
+    recentMemory: brainCtx.recent,
+    remember: brainCtx.remember,
+    recall: brainCtx.recall,
+    recallByCategory: brainCtx.recallByCategory,
+    forget: brainCtx.forget,
+    clearSensitiveMemory: brainCtx.clearSensitive,
+    pruneExpired: brainCtx.pruneExpired,
   };
 }

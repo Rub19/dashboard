@@ -1,18 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useFocus } from "./FocusProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useSound } from "@/lib/sound";
+import { useSettings } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
 import FocusPopover from "./FocusPopover";
 
 export default function FocusIsland() {
   const i18n = useI18n();
   const { state } = useFocus();
+  const { play } = useSound();
+  const { settings } = useSettings();
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
   const [islandEl, setIslandEl] = useState<HTMLDivElement | null>(null);
+  const prevPhase = useRef<typeof state.phase>(state.phase);
 
   useEffect(() => {
     let t: ReturnType<typeof setTimeout> | null = null;
@@ -23,6 +28,17 @@ export default function FocusIsland() {
     }
     return () => { if (t) clearTimeout(t); };
   }, [state.paused]);
+
+  useEffect(() => {
+    if (
+      prevPhase.current === "focus" &&
+      (state.phase === "shortBreak" || state.phase === "longBreak") &&
+      settings.focusTimerSound
+    ) {
+      play("success");
+    }
+    prevPhase.current = state.phase;
+  }, [state.phase, settings.focusTimerSound, play]);
 
   if (state.phase === "idle" && !hidden) return null;
 

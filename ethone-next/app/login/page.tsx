@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Card3D from "@/components/Card3D";
-import LoginEight from "@/components/LoginEight";
+import BrandMark from "@/components/BrandMark";
 import { Icon } from "@/lib/icons";
 import {
   signInWithOtp,
@@ -123,8 +123,11 @@ export default function LoginPage() {
       >
         <Card3D>
           <div className="mb-6 flex flex-col items-center text-center">
-            <LoginEight className="mb-3 h-24 w-16" />
-            <h1 className="text-2xl font-bold">ETHONE</h1>
+            <BrandMark size={72} className="mb-3" />
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-bold">ETHONE</h1>
+              <span className="rounded border border-[var(--border)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--muted)]">OS</span>
+            </div>
             <p className="mt-1 text-sm text-[var(--muted)]">
               {i18n("loginDescription")}
             </p>

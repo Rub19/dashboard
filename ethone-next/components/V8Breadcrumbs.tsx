@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
+import BrandMark from "@/components/BrandMark";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { useSettings, useActiveProfile } from "@/components/SettingsProvider";
 import { useAuth } from "@/components/AuthProvider";
@@ -318,7 +319,7 @@ export default function V8Breadcrumbs() {
           className="flex items-center gap-1.5 rounded-md px-2 py-1 text-[var(--foreground)] transition-colors hover:bg-[var(--surface-raised)]"
           aria-label={i18n("home")}
         >
-          <Icon name="house" className="h-4 w-4 text-[var(--accent)]" />
+          <BrandMark size={18} />
           <span className="hidden text-sm font-semibold sm:inline">ETHONE</span>
         </Link>
         <span className="text-[var(--border)]">/</span>

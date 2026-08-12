@@ -8,6 +8,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { Icon } from "@/lib/icons";
 import Tooltip from "@/components/Tooltip";
+import BrandMark from "@/components/BrandMark";
 
 export default function Sidebar() {
   const [expanded, setExpanded] = useLocalStorage<boolean>("ethone-rail-expanded", false);
@@ -61,15 +62,16 @@ export default function Sidebar() {
         </button>
         <AnimatePresence>
           {expanded && (
-            <motion.span
+            <motion.div
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -10 }}
               transition={{ duration: 0.2 }}
-              className="ml-3 text-lg font-semibold tracking-tight text-[var(--foreground)]"
+              className="ml-3 flex items-center gap-2"
             >
-              Ethone.dev
-            </motion.span>
+              <BrandMark size={28} />
+              <span className="text-lg font-semibold tracking-tight text-[var(--foreground)]">ETHONE</span>
+            </motion.div>
           )}
         </AnimatePresence>
       </div>

@@ -4,6 +4,19 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration React + Tailwind : Home personnalisable, Dock v8, audio spatial et shell avancé**
+
+### Ajoute
+- `app/page.tsx` + `lib/settings.ts` : sections Home personnalisables (`homeHiddenSections`), mode personnalisation avec toggles et sélecteur d'Aura intégré.
+- `components/FocusProvider.tsx` + `components/FocusPopover.tsx` + `app/focus/page.tsx` + `lib/hooks/useZenMode.ts` : preset `sprint`, sélecteur de session, Zen mode et persistance `data-zen-mode`.
+- `components/Dock.tsx` + `lib/settings.ts` + `app/globals.css` : sélecteur de verre `vitrified/ultra-blur/sober`, échelles compact/normal/large, lanceur d'applications intégré dans le Dock.
+- `lib/sound.tsx` + `lib/settings.ts` + `app/settings/page.tsx` : packs v8 (`ethone`, `minimal`, `classic`, `apple-inspired`, `cyber-pulse`, `silent`), audio spatial pan (max 0.07) et volumes par catégorie (`interface`, `notifications`, `brain`, `system`).
+- `components/V8Breadcrumbs.tsx` + `components/V8StatusBar.tsx` + `components/NotificationCenter.tsx` : fil d'Ariane contextuel (workspace, data-space, profil, météo, connexion, quick actions) et barre d'état avancée (session, sync, réseau, notifications, version).
+
+### Corrige
+- Migration des packs audio legacy `mechanical`/`liquid`/`none` vers les équivalents v8 pour compatibilité ascendante.
+- Réduction des appels Worker via caches existants et réutilisation des hooks Worker.
+
 **Modernisation UI Next.js : notifications, haptics, tooltips, context-menus et bottom-sheets**
 
 ### Ajoute

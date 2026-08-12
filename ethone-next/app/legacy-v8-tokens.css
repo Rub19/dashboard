@@ -578,6 +578,20 @@
   --density-widget-scale: .92;
 }
 
+:root:is([data-density="dense"],[data-density-effective="dense"]) {
+  --density-font-scale: .9;
+  --density-line-height: 1.4;
+  --density-card-padding: 12px;
+  --density-control-height: 32px;
+  --density-row-height: 38px;
+  --density-table-row-height: 34px;
+  --density-section-gap: 12px;
+  --density-icon-size: 16px;
+  --density-toolbar-height: 42px;
+  --density-panel-width: 300px;
+  --density-widget-scale: .9;
+}
+
 @media (max-width:1366px), (max-height:800px) {
   :root {
       --v8-type-heading-adjust: -0.0625rem;

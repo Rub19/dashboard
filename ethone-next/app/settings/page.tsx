@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSettings } from "@/components/SettingsProvider";
 import type { BrainPermissions, BrainMemoryCategories } from "@/lib/settings";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -7,7 +8,17 @@ import Card3D from "@/components/Card3D";
 import LiveSettings from "@/components/LiveSettings";
 import { subscribePush, unsubscribePush } from "@/lib/push";
 import { Icon } from "@/lib/icons";
-import { PRESETS } from "@/lib/presets";
+import {
+  BUILT_IN_PRESETS,
+  applyPreset,
+  extractPresetFromState,
+  loadCustomPresets,
+  saveCustomPresets,
+  addCustomPreset,
+  removeCustomPreset,
+  sanitizePreset,
+  type Preset,
+} from "@/lib/presets";
 
 function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -98,8 +109,83 @@ const NAV_ITEMS = [
 ];
 
 export default function SettingsPage() {
-  const { settings, update } = useSettings();
+  const { settings, update, applyPreset: applyPresetFromProvider } = useSettings();
   const i18n = useI18n();
+
+  const [customPresets, setCustomPresets] = useState<Preset[]>(() => loadCustomPresets());
+  const [newPresetName, setNewPresetName] = useState("");
+  const [newPresetDescription, setNewPresetDescription] = useState("");
+  const [message, setMessage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    saveCustomPresets(customPresets);
+  }, [customPresets]);
+
+  const showMessage = useCallback(
+    (text: string) => {
+      setMessage(text);
+      window.setTimeout(() => setMessage(null), 3000);
+    },
+    [setMessage]
+  );
+
+  const handleApply = useCallback(
+    (preset: Preset) => {
+      const result = applyPresetFromProvider ? applyPresetFromProvider(preset) : applyPreset(preset, settings, update);
+      if (result.ok) {
+        showMessage(i18n("presetApplied").replace("{{name}}", result.preset.name));
+      } else {
+        showMessage(i18n("presetApplyError"));
+      }
+    },
+    [applyPresetFromProvider, settings, update, i18n, showMessage]
+  );
+
+  const handleExtract = useCallback(() => {
+    const name = newPresetName.trim() || i18n("myPreset");
+    const description = newPresetDescription.trim();
+    const preset = extractPresetFromState(settings, name, description, "sparkles");
+    setCustomPresets((prev) => addCustomPreset(prev, preset));
+    setNewPresetName("");
+    setNewPresetDescription("");
+    showMessage(i18n("presetSaved"));
+  }, [settings, newPresetName, newPresetDescription, i18n, showMessage]);
+
+  const handleExport = useCallback(() => {
+    const all = [...BUILT_IN_PRESETS, ...customPresets];
+    const blob = new Blob([JSON.stringify(all, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `ethone-presets-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [customPresets]);
+
+  const handleImport = useCallback(
+    (file: File | null) => {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(String(reader.result));
+          const list = Array.isArray(parsed) ? parsed : [parsed];
+          const valid = list.map((p) => sanitizePreset(p)).filter((p): p is Preset => p !== null);
+          if (valid.length) {
+            setCustomPresets((prev) => [...prev, ...valid]);
+            showMessage(i18n("presetsImported").replace("{{count}}", String(valid.length)));
+          } else {
+            showMessage(i18n("presetImportError"));
+          }
+        } catch {
+          showMessage(i18n("presetImportError"));
+        }
+      };
+      reader.readAsText(file);
+    },
+    [showMessage, i18n]
+  );
 
   const PACKS = [
     { id: "lucide", label: "Lucide" },
@@ -247,26 +333,119 @@ export default function SettingsPage() {
   const sections = [
     {
       id: "presets",
-      label: "Presets",
+      label: i18n("presets"),
       icon: "layers",
       children: (
         <div className="space-y-4">
-          <p className="text-xs text-[var(--muted)]">Appliquer une ambiance prédéfinie en un clic.</p>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            {PRESETS.map((preset) => (
-              <button
-                key={preset.id}
-                type="button"
-                onClick={() => update({ ...preset.settings })}
-                className="rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] p-3 text-left transition-colors hover:border-[var(--accent)]"
-              >
-                <div className="flex items-center gap-2 text-sm font-medium">
-                  <Icon name={preset.icon} className="h-4 w-4 text-[var(--accent)]" />
-                  {preset.name}
-                </div>
-                <div className="mt-1 text-xs text-[var(--muted)]">{preset.description}</div>
-              </button>
-            ))}
+          <p className="text-xs text-[var(--muted)]">{i18n("presetsDescription")}</p>
+
+          {message && (
+            <div className="rounded-lg border border-[var(--accent)] bg-[var(--accent-soft)] px-3 py-2 text-xs text-[var(--foreground)]">
+              {message}
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-[var(--foreground)]">{i18n("builtInPresets")}</p>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {BUILT_IN_PRESETS.map((preset) => (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => handleApply(preset)}
+                  className="rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] p-3 text-left transition-colors hover:border-[var(--accent)]"
+                >
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <Icon name={preset.icon} className="h-4 w-4 text-[var(--accent)]" />
+                    {preset.name}
+                  </div>
+                  <div className="mt-1 text-xs text-[var(--muted)]">{preset.description}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3">
+            <p className="text-xs font-medium text-[var(--foreground)]">{i18n("saveCurrentAsPreset")}</p>
+            <input
+              type="text"
+              value={newPresetName}
+              onChange={(e) => setNewPresetName(e.target.value)}
+              placeholder={i18n("presetNamePlaceholder")}
+              className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+            />
+            <input
+              type="text"
+              value={newPresetDescription}
+              onChange={(e) => setNewPresetDescription(e.target.value)}
+              placeholder={i18n("presetDescriptionPlaceholder")}
+              className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+            />
+            <button
+              type="button"
+              onClick={handleExtract}
+              className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)]"
+            >
+              {i18n("saveCurrentPreset")}
+            </button>
+          </div>
+
+          {customPresets.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-xs font-medium text-[var(--foreground)]">{i18n("customPresets")}</p>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                {customPresets.map((preset) => (
+                  <div
+                    key={preset.id}
+                    className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] p-3"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => handleApply(preset)}
+                      className="flex-1 text-left"
+                    >
+                      <div className="flex items-center gap-2 text-sm font-medium">
+                        <Icon name={preset.icon} className="h-4 w-4 text-[var(--accent)]" />
+                        {preset.name}
+                      </div>
+                      {preset.description && <div className="mt-1 text-xs text-[var(--muted)]">{preset.description}</div>}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCustomPresets((prev) => removeCustomPreset(prev, preset.id))}
+                      className="rounded p-1 text-[var(--muted)] transition-colors hover:text-[var(--accent)]"
+                      aria-label={i18n("delete")}
+                    >
+                      <Icon name="trash-2" className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleExport}
+              className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)]"
+            >
+              {i18n("exportPresets")}
+            </button>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)]"
+            >
+              {i18n("importPresets")}
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/json"
+              onChange={(e) => handleImport(e.target.files?.[0] || null)}
+              className="hidden"
+            />
           </div>
         </div>
       ),

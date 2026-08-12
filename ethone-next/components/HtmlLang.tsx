@@ -33,6 +33,8 @@ export default function HtmlLang() {
       html.style.removeProperty("--density-toolbar-height");
     }
     html.dataset.space = activeSpace;
+    html.dataset.dataSpace = activeSpace;
+    html.dataset.densityMode = settings.densityMode;
     html.dataset.rail = railExpanded ? "expanded" : "compact";
     html.style.setProperty("--dock-offset", railExpanded ? "122px" : "0px");
     html.dataset.wallpaper = settings.wallpaper;
@@ -40,6 +42,8 @@ export default function HtmlLang() {
     html.dataset.accent = settings.accentColor;
     html.dataset.aura = settings.aura;
     html.dataset.sessionMode = settings.sessionMode;
+    html.style.setProperty("--v8-breathe-duration", settings.ambientEffectsEnabled ? "26s" : "0s");
+    html.style.setProperty("--v8-ambient-transition", settings.uiAnimations === "snappy" ? "800ms" : settings.uiAnimations === "reduced" ? "1ms" : "3200ms");
     html.setAttribute("data-accent", settings.accentColor);
     if (settings.accentColor === "custom") {
       html.style.setProperty("--accent", settings.customAccent);
@@ -67,6 +71,8 @@ export default function HtmlLang() {
     settings.customAccent,
     settings.reducedMotion,
     settings.sessionMode,
+    settings.ambientEffectsEnabled,
+    settings.uiAnimations,
   ]);
   return null;
 }

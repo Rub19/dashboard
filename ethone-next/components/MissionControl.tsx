@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useWindowManager } from "./WindowManagerProvider";
+import { useLayer } from "./LayerProvider";
 import { useSettings, useActiveProfile } from "@/components/SettingsProvider";
 import { useLiveData, type LiveRecord } from "@/lib/hooks/useLiveData";
 import { useBrain } from "@/lib/hooks/useBrain";
@@ -186,11 +187,22 @@ function MissionControlDialog() {
   const pathname = usePathname();
   const { settings } = useSettings();
   const { activeProfile } = useActiveProfile();
-  const { windows, setMissionControl, focusWindow, closeWindow, openWindow } = useWindowManager();
+  const { windows, missionControl, setMissionControl, focusWindow, closeWindow, openWindow } = useWindowManager();
   const { records } = useLiveData();
   const brain = useBrain();
   const [query, setQuery] = useState("");
   const dialogRef = useRef<HTMLDivElement>(null);
+  useLayer(missionControl, () => setMissionControl(false), {
+    boundary: dialogRef,
+    kind: "dialog",
+    modal: true,
+    trapFocus: true,
+    closeOnEscape: true,
+    closeOnOutside: false,
+    closeOnResize: false,
+    closeOnScroll: false,
+    initialFocus: false,
+  });
 
   const activeWorkspace = useMemo(
     () => WORKSPACES.find((w) => w.id === (activeProfile?.workspace || "personal")) || WORKSPACES[0],
@@ -226,25 +238,12 @@ function MissionControlDialog() {
   const maxZ = useMemo(() => Math.max(0, ...windows.map((w) => w.z)), [windows]);
 
   function handleKeyDown(event: ReactKeyboardEvent<HTMLDivElement>) {
-    if (event.key === "Escape") {
-      event.preventDefault();
-      setMissionControl(false);
-      return;
-    }
-
     const target = event.target as HTMLElement;
     if (
       target instanceof HTMLInputElement ||
       target instanceof HTMLTextAreaElement ||
       (target instanceof HTMLElement && target.isContentEditable)
     ) {
-      return;
-    }
-
-    const item = target.closest<HTMLElement>("[data-mission-item]");
-    if ((event.key === "Enter" || event.key === " ") && item) {
-      event.preventDefault();
-      item.click();
       return;
     }
 
@@ -496,7 +495,7 @@ function MissionControlDialog() {
                   aria-label={i18n(r.id)}
                   onClick={() => {
                     setMissionControl(false);
-                    openWindow(r.route, i18n(r.id));
+                    openWindow(i18n(r.id), r.route);
                   }}
                   className={`group flex w-full items-center gap-3 rounded-xl border p-2.5 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)] ${
                     pathname === r.route
@@ -533,7 +532,7 @@ function MissionControlDialog() {
                   aria-label={record.label}
                   onClick={() => {
                     setMissionControl(false);
-                    openWindow("/connections", i18n("connections"));
+                    openWindow(i18n("connections"), "/connections");
                   }}
                   className="group flex w-full items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2.5 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)]"
                 >
@@ -565,7 +564,7 @@ function MissionControlDialog() {
                     type="button"
                     onClick={() => {
                       setMissionControl(false);
-                      openWindow("/brain", i18n("brain"));
+                      openWindow(i18n("brain"), "/brain");
                     }}
                     className="flex items-center gap-2 rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white"
                   >
@@ -584,7 +583,7 @@ function MissionControlDialog() {
                       aria-label={b.title}
                       onClick={() => {
                         setMissionControl(false);
-                        openWindow("/brain", i18n("brain"));
+                        openWindow(i18n("brain"), "/brain");
                       }}
                       className="group flex w-full items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2.5 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)]"
                     >

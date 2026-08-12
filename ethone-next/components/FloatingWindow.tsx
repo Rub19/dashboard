@@ -2,13 +2,28 @@
 
 import { motion } from "framer-motion";
 import { Icon } from "@/lib/icons";
-import { useWindowManager, WindowState } from "./WindowManagerProvider";
+import { useI18n } from "@/lib/hooks/useI18n";
+import { useWindowManager, type WindowState } from "./WindowManagerProvider";
+import { useLayer } from "./LayerProvider";
 import { useRef } from "react";
 
 export function FloatingWindow({ win }: { win: WindowState }) {
+  const i18n = useI18n();
   const { closeWindow, focusWindow, updateWindow } = useWindowManager();
   const draggingRef = useRef(false);
   const panelRef = useRef<HTMLDivElement>(null);
+
+  const layer = useLayer(true, () => closeWindow(win.id), {
+    boundary: panelRef,
+    kind: win.options?.modal ? "dialog" : "panel",
+    modal: win.options?.modal === true,
+    trapFocus: win.options?.modal === true,
+    closeOnEscape: win.options?.closeOnEscape !== false,
+    closeOnOutside: win.options?.closeOnOutside === true,
+    closeOnResize: win.options?.closeOnResize === true,
+    closeOnScroll: win.options?.closeOnScroll === true,
+    initialFocus: win.options?.focusOnOpen !== false,
+  });
 
   function toggleMaximize() {
     if (win.maximized) {
@@ -42,8 +57,12 @@ export function FloatingWindow({ win }: { win: WindowState }) {
         draggingRef.current = false;
         updateWindow(win.id, { x: win.x + info.offset.x, y: win.y + info.offset.y });
         focusWindow(win.id);
+        layer.activate();
       }}
-      onPointerDown={() => focusWindow(win.id)}
+      onPointerDown={() => {
+        focusWindow(win.id);
+        layer.activate();
+      }}
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1, x: win.x, y: win.y }}
       style={{
@@ -61,24 +80,29 @@ export function FloatingWindow({ win }: { win: WindowState }) {
           <button
             onClick={() => updateWindow(win.id, { height: win.height > 100 ? 48 : 360 })}
             className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+            aria-label={i18n("minimize")}
           >
             <Icon name="minus" className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={toggleFullscreen}
             className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
-            aria-label="Plein écran"
+            aria-label={i18n("fullscreen")}
           >
             <Icon name="expand" className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={toggleMaximize}
             className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
-            aria-label={win.maximized ? "Restaurer" : "Maximiser"}
+            aria-label={i18n(win.maximized ? "restore" : "maximize")}
           >
             <Icon name={win.maximized ? "minimize" : "maximize"} className="h-3.5 w-3.5" />
           </button>
-          <button onClick={() => closeWindow(win.id)} className="rounded p-1 text-[var(--muted)] hover:bg-red-500/10 hover:text-red-400">
+          <button
+            onClick={() => closeWindow(win.id)}
+            className="rounded p-1 text-[var(--muted)] hover:bg-red-500/10 hover:text-red-400"
+            aria-label={i18n("close")}
+          >
             <Icon name="close" className="h-3.5 w-3.5" />
           </button>
         </div>

@@ -1,9 +1,10 @@
 "use client";
 
 import { activityJournal } from "@/lib/activity-journal";
-import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useProfiles, type Profile } from "@/lib/hooks/useProfiles";
 import { loadSettings, saveSettings, saveSettingsAsync, loadSettingsAsync, Settings, DEFAULTS, type ThemeMode } from "@/lib/settings";
+import { applyPreset, type Preset } from "@/lib/preset-engine";
 
 const THEMES: Record<ThemeMode, { background: string; foreground: string; accent: string }> = {
   default: { background: "#0a0a0a", foreground: "#ededed", accent: "#8b5cf6" },
@@ -75,7 +76,8 @@ const ACCENTS: Record<string, string> = {
 const SettingsContext = createContext<{
   settings: Settings;
   update: (s: Partial<Settings>) => void;
-}>({ settings: DEFAULTS, update: () => {} });
+  applyPreset: (preset: Preset | unknown) => { ok: true; preset: Preset } | { ok: false; error: string };
+}>({ settings: DEFAULTS, update: () => {}, applyPreset: () => ({ ok: false, error: "Provider non initialisé" }) });
 
 export const useSettings = () => useContext(SettingsContext);
 
@@ -141,6 +143,8 @@ export default function SettingsProvider({
     root.dataset.cardTilt = settings.cardTilt ? "on" : "off";
     root.dataset.theme = settings.theme;
     root.dataset.density = settings.densityMode;
+    root.dataset.densityMode = settings.densityMode;
+    root.dataset.dataSpace = active || "personal";
     root.dataset.shadow = settings.shadow;
     root.dataset.background = settings.backgroundEffect;
     root.dataset.wallpaper = settings.wallpaper;
@@ -166,6 +170,9 @@ export default function SettingsProvider({
     root.dataset.sessionMode = settings.sessionMode;
     root.style.fontSize = `${settings.fontSize}%`;
     root.style.setProperty("--aurora-speed", `${60 - settings.backgroundSpeed}s`);
+    root.style.setProperty("--v8-breathe-duration", settings.ambientEffectsEnabled ? "26s" : "0s");
+    root.style.setProperty("--v8-ambient-transition", settings.uiAnimations === "snappy" ? "800ms" : settings.uiAnimations === "reduced" ? "1ms" : "3200ms");
+    root.style.setProperty("--v8-accent", accent);
     if (settings.reducedMotion) {
       root.setAttribute("data-reduced-motion", "true");
     } else {
@@ -176,14 +183,27 @@ export default function SettingsProvider({
     Object.entries(densityValues).forEach(([key, value]) => {
       root.style.setProperty(`--density-${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`, `${value}${UNIT[key] || ""}`);
     });
-  }, [settings]);
+  }, [settings, active]);
 
-  function update(partial: Partial<Settings>) {
-    const next = { ...settings, ...partial };
-    setSettings(next);
-    saveSettings(next, active || undefined);
-    saveSettingsAsync(next, active || undefined);
-  }
+  const update = useCallback(
+    (partial: Partial<Settings>) => {
+      const next = { ...settings, ...partial };
+      setSettings(next);
+      saveSettings(next, active || undefined);
+      saveSettingsAsync(next, active || undefined);
+    },
+    [settings, active]
+  );
+
+  const handleApplyPreset = useCallback(
+    (preset: Preset | unknown) => applyPreset(preset, settings, update),
+    [settings, update]
+  );
+
+  const settingsValue = useMemo(
+    () => ({ settings, update, applyPreset: handleApplyPreset }),
+    [settings, update, handleApplyPreset]
+  );
 
   const previousSettingsRef = useRef<Settings | null>(null);
   useEffect(() => {
@@ -200,7 +220,7 @@ export default function SettingsProvider({
 
   return (
     <ActiveProfileContext.Provider value={activeContext}>
-      <SettingsContext.Provider value={{ settings, update }}>
+      <SettingsContext.Provider value={settingsValue}>
         {children}
       </SettingsContext.Provider>
     </ActiveProfileContext.Provider>

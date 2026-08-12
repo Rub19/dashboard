@@ -24,11 +24,19 @@ export default function ContextMenu({
 }) {
   const i18n = useI18n();
   const [open, setOpen] = useState(false);
-  useLayer(open, () => setOpen(false));
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [adjusted, setAdjusted] = useState({ x: 0, y: 0 });
   const menuRef = useRef<HTMLDivElement>(null);
-  const previousFocus = useRef<HTMLElement | null>(null);
+
+  useLayer(open, () => setOpen(false), {
+    boundary: menuRef,
+    kind: "menu",
+    closeOnEscape: true,
+    closeOnOutside: true,
+    closeOnScroll: true,
+    closeOnResize: true,
+    initialFocus: true,
+  });
 
   const focusableItems = items.filter((item) => !item.separator);
 
@@ -83,104 +91,13 @@ export default function ContextMenu({
     (e: React.MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      previousFocus.current = document.activeElement as HTMLElement;
       setPos({ x: e.clientX, y: e.clientY });
       setAdjusted({ x: e.clientX, y: e.clientY });
       setActiveId(focusableItems.find((item) => !item.disabled)?.id ?? null);
       setOpen(true);
     },
-    [focusableItems, setActiveId]
+    [focusableItems, setActiveId, setOpen, setPos, setAdjusted]
   );
-
-  useEffect(() => {
-    if (!open) {
-      const trigger = previousFocus.current;
-      if (trigger && typeof trigger.focus === "function") {
-        queueMicrotask(() => trigger.focus({ preventScroll: true }));
-      }
-      previousFocus.current = null;
-      return;
-    }
-
-    queueMicrotask(() => menuRef.current?.focus({ preventScroll: true }));
-
-    function onKey(e: KeyboardEvent) {
-      switch (e.key) {
-        case "Escape":
-          e.preventDefault();
-          close();
-          return;
-        case "ArrowDown":
-        case "Down":
-          e.preventDefault();
-          setNext("next");
-          return;
-        case "ArrowUp":
-        case "Up":
-          e.preventDefault();
-          setNext("prev");
-          return;
-        case "Home":
-          e.preventDefault();
-          setFirst();
-          return;
-        case "End":
-          e.preventDefault();
-          setLast();
-          return;
-        case "Enter":
-        case " ":
-          e.preventDefault();
-          activate();
-          return;
-      }
-
-      if (e.key.length === 1 && /[\p{L}\p{N}]/u.test(e.key)) {
-        const match = focusableItems.find(
-          (item, idx) =>
-            idx > (activeIndex >= 0 ? activeIndex : -1) &&
-            !item.disabled &&
-            item.label.toLowerCase().startsWith(e.key.toLowerCase())
-        );
-        if (match) {
-          e.preventDefault();
-          setActiveId(match.id);
-          return;
-        }
-        const wrap = focusableItems.find(
-          (item) =>
-            !item.disabled &&
-            item.label.toLowerCase().startsWith(e.key.toLowerCase())
-        );
-        if (wrap) {
-          e.preventDefault();
-          setActiveId(wrap.id);
-        }
-      }
-    }
-
-    function onResize() {
-      close();
-    }
-
-    function onClick(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        close();
-      }
-    }
-
-    window.addEventListener("keydown", onKey);
-    window.addEventListener("resize", onResize);
-    window.addEventListener("scroll", onResize, true);
-    window.addEventListener("click", onClick, true);
-
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      window.removeEventListener("resize", onResize);
-      window.removeEventListener("scroll", onResize, true);
-      window.removeEventListener("click", onClick, true);
-    };
-  }, [open, close, setNext, setFirst, setLast, activate, focusableItems, activeIndex]);
 
   useEffect(() => {
     if (!open || !menuRef.current) return;
@@ -208,10 +125,60 @@ export default function ContextMenu({
           aria-activedescendant={activeId ? `ctx-item-${activeId}` : undefined}
           tabIndex={0}
           onKeyDown={(e) => {
+            switch (e.key) {
+              case "ArrowDown":
+              case "Down":
+                e.preventDefault();
+                setNext("next");
+                return;
+              case "ArrowUp":
+              case "Up":
+                e.preventDefault();
+                setNext("prev");
+                return;
+              case "Home":
+                e.preventDefault();
+                setFirst();
+                return;
+              case "End":
+                e.preventDefault();
+                setLast();
+                return;
+              case "Enter":
+              case " ":
+                e.preventDefault();
+                activate();
+                return;
+            }
+
             if (e.key === "Tab") {
               e.preventDefault();
               if (e.shiftKey) setNext("prev");
               else setNext("next");
+              return;
+            }
+
+            if (e.key.length === 1 && /[\p{L}\p{N}]/u.test(e.key)) {
+              const match = focusableItems.find(
+                (item, idx) =>
+                  idx > (activeIndex >= 0 ? activeIndex : -1) &&
+                  !item.disabled &&
+                  item.label.toLowerCase().startsWith(e.key.toLowerCase())
+              );
+              if (match) {
+                e.preventDefault();
+                setActiveId(match.id);
+                return;
+              }
+              const wrap = focusableItems.find(
+                (item) =>
+                  !item.disabled &&
+                  item.label.toLowerCase().startsWith(e.key.toLowerCase())
+              );
+              if (wrap) {
+                e.preventDefault();
+                setActiveId(wrap.id);
+              }
             }
           }}
         >

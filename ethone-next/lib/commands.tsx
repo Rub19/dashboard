@@ -47,7 +47,7 @@ export function useCommandItems(setOpen: (v: boolean) => void): CommandItem[] {
 
   const open = useCallback(
     (href: string, title: string) => {
-      openWindow(href, title);
+      openWindow(title, href);
       setOpen(false);
     },
     [openWindow, setOpen]

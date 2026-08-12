@@ -53,7 +53,7 @@ export default function PluginsPage() {
                     type="button"
                     aria-label={i18n("open")}
                     onClick={() => {
-                      openWindow(p.route, p.label);
+                      openWindow(p.label, p.route);
                       success(i18n("open"));
                     }}
                     className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--surface-raised)]"

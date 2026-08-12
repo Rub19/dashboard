@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -15,7 +15,18 @@ export default function CommandPalette() {
   const i18n = useI18n();
   const { settings, update } = useSettings();
   const { open, setOpen } = useCommandPalette();
-  useLayer(open, () => setOpen(false));
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useLayer(open, () => setOpen(false), {
+    boundary: dialogRef,
+    kind: "dialog",
+    modal: true,
+    trapFocus: true,
+    closeOnEscape: true,
+    closeOnOutside: true,
+    closeOnResize: true,
+    closeOnScroll: true,
+    initialFocus: false,
+  });
   const COMMANDS = useCommandItems(setOpen);
 
   const pinned = useMemo(() => new Set(settings.pinnedCommands || []), [settings.pinnedCommands]);
@@ -82,9 +93,6 @@ export default function CommandPalette() {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
         setOpen(!open);
-      }
-      if (event.key === "Escape") {
-        setOpen(false);
       }
       if (!open) return;
       if (event.key === "ArrowDown") {
@@ -170,9 +178,9 @@ export default function CommandPalette() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[60] flex items-start justify-center bg-black/60 p-6 pt-32 backdrop-blur-sm"
-            onClick={() => setOpen(false)}
           >
             <motion.div
+              ref={dialogRef}
               initial={{ opacity: 0, y: -20, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.96 }}

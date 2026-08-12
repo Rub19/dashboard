@@ -196,13 +196,151 @@ html[data-space="studio"][data-theme="day"] {
   --ease-snap: var(--ease-snap);
 }
 
+/* ============================================================
+   v8 ambient / Houdini property registration
+   ============================================================ */
+
+@property --v8-context-accent { syntax: "<color>"; inherits: true; initial-value: #b8a5ff; }
+@property --v8-ambient-phase-light { syntax: "<color>"; inherits: true; initial-value: rgba(212, 226, 255, 0.016); }
+@property --v8-ambient-phase-shadow { syntax: "<color>"; inherits: true; initial-value: rgba(0, 0, 0, 0.045); }
+@property --v8-ambient-highlight { syntax: "<color>"; inherits: true; initial-value: rgba(255, 255, 255, 0.018); }
+@property --v8-ambient-theme-wash { syntax: "<color>"; inherits: true; initial-value: rgba(184, 165, 255, 0.006); }
+@property --v8-ambient-space-wash { syntax: "<color>"; inherits: true; initial-value: rgba(184, 165, 255, 0.006); }
+@property --v8-ambient-opacity-min { syntax: "<number>"; inherits: true; initial-value: 0.38; }
+@property --v8-ambient-opacity-max { syntax: "<number>"; inherits: true; initial-value: 0.62; }
+@property --v8-ambient-lightness { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --v8-ambient-saturation { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --v8-ambient-halo-percent { syntax: "<percentage>"; inherits: true; initial-value: 12%; }
+@property --v8-ambient-glow-percent { syntax: "<percentage>"; inherits: true; initial-value: 7.5%; }
+@property --v8-ambient-surface-light-percent { syntax: "<percentage>"; inherits: true; initial-value: 8%; }
+@property --v8-ambient-hero-light-percent { syntax: "<percentage>"; inherits: true; initial-value: 10%; }
+@property --v8-ambient-accent-mix { syntax: "<percentage>"; inherits: true; initial-value: 18%; }
+@property --v8-ambient-motion-duration { syntax: "<time>"; inherits: true; initial-value: 32s; }
+@property --v8-ambient-transition { syntax: "<time>"; inherits: true; initial-value: 3200ms; }
+@property --v8-breathe-duration { syntax: "<time>"; inherits: true; initial-value: 26s; }
+@property --v8-accent { syntax: "<color>"; inherits: true; initial-value: #7be5c3; }
+@property --v8-swatch-angle { syntax: "<angle>"; inherits: false; initial-value: 180deg; }
+
+/* ============================================================
+   v8 context / aura / session tokens with color-mix surfaces
+   ============================================================ */
+
+:root {
+  --v8-ambient-transition: 3200ms;
+  --v8-breathe-duration: 26s;
+  --v8-ambient-opacity-min: 0.38;
+  --v8-ambient-opacity-max: 0.62;
+  --v8-ambient-lightness: 1;
+  --v8-ambient-saturation: 1;
+  --v8-ambient-halo-percent: 12%;
+  --v8-ambient-glow-percent: 7.5%;
+  --v8-ambient-surface-light-percent: 8%;
+  --v8-ambient-hero-light-percent: 10%;
+  --v8-ambient-accent-mix: 18%;
+  --v8-ambient-motion-duration: 32s;
+
+  --v8-ambient-accent: color-mix(in srgb, var(--v8-accent, var(--accent)), var(--v8-context-accent) var(--v8-ambient-accent-mix));
+  --v8-ambient-context-glow: color-mix(in srgb, var(--v8-ambient-accent) var(--v8-ambient-glow-percent), transparent);
+  --v8-context-canvas: color-mix(in srgb, var(--v8-canvas, var(--background)) 98%, var(--v8-ambient-accent));
+  --v8-light-surface: color-mix(in srgb, var(--v8-ambient-accent) var(--v8-ambient-surface-light-percent), transparent);
+  --v8-light-hero: color-mix(in srgb, var(--v8-ambient-accent) var(--v8-ambient-hero-light-percent), transparent);
+
+  --v8-surface-raised: color-mix(in srgb, var(--surface-raised) 96%, var(--v8-ambient-accent) 4%);
+  --v8-surface-sunken: color-mix(in srgb, var(--surface) 96%, var(--v8-ambient-accent) 4%);
+  --v8-surface-1: color-mix(in srgb, var(--surface-1) 94%, var(--v8-ambient-accent) 6%);
+  --v8-surface-2: color-mix(in srgb, var(--surface-2) 94%, var(--v8-ambient-accent) 6%);
+  --v8-surface-3: color-mix(in srgb, var(--surface-3) 94%, var(--v8-ambient-accent) 6%);
+  --v8-surface-hover: color-mix(in srgb, var(--surface-2) 92%, var(--v8-ambient-accent) 8%);
+  --v8-surface-pressed: color-mix(in srgb, var(--surface-3) 92%, var(--v8-ambient-accent) 8%);
+}
+
+/* Aura palettes */
+[data-aura="classic"] {
+  --v8-ambient-accent: color-mix(in srgb, var(--v8-accent, var(--accent)), var(--v8-context-accent) var(--v8-ambient-accent-mix));
+  --v8-ambient-phase-light: rgba(212, 226, 255, 0.016);
+  --v8-ambient-phase-shadow: rgba(0, 0, 0, 0.045);
+}
+
+[data-aura="boreal"] {
+  --v8-ambient-accent: color-mix(in srgb, #34d399 72%, var(--v8-context-accent));
+  --v8-ambient-phase-light: rgba(52, 211, 153, 0.024);
+  --v8-ambient-phase-shadow: rgba(0, 0, 0, 0.045);
+}
+
+[data-aura="cyberpunk"] {
+  --v8-ambient-accent: color-mix(in srgb, #f43f5e 72%, var(--v8-context-accent));
+  --v8-ambient-phase-light: rgba(244, 63, 94, 0.024);
+  --v8-ambient-phase-shadow: rgba(0, 0, 0, 0.065);
+}
+
+[data-aura="eclipse"] {
+  --v8-ambient-accent: color-mix(in srgb, #8b5cf6 72%, var(--v8-context-accent));
+  --v8-ambient-phase-light: rgba(139, 92, 246, 0.022);
+  --v8-ambient-phase-shadow: rgba(0, 0, 0, 0.075);
+}
+
+[data-aura="emerald"] {
+  --v8-ambient-accent: color-mix(in srgb, #10b981 72%, var(--v8-context-accent));
+  --v8-ambient-phase-light: rgba(16, 185, 129, 0.024);
+  --v8-ambient-phase-shadow: rgba(0, 0, 0, 0.045);
+}
+
+[data-aura="mineral"] {
+  --v8-ambient-accent: color-mix(in srgb, #38bdf8 72%, var(--v8-context-accent));
+  --v8-ambient-phase-light: rgba(56, 189, 248, 0.024);
+  --v8-ambient-phase-shadow: rgba(0, 0, 0, 0.045);
+}
+
+/* Session context overrides */
+[data-session-mode="default"] { --v8-context-accent: var(--accent); }
+
+[data-session-mode="focus"] {
+  --v8-context-accent: #5d9ddb;
+  --v8-ambient-space-wash: rgba(93, 157, 219, 0.012);
+  --v8-breathe-duration: 30s;
+}
+
+[data-session-mode="intense"] {
+  --v8-context-accent: #f43f5e;
+  --v8-breathe-duration: 22s;
+}
+
+[data-session-mode="zen"] {
+  --v8-context-accent: #7be5c3;
+  --v8-breathe-duration: 34s;
+}
+
+[data-session-mode="night"] {
+  --v8-context-accent: #9e93df;
+  --v8-ambient-phase-light: rgba(131, 119, 207, 0.022);
+  --v8-ambient-phase-shadow: rgba(0, 0, 0, 0.085);
+  --v8-ambient-highlight: rgba(184, 165, 255, 0.014);
+  --v8-breathe-duration: 34s;
+}
+
+[data-aura],
+[data-session-mode] {
+  transition: background-color var(--v8-ambient-transition, 3200ms) var(--ease-drift, ease-in-out),
+              color var(--v8-ambient-transition, 3200ms) var(--ease-drift, ease-in-out),
+              box-shadow var(--v8-ambient-transition, 3200ms) var(--ease-drift, ease-in-out),
+              border-color var(--v8-ambient-transition, 3200ms) var(--ease-drift, ease-in-out);
+}
+
+/* Breathe animation mapped to v8 duration */
+@keyframes v8-breathe {
+  0%, 100% { opacity: var(--v8-ambient-opacity-min, 0.38); transform: scale(1); }
+  50% { opacity: var(--v8-ambient-opacity-max, 0.62); transform: scale(1.03); }
+}
+
 html,
 body {
   height: 100%;
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  transition: background 0.3s ease, color 0.3s ease, font-family 0.3s ease;
+  transition: background var(--v8-ambient-transition, 3200ms) var(--ease-drift, ease-in-out),
+              color var(--v8-ambient-transition, 3200ms) var(--ease-drift, ease-in-out),
+              font-family 0.3s ease;
 }
 
 [data-font="sans"] body { font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif; }
@@ -331,6 +469,22 @@ body {
 [data-density="compact"] {
   --density-gap: 0.5rem;
   --density-pad: 0.75rem;
+}
+
+[data-density="dense"] {
+  --density-gap: 0.375rem;
+  --density-pad: 0.5rem;
+  --density-font-scale: .9;
+  --density-line-height: 1.4;
+  --density-card-padding: 12px;
+  --density-control-height: 32px;
+  --density-icon-size: 16px;
+  --density-row-height: 38px;
+  --density-table-row-height: 34px;
+  --density-section-gap: 12px;
+  --density-toolbar-height: 42px;
+  --density-panel-width: 300px;
+  --density-widget-scale: .9;
 }
 
 [data-density="ultra"] {
@@ -502,7 +656,7 @@ a:focus:not(:focus-visible) {
   50% { transform: scale(1.12); }
 }
 
-[data-ambient="breathe"] { animation: breathe 8s ease-in-out infinite; }
+[data-ambient="breathe"] { animation: v8-breathe var(--v8-breathe-duration, 26s) var(--ease-drift, ease-in-out) infinite alternate; }
 [data-ambient="drift"] { animation: drift 20s ease-in-out infinite; }
 [data-ambient="presence"] { animation: pulse-ring 3s ease-in-out infinite; }
 [data-ambient="dock-magnify"] > *:hover { animation: dock-magnify 0.3s ease-in-out; }
@@ -584,7 +738,7 @@ a:focus:not(:focus-visible) {
 }
 
 /* Ambient motion toggles */
-[data-ambient="breathe"] { animation: breathe var(--breathe-duration) var(--ease-drift, ease-in-out) infinite alternate; }
+[data-ambient="breathe"] { animation: v8-breathe var(--v8-breathe-duration, var(--breathe-duration, 8s)) var(--ease-drift, ease-in-out) infinite alternate; }
 [data-ambient="drift"] { animation: drift var(--ambient-motion-duration) var(--ease-drift, ease-in-out) infinite alternate; }
 [data-ambient="presence"] { animation: pulse-ring 3s var(--ease-standard, ease-in-out) infinite; }
 [data-ambient="float"] { animation: dashboard-float var(--dashboard-float-duration) var(--ease-drift, ease-in-out) -7s infinite alternate; }
@@ -1465,6 +1619,15 @@ a:focus:not(:focus-visible) {
 [data-surface="4"] { background-color: var(--surface-4); }
 [data-surface="5"] { background-color: var(--surface-5); }
 [data-surface="6"] { background-color: var(--surface-6); }
+
+/* v8 surface helpers */
+[data-surface="v8-raised"] { background-color: var(--v8-surface-raised); }
+[data-surface="v8-sunken"] { background-color: var(--v8-surface-sunken); }
+[data-surface="v8-1"] { background-color: var(--v8-surface-1); }
+[data-surface="v8-2"] { background-color: var(--v8-surface-2); }
+[data-surface="v8-3"] { background-color: var(--v8-surface-3); }
+[data-surface="v8-hover"] { background-color: var(--v8-surface-hover); }
+[data-surface="v8-pressed"] { background-color: var(--v8-surface-pressed); }
 
 /* Heatmap helpers */
 [data-heat="0"] { background-color: var(--heatmap-0); }

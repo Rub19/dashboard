@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useFloating, offset, flip, shift, autoUpdate, FloatingPortal } from "@floating-ui/react";
 import Image from "next/image";
@@ -10,6 +10,7 @@ import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useSettings } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
 import Card3D from "@/components/Card3D";
+import { useLayer } from "@/components/LayerProvider";
 
 type WeatherData = Record<string, unknown>;
 
@@ -145,35 +146,17 @@ function WeatherDetailContent({ open, onClose, referenceRef, weather }: ContentP
     elements: { reference: referenceRef },
   });
 
-  useEffect(() => {
-    if (!open) return;
-
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        onClose();
-      }
-    }
-
-    function onPointerDown(e: MouseEvent) {
-      const target = e.target as Node;
-      if (
-        panelRef.current &&
-        !panelRef.current.contains(target) &&
-        referenceRef &&
-        !referenceRef.contains(target)
-      ) {
-        onClose();
-      }
-    }
-
-    window.addEventListener("keydown", onKeyDown);
-    document.addEventListener("pointerdown", onPointerDown);
-    return () => {
-      window.removeEventListener("keydown", onKeyDown);
-      document.removeEventListener("pointerdown", onPointerDown);
-    };
-  }, [open, onClose, referenceRef]);
+  useLayer(open, onClose, {
+    boundary: panelRef,
+    anchor: referenceRef,
+    kind: "popover",
+    closeOnEscape: true,
+    closeOnOutside: true,
+    closeOnResize: true,
+    closeOnScroll: true,
+    initialFocus: true,
+    trapFocus: false,
+  });
 
   const city = asStr(weather?.city) || asStr(weather?.location);
   const country = asStr(weather?.country);

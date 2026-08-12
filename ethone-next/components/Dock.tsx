@@ -163,7 +163,7 @@ export default function Dock() {
           const active = pathname === item.href || pathname.startsWith(item.href);
           const contextItems = [
             { id: "open", label: i18n("openHere"), icon: "arrow-right", onClick: () => router.push(item.href) },
-            { id: "window", label: i18n("openInWindow"), icon: "maximize", onClick: () => openWindow(item.href, item.label) },
+            { id: "window", label: i18n("openInWindow"), icon: "maximize", onClick: () => openWindow(item.label, item.href) },
           ];
           const link = (
             <Link

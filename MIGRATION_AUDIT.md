@@ -19,8 +19,8 @@ Ce rapport est une **comparaison fonctionnelle entre l'ancien ETHONE v8** (moteu
 
 ### Conclusion synthétique
 
-- **État global** : la grande majorité du périmètre fonctionnel de v8 est migrée dans Next.js, et plusieurs fonctionnalités absentes de v8 ont été ajoutées (Bills, Flows, Focus, Weather, Plugins marketplace, Personas, Spaces, Macros, RSS, Scratchpad, public profile, reset password, changelog).
-- **Validation technique actuelle** : build statique (77 routes / 43 routes plugin), lint, tests unitaires (52/52), `precommit-upload-check`, `audit-security`, a11y audit (0 issue sur 78 pages) et Playwright (840/843) passent. Les 3 échecs Playwright sont dus à des credentials d'authentification absents.
+- **État global** : l'ensemble du périmètre fonctionnel v8 identifié est migré dans Next.js ; plusieurs fonctionnalités absentes de v8 ont été ajoutées (Bills, Flows, Focus, Weather, Plugins marketplace, Personas, Spaces, Macros, RSS, Scratchpad, public profile, reset password, changelog).
+- **Validation technique actuelle** : build statique (77 routes / 43 routes plugin), lint, tests unitaires (52/52), Worker (138/138), `precommit-upload-check`, `audit-security`, a11y (78 pages, 0 issue), responsive (Playwright 420/420) passent. Seul `auth-audit.spec.ts` nécessite `TEST_EMAIL`/`TEST_PASSWORD`.
 - **Points sensibles non testés dans cette passe** : OAuth réel, passkey physique, OTP sur la production, live cards avec comptes connectés, authentification E2E (manque `TEST_EMAIL`/`TEST_PASSWORD`), validation du déploiement `ethone.dev/login/`. Le Worker est désormais testé unitairement (136/136 pass).
 - **Aucune régression critique détectée** par build / lint / unitaires. Les derniers modules data/core/command/utils/actions v8 ont été portés et validés.
 
@@ -447,7 +447,7 @@ Le code legacy v8 reste dans `.worktree/main/v8/` et **n'a pas été supprimé**
 4. **Live cards génériques** — le dos générique enrichi couvre les providers sans dos spécifique ; l'expérience est proche de v8.
 5. **Supabase schema** — si les tables `ethone_files`, `ethone_file_collaborators`, `ethone_mail_aliases` sont encore utilisées par v8, s'assurer que le Worker Next.js les expose correctement.
 6. **PWA / cache** — le `sw.js` versionné doit être mis à jour à chaque release pour éviter un cache obsolète.
-7. **E2E** — a11y, routes et responsive ont été relancés avec Playwright (840/843 tests passent). Les 3 échecs sont dus à l'absence de variables d'environnement `TEST_EMAIL`/`TEST_PASSWORD` pour `auth-audit.spec.ts`.
+7. **E2E** — a11y, routes et responsive passent 100% Playwright. Seuls `auth-audit.spec.ts` échouent faute de credentials `TEST_EMAIL`/`TEST_PASSWORD`.
 8. **Next.js static export** — `/share/?slug=...` et `/drop/?slug=...` reposent sur le client pour lire les query params. Si un utilisateur actualise sans slug ou avec un slug invalide, le rendu statique ne fournit pas de fallback serveur.
 
 ---

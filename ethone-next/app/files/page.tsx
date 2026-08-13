@@ -507,7 +507,7 @@ export default function FilesPage() {
           filteredFiles.map((file) => (
             <ContextMenu key={file.id} items={fileContextItems(file)}>
               <Card3D>
-                <div className="flex items-center gap-3">
+                <div className="flex min-w-0 flex-col items-start gap-3 sm:flex-row sm:items-center">
                   <input
                     type="checkbox"
                     checked={isSelected(file.id)}
@@ -533,7 +533,7 @@ export default function FilesPage() {
                   </div>
                 </button>
 
-                <div className="flex items-center gap-1">
+                <div className="flex flex-wrap items-center justify-end gap-1">
                   <button
                     type="button"
                     aria-label={file.isFavorite ? i18n("removeFromFavorites") : i18n("addToFavorites")}

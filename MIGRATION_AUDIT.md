@@ -22,7 +22,7 @@ Ce rapport est une **comparaison fonctionnelle entre l'ancien ETHONE v8** (moteu
 - **État global** : la grande majorité du périmètre fonctionnel de v8 est migrée dans Next.js, et plusieurs fonctionnalités absentes de v8 ont été ajoutées (Bills, Flows, Focus, Weather, Plugins marketplace, Personas, Spaces, Macros, RSS, Scratchpad, public profile, reset password, changelog).
 - **Validation technique actuelle** : build statique (77 routes / 43 routes plugin), lint, tests unitaires (52/52), `precommit-upload-check` et `audit-security` passent. Les nouveaux modules data/core sont aussi validés.
 - **Points sensibles non testés dans cette passe** : OAuth réel, passkey physique, OTP sur la production, live cards avec comptes connectés, test Worker complet, tests E2E a11y/routes/responsive complets, validation du déploiement `ethone.dev/login/`.
-- **Aucune régression critique détectée** par build / lint / unitaires. Aucune correction de code n'a été apportée pendant cet audit (pas de régression à corriger).
+- **Aucune régression critique détectée** par build / lint / unitaires. Les derniers modules data/core/command/utils/actions v8 ont été portés et validés.
 
 ---
 

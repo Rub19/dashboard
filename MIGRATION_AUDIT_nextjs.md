@@ -88,6 +88,7 @@
 - **lib/date.ts** - `isExpired` / `isExpiringSoon` from `utils/date.mjs`
 - **lib/format.ts** - `formatBytes` from `utils/format.mjs`
 - **lib/download.ts** - `downloadJson` from `utils/download.mjs`
+- **lib/actions.ts** - Lightweight v8 action facade (`register`, `scope`, `dispatch`, `useActionFacade`)
 
 ## 4. Reusable Components
 

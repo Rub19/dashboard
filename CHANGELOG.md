@@ -34,6 +34,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `lib/date.ts` : portage de `utils/date.mjs` (`isExpired`, `isExpiringSoon`).
 - `lib/format.ts` : portage de `utils/format.mjs` (`formatBytes`).
 - `lib/download.ts` : portage de `utils/download.mjs` (`downloadJson`).
+- `lib/actions.ts` : portage léger de `core/actions.mjs` (registre d'actions v8 avec `register`, `scope`, `dispatch`, `useActionFacade`).
 
 ### Corrige
 - Worker OTP (`worker/src/services/otp-service.js`, `worker/src/services/security-identity-client.js`, `worker/src/routes/security-identity.js`) : envoi et vérification fonctionnels, `insertSecurityEvent` et `consumeOtpCode` corrigés, retour du `token` de session, session valide 8h.

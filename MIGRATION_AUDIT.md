@@ -141,6 +141,7 @@ Ce rapport est une **comparaison fonctionnelle entre l'ancien ETHONE v8** (moteu
 | `utils/date.mjs` | `lib/date.ts` | ✅ |
 | `utils/format.mjs` | `lib/format.ts` | ✅ |
 | `utils/download.mjs` | `lib/download.ts` | ✅ |
+| `core/actions.mjs` | `lib/actions.ts` | ✅ |
 
 ### Branchement des services dans l'UI
 

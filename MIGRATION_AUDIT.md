@@ -327,13 +327,13 @@ Les dos personnalisés sont implémentés pour les services principaux (Spotify,
 
 Ces éléments nécessitent une validation en conditions réelles, manuelle, ou avec des credentials dédiés. Ils **ne sont pas considérés comme manquants**, mais leur bon fonctionnement final ne peut être prouvé uniquement par audit source.
 
-1. **OTP en production** — le Worker est testé (136/136) et déployé. Une validation en production avec un vrai e-mail reste souhaitable.
+1. **OTP en production** — le Worker est testé (138/138). Une validation en production avec un vrai e-mail reste souhaitable.
 2. **Passkey / WebAuthn** — le code est câblé (`useSecurity.ts`), mais nécessite un authentificateur physique ou virtuel.
 3. **OAuth réels** — Google, GitHub, Spotify, Google Calendar/Drive, Notion, Todoist, YouTube, Reddit requièrent des `client_id`/`client_secret` et un callback déployé.
 4. **Live cards avec comptes connectés** — chaque provider a besoin de credentials/id public pour afficher des données réelles.
 5. **Mail avancé** — PGP et push VAPID sont consommés dans `components/MailAdvancedPanel.tsx`.
 6. **Supabase schema** — tables `ethone_files`, `ethone_file_collaborators`, `ethone_mail_aliases` : utilisées indirectement via Worker, valider qu'elles restent nécessaires.
-7. **Tests a11y / responsive / routes E2E** — relancés dans cette passe : 840/843 passent. Le test `auth-audit.spec.ts` échoue faute de credentials.
+7. **Tests a11y / responsive / routes E2E** — relancés dans cette passe : 843/843 passent avec `TEST_EMAIL`/`TEST_PASSWORD`.
 8. **Déploiement `ethone.dev/login/`** — un test précédent a renvoyé 404 sur `/login/` alors que le build statique génère bien `login/index.html`. Vérifier l'hébergement (GitHub Pages / DNS / Cloudflare) et les règles de route.
 9. **Visual regression** — aucun test visuel automatisé n'a été exécuté.
 10. **Performance / CSP / CORS / headers de sécurité** — vérifier la configuration côté Worker et hébergement final.

@@ -347,6 +347,7 @@ export default function ActivityPage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={i18n("journalSearchPlaceholder")}
+              aria-label={i18n("journalSearchPlaceholder")}
               className="h-9 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--accent)]"
             />
             <select

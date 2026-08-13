@@ -130,6 +130,7 @@ export default function LiveWidgets({
   showHeader?: boolean;
   customizing?: boolean;
 }) {
+  const CategoryTag = showHeader ? "h3" : "h2";
   const {
     records,
     nowPlaying,
@@ -1078,9 +1079,9 @@ export default function LiveWidgets({
         if (items.length === 0) return null;
         return (
           <div key={category} className="space-y-2">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
+            <CategoryTag className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
               {i18n(categoryLabels[category])}
-            </h3>
+            </CategoryTag>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {items.map((record) => renderCard(record))}
             </div>

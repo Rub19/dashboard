@@ -214,6 +214,7 @@ export default function TasksPage() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={i18n("search")}
+          aria-label={i18n("search")}
           icon="search"
           className="w-full sm:ml-auto sm:w-48"
         />

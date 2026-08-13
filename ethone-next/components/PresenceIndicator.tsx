@@ -40,6 +40,7 @@ export default function PresenceIndicator({
       data-signal={p.dominant}
       data-signal-value={p.value}
       data-presence-pulse={pulse ? "active" : "idle"}
+      role="status"
       aria-label={p.label}
     >
       {pulse && (

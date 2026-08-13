@@ -163,6 +163,7 @@ export default function TeamPage() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder={i18n("search")}
+        aria-label={i18n("search")}
         icon="search"
       />
 

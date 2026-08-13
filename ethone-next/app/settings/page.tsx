@@ -374,6 +374,7 @@ export default function SettingsPage() {
               value={newPresetName}
               onChange={(e) => setNewPresetName(e.target.value)}
               placeholder={i18n("presetNamePlaceholder")}
+              aria-label={i18n("presetNamePlaceholder")}
               className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
             <input
@@ -381,6 +382,7 @@ export default function SettingsPage() {
               value={newPresetDescription}
               onChange={(e) => setNewPresetDescription(e.target.value)}
               placeholder={i18n("presetDescriptionPlaceholder")}
+              aria-label={i18n("presetDescriptionPlaceholder")}
               className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
             <button
@@ -446,6 +448,7 @@ export default function SettingsPage() {
               type="file"
               accept="application/json"
               onChange={(e) => handleImport(e.target.files?.[0] || null)}
+              aria-label={i18n("importPresets")}
               className="hidden"
             />
           </div>

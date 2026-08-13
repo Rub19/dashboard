@@ -10,6 +10,7 @@ export default function NotFound() {
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center px-6 py-12">
+      <h1 className="sr-only">{i18n("notFoundTitle")}</h1>
       <EmptyState
         icon="ghost"
         title={i18n("notFoundTitle")}

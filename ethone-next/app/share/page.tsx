@@ -93,6 +93,7 @@ function ShareContent() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder={i18n("enterPassword")}
+                  aria-label={i18n("enterPassword")}
                   className="min-w-0 flex-1"
                 />
                 <button

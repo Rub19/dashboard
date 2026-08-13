@@ -16,6 +16,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - Lancement et succès de la suite Worker complète : 136/136 tests passent.
 
 ### Ajoute
+- `lib/profile-repository.ts` : portage de `v8/data/profile-repository.mjs` (modèle de profil, accents/types par défaut, snapshot, preview) branché dans `app/profile-selection/page.tsx`.
 - `lib/rate-limiter.ts` : portage du rate-limiter v8 avec `createRateLimiter`, politiques d'authentification, fenêtres temporelles, blocage temporaire, `reset`, `destroy` et `size`.
 - `lib/auth.ts` : OTP via Worker (`sendOtp`/`verifyOtp` sur `/api/auth/otp/send` et `/api/auth/otp/verify`), rate-limiting sur `sign-in`, `sign-up`, `password-reset`, `password-update` et `oauth`, et notification Worker `/api/signout` avant déconnexion Supabase.
 - `lib/hooks/usePublicProfile.ts` + `app/profile/page.tsx` : appel à `/api/supabase/public-profile`, champ public identifier, aperçu du profil public et copie du lien.

@@ -136,7 +136,7 @@ Ce rapport est une **comparaison fonctionnelle entre l'ancien ETHONE v8** (moteu
 | `core/style-loader.mjs` | `app/globals.css` + Tailwind | Chargement styles |
 | `core/presence-engine.mjs` | `components/PresenceProvider.tsx` | Présence/heartbeat |
 | `core/experience.mjs` | `lib/ambient-engine.ts` + `components/DenseContent.tsx`/`DepthEffect.tsx` | Ambiance/jour/densité |
-| `data/profile-repository.mjs` | `lib/hooks/useProfiles.ts` + `SettingsProvider` | Gestion profils |
+| `data/profile-repository.mjs` | `lib/profile-repository.ts` + `app/profile-selection/page.tsx` | Gestion profils |
 | `command/command-center.mjs` | `components/CommandPalette.tsx` | Palette commandes |
 | `command/history.mjs` | `lib/command-search.ts` | Historique recherche |
 | `command/search.mjs` | `lib/command-search.ts` | Score/filtre commandes |
@@ -348,7 +348,7 @@ Aucune fonctionnalité majeure du périmètre v8 n'est absente de Next.js après
 
 | Élément v8 | État dans Next.js | Action requise |
 |---|---|---|
-| `data/profile-repository.mjs` | logique partiellement couverte par `useProfiles.ts` + `SettingsProvider` / `AuthProvider`, sans le snapshot/backup local ni les accents/types par défaut | évaluer si le snapshot local est encore utile avec Supabase ; sinon documenter comme remplacé intentionnellement |
+| `data/profile-repository.mjs` | `lib/profile-repository.ts` (modèle, snapshot, preview) branché dans `app/profile-selection/page.tsx` | complété |
 | `ui/weather-detail.mjs` | fonction couverte par le dos de la carte météo dans `LiveWidgets` et la page `/weather` | le popover v8 n'est pas requis en React car le détail est accessible au verso / page dédiée |
 | `ui/timer-*.mjs` (timer split) | remplacés par `FocusIsland.tsx`, `FocusPopover.tsx` et `lib/focus-timer.ts` | vérifier que le fractionnement en sous-composants n'apportait pas d'accessibilité supplémentaire |
 | `services/supabase-state-sync.mjs` | non porté avec ce nom ; `onAuthStateChange` géré dans `AuthProvider` | confirmer qu'il n'y a pas de canal Realtime manquant |

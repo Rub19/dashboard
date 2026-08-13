@@ -1,17 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import Card3D from "@/components/Card3D";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useProfiles, type Profile } from "@/lib/hooks/useProfiles";
 import { useToast } from "@/components/ToastProvider";
 import { useActiveProfile } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
+import { buildDefaultProfileView, PROFILE_ACCENTS, PROFILE_COPY } from "@/lib/profile-repository";
 
 const TYPES = ["personal", "work", "development", "study", "gaming", "streaming", "creative"] as const;
 const WORKSPACES = ["personal", "focus", "studio"] as const;
 const ACCENTS = ["mint", "sky", "amber", "violet", "rose"] as const;
+
+const SUGGESTED_WIDGETS: Record<string, string[]> = {
+  personal: ["today", "notes", "calendar"],
+  work: ["tasks", "calendar", "focus"],
+  development: ["github", "brain", "tasks"],
+  study: ["notes", "planning", "focus"],
+  gaming: ["spotify", "tasks", "brain"],
+  streaming: ["today", "brain", "files"],
+  creative: ["notes", "files", "brain"],
+};
 
 const ACCENT_CLASSES: Record<string, string> = {
   mint: "bg-emerald-400",
@@ -36,8 +48,21 @@ export default function ProfileSelectionPage() {
   const [name, setName] = useState("");
   const [type, setType] = useState<Profile["type"]>("personal");
   const [workspace, setWorkspace] = useState<Profile["workspace"]>("personal");
-  const [accent, setAccent] = useState<string>("violet");
+  const [accent, setAccent] = useState<string>(PROFILE_ACCENTS.personal);
   const [creating, setCreating] = useState(false);
+
+  const preview = useMemo(
+    () =>
+      buildDefaultProfileView({
+        name,
+        type,
+        accent,
+        space: workspace,
+        widgets: SUGGESTED_WIDGETS[type] || ["today", "notes", "calendar"],
+        integrations: [],
+      }),
+    [name, type, accent, workspace]
+  );
 
   if (!loaded) {
     return (
@@ -51,32 +76,20 @@ export default function ProfileSelectionPage() {
   async function handleCreate() {
     if (!name.trim()) return;
     setCreating(true);
-    const selectedType = type;
-    const selectedWorkspace = workspace;
-    const selectedAccent = accent;
-    const suggestedWidgets: Record<string, string[]> = {
-      personal: ["today", "notes", "calendar"],
-      work: ["tasks", "calendar", "focus"],
-      development: ["github", "brain", "tasks"],
-      study: ["notes", "planning", "focus"],
-      gaming: ["spotify", "tasks", "brain"],
-      streaming: ["today", "brain", "files"],
-      creative: ["notes", "files", "brain"],
-    };
     try {
       await create({
-        name: name.trim(),
-        type: selectedType,
-        accent: selectedAccent,
-        workspace: selectedWorkspace,
-        widgets: suggestedWidgets[selectedType] || ["today", "notes", "calendar"],
-        integrations: [],
+        name: preview.name.trim(),
+        type: preview.type,
+        accent: preview.accent,
+        workspace,
+        widgets: [...preview.environment.widgets],
+        integrations: [...preview.environment.integrations],
       });
       await reload();
       success(i18n("created"));
       setName("");
       setWorkspace("personal");
-      setAccent("violet");
+      setAccent(PROFILE_ACCENTS.personal);
     } catch (err) {
       showError(String(err));
     } finally {
@@ -113,7 +126,10 @@ export default function ProfileSelectionPage() {
                 <button
                   key={t}
                   type="button"
-                  onClick={() => setType(t)}
+                  onClick={() => {
+                    setType(t);
+                    setAccent(PROFILE_ACCENTS[t as Profile["type"]]);
+                  }}
                   className={`rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs ${type === t ? "bg-[var(--accent)] text-white" : "hover:bg-[var(--surface-raised)]"}`}
                 >
                   {i18n(t)}
@@ -164,6 +180,34 @@ export default function ProfileSelectionPage() {
           >
             {i18n("create")}
           </button>
+        </div>
+      </Card3D>
+
+      <Card3D>
+        <div className="flex items-start gap-3">
+          <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${ACCENT_CLASSES[preview.accent] || "bg-violet-500"}`}>
+            {preview.avatar.kind === "image" ? (
+              <Image
+                unoptimized
+                src={preview.avatar.value}
+                alt=""
+                width={24}
+                height={24}
+                className="rounded-full object-cover"
+              />
+            ) : preview.avatar.kind === "symbol" ? (
+              <span className="text-lg leading-none">{preview.avatar.value}</span>
+            ) : (
+              <span className="text-xs font-bold text-white">{preview.avatar.value}</span>
+            )}
+          </span>
+          <div className="min-w-0 flex-1 space-y-1">
+            <p className="font-medium">{preview.name || i18n("preview")}</p>
+            <p className="text-xs text-[var(--muted)]">{PROFILE_COPY[preview.type]}</p>
+            <p className="text-xs text-[var(--muted)]">
+              {i18n(preview.type)} • {i18n(workspace)} • {preview.environment.widgets.length} widgets
+            </p>
+          </div>
         </div>
       </Card3D>
 

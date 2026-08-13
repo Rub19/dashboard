@@ -21,7 +21,7 @@ Ce rapport est une **comparaison fonctionnelle entre l'ancien ETHONE v8** (moteu
 
 - **État global** : la grande majorité du périmètre fonctionnel de v8 est migrée dans Next.js, et plusieurs fonctionnalités absentes de v8 ont été ajoutées (Bills, Flows, Focus, Weather, Plugins marketplace, Personas, Spaces, Macros, RSS, Scratchpad, public profile, reset password, changelog).
 - **Validation technique actuelle** : build statique (77 routes / 43 routes plugin), lint, tests unitaires (52/52), `precommit-upload-check`, `audit-security`, a11y audit (0 issue sur 78 pages) et Playwright (840/843) passent. Les 3 échecs Playwright sont dus à des credentials d'authentification absents.
-- **Points sensibles non testés dans cette passe** : OAuth réel, passkey physique, OTP sur la production, live cards avec comptes connectés, test Worker complet, authentification E2E (manque `TEST_EMAIL`/`TEST_PASSWORD`), validation du déploiement `ethone.dev/login/`.
+- **Points sensibles non testés dans cette passe** : OAuth réel, passkey physique, OTP sur la production, live cards avec comptes connectés, authentification E2E (manque `TEST_EMAIL`/`TEST_PASSWORD`), validation du déploiement `ethone.dev/login/`. Le Worker est désormais testé unitairement (136/136 pass).
 - **Aucune régression critique détectée** par build / lint / unitaires. Les derniers modules data/core/command/utils/actions v8 ont été portés et validés.
 
 ---
@@ -327,7 +327,7 @@ Les dos personnalisés sont implémentés pour les services principaux (Spotify,
 
 Ces éléments nécessitent une validation en conditions réelles, manuelle, ou avec des credentials dédiés. Ils **ne sont pas considérés comme manquants**, mais leur bon fonctionnement final ne peut être prouvé uniquement par audit source.
 
-1. **OTP en production** — le Worker est déployé, la dernière version corrigée a été testée côté build/unit. Une validation en production avec un vrai e-mail reste souhaitable (sans relancer la suite Worker complète).
+1. **OTP en production** — le Worker est testé (136/136) et déployé. Une validation en production avec un vrai e-mail reste souhaitable.
 2. **Passkey / WebAuthn** — le code est câblé (`useSecurity.ts`), mais nécessite un authentificateur physique ou virtuel.
 3. **OAuth réels** — Google, GitHub, Spotify, Google Calendar/Drive, Notion, Todoist, YouTube, Reddit requièrent des `client_id`/`client_secret` et un callback déployé.
 4. **Live cards avec comptes connectés** — chaque provider a besoin de credentials/id public pour afficher des données réelles.
@@ -463,7 +463,7 @@ cd . && node ./scripts/audit-security.mjs   ✅ 481 fichiers scannés
 scripts/a11y-audit.mjs            ✅ 0 issue sur 78 pages
 scripts/responsive-audit.mjs      ✅ 64/124 fichiers, aucune anomalie de layout
 npx playwright test               ✅ 840/843 pass (3 échecs = credentials auth-audit manquants)
-worker full test                  ❌ non exécuté (consigne utilisateur)
+worker full test                  ✅ 136/136 pass
 ```
 
 ---

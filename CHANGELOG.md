@@ -13,6 +13,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ### Audit
 - Mise à jour des inventaires exhaustifs : `MIGRATION_AUDIT_v8.md` (105 fichiers .mjs) et `MIGRATION_AUDIT.md` (validation Playwright, a11y 0 issue).
+- Lancement et succès de la suite Worker complète : 136/136 tests passent.
 
 ### Ajoute
 - `lib/rate-limiter.ts` : portage du rate-limiter v8 avec `createRateLimiter`, politiques d'authentification, fenêtres temporelles, blocage temporaire, `reset`, `destroy` et `size`.

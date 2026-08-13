@@ -85,6 +85,9 @@
 - **lib/navigation-session.ts** - Scroll position capture/restore per route
 - **lib/oauth.ts** - Public OAuth app Client IDs and `oauthClientId` helper
 - **lib/brand-icons.ts** - Brand SVG markup catalog from v8
+- **lib/date.ts** - `isExpired` / `isExpiringSoon` from `utils/date.mjs`
+- **lib/format.ts** - `formatBytes` from `utils/format.mjs`
+- **lib/download.ts** - `downloadJson` from `utils/download.mjs`
 
 ## 4. Reusable Components
 

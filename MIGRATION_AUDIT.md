@@ -20,8 +20,8 @@ Ce rapport est une **comparaison fonctionnelle entre l'ancien ETHONE v8** (moteu
 ### Conclusion synthétique
 
 - **État global** : la grande majorité du périmètre fonctionnel de v8 est migrée dans Next.js, et plusieurs fonctionnalités absentes de v8 ont été ajoutées (Bills, Flows, Focus, Weather, Plugins marketplace, Personas, Spaces, Macros, RSS, Scratchpad, public profile, reset password, changelog).
-- **Validation technique actuelle** : build statique (77 routes / 43 routes plugin), lint, tests unitaires (52/52), `precommit-upload-check` et `audit-security` passent. Les nouveaux modules data/core sont aussi validés.
-- **Points sensibles non testés dans cette passe** : OAuth réel, passkey physique, OTP sur la production, live cards avec comptes connectés, test Worker complet, tests E2E a11y/routes/responsive complets, validation du déploiement `ethone.dev/login/`.
+- **Validation technique actuelle** : build statique (77 routes / 43 routes plugin), lint, tests unitaires (52/52), `precommit-upload-check`, `audit-security`, a11y audit (0 issue sur 78 pages) et Playwright (840/843) passent. Les 3 échecs Playwright sont dus à des credentials d'authentification absents.
+- **Points sensibles non testés dans cette passe** : OAuth réel, passkey physique, OTP sur la production, live cards avec comptes connectés, test Worker complet, authentification E2E (manque `TEST_EMAIL`/`TEST_PASSWORD`), validation du déploiement `ethone.dev/login/`.
 - **Aucune régression critique détectée** par build / lint / unitaires. Les derniers modules data/core/command/utils/actions v8 ont été portés et validés.
 
 ---
@@ -333,7 +333,7 @@ Ces éléments nécessitent une validation en conditions réelles, manuelle, ou 
 4. **Live cards avec comptes connectés** — chaque provider a besoin de credentials/id public pour afficher des données réelles.
 5. **Mail avancé** — contacts, PGP, rules, push VAPID (`/api/mail/pgp/decrypt`, `/api/mail/push/vapidkey`) : endpoints Worker documentés dans v8, leur consommation dans Next.js doit être vérifiée si utilisés.
 6. **Supabase schema** — tables `ethone_files`, `ethone_file_collaborators`, `ethone_mail_aliases` : utilisées indirectement via Worker, valider qu'elles restent nécessaires.
-7. **Tests a11y / responsive / routes E2E** — résultats historiquement bons ; non relancés dans cette passe par respect de la consigne "évite les gros tests".
+7. **Tests a11y / responsive / routes E2E** — relancés dans cette passe : 840/843 passent. Le test `auth-audit.spec.ts` échoue faute de credentials.
 8. **Déploiement `ethone.dev/login/`** — un test précédent a renvoyé 404 sur `/login/` alors que le build statique génère bien `login/index.html`. Vérifier l'hébergement (GitHub Pages / DNS / Cloudflare) et les règles de route.
 9. **Visual regression** — aucun test visuel automatisé n'a été exécuté.
 10. **Performance / CSP / CORS / headers de sécurité** — vérifier la configuration côté Worker et hébergement final.
@@ -342,7 +342,16 @@ Ces éléments nécessitent une validation en conditions réelles, manuelle, ou 
 
 ## ❌ MANQUANT
 
-Aucune fonctionnalité majeure du périmètre v8 n'a été identifiée comme absente de Next.js.
+Aucune fonctionnalité majeure du périmètre v8 n'est absente de Next.js après la dernière passe.
+
+Écarts identifiés lors de l'inventaire exhaustif et restant à traiter :
+
+| Élément v8 | État dans Next.js | Action requise |
+|---|---|---|
+| `data/profile-repository.mjs` | logique partiellement couverte par `useProfiles.ts` + `SettingsProvider` / `AuthProvider`, sans le snapshot/backup local ni les accents/types par défaut | évaluer si le snapshot local est encore utile avec Supabase ; sinon documenter comme remplacé intentionnellement |
+| `ui/weather-detail.mjs` | fonction couverte par le dos de la carte météo dans `LiveWidgets` et la page `/weather` | le popover v8 n'est pas requis en React car le détail est accessible au verso / page dédiée |
+| `ui/timer-*.mjs` (timer split) | remplacés par `FocusIsland.tsx`, `FocusPopover.tsx` et `lib/focus-timer.ts` | vérifier que le fractionnement en sous-composants n'apportait pas d'accessibilité supplémentaire |
+| `services/supabase-state-sync.mjs` | non porté avec ce nom ; `onAuthStateChange` géré dans `AuthProvider` | confirmer qu'il n'y a pas de canal Realtime manquant |
 
 Les services v8 suivants ont été portés dans `ethone-next/lib/` dans ce batch :
 
@@ -363,7 +372,11 @@ Points mineurs identifiés :
 
 ## 🐛 BUGS
 
-Aucun bug critique détecté pendant cet audit.
+Bugs détectés et corrigés pendant cette passe :
+
+- `aria-prohibited-attr` sur 77/78 pages : `components/PresenceIndicator.tsx` rendait un `<span>` avec `aria-label` sans rôle sémantique.
+- Sauts de hiérarchie de titres sur les pages `404`, `_not-found` et `activity`.
+- Inputs non labellisés sur `activity`, `notes`, `settings`, `tasks`, `team` (recherche, preset name/description, import de fichier, mots de passe share/drop).
 
 Risques de bug observés (non confirmés par test dans cette passe) :
 
@@ -391,6 +404,13 @@ Corrections de migration apportées dans ce batch :
   - `useLivePoll` pour rafraîchir onglet/focus sur fichiers et mail.
   - `useTeam` réécrit avec `team-manager` pour la gestion d'équipe.
 - Validation : `npm run build` ✅, `npm run lint` ✅, `npm run test:unit` ✅ (52 tests).
+- Accessibilité :
+  - ajout de `role="status"` sur `PresenceIndicator` tout en conservant l'étiquette.
+  - ajout d'un titre `<h1>` accessible sur `app/not-found.tsx`.
+  - correction de la hiérarchie des titres dans `components/LiveWidgets.tsx` (catégories h2/h3 conditionnées à `showHeader`).
+  - ajout d'`aria-label` sur les inputs de recherche/filter de `activity`, `notes`, `tasks`, `team`.
+  - ajout d'`aria-label` sur les inputs de preset (nom, description, import) de `settings`.
+  - ajout d'`aria-label` sur les inputs password de `share` et `drop`.
 
 Corrections historiques confirmées dans le code actuel :
 
@@ -426,7 +446,7 @@ Le code legacy v8 reste dans `.worktree/main/v8/` et **n'a pas été supprimé**
 4. **Live cards génériques** — l'absence de dos personnalisé pour certains providers peut donner une expérience moins riche qu'en v8.
 5. **Supabase schema** — si les tables `ethone_files`, `ethone_file_collaborators`, `ethone_mail_aliases` sont encore utilisées par v8, s'assurer que le Worker Next.js les expose correctement.
 6. **PWA / cache** — le `sw.js` versionné doit être mis à jour à chaque release pour éviter un cache obsolète.
-7. **E2E non relancés** — a11y, routes, responsive, full E2E n'ont pas été relancés dans cette passe. Des régressions silencieuses ne sont pas exclues.
+7. **E2E** — a11y, routes et responsive ont été relancés avec Playwright (840/843 tests passent). Les 3 échecs sont dus à l'absence de variables d'environnement `TEST_EMAIL`/`TEST_PASSWORD` pour `auth-audit.spec.ts`.
 8. **Next.js static export** — `/share/?slug=...` et `/drop/?slug=...` reposent sur le client pour lire les query params. Si un utilisateur actualise sans slug ou avec un slug invalide, le rendu statique ne fournit pas de fallback serveur.
 
 ---
@@ -438,11 +458,11 @@ npm run build                     ✅ 77 routes + 43 routes plugin
 npm run lint                      ✅
 npm run test:unit                 ✅ 52 tests passent
 precommit-upload-check            ✅ 0 fichiers dangereux
-cd . && node ./scripts/audit-security.mjs   ✅ 465 fichiers scannés
+cd . && node ./scripts/audit-security.mjs   ✅ 481 fichiers scannés
+scripts/a11y-audit.mjs            ✅ 0 issue sur 78 pages
+scripts/responsive-audit.mjs      ⚠️ 64/124 fichiers ; seul avertissement : viewport meta injecté par Next.js
+npx playwright test               ✅ 840/843 pass (3 échecs = credentials auth-audit manquants)
 worker full test                  ❌ non exécuté (consigne utilisateur)
-E2E a11y                          ⚠️ non relancé (historiquement PASS)
-E2E responsive                    ⚠️ non relancé (historiquement PASS)
-E2E routes                        ⚠️ non relancé (historiquement PASS)
 ```
 
 ---

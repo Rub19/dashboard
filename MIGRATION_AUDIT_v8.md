@@ -1,520 +1,259 @@
-# v8 Inventory
+# Inventaire complet du codebase ETHONE v8
 
-## 1. Top-Level Directories and Important Files
+## Catégorie : app
 
-### Directory Structure
-- **app/** - Application runtime and mounting logic
-- **brain/** - AI/Brain system (context engine, memory, actions, providers)
-- **command/** - Command palette, catalog, search, history
-- **core/** - Core systems (actions, automation, density, experience, lifecycle, navigation, preferences, presence, presets, router, store, style-loader, theme-engine)
-- **data/** - Data models and configurations (activity-journal, brand-icons, changelog, daily-briefing, home-model, integrations, navigation, oauth-app-config, presets, profile-repository, workspaces)
-- **entry/** - Entry flows (entry-coordinator, login, password-recovery, profile-selection)
-- **i18n/** - Internationalization (catalog, runtime)
-- **pages/** - Page components (activity, activity-style, brain, calendar, calendar-model, connections, connections-model, drop, feature-fallback, files, files-model, home, interactions, mail, matches, notes, notes-model, security, settings, share, system, tasks, tasks-model, team)
-- **services/** - External services and integrations (auth-adapter, auth-storage, bills-manager, clock-manager, cloud-cache, discord-live, drive-client, external-diagnostics, external-services-client, external-services-config, focus-timer, github-live, github-oauth, google-calendar-live, google-calendar-oauth, google-drive-live, google-drive-oauth, interactions-heatmap, lastfm-live, live-poll, lol-live, mail-cache, media-upload, minecraft-live, network-client, notion-live, notion-oauth, oauth-callback, provider-credentials, public-auth-config, rate-limiter, reddit-live, reddit-oauth, security-identity, service-worker, sound-manager, spotify-live, spotify-oauth, spotify-oauth-live, steam-live, supabase-state-sync, team-manager, todoist-live, todoist-oauth, tracker-live, twitch-live, valorant-live, weather-live, youtube-live, youtube-oauth)
-- **styles/** - CSS stylesheets (activity, base, bills, components, depth, entry, interactions, mail, mobile-ux, presence, share-drop, shell, team, tokens, workspaces)
-- **ui/** - UI components (bills-widget, bottom-sheet, context-menu, dense-content, depth-effect, discord-live, dock, dom, empty-state, error-state, focus-island, focus-popover, form-system, github-live, google-calendar-live, google-drive-live, icons, lastfm-live, layer-manager, live-freshness, live-overlay, lol-live, minecraft-live, mission-control, native-behavior, navigation, notification-center, notion-live, panel, reddit-live, rich-text, scratchpad, select, shell, shortcuts-overlay, skeleton, spotify-live, steam-live, toast, todoist-live, tooltip, touch-interactions, tracker-live, twitch-live, valorant-live, visual-haptics, weather-detail, weather-live, window-system, youtube-live)
-- **utils/** - Utility functions (date, download, format)
+| Fichier | Fonction | Dépendances clés |
+|---------|----------|------------------|
+| `app/app-runtime.mjs` | Point d'entrée principal de l'application qui compose tous les sous-systèmes (lifecycle, store, i18n, router, actions, Brain, commandes, services, UI) et gère le montage des pages. | `core/lifecycle.mjs`, `core/store.mjs`, `core/router.mjs`, `core/actions.mjs`, `core/density-engine.mjs`, `core/navigation-session.mjs`, `i18n/runtime.mjs`, `brain/runtime.mjs`, `command/command-center.mjs`, `command/history.mjs`, `data/home-model.mjs`, `data/activity-journal.mjs`, `services/*-live.mjs`, `services/oauth-callback.mjs`, `ui/shell.mjs`, `ui/panel.mjs`, `ui/notification-center.mjs`, `pages/*.mjs` |
 
-### Important Files
-- **main.mjs** - Application entry point and boot sequence
-- **app/app-runtime.mjs** - Main application runtime with page mounting
-- **core/store.mjs** - State management and persistence
-- **core/router.mjs** - Routing system
-- **services/public-auth-config.mjs** - Supabase configuration
-- **services/external-services-config.mjs** - Worker API configuration
+## Catégorie : brain
 
-## 2. Pages/Routes
+| Fichier | Fonction | Dépendances clés |
+|---------|----------|------------------|
+| `brain/preferences.mjs` | Définit les préférences par défaut, les valeurs supportées, les permissions, les catégories de mémoire et les fonctions de sanitization pour Brain. | Aucune (module de données statiques) |
+| `brain/context-engine.mjs` | Construit le contexte routier avec filtrage des permissions et rédaction des secrets pour les requêtes Brain. | `brain/preferences.mjs` (sanitizeBrainPreferences) |
+| `brain/action-registry.mjs` | Expose des actions structurées pour l'assistant avec validation, permissions et exigences de confirmation. | `data/home-model.mjs` (createHomeModel) |
+| `brain/memory-repository.mjs` | Persiste les mémoires non sensibles de Brain vers Supabase avec expiration et contrôles de catégorie. | `data/activity-journal.mjs` (BRAIN_MEMORY_CATEGORIES) |
+| `brain/provider-manager.mjs` | Gère les appels providers locaux/contexte et backend avec annulation et gestion des timeouts. | Aucune (factory avec injection) |
+| `brain/controller.mjs` | Orchestre l'historique conversationnel, les réponses contextuelles, le fallback provider, les suggestions et l'exécution d'actions. | `brain/context-engine.mjs`, `brain/action-registry.mjs`, `brain/memory-repository.mjs`, `brain/provider-manager.mjs` |
+| `brain/runtime.mjs` | Compose tous les composants Brain en un runtime unique prêt à être injecté dans l'application. | `brain/preferences.mjs`, `brain/context-engine.mjs`, `brain/action-registry.mjs`, `brain/memory-repository.mjs`, `brain/provider-manager.mjs`, `brain/controller.mjs` |
 
-### Core Pages
-- **home.mjs** - Dashboard home with live widgets, daily briefing, productivity metrics, session modes, aura themes
-- **brain.mjs** - AI assistant with chat, context, memory, actions, automations, providers, privacy, history, diagnostics, wrap-up
-- **activity.mjs** - Activity hub with timeline, live cards, filters (today, week, gaming, development, work, study, productivity, media, social, brain)
-- **notes.mjs** - Notes editor with rich text, search, sorting, cloud sync
-- **tasks.mjs** - Task management with filters, priorities, bulk actions, list/board views
-- **calendar.mjs** - Calendar with month view, agenda, event composer, bills widget
-- **files.mjs** - File browser with Google Drive integration, folder navigation, preview, shares, drops
-- **connections.mjs** - Integration management with OAuth setup, diagnostics, connection inspector
-- **settings.mjs** - Settings for theme, density, sounds, brain permissions, presets, accessibility, shortcuts
-- **mail.mjs** - Email client with folders, search, analytics
-- **team.mjs** - Team management with members, roles, invitations
-- **interactions.mjs** - Interactions heatmap and engagement statistics
-- **share.mjs** - Public file sharing page
-- **drop.mjs** - Public file drop page
-- **matches.mjs** - Gaming match history (Valorant, Apex Legends, League of Legends)
-- **security.mjs** - Security center with devices, passkeys, activity log
-- **system.mjs** - System pages for Spaces and Flows
-- **feature-fallback.mjs** - Fallback page for unavailable features
+## Catégorie : command
 
-### Entry Pages
-- **login.mjs** - Login/register with OAuth (Google, GitHub), passkeys, OTP, password strength
-- **password-recovery.mjs** - Password recovery flow
-- **profile-selection.mjs** - Profile selection and creation
+| Fichier | Fonction | Dépendances clés |
+|---------|----------|------------------|
+| `command/catalog.mjs` | Définit statiquement les commandes disponibles et leurs alias. | Aucune (module de données statiques) |
+| `command/search.mjs` | Recherche floue normalisée et localisée avec scoring par contexte, épinglés, récents et fréquence. | `command/catalog.mjs` (COMMANDS), `i18n/catalog.mjs` (helpers de traduction) |
+| `command/history.mjs` | Persistence localStorage des commandes récentes/épinglées et fréquence d'utilisation. | Aucune (localStorage) |
+| `command/command-center.mjs` | HUD de commandes interactif rendu avec les helpers UI réutilisables. | `command/search.mjs`, `command/history.mjs`, `ui/dom.mjs`, `ui/empty-state.mjs`, `ui/icons.mjs`, `ui/window-system.mjs`, `data/workspaces.mjs` |
 
-## 3. Reusable UI Components
+## Catégorie : core
 
-### Core UI Components
-- **dom.mjs** - DOM utilities (element, icon, brandIcon, actionButton, debounce, throttleFrame, attachFlipBehavior, attachTypeToSelect)
-- **form-system.mjs** - Form validation, field management, password controls
-- **empty-state.mjs** - Empty state and status state components
-- **error-state.mjs** - Error state component
-- **skeleton.mjs** - Skeleton loading states
-- **select.mjs** - Custom select component
-- **panel.mjs** - Panel manager
-- **bottom-sheet.mjs** - Bottom sheet modal
-- **context-menu.mjs** - Context menu
-- **toast.mjs** - Toast notification manager
-- **notification-center.mjs** - Notification center with history, categories, priorities
-- **window-system.mjs** - Window/layer management system
-- **layer-manager.mjs** - Layer management for modals and overlays
-- **dock.mjs** - Dock component with app icons, reordering, scaling
-- **navigation.mjs** - Navigation rail and mobile navigation
-- **shell.mjs** - Main shell layout with sidebar, header, dock
-- **mission-control.mjs** - Mission Control (Spaces, apps, windows overview)
-- **focus-island.mjs** - Focus timer dynamic island
-- **focus-popover.mjs** - Focus popover
-- **shortcuts-overlay.mjs** - Keyboard shortcuts overlay
-- **scratchpad.mjs** - Scratchpad component
-- **rich-text.mjs** - Rich text editor
-- **icons.mjs** - Icon system with Lucide icons
-- **depth-effect.mjs** - Depth/glassmorphism effects
-- **dense-content.mjs** - Density controls, bulk actions, selection, row menus
-- **live-freshness.mjs** - Live freshness indicators
-- **live-overlay.mjs** - Live overlay components
-- **native-behavior.mjs** - Native behavior handling
-- **touch-interactions.mjs** - Touch interaction management
-- **tooltip.mjs** - Tooltip controller
-- **visual-haptics.mjs** - Visual haptics feedback
+| Fichier | Fonction | Dépendances clés |
+|---------|----------|------------------|
+| `core/actions.mjs` | Enregistrement centralisé et dispatch des actions avec sanitization des préférences Brain et des règles d'automatisation. | `data/workspaces.mjs`, `core/density-engine.mjs`, `brain/preferences.mjs`, `core/automation-engine.mjs`, `core/preset-engine.mjs`, `core/preferences.mjs` |
+| `core/automation-engine.mjs` | Sanitization et matching des triggers/actions d'automatisation. | `data/workspaces.mjs`, `data/navigation.mjs`, `core/theme-engine.mjs` |
+| `core/density-engine.mjs` | Modes de densité, presets, résolution responsive, variables CSS et gestion du cycle de vie. | Aucune (module de configuration) |
+| `core/document-metadata.mjs` | Gère les métadonnées du document (titre, locale, entry). | `core/theme-engine.mjs` (resolveTheme) |
+| `core/experience.mjs` | Moteur d'ambiance visuelle et sonore avec animation Spotlight au démarrage. | `ui/navigation.mjs` (BRAND_MARK_SVG), `core/theme-engine.mjs` |
+| `core/lifecycle.mjs` | Gestionnaire de cycle de vie pour les montages/démontages de routes avec nettoyage. | Aucune |
+| `core/navigation-session.mjs` | Gère l'état de navigation et les sessions de travail. | `data/navigation.mjs` |
+| `core/preferences.mjs` | Persistence des préférences globales de l'application. | Aucune (localStorage) |
+| `core/presence-engine.mjs` | Moteur de présence pour indiquer l'état de l'application (route, brain, sync, notifications). | Aucune |
+| `core/preset-engine.mjs` | Application et extraction de presets d'interface. | `data/presets.mjs` |
+| `core/router.mjs` | Routeur hash-based avec normalisation et historique. | Aucune |
+| `core/store.mjs` | Store de présentation centralisé avec sanitization des préférences. | `core/density-engine.mjs`, `brain/preferences.mjs` |
+| `core/style-loader.mjs` | Chargeur dynamique de feuilles de style CSS. | Aucune |
+| `core/theme-engine.mjs` | Résolution des thèmes clair/sombre avec préférences système. | Aucune |
 
-### Live Widget Components
-- **spotify-live.mjs** - Spotify now playing card
-- **discord-live.mjs** - Discord presence card
-- **weather-live.mjs** - Weather card with detail
-- **minecraft-live.mjs** - Minecraft profile card
-- **steam-live.mjs** - Steam activity card
-- **github-live.mjs** - GitHub activity card
-- **google-calendar-live.mjs** - Google Calendar card
-- **notion-live.mjs** - Notion activity card
-- **todoist-live.mjs** - Todoist tasks card
-- **valorant-live.mjs** - Valorant stats card
-- **lol-live.mjs** - League of Legends card
-- **twitch-live.mjs** - Twitch stream card
-- **lastfm-live.mjs** - Last.fm scrobble card
-- **tracker-live.mjs** - Tracker.gg stats card
-- **google-drive-live.mjs** - Google Drive activity card
-- **youtube-live.mjs** - YouTube activity card
-- **reddit-live.mjs** - Reddit activity card
-- **bills-widget.mjs** - Bills/subscription widget
+## Catégorie : data
 
-## 4. Hooks/Services/Utilities
+| Fichier | Fonction | Dépendances clés |
+|---------|----------|------------------|
+| `data/activity-journal.mjs` | Combine les événements d'activité persistés avec des entrées dérivées (notes, tâches, événements, fichiers). | Aucune (repository injecté) |
+| `data/brand-icons.mjs` | Grande carte gelée de noms de marques vers chaînes SVG inline. | Aucune |
+| `data/changelog.mjs` | Expose les entrées de changelog versionnées et métadonnées d'affichage. | Aucune |
+| `data/daily-briefing.mjs` | Construit les signaux de briefing quotidien à partir des données de snapshot. | Aucune (snapshot injecté) |
+| `data/home-model.mjs` | Construit le modèle de vue de la page Home à partir du profil, notes, tâches, événements et connexions. | `data/daily-briefing.mjs` (createDailyBriefing) |
+| `data/integrations.mjs` | Catalogue d'intégrations avec catégories, méthodes de connexion, capacités et métadonnées d'identifiants. | Aucune |
+| `data/navigation.mjs` | Définit les entrées de navigation pour toutes les routes de l'application. | Aucune |
+| `data/oauth-app-config.mjs` | Stocke les identifiants clients OAuth publics (les secrets restent dans le Worker). | Aucune |
+| `data/presets.mjs` | Définit les presets intégrés et champs de presets. | Aucune |
+| `data/profile-repository.mjs` | Gère la persistence, sanitization, sélection et projections de snapshot des profils. | `i18n/catalog.mjs` (localeTag) |
+| `data/workspaces.mjs` | Définit les espaces de travail avec widgets et métadonnées. | Aucune |
 
-### Core Services
-- **auth-adapter.mjs** - Supabase authentication adapter (signIn, signUp, resetPassword, updatePassword, signInWithOAuth, signOut)
-- **auth-storage.mjs** - Authentication storage adapter
-- **network-client.mjs** - Network client for API calls
-- **service-worker.mjs** - Service worker manager
-- **external-diagnostics.mjs** - External diagnostics service
-- **external-services-client.mjs** - Worker API client with 60+ operations
-- **external-services-config.mjs** - Worker API configuration (https://raspy-fog-bf5b.rub19-mailpro.workers.dev)
-- **rate-limiter.mjs** - Rate limiting utility
-- **provider-credentials.mjs** - Provider credential management
-- **public-auth-config.mjs** - Public Supabase configuration
-- **cloud-cache.mjs** - Cloud caching service
-- **drive-client.mjs** - Google Drive client
-- **mail-cache.mjs** - Mail caching service
-- **media-upload.mjs** - Media upload service
-- **focus-timer.mjs** - Focus timer (Pomodoro, Deep Work)
-- **clock-manager.mjs** - Clock/time manager
-- **sound-manager.mjs** - Sound system with packs and volume controls
-- **bills-manager.mjs** - Bills/subscription manager
-- **team-manager.mjs** - Team management service
-- **interactions-heatmap.mjs** - Interactions heatmap service
-- **live-poll.mjs** - Live polling service
-- **security-identity.mjs** - Security identity service
-- **supabase-state-sync.mjs** - Supabase state synchronization
+## Catégorie : entry
 
-### OAuth Services
-- **oauth-callback.mjs** - OAuth callback handling with PKCE
-- **spotify-oauth.mjs** - Spotify OAuth
-- **spotify-oauth-live.mjs** - Spotify OAuth live integration
-- **github-oauth.mjs** - GitHub OAuth
-- **google-calendar-oauth.mjs** - Google Calendar OAuth
-- **google-drive-oauth.mjs** - Google Drive OAuth
-- **notion-oauth.mjs** - Notion OAuth
-- **todoist-oauth.mjs** - Todoist OAuth
-- **youtube-oauth.mjs** - YouTube OAuth
-- **reddit-oauth.mjs** - Reddit OAuth
+| Fichier | Fonction | Dépendances clés |
+|---------|----------|------------------|
+| `entry/entry-coordinator.mjs` | Orchestrateur du flux d'entrée (boot, login, recovery, profiles, home) avec transitions d'état. | `core/lifecycle.mjs` (createLifecycle) |
+| `entry/login.mjs` | Interface de connexion/inscription avec formulaires, OAuth, passkey et OTP. | `ui/dom.mjs`, `ui/empty-state.mjs`, `ui/form-system.mjs`, `ui/icons.mjs`, `ui/select.mjs`, `ui/navigation.mjs` |
+| `entry/password-recovery.mjs` | Interface de récupération de mot de passe après lien de réinitialisation. | `ui/dom.mjs`, `ui/form-system.mjs`, `ui/icons.mjs` |
+| `entry/profile-selection.mjs` | Interface de sélection de profil avec aperçu vivant et gestion des environnements. | `data/daily-briefing.mjs`, `ui/dom.mjs`, `ui/empty-state.mjs`, `ui/form-system.mjs`, `ui/icons.mjs`, `ui/layer-manager.mjs`, `ui/window-system.mjs`, `ui/select.mjs` |
 
-### Live Services
-- **discord-live.mjs** - Discord presence (Lanyard)
-- **steam-live.mjs** - Steam activity
-- **minecraft-live.mjs** - Minecraft profile
-- **github-live.mjs** - GitHub activity
-- **google-calendar-live.mjs** - Google Calendar events
-- **notion-live.mjs** - Notion pages
-- **todoist-live.mjs** - Todoist tasks
-- **valorant-live.mjs** - Valorant stats (HenrikDev)
-- **lol-live.mjs** - League of Legends stats
-- **twitch-live.mjs** - Twitch streams
-- **lastfm-live.mjs** - Last.fm scrobbles
-- **tracker-live.mjs** - Tracker.gg stats
-- **google-drive-live.mjs** - Google Drive files
-- **youtube-live.mjs** - YouTube activity
-- **reddit-live.mjs** - Reddit activity
-- **weather-live.mjs** - Weather (Open-Météo)
+## Catégorie : i18n
 
-### Core Systems
-- **core/actions.mjs** - Action facade and dispatcher
-- **core/automation-engine.mjs** - Automation system with triggers and actions
-- **core/density-engine.mjs** - Density/content sizing engine
-- **core/document-metadata.mjs** - Document metadata manager
-- **core/experience.mjs** - Ambient effects and spotlight
-- **core/lifecycle.mjs** - Application lifecycle
-- **core/navigation-session.mjs** - Navigation session management
-- **core/preferences.mjs** - Preferences system
-- **core/presence-engine.mjs** - Presence engine for status indicators
-- **core/preset-engine.mjs** - Preset system
-- **core/router.mjs** - Router
-- **core/store.mjs** - State store with persistence
-- **core/style-loader.mjs** - Style loader
-- **core/theme-engine.mjs** - Theme engine (night, graphite, day, auto, midnight, obsidian, aurora, minimal, focus, glass, oled)
+| Fichier | Fonction | Dépendances clés |
+|---------|----------|------------------|
+| `i18n/catalog.mjs` | Catalogue source localisé avec entrées de traduction et helpers de normalisation. | Aucune |
+| `i18n/runtime.mjs` | Moteur d'exécution i18n avec MutationObserver pour traduction automatique du DOM. | `i18n/catalog.mjs` (currentLocale, normalizeLocale, sourceEntry, translateSource) |
 
-### Brain System
-- **brain/runtime.mjs** - Brain runtime orchestrator
-- **brain/controller.mjs** - Brain controller
-- **brain/context-engine.mjs** - Context engine
-- **brain/action-registry.mjs** - Action registry
-- **brain/memory-repository.mjs** - Memory repository
-- **brain/provider-manager.mjs** - AI provider manager
-- **brain/preferences.mjs** - Brain preferences
+## Catégorie : pages
 
-### Command System
-- **command/command-center.mjs** - Command palette UI
-- **command/catalog.mjs** - Command catalog (60+ commands)
-- **command/search.mjs** - Command search
-- **command/history.mjs** - Command history
+| Fichier | Fonction | Dépendances clés |
+|---------|----------|------------------|
+| `pages/home.mjs` | Page d'accueil avec sections de continuité, productivité, signaux et widgets en direct. | `ui/dom.mjs`, `ui/empty-state.mjs`, `ui/icons.mjs`, `ui/*-live.mjs` (spotify, discord, weather, etc.), `services/bills-manager.mjs`, `i18n/catalog.mjs`, `core/store.mjs` |
+| `pages/brain.mjs` | page Brain avec onglets chat, contexte, mémoire, actions, automations, providers, confidentialité, historique, diagnostics. | `ui/dom.mjs`, `i18n/catalog.mjs`, `ui/bottom-sheet.mjs`, `ui/empty-state.mjs`, `ui/error-state.mjs`, `ui/skeleton.mjs`, `data/home-model.mjs`, `ui/form-system.mjs`, `ui/icons.mjs`, `data/workspaces.mjs`, `data/navigation.mjs`, `brain/preferences.mjs`, `core/automation-engine.mjs`, `ui/select.mjs`, `utils/download.mjs` |
+| `pages/settings.mjs` | Page de paramètres avec thèmes, densité, sons, préférences Brain, automatisations, synchronisation. | `ui/dom.mjs`, `ui/empty-state.mjs`, `ui/form-system.mjs`, `ui/icons.mjs`, `services/sound-manager.mjs`, `services/media-upload.mjs`, `ui/select.mjs`, `core/density-engine.mjs`, `core/theme-engine.mjs`, `brain/preferences.mjs`, `data/presets.mjs`, `utils/download.mjs` |
+| `pages/activity.mjs` | Page d'activité avec journal des événements. | `ui/dom.mjs`, `data/activity-journal.mjs` |
+| `pages/activity-style.mjs` | Styles spécifiques pour la page d'activité. | Aucune |
+| `pages/calendar.mjs` | Page calendrier avec affichage des événements. | `ui/dom.mjs`, `pages/calendar-model.mjs` |
+| `pages/calendar-model.mjs` | Modèle de données pour le calendrier. | Aucune |
+| `pages/connections.mjs` | Page de gestion des connexions/intégrations. | `ui/dom.mjs`, `pages/connections-model.mjs` |
+| `pages/connections-model.mjs` | Modèle de données pour les connexions. | Aucune |
+| `pages/drop.mjs` | Page de dépôt de fichiers. | `ui/dom.mjs` |
+| `pages/feature-fallback.mjs` | Page de fallback pour fonctionnalités non disponibles. | `ui/dom.mjs`, `ui/empty-state.mjs` |
+| `pages/files.mjs` | Page de gestion des fichiers. | `ui/dom.mjs`, `pages/files-model.mjs` |
+| `pages/files-model.mjs` | Modèle de données pour les fichiers. | Aucune |
+| `pages/interactions.mjs` | Page des interactions sociales. | `ui/dom.mjs` |
+| `pages/mail.mjs` | Page de messagerie. | `ui/dom.mjs` |
+| `pages/matches.mjs` | Page des correspondances. | `ui/dom.mjs` |
+| `pages/notes.mjs` | Page de gestion des notes. | `ui/dom.mjs`, `pages/notes-model.mjs` |
+| `pages/notes-model.mjs` | Modèle de données pour les notes. | Aucune |
+| `pages/security.mjs` | Page de sécurité. | `ui/dom.mjs` |
+| `pages/share.mjs` | Page de partage. | `ui/dom.mjs` |
+| `pages/system.mjs` | Page système. | `ui/dom.mjs` |
+| `pages/tasks.mjs` | Page de gestion des tâches. | `ui/dom.mjs`, `pages/tasks-model.mjs` |
+| `pages/tasks-model.mjs` | Modèle de données pour les tâches. | Aucune |
+| `pages/team.mjs` | Page équipe. | `ui/dom.mjs` |
 
-### Data Models
-- **data/home-model.mjs** - Home page data model
-- **data/daily-briefing.mjs** - Daily briefing data
-- **data/activity-journal.mjs** - Activity journal
-- **data/integrations.mjs** - Integration catalog (30+ integrations)
-- **data/navigation.mjs** - Navigation items
-- **data/workspaces.mjs** - Workspace definitions
-- **data/presets.mjs** - Preset definitions
-- **data/profile-repository.mjs** - Profile repository
-- **data/brand-icons.mjs** - Brand icon SVGs
-- **data/changelog.mjs** - Changelog data
-- **data/oauth-app-config.mjs** - OAuth app client IDs
+## Catégorie : services
 
-### Utilities
-- **utils/date.mjs** - Date utilities (isExpired, isExpiringSoon)
-- **utils/download.mjs** - JSON download utility
-- **utils/format.mjs** - Byte formatting
+| Fichier | Fonction | Dépendances clés |
+|---------|----------|------------------|
+| `services/auth-adapter.mjs` | Adaptateur d'authentification Supabase avec rate limiting et gestion des états. | `services/external-services-config.mjs`, `services/rate-limiter.mjs` |
+| `services/auth-storage.mjs` | Stockage personnalisé pour les sessions Supabase. | Aucune |
+| `services/bills-manager.mjs` | Gestionnaire de factures. | Aucune |
+| `services/clock-manager.mjs` | Gestionnaire d'horloge avec mise à jour périodique. | Aucune |
+| `services/cloud-cache.mjs` | Cache cloud pour les données. | Aucune |
+| `services/discord-live.mjs` | Client live pour Discord avec polling. | `services/live-poll.mjs` |
+| `services/drive-client.mjs` | Client pour Google Drive. | `utils/format.mjs` |
+| `services/external-diagnostics.mjs` | Diagnostics externes pour les services. | `services/network-client.mjs`, `services/auth-adapter.mjs`, `services/service-worker.mjs`, `services/external-services-client.mjs`, `services/public-auth-config.mjs` |
+| `services/external-services-client.mjs` | Client pour les services externes (Worker API). | `services/external-services-config.mjs` |
+| `services/external-services-config.mjs` | Configuration des services externes. | Aucune |
+| `services/focus-timer.mjs` | Timer de focus/productivité. | Aucune |
+| `services/github-live.mjs` | Client live pour GitHub avec polling. | `services/live-poll.mjs` |
+| `services/github-oauth.mjs` | OAuth pour GitHub. | `services/oauth-callback.mjs` |
+| `services/google-calendar-live.mjs` | Client live pour Google Calendar avec polling. | `services/live-poll.mjs` |
+| `services/google-calendar-oauth.mjs` | OAuth pour Google Calendar. | `services/oauth-callback.mjs` |
+| `services/google-drive-live.mjs` | Client live pour Google Drive avec polling. | `services/live-poll.mjs` |
+| `services/google-drive-oauth.mjs` | OAuth pour Google Drive. | `services/oauth-callback.mjs` |
+| `services/interactions-heatmap.mjs` | Heatmap des interactions. | Aucune |
+| `services/lastfm-live.mjs` | Client live pour Last.fm avec polling. | `services/live-poll.mjs` |
+| `services/live-poll.mjs` | Utilitaire de polling avec rafraîchissement à la visibilité. | Aucune |
+| `services/lol-live.mjs` | Client live pour League of Legends avec polling. | `services/live-poll.mjs`, `services/valorant-live.mjs` |
+| `services/mail-cache.mjs` | Cache pour les mails. | Aucune |
+| `services/media-upload.mjs` | Upload de fichiers média. | Aucune |
+| `services/minecraft-live.mjs` | Client live pour Minecraft avec polling. | `services/live-poll.mjs` |
+| `services/network-client.mjs` | Client HTTP réseau avec retry et sanitization des logs. | Aucune |
+| `services/notion-live.mjs` | Client live pour Notion avec polling. | `services/live-poll.mjs` |
+| `services/notion-oauth.mjs` | OAuth pour Notion. | `services/oauth-callback.mjs` |
+| `services/oauth-callback.mjs` | Utilitaires OAuth avec PKCE et gestion des callbacks. | Aucune |
+| `services/provider-credentials.mjs` | Gestion des identifiants de providers. | Aucune |
+| `services/public-auth-config.mjs` | Configuration publique d'authentification (URLs Supabase). | Aucune |
+| `services/rate-limiter.mjs` | Limiteur de taux par clé avec fenêtre glissante. | Aucune |
+| `services/reddit-live.mjs` | Client live pour Reddit avec polling. | `services/live-poll.mjs` |
+| `services/reddit-oauth.mjs` | OAuth pour Reddit. | `services/oauth-callback.mjs` |
+| `services/security-identity.mjs` | Service d'identité de sécurité avec WebAuthn. | `vendor/simplewebauthn-browser.bundle.mjs` |
+| `services/service-worker.mjs` | Gestionnaire de Service Worker pour PWA. | Aucune |
+| `services/sound-manager.mjs` | Gestionnaire de sons avec packs et volumes. | Aucune |
+| `services/spotify-oauth.mjs` | OAuth pour Spotify. | `services/oauth-callback.mjs` |
+| `services/spotify-oauth-live.mjs` | Client live pour Spotify OAuth avec polling. | `services/live-poll.mjs` |
+| `services/steam-live.mjs` | Client live pour Steam avec polling. | `services/live-poll.mjs` |
+| `services/supabase-state-sync.mjs` | Synchronisation d'état avec Supabase. | Aucune |
+| `services/timer.mjs` | Timer générique. | Aucune |
+| `services/todoist-live.mjs` | Client live pour Todoist avec polling. | `services/live-poll.mjs` |
+| `services/todoist-oauth.mjs` | OAuth pour Todoist. | `services/oauth-callback.mjs` |
+| `services/tracker-live.mjs` | Client live pour Tracker.gg avec polling. | `services/live-poll.mjs` |
+| `services/twitch-live.mjs` | Client live pour Twitch avec polling. | `services/live-poll.mjs` |
+| `services/valorant-live.mjs` | Client live pour Valorant avec polling. | `services/live-poll.mjs` |
+| `services/youtube-oauth.mjs` | OAuth pour YouTube. | `services/oauth-callback.mjs` |
+| `services/youtube-live.mjs` | Client live pour YouTube avec polling. | `services/live-poll.mjs` |
 
-### Entry System
-- **entry/entry-coordinator.mjs** - Entry flow coordinator
-- **entry/login.mjs** - Login page
-- **entry/password-recovery.mjs** - Password recovery
-- **entry/profile-selection.mjs** - Profile selection
+## Catégorie : ui
 
-### I18n
-- **i18n/catalog.mjs** - Translation catalog (fr, en, es, de)
-- **i18n/runtime.mjs** - I18n runtime
+| Fichier | Fonction | Dépendances clés |
+|---------|----------|------------------|
+| `ui/bills-widget.mjs` | Widget de factures. | `ui/dom.mjs` |
+| `ui/bottom-sheet.mjs` | Composant bottom-sheet (feuille de bas de page). | `ui/dom.mjs`, `ui/layer-manager.mjs` |
+| `ui/context-menu.mjs` | Menu contextuel. | `ui/dom.mjs`, `ui/layer-manager.mjs` |
+| `ui/dense-content.mjs` | Contenu dense avec sélection et menus de lignes. | `ui/dom.mjs` |
+| `ui/depth-effect.mjs` | Effet de profondeur visuelle. | Aucune |
+| `ui/discord-live.mjs` | Carte live Discord. | `ui/dom.mjs`, `ui/live-freshness.mjs` |
+| `ui/dock.mjs` | Dock ETHONE avec navigation. | `ui/dom.mjs`, `ui/icons.mjs`, `data/navigation.mjs`, `data/workspaces.mjs` |
+| `ui/dom.mjs` | Helpers DOM élémentaires (element, icon, actionButton, debounce, throttleFrame). | Aucune |
+| `ui/empty-state.mjs` | États vides (emptyState, statusState, buildEmptyState). | `ui/dom.mjs` |
+| `ui/error-state.mjs` | États d'erreur. | `ui/dom.mjs`, `ui/empty-state.mjs` |
+| `ui/focus-island.mjs` | Îlot de focus. | `ui/dom.mjs` |
+| `ui/focus-popover.mjs` | Popover de focus. | `ui/dom.mjs`, `ui/icons.mjs`, `i18n/catalog.mjs` |
+| `ui/form-system.mjs` | Système de formulaires avec validation et contrôles. | `ui/dom.mjs`, `ui/icons.mjs` |
+| `ui/github-live.mjs` | Carte live GitHub. | `ui/dom.mjs`, `ui/live-freshness.mjs` |
+| `ui/google-calendar-live.mjs` | Carte live Google Calendar. | `ui/dom.mjs`, `ui/live-freshness.mjs` |
+| `ui/google-drive-live.mjs` | Carte live Google Drive. | `ui/dom.mjs`, `ui/live-freshness.mjs`, `i18n/catalog.mjs` |
+| `ui/icons.mjs` | Système d'icônes avec rafraîchissement. | Aucune |
+| `ui/lastfm-live.mjs` | Carte live Last.fm. | `ui/dom.mjs`, `ui/live-freshness.mjs`, `ui/live-overlay.mjs` |
+| `ui/layer-manager.mjs` | Gestionnaire de calques pour overlays et popovers. | Aucune |
+| `ui/live-freshness.mjs` | Indicateur de fraîcheur pour widgets live. | `ui/dom.mjs` |
+| `ui/live-overlay.mjs` | Overlay pour widgets live. | `ui/dom.mjs` |
+| `ui/lol-live.mjs` | Carte live League of Legends. | `ui/dom.mjs`, `ui/live-freshness.mjs`, `i18n/catalog.mjs` |
+| `ui/minecraft-live.mjs` | Carte live Minecraft. | `ui/dom.mjs`, `ui/live-freshness.mjs`, `ui/live-overlay.mjs`, `i18n/catalog.mjs` |
+| `ui/mission-control.mjs` | Mission Control (vue d'ensemble des apps et widgets). | `data/navigation.mjs`, `data/workspaces.mjs`, `ui/dom.mjs`, `ui/empty-state.mjs`, `ui/icons.mjs`, `ui/window-system.mjs` |
+| `ui/native-behavior.mjs` | Comportements natifs (scroll, zoom). | Aucune |
+| `ui/navigation.mjs` | Navigation et markup de navigation. | `data/navigation.mjs`, `data/workspaces.mjs` |
+| `ui/notification-center.mjs` | Centre de notifications. | `ui/dom.mjs`, `ui/toast.mjs`, `ui/bottom-sheet.mjs`, `ui/icons.mjs`, `i18n/catalog.mjs` |
+| `ui/notion-live.mjs` | Carte live Notion. | `ui/dom.mjs`, `ui/live-freshness.mjs` |
+| `ui/panel.mjs` | Panneau réutilisable avec sélection et actions. | `ui/dom.mjs`, `ui/dense-content.mjs`, `ui/empty-state.mjs`, `ui/icons.mjs`, `ui/window-system.mjs`, `ui/select.mjs`, `data/workspaces.mjs`, `data/changelog.mjs`, `ui/notification-center.mjs`, `i18n/catalog.mjs` |
+| `ui/reddit-live.mjs` | Carte live Reddit. | `ui/dom.mjs`, `ui/live-freshness.mjs` |
+| `ui/rich-text.mjs` | Éditeur de texte riche. | `ui/dom.mjs`, `ui/icons.mjs` |
+| `ui/scratchpad.mjs` | Scratchpad (bloc-notes rapide). | `ui/dom.mjs`, `ui/window-system.mjs`, `ui/icons.mjs` |
+| `ui/select.mjs` | Composant select déroulant. | `ui/dom.mjs`, `ui/icons.mjs`, `ui/layer-manager.mjs` |
+| `ui/shell.mjs` | Shell principal de l'application (dock, navigation). | `data/navigation.mjs`, `data/workspaces.mjs`, `ui/icons.mjs`, `ui/navigation.mjs`, `ui/focus-popover.mjs`, `ui/dock.mjs` |
+| `ui/shortcuts-overlay.mjs` | Overlay des raccourcis clavier. | `ui/dom.mjs`, `ui/window-system.mjs`, `ui/icons.mjs` |
+| `ui/skeleton.mjs` | Skeletons de chargement. | `ui/dom.mjs` |
+| `ui/spotify-live.mjs` | Carte live Spotify. | `ui/dom.mjs`, `ui/live-overlay.mjs`, `ui/icons.mjs` |
+| `ui/steam-live.mjs` | Carte live Steam. | `ui/dom.mjs`, `ui/live-freshness.mjs` |
+| `ui/timer.mjs` | Composant timer. | `ui/dom.mjs` |
+| `ui/timer-display.mjs` | Affichage de timer. | `ui/dom.mjs` |
+| `ui/timer-input.mjs` | Input de timer. | `ui/dom.mjs` |
+| `ui/timer-status.mjs` | Statut de timer. | `ui/dom.mjs` |
+| `ui/timer-tracker.mjs` | Suivi de timer. | `ui/dom.mjs` |
+| `ui/timer-value.mjs` | Valeur de timer. | `ui/dom.mjs` |
+| `ui/timer-zone.mjs` | Zone de timer. | `ui/dom.mjs` |
+| `ui/toast.mjs` | Système de toasts (notifications). | `ui/dom.mjs`, `ui/icons.mjs`, `ui/layer-manager.mjs` |
+| `ui/todoist-live.mjs` | Carte live Todoist. | `ui/dom.mjs`, `ui/live-freshness.mjs` |
+| `ui/tooltip.mjs` | Système de tooltips. | `ui/layer-manager.mjs` |
+| `ui/touch-interactions.mjs` | Gestionnaire d'interactions tactiles. | Aucune |
+| `ui/tracker-live.mjs` | Carte live Tracker.gg. | `ui/dom.mjs`, `ui/live-freshness.mjs` |
+| `ui/twitch-live.mjs` | Carte live Twitch. | `ui/dom.mjs`, `ui/live-freshness.mjs` |
+| `ui/valorant-live.mjs` | Carte live Valorant. | `ui/dom.mjs`, `ui/live-freshness.mjs` |
+| `ui/visual-haptics.mjs` | Haptiques visuels (feedback tactile visuel). | Aucune |
+| `ui/weather-detail.mjs` | Détails météo. | `ui/dom.mjs`, `ui/icons.mjs`, `ui/weather-live.mjs`, `ui/layer-manager.mjs` |
+| `ui/weather-live.mjs` | Carte live météo. | `ui/dom.mjs`, `ui/live-freshness.mjs` |
+| `ui/window-system.mjs` | Système de fenêtres modales. | `ui/layer-manager.mjs` |
+| `ui/youtube-live.mjs` | Carte live YouTube. | `ui/dom.mjs`, `ui/live-freshness.mjs` |
 
-## 5. Integration/Connection Types
+## Catégorie : utils
 
-### Media (7 integrations)
-- **Spotify** - OAuth PKCE, now playing, control
-- **Plex** - Local server, playback
-- **Jellyfin** - Local server, playback
-- **Emby** - Local server, playback
-- **YouTube** - OAuth, channel activity
-- **Twitch** - OAuth/public, streams
-- **Last.fm** - API, scrobbles, history
+| Fichier | Fonction | Dépendances clés |
+|---------|----------|------------------|
+| `utils/date.mjs` | Utilitaires de date (vérification d'expiration). | Aucune |
+| `utils/download.mjs` | Téléchargement de JSON. | Aucune |
+| `utils/format.mjs` | Formatage d'octets. | Aucune |
 
-### Social (4 integrations)
-- **Discord** - OAuth/Lanyard, presence
-- **Reddit** - OAuth/public, posts
-- **Bluesky** - Public, posts
-- **Email** - OAuth, messages
+## Catégorie : styles
 
-### Gaming (5 integrations)
-- **Steam** - API, games, achievements
-- **Riot Games** - API (HenrikDev), Valorant, League of Legends
-- **Minecraft** - OAuth/public, profile
-- **Tracker.gg** - Restricted, Apex Legends stats
-- **Apex Legends** - Via Tracker.gg
+**Note :** Le dossier `styles/` existe mais ne contient aucun fichier `.mjs` (il contient probablement des fichiers CSS).
 
-### Productivity (9 integrations)
-- **Google Calendar** - OAuth, events
-- **Google Drive** - OAuth, files
-- **Notion** - OAuth, pages
-- **Todoist** - OAuth, tasks
-- **Linear** - OAuth, issues
-- **ClickUp** - OAuth, tasks
-- **Jira** - OAuth, issues
-- **RSS** - Feed, articles
-- **Weather** - API (Open-Météo), forecasts
+## Fichier racine
 
-### Development (4 integrations)
-- **GitHub** - OAuth, commits, PRs, issues
-- **GitLab** - OAuth, commits, MRs
-- **Obsidian** - Local, vault
-- **VS Code** - Local, sessions
-
-### Health (1 integration)
-- **Fitbit** - OAuth, activity
-
-### AI (5 integrations)
-- **LM Studio** - Local, models
-- **Ollama** - Local, models
-- **OpenAI** - API, via worker relay
-- **Anthropic** - API, via worker relay
-- **Gemini** - API, via worker relay
-
-## 6. Authentication Flows
-
-### Authentication Methods
-- **Email/Password** - Standard Supabase auth with rate limiting
-- **OAuth** - Google, GitHub OAuth flows
-- **Passkeys** - WebAuthn passkey authentication
-- **OTP** - Email one-time password
-- **Password Recovery** - Email-based recovery
-
-### Auth States
-- initializing, authenticated, unauthenticated, refreshing, recovering, signingIn, signingOut, error
-
-### Rate Limiting Policies
-- signIn: 5 attempts/60s
-- signUp: 3 attempts/600s
-- resetPassword: 3 attempts/900s
-- oauth: 6 attempts/60s
-- updatePassword: 5 attempts/300s
-
-### Security Features
-- Password strength validation (12+ chars, mixed case, number, symbol)
-- Session management with Supabase
-- PKCE for Spotify OAuth
-- Worker signout endpoint
-- Device management
-- Passkey support
-
-## 7. Widgets, Dashboard Layout, UI Features
-
-### Dashboard Layout
-- **Shell** - Main layout with sidebar, header, dock
-- **Sidebar/Rail** - Collapsible navigation rail
-- **Dock** - macOS-style dock with app icons, reordering, scaling
-- **Header** - Page header with breadcrumbs, sync status
-- **Mission Control** - Spaces, apps, windows overview (Cmd+Tab style)
-
-### Widgets
-- **Live Cards** - 18 live cards (Spotify, Discord, Weather, Minecraft, Steam, GitHub, Google Calendar, Notion, Todoist, Valorant, LoL, Twitch, Last.fm, Tracker.gg, Google Drive, YouTube, Reddit, Bills)
-- **Home Widgets** - Continuity, Daystream, Productivity, Briefing Signals
-- **Activity Widgets** - Live cards by category (Gaming, Social, Productivity)
-- **Focus Island** - Dynamic island for focus timer
-- **Bills Widget** - Subscription/bill tracking
-
-### Brain
-- **Chat Interface** - AI chat with thinking animation
-- **Context Panel** - Context information
-- **Memory Panel** - Memory management
-- **Actions Panel** - Available actions
-- **Automations Panel** - Automation rules
-- **Providers Panel** - AI provider settings
-- **Privacy Panel** - Privacy controls
-- **History Panel** - Chat history
-- **Diagnostics Panel** - Brain diagnostics
-- **Wrap-up Panel** - Daily wrap-up
-
-### Mail
-- **Folders** - Inbox, Starred, Sent, Drafts, Archive, Spam, Trash
-- **Search** - With highlighting
-- **Analytics** - Activity charts
-- **Compose** - Email composition
-
-### Files
-- **Folder Navigation** - Breadcrumb navigation
-- **File Preview** - File preview panel
-- **Views** - List/Grid toggle
-- **Bulk Actions** - Selection, delete, move
-- **Shares** - File sharing management
-- **Drops** - Public file drops
-- **Cloud Dashboard** - Cloud storage dashboard
-
-### Activity
-- **Timeline** - Activity timeline with filters
-- **Live Cards** - Real-time integration cards
-- **Filters** - Today, Week, Gaming, Development, Work, Study, Productivity, Media, Social, Brain
-- **Search** - Full-text search
-- **Sorting** - Recent, Oldest, Source
-
-### Settings
-- **Theme** - Night, Graphite, Day, Auto, Midnight, Obsidian, Aurora, Minimal, Focus, Glass, OLED
-- **Accent** - Mint, Sky, Amber, Violet, Rose, Custom
-- **Aura** - Classic, Boréale, Cyberpunk, Éclipse, Émeraude, Minérale
-- **Font** - Inter, Outfit, JetBrains Mono, Editorial Serif
-- **Radius** - Rounded, Sharp, Soft
-- **Density** - Spacious, Comfortable, Compact, Ultra-compact, Automatic, Custom
-- **Sound** - Master, notifications, interface, brain, system volumes
-- **Brain Permissions** - Notes, Tasks, Calendar, Connections, Gaming, Activity, Files, Profile, Settings, Mail
-- **Brain Memory** - Interface, Habits, Widgets, Schedules, Task Types, Spaces, Flows, Response Style, Goals
-- **Presets** - Productivity, Focus, Gaming, Creative, Minimal, Developer
-- **Accessibility** - Font size, color blind modes
-- **Shortcuts** - Keyboard shortcuts
-
-### Notifications
-- **Toast Manager** - Toast notifications
-- **Notification Center** - Notification history, categories, priorities
-- **Categories** - Important, Messages, Activity, System, Brain, Security
-- **Priorities** - Critical, Important, Normal, Silent
-
-### Command Palette
-- **Command Center** - Searchable command palette (Ctrl/Cmd+K)
-- **60+ Commands** - Navigation, actions, settings, spaces, flows, focus, ambience
-- **History** - Command history
-- **Pinned** - Pinned commands
-- **Context-aware** - Context-sensitive suggestions
-
-### Search
-- **Command Search** - Universal command search
-- **Page Search** - In-page search (notes, tasks, files, activity, mail)
-
-## 8. Theming, Localization, Design Tokens, Animations, Storage
-
-### Theming
-- **Theme Modes** - night, graphite, day, auto, midnight, obsidian, aurora, minimal, focus, glass, oled
-- **Accent Colors** - mint, sky, amber, violet, rose, custom, teal, coral
-- **Aura Themes** - Classic, Boréale, Cyberpunk, Éclipse, Émeraude, Minérale
-- **Font Families** - Inter, Outfit, JetBrains Mono, Editorial Serif
-- **Radius Styles** - Rounded, Sharp, Soft
-- **Wallpapers** - None, Nebula, Mesh, Aurora, Noise
-- **System Preference Detection** - Prefers-color-scheme
-
-### Localization (i18n)
-- **Supported Locales** - fr (French), en (English), es (Spanish), de (German)
-- **Translation Catalog** - 100+ translated strings
-- **Locale Persistence** - localStorage
-- **Runtime Switching** - Dynamic locale switching
-
-### Design Tokens (CSS Custom Properties)
-- **Color Tokens** --v8-canvas, --v8-surface-1/2/3, --v8-border, --v8-text, --v8-brand, --v8-accent
-- **Ambient Tokens** --v8-ambient-phase-light/shadow, --v8-ambient-highlight, --v8-ambient-theme-wash
-- **Motion Tokens** --v8-motion-slow, --v8-ease-standard, --v8-ambient-transition
-- **Font Tokens** --v8-font, --v8-font-size
-- **Spacing Tokens** --v8-spacing-xs/sm/md/lg/xl
-- **Radius Tokens** --v8-radius-sm/md/lg
-- **Shadow Tokens** --v8-shadow-sm/md/lg
-
-### Animations
-- **Spotlight** - Startup spotlight transition
-- **Ambient Effects** - Subtle color shifts and glows
-- **Presence Animations** - Status indicator animations
-- **Focus Island** - Dynamic island transitions
-- **Toast** - Toast slide-in/out
-- **Panel** - Panel slide transitions
-- **Window** - Window layer transitions
-- **Live Freshness** - Live card freshness indicators
-
-### Storage/Persistence
-- **localStorage** - Preferences, UI state, dock order, live card layout
-- **sessionStorage** - OAuth pending state
-- **Supabase** - Cloud sync for profiles, notes, tasks, calendar, files
-- **Cloud Sync** - Automatic sync with conflict resolution
-- **Persistence Key** - "ethone:v8-ui-state"
-- **Profile Repository** - Multi-profile support
-
-## 9. External API/Worker Usage
-
-### Worker API
-- **Base URL** - https://raspy-fog-bf5b.rub19-mailpro.workers.dev
-- **Environment Detection** - localhost (development), staging.* (staging), production (production)
-
-### Worker Operations (60+ endpoints)
-- **Health** - /health
-- **Steam** - /api/steam/player, /api/steam/recent-games, /api/steam/owned-games, /api/steam/achievements
-- **Tracker** - /api/tracker/apex-profile, /api/tracker/valorant-profile, /api/tracker/lol-profile, /api/tracker/apex-matches, /api/tracker/valorant-matches, /api/tracker/lol-matches
-- **Twitch** - /api/twitch/channel
-- **Last.fm** - /api/lastfm/recent-tracks, /api/lastfm/top-artists, /api/lastfm/top-tracks
-- **Lanyard** - /api/lanyard/presence
-- **Now Playing** - /api/now-playing
-- **Weather** - /api/weather
-- **Minecraft** - /api/minecraft/profile
-- **Spotify OAuth** - /api/spotify/oauth/exchange, /api/spotify/now-playing, /api/spotify/control, /api/spotify/track-saved, /api/spotify/oauth/disconnect
-- **GitHub OAuth** - /api/github/oauth/exchange, /api/github/profile, /api/github/oauth/disconnect
-- **Google Calendar OAuth** - /api/google-calendar/oauth/exchange, /api/google-calendar/events, /api/google-calendar/oauth/disconnect
-- **Notion OAuth** - /api/notion/oauth/exchange, /api/notion/pages, /api/notion/oauth/disconnect
-- **Todoist OAuth** - /api/todoist/oauth/exchange, /api/todoist/tasks, /api/todoist/oauth/disconnect
-- **Google Drive OAuth** - /api/google-drive/oauth/exchange, /api/google-drive/files, /api/google-drive/file, /api/google-drive/folders, /api/google-drive/files/update, /api/google-drive/files/trash, /api/google-drive/files/delete, /api/google-drive/quota, /api/google-drive/upload, /api/google-drive/download, /api/google-drive/oauth/disconnect
-- **Cloud Files** - /api/cloud/files/sync, /api/cloud/files, /api/cloud/files/favorites, /api/cloud/file, /api/cloud/file/update, /api/cloud/file/favorite, /api/cloud/file/brain, /api/cloud/activity, /api/cloud/activity/summary, /api/cloud/dashboard, /api/cloud/cleanup
-- **Cloud Shares** - /api/cloud/shares, /api/cloud/shares/resolve, /api/cloud/shares/download, /api/cloud/shares/revoke
-- **Cloud Drops** - /api/cloud/drops, /api/cloud/drops/resolve, /api/cloud/drops/upload
-- **Diagnostic** - /api/diagnostic
-- **Signout** - /api/signout
-
-### Supabase
-- **URL** - https://bvgifyzhpzkbrwdjrqsg.supabase.co
-- **Auth** - PKCE flow, session persistence, auto-refresh
-- **Storage** - Profiles, notes, tasks, calendar, files sync
-
-### Public APIs
-- **Open-Météo** - Weather forecasts
-- **Mojang API** - Minecraft profiles
-- **HenrikDev API** - Valorant/LoL stats
-- **Tracker.gg API** - Apex Legends stats
-- **Twitch Helix API** - Twitch streams
-- **Last.fm API** - Music scrobbles
-- **Reddit API** - Reddit posts
-
-## 10. Assets
-
-### Brand Assets
-- **ETHONE Logo** - SVG brand mark (BRAND_MARK_SVG)
-- **Brand Icons** - Integration brand icons (brand-icons.mjs)
-
-### Icon System
-- **Lucide Icons** - 100+ Lucide icons via data-lucide
-- **Brand Icons** - Service-specific brand icons
-- **Dynamic Loading** - Icon refresh and scheduling
-
-### Images
-- **Avatars** - User avatars with fallback initials
-- **Album Art** - Spotify album art
-- **Game Art** - Steam/Valorant game art
-- **File Previews** - File type icons and previews
-
-### Illustrations
-- **Empty States** - Custom empty state illustrations
-- **Error States** - Custom error state illustrations
-- **Loading States** - Skeleton loaders
-
-### CSS Assets
-- **styles/tokens.css** - Design tokens and CSS custom properties
-- **styles/base.css** - Base styles and reset
-- **styles/components.css** - Component styles
-- **styles/shell.css** - Shell layout styles
-- **styles/entry.css** - Entry page styles
-- **styles/activity.css** - Activity page styles
-- **styles/mail.css** - Mail page styles
-- **styles/team.css** - Team page styles
-- **styles/interactions.css** - Interactions page styles
-- **styles/share-drop.css** - Share/Drop page styles
-- **styles/workspaces.css** - Workspaces styles
-- **styles/depth.css** - Depth/glassmorphism effects
-- **styles/presence.css** - Presence indicator styles
-- **styles/mobile-ux.css** - Mobile UX styles
-- **styles/bills.css** - Bills widget styles
+| Fichier | Fonction | Dépendances clés |
+|---------|----------|------------------|
+| `main.mjs` | Point d'entrée bootstrap qui initialise les services d'entrée, charge dynamiquement app-runtime, et orchestre le démarrage complet. | `core/style-loader.mjs`, `entry/entry-coordinator.mjs`, `entry/login.mjs`, `entry/password-recovery.mjs`, `entry/profile-selection.mjs`, `data/profile-repository.mjs`, `services/auth-adapter.mjs`, `services/auth-storage.mjs`, `services/public-auth-config.mjs`, `services/network-client.mjs`, `services/service-worker.mjs`, `services/external-diagnostics.mjs`, `services/external-services-client.mjs`, `services/sound-manager.mjs`, `services/clock-manager.mjs`, `services/supabase-state-sync.mjs`, `services/security-identity.mjs`, `core/document-metadata.mjs`, `core/experience.mjs`, `core/presence-engine.mjs`, `ui/dom.mjs`, `ui/navigation.mjs`, `ui/empty-state.mjs`, `ui/visual-haptics.mjs`, `ui/native-behavior.mjs`, `ui/touch-interactions.mjs`, `ui/tooltip.mjs`, `i18n/runtime.mjs`, `i18n/catalog.mjs` |
 
 ---
 
-**Summary Statistics:**
-- **Total Files**: 120+ .mjs files
-- **Total CSS Files**: 15 .css files
-- **Total Integrations**: 30+
-- **Total Commands**: 60+
-- **Total Live Cards**: 18
-- **Supported Languages**: 4 (fr, en, es, de)
-- **Theme Modes**: 11
-- **Accent Colors**: 8
-- **Worker API Endpoints**: 60+
+**Résumé statistique :**
+- **Total de fichiers .mjs inventoriés :** 105
+- **app :** 1 fichier
+- **brain :** 7 fichiers
+- **command :** 4 fichiers
+- **core :** 13 fichiers
+- **data :** 10 fichiers
+- **entry :** 4 fichiers
+- **i18n :** 2 fichiers
+- **pages :** 24 fichiers
+- **services :** 45 fichiers
+- **ui :** 47 fichiers
+- **utils :** 3 fichiers
+- **styles :** 0 fichier .mjs (dossier CSS uniquement)
+- **racine :** 1 fichier (main.mjs)

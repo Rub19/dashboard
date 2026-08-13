@@ -6,6 +6,14 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 **Migration Next.js : parité legacy v8 complète (rate-limiter, OTP Worker, profil public, Steam, Spotify, mail, marketplace, dense-content, depth-effect, form validation, command history/search, navigation, espaces, intégrations, home/daily briefing, lifecycle, document metadata)**
 
+### Corrige
+- Accessibilité : `aria-prohibited-attr` sur `PresenceIndicator` via `role="status"`.
+- Accessibilité : hiérarchie de titres sur `app/not-found.tsx` et `components/LiveWidgets.tsx`.
+- Accessibilité : `aria-label` sur les inputs non labellisés de `activity`, `notes`, `settings`, `tasks`, `team`, `share`, `drop`.
+
+### Audit
+- Mise à jour des inventaires exhaustifs : `MIGRATION_AUDIT_v8.md` (105 fichiers .mjs) et `MIGRATION_AUDIT.md` (validation Playwright, a11y 0 issue).
+
 ### Ajoute
 - `lib/rate-limiter.ts` : portage du rate-limiter v8 avec `createRateLimiter`, politiques d'authentification, fenêtres temporelles, blocage temporaire, `reset`, `destroy` et `size`.
 - `lib/auth.ts` : OTP via Worker (`sendOtp`/`verifyOtp` sur `/api/auth/otp/send` et `/api/auth/otp/verify`), rate-limiting sur `sign-in`, `sign-up`, `password-reset`, `password-update` et `oauth`, et notification Worker `/api/signout` avant déconnexion Supabase.

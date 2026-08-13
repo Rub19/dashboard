@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import BrandMark from "@/components/BrandMark";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import Switch from "@/components/Switch";
 import GoogleIcon from "@/components/icons/GoogleIcon";
 import GithubIcon from "@/components/icons/GithubIcon";
@@ -258,7 +259,10 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div className="flex w-full flex-col items-center justify-center bg-[var(--background)] p-4 sm:p-6 lg:w-1/2 lg:p-10">
+      <div className="relative flex w-full flex-col items-center justify-center bg-[var(--background)] p-4 pt-16 sm:p-6 sm:pt-20 lg:w-1/2 lg:p-10">
+        <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
+          <LanguageSwitcher />
+        </div>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -277,36 +281,41 @@ export default function LoginPage() {
               <p className="mt-1 text-sm text-[var(--muted)]">{i18n("loginDescription")}</p>
             </div>
 
-            <div className="relative mt-6 flex rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]/50 p-1">
-              {(["otp", "password", "register"] as AuthMode[]).map((m) => {
-                const active = mode === m;
-                return (
-                  <button
-                    key={m}
-                    type="button"
-                    onClick={() => {
-                      setMode(m);
-                      setStep("email");
-                      setError(null);
-                    }}
-                    className={`relative z-10 flex-1 whitespace-nowrap rounded-xl px-1 py-2 text-[11px] font-semibold tracking-wide transition-colors sm:px-2 sm:text-xs ${
-                      active ? "text-white" : "text-[var(--muted)] hover:text-[var(--foreground)]"
-                    }`}
-                  >
-                    {m === "otp" ? i18n("otp") : m === "password" ? i18n("password") : i18n("register")}
-                  </button>
-                );
-              })}
-              <motion.div
-                layoutId="auth-tab"
-                className="absolute inset-y-1 rounded-xl bg-[var(--accent)]"
-                style={{
-                  width: `${100 / 3}%`,
-                  left: `${(["otp", "password", "register"] as AuthMode[]).indexOf(mode) * (100 / 3)}%`,
-                }}
-                transition={{ type: "spring", stiffness: 400, damping: 35 }}
-              />
-            </div>
+            {(() => {
+              const modes: AuthMode[] = ["otp", "password", "register"];
+              const activeIndex = modes.indexOf(mode);
+              return (
+                <div className="relative mt-6 flex rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]/50 p-1">
+                  {modes.map((m) => {
+                    const active = mode === m;
+                    return (
+                      <button
+                        key={m}
+                        type="button"
+                        onClick={() => {
+                          setMode(m);
+                          setStep("email");
+                          setError(null);
+                        }}
+                        className={`relative z-10 min-w-0 flex-1 select-none whitespace-nowrap rounded-xl px-0.5 py-2 text-[10px] font-semibold tracking-wide transition-colors sm:px-2 sm:text-[11px] ${
+                          active ? "text-white" : "text-[var(--muted)] hover:text-[var(--foreground)]"
+                        }`}
+                      >
+                        <span className="block truncate">
+                          {m === "otp" ? i18n("otp") : m === "password" ? i18n("password") : i18n("register")}
+                        </span>
+                      </button>
+                    );
+                  })}
+                  <motion.div
+                    className="absolute inset-y-1 w-1/3 rounded-xl bg-[var(--accent)]"
+                    initial={false}
+                    animate={{ left: `${(activeIndex * 100) / 3}%` }}
+                    transition={{ type: "spring", stiffness: 400, damping: 35 }}
+                  />
+                </div>
+              );
+            })()}
 
             {error && (
               <div className="relative mt-5 rounded-2xl border border-red-500/20 bg-red-500/10 p-3 text-xs text-red-400">

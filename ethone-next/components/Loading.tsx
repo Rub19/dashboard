@@ -6,7 +6,7 @@ import BrandMark from "./BrandMark";
 export default function Loading({ message = "Initialisation" }: { message?: string }) {
   return (
     <div
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-5 bg-[var(--canvas)]"
+      className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-5 bg-[var(--background)]"
       role="status"
       aria-label={message}
       data-v8-boot

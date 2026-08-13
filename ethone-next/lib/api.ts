@@ -2,9 +2,13 @@
 
 import { supabase } from "./supabase";
 
-export const WORKER_URL =
-  process.env.NEXT_PUBLIC_WORKER_URL ||
-  "https://raspy-fog-bf5b.rub19-mailpro.workers.dev";
+export const WORKER_URL = process.env.NEXT_PUBLIC_WORKER_URL || "";
+
+if (typeof window !== "undefined" && !WORKER_URL) {
+  console.error(
+    "ETHONE : NEXT_PUBLIC_WORKER_URL est requis. Vérifiez vos variables d'environnement."
+  );
+}
 
 async function getToken(): Promise<string | null> {
   if (typeof window === "undefined") return null;

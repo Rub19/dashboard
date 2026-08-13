@@ -15,9 +15,15 @@ type AuthContextValue = {
   session: Session | null;
   user: User | null;
   loading: boolean;
+  error: Error | null;
+  isOnline: boolean;
   signInOtp: (email: string) => Promise<{ error?: Error }>;
   verifyOtp: (email: string, code: string) => Promise<{ error?: Error }>;
   signInPassword: (email: string, password: string) => Promise<{ error?: Error }>;
+  signInWithOAuth: (provider: "google" | "github") => Promise<{ error?: Error; url?: string | null }>;
+  signUp: (email: string, password: string, username: string) => Promise<{ error?: Error; session?: Session }>;
+  resetPassword: (email: string) => Promise<{ error?: Error }>;
+  refreshSession: () => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -29,29 +35,78 @@ export function useAuth() {
   return value;
 }
 
+const SESSION_TIMEOUT_MS = 8_000;
+
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [isOnline, setIsOnline] = useState(true);
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
+  async function resolveSession() {
+    let settled = false;
+    const timeout = new Promise<never>((_, reject) =>
+      setTimeout(() => {
+        if (!settled) {
+          settled = true;
+          reject(new Error("La vérification de session a expiré."));
+        }
+      }, SESSION_TIMEOUT_MS)
+    );
+    try {
+      const { data } = await Promise.race([
+        supabase.auth.getSession().then((res) => {
+          if (!settled) {
+            settled = true;
+          }
+          return res;
+        }),
+        timeout,
+      ]);
       setSession(data.session);
       setUser(data.session?.user ?? null);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error(String(err)));
+    } finally {
       setLoading(false);
-    });
+    }
+  }
+
+  useEffect(() => {
+    resolveSession();
 
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, newSession) => {
         setSession(newSession);
         setUser(newSession?.user ?? null);
+        setLoading(false);
       }
     );
 
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    if (typeof window !== "undefined") {
+      setIsOnline(navigator.onLine);
+      window.addEventListener("online", handleOnline);
+      window.addEventListener("offline", handleOffline);
+    }
+
     return () => {
       listener.subscription.unsubscribe();
+      if (typeof window !== "undefined") {
+        window.removeEventListener("online", handleOnline);
+        window.removeEventListener("offline", handleOffline);
+      }
     };
   }, []);
+
+  async function refreshSession() {
+    setLoading(true);
+    await resolveSession();
+  }
 
   async function signInOtp(email: string) {
     const { error } = await supabase.auth.signInWithOtp({
@@ -83,6 +138,36 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error ?? undefined };
   }
 
+  async function signInWithOAuth(provider: "google" | "github") {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: typeof window !== "undefined" ? `${window.location.origin}/` : undefined,
+      },
+    });
+    return { error: error ?? undefined, url: data?.url };
+  }
+
+  async function signUp(email: string, password: string, username: string) {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { username } },
+    });
+    if (data.session) {
+      setSession(data.session);
+      setUser(data.session.user);
+    }
+    return { error: error ?? undefined, session: data.session ?? undefined };
+  }
+
+  async function resetPassword(email: string) {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: typeof window !== "undefined" ? `${window.location.origin}/reset-password/` : undefined,
+    });
+    return { error: error ?? undefined };
+  }
+
   async function signOut() {
     try {
       await fetchWorker("/api/signout", { method: "POST" });
@@ -96,7 +181,21 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ session, user, loading, signInOtp, verifyOtp, signInPassword, signOut }}
+      value={{
+        session,
+        user,
+        loading,
+        error,
+        isOnline,
+        signInOtp,
+        verifyOtp,
+        signInPassword,
+        signInWithOAuth,
+        signUp,
+        resetPassword,
+        refreshSession,
+        signOut,
+      }}
     >
       {children}
     </AuthContext.Provider>

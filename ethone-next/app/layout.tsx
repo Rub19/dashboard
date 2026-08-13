@@ -25,6 +25,7 @@ import UIProvider from "@/components/UIProvider";
 import PageTransition from "@/components/PageTransition";
 import { WindowManagerProvider } from "@/components/WindowManagerProvider";
 import ProfileSync from "@/components/ProfileSync";
+import BootProvider from "@/components/BootProvider";
 import ShortcutsOverlay from "@/components/ShortcutsOverlay";
 import { FocusProvider } from "@/components/FocusProvider";
 import FocusIsland from "@/components/FocusIsland";
@@ -132,7 +133,9 @@ export default function RootLayout({
                   <FocusIsland />
                   <main data-v8-main id="main-content" className="p-6 pb-24 md:pb-10" tabIndex={-1}>
                     <ActivityJournalProvider>
-                      <PageTransition>{children}</PageTransition>
+                      <BootProvider>
+                        <PageTransition>{children}</PageTransition>
+                      </BootProvider>
                       <AutomationRuntime />
                     </ActivityJournalProvider>
                   </main>

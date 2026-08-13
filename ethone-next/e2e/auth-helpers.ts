@@ -1,8 +1,19 @@
 import type { Page, APIRequestContext } from "@playwright/test";
 
-const SUPABASE_URL = "https://bvgifyzhpzkbrwdjrqsg.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2Z2lmeXpocHprYnJ3ZGpycXNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1ODgzNjAsImV4cCI6MjA5NjE2NDM2MH0.PCm_g4w7ZrLqNilISt-Xnlw_CZrA8PY1Uvk9H_PUhCc";
-const AUTH_KEY = "sb-bvgifyzhpzkbrwdjrqsg-auth-token";
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+
+function getAuthKey() {
+  try {
+    const url = new URL(SUPABASE_URL);
+    const ref = url.hostname.split(".")[0];
+    return `sb-${ref}-auth-token`;
+  } catch {
+    return "sb-auth-token";
+  }
+}
+
+const AUTH_KEY = getAuthKey();
 
 export async function signInByPassword(
   page: Page,

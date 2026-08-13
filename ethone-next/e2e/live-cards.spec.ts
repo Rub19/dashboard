@@ -6,20 +6,24 @@ test("authenticated dashboard loads live cards without errors", async ({ page })
   const errors: string[] = [];
   const networkErrors: string[] = [];
   page.on("pageerror", (err) => errors.push(err.message));
+  page.on("console", (msg) => {
+    if (msg.type() === "error" || msg.type() === "warning") {
+      console.log(`[console.${msg.type()}]`, msg.text());
+    }
+  });
   page.on("response", (res) => {
     if (res.status() >= 500) networkErrors.push(`${res.request().method()} ${res.url()} => ${res.status()}`);
   });
 
   await page.setViewportSize(MOBILE);
 
-  await page.goto("/login/", { waitUntil: "load" });
+  await page.goto("/login/", { waitUntil: "domcontentloaded" });
 
-  await page.getByRole("button", { name: /Mot de passe|Password|Contraseña/ }).first().click();
   await page.getByPlaceholder(/exemple|example|exemplo|exempel|Beispiel/).first().fill(String(process.env.TEST_EMAIL));
   await page.getByLabel(/Mot de passe|Password|Contraseña/).first().fill(String(process.env.TEST_PASSWORD));
-  await page.getByRole("button", { name: /Se connecter|Sign in|Iniciar sesión|Anmelden/ }).first().click();
+  await page.getByTestId("sign-in-button").click();
 
-  await page.goto("/", { waitUntil: "networkidle" });
+  await page.waitForURL("/", { waitUntil: "domcontentloaded", timeout: 15000 });
 
   await expect(page).toHaveTitle(/Ethone|ETHONE/);
 

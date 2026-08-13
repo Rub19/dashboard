@@ -73,7 +73,17 @@
 - **/share** - Public share page
 - **/mail** - Mail client
 
-## 3. Reusable Components
+## 3. Core Data/Models (ported from v8)
+
+- **lib/navigation.ts** - Shared navigation catalog for rail/mobile nav
+- **lib/workspaces.ts** - Workspace/presets model (Personal, Focus, Studio)
+- **lib/integrations.ts** - Integration catalog with categories, auth status, official URLs
+- **lib/home-model.ts** - Home model: greeting, recommendations, next tasks, today events, recent notes
+- **lib/daily-briefing.ts** - Daily briefing signals (weather, music, GitHub, events, tasks, yesterday activity)
+- **lib/lifecycle.ts** - Route/component lifecycle manager (mount/unmount/stats)
+- **lib/document-metadata.ts** - Document title/description/OG/Twitter manager by context
+
+## 4. Reusable Components
 
 ### Shell / Layout
 - **Sidebar** - Collapsible navigation rail
@@ -123,7 +133,7 @@
 ### Providers
 - **AuthProvider, SettingsProvider, UIProvider, LayerProvider, WindowManagerProvider, PresenceProvider, ActivityJournalProvider, CommandPaletteProvider, ShortcutsProvider, ToastProvider, FocusProvider**
 
-## 4. Hooks / Lib
+## 5. Hooks / Lib
 
 ### Core Libraries
 - **api.ts** - Worker API client with fetch wrapper, bearer token, auth
@@ -144,7 +154,7 @@
 ### Custom Hooks
 - useActivityJournal, useAmbientEngine, useBrain, useBrainContext, useCalendarEvents, useCloudCache, useCloudFiles, useClock, useConnections, useDashboard, useDiscordLive, useDriveFiles, useDrops, useFocusTrap, useHaptics, useI18n, useItems, useLiveData, useLiveFetch, useLivePoll, useLocalStorage, useLolLive, useMail, useMailCache, useMediaQuery, useMediaUpload, useMinecraftLive, useNativeBehavior, useNotifications, useProfile, useProfiles, useProviderCredentials, usePublicProfile, useSecurity, useSelection, useShares, useTeam, useTeamManager, useTracker, useUserData, useUserState, useWorker, useZenMode
 
-## 5. Integration/Connection Types (Plugins)
+## 6. Integration/Connection Types (Plugins)
 
 ### Media
 - Spotify, Plex, Jellyfin, Emby, YouTube, Twitch, Last.fm
@@ -172,7 +182,7 @@
 
 **Total**: 43 plugin routes.
 
-## 6. Authentication Flows
+## 7. Authentication Flows
 
 - **Email/Password** - Supabase auth + rate limiting
 - **OTP** - Worker-based `/api/auth/otp/send` and `/api/auth/otp/verify`
@@ -182,7 +192,7 @@
 - **Session** - Supabase session + Worker signout
 - **Device management** - `/api/auth/devices`, trust/revoke
 
-## 7. Widgets, Dashboard Layout, UI Features
+## 8. Widgets, Dashboard Layout, UI Features
 
 ### Dashboard Layout
 - **Shell** - layout.tsx with Sidebar, Dock, Header
@@ -214,7 +224,7 @@
 ### Command Palette
 - **CommandPalette, keyboard shortcuts, context-aware search**
 
-## 8. Theming, Localization, Design Tokens, Animations, Storage
+## 9. Theming, Localization, Design Tokens, Animations, Storage
 
 ### Theming
 - 16 theme modes
@@ -248,7 +258,7 @@
 - **Supabase** - Profiles, notes, tasks, calendar, files, cloud state
 - **Service Worker** - PWA, offline.html, sw.js
 
-## 9. External API/Worker Usage
+## 10. External API/Worker Usage
 
 ### Worker API
 - **Base URL** - `https://raspy-fog-bf5b.rub19-mailpro.workers.dev`
@@ -268,7 +278,7 @@
 ### Supabase
 - Auth, profiles, settings, mail, files, notes, tasks, realtime
 
-## 10. Assets
+## 11. Assets
 
 - **Logos** - `public/icons/ethone-*.png/svg`
 - **Icons** - Iconify/Lucide/Phosphor sets

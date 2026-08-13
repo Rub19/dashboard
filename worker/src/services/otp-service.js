@@ -11,45 +11,53 @@ const LOGO_PNG_BASE64 = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAHzklEQVR
 const EMAIL_I18N = {
   fr: {
     subject: "Votre code de connexion ETHONE",
-    title: "Code de connexion",
+    greeting: "Bonjour,",
+    intro: "Voici votre code de connexion pour accéder à <strong>ETHONE</strong>.",
     account: "Compte",
-    codeLabel: "Votre code à six chiffres",
+    codeLabel: "Code à six chiffres",
     validUntil: "Valable jusqu'au",
-    localTime: "heure locale",
-    footer: "Ne partagez ce code avec personne. Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email.",
-    tagline: "ETHONE — votre dashboard personnel."
+    security: "Ne partagez ce code avec personne. Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.",
+    tagline: "ETHONE — votre dashboard personnel",
+    signoff: "L'équipe ETHONE"
   },
   en: {
     subject: "Your ETHONE login code",
-    title: "Login code",
+    greeting: "Hello,",
+    intro: "Here is your login code to access <strong>ETHONE</strong>.",
     account: "Account",
-    codeLabel: "Your six-digit code",
+    codeLabel: "Six-digit code",
     validUntil: "Valid until",
-    localTime: "local time",
-    footer: "Do not share this code with anyone. If you did not request it, you can ignore this email.",
-    tagline: "ETHONE — your personal dashboard."
+    security: "Do not share this code with anyone. If you did not request it, you can ignore this email.",
+    tagline: "ETHONE — your personal dashboard",
+    signoff: "The ETHONE team"
   },
   es: {
     subject: "Tu código de acceso ETHONE",
-    title: "Código de acceso",
+    greeting: "Hola,",
+    intro: "Aquí tienes tu código de acceso para entrar en <strong>ETHONE</strong>.",
     account: "Cuenta",
-    codeLabel: "Tu código de seis dígitos",
+    codeLabel: "Código de seis dígitos",
     validUntil: "Válido hasta",
-    localTime: "hora local",
-    footer: "No compartas este código con nadie. Si no fuiste tú quien lo solicitó, puedes ignorar este email.",
-    tagline: "ETHONE — tu dashboard personal."
+    security: "No compartas este código con nadie. Si no fuiste tú quien lo solicitó, ignora este email.",
+    tagline: "ETHONE — tu dashboard personal",
+    signoff: "El equipo de ETHONE"
   },
   de: {
     subject: "Dein ETHONE-Anmeldecode",
-    title: "Anmeldecode",
+    greeting: "Hallo,",
+    intro: "Hier ist dein Anmeldecode für <strong>ETHONE</strong>.",
     account: "Konto",
-    codeLabel: "Dein sechsstelliger Code",
+    codeLabel: "Sechsstelliger Code",
     validUntil: "Gültig bis",
-    localTime: "Ortszeit",
-    footer: "Teilen Sie diesen Code mit niemandem. Wenn Sie ihn nicht angefordert haben, können Sie diese E-Mail ignorieren.",
-    tagline: "ETHONE — dein persönliches Dashboard."
+    security: "Teile diesen Code mit niemandem. Wenn du ihn nicht angefordert hast, ignoriere diese E-Mail.",
+    tagline: "ETHONE — dein persönliches Dashboard",
+    signoff: "Das ETHONE-Team"
   }
 };
+
+function stripHtml(value) {
+  return String(value).replace(/<[^>]+>/g, "");
+}
 
 const COUNTRY_TO_LOCALE = {
   FR: "fr", BE: "fr", CH: "de", LU: "fr", MC: "fr",
@@ -96,25 +104,50 @@ function buildOtpEmail(code, contact, expiresAt, locale, timezone) {
       <td align="center">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#14191f; border:1px solid #1f2937; border-radius:16px; max-width:520px; width:100%; padding:32px 24px;">
           <tr>
-            <td align="center">
-              <img src="cid:ethone-logo" alt="ETHONE" width="64" height="64" style="display:block; margin:0 auto 16px; border-radius:15px;">
-              <h1 style="margin:0 0 8px; font-size:22px; font-weight:600; color:#f4f7fa;">${i18n.title}</h1>
-              <p style="margin:0; color:#9ca3af; font-size:14px;">${i18n.account} : <strong style="color:#f4f7fa;">${masked}</strong></p>
+            <td align="center" style="padding-bottom:8px;">
+              <img src="cid:ethone-logo" alt="ETHONE" width="64" height="64" style="display:block; margin:0 auto 12px; border-radius:15px;">
+              <h1 style="margin:0; font-size:24px; font-weight:700; color:#f4f7fa; letter-spacing:1px;">ETHONE</h1>
             </td>
           </tr>
           <tr>
-            <td align="center" style="padding:32px 0;">
-              <p style="margin:0 0 16px; color:#9ca3af; font-size:14px;">${i18n.codeLabel} :</p>
-              <div style="font-size:36px; letter-spacing:10px; font-weight:700; color:#7be5c3; font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;">${code}</div>
+            <td style="padding:16px 0 8px;">
+              <p style="margin:0 0 8px; color:#f4f7fa; font-size:16px; font-weight:500;">${i18n.greeting}</p>
+              <p style="margin:0; color:#9ca3af; font-size:14px; line-height:1.5;">${i18n.intro}</p>
             </td>
           </tr>
           <tr>
-            <td align="center">
-              <p style="margin:0 0 8px; color:#9ca3af; font-size:14px;">${i18n.validUntil} <strong style="color:#f4f7fa;">${expires} (${i18n.localTime})</strong>.</p>
-              <p style="margin:24px 0 0; color:#6b7280; font-size:12px; line-height:1.5;">
-                ${i18n.footer}<br>
-                ${i18n.tagline}
-              </p>
+            <td align="center" style="padding:20px 0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#0b1d1b; border:1px solid #7be5c3; border-radius:12px; padding:24px;">
+                <tr>
+                  <td align="center">
+                    <p style="margin:0 0 8px; color:#7be5c3; font-size:13px; font-weight:500;">${i18n.codeLabel}</p>
+                    <div style="font-size:38px; letter-spacing:12px; font-weight:700; color:#7be5c3; font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;">${code}</div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="padding-bottom:16px;">
+              <p style="margin:0 0 4px; color:#9ca3af; font-size:13px;">${i18n.account} : <strong style="color:#f4f7fa;">${masked}</strong></p>
+              <p style="margin:0; color:#9ca3af; font-size:13px;">${i18n.validUntil} <strong style="color:#f4f7fa;">${expires}</strong></p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:8px 0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#1a1f2a; border:1px solid #2d3748; border-radius:10px; padding:16px;">
+                <tr>
+                  <td>
+                    <p style="margin:0; color:#9ca3af; font-size:13px; line-height:1.5;">${i18n.security}</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="padding-top:24px; border-top:1px solid #1f2937;">
+              <p style="margin:0 0 4px; color:#f4f7fa; font-size:13px; font-weight:500;">${i18n.tagline}</p>
+              <p style="margin:0; color:#6b7280; font-size:12px;">${i18n.signoff}</p>
             </td>
           </tr>
         </table>
@@ -124,14 +157,18 @@ function buildOtpEmail(code, contact, expiresAt, locale, timezone) {
 </body>
 </html>`;
 
-  const text = `${i18n.subject}
+  const text = `${i18n.greeting}
 
-${i18n.account} : ${masked}
+${stripHtml(i18n.intro)}
+
 ${i18n.codeLabel} : ${code}
-${i18n.validUntil} : ${expires} (${i18n.localTime})
+${i18n.account} : ${masked}
+${i18n.validUntil} : ${expires}
 
-${i18n.footer}
-${i18n.tagline}`;
+${i18n.security}
+
+${i18n.tagline}
+${i18n.signoff}`;
 
   const attachments = [{
     content: LOGO_PNG_BASE64,

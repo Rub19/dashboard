@@ -89,6 +89,7 @@
 - **lib/format.ts** - `formatBytes` from `utils/format.mjs`
 - **lib/download.ts** - `downloadJson` from `utils/download.mjs`
 - **lib/actions.ts** - Lightweight v8 action facade (`register`, `scope`, `dispatch`, `useActionFacade`)
+- **lib/command-catalog.ts** - v8 command catalog with aliases and context priority
 
 ## 4. Reusable Components
 

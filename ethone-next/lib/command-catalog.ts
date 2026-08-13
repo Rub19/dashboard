@@ -1,0 +1,121 @@
+export type CatalogCommand = {
+  id: string;
+  actionId: string;
+  label: string;
+  subtitle: string;
+  category: string;
+  icon: string;
+  keywords: readonly string[];
+  contexts?: readonly string[];
+  contextPriority?: number;
+  aliases?: readonly string[];
+};
+
+const rawCommands: CatalogCommand[] = [
+  { id: "home.open", actionId: "v8.home.open", label: "Ouvrir l'accueil", subtitle: "Vue d'ensemble ETHONE", category: "Navigation", icon: "house", keywords: ["dashboard", "home", "accueil"] },
+  { id: "activity.open", actionId: "v8.activity.open", label: "Ouvrir Activity Hub", subtitle: "Activité et signaux ETHONE", category: "Applications", icon: "activity", keywords: ["activity", "activité", "insights", "historique"] },
+  { id: "connections.open", actionId: "v8.connections.open", label: "Ouvrir Connections", subtitle: "Intégrations et synchronisation", category: "Système", icon: "plug", keywords: ["connections", "intégrations", "spotify", "discord", "github"], contexts: ["activity"], contextPriority: 96 },
+  { id: "spaces.open", actionId: "v8.spaces.open", label: "Ouvrir Spaces", subtitle: "Environnements ETHONE", category: "Navigation", icon: "layout-grid", keywords: ["space", "spaces", "espace", "workspace"] },
+  { id: "flows.open", actionId: "v8.flows.open", label: "Ouvrir Flows", subtitle: "Contextes de travail", category: "Navigation", icon: "workflow", keywords: ["flow", "flows", "contexte", "mode"] },
+  { id: "mission.open", actionId: "v8.mission.open", label: "Ouvrir Mission Control", subtitle: "Spaces, applications et sessions", category: "Système", icon: "layout-dashboard", keywords: ["mission", "spaces", "fenêtrès", "navigation"], contextPriority: 90 },
+  { id: "notes.new", actionId: "v8.notes.new", label: "Nouvelle note", subtitle: "Capturer une idee", category: "Actions", icon: "file-plus-2", keywords: ["note", "ecrire", "capture"], contexts: ["notes"], contextPriority: 120 },
+  { id: "notes.open", actionId: "v8.notes.open", label: "Ouvrir Notes", subtitle: "Ecrire et retrouver vos idees", category: "Applications", icon: "notebook-pen", keywords: ["notes", "markdown", "texte"] },
+  { id: "tasks.new", actionId: "v8.tasks.new", label: "Nouvelle tache", subtitle: "Ajouter a votre liste", category: "Actions", icon: "list-plus", keywords: ["tache", "todo", "action"], contexts: ["tasks", "home"], contextPriority: 120 },
+  { id: "tasks.open", actionId: "v8.tasks.open", label: "Ouvrir Taches", subtitle: "Priorités et progression", category: "Applications", icon: "circle-check-big", keywords: ["tasks", "todo", "taches"] },
+  { id: "calendar.open", actionId: "v8.calendar.open", label: "Ouvrir Calendrier", subtitle: "Planning et événements", category: "Applications", icon: "calendar-days", keywords: ["cal", "agenda", "planning", "événement"] },
+  { id: "calendar.new", actionId: "v8.calendar.new", label: "Nouvel événement", subtitle: "Ajouter au calendrier", category: "Actions", icon: "calendar-plus", keywords: ["calendrier", "agenda", "événement"], contexts: ["calendar"], contextPriority: 120 },
+  { id: "files.open", actionId: "v8.files.open", label: "Ouvrir Fichiers", subtitle: "Documents et favoris", category: "Applications", icon: "folder", keywords: ["fichiers", "documents", "finder"] },
+  { id: "interactions.open", actionId: "v8.interactions.open", label: "Ouvrir Interactions", subtitle: "Carte de chaleur et engagement", category: "Applications", icon: "flame", keywords: ["interactions", "heatmap", "engagement", "activite"] },
+  { id: "files.new-link", actionId: "v8.files.new-link", label: "Ajouter un lien", subtitle: "Créer une ressource dans Fichiers", category: "Actions", icon: "link-2", keywords: ["fichier", "lien", "url", "ressource"], contexts: ["files"], contextPriority: 120 },
+  { id: "widgets.open", actionId: "v8.widgets.open", label: "Ouvrir Widgets", subtitle: "Apercu du Space actif", category: "Système", icon: "panels-top-left", keywords: ["widget", "panel", "panneau"] },
+  { id: "brain.open", actionId: "v8.brain.open", label: "Ouvrir Brain", subtitle: "Intelligence contextuelle", category: "Applications", icon: "brain", keywords: ["brain", "ai", "ia", "assistant"], contexts: ["home"], contextPriority: 72 },
+  { id: "team.open", actionId: "v8.team.open", label: "Ouvrir Équipe", subtitle: "Membres et invitations", category: "Applications", icon: "users", keywords: ["team", "équipe", "membres", "inviter", "collaboration"] },
+  { id: "mail.open", actionId: "v8.mail.open", label: "Ouvrir Mail", subtitle: "Boîte de réception ETHONE", category: "Applications", icon: "mail", keywords: ["mail", "email", "message", "inbox", "courrier"] },
+  { id: "settings.open", actionId: "v8.settings.open", label: "Ouvrir Réglages", subtitle: "Apparence et préférences", category: "Système", icon: "settings-2", keywords: ["settings", "réglages", "préférences"] },
+  { id: "changelog.open", actionId: "v8.changelog.open", label: "Notes de version (Changelog)", subtitle: "Nouveautés et historique ETHONE", category: "Système", icon: "badge-check", keywords: ["changelog", "version", "mise à jour", "maj", "nouveautés", "notes"] },
+  { id: "profiles.open", actionId: "v8.profiles.open", label: "Choix de profil (Écran des espaces)", subtitle: "Changer de profil ou créer un environnement", category: "Système", icon: "layout-grid", keywords: ["profil", "profile", "compte", "choix", "environnement", "créer"] },
+  { id: "sync.refresh", actionId: "v8.sync.refresh", label: "Synchroniser maintenant", subtitle: "Vérifier les données locales", category: "Système", icon: "cloud-cog", keywords: ["cloud", "sync", "synchronisation", "sauvegarde"] },
+  { id: "locale.cycle", actionId: "v8.locale.cycle", label: "Changer de langue", subtitle: "Francais, English, Espanol, Deutsch", category: "Réglages", icon: "languages", keywords: ["langue", "language", "locale"] },
+  { id: "theme.toggle", actionId: "v8.theme.toggle", label: "Changer de thème", subtitle: "Basculer Nuit ou Graphite", category: "Réglages", icon: "sun-moon", keywords: ["thème", "nuit", "graphite", "apparence"], contexts: ["settings"], contextPriority: 100 },
+  { id: "density.automatic", actionId: "v8.density.automatic", label: "Densité automatique", subtitle: "Adapter l'interface a l'écran et au contexte", category: "Réglages", icon: "wand-sparkles", keywords: ["densité", "automatique", "zoom", "responsive"], contexts: ["settings"], contextPriority: 102 },
+  { id: "density.spacious", actionId: "v8.density.spacious", label: "Densité spacieuse", subtitle: "Lecture et cibles genereuses", category: "Réglages", icon: "maximize-2", keywords: ["densité", "spacieux", "accessibilite"], contexts: ["settings"], contextPriority: 96 },
+  { id: "density.comfortable", actionId: "v8.density.comfortable", label: "Densité confortable", subtitle: "Equilibre ETHONE par defaut", category: "Réglages", icon: "panel-top", keywords: ["densité", "confortable", "interface"], contexts: ["settings"], contextPriority: 96 },
+  { id: "density.compact", actionId: "v8.density.compact", label: "Densité compacte", subtitle: "Plus d'information visible", category: "Réglages", icon: "rows-3", keywords: ["densité", "compact", "interface"], contexts: ["settings"], contextPriority: 96 },
+  { id: "density.ultra", actionId: "v8.density.ultra-compact", label: "Densité ultra compacte", subtitle: "Densité maximale, focus conserve", category: "Réglages", icon: "list-collapse", keywords: ["densité", "ultra", "compact"], contexts: ["settings"], contextPriority: 94 },
+  { id: "brain.privacy", actionId: "v8.brain.open", label: "Ouvrir le Privacy Center Brain", subtitle: "Contexte, memoire et permissions", category: "Brain", icon: "shield-check", keywords: ["brain", "privacy", "memoire", "permissions"], contexts: ["brain", "settings"], contextPriority: 108 },
+  { id: "appearance.cycle", actionId: "v8.appearance.cycle", label: "Changer l'accent", subtitle: "Parcourir les couleurs ETHONE", category: "Réglages", icon: "palette", keywords: ["couleur", "accent", "apparence"], contexts: ["settings"], contextPriority: 100 },
+  { id: "space.personal", actionId: "v8.space.personal", label: "Space Personnel", subtitle: "Flow Essentiel", category: "Spaces", icon: "user-round", keywords: ["space", "personnel", "essentiel"], contexts: ["space-personal"], contextPriority: 74 },
+  { id: "space.focus", actionId: "v8.space.focus", label: "Space Focus", subtitle: "Flow Deep Work", category: "Spaces", icon: "focus", keywords: ["space", "focus", "deep work", "study", "dev"], contexts: ["space-focus"], contextPriority: 74 },
+  { id: "space.studio", actionId: "v8.space.studio", label: "Space Studio", subtitle: "Flow Creation", category: "Spaces", icon: "sparkles", keywords: ["space", "studio", "creation", "creative"], contexts: ["space-studio"], contextPriority: 74 },
+  { id: "zen.toggle", actionId: "v8.zen.toggle", label: "Mode Zen (Concentration)", subtitle: "Masquer les barres pour un focus maximal", category: "Navigation", icon: "minimize-2", keywords: ["zen", "focus", "concentration", "plein écran"] },
+  { id: "dock.scale", actionId: "v8.dock.scale", label: "Taille du Dock", subtitle: "Changer l'échelle (Compacte, Normale, Grande)", category: "Réglages", icon: "dock", keywords: ["dock", "taille", "échelle", "barre"] },
+  { id: "focus.pomodoro", actionId: "v8.focus.start.pomodoro", label: "Démarrer Pomodoro (25 min)", subtitle: "Focus Express avec pause", category: "Focus Timer", icon: "timer", keywords: ["pomodoro", "focus", "timer", "chrono", "minuteur"], contextPriority: 115 },
+  { id: "focus.deep", actionId: "v8.focus.start.deep", label: "Démarrer Deep Work (50 min)", subtitle: "Focus intense sans interruption", category: "Focus Timer", icon: "brain", keywords: ["deep", "work", "focus", "timer", "intense"], contextPriority: 110 },
+  { id: "focus.stop", actionId: "v8.focus.stop", label: "Arrêter le Focus Timer", subtitle: "Mettre fin à la session en cours", category: "Focus Timer", icon: "square", keywords: ["stop", "focus", "timer", "arrêt", "pause"], contextPriority: 105 },
+  { id: "ambience.rain", actionId: "v8.ambience.rain", label: "Ambiance : Pluie (Rain)", subtitle: "Son d'ambiance relaxant", category: "Ambiance", icon: "cloud-rain", keywords: ["pluie", "rain", "son", "ambiance", "relax"], contextPriority: 100 },
+  { id: "ambience.pink", actionId: "v8.ambience.pink", label: "Ambiance : Bruit rose (Pink noise)", subtitle: "Son d'ambiance de concentration", category: "Ambiance", icon: "sparkles", keywords: ["pink", "rose", "bruit", "ambiance"], contextPriority: 100 },
+  { id: "ambience.stop", actionId: "v8.ambience.stop", label: "Arrêter l'ambiance sonore", subtitle: "Couper les sons d'ambiance", category: "Ambiance", icon: "volume-x", keywords: ["ambience", "stop", "silence", "muet"], contextPriority: 98 },
+  { id: "dock.edit", actionId: "v8.dock.edit.open", label: "Personnaliser le Dock", subtitle: "Taille, verre, animations, sons et minuteur", category: "Réglages", icon: "sliders-horizontal", keywords: ["dock", "personnaliser", "taille", "verre", "animations", "sons", "barre"], contextPriority: 112 },
+  { id: "sidebar.toggle", actionId: "v8.sidebar.toggle", label: "Basculer la barre latérale", subtitle: "Développer ou compacter le menu latéral", category: "Navigation", icon: "panel-left", keywords: ["sidebar", "rail", "menu", "latéral", "barre"] },
+  { id: "sound.toggle", actionId: "v8.sound.toggle", label: "Activer ou désactiver les sons", subtitle: "Couper ou rétablir le retour sonore ETHONE", category: "Réglages", icon: "volume-2", keywords: ["son", "muet", "silence", "audio", "volume"] },
+  { id: "brain.memory.toggle", actionId: "v8.brain.memory.toggle", label: "Activer ou désactiver la mémoire Brain", subtitle: "Gérer la mémorisation contextuelle de l'IA", category: "Brain", icon: "bookmark-check", keywords: ["mémoire", "brain", "ia", "privacy", "souvenir"] },
+  { id: "preset.productivity", actionId: "v8.preset.apply", label: "Preset Productivité", subtitle: "Clair, structuré, calme", category: "Presets", icon: "circle-check-big", keywords: ["preset", "productivité", "focus", "calme"], contextPriority: 100 },
+  { id: "preset.focus", actionId: "v8.preset.apply", label: "Preset Focus", subtitle: "Minimal, calme, sans distraction", category: "Presets", icon: "focus", keywords: ["preset", "focus", "deep work", "minimal"], contextPriority: 100 },
+  { id: "preset.gaming", actionId: "v8.preset.apply", label: "Preset Gaming", subtitle: "Néon, énergie, contraste", category: "Presets", icon: "gamepad-2", keywords: ["preset", "gaming", "neon", "jeu"], contextPriority: 100 },
+  { id: "preset.creative", actionId: "v8.preset.apply", label: "Preset Créatif", subtitle: "Chaleur, espace, inspiration", category: "Presets", icon: "sparkles", keywords: ["preset", "créatif", "creative", "inspiration"], contextPriority: 100 },
+  { id: "preset.minimal", actionId: "v8.preset.apply", label: "Preset Minimal", subtitle: "Léger, épuré, silencieux", category: "Presets", icon: "minimize-2", keywords: ["preset", "minimal", "épuré", "silencieux"], contextPriority: 100 },
+  { id: "preset.developer", actionId: "v8.preset.apply", label: "Preset Développement", subtitle: "Compact, lisible, technique", category: "Presets", icon: "code", keywords: ["preset", "dev", "développement", "code"], contextPriority: 100 },
+  { id: "auth.signout", actionId: "v8.auth.signout", label: "Se déconnecter de votre session", subtitle: "Fermer la session ETHONE active", category: "Système", icon: "log-out", keywords: ["déconnexion", "signout", "logout", "quitter"] },
+  { id: "security.open", actionId: "v8.security.open", label: "Ouvrir Sécurité", subtitle: "Centre de sécurité ETHONE", category: "Système", icon: "shield-check", keywords: ["sécurité", "security", "confidentialité"] },
+  { id: "marketplace.open", actionId: "v8.marketplace.open", label: "Ouvrir Marketplace", subtitle: "Découvrir les intégrations et extensions", category: "Système", icon: "store", keywords: ["marketplace", "boutique", "extensions"] },
+  { id: "mail.compose", actionId: "v8.mail.compose", label: "Nouveau Mail", subtitle: "Rédiger un message", category: "Actions", icon: "mail-plus", keywords: ["mail", "nouveau", "écrire", "message"] },
+  { id: "brain.note", actionId: "v8.brain.note", label: "Nouvelle Note", subtitle: "Capturer une idée", category: "Actions", icon: "file-plus-2", keywords: ["note", "nouvelle", "idée"] },
+  { id: "files.upload", actionId: "v8.files.upload", label: "Uploader un Fichier", subtitle: "Ajouter un document", category: "Actions", icon: "upload", keywords: ["fichier", "upload", "document", "envoyer"] },
+  { id: "quick.actions", actionId: "v8.quick-actions.open", label: "Actions rapides", subtitle: "Mail, note, fichier, Brain...", category: "Actions", icon: "zap", keywords: ["actions", "rapides", "créer", "plus"] },
+  { id: "search.open", actionId: "v8.command.open", label: "Rechercher", subtitle: "Ouvrir la palette de commandes", category: "Navigation", icon: "search", keywords: ["rechercher", "search", "commandes", "palette"] },
+  { id: "focus.toggle", actionId: "v8.brain.focus-mode.toggle", label: "Mode Focus", subtitle: "Masquer distractions et notifications", category: "Focus", icon: "focus", keywords: ["focus", "concentration", "mode"] }
+];
+
+const ALIASES: Record<string, string[]> = {
+  "home.open": ["accueil", "dashboard"],
+  "notes.new": ["note", "nouvelle note"],
+  "tasks.new": ["todo", "tache", "task"],
+  "calendar.new": ["event", "rdv", "événement"],
+  "files.new-link": ["lien", "url"],
+  "brain.open": ["ia", "ai", "assistant"],
+  "settings.open": ["préférences", "prefs"],
+  "command.open": ["cmd", "palette"],
+  "activity.open": ["hub", "journal"],
+  "connections.open": ["intégrations", "services"],
+  "zen.toggle": ["focus", "plein écran"],
+  "focus.pomodoro": ["pomodoro", "timer"],
+  "focus.deep": ["deep work"],
+  "focus.stop": ["arrêter timer"],
+  "theme.toggle": ["thème", "nuit"],
+  "appearance.cycle": ["couleur", "accent"],
+  "density.automatic": ["auto", "densité"],
+  "dock.edit": ["dock"],
+  "sidebar.toggle": ["sidebar"],
+  "sound.toggle": ["son"],
+  "mission.open": ["mission", "spaces"],
+  "changelog.open": ["versions", "maj"],
+  "sync.refresh": ["sync", "synchroniser"],
+  "auth.signout": ["logout"]
+};
+
+const commands: readonly CatalogCommand[] = Object.freeze(
+  rawCommands.map((command) =>
+    Object.freeze({
+      ...command,
+      aliases: Object.freeze(ALIASES[command.id] || command.aliases || []),
+      keywords: Object.freeze(command.keywords || []),
+      contexts: Object.freeze(command.contexts || [])
+    })
+  )
+);
+
+export const COMMANDS: readonly CatalogCommand[] = Object.freeze(commands);
+
+export function commandById(id: string): CatalogCommand | null {
+  return COMMANDS.find((command) => command.id === id) || null;
+}

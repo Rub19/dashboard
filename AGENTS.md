@@ -16,3 +16,4 @@
 - `innerHTML` n'est autorisé que dans les fichiers listés dans `APPROVED_INNER_HTML` de `scripts/audit-security.mjs`.
 - Les changelogs sont ajoutés en haut de `CHANGELOG.md`.
 - Style de commit : `Migration Next.js : description`.
+- Attribution : ne pas ajouter `Generated with [Devin]` ni `Co-Authored-By: Devin`. Utiliser l'identité de l'utilisateur (git `user.name` / `user.email`) ou le pseudo demandé.

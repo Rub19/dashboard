@@ -1,5 +1,7 @@
 # Next.js Inventory
 
+Dernière passe : inventaire exhaustif source-à-source (37 pages, 85+ composants, 50+ modules core, 40+ hooks, 5 modules Brain, PWA complète).
+
 ## 1. Top-Level Directories and Important Files
 
 ### Application Stack

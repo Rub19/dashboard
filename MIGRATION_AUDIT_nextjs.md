@@ -135,6 +135,7 @@
 - **rate-limiter.ts** - Rate limiting utility
 - **plugins.ts** - Plugin catalog and marketplace
 - **files.ts / notes.ts / calendar.ts / bills-manager.ts / interactions-heatmap.ts / focus-timer.ts / activity-journal.ts**
+- **cloud-cache.ts, mail-cache.ts, media-upload.ts, clock-manager.ts, live-poll.ts, team-manager.ts** - services v8 portés
 - **brain-context.ts, brain-memory.ts, lib/brain/* - Brain engine, memory, providers, automation
 - **density-engine.ts, ambient-engine.ts, presence-engine.ts, preset-engine.ts, user-state.ts**
 - **command-search.ts** - Command history, catalog, scoring

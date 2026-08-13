@@ -113,6 +113,17 @@ Ce rapport est une **comparaison fonctionnelle entre l'ancien ETHONE v8** (moteu
 | Brain memories | ✅ | `lib/brain/memory.ts` |
 | Files / notes / tasks / team / mail | ✅ | `lib/files.ts`, `lib/notes.ts`, `useTeam.ts`, `useMail.ts`, `lib/bills-manager.ts` |
 
+### Services v8 portés
+
+| Service v8 | Fichier Next.js | Statut |
+|------------|-----------------|--------|
+| `services/cloud-cache.mjs` | `lib/cloud-cache.ts` | ✅ |
+| `services/mail-cache.mjs` | `lib/mail-cache.ts` | ✅ |
+| `services/media-upload.mjs` | `lib/media-upload.ts` | ✅ |
+| `services/clock-manager.mjs` | `lib/clock-manager.ts` | ✅ |
+| `services/live-poll.mjs` | `lib/live-poll.ts` | ✅ |
+| `services/team-manager.mjs` | `lib/team-manager.ts` | ✅ |
+
 ### Cloudflare Worker
 
 | Élément | Statut | Preuve |
@@ -270,11 +281,21 @@ Ces éléments nécessitent une validation en conditions réelles, manuelle, ou 
 
 Aucune fonctionnalité majeure du périmètre v8 n'a été identifiée comme absente de Next.js.
 
+Les services v8 suivants ont été portés dans `ethone-next/lib/` dans ce batch :
+
+- `cloud-cache` → `lib/cloud-cache.ts`
+- `mail-cache` → `lib/mail-cache.ts`
+- `media-upload` → `lib/media-upload.ts`
+- `clock-manager` → `lib/clock-manager.ts`
+- `live-poll` → `lib/live-poll.ts`
+- `team-manager` → `lib/team-manager.ts`
+
 Points mineurs identifiés :
 
 - **Spotify seek** : le Worker `controlSpotifyPlayback` ne gère que play/pause/next/previous (voir 🔧 / 🚨).
 - **Live cards génériques** : le dos personnalisé n'est pas encore implémenté pour tous les providers (GitHub, Todoist, Twitch, Reddit, YouTube, Steam, Google Calendar, Google Drive, Notion, Valorant, LoL, Tracker, Last.fm, RSS, Bluesky, Apex) ; ils fonctionnent mais avec le rendu générique.
 - **Endpoints `/api/mail/pgp/decrypt` et `/api/mail/push/vapidkey`** : présents côté Worker ; leur consommation explicite dans le front Next.js n'a pas été confirmée.
+- **Wiring** — les services migrés ci-dessus sont présents mais non encore branchés dans les pages/hooks.
 
 ---
 
@@ -291,14 +312,16 @@ Risques de bug observés (non confirmés par test dans cette passe) :
 
 ## 🔧 CORRECTIONS
 
-Aucune correction de code n'a été nécessaire pendant cet audit. Les validations techniques suivantes ont été exécutées :
+Corrections de migration apportées dans ce batch :
 
-- `npm run build` ✅ (77 routes + 43 routes plugin générées).
-- `npm run lint` ✅.
-- `npm run test:unit` ✅ (52 tests passent).
-- Inventaire v8 sauvegardé dans `MIGRATION_AUDIT_v8.md`.
-- Inventaire Next.js sauvegardé dans `MIGRATION_AUDIT_nextjs.md`.
-- Mise à jour de `MIGRATION_AUDIT.md` avec les dernières constatations.
+- Migration des services v8 absents de Next.js :
+  - `lib/cloud-cache.ts` — cache IndexedDB fichiers/favoris/file d'attente.
+  - `lib/mail-cache.ts` — cache IndexedDB messages/templates/rules/notifications/outbox.
+  - `lib/media-upload.ts` — upload avatar/banner vers Supabase Storage (`profile-media`).
+  - `lib/clock-manager.ts` — horloge temps réel avec snapshot et subscribers.
+  - `lib/live-poll.ts` — rafraîchissement au retour sur l'onglet / focus.
+  - `lib/team-manager.ts` — gestion d'équipe complète (invite, rôles, statuts, Supabase + localStorage).
+- Validation : `npm run build` ✅, `npm run lint` ✅.
 
 Corrections historiques confirmées dans le code actuel :
 

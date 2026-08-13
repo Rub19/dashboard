@@ -441,7 +441,7 @@ Le répertoire legacy `.worktree/main/v8/` a été **supprimé** suite à la val
 
 ## 🚨 RISQUES
 
-1. **Hébergement / routes** — `ethone.dev` sert actuellement l'ancienne version v8 (pas le build Next.js) : `/login` et `/login/` retournent 404. La raison est que la branche `main` n'est pas encore mise à jour avec le build Next.js. Le workflow `.github/workflows/deploy-pages.yml`, les scripts `verify-deployment.mjs`/`verify-security-headers.mjs` et le fichier `_headers` ont été préparés pour le déploiement du build `ethone-next/dist`.
+1. **Hébergement / routes** — `ethone.dev` sert actuellement l'ancienne version v8 (pas le build Next.js) : `/login` et `/login/` retournent 404. La branche `migration-react-tailwind` a été poussée sur `origin` ; elle est prête à être mergée dans `main` pour activer le déploiement du build `ethone-next/dist` via `.github/workflows/deploy-pages.yml`.
 2. **Tests avec credentials réels** — OAuth, passkey, OTP, live cards ne sont prouvés que par code, pas par exécution réelle. Un endpoint Worker ou un `client_id` mal configuré peut casser le flux.
 3. **Spotify seek** — le Worker supporte désormais `seek` (`/api/spotify/control` avec `positionMs`) et l'UI `LiveWidgets` permet de scrubber la lecture.
 4. **Live cards génériques** — le dos générique enrichi couvre les providers sans dos spécifique ; l'expérience est proche de v8.

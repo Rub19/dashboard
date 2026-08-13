@@ -256,14 +256,19 @@ export default function LiveWidgets({
     groups[cat] = list;
   }
 
-  async function controlSpotify(action: "play" | "pause" | "next" | "previous" | "save" | "unsave", trackId?: string) {
+  async function controlSpotify(
+    action: "play" | "pause" | "next" | "previous" | "save" | "unsave" | "seek",
+    trackId?: string,
+    positionMs?: number
+  ) {
     if (!settings.liveSpotifyClientId) {
       showError(i18n("configureToEnable"));
       return;
     }
     try {
-      const body: Record<string, string> = { action, clientId: settings.liveSpotifyClientId };
+      const body: Record<string, string | number> = { action, clientId: settings.liveSpotifyClientId };
       if (trackId) body.trackId = trackId;
+      if (action === "seek" && positionMs !== undefined) body.positionMs = Math.round(positionMs);
       await fetchWorker("/api/spotify/control", {
         method: "POST",
         body: JSON.stringify(body),
@@ -520,12 +525,16 @@ export default function LiveWidgets({
 
           {track.progressMs !== undefined && track.durationMs ? (
             <div className="space-y-1 pt-1">
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--border)]">
-                <div
-                  className="h-full rounded-full bg-emerald-400"
-                  style={{ width: `${Math.min(100, (track.progressMs / track.durationMs) * 100)}%` }}
-                />
-              </div>
+              <input
+                type="range"
+                min={0}
+                max={track.durationMs}
+                value={track.progressMs}
+                onChange={(e) => controlSpotify("seek", undefined, Number(e.target.value))}
+                onClick={(e) => e.stopPropagation()}
+                aria-label={i18n("seek")}
+                className="w-full accent-emerald-400"
+              />
               <div className="flex justify-between text-[10px] text-[var(--muted)]">
                 <span>{formatTime(track.progressMs)}</span>
                 <span>{formatTime(track.durationMs)}</span>
@@ -1032,12 +1041,16 @@ export default function LiveWidgets({
                 <div className="mt-3 space-y-2" onClick={(e) => e.stopPropagation()}>
                   {nowPlaying.progressMs !== undefined && nowPlaying.durationMs && (
                     <div className="space-y-1">
-                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--border)]">
-                        <div
-                          className="h-full rounded-full bg-emerald-400"
-                          style={{ width: `${Math.min(100, (nowPlaying.progressMs / nowPlaying.durationMs) * 100)}%` }}
-                        />
-                      </div>
+                      <input
+                        type="range"
+                        min={0}
+                        max={nowPlaying.durationMs}
+                        value={nowPlaying.progressMs}
+                        onChange={(e) => controlSpotify("seek", undefined, Number(e.target.value))}
+                        onClick={(e) => e.stopPropagation()}
+                        aria-label={i18n("seek")}
+                        className="w-full accent-emerald-400"
+                      />
                       <div className="flex justify-between text-[10px] text-[var(--muted)]">
                         <span>{formatTime(nowPlaying.progressMs)}</span>
                         <span>{formatTime(nowPlaying.durationMs)}</span>

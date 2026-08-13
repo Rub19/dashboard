@@ -148,6 +148,45 @@ test("Spotify control sends a PUT to play and a POST to next using a valid store
   ]);
 });
 
+test("Spotify seek sends a PUT to /v1/me/player/seek with position_ms", async () => {
+  const futureExpiry = new Date(Date.now() + 3600000).toISOString();
+  const calls = [];
+  const env = testEnv({
+    __TEST_FETCH__: async (input, init = {}) => {
+      const url = new URL(String(input));
+      if (url.hostname === "api.spotify.com") {
+        calls.push({ path: url.pathname, method: init.method, authorization: init.headers.authorization });
+        return new Response(null, { status: 204 });
+      }
+      return supabaseRpcFetch({ getResponse: [{ access_token: "stored-access-token", refresh_token: "stored-refresh-token", scope: "user-modify-playback-state", expires_at: futureExpiry }] })(input, init);
+    }
+  });
+  const response = await invoke("/api/spotify/control", {
+    env,
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ action: "seek", clientId: "c".repeat(32), positionMs: 12345 })
+  });
+  assert.equal(response.status, 200);
+  const body = await payload(response);
+  assert.equal(body.data.action, "seek");
+  assert.equal(body.data.positionMs, 12345);
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].path, "/v1/me/player/seek");
+  assert.equal(calls[0].method, "PUT");
+});
+
+test("Spotify seek rejects an invalid positionMs", async () => {
+  const env = testEnv({ __TEST_FETCH__: supabaseRpcFetch() });
+  const response = await invoke("/api/spotify/control", {
+    env,
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ action: "seek", clientId: "c".repeat(32), positionMs: -1 })
+  });
+  assert.equal(response.status, 400);
+});
+
 test("Spotify control surfaces a not-found error when there is no active device", async () => {
   const futureExpiry = new Date(Date.now() + 3600000).toISOString();
   const env = testEnv({

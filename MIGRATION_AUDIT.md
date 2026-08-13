@@ -443,7 +443,7 @@ Le code legacy v8 reste dans `.worktree/main/v8/` et **n'a pas été supprimé**
 
 1. **Hébergement / routes** — si `ethone.dev/login/` renvoie 404 en production malgré un build correct, le problème vient de l'hébergeur (GitHub Pages, DNS, Cloudflare) ou d'un manque de rewrite. Impact : impossibilité de se connecter directement par URL.
 2. **Tests avec credentials réels** — OAuth, passkey, OTP, live cards ne sont prouvés que par code, pas par exécution réelle. Un endpoint Worker ou un `client_id` mal configuré peut casser le flux.
-3. **Spotify seek** — le Worker ne supporte pas le seek. Si v8 le supportait, c'est une perte fonctionnelle mineure.
+3. **Spotify seek** — le Worker supporte désormais `seek` (`/api/spotify/control` avec `positionMs`) et l'UI `LiveWidgets` permet de scrubber la lecture.
 4. **Live cards génériques** — le dos générique enrichi couvre les providers sans dos spécifique ; l'expérience est proche de v8.
 5. **Supabase schema** — si les tables `ethone_files`, `ethone_file_collaborators`, `ethone_mail_aliases` sont encore utilisées par v8, s'assurer que le Worker Next.js les expose correctement.
 6. **PWA / cache** — le `sw.js` versionné doit être mis à jour à chaque release pour éviter un cache obsolète.

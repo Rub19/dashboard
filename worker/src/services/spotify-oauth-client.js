@@ -125,6 +125,27 @@ export async function controlSpotifyPlayback(env, userId, clientId, action) {
   return true;
 }
 
+export async function seekSpotifyPlayback(env, userId, clientId, positionMs) {
+  const position = Number(positionMs);
+  if (!Number.isFinite(position) || position < 0) throw httpError("INVALID_PARAMETER", 400);
+  const accessToken = await validAccessToken(env, userId, clientId);
+  try {
+    await requestExternal(new URL(`/v1/me/player/seek?position_ms=${Math.round(position)}`, API_ORIGIN), {
+      env,
+      expectedOrigin: API_ORIGIN,
+      service: "spotify",
+      method: "PUT",
+      headers: { authorization: `Bearer ${accessToken}` },
+      retries: 0,
+      maxBytes: 8192
+    });
+  } catch (error) {
+    if (error?.code === "PROVIDER_NOT_FOUND") throw httpError("PROVIDER_NOT_FOUND", 404, { retryable: false });
+    throw error;
+  }
+  return { positionMs: Math.round(position) };
+}
+
 export async function isSpotifyTrackSaved(env, userId, clientId, trackId) {
   const accessToken = await validAccessToken(env, userId, clientId);
   const response = await requestExternal(new URL(`/v1/me/tracks/contains?ids=${encodeURIComponent(safeText(trackId, "", 64))}`, API_ORIGIN), {

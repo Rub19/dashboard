@@ -5,7 +5,7 @@
 - Client Next.js : `cd ethone-next && npm run build`.
 - Client lint    : `cd ethone-next && npm run lint`.
 - Client unit    : `cd ethone-next && npm run test:unit`.
-- E2E            : `cd ethone-next && npx playwright test`.
+- E2E            : `cd ethone-next && npx playwright test`. Nécessite `TEST_EMAIL` et `TEST_PASSWORD` (chargeable depuis `ethone-next/.env.local`).
 - Worker         : `cd worker && npm run deploy` (ou `npx wrangler deploy`).
 - Tests worker   : `cd worker && npm test`.
 - Pré-commit     : `node ./scripts/precommit-upload-check.mjs` puis `node ./scripts/audit-security.mjs`.

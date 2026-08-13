@@ -426,16 +426,16 @@ Corrections historiques confirmées dans le code actuel :
 
 ## 🗑️ LEGACY
 
-Le code legacy v8 reste dans `.worktree/main/v8/` et **n'a pas été supprimé**. Les éléments suivants sont théoriquement couverts et pourraient être retirés **uniquement après validation utilisateur** :
+Le répertoire legacy `.worktree/main/v8/` a été **supprimé** suite à la validation complète du périmètre Next.js. Le worktree `.worktree/main/` est conservé pour référence (commit `32e0e324`), mais le code source v8 n'est plus présent localement.
 
-- `v8/styles/*.css` — remplacés par `app/globals.css` + tokens Tailwind.
-- `v8/pages/*.mjs` — remplacés par `app/**/page.tsx`.
-- `v8/ui/*.mjs` — remplacés par `components/*.tsx`.
-- `v8/services/*.mjs` — remplacés par `lib/*.ts`, `lib/hooks/*.ts`, `lib/brain/*.ts`.
-- `v8/entry/*.mjs` — remplacés par `app/login`, `app/password-recovery`, `app/profile-selection`.
-- `v8/brain/*.mjs`, `v8/command/*.mjs`, `v8/core/*.mjs` — logique migrée dans `lib/brain/`, `lib/command-search.ts`, `lib/settings.ts`, `lib/ambient-engine.ts`, etc.
+Éléments couverts par Next.js :
 
-**Ne pas supprimer** le worktree legacy sans validation explicite de l'utilisateur : il reste la référence fonctionnelle.
+- `v8/styles/*.css` → `app/globals.css` + tokens Tailwind.
+- `v8/pages/*.mjs` → `app/**/page.tsx`.
+- `v8/ui/*.mjs` → `components/*.tsx`.
+- `v8/services/*.mjs` → `lib/*.ts`, `lib/hooks/*.ts`, `lib/brain/*.ts`.
+- `v8/entry/*.mjs` → `app/login`, `app/password-recovery`, `app/profile-selection`.
+- `v8/brain/*.mjs`, `v8/command/*.mjs`, `v8/core/*.mjs` → `lib/brain/`, `lib/command-search.ts`, `lib/settings.ts`, `lib/ambient-engine.ts`, etc.
 
 ---
 

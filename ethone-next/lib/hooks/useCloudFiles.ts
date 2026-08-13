@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { fetchWorker, uploadWorker } from "../api";
 import { activityJournal } from "@/lib/activity-journal";
+import { useCloudCache } from "./useCloudCache";
+import { useLivePoll } from "./useLivePoll";
 
 export type CloudFile = {
   id: string;
@@ -38,6 +40,8 @@ export function useCloudFiles(clientId?: string) {
   const [trashed, setTrashed] = useState(false);
   const [favorites, setFavorites] = useState(false);
   const [query, setQuery] = useState("");
+  const { cache } = useCloudCache();
+  const [cacheLoaded, setCacheLoaded] = useState(false);
 
   const params = useMemo(() => {
     const p = new URLSearchParams();
@@ -55,12 +59,15 @@ export function useCloudFiles(clientId?: string) {
       const res = await fetchWorker(`/api/cloud/files?${params}`);
       const list = Array.isArray(res?.data?.files) ? res.data.files : [];
       setFiles(list);
+      if (cache && !query.trim() && !trashed && !favorites) {
+        await cache.setFiles(list as Record<string, unknown>[]);
+      }
     } catch (err) {
       setError(err instanceof Error ? err : new Error(String(err)));
     } finally {
       setLoading(false);
     }
-  }, [params]);
+  }, [params, cache, query, trashed, favorites]);
 
   const fetchFavorites = useCallback(async () => {
     setLoading(true);
@@ -69,12 +76,15 @@ export function useCloudFiles(clientId?: string) {
       const res = await fetchWorker("/api/cloud/files/favorites");
       const list = Array.isArray(res?.data) ? res.data : [];
       setFiles(list);
+      if (cache) {
+        await cache.setFavorites(list as Record<string, unknown>[]);
+      }
     } catch (err) {
       setError(err instanceof Error ? err : new Error(String(err)));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [cache]);
 
   const reload = useCallback(() => {
     if (favorites) return fetchFavorites();
@@ -82,8 +92,21 @@ export function useCloudFiles(clientId?: string) {
   }, [favorites, fetchFavorites, fetchList]);
 
   useEffect(() => {
-    reload();
-  }, [reload]);
+    async function init() {
+      setLoading(true);
+      if (cache && !cacheLoaded && !query.trim() && !trashed) {
+        const cached = await (favorites ? cache.getFavorites() : cache.getFiles());
+        if (cached?.length) {
+          setFiles(cached as CloudFile[]);
+        }
+        setCacheLoaded(true);
+      }
+      await reload();
+    }
+    init();
+  }, [reload, cache, cacheLoaded, query, trashed, favorites]);
+
+  useLivePoll(reload, { minGapMs: 10000 });
 
   const fetchQuota = useCallback(async () => {
     if (!clientId) return;

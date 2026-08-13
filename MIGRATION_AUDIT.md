@@ -124,6 +124,17 @@ Ce rapport est une **comparaison fonctionnelle entre l'ancien ETHONE v8** (moteu
 | `services/live-poll.mjs` | `lib/live-poll.ts` | ✅ |
 | `services/team-manager.mjs` | `lib/team-manager.ts` | ✅ |
 
+### Branchement des services dans l'UI
+
+| Service | Hook / Composant | Branchement |
+|---------|------------------|-------------|
+| Cloud cache | `lib/hooks/useCloudCache.ts` + `useCloudFiles.ts` | Cache IndexedDB des fichiers/favoris, rechargement on focus/visibility |
+| Mail cache | `lib/hooks/useMailCache.ts` + `useMail.ts` | Cache IndexedDB des messages/templates/rules, rechargement on focus/visibility |
+| Media upload | `lib/hooks/useMediaUpload.ts` + `app/profile/page.tsx` | Upload avatar sur Supabase Storage dans la page profil |
+| Clock manager | `lib/hooks/useClock.ts` + `components/V8StatusBar.tsx` | Horloge temps réel avec fuseau horaire |
+| Live poll | `lib/hooks/useLivePoll.ts` | Rafraîchissement onglet/focus pour `useCloudFiles`, `useMail` |
+| Team manager | `lib/hooks/useTeam.ts` + `app/team/page.tsx` | Gestion d'équipe directement via Supabase + localStorage |
+
 ### Cloudflare Worker
 
 | Élément | Statut | Preuve |
@@ -295,7 +306,6 @@ Points mineurs identifiés :
 - **Spotify seek** : le Worker `controlSpotifyPlayback` ne gère que play/pause/next/previous (voir 🔧 / 🚨).
 - **Live cards génériques** : le dos personnalisé n'est pas encore implémenté pour tous les providers (GitHub, Todoist, Twitch, Reddit, YouTube, Steam, Google Calendar, Google Drive, Notion, Valorant, LoL, Tracker, Last.fm, RSS, Bluesky, Apex) ; ils fonctionnent mais avec le rendu générique.
 - **Endpoints `/api/mail/pgp/decrypt` et `/api/mail/push/vapidkey`** : présents côté Worker ; leur consommation explicite dans le front Next.js n'a pas été confirmée.
-- **Wiring** — les services migrés ci-dessus sont présents mais non encore branchés dans les pages/hooks.
 
 ---
 
@@ -321,7 +331,14 @@ Corrections de migration apportées dans ce batch :
   - `lib/clock-manager.ts` — horloge temps réel avec snapshot et subscribers.
   - `lib/live-poll.ts` — rafraîchissement au retour sur l'onglet / focus.
   - `lib/team-manager.ts` — gestion d'équipe complète (invite, rôles, statuts, Supabase + localStorage).
-- Validation : `npm run build` ✅, `npm run lint` ✅.
+- Branchement dans l'UI :
+  - `useCloudCache` + `useCloudFiles` pour le cache offline des fichiers.
+  - `useMailCache` + `useMail` pour le cache offline des messages/templates/rules.
+  - `useMediaUpload` + `app/profile/page.tsx` pour l'upload d'avatar.
+  - `useClock` + `V8StatusBar` pour l'horloge en temps réel.
+  - `useLivePoll` pour rafraîchir onglet/focus sur fichiers et mail.
+  - `useTeam` réécrit avec `team-manager` pour la gestion d'équipe.
+- Validation : `npm run build` ✅, `npm run lint` ✅, `npm run test:unit` ✅ (52 tests).
 
 Corrections historiques confirmées dans le code actuel :
 
@@ -369,7 +386,7 @@ npm run build                     ✅ 77 routes + 43 routes plugin
 npm run lint                      ✅
 npm run test:unit                 ✅ 52 tests passent
 precommit-upload-check            ✅ 0 fichiers dangereux
-cd . && node ./scripts/audit-security.mjs   ✅ 453 fichiers scannés
+cd . && node ./scripts/audit-security.mjs   ✅ 465 fichiers scannés
 worker full test                  ❌ non exécuté (consigne utilisateur)
 E2E a11y                          ⚠️ non relancé (historiquement PASS)
 E2E responsive                    ⚠️ non relancé (historiquement PASS)

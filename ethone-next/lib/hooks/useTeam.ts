@@ -1,63 +1,53 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { fetchWorker } from "@/lib/api";
+import { useEffect, useMemo, useState } from "react";
+import { useAuth } from "@/components/AuthProvider";
+import { createTeamManager, type TeamMember, type TeamRole, type TeamStatus } from "@/lib/team-manager";
 
-export type TeamMember = {
-  id: string;
-  email: string;
-  role: string;
-  status: "pending" | "active" | "declined" | "revoked";
-  display_name?: string;
-  invited_at: string;
-};
+export type { TeamMember, TeamRole, TeamStatus };
 
 export function useTeam() {
+  const { user } = useAuth();
+  const ownerId = user?.id || "";
+  const manager = useMemo(() => (ownerId ? createTeamManager(ownerId) : null), [ownerId]);
   const [members, setMembers] = useState<TeamMember[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  async function load() {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetchWorker("/api/team/members");
-      setMembers(Array.isArray(res.data) ? res.data : []);
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error(String(err)));
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
-    load();
-  }, []);
+    if (!manager) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    const unsubscribe = manager.subscribe((state) => {
+      setMembers(state.members);
+      setLoading(state.loading);
+      setError(state.error ? new Error(state.error) : null);
+    });
+    manager.listMembers().finally(() => setLoading(false));
+    return () => { unsubscribe(); };
+  }, [manager]);
 
   async function invite(email: string, role: string, displayName?: string) {
-    const res = await fetchWorker("/api/team/members", {
-      method: "POST",
-      body: JSON.stringify({ email, role, display_name: displayName }),
-    });
-    await load();
-    return res.data;
+    if (!manager) throw new Error("Team manager not available");
+    const result = await manager.invite({ email, role: role as TeamRole, displayName });
+    if (!result.ok) throw new Error(result.message || "Échec de l'invitation");
+    return result.member;
   }
 
   async function remove(id: string) {
-    await fetchWorker("/api/team/members", {
-      method: "DELETE",
-      body: JSON.stringify({ id }),
-    });
-    setMembers(members.filter((m) => m.id !== id));
+    if (!manager) throw new Error("Team manager not available");
+    const result = await manager.remove(id);
+    if (!result.ok) throw new Error(result.message || "Échec de la suppression");
   }
 
   async function update(id: string, role: string) {
-    await fetchWorker("/api/team/members", {
-      method: "PATCH",
-      body: JSON.stringify({ id, role }),
-    });
-    setMembers(members.map((m) => (m.id === id ? { ...m, role } : m)));
+    if (!manager) throw new Error("Team manager not available");
+    const result = await manager.updateRole(id, role as TeamRole);
+    if (!result.ok) throw new Error(result.message || "Échec de la mise à jour");
+    return result.member;
   }
 
-  return { members, loading, error, reload: load, invite, remove, update };
+  return { members, loading, error, reload: () => manager?.listMembers(), invite, remove, update };
 }

@@ -14,6 +14,7 @@ import { usePresence } from "@/components/PresenceProvider";
 import PresenceIndicator from "@/components/PresenceIndicator";
 import Tooltip from "@/components/Tooltip";
 import { type SessionMode } from "@/lib/settings";
+import { useClock } from "@/lib/hooks/useClock";
 
 const SESSION_MODE_LABELS: Record<SessionMode, string> = {
   default: "sessionModeDefault",
@@ -48,22 +49,6 @@ function toneClass(tone: Tone) {
     default:
       return "text-[var(--muted)]";
   }
-}
-
-function useClientClock() {
-  const [time, setTime] = useState("--:--");
-  useEffect(() => {
-    const update = () => {
-      const now = new Date();
-      setTime(
-        `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`
-      );
-    };
-    update();
-    const id = setInterval(update, 1000);
-    return () => clearInterval(id);
-  }, []);
-  return time;
 }
 
 function useOnlineStatus() {
@@ -118,7 +103,8 @@ export default function V8StatusBar() {
   const { loading: notesLoading } = useItems("notes");
   const { loading: tasksLoading } = useItems("tasks");
   const { presence } = usePresence();
-  const time = useClientClock();
+  const clock = useClock();
+  const time = clock?.time ?? "--:--";
   const online = useOnlineStatus();
 
   const profileName = activeProfile?.name || user?.email || i18n("guest");

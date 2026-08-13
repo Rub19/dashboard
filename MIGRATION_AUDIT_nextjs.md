@@ -142,7 +142,7 @@
 - **form-validation.ts** - Form validators
 
 ### Custom Hooks
-- useActivityJournal, useAmbientEngine, useBrain, useBrainContext, useCalendarEvents, useCloudFiles, useConnections, useDashboard, useDiscordLive, useDriveFiles, useDrops, useFocusTrap, useHaptics, useI18n, useItems, useLiveData, useLiveFetch, useLocalStorage, useLolLive, useMail, useMediaQuery, useMinecraftLive, useNativeBehavior, useNotifications, useProfile, useProfiles, useProviderCredentials, usePublicProfile, useSecurity, useSelection, useShares, useTeam, useTracker, useUserData, useUserState, useWorker, useZenMode
+- useActivityJournal, useAmbientEngine, useBrain, useBrainContext, useCalendarEvents, useCloudCache, useCloudFiles, useClock, useConnections, useDashboard, useDiscordLive, useDriveFiles, useDrops, useFocusTrap, useHaptics, useI18n, useItems, useLiveData, useLiveFetch, useLivePoll, useLocalStorage, useLolLive, useMail, useMailCache, useMediaQuery, useMediaUpload, useMinecraftLive, useNativeBehavior, useNotifications, useProfile, useProfiles, useProviderCredentials, usePublicProfile, useSecurity, useSelection, useShares, useTeam, useTeamManager, useTracker, useUserData, useUserState, useWorker, useZenMode
 
 ## 5. Integration/Connection Types (Plugins)
 

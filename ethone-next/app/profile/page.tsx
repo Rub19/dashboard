@@ -7,6 +7,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useProfile } from "@/lib/hooks/useProfile";
 import { usePublicProfile } from "@/lib/hooks/usePublicProfile";
+import { useMediaUpload } from "@/lib/hooks/useMediaUpload";
 import { Icon } from "@/lib/icons";
 import { useToast } from "@/components/ToastProvider";
 import Image from "next/image";
@@ -25,6 +26,7 @@ export default function ProfilePage() {
   const publicProfile = usePublicProfile(form.username || profile?.username);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const { upload: uploadMedia, uploading: uploadingMedia, result: uploadResult } = useMediaUpload(user?.id);
 
   useEffect(() => {
     if (profile) {
@@ -47,6 +49,16 @@ export default function ProfilePage() {
       showError(i18n("error"));
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleAvatarUpload(file: File) {
+    const res = await uploadMedia(file, "avatar");
+    if (res.ok && res.data?.url) {
+      setForm((prev) => ({ ...prev, avatar_url: res.data!.url }));
+      success(i18n("uploaded"));
+    } else if (res.message) {
+      showError(res.message);
     }
   }
 
@@ -137,6 +149,24 @@ export default function ProfilePage() {
               placeholder="https://..."
               className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
+            <label className="mt-2 flex cursor-pointer items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)]">
+              <Icon name="upload" className="h-4 w-4" />
+              {uploadingMedia ? i18n("loading") : i18n("uploadAvatar")}
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                className="hidden"
+                disabled={uploadingMedia}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleAvatarUpload(file);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+            {uploadResult?.message && !uploadResult?.ok && (
+              <p className="text-xs text-red-400">{uploadResult.message}</p>
+            )}
           </div>
 
           <div className="flex flex-wrap items-center gap-3">

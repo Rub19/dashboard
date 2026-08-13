@@ -8,14 +8,14 @@ import { useTeam } from "@/lib/hooks/useTeam";
 import { Icon } from "@/lib/icons";
 import { useToast } from "@/components/ToastProvider";
 
-const ROLES = ["owner", "admin", "member", "viewer", "editor", "billing"] as const;
+const ROLES = ["owner", "admin", "senior", "junior", "assistant", "viewer"] as const;
 
 export default function TeamPage() {
   const i18n = useI18n();
   const { success: toastSuccess, error: showError } = useToast();
   const { members, loading, error, invite, remove, update } = useTeam();
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<(typeof ROLES)[number]>("member");
+  const [role, setRole] = useState<(typeof ROLES)[number]>("viewer");
   const [inviting, setInviting] = useState(false);
   const [inviteError, setInviteError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);

@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { fetchWorker } from "@/lib/api";
+import { useMailCache } from "./useMailCache";
+import { useLivePoll } from "./useLivePoll";
 
 export type MailAttachment = {
   filename: string;
@@ -163,6 +165,8 @@ export function useMail() {
   const [pgpKeys, setPgpKeys] = useState<MailPgpKey[]>([]);
   const [pushSubscriptions, setPushSubscriptions] = useState<MailPushSubscription[]>([]);
   const [lists, setLists] = useState<MailList[]>([]);
+  const { cache } = useMailCache();
+  const [cacheLoaded, setCacheLoaded] = useState(false);
 
   const fetchMessages = useCallback(async () => {
     setLoading(true);
@@ -181,20 +185,39 @@ export function useMail() {
         res = await fetchWorker(`/api/mail/inbox?${p.toString()}`);
       }
 
-      setMessages(Array.isArray(res?.data) ? res.data : []);
+      const list = Array.isArray(res?.data) ? res.data : [];
+      setMessages(list);
       if (typeof res?.meta?.unread === "number") {
         setUnread(res.meta.unread);
+      }
+      if (cache && !search.trim()) {
+        const cacheKey = label ? `${folder}:${label}` : folder;
+        await cache.putMessages(cacheKey, list);
       }
     } catch (err) {
       setError(err instanceof Error ? err : new Error(String(err)));
     } finally {
       setLoading(false);
     }
-  }, [folder, label, search]);
+  }, [folder, label, search, cache]);
 
   useEffect(() => {
-    fetchMessages();
-  }, [fetchMessages]);
+    async function init() {
+      setLoading(true);
+      if (cache && !cacheLoaded && !search.trim()) {
+        const cacheKey = label ? `${folder}:${label}` : folder;
+        const cached = await cache.getMessages(cacheKey);
+        if (Array.isArray(cached) && cached.length) {
+          setMessages(cached as MailMessage[]);
+        }
+        setCacheLoaded(true);
+      }
+      await fetchMessages();
+    }
+    init();
+  }, [fetchMessages, cache, cacheLoaded, folder, label, search]);
+
+  useLivePoll(fetchMessages, { minGapMs: 30000 });
 
   const fetchLabels = useCallback(async () => {
     try {
@@ -213,16 +236,20 @@ export function useMail() {
   const fetchTemplates = useCallback(async () => {
     try {
       const res = await fetchWorker("/api/mail/templates");
-      setTemplates(Array.isArray(res?.data) ? res.data : []);
+      const list = Array.isArray(res?.data) ? res.data : [];
+      setTemplates(list);
+      if (cache) await cache.putTemplates(list);
     } catch {}
-  }, []);
+  }, [cache]);
 
   const fetchRules = useCallback(async () => {
     try {
       const res = await fetchWorker("/api/mail/rules");
-      setRules(Array.isArray(res?.data) ? res.data : []);
+      const list = Array.isArray(res?.data) ? res.data : [];
+      setRules(list);
+      if (cache) await cache.putRules(list);
     } catch {}
-  }, []);
+  }, [cache]);
 
   const fetchBlocked = useCallback(async () => {
     try {
@@ -274,6 +301,12 @@ export function useMail() {
   }, []);
 
   useEffect(() => {
+    if (cache) {
+      Promise.all([cache.getTemplates(), cache.getRules()]).then(([cachedTemplates, cachedRules]) => {
+        if (cachedTemplates.length) setTemplates(cachedTemplates as MailTemplate[]);
+        if (cachedRules.length) setRules(cachedRules as MailRule[]);
+      });
+    }
     fetchLabels();
     fetchSignatures();
     fetchTemplates();
@@ -285,7 +318,7 @@ export function useMail() {
     fetchPgpKeys();
     fetchPushSubscriptions();
     fetchLists();
-  }, [fetchLabels, fetchSignatures, fetchTemplates, fetchRules, fetchBlocked, fetchTrusted, fetchAliases, fetchAccounts, fetchPgpKeys, fetchPushSubscriptions, fetchLists]);
+  }, [fetchLabels, fetchSignatures, fetchTemplates, fetchRules, fetchBlocked, fetchTrusted, fetchAliases, fetchAccounts, fetchPgpKeys, fetchPushSubscriptions, fetchLists, cache]);
 
   async function getThread(threadId: string) {
     const res = await fetchWorker(`/api/mail/thread?thread_id=${encodeURIComponent(threadId)}`);

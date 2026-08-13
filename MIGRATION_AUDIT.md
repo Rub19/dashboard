@@ -411,6 +411,7 @@ Corrections de migration apportées dans ce batch :
   - ajout d'`aria-label` sur les inputs de recherche/filter de `activity`, `notes`, `tasks`, `team`.
   - ajout d'`aria-label` sur les inputs de preset (nom, description, import) de `settings`.
   - ajout d'`aria-label` sur les inputs password de `share` et `drop`.
+  - ajout de l'export `viewport` explicite dans `app/layout.tsx` pour lever le dernier avertissement responsive.
 
 Corrections historiques confirmées dans le code actuel :
 
@@ -460,7 +461,7 @@ npm run test:unit                 ✅ 52 tests passent
 precommit-upload-check            ✅ 0 fichiers dangereux
 cd . && node ./scripts/audit-security.mjs   ✅ 481 fichiers scannés
 scripts/a11y-audit.mjs            ✅ 0 issue sur 78 pages
-scripts/responsive-audit.mjs      ⚠️ 64/124 fichiers ; seul avertissement : viewport meta injecté par Next.js
+scripts/responsive-audit.mjs      ✅ 64/124 fichiers, aucune anomalie de layout
 npx playwright test               ✅ 840/843 pass (3 échecs = credentials auth-audit manquants)
 worker full test                  ❌ non exécuté (consigne utilisateur)
 ```

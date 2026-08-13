@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import BrandMark from "@/components/BrandMark";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import Switch from "@/components/Switch";
@@ -269,7 +269,12 @@ export default function LoginPage() {
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           className="w-full max-w-md"
         >
-          <div className="relative overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)]/80 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
+          <motion.div
+            layout="size"
+            style={{ originY: 0 }}
+            transition={{ layout: { type: "spring", stiffness: 320, damping: 32 } }}
+            className="relative flex min-h-[540px] flex-col overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)]/80 p-6 shadow-2xl backdrop-blur-xl sm:min-h-[600px] sm:p-8 lg:min-h-[720px]"
+          >
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/50 to-transparent" />
             <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[var(--accent)]/10 blur-3xl" />
 
@@ -323,8 +328,17 @@ export default function LoginPage() {
               </div>
             )}
 
-            {isOtp && step === "code" ? (
-              <form onSubmit={handleVerify} className="relative mt-5 space-y-5">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={isOtp && step === "code" ? `otp-${step}` : mode}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.18, ease: "easeInOut" }}
+                className="relative mt-5"
+              >
+                {isOtp && step === "code" ? (
+              <form onSubmit={handleVerify} className="space-y-5">
                 <label className="block text-sm font-medium" htmlFor="code">
                   {i18n("codeReceived")}
                 </label>
@@ -555,7 +569,9 @@ export default function LoginPage() {
                 </div>
               </form>
             )}
-          </div>
+              </motion.div>
+            </AnimatePresence>
+          </motion.div>
 
           <div className="mt-6 flex items-center justify-center gap-2 text-[10px] text-[var(--muted)] lg:hidden">
             <BrandMark size={18} />

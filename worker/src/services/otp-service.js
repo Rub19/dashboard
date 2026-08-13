@@ -6,7 +6,6 @@ const OTP_TTL_MS = 10 * 60 * 1000;
 const MAX_ATTEMPTS = 5;
 const COOLDOWN_MS = 60 * 1000;
 
-const LOGO_PNG_BASE64 = "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";
 
 const EMAIL_I18N = {
   fr: {
@@ -104,17 +103,13 @@ function buildOtpEmail(code, contact, expiresAt, locale, timezone) {
       <td align="center">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#14191f; border:1px solid #1f2937; border-radius:16px; max-width:520px; width:100%; padding:32px 24px;">
           <tr>
-            <td style="padding-bottom:16px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tr>
-                  <td style="width:64px; vertical-align:middle;">
-                    <img src="cid:ethone-logo" alt="ETHONE" width="64" height="64" style="display:block; border-radius:15px;">
-                  </td>
-                  <td style="padding-left:16px; vertical-align:middle;">
-                    <h1 style="margin:0; font-size:24px; font-weight:700; color:#f4f7fa; letter-spacing:1px;">ETHONE</h1>
-                  </td>
-                </tr>
-              </table>
+            <td align="center" style="padding-bottom:8px;">
+              <img src="https://raw.githubusercontent.com/Rub19/dashboard/gh-pages/icons/ethone-icon-192.png" alt="ETHONE" width="64" height="64" style="display:block; margin:0 auto 12px; border-radius:15px;">
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="padding-bottom:16px;">
+              <h1 style="margin:0; font-size:24px; font-weight:700; color:#f4f7fa; letter-spacing:1px;">ETHONE</h1>
             </td>
           </tr>
           <tr>
@@ -178,14 +173,7 @@ ${i18n.security}
 ${i18n.tagline}
 ${i18n.signoff}`;
 
-  const attachments = [{
-    content: LOGO_PNG_BASE64,
-    filename: "ethone-logo.png",
-    content_type: "image/png",
-    content_id: "ethone-logo"
-  }];
-
-  return { html, text, attachments };
+  return { html, text };
 }
 
 async function sendEmail(env, to, subject, { html, text, attachments } = {}) {
@@ -254,9 +242,9 @@ export async function sendOtp(env, email, providedUserId, acceptLanguage = "fr",
   if (!exposeCode) {
     const effectiveLocale = resolveEmailLocale(acceptLanguage, country);
     const effectiveTimezone = timezone || "Europe/Paris";
-    const { html, text, attachments } = buildOtpEmail(code, contact, expiresAt, effectiveLocale, effectiveTimezone);
+    const { html, text } = buildOtpEmail(code, contact, expiresAt, effectiveLocale, effectiveTimezone);
     const i18n = EMAIL_I18N[effectiveLocale] || EMAIL_I18N.en;
-    await sendEmail(env, contact, i18n.subject, { html, text, attachments });
+    await sendEmail(env, contact, i18n.subject, { html, text });
   }
 
   await insertSecurityEvent(env, {

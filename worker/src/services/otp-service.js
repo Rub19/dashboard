@@ -104,9 +104,17 @@ function buildOtpEmail(code, contact, expiresAt, locale, timezone) {
       <td align="center">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#14191f; border:1px solid #1f2937; border-radius:16px; max-width:520px; width:100%; padding:32px 24px;">
           <tr>
-            <td align="center" style="padding-bottom:8px;">
-              <img src="cid:ethone-logo" alt="ETHONE" width="64" height="64" style="display:block; margin:0 auto 12px; border-radius:15px;">
-              <h1 style="margin:0; font-size:24px; font-weight:700; color:#f4f7fa; letter-spacing:1px;">ETHONE</h1>
+            <td style="padding-bottom:16px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="width:64px; vertical-align:middle;">
+                    <img src="cid:ethone-logo" alt="ETHONE" width="64" height="64" style="display:block; border-radius:15px;">
+                  </td>
+                  <td style="padding-left:16px; vertical-align:middle;">
+                    <h1 style="margin:0; font-size:24px; font-weight:700; color:#f4f7fa; letter-spacing:1px;">ETHONE</h1>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
           <tr>

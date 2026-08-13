@@ -10,7 +10,18 @@ function configuredOrigins(env) {
     .map((value) => value.trim())
     .filter(Boolean);
   if (String(env.ENVIRONMENT || "production") !== "production") {
-    origins.push("http://127.0.0.1:4173", "http://127.0.0.1:4179", "http://localhost:4173", "http://localhost:4179");
+    origins.push(
+      "http://127.0.0.1:4173",
+      "http://127.0.0.1:4179",
+      "http://127.0.0.1:3000",
+      "http://127.0.0.1:3001",
+      "http://127.0.0.1:3002",
+      "http://localhost:4173",
+      "http://localhost:4179",
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "http://localhost:3002"
+    );
   }
   return new Set(origins);
 }

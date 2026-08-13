@@ -249,7 +249,7 @@ Toutes les intégrations répertoriées dans v8 (`data/integrations.mjs`) sont c
 
 - Spotify, Discord, Weather, GitHub, Todoist, Google Calendar, Notion, Google Drive, Valorant, LoL, Apex, Twitch, Last.fm, YouTube, Reddit, Minecraft, Steam, Tracker.gg, Bills.
 
-Les dos personnalisés sont implémentés pour les services principaux (Spotify, Discord, Weather, Minecraft, Bills). Les autres services utilisent le dos générique enrichi par `useLiveData`.
+Les dos personnalisés sont implémentés pour les services principaux (Spotify, Discord, Weather, Minecraft, Bills). Les autres services utilisent un dos générique enrichi (`renderGenericBack`) avec icône, image, titre, sous-titre, méta et indicateur de statut.
 
 ### Brain
 
@@ -349,7 +349,7 @@ Aucune fonctionnalité majeure du périmètre v8 n'est absente de Next.js après
 | Élément v8 | État dans Next.js | Action requise |
 |---|---|---|
 | `data/profile-repository.mjs` | `lib/profile-repository.ts` (modèle, snapshot, preview) branché dans `app/profile-selection/page.tsx` | complété |
-| `ui/weather-detail.mjs` | fonction couverte par le dos de la carte météo dans `LiveWidgets` et la page `/weather` | le popover v8 n'est pas requis en React car le détail est accessible au verso / page dédiée |
+| `ui/weather-detail.mjs` | `components/WeatherDetailPopover.tsx` + `components/V8Breadcrumbs.tsx` | popover météo porté et utilisé dans la topbar |
 | `ui/timer-*.mjs` (timer split) | remplacés par `FocusIsland.tsx`, `FocusPopover.tsx` et `lib/focus-timer.ts` | vérifier que le fractionnement en sous-composants n'apportait pas d'accessibilité supplémentaire |
 | `services/supabase-state-sync.mjs` | non porté avec ce nom ; `onAuthStateChange` géré dans `AuthProvider` | confirmer qu'il n'y a pas de canal Realtime manquant |
 
@@ -365,7 +365,7 @@ Les services v8 suivants ont été portés dans `ethone-next/lib/` dans ce batch
 Points mineurs identifiés :
 
 - **Spotify seek** : le Worker `controlSpotifyPlayback` ne gère que play/pause/next/previous (voir 🔧 / 🚨).
-- **Live cards génériques** : le dos personnalisé n'est pas encore implémenté pour tous les providers (GitHub, Todoist, Twitch, Reddit, YouTube, Steam, Google Calendar, Google Drive, Notion, Valorant, LoL, Tracker, Last.fm, RSS, Bluesky, Apex) ; ils fonctionnent mais avec le rendu générique.
+- **Live cards génériques** : le dos générique enrichi (`renderGenericBack`) couvre désormais tous les providers sans dos spécifique ; les dos spécifiques des providers principaux restent ceux de v8.
 - **Endpoints `/api/mail/pgp/decrypt` et `/api/mail/push/vapidkey`** : présents côté Worker ; leur consommation explicite dans le front Next.js n'a pas été confirmée.
 
 ---
@@ -420,7 +420,7 @@ Corrections historiques confirmées dans le code actuel :
 - Fallback legacy retiré (`public/legacy/` supprimé).
 - Signout Worker notifié avant déconnexion locale.
 - Marketplace à 43 plugins couvrant toutes les intégrations v8.
-- Live cards enrichies (dos personnalisés pour Spotify, Discord, Météo, Minecraft, Bills).
+- Live cards enrichies (dos personnalisés pour Spotify, Discord, Météo, Minecraft, Bills + dos générique enrichi pour les autres sources).
 
 ---
 
@@ -444,7 +444,7 @@ Le code legacy v8 reste dans `.worktree/main/v8/` et **n'a pas été supprimé**
 1. **Hébergement / routes** — si `ethone.dev/login/` renvoie 404 en production malgré un build correct, le problème vient de l'hébergeur (GitHub Pages, DNS, Cloudflare) ou d'un manque de rewrite. Impact : impossibilité de se connecter directement par URL.
 2. **Tests avec credentials réels** — OAuth, passkey, OTP, live cards ne sont prouvés que par code, pas par exécution réelle. Un endpoint Worker ou un `client_id` mal configuré peut casser le flux.
 3. **Spotify seek** — le Worker ne supporte pas le seek. Si v8 le supportait, c'est une perte fonctionnelle mineure.
-4. **Live cards génériques** — l'absence de dos personnalisé pour certains providers peut donner une expérience moins riche qu'en v8.
+4. **Live cards génériques** — le dos générique enrichi couvre les providers sans dos spécifique ; l'expérience est proche de v8.
 5. **Supabase schema** — si les tables `ethone_files`, `ethone_file_collaborators`, `ethone_mail_aliases` sont encore utilisées par v8, s'assurer que le Worker Next.js les expose correctement.
 6. **PWA / cache** — le `sw.js` versionné doit être mis à jour à chaque release pour éviter un cache obsolète.
 7. **E2E** — a11y, routes et responsive ont été relancés avec Playwright (840/843 tests passent). Les 3 échecs sont dus à l'absence de variables d'environnement `TEST_EMAIL`/`TEST_PASSWORD` pour `auth-audit.spec.ts`.

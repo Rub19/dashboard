@@ -25,6 +25,31 @@ const STATUS_DOT = {
   error: "bg-red-500",
 };
 
+const SOURCE_ICON: Record<string, string> = {
+  nowplaying: "disc",
+  lanyard: "message-circle",
+  weather: "cloud-sun",
+  github: "github",
+  todoist: "check-square",
+  youtube: "youtube",
+  reddit: "globe",
+  lastfm: "music",
+  twitch: "twitch",
+  minecraft: "box",
+  steam: "gamepad-2",
+  "steam-achievements": "trophy",
+  rss: "rss",
+  bluesky: "cloud",
+  bills: "receipt",
+  valorant: "crosshair",
+  lol: "swords",
+  "google-calendar": "calendar",
+  "google-drive": "hard-drive",
+  notion: "file-text",
+  tracker: "target",
+  apex: "target",
+};
+
 function formatLocalDate(value: string | number | Date, mounted: boolean) {
   if (!mounted) return "";
   const d = typeof value === "object" ? value : new Date(value);
@@ -828,28 +853,56 @@ export default function LiveWidgets({
     if (record.source === "minecraft") return renderMinecraftBack(record);
     if (record.source === "bills") return renderBillsBack(record);
     if (record.source === "weather") return renderWeatherBack(record);
+    return renderGenericBack(record);
+  }
+
+  function renderGenericBack(record: LiveRecord) {
+    const isConnected = record.status === "connected";
+    const statusDot = `inline-block h-2 w-2 rounded-full ${STATUS_DOT[record.status]}`;
+    const iconName = SOURCE_ICON[record.source] || "activity";
+
     return (
-      <div className="flex h-full flex-col justify-between">
-        <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
-        <div className="space-y-1 text-sm text-[var(--foreground)]">
-          <p>
-            <span className="text-[var(--muted)]">{i18n("source")}:</span> {record.source}
-          </p>
-          <p>
-            <span className="text-[var(--muted)]">{i18n("status")}:</span> {record.status}
-          </p>
-          {record.subtitle && (
-            <p>
-              <span className="text-[var(--muted)]">{i18n("detail")}:</span> {record.subtitle}
-            </p>
-          )}
-          {record.meta && (
-            <p>
-              <span className="text-[var(--muted)]">{i18n("meta")}:</span> {record.meta}
-            </p>
-          )}
+      <div className="flex h-full flex-col gap-3">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Icon name={iconName} className="h-4 w-4 text-[var(--accent)]" />
+            <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
+          </div>
+          <span className={statusDot} aria-hidden="true" />
         </div>
-        <p className="text-[10px] text-[var(--muted)]">{i18n("flipCard")}</p>
+
+        {!isConnected && (
+          <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
+            <Icon name={iconName} className="h-10 w-10 text-[var(--muted)]" />
+            <p className="text-sm text-[var(--foreground)]">
+              {record.status === "loading" ? i18n("loading") : record.status === "error" ? i18n("liveError") : i18n("notConnected")}
+            </p>
+            {record.subtitle && <p className="text-xs text-[var(--muted)]">{record.subtitle}</p>}
+          </div>
+        )}
+
+        {isConnected && (
+          <>
+            {record.image && (
+              <div className="relative h-24 w-full shrink-0">
+                <Image
+                  src={record.image}
+                  alt=""
+                  fill
+                  unoptimized
+                  className="rounded-xl object-cover"
+                />
+              </div>
+            )}
+            <div className="min-w-0 flex-1 overflow-hidden">
+              {record.title && <p className="truncate text-sm font-semibold text-[var(--foreground)]">{record.title}</p>}
+              {record.subtitle && <p className="truncate text-xs text-[var(--muted)]">{record.subtitle}</p>}
+              {record.meta && <p className="mt-1 truncate text-xs text-[var(--muted)]">{record.meta}</p>}
+            </div>
+          </>
+        )}
+
+        <p className="mt-auto text-[10px] text-[var(--muted)]">{i18n("flipCard")}</p>
       </div>
     );
   }

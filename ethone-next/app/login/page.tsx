@@ -289,7 +289,7 @@ export default function LoginPage() {
                       setStep("email");
                       setError(null);
                     }}
-                    className={`relative z-10 flex-1 rounded-xl px-1 py-2 text-[11px] font-semibold uppercase tracking-wide transition-colors sm:px-2 sm:text-xs ${
+                    className={`relative z-10 flex-1 whitespace-nowrap rounded-xl px-1 py-2 text-[11px] font-semibold tracking-wide transition-colors sm:px-2 sm:text-xs ${
                       active ? "text-white" : "text-[var(--muted)] hover:text-[var(--foreground)]"
                     }`}
                   >
@@ -475,7 +475,10 @@ export default function LoginPage() {
                   className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-[var(--accent)]/20 transition-all hover:opacity-90 hover:shadow-[var(--accent)]/30 disabled:opacity-50"
                 >
                   {loading ? (
-                    <Icon name="loader-2" className="h-4 w-4 animate-spin" />
+                    <>
+                      <Icon name="loader-2" className="h-4 w-4 animate-spin" />
+                      {isOtp ? i18n("sending") : i18n("loading")}
+                    </>
                   ) : isOtp ? (
                     <>
                       {i18n("sendCode")} <Icon name="arrow-right" className="h-4 w-4" />

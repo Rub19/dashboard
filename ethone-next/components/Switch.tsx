@@ -17,7 +17,7 @@ export default function Switch({ checked, onChange, label, id, disabled }: Switc
   return (
     <label
       htmlFor={switchId}
-      className={`inline-flex cursor-pointer items-center gap-3 ${disabled ? "opacity-50" : ""}`}
+      className={`inline-flex cursor-pointer items-center gap-3 select-none ${disabled ? "opacity-50" : ""}`}
     >
       {label && <span className="text-sm font-medium text-[var(--foreground)]">{label}</span>}
       <button
@@ -27,12 +27,14 @@ export default function Switch({ checked, onChange, label, id, disabled }: Switc
         aria-checked={checked}
         disabled={disabled}
         onClick={() => onChange(!checked)}
-        className={`relative h-6 w-11 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] ${
-          checked ? "bg-[var(--accent)]" : "bg-[var(--border)]"
+        className={`relative h-6 w-11 rounded-full border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] ${
+          checked
+            ? "border-[var(--accent)] bg-[var(--accent)]"
+            : "border-[var(--border)] bg-[var(--surface-raised)]"
         }`}
       >
         <span
-          className={`absolute left-1 top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
+          className={`absolute left-[3px] top-[3px] h-[18px] w-[18px] rounded-full bg-white shadow-md transition-transform ${
             checked ? "translate-x-5" : "translate-x-0"
           }`}
         />

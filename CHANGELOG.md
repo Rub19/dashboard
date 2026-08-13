@@ -10,6 +10,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - Accessibilité : `aria-prohibited-attr` sur `PresenceIndicator` via `role="status"`.
 - Accessibilité : hiérarchie de titres sur `app/not-found.tsx` et `components/LiveWidgets.tsx`.
 - Accessibilité : `aria-label` sur les inputs non labellisés de `activity`, `notes`, `settings`, `tasks`, `team`, `share`, `drop`.
+- Hydratation : `lib/hooks/useActivityJournal.ts` initialisé avec `[]` et chargé dans `useEffect` pour éviter l'erreur React #418 sur `/activity/` (différence localStorage SSR vs client).
 
 ### Audit
 - Mise à jour des inventaires exhaustifs : `MIGRATION_AUDIT_v8.md` (105 fichiers .mjs) et `MIGRATION_AUDIT.md` (validation Playwright, a11y 0 issue).

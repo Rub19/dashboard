@@ -13,16 +13,15 @@ export type UseActivityJournalOptions = {
 };
 
 export function useActivityJournal(options: UseActivityJournalOptions = {}) {
-  const [entries, setEntries] = useState<ActivityEntry[]>(() =>
-    activityJournal.entries(options.snapshot)
-  );
-  const [pendingCount, setPendingCount] = useState(() => activityJournal.pendingCount());
+  const [entries, setEntries] = useState<ActivityEntry[]>([]);
+  const [pendingCount, setPendingCount] = useState(0);
   const [syncing, setSyncing] = useState(activityJournal.syncing());
   const [lastSync, setLastSync] = useState<Date | null>(null);
   const [syncError, setSyncError] = useState<Error | null>(null);
 
   useEffect(() => {
     setEntries(activityJournal.entries(options.snapshot));
+    setPendingCount(activityJournal.pendingCount());
     const unsubscribe = activityJournal.subscribe(() => {
       setEntries(activityJournal.entries(options.snapshot));
       setPendingCount(activityJournal.pendingCount());

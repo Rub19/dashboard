@@ -462,7 +462,7 @@ precommit-upload-check            ✅ 0 fichiers dangereux
 cd . && node ./scripts/audit-security.mjs   ✅ 481 fichiers scannés
 scripts/a11y-audit.mjs            ✅ 0 issue sur 78 pages
 scripts/responsive-audit.mjs      ✅ 64/124 fichiers, aucune anomalie de layout
-npx playwright test               ✅ 843/843 (credentials TEST_EMAIL/TEST_PASSWORD)
+npx playwright test               ✅ 843/843 (credentials TEST_EMAIL/TEST_PASSWORD) — 12.2 min
 worker full test                  ✅ 138/138 pass
 vérification déploiement local    ✅ /login et /login/ retournent 200 sur l'artifact Next.js
 ```

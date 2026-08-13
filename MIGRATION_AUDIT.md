@@ -146,7 +146,7 @@ Ce rapport est une **comparaison fonctionnelle entre l'ancien ETHONE v8** (moteu
 | `services/auth-storage.mjs` | `lib/supabase.ts` + `AuthProvider` | Stockage session |
 | `services/network-client.mjs` | `lib/api.ts` (`fetchWorker`) | Client Worker |
 | `services/service-worker.mjs` | `public/sw.js` | PWA service worker |
-| `services/supabase-state-sync.mjs` | `lib/supabase.ts` + `AuthProvider` | Sync état Supabase |
+| `services/supabase-state-sync.mjs` | `lib/user-state.ts` + `lib/settings.ts`/`lib/brain/preferences.ts`/`useUserState.ts` | Sync état Supabase |
 | `services/sound-manager.mjs` | `lib/sound.ts` | Sons UI |
 | `ui/*` | `components/*` correspondants | Composants React |
 | `pages/*.mjs` | `app/**/page.tsx` | App Router |
@@ -331,7 +331,7 @@ Ces éléments nécessitent une validation en conditions réelles, manuelle, ou 
 2. **Passkey / WebAuthn** — le code est câblé (`useSecurity.ts`), mais nécessite un authentificateur physique ou virtuel.
 3. **OAuth réels** — Google, GitHub, Spotify, Google Calendar/Drive, Notion, Todoist, YouTube, Reddit requièrent des `client_id`/`client_secret` et un callback déployé.
 4. **Live cards avec comptes connectés** — chaque provider a besoin de credentials/id public pour afficher des données réelles.
-5. **Mail avancé** — contacts, PGP, rules, push VAPID (`/api/mail/pgp/decrypt`, `/api/mail/push/vapidkey`) : endpoints Worker documentés dans v8, leur consommation dans Next.js doit être vérifiée si utilisés.
+5. **Mail avancé** — PGP et push VAPID sont consommés dans `components/MailAdvancedPanel.tsx`.
 6. **Supabase schema** — tables `ethone_files`, `ethone_file_collaborators`, `ethone_mail_aliases` : utilisées indirectement via Worker, valider qu'elles restent nécessaires.
 7. **Tests a11y / responsive / routes E2E** — relancés dans cette passe : 840/843 passent. Le test `auth-audit.spec.ts` échoue faute de credentials.
 8. **Déploiement `ethone.dev/login/`** — un test précédent a renvoyé 404 sur `/login/` alors que le build statique génère bien `login/index.html`. Vérifier l'hébergement (GitHub Pages / DNS / Cloudflare) et les règles de route.
@@ -342,7 +342,7 @@ Ces éléments nécessitent une validation en conditions réelles, manuelle, ou 
 
 ## ❌ MANQUANT
 
-Aucune fonctionnalité majeure du périmètre v8 n'est absente de Next.js après la dernière passe.
+Aucune fonctionnalité majeure du périmètre v8 n'est absente de Next.js après cette passe.
 
 Écarts identifiés lors de l'inventaire exhaustif et restant à traiter :
 
@@ -351,7 +351,7 @@ Aucune fonctionnalité majeure du périmètre v8 n'est absente de Next.js après
 | `data/profile-repository.mjs` | `lib/profile-repository.ts` (modèle, snapshot, preview) branché dans `app/profile-selection/page.tsx` | complété |
 | `ui/weather-detail.mjs` | `components/WeatherDetailPopover.tsx` + `components/V8Breadcrumbs.tsx` | popover météo porté et utilisé dans la topbar |
 | `ui/timer-*.mjs` (timer split) | remplacés par `FocusIsland.tsx`, `FocusPopover.tsx` et `lib/focus-timer.ts` | vérifier que le fractionnement en sous-composants n'apportait pas d'accessibilité supplémentaire |
-| `services/supabase-state-sync.mjs` | non porté avec ce nom ; `onAuthStateChange` géré dans `AuthProvider` | confirmer qu'il n'y a pas de canal Realtime manquant |
+| `services/supabase-state-sync.mjs` | `lib/user-state.ts` + `lib/settings.ts` (`saveSettingsAsync`/`loadSettingsAsync`) + `lib/brain/preferences.ts` + `lib/hooks/useUserState.ts` | synchronisation state utilisateur via `ethone_user_state` (porté et actif) |
 
 Les services v8 suivants ont été portés dans `ethone-next/lib/` dans ce batch :
 
@@ -366,7 +366,7 @@ Points mineurs identifiés :
 
 - **Spotify seek** : le Worker `controlSpotifyPlayback` ne gère que play/pause/next/previous (voir 🔧 / 🚨).
 - **Live cards génériques** : le dos générique enrichi (`renderGenericBack`) couvre désormais tous les providers sans dos spécifique ; les dos spécifiques des providers principaux restent ceux de v8.
-- **Endpoints `/api/mail/pgp/decrypt` et `/api/mail/push/vapidkey`** : présents côté Worker ; leur consommation explicite dans le front Next.js n'a pas été confirmée.
+- **Endpoints `/api/mail/pgp/decrypt` et `/api/mail/push/vapidkey`** : consommés dans `components/MailAdvancedPanel.tsx` (onglets PGP et push).
 
 ---
 

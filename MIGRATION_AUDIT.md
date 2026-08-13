@@ -124,6 +124,34 @@ Ce rapport est une **comparaison fonctionnelle entre l'ancien ETHONE v8** (moteu
 | `services/live-poll.mjs` | `lib/live-poll.ts` | ✅ |
 | `services/team-manager.mjs` | `lib/team-manager.ts` | ✅ |
 
+### Data/core v8 remplacés par l'architecture Next.js
+
+| Module v8 | Équivalent Next.js | Justification |
+|-----------|-------------------|---------------|
+| `app/app-runtime.mjs` | Next.js App Router + `app/layout.tsx` | Runtime SSG/App Router |
+| `core/router.mjs` | App Router + `next/navigation` | Routage natif |
+| `core/store.mjs` | React Context + `SettingsProvider`, `AuthProvider`, `LayerProvider`, etc. | État global React |
+| `core/preferences.mjs` | `lib/settings.ts` + `SettingsProvider` | Persistance préférences |
+| `core/theme-engine.mjs` | `lib/settings.ts` + Tailwind CSS variables | Théming Next.js |
+| `core/style-loader.mjs` | `app/globals.css` + Tailwind | Chargement styles |
+| `core/presence-engine.mjs` | `components/PresenceProvider.tsx` | Présence/heartbeat |
+| `core/experience.mjs` | `lib/ambient-engine.ts` + `components/DenseContent.tsx`/`DepthEffect.tsx` | Ambiance/jour/densité |
+| `data/profile-repository.mjs` | `lib/hooks/useProfiles.ts` + `SettingsProvider` | Gestion profils |
+| `command/command-center.mjs` | `components/CommandPalette.tsx` | Palette commandes |
+| `command/history.mjs` | `lib/command-search.ts` | Historique recherche |
+| `command/search.mjs` | `lib/command-search.ts` | Score/filtre commandes |
+| `i18n/catalog.mjs` | `lib/i18n.ts` | Catalogue i18n |
+| `i18n/runtime.mjs` | `lib/i18n.ts` + `useI18n` | Runtime i18n |
+| `services/auth-adapter.mjs` | `lib/auth.ts` | Auth Supabase/Worker |
+| `services/auth-storage.mjs` | `lib/supabase.ts` + `AuthProvider` | Stockage session |
+| `services/network-client.mjs` | `lib/api.ts` (`fetchWorker`) | Client Worker |
+| `services/service-worker.mjs` | `public/sw.js` | PWA service worker |
+| `services/supabase-state-sync.mjs` | `lib/supabase.ts` + `AuthProvider` | Sync état Supabase |
+| `services/sound-manager.mjs` | `lib/sound.ts` | Sons UI |
+| `ui/*` | `components/*` correspondants | Composants React |
+| `pages/*.mjs` | `app/**/page.tsx` | App Router |
+| `entry/*.mjs` | `app/login`, `app/password-recovery`, `app/profile-selection` | Pages d'entrée |
+
 ### Data/core v8 portés
 
 | Module v8 | Fichier Next.js | Statut |

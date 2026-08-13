@@ -82,6 +82,9 @@
 - **lib/daily-briefing.ts** - Daily briefing signals (weather, music, GitHub, events, tasks, yesterday activity)
 - **lib/lifecycle.ts** - Route/component lifecycle manager (mount/unmount/stats)
 - **lib/document-metadata.ts** - Document title/description/OG/Twitter manager by context
+- **lib/navigation-session.ts** - Scroll position capture/restore per route
+- **lib/oauth.ts** - Public OAuth app Client IDs and `oauthClientId` helper
+- **lib/brand-icons.ts** - Brand SVG markup catalog from v8
 
 ## 4. Reusable Components
 

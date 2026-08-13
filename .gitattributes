@@ -10,6 +10,9 @@
 *.yml text eol=lf
 *.yaml text eol=lf
 .githooks/* text eol=lf
+CNAME text eol=lf
+_headers text eol=lf
+.nojekyll text eol=lf
 *.ps1 text eol=crlf
 *.png binary
 *.ico binary

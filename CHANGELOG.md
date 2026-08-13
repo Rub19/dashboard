@@ -20,6 +20,8 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `components/LiveWidgets.tsx` : dos générique enrichi pour tous les providers live sans dos spécifique (icône, image, titre, sous-titre, méta, statut).
 - Spotify seek : endpoint Worker `/api/spotify/control` accepte `action: "seek"` + `positionMs`, et `components/LiveWidgets.tsx` expose un `<input type="range">` pour scrubber la lecture.
 - `app/files/page.tsx` : correction du débordement horizontal sur mobile 320px (ligne de fichier en colonne, actions flex-wrap).
+- `playwright.config.ts` : chargement automatique de `.env.local` pour les credentials E2E.
+- `.env.example` : commentaires pour `TEST_EMAIL` / `TEST_PASSWORD`.
 - `lib/rate-limiter.ts` : portage du rate-limiter v8 avec `createRateLimiter`, politiques d'authentification, fenêtres temporelles, blocage temporaire, `reset`, `destroy` et `size`.
 - `lib/auth.ts` : OTP via Worker (`sendOtp`/`verifyOtp` sur `/api/auth/otp/send` et `/api/auth/otp/verify`), rate-limiting sur `sign-in`, `sign-up`, `password-reset`, `password-update` et `oauth`, et notification Worker `/api/signout` avant déconnexion Supabase.
 - `lib/hooks/usePublicProfile.ts` + `app/profile/page.tsx` : appel à `/api/supabase/public-profile`, champ public identifier, aperçu du profil public et copie du lien.

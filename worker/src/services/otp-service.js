@@ -6,16 +6,70 @@ const OTP_TTL_MS = 10 * 60 * 1000;
 const MAX_ATTEMPTS = 5;
 const COOLDOWN_MS = 60 * 1000;
 
-function brandMarkDataUri() {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" aria-label="ETHONE"><defs><linearGradient id="ethone-signal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7be5c3"/><stop offset="1" stop-color="#8bc9fa"/></linearGradient><linearGradient id="ethone-surface" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14191f"/><stop offset="1" stop-color="#080a0d"/></linearGradient></defs><rect x="1.25" y="1.25" width="61.5" height="61.5" rx="15.25" fill="url(#ethone-signal)"/><rect x="4.15" y="4.15" width="55.7" height="55.7" rx="12.6" fill="url(#ethone-surface)"/><path d="M19 18v28m0-28h26M19 32h20.5M19 46h26" fill="none" stroke="#f4f7fa" stroke-width="6.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-  return `data:image/svg+xml;base64,${btoa(svg)}`;
+const LOGO_PNG_BASE64 = "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";
+
+const EMAIL_I18N = {
+  fr: {
+    subject: "Votre code de connexion ETHONE",
+    title: "Code de connexion",
+    account: "Compte",
+    codeLabel: "Votre code à six chiffres",
+    validUntil: "Valable jusqu'au",
+    localTime: "heure locale",
+    footer: "Ne partagez ce code avec personne. Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email.",
+    tagline: "ETHONE — votre dashboard personnel."
+  },
+  en: {
+    subject: "Your ETHONE login code",
+    title: "Login code",
+    account: "Account",
+    codeLabel: "Your six-digit code",
+    validUntil: "Valid until",
+    localTime: "local time",
+    footer: "Do not share this code with anyone. If you did not request it, you can ignore this email.",
+    tagline: "ETHONE — your personal dashboard."
+  },
+  es: {
+    subject: "Tu código de acceso ETHONE",
+    title: "Código de acceso",
+    account: "Cuenta",
+    codeLabel: "Tu código de seis dígitos",
+    validUntil: "Válido hasta",
+    localTime: "hora local",
+    footer: "No compartas este código con nadie. Si no fuiste tú quien lo solicitó, puedes ignorar este email.",
+    tagline: "ETHONE — tu dashboard personal."
+  },
+  de: {
+    subject: "Dein ETHONE-Anmeldecode",
+    title: "Anmeldecode",
+    account: "Konto",
+    codeLabel: "Dein sechsstelliger Code",
+    validUntil: "Gültig bis",
+    localTime: "Ortszeit",
+    footer: "Teilen Sie diesen Code mit niemandem. Wenn Sie ihn nicht angefordert haben, können Sie diese E-Mail ignorieren.",
+    tagline: "ETHONE — dein persönliches Dashboard."
+  }
+};
+
+const COUNTRY_TO_LOCALE = {
+  FR: "fr", BE: "fr", CH: "de", LU: "fr", MC: "fr",
+  ES: "es",
+  DE: "de", AT: "de"
+};
+
+export function resolveEmailLocale(acceptLanguage = "", country = "") {
+  const match = String(acceptLanguage).match(/^[a-zA-Z]{2}/);
+  if (match) {
+    const lang = match[0].toLowerCase();
+    if (EMAIL_I18N[lang]) return lang;
+  }
+  const cc = String(country).toUpperCase();
+  return COUNTRY_TO_LOCALE[cc] || "en";
 }
 
-function formatExpiresAt(iso) {
+function formatExpiresAt(iso, locale, timezone) {
   const d = new Date(iso);
-  const paris = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", dateStyle: "short", timeStyle: "short" });
-  const utc = new Intl.DateTimeFormat("fr-FR", { timeZone: "UTC", dateStyle: "short", timeStyle: "short" });
-  return `${paris.format(d)} (heure de Paris) / ${utc.format(d)} UTC`;
+  return new Intl.DateTimeFormat(locale, { timeZone: timezone, day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(d);
 }
 
 function maskContact(contact) {
@@ -25,16 +79,16 @@ function maskContact(contact) {
   return `${local}***${contact.slice(at)}`;
 }
 
-function buildOtpEmail(code, contact, expiresAt) {
-  const logo = brandMarkDataUri();
-  const expires = formatExpiresAt(expiresAt);
+function buildOtpEmail(code, contact, expiresAt, locale, timezone) {
+  const i18n = EMAIL_I18N[locale] || EMAIL_I18N.en;
+  const expires = formatExpiresAt(expiresAt, locale, timezone);
   const masked = maskContact(contact);
   const html = `<!DOCTYPE html>
-<html lang="fr">
+<html lang="${locale}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Votre code de connexion ETHONE</title>
+  <title>${i18n.subject}</title>
 </head>
 <body style="margin:0; padding:0; background:#080a0d; color:#f4f7fa; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#080a0d; padding:24px 0;">
@@ -43,23 +97,23 @@ function buildOtpEmail(code, contact, expiresAt) {
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#14191f; border:1px solid #1f2937; border-radius:16px; max-width:520px; width:100%; padding:32px 24px;">
           <tr>
             <td align="center">
-              <img src="${logo}" alt="ETHONE" width="64" height="64" style="display:block; margin:0 auto 16px; border-radius:15px;">
-              <h1 style="margin:0 0 8px; font-size:22px; font-weight:600; color:#f4f7fa;">Code de connexion</h1>
-              <p style="margin:0; color:#9ca3af; font-size:14px;">Compte : <strong style="color:#f4f7fa;">${masked}</strong></p>
+              <img src="cid:ethone-logo" alt="ETHONE" width="64" height="64" style="display:block; margin:0 auto 16px; border-radius:15px;">
+              <h1 style="margin:0 0 8px; font-size:22px; font-weight:600; color:#f4f7fa;">${i18n.title}</h1>
+              <p style="margin:0; color:#9ca3af; font-size:14px;">${i18n.account} : <strong style="color:#f4f7fa;">${masked}</strong></p>
             </td>
           </tr>
           <tr>
             <td align="center" style="padding:32px 0;">
-              <p style="margin:0 0 16px; color:#9ca3af; font-size:14px;">Votre code à six chiffres :</p>
+              <p style="margin:0 0 16px; color:#9ca3af; font-size:14px;">${i18n.codeLabel} :</p>
               <div style="font-size:36px; letter-spacing:10px; font-weight:700; color:#7be5c3; font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;">${code}</div>
             </td>
           </tr>
           <tr>
             <td align="center">
-              <p style="margin:0 0 8px; color:#9ca3af; font-size:14px;">Valable jusqu'au <strong style="color:#f4f7fa;">${expires}</strong>.</p>
+              <p style="margin:0 0 8px; color:#9ca3af; font-size:14px;">${i18n.validUntil} <strong style="color:#f4f7fa;">${expires} (${i18n.localTime})</strong>.</p>
               <p style="margin:24px 0 0; color:#6b7280; font-size:12px; line-height:1.5;">
-                Ne partagez ce code avec personne. Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email.<br>
-                ETHONE — votre dashboard personnel.
+                ${i18n.footer}<br>
+                ${i18n.tagline}
               </p>
             </td>
           </tr>
@@ -70,19 +124,26 @@ function buildOtpEmail(code, contact, expiresAt) {
 </body>
 </html>`;
 
-  const text = `ETHONE — Code de connexion
+  const text = `${i18n.subject}
 
-Compte : ${masked}
-Code : ${code}
-Valable jusqu'au : ${expires}
+${i18n.account} : ${masked}
+${i18n.codeLabel} : ${code}
+${i18n.validUntil} : ${expires} (${i18n.localTime})
 
-Ne partagez ce code avec personne. Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.
-ETHONE — votre dashboard personnel.`;
+${i18n.footer}
+${i18n.tagline}`;
 
-  return { html, text };
+  const attachments = [{
+    content: LOGO_PNG_BASE64,
+    filename: "ethone-logo.png",
+    content_type: "image/png",
+    content_id: "ethone-logo"
+  }];
+
+  return { html, text, attachments };
 }
 
-async function sendEmail(env, to, subject, { html, text } = {}) {
+async function sendEmail(env, to, subject, { html, text, attachments } = {}) {
   const apiKey = env.RESEND_API_KEY;
   if (!apiKey) throw new Error("Email service not configured");
   const from = env.RESEND_FROM || "ETHONE <no-reply@ethone.dev>";
@@ -96,7 +157,7 @@ async function sendEmail(env, to, subject, { html, text } = {}) {
       authorization: `Bearer ${apiKey}`,
       "content-type": "application/json"
     },
-    body: JSON.stringify({ from, to, subject, html, text }),
+    body: JSON.stringify({ from, to, subject, html, text, ...(attachments?.length ? { attachments } : {}) }),
     retries: 1,
     maxBytes: 8192
   });
@@ -114,7 +175,7 @@ function safeEmail(value) {
   return email;
 }
 
-export async function sendOtp(env, email, providedUserId) {
+export async function sendOtp(env, email, providedUserId, acceptLanguage = "fr", country = "", timezone = "Europe/Paris") {
   const contact = safeEmail(email);
   if (!contact) throw new Error("Invalid email address");
 
@@ -146,8 +207,11 @@ export async function sendOtp(env, email, providedUserId) {
   const debugOtpEnabled = !isProduction && env.ENVIRONMENT === "development" && env.ETHONE_DEBUG_OTP === "true";
   const exposeCode = debugOtpEnabled;
   if (!exposeCode) {
-    const { html, text } = buildOtpEmail(code, contact, expiresAt);
-    await sendEmail(env, contact, "Votre code de connexion ETHONE", { html, text });
+    const effectiveLocale = resolveEmailLocale(acceptLanguage, country);
+    const effectiveTimezone = timezone || "Europe/Paris";
+    const { html, text, attachments } = buildOtpEmail(code, contact, expiresAt, effectiveLocale, effectiveTimezone);
+    const i18n = EMAIL_I18N[effectiveLocale] || EMAIL_I18N.en;
+    await sendEmail(env, contact, i18n.subject, { html, text, attachments });
   }
 
   await insertSecurityEvent(env, {

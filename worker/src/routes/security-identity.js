@@ -131,7 +131,10 @@ export async function otpSendRoute({ request, env }) {
   const body = await readJsonBody(request, 2);
   const email = requireField(body, "email", EMAIL_RE, 320);
   const userId = body.userId && UUID_RE.test(body.userId) ? body.userId : null;
-  const result = await sendOtp(env, email, userId);
+  const acceptLanguage = request.headers.get("accept-language") || "";
+  const country = request.headers.get("cf-ipcountry") || request.cf?.country || "";
+  const timezone = request.cf?.timezone || "Europe/Paris";
+  const result = await sendOtp(env, email, userId, acceptLanguage, country, timezone);
   return { data: { sent: result.sent, userId: result.userId, contact: result.contact, expiresIn: result.expiresIn, ...(result.code ? { code: result.code } : {}) } };
 }
 

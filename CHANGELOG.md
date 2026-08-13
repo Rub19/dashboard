@@ -25,7 +25,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ### Corrige
 - Worker OTP (`worker/src/services/otp-service.js`, `worker/src/services/security-identity-client.js`, `worker/src/routes/security-identity.js`) : envoi et vérification fonctionnels, `insertSecurityEvent` et `consumeOtpCode` corrigés, retour du `token` de session, session valide 8h.
-- Template d'email OTP : intégration du logo ETHONE en SVG, affichage de la vraie date/heure d'expiration (heure de Paris + UTC), compte masqué et version texte.
+- Template d'email OTP : intégration du logo ETHONE en pièce jointe PNG, i18n automatique (fr/en/es/de) selon `Accept-Language` ou le pays Cloudflare, format de date court sans secondes ni UTC, compte masqué et version texte.
 - `ethone-next/app/login/page.tsx` et `ethone-next/lib/auth.ts` : la connexion par code OTP utilise désormais `sendOtp`/`verifyOtp` du Worker et établit une vraie session Supabase via `supabase.auth.setSession`.
 - `lib/hooks/useLiveData.ts` : `fetchOptional` propage désormais les erreurs ; `Promise.allSettled` collecte les échecs par source et expose `error` au lieu de masquer les problèmes derrière des états vides.
 - `app/login/page.tsx` et `app/reset-password/page.tsx` : validation avancée par `lib/form-validation.ts` sans casser le comportement existant.

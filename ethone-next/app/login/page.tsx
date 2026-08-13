@@ -246,9 +246,9 @@ export default function LoginPage() {
         </div>
 
         <div className="z-10 text-xs text-[var(--muted)]">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface)]/50 px-2.5 py-1">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            {i18n("systemStatus")}: {i18n("online")}
+          <span className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)]/50 px-3 py-1.5">
+            <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)]" />
+            {i18n("online")}
           </span>
         </div>
 

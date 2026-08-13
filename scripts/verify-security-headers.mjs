@@ -9,7 +9,6 @@ const requiredHeaders = [
   "referrer-policy",
   "permissions-policy",
   "cross-origin-opener-policy",
-  "cross-origin-resource-policy",
   "content-security-policy",
 ];
 

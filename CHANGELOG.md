@@ -28,6 +28,9 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `lib/home-model.ts` + `lib/daily-briefing.ts` + `lib/hooks/useDashboard.ts` : modèle home v8 (salutation périodique, recommandation contextuelle, tâches, événements, notes récentes) et briefing quotidien (signaux météo/musique/GitHub, suggestion d'action, `claimDailyBriefing`).
 - `lib/document-metadata.ts` + `components/DocumentMetadata.tsx` + `app/layout.tsx` : gestionnaire de métadonnées document v8 (titre/description/OG/Twitter par contexte de route).
 - `lib/lifecycle.ts` : portage du gestionnaire de cycle de vie v8 (`mount`/`unmount`/stats).
+- `lib/oauth.ts` : portage de `data/oauth-app-config.mjs` (Client IDs publics par défaut + `oauthClientId`).
+- `lib/navigation-session.ts` : portage de `core/navigation-session.mjs` (capture/restauration de la position de scroll par route).
+- `lib/brand-icons.ts` : portage de `data/brand-icons.mjs` (catalogue SVG de marques, données sans innerHTML).
 
 ### Corrige
 - Worker OTP (`worker/src/services/otp-service.js`, `worker/src/services/security-identity-client.js`, `worker/src/routes/security-identity.js`) : envoi et vérification fonctionnels, `insertSecurityEvent` et `consumeOtpCode` corrigés, retour du `token` de session, session valide 8h.

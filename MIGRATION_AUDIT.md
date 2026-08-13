@@ -135,6 +135,9 @@ Ce rapport est une **comparaison fonctionnelle entre l'ancien ETHONE v8** (moteu
 | `data/daily-briefing.mjs` | `lib/daily-briefing.ts` | ✅ |
 | `core/lifecycle.mjs` | `lib/lifecycle.ts` | ✅ |
 | `core/document-metadata.mjs` | `lib/document-metadata.ts` | ✅ |
+| `core/navigation-session.mjs` | `lib/navigation-session.ts` | ✅ |
+| `data/oauth-app-config.mjs` | `lib/oauth.ts` | ✅ |
+| `data/brand-icons.mjs` | `lib/brand-icons.ts` | ✅ |
 
 ### Branchement des services dans l'UI
 

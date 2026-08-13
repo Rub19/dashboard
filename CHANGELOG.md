@@ -4,7 +4,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
-**Migration Next.js : parité legacy v8 complète (rate-limiter, OTP Worker, profil public, Steam, Spotify, mail, marketplace, dense-content, depth-effect, form validation, command history/search)**
+**Migration Next.js : parité legacy v8 complète (rate-limiter, OTP Worker, profil public, Steam, Spotify, mail, marketplace, dense-content, depth-effect, form validation, command history/search, navigation, espaces, intégrations, home/daily briefing, lifecycle, document metadata)**
 
 ### Ajoute
 - `lib/rate-limiter.ts` : portage du rate-limiter v8 avec `createRateLimiter`, politiques d'authentification, fenêtres temporelles, blocage temporaire, `reset`, `destroy` et `size`.
@@ -22,6 +22,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `lib/i18n-extras.ts` : clés `fieldRequired` et `emailInvalid` pour les 4 langues.
 - `app/page.tsx` : ajout du `BrandMark` et du nom `ETHONE` en haut du dashboard home.
 - `components/LanguageSwitcher.tsx` + `app/layout.tsx` : bouton de changement de langue dans la topbar (icône globe + code langue), qui fait défiler `fr/en/es/de` comme en v8.
+- `lib/navigation.ts` + `components/Sidebar.tsx` + `components/MobileNav.tsx` : catalogue de navigation v8 partagé pour le rail et la barre mobile.
+- `lib/workspaces.ts` : portage du modèle d'espaces v8 (Personal, Focus, Studio) avec widgets, étapes et acccents.
+- `lib/integrations.ts` + `app/connections/page.tsx` : catalogue enrichi des intégrations v8 (catégories, statut, icône, signal live, URL officielle) remplaçant la liste localisée en dur de la page Connections.
+- `lib/home-model.ts` + `lib/daily-briefing.ts` + `lib/hooks/useDashboard.ts` : modèle home v8 (salutation périodique, recommandation contextuelle, tâches, événements, notes récentes) et briefing quotidien (signaux météo/musique/GitHub, suggestion d'action, `claimDailyBriefing`).
+- `lib/document-metadata.ts` + `components/DocumentMetadata.tsx` + `app/layout.tsx` : gestionnaire de métadonnées document v8 (titre/description/OG/Twitter par contexte de route).
+- `lib/lifecycle.ts` : portage du gestionnaire de cycle de vie v8 (`mount`/`unmount`/stats).
 
 ### Corrige
 - Worker OTP (`worker/src/services/otp-service.js`, `worker/src/services/security-identity-client.js`, `worker/src/routes/security-identity.js`) : envoi et vérification fonctionnels, `insertSecurityEvent` et `consumeOtpCode` corrigés, retour du `token` de session, session valide 8h.

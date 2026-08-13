@@ -13,6 +13,7 @@ import { useProviderCredentials } from "@/lib/hooks/useProviderCredentials";
 import type { ProviderCredential } from "@/lib/hooks/useProviderCredentials";
 import ConnectionDiagnostics from "@/components/ConnectionDiagnostics";
 import ConnectionInspector, { type InspectorIntegration } from "@/components/ConnectionInspector";
+import { INTEGRATIONS, INTEGRATION_CATEGORIES } from "@/lib/integrations";
 
 const categoryIcons: Record<string, string> = {
   media: "music",
@@ -23,55 +24,6 @@ const categoryIcons: Record<string, string> = {
   health: "heart-pulse",
   ai: "brain",
 };
-
-const INTEGRATIONS: { id: string; name: string; category: string; description: string; status: string }[] = [
-  { id: "spotify", name: "Spotify", category: "media", description: "descSpotify", status: "oauth" },
-  { id: "plex", name: "Plex", category: "media", description: "descPlex", status: "api" },
-  { id: "jellyfin", name: "Jellyfin", category: "media", description: "descJellyfin", status: "local" },
-  { id: "emby", name: "Emby", category: "media", description: "descEmby", status: "local" },
-  { id: "youtube", name: "YouTube", category: "media", description: "descYoutube", status: "oauth" },
-  { id: "twitch", name: "Twitch", category: "media", description: "descTwitch", status: "oauth" },
-  { id: "lastfm", name: "Last.fm", category: "media", description: "descLastfm", status: "api" },
-  { id: "discord", name: "Discord", category: "social", description: "descDiscord", status: "oauth" },
-  { id: "reddit", name: "Reddit", category: "social", description: "descReddit", status: "oauth" },
-  { id: "bluesky", name: "Bluesky", category: "social", description: "descBluesky", status: "api" },
-  { id: "steam", name: "Steam", category: "gaming", description: "descSteam", status: "api" },
-  { id: "riot", name: "Riot Games", category: "gaming", description: "descRiot", status: "api" },
-  { id: "minecraft", name: "Minecraft", category: "gaming", description: "descMinecraft", status: "oauth" },
-  { id: "tracker", name: "Tracker.gg", category: "gaming", description: "descTracker", status: "restricted" },
-  { id: "google-calendar", name: "Google Calendar", category: "productivity", description: "descGoogleCalendar", status: "oauth" },
-  { id: "google-drive", name: "Google Drive", category: "productivity", description: "descGoogleDrive", status: "oauth" },
-  { id: "notion", name: "Notion", category: "productivity", description: "descNotion", status: "oauth" },
-  { id: "todoist", name: "Todoist", category: "productivity", description: "descTodoist", status: "oauth" },
-  { id: "linear", name: "Linear", category: "productivity", description: "descLinear", status: "oauth" },
-  { id: "clickup", name: "ClickUp", category: "productivity", description: "descClickUp", status: "oauth" },
-  { id: "jira", name: "Jira", category: "productivity", description: "descJira", status: "oauth" },
-  { id: "email", name: "Email", category: "productivity", description: "descEmail", status: "oauth" },
-  { id: "rss", name: "RSS", category: "productivity", description: "descRss", status: "feed" },
-  { id: "weather", name: "Météo", category: "productivity", description: "descWeather", status: "api" },
-  { id: "github", name: "GitHub", category: "development", description: "descGithub", status: "oauth" },
-  { id: "gitlab", name: "GitLab", category: "development", description: "descGitLab", status: "oauth" },
-  { id: "obsidian", name: "Obsidian", category: "development", description: "descObsidian", status: "local" },
-  { id: "vscode", name: "VS Code", category: "development", description: "descVscode", status: "local" },
-  { id: "fitbit", name: "Fitbit", category: "health", description: "descFitbit", status: "oauth" },
-  { id: "lm-studio", name: "LM Studio", category: "ai", description: "descLmStudio", status: "local" },
-  { id: "ollama", name: "Ollama", category: "ai", description: "descOllama", status: "local" },
-  { id: "openai", name: "OpenAI", category: "ai", description: "descOpenai", status: "api" },
-  { id: "anthropic", name: "Anthropic", category: "ai", description: "descAnthropic", status: "api" },
-  { id: "gemini", name: "Gemini", category: "ai", description: "descGemini", status: "api" },
-  { id: "groq", name: "Groq", category: "ai", description: "descGroq", status: "api" },
-];
-
-const CATEGORIES = [
-  { id: "all", label: "Toutes", icon: "blocks" },
-  { id: "media", label: "Médias", icon: "music" },
-  { id: "social", label: "Social", icon: "message-square" },
-  { id: "gaming", label: "Gaming", icon: "gamepad-2" },
-  { id: "productivity", label: "Productivité", icon: "briefcase" },
-  { id: "development", label: "Développement", icon: "code" },
-  { id: "health", label: "Santé", icon: "heart-pulse" },
-  { id: "ai", label: "IA", icon: "brain" },
-];
 
 type PublicFieldDef = {
   key: keyof Settings;
@@ -247,7 +199,7 @@ export default function ConnectionsPage() {
       <ConnectionDiagnostics />
 
       <div className="flex flex-wrap gap-2">
-        {CATEGORIES.map((cat) => (
+        {INTEGRATION_CATEGORIES.map((cat) => (
           <button
             key={cat.id}
             onClick={() => setFilter(cat.id)}

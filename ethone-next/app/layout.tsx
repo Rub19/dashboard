@@ -38,6 +38,7 @@ import AutomationRuntime from "@/components/AutomationRuntime";
 import { ActivityJournalProvider } from "@/components/ActivityJournalProvider";
 import V8Breadcrumbs from "@/components/V8Breadcrumbs";
 import V8StatusBar from "@/components/V8StatusBar";
+import DocumentMetadata from "@/components/DocumentMetadata";
 import V8WindowControls from "@/components/V8WindowControls";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
@@ -113,6 +114,7 @@ export default function RootLayout({
                       <V8WindowControls />
                     </div>
                   </header>
+                  <DocumentMetadata />
                   <ServiceWorker />
                   <OAuthHandler />
                   <LiveOverlay />

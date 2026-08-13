@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { fetchWorker } from "../api";
 import { useSettings } from "@/components/SettingsProvider";
+import { timeContext } from "@/lib/home-model";
 
 export type CloudDashboard = {
   totalFiles: number;
@@ -90,13 +91,8 @@ export function useHomeData() {
     ? `/api/tracker/lol-matches?name=${encodeURIComponent(liveTrackerRiotName)}&tag=${encodeURIComponent(liveTrackerRiotTag)}`
     : null;
 
-  const greeting = useMemo(() => {
-    const hour = new Date().getHours();
-    if (hour >= 5 && hour < 12) return { label: "Bonjour", tone: "Un départ calme, puis l'essentiel." };
-    if (hour >= 12 && hour < 18) return { label: "Bon après-midi", tone: "Gardez le cap sur ce qui compte." };
-    if (hour >= 18 && hour < 23) return { label: "Bonsoir", tone: "Le bon moment pour conclure sans se presser." };
-    return { label: "Encore éveillé", tone: "ETHONE reste discret pendant que vous avancez." };
-  }, []);
+  const context = useMemo(() => timeContext(), []);
+  const greeting = useMemo(() => ({ label: context.greeting, tone: context.tone }), [context]);
 
   useEffect(() => {
     let cancelled = false;

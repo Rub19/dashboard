@@ -4,24 +4,13 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
+import { NAVIGATION_ITEMS, type NavigationItem } from "@/lib/navigation";
 
 export default function MobileNav() {
   const pathname = usePathname();
   const i18n = useI18n();
 
-  const items = [
-    { id: "home", label: i18n("home"), href: "/", icon: "home" },
-    { id: "notes", label: i18n("notes"), href: "/notes/", icon: "notes" },
-    { id: "tasks", label: i18n("tasks"), href: "/tasks/", icon: "tasks" },
-    { id: "calendar", label: i18n("calendar"), href: "/calendar/", icon: "calendar" },
-    { id: "mail", label: i18n("mail"), href: "/mail/", icon: "mail" },
-    { id: "brain", label: i18n("brain"), href: "/brain/", icon: "brain" },
-    { id: "weather", label: i18n("weather"), href: "/weather/", icon: "cloudSun" },
-    { id: "files", label: i18n("files"), href: "/files/", icon: "folder" },
-    { id: "connections", label: i18n("connections"), href: "/connections/", icon: "plug" },
-    { id: "team", label: i18n("team"), href: "/team/", icon: "users" },
-    { id: "settings", label: i18n("settings"), href: "/settings/", icon: "settings" },
-  ];
+  const items = NAVIGATION_ITEMS.map((item: NavigationItem) => ({ ...item, label: i18n(item.label) }));
 
   return (
     <nav data-zen-hidden className="fixed bottom-0 left-0 right-0 z-40 border-t border-[var(--border)] bg-[var(--surface)] pb-safe md:hidden">

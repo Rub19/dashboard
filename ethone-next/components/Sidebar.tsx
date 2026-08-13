@@ -9,6 +9,7 @@ import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { Icon } from "@/lib/icons";
 import Tooltip from "@/components/Tooltip";
 import BrandMark from "@/components/BrandMark";
+import { NAVIGATION_ITEMS, type NavigationItem } from "@/lib/navigation";
 
 export default function Sidebar() {
   const [expanded, setExpanded] = useLocalStorage<boolean>("ethone-rail-expanded", false);
@@ -16,27 +17,7 @@ export default function Sidebar() {
   const i18n = useI18n();
   const { settings } = useSettings();
 
-  const navItems = [
-    { id: "home", label: i18n("home"), href: "/", icon: "home" },
-    { id: "notes", label: i18n("notes"), href: "/notes/", icon: "notes" },
-    { id: "tasks", label: i18n("tasks"), href: "/tasks/", icon: "tasks" },
-    { id: "calendar", label: i18n("calendar"), href: "/calendar/", icon: "calendar" },
-    { id: "files", label: i18n("files"), href: "/files/", icon: "files" },
-    { id: "bills", label: i18n("bills"), href: "/bills/", icon: "bills" },
-    { id: "activity", label: i18n("activity"), href: "/activity/", icon: "activity" },
-    { id: "interactions", label: i18n("interactions"), href: "/interactions/", icon: "interactions" },
-    { id: "connections", label: i18n("connections"), href: "/connections/", icon: "connections" },
-    { id: "plugins", label: i18n("plugins"), href: "/plugins/", icon: "plugins" },
-    { id: "spaces", label: i18n("spaces"), href: "/spaces/", icon: "spaces" },
-    { id: "flows", label: i18n("flowsTitle"), href: "/flows/", icon: "flows" },
-    { id: "system", label: i18n("systemTitle"), href: "/system/", icon: "settings-2" },
-    { id: "brain", label: i18n("brain"), href: "/brain/", icon: "brain" },
-    { id: "weather", label: i18n("weather"), href: "/weather/", icon: "cloudSun" },
-    { id: "focus", label: i18n("focus"), href: "/focus/", icon: "focus" },
-    { id: "team", label: i18n("team"), href: "/team/", icon: "team" },
-    { id: "mail", label: i18n("mail"), href: "/mail/", icon: "mail" },
-    { id: "settings", label: i18n("settings"), href: "/settings/", icon: "settings" },
-  ];
+  const navItems = NAVIGATION_ITEMS.map((item: NavigationItem) => ({ ...item, label: i18n(item.label) }));
 
   if (settings.layoutPreset === "dock-only" || settings.layoutPreset === "minimal" || !settings.sidebarVisible) return null;
 

@@ -20,7 +20,7 @@ Ce rapport est une **comparaison fonctionnelle entre l'ancien ETHONE v8** (moteu
 ### Conclusion synthétique
 
 - **État global** : la grande majorité du périmètre fonctionnel de v8 est migrée dans Next.js, et plusieurs fonctionnalités absentes de v8 ont été ajoutées (Bills, Flows, Focus, Weather, Plugins marketplace, Personas, Spaces, Macros, RSS, Scratchpad, public profile, reset password, changelog).
-- **Validation technique actuelle** : build statique (77 routes / 43 routes plugin), lint, tests unitaires (52/52), `precommit-upload-check` et `audit-security` passent.
+- **Validation technique actuelle** : build statique (77 routes / 43 routes plugin), lint, tests unitaires (52/52), `precommit-upload-check` et `audit-security` passent. Les nouveaux modules data/core sont aussi validés.
 - **Points sensibles non testés dans cette passe** : OAuth réel, passkey physique, OTP sur la production, live cards avec comptes connectés, test Worker complet, tests E2E a11y/routes/responsive complets, validation du déploiement `ethone.dev/login/`.
 - **Aucune régression critique détectée** par build / lint / unitaires. Aucune correction de code n'a été apportée pendant cet audit (pas de régression à corriger).
 
@@ -124,6 +124,18 @@ Ce rapport est une **comparaison fonctionnelle entre l'ancien ETHONE v8** (moteu
 | `services/live-poll.mjs` | `lib/live-poll.ts` | ✅ |
 | `services/team-manager.mjs` | `lib/team-manager.ts` | ✅ |
 
+### Data/core v8 portés
+
+| Module v8 | Fichier Next.js | Statut |
+|-----------|-----------------|--------|
+| `data/navigation.mjs` | `lib/navigation.ts` | ✅ |
+| `data/workspaces.mjs` | `lib/workspaces.ts` | ✅ |
+| `data/integrations.mjs` | `lib/integrations.ts` | ✅ |
+| `data/home-model.mjs` | `lib/home-model.ts` | ✅ |
+| `data/daily-briefing.mjs` | `lib/daily-briefing.ts` | ✅ |
+| `core/lifecycle.mjs` | `lib/lifecycle.ts` | ✅ |
+| `core/document-metadata.mjs` | `lib/document-metadata.ts` | ✅ |
+
 ### Branchement des services dans l'UI
 
 | Service | Hook / Composant | Branchement |
@@ -134,6 +146,10 @@ Ce rapport est une **comparaison fonctionnelle entre l'ancien ETHONE v8** (moteu
 | Clock manager | `lib/hooks/useClock.ts` + `components/V8StatusBar.tsx` | Horloge temps réel avec fuseau horaire |
 | Live poll | `lib/hooks/useLivePoll.ts` | Rafraîchissement onglet/focus pour `useCloudFiles`, `useMail` |
 | Team manager | `lib/hooks/useTeam.ts` + `app/team/page.tsx` | Gestion d'équipe directement via Supabase + localStorage |
+|| Navigation catalog | `lib/navigation.ts` + `components/Sidebar.tsx` + `components/MobileNav.tsx` | Items v8 partagés entre rail et nav mobile |
+|| Integrations catalog | `lib/integrations.ts` + `app/connections/page.tsx` | Catalogue v8 catégories/statuts/icônes dans Connections |
+|| Home/Daily briefing | `lib/home-model.ts` + `lib/daily-briefing.ts` + `lib/hooks/useDashboard.ts` | Salutation périodique et modèle de recommandation v8 |
+|| Document metadata | `lib/document-metadata.ts` + `components/DocumentMetadata.tsx` + `app/layout.tsx` | Titre/description/OG mis à jour par route |
 
 ### Cloudflare Worker
 

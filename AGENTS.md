@@ -9,7 +9,7 @@
 - Worker         : `cd worker && npm run deploy` (ou `npx wrangler deploy`).
 - Tests worker   : `cd worker && npm test`.
 - Pré-commit     : `node ./scripts/precommit-upload-check.mjs` puis `node ./scripts/audit-security.mjs`.
-- Déploiement    : `main` déploie `ethone-next/dist` via `.github/workflows/deploy-pages.yml`. Les scripts `scripts/verify-deployment.mjs` et `scripts/verify-security-headers.mjs` vérifient le déploiement.
+- Déploiement    : `main` est déployé sur Cloudflare Pages depuis le dashboard ou `npx wrangler pages deploy ethone-next/dist --project-name=<nom>`. L'ancien workflow GitHub Pages a été supprimé.
 - Headers Pages  : `ethone-next/public/_headers` est copié dans l'artifact statique.
 
 ## Conventions

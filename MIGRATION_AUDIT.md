@@ -441,7 +441,7 @@ Le répertoire legacy `.worktree/main/v8/` a été **supprimé** suite à la val
 
 ## 🚨 RISQUES
 
-1. **Hébergement / routes** — `ethone.dev` déploie maintenant le build Next.js (branche `main`) : `/login` et `/login/` retournent 200. Le domaine personnalisé a été réactivé via un `CNAME` racine. Le CSP actuellement servi est celui de la configuration Cloudflare existante ; les headers complémentaires du fichier `_headers` ne sont appliqués que sur Cloudflare Pages.
+1. **Hébergement / routes** — `ethone.dev` est hébergé sur Cloudflare Pages. Le build Next.js déploie depuis `ethone-next/dist` et `/login/` retourne 200. Les headers de `ethone-next/public/_headers` sont actifs ; le CSP doit être nettoyé si une ancienne règle Cloudflare Transform l'écrase.
 2. **Tests avec credentials réels** — OAuth, passkey, OTP, live cards ne sont prouvés que par code, pas par exécution réelle. Un endpoint Worker ou un `client_id` mal configuré peut casser le flux.
 3. **Spotify seek** — le Worker supporte désormais `seek` (`/api/spotify/control` avec `positionMs`) et l'UI `LiveWidgets` permet de scrubber la lecture.
 4. **Live cards génériques** — le dos générique enrichi couvre les providers sans dos spécifique ; l'expérience est proche de v8.

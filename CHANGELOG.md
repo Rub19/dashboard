@@ -22,9 +22,9 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - Spotify seek : endpoint Worker `/api/spotify/control` accepte `action: "seek"` + `positionMs`, et `components/LiveWidgets.tsx` expose un `<input type="range">` pour scrubber la lecture.
 - `app/files/page.tsx` : correction du débordement horizontal sur mobile 320px (ligne de fichier en colonne, actions flex-wrap).
 - `ethone-next/public/_headers` : headers de sécurité (CSP, HSTS, X-Frame-Options, COOP, CORP, Referrer-Policy, Permissions-Policy) pour le déploiement statique.
-- `.github/workflows/deploy-pages.yml` : pipeline de build/déploiement GitHub Pages pour `ethone-next/dist` avec lint, build, a11y et vérifications post-déploiement.
 - `main` : fast-forward vers `migration-react-tailwind`, suppression du worktree `.worktree/main`, ajout d'un `CNAME` racine pour réactiver `ethone.dev`.
 - `scripts/verify-security-headers.mjs` : adaptation aux headers effectivement servis par GitHub Pages + Cloudflare.
+- Migration vers Cloudflare Pages : `ethone.dev` hébergé via `ethone-next/dist`, custom domain actif, suppression du workflow GitHub Pages et du `CNAME` racine.
 - Push de la branche `migration-react-tailwind` sur `origin`.
 - `scripts/verify-deployment.mjs` et `scripts/verify-security-headers.mjs` : scripts de vérification post-déploiement du build Next.js.
 - `scripts/precommit-upload-check.mjs` : évite les faux positifs sur les valeurs mock/test et les catalogues i18n/tests.

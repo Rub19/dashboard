@@ -20,6 +20,10 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `components/LiveWidgets.tsx` : dos générique enrichi pour tous les providers live sans dos spécifique (icône, image, titre, sous-titre, méta, statut).
 - Spotify seek : endpoint Worker `/api/spotify/control` accepte `action: "seek"` + `positionMs`, et `components/LiveWidgets.tsx` expose un `<input type="range">` pour scrubber la lecture.
 - `app/files/page.tsx` : correction du débordement horizontal sur mobile 320px (ligne de fichier en colonne, actions flex-wrap).
+- `ethone-next/public/_headers` : headers de sécurité (CSP, HSTS, X-Frame-Options, COOP, CORP, Referrer-Policy, Permissions-Policy) pour le déploiement statique.
+- `.github/workflows/deploy-pages.yml` : pipeline de build/deploiement GitHub Pages pour `ethone-next/dist` avec validation Worker, lint, build, a11y et vérifications post-déploiement.
+- `scripts/verify-deployment.mjs` et `scripts/verify-security-headers.mjs` : scripts de vérification post-déploiement du build Next.js.
+- `scripts/precommit-upload-check.mjs` : évite les faux positifs sur les valeurs mock/test et les catalogues i18n/tests.
 - `playwright.config.ts` : chargement automatique de `.env.local` pour les credentials E2E.
 - `.env.example` : commentaires pour `TEST_EMAIL` / `TEST_PASSWORD`.
 - `MIGRATION_AUDIT.md` : mise à jour des résultats finaux (Worker 138/138, Playwright 843/843) et du nettoyage legacy v8.

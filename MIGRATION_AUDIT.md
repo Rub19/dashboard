@@ -441,7 +441,7 @@ Le répertoire legacy `.worktree/main/v8/` a été **supprimé** suite à la val
 
 ## 🚨 RISQUES
 
-1. **Hébergement / routes** — si `ethone.dev/login/` renvoie 404 en production malgré un build correct, le problème vient de l'hébergeur (GitHub Pages, DNS, Cloudflare) ou d'un manque de rewrite. Impact : impossibilité de se connecter directement par URL.
+1. **Hébergement / routes** — `ethone.dev` sert actuellement l'ancienne version v8 (pas le build Next.js) : `/login` et `/login/` retournent 404. La raison est que la branche `main` n'est pas encore mise à jour avec le build Next.js. Le workflow `.github/workflows/deploy-pages.yml`, les scripts `verify-deployment.mjs`/`verify-security-headers.mjs` et le fichier `_headers` ont été préparés pour le déploiement du build `ethone-next/dist`.
 2. **Tests avec credentials réels** — OAuth, passkey, OTP, live cards ne sont prouvés que par code, pas par exécution réelle. Un endpoint Worker ou un `client_id` mal configuré peut casser le flux.
 3. **Spotify seek** — le Worker supporte désormais `seek` (`/api/spotify/control` avec `positionMs`) et l'UI `LiveWidgets` permet de scrubber la lecture.
 4. **Live cards génériques** — le dos générique enrichi couvre les providers sans dos spécifique ; l'expérience est proche de v8.
@@ -462,8 +462,9 @@ precommit-upload-check            ✅ 0 fichiers dangereux
 cd . && node ./scripts/audit-security.mjs   ✅ 481 fichiers scannés
 scripts/a11y-audit.mjs            ✅ 0 issue sur 78 pages
 scripts/responsive-audit.mjs      ✅ 64/124 fichiers, aucune anomalie de layout
-npx playwright test               ✅ 840/843 pass (3 échecs = credentials auth-audit manquants)
-worker full test                  ✅ 136/136 pass
+npx playwright test               ✅ 843/843 (credentials TEST_EMAIL/TEST_PASSWORD)
+worker full test                  ✅ 138/138 pass
+vérification déploiement local    ✅ /login et /login/ retournent 200 sur l'artifact Next.js
 ```
 
 ---

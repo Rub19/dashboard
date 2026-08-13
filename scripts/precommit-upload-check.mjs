@@ -59,6 +59,8 @@ function placeholderValue(value) {
     || clean.startsWith("${")
     || clean.startsWith("<")
     || /^(?:example|sample|dummy|placeholder|replace|redacted|your[-_]|not[-_]?a[-_]?real|change[-_]?me|test[-_]?only|none|null|undefined|x{4,}|\*{4,})/.test(clean)
+    || clean.includes("mock")
+    || /^test[-_]/.test(clean)
     || clean.includes("process.env")
     || clean.includes("import.meta.env")
     || clean.includes("deno.env")
@@ -85,7 +87,9 @@ function serviceRoleJwt(source) {
   });
 }
 
-export function scanText(source) {
+const SKIP_SENSITIVE_ASSIGNMENT = /(?:\/(?:i18n|locales)\/|i18n\.(?:ts|js|mjs)$|\.test\.(?:mjs|js|ts)$)/i;
+
+export function scanText(source, sourceName = "") {
   const text = String(source || "");
   const findings = new Set();
   secretFormatPatterns().forEach(([reason, pattern]) => {
@@ -93,11 +97,13 @@ export function scanText(source) {
   });
   if (serviceRoleJwt(text)) findings.add("Supabase service_role JWT");
 
-  const assignment = /\b([A-Za-z][A-Za-z0-9_.-]*(?:api[_-]?key|client[_-]?secret|service[_-]?role(?:[_-]?key)?|access[_-]?token|refresh[_-]?token|github[_-]?token|cloudflare[_-]?(?:api[_-]?token|account[_-]?id)|private[_-]?key|password|passwd|credentials?)[A-Za-z0-9_.-]*)\b\s*(?:=|:)\s*["'`]([^"'`\r\n]{6,})["'`]/gi;
-  let match = assignment.exec(text);
-  while (match) {
-    if (sensitiveAssignmentName(match[1]) && !placeholderValue(match[2])) findings.add(`hardcoded sensitive value (${match[1]})`);
-    match = assignment.exec(text);
+  if (!SKIP_SENSITIVE_ASSIGNMENT.test(sourceName)) {
+    const assignment = /\b([A-Za-z][A-Za-z0-9_.-]*(?:api[_-]?key|client[_-]?secret|service[_-]?role(?:[_-]?key)?|access[_-]?token|refresh[_-]?token|github[_-]?token|cloudflare[_-]?(?:api[_-]?token|account[_-]?id)|private[_-]?key|password|passwd|credentials?)[A-Za-z0-9_.-]*)\b\s*(?:=|:)\s*["'`]([^"'`\r\n]{6,})["'`]/gi;
+    let match = assignment.exec(text);
+    while (match) {
+      if (sensitiveAssignmentName(match[1]) && !placeholderValue(match[2])) findings.add(`hardcoded sensitive value (${match[1]})`);
+      match = assignment.exec(text);
+    }
   }
   return Object.freeze([...findings]);
 }
@@ -122,7 +128,7 @@ export function scanPaths(rootInput, relativePaths) {
     }
     const buffer = fs.readFileSync(absolute);
     if (isBinary(buffer)) return;
-    scanText(buffer.toString("utf8")).forEach((finding) => issues.push({ file: relative, reason: finding }));
+    scanText(buffer.toString("utf8"), relative).forEach((finding) => issues.push({ file: relative, reason: finding }));
   });
   const unique = new Map(issues.map((issue) => [`${issue.file}\0${issue.reason}`, issue]));
   return Object.freeze([...unique.values()]);

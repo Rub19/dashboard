@@ -31,6 +31,9 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `lib/oauth.ts` : portage de `data/oauth-app-config.mjs` (Client IDs publics par défaut + `oauthClientId`).
 - `lib/navigation-session.ts` : portage de `core/navigation-session.mjs` (capture/restauration de la position de scroll par route).
 - `lib/brand-icons.ts` : portage de `data/brand-icons.mjs` (catalogue SVG de marques, données sans innerHTML).
+- `lib/date.ts` : portage de `utils/date.mjs` (`isExpired`, `isExpiringSoon`).
+- `lib/format.ts` : portage de `utils/format.mjs` (`formatBytes`).
+- `lib/download.ts` : portage de `utils/download.mjs` (`downloadJson`).
 
 ### Corrige
 - Worker OTP (`worker/src/services/otp-service.js`, `worker/src/services/security-identity-client.js`, `worker/src/routes/security-identity.js`) : envoi et vérification fonctionnels, `insertSecurityEvent` et `consumeOtpCode` corrigés, retour du `token` de session, session valide 8h.

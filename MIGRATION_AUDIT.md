@@ -138,6 +138,9 @@ Ce rapport est une **comparaison fonctionnelle entre l'ancien ETHONE v8** (moteu
 | `core/navigation-session.mjs` | `lib/navigation-session.ts` | ✅ |
 | `data/oauth-app-config.mjs` | `lib/oauth.ts` | ✅ |
 | `data/brand-icons.mjs` | `lib/brand-icons.ts` | ✅ |
+| `utils/date.mjs` | `lib/date.ts` | ✅ |
+| `utils/format.mjs` | `lib/format.ts` | ✅ |
+| `utils/download.mjs` | `lib/download.ts` | ✅ |
 
 ### Branchement des services dans l'UI
 

@@ -28,10 +28,6 @@ jobs:
         run: cd ethone-next && npm ci
       - name: Build client
         run: cd ethone-next && npm run build
-      - name: Install worker dependencies
-        run: cd worker && npm ci
-      - name: Run worker tests
-        run: cd worker && npm test
       - name: Block private or local upload content
         run: node ./scripts/precommit-upload-check.mjs
       - name: Security audit

@@ -1,18 +1,38 @@
 # Audit de migration ETHONE — v8 (legacy) → React + Tailwind (Next.js)
 
-Généré le : <!-- auto -->
-Branche : `migration-react-tailwind`
+Généré le : *audit actuel*  
+Branche : `migration-react-tailwind`  
+Référence legacy : `C:\Users\storm\dashboard\.worktree\main\v8`  
+Application Next.js : `C:\Users\storm\dashboard\ethone-next`  
 
 ---
 
 ## Résumé exécutif
 
-L'inventaire comparatif a été réalisé sur l'ancien ETHONE v8 (`\.worktree\main\v8`) et le nouveau Next.js (`\ethone-next`).
+Ce rapport est une **comparaison fonctionnelle entre l'ancien ETHONE v8** (moteur JavaScript/CSS vanilla) **et la nouvelle application Next.js + Tailwind CSS**. Il s'appuie sur :
 
-- **État global** : la grande majorité des pages, composants shell, connexions externes, paramètres et comportements sont migrés et fonctionnent.
-- **Dernières corrections** : retrait du fallback legacy (`public/legacy` supprimé), propagation des erreurs live data, signout Worker notifié, marketplace complet (35 intégrations v8 couvertes dans `lib/plugins.ts`, 40 routes de plugin générées, dont `bills` et `steam-achievements`), rate-limiter client v8 porté dans `lib/rate-limiter.ts` et `lib/auth.ts`, OTP Worker (`/api/auth/otp/send` et `/api/auth/otp/verify`), profil public Supabase (`/api/supabase/public-profile`) avec aperçu profil, succès Steam via `/api/steam/achievements`, endpoints mail contacts/extract/notifications, validateurs de formulaires avancés v8 portés dans `lib/form-validation.ts`, command search/history enrichi, composants `DenseContent` et `DepthEffect` portés, like Spotify synchronisé, recherche mail via `/api/mail/search`, parité RichTextEditor renforcie, logo ETHONE sur le dashboard home, badge "OS" retiré de l'écran de chargement, sélecteur de langue dans la topbar.
-- **Différences principales** : Next.js ajoute de nombreuses fonctionnalités absentes de v8 (Bills, Flows, Focus, Weather, Plugins, Personas, Spaces, Macros, RSS, Scratchpad, etc.). Quelques écarts mineurs subsistent (tests a11y/routes/responsive non relancés pour préserver la limite Worker).
-- **Validation technique** : build (77 pages), lint, tests unitaires (45 tests), `audit-security` (416 fichiers), `precommit-upload-check`, E2E direct refresh (`/plugins/spotify/`, `/drop/?slug=...`, `/share/?slug=...`) et `auth-audit` (3 tests) passent.
+- un inventaire détaillé du legacy v8 (`MIGRATION_AUDIT_v8.md`) ;
+- un inventaire détaillé de l'app Next.js (`MIGRATION_AUDIT_nextjs.md`) ;
+- une comparaison source-à-source des pages, composants, services, intégrations, Worker, Supabase, thèmes, i18n et assets ;
+- les validations techniques rapides : `npm run build`, `npm run lint`, `npm run test:unit`, `precommit-upload-check`, `audit-security` ;
+- les résultats E2E et Worker des audits précédents, **sans relancer la suite Worker complète** conformément à votre consigne.
+
+### Conclusion synthétique
+
+- **État global** : la grande majorité du périmètre fonctionnel de v8 est migrée dans Next.js, et plusieurs fonctionnalités absentes de v8 ont été ajoutées (Bills, Flows, Focus, Weather, Plugins marketplace, Personas, Spaces, Macros, RSS, Scratchpad, public profile, reset password, changelog).
+- **Validation technique actuelle** : build statique (77 routes / 43 routes plugin), lint, tests unitaires (52/52), `precommit-upload-check` et `audit-security` passent.
+- **Points sensibles non testés dans cette passe** : OAuth réel, passkey physique, OTP sur la production, live cards avec comptes connectés, test Worker complet, tests E2E a11y/routes/responsive complets, validation du déploiement `ethone.dev/login/`.
+- **Aucune régression critique détectée** par build / lint / unitaires. Aucune correction de code n'a été apportée pendant cet audit (pas de régression à corriger).
+
+---
+
+## Méthodologie
+
+1. **Inventaire complet du legacy** : tous les répertoires `app/`, `brain/`, `command/`, `core/`, `data/`, `entry/`, `i18n/`, `pages/`, `services/`, `styles/`, `ui/`, `utils/` de `.worktree/main/v8`.
+2. **Inventaire complet de Next.js** : `app/**/page.tsx`, `components/`, `lib/`, `lib/hooks/`, `lib/brain/`, `public/`.
+3. **Comparaison catégorie par catégorie** : pages, composants UI, shell, authentification, Supabase, Worker, intégrations, Brain, Mail, Activity, Files, Settings, i18n, thèmes, PWA, responsive, accessibilité, command palette, live cards.
+4. **Validation technique** : `npm run build`, `npm run lint`, `npm run test:unit` (aucun gros test Worker exécuté, conformément à la consigne).
+5. **Preuves conservées** : les deux inventaires sont persistés dans `MIGRATION_AUDIT_v8.md` et `MIGRATION_AUDIT_nextjs.md`.
 
 ---
 
@@ -20,453 +40,324 @@ L'inventaire comparatif a été réalisé sur l'ancien ETHONE v8 (`\.worktree\ma
 
 ### Architecture & routing
 
-| Domaine | Statut | Détails |
-|---------|--------|---------|
-| Layout principal | ✅ | `app/layout.tsx` remplace `main.mjs` + `shell.mjs` |
-| Sidebar / Rail | ✅ | `components/Sidebar.tsx` |
-| Header / Topbar | ✅ | intégré dans `app/layout.tsx` |
+| Domaine | Statut | Preuve |
+|---------|--------|--------|
+| Layout principal | ✅ | `app/layout.tsx` |
+| Sidebar / Rail | ✅ | `components/Sidebar.tsx`, `LiquidSidebar.tsx` |
+| Header / Topbar | ✅ | intégré dans le layout, `Header`, `SearchBar`, `ProfileDropdown` |
 | Breadcrumbs | ✅ | `components/V8Breadcrumbs.tsx` |
 | StatusBar | ✅ | `components/V8StatusBar.tsx` |
-| Dock | ✅ | `components/Dock.tsx` + `DockControlCenter.tsx` |
+| Dock | ✅ | `components/Dock.tsx`, `DockControlCenter.tsx` |
 | MobileNav | ✅ | `components/MobileNav.tsx` |
-| Command Palette | ✅ | `components/CommandPalette.tsx` |
+| Command Palette | ✅ | `components/CommandPalette.tsx`, `lib/command-search.ts` |
 | Notification Center | ✅ | `components/NotificationCenter.tsx` |
 | Mission Control | ✅ | `components/MissionControl.tsx` |
-| Focus Popover | ✅ | `components/FocusPopover.tsx` |
+| Focus Popover / Focus Island | ✅ | `components/FocusPopover.tsx`, `FocusIsland.tsx` |
 | Context Menu | ✅ | `components/ContextMenu.tsx` |
-| Layer / Overlay | ✅ | `components/LayerProvider.tsx` |
-| 404 / not-found | ✅ | `app/not-found.tsx` + `app/global-error.tsx` |
+| Layer / Overlay / Windows | ✅ | `LayerProvider.tsx`, `FloatingWindow.tsx`, `WindowRenderer.tsx`, `SidePanel.tsx` |
+| Bottom Sheet | ✅ | `components/BottomSheet.tsx` |
+| 404 / not-found | ✅ | `app/not-found.tsx`, `app/global-error.tsx` |
+| 77 routes statiques | ✅ | build Next.js (`output: "export"`, `trailingSlash: true`) |
 
-### Pages
+### Pages v8 → Next.js
 
-| Page | Statut | Remarque |
-|------|--------|----------|
-| / (home) | ✅ | `app/page.tsx` |
-| /notes | ✅ | `app/notes/page.tsx` |
-| /tasks | ✅ | `app/tasks/page.tsx` |
-| /calendar | ✅ | `app/calendar/page.tsx` |
-| /files | ✅ | `app/files/page.tsx` + `FilesAdminPanel.tsx` |
-| /activity | ✅ | `app/activity/page.tsx` |
-| /interactions | ✅ | `app/interactions/page.tsx` |
-| /connections | ✅ | `app/connections/page.tsx` |
-| /brain | ✅ | `app/brain/page.tsx` |
-| /mail | ✅ | `app/mail/page.tsx` + `MailAnalyticsPanel` |
-| /matches | ✅ | `app/matches/page.tsx` (scoreboard détaillé ajouté) |
-| /team | ✅ | `app/team/page.tsx` |
-| /settings | ✅ | `app/settings/page.tsx` |
-| /security | ✅ | `app/security/page.tsx` |
-| /system | ✅ | `app/system/page.tsx` |
-| /share | ✅ | `app/share/page.tsx` |
-| /drop | ✅ | `app/drop/page.tsx` (password protection conservée) |
-| /feature-fallback | ✅ | `app/feature-fallback/page.tsx` |
-| /login | ✅ | `app/login/page.tsx` |
-| /password-recovery | ✅ | `app/password-recovery/page.tsx` |
-| /profile-selection | ✅ | `app/profile-selection/page.tsx` |
+| Page v8 | Route Next.js | Statut | Fichier |
+|---------|---------------|--------|---------|
+| home | `/` | ✅ | `app/page.tsx` |
+| brain | `/brain` | ✅ | `app/brain/page.tsx` |
+| activity | `/activity` | ✅ | `app/activity/page.tsx` |
+| calendar | `/calendar` | ✅ | `app/calendar/page.tsx` |
+| notes | `/notes` | ✅ | `app/notes/page.tsx` |
+| tasks | `/tasks` | ✅ | `app/tasks/page.tsx` |
+| files | `/files` | ✅ | `app/files/page.tsx` |
+| mail | `/mail` | ✅ | `app/mail/page.tsx` |
+| connections | `/connections` | ✅ | `app/connections/page.tsx` |
+| matches | `/matches` | ✅ | `app/matches/page.tsx` |
+| team | `/team` | ✅ | `app/team/page.tsx` |
+| settings | `/settings` | ✅ | `app/settings/page.tsx` |
+| security | `/security` | ✅ | `app/security/page.tsx` |
+| system | `/system` | ✅ | `app/system/page.tsx` |
+| share | `/share` | ✅ | `app/share/page.tsx` |
+| drop | `/drop` | ✅ | `app/drop/page.tsx` |
+| feature-fallback | `/feature-fallback` | ✅ | `app/feature-fallback/page.tsx` |
+| changelog | `/changelog` | ✅ | `app/changelog/page.tsx` |
+| login | `/login` | ✅ | `app/login/page.tsx` |
+| password-recovery | `/password-recovery` | ✅ | `app/password-recovery/page.tsx` |
+| profile-selection | `/profile-selection` | ✅ | `app/profile-selection/page.tsx` |
 
-### Nouvelles pages Next.js (non présentes dans v8)
+### Pages absentes de v8 mais présentes dans Next.js (ajouts, pas des régressions)
 
-Ces fonctionnalités sont des ajouts du nouveau Dashboard, pas des régressions :
-
-- /bills, /flows, /focus, /weather, /changelog, /spaces, /plugins, /plugins/[id], /personas, /macros, /rss, /scratchpad, /profile, /reset-password.
-
-### Marketplace / Plugins
-
-| Élément | Statut | Remarque |
-|---------|--------|----------|
-| Catalogue v8 complet | ✅ | `lib/plugins.ts` couvre les 35 intégrations du catalogue v8 (`v8/data/integrations.mjs`) ; 38 routes statiques `/plugins/[id]` générées |
-| Fiches plugin dédiées | ✅ | `app/plugins/[id]/page.tsx` + `PluginClient.tsx` |
-| Mappings live corrigés | ✅ | `recordSource` pour `google-calendar`, `google-drive`, et intégrations dérivées (Valorant, LoL, Apex) |
+`/bills`, `/flows`, `/focus`, `/weather`, `/personas`, `/macros`, `/rss`, `/scratchpad`, `/spaces`, `/plugins`, `/plugins/[id]`, `/profile`, `/reset-password`.
 
 ### Authentification & session
 
-| Élément | Statut | Remarque |
-|---------|--------|----------|
-| Login | ✅ | `app/login/page.tsx` |
-| Logout | ✅ | `lib/auth.ts` |
-| Session restore | ✅ | `lib/supabase.ts` + `onAuthStateChange` |
-| OAuth (Google, GitHub) | ✅ | via Supabase + `lib/oauth.ts` |
-| Passkey | ✅ | `lib/hooks/useSecurity.ts` |
-| Device verification | ✅ | logique présente dans le flow auth |
-| Password reset | ✅ | `/password-recovery` + `/reset-password` |
-| Rate limiter | ✅ | `lib/rate-limiter.ts` (bucket v8, fenêtres, blocage, politiques auth) |
-| OTP Worker | ✅ | `lib/auth.ts` : `sendOtp`/`verifyOtp` via Worker `/api/auth/otp/send` & `/api/auth/otp/verify` |
-| Public profile | ✅ | `lib/hooks/usePublicProfile.ts` + `app/profile/page.tsx` via `/api/supabase/public-profile` |
+| Élément | Statut | Preuve |
+|---------|--------|--------|
+| Login / Register | ✅ | `app/login/page.tsx`, `lib/auth.ts` |
+| Logout | ✅ | `lib/auth.ts`, `AuthProvider.tsx` |
+| Session restore | ✅ | `lib/supabase.ts`, `onAuthStateChange` |
+| OAuth (Google, GitHub, Spotify, GitHub, Google Calendar/Drive, Notion, Todoist, YouTube, Reddit) | ✅ | `lib/oauth.ts`, `lib/plugins.ts`, `components/OAuthHandler.tsx` |
+| Passkey / WebAuthn | ✅ | `lib/hooks/useSecurity.ts` |
+| OTP (Worker) | ✅ | `lib/auth.ts` → `/api/auth/otp/send` & `/api/auth/otp/verify` |
+| Password recovery / reset | ✅ | `app/password-recovery/page.tsx`, `/reset-password/page.tsx` |
+| Device verification | ✅ | `useSecurity.ts` → `/api/auth/device/*` |
+| Rate limiting client | ✅ | `lib/rate-limiter.ts`, `lib/auth.ts` |
+| Signout Worker | ✅ | `/api/signout` appelé avant `supabase.auth.signOut()` |
 
 ### Supabase
 
-| Élément | Statut | Remarque |
-|---------|--------|----------|
+| Élément | Statut | Preuve |
+|---------|--------|--------|
 | Auth client | ✅ | `lib/supabase.ts` |
+| Sessions / profiles / preferences | ✅ | `AuthProvider.tsx`, `SettingsProvider.tsx`, `useUserData.ts` |
 | Brain memories | ✅ | `lib/brain/memory.ts` |
-| Profiles / preferences | ✅ | `SettingsProvider` + persistance locale/distants |
+| Files / notes / tasks / team / mail | ✅ | `lib/files.ts`, `lib/notes.ts`, `useTeam.ts`, `useMail.ts`, `lib/bills-manager.ts` |
 
 ### Cloudflare Worker
 
-| Élément | Statut | Remarque |
-|---------|--------|----------|
-| Worker partagé | ✅ | `lib/api.ts` + `fetchWorker` |
-| Tous les endpoints v8 | ✅ | appelés via les routes `/api/*` |
-| Authentification Worker | ✅ | token via Supabase |
+| Élément | Statut | Preuve |
+|---------|--------|--------|
+| Client Worker | ✅ | `lib/api.ts` |
+| OTP endpoints | ✅ | `/api/auth/otp/send`, `/api/auth/otp/verify` |
+| Auth / devices / passkey | ✅ | routes `/api/auth/*` |
+| Signout | ✅ | `/api/signout` |
+| Steam / Tracker / Twitch / Last.fm / Lanyard / Weather / Minecraft | ✅ | routes correspondantes |
+| Spotify / GitHub / Google Calendar / Google Drive / Notion / Todoist / YouTube / Reddit | ✅ | OAuth exchange + resource endpoints |
+| Cloud files / shares / drops | ✅ | `/api/cloud/*` |
+| Mail | ✅ | `/api/mail/*` |
+| Brain completion | ✅ | `/api/brain/complete` |
+| Public profile | ✅ | `/api/supabase/public-profile` |
 
-### Connexions externes
+### Intégrations externes
 
-Toutes les intégrations v8 sont présentes dans Next.js (settings + endpoints Worker) :
+Toutes les intégrations répertoriées dans v8 (`data/integrations.mjs`) sont couvertes par le catalogue Next.js (`lib/plugins.ts`), 43 routes de plugin générées :
 
-Spotify, Plex, Jellyfin, Emby, YouTube, Twitch, Last.fm, Discord (Lanyard), Reddit, Bluesky, Steam, Riot Games (Valorant, LoL, TFT), Minecraft, Tracker.gg (Apex), Google Calendar, Google Drive, Notion, Todoist, Linear, ClickUp, Jira, Email, RSS, Météo, GitHub, GitLab, Obsidian, VS Code, Fitbit, LM Studio, Ollama, OpenAI, Anthropic, Gemini, Groq.
+**Média** : Spotify, Plex, Jellyfin, Emby, YouTube, Twitch, Last.fm  
+**Social** : Discord, Reddit, Bluesky, Email  
+**Gaming** : Steam, Riot Games, Valorant, LoL, Minecraft, Tracker.gg, Apex Legends  
+**Productivité** : Google Calendar, Google Drive, Notion, Todoist, Linear, ClickUp, Jira, RSS, Météo  
+**Développement** : GitHub, GitLab, Obsidian, VS Code  
+**Santé** : Fitbit  
+**IA** : LM Studio, Ollama, OpenAI, Anthropic, Gemini, Groq  
+**Extras** : Bills, Steam Achievements
 
-### Composants UI
+### Composants UI / shell
 
-| Composant | Statut | Remarque |
-|-----------|--------|----------|
-| Card3D | ✅ | `components/Card3D.tsx` |
-| BottomSheet | ✅ | `components/BottomSheet.tsx` |
-| Modals / Layer | ✅ | `LayerProvider` |
-| Toasts | ✅ | `ToastProvider` |
-| Forms / Inputs / Select | ✅ | `FormField`, `Input`, `Select`, `SelectMulti` |
-| ContextMenu | ✅ | `components/ContextMenu.tsx` |
-| Equalizer | ✅ | `components/Equalizer.tsx` |
-| RichTextEditor | ✅ | `components/RichTextEditor.tsx` (parité v8 améliorée) |
-| DenseContent | ✅ | `components/DenseContent.tsx` (sélection, densité, bulk bar, row menu) |
-| DepthEffect | ✅ | `components/DepthEffect.tsx` (effet de profondeur v8) |
-| Form validation | ✅ | `lib/form-validation.ts` (required, email, min/max, pattern, match, passwordStrength, oneOf) |
-| Command search / history | ✅ | `lib/command-search.ts` + `components/CommandPalette.tsx` (fréquence, recency, pinned, contexte route/space) |
+| Composant v8 | Composant Next.js | Statut |
+|--------------|-------------------|--------|
+| shell | `app/layout.tsx` + `Sidebar` + `Dock` + `Header` | ✅ |
+| sidebar / rail | `Sidebar` / `LiquidSidebar` | ✅ |
+| dock | `Dock` + `DockControlCenter` | ✅ |
+| mission-control | `MissionControl` | ✅ |
+| window-system / layer-manager / panel | `WindowManagerProvider`, `FloatingWindow`, `WindowRenderer`, `SidePanel`, `LayerProvider` | ✅ |
+| bottom-sheet | `BottomSheet` | ✅ |
+| context-menu | `ContextMenu` | ✅ |
+| toast | `ToastProvider` | ✅ |
+| notification-center | `NotificationCenter` | ✅ |
+| tooltip | `Tooltip` | ✅ |
+| select / form-system | `Select`, `SelectMulti`, `Input`, `Textarea`, `FormField`, `lib/form-validation.ts` | ✅ |
+| empty-state / error-state / skeleton | `EmptyState`, `ErrorState`, `Skeleton`, `Loading` | ✅ |
+| rich-text | `RichTextEditor` | ✅ |
+| scratchpad | page `app/scratchpad/page.tsx` + possible usage | ✅ |
+| dense-content | `DenseContent` | ✅ |
+| depth-effect | `DepthEffect` | ✅ |
+| visual-haptics | `VisualHaptics` | ✅ |
+| live-freshness | `LiveFreshness` | ✅ |
+| live-overlay | `LiveOverlay` | ✅ |
+| focus-island / focus-popover | `FocusIsland`, `FocusPopover` | ✅ |
+| search | `SearchBar`, `CommandPalette`, `lib/command-search.ts` | ✅ |
+| spotlight / shortcuts | `Spotlight`, `KeyboardShortcuts`, `ShortcutsOverlay` | ✅ |
+| presence | `PresenceProvider`, `PresenceIndicator`, `PresencePulse` | ✅ |
 
-### Dashboard / Home widgets
+### Live cards
 
-| Widget | Statut | Remarque |
-|--------|--------|----------|
-| Daily Briefing | ✅ | `BrainBriefingPanel` |
-| Session Mode Selector | ✅ | `SessionModeSelector` |
-| Aura Selector | ✅ | `AuraSelector` |
-| Live Widgets | ✅ | `LiveWidgets` + filtres catégories |
-| Bills Widget | ✅ | `BillsWidget` + `BillsCalendarWidget` |
-| Customization toggle | ✅ | home personalization |
+`lib/hooks/useLiveData.ts` et `components/LiveWidgets.tsx` couvrent :
 
-### Live cards / intégrations
+- Spotify, Discord, Weather, GitHub, Todoist, Google Calendar, Notion, Google Drive, Valorant, LoL, Apex, Twitch, Last.fm, YouTube, Reddit, Minecraft, Steam, Tracker.gg, Bills.
 
-| Service | Statut | Remarque |
-|---------|--------|----------|
-| Spotify | ✅ | lecture, contrôles, like/unlike ; **seek non supporté côté Worker (`controlSpotifyPlayback` ne gère que play/pause/next/previous)** |
-| Discord (Lanyard) | ✅ | présence, activité |
-| Weather | ✅ | météo + prévisions |
-| GitHub | ✅ | profil, repos |
-| Todoist | ✅ | tâches |
-| Google Calendar | ✅ | événements |
-| Notion | ✅ | pages |
-| Google Drive | ✅ | fichiers |
-| Valorant / LoL / Apex | ✅ | via tracker |
-| Twitch | ✅ | chaîne / live |
-| Last.fm | ✅ | top artistes / titres |
-| YouTube | ✅ | dernières vidéos |
-| Reddit | ✅ | activité |
-| Minecraft | ✅ | profil, historique de noms |
-| Steam | ✅ | profil, jeux récents / possédés, succès (`/api/steam/achievements`) |
-| Tracker.gg | ✅ | profil Apex |
+Les dos personnalisés sont implémentés pour les services principaux (Spotify, Discord, Weather, Minecraft, Bills). Les autres services utilisent le dos générique enrichi par `useLiveData`.
 
 ### Brain
 
-| Fonction | Statut | Remarque |
-|----------|--------|----------|
-| Chat | ✅ | onglet chat + messages |
-| Memory | ✅ | CRUD mémoires |
-| Context | ✅ | `BrainContextPanel` |
-| Actions | ✅ | action registry + exécution |
-| Mail actions | ✅ | summarize, suggestReply, draft, search, move, analytics, block, trust |
-| Automations | ✅ | route/space/time triggers |
-| Providers | ✅ | gestion providers IA |
-| Preferences | ✅ | onglet préférences |
-| Privacy | ✅ | confidentialité |
-| History | ✅ | historique |
-| Diagnostics | ✅ | diagnostics |
-| Briefing | ✅ | daily briefing |
-| Wrapup | ✅ | wrapup |
-| Suggestions | ✅ | suggestions dans le chat |
-
-### Activity
-
-| Élément | Statut | Remarque |
-|---------|--------|----------|
-| Journal | ✅ | `useActivityJournal` + groupement/filtres |
-| Heatmap | ✅ | composant heatmap |
-| Statistiques | ✅ | streak, consistency, etc. |
-| Live cards | ✅ | `LiveWidgets` dans activity |
+| Fonction v8 | Implémentation Next.js | Statut |
+|-------------|------------------------|--------|
+| Chat | `app/brain/page.tsx` | ✅ |
+| Memory | `lib/brain/memory.ts` | ✅ |
+| Context | `components/BrainContextPanel` | ✅ |
+| Actions | `lib/brain/action-registry.ts` | ✅ |
+| Automations | `lib/brain/automation.ts`, `components/FlowAutomations` | ✅ |
+| Providers | `lib/brain/providers.ts` | ✅ |
+| Preferences | `lib/brain/preferences.ts` | ✅ |
+| Privacy | onglet privacy dans brain | ✅ |
+| History | historique chat | ✅ |
+| Diagnostics | diagnostics brain | ✅ |
+| Briefing / Wrapup | `DailyBriefing`, `BrainBriefingPanel` | ✅ |
 
 ### Mail
 
-| Élément | Statut | Remarque |
-|---------|--------|----------|
-| Inbox / folders | ✅ | `LiquidSidebar` |
-| Compose | ✅ | BottomSheet |
-| Threading | ✅ | `getThread` |
-| Labels / Signatures / Templates / Rules | ✅ | panneaux avancés |
-| Snooze | ✅ | `snoozeMessage` |
-| Search | ✅ | recherche + filtres |
-| Bulk actions | ✅ | `bulkAction` |
-| Analytics | ✅ | `MailAnalyticsPanel` |
-| Contacts / Extract / Notifications | ✅ | `useMail` : `/api/mail/contacts`, `/api/mail/extract`, `/api/mail/notifications` |
-
-### Settings / personnalisation
-
-| Élément | Statut | Remarque |
-|---------|--------|----------|
-| Thèmes | ✅ | 16 thèmes (inclut tous les thèmes v8) |
-| Densité | ✅ | 10 modes + densityCustom |
-| Accent | ✅ | 8 accents + custom picker |
-| Langue | ✅ | fr/en/es/de + sélecteur UI |
-| Icon packs | ✅ | 5 packs (lucide, phosphor, tabler, heroicons, radix) |
-| Animations | ✅ | smooth/snappy/reduced |
-| Son / haptics | ✅ | packs sonores, volumes |
-| Wallpaper / background | ✅ | sélecteurs |
-
-### i18n
-
-| Élément | Statut | Remarque |
-|---------|--------|----------|
-| Catalogues | ✅ | `lib/i18n.ts` fr/en/es/de |
-| Hook useI18n | ✅ | utilisé dans tous les composants |
-| Extra keys | ✅ | `lib/i18n-extras.ts` |
-
-### PWA / assets
-
-| Élément | Statut | Remarque |
-|---------|--------|----------|
-| Favicons / icônes | ✅ | `public/icons/` |
-| Service Worker | ✅ | `public/sw.js` |
-| Manifest | ✅ corrigé | aligné avec v8 (shortcuts, categories, lang, dir, orientation) |
-
-### Notifications
-
-| Élément | Statut | Remarque |
-|---------|--------|----------|
-| Centre notifications | ✅ | `NotificationCenter` |
-| Push | ✅ | `lib/push.ts` |
-| Toasts | ✅ | `ToastProvider` |
+- Inbox / dossiers, recherche, filtre, composition, threading, labels, signatures, templates, rules, snooze, analytics, contacts, extract, notifications.
+- `app/mail/page.tsx`, `components/MailAdvancedPanel`, `components/MailAnalyticsPanel`, `lib/hooks/useMail.ts`.
 
 ### Files / Drop / Share
 
-| Élément | Statut | Remarque |
-|---------|--------|----------|
-| Files | ✅ | `app/files/page.tsx` + `FilesAdminPanel` |
-| Drop (upload, mot de passe, drag & drop) | ✅ | `app/drop/page.tsx` |
-| Share (download, mot de passe) | ✅ | `app/share/page.tsx` |
+- Navigation dossiers, Google Drive, previews, shares, drops, drag & drop, bulk actions, admin panel.
+- `app/files/page.tsx`, `FilesAdminPanel.tsx`, `app/drop/page.tsx`, `app/share/page.tsx`, `lib/hooks/useCloudFiles.ts`, `useDriveFiles.ts`, `useDrops.ts`, `useShares.ts`.
 
-### Responsive
+### Activity
 
-| Élément | Statut | Remarque |
-|---------|--------|----------|
-| Mobile / tablet / desktop | ✅ | CSS responsive + `MobileNav` |
-| Density responsive | ✅ | `density-engine` |
+- Journal, heatmap, statistiques (streak, consistency), live cards.
+- `app/activity/page.tsx`, `lib/hooks/useActivityJournal.ts`, `lib/interactions-heatmap.ts`.
+
+### Settings / personnalisation
+
+| Élément | Next.js | Statut |
+|---------|---------|--------|
+| Thèmes | 16 modes (tous les thèmes v8 + ajouts) | ✅ |
+| Densité | 10 modes | ✅ |
+| Accent | 8 couleurs + custom | ✅ |
+| Aura | 6 palettes | ✅ |
+| Polices | 7 familles | ✅ |
+| Radius | 3 styles | ✅ |
+| Son / haptics | packs sonores, volumes | ✅ |
+| Icônes | 5 packs (Lucide, Phosphor, Tabler, Heroicons, Radix) | ✅ |
+| Langue | fr/en/es/de + sélecteur | ✅ |
+| Fond d'écran | sélecteur wallpaper | ✅ |
+| Presets | preset engine | ✅ |
+
+### i18n
+
+- Catalogue fr/en/es/de dans `lib/i18n.ts`.
+- Hook `useI18n` utilisé dans les composants.
+- Extra keys dans `lib/i18n-extras.ts`.
+
+### PWA / assets
+
+- Favicons / icônes : `public/icons/`.
+- Service worker : `public/sw.js`.
+- Manifest : `public/manifest.json`.
+- `offline.html`, `.nojekyll`, `CNAME`.
+
+### Responsive / accessibilité
+
+- CSS responsive Tailwind, `MobileNav`, `useMediaQuery`, `SkipLink`, `aria-label` sur les select, mobile-first layouts.
+- Dernier audit E2E responsive signalait 522 tests passants (non relancé dans cette passe).
+
+### Command palette
+
+- `lib/command-search.ts` : fuzzy search, scoring, fréquence, pinned, récent, contexte route/space, filtres `>` et `/`, navigation clavier.
+- `components/CommandPalette.tsx` : UI + raccourcis.
 
 ---
 
 ## ⚠️ À VÉRIFIER
 
-Ces éléments nécessitent encore une validation manuelle ou approfondie :
+Ces éléments nécessitent une validation en conditions réelles, manuelle, ou avec des credentials dédiés. Ils **ne sont pas considérés comme manquants**, mais leur bon fonctionnement final ne peut être prouvé uniquement par audit source.
 
-1. **RichTextEditor** — implémenté ; parité fonctionnelle confirmée au moins équivalente à v8 (barré, alignement, code, raccourcis clavier).
-2. **Supabase schema** — tables critiques (`ethone_user_state`, `ethone_brain_memories`, `ethone_team_members`) couvertes ; vérifier les tables `ethone_files`, `ethone_file_collaborators` et `ethone_mail_aliases` si elles sont toujours utilisées par v8.
-3. **Direct URL refresh** — routes `/share/[slug]`, `/drop/[slug]`, `/plugins/[id]` statiques ; vérifier l'hydratation côté Worker en production.
-4. **Auth-audit Playwright** — tests E2E d'audit authentifié échouent faute de variables `TEST_EMAIL/TEST_PASSWORD` ; non lié au code.
-
----
-
-## ✅ MIGRÉ (corrigé dans ce batch)
-
-1. **Inscription / Sign-up** — onglet "Créer un compte" ajouté à `app/login/page.tsx` avec `signUpWithPassword` dans `lib/auth.ts`.
-2. **Share — QR code** — généré via `api.qrserver.com` et affiché dans `app/share/page.tsx`.
-3. **Share — brainSummary** — affiché sous forme de blockquote si `file.brain_summary` est présent dans la réponse Worker.
-
-## ❌ MANQUANT (par rapport à v8)
-
-*Aucun point critique nouveau à signaler après ce batch.*
+1. **OTP en production** — le Worker est déployé, la dernière version corrigée a été testée côté build/unit. Une validation en production avec un vrai e-mail reste souhaitable (sans relancer la suite Worker complète).
+2. **Passkey / WebAuthn** — le code est câblé (`useSecurity.ts`), mais nécessite un authentificateur physique ou virtuel.
+3. **OAuth réels** — Google, GitHub, Spotify, Google Calendar/Drive, Notion, Todoist, YouTube, Reddit requièrent des `client_id`/`client_secret` et un callback déployé.
+4. **Live cards avec comptes connectés** — chaque provider a besoin de credentials/id public pour afficher des données réelles.
+5. **Mail avancé** — contacts, PGP, rules, push VAPID (`/api/mail/pgp/decrypt`, `/api/mail/push/vapidkey`) : endpoints Worker documentés dans v8, leur consommation dans Next.js doit être vérifiée si utilisés.
+6. **Supabase schema** — tables `ethone_files`, `ethone_file_collaborators`, `ethone_mail_aliases` : utilisées indirectement via Worker, valider qu'elles restent nécessaires.
+7. **Tests a11y / responsive / routes E2E** — résultats historiquement bons ; non relancés dans cette passe par respect de la consigne "évite les gros tests".
+8. **Déploiement `ethone.dev/login/`** — un test précédent a renvoyé 404 sur `/login/` alors que le build statique génère bien `login/index.html`. Vérifier l'hébergement (GitHub Pages / DNS / Cloudflare) et les règles de route.
+9. **Visual regression** — aucun test visuel automatisé n'a été exécuté.
+10. **Performance / CSP / CORS / headers de sécurité** — vérifier la configuration côté Worker et hébergement final.
 
 ---
 
-## 🐛 BUGS / RÉGRESSIONS POTENTIELLES
+## ❌ MANQUANT
 
-*Aucune régression critique signalée. Les dos de Live cards principaux (Spotify, Discord, Météo, Minecraft, Bills) sont maintenant enrichis.*
+Aucune fonctionnalité majeure du périmètre v8 n'a été identifiée comme absente de Next.js.
 
-*Les bugs suivants, identifiés dans le dernier audit, ont été corrigés dans ce batch : fallback legacy 404, `useLiveData` silencieux, signout partiel, marketplace incomplet, like Spotify non synchronisé, recherche mail via inbox, RichTextEditor partiel. Voir la section 🔧 CORRECTIONS EFFECTUÉES DANS CE BATCH ci-dessus.*
+Points mineurs identifiés :
 
----
-
-## 🔧 CORRECTIONS EFFECTUÉES DANS CE BATCH
-
-1. **Manifest PWA** — aligné sur v8 (shortcuts, catégories, langue, direction, orientation, display_override).
-2. **Register / Sign-up** — onglet d'inscription ajouté à `app/login/page.tsx` avec `signUpWithPassword` dans `lib/auth.ts`.
-3. **Share QR code** — QR code de partage affiché dans `app/share/page.tsx` via `api.qrserver.com`.
-4. **Share brainSummary** — résumé Brain affiché dans `app/share/page.tsx` si disponible.
-5. **Spotlight / Command palette** — recherche floue, scoring contextuel, commandes récentes/fréquence persistées, filtres `>category` et `/category`, navigation clavier étendue et raccourcis footer.
-6. **ProfileDropdown** — sélection/switch de profils multiples, switch Workspace/Space, rename, avatar, export, duplicate, delete, équipe, focus, langue, visibilité dock/FAB, fil d'ariane contextuel.
-7. **Responsive** — classes Tailwind responsives ajoutées aux pages auditées : Calendar, Changelog, Drop, Feature fallback, Focus, Login, Notes, Password recovery, Plugin detail, Profile, Reset password, Scratchpad, Share, Tasks.
-8. **Accessibilité** — `aria-label` et noms accessibles ajoutés aux `<select>` et contrôles interactifs des pages auditées.
-9. **Live cards** — dos personnalisés enrichis pour Spotify/nowplaying, Discord/lanyard, Météo, Minecraft et Bills.
-10. **Hydratation React #418 sur `/activity/`** — résolu en sécurisant l'affichage des dates et en rendant le contenu client-only dans `LiveWidgets`.
-11. **Translations** — clés i18n ajoutées pour l'enregistrement, la recherche, le filtrage, le profil et la navigation Spotlight (fr/en/es/de).
-12. **Fallback legacy** — le dossier `public/legacy/` a été retiré ; l'application Next gère les 404 via `app/not-found.tsx`.
-13. **Erreurs live data** — `fetchOptional` propage les erreurs ; `useLiveData` expose `error` et loggue les échecs par source au lieu d'afficher des états vides.
-14. **Déconnexion Worker** — `AuthProvider.signOut` et `lib/auth.ts:signOut` appellent `/api/signout` avant la déconnexion Supabase locale.
-15. **Marketplace Plugins** — `lib/plugins.ts` couvre désormais les 35 intégrations du catalogue v8, en conservant les plugins dérivés existants (Valorant, LoL, Apex) et en corrigeant `recordSource` pour `google-calendar` et `google-drive`.
-16. **Like Spotify synchronisé** — `LiveWidgets` interroge `/api/spotify/track-saved` pour refléter l'état réel de la bibliothèque utilisateur.
-17. **Recherche mail dédiée** — `useMail` utilise `/api/mail/search` quand un terme est saisi, `/api/mail/inbox` pour l'affichage dossier/étiquette.
-18. **RichTextEditor** — parité renforcée avec v8 via `toEditableHtml`, `plainTextToHtml`, `stripHtml`, `safeHref`, suppression des balises interdites/commentaires et conservation de la classe `code`.
+- **Spotify seek** : le Worker `controlSpotifyPlayback` ne gère que play/pause/next/previous (voir 🔧 / 🚨).
+- **Live cards génériques** : le dos personnalisé n'est pas encore implémenté pour tous les providers (GitHub, Todoist, Twitch, Reddit, YouTube, Steam, Google Calendar, Google Drive, Notion, Valorant, LoL, Tracker, Last.fm, RSS, Bluesky, Apex) ; ils fonctionnent mais avec le rendu générique.
+- **Endpoints `/api/mail/pgp/decrypt` et `/api/mail/push/vapidkey`** : présents côté Worker ; leur consommation explicite dans le front Next.js n'a pas été confirmée.
 
 ---
 
-## 🗑️ LEGACY SUPPRIMABLE
+## 🐛 BUGS
 
-Ces fichiers / dossiers semblent encore présents mais non utilisés par Next.js. Avant suppression, confirmer qu'aucune route/statique n'en dépend :
+Aucun bug critique détecté pendant cet audit.
 
-- `v8/styles/*.css` — remplacés par `app/globals.css` + `app/legacy-v8-tokens.css`.
+Risques de bug observés (non confirmés par test dans cette passe) :
+
+- Le 404 constaté précédemment sur `https://ethone.dev/login/` alors que le build est correct — probablement un problème d'hébergement/route, non de code Next.js.
+- Hydratation React sur `/activity/` avait été signalée et corrigée ; vérifier qu'elle ne réapparaît pas avec de nouvelles sources live.
+
+---
+
+## 🔧 CORRECTIONS
+
+Aucune correction de code n'a été nécessaire pendant cet audit. Les validations techniques suivantes ont été exécutées :
+
+- `npm run build` ✅ (77 routes + 43 routes plugin générées).
+- `npm run lint` ✅.
+- `npm run test:unit` ✅ (52 tests passent).
+- Inventaire v8 sauvegardé dans `MIGRATION_AUDIT_v8.md`.
+- Inventaire Next.js sauvegardé dans `MIGRATION_AUDIT_nextjs.md`.
+- Mise à jour de `MIGRATION_AUDIT.md` avec les dernières constatations.
+
+Corrections historiques confirmées dans le code actuel :
+
+- OTP Worker fonctionnel (`/api/auth/otp/send`, `/api/auth/otp/verify`) avec e-mails localisés.
+- Logo ETHONE hébergé en haut de l'e-mail OTP.
+- Fallback legacy retiré (`public/legacy/` supprimé).
+- Signout Worker notifié avant déconnexion locale.
+- Marketplace à 43 plugins couvrant toutes les intégrations v8.
+- Live cards enrichies (dos personnalisés pour Spotify, Discord, Météo, Minecraft, Bills).
+
+---
+
+## 🗑️ LEGACY
+
+Le code legacy v8 reste dans `.worktree/main/v8/` et **n'a pas été supprimé**. Les éléments suivants sont théoriquement couverts et pourraient être retirés **uniquement après validation utilisateur** :
+
+- `v8/styles/*.css` — remplacés par `app/globals.css` + tokens Tailwind.
 - `v8/pages/*.mjs` — remplacés par `app/**/page.tsx`.
 - `v8/ui/*.mjs` — remplacés par `components/*.tsx`.
-- `v8/entry/*.mjs` (sauf logique auth réutilisable) — remplacés par `app/login`, `app/password-recovery`, etc.
+- `v8/services/*.mjs` — remplacés par `lib/*.ts`, `lib/hooks/*.ts`, `lib/brain/*.ts`.
+- `v8/entry/*.mjs` — remplacés par `app/login`, `app/password-recovery`, `app/profile-selection`.
+- `v8/brain/*.mjs`, `v8/command/*.mjs`, `v8/core/*.mjs` — logique migrée dans `lib/brain/`, `lib/command-search.ts`, `lib/settings.ts`, `lib/ambient-engine.ts`, etc.
 
-**Ne pas supprimer** avant validation utilisateur car le `manifest.webmanifest` du legacy et le `sw.js` historique sont encore référencés potentiellement.
+**Ne pas supprimer** le worktree legacy sans validation explicite de l'utilisateur : il reste la référence fonctionnelle.
 
 ---
 
-## 🚨 RISQUES RÉSIDUELS
+## 🚨 RISQUES
 
-1. **Spotify seek** — le Worker ne supporte pas le seek (`controlSpotifyPlayback` ne gère que play/pause/next/previous).
-2. **Supabase schema divergent** — si v8 utilisait encore `ethone_files`, `ethone_file_collaborators` ou `ethone_mail_aliases`, vérifier leur usage et mapping dans le Worker.
-3. **Assets legacy** — `public/legacy/` a été supprimé. Le worktree `.worktree/main/v8/` reste la référence legacy et n'est plus dupliqué dans `public/`.
-4. **Tests E2E authentifiés** — `auth-audit.spec.ts` passe avec `TEST_EMAIL/TEST_PASSWORD` (non conservés dans le dépôt).
+1. **Hébergement / routes** — si `ethone.dev/login/` renvoie 404 en production malgré un build correct, le problème vient de l'hébergeur (GitHub Pages, DNS, Cloudflare) ou d'un manque de rewrite. Impact : impossibilité de se connecter directement par URL.
+2. **Tests avec credentials réels** — OAuth, passkey, OTP, live cards ne sont prouvés que par code, pas par exécution réelle. Un endpoint Worker ou un `client_id` mal configuré peut casser le flux.
+3. **Spotify seek** — le Worker ne supporte pas le seek. Si v8 le supportait, c'est une perte fonctionnelle mineure.
+4. **Live cards génériques** — l'absence de dos personnalisé pour certains providers peut donner une expérience moins riche qu'en v8.
+5. **Supabase schema** — si les tables `ethone_files`, `ethone_file_collaborators`, `ethone_mail_aliases` sont encore utilisées par v8, s'assurer que le Worker Next.js les expose correctement.
+6. **PWA / cache** — le `sw.js` versionné doit être mis à jour à chaque release pour éviter un cache obsolète.
+7. **E2E non relancés** — a11y, routes, responsive, full E2E n'ont pas été relancés dans cette passe. Des régressions silencieuses ne sont pas exclues.
+8. **Next.js static export** — `/share/?slug=...` et `/drop/?slug=...` reposent sur le client pour lire les query params. Si un utilisateur actualise sans slug ou avec un slug invalide, le rendu statique ne fournit pas de fallback serveur.
 
 ---
 
 ## Validation technique actuelle
 
 ```text
-npm run build                        ✅ 77 routes statiques / 40 routes plugin
-npm run lint                         ✅
-npm run test:unit                    ✅ 52 tests
-security audit                       ✅ 418 fichiers
-upload check                         ✅ 0 unsafe
-direct refresh E2E                   ✅ 9 tests (/plugins/spotify/, /drop/?slug=..., /share/?slug=...)
-live cards E2E                       ✅ 3 tests (chargement dashboard authentifié sans erreurs)
-a11y E2E                             ⚠️  non relancé (conserve le dernier PASS à 306)
-routes + responsive E2E              ⚠️  non relancé (conserve le dernier PASS à 522)
-auth-audit E2E                       ✅ 3 tests (desktop / mobile / tablet)
-full E2E                             ⚠️  non relancé
+npm run build                     ✅ 77 routes + 43 routes plugin
+npm run lint                      ✅
+npm run test:unit                 ✅ 52 tests passent
+precommit-upload-check            ✅ 0 fichiers dangereux
+cd . && node ./scripts/audit-security.mjs   ✅ 453 fichiers scannés
+worker full test                  ❌ non exécuté (consigne utilisateur)
+E2E a11y                          ⚠️ non relancé (historiquement PASS)
+E2E responsive                    ⚠️ non relancé (historiquement PASS)
+E2E routes                        ⚠️ non relancé (historiquement PASS)
 ```
 
 ---
 
-## Vérification des points d'attention
+## Inventaires détaillés
 
-Cette section détaille les résultats des vérifications demandées.
+- **Legacy v8** : `MIGRATION_AUDIT_v8.md`
+- **Next.js** : `MIGRATION_AUDIT_nextjs.md`
 
-### 1. RichTextEditor
-
-**Statut : PARTIEL / AVANCÉ**
-
-- Le Next.js `RichTextEditor` est **plus complet que v8** :
-  - barré, alignement, bloc code, raccourcis clavier Ctrl+B/I/U/K, unlink, code inline.
-- Les deux versions manquent des fonctionnalités avancées (mentions, embeds, images, undo/redo, tableaux, couleurs).
-- **Conclusion** : pas de régression, le Next est au moins équivalent.
-
-### 2. SearchBar / ProfileDropdown
-
-**Statut : PARITÉ ATTEINTE**
-
-- **Spotlight / CommandPalette** : algorithme flou normalisé, scoring (exact/prefix/contient/subsequence), bonus contexte de route, fréquence persiste dans `localStorage`, syntaxes `>category` et `/category`, navigation fléchées/Home/End/PageUp/PageDown, footer raccourcis.
-- **ProfileDropdown** : sélection/switch de profils multiples, switch Workspace/Space, rename, avatar (public), export, duplicate, delete (protection dernier profil), accès équipe, focus, Brain, langue, visibilité dock/FAB, fil d'ariane contextuel.
-- **Fichiers** : `components/CommandPalette.tsx`, `components/ProfileDropdown.tsx`, `lib/command-search.ts`.
-- **Conclusion** : parité fonctionnelle v8 atteinte pour ces deux composants.
-
-### 3. Schéma Supabase
-
-**Statut : ARCHITECTURE DIFFÉRENTE MAIS COUVERTE**
-
-- `ethone_user_state` : présent des deux côtés.
-- `ethone_brain_memories` : présent des deux côtés.
-- `ethone_team_members` : v8 accès direct, Next via Worker `/api/team/members`.
-- `user_provider_credentials` : v8 direct, Next via Worker `/api/provider-credentials`.
-- Tables v8 non directement utilisées dans Next (via Worker) : `ethone_files`, `ethone_file_collaborators`, `ethone_mail_aliases`.
-- **Conclusion** : pas de données oubliées, mais architecture déportée côté Worker.
-
-### 4. Endpoints Worker historiques
-
-**Statut : PARITÉ OPÉRATIONNELLE**
-
-- **Déconnexions OAuth** : câblées dans `app/connections/page.tsx` via le endpoint générique `/api/{provider}/disconnect`.
-- **Team invite** : remplacé par `/api/team/members` POST (invite fusionnée avec la gestion des membres).
-- **Mail avancé** : contacts, extraction, notifications et règles opérationnels dans `app/mail/page.tsx` et `components/MailAdvancedPanel.tsx`.
-- **Share / Drop** : routes Worker `/api/cloud/shares/*` et `/api/cloud/drops/*` appelées.
-- **Endpoints historiques désormais utilisés dans Next** : `/api/steam/achievements`, `/api/spotify/track-saved`, `/api/signout` sont appelés. `/api/team/invite` est remplacé par `/api/team/members`. Seuls `/api/mail/pgp/decrypt` et `/api/mail/push/vapidkey` restent à documenter si le besoin remonte.
-
-### 5. Live cards — dos personnalisés
-
-**Statut : HAUTE PRIORITÉ TRAITÉE**
-
-Les dos personnalisés sont maintenant implémentés pour les services principaux via `components/LiveWidgets.tsx` et `lib/hooks/useLiveData.ts` :
-
-- **Spotify / nowplaying** : pochette, titre, artiste, album, barre de progression, contrôles play/pause/précédent/suivant, like.
-- **Discord / lanyard** : statut coloré, avatar, nom, ID tronqué, activités en cours, Spotify en cours.
-- **Météo** : icône, température, condition, humidité, vent, prévisions 3 jours.
-- **Minecraft** : skin/avatar, pseudo, UUID, modèle/cape, historique des noms.
-- **Bills** : total à payer ce mois + 5 prochaines factures (montant, catégorie, échéance).
-
-Services restants génériques (moyenne/basse priorité) : GitHub, Todoist, Twitch, Reddit, YouTube, Steam, Google Calendar, Google Drive, Notion, Valorant, LoL, Tracker, Last.fm, RSS, Bluesky, Apex.
-
-### 6. Mobile overflow / responsive
-
-**Statut : PASSÉ**
-
-- **Audit script `responsive-audit.mjs`** : aucune page non responsive signalée ; `nonResponsivePages: []`.
-- **E2E responsive** : 522 tests passent sur mobile 320–430, tablet 640–1024, desktop 1280–3440. Aucun overflow horizontal détecté.
-- Classes responsives ajoutées aux pages précédemment identifiées : Calendar, Changelog, Drop, Feature fallback, Focus, Login, Notes, Password recovery, Plugin detail, Profile, Reset password, Scratchpad, Share, Tasks.
-
-### 7. Direct URL refresh
-
-**Statut : OK**
-
-- `next.config.ts` : `output: "export"`, `trailingSlash: true`.
-- Aucun middleware.
-- Toutes les routes sont statiquement pré-renderisées (77 pages) : direct URL refresh fonctionne.
-- `plugins/[id]` utilise `generateStaticParams`.
-- `/share/` et `/drop/` supportent les query params côté client.
-
-### 8. Tests E2E
-
-**Statut : EXÉCUTÉS — 791 passed, 40 failed**
-
-- **a11y** : échecs sur `/notes/`, `/calendar/`, `/files/`, `/system/` (desktop + mobile + tablet).
-  - Cause : `select` sans nom accessible (`aria-label`/`label` manquant).
-  - Exemple : `<select>` tri Notes, filtre Calendrier, tri Fichiers, selects de `FlowAutomations` sur Système.
-- **/activity/** : erreur React `Minified React error #418` corrigée (hydration mismatch lié aux dates dans `LiveWidgets`).
-- **auth-audit** : 3 tests passent avec `TEST_EMAIL` / `TEST_PASSWORD` (credentials non commités).
-- **responsive** : tous les tests de largeurs passent (pas d'overflow).
-- **routes** : toutes les routes passent, y compris `/activity/`.
-
-### Synthèse des nouvelles régressions découvertes
-
-Aucune régression critique nouvelle. Les points suivants ont été corrigés dans ce batch :
-
-1. Accessibilité : `<select>` sans `aria-label` corrigés.
-2. Hydratation `/activity/` : corrigée.
-3. UX shell : command palette et dropdown profil enrichis à parité v8.
-4. Endpoints historiques : OAuth disconnect, team members, mail avancé raccordés.
-5. Live cards : dos personnalisés enrichis pour les 5 services prioritaires.
-
-### 9. Points d'attention complémentaires vérifiés
-
-| Point | Statut | Détails |
-|-------|--------|---------|
-| Inscription (/login/ onglet register) | OK par code | `app/login/page.tsx` gère le mode `register` et appelle `signUpWithPassword` avec validation `lib/form-validation.ts`. Test E2E nécessite un email non utilisé. |
-| OAuth complet | OK par code | `lib/oauth.ts` expose `buildAuthUrl` et `exchangeCode` ; `components/OAuthHandler.tsx` gère le callback. Test réel nécessite un provider + clientId. |
-| Passkey / OTP / device | OK par code | `lib/hooks/useSecurity.ts` câble `/api/auth/passkey/*`, `/api/auth/device/*`. OTP passe par `/api/auth/otp/*` dans `lib/auth.ts`. Passkey nécessite un authentificateur physique/virtuel. |
-| Live cards avec comptes réels | OK par code | `lib/hooks/useLiveData.ts` couvre 20+ providers. Chacun nécessite ses propres credentials/id pour un E2E réel. |
-| RichTextEditor | Parité atteinte/supérieure | `components/RichTextEditor.tsx` ajoute barré, alignement, code, liens, raccourcis clavier ; v8 n'a pas alignement/barré/code. Les deux manquent mentions/embeds/images/tables/undo. |
-| Marketplace / Plugins | 40 plugins | `lib/plugins.ts` couvre 35 intégrations v8 + dérivés ; le catalogue v8 declare 35 records (pas 47). |
-| Command palette avancée | OK | `lib/command-search.ts` implémente fuzzy, scoring, filtres `>` et `/`, fréquence, pinned, recent, contexte route/space. |
-| Direct refresh | OK E2E | Testé dans `e2e/direct-refresh.spec.ts` : `/plugins/spotify/`, `/drop/?slug=...`, `/share/?slug=...` (9/9 passent). |
-| Legacy v8 fallback | Supprimé | `public/legacy/` retiré. `app/not-found.tsx` gère les 404. |
-| Sign-out côté Worker | OK | `lib/auth.ts` et `AuthProvider.tsx` appellent `/api/signout` avant `supabase.auth.signOut()`. Vérifié par `lib/auth.test.ts`. |
-
----
-
-## Conclusion
-
-La migration atteint un haut niveau de parité. Les fonctionnalités v8 principales (pages, shell, intégrations, Brain, Mail, Activity, Settings, Live cards, SearchBar, ProfileDropdown) sont migrées et validées par build (77 pages), lint, unit tests (45/45), `audit-security`, `precommit-upload-check`, E2E direct refresh (9/9) et auth-audit (3/3). `public/legacy/` a été retiré. Les écarts restants concernent principalement des tests avec credentials réels (OAuth, providers live, Passkey) ou des enrichissements UI de Live cards de moyenne/basse priorité.
+Ces deux fichiers contiennent l'inventaire complet par répertoire, page, composant, service, intégration, Worker endpoint et asset.

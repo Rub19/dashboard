@@ -17,3 +17,4 @@
 - Les changelogs sont ajoutés en haut de `CHANGELOG.md`.
 - Style de commit : `Migration Next.js : description`.
 - Attribution : ne pas ajouter `Generated with [Devin]` ni `Co-Authored-By: Devin`. Utiliser le pseudo `Rub19` et l'email `rub19.mailpro@gmail.com` pour toute mention de co-auteur.
+- Auteur des commits : `git config user.name "Rub19"` et `git config user.email "rub19.mailpro@gmail.com"`.

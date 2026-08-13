@@ -21,7 +21,7 @@ Ce rapport est une **comparaison fonctionnelle entre l'ancien ETHONE v8** (moteu
 
 - **État global** : l'ensemble du périmètre fonctionnel v8 identifié est migré dans Next.js ; plusieurs fonctionnalités absentes de v8 ont été ajoutées (Bills, Flows, Focus, Weather, Plugins marketplace, Personas, Spaces, Macros, RSS, Scratchpad, public profile, reset password, changelog).
 - **Validation technique actuelle** : build statique (77 routes / 43 routes plugin), lint, tests unitaires (52/52), Worker (138/138), `precommit-upload-check`, `audit-security`, a11y (78 pages, 0 issue), responsive (420/420) et **Playwright E2E (843/843)** passent avec `TEST_EMAIL`/`TEST_PASSWORD` provisionnées.
-- **Points sensibles non testés dans cette passe** : OAuth réel, passkey physique, OTP sur la production, live cards avec comptes connectés, validation du déploiement `ethone.dev/login/`. Le Worker est désormais testé unitairement (138/138 pass).
+- **Points sensibles non testés dans cette passe** : OAuth réel, passkey physique, OTP sur la production, live cards avec comptes connectés. Le Worker est désormais testé unitairement (138/138 pass) et le déploiement `ethone.dev/login/` retourne 200.
 - **Aucune régression critique détectée** par build / lint / unitaires. Les derniers modules data/core/command/utils/actions v8 ont été portés et validés.
 
 ---
@@ -334,7 +334,7 @@ Ces éléments nécessitent une validation en conditions réelles, manuelle, ou 
 5. **Mail avancé** — PGP et push VAPID sont consommés dans `components/MailAdvancedPanel.tsx`.
 6. **Supabase schema** — tables `ethone_files`, `ethone_file_collaborators`, `ethone_mail_aliases` : utilisées indirectement via Worker, valider qu'elles restent nécessaires.
 7. **Tests a11y / responsive / routes E2E** — relancés dans cette passe : 843/843 passent avec `TEST_EMAIL`/`TEST_PASSWORD`.
-8. **Déploiement `ethone.dev/login/`** — un test précédent a renvoyé 404 sur `/login/` alors que le build statique génère bien `login/index.html`. Vérifier l'hébergement (GitHub Pages / DNS / Cloudflare) et les règles de route.
+8. **Déploiement `ethone.dev/login/`** — résolu : `ethone.dev` et `/login/` retournent 200 via GitHub Pages + CNAME racine. Le Worker est redéployé en production.
 9. **Visual regression** — aucun test visuel automatisé n'a été exécuté.
 10. **Performance / CSP / CORS / headers de sécurité** — vérifier la configuration côté Worker et hébergement final.
 
@@ -380,7 +380,7 @@ Bugs détectés et corrigés pendant cette passe :
 
 Risques de bug observés (non confirmés par test dans cette passe) :
 
-- Le 404 constaté précédemment sur `https://ethone.dev/login/` alors que le build est correct — probablement un problème d'hébergement/route, non de code Next.js.
+- Le 404 sur `https://ethone.dev/login/` a été résolu par l'ajout d'un `CNAME` racine et la mise à jour du workflow GitHub Pages.
 - Hydratation React sur `/activity/` avait été signalée et corrigée ; vérifier qu'elle ne réapparaît pas avec de nouvelles sources live.
 
 ---

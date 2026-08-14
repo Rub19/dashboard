@@ -13,7 +13,6 @@ import SidePanel from "@/components/SidePanel";
 import CommandPalette from "@/components/CommandPalette";
 import MobileNav from "@/components/MobileNav";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import V8WindowControls from "@/components/V8WindowControls";
 import V8Breadcrumbs from "@/components/V8Breadcrumbs";
 import DocumentMetadata from "@/components/DocumentMetadata";
 import LiveOverlay from "@/components/LiveOverlay";
@@ -55,7 +54,6 @@ export default function Shell({ children }: { children: ReactNode }) {
                   <CommandPalette />
                   <LanguageSwitcher />
                   <ProfileDropdown />
-                  <V8WindowControls />
                 </div>
               </header>
               <DocumentMetadata />

@@ -7,8 +7,8 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
 /**
  * Client Supabase pour le navigateur.
- * Les tokens de session sont synchronisés avec des cookies sécurisés au lieu de localStorage.
- * Cela protège contre le vol de session par XSS.
+ * Les tokens de session sont synchronisés avec des cookies accessibles au client
+ * afin que getSession() puisse relire la session après un refresh.
  */
 export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey, {
   cookies: {
@@ -25,7 +25,6 @@ export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey, {
         const secure = window.location.protocol === "https:";
         const opts = [
           `path=${options?.path ?? "/"}`,
-          `httpOnly`,
           secure ? "secure" : "",
           "SameSite=Lax",
           options?.maxAge ? `max-age=${options.maxAge}` : "",

@@ -50,7 +50,7 @@
   "migrations": [
     {
       "tag": "v2",
-      "new_classes": ["AiQuotaManager"]
+      "new_sqlite_classes": ["AiQuotaManager"]
     }
   ],
   "ratelimits": [

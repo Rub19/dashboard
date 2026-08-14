@@ -8,6 +8,7 @@ import { errorResponse, routeResult, successResponse } from "./utils/response.js
 import { mailReceiveHandler } from "./routes/mail.js";
 import { sendScheduledMessages } from "./services/mail-client.js";
 import { processOutbox } from "./services/mail-outbox.js";
+import { AiQuotaManager } from "./services/ai-quota-durable-object.js";
 
 function securityHeaders(response) {
   const headers = new Headers(response.headers);
@@ -95,8 +96,11 @@ async function handleScheduled(event, env, executionCtx) {
   }
 }
 
+export { AiQuotaManager } from "./services/ai-quota-durable-object.js";
+
 export default Object.freeze({
   fetch: handleRequest,
   email: handleEmail,
-  scheduled: handleScheduled
+  scheduled: handleScheduled,
+  AiQuotaManager
 });

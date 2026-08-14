@@ -2,14 +2,13 @@
 
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
 import { useMemo } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { Icon } from "@/lib/icons";
-import Tooltip from "@/components/Tooltip";
 import BrandMark from "@/components/BrandMark";
+import SidebarItem from "@/components/SidebarItem";
 import { NAVIGATION_ITEMS, type NavigationItem } from "@/lib/navigation";
 
 export default function Sidebar() {
@@ -28,44 +27,6 @@ export default function Sidebar() {
   const mainItems = navItems.filter((item) => item.id !== "settings");
   const bottomItems = [navItems.find((item) => item.id === "settings")].filter(Boolean) as NavigationItem[];
 
-  function NavButton({ item }: { item: NavigationItem }) {
-    const isActive = pathname === item.href || pathname.startsWith(item.href);
-    const base =
-      "v8-icon-radius group relative flex h-10 shrink-0 items-center justify-center gap-3 overflow-hidden rounded-xl text-[var(--muted)] transition-all duration-200 hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]";
-    const active = "bg-[var(--accent)] text-white shadow-lg shadow-[var(--accent)]/20";
-    const inactive = "bg-transparent";
-    const sizeClass = expanded ? "w-full px-3" : "w-10";
-
-    const link = (
-      <Link
-        key={item.id}
-        href={item.href}
-        onClick={() => setExpanded(false)}
-        aria-label={item.label}
-        data-tooltip={expanded ? undefined : item.label}
-        data-haptic
-        className={`${base} ${sizeClass} ${isActive ? active : inactive}`}
-      >
-        <Icon name={item.icon} className="h-5 w-5 shrink-0" />
-        <AnimatePresence>
-          {expanded && (
-            <motion.span
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -8 }}
-              transition={{ duration: 0.15 }}
-              className="min-w-0 flex-1 overflow-hidden whitespace-nowrap text-sm font-medium text-start"
-            >
-              {item.label}
-            </motion.span>
-          )}
-        </AnimatePresence>
-      </Link>
-    );
-
-    return expanded ? link : <Tooltip key={item.id} label={item.label} position="right">{link}</Tooltip>;
-  }
-
   return (
     <motion.aside
       data-v8-rail
@@ -81,9 +42,8 @@ export default function Sidebar() {
         <button
           type="button"
           onClick={() => setExpanded(!expanded)}
-          className="v8-icon-radius flex h-10 w-10 shrink-0 items-center justify-center text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
+          className="flex h-10 w-10 shrink-0 items-center justify-center !rounded-xl text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
           aria-label={expanded ? "Réduire" : "Étendre"}
-          data-tooltip={expanded ? undefined : "Menu"}
         >
           <Icon name="menu" className="h-5 w-5" />
         </button>
@@ -104,18 +64,34 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation scrollable */}
-      <nav className="flex-1 min-h-0 w-full overflow-y-auto overflow-x-hidden px-3 py-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-        <div className="flex w-full flex-col items-center gap-2">
+      <nav className="flex-1 min-h-0 w-full overflow-y-auto overflow-x-hidden px-2 py-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex w-full flex-col items-center gap-1.5">
           {mainItems.map((item) => (
-            <NavButton key={item.id} item={item} />
+            <SidebarItem
+              key={item.id}
+              href={item.href}
+              icon={item.icon}
+              label={item.label}
+              isActive={pathname === item.href || pathname.startsWith(item.href)}
+              tooltip={expanded ? undefined : item.label}
+              onClick={() => setExpanded(false)}
+            />
           ))}
         </div>
       </nav>
 
       {/* Bottom */}
-      <div className="flex w-full shrink-0 flex-col items-center gap-2 border-t border-[var(--border)] px-3 py-3">
+      <div className="flex w-full shrink-0 flex-col items-center gap-1.5 border-t border-[var(--border)] px-2 py-3">
         {bottomItems.map((item) => (
-          <NavButton key={item.id} item={item} />
+          <SidebarItem
+            key={item.id}
+            href={item.href}
+            icon={item.icon}
+            label={item.label}
+            isActive={pathname === item.href || pathname.startsWith(item.href)}
+            tooltip={expanded ? undefined : item.label}
+            onClick={() => setExpanded(false)}
+          />
         ))}
       </div>
     </motion.aside>

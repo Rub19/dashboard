@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : correction crash LayerProvider notify**
+
+### Corrige
+- `ethone-next/components/LayerProvider.tsx` : retire l’appel récursif infini dans `notify()` qui provoquait un stack overflow au clic sur la météo (et tout autre popover/layer).
+
 **Migration Next.js : arrondir le Dock et ses icônes**
 
 ### Corrige

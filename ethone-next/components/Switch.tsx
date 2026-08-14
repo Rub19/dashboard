@@ -38,25 +38,25 @@ const SIZES: Record<
   }
 > = {
   sm: {
-    rail: "w-9 h-7",
-    knob: "h-4 w-4",
-    icon: "h-3 w-3",
-    travel: 8,
-    labelClass: "text-[0.45rem]",
+    rail: "w-9 h-6",
+    knob: "h-3 w-3",
+    icon: "h-2.5 w-2.5",
+    travel: 12,
+    labelClass: "text-[0.4rem]",
   },
   md: {
-    rail: "w-11 h-8",
-    knob: "h-5 w-5",
-    icon: "h-3.5 w-3.5",
-    travel: 12,
-    labelClass: "text-[0.55rem]",
+    rail: "w-11 h-7",
+    knob: "h-4 w-4",
+    icon: "h-3 w-3",
+    travel: 16,
+    labelClass: "text-[0.5rem]",
   },
   lg: {
-    rail: "w-14 h-9",
-    knob: "h-6 w-6",
-    icon: "h-4 w-4",
-    travel: 20,
-    labelClass: "text-[0.65rem]",
+    rail: "w-14 h-8",
+    knob: "h-5 w-5",
+    icon: "h-3.5 w-3.5",
+    travel: 24,
+    labelClass: "text-[0.6rem]",
   },
 };
 

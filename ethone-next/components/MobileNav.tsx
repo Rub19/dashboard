@@ -6,9 +6,10 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
+import BrandMark from "@/components/BrandMark";
 import { NAVIGATION_ITEMS } from "@/lib/navigation";
 
-const VISIBLE_MOBILE_IDS = ["home", "notes", "tasks", "calendar", "files"];
+const VISIBLE_MOBILE_IDS = ["home", "notes", "tasks", "calendar"];
 
 function cn(...parts: (string | false | undefined)[]) {
   return parts.filter(Boolean).join(" ");
@@ -21,9 +22,6 @@ export default function MobileNav() {
 
   const items = NAVIGATION_ITEMS.map((item) => ({ ...item, label: i18n(item.label) }));
   const visibleItems = items.filter((item) => VISIBLE_MOBILE_IDS.includes(item.id));
-  const moreItems = items.filter((item) => !VISIBLE_MOBILE_IDS.includes(item.id));
-
-  const moreActive = moreItems.some((item) => pathname === item.href || pathname.startsWith(item.href));
 
   return (
     <>
@@ -69,17 +67,9 @@ export default function MobileNav() {
             data-haptic
             className="relative flex min-h-[44px] min-w-[56px] flex-col items-center justify-center gap-0.5 rounded-2xl px-2 py-1 text-[10px] font-medium transition-colors"
           >
-            {moreActive && (
-              <motion.div
-                layoutId="mobileNavPill"
-                initial={false}
-                transition={{ type: "spring", damping: 22, stiffness: 200 }}
-                className="absolute inset-0 -z-10 rounded-2xl bg-[var(--accent)]/10"
-              />
-            )}
-            <Icon name="more-horizontal" className={cn("h-5 w-5", moreActive ? "text-[var(--accent)]" : "text-[var(--muted)]")} />
-            <span className={cn("max-w-[3.5rem] truncate", moreActive ? "text-[var(--foreground)]" : "text-[var(--muted)]")}>
-              {i18n("more")}
+            <Icon name="menu" className="h-5 w-5 text-[var(--muted)]" />
+            <span className="max-w-[3.5rem] truncate text-[var(--muted)]">
+              {i18n("menu")}
             </span>
           </button>
         </div>
@@ -97,17 +87,20 @@ export default function MobileNav() {
               onClick={() => setDrawerOpen(false)}
               aria-hidden="true"
             />
-            <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 280 }}
-              className="fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl border border-white/10 bg-[var(--surface)] p-4 shadow-2xl md:hidden"
+            <motion.aside
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 28, stiffness: 280 }}
+              className="fixed left-0 top-0 z-50 h-full w-[min(85vw,320px)] border-r border-[var(--border)] bg-[var(--surface)] p-4 shadow-2xl md:hidden"
               role="dialog"
               aria-label={i18n("navigation")}
             >
-              <div className="mx-auto mb-4 h-1 w-12 rounded-full bg-white/20" />
-              <div className="grid grid-cols-4 gap-3 pb-safe">
+              <div className="mb-6 flex items-center gap-2 px-2">
+                <BrandMark size={28} />
+                <span className="text-lg font-semibold tracking-tight text-[var(--foreground)]">ETHONE</span>
+              </div>
+              <nav className="space-y-1">
                 {items.map((item) => {
                   const isActive = pathname === item.href || pathname.startsWith(item.href);
                   return (
@@ -117,19 +110,19 @@ export default function MobileNav() {
                       onClick={() => setDrawerOpen(false)}
                       aria-current={isActive ? "page" : undefined}
                       className={cn(
-                        "flex flex-col items-center gap-1 rounded-2xl p-3 text-xs font-medium transition-colors",
+                        "flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-colors",
                         isActive
                           ? "bg-[var(--accent)]/10 text-[var(--accent)]"
-                          : "text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+                          : "text-[var(--foreground)] hover:bg-[var(--surface-raised)]"
                       )}
                     >
-                      <Icon name={item.icon} className="h-6 w-6" />
-                      <span className="w-full truncate text-center">{item.label}</span>
+                      <Icon name={item.icon} className="h-5 w-5" />
+                      {item.label}
                     </Link>
                   );
                 })}
-              </div>
-            </motion.div>
+              </nav>
+            </motion.aside>
           </>
         )}
       </AnimatePresence>

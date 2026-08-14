@@ -1930,79 +1930,27 @@ html[data-zen-mode="true"] [data-v8-main] {
 .login-cosmic-base {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse at 68% 48%, rgba(139, 92, 246, 0.22) 0%, transparent 45%),
-    radial-gradient(ellipse at 55% 55%, rgba(124, 58, 237, 0.16) 0%, transparent 52%),
-    radial-gradient(ellipse at 75% 35%, rgba(167, 139, 250, 0.12) 0%, transparent 40%),
-    radial-gradient(ellipse at 40% 70%, rgba(76, 29, 149, 0.14) 0%, transparent 48%),
-    radial-gradient(ellipse at 25% 25%, rgba(139, 92, 246, 0.06) 0%, transparent 35%),
-    #030712;
+  background: url("/login-nebula.png") no-repeat center / cover, #030712;
 }
 
 .login-cosmic-glow {
   position: absolute;
-  top: 52%;
-  left: 58%;
-  width: 92vh;
-  height: 92vh;
+  top: 50%;
+  left: 55%;
+  width: 96vh;
+  height: 96vh;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.28) 0%, rgba(124, 58, 237, 0.10) 38%, transparent 70%);
-  filter: blur(80px);
-  animation: nebula-breathe 16s ease-in-out infinite alternate;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.16) 0%, rgba(124, 58, 237, 0.06) 40%, transparent 70%);
+  filter: blur(90px);
+  mix-blend-mode: screen;
+  opacity: 0.65;
+  animation: nebula-breathe 18s ease-in-out infinite alternate;
 }
 
-.login-orbit {
-  position: absolute;
-  top: 50%;
-  left: 55%;
-  border-radius: 50%;
-  border: 1.5px solid rgba(196, 181, 253, 0.10);
-  transform-style: preserve-3d;
-  box-shadow:
-    0 0 90px 40px rgba(139, 92, 246, 0.14),
-    0 0 160px 70px rgba(124, 58, 237, 0.07),
-    inset 0 0 70px 25px rgba(139, 92, 246, 0.08);
-  filter: blur(18px);
-}
-
-.login-orbit--outer {
-  width: 110vh;
-  height: 95vh;
-  transform: translate(-50%, -50%) perspective(1200px) rotateX(72deg) rotateY(20deg);
-  animation: orbit-spin 90s linear infinite;
-}
-
-.login-orbit--middle {
-  width: 86vh;
-  height: 74vh;
-  transform: translate(-50%, -50%) perspective(1200px) rotateX(64deg) rotateY(-18deg);
-  animation: orbit-spin-reverse 68s linear infinite;
-}
-
-.login-orbit--inner {
-  width: 62vh;
-  height: 54vh;
-  transform: translate(-50%, -50%) perspective(1200px) rotateX(78deg) rotateY(10deg);
-  animation: orbit-spin 52s linear infinite;
-}
-
+.login-orbit,
 .login-torus {
-  position: absolute;
-  top: 50%;
-  left: 55%;
-  width: 54vh;
-  height: 46vh;
-  transform: translate(-50%, -50%) perspective(1200px) rotateX(68deg) rotateY(32deg);
-  border-radius: 50%;
-  border: 1px solid rgba(196, 181, 253, 0.14);
-  background: radial-gradient(circle, rgba(167, 139, 250, 0.10) 0%, transparent 60%);
-  box-shadow:
-    0 0 40px 12px rgba(139, 92, 246, 0.18),
-    0 0 100px 36px rgba(139, 92, 246, 0.09),
-    inset 0 0 50px 12px rgba(139, 92, 246, 0.10);
-  filter: blur(22px);
-  animation: orbit-spin 40s linear infinite;
+  display: none;
 }
 
 .login-starfield {
@@ -2011,25 +1959,15 @@ html[data-zen-mode="true"] [data-v8-main] {
   background-image: url("/starfield.svg");
   background-size: 480px 480px;
   background-repeat: repeat;
-  opacity: 0.28;
-  mask-image: radial-gradient(ellipse at 60% 50%, black 50%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse at 60% 50%, black 50%, transparent 100%);
-  animation: starfield-drift 140s linear infinite;
-}
-
-@keyframes orbit-spin {
-  from { transform: translate(-50%, -50%) perspective(1200px) rotateX(72deg) rotateY(20deg) rotateZ(0deg); }
-  to { transform: translate(-50%, -50%) perspective(1200px) rotateX(72deg) rotateY(20deg) rotateZ(360deg); }
-}
-
-@keyframes orbit-spin-reverse {
-  from { transform: translate(-50%, -50%) perspective(1200px) rotateX(64deg) rotateY(-18deg) rotateZ(360deg); }
-  to { transform: translate(-50%, -50%) perspective(1200px) rotateX(64deg) rotateY(-18deg) rotateZ(0deg); }
+  opacity: 0.18;
+  mask-image: radial-gradient(ellipse at 58% 50%, black 55%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse at 58% 50%, black 55%, transparent 100%);
+  animation: starfield-drift 160s linear infinite;
 }
 
 @keyframes nebula-breathe {
-  from { opacity: 0.72; transform: translate(-50%, -50%) scale(0.94); }
-  to { opacity: 1; transform: translate(-50%, -50%) scale(1.06); }
+  from { opacity: 0.52; transform: translate(-50%, -50%) scale(0.96); }
+  to { opacity: 0.78; transform: translate(-50%, -50%) scale(1.04); }
 }
 
 @keyframes starfield-drift {

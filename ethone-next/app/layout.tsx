@@ -131,7 +131,7 @@ export default function RootLayout({
                   <VisualHaptics />
                   <DepthEffect />
                   <FocusIsland />
-                  <main data-v8-main id="main-content" className="p-6 pb-24 md:pb-10" tabIndex={-1}>
+                  <main data-v8-main id="main-content" className="w-full p-6 pb-24 md:pb-10" tabIndex={-1}>
                     <ActivityJournalProvider>
                       <BootProvider>
                         <PageTransition>{children}</PageTransition>

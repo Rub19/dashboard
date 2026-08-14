@@ -12,6 +12,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import Loading from "@/components/Loading";
 import BrandMark from "@/components/BrandMark";
+import Shell from "@/components/Shell";
 import { motion } from "framer-motion";
 
 export type BootState =
@@ -232,9 +233,17 @@ export default function BootProvider({ children }: { children: ReactNode }) {
     );
   }
 
+  if (publicRoute) {
+    return (
+      <BootContext.Provider value={{ state, retry, continueOffline }}>
+        {children}
+      </BootContext.Provider>
+    );
+  }
+
   return (
     <BootContext.Provider value={{ state, retry, continueOffline }}>
-      {children}
+      <Shell>{children}</Shell>
     </BootContext.Provider>
   );
 }

@@ -1,0 +1,89 @@
+"use client";
+
+import { type ReactNode } from "react";
+import { WindowManagerProvider } from "@/components/WindowManagerProvider";
+import PresenceProvider from "@/components/PresenceProvider";
+import { ShortcutsProvider } from "@/components/ShortcutsProvider";
+import ProfileSync from "@/components/ProfileSync";
+import Sidebar from "@/components/Sidebar";
+import SearchBar from "@/components/SearchBar";
+import ProfileDropdown from "@/components/ProfileDropdown";
+import NotificationCenter from "@/components/NotificationCenter";
+import SidePanel from "@/components/SidePanel";
+import CommandPalette from "@/components/CommandPalette";
+import MobileNav from "@/components/MobileNav";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import V8WindowControls from "@/components/V8WindowControls";
+import V8Breadcrumbs from "@/components/V8Breadcrumbs";
+import DocumentMetadata from "@/components/DocumentMetadata";
+import LiveOverlay from "@/components/LiveOverlay";
+import AmbientParticles from "@/components/AmbientParticles";
+import Spotlight from "@/components/Spotlight";
+import VisualHaptics from "@/components/VisualHaptics";
+import DepthEffect from "@/components/DepthEffect";
+import FocusIsland from "@/components/FocusIsland";
+import { ActivityJournalProvider } from "@/components/ActivityJournalProvider";
+import PageTransition from "@/components/PageTransition";
+import AutomationRuntime from "@/components/AutomationRuntime";
+import V8StatusBar from "@/components/V8StatusBar";
+import Dock from "@/components/Dock";
+import ShortcutsOverlay from "@/components/ShortcutsOverlay";
+import KeyboardShortcuts from "@/components/KeyboardShortcuts";
+import SkipLink from "@/components/SkipLink";
+
+export default function Shell({ children }: { children: ReactNode }) {
+  return (
+    <WindowManagerProvider>
+      <PresenceProvider>
+        <ShortcutsProvider>
+          <SkipLink />
+          <ProfileSync />
+          <Sidebar />
+            <div
+              data-v8-shell
+              className="min-h-screen transition-all duration-300 md:ml-[72px]"
+            >
+              <header
+                data-v8-topbar
+                className="v8-topbar sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[var(--border)] bg-[var(--background)]/80 px-6 backdrop-blur-md"
+              >
+                <V8Breadcrumbs />
+                <SearchBar />
+                <div className="flex items-center gap-3">
+                  <NotificationCenter />
+                  <SidePanel />
+                  <CommandPalette />
+                  <LanguageSwitcher />
+                  <ProfileDropdown />
+                  <V8WindowControls />
+                </div>
+              </header>
+              <DocumentMetadata />
+              <LiveOverlay />
+              <AmbientParticles />
+              <Spotlight />
+              <VisualHaptics />
+              <DepthEffect />
+              <FocusIsland />
+              <main
+                data-v8-main
+                id="main-content"
+                className="w-full p-6 pb-24 md:pb-10"
+                tabIndex={-1}
+              >
+                <ActivityJournalProvider>
+                  <PageTransition>{children}</PageTransition>
+                  <AutomationRuntime />
+                </ActivityJournalProvider>
+              </main>
+              <V8StatusBar />
+            </div>
+            <MobileNav />
+            <Dock />
+            <ShortcutsOverlay />
+            <KeyboardShortcuts />
+          </ShortcutsProvider>
+        </PresenceProvider>
+      </WindowManagerProvider>
+    );
+}

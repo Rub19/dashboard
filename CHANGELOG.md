@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : icônes rondes dans la sidebar/dock et header carré**
+
+### Corrige
+- `ethone-next/lib/settings.ts` : `iconRadius` par défaut passe à `circle` pour un rendu rond style macOS.
+- `ethone-next/components/Shell.tsx` : le header garde `data-icon-radius="square"` pour rester carré.
+
 **Migration Next.js : icône distincte pour les plugins**
 
 ### Corrige

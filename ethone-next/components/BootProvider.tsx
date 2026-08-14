@@ -71,8 +71,12 @@ export default function BootProvider({ children }: { children: ReactNode }) {
       return;
     }
 
+    const publicRoute = isPublicRoute(pathname);
+
     if (authLoading) {
-      setState("booting");
+      if (!publicRoute) {
+        setState("booting");
+      }
       return;
     }
 
@@ -81,8 +85,6 @@ export default function BootProvider({ children }: { children: ReactNode }) {
       setError(authError.message || "Erreur lors du démarrage d'ETHONE.");
       return;
     }
-
-    const publicRoute = isPublicRoute(pathname);
 
     if (session) {
       setState("authenticated");
@@ -234,13 +236,5 @@ export default function BootProvider({ children }: { children: ReactNode }) {
     <BootContext.Provider value={{ state, retry, continueOffline }}>
       {children}
     </BootContext.Provider>
-  );
-}
-
-function AuthOnlyShell({ children }: { children: ReactNode }) {
-  return (
-    <div className="fixed inset-0 z-[100] flex min-h-full flex-col bg-[var(--background)]">
-      {children}
-    </div>
   );
 }

@@ -132,7 +132,7 @@ function ContextItem({
 }) {
   return (
     <div
-      className="flex min-w-0 items-center gap-1.5 rounded-none px-2 py-1 text-[10px] text-[var(--foreground)] transition-colors hover:bg-[var(--surface-raised)]"
+      className="flex min-w-0 items-center gap-1.5 rounded-full px-2 py-1 text-[10px] text-[var(--foreground)] transition-colors hover:bg-[var(--surface-raised)]"
       data-tone={tone}
       title={title}
     >
@@ -165,7 +165,7 @@ function QuickAction({
       data-tooltip={label}
       data-interactive
       aria-pressed={active}
-      className={`relative flex h-8 w-8 items-center justify-center rounded-none border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)] ${
+      className={`relative flex h-8 w-8 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)] ${
         active ? "border-[var(--accent)] text-[var(--accent)]" : ""
       }`}
       aria-label={label}
@@ -197,7 +197,7 @@ function WeatherButton({
         data-tooltip={i18n("weather")}
         data-interactive
         aria-label={`${i18n("weather")} ${temp}`}
-        className="relative flex h-8 items-center gap-1.5 rounded-none border border-[var(--border)] bg-[var(--surface)] px-2 text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)]"
+        className="relative flex h-8 items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface)] px-2 text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)]"
       >
         <Icon name={weatherIcon(condition)} className="h-4 w-4" />
         <span className="text-sm font-medium tabular-nums">{temp}</span>

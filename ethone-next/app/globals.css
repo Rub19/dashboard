@@ -1898,20 +1898,7 @@ a:has(> svg) {
   border-radius: 9999px;
 }
 
-[data-icon-radius="square"] img,
-[data-icon-radius="square"] [role="img"] {
-  border-radius: 0;
-}
 
-[data-icon-radius="circle"] img,
-[data-icon-radius="circle"] [role="img"] {
-  border-radius: 9999px;
-}
-
-[data-icon-radius="pill"] img,
-[data-icon-radius="pill"] [role="img"] {
-  border-radius: 9999px;
-}
 
 /* =====================================================
    Login cosmic background — arrière-plan nébuleux/ethone

@@ -106,7 +106,7 @@ export default function LanguageSwitcher() {
         aria-label={i18n("language")}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex h-9 items-center gap-2 rounded-none border border-[var(--border)] bg-[var(--surface-raised)] px-2.5 text-sm font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+        className="flex h-9 items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-raised)] px-2.5 text-sm font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
       >
         <Icon name="globe" className="h-4 w-4" />
         <Flag code={current} className="h-4 w-5" />

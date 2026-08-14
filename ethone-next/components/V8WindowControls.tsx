@@ -6,17 +6,17 @@ export default function V8WindowControls() {
       <button
         type="button"
         aria-label="Minimize"
-        className="h-3 w-3 rounded-none bg-amber-400/80 hover:bg-amber-400"
+        className="h-3 w-3 rounded-full bg-amber-400/80 hover:bg-amber-400"
       />
       <button
         type="button"
         aria-label="Maximize"
-        className="h-3 w-3 rounded-none bg-emerald-400/80 hover:bg-emerald-400"
+        className="h-3 w-3 rounded-full bg-emerald-400/80 hover:bg-emerald-400"
       />
       <button
         type="button"
         aria-label="Close"
-        className="h-3 w-3 rounded-none bg-red-400/80 hover:bg-red-400"
+        className="h-3 w-3 rounded-full bg-red-400/80 hover:bg-red-400"
       />
     </div>
   );

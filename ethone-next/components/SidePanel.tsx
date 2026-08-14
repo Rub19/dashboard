@@ -78,7 +78,7 @@ export default function SidePanel() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded-none p-2 text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
+        className="rounded-full p-2 text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
         aria-label={i18n("openPanel")}
       >
         <Icon name="panels-right-bottom" className="h-5 w-5" />

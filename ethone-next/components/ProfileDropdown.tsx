@@ -87,8 +87,8 @@ function Avatar({
   const showImage = url && !imgError;
   const className =
     size === "sm"
-      ? "h-7 w-7 rounded-none text-[10px]"
-      : "h-10 w-10 rounded-none text-sm";
+      ? "h-7 w-7 rounded-full text-[10px]"
+      : "h-10 w-10 rounded-full text-sm";
   const wh = size === "sm" ? 28 : 40;
   const color = active || !accent ? "bg-[var(--accent)]" : (ACCENT_BG[accent] || "bg-[var(--accent)]");
 
@@ -141,7 +141,7 @@ function QuickAction({
       aria-label={label}
       aria-pressed={active}
       data-tooltip={label}
-      className={`flex h-8 w-8 items-center justify-center rounded-none border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)] ${
+      className={`flex h-8 w-8 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)] ${
         active ? "border-[var(--accent)] text-[var(--accent)]" : ""
       }`}
     >
@@ -383,7 +383,7 @@ export default function ProfileDropdown() {
         type="button"
         onClick={() => setOpen(!open)}
         disabled={pending}
-        className="flex h-10 items-center gap-2 rounded-none border border-[var(--border)] bg-[var(--surface)] px-2 text-[var(--foreground)] transition-colors hover:bg-[var(--surface-raised)]"
+        className="flex h-10 items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-2 text-[var(--foreground)] transition-colors hover:bg-[var(--surface-raised)]"
         aria-label={i18n("profile")}
         aria-expanded={open}
         aria-haspopup="true"

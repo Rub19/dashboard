@@ -208,7 +208,7 @@ export const DEFAULTS: Settings = {
   },
   radius: 50,
   radiusStyle: "rounded",
-  iconRadius: "rounded",
+  iconRadius: "circle",
   aura: "classic",
   homeGrid: "4",
   homeHero: "full",

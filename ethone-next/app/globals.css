@@ -334,7 +334,8 @@ html[data-space="studio"][data-theme="day"] {
 
 html,
 body {
-  height: 100%;
+  width: 100%;
+  min-height: 100%;
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
@@ -1575,17 +1576,8 @@ a:focus:not(:focus-visible) {
 .shadow-glow { box-shadow: var(--shadow-glow); }
 .shadow-accent { box-shadow: var(--shadow-accent); }
 
-/* Layout helpers */
-[data-rail] { width: var(--rail-width); }
-[data-rail="collapsed"] { width: var(--rail-collapsed-width); }
-[data-panel] { width: var(--panel-width); }
-[data-panel="narrow"] { width: var(--panel-narrow); }
-[data-panel="wide"] { width: var(--panel-wide); }
-[data-toolbar] { height: var(--toolbar-height); }
-[data-toolbar="compact"] { height: var(--toolbar-height-compact); }
-[data-dashboard] { display: grid; grid-template-columns: repeat(var(--dashboard-columns), minmax(0, 1fr)); gap: var(--dashboard-gap); }
-[data-content="max"] { max-width: var(--content-max); }
-[data-content="reading"] { max-width: var(--reading-width); }
+/* Layout helpers: REMOVED broad attribute selectors that accidentally applied to
+   <html data-rail="compact"> and made the whole viewport 72px wide. */
 
 [data-elevation="1"] { --shadow-elevation: 1; box-shadow: var(--shadow-1); }
 [data-elevation="2"] { --shadow-elevation: 2; box-shadow: var(--shadow-2); }

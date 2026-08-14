@@ -48,7 +48,7 @@ export default function HtmlLang() {
     html.dataset.space = activeSpace;
     html.dataset.dataSpace = activeSpace;
     html.dataset.densityMode = settings.densityMode;
-    html.dataset.rail = railExpanded ? "expanded" : "compact";
+    // data-rail removed: it collided with a global [data-rail] { width: 72px; } rule.
     html.style.setProperty("--dock-offset", railExpanded ? "122px" : "0px");
     html.dataset.wallpaper = settings.wallpaper;
     html.dataset.font = settings.fontFamily;

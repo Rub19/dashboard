@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "@/lib/icons";
+import VendorLogo from "@/components/logos/VendorLogo";
 
 export type BillCategory = "monthly" | "yearly" | "event";
 
@@ -32,10 +33,6 @@ const MOCK_ITEMS: CalendarItem[] = [
 
 function startOfMonth(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), 1);
-}
-
-function endOfMonth(date: Date) {
-  return new Date(date.getFullYear(), date.getMonth() + 1, 0);
 }
 
 function addMonths(date: Date, months: number) {
@@ -205,10 +202,10 @@ export default function CalendarBills({ items = MOCK_ITEMS }: { items?: Calendar
                       title={item.title}
                     >
                       <span
-                        className="h-4 w-4 rounded-full text-[8px] font-bold text-white/90 flex items-center justify-center"
+                        className="flex h-5 w-5 items-center justify-center rounded-md text-white"
                         style={{ backgroundColor: item.color || (item.category === "monthly" ? "#A259FF" : "#F59E0B") }}
                       >
-                        {item.vendor ? item.vendor[0].toUpperCase() : item.title[0]}
+                        <VendorLogo vendor={item.vendor} className="h-3.5 w-3.5" />
                       </span>
                       {inMonth && (
                         <span className="hidden text-[10px] text-[var(--foreground)] sm:inline">

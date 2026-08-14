@@ -4,6 +4,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : logos SVG des fournisseurs dans le calendrier de bills (Netflix, Adobe, Apple, Figma, Spotify, Notion)**
+
+### Ajoute
+- `components/logos/` : composants SVG pour Netflix, Adobe, Apple, Figma, Spotify, Notion et dispatcher `VendorLogo`.
+- `components/CalendarBills.tsx` : intégration des vrais logos SVG dans les cellules du calendrier.
+- `app/calendar-bills/page.tsx` : page de prévisualisation du composant fusionné calendrier + bills.
+
 **Migration Next.js : parité legacy v8 complète (rate-limiter, OTP Worker, profil public, Steam, Spotify, mail, marketplace, dense-content, depth-effect, form validation, command history/search, navigation, espaces, intégrations, home/daily briefing, lifecycle, document metadata)**
 
 ### Corrige

@@ -19,13 +19,11 @@ export function useTeam() {
       setLoading(false);
       return;
     }
-    setLoading(true);
     const unsubscribe = manager.subscribe((state) => {
       setMembers(state.members);
       setLoading(state.loading);
       setError(state.error ? new Error(state.error) : null);
     });
-    manager.listMembers().finally(() => setLoading(false));
     return () => { unsubscribe(); };
   }, [manager]);
 

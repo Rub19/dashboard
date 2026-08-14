@@ -279,8 +279,8 @@ export default function LoginPage() {
             <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[var(--accent)]/10 blur-3xl" />
 
             <div className="relative flex w-full flex-col items-center text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--accent)]/10 ring-1 ring-[var(--accent)]/20">
-                <BrandMark size={28} />
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--accent)]/10 ring-1 ring-[var(--accent)]/20">
+                <BrandMark size={40} />
               </div>
               <h2 className="mt-3 text-2xl font-bold tracking-tight">{i18n("welcomeBack")}</h2>
               <p className="mt-1 text-xs text-[var(--muted)]">{i18n("loginDescription")}</p>

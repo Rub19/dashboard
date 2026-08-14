@@ -7,8 +7,7 @@ import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import BrandMark from "@/components/BrandMark";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
-import { useSettings, useActiveProfile } from "@/components/SettingsProvider";
-import { useAuth } from "@/components/AuthProvider";
+import { useSettings } from "@/components/SettingsProvider";
 import { activityJournal } from "@/lib/activity-journal";
 import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
 import { useLiveData } from "@/lib/hooks/useLiveData";
@@ -249,7 +248,6 @@ export default function V8Breadcrumbs() {
   const pageIcon = ROUTE_ICONS[page] || "gauge";
   const pageLabel = i18n(page) || page;
 
-  const profileName = activeProfile?.name || user?.email || i18n("guest");
   const spaceFlow = WORKSPACE_FLOWS[activeSpace] || "v8FlowPersonal";
   const spaceLabel = i18n(activeSpace) || activeSpace;
 

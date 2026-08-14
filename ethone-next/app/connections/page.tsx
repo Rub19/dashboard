@@ -17,7 +17,7 @@ import { fetchWorker } from "@/lib/api";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useProviderCredentials } from "@/lib/hooks/useProviderCredentials";
-import { INTEGRATIONS, INTEGRATION_CATEGORIES, type Integration } from "@/lib/integrations";
+import { INTEGRATIONS, INTEGRATION_CATEGORIES } from "@/lib/integrations";
 import { isConfigured, pingIntegration, type PingResult } from "@/lib/connection-config";
 import DiagnosticPanel from "@/components/DiagnosticPanel";
 import ConnectionCard from "@/components/ConnectionCard";

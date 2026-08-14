@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Activity, AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Loader2, RefreshCw } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { INTEGRATIONS, type Integration } from "@/lib/integrations";
+import { INTEGRATIONS } from "@/lib/integrations";
 import type { PingResult } from "@/lib/connection-config";
 import ServiceIcon from "@/components/ServiceIcon";
 

@@ -59,8 +59,8 @@ export default function ConnectionCard({
   const { settings, update } = useSettings();
   const { success, error: showError } = useToast();
 
-  const publicFields = PUBLIC_FIELDS[integration.id] || [];
-  const credentialFields = CREDENTIAL_FIELDS[integration.id] || [];
+  const publicFields = useMemo(() => PUBLIC_FIELDS[integration.id] || [], [integration.id]);
+  const credentialFields = useMemo(() => CREDENTIAL_FIELDS[integration.id] || [], [integration.id]);
   const hasInputs = publicFields.length > 0 || credentialFields.length > 0;
   const isOauth = integration.status === "oauth" && !hasInputs;
 

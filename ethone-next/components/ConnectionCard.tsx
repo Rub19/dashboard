@@ -7,18 +7,21 @@ import {
   CheckCircle2,
   ChevronDown,
   ChevronUp,
+  HelpCircle,
   Eye,
   EyeOff,
+  ExternalLink,
   Loader2,
+  Unlink,
   Plug,
   Save,
-  Unlink,
 } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { fetchWorker } from "@/lib/api";
 import { buildAuthUrl, PROVIDERS as OAUTH_PROVIDERS } from "@/lib/oauth";
+import { getConnectionGuide, type ConnectionGuide } from "@/config/connectionsGuide";
 import type { Integration } from "@/lib/integrations";
 import type { Settings } from "@/lib/settings";
 import type { ProviderCredential } from "@/lib/hooks/useProviderCredentials";
@@ -60,6 +63,8 @@ export default function ConnectionCard({
   const { settings, update } = useSettings();
   const { success, error: showError } = useToast();
 
+  const guide = useMemo<ConnectionGuide | undefined>(() => getConnectionGuide(integration.id), [integration.id]);
+
   const publicFields = useMemo(() => PUBLIC_FIELDS[integration.id] || [], [integration.id]);
   const credentialFields = useMemo(() => CREDENTIAL_FIELDS[integration.id] || [], [integration.id]);
   const hasInputs = publicFields.length > 0 || credentialFields.length > 0;
@@ -87,19 +92,19 @@ export default function ConnectionCard({
   const methodKey = getServiceMethodKey(integration.status);
   const methodClass =
     integration.status === "oauth"
-      ? "bg-violet-500/10 text-violet-400"
+      ? "bg-violet-500/10 text-violet-400 border border-violet-500/20"
       : integration.status === "api"
-        ? "bg-sky-500/10 text-sky-400"
+        ? "bg-sky-500/10 text-sky-400 border border-sky-500/20"
         : integration.status === "local" || integration.status === "feed"
-          ? "bg-amber-500/10 text-amber-400"
-          : "bg-zinc-500/10 text-zinc-400";
+          ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+          : "bg-zinc-500/10 text-zinc-400 border border-zinc-500/20";
 
   const statusClass =
     status === "connected"
-      ? "bg-emerald-500/10 text-emerald-400"
+      ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
       : status === "error"
-        ? "bg-rose-500/10 text-rose-400"
-        : "bg-zinc-500/10 text-zinc-400";
+        ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+        : "bg-zinc-800 text-zinc-400";
 
   const [publicValues, setPublicValues] = useState<Record<string, string>>(() => {
     const map: Record<string, string> = {};
@@ -130,6 +135,7 @@ export default function ConnectionCard({
   const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});
   const [rawOpen, setRawOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [openGuideField, setOpenGuideField] = useState<string | null>(null);
 
   useEffect(() => {
     if (rawOpen && onTest) onTest(integration.id);
@@ -220,6 +226,13 @@ export default function ConnectionCard({
     }
   }
 
+  function toggleGuide(fieldKey: string) {
+    setOpenGuideField((prev) => (prev === fieldKey ? null : fieldKey));
+  }
+
+  const inputClass =
+    "w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-foreground outline-none transition placeholder:text-muted/60 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/30";
+
   return (
     <motion.div
       layout
@@ -239,7 +252,7 @@ export default function ConnectionCard({
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <h3 className="font-semibold text-foreground">{integration.name}</h3>
-            <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${methodClass}`}>
+            <span className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${methodClass}`}>
               {i18n(methodKey)}
             </span>
           </div>
@@ -258,18 +271,58 @@ export default function ConnectionCard({
             onChange={(e) => onClientIdChange(integration.id, e.target.value)}
             aria-label={i18n("clientId")}
             placeholder={i18n("clientId")}
-            className="w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground outline-none transition focus:border-accent"
+            className={inputClass}
           />
+
+          {guide && (
+            <div className="flex flex-col">
+              <button
+                type="button"
+                onClick={() => toggleGuide("oauth")}
+                aria-expanded={openGuideField === "oauth"}
+                className="flex items-center gap-1.5 text-xs text-purple-400 transition-colors hover:text-purple-300"
+              >
+                <HelpCircle className="h-3.5 w-3.5" />
+                {openGuideField === "oauth" ? "Masquer le guide" : "Comment obtenir ce Client ID ?"}
+              </button>
+              <AnimatePresence initial={false}>
+                {openGuideField === "oauth" && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    className="overflow-hidden"
+                  >
+                    <GuidePanel guide={guide} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
+
           <button
             type="button"
             onClick={handleConnect}
             disabled={!clientId.trim() || !OAUTH_PROVIDERS[integration.id] || submitting}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent px-3 py-2 text-sm font-medium text-white transition hover:bg-accent/90 disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-purple-600 px-3 py-2 text-sm font-medium text-white shadow-lg shadow-purple-600/20 transition hover:bg-purple-500 disabled:opacity-50"
           >
             {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plug className="h-4 w-4" />}
             {i18n("connect")}
           </button>
         </div>
+      )}
+
+      {isOauth && isConnected && (
+        <button
+          type="button"
+          onClick={handleDisconnect}
+          disabled={submitting}
+          className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm font-medium text-red-400 transition hover:bg-red-500/20 disabled:opacity-50"
+        >
+          <Unlink className="h-4 w-4" />
+          {i18n("disconnect")}
+        </button>
       )}
 
       {hasInputs && (
@@ -292,7 +345,7 @@ export default function ConnectionCard({
                 onChange={(e) => setPublicValues((v) => ({ ...v, [f.label]: e.target.value }))}
                 aria-label={i18n(f.label)}
                 placeholder={i18n(f.label)}
-                className="w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground outline-none transition focus:border-accent"
+                className={inputClass}
               />
             )
           )}
@@ -300,26 +353,56 @@ export default function ConnectionCard({
           {credentialFields.map((f) => {
             const isPassword = f.type === "password";
             const visible = showPassword[f.key];
+            const fieldGuideOpen = openGuideField === f.key;
             return (
-              <div key={f.label} className="relative">
-                <input
-                  type={isPassword && !visible ? "password" : "text"}
-                  value={credValues[f.label] || ""}
-                  onChange={(e) => setCredValues((v) => ({ ...v, [f.label]: e.target.value }))}
-                  aria-label={i18n(f.label)}
-                  placeholder={i18n(f.label)}
-                  className="w-full rounded-xl border border-border bg-surface px-3 py-2 pr-10 text-sm text-foreground outline-none transition focus:border-accent"
-                />
-                {isPassword && (
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((s) => ({ ...s, [f.key]: !s[f.key] }))}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted transition hover:text-foreground"
-                    aria-label={visible ? i18n("hide") : i18n("show")}
-                    tabIndex={-1}
-                  >
-                    {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
+              <div key={f.label} className="flex flex-col">
+                <div className="relative">
+                  <input
+                    type={isPassword && !visible ? "password" : "text"}
+                    value={credValues[f.label] || ""}
+                    onChange={(e) => setCredValues((v) => ({ ...v, [f.label]: e.target.value }))}
+                    aria-label={i18n(f.label)}
+                    placeholder={i18n(f.label)}
+                    className={`${inputClass} pr-10`}
+                  />
+                  {isPassword && (
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((s) => ({ ...s, [f.key]: !s[f.key] }))}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted transition hover:text-foreground"
+                      aria-label={visible ? i18n("hide") : i18n("show")}
+                      tabIndex={-1}
+                    >
+                      {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  )}
+                </div>
+
+                {guide && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => toggleGuide(f.key)}
+                      aria-expanded={fieldGuideOpen}
+                      className="mt-1.5 flex w-fit items-center gap-1.5 text-xs text-purple-400 transition-colors hover:text-purple-300"
+                    >
+                      <HelpCircle className="h-3.5 w-3.5" />
+                      {fieldGuideOpen ? "Masquer le guide" : "Comment obtenir cette clé ?"}
+                    </button>
+                    <AnimatePresence initial={false}>
+                      {fieldGuideOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                          className="overflow-hidden"
+                        >
+                          <GuidePanel guide={guide} />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </>
                 )}
               </div>
             );
@@ -330,7 +413,7 @@ export default function ConnectionCard({
               type="button"
               onClick={handleSave}
               disabled={submitting}
-              className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-accent px-3 py-2 text-sm font-medium text-white transition hover:bg-accent/90 disabled:opacity-50"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-purple-600 px-3 py-2 text-sm font-medium text-white shadow-lg shadow-purple-600/20 transition hover:bg-purple-500 disabled:opacity-50"
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
               {i18n("save")}
@@ -339,7 +422,7 @@ export default function ConnectionCard({
               type="button"
               onClick={handleDisconnect}
               disabled={submitting}
-              className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-rose-500/20 bg-rose-500/5 px-3 py-2 text-sm font-medium text-rose-400 transition hover:bg-rose-500/10 disabled:opacity-50"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm font-medium text-red-400 transition hover:bg-red-500/20 disabled:opacity-50"
             >
               <Unlink className="h-4 w-4" />
               {i18n("disconnect")}
@@ -402,5 +485,31 @@ export default function ConnectionCard({
         )}
       </AnimatePresence>
     </motion.div>
+  );
+}
+
+function GuidePanel({ guide }: { guide: ConnectionGuide }) {
+  return (
+    <div className="mt-2 rounded-xl border border-purple-500/20 bg-purple-500/[0.06] p-3.5">
+      <div className="mb-2.5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <span className="text-xs font-medium text-purple-200">Comment obtenir cette clé ?</span>
+        <a
+          href={guide.keyGuide.dashboardUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-purple-500/20 px-3 py-1.5 text-xs font-semibold text-purple-300 transition-all hover:bg-purple-500/30"
+        >
+          {guide.keyGuide.linkText}
+          <ExternalLink className="h-3 w-3" />
+        </a>
+      </div>
+      <ol className="list-decimal space-y-1.5 pl-4">
+        {guide.keyGuide.steps.map((step, index) => (
+          <li key={index} className="text-xs leading-relaxed text-zinc-400">
+            {step}
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 }

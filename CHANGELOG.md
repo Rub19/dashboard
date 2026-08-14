@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : correction des icônes / BrandMark**
+
+### Corrige
+- `ethone-next/components/BrandMark.tsx` : coins plus arrondis, `shape-rendering="geometricPrecision"`, ajustement du trait et des arrondis pour éviter les artefacts.
+- `ethone-next/lib/icons.tsx` : fallback `help-circle` affiché si l’icône demandée n’existe pas dans le pack actif, afin d’éviter les cases vides/icônes cassées.
+
 **Migration Next.js : logo et page login sans scroll**
 
 ### Corrige

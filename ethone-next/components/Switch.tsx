@@ -38,24 +38,24 @@ const SIZES: Record<
   }
 > = {
   sm: {
-    rail: "w-9 h-6",
+    rail: "w-9 h-7",
     knob: "h-4 w-4",
     icon: "h-3 w-3",
-    travel: 12,
+    travel: 8,
     labelClass: "text-[0.45rem]",
   },
   md: {
-    rail: "w-11 h-7",
+    rail: "w-11 h-8",
     knob: "h-5 w-5",
     icon: "h-3.5 w-3.5",
-    travel: 20,
+    travel: 12,
     labelClass: "text-[0.55rem]",
   },
   lg: {
-    rail: "w-14 h-8",
+    rail: "w-14 h-9",
     knob: "h-6 w-6",
     icon: "h-4 w-4",
-    travel: 24,
+    travel: 20,
     labelClass: "text-[0.65rem]",
   },
 };
@@ -137,12 +137,6 @@ export default function Switch({
     }
   }, [current, disabled, isLoading, onChange, onToggle]);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
-    if (e.key === " ") {
-      e.preventDefault();
-    }
-  };
-
   const railColor = current ? "var(--accent)" : "var(--surface-raised)";
   const railBorder = current ? "var(--accent)" : "var(--border)";
 
@@ -178,7 +172,6 @@ export default function Switch({
           }
           disabled={disabled || isLoading}
           onClick={handleToggle}
-          onKeyDown={handleKeyDown}
           whileTap={disabled || isLoading ? {} : { scale: 0.96 }}
           animate={{
             backgroundColor: railColor,
@@ -188,7 +181,7 @@ export default function Switch({
               : `0 0 0 0 rgba(0, 0, 0, 0)`,
           }}
           transition={MOTION_TRANSITION}
-          className={`relative rounded-full border-2 p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--foreground)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] ${sizeConfig.rail}`}
+          className={`relative flex items-center rounded-full border-2 p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--foreground)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] ${sizeConfig.rail}`}
         >
           <AnimatePresence mode="wait" initial={false}>
             {labelPair && !current && (

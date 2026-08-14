@@ -4,6 +4,14 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : refactor visuel des Paramètres d'Apparence**
+
+### Corrige
+- `ethone-next/components/settings/AppearanceSettings.tsx` : nouveau composant dédié avec des cartes de prévisualisation de thèmes, des pastilles chromatiques pour l’accent, un segmented control animé pour le pack d’icônes, un switch mode sombre et une section effets rééquilibrée.
+- `ethone-next/components/settings/SettingsContent.tsx` : section Apparence remplacée par le nouveau composant visuel.
+- `ethone-next/lib/i18n.ts` : ajout des traductions liées à l’apparence.
+- `ethone-next/components/SettingsProvider.tsx` : export de `THEMES` et `ACCENTS` pour les aperçus.
+
 **Migration Next.js : boutons, avatars et badges ronds**
 
 ### Corrige

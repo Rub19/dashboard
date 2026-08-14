@@ -25,6 +25,47 @@ export default function Sidebar() {
 
   if (settings.layoutPreset === "dock-only" || settings.layoutPreset === "minimal" || !settings.sidebarVisible) return null;
 
+  const mainItems = navItems.filter((item) => item.id !== "settings");
+  const bottomItems = [navItems.find((item) => item.id === "settings")].filter(Boolean) as NavigationItem[];
+
+  function NavButton({ item }: { item: NavigationItem }) {
+    const isActive = pathname === item.href || pathname.startsWith(item.href);
+    const base =
+      "v8-icon-radius group relative flex h-10 shrink-0 items-center justify-center gap-3 overflow-hidden rounded-xl text-[var(--muted)] transition-all duration-200 hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]";
+    const active = "bg-[var(--accent)] text-white shadow-lg shadow-[var(--accent)]/20";
+    const inactive = "bg-transparent";
+    const sizeClass = expanded ? "w-full px-3" : "w-10";
+
+    const link = (
+      <Link
+        key={item.id}
+        href={item.href}
+        onClick={() => setExpanded(false)}
+        aria-label={item.label}
+        data-tooltip={expanded ? undefined : item.label}
+        data-haptic
+        className={`${base} ${sizeClass} ${isActive ? active : inactive}`}
+      >
+        <Icon name={item.icon} className="h-5 w-5 shrink-0" />
+        <AnimatePresence>
+          {expanded && (
+            <motion.span
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -8 }}
+              transition={{ duration: 0.15 }}
+              className="min-w-0 flex-1 overflow-hidden whitespace-nowrap text-sm font-medium text-start"
+            >
+              {item.label}
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </Link>
+    );
+
+    return expanded ? link : <Tooltip key={item.id} label={item.label} position="right">{link}</Tooltip>;
+  }
+
   return (
     <motion.aside
       data-v8-rail
@@ -35,11 +76,12 @@ export default function Sidebar() {
         settings.glassEnabled ? "bg-[var(--surface)]/80 backdrop-blur-xl" : "bg-[var(--surface)]"
       }`}
     >
-      <div className="flex h-16 items-center px-4">
+      {/* Header */}
+      <div className="flex h-16 shrink-0 items-center px-4">
         <button
           type="button"
           onClick={() => setExpanded(!expanded)}
-          className="v8-icon-radius flex h-10 w-10 items-center justify-center text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
+          className="v8-icon-radius flex h-10 w-10 shrink-0 items-center justify-center text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
           aria-label={expanded ? "Réduire" : "Étendre"}
           data-tooltip={expanded ? undefined : "Menu"}
         >
@@ -61,48 +103,21 @@ export default function Sidebar() {
         </AnimatePresence>
       </div>
 
-      <nav className="flex-1 space-y-1 px-3 py-2">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href;
-          const link = (
-            <Link
-              key={item.id}
-              href={item.href}
-              onClick={() => setExpanded(false)}
-              aria-label={item.label}
-              data-tooltip={expanded ? undefined : item.label}
-              className={`v8-icon-radius group relative flex h-11 items-center transition-all duration-300 ${
-                isActive
-                  ? "bg-[var(--accent-soft)] text-[var(--accent)]"
-                  : "text-[var(--muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
-              } ${expanded ? "px-3" : "justify-center"}`}
-            >
-              {isActive && (
-                <motion.div
-                  layoutId="sidebar-pill"
-                  className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.35)]"
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                />
-              )}
-              <Icon name={item.icon} className="h-5 w-5 flex-shrink-0" />
-              <AnimatePresence>
-                {expanded && (
-                  <motion.span
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
-                    transition={{ duration: 0.2 }}
-                    className="ml-3 overflow-hidden whitespace-nowrap text-sm font-medium"
-                  >
-                    {item.label}
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </Link>
-          );
-          return expanded ? link : <Tooltip key={item.id} label={item.label} position="right">{link}</Tooltip>;
-        })}
+      {/* Navigation scrollable */}
+      <nav className="flex-1 min-h-0 w-full overflow-y-auto overflow-x-hidden px-3 py-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex w-full flex-col items-center gap-2">
+          {mainItems.map((item) => (
+            <NavButton key={item.id} item={item} />
+          ))}
+        </div>
       </nav>
+
+      {/* Bottom */}
+      <div className="flex w-full shrink-0 flex-col items-center gap-2 border-t border-[var(--border)] px-3 py-3">
+        {bottomItems.map((item) => (
+          <NavButton key={item.id} item={item} />
+        ))}
+      </div>
     </motion.aside>
   );
 }

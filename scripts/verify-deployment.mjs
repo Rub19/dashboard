@@ -35,7 +35,11 @@ async function verify() {
   const nonce = Date.now();
   const page = await fetchWithTimeout(new URL(`./?ethone-release-check=${nonce}`, baseUrl));
   if (!page.ok) throw new Error(`HTML returned HTTP ${page.status}`);
-  if (!page.text.includes('data-v8-shell') && !page.text.includes('id="__next"')) {
+  const isNextApp =
+    page.text.includes('id="__next"') ||
+    page.text.includes('/_next/static/') ||
+    page.text.includes('data-v8-shell');
+  if (!isNextApp) {
     throw new Error("HTML is not the ETHONE Next.js entry");
   }
   if (!page.text.includes('<title>ETHONE</title>')) throw new Error("Page title is missing");

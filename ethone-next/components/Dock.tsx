@@ -178,7 +178,7 @@ export default function Dock() {
   }
 
   const baseControlClass =
-    "v8-icon-radius flex h-11 w-11 items-center justify-center border border-transparent text-[var(--foreground)] transition-all hover:border-[var(--accent)]/30 hover:bg-[var(--surface)] hover:shadow-lg";
+    "!rounded-full v8-icon-radius flex h-11 w-11 items-center justify-center border border-transparent text-[var(--foreground)] transition-all hover:border-[var(--accent)]/30 hover:bg-[var(--surface)] hover:shadow-lg";
 
   const controlInactive = "text-[var(--muted)]";
   const controlActive = "bg-[var(--accent)]/10 text-[var(--accent)]";
@@ -236,10 +236,9 @@ export default function Dock() {
 
       <div
         data-dock
-        className={`flex items-end gap-1 border border-[var(--border)] bg-[var(--surface-raised)]/95 p-2 shadow-2xl backdrop-blur-md transition-all ${
+        className={`flex items-end gap-1 !rounded-full overflow-hidden border border-[var(--border)] bg-[var(--surface-raised)]/95 p-2 shadow-2xl backdrop-blur-md transition-all ${
           expanded ? "min-w-[320px] flex-wrap justify-center" : ""
         }`}
-        style={{ borderRadius: "var(--dock-radius, 50px)" }}
       >
         {visibleItems().map((item) => {
           const active = pathname === item.href || pathname.startsWith(item.href);

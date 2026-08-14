@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : correction point parasite sur le cercle Pomodoro**
+
+### Corrige
+- `ethone-next/app/focus/page.tsx` : masque le cercle de progression quand `progress <= 0`, ce qui supprime le point coloré résiduel dû à `strokeLinecap="round"`.
+
 **Migration Next.js : Expanding Sidebar**
 
 ### Corrige

@@ -462,7 +462,7 @@ export default function Home() {
               {continuation.action}
             </Link>
           </div>
-          <div className="mt-4 grid grid-cols-3 gap-3">
+          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
             <Summary icon="circle-check" label={i18n("openTasks")} value={openTasksCount} />
             <Summary icon="calendar" label={i18n("todayEvents")} value={todayEvents.length} />
             <Summary icon="notebook-pen" label={i18n("notes")} value={notes.length} />

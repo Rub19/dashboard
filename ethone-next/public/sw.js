@@ -1,4 +1,4 @@
-const CACHE_NAME = "ethone-next-v342";
+const CACHE_NAME = "ethone-next-v343";
 const PRECACHE = ["/", "/login/", "/offline.html"];
 const STATIC_EXTENSIONS = [".js", ".css", ".png", ".jpg", ".jpeg", ".webp", ".svg", ".woff", ".woff2", ".ico"];
 
@@ -236,6 +236,9 @@ self.addEventListener("message", (event) => {
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   if (event.request.url.includes("/api/")) return;
+
+  const requestUrl = new URL(event.request.url);
+  if (requestUrl.protocol !== "http:" && requestUrl.protocol !== "https:") return;
 
   if (isStaticAsset(event.request.url)) {
     event.respondWith(

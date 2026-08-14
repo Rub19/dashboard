@@ -4,6 +4,14 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : correction du Worker 401 sur les pages protégées**
+
+### Corrige
+- `ethone-next/lib/supabase.ts` : désactive `autoRefreshToken` pour empêcher Supabase de supprimer la session quand le refresh token n’est pas valide (OTP).
+- `ethone-next/lib/auth.ts` : stocke le `refresh_token` et `auth-type` pour les connexions par mot de passe / OTP.
+- `ethone-next/components/AuthProvider.tsx` : restaure ou rafraîchit manuellement la session au montage depuis `localStorage` selon le type d’authentification.
+- `ethone-next/app/login/page.tsx` : transmet `rememberMe` à `signInWithPassword`.
+
 **Migration Next.js : textes complets et icônes carrées dans le header**
 
 ### Corrige

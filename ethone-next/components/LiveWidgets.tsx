@@ -131,6 +131,31 @@ function toStr(value: unknown): string | undefined {
   return undefined;
 }
 
+function ImageFallback({
+  src,
+  alt,
+  size = 48,
+  fallback,
+  className,
+}: {
+  src?: string;
+  alt?: string;
+  size?: number;
+  fallback?: string;
+  className?: string;
+}) {
+  const [error, setError] = useState(false);
+  const initial = (fallback || alt?.slice(0, 2) || "?").toUpperCase();
+  if (!src || error) {
+    return (
+      <span className={`inline-flex shrink-0 items-center justify-center overflow-hidden bg-[var(--surface)] text-[10px] font-medium text-[var(--foreground)] ${className}`}>
+        {initial}
+      </span>
+    );
+  }
+  return <Image src={src} alt={alt || ""} width={size} height={size} unoptimized className={`${className} object-cover`} onError={() => setError(true)} />;
+}
+
 function toNum(value: unknown): number | undefined {
   if (typeof value === "number") return value;
   if (typeof value === "string" && /^-?\d+(\.\d+)?$/.test(value)) return Number(value);
@@ -624,11 +649,13 @@ export default function LiveWidgets({
         </div>
 
         <div className="flex items-center gap-3">
-          {lanyard.avatarUrl ? (
-            <Image src={lanyard.avatarUrl} alt="" width={48} height={48} unoptimized className="h-12 w-12 rounded-full border border-[var(--border)] object-cover" />
-          ) : (
-            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--surface)] text-[10px]">DC</span>
-          )}
+          <ImageFallback
+            src={lanyard.avatarUrl}
+            alt={lanyard.displayName || "Discord"}
+            size={48}
+            fallback="DC"
+            className="h-12 w-12 rounded-full border border-[var(--border)] object-cover"
+          />
           <div className="min-w-0">
             <p className="truncate font-medium text-[var(--foreground)]">{lanyard.displayName || record.title}</p>
             <p className="truncate text-[10px] text-[var(--muted)]">{lanyard.userId ? `ID: ${lanyard.userId.slice(0, 8)}…` : "—"}</p>
@@ -1009,12 +1036,11 @@ export default function LiveWidgets({
 
               {hasImageHeader && (
                 <div className="mb-3 flex items-center gap-3">
-                  <Image
-                    src={record.image || ""}
-                    alt=""
-                    width={56}
-                    height={56}
-                    unoptimized
+                  <ImageFallback
+                    src={record.image}
+                    alt={record.title}
+                    size={56}
+                    fallback={record.title?.slice(0, 2).toUpperCase()}
                     className="h-14 w-14 rounded-full border-2 border-[var(--border)] object-cover shadow-md"
                   />
                   <div>

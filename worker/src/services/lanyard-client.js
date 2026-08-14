@@ -15,8 +15,10 @@ export async function getLanyardPresence(env, userId) {
   const value = response.data?.data || {};
   const discordUser = value.discord_user || {};
   const spotify = value.spotify || null;
-  const avatar = discordUser.avatar && discordUser.id
-    ? `https://cdn.discordapp.com/avatars/${encodeURIComponent(discordUser.id)}/${encodeURIComponent(discordUser.avatar)}.png?size=128`
+  const userIdForAvatar = discordUser.id || userId;
+  const isAnimated = String(discordUser.avatar || "").startsWith("a_");
+  const avatar = discordUser.avatar && userIdForAvatar
+    ? `https://cdn.discordapp.com/avatars/${encodeURIComponent(userIdForAvatar)}/${encodeURIComponent(discordUser.avatar)}.${isAnimated ? "gif" : "png"}?size=128`
     : "";
   return Object.freeze({
     userId: safeText(discordUser.id || userId, 24),

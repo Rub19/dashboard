@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : extraction SidebarItem et correction artefact actif**
+
+### Corrige
+- `ethone-next/components/SidebarItem.tsx` : nouveau composant isolé avec une seule convention d’état actif (fond accent arrondi + indicateur latéral séparé).
+- `ethone-next/components/Sidebar.tsx` : utilise `SidebarItem`, taille fixe `w-10 h-10`, `!rounded-xl` pour outrepasser les radius globaux, et scroll silencieux.
+
 **Migration Next.js : refactor Sidebar**
 
 ### Corrige

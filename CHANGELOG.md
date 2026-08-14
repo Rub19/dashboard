@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : retirer animations bump sur la page Activité**
+
+### Corrige
+- `ethone-next/app/activity/page.tsx` : retire `bump` des cartes (statistiques, heatmap, journal) pour éviter les animations/effets indésirables sur la Carte d'activité.
+
 **Migration Next.js : fallback avatar Discord et URL avatar corrigée**
 
 ### Corrige

@@ -216,8 +216,6 @@ export default function V8Breadcrumbs() {
   const i18n = useI18n();
   const pathname = usePathname() ?? "/";
   const { settings, update } = useSettings();
-  const { activeProfile } = useActiveProfile();
-  const { user } = useAuth();
   const [activeSpace] = useLocalStorage<string>("ethone-active-workspace", "personal");
   const { weather, lastUpdated } = useLiveData(300000);
   const { syncing, sync } = useActivityJournal();

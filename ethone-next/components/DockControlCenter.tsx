@@ -136,10 +136,10 @@ export default function DockControlCenter({
     onOpenChange: (next) => {
       if (!next) onClose();
     },
-    placement: "bottom",
+    placement: "top",
     strategy: "fixed",
     whileElementsMounted: autoUpdate,
-    middleware: [offset(12), flip({ padding: 8 }), shift({ padding: 8 })],
+    middleware: [offset(12), flip({ fallbackPlacements: ["top"], padding: 8 }), shift({ padding: 8 })],
     elements: { reference: referenceRef },
   });
 

@@ -4,6 +4,14 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : arrondi des bords (dock, mobile nav, sidebar, header)**
+
+### Corrige
+- `ethone-next/components/Dock.tsx` : fallback `border-radius: var(--dock-radius, 50px)` et retrait du `overflow-hidden` qui pouvait couper/cacher les bords.
+- `ethone-next/components/MobileNav.tsx` : `rounded-t-2xl` pour éviter les coins carrés en haut de la barre mobile.
+- `ethone-next/components/Sidebar.tsx` : `rounded-r-2xl` pour adoucir le bord droit du rail.
+- `ethone-next/components/Shell.tsx` : `rounded-b-2xl` sur le header pour un rendu plus doux.
+
 **Migration Next.js : forme des icônes du header**
 
 ### Corrige

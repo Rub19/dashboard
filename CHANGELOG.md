@@ -4,6 +4,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : logo et page login sans scroll**
+
+### Corrige
+- `ethone-next/components/BrandMark.tsx` : coins arrondis, trait du E affiné et récentré.
+- `ethone-next/app/login/page.tsx` : suppression du `min-h` fixe, hauteur limitée à `100vh - 2rem`, espacements et champs réduits pour éviter tout scroll.
+- `ethone-next/components/PasswordField.tsx` : hauteur de l’input et espacement des règles réduits.
+
 **Migration Next.js : audit performance et optimisations dashboard**
 
 ### Corrige

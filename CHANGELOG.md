@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : icône distincte pour les plugins**
+
+### Corrige
+- `ethone-next/lib/icons.tsx` : l’icône `plugins` est maintenant un bloc/cube (`blocks` / `package` / `cube`) au lieu de `plug`/`puzzle`, pour ne plus être confondue avec `connections`.
+
 **Migration Next.js : correction du Worker 401 sur les pages protégées**
 
 ### Corrige

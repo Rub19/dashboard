@@ -8,7 +8,8 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ### Corrige
 - `V8Breadcrumbs`, `V8StatusBar` : suppression des `truncate` et `max-w` pour afficher les intitulés complets (session, synchronisation, heure, profil…).
-- `V8Breadcrumbs`, `NotificationCenter`, `SidePanel`, `CommandPalette`, `LanguageSwitcher`, `ProfileDropdown`, `V8WindowControls`, `BrandMark` : passage des conteneurs d’icônes en `rounded-none` pour un rendu carré.
+- `V8Breadcrumbs`, `NotificationCenter`, `SidePanel`, `CommandPalette`, `LanguageSwitcher`, `ProfileDropdown`, `BrandMark` : passage des conteneurs d’icônes en `rounded-none` pour un rendu carré.
+- `Shell.tsx` : retrait des trois points de contrôle fenêtre (`V8WindowControls`) du header.
 
 **Migration Next.js : correction de la session qui disparaît au refresh (mot de passe et OTP)**
 

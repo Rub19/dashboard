@@ -67,6 +67,11 @@ export default function BootProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   const check = useCallback(() => {
+    if (!pathname) {
+      setState("booting");
+      return;
+    }
+
     if (typeof window !== "undefined" && !navigator.onLine) {
       setState("offline");
       return;

@@ -891,9 +891,7 @@ export default function SettingsContent() {
         label: i18n("otpRequired"),
         type: "custom",
         defaultValue: true,
-        render: (value, onChange) => (
-          <SwitchControl checked={Boolean(value)} onChange={() => onChange(value)} />
-        ),
+        render: (value) => <SwitchControl checked={Boolean(value)} onChange={() => {}} />,
         keywords: ["sécurité", "otp", "2fa"],
       },
     ],

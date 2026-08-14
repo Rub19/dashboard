@@ -58,7 +58,9 @@ export default function BootProvider({ children }: { children: ReactNode }) {
     if (typeof window !== "undefined" && !navigator.onLine) {
       return "offline";
     }
-    if (isPublicRoute(pathname)) {
+    // During SSG usePathname is null; default to unauthenticated so public
+    // pages like /login prerender their real content instead of the loader.
+    if (typeof window === "undefined" || isPublicRoute(pathname) || pathname === null) {
       return "unauthenticated";
     }
     return "booting";
@@ -67,22 +69,17 @@ export default function BootProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   const check = useCallback(() => {
-    if (!pathname) {
-      setState("booting");
-      return;
-    }
-
     if (typeof window !== "undefined" && !navigator.onLine) {
       setState("offline");
       return;
     }
 
-    const publicRoute = isPublicRoute(pathname);
+    // pathname can be null during the first client render or during SSG.
+    // Treat null as public so /login never stays on the loader.
+    const publicRoute = isPublicRoute(pathname) || pathname === null;
 
     if (authLoading) {
-      if (!publicRoute) {
-        setState("booting");
-      }
+      setState(publicRoute ? "unauthenticated" : "booting");
       return;
     }
 
@@ -146,7 +143,7 @@ export default function BootProvider({ children }: { children: ReactNode }) {
     check();
   }, [check]);
 
-  const publicRoute = isPublicRoute(pathname);
+  const publicRoute = isPublicRoute(pathname) || pathname === null;
 
   if (state === "booting" || state === "recovering") {
     return (

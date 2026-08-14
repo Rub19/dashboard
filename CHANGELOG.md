@@ -4,6 +4,15 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : rendre le "rester connecté" persistant au refresh**
+
+### Corrige
+- `worker/src/routes/security-identity.js` : l'endpoint `/api/auth/otp/verify` accepte `rememberMe` et signe un token valable 30 jours quand la case est cochée, 8 h sinon.
+- `ethone-next/lib/auth.ts` : `verifyOtp` transmet `rememberMe` au Worker, stocke le token et son expiration dans `localStorage`.
+- `ethone-next/app/login/page.tsx` : transmet l'état `rememberMe` à `verifyOtp`.
+- `ethone-next/components/AuthProvider.tsx` : restaure la session depuis le token stocké au montage si `getSession()` retourne `null` et que le token n'est pas expiré.
+- `ethone-next/lib/auth.test.ts` : ajuste l'appel attendu avec `rememberMe: false`.
+
 **Migration Next.js : système d'onglets moderne avec indicateur animé, accessibilité et adaptatif mobile/desktop**
 
 ### Ajoute

@@ -268,7 +268,7 @@ export default function LoginPage() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="w-full max-w-md"
+          className="w-full min-w-[min(100%,24rem)] max-w-md"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.98 }}
@@ -279,7 +279,7 @@ export default function LoginPage() {
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/50 to-transparent" />
             <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[var(--accent)]/10 blur-3xl" />
 
-            <div className="relative flex flex-col items-center text-center">
+            <div className="relative flex w-full flex-col items-center text-center">
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--accent)]/10 ring-1 ring-[var(--accent)]/20">
                 <BrandMark size={36} />
               </div>

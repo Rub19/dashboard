@@ -59,7 +59,7 @@ const MAP: Record<string, Partial<Record<IconPack, string>>> = {
   sunset: { lucide: "sunset", phosphor: "sun-horizon", tabler: "sunset", heroicons: "sun", radix: "sun" },
   interactions: { lucide: "flame", phosphor: "fire", tabler: "flame", heroicons: "fire", radix: "lightning-bolt" },
   connections: { lucide: "plug", phosphor: "plugs", tabler: "plug", heroicons: "link", radix: "link-2" },
-  plugins: { lucide: "plug", phosphor: "plugs-connected", tabler: "puzzle", heroicons: "puzzle-piece", radix: "magic-wand" },
+  plugins: { lucide: "blocks", phosphor: "package", tabler: "blocks", heroicons: "cube", radix: "cube" },
   spaces: { lucide: "layout-grid", phosphor: "squares-four", tabler: "layout-grid", heroicons: "squares-2x2", radix: "grid" },
   flows: { lucide: "workflow", phosphor: "tree-structure", tabler: "arrow-fork", heroicons: "arrow-path", radix: "mixer-horizontal" },
   brain: { lucide: "brain", phosphor: "brain", tabler: "brain", heroicons: "bolt", radix: "rocket" },

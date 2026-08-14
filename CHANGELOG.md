@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : enrichir les cartes Live Discord et Météo**
+
+### Corrige
+- `ethone-next/components/LiveWidgets.tsx` : rendus front dédiés pour Discord (statut, activité, Spotify) et Météo (condition, humidité/vent, prévisions sur 3 jours) avec `ImageFallback`, icônes météo et design plus compact.
+
 **Migration Next.js : refactor NotificationCenter et NotificationItem**
 
 ### Corrige

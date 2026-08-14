@@ -16,7 +16,7 @@ export function AiProviderPanel() {
   if (error) {
     return (
       <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">
-        Impossible de charger l'état IA.
+        Impossible de charger l&apos;état IA.
       </div>
     );
   }

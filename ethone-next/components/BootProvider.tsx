@@ -221,11 +221,18 @@ export default function BootProvider({ children }: { children: ReactNode }) {
   }
 
   const isAuthenticated = state === "authenticated" || session !== null;
-  const showShell = isAuthenticated || !publicRoute;
+
+  if (!isAuthenticated && !publicRoute) {
+    return (
+      <BootContext.Provider value={{ state, retry, continueOffline }}>
+        <Loading message="Redirection..." />
+      </BootContext.Provider>
+    );
+  }
 
   return (
     <BootContext.Provider value={{ state, retry, continueOffline }}>
-      {showShell ? children : <AuthOnlyShell>{children}</AuthOnlyShell>}
+      {children}
     </BootContext.Provider>
   );
 }

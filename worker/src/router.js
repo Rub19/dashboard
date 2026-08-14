@@ -361,15 +361,15 @@ export const ROUTES = Object.freeze([
   route("provider-credentials.delete", "/api/provider-credentials", providerCredentialsRoute, { method: "DELETE", service: "sync", rateLimit: "strict" }),
 
   // Sync (notes, tasks, events)
-  route("items.notes", "/api/notes", itemsRoute, { service: "sync" }),
+  route("items.notes", "/api/notes", itemsRoute, { service: "sync", action: "note" }),
   route("items.notes.create", "/api/notes", itemsRoute, { method: "POST", service: "sync", action: "note" }),
   route("items.notes.update", "/api/notes", itemsRoute, { method: "PATCH", service: "sync", action: "note" }),
   route("items.notes.delete", "/api/notes", itemsRoute, { method: "DELETE", service: "sync", action: "note" }),
-  route("items.tasks", "/api/tasks", itemsRoute, { service: "sync" }),
+  route("items.tasks", "/api/tasks", itemsRoute, { service: "sync", action: "task" }),
   route("items.tasks.create", "/api/tasks", itemsRoute, { method: "POST", service: "sync", action: "task" }),
   route("items.tasks.update", "/api/tasks", itemsRoute, { method: "PATCH", service: "sync", action: "task" }),
   route("items.tasks.delete", "/api/tasks", itemsRoute, { method: "DELETE", service: "sync", action: "task" }),
-  route("items.events", "/api/events", itemsRoute, { service: "sync" }),
+  route("items.events", "/api/events", itemsRoute, { service: "sync", action: "event" }),
   route("items.events.create", "/api/events", itemsRoute, { method: "POST", service: "sync", action: "event" }),
   route("items.events.update", "/api/events", itemsRoute, { method: "PATCH", service: "sync", action: "event" }),
   route("items.events.delete", "/api/events", itemsRoute, { method: "DELETE", service: "sync", action: "event" }),

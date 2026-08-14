@@ -1062,7 +1062,22 @@ export default function SettingsContent() {
     [form]
   );
 
-  const advancedOpen = form.showAdvanced || form.query.trim().length > 0;
+  const visibleAdvancedSections = useMemo(
+    () => advancedSections.filter(sectionVisible),
+    [advancedSections, sectionVisible]
+  );
+
+  const advancedOpen =
+    visibleAdvancedSections.length > 0 &&
+    (form.showAdvanced || form.query.trim().length > 0);
+
+  const advancedModifiedCount = useMemo(
+    () =>
+      visibleAdvancedSections.some((s) => s.id === "density-custom")
+        ? modifiedCounts.densityCustom
+        : 0,
+    [visibleAdvancedSections, modifiedCounts.densityCustom]
+  );
 
   return (
     <div className="space-y-6">
@@ -1102,18 +1117,18 @@ export default function SettingsContent() {
               id="advanced"
               label="Paramètres avancés"
               icon="sliders-horizontal"
-              modifiedCount={modifiedCounts.densityCustom}
+              modifiedCount={advancedModifiedCount}
               visible
             >
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                {advancedSections.map((section) => (
+                {visibleAdvancedSections.map((section) => (
                   <SettingsSection
                     key={section.id}
                     id={section.id}
                     label={section.label}
                     icon={section.icon}
                     modifiedCount={section.id === "density-custom" ? modifiedCounts.densityCustom : undefined}
-                    visible={sectionVisible(section)}
+                    visible
                   >
                     {!section.skipFields &&
                       section.fields.map((field) => (

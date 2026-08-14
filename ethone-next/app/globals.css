@@ -1872,36 +1872,26 @@ html[data-zen-mode="true"] [data-v8-main] {
 }
 
 /* Dashboard-wide icon shape overrides */
-[data-icon-radius="square"] button:has(> svg),
-[data-icon-radius="square"] a:has(> svg),
-[data-icon-radius="square"] [data-dock-item] {
-  border-radius: 0;
-}
-
-[data-icon-radius="circle"] button:has(> svg),
-[data-icon-radius="circle"] a:has(> svg),
-[data-icon-radius="circle"] [data-dock-item] {
+button:has(> svg),
+a:has(> svg) {
   border-radius: 9999px;
 }
 
-[data-icon-radius="pill"] button:has(> svg),
-[data-icon-radius="pill"] a:has(> svg),
-[data-icon-radius="pill"] [data-dock-item] {
-  border-radius: 9999px;
-}
-
+[data-icon-radius="square"] [data-dock-item],
 [data-icon-radius="square"] .v8-icon-radius,
 [data-icon-radius="square"] [data-v8-rail] a,
 [data-icon-radius="square"] [data-v8-rail] button {
   border-radius: 0;
 }
 
+[data-icon-radius="circle"] [data-dock-item],
 [data-icon-radius="circle"] .v8-icon-radius,
 [data-icon-radius="circle"] [data-v8-rail] a,
 [data-icon-radius="circle"] [data-v8-rail] button {
   border-radius: 9999px;
 }
 
+[data-icon-radius="pill"] [data-dock-item],
 [data-icon-radius="pill"] .v8-icon-radius,
 [data-icon-radius="pill"] [data-v8-rail] a,
 [data-icon-radius="pill"] [data-v8-rail] button {

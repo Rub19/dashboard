@@ -46,7 +46,7 @@ export default function Shell({ children }: { children: ReactNode }) {
             >
               <header
                 data-v8-topbar
-                className="v8-topbar sticky top-0 z-30 flex h-16 min-w-0 items-center justify-between gap-2 border-b border-[var(--border)] bg-[var(--background)]/80 px-4 backdrop-blur-md lg:px-6"
+                className="v8-topbar sticky top-0 z-30 flex h-16 min-w-0 items-center justify-between gap-2 rounded-b-2xl border-b border-[var(--border)] bg-[var(--background)]/80 px-4 backdrop-blur-md lg:px-6"
               >
                 <V8Breadcrumbs />
                 <SearchBar />

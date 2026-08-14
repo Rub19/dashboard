@@ -28,7 +28,7 @@ export default function MobileNav() {
       <nav
         data-zen-hidden
         className={cn(
-          "fixed bottom-0 left-0 right-0 z-40 border-t border-[var(--border)] bg-[var(--surface)]/95 pb-safe backdrop-blur-xl transition-transform md:hidden",
+          "fixed bottom-0 left-0 right-0 z-40 rounded-t-2xl border-t border-[var(--border)] bg-[var(--surface)]/95 pb-safe backdrop-blur-xl transition-transform md:hidden",
           drawerOpen ? "translate-y-full" : "translate-y-0"
         )}
       >

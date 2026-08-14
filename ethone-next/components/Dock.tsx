@@ -236,10 +236,10 @@ export default function Dock() {
 
       <div
         data-dock
-        className={`flex items-end gap-1 overflow-hidden border border-[var(--border)] bg-[var(--surface-raised)]/95 p-2 shadow-2xl backdrop-blur-md transition-all ${
+        className={`flex items-end gap-1 border border-[var(--border)] bg-[var(--surface-raised)]/95 p-2 shadow-2xl backdrop-blur-md transition-all ${
           expanded ? "min-w-[320px] flex-wrap justify-center" : ""
         }`}
-        style={{ borderRadius: "var(--dock-radius)" }}
+        style={{ borderRadius: "var(--dock-radius, 50px)" }}
       >
         {visibleItems().map((item) => {
           const active = pathname === item.href || pathname.startsWith(item.href);

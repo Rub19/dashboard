@@ -31,7 +31,7 @@ export default function Sidebar() {
       initial={false}
       animate={{ width: expanded ? 240 : 72 }}
       transition={{ type: "spring", stiffness: 500, damping: 35 }}
-      className={`v8-rail fixed left-0 top-0 z-40 hidden h-screen flex-col border-r border-[var(--border)] md:flex ${
+      className={`v8-rail fixed left-0 top-0 z-40 hidden h-screen flex-col rounded-r-2xl border-r border-[var(--border)] md:flex ${
         settings.glassEnabled ? "bg-[var(--surface)]/80 backdrop-blur-xl" : "bg-[var(--surface)]"
       }`}
     >

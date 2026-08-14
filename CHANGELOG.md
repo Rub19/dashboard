@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : arrondir le Dock et ses icônes**
+
+### Corrige
+- `ethone-next/components/Dock.tsx` : conteneur `!rounded-full overflow-hidden` et items du dock `!rounded-full` pour forcer les formes arrondies partout.
+
 **Migration Next.js : correction point parasite sur le cercle Pomodoro**
 
 ### Corrige

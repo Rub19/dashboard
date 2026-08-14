@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : refactor des cartes de connexion**
+
+### Corrige
+- `ethone-next/components/ConnectionCard.tsx` : remplacement de `CircleQuestionMark as HelpCircle` par `HelpCircle` et de `LogOut` par `Unlink` pour corriger l’icône corrompue du bouton Déconnecter.
+- `ethone-next/config/connectionsGuide.ts` : fichier de guides existant consolidé pour Jellyfin, Spotify, GitHub, Google, TMDB (URL, étapes, champs).
+
 **Migration Next.js : icônes rondes dans la sidebar/dock et header carré**
 
 ### Corrige

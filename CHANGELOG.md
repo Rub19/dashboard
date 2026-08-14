@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : fallback avatar Discord et URL avatar corrigée**
+
+### Corrige
+- `worker/src/services/lanyard-client.js` : utilise le `userId` fourni en fallback pour l’URL avatar et gère les avatars animés (`a_` → `.gif`).
+- `ethone-next/components/LiveWidgets.tsx` : ajoute `ImageFallback` avec placeholder si l’image Discord (ou autre) ne charge pas.
+
 **Migration Next.js : correction crash LayerProvider notify**
 
 ### Corrige

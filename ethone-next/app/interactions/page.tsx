@@ -8,6 +8,7 @@ import { Icon } from "@/lib/icons";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import Tooltip from "@/components/Tooltip";
+import Select from "@/components/ui/Select";
 import { useHaptics } from "@/lib/hooks/useHaptics";
 import { InteractionsHeatmap, type HeatmapRange } from "@/lib/interactions-heatmap";
 
@@ -248,16 +249,13 @@ export default function InteractionsPage() {
             <p className="text-sm leading-relaxed text-[var(--muted)]">{i18n("interactionsDescription")}</p>
           </div>
           <div className="flex flex-wrap items-end gap-2">
-            <select
-              aria-label={i18n("kind")}
+            <Select
               value={newKind}
-              onChange={(e) => setNewKind(e.target.value)}
-              className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
-            >
-              {INTERACTION_KINDS.map((k) => (
-                <option key={k} value={k}>{i18n(k)}</option>
-              ))}
-            </select>
+              onChange={setNewKind}
+              options={INTERACTION_KINDS.map((k) => ({ id: k, label: i18n(k) }))}
+              aria-label={i18n("kind")}
+              className="min-w-0"
+            />
             <input
               type="text"
               value={newTarget}
@@ -294,17 +292,16 @@ export default function InteractionsPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <select
-              aria-label={i18n("kind")}
+            <Select
               value={filterKind}
-              onChange={(e) => setFilterKind(e.target.value)}
-              className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 text-sm outline-none focus:border-[var(--accent)]"
-            >
-              <option value="all">{i18n("all")}</option>
-              {INTERACTION_KINDS.map((k) => (
-                <option key={k} value={k}>{i18n(k)}</option>
-              ))}
-            </select>
+              onChange={setFilterKind}
+              options={[
+                { id: "all", label: i18n("all") },
+                ...INTERACTION_KINDS.map((k) => ({ id: k, label: i18n(k) })),
+              ]}
+              aria-label={i18n("kind")}
+              className="min-w-0"
+            />
             <div className="flex gap-1">
               {[30, 90, 365].map((r) => (
                 <button

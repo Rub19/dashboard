@@ -6,6 +6,7 @@ import { useUserData } from "@/lib/hooks/useUserData";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
+import Select from "@/components/ui/Select";
 
 const ACTIONS = [
   { id: "navigate", i18nKey: "openPage", label: "Ouvrir page", defaults: { href: "/" } },
@@ -57,16 +58,13 @@ export default function MacrosPage() {
               aria-label={i18n("create")} placeholder={i18n("create")}
               className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
-            <select
-              aria-label={i18n("action")}
+            <Select
               value={action}
-              onChange={(e) => setAction(e.target.value)}
-              className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm"
-            >
-              {ACTIONS.map((a) => (
-                <option key={a.id} value={a.id}>{i18n(a.i18nKey)}</option>
-              ))}
-            </select>
+              onChange={setAction}
+              options={ACTIONS.map((a) => ({ id: a.id, label: i18n(a.i18nKey) }))}
+              aria-label={i18n("action")}
+              className="min-w-0"
+            />
             {action === "navigate" && (
               <input
                 type="text"

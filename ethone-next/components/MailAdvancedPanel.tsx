@@ -6,6 +6,7 @@ import { useMail, type MailAccount, type MailList, type MailPgpKey } from "@/lib
 import { useToast } from "@/components/ToastProvider";
 import { Icon } from "@/lib/icons";
 import Card3D from "@/components/Card3D";
+import Select from "@/components/ui/Select";
 
 type Tab = "accounts" | "pgp" | "push" | "lists";
 
@@ -284,11 +285,17 @@ export default function MailAdvancedPanel({ initialTab }: { initialTab: Tab }) {
         <div className="space-y-4">
           <form onSubmit={(e) => { e.preventDefault(); onCreateAccount(); }} className="space-y-2">
             <div className="grid gap-2 sm:grid-cols-2">
-              <select value={accountForm.provider || "gmail"} onChange={(e) => setAccountForm({ ...accountForm, provider: e.target.value })} aria-label={i18n("provider")} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm">
-                <option value="gmail">Gmail (OAuth)</option>
-                <option value="outlook">Outlook (OAuth)</option>
-                <option value="imap">IMAP</option>
-              </select>
+              <Select
+                value={accountForm.provider || "gmail"}
+                onChange={(value) => setAccountForm({ ...accountForm, provider: value })}
+                options={[
+                  { id: "gmail", label: "Gmail (OAuth)" },
+                  { id: "outlook", label: "Outlook (OAuth)" },
+                  { id: "imap", label: "IMAP" },
+                ]}
+                aria-label={i18n("provider")}
+                className="min-w-0"
+              />
               <input type="text" value={accountForm.email || ""} onChange={(e) => setAccountForm({ ...accountForm, email: e.target.value })} placeholder={i18n("email")} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
               <input type="text" value={accountForm.name || ""} onChange={(e) => setAccountForm({ ...accountForm, name: e.target.value })} placeholder={i18n("name")} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
               <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={accountForm.is_enabled === "true"} onChange={(e) => setAccountForm({ ...accountForm, is_enabled: e.target.checked ? "true" : "false" })} /> {i18n("enabled")}</label>

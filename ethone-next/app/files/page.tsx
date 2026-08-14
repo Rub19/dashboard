@@ -18,6 +18,7 @@ import { formatBytes, mimeIcon, sortFiles } from "@/lib/files";
 import FilesAdminPanel from "@/components/FilesAdminPanel";
 import BottomSheet from "@/components/BottomSheet";
 import FileUploader from "@/components/FileUploader";
+import Select from "@/components/ui/Select";
 
 function folderPath(files: CloudFile[], folderId: string | null) {
   const path: CloudFile[] = [];
@@ -400,16 +401,17 @@ export default function FilesPage() {
           placeholder={i18n("searchFiles")}
           className="min-w-0 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
         />
-        <select
+        <Select
           value={sort}
-          onChange={(e) => setSort(e.target.value as typeof sort)}
+          onChange={(value) => setSort(value as typeof sort)}
+          options={[
+            { id: "name", label: i18n("sortByName") },
+            { id: "size", label: i18n("sortBySize") },
+            { id: "date", label: i18n("sortByDate") },
+          ]}
           aria-label={i18n("sortBy")}
-          className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none"
-        >
-          <option value="name">{i18n("sortByName")}</option>
-          <option value="size">{i18n("sortBySize")}</option>
-          <option value="date">{i18n("sortByDate")}</option>
-        </select>
+          className="min-w-0"
+        />
       </div>
 
       {hasSelection && (
@@ -666,16 +668,17 @@ export default function FilesPage() {
               <form onSubmit={handleShare} className="space-y-4">
                 <h2 className="text-lg font-semibold">{i18n("shareFile")}</h2>
                 <p className="text-sm text-[var(--muted)]">{modal.file.name}</p>
-                <select
+                <Select
                   value={form.visibility || "public"}
-                  onChange={(e) => setForm({ ...form, visibility: e.target.value })}
+                  onChange={(value) => setForm({ ...form, visibility: value })}
+                  options={[
+                    { id: "public", label: i18n("public") },
+                    { id: "private", label: i18n("private") },
+                    { id: "password", label: i18n("password") },
+                  ]}
                   aria-label={i18n("visibility")}
-                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
-                >
-                  <option value="public">{i18n("public")}</option>
-                  <option value="private">{i18n("private")}</option>
-                  <option value="password">{i18n("password")}</option>
-                </select>
+                  className="w-full"
+                />
                 {form.visibility === "password" && (
                   <input
                     type="password"
@@ -723,15 +726,16 @@ export default function FilesPage() {
                   placeholder={i18n("description")}
                   className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
                 />
-                <select
+                <Select
                   value={form.visibility || "public"}
-                  onChange={(e) => setForm({ ...form, visibility: e.target.value })}
+                  onChange={(value) => setForm({ ...form, visibility: value })}
+                  options={[
+                    { id: "public", label: i18n("public") },
+                    { id: "password", label: i18n("password") },
+                  ]}
                   aria-label={i18n("visibility")}
-                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
-                >
-                  <option value="public">{i18n("public")}</option>
-                  <option value="password">{i18n("password")}</option>
-                </select>
+                  className="w-full"
+                />
                 {form.visibility === "password" && (
                   <input
                     type="password"

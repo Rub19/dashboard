@@ -7,6 +7,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useIsMobile } from "@/lib/hooks/useMediaQuery";
 import { Icon } from "@/lib/icons";
 import { usePresence } from "@/components/PresenceProvider";
+import Select from "@/components/ui/Select";
 import BottomSheet from "@/components/BottomSheet";
 
 const CATEGORY_ICONS: Record<NotificationCategory, string> = {
@@ -205,18 +206,13 @@ export default function NotificationCenter() {
             className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] py-2 pl-9 pr-3 text-sm outline-none focus:border-[var(--accent)]"
           />
         </div>
-        <select
+        <Select
           value={filter}
-          onChange={(e) => setFilter(e.target.value)}
+          onChange={setFilter}
+          options={categories.map((cat) => ({ id: cat.id, label: cat.label }))}
           aria-label={i18n("filter")}
-          className="rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-sm outline-none"
-        >
-          {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.label}
-            </option>
-          ))}
-        </select>
+          className="h-9 min-w-[10rem]"
+        />
       </div>
 
       <div className="flex flex-wrap gap-1.5">

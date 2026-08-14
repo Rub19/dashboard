@@ -8,6 +8,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
+import Select from "@/components/ui/Select";
 
 const THEMES = ["default", "boreal", "cyberpunk", "eclipse", "emerald"] as const;
 
@@ -92,16 +93,13 @@ export default function PersonasPage() {
               placeholder={i18n("create")}
               className="min-w-0 flex-1"
             />
-            <select
-              aria-label={i18n("theme")}
+            <Select
               value={theme}
-              onChange={(e) => setTheme(e.target.value as (typeof THEMES)[number])}
-              className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm"
-            >
-              {THEMES.map((t) => (
-                <option key={t} value={t}>{themeLabel(t, i18n)}</option>
-              ))}
-            </select>
+              onChange={(value) => setTheme(value as (typeof THEMES)[number])}
+              options={THEMES.map((t) => ({ id: t, label: themeLabel(t, i18n) }))}
+              aria-label={i18n("theme")}
+              className="min-w-0"
+            />
             <button type="button" aria-label={i18n("add")} onClick={add} className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white">
               <Icon name="plus" className="h-4 w-4" />
             </button>
@@ -123,16 +121,13 @@ export default function PersonasPage() {
                     onKeyDown={(e) => { if (e.key === "Enter") saveEdit(p.id); if (e.key === "Escape") cancelEdit(); }}
                     aria-label={i18n("label")}
                   />
-                  <select
-                    aria-label={i18n("theme")}
+                  <Select
                     value={editTheme}
-                    onChange={(e) => setEditTheme(e.target.value as (typeof THEMES)[number])}
-                    className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm"
-                  >
-                    {THEMES.map((t) => (
-                      <option key={t} value={t}>{themeLabel(t, i18n)}</option>
-                    ))}
-                  </select>
+                    onChange={(value) => setEditTheme(value as (typeof THEMES)[number])}
+                    options={THEMES.map((t) => ({ id: t, label: themeLabel(t, i18n) }))}
+                    aria-label={i18n("theme")}
+                    className="w-full"
+                  />
                   <div className="flex gap-2">
                     <button type="button" onClick={() => saveEdit(p.id)} className="flex-1 rounded-xl bg-[var(--accent)] py-2 text-sm font-semibold text-white">{i18n("save")}</button>
                     <button type="button" onClick={cancelEdit} className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm text-[var(--muted)] hover:text-[var(--foreground)]">{i18n("cancel")}</button>

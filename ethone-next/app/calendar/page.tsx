@@ -13,6 +13,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { getUserState, setUserState } from "@/lib/user-state";
 import { buildMonth, eventsForDate } from "@/lib/calendar";
+import Select from "@/components/ui/Select";
 
 const DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
@@ -240,16 +241,17 @@ export default function CalendarPage() {
             ) : (
               <span className="text-xs text-emerald-400">{i18n("google")} {i18n("connected")}</span>
             )}
-            <select
+            <Select
               value={filter}
-              onChange={(e) => setFilter(e.target.value as typeof filter)}
+              onChange={(value) => setFilter(value as typeof filter)}
+              options={[
+                { id: "all", label: i18n("allSources") },
+                { id: "local", label: i18n("local") },
+                { id: "google", label: i18n("google") },
+              ]}
               aria-label={i18n("filter")}
-              className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-xs outline-none"
-            >
-              <option value="all">{i18n("allSources")}</option>
-              <option value="local">{i18n("local")}</option>
-              <option value="google">{i18n("google")}</option>
-            </select>
+              className="min-w-0"
+            />
           </div>
         </div>
         <p className="text-sm text-[var(--muted)]">

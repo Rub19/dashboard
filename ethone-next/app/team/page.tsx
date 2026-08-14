@@ -7,6 +7,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useTeam } from "@/lib/hooks/useTeam";
 import { Icon } from "@/lib/icons";
 import { useToast } from "@/components/ToastProvider";
+import Select from "@/components/ui/Select";
 
 const ROLES = ["owner", "admin", "senior", "junior", "assistant", "viewer"] as const;
 
@@ -119,19 +120,14 @@ export default function TeamPage() {
               disabled={inviting}
               className="min-w-0 flex-1"
             />
-            <select
-              aria-label={i18n("role")}
+            <Select
               value={role}
-              onChange={(e) => setRole(e.target.value as (typeof ROLES)[number])}
+              onChange={(value) => setRole(value as (typeof ROLES)[number])}
+              options={ROLES.map((r) => ({ id: r, label: i18n(r) }))}
+              aria-label={i18n("role")}
               disabled={inviting}
-              className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm disabled:opacity-50"
-            >
-              {ROLES.map((r) => (
-                <option key={r} value={r}>
-                  {i18n(r)}
-                </option>
-              ))}
-            </select>
+              className="min-w-0"
+            />
             <button
               type="button"
               aria-label={i18n("add")}
@@ -198,16 +194,13 @@ export default function TeamPage() {
                       {i18n(m.role)}
                     </span>
                   ) : (
-                    <select
-                      aria-label={i18n("role")}
+                    <Select
                       value={m.role}
-                      onChange={(e) => changeRole(m.id, e.target.value)}
-                      className="shrink-0 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-xs"
-                    >
-                      {ROLES.map((r) => (
-                        <option key={r} value={r}>{i18n(r)}</option>
-                      ))}
-                    </select>
+                      onChange={(value) => changeRole(m.id, value)}
+                      options={ROLES.map((r) => ({ id: r, label: i18n(r) }))}
+                      aria-label={i18n("role")}
+                      className="shrink-0 min-w-0"
+                    />
                   )}
                   {m.role !== "owner" && (
                     <button type="button" onClick={() => deleteMember(m.id)} className="rounded p-1 text-[var(--muted)] hover:bg-red-500/10 hover:text-red-400">

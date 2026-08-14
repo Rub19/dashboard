@@ -7,6 +7,7 @@ import { useUserData } from "@/lib/hooks/useUserData";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { Icon } from "@/lib/icons";
 import { useToast } from "@/components/ToastProvider";
+import Select from "@/components/ui/Select";
 import { useBrain } from "@/lib/hooks/useBrain";
 import { AUTOMATION_ACTIONS, actionLabel } from "@/lib/brain/automation";
 
@@ -218,18 +219,13 @@ export default function FlowsPage() {
             <p className="text-sm leading-relaxed text-[var(--muted)]">{i18n("fromTemplates")}</p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <select
-              aria-label={i18n("template")}
+            <Select
               value={selectedTemplate}
-              onChange={(e) => setSelectedTemplate(e.target.value)}
-              className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
-            >
-              {TEMPLATES.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {i18n(t.id)}
-                </option>
-              ))}
-            </select>
+              onChange={setSelectedTemplate}
+              options={TEMPLATES.map((t) => ({ id: t.id, label: i18n(t.id) }))}
+              aria-label={i18n("template")}
+              className="min-w-0"
+            />
             <input
               type="text"
               value={newLabel}
@@ -414,20 +410,15 @@ export default function FlowsPage() {
                         </div>
                       ) : null}
                       <div className="flex flex-col gap-2 sm:flex-row">
-                        <select
+                        <Select
                           value={selectedAuto[flow.id] || attachableActions[0]?.id}
-                          onChange={(e) =>
-                            setSelectedAuto((prev) => ({ ...prev, [flow.id]: e.target.value }))
+                          onChange={(value) =>
+                            setSelectedAuto((prev) => ({ ...prev, [flow.id]: value }))
                           }
-                          className="min-w-0 flex-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-1.5 text-xs outline-none"
+                          options={attachableActions.map((a) => ({ id: a.id, label: a.label }))}
                           aria-label={i18n("action")}
-                        >
-                          {attachableActions.map((a) => (
-                            <option key={a.id} value={a.id}>
-                              {a.label}
-                            </option>
-                          ))}
-                        </select>
+                          className="min-w-0 flex-1"
+                        />
                         <button
                           type="button"
                           onClick={() => attachAutomation(flow.id, workspaceId)}

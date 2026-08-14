@@ -12,6 +12,7 @@ import MailAnalyticsPanel from "@/components/MailAnalyticsPanel";
 import BottomSheet from "@/components/BottomSheet";
 import ContextMenu from "@/components/ContextMenu";
 import RichTextEditor from "@/components/RichTextEditor";
+import Select from "@/components/ui/Select";
 
 const FOLDERS = ["inbox", "starred", "sent", "drafts", "archive", "trash", "spam"];
 
@@ -657,17 +658,16 @@ export default function MailPage() {
               <button type="button" onClick={() => handleBulk("archive")} className="rounded-xl border border-[var(--border)] px-2 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("archive")}</button>
               <button type="button" onClick={() => handleBulk("delete")} className="rounded-xl border border-[var(--border)] px-2 py-1.5 text-xs text-red-400 hover:bg-red-500/10">{i18n("delete")}</button>
               {labels.length > 0 && (
-                <select
-                  aria-label={i18n("labels")}
+                <Select
                   value=""
-                  onChange={(e) => e.target.value && handleBulk("label", e.target.value)}
-                  className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-1.5 text-xs"
-                >
-                  <option value="">{i18n("labels")}</option>
-                  {labels.map((l) => (
-                    <option key={l.id} value={l.name}>{l.name}</option>
-                  ))}
-                </select>
+                  onChange={(value) => value && handleBulk("label", value)}
+                  options={[
+                    { id: "", label: i18n("labels") },
+                    ...labels.map((l) => ({ id: l.name, label: l.name })),
+                  ]}
+                  aria-label={i18n("labels")}
+                  className="min-w-0"
+                />
               )}
             </div>
           </Card3D>
@@ -1021,18 +1021,20 @@ export default function MailPage() {
                 />
               </div>
               {templates.length > 0 && (
-                <select
-                  aria-label={i18n("templates")}
+                <Select
                   value=""
-                  onChange={(e) => {
-                    const t = templates.find((x) => x.id === e.target.value);
+                  onChange={(value) => {
+                    if (!value) return;
+                    const t = templates.find((x) => x.id === value);
                     if (t) { setComposeSubject(t.subject); setComposeBody(t.content); }
                   }}
-                  className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm"
-                >
-                  <option value="">{i18n("templates")}</option>
-                  {templates.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
-                </select>
+                  options={[
+                    { id: "", label: i18n("templates") },
+                    ...templates.map((t) => ({ id: t.id, label: t.name })),
+                  ]}
+                  aria-label={i18n("templates")}
+                  className="min-w-0"
+                />
               )}
               <RichTextEditor
                 defaultValue={composeBody}
@@ -1169,10 +1171,16 @@ export default function MailPage() {
                   <input type="text" value={form.condition_body || ""} onChange={(e) => setForm({ ...form, condition_body: e.target.value })} placeholder={i18n("body")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
                   <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.condition_has_attachments === "true"} onChange={(e) => setForm({ ...form, condition_has_attachments: e.target.checked ? "true" : "false" })} /> {i18n("hasAttachments")}</label>
                   <p className="text-xs font-medium text-[var(--muted)]">{i18n("actions")}</p>
-                  <select value={form.action_move_to || ""} onChange={(e) => setForm({ ...form, action_move_to: e.target.value })} aria-label={i18n("moveTo")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm">
-                    <option value="">{i18n("moveTo")}</option>
-                    {FOLDERS.map((f) => <option key={f} value={f}>{i18n(f)}</option>)}
-                  </select>
+                  <Select
+                    value={form.action_move_to || ""}
+                    onChange={(value) => setForm({ ...form, action_move_to: value })}
+                    options={[
+                      { id: "", label: i18n("moveTo") },
+                      ...FOLDERS.map((f) => ({ id: f, label: i18n(f) })),
+                    ]}
+                    aria-label={i18n("moveTo")}
+                    className="w-full"
+                  />
                   <input type="text" value={form.action_label || ""} onChange={(e) => setForm({ ...form, action_label: e.target.value })} placeholder={i18n("labels")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
                   <input type="text" value={form.action_forward || ""} onChange={(e) => setForm({ ...form, action_forward: e.target.value })} placeholder={i18n("forwardTo")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
                   <textarea value={form.action_auto_reply || ""} onChange={(e) => setForm({ ...form, action_auto_reply: e.target.value })} placeholder={i18n("autoReply")} className="h-20 w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2 text-sm" />

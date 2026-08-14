@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useBrain } from "@/lib/hooks/useBrain";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
@@ -8,6 +8,7 @@ import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
 import { actionLabel, triggerLabel, AUTOMATION_ACTIONS, AUTOMATION_TRIGGER_TYPES, type AutomationRule } from "@/lib/brain/automation";
 import { AUTOMATION_NAVIGATION, AUTOMATION_SPACES } from "@/lib/brain/automation";
+import Select from "@/components/ui/Select";
 
 const TIME_OPTIONS = ["09:00", "12:00", "14:00", "17:00", "18:00", "21:00", "22:00"] as const;
 
@@ -57,21 +58,32 @@ export default function FlowAutomations({ activeFlow }: { activeFlow?: string })
         ? AUTOMATION_NAVIGATION
         : TIME_OPTIONS;
 
+  const actionOptions = useMemo(() => {
+    const groups = [
+      { label: i18n("space"), actions: groupOptions("space") },
+      { label: i18n("densityTitle"), actions: groupOptions("density") },
+      { label: i18n("theme"), actions: groupOptions("theme") },
+    ];
+    const options: { id: string; label: string; disabled?: boolean }[] = [];
+    groups.forEach((g) => {
+      options.push({ id: `group-${g.label}`, label: g.label, disabled: true });
+      g.actions.forEach((a) => options.push({ id: a.id, label: a.label }));
+    });
+    return options;
+  }, [i18n]);
+
   return (
     <Card3D>
       <h2 className="mb-3 text-sm font-semibold">{i18n("flowAutomations")}</h2>
       <div className="space-y-3">
         <div className="flex flex-col gap-2 sm:flex-row">
-          <select
+          <Select
             value={triggerType}
-            onChange={(e) => resetValue(e.target.value as "space" | "route" | "time")}
+            onChange={(value) => resetValue(value as "space" | "route" | "time")}
+            options={AUTOMATION_TRIGGER_TYPES.map((t) => ({ id: t, label: i18n(t) }))}
             aria-label={i18n("trigger")}
-            className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm"
-          >
-            {AUTOMATION_TRIGGER_TYPES.map((t) => (
-              <option key={t} value={t}>{i18n(t)}</option>
-            ))}
-          </select>
+            className="min-w-0"
+          />
           {triggerType === "time" ? (
             <input
               type="time"
@@ -80,39 +92,21 @@ export default function FlowAutomations({ activeFlow }: { activeFlow?: string })
               className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none"
             />
           ) : (
-            <select
+            <Select
               value={triggerValue}
-              onChange={(e) => setTriggerValue(e.target.value)}
+              onChange={setTriggerValue}
+              options={triggerOptions.map((v) => ({ id: v, label: i18n(v) }))}
               aria-label={i18n("value")}
-              className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm"
-            >
-              {triggerOptions.map((v) => (
-                <option key={v} value={v}>{i18n(v)}</option>
-              ))}
-            </select>
+              className="min-w-0 flex-1"
+            />
           )}
-          <select
+          <Select
             value={action}
-            onChange={(e) => setAction(e.target.value)}
+            onChange={setAction}
+            options={actionOptions}
             aria-label={i18n("action")}
-            className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm"
-          >
-            <optgroup label={i18n("space")}>
-              {groupOptions("space").map((a) => (
-                <option key={a.id} value={a.id}>{a.label}</option>
-              ))}
-            </optgroup>
-            <optgroup label={i18n("densityTitle")}>
-              {groupOptions("density").map((a) => (
-                <option key={a.id} value={a.id}>{a.label}</option>
-              ))}
-            </optgroup>
-            <optgroup label={i18n("theme")}>
-              {groupOptions("theme").map((a) => (
-                <option key={a.id} value={a.id}>{a.label}</option>
-              ))}
-            </optgroup>
-          </select>
+            className="min-w-0 flex-1"
+          />
           <button
             type="button"
             onClick={addAutomation}

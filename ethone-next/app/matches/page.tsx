@@ -7,6 +7,7 @@ import LiquidSidebar from "@/components/LiquidSidebar";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
+import Select from "@/components/ui/Select";
 import { useSettings } from "@/components/SettingsProvider";
 
 const tabs = [
@@ -200,18 +201,16 @@ export default function MatchesPage() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
             <div className="min-w-0 flex-1">
               <label htmlFor="apex-platform" className="mb-1 block text-xs text-[var(--muted)]">{i18n("platform")}</label>
-              <select
+              <Select
                 id="apex-platform"
                 value={apexPlatform}
-                onChange={(e) => setApexPlatform(e.target.value as typeof apexPlatform)}
-                className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)]"
-              >
-                {APEX_PLATFORMS.map((p) => (
-                  <option key={p} value={p}>
-                    {p === "origin" ? "Origin (PC)" : p === "xbl" ? "Xbox Live" : "PlayStation Network"}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setApexPlatform(value as typeof apexPlatform)}
+                options={APEX_PLATFORMS.map((p) => ({
+                  id: p,
+                  label: p === "origin" ? "Origin (PC)" : p === "xbl" ? "Xbox Live" : "PlayStation Network",
+                }))}
+                className="w-full"
+              />
             </div>
             <div className="min-w-0 flex-1">
               <label htmlFor="apex-identifier" className="mb-1 block text-xs text-[var(--muted)]">{i18n("liveTrackerApexIdentifier")}</label>

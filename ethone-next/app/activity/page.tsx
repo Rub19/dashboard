@@ -9,6 +9,7 @@ import type { ActivityCategory, ActivitySnapshot } from "@/lib/activity-journal"
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
 import LiveWidgets from "@/components/LiveWidgets";
+import Select from "@/components/ui/Select";
 
 function dateKey(iso = "") {
   const d = new Date(iso);
@@ -350,30 +351,20 @@ export default function ActivityPage() {
               aria-label={i18n("journalSearchPlaceholder")}
               className="h-9 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--accent)]"
             />
-            <select
+            <Select
               value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value as ActivityCategory | "all")}
-              className="h-9 rounded-xl border border-[var(--border)] bg-[var(--background)] px-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
+              onChange={(value) => setCategoryFilter(value as ActivityCategory | "all")}
+              options={CATEGORIES.map((c) => ({ id: c.id, label: i18n(c.labelKey) }))}
               aria-label={i18n("journalFilterCategory")}
-            >
-              {CATEGORIES.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {i18n(c.labelKey)}
-                </option>
-              ))}
-            </select>
-            <select
+              className="h-9 min-w-0"
+            />
+            <Select
               value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="h-9 rounded-xl border border-[var(--border)] bg-[var(--background)] px-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
+              onChange={setTypeFilter}
+              options={TYPES.map((t) => ({ id: t.id, label: i18n(t.labelKey) }))}
               aria-label={i18n("journalFilterType")}
-            >
-              {TYPES.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {i18n(t.labelKey)}
-                </option>
-              ))}
-            </select>
+              className="h-9 min-w-0"
+            />
           </div>
         </div>
 

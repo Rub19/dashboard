@@ -7,6 +7,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
 import { CHANGELOG } from "@/data/changelog";
 import { useNotifications } from "@/lib/hooks/useNotifications";
+import Select from "@/components/ui/Select";
 import { useAuth } from "@/components/AuthProvider";
 import { useProfile } from "@/lib/hooks/useProfile";
 import { useFocus } from "./FocusProvider";
@@ -292,18 +293,17 @@ function NotificationsTab() {
           placeholder={i18n("search")}
           className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
         />
-        <select
+        <Select
           value={filter}
-          onChange={(e) => setFilter(e.target.value)}
+          onChange={setFilter}
+          options={[
+            { id: "all", label: i18n("all") },
+            { id: "unread", label: i18n("unread") },
+            ...categories.map((cat) => ({ id: cat, label: cat })),
+          ]}
           aria-label={i18n("filter")}
-          className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm"
-        >
-          <option value="all">{i18n("all")}</option>
-          <option value="unread">{i18n("unread")}</option>
-          {categories.map((cat) => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
-        </select>
+          className="min-w-[6rem]"
+        />
         <button type="button" onClick={() => markAllRead()} className="rounded-xl p-2 hover:bg-[var(--surface)]" aria-label={i18n("markAllRead")}>
           <Icon name="check-check" className="h-4 w-4" />
         </button>

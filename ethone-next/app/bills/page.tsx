@@ -8,6 +8,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { useItems } from "@/lib/hooks/useItems";
 import { Icon } from "@/lib/icons";
+import Select from "@/components/ui/Select";
 import {
   addBill,
   editBill,
@@ -266,16 +267,17 @@ export default function BillsPage() {
               aria-label={i18n("amount")}
               placeholder={i18n("amount")}
             />
-            <select
-              aria-label={i18n("currency")}
+            <Select
               value={currency}
-              onChange={(e) => setCurrency(e.target.value)}
-              className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm"
-            >
-              <option value="EUR">{i18n("currencyEur")}</option>
-              <option value="USD">{i18n("currencyUsd")}</option>
-              <option value="GBP">{i18n("currencyGbp")}</option>
-            </select>
+              onChange={setCurrency}
+              options={[
+                { id: "EUR", label: i18n("currencyEur") },
+                { id: "USD", label: i18n("currencyUsd") },
+                { id: "GBP", label: i18n("currencyGbp") },
+              ]}
+              aria-label={i18n("currency")}
+              className="min-w-0"
+            />
             <input
               aria-label={i18n("date")}
               type="date"
@@ -283,30 +285,20 @@ export default function BillsPage() {
               onChange={(e) => setDate(e.target.value)}
               className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm"
             />
-            <select
-              aria-label={i18n("category")}
+            <Select
               value={category}
-              onChange={(e) => setCategory(e.target.value as BillCategory)}
-              className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm"
-            >
-              {categories.map((c) => (
-                <option key={c} value={c}>
-                  {categoryLabel(c)}
-                </option>
-              ))}
-            </select>
-            <select
-              aria-label={i18n("recurrence")}
+              onChange={(value) => setCategory(value as BillCategory)}
+              options={categories.map((c) => ({ id: c, label: categoryLabel(c) }))}
+              aria-label={i18n("category")}
+              className="min-w-0"
+            />
+            <Select
               value={recurrence}
-              onChange={(e) => setRecurrence(e.target.value as Recurrence)}
-              className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm"
-            >
-              {RECURRENCES.map((r) => (
-                <option key={r} value={r}>
-                  {recurrenceLabel(r)}
-                </option>
-              ))}
-            </select>
+              onChange={(value) => setRecurrence(value as Recurrence)}
+              options={RECURRENCES.map((r) => ({ id: r, label: recurrenceLabel(r) }))}
+              aria-label={i18n("recurrence")}
+              className="min-w-0"
+            />
             <label className="flex items-center gap-2 text-sm text-[var(--muted)]">
               <input
                 type="checkbox"

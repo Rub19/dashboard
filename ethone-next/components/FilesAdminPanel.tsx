@@ -7,6 +7,7 @@ import { fetchWorker } from "@/lib/api";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
 import { formatBytes } from "@/lib/files";
+import Select from "@/components/ui/Select";
 
 const STORAGE_CAP = 10 * 1024 * 1024 * 1024;
 
@@ -205,17 +206,18 @@ export default function FilesAdminPanel() {
               placeholder={i18n("search")}
               className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
-            <select
+            <Select
               value={visibility}
-              onChange={(e) => setVisibility(e.target.value as typeof visibility)}
+              onChange={(value) => setVisibility(value as typeof visibility)}
+              options={[
+                { id: "all", label: i18n("allVisibility") },
+                { id: "public", label: i18n("public") },
+                { id: "private", label: i18n("private") },
+                { id: "unlisted", label: i18n("unlisted") },
+              ]}
               aria-label={i18n("visibility")}
-              className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none"
-            >
-              <option value="all">{i18n("allVisibility")}</option>
-              <option value="public">{i18n("public")}</option>
-              <option value="private">{i18n("private")}</option>
-              <option value="unlisted">{i18n("unlisted")}</option>
-            </select>
+              className="min-w-[5rem]"
+            />
           </div>
 
           {items.length === 0 ? (

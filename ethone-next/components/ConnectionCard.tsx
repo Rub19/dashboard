@@ -30,6 +30,7 @@ import {
   getServiceMethodKey,
 } from "@/lib/connection-config";
 import ServiceIcon from "@/components/ServiceIcon";
+import Select from "@/components/ui/Select";
 
 export type CredentialsApi = {
   save: (provider: string, credential: ProviderCredential) => Promise<unknown>;
@@ -275,19 +276,14 @@ export default function ConnectionCard({
         <div className="flex flex-col gap-2">
           {publicFields.map((f) =>
             f.options ? (
-              <select
+              <Select
                 key={f.label}
                 value={publicValues[f.label] || ""}
-                onChange={(e) => setPublicValues((v) => ({ ...v, [f.label]: e.target.value }))}
+                onChange={(value) => setPublicValues((v) => ({ ...v, [f.label]: value }))}
+                options={f.options.map((o) => ({ id: o, label: o }))}
                 aria-label={i18n(f.label)}
-                className="w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm text-foreground outline-none transition focus:border-accent"
-              >
-                {f.options.map((o) => (
-                  <option key={o} value={o}>
-                    {o}
-                  </option>
-                ))}
-              </select>
+                className="w-full"
+              />
             ) : (
               <input
                 key={f.label}

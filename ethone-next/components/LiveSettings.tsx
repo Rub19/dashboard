@@ -3,6 +3,7 @@
 import { useEffect, useId, useState } from "react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
+import Select from "@/components/ui/Select";
 
 function SettingsTextInput({
   label,
@@ -52,17 +53,16 @@ export default function LiveSettings() {
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
           <label htmlFor={selectId} className="mb-1 block text-xs text-[var(--muted)]">{i18n("liveNowPlayingSource")}</label>
-          <select
+          <Select
             id={selectId}
             value={settings.liveNowPlayingSource}
-            onChange={(e) =>
-              update({ liveNowPlayingSource: e.target.value as "lanyard" | "lastfm" })
-            }
-            className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)]"
-          >
-            <option value="lanyard">Lanyard (Discord)</option>
-            <option value="lastfm">Last.fm</option>
-          </select>
+            onChange={(value) => update({ liveNowPlayingSource: value as "lanyard" | "lastfm" })}
+            options={[
+              { id: "lanyard", label: "Lanyard (Discord)" },
+              { id: "lastfm", label: "Last.fm" },
+            ]}
+            className="w-full"
+          />
         </div>
 
         <SettingsTextInput

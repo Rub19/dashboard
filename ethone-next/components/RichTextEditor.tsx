@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/lib/icons";
+import Select from "@/components/ui/Select";
 
 const ALLOWED_TAGS = new Set(["P", "BR", "STRONG", "B", "EM", "I", "U", "UL", "OL", "LI", "H2", "H3", "BLOCKQUOTE", "A", "PRE", "CODE"]);
 const STRIP_ENTIRELY = new Set(["SCRIPT", "STYLE", "IFRAME", "OBJECT", "EMBED", "SVG", "FORM", "INPUT", "BUTTON", "LINK", "META", "BASE", "IMG", "VIDEO", "AUDIO", "SOURCE", "NOSCRIPT"]);
@@ -280,16 +281,13 @@ export default function RichTextEditor({
           />
         ))}
         <div className="mx-1 w-px self-stretch bg-[var(--border)]" />
-        <select
-          aria-label="Style de bloc"
+        <Select
           value={format.block}
-          onChange={(e) => exec("formatBlock", e.target.value)}
-          className="rounded-md border-0 bg-transparent px-2 py-1.5 text-xs text-[var(--foreground)] outline-none hover:bg-[var(--surface)]"
-        >
-          {BLOCK_TOOLS.map((t) => (
-            <option key={t.value} value={t.value}>{t.label}</option>
-          ))}
-        </select>
+          onChange={(value) => exec("formatBlock", value)}
+          options={BLOCK_TOOLS.map((t) => ({ id: t.value, label: t.label }))}
+          aria-label="Style de bloc"
+          className="min-w-0 w-28"
+        />
         <div className="mx-1 w-px self-stretch bg-[var(--border)]" />
         <ToolbarButton active={false} onClick={insertLink} label="Lien" icon="link" data-rich-command="createLink" />
         <ToolbarButton active={false} onClick={() => exec("unlink")} label="Supprimer le lien" icon="unlink" data-rich-command="unlink" />

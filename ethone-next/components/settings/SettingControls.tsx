@@ -1,6 +1,7 @@
 "use client";
 
 import Switch from "@/components/Switch";
+import Select from "@/components/ui/Select";
 
 export function SwitchControl({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
   return <Switch checked={checked} onChange={onChange} labels={false} size="md" />;
@@ -117,17 +118,12 @@ export function SelectControl<T extends string>({
   options: { id: T; label: string }[];
 }) {
   return (
-    <select
+    <Select
       value={value}
-      onChange={(e) => onChange(e.target.value as T)}
-      className="rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
-    >
-      {options.map((opt) => (
-        <option key={opt.id} value={opt.id}>
-          {opt.label}
-        </option>
-      ))}
-    </select>
+      onChange={(v) => onChange(v as T)}
+      options={options as { id: string; label: string }[]}
+      className="min-w-[8rem]"
+    />
   );
 }
 

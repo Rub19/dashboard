@@ -11,6 +11,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import ContextMenu from "@/components/ContextMenu";
 import RichTextEditor from "@/components/RichTextEditor";
+import Select from "@/components/ui/Select";
 import { wordCountFromHtml } from "@/lib/notes";
 
 type Note = { id: string; title: string; body: string; createdAt?: string };
@@ -189,16 +190,17 @@ export default function NotesPage() {
           icon="search"
           className="w-full sm:w-48"
         />
-        <select
+        <Select
           value={sort}
-          onChange={(e) => setSort(e.target.value as typeof sort)}
+          onChange={(value) => setSort(value as typeof sort)}
+          options={[
+            { id: "created", label: i18n("sortByDate") },
+            { id: "title", label: i18n("sortByTitle") },
+            { id: "words", label: i18n("sortByWords") },
+          ]}
           aria-label={i18n("sortBy")}
-          className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none"
-        >
-          <option value="created">{i18n("sortByDate")}</option>
-          <option value="title">{i18n("sortByTitle")}</option>
-          <option value="words">{i18n("sortByWords")}</option>
-        </select>
+          className="min-w-0"
+        />
       </div>
 
       {error && (

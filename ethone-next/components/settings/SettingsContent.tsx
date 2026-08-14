@@ -255,10 +255,11 @@ type SectionDef = {
   keywords: string[];
   fields: FieldDef[];
   children?: React.ReactNode;
+  skipFields?: boolean;
 };
 
 function PresetsPanel() {
-  const { settings, applyPreset: applyPresetFromProvider } = useSettings();
+  const { settings, update, applyPreset: applyPresetFromProvider } = useSettings();
   const i18n = useI18n();
   const [customPresets, setCustomPresets] = useState<Preset[]>(() => loadCustomPresets());
   const [newPresetName, setNewPresetName] = useState("");
@@ -282,14 +283,14 @@ function PresetsPanel() {
     (preset: Preset) => {
       const result = applyPresetFromProvider
         ? applyPresetFromProvider(preset)
-        : applyPreset(preset, settings, () => {});
+        : applyPreset(preset, settings, update);
       if (result && "ok" in result && result.ok) {
         showMessage(i18n("presetApplied").replace("{{name}}", result.preset.name));
       } else {
         showMessage(i18n("presetApplyError"));
       }
     },
-    [applyPresetFromProvider, settings, i18n, showMessage]
+    [applyPresetFromProvider, settings, update, i18n, showMessage]
   );
 
   const handleExtract = useCallback(() => {
@@ -554,14 +555,14 @@ function RawSettingsPanel() {
           onClick={handleExport}
           className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)]"
         >
-          {i18n("exportPresets")} JSON
+          {i18n("exportPresets")}
         </button>
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
           className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)]"
         >
-          {i18n("importPresets")} JSON
+          {i18n("importPresets")}
         </button>
         <input
           ref={fileInputRef}
@@ -1010,24 +1011,17 @@ export default function SettingsContent() {
               icon: "gauge",
               keywords: ["density", "personnalisé", "avancé"],
               fields: densityCustomFields,
+              skipFields: true,
               children: <DensityCustomPanel fields={densityCustomFields} />,
             },
           ]
         : []),
       {
         id: "sound-preview",
-        label: i18n("preview"),
+        label: i18n("soundPack"),
         icon: "play",
-        keywords: ["son", "pack", "aperçu"],
-        fields: [
-          {
-            key: "soundPackPreview",
-            label: `${i18n("preview")} ${i18n("soundPack")}`,
-            type: "custom",
-            render: () => <SoundPackPreview />,
-            keywords: ["son", "pack", "aperçu"],
-          },
-        ],
+        keywords: ["son", "pack", "aperçu", "preview", "ethone", "minimal", "classic", "apple", "cyber"],
+        fields: [],
         children: <SoundPackPreview />,
       },
       {
@@ -1123,9 +1117,10 @@ export default function SettingsContent() {
                     modifiedCount={section.id === "density-custom" ? modifiedCounts.densityCustom : undefined}
                     visible={sectionVisible(section)}
                   >
-                    {section.fields.map((field) => (
-                      <SettingField key={field.key} field={field} />
-                    ))}
+                    {!section.skipFields &&
+                      section.fields.map((field) => (
+                        <SettingField key={field.key} field={field} />
+                      ))}
                     {section.children}
                   </SettingsSection>
                 ))}

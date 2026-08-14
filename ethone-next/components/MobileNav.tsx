@@ -27,7 +27,10 @@ export default function MobileNav() {
     <>
       <nav
         data-zen-hidden
-        className="fixed bottom-0 left-0 right-0 z-40 border-t border-[var(--border)] bg-[var(--surface)]/95 pb-safe backdrop-blur-xl md:hidden"
+        className={cn(
+          "fixed bottom-0 left-0 right-0 z-40 border-t border-[var(--border)] bg-[var(--surface)]/95 pb-safe backdrop-blur-xl transition-transform md:hidden",
+          drawerOpen ? "translate-y-full" : "translate-y-0"
+        )}
       >
         <div className="flex items-center justify-around gap-1 px-2 py-2">
           {visibleItems.map((item) => {
@@ -96,9 +99,19 @@ export default function MobileNav() {
               role="dialog"
               aria-label={i18n("navigation")}
             >
-              <div className="mb-6 flex items-center gap-2 px-2">
-                <BrandMark size={28} />
-                <span className="text-lg font-semibold tracking-tight text-[var(--foreground)]">ETHONE</span>
+              <div className="mb-6 flex items-center justify-between px-2">
+                <div className="flex items-center gap-2">
+                  <BrandMark size={28} />
+                  <span className="text-lg font-semibold tracking-tight text-[var(--foreground)]">ETHONE</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setDrawerOpen(false)}
+                  aria-label={i18n("close")}
+                  className="rounded-xl p-2 text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
+                >
+                  <Icon name="close" className="h-5 w-5" />
+                </button>
               </div>
               <nav className="space-y-1">
                 {items.map((item) => {

@@ -155,7 +155,7 @@ export function SettingsFormProvider({ children }: { children: React.ReactNode }
         update({ [key]: defaultVal } as Partial<Settings>);
       }
     },
-    [settings, update, defaults]
+    [settings, update, defaults, draft]
   );
 
   const isDirty = useCallback((key: string, value: unknown, defaultValue: unknown) => {
@@ -219,9 +219,13 @@ export function SettingsFormProvider({ children }: { children: React.ReactNode }
       resetToDefault,
       clearExplicitKey,
       isDirty,
+      hasExplicitChanges,
+      isExplicitFieldDirty,
+      instantSaved,
       currentValue,
       updateInstant,
       matchesSearch,
+      triggerInstantSaved,
       isKnownSetting,
     ]
   );

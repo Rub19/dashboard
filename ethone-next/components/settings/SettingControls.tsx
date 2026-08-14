@@ -1,8 +1,5 @@
 "use client";
 
-import { useI18n } from "@/lib/hooks/useI18n";
-import { Icon } from "@/lib/icons";
-
 export function SwitchControl({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
   return (
     <button

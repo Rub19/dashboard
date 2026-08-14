@@ -52,12 +52,14 @@ export default function LiquidSidebar({
             {isCurrent && (
               <motion.div
                 layoutId="liquid-bg"
-                className="absolute inset-0 -z-10 rounded-xl bg-[var(--surface-raised)]"
+                className={`absolute inset-0 -z-10 rounded-xl ${
+                  currentActive === item.id ? "bg-[var(--accent)]" : "bg-[var(--surface-raised)]"
+                }`}
                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
               />
             )}
             {item.icon && <span className="text-[var(--muted)]">{item.icon}</span>}
-            <span className={currentActive === item.id ? "text-[var(--foreground)]" : "text-[var(--muted)]"}>
+            <span className={currentActive === item.id ? "font-semibold text-white" : "text-[var(--muted)]"}>
               {item.label}
             </span>
           </button>

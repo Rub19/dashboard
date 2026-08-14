@@ -4,7 +4,7 @@ import { useRef, type ReactNode, type MouseEvent } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useSettings } from "./SettingsProvider";
 
-export default function Card3D({ children }: { children: ReactNode }) {
+export default function Card3D({ children, tilt = false }: { children: ReactNode; tilt?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const { settings } = useSettings();
 
@@ -15,7 +15,7 @@ export default function Card3D({ children }: { children: ReactNode }) {
   const rotateY = useSpring(useTransform(x, [0, 1], [-8, 8]), { stiffness: 300, damping: 30 });
 
   function handleMouseMove(event: MouseEvent<HTMLDivElement>) {
-    if (!settings.cardTilt || !ref.current) return;
+    if (!tilt || !settings.cardTilt || !ref.current) return;
     const rect = ref.current.getBoundingClientRect();
     const px = (event.clientX - rect.left) / rect.width;
     const py = (event.clientY - rect.top) / rect.height;
@@ -51,8 +51,8 @@ export default function Card3D({ children }: { children: ReactNode }) {
       className="v8-depth-active min-w-0 overflow-hidden border border-[var(--border)] bg-[var(--surface)] p-5 transition-colors hover:border-[var(--accent)]/30"
       data-card-style={settings.glassEnabled ? "glass" : "solid"}
       style={{
-        rotateX: settings.cardTilt ? rotateX : 0,
-        rotateY: settings.cardTilt ? rotateY : 0,
+        rotateX: tilt && settings.cardTilt ? rotateX : 0,
+        rotateY: tilt && settings.cardTilt ? rotateY : 0,
         transformStyle: "preserve-3d",
         perspective: 1000,
         borderRadius: "var(--card-radius)",
@@ -68,7 +68,12 @@ export default function Card3D({ children }: { children: ReactNode }) {
         }}
         aria-hidden="true"
       />
-      <div className="relative z-10">{children}</div>
+      <div
+        className="relative z-10"
+        style={{ transform: tilt && settings.cardTilt ? "translateZ(30px)" : "none" }}
+      >
+        {children}
+      </div>
     </motion.div>
   );
 }

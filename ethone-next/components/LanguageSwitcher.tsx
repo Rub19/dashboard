@@ -110,7 +110,7 @@ export default function LanguageSwitcher() {
       >
         <Icon name="globe" className="h-4 w-4" />
         <Flag code={current} className="h-4 w-5" />
-        <span className="hidden uppercase sm:inline">{current}</span>
+        <span className="hidden uppercase 2xl:inline">{current}</span>
       </button>
 
       {open && (

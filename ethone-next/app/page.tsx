@@ -56,7 +56,7 @@ function SessionModeSelector() {
   }
 
   return (
-    <Card3D>
+    <Card3D tilt>
       <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">{i18n("sessionMode")}</h2>
       <button
         type="button"
@@ -145,7 +145,7 @@ function AuraSelector() {
   const { settings, update } = useSettings();
 
   return (
-    <Card3D>
+    <Card3D tilt>
       <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-[var(--foreground)]">
         <Icon name="palette" className="h-4 w-4 text-[var(--accent)]" />
         {i18n("aura")}
@@ -392,7 +392,7 @@ export default function Home() {
       <DailyBriefing greeting={greeting} dashboard={dashboard} nowPlaying={nowPlaying} loading={loading} />
 
       {customizing && (
-        <Card3D>
+        <Card3D tilt>
           <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">{i18n("customizeDashboard")}</h2>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {sections.map((s) => (
@@ -419,7 +419,7 @@ export default function Home() {
 
       <SessionModeSelector />
 
-      <Card3D>
+      <Card3D tilt>
         <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">{i18n("presence")}</h2>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
           {STATUSES.map((s) => (
@@ -447,7 +447,7 @@ export default function Home() {
       )}
 
       <SectionWrap id="continuity" title={i18n("continuity")} icon="activity" hidden={hidden}>
-        <Card3D>
+        <Card3D tilt>
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div className="min-w-0">
               <p className="text-xs text-[var(--muted)]">{continuation.type}</p>
@@ -471,7 +471,7 @@ export default function Home() {
       </SectionWrap>
 
       <SectionWrap id="daystream" title={i18n("daystream")} icon="calendar" hidden={hidden}>
-        <Card3D>
+        <Card3D tilt>
           <div className="mb-3 flex items-center gap-2 text-xs text-[var(--accent)]">
             <Icon name="clock" className="h-3.5 w-3.5" />
             <span className="uppercase tracking-wider">{i18n("daystreamNow")}</span>
@@ -502,7 +502,7 @@ export default function Home() {
       </SectionWrap>
 
       <SectionWrap id="recent" title={i18n("recent")} icon="history" hidden={hidden}>
-        <Card3D>
+        <Card3D tilt>
           {recentNotes.length > 0 ? (
             <div className="space-y-2">
               {recentNotes.map((n) => (
@@ -532,7 +532,7 @@ export default function Home() {
 
       <SectionWrap id="productivity" title={i18n("productivityAndRhythm")} icon="zap" hidden={hidden}>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <Card3D>
+          <Card3D tilt>
             <div className="flex items-center justify-between">
               <span className="text-xs text-[var(--muted)]">{i18n("tasksDone")}</span>
               <span className="text-lg font-bold tabular-nums text-[var(--accent)]">{percentage}%</span>
@@ -544,7 +544,7 @@ export default function Home() {
               />
             </div>
           </Card3D>
-          <Card3D>
+          <Card3D tilt>
             <div className="flex items-center gap-2">
               <Icon name="notebook-pen" className="h-4 w-4 text-[var(--muted)]" />
               <span className="text-xs text-[var(--muted)]">{i18n("activeNotes")}</span>
@@ -559,7 +559,7 @@ export default function Home() {
 
       <SectionWrap id="signals" title={i18n("signals")} icon="radio" hidden={hidden}>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Card3D>
+          <Card3D tilt>
             <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
                 <Icon name="zap" className="h-5 w-5" />
@@ -570,7 +570,7 @@ export default function Home() {
               </div>
             </div>
           </Card3D>
-          <Card3D>
+          <Card3D tilt>
             <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
                 <Icon name="mail" className="h-5 w-5" />
@@ -581,7 +581,7 @@ export default function Home() {
               </div>
             </div>
           </Card3D>
-          <Card3D>
+          <Card3D tilt>
             <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
                 <Icon name="activity" className="h-5 w-5" />
@@ -592,7 +592,7 @@ export default function Home() {
               </div>
             </div>
           </Card3D>
-          <Card3D>
+          <Card3D tilt>
             <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-500/10 text-sky-400">
                 <Icon name="brain" className="h-5 w-5" />
@@ -605,7 +605,7 @@ export default function Home() {
           </Card3D>
         </div>
 
-        <Card3D>
+        <Card3D tilt>
           <div className="space-y-2">
             <SignalRow icon="layers" label={i18n("interface")} value={i18n("active")} color="emerald" />
             <SignalRow icon="database" label={i18n("data")} value={i18n("connection")} color="sky" />
@@ -617,7 +617,7 @@ export default function Home() {
       </SectionWrap>
 
       <SectionWrap id="recommendation" title={i18n("recommendation")} icon="sparkles" hidden={hidden}>
-        <Card3D>
+        <Card3D tilt>
           <div className="flex flex-col gap-4 md:flex-row md:items-start">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent)]/10 text-[var(--accent)]">
               <Icon name={recommendation.icon} className="h-5 w-5" />
@@ -645,7 +645,7 @@ export default function Home() {
 
       <SectionWrap id="live" title={i18n("live")} icon="radio" hidden={hidden}>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Card3D>
+          <Card3D tilt>
             <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-[var(--foreground)]">
               <Icon name="music" className="h-4 w-4 text-[var(--muted)]" /> {i18n("live")}
             </h2>
@@ -669,7 +669,7 @@ export default function Home() {
             )}
           </Card3D>
 
-          <Card3D>
+          <Card3D tilt>
             <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">{i18n("cloud")}</h2>
             {loading ? (
               <div className="space-y-3">
@@ -700,7 +700,7 @@ export default function Home() {
             )}
           </Card3D>
 
-          <Card3D>
+          <Card3D tilt>
             <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">{i18n("recentMatches")}</h2>
             {loading ? (
               <div className="space-y-3">
@@ -732,7 +732,7 @@ export default function Home() {
         </div>
 
         {lanyard?.discord_status && (
-          <Card3D>
+          <Card3D tilt>
             <h2 className="mb-2 text-sm font-semibold text-[var(--foreground)]">{i18n("discord")}</h2>
             <div className="flex items-center gap-2">
               <span

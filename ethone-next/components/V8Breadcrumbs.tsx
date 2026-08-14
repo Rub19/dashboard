@@ -133,14 +133,14 @@ function ContextItem({
 }) {
   return (
     <div
-      className="flex items-center gap-1.5 rounded-md px-2 py-1 text-[10px] text-[var(--foreground)] transition-colors hover:bg-[var(--surface-raised)]"
+      className="flex min-w-0 items-center gap-1.5 rounded-md px-2 py-1 text-[10px] text-[var(--foreground)] transition-colors hover:bg-[var(--surface-raised)]"
       data-tone={tone}
       title={title}
     >
-      <Icon name={icon} className={`h-3.5 w-3.5 ${toneClass(tone)}`} />
-      <div className="hidden flex-col xl:flex">
-        <span className="text-[9px] uppercase tracking-wider text-[var(--muted)]">{label}</span>
-        <span className={`font-medium ${mono ? "font-mono" : ""}`} translate={mono ? "no" : undefined}>
+      <Icon name={icon} className={`h-3.5 w-3.5 shrink-0 ${toneClass(tone)}`} />
+      <div className="hidden min-w-0 flex-col 2xl:flex">
+        <span className="max-w-[5.5rem] truncate text-[9px] uppercase tracking-wider text-[var(--muted)]">{label}</span>
+        <span className={`max-w-[5.5rem] truncate font-medium ${mono ? "font-mono" : ""}`} translate={mono ? "no" : undefined}>
           {value}
         </span>
       </div>
@@ -329,9 +329,8 @@ export default function V8Breadcrumbs() {
         </span>
       </div>
 
-      <div className="hidden flex-1 items-center justify-center gap-1 md:flex">
+      <div className="hidden min-w-0 max-w-full flex-1 items-center justify-center gap-1 overflow-hidden xl:flex">
         <ContextItem icon="briefcase-business" label={i18n("v8Workspace")} value={spaceLabel} />
-        <ContextItem icon="layout-grid" label={i18n("v8DataSpace")} value={spaceLabel} />
         <ContextItem icon="zap" label={i18n("v8Mode")} value={i18n(spaceFlow)} />
         <ContextItem
           icon={syncMeta.icon}
@@ -353,10 +352,9 @@ export default function V8Breadcrumbs() {
           tone={online ? "online" : "offline"}
         />
         <ContextItem icon="clock" label={i18n("time")} value={time} mono />
-        <ContextItem icon="user" label={i18n("profile")} value={profileName} />
       </div>
 
-      <div className="flex shrink-0 items-center gap-1" aria-label={i18n("v8QuickActions")}>
+      <div className="hidden shrink-0 items-center gap-1 xl:flex" aria-label={i18n("v8QuickActions")}>
         <QuickAction
           icon={isZen ? "moon" : "sun"}
           active={isZen}

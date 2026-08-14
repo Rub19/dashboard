@@ -523,7 +523,7 @@ async function mapLimit(items, limit, mapper) {
 async function getLolMatchIds(env, puuid, apiKey, queueId) {
   const matchIdsUrl = new URL(`/lol/match/v5/matches/by-puuid/${puuid}/ids`, RIOT_EUROPE);
   matchIdsUrl.searchParams.set("start", "0");
-  matchIdsUrl.searchParams.set("count", "25");
+  matchIdsUrl.searchParams.set("count", "100");
   if (queueId != null) matchIdsUrl.searchParams.set("queue", String(queueId));
   try {
     const matchIdsResponse = await requestExternal(matchIdsUrl, {
@@ -578,7 +578,7 @@ export async function getLolMatches(env, riotId, mode, apiKeyOverride) {
     .filter(Boolean)
     .filter((match) => !allowedQueueIds || allowedQueueIds.has(match.info?.queueId))
     .sort((a, b) => (b.info?.gameCreation || 0) - (a.info?.gameCreation || 0))
-    .slice(0, 25);
+    .slice(0, 100);
 
   const ddragonData = await getLolDdragonData(env);
 

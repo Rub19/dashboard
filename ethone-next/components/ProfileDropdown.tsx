@@ -389,7 +389,7 @@ export default function ProfileDropdown() {
         aria-haspopup="true"
       >
         <Avatar url={avatarUrl} name={displayName} accent={activeProfile?.accent} size="sm" active />
-        <span className="hidden max-w-[8rem] truncate text-sm font-medium sm:inline">
+        <span className="hidden max-w-[8rem] truncate text-sm font-medium 2xl:inline">
           {displayName}
         </span>
         <Icon
@@ -403,10 +403,11 @@ export default function ProfileDropdown() {
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: -8, scale: 0.96 }}
+            initial={{ opacity: 0, y: -12, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.96 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            exit={{ opacity: 0, y: -12, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 420, damping: 28 }}
+            style={{ originX: 1, originY: 0 }}
             className="absolute right-0 top-full z-50 mt-2 w-80 max-w-[calc(100vw-1rem)] overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] shadow-2xl"
           >
             <div className="max-h-[80vh] overflow-y-auto p-0">

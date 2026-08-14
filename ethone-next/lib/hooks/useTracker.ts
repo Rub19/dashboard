@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { fetchWorker } from "../api";
 
-const CACHE_TTL_MS = 7 * 60 * 1000;
+const CACHE_TTL_MS = 10 * 60 * 1000;
 
 export type TrackerPlayer = {
   name: string;
@@ -67,7 +67,7 @@ export function useTracker<T extends TrackerGame>(
       if (typeof window === "undefined") return;
 
       const cached = JSON.parse(
-        sessionStorage.getItem(`ethone-cache:${cacheKey}`) || "null"
+        localStorage.getItem(`ethone-cache:${cacheKey}`) || "null"
       ) as CacheEntry<T[]> | null;
 
       if (!force && cached && Date.now() - cached.ts < CACHE_TTL_MS) {
@@ -91,7 +91,7 @@ export function useTracker<T extends TrackerGame>(
         const res = await fetchWorker(path);
         const data = (res?.matches || res?.data || res || []) as T[];
         setItems(data);
-        sessionStorage.setItem(
+        localStorage.setItem(
           `ethone-cache:${cacheKey}`,
           JSON.stringify({ data, ts: Date.now() })
         );

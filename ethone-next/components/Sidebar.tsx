@@ -73,6 +73,13 @@ export default function Sidebar() {
                   : "text-[var(--muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
               } ${expanded ? "px-3" : "justify-center"}`}
             >
+              {isActive && (
+                <motion.div
+                  layoutId="sidebar-pill"
+                  className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.35)]"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
               <Icon name={item.icon} className="h-5 w-5 flex-shrink-0" />
               <AnimatePresence>
                 {expanded && (

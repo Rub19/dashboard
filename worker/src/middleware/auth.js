@@ -126,9 +126,20 @@ function validateClaims(payload, env) {
   return Object.freeze({
     userId: payload.sub,
     role: payload.role,
+    appRole: typeof payload.app_metadata?.role === "string" ? payload.app_metadata.role : null,
     sessionId: typeof payload.session_id === "string" ? payload.session_id.slice(0, 128) : null,
     expiresAt: new Date(payload.exp * 1000).toISOString()
   });
+}
+
+/**
+ * Vérifie que l'utilisateur authentifié possède le rôle requis (côté serveur).
+ * À utiliser pour toute action administrative ou sensible.
+ */
+export function requireRole(auth, ...allowed) {
+  if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
+  if (!allowed.includes(auth.appRole)) throw httpError("FORBIDDEN", 403);
+  return auth;
 }
 
 export async function authenticateRequest(request, env) {

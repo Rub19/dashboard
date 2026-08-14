@@ -284,29 +284,29 @@ export default function ActivityPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Card3D>
+        <Card3D bump>
           <p className="text-xs text-[var(--muted)]">{i18n("today")}</p>
           <p className="text-2xl font-bold">{stats.todayCount}</p>
           <p className="text-[10px] text-[var(--muted)]">{i18n("eventsToday")}</p>
         </Card3D>
-        <Card3D>
+        <Card3D bump>
           <p className="text-xs text-[var(--muted)]">{i18n("currentStreak")}</p>
           <p className="text-2xl font-bold">{stats.streak}D</p>
           <p className="text-[10px] text-[var(--muted)]">{i18n("active")}</p>
         </Card3D>
-        <Card3D>
+        <Card3D bump>
           <p className="text-xs text-[var(--muted)]">{i18n("thisWeek")}</p>
           <p className="text-2xl font-bold">{stats.weekPct}%</p>
           <p className="text-[10px] text-[var(--muted)]">{stats.weekPct}/7 {i18n("activeDays")}</p>
         </Card3D>
-        <Card3D>
+        <Card3D bump>
           <p className="text-xs text-[var(--muted)]">{i18n("consistency")}</p>
           <p className="text-2xl font-bold">{stats.consistency}%</p>
           <p className="text-[10px] text-[var(--muted)]">{i18n("periodActive")}</p>
         </Card3D>
       </div>
 
-      <Card3D>
+      <Card3D bump>
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-sm font-semibold">{i18n("activityHeatmap")}</h2>
           <div className="flex items-center gap-2 text-[10px] text-[var(--muted)]">
@@ -338,7 +338,7 @@ export default function ActivityPage() {
         </div>
       </Card3D>
 
-      <Card3D>
+      <Card3D bump>
         <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="text-sm font-semibold">{i18n("activityJournalEntries")}</h2>
           <div className="flex flex-wrap items-center gap-2">
@@ -416,7 +416,7 @@ export default function ActivityPage() {
                   {formatLocalDate(new Date(key), mounted)}
                 </h3>
                 {group.map((event, i) => (
-                  <Card3D key={event.id || i}>
+                  <Card3D bump key={event.id || i}>
                     <div className="flex items-start gap-3">
                       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
                         <Icon name={event.icon || "activity"} className="h-4 w-4" />

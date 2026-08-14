@@ -645,7 +645,7 @@ export default function Home() {
 
       <SectionWrap id="live" title={i18n("live")} icon="radio" hidden={hidden}>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Card3D tilt>
+          <Card3D tilt bump>
             <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-[var(--foreground)]">
               <Icon name="music" className="h-4 w-4 text-[var(--muted)]" /> {i18n("live")}
             </h2>
@@ -669,7 +669,7 @@ export default function Home() {
             )}
           </Card3D>
 
-          <Card3D tilt>
+          <Card3D tilt bump>
             <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">{i18n("cloud")}</h2>
             {loading ? (
               <div className="space-y-3">
@@ -700,7 +700,7 @@ export default function Home() {
             )}
           </Card3D>
 
-          <Card3D tilt>
+          <Card3D tilt bump>
             <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">{i18n("recentMatches")}</h2>
             {loading ? (
               <div className="space-y-3">
@@ -732,7 +732,7 @@ export default function Home() {
         </div>
 
         {lanyard?.discord_status && (
-          <Card3D tilt>
+          <Card3D tilt bump>
             <h2 className="mb-2 text-sm font-semibold text-[var(--foreground)]">{i18n("discord")}</h2>
             <div className="flex items-center gap-2">
               <span

@@ -86,7 +86,7 @@ function StatusItem({
       {label && <span className="hidden text-[10px] uppercase tracking-wider text-[var(--muted)] 2xl:inline">{label}</span>}
       {value && (
         <span
-          className="truncate font-medium text-[var(--foreground)]"
+          className="inline-block truncate font-medium text-[var(--foreground)]"
           style={{ maxWidth: maxValueWidth }}
           translate={value.includes(":") ? "no" : undefined}
         >

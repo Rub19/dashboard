@@ -1,4 +1,5 @@
 import { httpError } from "../middleware/errors.js";
+import { applyAuthRateLimit } from "../middleware/rate-limit.js";
 import { PATTERNS, assertAllowedQuery } from "../middleware/validation.js";
 import {
   createRegistrationOptions,
@@ -18,6 +19,7 @@ import {
   listUserDevices
 } from "../services/device-service.js";
 import { listSecurityEvents, getUserIdByEmail, listPasskeys } from "../services/security-identity-client.js";
+import { generateTotpSecret, verifyTotp } from "../services/totp-service.js";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -130,6 +132,7 @@ export async function passkeyRevokeRoute({ request, env, auth }) {
 export async function otpSendRoute({ request, env }) {
   const body = await readJsonBody(request, 2);
   const email = requireField(body, "email", EMAIL_RE, 320);
+  await applyAuthRateLimit({ request, env, route: { id: "otp.send" } }, email);
   const userId = body.userId && UUID_RE.test(body.userId) ? body.userId : null;
   const acceptLanguage = request.headers.get("accept-language") || "";
   const country = request.headers.get("cf-ipcountry") || request.cf?.country || "";
@@ -141,6 +144,7 @@ export async function otpSendRoute({ request, env }) {
 export async function otpVerifyRoute({ request, env }) {
   const body = await readJsonBody(request, 3);
   const userId = requireField(body, "userId", UUID_RE, 36);
+  await applyAuthRateLimit({ request, env, route: { id: "otp.verify" } }, userId);
   const email = requireField(body, "email", EMAIL_RE, 320);
   const code = requireField(body, "code", CODE_RE, 6);
 
@@ -206,4 +210,77 @@ export async function passkeyListRoute({ env, auth }) {
   if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
   const passkeys = await listPasskeys(env, auth.userId);
   return { data: passkeys };
+}
+
+/**
+ * Configure le 2FA TOTP pour l'utilisateur.
+ * Retourne un QR code (otpauth URL) et des codes de secours.
+ */
+export async function totpSetupRoute({ request, env, auth }) {
+  if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
+  const body = await readJsonBody(request, 1);
+  const email = requireField(body, "email", EMAIL_RE, 320);
+
+  const existing = await supabaseRequest(env, `/rest/v1/ethone_user_data?user_id=eq.${encodeURIComponent(auth.userId)}&kind=eq.totp&select=*`);
+  if (Array.isArray(existing) && existing.length > 0 && existing[0].data?.verified) {
+    throw httpError("TOTP_ALREADY_ENABLED", 409);
+  }
+
+  const { secret, hashedSecret, otpauth, backupCodes } = await generateTotpSecret(auth.userId, email);
+
+  await supabaseRequest(env, "/rest/v1/ethone_user_data", {
+    method: "POST",
+    body: JSON.stringify({
+      user_id: auth.userId,
+      kind: "totp",
+      slug: "totp",
+      data: {
+        secret: hashedSecret,
+        verified: false,
+        backup: backupCodes,
+      },
+      profile_id: null,
+      active: true,
+    }),
+    headers: { Prefer: "return=representation" },
+  });
+
+  return { data: { secret, otpauth, backupCodes } };
+}
+
+/**
+ * Vérifie un code TOTP pour activer le 2FA.
+ */
+export async function totpVerifySetupRoute({ request, env, auth }) {
+  if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
+  const body = await readJsonBody(request, 1);
+  const code = requireField(body, "code", /^\d{6}$/, 6);
+
+  const records = await supabaseRequest(env, `/rest/v1/ethone_user_data?user_id=eq.${encodeURIComponent(auth.userId)}&kind=eq.totp&select=*`);
+  const record = Array.isArray(records) ? records[0] : null;
+  if (!record || !record.data?.secret) throw httpError("TOTP_NOT_SETUP", 400);
+
+  const pendingSecret = record.data.secret;
+  const valid = await verifyTotp(pendingSecret, code);
+  if (!valid) throw httpError("TOTP_INVALID", 401);
+
+  await supabaseRequest(env, "/rest/v1/ethone_user_data", {
+    method: "POST",
+    body: JSON.stringify({
+      id: record.id,
+      data: { ...record.data, verified: true },
+    }),
+    headers: { Prefer: "return=representation" },
+  });
+
+  return { data: { enabled: true } };
+}
+
+/**
+ * Désactive le 2FA TOTP.
+ */
+export async function totpDisableRoute({ env, auth }) {
+  if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
+  await supabaseRequest(env, `/rest/v1/ethone_user_data?user_id=eq.${encodeURIComponent(auth.userId)}&kind=eq.totp`, { method: "DELETE" });
+  return { data: { disabled: true } };
 }

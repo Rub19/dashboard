@@ -36,7 +36,7 @@ export default function LiveStats() {
   const hasHistory = Object.values(historyCounts).some((n) => n > 0);
 
   return (
-    <Card3D>
+    <Card3D bump>
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-sm font-semibold text-[var(--foreground)]">{i18n("liveStats")}</h2>
         <LiveFreshness updatedAt={updatedAt} />

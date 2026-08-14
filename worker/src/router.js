@@ -100,7 +100,10 @@ import {
   deviceTrustRoute,
   deviceRevokeRoute,
   deviceRemoveRoute,
-  securityEventsRoute
+  securityEventsRoute,
+  totpSetupRoute,
+  totpVerifySetupRoute,
+  totpDisableRoute,
 } from "./routes/security-identity.js";
 
 function route(id, path, handler, options = {}) {
@@ -217,6 +220,11 @@ export const ROUTES = Object.freeze([
   // OTP fallback
   route("otp.send", "/api/auth/otp/send", otpSendRoute, { method: "POST", public: true, service: "security", rateLimit: "strict" }),
   route("otp.verify", "/api/auth/otp/verify", otpVerifyRoute, { method: "POST", public: true, service: "security", rateLimit: "strict" }),
+
+  // 2FA TOTP
+  route("totp.setup", "/api/auth/totp/setup", totpSetupRoute, { method: "POST", service: "security", rateLimit: "strict" }),
+  route("totp.verify", "/api/auth/totp/verify", totpVerifySetupRoute, { method: "POST", service: "security", rateLimit: "strict" }),
+  route("totp.disable", "/api/auth/totp/disable", totpDisableRoute, { method: "POST", service: "security", rateLimit: "strict" }),
 
   // Device management
   route("device.upsert", "/api/auth/device", deviceUpsertRoute, { method: "POST", service: "security", rateLimit: "standard" }),

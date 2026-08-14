@@ -20,6 +20,8 @@ import {
 } from "@/lib/auth";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
+import PasswordStrengthMeter from "@/components/PasswordStrengthMeter";
+import { isPasswordPwned } from "@/lib/password-strength";
 import {
   required,
   email as emailValidator,
@@ -164,6 +166,13 @@ export default function LoginPage() {
     if (firstError) {
       setLoading(false);
       setError(firstError);
+      showError(i18n("error"));
+      return;
+    }
+    const pwned = await isPasswordPwned(password);
+    if (pwned) {
+      setLoading(false);
+      setError(i18n("passwordPwned") || "Ce mot de passe a été compromis dans une fuite de données. Choisissez-en un autre.");
       showError(i18n("error"));
       return;
     }
@@ -457,6 +466,7 @@ export default function LoginPage() {
                         <Icon name={showPassword ? "eye-off" : "eye"} className="h-4 w-4" />
                       </button>
                     </div>
+                    {isRegister && <PasswordStrengthMeter password={password} />}
                   </div>
                 )}
 

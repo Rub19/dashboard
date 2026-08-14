@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : icônes des boutons rondes par défaut**
+
+### Corrige
+- `ethone-next/app/globals.css` : les boutons/liens contenant directement un SVG (`button:has(> svg)`, `a:has(> svg)`) sont maintenant ronds par défaut. Seuls les conteneurs dock/rail/`v8-icon-radius` et les images suivent encore le réglage utilisateur `iconRadius`.
+
 **Migration Next.js : arrondi des bords (dock, mobile nav, sidebar, header)**
 
 ### Corrige

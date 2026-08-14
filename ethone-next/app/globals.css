@@ -1630,6 +1630,15 @@ a:focus:not(:focus-visible) {
 [data-heat="4"] { background-color: var(--heatmap-4); }
 [data-heat="5"] { background-color: var(--heatmap-5); }
 
+/* Scrollbar helpers */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* ============================================================
    Density tokens applied
    ============================================================ */

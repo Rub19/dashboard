@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : textes complets et icônes carrées dans le header**
+
+### Corrige
+- `V8Breadcrumbs`, `V8StatusBar` : suppression des `truncate` et `max-w` pour afficher les intitulés complets (session, synchronisation, heure, profil…).
+- `V8Breadcrumbs`, `NotificationCenter`, `SidePanel`, `CommandPalette`, `LanguageSwitcher`, `ProfileDropdown`, `V8WindowControls`, `BrandMark` : passage des conteneurs d’icônes en `rounded-none` pour un rendu carré.
+
 **Migration Next.js : correction de la session qui disparaît au refresh (mot de passe et OTP)**
 
 ### Corrige

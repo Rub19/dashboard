@@ -68,7 +68,7 @@ export default function Shell({ children }: { children: ReactNode }) {
               <main
                 data-v8-main
                 id="main-content"
-                className="w-full p-6 pb-32 md:pb-32"
+                className="w-full p-6 pb-28 md:pb-32"
                 tabIndex={-1}
               >
                 <ActivityJournalProvider>

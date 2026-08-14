@@ -185,7 +185,7 @@ export default function Dock() {
 
   return (
     <div
-      className="v8-floating-dock fixed bottom-4 z-50"
+      className="v8-floating-dock fixed bottom-4 z-50 hidden md:block"
       style={{ left: "calc(50% + var(--dock-offset))", transform: "translateX(-50%)" }}
       data-dock-magnify="true"
       data-dock-pulse="true"

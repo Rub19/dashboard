@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Icon } from "@/lib/icons";
 import { useSettings } from "@/components/SettingsProvider";
@@ -29,117 +28,104 @@ export type FieldType =
   | "password"
   | "custom";
 
+type BaseFieldDef = {
+  key: string;
+  path?: string;
+  label: string;
+  saveMode?: "instant" | "explicit";
+  defaultValue?: unknown;
+  keywords?: string[];
+  onAfterChange?: (value: unknown) => void | Promise<void>;
+};
+
 export type FieldDef =
-  | {
-      key: string;
-      path?: string;
-      label: string;
-      type: FieldType;
-      saveMode?: "instant" | "explicit";
-      defaultValue?: unknown;
-      keywords?: string[];
-    }
-  | {
-      key: string;
-      label: string;
-      type: "range";
-      saveMode?: "instant" | "explicit";
-      min?: number;
-      max?: number;
-      unit?: string;
-      defaultValue?: number;
-      keywords?: string[];
-    }
-  | {
-      key: string;
-      label: string;
-      type: "button-grid" | "select";
-      saveMode?: "instant" | "explicit";
+  | (BaseFieldDef & { type: "toggle" })
+  | (BaseFieldDef & { type: "range"; min?: number; max?: number; unit?: string })
+  | (BaseFieldDef & {
+      type: "button-grid";
       options: { id: string; label: string }[];
-      defaultValue?: string;
-      keywords?: string[];
-    }
-  | {
-      key: string;
-      path?: string;
-      label: string;
+      cols?: number;
+    })
+  | (BaseFieldDef & {
+      type: "select";
+      options: { id: string; label: string }[];
+    })
+  | (BaseFieldDef & {
       type: "checkbox-list";
-      saveMode?: "instant" | "explicit";
       options: { id: string; label: string }[];
-      defaultValue?: string[];
-      keywords?: string[];
-    }
-  | {
-      key: string;
-      label: string;
+    })
+  | (BaseFieldDef & { type: "color" | "text" | "email" | "password" })
+  | (BaseFieldDef & {
       type: "custom";
       render: (value: unknown, onChange: (v: unknown) => void) => React.ReactNode;
-      defaultValue?: unknown;
-      keywords?: string[];
-    };
+    });
 
 export default function SettingField({ field }: { field: FieldDef }) {
   const { settings } = useSettings();
   const form = useSettingsForm();
-  const [justSaved, setJustSaved] = useState(false);
 
   const source = settings as Record<string, unknown>;
-  const saveMode = ("saveMode" in field ? field.saveMode : undefined) || "instant";
-  const path = ("path" in field && field.path) ? field.path : undefined;
+  const saveMode = field.saveMode ?? "instant";
+  const path = field.path;
   const settingKey = field.key;
 
   const committedValue = path ? getValueByPath(source, path) : source[settingKey];
-  const isDraft = saveMode === "explicit" && settingKey in form.draft;
-  const value = isDraft ? form.draft[settingKey] : committedValue;
-
-  const defaultValueSource = DEFAULTS as Record<string, unknown>;
+  const isDraft = saveMode === "explicit" && form.isExplicitFieldDirty(settingKey);
+  const rawValue = isDraft ? form.draft[settingKey] : committedValue;
   const defaultValue =
     field.defaultValue !== undefined
       ? field.defaultValue
       : path
-        ? getValueByPath(defaultValueSource, path)
-        : defaultValueSource[settingKey];
+        ? getValueByPath(DEFAULTS as Record<string, unknown>, path)
+        : (DEFAULTS as Record<string, unknown>)[settingKey];
+  const value = rawValue !== undefined ? rawValue : defaultValue;
 
   const isDirty = JSON.stringify(value) !== JSON.stringify(defaultValue);
 
-  const onChange = (v: unknown) => {
+  const onChange = async (v: unknown) => {
     if (saveMode === "explicit") {
       form.setExplicit(settingKey, v);
     } else {
       form.updateInstant(settingKey, v, path);
-      setJustSaved(true);
-      window.setTimeout(() => setJustSaved(false), 1500);
+    }
+    if (field.onAfterChange) {
+      try {
+        await field.onAfterChange(v);
+      } catch (err) {
+        console.error("onAfterChange error:", err);
+      }
     }
   };
 
   const handleUndo = () => {
-    form.resetToDefault(settingKey, path);
+    form.resetToDefault(settingKey, path, defaultValue);
   };
 
-  const visible = form.matchesSearch(field.label, field.keywords);
-
-  if (!visible) return null;
+  const match = form.matchesSearch(field.label, field.keywords);
+  const hidden = !match;
 
   const control = (() => {
     switch (field.type) {
       case "toggle":
         return <SwitchControl checked={Boolean(value)} onChange={(v) => onChange(v)} />;
-      case "range":
+      case "range": {
         return (
           <RangeControl
-            value={Number(value)}
+            value={Number(value ?? 0)}
             onChange={(v) => onChange(v)}
-            min={("min" in field ? field.min : undefined)}
-            max={("max" in field ? field.max : undefined)}
-            unit={("unit" in field ? field.unit : undefined)}
+            min={field.min}
+            max={field.max}
+            unit={field.unit}
           />
         );
+      }
       case "button-grid":
         return (
           <ButtonGridControl
-            value={String(value)}
+            value={String(value ?? "")}
             onChange={(v) => onChange(v)}
-            options={("options" in field ? field.options : []) as { id: string; label: string }[]}
+            options={field.options}
+            cols={field.cols}
           />
         );
       case "checkbox-list":
@@ -147,17 +133,17 @@ export default function SettingField({ field }: { field: FieldDef }) {
           <CheckboxListControl
             value={Array.isArray(value) ? (value as string[]) : []}
             onChange={(v) => onChange(v)}
-            options={("options" in field ? field.options : []) as { id: string; label: string }[]}
+            options={field.options}
           />
         );
       case "color":
-        return <ColorControl value={String(value)} onChange={(v) => onChange(v)} />;
+        return <ColorControl value={String(value ?? "#000000")} onChange={(v) => onChange(v)} />;
       case "select":
         return (
           <SelectControl
-            value={String(value)}
+            value={String(value ?? "")}
             onChange={(v) => onChange(v)}
-            options={("options" in field ? field.options : []) as { id: string; label: string }[]}
+            options={field.options}
           />
         );
       case "text":
@@ -165,29 +151,36 @@ export default function SettingField({ field }: { field: FieldDef }) {
       case "password":
         return (
           <TextControl
-            value={String(value)}
+            value={String(value ?? "")}
             onChange={(v) => onChange(v)}
             type={field.type}
           />
         );
       case "custom":
-        return ("render" in field ? field.render(value, onChange) : null);
+        return field.render(value, onChange);
       default:
         return null;
     }
   })();
 
+  if (!control) return null;
+
   return (
     <div
       data-setting-key={settingKey}
+      data-setting-path={path}
       data-setting-label={field.label}
-      className="relative border-b border-[var(--border)]/50 py-3 last:border-b-0"
+      className={`relative border-b border-[var(--border)]/50 py-3 transition-opacity last:border-b-0 ${hidden ? "hidden" : ""}`}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <div className="flex items-center gap-2">
             {isDirty && (
-              <span className="h-2 w-2 rounded-full bg-[var(--accent)]" title="Modifié" />
+              <span
+                className="h-2 w-2 rounded-full bg-[var(--accent)]"
+                title="Modifié"
+                aria-label="Modifié"
+              />
             )}
             <span className="text-sm font-medium text-[var(--foreground)]">{field.label}</span>
           </div>
@@ -196,7 +189,7 @@ export default function SettingField({ field }: { field: FieldDef }) {
           )}
         </div>
         <div className="flex items-center gap-2">
-          {isDirty && saveMode === "instant" && (
+          {isDirty && (
             <button
               type="button"
               onClick={handleUndo}
@@ -209,7 +202,7 @@ export default function SettingField({ field }: { field: FieldDef }) {
           )}
           {control}
           <AnimatePresence>
-            {saveMode === "instant" && justSaved && (
+            {saveMode === "instant" && form.instantSaved(settingKey) && (
               <motion.span
                 initial={{ opacity: 0, x: 8, scale: 0.8 }}
                 animate={{ opacity: 1, x: 0, scale: 1 }}

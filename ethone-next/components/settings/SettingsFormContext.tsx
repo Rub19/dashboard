@@ -21,7 +21,8 @@ type SettingsFormState = {
   setExplicit: (key: string, value: unknown) => void;
   saveExplicit: () => void;
   cancelExplicit: () => void;
-  resetToDefault: (key: string, path?: string) => void;
+  resetToDefault: (key: string, path?: string, defaultValue?: unknown) => void;
+  clearExplicitKey: (key: string) => void;
   isDirty: (key: string, value: unknown, defaultValue: unknown) => boolean;
   hasExplicitChanges: boolean;
   isExplicitFieldDirty: (key: string) => boolean;
@@ -31,6 +32,7 @@ type SettingsFormState = {
   currentValue: (key: string, path?: string) => unknown;
   updateInstant: (key: string, value: unknown, path?: string) => void;
   matchesSearch: (text: string, keywords?: string[]) => boolean;
+  isKnownSetting: (key: string, path?: string) => boolean;
 };
 
 const SettingsFormContext = createContext<SettingsFormState | null>(null);
@@ -47,6 +49,16 @@ export function SettingsFormProvider({ children }: { children: React.ReactNode }
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [draft, setDraft] = useState<Draft>({});
   const [microSaves, setMicroSaves] = useState<MicroSave[]>([]);
+
+  const defaults = DEFAULTS as Record<string, unknown>;
+
+  const isKnownSetting = useCallback(
+    (key: string, path?: string) => {
+      const topKey = path ? path.split(".")[0] : key;
+      return topKey in defaults;
+    },
+    [defaults]
+  );
 
   const currentValue = useCallback(
     (key: string, path?: string) => {
@@ -65,34 +77,67 @@ export function SettingsFormProvider({ children }: { children: React.ReactNode }
       } else {
         update({ [key]: value } as Partial<Settings>);
       }
+      const at = Date.now();
       setMicroSaves((prev) => {
         const filtered = prev.filter((m) => m.key !== key);
-        return [...filtered, { key, at: Date.now() }];
+        return [...filtered, { key, at }];
       });
       window.setTimeout(() => {
-        setMicroSaves((prev) => prev.filter((m) => !(m.key === key && m.at === Date.now())));
+        setMicroSaves((prev) => prev.filter((m) => !(m.key === key && m.at === at)));
       }, 1500);
     },
     [settings, update]
   );
 
+  const triggerInstantSaved = useCallback((key: string) => {
+    const at = Date.now();
+    setMicroSaves((prev) => {
+      const filtered = prev.filter((m) => m.key !== key);
+      return [...filtered, { key, at }];
+    });
+    window.setTimeout(() => {
+      setMicroSaves((prev) => prev.filter((m) => !(m.key === key && m.at === at)));
+    }, 1500);
+  }, []);
+
   const setExplicit = useCallback((key: string, value: unknown) => {
     setDraft((prev) => ({ ...prev, [key]: value }));
   }, []);
 
+  const clearExplicitKey = useCallback((key: string) => {
+    setDraft((prev) => {
+      if (!(key in prev)) return prev;
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+  }, []);
+
   const saveExplicit = useCallback(() => {
-    update(draft as Partial<Settings>);
+    const known = Object.fromEntries(
+      Object.entries(draft).filter(([key]) => key in defaults)
+    );
+    if (Object.keys(known).length > 0) {
+      update(known as Partial<Settings>);
+    }
     setDraft({});
-  }, [draft, update]);
+  }, [draft, update, defaults]);
 
   const cancelExplicit = useCallback(() => {
     setDraft({});
   }, []);
 
   const resetToDefault = useCallback(
-    (key: string, path?: string) => {
-      const source = DEFAULTS as Record<string, unknown>;
-      const defaultValue = path ? getValueByPath(source, path) : source[key];
+    (key: string, path?: string, defaultValue?: unknown) => {
+      const topKey = path ? path.split(".")[0] : key;
+      const isKnown = topKey in defaults;
+      const defaultVal =
+        defaultValue !== undefined
+          ? defaultValue
+          : path
+            ? getValueByPath(defaults, path)
+            : defaults[key];
+
       if (key in draft) {
         setDraft((prev) => {
           const next = { ...prev };
@@ -100,22 +145,23 @@ export function SettingsFormProvider({ children }: { children: React.ReactNode }
           return next;
         });
       }
+
+      if (!isKnown) return;
+
       if (path) {
-        const next = setValueByPath(settings as Record<string, unknown>, path, defaultValue);
+        const next = setValueByPath(settings as Record<string, unknown>, path, defaultVal);
         update(next as Partial<Settings>);
       } else {
-        update({ [key]: defaultValue } as Partial<Settings>);
+        update({ [key]: defaultVal } as Partial<Settings>);
       }
     },
-    [settings, update]
+    [settings, update, defaults]
   );
 
-  const isDirty = useCallback(
-    (key: string, value: unknown, defaultValue: unknown) => {
-      return JSON.stringify(value) !== JSON.stringify(defaultValue);
-    },
-    []
-  );
+  const isDirty = useCallback((key: string, value: unknown, defaultValue: unknown) => {
+    void key;
+    return JSON.stringify(value) !== JSON.stringify(defaultValue);
+  }, []);
 
   const hasExplicitChanges = useMemo(() => Object.keys(draft).length > 0, [draft]);
 
@@ -125,13 +171,9 @@ export function SettingsFormProvider({ children }: { children: React.ReactNode }
   );
 
   const instantSaved = useCallback(
-    (key: string) => microSaves.some((m) => m.key === key && Date.now() - m.at < 1500),
+    (key: string) => microSaves.some((m) => m.key === key),
     [microSaves]
   );
-
-  const triggerInstantSaved = useCallback((key: string) => {
-    setMicroSaves((prev) => [...prev.filter((m) => m.key !== key), { key, at: Date.now() }]);
-  }, []);
 
   const matchesSearch = useCallback(
     (text: string, keywords?: string[]) => {
@@ -154,6 +196,7 @@ export function SettingsFormProvider({ children }: { children: React.ReactNode }
       saveExplicit,
       cancelExplicit,
       resetToDefault,
+      clearExplicitKey,
       isDirty,
       hasExplicitChanges,
       isExplicitFieldDirty,
@@ -163,8 +206,24 @@ export function SettingsFormProvider({ children }: { children: React.ReactNode }
       currentValue,
       updateInstant,
       matchesSearch,
+      isKnownSetting,
     }),
-    [query, showAdvanced, draft, microSaves, setExplicit, saveExplicit, cancelExplicit, resetToDefault, isDirty, currentValue, updateInstant, matchesSearch]
+    [
+      query,
+      showAdvanced,
+      draft,
+      microSaves,
+      setExplicit,
+      saveExplicit,
+      cancelExplicit,
+      resetToDefault,
+      clearExplicitKey,
+      isDirty,
+      currentValue,
+      updateInstant,
+      matchesSearch,
+      isKnownSetting,
+    ]
   );
 
   return <SettingsFormContext.Provider value={value}>{children}</SettingsFormContext.Provider>;

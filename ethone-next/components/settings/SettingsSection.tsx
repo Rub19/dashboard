@@ -2,11 +2,6 @@
 
 import { motion } from "framer-motion";
 import { Icon } from "@/lib/icons";
-import { useSettings } from "@/components/SettingsProvider";
-import { DEFAULTS } from "@/lib/settings";
-import { getValueByPath } from "@/lib/object-path";
-import { useSettingsForm } from "./SettingsFormContext";
-import { Children, isValidElement, useEffect, useRef } from "react";
 
 export default function SettingsSection({
   id,
@@ -14,27 +9,19 @@ export default function SettingsSection({
   icon,
   children,
   modifiedCount,
+  visible = true,
 }: {
   id: string;
   label: string;
   icon: string;
   children: React.ReactNode;
   modifiedCount?: number;
+  visible?: boolean;
 }) {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const { query } = useSettingsForm();
-
-  useEffect(() => {
-    if (!query) return;
-    const hasVisible = sectionRef.current?.querySelector('[data-setting-key]:not(.hidden)') != null;
-    if (sectionRef.current) {
-      sectionRef.current.style.display = hasVisible ? "" : "none";
-    }
-  }, [query, children]);
+  if (!visible) return null;
 
   return (
     <motion.div
-      ref={sectionRef}
       data-section={id}
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
@@ -55,20 +42,4 @@ export default function SettingsSection({
       <div className="space-y-0">{children}</div>
     </motion.div>
   );
-}
-
-export function useSectionModifiedCount(
-  settings: Record<string, unknown>[],
-  keys: { settingKey: string; path?: string }[]
-): number {
-  const { settings: current } = useSettings();
-  const src = current as Record<string, unknown>;
-  const defaults = DEFAULTS as Record<string, unknown>;
-
-  return settings.reduce((count, _, i) => {
-    const { settingKey, path } = keys[i];
-    const currentValue = path ? getValueByPath(src, path) : src[settingKey];
-    const defaultValue = path ? getValueByPath(defaults, path) : defaults[settingKey];
-    return JSON.stringify(currentValue) !== JSON.stringify(defaultValue) ? count + 1 : count;
-  }, 0);
 }

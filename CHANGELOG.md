@@ -14,6 +14,9 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - Overflow desktop : défilement horizontal avec gradients de fondu et chevrons de navigation.
 - Mobile : segmented control compact (< 5 onglets) ou tiroir bas animé (≥ 5 onglets) sans dépendance externe.
 - `app/tabs-demo/page.tsx` : page de démonstration avec deux exemples (5 et 7 onglets).
+- `components/MobileNav.tsx` : barre de navigation mobile modernisée avec 5 raccourcis visibles, indicateur animé et tiroir bas pour les 13 applications restantes.
+- `components/Dock.tsx` : masqué sur mobile pour éviter le double emplacement avec `MobileNav`.
+- `components/Shell.tsx` : padding bottom réduit (`pb-28`) sur mobile pour s'adapter à la nouvelle barre.
 
 ### Corrige
 - `app/brain/page.tsx` : intégration de `TabList` pour les 12 sections Brain.

@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : forme des icônes du header**
+
+### Corrige
+- `ethone-next/components/Shell.tsx` : retrait de `data-icon-radius="square"` sur le header pour que les icônes reprennent la forme définie par le paramètre utilisateur (`circle` par défaut).
+
 **Migration Next.js : taille des toggles Switch**
 
 ### Corrige

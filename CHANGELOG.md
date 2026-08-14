@@ -4,6 +4,15 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : refactor Sidebar**
+
+### Corrige
+- `ethone-next/components/Sidebar.tsx` :
+  - largeur fixe stable (72px / 240px), items carrés `w-10 h-10 shrink-0` centrés;
+  - indicateur actif remplacé par un fond d’accent arrondi sur le bouton, plus de pilule blanche coupée;
+  - découpage en header / nav scrollable avec scrollbar cachée / footer settings;
+  - tooltips positionnés à droite quand la sidebar est repliée.
+
 **Migration Next.js : refactor visuel des Paramètres d'Apparence**
 
 ### Corrige

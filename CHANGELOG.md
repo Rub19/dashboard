@@ -4,6 +4,18 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : Expanding Sidebar**
+
+### Corrige
+- `ethone-next/components/Sidebar.tsx` :
+  - largeur animée par Framer Motion (64px → 256px) avec ressort doux;
+  - ouverture au survol et au `:focus-within`, fermeture au `mouseleave` / `blur`;
+  - overlay verre flouté, `overflow-hidden` et `will-change-[width]`;
+- `ethone-next/components/SidebarItem.tsx` :
+  - items `w-full` ou `w-10` selon l’état;
+  - labels `whitespace-nowrap` avec fade-in / slide subordonné à l’ouverture;
+  - anneau de focus visible `focus-visible:ring-[var(--accent)]/50`.
+
 **Migration Next.js : extraction SidebarItem et correction artefact actif**
 
 ### Corrige

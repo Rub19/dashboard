@@ -2,6 +2,7 @@
 
 import Switch from "@/components/Switch";
 import Select from "@/components/ui/Select";
+import Slider from "@/components/ui/Slider";
 
 export function SwitchControl({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
   return <Switch checked={checked} onChange={onChange} labels={false} size="md" />;
@@ -20,19 +21,7 @@ export function RangeControl({
   max?: number;
   unit?: string;
 }) {
-  return (
-    <div className="flex items-center gap-3">
-      <input
-        type="range"
-        min={min}
-        max={max}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="w-32 accent-[var(--accent)]"
-      />
-      <span className="w-10 text-right text-xs text-[var(--muted)]">{value}{unit}</span>
-    </div>
-  );
+  return <Slider value={value} onChange={onChange} min={min} max={max} unit={unit} className="w-full" />;
 }
 
 export function ButtonGridControl<T extends string>({

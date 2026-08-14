@@ -10,6 +10,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
 import Card3D from "@/components/Card3D";
 import { useLayer } from "@/components/LayerProvider";
+import Slider from "@/components/ui/Slider";
 
 const UI_ANIMATIONS = ["smooth", "snappy", "reduced"] as const;
 
@@ -77,20 +78,13 @@ type RangeProps = {
 
 function Range({ label, value, onChange }: RangeProps) {
   return (
-    <label className="space-y-1.5">
+    <div className="space-y-1.5">
       <div className="flex items-center justify-between text-xs">
         <span className="text-[var(--foreground)]">{label}</span>
         <span className="text-[var(--muted)]">{value}%</span>
       </div>
-      <input
-        type="range"
-        min={0}
-        max={100}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full accent-[var(--accent)]"
-      />
-    </label>
+      <Slider value={value} onChange={onChange} unit="%" className="w-full" aria-label={label} />
+    </div>
   );
 }
 

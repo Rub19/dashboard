@@ -10,6 +10,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import ContextMenu from "@/components/ContextMenu";
+import Select from "@/components/ui/Select";
 
 const STATUS = {
   connected: "text-emerald-400",
@@ -238,7 +239,10 @@ export default function LiveWidgets({
 
   const hidden = new Set(settings.homeHiddenLiveCards || []);
   const layout = settings.activityLiveLayout || [];
-  const baseRecords = (customizing ? records : records.filter((r) => !hidden.has(r.id))).map((r) => ({ ...r }));
+  const baseRecords = (customizing
+    ? records
+    : records.filter((r) => !hidden.has(r.id) && r.status === "connected")
+  ).map((r) => ({ ...r }));
   const orderMap = new Map(layout.map((id, i) => [id, i]));
   const visibleRecords = [...baseRecords].sort((a, b) => (orderMap.get(a.id) ?? Infinity) - (orderMap.get(b.id) ?? Infinity));
 
@@ -338,19 +342,15 @@ export default function LiveWidgets({
       <div className="flex h-full flex-col gap-3">
         <div className="flex items-center justify-between">
           <p className="text-sm font-semibold text-[var(--accent)]">Last.fm</p>
-          <select
-            value={lastfmPeriod}
-            onChange={(e) => setLastfmPeriod(e.target.value as LastfmPeriod)}
-            onClick={(e) => e.stopPropagation()}
-            className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-xs outline-none"
-            aria-label={i18n("period")}
-          >
-            {LASTFM_PERIODS.map((p) => (
-              <option key={p} value={p}>
-                {periodLabel(p)}
-              </option>
-            ))}
-          </select>
+          <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
+            <Select
+              value={lastfmPeriod}
+              onChange={(v) => setLastfmPeriod(v as LastfmPeriod)}
+              options={LASTFM_PERIODS.map((p) => ({ id: p, label: periodLabel(p) }))}
+              aria-label={i18n("period")}
+              className="min-w-0"
+            />
+          </div>
         </div>
 
         <div className="flex-1 space-y-3 overflow-y-auto pr-1">
@@ -1124,18 +1124,22 @@ export default function LiveWidgets({
             >
               {i18n("all")}
             </button>
-            {CATEGORY_ORDER.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setActiveCategory(cat)}
-                className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                  activeCategory === cat ? "bg-[var(--accent)] text-white" : "bg-[var(--surface-raised)] text-[var(--muted)] hover:text-[var(--foreground)]"
-                }`}
-              >
-                {i18n(categoryLabels[cat])} ({groups[cat].length})
-              </button>
-            ))}
+            {CATEGORY_ORDER.map((cat) => {
+              const count = groups[cat].length;
+              if (count === 0) return null;
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setActiveCategory(cat)}
+                  className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                    activeCategory === cat ? "bg-[var(--accent)] text-white" : "bg-[var(--surface-raised)] text-[var(--muted)] hover:text-[var(--foreground)]"
+                  }`}
+                >
+                  {i18n(categoryLabels[cat])} ({count})
+                </button>
+              );
+            })}
           </div>
         </div>
       )}

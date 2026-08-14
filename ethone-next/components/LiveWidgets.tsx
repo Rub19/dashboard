@@ -156,6 +156,50 @@ function ImageFallback({
   return <Image src={src} alt={alt || ""} width={size} height={size} unoptimized className={`${className} object-cover`} onError={() => setError(true)} />;
 }
 
+function weatherIconFromCondition(condition?: string): string | null {
+  if (!condition) return null;
+  const c = condition.toLowerCase();
+  if (c.includes("thunder")) return "cloud-lightning";
+  if (c.includes("rain") || c.includes("drizzle")) return "cloud-rain";
+  if (c.includes("snow")) return "snowflake";
+  if (c.includes("fog") || c.includes("mist")) return "cloud";
+  if (c.includes("cloud")) return "cloud-sun";
+  if (c.includes("clear") || c.includes("sun")) return "sun";
+  return null;
+}
+
+function weatherIconFromCode(code?: number, condition?: string): string {
+  if (typeof code === "number") {
+    if (code === 0) return "sun";
+    if (code >= 1 && code <= 3) return "cloud-sun";
+    if (code === 45 || code === 48) return "cloud";
+    if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return "cloud-rain";
+    if ((code >= 71 && code <= 77) || (code >= 85 && code <= 86)) return "snowflake";
+    if (code >= 95) return "cloud-lightning";
+  }
+  return weatherIconFromCondition(condition || "") || "cloud-sun";
+}
+
+function discordStatusTone(status?: string) {
+  switch (status) {
+    case "online":
+      return { dot: "bg-emerald-400", shadow: "shadow-[0_0_6px_#34d399]", label: "statusOnline" };
+    case "idle":
+      return { dot: "bg-amber-400", shadow: "shadow-[0_0_6px_#fbbf24]", label: "statusAway" };
+    case "dnd":
+      return { dot: "bg-rose-400", shadow: "shadow-[0_0_6px_#fb7185]", label: "statusBusy" };
+    default:
+      return { dot: "bg-zinc-500", shadow: "", label: "statusInvisible" };
+  }
+}
+
+function formatDateShort(iso?: string, mounted = true): string {
+  if (!iso || !mounted) return "—";
+  const d = new Date(`${iso}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString(undefined, { weekday: "short" });
+}
+
 function toNum(value: unknown): number | undefined {
   if (typeof value === "number") return value;
   if (typeof value === "string" && /^-?\d+(\.\d+)?$/.test(value)) return Number(value);
@@ -943,6 +987,121 @@ export default function LiveWidgets({
     );
   }
 
+  function renderDiscordFront(record: LiveRecord) {
+    const status = lanyard?.discord_status || "offline";
+    const tone = discordStatusTone(status);
+    const activity = lanyard?.activities?.[0];
+    const spotify = lanyard?.spotify;
+
+    return (
+      <div className="flex h-full flex-col">
+        <div className="mb-3 flex items-center gap-3">
+          <ImageFallback
+            src={record.image}
+            alt={record.title}
+            size={56}
+            fallback={record.title?.slice(0, 2).toUpperCase()}
+            className="h-14 w-14 rounded-full border-2 border-[var(--border)] object-cover shadow-md"
+          />
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-semibold text-[var(--foreground)]">{record.title}</p>
+            <div className="flex items-center gap-1.5 text-xs text-[var(--muted)]">
+              <span className={`h-2 w-2 rounded-full ${tone.dot} ${tone.shadow}`} />
+              <span>{i18n(tone.label)}</span>
+            </div>
+          </div>
+        </div>
+
+        {activity && (
+          <div className="mb-2 rounded-xl bg-[var(--surface)]/60 p-2.5">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">{i18n("activity")}</p>
+            <p className="truncate text-sm font-medium text-[var(--foreground)]">{activity.name}</p>
+            {activity.details && <p className="truncate text-xs text-[var(--muted)]">{activity.details}</p>}
+            {activity.state && <p className="truncate text-xs text-[var(--muted)]">{activity.state}</p>}
+          </div>
+        )}
+
+        {spotify?.playing && spotify.title && (
+          <div className="mt-auto rounded-xl bg-emerald-500/10 p-2.5">
+            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-emerald-400">Spotify</p>
+            <div className="flex items-center gap-2">
+              {spotify.artwork ? (
+                <Image src={spotify.artwork} alt="" width={40} height={40} unoptimized className="h-10 w-10 rounded-lg object-cover" />
+              ) : (
+                <Icon name="music" className="h-10 w-10 text-emerald-400" />
+              )}
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-[var(--foreground)]">{spotify.title}</p>
+                <p className="truncate text-xs text-[var(--muted)]">{spotify.artist}</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  function renderWeatherFront(record: LiveRecord) {
+    const w = weather as Record<string, unknown> | null;
+    const condition = toStr(w?.description) || toStr(w?.condition) || record.subtitle || "—";
+    const code = toNum(w?.weatherCode);
+    const icon = weatherIconFromCode(code, condition);
+    const city = toStr(w?.location) || toStr(w?.city) || "—";
+    const humidity = toNum(w?.humidityPercent);
+    const wind = toNum(w?.windSpeedKmh);
+    const forecast = (Array.isArray(w?.forecast) ? (w.forecast as Record<string, unknown>[]) : []).slice(0, 3);
+
+    return (
+      <div className="flex h-full flex-col">
+        <div className="mb-3 flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            <Icon name={icon} className="h-12 w-12 shrink-0 text-amber-400" />
+            <div>
+              <p className="text-2xl font-bold text-[var(--foreground)]">{record.title}</p>
+              <p className="text-xs text-[var(--muted)] capitalize">{condition}</p>
+              <p className="text-[10px] text-[var(--muted)]">{city}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-3 flex flex-wrap gap-2">
+          {humidity !== undefined && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-sky-500/10 px-2 py-1 text-[10px] text-sky-400">
+              <Icon name="droplets" className="h-3 w-3" />
+              {humidity}% {i18n("humidity")}
+            </span>
+          )}
+          {wind !== undefined && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] text-emerald-400">
+              <Icon name="wind" className="h-3 w-3" />
+              {wind} km/h
+            </span>
+          )}
+        </div>
+
+        {forecast.length > 0 && (
+          <div className="mt-auto grid grid-cols-3 gap-2">
+            {forecast.map((day, i) => {
+              const min = toNum(day.min);
+              const max = toNum(day.max);
+              const date = toStr(day.date);
+              const dayIcon = weatherIconFromCode(toNum(day.weatherCode), toStr(day.condition));
+              return (
+                <div key={i} className="flex flex-col items-center gap-1 rounded-xl bg-[var(--surface)]/60 p-2">
+                  <span className="text-[10px] text-[var(--muted)]">{formatDateShort(date, mounted)}</span>
+                  <Icon name={dayIcon} className="h-5 w-5 text-amber-400" />
+                  <span className="text-xs font-medium text-[var(--foreground)]">
+                    {min ?? "—"}° / {max ?? "—"}°
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   function renderCard(record: LiveRecord) {
     const isFlipped = !!flipped[record.id];
     const gradient = GRADIENTS[record.source] || "from-[var(--surface-raised)]/20 to-transparent border-[var(--border)]";
@@ -951,7 +1110,8 @@ export default function LiveWidgets({
     const isYoutube = record.source === "youtube";
     const isTracker = record.source === "tracker";
     const isApex = record.source === "apex";
-    const hasImageHeader = (isDiscord || isYoutube || isTracker || isApex) && record.image;
+    const isWeather = record.source === "weather";
+    const hasImageHeader = (isYoutube || isTracker || isApex) && record.image;
 
     return (
       <ContextMenu key={record.id} items={liveContextItems(record)}>
@@ -1050,17 +1210,21 @@ export default function LiveWidgets({
                 </div>
               )}
 
-              {!isSpotify && !hasImageHeader && (
+              {isDiscord && renderDiscordFront(record)}
+
+              {isWeather && renderWeatherFront(record)}
+
+              {!isSpotify && !isDiscord && !isWeather && !hasImageHeader && (
                 <div className="mb-2 flex items-center gap-2">
                   <span className={`text-sm font-semibold uppercase tracking-wider ${STATUS[record.status]}`}>{record.label}</span>
                 </div>
               )}
 
               <div className="space-y-1">
-                {!isSpotify && !hasImageHeader && <p className="truncate font-medium">{record.title}</p>}
+                {!isSpotify && !isDiscord && !isWeather && !hasImageHeader && <p className="truncate font-medium">{record.title}</p>}
                 {isSpotify && <p className="truncate text-lg font-bold">{record.title}</p>}
-                {record.subtitle && <p className="truncate text-sm text-[var(--muted)]">{record.subtitle}</p>}
-                {record.meta && <p className="truncate text-xs text-[var(--muted)]">{record.meta}</p>}
+                {!isDiscord && !isWeather && record.subtitle && <p className="truncate text-sm text-[var(--muted)]">{record.subtitle}</p>}
+                {!isDiscord && !isWeather && record.meta && <p className="truncate text-xs text-[var(--muted)]">{record.meta}</p>}
               </div>
 
               {isSpotify && nowPlaying?.isPlaying && (

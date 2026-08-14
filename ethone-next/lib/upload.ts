@@ -24,8 +24,8 @@ export function formatSpeed(bytesPerSecond: number): string {
 
 export function formatTimeLeft(seconds: number): string {
   if (!seconds || !Number.isFinite(seconds) || seconds < 0) return "∞";
-  if (seconds < 1) return "<1s";
-  return `${Math.ceil(seconds)}s`;
+  if (seconds < 1) return "<1";
+  return `${Math.ceil(seconds)}`;
 }
 
 export function fileExtension(file: File): string {

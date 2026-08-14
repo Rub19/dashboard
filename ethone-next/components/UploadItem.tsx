@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { RefreshCcw, Replace, Trash2 } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
@@ -46,10 +47,12 @@ export default function UploadItem({
       <div className="flex items-start gap-4">
         <div className="relative flex h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-surface-raised ring-1 ring-white/5">
           {isImage && objectUrl ? (
-            <img
+            <Image
               src={objectUrl}
               alt={task.file.name}
-              className="h-full w-full object-cover"
+              fill
+              unoptimized
+              className="object-cover"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-muted">
@@ -118,7 +121,7 @@ export default function UploadItem({
                   ? i18n("uploadComplete")
                   : task.status === "error"
                     ? task.error || i18n("uploadFailed")
-                    : `${progress}% · ${formatTimeLeft(task.secondsLeft)} ${i18n("secondsLeft")}`}
+                    : `${progress}% · ${formatTimeLeft(task.secondsLeft)}${i18n("secondsLeft")}`}
               </span>
               <span className="text-muted">
                 {task.status === "uploading" ? `${formatBytes(task.loaded)} / ${formatBytes(task.total)}` : task.status === "success" ? "100%" : `${progress}%`}

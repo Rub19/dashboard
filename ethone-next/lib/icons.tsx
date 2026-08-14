@@ -184,8 +184,11 @@ export function useIconName(name: string, pack: IconPack = "lucide") {
 
 function IconComponent({ name, ...props }: { name: string } & Omit<IconProps, "icon">) {
   const { settings } = useSettings();
-  const iconId = useIconName(name, settings.iconPack);
-  return <IconifyIcon icon={iconId} aria-hidden="true" focusable="false" {...props} />;
+  const pack = settings.iconPack;
+  const iconId = useIconName(name, pack);
+  const [prefix, suffix] = iconId.split(":");
+  const valid = prefix && suffix && (pack === "lucide" ? true : iconExists(pack as IconPack, suffix));
+  return <IconifyIcon icon={valid ? iconId : `${PREFIXES.lucide}:help-circle`} aria-hidden="true" focusable="false" {...props} />;
 }
 
 export const Icon = memo(IconComponent);

@@ -17,6 +17,7 @@ export default function BrandMark({ size = 40, className = "" }: BrandMarkProps)
       viewBox="0 0 64 64"
       role="img"
       aria-label="ETHONE"
+      shapeRendering="geometricPrecision"
       className={className}
     >
       <defs>
@@ -29,13 +30,13 @@ export default function BrandMark({ size = 40, className = "" }: BrandMarkProps)
           <stop offset="1" stopColor="#8bc9fa" />
         </linearGradient>
       </defs>
-      <rect x="1.25" y="1.25" width="61.5" height="61.5" rx="14" fill={`url(#${signalId})`} />
-      <rect x="5" y="5" width="54" height="54" rx="11" fill={`url(#${surfaceId})`} />
+      <rect x="1.5" y="1.5" width="61" height="61" rx="18" fill={`url(#${signalId})`} />
+      <rect x="5.5" y="5.5" width="53" height="53" rx="15" fill={`url(#${surfaceId})`} />
       <path
         d="M20 19v26m0-26h24M20 32h18M20 45h24"
         fill="none"
         stroke="#f4f7fa"
-        strokeWidth="5"
+        strokeWidth="5.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />

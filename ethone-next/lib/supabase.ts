@@ -11,6 +11,9 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
  * afin que getSession() puisse relire la session après un refresh.
  */
 export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: false,
+  },
   cookies: {
     getAll() {
       if (typeof document === "undefined") return [];

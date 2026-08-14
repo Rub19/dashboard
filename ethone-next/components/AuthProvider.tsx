@@ -54,6 +54,50 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         }
       }, SESSION_TIMEOUT_MS)
     );
+
+    async function restoreFromStorage() {
+      const savedToken = localStorage.getItem("ethone-remember-token");
+      const savedRefresh = localStorage.getItem("ethone-remember-refresh");
+      const expiresAt = Number(localStorage.getItem("ethone-remember-expires") || "0");
+      const authType = localStorage.getItem("ethone-auth-type") || "otp";
+
+      if (!savedToken || Date.now() >= expiresAt) {
+        setSession(null);
+        setUser(null);
+        return;
+      }
+
+      if (authType === "password" && savedRefresh) {
+        const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession({
+          refresh_token: savedRefresh,
+        });
+        if (!refreshError && refreshData.session) {
+          localStorage.setItem("ethone-remember-token", refreshData.session.access_token);
+          localStorage.setItem("ethone-remember-refresh", refreshData.session.refresh_token);
+          setSession(refreshData.session);
+          setUser(refreshData.session.user);
+          setError(null);
+          return;
+        }
+      }
+
+      const refreshToken = typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      const { data: setData, error: sessionError } = await supabase.auth.setSession({
+        access_token: savedToken,
+        refresh_token: refreshToken,
+      });
+      if (!sessionError && setData.session) {
+        setSession(setData.session);
+        setUser(setData.session.user);
+        setError(null);
+      } else {
+        setSession(null);
+        setUser(null);
+      }
+    }
+
     try {
       const { data } = await Promise.race([
         supabase.auth.getSession().then((res) => {
@@ -69,33 +113,21 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         setUser(data.session.user);
         setError(null);
       } else if (typeof localStorage !== "undefined" && localStorage.getItem("ethone-remember-me") === "true") {
-        const savedToken = localStorage.getItem("ethone-remember-token");
-        const expiresAt = Number(localStorage.getItem("ethone-remember-expires") || "0");
-        if (savedToken && Date.now() < expiresAt) {
-          const refreshToken = typeof crypto !== "undefined" && "randomUUID" in crypto
-            ? crypto.randomUUID()
-            : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-          const { data: setData, error: setError } = await supabase.auth.setSession({
-            access_token: savedToken,
-            refresh_token: refreshToken,
-          });
-          if (!setError && setData.session) {
-            setSession(setData.session);
-            setUser(setData.session.user);
-          } else {
-            setSession(null);
-            setUser(null);
-          }
-        } else {
-          setSession(null);
-          setUser(null);
-        }
+        await restoreFromStorage();
       } else {
         setSession(null);
         setUser(null);
       }
     } catch (err) {
-      setError(err instanceof Error ? err : new Error(String(err)));
+      if (typeof localStorage !== "undefined" && localStorage.getItem("ethone-remember-me") === "true") {
+        try {
+          await restoreFromStorage();
+        } catch (restoreErr) {
+          setError(restoreErr instanceof Error ? restoreErr : new Error(String(restoreErr)));
+        }
+      } else {
+        setError(err instanceof Error ? err : new Error(String(err)));
+      }
     } finally {
       setLoading(false);
     }

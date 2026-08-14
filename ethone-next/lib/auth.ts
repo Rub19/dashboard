@@ -47,10 +47,12 @@ export async function verifyOtp(userId: string, email: string, code: string, rem
     localStorage.setItem("ethone-remember-me", "true");
     localStorage.setItem("ethone-remember-token", token);
     localStorage.setItem("ethone-remember-expires", String(Date.now() + (res.data.expiresIn ?? 30 * 24 * 60 * 60) * 1000));
+    localStorage.setItem("ethone-auth-type", "otp");
   } else {
     localStorage.removeItem("ethone-remember-me");
     localStorage.removeItem("ethone-remember-token");
     localStorage.removeItem("ethone-remember-expires");
+    localStorage.removeItem("ethone-auth-type");
   }
   resetAuthAttempt("sign-in", `${userId}:${email}`);
   return { ok: true, session: data.session };
@@ -89,12 +91,21 @@ export async function verifyEmailOtp(email: string, code: string) {
   return { ok: !error && !!data.session, session: data.session, error };
 }
 
-export async function signInWithPassword(email: string, password: string) {
+export async function signInWithPassword(email: string, password: string, rememberMe = false) {
   const attempt = consumeAuthAttempt("sign-in", email);
   if (!attempt.allowed) return { ...rateLimitedResult(attempt.retryAfterMs), session: null };
 
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (!error && data.session) resetAuthAttempt("sign-in", email);
+  if (!error && data.session) {
+    resetAuthAttempt("sign-in", email);
+    if (rememberMe) {
+      localStorage.setItem("ethone-remember-me", "true");
+      localStorage.setItem("ethone-remember-token", data.session.access_token);
+      localStorage.setItem("ethone-remember-refresh", data.session.refresh_token);
+      localStorage.setItem("ethone-remember-expires", String(Date.now() + 30 * 24 * 60 * 60 * 1000));
+      localStorage.setItem("ethone-auth-type", "password");
+    }
+  }
   return { ok: !error && !!data.session, session: data.session, error };
 }
 

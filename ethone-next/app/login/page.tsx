@@ -125,17 +125,12 @@ export default function LoginPage() {
       showError(i18n("error"));
       return;
     }
-    const { ok, error: err } = await signInWithPassword(email, password);
+    const { ok, error: err } = await signInWithPassword(email, password, rememberMe);
     setLoading(false);
     if (!ok || err) {
       setError(err?.message || i18n("invalidCredentials"));
       showError(i18n("error"));
       return;
-    }
-    if (rememberMe) {
-      localStorage.setItem("ethone-remember-me", "true");
-    } else {
-      localStorage.removeItem("ethone-remember-me");
     }
     success(i18n("saved"));
     router.push("/");

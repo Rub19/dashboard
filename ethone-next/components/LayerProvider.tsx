@@ -264,7 +264,6 @@ function createLayerManager() {
   function notify() {
     const list = getEntries();
     subscribers.forEach((fn) => fn(list));
-    notify();
   }
 
   function top(predicate: (entry: LayerEntry) => boolean = () => true): LayerEntry | null {

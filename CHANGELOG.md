@@ -4,6 +4,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : refactor NotificationCenter et NotificationItem**
+
+### Corrige
+- Création de `ethone-next/components/NotificationItem.tsx` : actions rapides au survol (check, archive, menu), design épuré avec états lu/non lu/critique, point d'état et sortie animée.
+- Refonte de `ethone-next/components/NotificationCenter.tsx` : filtres en rangée scrollable, header avec actions discrètes, barre de recherche focus subtil, liste avec `AnimatePresence` et scrollbar fine.
+- Ajout de `moreActions` dans `lib/i18n.ts` (FR/EN/ES/DE) et utilitaire `.no-scrollbar` dans `globals.css`.
+
 **Migration Next.js : retirer animations bump sur la page Activité**
 
 ### Corrige

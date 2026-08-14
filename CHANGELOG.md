@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : correction des toggles Switch**
+
+### Corrige
+- `ethone-next/components/Switch.tsx` : ajustement des dimensions du rail et du curseur (`travel` et hauteurs) pour éviter les débordements, centrage vertical du curseur, et suppression du `preventDefault` sur la touche Espace qui bloquait l’interaction clavier.
+
 **Migration Next.js : correction des dropdowns Select**
 
 ### Corrige

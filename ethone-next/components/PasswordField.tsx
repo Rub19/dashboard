@@ -200,9 +200,11 @@ export default function PasswordField({
         <AnimatePresence>
           {shouldShowRules && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              layout
+              transition={{ type: "spring", stiffness: 500, damping: 35 }}
               className="space-y-3 overflow-hidden pt-2"
             >
               <StrengthMeter result={result} show={hasContent} />

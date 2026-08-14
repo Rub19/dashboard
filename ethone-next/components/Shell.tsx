@@ -1,6 +1,7 @@
 "use client";
 
 import { type ReactNode } from "react";
+import dynamic from "next/dynamic";
 import { WindowManagerProvider } from "@/components/WindowManagerProvider";
 import PresenceProvider from "@/components/PresenceProvider";
 import { ShortcutsProvider } from "@/components/ShortcutsProvider";
@@ -15,20 +16,21 @@ import MobileNav from "@/components/MobileNav";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import V8Breadcrumbs from "@/components/V8Breadcrumbs";
 import DocumentMetadata from "@/components/DocumentMetadata";
-import LiveOverlay from "@/components/LiveOverlay";
-import AmbientParticles from "@/components/AmbientParticles";
-import Spotlight from "@/components/Spotlight";
-import VisualHaptics from "@/components/VisualHaptics";
-import DepthEffect from "@/components/DepthEffect";
-import FocusIsland from "@/components/FocusIsland";
 import { ActivityJournalProvider } from "@/components/ActivityJournalProvider";
 import PageTransition from "@/components/PageTransition";
 import AutomationRuntime from "@/components/AutomationRuntime";
 import V8StatusBar from "@/components/V8StatusBar";
 import Dock from "@/components/Dock";
-import ShortcutsOverlay from "@/components/ShortcutsOverlay";
-import KeyboardShortcuts from "@/components/KeyboardShortcuts";
 import SkipLink from "@/components/SkipLink";
+
+const LiveOverlay = dynamic(() => import("@/components/LiveOverlay"), { ssr: false });
+const AmbientParticles = dynamic(() => import("@/components/AmbientParticles"), { ssr: false });
+const Spotlight = dynamic(() => import("@/components/Spotlight"), { ssr: false });
+const VisualHaptics = dynamic(() => import("@/components/VisualHaptics"), { ssr: false });
+const DepthEffect = dynamic(() => import("@/components/DepthEffect"), { ssr: false });
+const FocusIsland = dynamic(() => import("@/components/FocusIsland"), { ssr: false });
+const ShortcutsOverlay = dynamic(() => import("@/components/ShortcutsOverlay"), { ssr: false });
+const KeyboardShortcuts = dynamic(() => import("@/components/KeyboardShortcuts"), { ssr: false });
 
 export default function Shell({ children }: { children: ReactNode }) {
   return (

@@ -15,6 +15,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { usePresence } from "./PresenceProvider";
 import PresenceIndicator from "./PresenceIndicator";
 import Tooltip from "./Tooltip";
+import Link from "next/link";
 
 const HUBS = [
   { city: "Paris", zone: "Europe/Paris", label: "CET" },
@@ -253,14 +254,14 @@ function Metric({ icon, value, label }: { icon: string; value: string | number; 
 
 function QuickAction({ icon, label, href }: { icon: string; label: string; href: string }) {
   return (
-    <a
+    <Link
       href={href}
       className="flex items-center gap-2 rounded-xl bg-[var(--surface-raised)] p-2 text-sm transition-colors hover:bg-[var(--accent)]/10"
       data-interactive
     >
       <Icon name={icon} className="h-4 w-4 text-[var(--accent)]" />
       {label}
-    </a>
+    </Link>
   );
 }
 
@@ -407,20 +408,20 @@ function ProfileTab() {
         <strong className="block text-lg">{name}</strong>
         <span className="text-sm text-[var(--muted)]">{email}</span>
       </div>
-      <a href="/settings" className="flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 text-sm hover:bg-[var(--surface-raised)]" data-interactive>
+      <Link href="/settings" className="flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 text-sm hover:bg-[var(--surface-raised)]" data-interactive>
         <span className="flex items-center gap-2">
           <Icon name="settings" className="h-4 w-4" />
           {i18n("settings")}
         </span>
         <Icon name="chevron-right" className="h-4 w-4" />
-      </a>
-      <a href="/profile" className="flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 text-sm hover:bg-[var(--surface-raised)]" data-interactive>
+      </Link>
+      <Link href="/profile" className="flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 text-sm hover:bg-[var(--surface-raised)]" data-interactive>
         <span className="flex items-center gap-2">
           <Icon name="user" className="h-4 w-4" />
           {i18n("profile")}
         </span>
         <Icon name="chevron-right" className="h-4 w-4" />
-      </a>
+      </Link>
     </div>
   );
 }

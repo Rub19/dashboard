@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { Icon as IconifyIcon, type IconProps, type IconifyJSON } from "@iconify/react";
 import { addCollection } from "@iconify/react";
 import { icons as lucide } from "@iconify-json/lucide";
@@ -181,8 +182,10 @@ export function useIconName(name: string, pack: IconPack = "lucide") {
   return `${PREFIXES.lucide}:${entry?.lucide || name}`;
 }
 
-export function Icon({ name, ...props }: { name: string } & Omit<IconProps, "icon">) {
+function IconComponent({ name, ...props }: { name: string } & Omit<IconProps, "icon">) {
   const { settings } = useSettings();
   const iconId = useIconName(name, settings.iconPack);
   return <IconifyIcon icon={iconId} aria-hidden="true" focusable="false" {...props} />;
 }
+
+export const Icon = memo(IconComponent);

@@ -1975,3 +1975,12 @@ html[data-zen-mode="true"] [data-v8-main] {
   to { background-position: 480px 240px; }
 }
 
+/* Instant tactile feedback on interactive elements */
+button:not([disabled]):active,
+[role="button"]:not([aria-disabled="true"]):active,
+a[href]:active,
+[tabindex]:not([disabled]):active {
+  transform: scale(0.98);
+  transition: transform 100ms ease-out;
+}
+

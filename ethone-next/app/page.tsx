@@ -1,12 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import Card3D from "@/components/Card3D";
-import LiveWidgets from "@/components/LiveWidgets";
-import LiveStats from "@/components/LiveStats";
-import BillsWidget from "@/components/BillsWidget";
-import DailyBriefing from "@/components/DailyBriefing";
-import BrainBriefingPanel from "@/components/BrainBriefingPanel";
 import BrandMark from "@/components/BrandMark";
 import { useHomeData } from "@/lib/hooks/useDashboard";
 import { useMail } from "@/lib/hooks/useMail";
@@ -17,6 +13,12 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useFocus } from "@/components/FocusProvider";
 import { type SessionMode } from "@/lib/settings";
 import Link from "next/link";
+
+const LiveWidgets = dynamic(() => import("@/components/LiveWidgets"));
+const LiveStats = dynamic(() => import("@/components/LiveStats"));
+const BillsWidget = dynamic(() => import("@/components/BillsWidget"));
+const DailyBriefing = dynamic(() => import("@/components/DailyBriefing"));
+const BrainBriefingPanel = dynamic(() => import("@/components/BrainBriefingPanel"));
 
 function formatBytes(bytes = 0) {
   if (bytes === 0) return "0 B";

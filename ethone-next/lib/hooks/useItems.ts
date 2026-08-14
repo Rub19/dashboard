@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { fetchWorker } from "../api";
 import { activityJournal } from "@/lib/activity-journal";
 
@@ -38,45 +38,57 @@ export function useItems(kind: "notes" | "tasks" | "events") {
     reload();
   }, [reload]);
 
-  async function create(input: Omit<Item, "id">) {
-    const res = await fetchWorker(`/api/${kind}`, {
-      method: "POST",
-      body: JSON.stringify(input),
-    });
-    const data = res?.data;
-    const actionMap = {
-      notes: "v8.notes.new" as const,
-      tasks: "v8.tasks.create" as const,
-      events: "v8.calendar.create" as const,
-    };
-    const actionId = actionMap[kind];
-    activityJournal.capture(actionId, { ok: !!data, title: input.title });
-    await reload();
-    return data;
-  }
+  const create = useCallback(
+    async (input: Omit<Item, "id">) => {
+      const res = await fetchWorker(`/api/${kind}`, {
+        method: "POST",
+        body: JSON.stringify(input),
+      });
+      const data = res?.data;
+      const actionMap = {
+        notes: "v8.notes.new" as const,
+        tasks: "v8.tasks.create" as const,
+        events: "v8.calendar.create" as const,
+      };
+      const actionId = actionMap[kind];
+      activityJournal.capture(actionId, { ok: !!data, title: input.title });
+      await reload();
+      return data;
+    },
+    [kind, reload]
+  );
 
-  async function update(id: string, input: Partial<Omit<Item, "id">>) {
-    await fetchWorker(`/api/${kind}`, {
-      method: "PATCH",
-      body: JSON.stringify({ id, ...input }),
-    });
-    if (kind === "notes") {
-      activityJournal.capture("v8.notes.save", { ok: true, title: input.title });
-    }
-    if (kind === "tasks" && input.done === true) {
-      const item = items.find((i) => i.id === id);
-      activityJournal.capture("v8.tasks.complete", { ok: true, title: item?.title });
-    }
-    await reload();
-  }
+  const update = useCallback(
+    async (id: string, input: Partial<Omit<Item, "id">>) => {
+      await fetchWorker(`/api/${kind}`, {
+        method: "PATCH",
+        body: JSON.stringify({ id, ...input }),
+      });
+      if (kind === "notes") {
+        activityJournal.capture("v8.notes.save", { ok: true, title: input.title });
+      }
+      if (kind === "tasks" && input.done === true) {
+        const item = items.find((i) => i.id === id);
+        activityJournal.capture("v8.tasks.complete", { ok: true, title: item?.title });
+      }
+      await reload();
+    },
+    [kind, items, reload]
+  );
 
-  async function remove(id: string) {
-    await fetchWorker(`/api/${kind}`, {
-      method: "DELETE",
-      body: JSON.stringify({ id }),
-    });
-    await reload();
-  }
+  const remove = useCallback(
+    async (id: string) => {
+      await fetchWorker(`/api/${kind}`, {
+        method: "DELETE",
+        body: JSON.stringify({ id }),
+      });
+      await reload();
+    },
+    [kind, reload]
+  );
 
-  return { items, loading, error, reload, create, update, remove };
+  return useMemo(
+    () => ({ items, loading, error, reload, create, update, remove }),
+    [items, loading, error, reload, create, update, remove]
+  );
 }

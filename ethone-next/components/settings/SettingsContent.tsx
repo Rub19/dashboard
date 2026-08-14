@@ -1107,10 +1107,11 @@ export default function SettingsContent() {
         {advancedOpen && (
           <motion.div
             key="advanced"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ type: "spring", stiffness: 400, damping: 35 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            layout
+            transition={{ type: "spring", stiffness: 500, damping: 35 }}
             className="overflow-hidden"
           >
             <SettingsSection

@@ -12,7 +12,6 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
   { id: "tasks", label: "tasks", icon: "tasks", actionId: "v8.tasks.open", href: "/tasks/" },
   { id: "calendar", label: "calendar", icon: "calendar", actionId: "v8.calendar.open", href: "/calendar/" },
   { id: "files", label: "files", icon: "files", actionId: "v8.files.open", href: "/files/" },
-  { id: "bills", label: "bills", icon: "bills", actionId: "v8.bills.open", href: "/bills/" },
   { id: "activity", label: "activity", icon: "activity", actionId: "v8.activity.open", href: "/activity/" },
   { id: "interactions", label: "interactions", icon: "interactions", actionId: "v8.interactions.open", href: "/interactions/" },
   { id: "connections", label: "connections", icon: "connections", actionId: "v8.connections.open", href: "/connections/" },

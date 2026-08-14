@@ -24,16 +24,19 @@ export default function AmbientParticles() {
     if (!ctx) return;
 
     let raf = 0;
+    let running = true;
     let particles: Particle[] = [];
     const context = ctx;
+    let accent = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#8b5cf6";
 
     function resize() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+      accent = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#8b5cf6";
     }
 
     function createParticles() {
-      const count = settings.performanceMode === "low" ? 18 : 35;
+      const count = settings.performanceMode === "low" ? 12 : 28;
       particles = Array.from({ length: count }, () => ({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
@@ -45,14 +48,15 @@ export default function AmbientParticles() {
       }));
     }
 
-    resize();
-    createParticles();
-    window.addEventListener("resize", resize);
-
     function draw() {
+      if (!running || document.hidden) {
+        raf = requestAnimationFrame(draw);
+        return;
+      }
       context.clearRect(0, 0, canvas.width, canvas.height);
-      const accent = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#8b5cf6";
-      particles.forEach((p) => {
+      const len = particles.length;
+      for (let i = 0; i < len; i++) {
+        const p = particles[i];
         p.x += p.vx;
         p.y += p.vy;
         p.pulse += 0.02;
@@ -65,7 +69,8 @@ export default function AmbientParticles() {
         context.fillStyle = `color-mix(in srgb, ${accent} ${Math.round(alpha * 100)}%, transparent)`;
         context.fill();
 
-        particles.forEach((other) => {
+        for (let j = i + 1; j < len; j++) {
+          const other = particles[j];
           const dx = p.x - other.x;
           const dy = p.y - other.y;
           const dist = Math.hypot(dx, dy);
@@ -77,15 +82,24 @@ export default function AmbientParticles() {
             context.lineWidth = 0.5;
             context.stroke();
           }
-        });
-      });
+        }
+      }
       raf = requestAnimationFrame(draw);
     }
 
+    function handleVisibility() {
+      running = !document.hidden;
+    }
+
+    resize();
+    createParticles();
+    window.addEventListener("resize", resize);
+    document.addEventListener("visibilitychange", handleVisibility);
     draw();
 
     return () => {
       window.removeEventListener("resize", resize);
+      document.removeEventListener("visibilitychange", handleVisibility);
       cancelAnimationFrame(raf);
     };
   }, [settings.ambientEffectsEnabled, settings.performanceMode, settings.aura]);

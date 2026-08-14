@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { useMemo } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
@@ -17,7 +18,10 @@ export default function Sidebar() {
   const i18n = useI18n();
   const { settings } = useSettings();
 
-  const navItems = NAVIGATION_ITEMS.map((item: NavigationItem) => ({ ...item, label: i18n(item.label) }));
+  const navItems = useMemo(
+    () => NAVIGATION_ITEMS.map((item: NavigationItem) => ({ ...item, label: i18n(item.label) })),
+    [i18n]
+  );
 
   if (settings.layoutPreset === "dock-only" || settings.layoutPreset === "minimal" || !settings.sidebarVisible) return null;
 
@@ -26,7 +30,7 @@ export default function Sidebar() {
       data-v8-rail
       initial={false}
       animate={{ width: expanded ? 240 : 72 }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      transition={{ type: "spring", stiffness: 500, damping: 35 }}
       className={`v8-rail fixed left-0 top-0 z-40 hidden h-screen flex-col border-r border-[var(--border)] md:flex ${
         settings.glassEnabled ? "bg-[var(--surface)]/80 backdrop-blur-xl" : "bg-[var(--surface)]"
       }`}

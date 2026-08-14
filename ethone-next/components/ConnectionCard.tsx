@@ -288,10 +288,11 @@ export default function ConnectionCard({
               <AnimatePresence initial={false}>
                 {openGuideField === "oauth" && (
                   <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                    layout
                     className="overflow-hidden"
                   >
                     <GuidePanel guide={guide} />
@@ -392,10 +393,11 @@ export default function ConnectionCard({
                     <AnimatePresence initial={false}>
                       {fieldGuideOpen && (
                         <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                          layout
                           className="overflow-hidden"
                         >
                           <GuidePanel guide={guide} />
@@ -446,10 +448,11 @@ export default function ConnectionCard({
       <AnimatePresence initial={false}>
         {rawOpen && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ type: "spring", stiffness: 500, damping: 35 }}
+            layout
             className="overflow-hidden"
           >
             <div className="rounded-2xl border border-white/5 bg-black/30 p-3">

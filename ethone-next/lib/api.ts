@@ -10,7 +10,7 @@ if (typeof window !== "undefined" && !WORKER_URL) {
   );
 }
 
-async function getToken(): Promise<string | null> {
+export async function getToken(): Promise<string | null> {
   if (typeof window === "undefined") return null;
   const { data } = await supabase.auth.getSession();
   return data.session?.access_token || null;

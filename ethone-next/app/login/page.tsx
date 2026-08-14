@@ -294,7 +294,6 @@ export default function LoginPage() {
 
             {(() => {
               const modes: AuthMode[] = ["otp", "password", "register"];
-              const activeIndex = modes.indexOf(mode);
               return (
                 <div className="relative mt-6 flex rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]/50 p-1">
                   {modes.map((m) => {
@@ -312,18 +311,20 @@ export default function LoginPage() {
                           active ? "text-white" : "text-[var(--muted)] hover:text-[var(--foreground)]"
                         }`}
                       >
-                        <span className="block truncate">
+                        {active && (
+                          <motion.div
+                            layoutId="activeAuthTab"
+                            initial={false}
+                            transition={{ type: "spring", bounce: 0.15, duration: 0.3 }}
+                            className="absolute inset-0 rounded-xl bg-[var(--accent)]"
+                          />
+                        )}
+                        <span className="relative z-10 block truncate">
                           {m === "otp" ? i18n("otp") : m === "password" ? i18n("password") : i18n("register")}
                         </span>
                       </button>
                     );
                   })}
-                  <motion.div
-                    className="absolute inset-y-1 w-1/3 rounded-xl bg-[var(--accent)]"
-                    initial={false}
-                    animate={{ left: `${(activeIndex * 100) / 3}%` }}
-                    transition={{ type: "spring", stiffness: 400, damping: 35 }}
-                  />
                 </div>
               );
             })()}
@@ -334,15 +335,20 @@ export default function LoginPage() {
               </div>
             )}
 
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={isOtp && step === "code" ? `otp-${step}` : mode}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -12 }}
-                transition={{ duration: 0.18, ease: "easeInOut" }}
-                className="relative mt-5"
-              >
+            <motion.div
+              layout
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="relative mt-5 overflow-hidden"
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={isOtp && step === "code" ? `otp-${step}` : mode}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.15, ease: "easeOut" }}
+                  className="relative"
+                >
                 {isOtp && step === "code" ? (
               <form onSubmit={handleVerify} className="space-y-5">
                 <label className="block text-sm font-medium" htmlFor="code">
@@ -578,6 +584,7 @@ export default function LoginPage() {
             )}
               </motion.div>
             </AnimatePresence>
+            </motion.div>
           </motion.div>
 
           <div className="mt-6 flex items-center justify-center gap-2 text-[10px] text-[var(--muted)] lg:hidden">

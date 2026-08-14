@@ -4,6 +4,17 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : système d'onglets moderne avec indicateur animé, accessibilité et adaptatif mobile/desktop**
+
+### Ajoute
+- `components/tabs/` : `Tabs.tsx`, `TabList.tsx`, `TabContent.tsx` et `types.ts`.
+- Indicateur actif fluide avec `layoutId` et ressort physique (damping 22, stiffness 200).
+- Transitions de contenu `AnimatePresence mode="wait"` avec fade out / fade in et hauteur animée.
+- Navigation clavier : flèches gauche/droite, Home, End, séparation focus visible et état actif.
+- Overflow desktop : défilement horizontal avec gradients de fondu et chevrons de navigation.
+- Mobile : segmented control compact (< 5 onglets) ou tiroir bas animé (≥ 5 onglets) sans dépendance externe.
+- `app/tabs-demo/page.tsx` : page de démonstration avec deux exemples (5 et 7 onglets).
+
 **Migration Next.js : logos SVG des fournisseurs dans le calendrier de bills (Netflix, Adobe, Apple, Figma, Spotify, Notion)**
 
 ### Ajoute

@@ -118,17 +118,19 @@ export default function FocusPage() {
               stroke="var(--border)"
               strokeWidth="8"
             />
-            <circle
-              cx="50"
-              cy="50"
-              r="45"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="8"
-              strokeLinecap="round"
-              strokeDasharray={`${progress * 2.83} 283`}
-              className={`transition-all duration-1000 ${modeColor}`}
-            />
+            {progress > 0 && (
+              <circle
+                cx="50"
+                cy="50"
+                r="45"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="8"
+                strokeLinecap="round"
+                strokeDasharray={`${progress * 2.83} 283`}
+                className={`transition-all duration-1000 ${modeColor}`}
+              />
+            )}
           </svg>
           <div className="absolute text-center">
             <p className={`text-4xl font-bold tabular-nums sm:text-5xl ${modeColor}`}>

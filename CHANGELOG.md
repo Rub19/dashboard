@@ -4,6 +4,21 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : audit performance et optimisations dashboard**
+
+### Corrige
+- `ethone-next/components/Shell.tsx` : lazy-load des couches visuelles/effets (`LiveOverlay`, `AmbientParticles`, `Spotlight`, `VisualHaptics`, `DepthEffect`, `FocusIsland`, `ShortcutsOverlay`, `KeyboardShortcuts`) pour réduire le JS initial.
+- `ethone-next/app/page.tsx` : lazy-load des gros widgets (`LiveWidgets`, `LiveStats`, `BillsWidget`, `DailyBriefing`, `BrainBriefingPanel`) en chunks séparés.
+- `ethone-next/components/AmbientParticles.tsx` : pause `requestAnimationFrame` quand l’onglet est masqué, réduction du nombre de particules, suppression de `getComputedStyle` dans la boucle de rendu.
+- `ethone-next/lib/icons.tsx` : `Icon` mémoisé.
+- `ethone-next/lib/hooks/useI18n.ts` : fonction `i18n` mémoisée (évite de recréer des closures à chaque render).
+- `ethone-next/lib/hooks/useItems.ts` : `create`/`update`/`remove` mémoisés, retour d’objet stable.
+- `ethone-next/components/Sidebar.tsx` : `navItems` mémoisé, ressort plus réactif.
+- `ethone-next/components/SearchBar.tsx` : animation de la barre via `clipPath` au lieu de `width`.
+- `ethone-next/components/ConnectionCard.tsx`, `PasswordField.tsx`, `SettingsContent.tsx`, `DiagnosticPanel.tsx` : remplacement des animations `height: auto` par `layout` + `opacity`.
+- `ethone-next/components/SidePanel.tsx` : `<a>` remplacés par `<Link>` pour le prefetch.
+- `ethone-next/app/globals.css` : feedback tactile global `:active { transform: scale(0.98) }`.
+
 **Migration Next.js : meilleures barres de réglage (Slider)**
 
 ### Corrige

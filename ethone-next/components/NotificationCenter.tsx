@@ -384,17 +384,17 @@ export default function NotificationCenter() {
         onClick={() => setOpen(!open)}
         
         data-tooltip={i18n("notifications")}
-        className="relative rounded-xl p-2 text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
+        className="relative rounded-none p-2 text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
         aria-label={i18n("notifications")}
       >
         <Icon name="bell" className="h-5 w-5" />
         {unreadCount > 0 && (
-          <span data-notification-badge className="absolute right-1 top-1 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-[var(--accent)] px-1 text-[10px] font-bold text-white">
+          <span data-notification-badge className="absolute right-1 top-1 flex h-4 min-w-[1rem] items-center justify-center rounded-none bg-[var(--accent)] px-1 text-[10px] font-bold text-white">
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}
         {unreadCount === 0 && importantCount > 0 && (
-          <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-amber-400" />
+          <span className="absolute right-2 top-2 h-2 w-2 rounded-none bg-amber-400" />
         )}
       </button>
 

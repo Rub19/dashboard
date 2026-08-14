@@ -72,22 +72,19 @@ function StatusItem({
   tone = "muted",
   label,
   value,
-  maxValueWidth = "6rem",
 }: {
   icon: string;
   tone?: Tone;
   label?: string;
   value?: string;
-  maxValueWidth?: string;
 }) {
   return (
     <div className="v8-status-item flex min-w-0 items-center gap-1.5" data-tone={tone}>
       <Icon name={icon} className={`h-3.5 w-3.5 shrink-0 ${toneClass(tone)}`} />
-      {label && <span className="hidden text-[10px] uppercase tracking-wider text-[var(--muted)] 2xl:inline">{label}</span>}
+      {label && <span className="hidden whitespace-nowrap text-[10px] uppercase tracking-wider text-[var(--muted)] 2xl:inline">{label}</span>}
       {value && (
         <span
-          className="inline-block truncate font-medium text-[var(--foreground)]"
-          style={{ maxWidth: maxValueWidth }}
+          className="whitespace-nowrap font-medium text-[var(--foreground)]"
           translate={value.includes(":") ? "no" : undefined}
         >
           {value}
@@ -161,17 +158,16 @@ export default function V8StatusBar() {
     <footer
       data-v8-status-bar
       data-v8-bar
-      className="v8-status-bar fixed bottom-0 left-0 z-30 hidden w-full items-center justify-between border-t border-[var(--border)] bg-[var(--background)]/90 px-4 py-1.5 text-[10px] text-[var(--muted)] backdrop-blur-md md:flex"
+      className="v8-status-bar fixed bottom-0 left-0 z-30 hidden w-full flex-wrap items-center justify-between gap-y-1 border-t border-[var(--border)] bg-[var(--background)]/90 px-4 py-1.5 text-[10px] text-[var(--muted)] backdrop-blur-md md:flex"
     >
       <StatusItem
         icon="timer"
         tone={isFocus ? "online" : "muted"}
         label={i18n("v8Session")}
         value={sessionLabel}
-        maxValueWidth="10rem"
       />
 
-      <div className="flex min-w-0 max-w-full items-center gap-2 overflow-hidden">
+      <div className="flex min-w-0 max-w-full flex-wrap items-center gap-2 overflow-visible">
         <StatusItem
           icon={sessionModeIcon}
           tone="muted"
@@ -190,7 +186,7 @@ export default function V8StatusBar() {
           label={i18n("sync")}
           value={syncMeta.value}
         />
-        <StatusItem icon="user" tone="muted" label={i18n("profile")} value={profileName} maxValueWidth="8rem" />
+        <StatusItem icon="user" tone="muted" label={i18n("profile")} value={profileName} />
         <Tooltip
           label={`${i18n("presence")}: ${i18n(presence.label)}${
             presence.badge ? ` (${presence.badge})` : ""
@@ -214,7 +210,7 @@ export default function V8StatusBar() {
         />
       </div>
 
-      <div className="flex min-w-0 max-w-full items-center gap-2 overflow-hidden">
+      <div className="flex min-w-0 max-w-full flex-wrap items-center gap-2 overflow-visible">
         <StatusItem icon="badge-check" tone="muted" value={i18n("v8Version")} />
         <time
           dateTime={time}

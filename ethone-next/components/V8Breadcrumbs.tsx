@@ -132,14 +132,14 @@ function ContextItem({
 }) {
   return (
     <div
-      className="flex min-w-0 items-center gap-1.5 rounded-md px-2 py-1 text-[10px] text-[var(--foreground)] transition-colors hover:bg-[var(--surface-raised)]"
+      className="flex min-w-0 items-center gap-1.5 rounded-none px-2 py-1 text-[10px] text-[var(--foreground)] transition-colors hover:bg-[var(--surface-raised)]"
       data-tone={tone}
       title={title}
     >
       <Icon name={icon} className={`h-3.5 w-3.5 shrink-0 ${toneClass(tone)}`} />
       <div className="hidden min-w-0 flex-col 2xl:flex">
-        <span className="max-w-[5.5rem] truncate text-[9px] uppercase tracking-wider text-[var(--muted)]">{label}</span>
-        <span className={`max-w-[5.5rem] truncate font-medium ${mono ? "font-mono" : ""}`} translate={mono ? "no" : undefined}>
+        <span className="whitespace-nowrap text-[9px] uppercase tracking-wider text-[var(--muted)]">{label}</span>
+        <span className={`whitespace-nowrap font-medium ${mono ? "font-mono" : ""}`} translate={mono ? "no" : undefined}>
           {value}
         </span>
       </div>
@@ -165,7 +165,7 @@ function QuickAction({
       data-tooltip={label}
       data-interactive
       aria-pressed={active}
-      className={`relative flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)] ${
+      className={`relative flex h-8 w-8 items-center justify-center rounded-none border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)] ${
         active ? "border-[var(--accent)] text-[var(--accent)]" : ""
       }`}
       aria-label={label}
@@ -197,7 +197,7 @@ function WeatherButton({
         data-tooltip={i18n("weather")}
         data-interactive
         aria-label={`${i18n("weather")} ${temp}`}
-        className="relative flex h-8 items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)]"
+        className="relative flex h-8 items-center gap-1.5 rounded-none border border-[var(--border)] bg-[var(--surface)] px-2 text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)]"
       >
         <Icon name={weatherIcon(condition)} className="h-4 w-4" />
         <span className="text-sm font-medium tabular-nums">{temp}</span>
@@ -321,11 +321,11 @@ export default function V8Breadcrumbs() {
         <span className="text-[var(--border)]">/</span>
         <span className="flex items-center gap-1.5 rounded-md px-2 py-1 text-[var(--foreground)]">
           <Icon name={pageIcon} className="h-4 w-4 text-[var(--muted)]" />
-          <span className="max-w-[8rem] truncate text-sm font-medium capitalize">{pageLabel}</span>
+          <span className="whitespace-nowrap text-sm font-medium capitalize">{pageLabel}</span>
         </span>
       </div>
 
-      <div className="hidden min-w-0 max-w-full flex-1 items-center justify-center gap-1 overflow-hidden xl:flex">
+      <div className="hidden min-w-0 max-w-full flex-1 flex-wrap items-center justify-center gap-1 overflow-visible xl:flex">
         <ContextItem icon="briefcase-business" label={i18n("v8Workspace")} value={spaceLabel} />
         <ContextItem icon="zap" label={i18n("v8Mode")} value={i18n(spaceFlow)} />
         <ContextItem

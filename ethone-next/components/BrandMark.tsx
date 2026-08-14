@@ -29,8 +29,8 @@ export default function BrandMark({ size = 40, className = "" }: BrandMarkProps)
           <stop offset="1" stopColor="#8bc9fa" />
         </linearGradient>
       </defs>
-      <rect x="1.25" y="1.25" width="61.5" height="61.5" rx="15.25" fill={`url(#${signalId})`} />
-      <rect x="4.15" y="4.15" width="55.7" height="55.7" rx="12.6" fill={`url(#${surfaceId})`} />
+      <rect x="1.25" y="1.25" width="61.5" height="61.5" rx="0" fill={`url(#${signalId})`} />
+      <rect x="4.15" y="4.15" width="55.7" height="55.7" rx="0" fill={`url(#${surfaceId})`} />
       <path
         d="M19 18v28m0-28h26M19 32h20.5M19 46h26"
         fill="none"

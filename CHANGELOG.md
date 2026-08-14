@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : correction des dropdowns Select**
+
+### Corrige
+- `ethone-next/components/ui/Select.tsx` : le listbox est maintenant rendu dans un `portal` (`document.body`) en `position: fixed`, avec recalcul de position au scroll/resize. Cela évite que les listes soient coupées ou mal positionnées à l’intérieur de parents `overflow: hidden` (cards, modales, etc.).
+
 **Migration Next.js : refactor des cartes de connexion**
 
 ### Corrige

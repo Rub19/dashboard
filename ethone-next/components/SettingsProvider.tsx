@@ -138,6 +138,12 @@ export default function SettingsProvider({
     root.style.setProperty("--font-size", `${settings.fontSize}%`);
     root.style.setProperty("--card-radius", `${settings.radius / 16}rem`);
     root.style.setProperty("--dock-radius", `${settings.dockRadius / 16}rem`);
+    root.style.setProperty("--icon-radius", {
+      square: "0px",
+      rounded: "0.5rem",
+      circle: "9999px",
+      pill: "9999px",
+    }[settings.iconRadius] || "0.5rem");
     root.style.setProperty("--glass", settings.glassEnabled ? "0.85" : "1");
     root.dataset.glassEnabled = settings.glassEnabled ? "true" : "false";
     root.dataset.cardTilt = settings.cardTilt ? "on" : "off";
@@ -152,6 +158,7 @@ export default function SettingsProvider({
     root.dataset.accent = settings.accentColor;
     root.dataset.layout = settings.layoutPreset;
     root.dataset.radiusStyle = settings.radiusStyle;
+    root.dataset.iconRadius = settings.iconRadius;
     root.dataset.dockScale = settings.dockScale;
     root.dataset.dockAlign = settings.dockAlign;
     root.dataset.dockGlass = settings.dockGlass;

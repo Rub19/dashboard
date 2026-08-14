@@ -271,6 +271,13 @@ export default function SettingsPage() {
     { id: "sharp", label: "Net" },
   ] as const;
 
+  const ICON_RADIUSES = [
+    { id: "square", label: "Carré" },
+    { id: "rounded", label: "Arrondi" },
+    { id: "circle", label: "Rond" },
+    { id: "pill", label: "Pill" },
+  ] as const;
+
   const DOCK_SCALES = [
     { id: "compact", label: i18n("dockScaleCompact") },
     { id: "normal", label: i18n("dockScaleNormal") },
@@ -634,6 +641,21 @@ export default function SettingsPage() {
                 onClick={() => update({ radiusStyle: r.id })}
                 className={`rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
                   settings.radiusStyle === r.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                }`}
+              >
+                {r.label}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-[var(--muted)]">Forme des icônes</p>
+          <div className="grid grid-cols-4 gap-2">
+            {ICON_RADIUSES.map((r) => (
+              <button
+                key={r.id}
+                type="button"
+                onClick={() => update({ iconRadius: r.id })}
+                className={`rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
+                  settings.iconRadius === r.id ? "border-[var(--accent)] text-[var(--accent)]" : ""
                 }`}
               >
                 {r.label}

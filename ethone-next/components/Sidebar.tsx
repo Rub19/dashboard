@@ -35,7 +35,7 @@ export default function Sidebar() {
         <button
           type="button"
           onClick={() => setExpanded(!expanded)}
-          className="flex h-10 w-10 items-center justify-center rounded-xl text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
+          className="v8-icon-radius flex h-10 w-10 items-center justify-center text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
           aria-label={expanded ? "Réduire" : "Étendre"}
           data-tooltip={expanded ? undefined : "Menu"}
         >
@@ -67,7 +67,7 @@ export default function Sidebar() {
               onClick={() => setExpanded(false)}
               aria-label={item.label}
               data-tooltip={expanded ? undefined : item.label}
-              className={`group relative flex h-11 items-center rounded-xl transition-all duration-300 ${
+              className={`v8-icon-radius group relative flex h-11 items-center transition-all duration-300 ${
                 isActive
                   ? "bg-[var(--accent-soft)] text-[var(--accent)]"
                   : "text-[var(--muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"

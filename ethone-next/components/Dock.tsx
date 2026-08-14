@@ -178,7 +178,7 @@ export default function Dock() {
   }
 
   const baseControlClass =
-    "flex h-11 w-11 items-center justify-center rounded-full border border-transparent text-[var(--foreground)] transition-all hover:border-[var(--accent)]/30 hover:bg-[var(--surface)] hover:shadow-lg";
+    "v8-icon-radius flex h-11 w-11 items-center justify-center border border-transparent text-[var(--foreground)] transition-all hover:border-[var(--accent)]/30 hover:bg-[var(--surface)] hover:shadow-lg";
 
   const controlInactive = "text-[var(--muted)]";
   const controlActive = "bg-[var(--accent)]/10 text-[var(--accent)]";

@@ -53,6 +53,7 @@ export type DensityMode =
   | "custom";
 
 export type RadiusStyle = "rounded" | "soft" | "sharp";
+export type IconRadius = "square" | "rounded" | "circle" | "pill";
 
 export type DockScale = "compact" | "normal" | "large";
 export type DockAlign = "center" | "stretch" | "left" | "right";
@@ -97,6 +98,7 @@ export type Settings = {
   };
   radius: number;
   radiusStyle: RadiusStyle;
+  iconRadius: IconRadius;
   aura: string;
   homeGrid: "2" | "3" | "4";
   homeHero: "hidden" | "compact" | "full";
@@ -206,6 +208,7 @@ export const DEFAULTS: Settings = {
   },
   radius: 50,
   radiusStyle: "rounded",
+  iconRadius: "rounded",
   aura: "classic",
   homeGrid: "4",
   homeHero: "full",

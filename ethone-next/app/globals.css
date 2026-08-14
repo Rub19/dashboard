@@ -1860,3 +1860,65 @@ html[data-zen-mode="true"] [data-v8-main] {
   padding-bottom: 1.5rem !important;
 }
 
+/* Global icon/control radius */
+.v8-icon-radius {
+  border-radius: var(--icon-radius, 0.5rem);
+}
+
+/* Page stat cards */
+.v8-stat-card {
+  border-radius: var(--card-radius);
+}
+
+/* Dashboard-wide icon shape overrides */
+[data-icon-radius="square"] button:has(> svg),
+[data-icon-radius="square"] a:has(> svg),
+[data-icon-radius="square"] [data-dock-item] {
+  border-radius: 0;
+}
+
+[data-icon-radius="circle"] button:has(> svg),
+[data-icon-radius="circle"] a:has(> svg),
+[data-icon-radius="circle"] [data-dock-item] {
+  border-radius: 9999px;
+}
+
+[data-icon-radius="pill"] button:has(> svg),
+[data-icon-radius="pill"] a:has(> svg),
+[data-icon-radius="pill"] [data-dock-item] {
+  border-radius: 9999px;
+}
+
+[data-icon-radius="square"] .v8-icon-radius,
+[data-icon-radius="square"] [data-v8-rail] a,
+[data-icon-radius="square"] [data-v8-rail] button {
+  border-radius: 0;
+}
+
+[data-icon-radius="circle"] .v8-icon-radius,
+[data-icon-radius="circle"] [data-v8-rail] a,
+[data-icon-radius="circle"] [data-v8-rail] button {
+  border-radius: 9999px;
+}
+
+[data-icon-radius="pill"] .v8-icon-radius,
+[data-icon-radius="pill"] [data-v8-rail] a,
+[data-icon-radius="pill"] [data-v8-rail] button {
+  border-radius: 9999px;
+}
+
+[data-icon-radius="square"] img,
+[data-icon-radius="square"] [role="img"] {
+  border-radius: 0;
+}
+
+[data-icon-radius="circle"] img,
+[data-icon-radius="circle"] [role="img"] {
+  border-radius: 9999px;
+}
+
+[data-icon-radius="pill"] img,
+[data-icon-radius="pill"] [role="img"] {
+  border-radius: 9999px;
+}
+

@@ -26,6 +26,7 @@ import SettingField, { type FieldDef } from "./SettingField";
 import { SwitchControl } from "./SettingControls";
 import { useSettingsForm } from "./SettingsFormContext";
 import { useModifiedCount } from "./useModifiedCount";
+import AppearanceSettings from "./AppearanceSettings";
 
 const THEMES = [
   { id: "default", label: "Aura ETHONE" },
@@ -983,7 +984,7 @@ export default function SettingsContent() {
 
   const mainSections: SectionDef[] = useMemo(
     () => [
-      { id: "appearance", label: i18n("appearance"), icon: "palette", keywords: ["préférences", "apparence"], fields: appearanceFields },
+      { id: "appearance", label: i18n("appearance"), icon: "palette", keywords: ["préférences", "apparence"], fields: [], children: <AppearanceSettings /> },
       { id: "typography", label: i18n("typography"), icon: "type", keywords: ["préférences", "typographie"], fields: typographyFields },
       { id: "language", label: i18n("language"), icon: "globe", keywords: ["préférences", "langue"], fields: languageFields },
       { id: "density", label: i18n("density"), icon: "gauge", keywords: ["préférences", "density", "densité"], fields: densityFields },
@@ -993,7 +994,7 @@ export default function SettingsContent() {
       { id: "notifications", label: i18n("notifications"), icon: "bell", keywords: ["notifications"], fields: notificationsFields },
       { id: "workspace", label: i18n("workspace"), icon: "layout-grid", keywords: ["workspace", "intégrations", "dock", "brain"], fields: workspaceFields },
     ],
-    [i18n, appearanceFields, typographyFields, languageFields, densityFields, soundFields, accountFields, securityFields, notificationsFields, workspaceFields]
+    [i18n, typographyFields, languageFields, densityFields, soundFields, accountFields, securityFields, notificationsFields, workspaceFields]
   );
 
   const advancedSections: SectionDef[] = useMemo(

@@ -6,7 +6,7 @@ import { useProfiles, type Profile } from "@/lib/hooks/useProfiles";
 import { loadSettings, saveSettings, saveSettingsAsync, loadSettingsAsync, Settings, DEFAULTS, type ThemeMode } from "@/lib/settings";
 import { applyPreset, type Preset } from "@/lib/preset-engine";
 
-const THEMES: Record<ThemeMode, { background: string; foreground: string; accent: string }> = {
+export const THEMES: Record<ThemeMode, { background: string; foreground: string; accent: string }> = {
   default: { background: "#0a0a0a", foreground: "#ededed", accent: "#8b5cf6" },
   boreal: { background: "#081016", foreground: "#e0f2fe", accent: "#06b6d4" },
   cyberpunk: { background: "#0f0514", foreground: "#ffe4e6", accent: "#f43f5e" },
@@ -63,7 +63,7 @@ function resolveTheme(theme: ThemeMode): { dark: boolean; theme: ThemeMode } {
   return { dark: true, theme };
 }
 
-const ACCENTS: Record<string, string> = {
+export const ACCENTS: Record<string, string> = {
   violet: "#8b5cf6",
   mint: "#34d399",
   sky: "#38bdf8",

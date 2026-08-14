@@ -1102,6 +1102,55 @@ export default function LiveWidgets({
     );
   }
 
+  function renderMinecraftFront(record: LiveRecord) {
+    const profile = (minecraft as Record<string, unknown>) || {};
+    const username = toStr(profile.username) || toStr(profile.name) || record.title;
+    const uuid = toStr(profile.uuid);
+    const skin = toStr(profile.skinUrl);
+    const cape = toStr(profile.capeUrl);
+    const model = toStr(profile.model);
+
+    return (
+      <div className="flex h-full flex-col">
+        <div className="mb-3 flex items-center gap-3">
+          {skin ? (
+            <Image src={skin} alt="" width={56} height={56} unoptimized className="h-14 w-14 rounded-xl border-2 border-[var(--border)] object-cover shadow-md" />
+          ) : (
+            <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-emerald-500/10 text-2xl shadow-md">
+              ⛏️
+            </span>
+          )}
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-semibold text-[var(--foreground)]">{username}</p>
+            <p className="truncate text-[10px] text-[var(--muted)]">{uuid ? `ID: ${uuid.slice(0, 8)}…` : "Minecraft"}</p>
+          </div>
+        </div>
+
+        <div className="mb-3 flex flex-wrap gap-2">
+          {model && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] text-emerald-400">
+              <Icon name="box" className="h-3 w-3" />
+              {model}
+            </span>
+          )}
+          {cape && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-1 text-[10px] text-amber-400">
+              <Icon name="shirt" className="h-3 w-3" />
+              Cape
+            </span>
+          )}
+        </div>
+
+        <div className="mt-auto rounded-xl bg-[var(--surface)]/60 p-2.5">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">{i18n("nameHistory")}</p>
+          <p className="text-xs text-[var(--foreground)]">
+            {(minecraftNameHistory || []).slice(-3).map((n) => toStr(n.name)).filter(Boolean).join(" → ") || "—"}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   function renderCard(record: LiveRecord) {
     const isFlipped = !!flipped[record.id];
     const gradient = GRADIENTS[record.source] || "from-[var(--surface-raised)]/20 to-transparent border-[var(--border)]";
@@ -1111,6 +1160,7 @@ export default function LiveWidgets({
     const isTracker = record.source === "tracker";
     const isApex = record.source === "apex";
     const isWeather = record.source === "weather";
+    const isMinecraft = record.source === "minecraft";
     const hasImageHeader = (isYoutube || isTracker || isApex) && record.image;
 
     return (
@@ -1214,17 +1264,19 @@ export default function LiveWidgets({
 
               {isWeather && renderWeatherFront(record)}
 
-              {!isSpotify && !isDiscord && !isWeather && !hasImageHeader && (
+              {isMinecraft && renderMinecraftFront(record)}
+
+              {!isSpotify && !isDiscord && !isWeather && !isMinecraft && !hasImageHeader && (
                 <div className="mb-2 flex items-center gap-2">
                   <span className={`text-sm font-semibold uppercase tracking-wider ${STATUS[record.status]}`}>{record.label}</span>
                 </div>
               )}
 
               <div className="space-y-1">
-                {!isSpotify && !isDiscord && !isWeather && !hasImageHeader && <p className="truncate font-medium">{record.title}</p>}
+                {!isSpotify && !isDiscord && !isWeather && !isMinecraft && !hasImageHeader && <p className="truncate font-medium">{record.title}</p>}
                 {isSpotify && <p className="truncate text-lg font-bold">{record.title}</p>}
-                {!isDiscord && !isWeather && record.subtitle && <p className="truncate text-sm text-[var(--muted)]">{record.subtitle}</p>}
-                {!isDiscord && !isWeather && record.meta && <p className="truncate text-xs text-[var(--muted)]">{record.meta}</p>}
+                {!isDiscord && !isWeather && !isMinecraft && record.subtitle && <p className="truncate text-sm text-[var(--muted)]">{record.subtitle}</p>}
+                {!isDiscord && !isWeather && !isMinecraft && record.meta && <p className="truncate text-xs text-[var(--muted)]">{record.meta}</p>}
               </div>
 
               {isSpotify && nowPlaying?.isPlaying && (

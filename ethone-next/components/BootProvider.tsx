@@ -49,6 +49,12 @@ function isPublicRoute(pathname: string | null): boolean {
   return PUBLIC_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`));
 }
 
+function resolvePublicRoute(pathname: string | null): boolean {
+  if (pathname) return isPublicRoute(pathname);
+  if (typeof window !== "undefined") return isPublicRoute(window.location.pathname);
+  return true;
+}
+
 export default function BootProvider({ children }: { children: ReactNode }) {
   const { session, loading: authLoading, error: authError, refreshSession } = useAuth();
   const pathname = usePathname();
@@ -58,12 +64,10 @@ export default function BootProvider({ children }: { children: ReactNode }) {
     if (typeof window !== "undefined" && !navigator.onLine) {
       return "offline";
     }
-    // During SSG usePathname is null; default to unauthenticated so public
-    // pages like /login prerender their real content instead of the loader.
-    if (typeof window === "undefined" || isPublicRoute(pathname) || pathname === null) {
-      return "unauthenticated";
-    }
-    return "booting";
+    // usePathname peut être null au premier rendu client ou pendant le SSG.
+    // On se base sur l'URL réelle pour ne jamais rendre une page protégée
+    // avant d'avoir vérifié l'authentification.
+    return resolvePublicRoute(pathname) ? "unauthenticated" : "booting";
   });
 
   const [error, setError] = useState<string | null>(null);
@@ -74,9 +78,7 @@ export default function BootProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    // pathname can be null during the first client render or during SSG.
-    // Treat null as public so /login never stays on the loader.
-    const publicRoute = isPublicRoute(pathname) || pathname === null;
+    const publicRoute = resolvePublicRoute(pathname);
 
     if (authLoading) {
       setState(publicRoute ? "unauthenticated" : "booting");
@@ -143,7 +145,7 @@ export default function BootProvider({ children }: { children: ReactNode }) {
     check();
   }, [check]);
 
-  const publicRoute = isPublicRoute(pathname) || pathname === null;
+  const publicRoute = resolvePublicRoute(pathname);
 
   if (state === "booting" || state === "recovering") {
     return (

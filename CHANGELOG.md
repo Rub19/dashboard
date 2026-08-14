@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : carte Minecraft moderne + emojis + données**
+
+### Corrige
+- `ethone-next/components/LiveWidgets.tsx` : rendu front dédié pour Minecraft (skin, modèle, cape, historique de pseudos, emoji ⛏️).
+- `lib/i18n.ts` : ajout de `nameHistory` (FR/EN/ES/DE).
+
 **Migration Next.js : enrichir les cartes Live Discord et Météo**
 
 ### Corrige

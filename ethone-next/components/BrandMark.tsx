@@ -29,13 +29,13 @@ export default function BrandMark({ size = 40, className = "" }: BrandMarkProps)
           <stop offset="1" stopColor="#8bc9fa" />
         </linearGradient>
       </defs>
-      <rect x="1.25" y="1.25" width="61.5" height="61.5" rx="0" fill={`url(#${signalId})`} />
-      <rect x="4.15" y="4.15" width="55.7" height="55.7" rx="0" fill={`url(#${surfaceId})`} />
+      <rect x="1.25" y="1.25" width="61.5" height="61.5" rx="14" fill={`url(#${signalId})`} />
+      <rect x="5" y="5" width="54" height="54" rx="11" fill={`url(#${surfaceId})`} />
       <path
-        d="M19 18v28m0-28h26M19 32h20.5M19 46h26"
+        d="M20 19v26m0-26h24M20 32h18M20 45h24"
         fill="none"
         stroke="#f4f7fa"
-        strokeWidth="6.3"
+        strokeWidth="5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />

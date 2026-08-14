@@ -231,9 +231,9 @@ export default function LoginPage() {
       : handlePassword;
 
   return (
-    <div className="relative flex min-h-screen w-full overflow-hidden bg-[#030712]">
+    <div className="relative flex h-screen w-full overflow-hidden bg-[#030712]">
       <LoginCosmicBackground />
-      <div className="relative z-10 hidden w-1/2 flex-col justify-between p-10 lg:flex lg:bg-gradient-to-r lg:from-[#030712]/70 lg:via-[#030712]/25 lg:to-transparent">
+      <div className="relative z-10 hidden h-screen w-1/2 flex-col justify-between p-10 lg:flex lg:bg-gradient-to-r lg:from-[#030712]/70 lg:via-[#030712]/25 lg:to-transparent">
         <div className="z-10 flex items-center gap-2">
           <BrandMark size={28} />
           <span className="text-lg font-bold tracking-tight">ETHONE</span>
@@ -259,7 +259,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div className="relative z-10 flex w-full flex-col items-center justify-center p-4 pt-16 sm:p-6 sm:pt-20 lg:w-1/2 lg:p-10">
+      <div className="relative z-10 flex h-full w-full flex-col items-center justify-center overflow-hidden p-4 lg:w-1/2 lg:p-6">
         <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
           <LanguageSwitcher />
         </div>
@@ -267,29 +267,29 @@ export default function LoginPage() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="w-full min-w-[min(100%,24rem)] max-w-md"
+          className="w-full min-w-[min(100%,20rem)] max-w-sm"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ type: "spring", stiffness: 320, damping: 32 }}
-            className="relative flex min-h-[540px] w-full flex-col overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)]/80 p-6 shadow-2xl backdrop-blur-xl sm:min-h-[600px] sm:p-8 lg:min-h-[720px]"
+            className="relative flex max-h-[calc(100vh-2rem)] w-full flex-col overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)]/80 p-5 shadow-2xl backdrop-blur-xl sm:p-6"
           >
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/50 to-transparent" />
             <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[var(--accent)]/10 blur-3xl" />
 
             <div className="relative flex w-full flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--accent)]/10 ring-1 ring-[var(--accent)]/20">
-                <BrandMark size={36} />
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--accent)]/10 ring-1 ring-[var(--accent)]/20">
+                <BrandMark size={28} />
               </div>
-              <h2 className="mt-4 text-2xl font-bold tracking-tight">{i18n("welcomeBack")}</h2>
-              <p className="mt-1 text-sm text-[var(--muted)]">{i18n("loginDescription")}</p>
+              <h2 className="mt-3 text-2xl font-bold tracking-tight">{i18n("welcomeBack")}</h2>
+              <p className="mt-1 text-xs text-[var(--muted)]">{i18n("loginDescription")}</p>
             </div>
 
             {(() => {
               const modes: AuthMode[] = ["otp", "password", "register"];
               return (
-                <div className="relative mt-6 flex rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]/50 p-1">
+                <div className="relative mt-4 flex rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]/50 p-1">
                   {modes.map((m) => {
                     const active = mode === m;
                     return (
@@ -324,7 +324,7 @@ export default function LoginPage() {
             })()}
 
             {error && (
-              <div className="relative mt-5 rounded-2xl border border-red-500/20 bg-red-500/10 p-3 text-xs text-red-400">
+              <div className="relative mt-3 rounded-2xl border border-red-500/20 bg-red-500/10 p-2.5 text-xs text-red-400">
                 {error}
               </div>
             )}
@@ -332,7 +332,7 @@ export default function LoginPage() {
             <motion.div
               layout
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="relative mt-5 overflow-hidden"
+              className="relative mt-3 overflow-hidden"
             >
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
@@ -344,7 +344,7 @@ export default function LoginPage() {
                   className="relative"
                 >
                 {isOtp && step === "code" ? (
-              <form onSubmit={handleVerify} className="space-y-5">
+              <form onSubmit={handleVerify} className="space-y-4">
                 <label className="block text-sm font-medium" htmlFor="code">
                   {i18n("codeReceived")}
                 </label>
@@ -358,7 +358,7 @@ export default function LoginPage() {
                     required
                     value={code}
                     onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                    className="w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] py-3 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-all placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10"
+                    className="w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] py-2.5 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-all placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10"
                     aria-label={i18n("codePlaceholder")}
                     placeholder={i18n("codePlaceholder")}
                   />
@@ -366,7 +366,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-[var(--accent)]/20 transition-all hover:opacity-90 hover:shadow-[var(--accent)]/30 disabled:opacity-50"
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[var(--accent)]/20 transition-all hover:opacity-90 hover:shadow-[var(--accent)]/30 disabled:opacity-50"
                 >
                   {loading ? <Icon name="loader-2" className="h-4 w-4 animate-spin" /> : i18n("verify")}
                 </button>
@@ -379,7 +379,7 @@ export default function LoginPage() {
                 </button>
               </form>
             ) : (
-              <form onSubmit={onSubmit} className="relative mt-5 space-y-5">
+              <form onSubmit={onSubmit} className="relative mt-3 space-y-3">
                 <div className="space-y-1.5">
                   <label className="text-xs font-medium text-[var(--muted)]" htmlFor="email">
                     {i18n("email")}
@@ -393,7 +393,7 @@ export default function LoginPage() {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] py-3 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-all placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10"
+                      className="w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] py-2.5 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-all placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10"
                       aria-label={i18n("emailPlaceholderLogin")}
                       placeholder={i18n("emailPlaceholderLogin")}
                     />
@@ -416,7 +416,7 @@ export default function LoginPage() {
                         maxLength={64}
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        className="w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] py-3 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-all placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10"
+                        className="w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] py-2.5 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-all placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10"
                         aria-label={i18n("username")}
                         placeholder={i18n("username")}
                       />
@@ -483,7 +483,7 @@ export default function LoginPage() {
                   type="submit"
                   data-testid="sign-in-button"
                   disabled={loading}
-                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-[var(--accent)]/20 transition-all hover:opacity-90 hover:shadow-[var(--accent)]/30 disabled:opacity-50"
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[var(--accent)]/20 transition-all hover:opacity-90 hover:shadow-[var(--accent)]/30 disabled:opacity-50"
                 >
                   {loading ? (
                     <>

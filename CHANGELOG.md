@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : boutons, avatars et badges ronds**
+
+### Corrige
+- `ethone-next/components/NotificationCenter.tsx`, `ProfileDropdown.tsx`, `LanguageSwitcher.tsx`, `CommandPalette.tsx`, `SidePanel.tsx`, `V8Breadcrumbs.tsx`, `V8WindowControls.tsx` : `rounded-none` remplacé par `rounded-full` partout dans le header/sidebar.
+- `ethone-next/app/globals.css` : suppression des overrides `img`/`[role="img"]` liés à `data-icon-radius` pour ne plus forcer les avatars/profils en carré.
+
 **Migration Next.js : icônes des boutons rondes par défaut**
 
 ### Corrige

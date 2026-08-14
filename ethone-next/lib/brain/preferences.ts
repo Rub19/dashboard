@@ -30,7 +30,7 @@ export const BRAIN_TONES = ["calm", "direct", "warm", "technical", "creative"] a
 export const BRAIN_DETAIL = ["brief", "balanced", "detailed"] as const;
 export const BRAIN_SUGGESTION_FREQUENCIES = ["off", "low", "balanced", "high"] as const;
 export const BRAIN_AUTOMATION_LEVELS = ["manual", "suggest-only", "confirm", "trusted"] as const;
-export const BRAIN_PROVIDERS = ["context", "openai", "anthropic", "groq", "gemini", "ollama", "lm-studio"] as const;
+export const BRAIN_PROVIDERS = ["cloudflare", "context", "openai", "anthropic", "groq", "gemini", "deepseek", "openrouter", "ollama", "lm-studio"] as const;
 export const BRAIN_RETENTION_DAYS = [30, 90, 365] as const;
 
 export type BrainMemoryCategory = (typeof BRAIN_MEMORY_CATEGORIES)[number];
@@ -104,7 +104,7 @@ export const DEFAULT_BRAIN_PREFERENCES: BrainPreferences = Object.freeze({
   sounds: true,
   silentInFocus: true,
   briefing: { enabled: true, concise: true },
-  provider: { active: "groq" as BrainProvider, model: "llama-3.1-8b-instant", fallback: "context" as BrainProvider, privacy: "minimal" as "minimal" | "full-context" },
+  provider: { active: "cloudflare" as BrainProvider, model: "", fallback: "groq" as BrainProvider, privacy: "minimal" as "minimal" | "full-context" },
   memory: {
     enabled: true,
     retentionDays: 90,

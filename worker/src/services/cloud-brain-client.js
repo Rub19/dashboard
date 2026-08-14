@@ -1,11 +1,10 @@
 import { httpError } from "../middleware/errors.js";
-import { askGroq } from "./groq-client.js";
+import { aiComplete } from "./ai-router.js";
 import { getCloudFile, updateCloudFile } from "./cloud-files-client.js";
 
 const SYSTEM_PROMPT = `Tu es Brain, l'assistant intégré à ETHONE Cloud. Tu reçois des métadonnées de fichier (nom, type, taille, tags existants). Résume en une phrase l'usage probable du fichier. Suggère un dossier parent pertinent parmi ceux fournis. Réponds UNIQUEMENT en JSON sans markdown : {"summary": "...", "suggestedFolderName": "..."}.`;
 
 export async function analyzeFile(env, userId, driveFileId, folders = []) {
-  if (!env?.GROQ_API_KEY) throw httpError("SERVICE_NOT_CONFIGURED", 501);
   const file = await getCloudFile(env, userId, driveFileId);
   if (!file) throw httpError("PROVIDER_NOT_FOUND", 404);
   const context = JSON.stringify({
@@ -15,14 +14,21 @@ export async function analyzeFile(env, userId, driveFileId, folders = []) {
     tags: file.tags,
     folders: folders.map((folder) => ({ id: folder.driveFileId || folder.id, name: folder.name }))
   }).slice(0, 4000);
-  const result = await askGroq(env, {
-    model: "llama-3.1-8b-instant",
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: `Métadonnées : ${context}` }
-    ],
-    context: {}
-  });
+
+  const prompt = `${SYSTEM_PROMPT}\n\nMétadonnées : ${context}`;
+  let result;
+  try {
+    result = await aiComplete({ ...env, __AUTH_USER_ID: userId }, {
+      messages: [{ role: "user", content: prompt }],
+      context: {},
+      feature: "cloud",
+      priority: "low",
+      provider: "cloudflare",
+    });
+  } catch (error) {
+    throw httpError("UPSTREAM_UNAVAILABLE", 503, { retryable: true, detail: error?.code });
+  }
+
   let parsed;
   try {
     parsed = JSON.parse(result.content);

@@ -14,8 +14,44 @@
     "WORKER_VERSION": "1.0.0",
     "ALLOWED_ORIGINS": "https://ethone.dev",
     "SUPABASE_AUDIENCE": "authenticated",
-    "OUTBOUND_TIMEOUT_MS": "6500"
+    "OUTBOUND_TIMEOUT_MS": "6500",
+    "AI_PRIMARY_PROVIDER": "cloudflare",
+    "AI_PRIMARY_MODEL": "@cf/meta/llama-3.3-70b-instruct-v1",
+    "AI_FALLBACK_PROVIDER": "groq",
+    "AI_FALLBACK_MODEL": "llama-3.1-8b-instant",
+    "AI_CLOUDFLARE_DAILY_ALLOCATION": "10000",
+    "AI_CLOUDFLARE_DAILY_BUDGET": "8000",
+    "AI_CLOUDFLARE_EMERGENCY_BUFFER": "2000",
+    "AI_CLOUDFLARE_WARNING_PCT": "0.8",
+    "AI_CLOUDFLARE_PREPARE_PCT": "0.9",
+    "AI_CLOUDFLARE_HARDSTOP_PCT": "1.0",
+    "AI_NEURONS_PER_TOKEN": "0.1",
+    "AI_MAX_RETRIES": "0",
+    "AI_RETRY_BASE_MS": "250",
+    "AI_USER_REQUESTS_PER_HOUR": "60",
+    "AI_USER_REQUESTS_PER_DAY": "500",
+    "AI_USER_MAX_PROMPT_CHARS": "12000",
+    "AI_USER_MAX_OUTPUT_TOKENS": "1024",
+    "AI_USER_MAX_CONTEXT_CHARS": "12000",
+    "AI_USAGE_LOGGING_ENABLED": "true"
   },
+  "ai": {
+    "binding": "AI"
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "AI_QUOTA_MANAGER",
+        "class_name": "AiQuotaManager"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v2",
+      "new_classes": ["AiQuotaManager"]
+    }
+  ],
   "ratelimits": [
     {
       "name": "RATE_LIMIT_EDGE",

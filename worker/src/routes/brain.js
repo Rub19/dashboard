@@ -1,7 +1,6 @@
 import { httpError } from "../middleware/errors.js";
-import { askGroq, pingGroq } from "../services/groq-client.js";
-import { askLocalLlm, pingLocalLlm } from "../services/local-llm-client.js";
-import { askOpenAi, askAnthropic, askGemini, pingBrainProvider } from "../services/brain-provider-clients.js";
+import { aiComplete, aiDiagnostic } from "../services/ai-router.js";
+import { aiProviderById } from "../services/ai-config.js";
 
 const PROVIDER_RE = /^[a-z-]{2,32}$/;
 
@@ -18,59 +17,41 @@ async function readJsonBody(request, maxFields) {
   return body;
 }
 
+function normalizeProvider(provider, env) {
+  const normalized = String(provider || env.AI_PRIMARY_PROVIDER || "cloudflare").toLowerCase();
+  if (!PROVIDER_RE.test(normalized)) throw httpError("INVALID_PARAMETER", 400, { detail: "provider" });
+  if (!aiProviderById(normalized)) throw httpError("SERVICE_NOT_CONFIGURED", 501, { detail: `provider:${normalized}` });
+  return normalized;
+}
+
 export async function brainCompleteRoute({ request, env, auth }) {
   if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
-  const body = await readJsonBody(request, 5);
-  const provider = String(body.provider || "");
-  if (!PROVIDER_RE.test(provider)) throw httpError("INVALID_PARAMETER", 400);
-  if (!["groq", "openai", "anthropic", "gemini", "ollama", "lm-studio"].includes(provider)) throw httpError("SERVICE_NOT_CONFIGURED", 501);
+  const body = await readJsonBody(request, 8);
+  const requestedProvider = normalizeProvider(body.provider, env);
 
   const envWithUser = { ...env, __AUTH_USER_ID: auth.userId };
 
   if (body.operation === "diagnostic") {
-    if (provider === "groq") {
-      const result = await pingGroq(envWithUser);
-      return { data: result };
-    }
-    if (["openai", "anthropic", "gemini"].includes(provider)) {
-      const ask = provider === "openai" ? askOpenAi : provider === "anthropic" ? askAnthropic : askGemini;
-      const result = await pingBrainProvider(envWithUser, provider, ask);
-      return { data: result };
-    }
-    if (!body.baseUrl) throw httpError("INVALID_REQUEST", 400, { detail: "base_url_required" });
-    const result = await pingLocalLlm(envWithUser, { provider, baseUrl: body.baseUrl });
+    const result = await aiDiagnostic(envWithUser, { provider: requestedProvider, baseUrl: body.baseUrl });
     return { data: result };
   }
 
   if (!Array.isArray(body.messages) || !body.messages.length) throw httpError("INVALID_REQUEST", 400);
 
-  if (provider === "groq") {
-    const result = await askGroq(envWithUser, { model: body.model, messages: body.messages, context: body.context });
-    return { data: result };
-  }
+  const forceProvider = requestedProvider !== "cloudflare";
+  const targetProvider = forceProvider ? requestedProvider : (body.fallbackProvider || undefined);
 
-  if (provider === "openai") {
-    const result = await askOpenAi(envWithUser, { model: body.model, messages: body.messages, context: body.context });
-    return { data: result };
-  }
-
-  if (provider === "anthropic") {
-    const result = await askAnthropic(envWithUser, { model: body.model, messages: body.messages, context: body.context });
-    return { data: result };
-  }
-
-  if (provider === "gemini") {
-    const result = await askGemini(envWithUser, { model: body.model, messages: body.messages, context: body.context });
-    return { data: result };
-  }
-
-  if (!body.baseUrl) throw httpError("INVALID_REQUEST", 400, { detail: "base_url_required" });
-  const result = await askLocalLlm(envWithUser, {
-    provider,
-    model: body.model,
+  const result = await aiComplete(envWithUser, {
     messages: body.messages,
     context: body.context,
-    baseUrl: body.baseUrl
+    provider: targetProvider,
+    model: body.model,
+    feature: "brain",
+    priority: "normal",
+    baseUrl: body.baseUrl,
+    forceProvider,
+    requestId: body.requestId,
   });
+
   return { data: result };
 }

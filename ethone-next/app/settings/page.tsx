@@ -8,6 +8,7 @@ import Card3D from "@/components/Card3D";
 import LiveSettings from "@/components/LiveSettings";
 import { subscribePush, unsubscribePush } from "@/lib/push";
 import { Icon } from "@/lib/icons";
+import { AiProviderPanel } from "@/components/AiProviderPanel";
 import { useSound } from "@/lib/sound";
 import {
   BUILT_IN_PRESETS,
@@ -962,6 +963,12 @@ export default function SettingsPage() {
           </div>
         </div>
       ),
+    },
+    {
+      id: "ai",
+      label: i18n("aiProviders") || "IA",
+      icon: "brain",
+      children: <AiProviderPanel />,
     },
     {
       id: "live",

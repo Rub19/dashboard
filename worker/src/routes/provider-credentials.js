@@ -2,8 +2,10 @@ import { httpError } from "../middleware/errors.js";
 import { safeText } from "../utils/normalize.js";
 import { requestExternal } from "../utils/external-request.js";
 import { requireSecret } from "../middleware/validation.js";
+import { encryptCredential } from "../services/ai-credential-vault.js";
 
-const ALLOWED = new Set(["steam", "twitch", "lastfm", "henrik", "tracker", "riot", "openai", "anthropic", "gemini", "groq", "plex", "jellyfin", "emby", "bluesky", "linear", "clickup", "jira", "gitlab", "obsidian", "vscode", "fitbit"]);
+const AI_PROVIDERS = new Set(["openai", "anthropic", "gemini", "groq", "deepseek", "openrouter"]);
+const ALLOWED = new Set(["steam", "twitch", "lastfm", "henrik", "tracker", "riot", "openai", "anthropic", "gemini", "groq", "deepseek", "openrouter", "plex", "jellyfin", "emby", "bluesky", "linear", "clickup", "jira", "gitlab", "obsidian", "vscode", "fitbit"]);
 
 function projectOrigin(env) {
   let url;
@@ -60,13 +62,17 @@ export async function providerCredentialsRoute({ request, env, auth, url }) {
     const credential = body && typeof body.credential === "object" ? body.credential : null;
     if (!credential) throw httpError("INVALID_PARAMETER", 400, { detail: "credential" });
 
+    const storedCredential = AI_PROVIDERS.has(provider)
+      ? await encryptCredential(env, credential)
+      : credential;
+
     await supabaseRequest(env, "/rest/v1/user_provider_credentials", {
       method: "POST",
       headers: { Prefer: "resolution=merge-duplicates" },
       body: {
         owner_id: auth.userId,
         provider,
-        credential,
+        credential: storedCredential,
       },
       maxBytes: 8192,
     });

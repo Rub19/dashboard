@@ -23,6 +23,7 @@ import { cloudCleanupRoute } from "./routes/cloud-cleanup.js";
 import { cloudDashboardRoute } from "./routes/cloud-dashboard.js";
 import { cloudFileBrainRoute } from "./routes/cloud-brain.js";
 import { brainCompleteRoute } from "./routes/brain.js";
+import { aiStatusRoute, aiQuotaRoute, aiPreferencesRoute } from "./routes/ai.js";
 import { diagnosticRoute } from "./routes/diagnostic.js";
 import { githubOAuthDisconnectRoute, githubOAuthExchangeRoute, githubProfileRoute } from "./routes/github-oauth.js";
 import { googleCalendarEventsRoute, googleCalendarOAuthDisconnectRoute, googleCalendarOAuthExchangeRoute } from "./routes/google-calendar-oauth.js";
@@ -120,6 +121,10 @@ export const ROUTES = Object.freeze([
   route("diagnostic", "/api/diagnostic", diagnosticRoute, { rateLimit: "strict" }),
   route("rss.feed", "/api/rss", rssRoute, { service: "rss" }),
   route("brain.complete", "/api/brain/complete", brainCompleteRoute, { method: "POST", service: "brain", rateLimit: "strict" }),
+  route("ai.status", "/api/ai/status", aiStatusRoute, { service: "ai", rateLimit: "standard" }),
+  route("ai.quota", "/api/ai/quota", aiQuotaRoute, { service: "ai", rateLimit: "standard" }),
+  route("ai.preferences", "/api/ai/preferences", aiPreferencesRoute, { service: "ai", rateLimit: "standard" }),
+  route("ai.preferences.post", "/api/ai/preferences", aiPreferencesRoute, { method: "POST", service: "ai", rateLimit: "strict" }),
   route("steam.player", "/api/steam/player", steamRoute, { service: "steam", action: "player" }),
   route("steam.recent-games", "/api/steam/recent-games", steamRoute, { service: "steam", action: "recent-games" }),
   route("steam.owned-games", "/api/steam/owned-games", steamRoute, { service: "steam", action: "owned-games" }),

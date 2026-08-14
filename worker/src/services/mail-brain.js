@@ -1,5 +1,5 @@
 import { requestExternal } from "../utils/external-request.js";
-import { askGroq } from "../services/groq-client.js";
+import { aiComplete } from "../services/ai-router.js";
 import { updateMailMessage } from "../services/mail-client.js";
 import { createAutoReplyOutbox } from "../services/mail-outbox.js";
 
@@ -304,7 +304,7 @@ export async function analyzeMessage(env, userId, message) {
 
   let parsed;
   try {
-    const { content } = await askGroq(env, { model: "llama-3.1-8b-instant", messages: [{ role: "user", content: prompt }], context: {} });
+    const { content } = await aiComplete({ ...env, __AUTH_USER_ID: userId }, { messages: [{ role: "user", content: prompt }], context: {}, feature: "mail", priority: "normal", provider: "cloudflare" });
     parsed = parseJsonFromAssistant(content);
   } catch {
     return defaultResult;
@@ -335,7 +335,7 @@ export async function suggestReplies(env, userId, message) {
   if (!message || !userId) return [];
   const prompt = `Suggère 3 réponses courtes en français à l'email suivant. Réponds UNIQUEMENT par un objet JSON {"suggested_replies": [...]}.\n\n${buildPrompt(message)}`;
   try {
-    const { content } = await askGroq(env, { model: "llama-3.1-8b-instant", messages: [{ role: "user", content: prompt }], context: {} });
+    const { content } = await aiComplete({ ...env, __AUTH_USER_ID: userId }, { messages: [{ role: "user", content: prompt }], context: {}, feature: "mail", priority: "normal", provider: "cloudflare" });
     const parsed = parseJsonFromAssistant(content);
     return (Array.isArray(parsed?.suggested_replies) ? parsed.suggested_replies : [])
       .map((r) => safeText(r, 160))
@@ -350,7 +350,7 @@ export async function extractEntities(env, userId, message) {
   if (!message || !userId) return { tasks: [], events: [] };
   const prompt = `Extrais les tâches et événements de l'email suivant. Réponds UNIQUEMENT par un objet JSON {"tasks": [{"title", "due?"}], "events": [{"title", "date?"}]}.\n\n${buildPrompt(message)}`;
   try {
-    const { content } = await askGroq(env, { model: "llama-3.1-8b-instant", messages: [{ role: "user", content: prompt }], context: {} });
+    const { content } = await aiComplete({ ...env, __AUTH_USER_ID: userId }, { messages: [{ role: "user", content: prompt }], context: {}, feature: "mail", priority: "normal", provider: "cloudflare" });
     const parsed = parseJsonFromAssistant(content) || {};
     const tasks = (Array.isArray(parsed?.tasks) ? parsed.tasks : [])
       .map((t) => {

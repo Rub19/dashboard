@@ -1,19 +1,9 @@
 "use client";
 
+import Switch from "@/components/Switch";
+
 export function SwitchControl({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
-  return (
-    <button
-      type="button"
-      onClick={() => onChange(!checked)}
-      className={`relative h-6 w-11 rounded-full transition-colors ${checked ? "bg-[var(--accent)]" : "bg-[var(--border)]"}`}
-      aria-checked={checked}
-      role="switch"
-    >
-      <span
-        className={`absolute top-1 h-4 w-4 rounded-full bg-white transition-transform ${checked ? "translate-x-6" : "translate-x-1"}`}
-      />
-    </button>
-  );
+  return <Switch checked={checked} onChange={onChange} labels={false} size="md" />;
 }
 
 export function RangeControl({

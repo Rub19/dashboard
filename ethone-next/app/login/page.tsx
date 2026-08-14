@@ -21,7 +21,7 @@ import {
 } from "@/lib/auth";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
-import PasswordStrengthMeter from "@/components/PasswordStrengthMeter";
+import PasswordField from "@/components/PasswordField";
 import { isPasswordPwned } from "@/lib/password-strength";
 import {
   required,
@@ -50,7 +50,6 @@ export default function LoginPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
   async function handleSend(e: React.FormEvent) {
@@ -445,30 +444,15 @@ export default function LoginPage() {
                         </Link>
                       )}
                     </div>
-                    <div className="relative">
-                      <Icon name="lock" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
-                      <input
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        autoComplete={isRegister ? "new-password" : "current-password"}
-                        required
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] py-3 pl-10 pr-10 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-all placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10"
-                        aria-label={i18n("password")}
-                        placeholder={i18n("password")}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
-                        aria-label={showPassword ? i18n("hidePassword") : i18n("showPassword")}
-                        title={showPassword ? i18n("hidePassword") : i18n("showPassword")}
-                      >
-                        <Icon name={showPassword ? "eye-off" : "eye"} className="h-4 w-4" />
-                      </button>
-                    </div>
-                    {isRegister && <PasswordStrengthMeter password={password} />}
+                    <PasswordField
+                      id="password"
+                      value={password}
+                      onChange={setPassword}
+                      placeholder={i18n("password")}
+                      autoComplete={isRegister ? "new-password" : "current-password"}
+                      showStrength={isRegister}
+                      showGenerator={isRegister}
+                    />
                   </div>
                 )}
 
@@ -477,20 +461,15 @@ export default function LoginPage() {
                     <label className="text-xs font-medium text-[var(--muted)]" htmlFor="confirmPassword">
                       {i18n("confirmPassword")}
                     </label>
-                    <div className="relative">
-                      <Icon name="lock" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
-                      <input
-                        id="confirmPassword"
-                        type={showPassword ? "text" : "password"}
-                        autoComplete="new-password"
-                        required
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] py-3 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-all placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10"
-                        aria-label={i18n("confirmPassword")}
-                        placeholder={i18n("confirmPassword")}
-                      />
-                    </div>
+                    <PasswordField
+                      id="confirmPassword"
+                      value={confirmPassword}
+                      onChange={setConfirmPassword}
+                      placeholder={i18n("confirmPassword")}
+                      autoComplete="new-password"
+                      showStrength={false}
+                      showGenerator={false}
+                    />
                   </div>
                 )}
 
@@ -500,6 +479,7 @@ export default function LoginPage() {
                       checked={rememberMe}
                       onChange={setRememberMe}
                       label={i18n("rememberMe")}
+                      labels={false}
                     />
                   </div>
                 )}

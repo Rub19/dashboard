@@ -88,10 +88,19 @@ export async function teamMembersRoute({ request, env, auth }) {
     const body = await request.json().catch(() => ({}));
     const id = safeText(body.id, 64);
     const role = safeText(body.role, 20) || "member";
+    const status = safeText(body.status, 20);
     if (!id) throw httpError("INVALID_PARAMETER", 400);
+    const updates = { role };
+    if (status) {
+      updates.status = status;
+      updates.updated_at = new Date().toISOString();
+      if (status === "active") {
+        updates.accepted_at = new Date().toISOString();
+      }
+    }
     const update = await supabaseRequest(env, `/rest/v1/ethone_team_members?id=eq.${encodeURIComponent(id)}&owner_id=eq.${encodeURIComponent(auth.userId)}`, {
       method: "PATCH",
-      body: JSON.stringify({ role }),
+      body: JSON.stringify(updates),
       maxBytes: 2048
     });
     return { data: { updated: true, member: Array.isArray(update) ? update[0] : update } };

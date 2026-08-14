@@ -1,6 +1,6 @@
 "use client";
 
-import { supabase } from "@/lib/supabase";
+import { fetchWorker } from "@/lib/api";
 
 export const TEAM_ROLES = ["owner", "admin", "senior", "junior", "assistant", "viewer"] as const;
 export const TEAM_STATUSES = ["pending", "active", "declined", "revoked"] as const;
@@ -72,15 +72,6 @@ function newId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
-function newToken(): string {
-  const bytes = new Uint8Array(24);
-  if (typeof crypto === "undefined" || !crypto.getRandomValues) {
-    throw new Error("team-manager: crypto.getRandomValues is required for secure invite tokens");
-  }
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
-}
-
 function memberFromRow(row: Record<string, unknown>): TeamMember {
   const email = validEmail(row.email);
   const displayName = cleanText(row.display_name || "", 80);
@@ -104,22 +95,6 @@ function memberFromRow(row: Record<string, unknown>): TeamMember {
     accepted_at: row.accepted_at ? String(row.accepted_at) : null,
     updatedAt: String(row.updated_at || new Date().toISOString()),
     updated_at: String(row.updated_at || new Date().toISOString())
-  };
-}
-
-function rowFromMember(member: TeamMember, ownerId: string): Record<string, unknown> {
-  return {
-    id: member.id,
-    owner_id: ownerId,
-    email: member.email,
-    role: member.role,
-    status: member.status,
-    display_name: member.displayName,
-    avatar_url: member.avatarUrl,
-    invite_token: member.inviteToken,
-    invited_at: member.invitedAt,
-    accepted_at: member.acceptedAt,
-    updated_at: member.updatedAt
   };
 }
 
@@ -219,9 +194,8 @@ export function createTeamManager(ownerId: string): TeamManager {
 
   async function loadRemote(): Promise<boolean> {
     if (!ownerId) return false;
-    const { data, error } = await supabase.from("ethone_team_members").select("*").eq("owner_id", ownerId).order("invited_at", { ascending: false });
-    if (error) throw error;
-    members = (Array.isArray(data) ? data : []).map(memberFromRow);
+    const res = await fetchWorker("/api/team/members");
+    members = (Array.isArray(res.data) ? res.data : []).map(memberFromRow);
     saveLocal(members);
     return true;
   }
@@ -249,29 +223,18 @@ export function createTeamManager(ownerId: string): TeamManager {
     const existing = members.find((m) => m.email === safeEmail);
     if (existing) return { ok: false, status: "duplicate", message: "Cet e-mail a déjà été invité." };
 
-    const token = newToken();
-    const nowIso = new Date().toISOString();
-    const member = normalizeMember({
-      email: safeEmail,
-      role,
-      displayName: cleanText(displayName, 80),
-      status: "pending",
-      inviteToken: token,
-      invitedAt: nowIso,
-      updatedAt: nowIso
-    });
-
     try {
-      const { error } = await supabase.from("ethone_team_members").insert(rowFromMember(member, ownerId));
-      if (error) {
-        if (error.code === "23505") return { ok: false, status: "duplicate", message: "Cet e-mail a déjà été invité." };
-        throw error;
-      }
-      members.push(member);
+      const res = await fetchWorker("/api/team/members", {
+        method: "POST",
+        body: JSON.stringify({ email: safeEmail, role, display_name: cleanText(displayName, 80) }),
+      });
+      const serverMember = res.data?.member ? memberFromRow(res.data.member) : null;
+      if (!serverMember) throw new Error("Échec de l'invitation.");
+      members.push(serverMember);
       saveLocal(members);
       notify();
-      const url = inviteUrl(token);
-      return { ok: true, status: "invited", member, url, token };
+      const url = inviteUrl(serverMember.inviteToken);
+      return { ok: true, status: "invited", member: serverMember, url, token: serverMember.inviteToken };
     } catch (err) {
       syncError = err instanceof Error ? err.message : "Échec de l'invitation.";
       notify();
@@ -288,14 +251,20 @@ export function createTeamManager(ownerId: string): TeamManager {
     member.updatedAt = new Date().toISOString();
 
     try {
-      const { error } = await supabase.from("ethone_team_members").update({ role: safeRole, updated_at: member.updatedAt }).eq("id", id).eq("owner_id", ownerId);
-      if (error) throw error;
+      const res = await fetchWorker("/api/team/members", {
+        method: "PATCH",
+        body: JSON.stringify({ id, role: safeRole }),
+      });
+      if (res.data?.member) {
+        const updated = memberFromRow(res.data.member);
+        members[index] = updated;
+      }
     } catch (err) {
       syncError = err instanceof Error ? err.message : "Échec de la mise à jour.";
     }
     saveLocal(members);
     notify();
-    return { ok: true, member };
+    return { ok: true, member: members[index] };
   }
 
   async function accept(id: string) {
@@ -307,8 +276,14 @@ export function createTeamManager(ownerId: string): TeamManager {
     member.updatedAt = new Date().toISOString();
 
     try {
-      const { error } = await supabase.from("ethone_team_members").update({ status: "active", accepted_at: member.acceptedAt, updated_at: member.updatedAt }).eq("id", id).eq("owner_id", ownerId);
-      if (error) throw error;
+      const res = await fetchWorker("/api/team/members", {
+        method: "PATCH",
+        body: JSON.stringify({ id, role: member.role, status: "active" }),
+      });
+      if (res.data?.member) {
+        const updated = memberFromRow(res.data.member);
+        members[index] = updated;
+      }
     } catch (err) {
       syncError = err instanceof Error ? err.message : "Échec de l'acceptation.";
     }
@@ -325,8 +300,14 @@ export function createTeamManager(ownerId: string): TeamManager {
     member.updatedAt = new Date().toISOString();
 
     try {
-      const { error } = await supabase.from("ethone_team_members").update({ status: "revoked", updated_at: member.updatedAt }).eq("id", id).eq("owner_id", ownerId);
-      if (error) throw error;
+      const res = await fetchWorker("/api/team/members", {
+        method: "PATCH",
+        body: JSON.stringify({ id, role: member.role, status: "revoked" }),
+      });
+      if (res.data?.member) {
+        const updated = memberFromRow(res.data.member);
+        members[index] = updated;
+      }
     } catch (err) {
       syncError = err instanceof Error ? err.message : "Échec de la révocation.";
     }
@@ -340,8 +321,10 @@ export function createTeamManager(ownerId: string): TeamManager {
     if (index === -1) return { ok: false, message: "Membre introuvable." };
 
     try {
-      const { error } = await supabase.from("ethone_team_members").delete().eq("id", id).eq("owner_id", ownerId);
-      if (error) throw error;
+      await fetchWorker("/api/team/members", {
+        method: "DELETE",
+        body: JSON.stringify({ id }),
+      });
     } catch (err) {
       syncError = err instanceof Error ? err.message : "Échec de la suppression.";
     }

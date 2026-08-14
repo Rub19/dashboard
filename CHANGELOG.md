@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : aération du logo BrandMark**
+
+### Corrige
+- `ethone-next/components/BrandMark.tsx` : marges internes augmentées et E réduit pour éviter tout effet de "crop" / bords coupés.
+- `ethone-next/app/login/page.tsx` : conteneur du logo en `h-14 w-14` avec `BrandMark size={40}`.
+
 **Migration Next.js : correction des icônes / BrandMark**
 
 ### Corrige

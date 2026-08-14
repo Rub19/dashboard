@@ -241,14 +241,15 @@ export default function LoginPage() {
           </p>
           <h1 className="mt-4 text-5xl font-bold tracking-tighter">ETHONE</h1>
           <p className="mt-2 text-xl font-light text-[var(--muted)]">
-            {i18n("yourDigitalEnvironment")} <span className="font-medium text-[var(--foreground)]">{i18n("reinvented")}</span>
+            {i18n("yourDigitalEnvironment")}{" "}
+            <span className="font-medium text-[var(--foreground)]">{i18n("reinventedAroundYou")}</span>
           </p>
         </div>
 
         <div className="z-10 text-xs text-[var(--muted)]">
           <span className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)]/50 px-3 py-1.5">
             <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)]" />
-            {i18n("online")}
+            {i18n("systemOperational")}
           </span>
         </div>
 
@@ -270,10 +271,10 @@ export default function LoginPage() {
           className="w-full max-w-md"
         >
           <motion.div
-            layout="size"
-            style={{ originY: 0 }}
-            transition={{ layout: { type: "spring", stiffness: 320, damping: 32 } }}
-            className="relative flex min-h-[540px] flex-col overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)]/80 p-6 shadow-2xl backdrop-blur-xl sm:min-h-[600px] sm:p-8 lg:min-h-[720px]"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: "spring", stiffness: 320, damping: 32 }}
+            className="relative flex min-h-[540px] w-full flex-col overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)]/80 p-6 shadow-2xl backdrop-blur-xl sm:min-h-[600px] sm:p-8 lg:min-h-[720px]"
           >
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/50 to-transparent" />
             <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[var(--accent)]/10 blur-3xl" />

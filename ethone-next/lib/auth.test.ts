@@ -57,7 +57,7 @@ describe("auth", () => {
       "/api/auth/otp/verify",
       expect.objectContaining({
         method: "POST",
-        body: JSON.stringify({ userId: "u1", email: "rub19.mailpro@gmail.com", code: "123456" }),
+        body: JSON.stringify({ userId: "u1", email: "rub19.mailpro@gmail.com", code: "123456", rememberMe: false }),
       })
     );
     expect(res.ok).toBe(true);

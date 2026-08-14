@@ -98,7 +98,7 @@ export default function LoginPage() {
       showError(i18n("error"));
       return;
     }
-    const { ok, error: err } = await verifyOtp(userId, email, code);
+    const { ok, error: err } = await verifyOtp(userId, email, code, rememberMe);
     setLoading(false);
     if (!ok || err) {
       setError(err?.message || i18n("invalidCode"));

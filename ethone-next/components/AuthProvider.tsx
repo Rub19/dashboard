@@ -64,9 +64,36 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         }),
         timeout,
       ]);
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
-      setError(null);
+      if (data.session) {
+        setSession(data.session);
+        setUser(data.session.user);
+        setError(null);
+      } else if (typeof localStorage !== "undefined" && localStorage.getItem("ethone-remember-me") === "true") {
+        const savedToken = localStorage.getItem("ethone-remember-token");
+        const expiresAt = Number(localStorage.getItem("ethone-remember-expires") || "0");
+        if (savedToken && Date.now() < expiresAt) {
+          const refreshToken = typeof crypto !== "undefined" && "randomUUID" in crypto
+            ? crypto.randomUUID()
+            : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+          const { data: setData, error: setError } = await supabase.auth.setSession({
+            access_token: savedToken,
+            refresh_token: refreshToken,
+          });
+          if (!setError && setData.session) {
+            setSession(setData.session);
+            setUser(setData.session.user);
+          } else {
+            setSession(null);
+            setUser(null);
+          }
+        } else {
+          setSession(null);
+          setUser(null);
+        }
+      } else {
+        setSession(null);
+        setUser(null);
+      }
     } catch (err) {
       setError(err instanceof Error ? err : new Error(String(err)));
     } finally {

@@ -152,9 +152,11 @@ export async function otpVerifyRoute({ request, env }) {
   const sessionId = null;
   const device = await getOrCreateDevice(env, userId, sessionId, userAgent, "");
   const result = await verifyOtp(env, userId, email, code, device.id);
-  const token = await signServiceToken(env, userId, null, 8 * 60 * 60);
+  const rememberMe = Boolean(body.rememberMe);
+  const tokenTtl = rememberMe ? 30 * 24 * 60 * 60 : 8 * 60 * 60;
+  const token = await signServiceToken(env, userId, null, tokenTtl);
 
-  return { data: { verified: true, deviceId: device.id, token } };
+  return { data: { verified: true, deviceId: device.id, token, rememberMe } };
 }
 
 export async function deviceUpsertRoute({ request, env, auth }) {

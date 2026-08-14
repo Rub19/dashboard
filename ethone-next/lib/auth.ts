@@ -24,13 +24,13 @@ export async function sendOtp(email: string) {
   return { ok: true, userId: res.data.userId as string, expiresIn: res.data.expiresIn as number, code: res.data.code as string | undefined };
 }
 
-export async function verifyOtp(userId: string, email: string, code: string) {
+export async function verifyOtp(userId: string, email: string, code: string, rememberMe = false) {
   const attempt = consumeAuthAttempt("sign-in", `${userId}:${email}`);
   if (!attempt.allowed) return rateLimitedResult(attempt.retryAfterMs);
 
   const res = await fetchWorker("/api/auth/otp/verify", {
     method: "POST",
-    body: JSON.stringify({ userId, email, code }),
+    body: JSON.stringify({ userId, email, code, rememberMe }),
   });
   if (!res?.data?.token) return { ok: false, error: new Error(res?.error || "Code invalide.") };
 
@@ -43,6 +43,15 @@ export async function verifyOtp(userId: string, email: string, code: string) {
     refresh_token: refreshToken,
   });
   if (error) return { ok: false, error };
+  if (rememberMe) {
+    localStorage.setItem("ethone-remember-me", "true");
+    localStorage.setItem("ethone-remember-token", token);
+    localStorage.setItem("ethone-remember-expires", String(Date.now() + (res.data.expiresIn ?? 30 * 24 * 60 * 60) * 1000));
+  } else {
+    localStorage.removeItem("ethone-remember-me");
+    localStorage.removeItem("ethone-remember-token");
+    localStorage.removeItem("ethone-remember-expires");
+  }
   resetAuthAttempt("sign-in", `${userId}:${email}`);
   return { ok: true, session: data.session };
 }

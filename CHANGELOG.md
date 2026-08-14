@@ -15,6 +15,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - Mobile : segmented control compact (< 5 onglets) ou tiroir bas animé (≥ 5 onglets) sans dépendance externe.
 - `app/tabs-demo/page.tsx` : page de démonstration avec deux exemples (5 et 7 onglets).
 
+### Corrige
+- `app/brain/page.tsx` : intégration de `TabList` pour les 12 sections Brain.
+- `app/files/page.tsx` : intégration de `TabList` pour les filtres All / Favorites / Trash.
+- `components/tabs/TabList.tsx` : couleurs du tiroir mobile (fond accent actif, blanc) et légende optionnelle.
+- `components/tabs/TabList.tsx` : fond `surface-raised` et indicateur accent pour le segmented control mobile (< 5 onglets).
+- Fichiers tiers du working tree : correction ESLint/TS (`UploadItem.tsx`, `SettingField.tsx`).
+
 **Migration Next.js : logos SVG des fournisseurs dans le calendrier de bills (Netflix, Adobe, Apple, Figma, Spotify, Notion)**
 
 ### Ajoute

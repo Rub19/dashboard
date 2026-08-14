@@ -130,6 +130,11 @@ export default function TabList({
               aria-label={label || "Tabs"}
             >
               <div className="mx-auto mb-4 h-1 w-12 rounded-full bg-white/20" />
+              {label && (
+                <p className="mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
+                  {label}
+                </p>
+              )}
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
@@ -140,10 +145,10 @@ export default function TabList({
                   }}
                   disabled={tab.disabled}
                   className={cn(
-                    "flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm transition-colors",
+                    "flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-medium transition-colors",
                     activeId === tab.id
-                      ? "bg-[var(--accent)]/10 text-[var(--foreground)]"
-                      : "text-[var(--muted)] hover:bg-white/5 hover:text-[var(--foreground)]",
+                      ? "bg-[var(--accent)] text-white"
+                      : "text-[var(--foreground)] hover:bg-[var(--surface-raised)]",
                     tab.disabled && "opacity-40 cursor-not-allowed"
                   )}
                   role="option"
@@ -175,7 +180,7 @@ export default function TabList({
         ref={listRef}
         className={cn(
           "flex gap-1 overflow-x-auto scrollbar-hide",
-          isMobile ? "justify-between" : "nowrap"
+          isMobile ? "justify-between rounded-2xl bg-[var(--surface-raised)] p-1" : "nowrap"
         )}
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
@@ -200,7 +205,7 @@ export default function TabList({
               className={cn(
                 "relative z-0 flex min-h-[44px] min-w-[44px] items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
                 active
-                  ? "text-[var(--foreground)]"
+                  ? "text-white"
                   : "text-[var(--muted)] hover:text-[var(--foreground)]",
                 tab.disabled && "opacity-40 cursor-not-allowed"
               )}
@@ -210,7 +215,7 @@ export default function TabList({
                   layoutId={layoutId}
                   initial={false}
                   transition={SPRING}
-                  className="absolute inset-0 -z-10 rounded-xl bg-[var(--surface-raised)]"
+                  className="absolute inset-0 -z-10 rounded-xl bg-[var(--accent)]"
                 />
               )}
               <span className="relative z-10 flex items-center gap-2">

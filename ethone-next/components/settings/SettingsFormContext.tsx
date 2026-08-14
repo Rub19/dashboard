@@ -21,7 +21,7 @@ type SettingsFormState = {
   setExplicit: (key: string, value: unknown) => void;
   saveExplicit: () => void;
   cancelExplicit: () => void;
-  resetToDefault: (key: string, path: string) => void;
+  resetToDefault: (key: string, path?: string) => void;
   isDirty: (key: string, value: unknown, defaultValue: unknown) => boolean;
   hasExplicitChanges: boolean;
   isExplicitFieldDirty: (key: string) => boolean;

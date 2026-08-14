@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { useCloudFiles, type CloudFile } from "@/lib/hooks/useCloudFiles";
 import { useUserState } from "@/lib/hooks/useUserState";
 import { useShares } from "@/lib/hooks/useShares";
@@ -10,12 +10,14 @@ import { useToast } from "@/components/ToastProvider";
 import { fetchWorker } from "@/lib/api";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
+import TabList from "@/components/tabs/TabList";
 import ContextMenu from "@/components/ContextMenu";
 import { useSelection } from "@/lib/hooks/useSelection";
 import BulkActionBar from "@/components/BulkActionBar";
 import { formatBytes, mimeIcon, sortFiles } from "@/lib/files";
 import FilesAdminPanel from "@/components/FilesAdminPanel";
 import BottomSheet from "@/components/BottomSheet";
+import FileUploader from "@/components/FileUploader";
 
 function folderPath(files: CloudFile[], folderId: string | null) {
   const path: CloudFile[] = [];
@@ -80,7 +82,6 @@ export default function FilesPage() {
     deleteFile,
     favoriteFile,
     createFolder,
-    uploadFile,
   } = useCloudFiles(clientId || undefined);
 
   const { create: createShare } = useShares();
@@ -91,7 +92,6 @@ export default function FilesPage() {
   const [form, setForm] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [sort, setSort] = useState<"name" | "size" | "date">("name");
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const filteredFiles = useMemo(() => {
     if (favorites) return sortFiles(files, sort);
@@ -118,22 +118,6 @@ export default function FilesPage() {
     const id = prompt(i18n("clientId"));
     if (!id) return;
     setClientId(id);
-  }
-
-  async function handleUpload(input: FileList | null) {
-    if (!clientId || !input?.length) return;
-    setSubmitting(true);
-    try {
-      for (const file of Array.from(input)) {
-        await uploadFile(file, parentId);
-      }
-      success(i18n("uploadFile"));
-      await reload();
-    } catch (err) {
-      toastError(String(err));
-    } finally {
-      setSubmitting(false);
-    }
   }
 
   async function handleCreateFolder(e: React.FormEvent) {
@@ -343,14 +327,6 @@ export default function FilesPage() {
             <>
               <button
                 type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={submitting}
-                className="flex items-center gap-2 rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
-              >
-                <Icon name="upload-cloud" className="h-4 w-4" /> {i18n("upload")}
-              </button>
-              <button
-                type="button"
                 onClick={() => { setForm({}); setModal({ type: "create-folder" }); }}
                 className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm font-medium hover:bg-[var(--surface)]"
               >
@@ -383,14 +359,9 @@ export default function FilesPage() {
         </div>
       </div>
 
-      <input
-        ref={fileInputRef}
-        type="file"
-        multiple
-        aria-label={i18n("uploadFile")}
-        className="hidden"
-        onChange={(e) => handleUpload(e.target.files)}
-      />
+      {clientId && (
+        <FileUploader clientId={clientId} parentId={parentId} onAllComplete={() => { success(i18n("uploadFile")); reload(); }} />
+      )}
 
       {quota && (
         <Card3D>
@@ -407,27 +378,20 @@ export default function FilesPage() {
       )}
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap gap-2">
-          {[
-            { id: "all", label: i18n("all"), onClick: () => { setFavorites(false); setTrashed(false); } },
-            { id: "folders", label: i18n("folders"), onClick: () => { setFavorites(false); setTrashed(false); } },
-            { id: "favorites", label: i18n("favorites"), onClick: () => { setFavorites(true); setTrashed(false); } },
-            { id: "trash", label: i18n("trash"), onClick: () => { setFavorites(false); setTrashed(true); } },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={tab.onClick}
-              className={`rounded-xl border px-3 py-1.5 text-sm font-medium transition-colors ${
-                (tab.id === "favorites" && favorites) || (tab.id === "trash" && trashed) || (tab.id === "all" && !favorites && !trashed)
-                  ? "border-[var(--accent)] bg-[var(--accent)] text-white"
-                  : "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted)] hover:text-[var(--foreground)]"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        <TabList
+          tabs={[
+            { id: "all", label: i18n("all"), content: null },
+            { id: "folders", label: i18n("folders"), content: null },
+            { id: "favorites", label: i18n("favorites"), content: null },
+            { id: "trash", label: i18n("trash"), content: null },
+          ]}
+          activeId={favorites ? "favorites" : trashed ? "trash" : "all"}
+          onSelect={(id) => {
+            setFavorites(id === "favorites");
+            setTrashed(id === "trash");
+          }}
+          layoutId="activeFilesTab"
+        />
         <input
           type="search"
           aria-label={i18n("searchFiles")}

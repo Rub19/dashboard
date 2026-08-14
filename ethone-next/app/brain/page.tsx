@@ -7,6 +7,7 @@ import { useMail } from "@/lib/hooks/useMail";
 import { usePresence } from "@/components/PresenceProvider";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
+import TabList from "@/components/tabs/TabList";
 import { useToast } from "@/components/ToastProvider";
 import BottomSheet from "@/components/BottomSheet";
 import { useItems } from "@/lib/hooks/useItems";
@@ -651,19 +652,17 @@ export default function BrainPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">{i18n("brainTitle")}</h1>
-      <div className="flex flex-wrap gap-2 border-b border-[var(--border)] pb-2">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm ${activeTab === tab.id ? "bg-[var(--accent)] text-white" : "text-[var(--muted)] hover:bg-[var(--surface-raised)]"}`}
-          >
-            <Icon name={tab.icon} className="h-4 w-4" />
-            {i18n(tab.label)}
-          </button>
-        ))}
-      </div>
+      <TabList
+        tabs={TABS.map((tab) => ({
+          id: tab.id,
+          label: i18n(tab.label),
+          icon: <Icon name={tab.icon} className="h-4 w-4" />,
+          content: null,
+        }))}
+        activeId={activeTab}
+        onSelect={(id) => setActiveTab(id as Tab)}
+        layoutId="activeBrainTab"
+      />
       <Card3D>
         {activeTab === "chat" && renderChat()}
         {activeTab === "briefing" && <BrainBriefingPanel />}

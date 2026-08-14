@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { RefreshCcw, Replace, Trash2, X } from "lucide-react";
+import { RefreshCcw, Replace, Trash2 } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
 import { formatBytes, mimeIcon } from "@/lib/files";

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import BrandMark from "@/components/BrandMark";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import LoginCosmicBackground from "@/components/LoginCosmicBackground";
 import Switch from "@/components/Switch";
 import GoogleIcon from "@/components/icons/GoogleIcon";
 import GithubIcon from "@/components/icons/GithubIcon";
@@ -236,8 +237,9 @@ export default function LoginPage() {
       : handlePassword;
 
   return (
-    <div className="flex min-h-screen w-full">
-      <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-gradient-to-br from-[#09090b] via-[#0f0f13] to-[#1a1a2e] p-10 lg:flex">
+    <div className="relative flex min-h-screen w-full overflow-hidden bg-[#030712]">
+      <LoginCosmicBackground />
+      <div className="relative z-10 hidden w-1/2 flex-col justify-between p-10 lg:flex lg:bg-gradient-to-r lg:from-[#030712]/70 lg:via-[#030712]/25 lg:to-transparent">
         <div className="z-10 flex items-center gap-2">
           <BrandMark size={28} />
           <span className="text-lg font-bold tracking-tight">ETHONE</span>
@@ -261,15 +263,9 @@ export default function LoginPage() {
             {i18n("systemOperational")}
           </span>
         </div>
-
-        <div className="pointer-events-none absolute inset-0 opacity-30">
-          <div className="absolute -bottom-32 -right-32 h-[32rem] w-[32rem] rounded-full bg-[var(--accent)] blur-[140px]" />
-          <div className="absolute -left-32 -top-32 h-[24rem] w-[24rem] rounded-full bg-violet-600/50 blur-[120px]" />
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTAgNjBWMGg2MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEiLz48L3N2Zz4=')] opacity-50" />
-        </div>
       </div>
 
-      <div className="relative flex w-full flex-col items-center justify-center bg-[var(--background)] p-4 pt-16 sm:p-6 sm:pt-20 lg:w-1/2 lg:p-10">
+      <div className="relative z-10 flex w-full flex-col items-center justify-center p-4 pt-16 sm:p-6 sm:pt-20 lg:w-1/2 lg:p-10">
         <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
           <LanguageSwitcher />
         </div>

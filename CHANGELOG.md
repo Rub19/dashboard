@@ -4,6 +4,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : meilleures barres de réglage (Slider)**
+
+### Corrige
+- `ethone-next/components/ui/Slider.tsx` : nouveau slider custom avec rail, fill coloré, curseur blanc, drag au clic / glisser, support clavier (flèches, Home/End, PageUp/PageDown) et affichage de la valeur.
+- `ethone-next/components/settings/SettingControls.tsx` : `RangeControl` utilise `Slider`.
+- `ethone-next/components/DockControlCenter.tsx` : le curseur du dock utilise `Slider`.
+
 **Migration Next.js : correction des toggles Switch**
 
 ### Corrige

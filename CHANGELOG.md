@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : taille des toggles Switch**
+
+### Corrige
+- `ethone-next/components/Switch.tsx` : dimensions réduites pour les trois tailles (sm, md, lg), ronds proportionnels au rail, travel recalculé pour éviter les débordements.
+
 **Migration Next.js : aération du logo BrandMark**
 
 ### Corrige

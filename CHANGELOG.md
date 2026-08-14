@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : correction de la session qui disparaît au refresh (mot de passe et OTP)**
+
+### Corrige
+- `ethone-next/lib/supabase.ts` : les cookies de session côté client ne sont plus marqués `httpOnly`, ce qui empêchait `getSession()` de relire la session après un refresh.
+
 **Migration Next.js : rendre le "rester connecté" persistant au refresh**
 
 ### Corrige

@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : ajouter traductions des thèmes manquants**
+
+### Corrige
+- `ethone-next/lib/i18n.ts` : ajout des clés `theme*` pour les thèmes non traduits (Obsidian, Minimal, Aurora, Night, etc.) dans `fr`, `en`, `es` et `de`.
+
 **Migration Next.js : retirer layout animation du panel settings avancé**
 
 ### Corrige

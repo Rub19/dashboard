@@ -4,6 +4,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : refaire page Interactions et heatmap GitHub**
+
+### Corrige
+- `ethone-next/app/interactions/page.tsx` : heatmap recodée avec des colonnes de semaines et des lignes de jours, style GitHub. Scroll horizontal, labels de mois, légende "less / more".
+- `ethone-next/lib/interactions-heatmap.ts` : génération `weeks` avec 7 jours par colonne, plus de structure `matrix`.
+- Ajout des filtres et formulaire plus clair.
+
 **Migration Next.js : corriger synchronisation Google Drive**
 
 ### Corrige

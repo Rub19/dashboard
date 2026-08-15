@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -34,10 +34,21 @@ type WeatherData = {
 export default function WeatherPage() {
   const i18n = useI18n();
   const { settings, update } = useSettings();
-  const [city, setCity] = useState(settings.liveWeatherCity || "Paris");
+  const initial = settings.liveWeatherCity || "Paris";
+  const [query, setQuery] = useState(initial);
+  const [searchTerm, setSearchTerm] = useState(initial);
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const debouncedTerm = useMemo(() => query.trim(), [query]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (debouncedTerm.length >= 2) setSearchTerm(debouncedTerm);
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [debouncedTerm]);
 
   useEffect(() => {
     let cancelled = false;
@@ -46,7 +57,7 @@ export default function WeatherPage() {
 
     async function load() {
       try {
-        const res = await fetchWorker(`/api/weather?city=${encodeURIComponent(city)}`);
+        const res = await fetchWorker(`/api/weather?city=${encodeURIComponent(searchTerm)}`);
         if (!cancelled) setWeather((res?.data as WeatherData) || null);
       } catch {
         if (!cancelled) setError(i18n("weatherError"));
@@ -57,16 +68,19 @@ export default function WeatherPage() {
 
     load();
     return () => { cancelled = true; };
-  }, [city, i18n]);
+  }, [searchTerm, i18n]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    update({ liveWeatherCity: city });
+    const term = query.trim();
+    if (term.length < 2) return;
+    setSearchTerm(term);
+    update({ liveWeatherCity: term });
   }
 
   const temp = weather?.temperature ?? weather?.temperatureC;
   const condition = weather?.condition || weather?.description || "—";
-  const displayCity = weather?.location || weather?.city || city;
+  const displayCity = weather?.location || weather?.city || searchTerm;
   const details = [
     weather?.humidityPercent !== undefined && `${weather.humidityPercent}% ${i18n("humidity")}`,
     weather?.windSpeedKmh !== undefined && `${weather.windSpeedKmh} km/h ${i18n("wind")}`,
@@ -82,8 +96,8 @@ export default function WeatherPage() {
           <FormField label={i18n("city")} help={error ? i18n("weatherError") : undefined}>
             <Input
               type="text"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
               placeholder={i18n("city")}
               icon="map-pin"
             />

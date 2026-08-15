@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : corriger synchronisation Google Drive**
+
+### Corrige
+- `ethone-next/lib/hooks/useCloudFiles.ts` : `syncWithDrive` liste maintenant les fichiers Google Drive côté worker, les convertit au format attendu et les envoie à `/api/cloud/files/sync`.
+- `worker/src/services/cloud-files-client.js` : `buildFileRecord` appelait `safeText` avec les mauvais arguments, ce qui vidait tous les IDs et parents (`drive_file_id`, `drive_parent_id`, etc.). Corrigé avec les bons appels `safeText(value, max)` et gestion des tableaux `parents`.
+
 **Migration Next.js : améliorer widget Minecraft avec Crafatar**
 
 ### Corrige

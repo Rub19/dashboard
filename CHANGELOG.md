@@ -4,6 +4,14 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : moderniser panneaux Settings**
+
+### Corrige
+- `ethone-next/components/Switch.tsx` : switch plus épuré, sans labels ON/OFF, sans glow agressif, transition CSS simple.
+- `ethone-next/components/settings/SettingControls.tsx` : ButtonGrid avec `check` actif, CheckboxList sans icône option invalide.
+- `ethone-next/components/settings/SettingsSection.tsx` : sections arrondies avec ombre et padding plus aéré.
+- `ethone-next/components/settings/SettingField.tsx` : padding uniforme, lignes plus subtiles.
+
 **Migration Next.js : refondre le panel admin Fichiers**
 
 ### Corrige

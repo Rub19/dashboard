@@ -10,6 +10,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useSettingsForm } from "./SettingsFormContext";
 import Switch from "@/components/Switch";
 import Select from "@/components/ui/Select";
+import Slider from "@/components/ui/Slider";
 import Tooltip from "@/components/Tooltip";
 import { THEMES, ACCENTS } from "@/components/SettingsProvider";
 import { type Settings, type ThemeMode, DEFAULTS } from "@/lib/settings";
@@ -413,14 +414,15 @@ export default function AppearanceSettings() {
         </SettingRow>
 
         <SettingRow label={i18n("backgroundSpeed")} description={i18n("backgroundSpeedDescription")}>
-          <div className="w-32">
-            <input
-              type="range"
+          <div className="w-40">
+            <Slider
+              value={settings.backgroundSpeed}
+              onChange={(v) => handleChange("backgroundSpeed", v)}
               min={0}
               max={100}
-              value={settings.backgroundSpeed}
-              onChange={(e) => handleChange("backgroundSpeed", Number(e.target.value))}
-              className="w-full accent-[var(--accent)]"
+              step={1}
+              unit="%"
+              showValue
               aria-label={i18n("backgroundSpeed")}
             />
           </div>

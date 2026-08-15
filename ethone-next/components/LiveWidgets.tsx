@@ -11,6 +11,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import ContextMenu from "@/components/ContextMenu";
 import Select from "@/components/ui/Select";
+import Slider from "@/components/ui/Slider";
 
 const STATUS = {
   connected: "text-emerald-400",
@@ -594,15 +595,15 @@ export default function LiveWidgets({
 
           {track.progressMs !== undefined && track.durationMs ? (
             <div className="space-y-1 pt-1">
-              <input
-                type="range"
+              <Slider
+                value={track.progressMs}
+                onChange={(v) => controlSpotify("seek", undefined, v)}
                 min={0}
                 max={track.durationMs}
-                value={track.progressMs}
-                onChange={(e) => controlSpotify("seek", undefined, Number(e.target.value))}
-                onClick={(e) => e.stopPropagation()}
+                step={1000}
+                showValue={false}
+                className="w-full"
                 aria-label={i18n("seek")}
-                className="w-full accent-emerald-400"
               />
               <div className="flex justify-between text-[10px] text-[var(--muted)]">
                 <span>{formatTime(track.progressMs)}</span>
@@ -1292,15 +1293,15 @@ export default function LiveWidgets({
                 <div className="mt-3 space-y-2" onClick={(e) => e.stopPropagation()}>
                   {nowPlaying.progressMs !== undefined && nowPlaying.durationMs && (
                     <div className="space-y-1">
-                      <input
-                        type="range"
+                      <Slider
+                        value={nowPlaying.progressMs}
+                        onChange={(v) => controlSpotify("seek", undefined, v)}
                         min={0}
                         max={nowPlaying.durationMs}
-                        value={nowPlaying.progressMs}
-                        onChange={(e) => controlSpotify("seek", undefined, Number(e.target.value))}
-                        onClick={(e) => e.stopPropagation()}
+                        step={1000}
+                        showValue={false}
+                        className="w-full"
                         aria-label={i18n("seek")}
-                        className="w-full accent-emerald-400"
                       />
                       <div className="flex justify-between text-[10px] text-[var(--muted)]">
                         <span>{formatTime(nowPlaying.progressMs)}</span>

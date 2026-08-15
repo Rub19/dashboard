@@ -169,10 +169,10 @@ export default function SettingField({ field }: { field: FieldDef }) {
       data-setting-key={settingKey}
       data-setting-path={path}
       data-setting-label={field.label}
-      className={`relative px-5 py-4 transition-opacity ${hidden ? "hidden" : ""}`}
+      className={`relative px-4 py-2.5 transition-opacity ${hidden ? "hidden" : ""}`}
     >
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex min-w-0 flex-1 items-center gap-3">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex min-w-0 flex-1 items-center gap-2.5">
           {isDirty && (
             <span
               className="h-2 w-2 rounded-full bg-[var(--accent)]"

@@ -39,7 +39,7 @@ export function ButtonGridControl<T extends string>({
   const gridClass =
     cols === 2 ? "grid-cols-2" : cols === 4 ? "grid-cols-2 sm:grid-cols-4" : cols === 5 ? "grid-cols-2 sm:grid-cols-5" : "grid-cols-3";
   return (
-    <div className={`grid ${gridClass} gap-2`}>
+    <div className={`grid ${gridClass} gap-1.5`}>
       {options.map((opt) => {
         const active = value === opt.id;
         return (
@@ -47,7 +47,7 @@ export function ButtonGridControl<T extends string>({
             key={opt.id}
             type="button"
             onClick={() => onChange(opt.id)}
-            className={`group relative flex items-center justify-center gap-2 rounded-2xl border px-3 py-2.5 text-xs font-medium transition-all ${
+            className={`group relative flex items-center justify-center gap-1.5 rounded-xl border px-2.5 py-2 text-xs font-medium transition-all ${
               active
                 ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)] shadow-sm"
                 : "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--foreground)] hover:border-[var(--accent)]/50 hover:bg-[var(--surface)]"

@@ -103,25 +103,25 @@ export default function NotificationCenter() {
             {unreadCount} {i18n("unread")} · {importantCount} {i18n("importantCount")}
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          {unreadCount > 0 && (
-            <button
-              type="button"
-              onClick={markAllRead}
-              className="text-xs text-zinc-400 transition-colors hover:text-zinc-200"
-            >
-              {i18n("markAllRead")}
-            </button>
-          )}
-          {activeItems.length > 0 && (
-            <button
-              type="button"
-              onClick={clear}
-              className="text-xs text-zinc-400 transition-colors hover:text-rose-400"
-            >
-              {i18n("clearAll")}
-            </button>
-          )}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={markAllRead}
+            disabled={unreadCount === 0}
+            className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-[11px] font-medium text-zinc-300 transition-colors hover:bg-white/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <Icon name="mail-open" className="h-3.5 w-3.5" />
+            {i18n("markAllRead")}
+          </button>
+          <button
+            type="button"
+            onClick={clear}
+            disabled={activeItems.length === 0}
+            className="flex items-center gap-1.5 rounded-lg border border-rose-500/20 bg-rose-500/10 px-2.5 py-1.5 text-[11px] font-medium text-rose-400 transition-colors hover:bg-rose-500/20 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <Icon name="trash-2" className="h-3.5 w-3.5" />
+            {i18n("clearAll")}
+          </button>
         </div>
       </div>
 

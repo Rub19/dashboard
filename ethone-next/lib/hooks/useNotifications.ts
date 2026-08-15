@@ -243,73 +243,6 @@ function mergeLists(local: Notification[], remote: Notification[]): Notification
   return [...map.values()].sort((a, b) => b.timestamp - a.timestamp).slice(0, MAX_ITEMS);
 }
 
-const SEED_DEMOS: Partial<Notification>[] = [
-  {
-    id: "demo:github:1",
-    title: "Review requested",
-    message: "PR #42 on ethone-dashboard needs your review.",
-    type: "github-pr",
-    category: "integration",
-    priority: "important",
-    source: "GitHub",
-    icon: "github",
-    data: { pr: 42 },
-  },
-  {
-    id: "demo:github:2",
-    title: "PR #37 approved",
-    message: "brain/runtime PR approved and ready to merge.",
-    type: "github-pr",
-    category: "integration",
-    priority: "normal",
-    source: "GitHub",
-    icon: "github",
-    data: { pr: 37 },
-  },
-  {
-    id: "demo:calendar:1",
-    title: "Réunion Brain",
-    message: "Dans 15 minutes — Focus room.",
-    type: "calendar",
-    category: "important",
-    priority: "important",
-    source: "Google Calendar",
-    icon: "calendar",
-    data: { eventId: "demo" },
-  },
-  {
-    id: "demo:mail:1",
-    title: "Invitation ETHONE",
-    message: "Vous avez été invité à rejoindre le serveur Discord.",
-    type: "mail",
-    category: "messages",
-    priority: "normal",
-    source: "ETHONE Mail",
-    icon: "mail",
-    data: { messageId: "demo" },
-  },
-  {
-    id: "demo:security:1",
-    title: "Nouvelle connexion",
-    message: "Un appareil inconnu vient de se connecter.",
-    type: "security",
-    category: "security",
-    priority: "critical",
-    source: "ETHONE Security",
-    icon: "shield-alert",
-  },
-  {
-    id: "demo:brain:1",
-    title: "Rappel Brain",
-    message: "Pensez à finaliser votre contexte.",
-    type: "brain",
-    category: "brain",
-    priority: "silent",
-    source: "Brain",
-    icon: "brain",
-  },
-];
-
 export type NotificationInput = Partial<Omit<Notification, "id">> & {
   title: string;
   message: string;
@@ -342,21 +275,6 @@ export function useNotifications() {
     loadAsync().then((remote) => {
       if (remote && remote.length > 0) {
         setItems((prev) => mergeLists(prev, remote));
-      } else if (local.length === 0) {
-        // seed demo data for first-time users
-        const now = Date.now();
-        const demos = SEED_DEMOS.map((demo) =>
-          migrate({
-            ...demo,
-            demo: true,
-            read: false,
-            archived: false,
-            timestamp: now - Math.floor(Math.random() * 3600000),
-            createdAt: new Date(now - Math.floor(Math.random() * 3600000)).toISOString(),
-          })
-        );
-        setItems(demos);
-        persist(demos);
       }
     });
 

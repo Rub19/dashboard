@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : debounce et validation de la recherche météo**
+
+### Corrige
+- `ethone-next/app/weather/page.tsx` : ajout d’un debounce de 600 ms et d’un état `searchTerm` distinct de l’input. Le bouton "Rechercher" valide et déclenche explicitement l’appel, évitant les requêtes à chaque caractère.
+
 **Migration Next.js : ajouter traductions des thèmes manquants**
 
 ### Corrige

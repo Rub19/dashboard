@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : corriger notifications et retirer les placeholders**
+
+### Corrige
+- `ethone-next/lib/hooks/useNotifications.ts` : suppression des notifications `SEED_DEMOS` et de la logique d’insertion automatique.
+- `ethone-next/components/NotificationCenter.tsx` : boutons "Tout marquer comme lu" et "Tout effacer" toujours visibles, avec icônes, fonds et états `disabled`. Plus de disparition du bouton.
+
 **Migration Next.js : debounce et validation de la recherche météo**
 
 ### Corrige

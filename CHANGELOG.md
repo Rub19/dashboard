@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : corriger persistance des credentials live au refresh**
+
+### Corrige
+- `ethone-next/lib/settings.ts` : `migrateSettings` ignore les champs `undefined` du remote et `loadSettingsAsync` retourne un `Partial<Settings>` sans écraser les defaults.
+- `ethone-next/components/SettingsProvider.tsx` : merge `DEFAULTS → local → remote` pour ne pas écraser les credentials et IDs live saisis localement.
+
 **Migration Next.js : carte Minecraft moderne + emojis + données**
 
 ### Corrige

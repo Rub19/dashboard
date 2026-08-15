@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : corriger animation et positionnement des tooltips**
+
+### Corrige
+- `ethone-next/components/UIProvider.tsx` : le tooltip démarre invisible (`hidden: true`) tant que sa position n'est pas calculée, évitant l'apparition à l'autre bout de l'écran.
+- `ethone-next/app/globals.css` : animation fade-in/translate douce dès que le tooltip est positionné, au lieu d'un keyframe joué depuis une position hors écran.
+
 **Migration Next.js : nettoyer et moderniser l'UI des settings**
 
 ### Corrige

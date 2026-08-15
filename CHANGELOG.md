@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : forcer coins arrondis sur le Dock**
+
+### Corrige
+- `ethone-next/app/globals.css` : `border-radius: 9999px !important` sur `[data-dock]` et `[data-dock-item]` pour éviter les coins carrés malgré `data-icon-radius="square"` ou `--icon-radius` petit.
+
 **Migration Next.js : corriger animation et positionnement des tooltips**
 
 ### Corrige

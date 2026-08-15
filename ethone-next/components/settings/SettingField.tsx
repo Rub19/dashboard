@@ -1,6 +1,5 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import { Icon } from "@/lib/icons";
 import { useSettings } from "@/components/SettingsProvider";
 import { DEFAULTS } from "@/lib/settings";
@@ -170,30 +169,30 @@ export default function SettingField({ field }: { field: FieldDef }) {
       data-setting-key={settingKey}
       data-setting-path={path}
       data-setting-label={field.label}
-      className={`relative border-b border-[var(--border)]/50 py-3 transition-opacity last:border-b-0 ${hidden ? "hidden" : ""}`}
+      className={`relative border-b border-[var(--border)]/40 py-3.5 transition-opacity last:border-b-0 ${hidden ? "hidden" : ""}`}
     >
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <div className="flex items-center gap-2">
-            {isDirty && (
-              <span
-                className="h-2 w-2 rounded-full bg-[var(--accent)]"
-                title="Modifié"
-                aria-label="Modifié"
-              />
-            )}
-            <span className="text-sm font-medium text-[var(--foreground)]">{field.label}</span>
-          </div>
-          {form.query && field.keywords && field.keywords.length > 0 && (
-            <span className="text-[10px] text-[var(--muted)]">{field.keywords.join(" > ")}</span>
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex min-w-0 flex-1 items-center gap-2.5">
+          {isDirty && (
+            <span
+              className="h-2 w-2 rounded-full bg-[var(--accent)]"
+              title="Modifié"
+              aria-label="Modifié"
+            />
           )}
+          <div className="flex min-w-0 flex-col">
+            <span className="text-sm font-medium text-[var(--foreground)]">{field.label}</span>
+            {form.query && field.keywords && field.keywords.length > 0 && (
+              <span className="text-[10px] text-[var(--muted)]">{field.keywords.join(" > ")}</span>
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-2">
           {isDirty && (
             <button
               type="button"
               onClick={handleUndo}
-              className="rounded p-1 text-[var(--muted)] transition-colors hover:text-[var(--accent)]"
+              className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--accent)]"
               title="Rétablir la valeur par défaut"
               aria-label="Rétablir"
             >
@@ -201,18 +200,6 @@ export default function SettingField({ field }: { field: FieldDef }) {
             </button>
           )}
           {control}
-          <AnimatePresence>
-            {saveMode === "instant" && form.instantSaved(settingKey) && (
-              <motion.span
-                initial={{ opacity: 0, x: 8, scale: 0.8 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                exit={{ opacity: 0, x: 8, scale: 0.8 }}
-                className="text-[10px] font-medium text-emerald-400"
-              >
-                ✓ Saved
-              </motion.span>
-            )}
-          </AnimatePresence>
         </div>
       </div>
     </div>

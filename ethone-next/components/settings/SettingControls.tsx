@@ -1,5 +1,6 @@
 "use client";
 
+import { Icon } from "@/lib/icons";
 import Switch from "@/components/Switch";
 import Select from "@/components/ui/Select";
 import Slider from "@/components/ui/Slider";
@@ -38,18 +39,26 @@ export function ButtonGridControl<T extends string>({
   const gridClass = cols === 2 ? "grid-cols-2" : cols === 4 ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3";
   return (
     <div className={`grid ${gridClass} gap-2`}>
-      {options.map((opt) => (
-        <button
-          key={opt.id}
-          type="button"
-          onClick={() => onChange(opt.id)}
-          className={`rounded-xl border px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] ${
-            value === opt.id ? "border-[var(--accent)] text-[var(--accent)]" : "border-[var(--border)] bg-[var(--surface-raised)]"
-          }`}
-        >
-          {opt.label}
-        </button>
-      ))}
+      {options.map((opt) => {
+        const active = value === opt.id;
+        return (
+          <button
+            key={opt.id}
+            type="button"
+            onClick={() => onChange(opt.id)}
+            className={`group relative overflow-hidden rounded-xl border px-2 py-2.5 text-xs font-medium transition-all ${
+              active
+                ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
+                : "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--foreground)] hover:border-[var(--accent)]/50 hover:bg-[var(--surface)]"
+            }`}
+          >
+            <span className="relative z-10">{opt.label}</span>
+            {active && (
+              <span className="absolute right-1.5 top-1.5 flex h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -68,18 +77,29 @@ export function CheckboxListControl({
       {options.map((opt) => {
         const checked = value.includes(opt.id);
         return (
-          <label key={opt.id} className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={checked}
-              onChange={(e) => {
-                const next = e.target.checked ? [...value, opt.id] : value.filter((id) => id !== opt.id);
-                onChange(next);
-              }}
-              className="accent-[var(--accent)]"
-            />
-            {opt.label}
-          </label>
+          <button
+            key={opt.id}
+            type="button"
+            onClick={() => {
+              const next = checked ? value.filter((id) => id !== opt.id) : [...value, opt.id];
+              onChange(next);
+            }}
+            className={`flex items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left text-sm transition-all ${
+              checked
+                ? "border-[var(--accent)]/50 bg-[var(--accent)]/10 text-[var(--foreground)]"
+                : "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted)] hover:border-[var(--accent)]/30 hover:text-[var(--foreground)]"
+            }`}
+          >
+            <span
+              className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors ${
+                checked ? "border-[var(--accent)] bg-[var(--accent)]" : "border-[var(--border)] bg-[var(--surface)]"
+              }`}
+            >
+              {checked && <Icon name="check" className="h-3 w-3 text-white" />}
+            </span>
+            <Icon name={opt.id} className="h-4 w-4 shrink-0 text-[var(--accent)]" />
+            <span className="min-w-0 flex-1 truncate">{opt.label}</span>
+          </button>
         );
       })}
     </div>

@@ -34,7 +34,7 @@ export async function brainComplete(input: {
   return fetchWorker("/api/brain/complete", {
     method: "POST",
     body: JSON.stringify({
-      provider: input.provider === "context" ? "groq" : input.provider,
+      provider: input.provider,
       model: input.model,
       messages: input.messages,
       context: input.context,
@@ -47,7 +47,7 @@ export async function brainDiagnostic(provider: BrainProvider, baseUrl?: string)
   return fetchWorker("/api/brain/complete", {
     method: "POST",
     body: JSON.stringify({
-      provider: provider === "context" ? "groq" : provider,
+      provider,
       operation: "diagnostic",
       baseUrl,
     }),

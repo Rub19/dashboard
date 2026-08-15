@@ -26,6 +26,43 @@ function buildContext(context) {
   return JSON.stringify(context || {}).slice(0, 4000);
 }
 
+function contextReply(messages, context) {
+  const last = messages.findLast((m) => m?.role === "user" && m?.content) || { content: "" };
+  const text = String(last.content).toLowerCase();
+  const persona = String(context?.persona || "");
+  const tone = String(context?.tone || "");
+  const detail = String(context?.detail || "");
+
+  if (text.includes("bonjour") || text.includes("salut") || text.includes("hello")) {
+    return "Salut ! Je suis Brain, ton assistant ETHONE. Comment puis-je t'aider aujourd'hui ?";
+  }
+  if (text.includes("note")) {
+    return "Je peux t'aider à créer ou modifier une note. Veux-tu que je le fasse maintenant ?";
+  }
+  if (text.includes("tâche") || text.includes("task")) {
+    return "Tu veux créer une tâche ? Donne-moi un titre et une priorité.";
+  }
+  if (text.includes("planning") || text.includes("agenda") || text.includes("calendrier")) {
+    return "Je peux t'aider à préparer ton planning. Quelles sont les choses importantes cette semaine ?";
+  }
+  if (text.includes("météo") || text.includes("weather")) {
+    return "Consulte la page Météo pour les prévisions en temps réel.";
+  }
+  if (text.includes("paramètre") || text.includes("setting")) {
+    return "Tu peux modifier tes préférences dans l'onglet Préférences de Brain ou dans Paramètres.";
+  }
+  if (text.includes("merci")) {
+    return "Avec plaisir ! N'hésite pas si tu as besoin d'autre chose.";
+  }
+  if (text.includes("aide") || text.includes("help")) {
+    return "Je peux créer des notes, tâches, événements, analyser tes mails ou te donner un briefing. Que veux-tu faire ?";
+  }
+
+  const toneLabel = tone ? ` (ton : ${tone})` : "";
+  const detailLabel = detail === "detailed" ? " en détail" : detail === "brief" ? " brièvement" : "";
+  return `J'ai bien reçu ton message${toneLabel}. Pour l'instant je tourne en mode local${detailLabel}, donc je réponds avec des règles simples. Configure un provider cloud (Groq, OpenAI...) pour obtenir des réponses plus riches.`;
+}
+
 function requireApiKey(env, userId, provider) {
   return getUserCredential(env, userId, provider).then((credential) => {
     const key = safeApiKey(credential);
@@ -317,6 +354,12 @@ export async function askUserProvider(env, { provider, model, messages, context,
     case "ollama":
     case "lm-studio":
       return askLocalLlm(env, { provider, model, messages, context, baseUrl });
+    case "context": {
+      const chatMessages = sanitizeMessages(messages);
+      if (!chatMessages.length) throw httpError("INVALID_REQUEST", 400);
+      const content = contextReply(chatMessages, context);
+      return Object.freeze({ content, model: "context-v1", provider: "context" });
+    }
     default:
       throw httpError("SERVICE_NOT_CONFIGURED", 501, { detail: `unknown_provider:${provider}` });
   }

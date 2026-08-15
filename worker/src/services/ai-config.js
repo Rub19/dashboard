@@ -1,4 +1,19 @@
 export const AI_PROVIDERS = Object.freeze({
+  context: Object.freeze({
+    id: "context",
+    label: "ETHONE Context",
+    kind: "local",
+    isPrimary: false,
+    defaultModel: "context-v1",
+    fallbackModels: Object.freeze([]),
+    maxTokens: 256,
+    maxContextChars: 4000,
+    maxOutputChars: 1000,
+    timeoutMs: 5000,
+    retryable: false,
+    maxRetries: 0,
+    priority: 0,
+  }),
   cloudflare: Object.freeze({
     id: "cloudflare",
     label: "Cloudflare Workers AI",

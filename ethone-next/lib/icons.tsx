@@ -167,6 +167,17 @@ const MAP: Record<string, Partial<Record<IconPack, string>>> = {
   "external-link": { lucide: "external-link", phosphor: "arrow-up-right", tabler: "external-link", heroicons: "arrow-top-right-on-square", radix: "external-link" },
   "arrow-up": { lucide: "arrow-up", phosphor: "arrow-up", tabler: "arrow-up", heroicons: "arrow-up", radix: "arrow-up" },
   "arrow-down": { lucide: "arrow-down", phosphor: "arrow-down", tabler: "arrow-down", heroicons: "arrow-down", radix: "arrow-down" },
+  cloud: { lucide: "cloud", phosphor: "cloud", tabler: "cloud", heroicons: "cloud", radix: "cloud" },
+  cloudRain: { lucide: "cloud-rain", phosphor: "cloud-rain", tabler: "cloud-rain", heroicons: "cloud", radix: "cloud" },
+  cloudSnow: { lucide: "cloud-snow", phosphor: "cloud-snow", tabler: "cloud-snow", heroicons: "cloud", radix: "cloud" },
+  cloudLightning: { lucide: "cloud-lightning", phosphor: "cloud-lightning", tabler: "cloud-lightning", heroicons: "bolt", radix: "lightning-bolt" },
+  cloudFog: { lucide: "cloud-fog", phosphor: "cloud-fog", tabler: "cloud-fog", heroicons: "cloud", radix: "cloud" },
+  cloudMoon: { lucide: "cloud-moon", phosphor: "cloud-moon", tabler: "cloud-moon", heroicons: "cloud", radix: "moon" },
+  wind: { lucide: "wind", phosphor: "wind", tabler: "wind", heroicons: "arrow-path", radix: "dimensions" },
+  droplets: { lucide: "droplets", phosphor: "drop", tabler: "droplet", heroicons: "beaker", radix: "drop" },
+  thermometer: { lucide: "thermometer", phosphor: "thermometer", tabler: "thermometer", heroicons: "fire", radix: "value" },
+  umbrella: { lucide: "umbrella", phosphor: "umbrella", tabler: "umbrella", heroicons: "cloud", radix: "cover" },
+  sunrise: { lucide: "sunrise", phosphor: "sun-horizon", tabler: "sunrise", heroicons: "sun", radix: "sun" },
 };
 
 export function useIconName(name: string, pack: IconPack = "lucide") {

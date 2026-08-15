@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : décaler la barre de sauvegarde au-dessus du Dock**
+
+### Corrige
+- `ethone-next/components/settings/SettingsBottomBar.tsx` : position `bottom-20` au lieu de `bottom-6` pour éviter le chevauchement avec le Dock.
+
 **Migration Next.js : fallback localStorage pour les Client IDs OAuth**
 
 ### Corrige

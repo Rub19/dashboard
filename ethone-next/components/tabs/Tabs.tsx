@@ -13,7 +13,6 @@ export default function Tabs({
   defaultTab,
   value,
   onChange,
-  layoutId = "activeTab",
   className = "",
 }: TabsProps) {
   const firstEnabled = tabs.find((t) => !t.disabled)?.id;
@@ -32,7 +31,7 @@ export default function Tabs({
 
   return (
     <div className={className}>
-      <TabList tabs={tabs} activeId={activeId} onSelect={handleSelect} layoutId={layoutId} />
+      <TabList tabs={tabs} activeId={activeId} onSelect={handleSelect} />
       <TabContent tabs={tabs} activeId={activeId} listId={listId} />
     </div>
   );

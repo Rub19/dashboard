@@ -785,7 +785,7 @@ export default function FilesPage() {
         </div>
       )}
 
-      <BottomSheet open={adminOpen} onClose={() => setAdminOpen(false)} title={i18n("filesAdminPanel")}>
+      <BottomSheet open={adminOpen} onClose={() => setAdminOpen(false)} title={i18n("filesAdminPanel")} position="center">
         <FilesAdminPanel />
       </BottomSheet>
     </div>

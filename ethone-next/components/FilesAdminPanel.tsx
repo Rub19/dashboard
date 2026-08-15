@@ -11,8 +11,24 @@ import Select from "@/components/ui/Select";
 
 const STORAGE_CAP = 10 * 1024 * 1024 * 1024;
 
-type Share = { id: string; slug: string; fileName?: string; visibility?: string; expiresAt?: string; downloadCount?: number };
-type Drop = { id: string; slug: string; title?: string; visibility?: string; expiresAt?: string; fileCount?: number };
+type Share = {
+  id: string;
+  slug: string;
+  fileName?: string;
+  visibility?: string;
+  expiresAt?: string;
+  downloadCount?: number;
+};
+
+type Drop = {
+  id: string;
+  slug: string;
+  title?: string;
+  visibility?: string;
+  expiresAt?: string;
+  fileCount?: number;
+};
+
 type Dashboard = {
   totalFiles: number;
   totalSize: number;
@@ -25,32 +41,60 @@ type Dashboard = {
   topFiles: { id?: string; name?: string; size: number }[];
 };
 
+type Tab = "shares" | "drops" | "stats";
+
 export default function FilesAdminPanel() {
   const i18n = useI18n();
   const { success, error: showError } = useToast();
-  const [tab, setTab] = useState<"shares" | "drops" | "stats">("stats");
+  const [tab, setTab] = useState<Tab>("stats");
   const [shares, setShares] = useState<Share[]>([]);
   const [drops, setDrops] = useState<Drop[]>([]);
   const [dashboard, setDashboard] = useState<Dashboard | null>(null);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<string[]>([]);
   const [cleaning, setCleaning] = useState(false);
   const [search, setSearch] = useState("");
   const [visibility, setVisibility] = useState<"all" | "public" | "private" | "unlisted">("all");
 
   async function load() {
     setLoading(true);
+    setErrors([]);
+    const nextShares: Share[] = [];
+    const nextDrops: Drop[] = [];
+    let nextDashboard: Dashboard | null = null;
+    const nextErrors: string[] = [];
+
     try {
-      const [s, d, dash] = await Promise.all([
+      const [s, d, dash] = await Promise.allSettled([
         fetchWorker("/api/cloud/shares"),
         fetchWorker("/api/cloud/drops"),
         fetchWorker("/api/cloud/dashboard"),
       ]);
-      setShares((s?.data?.shares as Share[]) || []);
-      setDrops((d?.data?.drops as Drop[]) || []);
-      setDashboard(dash?.data as Dashboard);
+
+      if (s.status === "fulfilled" && s.value?.data?.shares) {
+        nextShares.push(...(s.value.data.shares as Share[]));
+      } else if (s.status === "rejected") {
+        nextErrors.push(i18n("shares"));
+      }
+
+      if (d.status === "fulfilled" && d.value?.data?.drops) {
+        nextDrops.push(...(d.value.data.drops as Drop[]));
+      } else if (d.status === "rejected") {
+        nextErrors.push(i18n("drops"));
+      }
+
+      if (dash.status === "fulfilled" && dash.value?.data) {
+        nextDashboard = dash.value.data as Dashboard;
+      } else if (dash.status === "rejected") {
+        nextErrors.push(i18n("dashboard"));
+      }
     } catch {
-      showError(i18n("error"));
+      nextErrors.push(i18n("error"));
     } finally {
+      setShares(nextShares);
+      setDrops(nextDrops);
+      setDashboard(nextDashboard);
+      setErrors(nextErrors);
       setLoading(false);
     }
   }
@@ -98,75 +142,107 @@ export default function FilesAdminPanel() {
 
   const items = useMemo(() => {
     const baseItems = tab === "shares" ? shares : tab === "drops" ? drops : [];
+    const q = search.toLowerCase().trim();
     return baseItems.filter((item) => {
-      const matchesSearch = (item.slug + (item as Share).fileName + (item as Drop).title || "")
-        .toLowerCase()
-        .includes(search.toLowerCase());
+      const isShare = tab === "shares";
+      const share = isShare ? (item as Share) : null;
+      const drop = !isShare ? (item as Drop) : null;
+      const label = String(share?.fileName || drop?.title || item.slug || "").toLowerCase();
+      const matchesSearch = !q || label.includes(q) || item.slug.toLowerCase().includes(q);
       const matchesVisibility = visibility === "all" || item.visibility === visibility;
       return matchesSearch && matchesVisibility;
     });
   }, [tab, shares, drops, search, visibility]);
 
+  const stats = [
+    { icon: "file", label: i18n("totalFiles"), value: dashboard?.totalFiles ?? "-" },
+    { icon: "hard-drive", label: i18n("storageUsed"), value: dashboard ? formatBytes(dashboard.totalSize) : "-" },
+    { icon: "folder", label: i18n("folders"), value: dashboard?.folders ?? "-" },
+    { icon: "heart", label: i18n("favorites"), value: dashboard?.favorites ?? "-" },
+    { icon: "share-2", label: i18n("shares"), value: dashboard?.activeShares ?? "-" },
+    { icon: "inbox", label: i18n("drops"), value: dashboard?.activeDrops ?? "-" },
+    { icon: "clock", label: i18n("expiredShares"), value: dashboard?.expiredShares ?? "-", warn: true },
+    { icon: "clock", label: i18n("expiredDrops"), value: dashboard?.expiredDrops ?? "-", warn: true },
+  ];
+
+  const tabs: { id: Tab; label: string; icon: string; count: number }[] = [
+    { id: "stats", label: i18n("dashboard"), icon: "layout-dashboard", count: 0 },
+    { id: "shares", label: i18n("shares"), icon: "share-2", count: shares.length },
+    { id: "drops", label: i18n("drops"), icon: "inbox", count: drops.length },
+  ];
+
   return (
     <div className="space-y-4">
-      <div className="flex gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] p-1">
-        <button type="button" onClick={() => setTab("stats")} className={`flex-1 rounded-xl py-1.5 text-sm font-medium transition-colors ${tab === "stats" ? "bg-[var(--accent)] text-white" : "text-[var(--muted)]"}`}>{i18n("dashboard")}</button>
-        <button type="button" onClick={() => setTab("shares")} className={`flex-1 rounded-xl py-1.5 text-sm font-medium transition-colors ${tab === "shares" ? "bg-[var(--accent)] text-white" : "text-[var(--muted)]"}`}>{i18n("shares")} ({shares.length})</button>
-        <button type="button" onClick={() => setTab("drops")} className={`flex-1 rounded-xl py-1.5 text-sm font-medium transition-colors ${tab === "drops" ? "bg-[var(--accent)] text-white" : "text-[var(--muted)]"}`}>{i18n("drops")} ({drops.length})</button>
+      <div className="flex gap-1 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] p-1">
+        {tabs.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            onClick={() => setTab(t.id)}
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-medium transition-colors sm:text-sm ${
+              tab === t.id ? "bg-[var(--accent)] text-white" : "text-[var(--muted)] hover:text-[var(--foreground)]"
+            }`}
+          >
+            <Icon name={t.icon} className="h-4 w-4" />
+            <span className="hidden sm:inline">{t.label}</span>
+            <span className="sm:hidden">{t.label}</span>
+            {t.count > 0 && <span className="ml-0.5 rounded-full bg-white/20 px-1.5 py-0.5 text-[10px]">{t.count}</span>}
+          </button>
+        ))}
       </div>
 
+      {errors.length > 0 && (
+        <Card3D>
+          <div className="flex items-start gap-2 text-sm text-red-400">
+            <Icon name="alert-triangle" className="mt-0.5 h-4 w-4 shrink-0" />
+            <p>
+              {i18n("error")}: {errors.join(", ")}
+            </p>
+          </div>
+        </Card3D>
+      )}
+
       {loading ? (
-        <Card3D><div className="h-4 w-1/3 animate-pulse rounded bg-[var(--border)]" /></Card3D>
+        <div className="space-y-3">
+          {[...Array(3)].map((_, i) => (
+            <Card3D key={i}>
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 animate-pulse rounded-xl bg-[var(--border)]" />
+                <div className="min-w-0 flex-1 space-y-2">
+                  <div className="h-3 w-1/3 animate-pulse rounded bg-[var(--border)]" />
+                  <div className="h-2.5 w-1/4 animate-pulse rounded bg-[var(--border)]" />
+                </div>
+              </div>
+            </Card3D>
+          ))}
+        </div>
       ) : tab === "stats" ? (
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <Card3D>
-              <p className="text-xs text-[var(--muted)]">{i18n("totalFiles")}</p>
-              <p className="text-2xl font-bold">{dashboard?.totalFiles ?? "-"}</p>
-            </Card3D>
-            <Card3D>
-              <p className="text-xs text-[var(--muted)]">{i18n("storageUsed")}</p>
-              <p className="text-2xl font-bold">{dashboard ? formatBytes(dashboard.totalSize) : "-"}</p>
-              {dashboard && (
-                <div className="mt-2 space-y-1">
-                  <div className="flex justify-between text-[10px] text-[var(--muted)]">
-                    <span>{usagePct}%</span>
-                    <span>{formatBytes(STORAGE_CAP)}</span>
-                  </div>
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
-                    <div
-                      className={`h-full rounded-full ${usagePct > 90 ? "bg-red-400" : usagePct > 70 ? "bg-amber-400" : "bg-emerald-400"}`}
-                      style={{ width: `${usagePct}%` }}
-                    />
-                  </div>
+            {stats.map((s) => (
+              <Card3D key={s.label}>
+                <div className="flex items-start justify-between">
+                  <Icon name={s.icon} className="h-4 w-4 text-[var(--accent)]" />
+                  <span className={`text-2xl font-bold ${s.warn ? "text-amber-400" : ""}`}>{s.value}</span>
                 </div>
-              )}
-            </Card3D>
-            <Card3D>
-              <p className="text-xs text-[var(--muted)]">{i18n("folders")}</p>
-              <p className="text-2xl font-bold">{dashboard?.folders ?? "-"}</p>
-            </Card3D>
-            <Card3D>
-              <p className="text-xs text-[var(--muted)]">{i18n("favorites")}</p>
-              <p className="text-2xl font-bold">{dashboard?.favorites ?? "-"}</p>
-            </Card3D>
-            <Card3D>
-              <p className="text-xs text-[var(--muted)]">{i18n("shares")}</p>
-              <p className="text-2xl font-bold">{dashboard?.activeShares ?? "-"}</p>
-            </Card3D>
-            <Card3D>
-              <p className="text-xs text-[var(--muted)]">{i18n("expiredShares")}</p>
-              <p className="text-2xl font-bold text-amber-400">{dashboard?.expiredShares ?? "-"}</p>
-            </Card3D>
-            <Card3D>
-              <p className="text-xs text-[var(--muted)]">{i18n("drops")}</p>
-              <p className="text-2xl font-bold">{dashboard?.activeDrops ?? "-"}</p>
-            </Card3D>
-            <Card3D>
-              <p className="text-xs text-[var(--muted)]">{i18n("expiredDrops")}</p>
-              <p className="text-2xl font-bold text-amber-400">{dashboard?.expiredDrops ?? "-"}</p>
-            </Card3D>
+                <p className="mt-2 text-xs text-[var(--muted)]">{s.label}</p>
+              </Card3D>
+            ))}
           </div>
+
+          <Card3D>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-[var(--muted)]">{i18n("storageUsed")}</span>
+              <span className="font-medium">{dashboard ? formatBytes(dashboard.totalSize) : "-"} / {formatBytes(STORAGE_CAP)}</span>
+            </div>
+            <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
+              <div
+                className={`h-full rounded-full ${usagePct > 90 ? "bg-red-400" : usagePct > 70 ? "bg-amber-400" : "bg-emerald-400"}`}
+                style={{ width: `${usagePct}%` }}
+              />
+            </div>
+            <p className="mt-1 text-right text-[10px] text-[var(--muted)]">{usagePct}%</p>
+          </Card3D>
 
           {expiredCount > 0 && (
             <button
@@ -186,7 +262,7 @@ export default function FilesAdminPanel() {
               <div className="space-y-2">
                 {dashboard.topFiles.map((f, i) => (
                   <div key={i} className="flex items-center justify-between text-sm">
-                    <span className="min-w-0 truncate">{f.name}</span>
+                    <span className="min-w-0 truncate">{f.name || "-"}</span>
                     <span className="text-xs text-[var(--muted)]">{formatBytes(f.size)}</span>
                   </div>
                 ))}
@@ -229,13 +305,14 @@ export default function FilesAdminPanel() {
               const isShare = tab === "shares";
               const share = isShare ? (item as Share) : null;
               const drop = !isShare ? (item as Drop) : null;
+              const label = share?.fileName || drop?.title || item.slug;
               return (
                 <Card3D key={item.id}>
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="truncate font-medium">{share?.fileName || drop?.title || item.slug}</p>
+                      <p className="truncate font-medium">{label}</p>
                       <p className="text-xs text-[var(--muted)]">
-                        {i18n("visibility")}: {item.visibility}
+                        {i18n("visibility")}: {item.visibility || "-"}
                         {share ? ` · ${i18n("downloads")}: ${share.downloadCount || 0}` : ` · ${i18n("files")}: ${drop?.fileCount || 0}`}
                         {item.expiresAt ? ` · ${i18n("expiresAt")}: ${new Date(item.expiresAt).toLocaleDateString()}` : ""}
                       </p>

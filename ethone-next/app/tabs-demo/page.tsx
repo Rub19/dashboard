@@ -29,7 +29,7 @@ export default function TabsDemoPage() {
 
       <div className="mx-auto max-w-2xl rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6">
         <h1 className="mb-6 text-lg font-semibold text-[var(--foreground)]">Tabs Demo (overflow)</h1>
-        <Tabs tabs={MANY_TABS} defaultTab="overview" layoutId="activeTabOverflow" />
+        <Tabs tabs={MANY_TABS} defaultTab="overview" />
       </div>
     </div>
   );

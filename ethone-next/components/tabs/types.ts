@@ -13,7 +13,6 @@ export type TabsProps = {
   defaultTab?: string;
   value?: string;
   onChange?: (id: string) => void;
-  layoutId?: string;
   className?: string;
   mobileThreshold?: number;
 };

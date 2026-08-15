@@ -680,7 +680,6 @@ export default function BrainPage() {
         }))}
         activeId={activeTab}
         onSelect={(id) => setActiveTab(id as Tab)}
-        layoutId="activeBrainTab"
       />
       <Card3D>
         {activeTab === "chat" && renderChat()}

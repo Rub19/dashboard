@@ -22,7 +22,7 @@ export default function DiagnosticPanel({
   onTestAll: () => void;
 }) {
   const i18n = useI18n();
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
 
   const items = useMemo(() => {
     return INTEGRATIONS.map((integration) => {

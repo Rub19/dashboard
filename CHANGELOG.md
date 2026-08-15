@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : simplifier Mail sidebar et panels**
+
+### Corrige
+- `ethone-next/components/LiquidSidebar.tsx` : sidebar refaite sans Framer Motion, sans animation "liquid" qui provoquait des surlignages bizarres. Fond d'accent sur l'item actif, simple et fiable.
+- `ethone-next/app/mail/page.tsx` : suppression du `draggable` sur tous les `BottomSheet` de tri, déplacement, labels et actions.
+
 **Migration Next.js : ajouter provider Brain context local**
 
 ### Corrige

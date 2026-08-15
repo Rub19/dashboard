@@ -15,7 +15,7 @@ export default function SettingsBottomBar() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 40 }}
-          className="fixed inset-x-0 bottom-6 z-40 mx-auto w-[calc(100%-3rem)] max-w-2xl"
+          className="fixed inset-x-0 bottom-20 z-40 mx-auto w-[calc(100%-3rem)] max-w-2xl"
         >
           <div className="flex items-center justify-between gap-4 rounded-2xl border border-[var(--accent)]/30 bg-[var(--surface)]/95 px-4 py-3 shadow-2xl backdrop-blur-xl">
             <span className="text-sm text-[var(--foreground)]">{i18n("unsavedChanges")}</span>

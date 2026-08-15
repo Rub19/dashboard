@@ -78,22 +78,24 @@ function normalizeDriveFile(input = {}) {
 }
 
 function buildFileRecord(userId, file, clientId = "") {
+  const parentId = file.driveParentId !== undefined ? file.driveParentId : file.parentId;
+  const parentValue = Array.isArray(parentId) && parentId.length ? parentId[0] : parentId;
   return Object.freeze({
     user_id: userId,
-    drive_file_id: safeText(file.driveFileId || file.id, "", 128),
-    drive_parent_id: safeText(file.driveParentId || file.parentId, "", 128) || null,
-    drive_client_id: safeText(clientId, "", 120),
-    name: safeText(file.name, "(Sans titre)", 500),
+    drive_file_id: safeText(file.driveFileId || file.id, 128),
+    drive_parent_id: safeText(parentValue, 128) || null,
+    drive_client_id: safeText(clientId, 120),
+    name: safeText(file.name, 500) || "(Sans titre)",
     mime_type: safeText(file.mimeType || "application/octet-stream", 120),
     is_folder: file.type === "folder" || file.mimeType === "application/vnd.google-apps.folder",
     size: Math.max(0, Number(file.size) || 0),
     web_view_link: safePublicUrl(file.webViewLink, []),
     thumbnail_link: safePublicUrl(file.thumbnailLink, []),
     icon_url: safePublicUrl(file.iconUrl, []),
-    md5_checksum: safeText(file.md5Checksum, "", 64),
+    md5_checksum: safeText(file.md5Checksum, 64),
     trashed: file.trashed === true,
-    drive_created_at: safeText(file.createdAt, "", 40) || null,
-    drive_modified_at: safeText(file.date, "", 40) || null
+    drive_created_at: safeText(file.createdAt, 40) || null,
+    drive_modified_at: safeText(file.date, 40) || null
   });
 }
 

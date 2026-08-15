@@ -125,11 +125,31 @@ export function useCloudFiles(clientId?: string) {
     fetchQuota();
   }, [fetchQuota]);
 
-  async function syncWithDrive(filesToSync: CloudFile[] = []) {
+  async function syncWithDrive(filesToSync?: CloudFile[]) {
     if (!clientId) return null;
+    let files = filesToSync;
+    if (!files) {
+      const listRes = await fetchWorker(`/api/google-drive/files?clientId=${encodeURIComponent(clientId)}&pageSize=200`);
+      const raw = Array.isArray(listRes?.data?.files) ? listRes.data.files : [];
+      files = raw.map((f: Record<string, unknown>) => ({
+        driveFileId: String(f.id || ""),
+        driveParentId: Array.isArray(f.parents) && f.parents.length ? String(f.parents[0]) : null,
+        name: String(f.name || ""),
+        mimeType: String(f.mimeType || "application/octet-stream"),
+        isFolder: Boolean(f.isFolder),
+        size: Number(f.size) || 0,
+        webViewLink: f.webViewLink ? String(f.webViewLink) : undefined,
+        thumbnailLink: f.thumbnailLink ? String(f.thumbnailLink) : undefined,
+        iconUrl: f.iconUrl ? String(f.iconUrl) : undefined,
+        md5Checksum: f.md5Checksum ? String(f.md5Checksum) : undefined,
+        trashed: Boolean(f.trashed),
+        createdAt: f.createdTime ? String(f.createdTime) : undefined,
+        date: f.modifiedTime ? String(f.modifiedTime) : undefined,
+      })) as CloudFile[];
+    }
     const res = await fetchWorker("/api/cloud/files/sync", {
       method: "POST",
-      body: JSON.stringify({ clientId, files: filesToSync }),
+      body: JSON.stringify({ clientId, files }),
     });
     await reload();
     return res?.data;

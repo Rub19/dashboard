@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
 import BrandMark from "@/components/BrandMark";
-import { NAVIGATION_ITEMS } from "@/lib/navigation";
+import { NAVIGATION_ITEMS, isActiveRoute } from "@/lib/navigation";
 
 const VISIBLE_MOBILE_IDS = ["home", "notes", "tasks", "calendar"];
 
@@ -34,7 +34,7 @@ export default function MobileNav() {
       >
         <div className="flex items-center justify-around gap-1 px-2 py-2">
           {visibleItems.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(item.href);
+            const isActive = isActiveRoute(pathname ?? "/", item.href);
             return (
               <Link
                 key={item.id}
@@ -115,7 +115,7 @@ export default function MobileNav() {
               </div>
               <nav className="space-y-1">
                 {items.map((item) => {
-                  const isActive = pathname === item.href || pathname.startsWith(item.href);
+                  const isActive = isActiveRoute(pathname ?? "/", item.href);
                   return (
                     <Link
                       key={item.id}

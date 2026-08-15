@@ -3,6 +3,7 @@
 import { useMemo, useState, useEffect, useRef, type DragEvent } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { isActiveRoute } from "@/lib/navigation";
 import { useSettings } from "@/components/SettingsProvider";
 import { useWindowManager } from "@/components/WindowManagerProvider";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
@@ -241,7 +242,7 @@ export default function Dock() {
         }`}
       >
         {visibleItems().map((item) => {
-          const active = pathname === item.href || pathname.startsWith(item.href);
+          const active = isActiveRoute(pathname, item.href);
           const isFocus = item.id === "focus";
 
           const contextItems = [

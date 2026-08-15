@@ -8,7 +8,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
 import BrandMark from "@/components/BrandMark";
 import SidebarItem from "@/components/SidebarItem";
-import { NAVIGATION_ITEMS, type NavigationItem } from "@/lib/navigation";
+import { NAVIGATION_ITEMS, type NavigationItem, isActiveRoute } from "@/lib/navigation";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -78,7 +78,7 @@ export default function Sidebar() {
               href={item.href}
               icon={item.icon}
               label={item.label}
-              isActive={pathname === item.href || pathname.startsWith(item.href)}
+              isActive={isActiveRoute(pathname ?? "/", item.href)}
               expanded={expanded}
             />
           ))}
@@ -93,7 +93,7 @@ export default function Sidebar() {
             href={item.href}
             icon={item.icon}
             label={item.label}
-            isActive={pathname === item.href || pathname.startsWith(item.href)}
+            isActive={isActiveRoute(pathname ?? "/", item.href)}
             expanded={expanded}
           />
         ))}

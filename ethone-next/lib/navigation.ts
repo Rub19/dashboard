@@ -29,3 +29,8 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
 export function navigationItem(id: string): NavigationItem {
   return NAVIGATION_ITEMS.find((item) => item.id === id) || NAVIGATION_ITEMS[0];
 }
+
+export function isActiveRoute(pathname: string, href: string) {
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(href);
+}

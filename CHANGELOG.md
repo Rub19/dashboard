@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : empêcher étirement vertical des cartes settings**
+
+### Corrige
+- `ethone-next/components/settings/SettingsContent.tsx` : ajout de `items-start` sur les grilles de sections pour que les petites cartes (Langue, etc.) ne s’étirent pas à la hauteur des voisines.
+
 **Migration Next.js : décaler la barre de sauvegarde au-dessus du Dock**
 
 ### Corrige

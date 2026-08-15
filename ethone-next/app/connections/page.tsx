@@ -23,6 +23,15 @@ import DiagnosticPanel from "@/components/DiagnosticPanel";
 import ConnectionCard from "@/components/ConnectionCard";
 import type { ReactNode } from "react";
 
+function clientIdFromStorage(provider: string): string {
+  if (typeof window === "undefined") return "";
+  try {
+    return localStorage.getItem(`ethone:clientId:${provider}`) || "";
+  } catch {
+    return "";
+  }
+}
+
 const CATEGORY_ICONS: Record<string, ReactNode> = {
   all: <Blocks className="h-3.5 w-3.5" />,
   media: <Music className="h-3.5 w-3.5" />,
@@ -49,11 +58,11 @@ export default function ConnectionsPage() {
   useEffect(() => {
     setClientIds((prev) => ({
       ...prev,
-      spotify: settings.liveSpotifyClientId || prev.spotify || "",
-      youtube: settings.liveYoutubeClientId || prev.youtube || "",
-      reddit: settings.liveRedditClientId || prev.reddit || "",
-      "google-calendar": settings.calendarClientId || prev["google-calendar"] || "",
-      "google-drive": settings.driveClientId || prev["google-drive"] || "",
+      spotify: settings.liveSpotifyClientId || clientIdFromStorage("spotify") || prev.spotify || "",
+      youtube: settings.liveYoutubeClientId || clientIdFromStorage("youtube") || prev.youtube || "",
+      reddit: settings.liveRedditClientId || clientIdFromStorage("reddit") || prev.reddit || "",
+      "google-calendar": settings.calendarClientId || clientIdFromStorage("google-calendar") || prev["google-calendar"] || "",
+      "google-drive": settings.driveClientId || clientIdFromStorage("google-drive") || prev["google-drive"] || "",
     }));
   }, [settings.liveSpotifyClientId, settings.liveYoutubeClientId, settings.liveRedditClientId, settings.calendarClientId, settings.driveClientId]);
 

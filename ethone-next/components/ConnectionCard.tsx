@@ -155,6 +155,9 @@ export default function ConnectionCard({
       if (integration.id === "reddit") update({ liveRedditClientId: trimmed });
       if (integration.id === "google-calendar") update({ calendarClientId: trimmed });
       if (integration.id === "google-drive") update({ driveClientId: trimmed });
+      try {
+        localStorage.setItem(`ethone:clientId:${integration.id}`, trimmed);
+      } catch {}
       success(i18n("connectSuccess"));
       window.location.href = buildAuthUrl(integration.id, trimmed, { provider: integration.id, clientId: trimmed });
     } catch {

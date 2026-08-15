@@ -293,11 +293,6 @@ export default function V8Breadcrumbs() {
     if (isFocus) focus.stop();
     else focus.start(settings.focusPreset || "pomodoro");
   };
-  const handleNotifications = () => {
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(new CustomEvent("v8:open-notifications"));
-    }
-  };
   const handleSync = () => {
     sync().catch(() => {});
   };
@@ -368,11 +363,6 @@ export default function V8Breadcrumbs() {
           active={syncing}
           label={i18n("sync")}
           onClick={handleSync}
-        />
-        <QuickAction
-          icon="bell"
-          label={i18n("notifications")}
-          onClick={handleNotifications}
         />
         <WeatherButton
           weather={weather}

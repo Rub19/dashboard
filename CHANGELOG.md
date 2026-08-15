@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : retirer layout animation du panel settings avancé**
+
+### Corrige
+- `ethone-next/components/settings/SettingsContent.tsx` : suppression du `layout` Framer Motion sur le conteneur des sections avancées pour éviter le recul/rebond du panel au clic.
+
 **Migration Next.js : empêcher étirement vertical des cartes settings**
 
 ### Corrige

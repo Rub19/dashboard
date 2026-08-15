@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : panneau Santé réduit par défaut**
+
+### Corrige
+- `ethone-next/components/DiagnosticPanel.tsx` : `expanded` passe à `false` par défaut.
+
 **Migration Next.js : refaire page Interactions et heatmap GitHub**
 
 ### Corrige

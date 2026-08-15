@@ -1111,7 +1111,6 @@ export default function SettingsContent() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            layout
             transition={{ type: "spring", stiffness: 500, damping: 35 }}
             className="overflow-hidden"
           >

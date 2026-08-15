@@ -4,6 +4,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : améliorer widget Minecraft avec Crafatar**
+
+### Corrige
+- `worker/src/services/minecraft-client.js` : ajout de `avatarUrl`, `bodyUrl` et `skinUrl` fallback via Crafatar. NameMC n'a pas d'API publique accessible, donc on utilise Crafatar qui est fiable et gratuit.
+- `ethone-next/lib/hooks/useMinecraftLive.ts` : expose les nouvelles URLs.
+- `ethone-next/components/LiveWidgets.tsx` : face avec l'avatar Crafatar, verso avec le rendu 3D du body, les tags Cape/Model, et l'historique des pseudos stylisé.
+
 **Migration Next.js : moderniser panneaux Settings**
 
 ### Corrige

@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : retirer cloche quick action en double**
+
+### Corrige
+- `ethone-next/components/V8Breadcrumbs.tsx` : suppression de l’icône cloche quick action dans le header (doublon avec `NotificationCenter` dans `Shell`).
+
 **Migration Next.js : corriger notifications et retirer les placeholders**
 
 ### Corrige

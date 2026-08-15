@@ -745,35 +745,44 @@ export default function LiveWidgets({
     const username = toStr(profile.username) || toStr(profile.name) || record.title;
     const uuid = toStr(profile.uuid);
     const model = toStr(profile.model);
-    const skin = toStr(profile.skinUrl);
+    const body = toStr(profile.bodyUrl);
     const cape = toStr(profile.capeUrl);
 
     return (
       <div className="flex h-full flex-col gap-3">
         <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
-        <div className="flex items-center gap-3">
-          {skin ? (
-            <Image src={skin} alt="" width={48} height={48} unoptimized className="h-12 w-12 rounded object-cover" />
-          ) : (
-            <span className="flex h-12 w-12 items-center justify-center rounded bg-[var(--surface)] text-[10px]">MC</span>
-          )}
+
+        {body ? (
+          <div className="flex items-center justify-center rounded-2xl bg-[var(--surface)]/60 p-2">
+            <Image src={body} alt="" width={200} height={200} unoptimized className="h-28 w-28 object-contain drop-shadow-lg" />
+          </div>
+        ) : (
+          <div className="flex h-28 items-center justify-center rounded-2xl bg-[var(--surface)]/60">
+            <span className="text-3xl">⛏️</span>
+          </div>
+        )}
+
+        <div className="flex items-center justify-between gap-2">
           <div className="min-w-0">
             <p className="truncate font-medium text-[var(--foreground)]">{username || "—"}</p>
             {uuid && <p className="text-[10px] text-[var(--muted)]">ID: {uuid.slice(0, 8)}…</p>}
           </div>
+          <div className="flex flex-wrap items-center justify-end gap-1.5">
+            {model && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] text-emerald-400">
+                <Icon name="box" className="h-3 w-3" />
+                {model}
+              </span>
+            )}
+            {cape && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-1 text-[10px] text-amber-400">
+                <Icon name="shirt" className="h-3 w-3" />
+                Cape
+              </span>
+            )}
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {model && (
-            <span className="rounded bg-[var(--surface)] px-1.5 py-0.5 text-xs text-[var(--muted)]">
-              {i18n("model")}: {model}
-            </span>
-          )}
-          {cape && (
-            <span className="rounded bg-[var(--surface)] px-1.5 py-0.5 text-xs text-[var(--muted)]">
-              Cape
-            </span>
-          )}
-        </div>
+
         <div className="flex-1 overflow-y-auto pr-1">
           <p className="mb-1 text-xs font-medium text-[var(--muted)]">
             {i18n("nameHistory")} · {names.length}
@@ -781,7 +790,7 @@ export default function LiveWidgets({
           {names.length > 0 ? (
             <ul className="space-y-1.5">
               {names.slice(-8).map((n, i) => (
-                <li key={i} className="flex items-center justify-between text-sm">
+                <li key={i} className="flex items-center justify-between rounded-lg bg-[var(--surface)]/40 px-2 py-1 text-sm">
                   <span className="truncate text-[var(--foreground)]">{toStr(n.name) || "—"}</span>
                   {Boolean(n.changedAt) && (
                     <span className="text-[10px] text-[var(--muted)]">
@@ -1106,15 +1115,15 @@ export default function LiveWidgets({
     const profile = (minecraft as Record<string, unknown>) || {};
     const username = toStr(profile.username) || toStr(profile.name) || record.title;
     const uuid = toStr(profile.uuid);
-    const skin = toStr(profile.skinUrl);
+    const avatar = toStr(profile.avatarUrl) || toStr(profile.skinUrl);
     const cape = toStr(profile.capeUrl);
     const model = toStr(profile.model);
 
     return (
       <div className="flex h-full flex-col">
         <div className="mb-3 flex items-center gap-3">
-          {skin ? (
-            <Image src={skin} alt="" width={56} height={56} unoptimized className="h-14 w-14 rounded-xl border-2 border-[var(--border)] object-cover shadow-md" />
+          {avatar ? (
+            <Image src={avatar} alt="" width={56} height={56} unoptimized className="h-14 w-14 rounded-xl border-2 border-[var(--border)] object-cover shadow-md" />
           ) : (
             <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-emerald-500/10 text-2xl shadow-md">
               ⛏️

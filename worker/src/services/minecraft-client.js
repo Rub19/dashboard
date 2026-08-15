@@ -68,11 +68,16 @@ export async function getMinecraftProfile(env, username) {
     nameHistory = [];
   }
 
+  const uuidWithDashes = `${uuid.slice(0, 8)}-${uuid.slice(8, 12)}-${uuid.slice(12, 16)}-${uuid.slice(16, 20)}-${uuid.slice(20)}`;
+
   return Object.freeze({
     username: safeText(profile.data?.name || lookup.data?.name, 16),
     uuid,
-    skinUrl: textures.skinUrl,
-    capeUrl: textures.capeUrl,
+    uuidWithDashes,
+    skinUrl: textures.skinUrl || `https://crafatar.com/skins/${uuidWithDashes}`,
+    avatarUrl: `https://crafatar.com/avatars/${uuidWithDashes}?overlay&size=128`,
+    bodyUrl: `https://crafatar.com/renders/body/${uuidWithDashes}?overlay&scale=6&width=256&height=256`,
+    capeUrl: textures.capeUrl || `https://crafatar.com/capes/${uuidWithDashes}`,
     model: textures.model,
     nameHistory: Object.freeze(nameHistory)
   });

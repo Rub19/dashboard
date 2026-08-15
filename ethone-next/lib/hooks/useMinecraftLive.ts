@@ -12,7 +12,10 @@ export type MinecraftProfile = {
   username?: string;
   name?: string;
   uuid?: string;
+  uuidWithDashes?: string;
   skinUrl?: string;
+  avatarUrl?: string;
+  bodyUrl?: string;
   capeUrl?: string;
   model?: string;
   nameHistory?: MinecraftNameHistoryEntry[];
@@ -31,7 +34,7 @@ export type MinecraftLive = {
 
 function deriveAvatarUrl(profile: MinecraftProfile | null): string | undefined {
   if (!profile) return undefined;
-  return profile.skinUrl || profile.capeUrl;
+  return profile.avatarUrl || profile.skinUrl || profile.capeUrl;
 }
 
 function deriveLastSeen(profile: MinecraftProfile | null): string | undefined {

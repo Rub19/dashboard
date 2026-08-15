@@ -391,7 +391,6 @@ export default function FilesPage() {
             setFavorites(id === "favorites");
             setTrashed(id === "trash");
           }}
-          layoutId="activeFilesTab"
         />
         <input
           type="search"
@@ -462,9 +461,20 @@ export default function FilesPage() {
 
       <div className="grid grid-cols-1 gap-3">
         {loading ? (
-          <Card3D>
-            <div className="h-4 w-1/3 animate-pulse rounded bg-[var(--border)]" />
-          </Card3D>
+          <>
+            {[...Array(4)].map((_, i) => (
+              <Card3D key={i}>
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 shrink-0 animate-pulse rounded-xl bg-[var(--border)]" />
+                  <div className="min-w-0 flex-1 space-y-2">
+                    <div className="h-3.5 w-2/5 animate-pulse rounded bg-[var(--border)]" />
+                    <div className="h-2.5 w-1/4 animate-pulse rounded bg-[var(--border)]" />
+                  </div>
+                  <div className="h-4 w-20 animate-pulse rounded bg-[var(--border)]" />
+                </div>
+              </Card3D>
+            ))}
+          </>
         ) : filteredFiles.length === 0 ? (
           <Card3D>
             <p className="text-sm text-[var(--muted)]">{i18n("noFiles")}</p>

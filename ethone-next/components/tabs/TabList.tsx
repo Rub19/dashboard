@@ -15,7 +15,6 @@ type TabListProps = {
   tabs: TabItem[];
   activeId: string;
   onSelect: (id: string) => void;
-  layoutId?: string;
   label?: string;
 };
 
@@ -23,7 +22,6 @@ export default function TabList({
   tabs,
   activeId,
   onSelect,
-  layoutId = "activeTab",
   label,
 }: TabListProps) {
   const listRef = useRef<HTMLDivElement>(null);
@@ -211,12 +209,7 @@ export default function TabList({
               )}
             >
               {active && (
-                <motion.div
-                  layoutId={layoutId}
-                  initial={false}
-                  transition={SPRING}
-                  className="absolute inset-0 -z-10 rounded-xl bg-[var(--accent)]"
-                />
+                <div className="absolute inset-0 -z-10 rounded-xl bg-[var(--accent)]" />
               )}
               <span className="relative z-10 flex items-center gap-2">
                 {tab.icon}

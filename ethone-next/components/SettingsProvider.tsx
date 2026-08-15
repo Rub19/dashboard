@@ -115,7 +115,7 @@ export default function SettingsProvider({
     const local = loadSettings(active || undefined);
     setSettings(local);
     loadSettingsAsync(active || undefined).then((remote) => {
-      setSettings({ ...local, ...remote });
+      setSettings({ ...DEFAULTS, ...local, ...remote });
     });
   }, [loaded, active]);
 

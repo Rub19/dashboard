@@ -355,7 +355,12 @@ const SOUND_PACK_LEGACY: Record<string, SoundPack> = {
 const SESSION_MODE_VALUES: SessionMode[] = ["default", "focus", "intense", "zen", "night"];
 
 function migrateSettings(raw: Partial<Settings>): Partial<Settings> {
-  const next: Partial<Settings> = { ...raw };
+  const next: Partial<Settings> = {};
+  for (const [key, value] of Object.entries(raw)) {
+    if (value !== undefined) {
+      (next as Record<string, unknown>)[key] = value;
+    }
+  }
   if (typeof raw.sessionMode === "string" && !SESSION_MODE_VALUES.includes(raw.sessionMode as SessionMode)) {
     next.sessionMode = "default";
   }
@@ -409,16 +414,16 @@ export function saveSettings(settings: Settings, profileId?: string) {
   localStorage.setItem(localSettingsKey(profileId), JSON.stringify(settings));
 }
 
-export async function loadSettingsAsync(profileId?: string): Promise<Settings> {
+export async function loadSettingsAsync(profileId?: string): Promise<Partial<Settings>> {
   try {
     const scopedKey = remoteSettingsKey(profileId);
     let remote = await getUserState<Partial<Settings> | null>(scopedKey, null);
     if (profileId && !remote) {
       remote = await getUserState<Partial<Settings> | null>(STATE_KEY, null);
     }
-    return { ...DEFAULTS, ...migrateSettings(remote || {}) };
+    return migrateSettings(remote || {});
   } catch {
-    return loadSettings(profileId);
+    return migrateSettings({});
   }
 }
 

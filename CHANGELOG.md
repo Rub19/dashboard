@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : adoucir animation sidebar**
+
+### Corrige
+- `ethone-next/components/SidebarItem.tsx` : remplacement des sauts de classes `w-0` / `w-full` par des transitions CSS sur `width`, `maxWidth`, `opacity` et `marginLeft`. L'ouverture/fermeture est maintenant fluide.
+- `ethone-next/components/Sidebar.tsx` : le titre `ETHONE` utilise aussi `maxWidth` au lieu de `w-0`, sans délai saccadé.
+
 **Migration Next.js : refaire design Météo**
 
 ### Corrige

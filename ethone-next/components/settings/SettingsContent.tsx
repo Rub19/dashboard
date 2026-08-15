@@ -1082,7 +1082,7 @@ export default function SettingsContent() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
         {mainSections.map((section) => (
           <SettingsSection
             key={section.id}
@@ -1122,7 +1122,7 @@ export default function SettingsContent() {
               modifiedCount={advancedModifiedCount}
               visible
             >
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
                 {visibleAdvancedSections.map((section) => (
                   <SettingsSection
                     key={section.id}

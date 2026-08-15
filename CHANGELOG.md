@@ -4,6 +4,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : refaire design Météo**
+
+### Corrige
+- `ethone-next/app/weather/page.tsx` : refonte complète avec un hero, icône dynamique selon le code WMO, grille de détails (humidité, vent, jour/nuit, température), prévisions en cards modernes.
+- `ethone-next/lib/icons.tsx` : ajout des icônes météo (cloud, cloudRain, cloudSnow, cloudLightning, cloudFog, cloudMoon, wind, droplets, thermometer, umbrella, sunrise).
+- Les fonds gris transparents ont été remplacés par `bg-[var(--surface-raised)]` opaque, plus lisible.
+
 **Migration Next.js : corriger UI Focus**
 
 ### Corrige

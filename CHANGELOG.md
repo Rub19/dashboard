@@ -4,6 +4,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : refondre le panel admin Fichiers**
+
+### Corrige
+- `ethone-next/components/FilesAdminPanel.tsx` : refonte complète avec gestion d'erreurs par requête, meilleur état de chargement, icônes sur les stats, recherche plus robuste, onglets plus clairs.
+- `ethone-next/app/files/page.tsx` : le BottomSheet admin s'ouvre maintenant au centre et non plus en bas.
+- `ethone-next/components/tabs/TabList.tsx` / `Tabs.tsx` / `types.ts` : suppression de l'ancienne prop `layoutId` devenue inutile.
+
 **Migration Next.js : retirer animation moche dans les onglets Fichiers**
 
 ### Corrige

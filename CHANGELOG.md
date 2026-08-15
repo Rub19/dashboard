@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : fallback localStorage pour les Client IDs OAuth**
+
+### Corrige
+- `ethone-next/app/connections/page.tsx` : initialisation des champs Client ID avec un fallback `localStorage` (`ethone:clientId:<provider>`) en plus des settings.
+- `ethone-next/components/ConnectionCard.tsx` : sauvegarde du Client ID dans `localStorage` avant la redirection OAuth.
+
 **Migration Next.js : corriger persistance des credentials live au refresh**
 
 ### Corrige

@@ -4,6 +4,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : nettoyer et moderniser l'UI des settings**
+
+### Corrige
+- `ethone-next/components/settings/SettingControls.tsx` : `ButtonGridControl` et `CheckboxListControl` modernisés avec bordures accent, indicateurs visuels, icônes et états plus lisibles.
+- `ethone-next/components/settings/SettingField.tsx` : alignement centré, meilleur espacement, suppression du badge "Saved" parasite.
+- `ethone-next/components/settings/SettingsSection.tsx` : en-tête de section avec fond d'icône et espacement amélioré.
+
 **Migration Next.js : retirer cloche quick action en double**
 
 ### Corrige

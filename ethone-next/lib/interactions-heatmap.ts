@@ -17,6 +17,11 @@ export type HeatmapStats = {
   averagePerDay: number;
 };
 
+export type HeatmapWeek = {
+  week: string;
+  days: (InteractionsHeatmapPoint | null)[];
+};
+
 function startOfDay(d: Date) {
   const c = new Date(d);
   c.setHours(0, 0, 0, 0);
@@ -29,6 +34,19 @@ function dateKey(d: Date) {
 
 function isSameDay(a: Date, b: Date) {
   return dateKey(a) === dateKey(b);
+}
+
+function weekday(d: Date) {
+  const day = d.getDay();
+  return day === 0 ? 6 : day - 1; // Lundi = 0, Dimanche = 6
+}
+
+function weekKey(d: Date) {
+  const c = new Date(d);
+  c.setHours(0, 0, 0, 0);
+  const day = weekday(c);
+  c.setDate(c.getDate() - day);
+  return c.toISOString().slice(0, 10);
 }
 
 function getKind(record: { data?: Record<string, unknown> }): string {
@@ -70,6 +88,7 @@ export class InteractionsHeatmap {
   build(range: HeatmapRange, filterKind: string | "all" = "all"): {
     heatmap: InteractionsHeatmapPoint[];
     points: InteractionsHeatmapPoint[];
+    weeks: HeatmapWeek[];
     matrix: (InteractionsHeatmapPoint | null)[][];
     stats: HeatmapStats;
   } {
@@ -114,23 +133,22 @@ export class InteractionsHeatmap {
     const total = points.reduce((s, d) => s + d.count, 0);
     const averagePerDay = points.length ? Math.round((total / points.length) * 10) / 10 : 0;
 
-    const firstWeekday = new Date(points[0].date).getDay();
-    const matrix: (InteractionsHeatmapPoint | null)[][] = [];
-    let row: (InteractionsHeatmapPoint | null)[] = [];
-    for (let i = 0; i < (firstWeekday === 0 ? 6 : firstWeekday - 1); i++) row.push(null);
+    const weeksMap: Record<string, (InteractionsHeatmapPoint | null)[]> = {};
     points.forEach((day) => {
-      if (row.length === 7) {
-        matrix.push(row);
-        row = [];
-      }
-      row.push(day);
+      const d = new Date(day.date);
+      const wk = weekKey(d);
+      if (!weeksMap[wk]) weeksMap[wk] = Array(7).fill(null);
+      const idx = weekday(d);
+      weeksMap[wk][idx] = day;
     });
-    while (row.length < 7) row.push(null);
-    if (row.length) matrix.push(row);
+
+    const weeks = Object.entries(weeksMap).map(([week, days]) => ({ week, days })).sort((a, b) => a.week.localeCompare(b.week));
+    const matrix = weeks.map((w) => w.days);
 
     return {
       heatmap: points,
       points,
+      weeks,
       matrix,
       stats: {
         today,

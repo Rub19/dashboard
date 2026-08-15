@@ -62,6 +62,16 @@ function getKind(record: { data?: Record<string, unknown> }) {
   return "sync";
 }
 
+function formatDayLabel(dateStr?: string, locale = "fr") {
+  if (!dateStr) return "";
+  return new Date(dateStr).toLocaleDateString(locale, { month: "short", day: "numeric" });
+}
+
+function formatMonthLabel(dateStr?: string, locale = "fr") {
+  if (!dateStr) return "";
+  return new Date(dateStr).toLocaleDateString(locale, { month: "short" });
+}
+
 export default function InteractionsPage() {
   const i18n = useI18n();
   const { settings } = useSettings();
@@ -71,8 +81,7 @@ export default function InteractionsPage() {
   const [newTarget, setNewTarget] = useState("");
   const [newKind, setNewKind] = useState<string>("like");
   const [live, setLive] = useState(false);
-  const [range, setRange] = useState<HeatmapRange>(30);
-  const [expanded, setExpanded] = useState(true);
+  const [range, setRange] = useState<HeatmapRange>(90);
   const [filterKind, setFilterKind] = useState<string>("all");
 
   const filteredReactions = useMemo(() => {
@@ -82,7 +91,7 @@ export default function InteractionsPage() {
 
   const engine = useMemo(() => new InteractionsHeatmap(), []);
 
-  const { heatmap, matrix, stats } = useMemo(() => {
+  const { weeks, stats } = useMemo(() => {
     engine.setRecords(filteredReactions);
     return engine.build(range, filterKind);
   }, [engine, filteredReactions, range, filterKind]);
@@ -90,8 +99,6 @@ export default function InteractionsPage() {
   const kindStats = useMemo(() => {
     return Object.entries(stats.byKind).sort((a, b) => b[1] - a[1]);
   }, [stats.byKind]);
-
-  const maxInDay = stats.maxInDay || 10;
 
   useEffect(() => {
     if (!live) return;
@@ -143,7 +150,7 @@ export default function InteractionsPage() {
       sync: "refresh-cw",
       uiCustomize: "sliders-horizontal",
     };
-    return <Icon name={map[kind] || "flame"} className={`h-5 w-5 ${colorFor(kind)}`} />;
+    return <Icon name={map[kind] || "flame"} className={`h-4 w-4 ${colorFor(kind)}`} />;
   }
 
   function colorFor(kind: string) {
@@ -154,11 +161,21 @@ export default function InteractionsPage() {
   }
 
   const weekdays = WEEKDAY_KEYS.map((k) => i18n(k));
-
-  function formatDayLabel(dateStr?: string) {
-    if (!dateStr) return "";
-    return new Date(dateStr).toLocaleDateString(settings.language, { month: "short", day: "numeric" });
-  }
+  const monthLabels = useMemo(() => {
+    const labels: { index: number; label: string }[] = [];
+    weeks.forEach((w, i) => {
+      const firstDay = w.days.find((d) => d !== null);
+      if (!firstDay) return;
+      const day = new Date(firstDay.date);
+      if (day.getDate() <= 7 || i === 0) {
+        const label = formatMonthLabel(firstDay.date, settings.language);
+        if (!labels.length || labels[labels.length - 1].label !== label) {
+          labels.push({ index: i, label });
+        }
+      }
+    });
+    return labels;
+  }, [weeks, settings.language]);
 
   return (
     <div className="space-y-6">
@@ -175,7 +192,7 @@ export default function InteractionsPage() {
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Card3D>
           <div className="flex items-center gap-3">
             <Icon name="calendar" className="h-6 w-6 text-rose-400" />
@@ -217,13 +234,13 @@ export default function InteractionsPage() {
       {kindStats.length > 0 && (
         <Card3D>
           <p className="mb-3 text-sm font-medium">{i18n("byKind")}</p>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
             {kindStats.map(([kind, count]) => (
               <button
                 key={kind}
                 type="button"
                 onClick={() => setFilterKind(kind)}
-                className={`flex items-center gap-2 rounded-xl border px-2 py-1.5 text-left text-xs transition-colors ${
+                className={`flex items-center gap-2 rounded-xl border px-2.5 py-2 text-left text-xs transition-colors ${
                   filterKind === kind ? "border-[var(--accent)] bg-[var(--accent)]/10" : "border-[var(--border)] bg-[var(--surface)]"
                 }`}
               >
@@ -314,62 +331,75 @@ export default function InteractionsPage() {
                       : "border-[var(--border)] bg-[var(--surface-raised)] hover:border-[var(--accent)]"
                   }`}
                 >
-                  {i18n(r === 30 ? "range30" : "range90")}
+                  {r}j
                 </button>
               ))}
             </div>
-            <button
-              type="button"
-              onClick={() => setExpanded((v) => !v)}
-              className="inline-flex items-center gap-1 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs font-medium transition-colors hover:border-[var(--accent)]"
-            >
-              <Icon name={expanded ? "chevron-up" : "chevron-down"} className="h-3.5 w-3.5" />
-              {i18n(expanded ? "collapse" : "expand")}
-            </button>
           </div>
         </div>
       </Card3D>
 
-      {expanded && (
-        <Card3D>
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold">{i18n("heatmap")}</h2>
-            <div className="flex items-center gap-1.5">
-              {[0, 1, 2, 3, 4].map((level) => (
-                <div key={level} className={`h-2.5 w-2.5 rounded-sm ${intensityBg(level)}`} />
-              ))}
+      <Card3D>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-semibold">{i18n("heatmap")}</h2>
+          <div className="flex items-center gap-1.5">
+            <span className="text-[10px] text-[var(--muted)]">{i18n("less")}</span>
+            {[0, 1, 2, 3, 4].map((level) => (
+              <div key={level} className={`h-2.5 w-2.5 rounded-[3px] ${intensityBg(level)}`} />
+            ))}
+            <span className="text-[10px] text-[var(--muted)]">{i18n("more")}</span>
+          </div>
+        </div>
+
+        <div className="overflow-x-auto pb-2">
+          <div className="min-w-max">
+            <div className="flex gap-1">
+              <div className="flex w-8 flex-col gap-1 pt-5">
+                {weekdays.map((d, i) => (
+                  <div key={i} className="flex h-3 items-center justify-end text-[10px] text-[var(--muted)]">
+                    {i % 2 === 0 ? d : ""}
+                  </div>
+                ))}
+              </div>
+              <div className="flex flex-col gap-1">
+                <div className="relative flex h-4 gap-1">
+                  {monthLabels.map((m, i) => (
+                    <div
+                      key={i}
+                      className="absolute text-[10px] text-[var(--muted)]"
+                      style={{ left: `${m.index * 17}px` }}
+                    >
+                      {m.label}
+                    </div>
+                  ))}
+                </div>
+                <div className="flex gap-1">
+                  {weeks.map((w, wi) => (
+                    <div key={wi} className="flex flex-col gap-1">
+                      {w.days.map((day, di) => (
+                        <div key={di} className="h-3 w-3">
+                          {day ? (
+                            <Tooltip label={`${formatDayLabel(day.date, settings.language)}: ${day.count} ${i18n("interactions")}`} position="top">
+                              <button
+                                type="button"
+                                onPointerDown={medium}
+                                aria-label={`${formatDayLabel(day.date, settings.language)}: ${day.count} ${i18n("interactions")}`}
+                                className={`h-3 w-3 rounded-[3px] transition-all hover:scale-125 hover:brightness-110 ${intensityBg(InteractionsHeatmap.intensity(day.count, stats.maxInDay || 1))}`}
+                              />
+                            </Tooltip>
+                          ) : (
+                            <div className="h-3 w-3" />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-
-          <div className="grid grid-cols-7 gap-1.5">
-            {weekdays.map((d, i) => (
-              <div key={i} className="text-center text-[10px] text-[var(--muted)]">{d}</div>
-            ))}
-            {matrix.flat().map((day, i) => (
-              <div key={i}>
-                {day ? (
-                  <Tooltip label={`${formatDayLabel(day.date)}: ${day.count}`} position="top">
-                    <button
-                      type="button"
-                      onPointerDown={medium}
-                      aria-label={`${formatDayLabel(day.date)}: ${day.count} ${i18n("interactions")}`}
-                      title={`${formatDayLabel(day.date)}: ${day.count}`}
-                      className={`aspect-square w-full rounded-md transition-all hover:scale-125 hover:shadow-lg hover:brightness-110 ${intensityBg(InteractionsHeatmap.intensity(day.count, maxInDay))}`}
-                    />
-                  </Tooltip>
-                ) : (
-                  <div className="aspect-square w-full" />
-                )}
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-2 flex items-center justify-between text-xs text-[var(--muted)]">
-            <span>{formatDayLabel(heatmap[0]?.date)}</span>
-            <span>{formatDayLabel(heatmap[heatmap.length - 1]?.date)}</span>
-          </div>
-        </Card3D>
-      )}
+        </div>
+      </Card3D>
 
       <div className="space-y-3">
         {filteredReactions.map((r) => {

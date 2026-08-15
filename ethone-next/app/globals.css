@@ -1695,6 +1695,11 @@ html {
   display: flex;
   align-items: flex-end;
   gap: var(--density-section-gap);
+  border-radius: 9999px !important;
+}
+
+[data-dock-item] {
+  border-radius: 9999px !important;
 }
 
 [data-dock-scale="compact"] [data-dock] {

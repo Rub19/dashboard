@@ -60,9 +60,8 @@ export default function Sidebar() {
           <Icon name="menu" className="h-5 w-5" />
         </button>
         <span
-          className={`ml-3 flex items-center gap-2 overflow-hidden whitespace-nowrap text-lg font-semibold tracking-tight text-[var(--foreground)] transition-all duration-300 ${
-            expanded ? "opacity-100 translate-x-0 delay-100" : "opacity-0 pointer-events-none translate-x-2 w-0"
-          }`}
+          className="ml-3 flex items-center gap-2 overflow-hidden whitespace-nowrap text-lg font-semibold tracking-tight text-[var(--foreground)] transition-all duration-300 ease-out"
+          style={{ maxWidth: expanded ? 160 : 0, opacity: expanded ? 1 : 0, transform: expanded ? "translateX(0)" : "translateX(8px)" }}
         >
           <BrandMark size={28} />
           ETHONE

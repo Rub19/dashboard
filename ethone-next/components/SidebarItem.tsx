@@ -29,20 +29,28 @@ export default function SidebarItem({
       aria-label={label}
       data-tooltip={expanded ? undefined : label}
       data-haptic
-      className={`group relative z-10 flex h-10 shrink-0 items-center !rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/50 ${
-        expanded ? "w-full gap-3.5 px-3 py-2.5" : "w-10 justify-center"
-      } ${
+      className={`group relative z-10 flex h-10 shrink-0 items-center !rounded-xl transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/50 ${
         isActive
           ? "bg-[var(--accent)]/15 text-[var(--accent)] border border-[var(--accent)]/30"
           : "text-[var(--muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
       }`}
-      style={isActive ? { boxShadow: "0 0 12px color-mix(in srgb, var(--accent) 15%, transparent)" } : undefined}
+      style={{
+        width: expanded ? "100%" : 40,
+        paddingLeft: expanded ? 12 : 0,
+        paddingRight: expanded ? 12 : 0,
+        justifyContent: expanded ? "flex-start" : "center",
+        boxShadow: isActive ? "0 0 12px color-mix(in srgb, var(--accent) 15%, transparent)" : undefined,
+      }}
     >
       <Icon name={icon} className="h-5 w-5 shrink-0" />
       <span
-        className={`text-sm font-medium whitespace-nowrap transition-all duration-300 ${
-          expanded ? "opacity-100 translate-x-0 delay-100" : "opacity-0 pointer-events-none translate-x-2 w-0"
-        }`}
+        className="whitespace-nowrap text-sm font-medium transition-all duration-300 ease-out"
+        style={{
+          maxWidth: expanded ? 180 : 0,
+          opacity: expanded ? 1 : 0,
+          marginLeft: expanded ? 12 : 0,
+          overflow: "hidden",
+        }}
       >
         {label}
       </span>
@@ -50,7 +58,7 @@ export default function SidebarItem({
   );
 
   return (
-    <div className={`relative flex w-full items-center py-0.5 ${expanded ? "justify-start" : "justify-center"}`}>
+    <div className="relative flex w-full items-center justify-start py-0.5">
       {isActive && (
         <motion.div
           layoutId="sidebarActivePill"

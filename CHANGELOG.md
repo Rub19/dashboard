@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : retirer animation moche dans les onglets Fichiers**
+
+### Corrige
+- `ethone-next/components/tabs/TabList.tsx` : remplacement du fond d'onglet animé Framer Motion par un fond statique.
+- `ethone-next/app/files/page.tsx` : suppression de la prop `layoutId` inutile et amélioration du skeleton de chargement.
+
 **Migration Next.js : moderniser widget Factures avec scan IA et logos**
 
 ### Corrige

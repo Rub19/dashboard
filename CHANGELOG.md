@@ -4,6 +4,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : améliorer messages d'erreur Google Calendar**
+
+### Corrige
+- `ethone-next/lib/hooks/useCalendarEvents.ts` : traduction et remplacement du message technique "Failed to fetch" par `calendarConnectionError`.
+- `ethone-next/app/calendar/page.tsx` : affichage d'une icône et d'un hint explicite quand Google Agenda n'est pas accessible.
+- `ethone-next/lib/i18n.ts` : ajout des clés `calendarConnectionError` et `calendarConnectionHint` (FR/EN/ES/DE).
+
 **Migration Next.js : corriger surbrillance active Accueil dans la navigation**
 
 ### Corrige

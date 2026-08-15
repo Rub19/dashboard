@@ -4,6 +4,19 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : compacter Settings**
+
+### Corrige
+- `components/settings/SettingsSection.tsx` : padding et icône réduits, radius plus discret.
+- `components/settings/SettingField.tsx` : padding réduit de `px-5 py-4` à `px-4 py-2.5`, espaces internes resserrés.
+- `components/settings/SettingsContent.tsx` : `space-y-6` → `space-y-4`, `gap-4` → `gap-3`.
+- `components/settings/SettingControls.tsx` : `ButtonGridControl` plus compact.
+
+**Migration Next.js : i18n météo**
+
+### Corrige
+- `ethone-next/lib/i18n.ts` : ajout des clés `weatherDescription`, `dayNight`, `day`, `night`, `temperature` pour les langues fr, en, es, de.
+
 **Migration Next.js : composant Slider moderne**
 
 ### Corrige

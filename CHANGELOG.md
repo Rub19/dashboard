@@ -4,6 +4,14 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : moderniser widget Factures avec scan IA et logos**
+
+### Corrige
+- `ethone-next/components/BillsCalendarWidget.tsx` : redesign moderne, boutons "Ajouter" et "Scanner", formulaire d'ajout, suppression, affichage du logo fournisseur sur les jours et dans la liste.
+- `ethone-next/lib/bills-brands.ts` : détection automatique des fournisseurs (Spotify, Netflix, YouTube, EDF, Orange, etc.) avec logo SimpleIcons et couleur.
+- `worker/src/routes/bills-scan.js` : route `/api/bills/scan` pour OCR d'image via OpenAI (désactivée si `OPENAI_API_KEY` manquante).
+- `ethone-next/lib/i18n.ts` : ajout des clés `billLabel`, `billAmount`, `scan`, `once`, `weekly`, `monthly`, `yearly`.
+
 **Migration Next.js : améliorer messages d'erreur Google Calendar**
 
 ### Corrige

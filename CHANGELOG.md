@@ -4,6 +4,15 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : ajouter provider Brain context local**
+
+### Corrige
+- `worker/src/services/ai-config.js` : ajout du provider `context` (local).
+- `worker/src/services/ai-provider-clients.js` : ajout d'un moteur `context` qui répond localement avec des règles simples, sans clé API.
+- `ethone-next/lib/brain/providers.ts` : ne remplace plus `context` par `groq` ; le provider est envoyé au worker tel quel.
+
+Le Brain fonctionne maintenant avec le provider `context` (mode local) si aucune clé cloud n'est configurée. Pour obtenir des réponses plus riches, configure un provider cloud dans les préférences Brain.
+
 **Migration Next.js : panneau Santé réduit par défaut**
 
 ### Corrige

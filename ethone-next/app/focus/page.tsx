@@ -89,7 +89,7 @@ export default function FocusPage() {
         </button>
       </div>
 
-      <Card3D>
+      <Card3D className="p-4" radius="1.5rem">
         <p className="mb-2 text-center text-xs text-[var(--muted)]">{i18n("focusPresets")}</p>
         <div className="flex flex-wrap justify-center gap-2">
           {FOCUS_PRESETS.map((p) => (
@@ -108,8 +108,8 @@ export default function FocusPage() {
           ))}
         </div>
 
-        <div className="relative my-8 flex items-center justify-center">
-          <svg className="h-44 w-44 -rotate-90 sm:h-56 sm:w-56" viewBox="0 0 100 100">
+        <div className="relative my-6 flex items-center justify-center">
+          <svg className="h-40 w-40 -rotate-90 sm:h-48 sm:w-48" viewBox="0 0 100 100">
             <circle
               cx="50"
               cy="50"
@@ -128,12 +128,12 @@ export default function FocusPage() {
                 strokeWidth="8"
                 strokeLinecap="round"
                 strokeDasharray={`${progress * 2.83} 283`}
-                className={`transition-all duration-1000 ${modeColor}`}
+                className={`transition-[stroke-dasharray] duration-700 ${modeColor}`}
               />
             )}
           </svg>
           <div className="absolute text-center">
-            <p className={`text-4xl font-bold tabular-nums sm:text-5xl ${modeColor}`}>
+            <p className={`text-3xl font-bold tabular-nums sm:text-4xl ${modeColor}`}>
               {format(state.remaining)}
             </p>
             <p className="text-sm text-[var(--muted)]">
@@ -179,26 +179,26 @@ export default function FocusPage() {
         </div>
       </Card3D>
 
-      <Card3D>
+      <Card3D className="p-3" radius="1.5rem">
         <p className="text-center text-sm text-[var(--muted)]">{i18n("zenModeDesc")}</p>
       </Card3D>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <Card3D>
+        <Card3D className="p-3" radius="1.5rem">
           <div className="flex flex-col items-center gap-1 text-center">
             <Icon name="brain" className="h-5 w-5 text-[var(--accent)]" />
             <p className="text-lg font-bold">{state.completedPomodoros}</p>
             <p className="text-[10px] text-[var(--muted)]">{i18n("pomodoros")}</p>
           </div>
         </Card3D>
-        <Card3D>
+        <Card3D className="p-3" radius="1.5rem">
           <div className="flex flex-col items-center gap-1 text-center">
             <Icon name="timer" className="h-5 w-5 text-amber-400" />
-            <p className="text-lg font-bold">{Math.floor(state.totalFocusSeconds / 60)} {i18n("focusMinutes")}</p>
+            <p className="text-base font-bold">{Math.floor(state.totalFocusSeconds / 60)} {i18n("focusMinutes")}</p>
             <p className="text-[10px] text-[var(--muted)]">{i18n("totalFocus")}</p>
           </div>
         </Card3D>
-        <Card3D>
+        <Card3D className="p-3" radius="1.5rem">
           <div className="flex flex-col items-center gap-1 text-center">
             <Icon name="coffee" className="h-5 w-5 text-emerald-400" />
             <p className="text-lg font-bold">{state.completedBreaks}</p>

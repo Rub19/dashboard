@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type ReactNode, type MouseEvent } from "react";
+import { useRef, type ReactNode, type MouseEvent, type CSSProperties } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useSettings } from "./SettingsProvider";
 
@@ -8,10 +8,16 @@ export default function Card3D({
   children,
   tilt = false,
   bump = false,
+  className = "",
+  style,
+  radius,
 }: {
   children: ReactNode;
   tilt?: boolean;
   bump?: boolean;
+  className?: string;
+  style?: CSSProperties;
+  radius?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const { settings } = useSettings();
@@ -58,17 +64,18 @@ export default function Card3D({
       whileHover={interactive ? { scale: 1.015 } : undefined}
       whileTap={interactive ? { scale: 0.985 } : undefined}
       transition={interactive ? { type: "spring", stiffness: 400, damping: 25 } : undefined}
-      className="v8-depth-active min-w-0 overflow-hidden border border-[var(--border)] bg-[var(--surface)] p-5 transition-colors hover:border-[var(--accent)]/30 hover:bg-white/[0.02]"
+      className={`v8-depth-active min-w-0 overflow-hidden border border-[var(--border)] bg-[var(--surface)] p-5 transition-colors hover:border-[var(--accent)]/30 hover:bg-white/[0.02] ${className}`}
       data-card-style={settings.glassEnabled ? "glass" : "solid"}
       style={{
         rotateX: interactive && tilt && settings.cardTilt ? rotateX : 0,
         rotateY: interactive && tilt && settings.cardTilt ? rotateY : 0,
         transformStyle: "preserve-3d",
         perspective: 1000,
-        borderRadius: "var(--card-radius)",
+        borderRadius: radius || "var(--card-radius)",
         willChange: interactive ? "transform" : "auto",
         backfaceVisibility: "hidden",
         boxShadow: settings.shadow === "glow" ? "var(--shadow)" : settings.shadow === "md" ? "0 4px 20px -4px rgba(0,0,0,0.3)" : settings.shadow === "sm" ? "0 1px 3px rgba(0,0,0,0.2)" : "none",
+        ...style,
       }}
     >
       <div

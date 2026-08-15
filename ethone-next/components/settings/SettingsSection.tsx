@@ -23,17 +23,17 @@ export default function SettingsSection({
   return (
     <motion.div
       data-section={id}
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="rounded-2xl border border-[var(--border)] bg-[var(--surface)]/60 p-4 backdrop-blur-sm sm:p-5"
+      transition={{ duration: 0.2 }}
+      className="overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-1 shadow-sm"
     >
-      <div className="mb-4 flex items-center justify-between border-b border-[var(--border)] pb-3">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--accent)]/10 text-[var(--accent)]">
-            <Icon name={icon} className="h-4 w-4" />
+      <div className="flex items-center justify-between px-5 py-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[var(--accent)]/10 text-[var(--accent)]">
+            <Icon name={icon} className="h-4.5 w-4.5" />
           </div>
-          <h2 className="font-semibold text-[var(--foreground)]">{label}</h2>
+          <h2 className="text-base font-semibold text-[var(--foreground)]">{label}</h2>
         </div>
         {modifiedCount ? (
           <span className="rounded-full bg-[var(--accent)]/10 px-2.5 py-1 text-[10px] font-medium text-[var(--accent)]">
@@ -41,7 +41,7 @@ export default function SettingsSection({
           </span>
         ) : null}
       </div>
-      <div className="space-y-0">{children}</div>
+      <div className="divide-y divide-[var(--border)]/40">{children}</div>
     </motion.div>
   );
 }

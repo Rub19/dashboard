@@ -36,7 +36,8 @@ export function ButtonGridControl<T extends string>({
   options: { id: T; label: string }[];
   cols?: number;
 }) {
-  const gridClass = cols === 2 ? "grid-cols-2" : cols === 4 ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3";
+  const gridClass =
+    cols === 2 ? "grid-cols-2" : cols === 4 ? "grid-cols-2 sm:grid-cols-4" : cols === 5 ? "grid-cols-2 sm:grid-cols-5" : "grid-cols-3";
   return (
     <div className={`grid ${gridClass} gap-2`}>
       {options.map((opt) => {
@@ -46,16 +47,14 @@ export function ButtonGridControl<T extends string>({
             key={opt.id}
             type="button"
             onClick={() => onChange(opt.id)}
-            className={`group relative overflow-hidden rounded-xl border px-2 py-2.5 text-xs font-medium transition-all ${
+            className={`group relative flex items-center justify-center gap-2 rounded-2xl border px-3 py-2.5 text-xs font-medium transition-all ${
               active
-                ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
+                ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)] shadow-sm"
                 : "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--foreground)] hover:border-[var(--accent)]/50 hover:bg-[var(--surface)]"
             }`}
           >
+            {active && <Icon name="check" className="h-3 w-3" />}
             <span className="relative z-10">{opt.label}</span>
-            {active && (
-              <span className="absolute right-1.5 top-1.5 flex h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
-            )}
           </button>
         );
       })}
@@ -91,13 +90,12 @@ export function CheckboxListControl({
             }`}
           >
             <span
-              className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors ${
+              className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-md border transition-colors ${
                 checked ? "border-[var(--accent)] bg-[var(--accent)]" : "border-[var(--border)] bg-[var(--surface)]"
               }`}
             >
               {checked && <Icon name="check" className="h-3 w-3 text-white" />}
             </span>
-            <Icon name={opt.id} className="h-4 w-4 shrink-0 text-[var(--accent)]" />
             <span className="min-w-0 flex-1 truncate">{opt.label}</span>
           </button>
         );

@@ -28,6 +28,7 @@ type TooltipState = {
   placement: string;
   x: number;
   y: number;
+  hidden: boolean;
 } | null;
 
 function findControl(event: Event) {
@@ -125,7 +126,7 @@ export default function UIProvider({ children }: { children: React.ReactNode }) 
       if (!label) return;
       clearHideTimer();
       activeTarget.current = target;
-      setTooltip({ target, label, placement: "top", x: -10000, y: -10000 });
+      setTooltip({ target, label, placement: "top", x: -10000, y: -10000, hidden: true });
     },
     [clearHideTimer]
   );
@@ -140,7 +141,7 @@ export default function UIProvider({ children }: { children: React.ReactNode }) 
     const anchor = target.getBoundingClientRect();
     const preferred = target.dataset.tooltipPosition || "top";
     const pos = computeTooltipPosition(anchor, rect, preferred);
-    setTooltip((prev) => (prev ? { ...prev, ...pos } : null));
+    setTooltip((prev) => (prev ? { ...prev, ...pos, hidden: false } : null));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tooltip?.label, tooltip?.target]);
 
@@ -252,7 +253,7 @@ export default function UIProvider({ children }: { children: React.ReactNode }) 
         <div
           ref={tooltipRef}
           role="tooltip"
-          className="ethone-tooltip"
+          className={`ethone-tooltip ${!tooltip.hidden ? "ethone-tooltip-visible" : ""}`}
           style={{
             position: "fixed",
             left: tooltip.x,

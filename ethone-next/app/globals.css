@@ -573,12 +573,13 @@ a:focus:not(:focus-visible) {
   pointer-events: none;
   box-shadow: var(--shadow);
   opacity: 0;
-  animation: ethone-tooltip-in 120ms ease forwards;
+  transform: translateY(4px);
+  transition: opacity 150ms ease, transform 150ms ease;
 }
 
-@keyframes ethone-tooltip-in {
-  from { opacity: 0; transform: translateY(2px); }
-  to { opacity: 1; transform: translateY(0); }
+.ethone-tooltip.ethone-tooltip-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 [data-haptic-state="pressed"] {

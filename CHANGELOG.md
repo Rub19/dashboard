@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : corriger surbrillance active Accueil dans la navigation**
+
+### Corrige
+- `ethone-next/lib/navigation.ts` : ajout de `isActiveRoute` pour traiter `/` (Accueil) comme une route exacte.
+- `ethone-next/components/Sidebar.tsx`, `Dock.tsx`, `MobileNav.tsx` : utilisation de `isActiveRoute` pour éviter que l'accueil soit surligné sur toutes les pages.
+
 **Migration Next.js : forcer coins arrondis sur le Dock**
 
 ### Corrige

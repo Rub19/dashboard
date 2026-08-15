@@ -218,7 +218,13 @@ export default function CalendarPage() {
 
       {(itemsError || googleError) && (
         <Card3D>
-          <p className="break-words text-sm text-red-400">{itemsError?.message || googleError?.message}</p>
+          <div className="space-y-1">
+            <p className="flex items-center gap-2 text-sm text-red-400">
+              <Icon name="alert-triangle" className="h-4 w-4" />
+              {itemsError?.message || googleError?.message}
+            </p>
+            <p className="text-xs text-[var(--muted)]">{i18n("calendarConnectionHint")}</p>
+          </div>
         </Card3D>
       )}
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { fetchWorker } from "@/lib/api";
+import { useI18n } from "@/lib/hooks/useI18n";
 
 type GoogleTime = { dateTime?: string; date?: string };
 
@@ -30,6 +31,7 @@ function toIso(value: string | GoogleTime | undefined): string | undefined {
 }
 
 export function useCalendarEvents(clientId?: string) {
+  const i18n = useI18n();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -58,7 +60,12 @@ export function useCalendarEvents(clientId?: string) {
       })
       .catch((err) => {
         if (cancelled) return;
-        setError(err instanceof Error ? err : new Error(String(err)));
+        const raw = err instanceof Error ? err.message : String(err);
+        if (raw.includes("401") || raw.toLowerCase().includes("unauthorized") || raw.toLowerCase().includes("auth")) {
+          setError(new Error(i18n("calendarConnectionError")));
+          return;
+        }
+        setError(new Error(i18n("calendarConnectionError")));
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -67,7 +74,7 @@ export function useCalendarEvents(clientId?: string) {
     return () => {
       cancelled = true;
     };
-  }, [clientId]);
+  }, [clientId, i18n]);
 
   return { events, loading, error };
 }

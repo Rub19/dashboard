@@ -4,6 +4,15 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : composant Slider moderne**
+
+### Corrige
+- `ethone-next/components/ui/Slider.tsx` : refonte avec piste fine, active en `var(--accent)` avec glow, poignée blanche bordée d'accent, effet scale au hover/drag, badge de valeur stylisé.
+- Remplacement des `<input type="range">` natifs par `Slider` dans :
+  - `components/settings/AppearanceSettings.tsx`
+  - `components/LiveWidgets.tsx` (2 lecteurs Spotify)
+  - `components/settings/SettingControls.tsx` utilisait déjà `Slider` (amélioré par le composant).
+
 **Migration Next.js : adoucir animation sidebar**
 
 ### Corrige

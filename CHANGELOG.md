@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : corriger UI Focus**
+
+### Corrige
+- `ethone-next/app/focus/page.tsx` : timer légèrement réduit, cercle plus petit, padding des cartes réduit, radius forcé à `1.5rem` pour éviter l'effet "pill" qui sort du cadre.
+- `ethone-next/components/Card3D.tsx` : ajout des props `className`, `style` et `radius` pour contrôler le rayon et le style sans casser les autres usages.
+
 **Migration Next.js : simplifier Mail sidebar et panels**
 
 ### Corrige

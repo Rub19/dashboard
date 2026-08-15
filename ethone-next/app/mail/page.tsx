@@ -841,7 +841,7 @@ export default function MailPage() {
         )}
       </div>
 
-      <BottomSheet open={sortOpen} onClose={() => setSortOpen(false)} title={i18n("sort")} position="bottom" draggable>
+      <BottomSheet open={sortOpen} onClose={() => setSortOpen(false)} title={i18n("sort")} position="bottom">
         <div className="space-y-1">
           {[
             { id: "newest", icon: "arrow-down" },
@@ -866,7 +866,7 @@ export default function MailPage() {
         </div>
       </BottomSheet>
 
-      <BottomSheet open={moveOpen} onClose={() => setMoveOpen(false)} title={i18n("moveTo")} position="bottom" draggable>
+      <BottomSheet open={moveOpen} onClose={() => setMoveOpen(false)} title={i18n("moveTo")} position="bottom">
         <div className="space-y-1">
           {FOLDERS.filter((f) => f !== folder).map((f) => (
             <button
@@ -883,7 +883,7 @@ export default function MailPage() {
         </div>
       </BottomSheet>
 
-      <BottomSheet open={labelOpen} onClose={() => setLabelOpen(false)} title={i18n("labels")} position="bottom" draggable>
+      <BottomSheet open={labelOpen} onClose={() => setLabelOpen(false)} title={i18n("labels")} position="bottom">
         <div className="space-y-3">
           <div className="flex gap-2">
             <input
@@ -922,7 +922,7 @@ export default function MailPage() {
         </div>
       </BottomSheet>
 
-      <BottomSheet open={actionsOpen} onClose={() => { setActionsOpen(false); setActionsTarget(null); }} title={i18n("actions")} position="bottom" draggable>
+      <BottomSheet open={actionsOpen} onClose={() => { setActionsOpen(false); setActionsTarget(null); }} title={i18n("actions")} position="bottom">
         <div className="space-y-1">
           {actionsTarget && (
             <>

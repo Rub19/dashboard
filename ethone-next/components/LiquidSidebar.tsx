@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 
 export type LiquidItem = {
   id: string;
@@ -22,8 +21,6 @@ export default function LiquidSidebar({
 }) {
   const [internal, setInternal] = useState(defaultActive || items[0]?.id);
   const currentActive = active !== undefined ? active : internal;
-  const [hovered, setHovered] = useState<string | null>(null);
-  const current = hovered || currentActive;
 
   function handleClick(id: string) {
     if (active === undefined) setInternal(id);
@@ -32,36 +29,27 @@ export default function LiquidSidebar({
 
   return (
     <div
-      className="v8-panel w-56 space-y-1 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-2"
+      className="w-56 space-y-1 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-2"
       role="tablist"
       aria-label="Panneau latéral"
     >
       {items.map((item) => {
-        const isCurrent = current === item.id;
+        const isActive = currentActive === item.id;
         return (
           <button
             key={item.id}
             type="button"
             role="tab"
-            aria-selected={currentActive === item.id}
+            aria-selected={isActive}
             onClick={() => handleClick(item.id)}
-            onMouseEnter={() => setHovered(item.id)}
-            onMouseLeave={() => setHovered(null)}
-            className="v8-panel__item relative flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors"
+            className={`relative flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
+              isActive
+                ? "bg-[var(--accent)] text-white"
+                : "text-[var(--muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
+            }`}
           >
-            {isCurrent && (
-              <motion.div
-                layoutId="liquid-bg"
-                className={`absolute inset-0 -z-10 rounded-xl ${
-                  currentActive === item.id ? "bg-[var(--accent)]" : "bg-[var(--surface-raised)]"
-                }`}
-                transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              />
-            )}
-            {item.icon && <span className="text-[var(--muted)]">{item.icon}</span>}
-            <span className={currentActive === item.id ? "font-semibold text-white" : "text-[var(--muted)]"}>
-              {item.label}
-            </span>
+            {item.icon && <span className={isActive ? "text-white/80" : "text-[var(--muted)]"}>{item.icon}</span>}
+            <span className="min-w-0 truncate">{item.label}</span>
           </button>
         );
       })}

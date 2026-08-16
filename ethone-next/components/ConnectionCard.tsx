@@ -205,8 +205,8 @@ export default function ConnectionCard({
       }
       success(i18n("connectSuccess"));
       window.location.href = buildAuthUrl(integration.id, trimmed, { provider: integration.id, clientId: trimmed });
-    } catch {
-      showError(i18n("error"));
+    } catch (err) {
+      showError(err instanceof Error ? err.message : i18n("error"));
       setSubmitting(false);
     }
   }
@@ -246,8 +246,8 @@ export default function ConnectionCard({
         try { localStorage.removeItem(`ethone:clientId:${integration.id}`); } catch {}
       }
       success(i18n("disconnectSuccess"));
-    } catch {
-      showError(i18n("error"));
+    } catch (err) {
+      showError(err instanceof Error ? err.message : i18n("error"));
     } finally {
       setSubmitting(false);
     }
@@ -297,8 +297,8 @@ export default function ConnectionCard({
       }
 
       success(i18n("saved"));
-    } catch {
-      showError(i18n("error"));
+    } catch (err) {
+      showError(err instanceof Error ? err.message : i18n("error"));
     } finally {
       setSubmitting(false);
     }
@@ -315,8 +315,8 @@ export default function ConnectionCard({
       setCopied(key);
       success(i18n("copied"));
       window.setTimeout(() => setCopied(null), 1500);
-    } catch {
-      // ignore
+    } catch (err) {
+      showError(err instanceof Error ? err.message : i18n("error"));
     }
   }
 

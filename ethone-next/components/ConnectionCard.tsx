@@ -13,7 +13,6 @@ import {
   EyeOff,
   ExternalLink,
   Loader2,
-  Plug,
   PlugZap,
   RefreshCw,
   Save,
@@ -118,7 +117,7 @@ export default function ConnectionCard({
     const map: Record<string, string> = {};
     publicFields.forEach((f) => {
       const fromStore = storeValues[f.key as string];
-      const fromSettings = settings[f.key as string];
+      const fromSettings = (settings as Record<string, unknown>)[f.key as string];
       map[f.label] = typeof fromStore === "string" ? fromStore : typeof fromSettings === "string" ? fromSettings : "";
     });
     return map;
@@ -129,7 +128,7 @@ export default function ConnectionCard({
       const map = { ...prev };
       publicFields.forEach((f) => {
         const fromStore = storeValues[f.key as string];
-        const fromSettings = settings[f.key as string];
+        const fromSettings = (settings as Record<string, unknown>)[f.key as string];
         const next = typeof fromStore === "string" ? fromStore : typeof fromSettings === "string" ? fromSettings : "";
         if (!prev[f.label] && next) map[f.label] = next;
       });

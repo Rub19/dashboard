@@ -4,11 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import { exchangeCode, parseOAuthState } from "@/lib/oauth";
 import { setUserState } from "@/lib/user-state";
 import { useSettings } from "@/components/SettingsProvider";
+import { useIntegrationStore } from "@/lib/hooks/useIntegrationStore";
 
 export default function OAuthHandler() {
   const [status, setStatus] = useState<string | null>(null);
   const handled = useRef(false);
   const { update } = useSettings();
+  const { getField } = useIntegrationStore();
 
   useEffect(() => {
     if (handled.current) return;
@@ -22,7 +24,8 @@ export default function OAuthHandler() {
     if (!provider || !clientId) return;
     handled.current = true;
 
-    exchangeCode(provider, code, clientId)
+    const clientSecret = provider === "github" ? getField("github", "clientSecret") : "";
+    exchangeCode(provider, code, clientId, clientSecret || undefined)
       .then(() => {
         localStorage.setItem(`ethone:clientId:${provider}`, clientId);
         setUserState(`clientId:${provider}`, clientId).catch(() => {});
@@ -40,6 +43,7 @@ export default function OAuthHandler() {
         window.history.replaceState({}, "", url);
         setTimeout(() => setStatus(null), 3000);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [update]);
 
   if (!status) return null;

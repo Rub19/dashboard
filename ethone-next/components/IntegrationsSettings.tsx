@@ -2,39 +2,18 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Blocks,
-  Brain,
-  BriefcaseBusiness,
-  Code2,
-  Gamepad2,
-  HeartPulse,
-  MessageSquare,
-  Music,
-  Plug,
-} from "lucide-react";
+import { Plug } from "lucide-react";
 import { fetchWorker } from "@/lib/api";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useProviderCredentials } from "@/lib/hooks/useProviderCredentials";
-import { INTEGRATIONS, INTEGRATION_CATEGORIES } from "@/lib/integrations";
+import { INTEGRATIONS } from "@/lib/integrations";
 import { isConfigured, pingIntegration, type PingResult } from "@/lib/connection-config";
-import DiagnosticPanel from "@/components/DiagnosticPanel";
+import SystemHealthBanner from "@/components/SystemHealthBanner";
+import CategoryTabs from "@/components/CategoryTabs";
 import ConnectionCard from "@/components/ConnectionCard";
 import DiscordConfig from "@/components/DiscordConfig";
 import SpotifyConfig from "@/components/SpotifyConfig";
-import type { ReactNode } from "react";
-
-const CATEGORY_ICONS: Record<string, ReactNode> = {
-  all: <Blocks className="h-3.5 w-3.5" />,
-  media: <Music className="h-3.5 w-3.5" />,
-  social: <MessageSquare className="h-3.5 w-3.5" />,
-  gaming: <Gamepad2 className="h-3.5 w-3.5" />,
-  productivity: <BriefcaseBusiness className="h-3.5 w-3.5" />,
-  development: <Code2 className="h-3.5 w-3.5" />,
-  health: <HeartPulse className="h-3.5 w-3.5" />,
-  ai: <Brain className="h-3.5 w-3.5" />,
-};
 
 function clientIdFromStorage(provider: string): string {
   if (typeof window === "undefined") return "";
@@ -151,40 +130,23 @@ export default function IntegrationsSettings() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-bold text-foreground">{i18n("connectionsTitle")}</h1>
-        <p className="text-sm text-muted">{i18n("connectionsDescription")}</p>
+        <h1 className="text-2xl font-bold text-white">{i18n("connectionsTitle")}</h1>
+        <p className="text-sm text-zinc-400">{i18n("connectionsDescription")}</p>
       </div>
 
-      <DiagnosticPanel
+      <SystemHealthBanner
         configuredMap={configuredMap}
         health={health}
         testing={testingAll}
         onTestAll={testAll}
       />
 
-      <div className="flex flex-wrap gap-2">
-        {INTEGRATION_CATEGORIES.map((cat) => (
-          <motion.button
-            key={cat.id}
-            onClick={() => setFilter(cat.id)}
-            layout
-            whileTap={{ scale: 0.96 }}
-            className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium transition ${
-              filter === cat.id
-                ? "bg-accent text-white shadow-[0_0_20px_-4px_rgba(139,92,246,0.4)]"
-                : "border border-[var(--panel-border)] bg-[var(--panel-bg)]/60 text-muted hover:border-accent/30 hover:text-foreground"
-            } backdrop-blur-[var(--panel-blur)]`}
-          >
-            {CATEGORY_ICONS[cat.id] || <Plug className="h-3.5 w-3.5" />}
-            {i18n(cat.id)}
-          </motion.button>
-        ))}
-      </div>
+      <CategoryTabs active={filter} onChange={setFilter} />
 
       {(loading || credentials.loading) && (
-        <div className="flex items-center gap-3 rounded-3xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/60 p-5 text-sm text-muted backdrop-blur-2xl">
+        <div className="flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 text-sm text-zinc-400 backdrop-blur-2xl">
           <Plug className="h-5 w-5 animate-spin" />
           {i18n("loading")}
         </div>
@@ -196,7 +158,7 @@ export default function IntegrationsSettings() {
         </AnimatePresence>
       </motion.div>
 
-      <div className="rounded-3xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/60 p-5 text-sm text-muted backdrop-blur-2xl">
+      <div className="rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 text-sm text-zinc-400 backdrop-blur-2xl">
         <div className="flex items-center gap-2">
           <Plug className="h-4 w-4" />
           <p>{i18n("oauthInfo")}</p>

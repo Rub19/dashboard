@@ -45,10 +45,10 @@ export default function DiagnosticPanel({
   const statusTone = errors > 0 ? "danger" : unconfigured > 0 ? "warning" : "success";
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-white/5 bg-surface/60 shadow-2xl backdrop-blur-2xl">
+    <div className="overflow-hidden rounded-3xl border border-[var(--panel-border)] bg-surface/60 shadow-2xl backdrop-blur-2xl">
       <div className="flex items-center justify-between gap-4 p-4 sm:p-5">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-accent/10 text-accent">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-accent/10 text-accent">
             <Activity className="h-5 w-5" />
           </div>
           <div>
@@ -76,7 +76,7 @@ export default function DiagnosticPanel({
             type="button"
             onClick={onTestAll}
             disabled={testing}
-            className="flex items-center gap-1.5 rounded-xl bg-accent/10 px-3 py-2 text-xs font-medium text-accent transition hover:bg-accent/20 disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-[var(--panel-radius)] bg-accent/10 px-3 py-2 text-xs font-medium text-accent transition hover:bg-accent/20 disabled:opacity-50"
           >
             {testing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
             <span className="hidden sm:inline">{i18n("testAll")}</span>
@@ -85,7 +85,7 @@ export default function DiagnosticPanel({
           <button
             type="button"
             onClick={() => setExpanded((v) => !v)}
-            className="rounded-xl p-2 text-muted transition hover:bg-surface-raised hover:text-foreground"
+            className="rounded-[var(--panel-radius)] p-2 text-muted transition hover:bg-surface-raised hover:text-foreground"
             aria-label={expanded ? i18n("collapse") : i18n("expand")}
           >
             {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -96,11 +96,11 @@ export default function DiagnosticPanel({
       <motion.div
         initial={false}
         animate={{ opacity: expanded ? 1 : 0 }}
-        transition={{ type: "spring", stiffness: 500, damping: 35 }}
+        transition={{ duration: 0.15, ease: "easeOut" as const }}
         className="overflow-hidden"
         style={{ height: expanded ? "auto" : 0 }}
       >
-        <div className="border-t border-white/5 p-4 sm:p-5">
+        <div className="border-t border-[var(--panel-border)] p-4 sm:p-5">
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             <AnimatePresence mode="popLayout">
               {items.map(({ integration, status, result }) => (
@@ -111,9 +111,9 @@ export default function DiagnosticPanel({
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.96 }}
                   transition={{ duration: 0.2 }}
-                  className="flex items-center gap-3 rounded-2xl border border-white/5 bg-surface-raised/50 p-3 backdrop-blur-sm"
+                  className="flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-surface-raised/50 p-3 backdrop-blur-sm"
                 >
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-surface text-foreground">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-surface text-foreground">
                     <ServiceIcon id={integration.id} icon={integration.icon} className="h-4 w-4" colored />
                   </div>
                   <div className="min-w-0 flex-1">

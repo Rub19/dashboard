@@ -156,7 +156,7 @@ export default function ShortcutsOverlay() {
             initial={{ opacity: 0, scale: 0.96, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 20 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            transition={{ duration: 0.15, ease: "easeOut" as const }}
             className="fixed left-1/2 top-1/2 z-[71] w-[min(90vw,800px)] max-h-[90vh] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface-raised)] shadow-2xl"
           >
             <header className="flex items-center justify-between border-b border-[var(--border)] p-5">
@@ -168,7 +168,7 @@ export default function ShortcutsOverlay() {
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="rounded-lg p-2 transition-colors hover:bg-[var(--surface)]"
+                className="rounded-[var(--panel-radius)] p-2 transition-colors hover:bg-[var(--surface)]"
                 aria-label="Fermer les raccourcis"
               >
                 <Icon name="x" className="h-5 w-5" />
@@ -178,7 +178,7 @@ export default function ShortcutsOverlay() {
               {groups.map((group) => (
                 <section
                   key={group.label}
-                  className="space-y-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4"
+                  className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-4"
                 >
                   <header className="flex items-center gap-2 text-sm font-semibold text-[var(--accent)]">
                     <Icon name={group.icon} className="h-4 w-4" />

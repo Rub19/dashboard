@@ -169,7 +169,7 @@ function ActionButton({
       onClick={onClick}
       disabled={disabled}
       title={label}
-      className={`flex flex-col items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-2 text-[10px] font-medium transition-colors hover:bg-[var(--surface-raised)] disabled:opacity-50 ${
+      className={`flex flex-col items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-2 text-[10px] font-medium transition-colors hover:bg-[var(--surface-raised)] disabled:opacity-50 ${
         danger ? "text-red-400 hover:bg-red-500/10" : "text-[var(--foreground)]"
       }`}
     >
@@ -406,9 +406,9 @@ export default function ProfileDropdown() {
             initial={{ opacity: 0, y: -12, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -12, scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 420, damping: 28 }}
+            transition={{ duration: 0.15, ease: "easeOut" as const }}
             style={{ originX: 1, originY: 0 }}
-            className="absolute right-0 top-full z-50 mt-2 w-80 max-w-[calc(100vw-1rem)] overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] shadow-2xl"
+            className="absolute right-0 top-full z-50 mt-2 w-80 max-w-[calc(100vw-1rem)] overflow-hidden rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] shadow-2xl"
           >
             <div className="max-h-[80vh] overflow-y-auto p-0">
               {/* Breadcrumb context */}
@@ -488,7 +488,7 @@ export default function ProfileDropdown() {
                         key={w.id}
                         type="button"
                         onClick={() => handleWorkspace(w.id)}
-                        className={`flex items-center gap-2 rounded-lg border px-2 py-1.5 text-left text-xs transition-colors ${
+                        className={`flex items-center gap-2 rounded-[var(--panel-radius)] border px-2 py-1.5 text-left text-xs transition-colors ${
                           isActive
                             ? `border-[var(--accent)] bg-[var(--accent)]/5 ring-1 ${w.ring}`
                             : "border-[var(--border)] bg-[var(--surface)] hover:border-[var(--accent)] hover:bg-[var(--surface-raised)]"
@@ -555,7 +555,7 @@ export default function ProfileDropdown() {
                           type="button"
                           disabled={pending}
                           onClick={() => handleSelectProfile(p)}
-                          className={`flex w-full items-center gap-2 rounded-xl px-2 py-1.5 text-left text-sm transition-colors ${
+                          className={`flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-2 py-1.5 text-left text-sm transition-colors ${
                             isActive
                               ? "bg-[var(--surface-raised)] ring-1 ring-[var(--accent)]"
                               : "hover:bg-[var(--surface)]"
@@ -674,7 +674,7 @@ export default function ProfileDropdown() {
                     setOpen(false);
                     router.push("/profile");
                   }}
-                  className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--surface)]"
+                  className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--surface)]"
                 >
                   <Icon name="user" className="h-4 w-4 text-[var(--muted)]" />
                   {i18n("myProfile")}
@@ -685,7 +685,7 @@ export default function ProfileDropdown() {
                     setOpen(false);
                     router.push("/settings");
                   }}
-                  className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--surface)]"
+                  className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--surface)]"
                 >
                   <Icon name="settings" className="h-4 w-4 text-[var(--muted)]" />
                   {i18n("settings")}
@@ -696,7 +696,7 @@ export default function ProfileDropdown() {
                     setOpen(false);
                     router.push("/changelog");
                   }}
-                  className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--surface)]"
+                  className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--surface)]"
                 >
                   <Icon name="sparkles" className="h-4 w-4 text-[var(--muted)]" />
                   {i18n("changelog")}
@@ -704,7 +704,7 @@ export default function ProfileDropdown() {
                 <button
                   type="button"
                   onClick={handleSignOut}
-                  className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-red-400 transition-colors hover:bg-red-500/10"
+                  className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-sm text-red-400 transition-colors hover:bg-red-500/10"
                 >
                   <Icon name="logout" className="h-4 w-4" />
                   {i18n("signOut")}

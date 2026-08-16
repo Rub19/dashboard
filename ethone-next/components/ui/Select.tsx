@@ -164,7 +164,7 @@ export default function Select({
       initial={{ opacity: 0, y: -6, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -4, scale: 0.98 }}
-      transition={{ duration: 0.15, ease: "easeOut" }}
+      transition={{ duration: 0.15, ease: "easeOut" as const }}
       onKeyDown={handleListboxKeyDown}
       style={{
         position: "fixed",
@@ -172,7 +172,7 @@ export default function Select({
         left: position.left,
         width: position.width,
       }}
-      className="z-[100] mt-1.5 min-w-[12rem] overflow-hidden rounded-xl border border-white/10 bg-zinc-950/90 shadow-2xl shadow-black/60 backdrop-blur-xl"
+      className="z-[100] mt-1.5 min-w-[12rem] overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-2xl shadow-black/60 backdrop-blur-xl"
     >
       <div className="max-h-64 overflow-y-auto p-1.5">
         {options.map((option, index) => {
@@ -187,7 +187,7 @@ export default function Select({
               onMouseEnter={() => setActiveIndex(index)}
               onClick={() => selectOption(option)}
               tabIndex={-1}
-              className={`flex cursor-pointer items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${
+              className={`flex cursor-pointer items-center justify-between gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-sm transition-colors ${
                 option.disabled
                   ? "cursor-not-allowed opacity-40"
                   : isSelected
@@ -227,12 +227,12 @@ export default function Select({
         aria-controls={listboxId}
         aria-label={ariaLabel}
         aria-labelledby={label ? labelId : undefined}
-        className={`flex h-11 w-full items-center justify-between gap-2 rounded-xl border px-3.5 text-left text-base font-medium transition-all focus:outline-none md:h-10 md:text-sm ${
+        className={`flex h-11 w-full items-center justify-between gap-2 rounded-[var(--panel-radius)] border px-3.5 text-left text-base font-medium transition-colors duration-150 focus:outline-none md:h-10 md:text-sm ${
           disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
         } ${
           open
             ? "border-purple-500/50 bg-white/[0.04] text-zinc-200 ring-1 ring-purple-500/30"
-            : "border-white/10 bg-zinc-900/70 text-zinc-200 hover:border-white/20"
+            : "border-[var(--panel-border)] bg-zinc-900/70 text-zinc-200 hover:border-white/20"
         }`}
       >
         <span className="truncate">{selected ? selected.label : placeholder}</span>

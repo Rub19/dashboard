@@ -183,7 +183,7 @@ export default function BillsCalendarWidget() {
                 onClick={() => setSelected(d)}
                 aria-pressed={isSelected}
                 aria-label={`${dateFormatter.format(d)}, ${dayBills.length} ${dayBills.length > 1 ? i18n("bills") : i18n("bill")}`}
-                className={`relative flex flex-col items-center gap-1 rounded-2xl p-2 text-xs transition-all ${
+                className={`relative flex flex-col items-center gap-1 rounded-[var(--panel-radius)] p-2 text-xs transition-colors duration-150 ${
                   isSelected
                     ? "bg-[var(--accent)] text-white"
                     : isToday
@@ -205,12 +205,12 @@ export default function BillsCalendarWidget() {
                           width={16}
                           height={16}
                           unoptimized
-                          className="h-4 w-4 rounded-full border border-white/10 bg-black/20 object-contain p-0.5"
+                          className="h-4 w-4 rounded-full border border-[var(--panel-border)] bg-black/20 object-contain p-0.5"
                         />
                       ) : (
                         <span
                           key={b.id}
-                          className="flex h-4 w-4 items-center justify-center rounded-full border border-white/10 text-[8px]"
+                          className="flex h-4 w-4 items-center justify-center rounded-full border border-[var(--panel-border)] text-[8px]"
                           style={{ backgroundColor: brand.color }}
                         >
                           <Icon name={brand.icon} className="h-2.5 w-2.5 text-white" />
@@ -228,7 +228,7 @@ export default function BillsCalendarWidget() {
           <button
             type="button"
             onClick={() => setAdding((v) => !v)}
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-[var(--accent)]/10 px-3 py-2 text-xs font-medium text-[var(--accent)] transition-colors hover:bg-[var(--accent)]/20"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-[var(--panel-radius)] bg-[var(--accent)]/10 px-3 py-2 text-xs font-medium text-[var(--accent)] transition-colors hover:bg-[var(--accent)]/20"
           >
             <Icon name="plus" className="h-3.5 w-3.5" />
             {i18n("add")}
@@ -237,7 +237,7 @@ export default function BillsCalendarWidget() {
             type="button"
             onClick={() => fileRef.current?.click()}
             disabled={scanning}
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-xs font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--surface)] disabled:opacity-50"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-xs font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--surface)] disabled:opacity-50"
           >
             <Icon name={scanning ? "loader-2" : "scan"} className={`h-3.5 w-3.5 ${scanning ? "animate-spin" : ""}`} />
             {i18n("scan")}
@@ -256,7 +256,7 @@ export default function BillsCalendarWidget() {
         </div>
 
         {adding && (
-          <div className="space-y-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]/50 p-3">
+          <div className="space-y-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)]/50 p-3">
             <Input value={label} onChange={(e) => setLabel(e.target.value)} placeholder={i18n("billLabel")} />
             <div className="flex gap-2">
               <input
@@ -264,7 +264,7 @@ export default function BillsCalendarWidget() {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder={i18n("billAmount")}
-                className="w-28 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                className="w-28 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
               />
               <Select
                 value={currency}
@@ -295,7 +295,7 @@ export default function BillsCalendarWidget() {
               <button
                 type="button"
                 onClick={handleAdd}
-                className="flex-1 rounded-xl bg-[var(--accent)] px-3 py-2 text-xs font-semibold text-white"
+                className="flex-1 rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-xs font-semibold text-white"
               >
                 {i18n("save")}
               </button>
@@ -310,7 +310,7 @@ export default function BillsCalendarWidget() {
             selectedBills.map((b) => {
               const brand = detectBrandMeta(b.label, { icon: "receipt", color: "var(--muted)" });
               return (
-                <div key={b.id} className="flex items-center gap-3 rounded-2xl bg-[var(--surface-raised)] p-2.5">
+                <div key={b.id} className="flex items-center gap-3 rounded-[var(--panel-radius)] bg-[var(--surface-raised)] p-2.5">
                   {brand.logo ? (
                     <Image
                       src={brand.logo}
@@ -318,11 +318,11 @@ export default function BillsCalendarWidget() {
                       width={36}
                       height={36}
                       unoptimized
-                      className="h-9 w-9 rounded-xl border border-white/10 bg-black/20 object-contain p-1.5"
+                      className="h-9 w-9 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/20 object-contain p-1.5"
                     />
                   ) : (
                     <span
-                      className="flex h-9 w-9 items-center justify-center rounded-xl text-white"
+                      className="flex h-9 w-9 items-center justify-center rounded-[var(--panel-radius)] text-white"
                       style={{ backgroundColor: brand.color }}
                     >
                       <Icon name={brand.icon} className="h-4 w-4" />

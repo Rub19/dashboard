@@ -150,7 +150,7 @@ export default function NotesPage() {
             type="button"
             onClick={addNote}
             disabled={loading}
-            className="flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+            className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
           >
             <Icon name="plus" className="h-4 w-4" /> {i18n("add")}
           </button>
@@ -166,7 +166,7 @@ export default function NotesPage() {
           <button
             type="button"
             onClick={bulkDuplicate}
-            className="flex items-center gap-1.5 rounded-xl bg-[var(--surface)] px-3 py-1.5 text-xs hover:bg-[var(--accent)]/10"
+            className="flex items-center gap-1.5 rounded-[var(--panel-radius)] bg-[var(--surface)] px-3 py-1.5 text-xs hover:bg-[var(--accent)]/10"
           >
             <Icon name="copy-plus" className="h-3.5 w-3.5" /> {i18n("duplicate")}
           </button>

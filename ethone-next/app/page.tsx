@@ -58,14 +58,14 @@ function SessionModeSelector() {
   }
 
   return (
-    <Card3D tilt>
+    <Card3D>
       <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">{i18n("sessionMode")}</h2>
       <button
         type="button"
         onClick={cycle}
         title={i18n("changeSessionMode")}
         aria-label={i18n("changeSessionMode")}
-        className="group flex w-full items-center justify-between gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-3 text-left text-sm font-medium transition-colors hover:border-[var(--accent)] hover:text-[var(--foreground)]"
+        className="group flex w-full items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-3 text-left text-sm font-medium transition-colors hover:border-[var(--accent)] hover:text-[var(--foreground)]"
       >
         <span className="flex items-center gap-2 text-[var(--foreground)]">
           <Icon name={active.icon} className="h-4 w-4 text-[var(--accent)]" />
@@ -130,8 +130,8 @@ function SectionWrap({
 
 function Summary({ icon, label, value }: { icon: string; label: string; value: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl bg-[var(--surface-raised)] p-3">
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--accent)]/10 text-[var(--accent)]">
+    <div className="flex items-center gap-3 rounded-[var(--panel-radius)] bg-[var(--surface-raised)] p-3">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent)]/10 text-[var(--accent)]">
         <Icon name={icon} className="h-4 w-4" />
       </span>
       <div className="min-w-0">
@@ -147,7 +147,7 @@ function AuraSelector() {
   const { settings, update } = useSettings();
 
   return (
-    <Card3D tilt>
+    <Card3D>
       <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-[var(--foreground)]">
         <Icon name="palette" className="h-4 w-4 text-[var(--accent)]" />
         {i18n("aura")}
@@ -161,7 +161,7 @@ function AuraSelector() {
               key={a.id}
               type="button"
               onClick={() => update({ aura: a.id })}
-              className={`flex flex-col items-center gap-1 rounded-xl border p-2 text-center text-xs font-medium transition-colors ${
+              className={`flex flex-col items-center gap-1 rounded-[var(--panel-radius)] border p-2 text-center text-xs font-medium transition-colors ${
                 active
                   ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
                   : "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--foreground)]"
@@ -195,9 +195,9 @@ function SignalRow({
     violet: { bg: "bg-violet-500/10", text: "text-violet-400" },
   }[color];
   return (
-    <div className="flex items-center justify-between rounded-xl bg-[var(--surface-raised)] p-3">
+    <div className="flex items-center justify-between rounded-[var(--panel-radius)] bg-[var(--surface-raised)] p-3">
       <div className="flex items-center gap-3">
-        <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${styles.bg} ${styles.text}`}>
+        <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--panel-radius)] ${styles.bg} ${styles.text}`}>
           <Icon name={icon} className="h-4 w-4" />
         </span>
         <span className="text-sm font-medium">{label}</span>
@@ -384,7 +384,7 @@ export default function Home() {
         <button
           type="button"
           onClick={() => setCustomizing((v) => !v)}
-          className="flex items-center gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+          className="flex items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
         >
           <Icon name={customizing ? "x" : "sliders-horizontal"} className="h-3.5 w-3.5" />
           {customizing ? i18n("done") : i18n("customize")}
@@ -394,7 +394,7 @@ export default function Home() {
       <DailyBriefing greeting={greeting} dashboard={dashboard} nowPlaying={nowPlaying} loading={loading} />
 
       {customizing && (
-        <Card3D tilt>
+        <Card3D>
           <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">{i18n("customizeDashboard")}</h2>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {sections.map((s) => (
@@ -402,7 +402,7 @@ export default function Home() {
                 key={s.id}
                 type="button"
                 onClick={() => toggleSection(s.id)}
-                className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition-colors ${
+                className={`flex items-center gap-2 rounded-[var(--panel-radius)] border px-3 py-2 text-xs font-medium transition-colors ${
                   hidden.has(s.id)
                     ? "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted)]"
                     : "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
@@ -421,7 +421,7 @@ export default function Home() {
 
       <SessionModeSelector />
 
-      <Card3D tilt>
+      <Card3D>
         <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">{i18n("presence")}</h2>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
           {STATUSES.map((s) => (
@@ -429,7 +429,7 @@ export default function Home() {
               key={s.id}
               type="button"
               onClick={() => updateSettings({ status: s.id })}
-              className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition-colors ${
+              className={`flex items-center justify-center gap-2 rounded-[var(--panel-radius)] border px-3 py-2 text-xs font-medium transition-colors ${
                 settings.status === s.id
                   ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
                   : "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--foreground)]"
@@ -443,13 +443,13 @@ export default function Home() {
       </Card3D>
 
       {error && (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
+        <div className="rounded-[var(--panel-radius)] border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
           {error.message}
         </div>
       )}
 
       <SectionWrap id="continuity" title={i18n("continuity")} icon="activity" hidden={hidden}>
-        <Card3D tilt>
+        <Card3D>
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div className="min-w-0">
               <p className="text-xs text-[var(--muted)]">{continuation.type}</p>
@@ -458,7 +458,7 @@ export default function Home() {
             </div>
             <Link
               href={continuation.href}
-              className="mt-2 inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-[var(--accent)] px-3 py-2 text-xs font-medium text-white transition-opacity hover:opacity-90 md:mt-0"
+              className="mt-2 inline-flex shrink-0 items-center gap-1.5 rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-xs font-medium text-white transition-opacity hover:opacity-90 md:mt-0"
             >
               <Icon name={continuation.icon} className="h-3.5 w-3.5" />
               {continuation.action}
@@ -473,28 +473,28 @@ export default function Home() {
       </SectionWrap>
 
       <SectionWrap id="daystream" title={i18n("daystream")} icon="calendar" hidden={hidden}>
-        <Card3D tilt>
+        <Card3D>
           <div className="mb-3 flex items-center gap-2 text-xs text-[var(--accent)]">
             <Icon name="clock" className="h-3.5 w-3.5" />
             <span className="uppercase tracking-wider">{i18n("daystreamNow")}</span>
           </div>
           <ul className="space-y-2">
             {todayEvents.slice(0, 3).map((e) => (
-              <li key={e.id} className="flex items-center gap-2 rounded-xl bg-[var(--surface-raised)] p-2 text-sm">
+              <li key={e.id} className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--surface-raised)] p-2 text-sm">
                 <Icon name="calendar-days" className="h-4 w-4 text-sky-400" />
                 <span className="min-w-0 flex-1 truncate">{e.title}</span>
                 <span className="text-[10px] text-[var(--muted)]">{i18n("events")}</span>
               </li>
             ))}
             {nextTasks.map((t) => (
-              <li key={t.id} className="flex items-center gap-2 rounded-xl bg-[var(--surface-raised)] p-2 text-sm">
+              <li key={t.id} className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--surface-raised)] p-2 text-sm">
                 <Icon name="circle" className="h-4 w-4 text-emerald-400" />
                 <span className="min-w-0 flex-1 truncate">{t.title}</span>
                 <span className="text-[10px] text-[var(--muted)]">{i18n("tasks")}</span>
               </li>
             ))}
             {todayEvents.length === 0 && nextTasks.length === 0 && (
-              <li className="flex items-center gap-2 rounded-xl bg-[var(--surface-raised)] p-2 text-sm text-[var(--muted)]">
+              <li className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--surface-raised)] p-2 text-sm text-[var(--muted)]">
                 <Icon name="coffee" className="h-4 w-4" />
                 <span>{i18n("noImperative")} — {i18n("freeDay")}</span>
               </li>
@@ -504,14 +504,14 @@ export default function Home() {
       </SectionWrap>
 
       <SectionWrap id="recent" title={i18n("recent")} icon="history" hidden={hidden}>
-        <Card3D tilt>
+        <Card3D>
           {recentNotes.length > 0 ? (
             <div className="space-y-2">
               {recentNotes.map((n) => (
                 <Link
                   key={n.id}
                   href="/notes"
-                  className="flex items-center gap-2 rounded-xl bg-[var(--surface-raised)] p-2 text-sm transition-colors hover:bg-[var(--surface)]"
+                  className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--surface-raised)] p-2 text-sm transition-colors hover:bg-[var(--surface)]"
                 >
                   <Icon name="file-text" className="h-4 w-4 text-violet-400" />
                   <span className="min-w-0 flex-1 truncate">{n.title}</span>
@@ -524,7 +524,7 @@ export default function Home() {
           )}
           <Link
             href="/notes"
-            className="mt-4 inline-flex items-center gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs font-medium text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
+            className="mt-4 inline-flex items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs font-medium text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
           >
             <Icon name="plus" className="h-3.5 w-3.5" />
             {i18n("createNote")}
@@ -534,19 +534,19 @@ export default function Home() {
 
       <SectionWrap id="productivity" title={i18n("productivityAndRhythm")} icon="zap" hidden={hidden}>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <Card3D tilt>
+          <Card3D>
             <div className="flex items-center justify-between">
               <span className="text-xs text-[var(--muted)]">{i18n("tasksDone")}</span>
               <span className="text-lg font-bold tabular-nums text-[var(--accent)]">{percentage}%</span>
             </div>
             <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
               <div
-                className="h-full rounded-full bg-[var(--accent)] transition-all"
+                className="h-full rounded-full bg-[var(--accent)] transition-colors duration-150"
                 style={{ width: `${percentage}%` }}
               />
             </div>
           </Card3D>
-          <Card3D tilt>
+          <Card3D>
             <div className="flex items-center gap-2">
               <Icon name="notebook-pen" className="h-4 w-4 text-[var(--muted)]" />
               <span className="text-xs text-[var(--muted)]">{i18n("activeNotes")}</span>
@@ -561,9 +561,9 @@ export default function Home() {
 
       <SectionWrap id="signals" title={i18n("signals")} icon="radio" hidden={hidden}>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Card3D tilt>
+          <Card3D>
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-violet-500/10 text-violet-400">
                 <Icon name="zap" className="h-5 w-5" />
               </span>
               <div className="min-w-0">
@@ -572,9 +572,9 @@ export default function Home() {
               </div>
             </div>
           </Card3D>
-          <Card3D tilt>
+          <Card3D>
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-emerald-500/10 text-emerald-400">
                 <Icon name="mail" className="h-5 w-5" />
               </span>
               <div className="min-w-0">
@@ -583,9 +583,9 @@ export default function Home() {
               </div>
             </div>
           </Card3D>
-          <Card3D tilt>
+          <Card3D>
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-amber-500/10 text-amber-400">
                 <Icon name="activity" className="h-5 w-5" />
               </span>
               <div className="min-w-0">
@@ -594,9 +594,9 @@ export default function Home() {
               </div>
             </div>
           </Card3D>
-          <Card3D tilt>
+          <Card3D>
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-500/10 text-sky-400">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-sky-500/10 text-sky-400">
                 <Icon name="brain" className="h-5 w-5" />
               </span>
               <div className="min-w-0">
@@ -607,7 +607,7 @@ export default function Home() {
           </Card3D>
         </div>
 
-        <Card3D tilt>
+        <Card3D>
           <div className="space-y-2">
             <SignalRow icon="layers" label={i18n("interface")} value={i18n("active")} color="emerald" />
             <SignalRow icon="database" label={i18n("data")} value={i18n("connection")} color="sky" />
@@ -619,9 +619,9 @@ export default function Home() {
       </SectionWrap>
 
       <SectionWrap id="recommendation" title={i18n("recommendation")} icon="sparkles" hidden={hidden}>
-        <Card3D tilt>
+        <Card3D>
           <div className="flex flex-col gap-4 md:flex-row md:items-start">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent)]/10 text-[var(--accent)]">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent)]/10 text-[var(--accent)]">
               <Icon name={recommendation.icon} className="h-5 w-5" />
             </span>
             <div className="min-w-0 flex-1">
@@ -632,7 +632,7 @@ export default function Home() {
             <Link
               href={recommendation.href}
               onClick={() => recommendation.href === "/focus" && recommendation.onClick?.()}
-              className="mt-2 inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-[var(--accent)] px-3 py-2 text-xs font-medium text-white transition-opacity hover:opacity-90 md:mt-0"
+              className="mt-2 inline-flex shrink-0 items-center gap-1.5 rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-xs font-medium text-white transition-opacity hover:opacity-90 md:mt-0"
             >
               <Icon name="arrow-right" className="h-3.5 w-3.5" />
               {recommendation.action}
@@ -647,7 +647,7 @@ export default function Home() {
 
       <SectionWrap id="live" title={i18n("live")} icon="radio" hidden={hidden}>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Card3D tilt bump>
+          <Card3D>
             <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-[var(--foreground)]">
               <Icon name="music" className="h-4 w-4 text-[var(--muted)]" /> {i18n("live")}
             </h2>
@@ -658,7 +658,7 @@ export default function Home() {
               </div>
             ) : nowPlaying?.title ? (
               <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-500/10 text-green-400">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-green-500/10 text-green-400">
                   <Icon name="disc" className="h-5 w-5 animate-spin-slow" />
                 </span>
                 <div className="min-w-0">
@@ -671,7 +671,7 @@ export default function Home() {
             )}
           </Card3D>
 
-          <Card3D tilt bump>
+          <Card3D>
             <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">{i18n("cloud")}</h2>
             {loading ? (
               <div className="space-y-3">
@@ -702,7 +702,7 @@ export default function Home() {
             )}
           </Card3D>
 
-          <Card3D tilt bump>
+          <Card3D>
             <h2 className="mb-3 text-sm font-semibold text-[var(--foreground)]">{i18n("recentMatches")}</h2>
             {loading ? (
               <div className="space-y-3">
@@ -734,7 +734,7 @@ export default function Home() {
         </div>
 
         {lanyard?.discord_status && (
-          <Card3D tilt bump>
+          <Card3D>
             <h2 className="mb-2 text-sm font-semibold text-[var(--foreground)]">{i18n("discord")}</h2>
             <div className="flex items-center gap-2">
               <span

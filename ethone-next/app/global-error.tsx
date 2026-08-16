@@ -24,7 +24,7 @@ export default function GlobalError({
           reason={i18n("unexpectedError")}
           actionText={i18n("globalErrorRetry")}
           onAction={reset}
-          className="max-w-md rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] p-8"
+          className="max-w-md rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-8"
         />
       </body>
     </html>

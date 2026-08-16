@@ -344,7 +344,7 @@ function PresetsPanel() {
       <p className="text-xs text-[var(--muted)]">{i18n("presetsDescription")}</p>
 
       {message && (
-        <div className="rounded-lg border border-[var(--accent)] bg-[var(--accent-soft)] px-3 py-2 text-xs text-[var(--foreground)]">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--accent)] bg-[var(--accent-soft)] px-3 py-2 text-xs text-[var(--foreground)]">
           {message}
         </div>
       )}
@@ -357,7 +357,7 @@ function PresetsPanel() {
               key={preset.id}
               type="button"
               onClick={() => handleApply(preset)}
-              className="rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] p-3 text-left transition-colors hover:border-[var(--accent)]"
+              className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-3 text-left transition-colors hover:border-[var(--accent)]"
             >
               <div className="flex items-center gap-2 text-sm font-medium">
                 <Icon name={preset.icon} className="h-4 w-4 text-[var(--accent)]" />
@@ -369,7 +369,7 @@ function PresetsPanel() {
         </div>
       </div>
 
-      <div className="space-y-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3">
+      <div className="space-y-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-3">
         <p className="text-xs font-medium text-[var(--foreground)]">{i18n("saveCurrentAsPreset")}</p>
         <input
           type="text"
@@ -377,7 +377,7 @@ function PresetsPanel() {
           onChange={(e) => setNewPresetName(e.target.value)}
           placeholder={i18n("presetNamePlaceholder")}
           aria-label={i18n("presetNamePlaceholder")}
-          className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+          className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
         />
         <input
           type="text"
@@ -385,12 +385,12 @@ function PresetsPanel() {
           onChange={(e) => setNewPresetDescription(e.target.value)}
           placeholder={i18n("presetDescriptionPlaceholder")}
           aria-label={i18n("presetDescriptionPlaceholder")}
-          className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+          className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
         />
         <button
           type="button"
           onClick={handleExtract}
-          className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)]"
+          className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)]"
         >
           {i18n("saveCurrentPreset")}
         </button>
@@ -403,7 +403,7 @@ function PresetsPanel() {
             {customPresets.map((preset) => (
               <div
                 key={preset.id}
-                className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] p-3"
+                className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-3"
               >
                 <button
                   type="button"
@@ -436,14 +436,14 @@ function PresetsPanel() {
         <button
           type="button"
           onClick={handleExport}
-          className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)]"
+          className="flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)]"
         >
           {i18n("exportPresets")}
         </button>
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)]"
+          className="flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)]"
         >
           {i18n("importPresets")}
         </button>
@@ -471,7 +471,7 @@ function SoundPackPreview() {
           key={pack}
           type="button"
           onClick={() => play("click", pack)}
-          className="flex items-center justify-center gap-1 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)]"
+          className="flex items-center justify-center gap-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)]"
         >
           <Icon name="play" className="h-3 w-3" />
           {i18n("preview")}
@@ -484,7 +484,7 @@ function SoundPackPreview() {
 function DensityCustomPanel({ fields }: { fields: FieldDef[] }) {
   const i18n = useI18n();
   return (
-    <div className="space-y-3 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] p-3" data-section-match>
+    <div className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-3" data-section-match>
       <p className="text-xs font-medium text-[var(--accent)]">{i18n("densityEngineAdvanced")}</p>
       {fields.map((field) => (
         <SettingField key={field.key} field={field} />
@@ -546,7 +546,7 @@ function RawSettingsPanel() {
   return (
     <div className="space-y-3" data-section-match>
       {message && (
-        <div className="rounded-lg border border-[var(--accent)] bg-[var(--accent-soft)] px-3 py-2 text-xs text-[var(--foreground)]">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--accent)] bg-[var(--accent-soft)] px-3 py-2 text-xs text-[var(--foreground)]">
           {message}
         </div>
       )}
@@ -554,14 +554,14 @@ function RawSettingsPanel() {
         <button
           type="button"
           onClick={handleExport}
-          className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)]"
+          className="flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)]"
         >
           {i18n("exportPresets")}
         </button>
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)]"
+          className="flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)]"
         >
           {i18n("importPresets")}
         </button>
@@ -1114,7 +1114,7 @@ export default function SettingsContent() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ type: "spring", stiffness: 500, damping: 35 }}
+            transition={{ duration: 0.15, ease: "easeOut" as const }}
             className="overflow-hidden"
           >
             <SettingsSection

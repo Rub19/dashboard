@@ -99,7 +99,7 @@ function ShareContent() {
                 <button
                   type="button"
                   onClick={() => { setData(null); setError(null); }}
-                  className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white"
+                  className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white"
                 >
                   {i18n("unlock")}
                 </button>
@@ -113,7 +113,7 @@ function ShareContent() {
           {data && (
             <div className="space-y-4">
               <div className="flex min-w-0 items-center gap-3">
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-violet-500/10 text-violet-400">
                   <Icon name="file-text" className="h-6 w-6" />
                 </span>
                 <div className="min-w-0 flex-1">
@@ -123,12 +123,12 @@ function ShareContent() {
               </div>
 
               <div className="grid grid-cols-1 gap-2 text-xs text-[var(--muted)] sm:grid-cols-2 sm:gap-4">
-                <div className="rounded-xl bg-[var(--surface)] p-2 text-center">
+                <div className="rounded-[var(--panel-radius)] bg-[var(--surface)] p-2 text-center">
                   <p className="text-lg font-bold text-[var(--foreground)]">{downloads}</p>
                   <p>{i18n("downloads")}</p>
                 </div>
                 {maxDownloads !== undefined && (
-                  <div className="rounded-xl bg-[var(--surface)] p-2 text-center">
+                  <div className="rounded-[var(--panel-radius)] bg-[var(--surface)] p-2 text-center">
                     <p className="text-lg font-bold text-[var(--foreground)]">{maxDownloads}</p>
                     <p>{i18n("maxDownloads")}</p>
                   </div>
@@ -145,11 +145,11 @@ function ShareContent() {
                 width={160}
                 height={160}
                 unoptimized
-                className="mx-auto rounded-xl bg-white p-2"
+                className="mx-auto rounded-[var(--panel-radius)] bg-white p-2"
               />
 
               {data.file.brain_summary && (
-                <blockquote className="break-words rounded-xl border-l-4 border-[var(--accent)] bg-[var(--surface)] p-3 text-sm italic text-[var(--muted)]">
+                <blockquote className="break-words rounded-[var(--panel-radius)] border-l-4 border-[var(--accent)] bg-[var(--surface)] p-3 text-sm italic text-[var(--muted)]">
                   {data.file.brain_summary}
                 </blockquote>
               )}
@@ -157,14 +157,14 @@ function ShareContent() {
               <button
                 type="button"
                 onClick={download}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] py-2.5 text-sm font-semibold text-white hover:opacity-90"
+                className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] py-2.5 text-sm font-semibold text-white hover:opacity-90"
               >
                 <Icon name="download" className="h-4 w-4" /> {i18n("download")}
               </button>
               <button
                 type="button"
                 onClick={copyLink}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] py-2.5 text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--surface)]"
+                className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] py-2.5 text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--surface)]"
               >
                 <Icon name="copy" className="h-4 w-4" /> {i18n("copyLink")}
               </button>

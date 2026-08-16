@@ -43,14 +43,14 @@ export default function RssPage() {
               onChange={(e) => setUrl(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") handleLoad(); }}
               placeholder={i18n("rssUrlPlaceholder")}
-              className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+              className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
           </label>
           <button
             type="button"
             onClick={handleLoad}
             disabled={loading || !url.trim()}
-            className="flex items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
+            className="flex items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
           >
             {loading ? <Icon name="loader-2" className="h-4 w-4 animate-spin" /> : <Icon name="rss" className="h-4 w-4" />}
             {i18n("load")}

@@ -126,7 +126,7 @@ export default function CalendarPage() {
             type="button"
             aria-label={i18n("previous")}
             onClick={prev}
-            className="rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] p-2 text-[var(--muted)] hover:text-[var(--foreground)]"
+            className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-2 text-[var(--muted)] hover:text-[var(--foreground)]"
           >
             <Icon name="chevron-left" className="h-4 w-4" />
           </button>
@@ -135,14 +135,14 @@ export default function CalendarPage() {
             type="button"
             aria-label={i18n("next")}
             onClick={next}
-            className="rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] p-2 text-[var(--muted)] hover:text-[var(--foreground)]"
+            className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-2 text-[var(--muted)] hover:text-[var(--foreground)]"
           >
             <Icon name="chevron-right" className="h-4 w-4" />
           </button>
           <button
             type="button"
             onClick={today}
-            className="rounded-xl bg-[var(--accent)] px-3 py-2 text-xs font-semibold text-white hover:opacity-90"
+            className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-xs font-semibold text-white hover:opacity-90"
           >
             {i18n("today")}
           </button>
@@ -164,14 +164,14 @@ export default function CalendarPage() {
             value={newTime}
             onChange={(e) => setNewTime(e.target.value)}
             aria-label={i18n("time")}
-            className="w-28 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm outline-none focus:border-[var(--accent)]"
+            className="w-28 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm outline-none focus:border-[var(--accent)]"
           />
           <button
             type="button"
             aria-label={i18n("add")}
             onClick={addEvent}
             disabled={itemsLoading}
-            className="flex shrink-0 items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+            className="flex shrink-0 items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
           >
             <Icon name="plus" className="h-4 w-4" />
           </button>
@@ -192,7 +192,7 @@ export default function CalendarPage() {
                 type="button"
                 onClick={() => day.date && setSelectedDay(day.day)}
                 disabled={day.date === 0}
-                className={`relative flex aspect-square items-center justify-center rounded-xl text-xs sm:text-sm transition-colors ${
+                className={`relative flex aspect-square items-center justify-center rounded-[var(--panel-radius)] text-xs sm:text-sm transition-colors ${
                   day.date === 0
                     ? "pointer-events-none bg-transparent"
                     : day.isToday
@@ -239,7 +239,7 @@ export default function CalendarPage() {
               <button
                 type="button"
                 onClick={connectGoogle}
-                className="flex shrink-0 items-center gap-1.5 rounded-lg bg-[var(--surface-raised)] px-2 py-1 text-xs font-medium text-[var(--foreground)] hover:bg-[var(--accent)]/20"
+                className="flex shrink-0 items-center gap-1.5 rounded-[var(--panel-radius)] bg-[var(--surface-raised)] px-2 py-1 text-xs font-medium text-[var(--foreground)] hover:bg-[var(--accent)]/20"
               >
                 <Icon name="cloud" className="h-3 w-3" />
                 {i18n("google")}

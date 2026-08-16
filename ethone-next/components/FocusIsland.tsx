@@ -57,7 +57,7 @@ export default function FocusIsland() {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -20, scale: 0.95 }}
         onClick={() => setOpen((v) => !v)}
-        className="v8-dynamic-island fixed left-1/2 top-4 z-[80] -translate-x-1/2 cursor-pointer overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-2 shadow-2xl backdrop-blur-md transition-all hover:bg-[var(--surface)]"
+        className="v8-dynamic-island fixed left-1/2 top-4 z-[80] -translate-x-1/2 cursor-pointer overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-2 shadow-2xl backdrop-blur-md transition-colors duration-150 hover:bg-[var(--surface)]"
       >
         <div className="flex items-center gap-3">
           <Icon name="timer" className="h-4 w-4 text-[var(--accent)]" />

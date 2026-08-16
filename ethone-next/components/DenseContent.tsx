@@ -239,7 +239,7 @@ export function CollectionDensityControl({
 
   return (
     <div
-      className={`v8-collection-density inline-flex items-center gap-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1 ${className}`}
+      className={`v8-collection-density inline-flex items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-1 ${className}`}
       role="group"
       aria-label={i18n("listDensity")}
     >
@@ -249,7 +249,7 @@ export function CollectionDensityControl({
           <button
             key={entry.id}
             type="button"
-            className={`flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)] ${
+            className={`flex h-8 w-8 items-center justify-center rounded-[var(--panel-radius)] text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)] ${
               active ? "is-active bg-[var(--surface-raised)] text-[var(--accent)]" : ""
             }`}
             aria-label={entry.label}
@@ -289,7 +289,7 @@ export function SelectionControl({
       aria-checked={isChecked}
       aria-label={label || "Sélectionner"}
       data-collection-select={id}
-      className={`v8-selection-control flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)] ${
+      className={`v8-selection-control flex h-8 w-8 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)] ${
         isChecked ? "is-selected bg-[var(--accent)]/10 text-[var(--accent)]" : ""
       } ${className}`}
       onClick={() => {
@@ -340,7 +340,7 @@ export function DenseBulkActionBar({
 
   return (
     <div
-      className={`v8-bulk-bar flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] p-3 shadow-lg ${
+      className={`v8-bulk-bar flex flex-wrap items-center justify-between gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-3 shadow-lg ${
         resolvedCount ? "" : "hidden"
       } ${className}`}
       role="toolbar"
@@ -379,7 +379,7 @@ export function DenseBulkActionBar({
             disabled={action.disabled}
             aria-label={action.label}
             onClick={action.onSelect}
-            className={`v8-button inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-colors ${
+            className={`v8-button inline-flex items-center gap-1.5 rounded-[var(--panel-radius)] px-3 py-1.5 text-xs font-medium transition-colors ${
               action.tone === "danger"
                 ? "v8-button--danger bg-red-500/10 text-red-400 hover:bg-red-500/20"
                 : "bg-[var(--surface)] text-[var(--foreground)] hover:bg-[var(--accent)]/10"
@@ -396,7 +396,7 @@ export function DenseBulkActionBar({
             if (onClear) onClear();
             else if (selection) selection.clear();
           }}
-          className="v8-icon-button flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
+          className="v8-icon-button flex h-8 w-8 items-center justify-center rounded-[var(--panel-radius)] text-[var(--muted)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
         >
           <Icon name="x" className="h-4 w-4" />
         </button>
@@ -473,7 +473,7 @@ export function useRowMenu() {
       return (
         <div
           ref={menuRef}
-          className="v8-row-menu fixed z-50 min-w-[12rem] max-w-[18rem] rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] p-1 shadow-[var(--shadow)] outline-none"
+          className="v8-row-menu fixed z-50 min-w-[12rem] max-w-[18rem] rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-1 shadow-[var(--shadow)] outline-none"
           role="menu"
           aria-label={label}
           style={{ left: pos.x, top: pos.y }}
@@ -491,7 +491,7 @@ export function useRowMenu() {
                 type="button"
                 role="menuitem"
                 disabled={entry.disabled}
-                className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors hover:bg-[var(--surface)] focus:bg-[var(--surface)] disabled:opacity-40 disabled:hover:bg-transparent ${
+                className={`flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-left text-sm transition-colors hover:bg-[var(--surface)] focus:bg-[var(--surface)] disabled:opacity-40 disabled:hover:bg-transparent ${
                   entry.danger ? "is-danger text-red-400" : "text-[var(--foreground)]"
                 }`}
                 onClick={() => {

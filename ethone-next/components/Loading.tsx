@@ -15,7 +15,7 @@ export default function Loading({ message = "Initialisation" }: { message?: stri
         className="flex flex-col items-center gap-3"
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
+        transition={{ duration: 0.4, ease: "easeOut" as const }}
       >
         <BrandMark size={72} />
         <span className="text-2xl font-semibold tracking-tight text-[var(--foreground)]">ETHONE</span>

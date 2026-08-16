@@ -30,7 +30,7 @@ export default function PluginsPage() {
             <Card3D key={p.id}>
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-raised)] text-[var(--accent)]">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--surface-raised)] text-[var(--accent)]">
                     <Icon name={p.icon} className="h-5 w-5" />
                   </span>
                   <div>

@@ -211,7 +211,7 @@ export default function ConnectionInspector({
       >
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className={`rounded-xl px-2.5 py-1 text-xs font-semibold ${statusColor}`}>
+            <span className={`rounded-[var(--panel-radius)] px-2.5 py-1 text-xs font-semibold ${statusColor}`}>
               {connected ? i18n("connected") : i18n(integration.status)}
             </span>
             <h2 className="text-xl font-bold">{integration.name}</h2>
@@ -226,13 +226,13 @@ export default function ConnectionInspector({
           </button>
         </div>
 
-        <div className="mb-4 flex gap-1 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] p-1">
+        <div className="mb-4 flex gap-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-1">
           {(["overview", "setup", "methods", "diagnostics"] as Tab[]).map((t) => (
             <button
               key={t}
               type="button"
               onClick={() => setTab(t)}
-              className={`flex-1 rounded-xl py-1.5 text-xs font-medium transition-colors ${
+              className={`flex-1 rounded-[var(--panel-radius)] py-1.5 text-xs font-medium transition-colors ${
                 tab === t ? "bg-[var(--accent)] text-white" : "text-[var(--muted)]"
               }`}
             >
@@ -279,7 +279,7 @@ export default function ConnectionInspector({
               <p className="mb-2 font-semibold">{i18n("availableRoutes")}</p>
               <div className="space-y-2">
                 {methods.map((m, i) => (
-                  <div key={i} className="rounded-lg bg-[var(--surface-raised)] px-3 py-2 font-mono text-xs">
+                  <div key={i} className="rounded-[var(--panel-radius)] bg-[var(--surface-raised)] px-3 py-2 font-mono text-xs">
                     {m}
                   </div>
                 ))}

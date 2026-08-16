@@ -541,13 +541,13 @@ export default function MailPage() {
                 {unread} {i18n("unread")}
               </span>
             )}
-            <div className="flex gap-1 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] p-1">
+            <div className="flex gap-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-1">
               {(["all", "unread", "starred", "important"] as const).map((key) => (
                 <button
                   key={key}
                   type="button"
                   onClick={() => setFilter(key)}
-                  className={`rounded-lg px-2 py-1 text-xs font-medium transition-colors ${
+                  className={`rounded-[var(--panel-radius)] px-2 py-1 text-xs font-medium transition-colors ${
                     filter === key ? "bg-[var(--accent)] text-white" : "text-[var(--muted)] hover:text-[var(--foreground)]"
                   }`}
                 >
@@ -558,7 +558,7 @@ export default function MailPage() {
             <button
               type="button"
               onClick={() => openCompose("new")}
-              className="flex items-center gap-2 rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white hover:opacity-90"
+              className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white hover:opacity-90"
             >
               <Icon name="pencil" className="h-4 w-4" /> {i18n("compose")}
             </button>
@@ -568,7 +568,7 @@ export default function MailPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={i18n("searchMail")}
-              className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+              className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
             <button
               type="button"
@@ -576,7 +576,7 @@ export default function MailPage() {
               data-tooltip={i18n("refresh")}
               data-haptic
               aria-label={i18n("refresh")}
-              className="rounded-xl border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+              className="rounded-[var(--panel-radius)] border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
             >
               <Icon name="refresh-cw" className="h-4 w-4" />
             </button>
@@ -586,7 +586,7 @@ export default function MailPage() {
               data-tooltip={i18n("sort")}
               data-haptic
               aria-label={i18n("sort")}
-              className="rounded-xl border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+              className="rounded-[var(--panel-radius)] border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
             >
               <Icon name="arrow-up-down" className="h-4 w-4" />
             </button>
@@ -596,7 +596,7 @@ export default function MailPage() {
               data-tooltip={i18n("moveTo")}
               data-haptic
               aria-label={i18n("moveTo")}
-              className="rounded-xl border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+              className="rounded-[var(--panel-radius)] border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
             >
               <Icon name="folder-input" className="h-4 w-4" />
             </button>
@@ -606,7 +606,7 @@ export default function MailPage() {
               data-tooltip={i18n("labels")}
               data-haptic
               aria-label={i18n("labels")}
-              className="rounded-xl border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+              className="rounded-[var(--panel-radius)] border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
             >
               <Icon name="tag" className="h-4 w-4" />
             </button>
@@ -614,7 +614,7 @@ export default function MailPage() {
               <button
                 type="button"
                 onClick={() => setPanel("labels")}
-                className="rounded-xl border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+                className="rounded-[var(--panel-radius)] border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
                 aria-label={i18n("labels")}
               >
                 <Icon name="tag" className="h-4 w-4" />
@@ -623,7 +623,7 @@ export default function MailPage() {
             <button
               type="button"
               onClick={() => setPanel("analytics")}
-              className="rounded-xl border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+              className="rounded-[var(--panel-radius)] border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
               aria-label={i18n("analytics")}
             >
               <Icon name="bar-chart-2" className="h-4 w-4" />
@@ -631,7 +631,7 @@ export default function MailPage() {
             <button
               type="button"
               onClick={() => setPanel(panel ? null : "rules")}
-              className="rounded-xl border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+              className="rounded-[var(--panel-radius)] border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
               aria-label={i18n("more")}
             >
               <Icon name="more-horizontal" className="h-4 w-4" />
@@ -639,7 +639,7 @@ export default function MailPage() {
             <button
               type="button"
               onClick={() => setPanel("accounts")}
-              className="rounded-xl border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+              className="rounded-[var(--panel-radius)] border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
               aria-label={i18n("accounts")}
             >
               <Icon name="cog" className="h-4 w-4" />
@@ -650,13 +650,13 @@ export default function MailPage() {
         {selected.length > 0 && (
           <Card3D>
             <div className="flex flex-wrap items-center gap-2">
-              <button type="button" onClick={selectAll} className="rounded-xl border border-[var(--border)] px-2 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("selectAll")}</button>
-              <button type="button" onClick={deselectAll} className="rounded-xl border border-[var(--border)] px-2 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("cancel")}</button>
-              <button type="button" onClick={() => handleBulk("read")} className="rounded-xl border border-[var(--border)] px-2 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("markAsRead")}</button>
-              <button type="button" onClick={() => handleBulk("unread")} className="rounded-xl border border-[var(--border)] px-2 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("markAsUnread")}</button>
-              <button type="button" onClick={() => handleBulk("star")} className="rounded-xl border border-[var(--border)] px-2 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("starred")}</button>
-              <button type="button" onClick={() => handleBulk("archive")} className="rounded-xl border border-[var(--border)] px-2 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("archive")}</button>
-              <button type="button" onClick={() => handleBulk("delete")} className="rounded-xl border border-[var(--border)] px-2 py-1.5 text-xs text-red-400 hover:bg-red-500/10">{i18n("delete")}</button>
+              <button type="button" onClick={selectAll} className="rounded-[var(--panel-radius)] border border-[var(--border)] px-2 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("selectAll")}</button>
+              <button type="button" onClick={deselectAll} className="rounded-[var(--panel-radius)] border border-[var(--border)] px-2 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("cancel")}</button>
+              <button type="button" onClick={() => handleBulk("read")} className="rounded-[var(--panel-radius)] border border-[var(--border)] px-2 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("markAsRead")}</button>
+              <button type="button" onClick={() => handleBulk("unread")} className="rounded-[var(--panel-radius)] border border-[var(--border)] px-2 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("markAsUnread")}</button>
+              <button type="button" onClick={() => handleBulk("star")} className="rounded-[var(--panel-radius)] border border-[var(--border)] px-2 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("starred")}</button>
+              <button type="button" onClick={() => handleBulk("archive")} className="rounded-[var(--panel-radius)] border border-[var(--border)] px-2 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("archive")}</button>
+              <button type="button" onClick={() => handleBulk("delete")} className="rounded-[var(--panel-radius)] border border-[var(--border)] px-2 py-1.5 text-xs text-red-400 hover:bg-red-500/10">{i18n("delete")}</button>
               {labels.length > 0 && (
                 <Select
                   value=""
@@ -687,23 +687,23 @@ export default function MailPage() {
                   <Icon name="arrow-left" className="mr-1 inline h-4 w-4" /> {i18n("back")}
                 </button>
                 <div className="flex gap-1">
-                  <button type="button" onClick={() => openCompose("reply", activeThread)} className="rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("reply")}</button>
-                  <button type="button" onClick={() => openCompose("replyAll", activeThread)} className="rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("replyAll")}</button>
-                  <button type="button" onClick={() => openCompose("forward", activeThread)} className="rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("forward")}</button>
+                  <button type="button" onClick={() => openCompose("reply", activeThread)} className="rounded-[var(--panel-radius)] border border-[var(--border)] px-3 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("reply")}</button>
+                  <button type="button" onClick={() => openCompose("replyAll", activeThread)} className="rounded-[var(--panel-radius)] border border-[var(--border)] px-3 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("replyAll")}</button>
+                  <button type="button" onClick={() => openCompose("forward", activeThread)} className="rounded-[var(--panel-radius)] border border-[var(--border)] px-3 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("forward")}</button>
                   <button
                     type="button"
                     onClick={() => { setActionsTarget(activeThread[activeThread.length - 1]); setActionsOpen(true); }}
-                    className="rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs hover:bg-[var(--surface-raised)]"
+                    className="rounded-[var(--panel-radius)] border border-[var(--border)] px-3 py-1.5 text-xs hover:bg-[var(--surface-raised)]"
                   >
                     {i18n("actions")}
                   </button>
-                  <button type="button" onClick={handleAnalyze} className="rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("brain")}</button>
-                  <button type="button" onClick={handleSuggest} className="rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("suggest")}</button>
+                  <button type="button" onClick={handleAnalyze} className="rounded-[var(--panel-radius)] border border-[var(--border)] px-3 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("brain")}</button>
+                  <button type="button" onClick={handleSuggest} className="rounded-[var(--panel-radius)] border border-[var(--border)] px-3 py-1.5 text-xs hover:bg-[var(--surface-raised)]">{i18n("suggest")}</button>
                 </div>
               </div>
 
               {brainSummary && (
-                <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 text-sm">
+                <div className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-3 text-sm">
                   <strong>{i18n("brain")}:</strong> {brainSummary}
                 </div>
               )}
@@ -712,7 +712,7 @@ export default function MailPage() {
                 <div className="space-y-2">
                   <p className="text-sm font-medium">{i18n("suggest")}</p>
                   {suggestions.map((s, i) => (
-                    <button key={i} type="button" onClick={() => setComposeBody(s)} className="block w-full rounded-xl border border-[var(--border)] p-2 text-left text-sm hover:bg-[var(--surface-raised)]">
+                    <button key={i} type="button" onClick={() => setComposeBody(s)} className="block w-full rounded-[var(--panel-radius)] border border-[var(--border)] p-2 text-left text-sm hover:bg-[var(--surface-raised)]">
                       {s}
                     </button>
                   ))}
@@ -723,7 +723,7 @@ export default function MailPage() {
 
               <div className="space-y-3">
                 {activeThread.map((msg) => (
-                  <div key={msg.id} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3">
+                  <div key={msg.id} className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-3">
                     <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--muted)]">
                       <span className="font-medium text-[var(--foreground)]">{msg.from_name || msg.from_address}</span>
                       <span>{formatMailDate(msg.received_at)}</span>
@@ -732,7 +732,7 @@ export default function MailPage() {
                     {msg.attachments?.length > 0 && (
                       <div className="mt-2 flex flex-wrap gap-2">
                         {msg.attachments.map((a) => (
-                          <span key={a.filename} className="flex items-center gap-1 rounded-lg bg-[var(--surface-raised)] px-2 py-1 text-xs">
+                          <span key={a.filename} className="flex items-center gap-1 rounded-[var(--panel-radius)] bg-[var(--surface-raised)] px-2 py-1 text-xs">
                             <Icon name="paperclip" className="h-3 w-3" /> {a.filename}
                           </span>
                         ))}
@@ -854,7 +854,7 @@ export default function MailPage() {
               type="button"
               onClick={() => { setSort(opt.id as typeof sort); setSortOpen(false); }}
               data-haptic
-              className={`flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-colors ${
+              className={`flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2.5 text-left text-sm transition-colors ${
                 sort === opt.id ? "bg-[var(--accent)] text-white" : "hover:bg-[var(--surface-raised)]"
               }`}
             >
@@ -874,7 +874,7 @@ export default function MailPage() {
               type="button"
               onClick={() => handleMoveSelected(f)}
               data-haptic
-              className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-raised)]"
+              className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-raised)]"
             >
               <Icon name={folderIcon(f)} className="h-4 w-4" />
               {i18n(f)}
@@ -892,9 +892,9 @@ export default function MailPage() {
               onChange={(e) => setNewLabel(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleCreateLabelFromSheet()}
               placeholder={i18n("newLabel")}
-              className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+              className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
-            <button type="button" onClick={handleCreateLabelFromSheet} data-haptic className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">
+            <button type="button" onClick={handleCreateLabelFromSheet} data-haptic className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">
               {i18n("create")}
             </button>
           </div>
@@ -911,7 +911,7 @@ export default function MailPage() {
                   type="button"
                   onClick={() => handleToggleSelectedLabel(l.id)}
                   data-haptic
-                  className={`flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-raised)] ${hasIt ? "text-[var(--accent)]" : ""}`}
+                  className={`flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-raised)] ${hasIt ? "text-[var(--accent)]" : ""}`}
                 >
                   <Icon name={hasIt ? "x" : "tag"} className="h-4 w-4" />
                   <span style={{ color: l.color }}>{l.name}</span>
@@ -930,7 +930,7 @@ export default function MailPage() {
                 type="button"
                 onClick={() => { openThread(actionsTarget); setActionsOpen(false); }}
                 data-haptic
-                className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-raised)]"
+                className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-raised)]"
               >
                 <Icon name="mail-open" className="h-4 w-4" /> {i18n("open")}
               </button>
@@ -938,7 +938,7 @@ export default function MailPage() {
                 type="button"
                 onClick={() => { setFlags([actionsTarget.id], { is_read: !actionsTarget.is_read }); setActionsOpen(false); }}
                 data-haptic
-                className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-raised)]"
+                className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-raised)]"
               >
                 <Icon name={actionsTarget.is_read ? "mail" : "mail-open"} className="h-4 w-4" />
                 {i18n(actionsTarget.is_read ? "markAsUnread" : "markAsRead")}
@@ -947,7 +947,7 @@ export default function MailPage() {
                 type="button"
                 onClick={() => { setFlags([actionsTarget.id], { is_starred: !actionsTarget.is_starred }); setActionsOpen(false); }}
                 data-haptic
-                className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-raised)]"
+                className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-raised)]"
               >
                 <Icon name={actionsTarget.is_starred ? "star-off" : "star"} className="h-4 w-4" />
                 {actionsTarget.is_starred ? i18n("removeFromFavorites") : i18n("addToFavorites")}
@@ -956,7 +956,7 @@ export default function MailPage() {
                 type="button"
                 onClick={() => { setFlags([actionsTarget.id], { is_important: !actionsTarget.is_important }); setActionsOpen(false); }}
                 data-haptic
-                className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-raised)]"
+                className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-raised)]"
               >
                 <Icon name={actionsTarget.is_important ? "circle" : "alert-circle"} className="h-4 w-4" />
                 {i18n(actionsTarget.is_important ? "important" : "markImportant")}
@@ -969,7 +969,7 @@ export default function MailPage() {
                   type="button"
                   onClick={() => handleThreadSnooze(id)}
                   data-haptic
-                  className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-raised)]"
+                  className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-raised)]"
                 >
                   <Icon name="clock-3" className="h-4 w-4" /> {i18n(key)}
                 </button>
@@ -979,7 +979,7 @@ export default function MailPage() {
                 type="button"
                 onClick={() => handleMoveMessage(actionsTarget, "archive")}
                 data-haptic
-                className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-raised)]"
+                className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-raised)]"
               >
                 <Icon name="archive" className="h-4 w-4" /> {i18n("archive")}
               </button>
@@ -987,7 +987,7 @@ export default function MailPage() {
                 type="button"
                 onClick={() => handleMoveMessage(actionsTarget, "trash")}
                 data-haptic
-                className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm text-red-400 transition-colors hover:bg-red-500/10"
+                className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2.5 text-left text-sm text-red-400 transition-colors hover:bg-red-500/10"
               >
                 <Icon name="trash-2" className="h-4 w-4" /> {i18n("delete")}
               </button>
@@ -998,7 +998,7 @@ export default function MailPage() {
 
       {composeOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setComposeOpen(false)}>
-          <div className="flex h-[85vh] w-full max-w-3xl flex-col rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="flex h-[85vh] w-full max-w-3xl flex-col rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between border-b border-[var(--border)] p-4">
               <h2 className="text-lg font-semibold">{composeMode === "new" ? i18n("compose") : i18n(composeMode)}</h2>
               <button type="button" onClick={() => setComposeOpen(false)} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface)]"><Icon name="x" className="h-4 w-4" /></button>
@@ -1017,7 +1017,7 @@ export default function MailPage() {
                   type="text"
                   value={composeSubject}
                   onChange={(e) => setComposeSubject(e.target.value)}
-                  className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                  className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
                 />
               </div>
               {templates.length > 0 && (
@@ -1042,7 +1042,7 @@ export default function MailPage() {
               />
               <div className="flex flex-wrap gap-2">
                 {composeAttachments.map((a) => (
-                  <span key={a.filename} className="flex items-center gap-1 rounded-lg bg-[var(--surface)] px-2 py-1 text-xs">
+                  <span key={a.filename} className="flex items-center gap-1 rounded-[var(--panel-radius)] bg-[var(--surface)] px-2 py-1 text-xs">
                     <Icon name="paperclip" className="h-3 w-3" /> {a.filename}
                     <button type="button" onClick={() => removeAttachment(a.filename)} className="text-red-400"><Icon name="x" className="h-3 w-3" /></button>
                   </span>
@@ -1055,7 +1055,7 @@ export default function MailPage() {
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-2 rounded-xl border border-[var(--border)] px-3 py-2 text-sm hover:bg-[var(--surface)]"
+                  className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] px-3 py-2 text-sm hover:bg-[var(--surface)]"
                 >
                   <Icon name="paperclip" className="h-4 w-4" /> {i18n("addAttachment")}
                 </button>
@@ -1064,16 +1064,16 @@ export default function MailPage() {
                   aria-label={i18n("schedule")}
                   value={composeScheduledAt}
                   onChange={(e) => setComposeScheduledAt(e.target.value)}
-                  className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm"
+                  className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-sm"
                 />
               </div>
               <div className="flex gap-2">
-                <button type="button" onClick={() => setComposeOpen(false)} className="rounded-xl px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--surface)]">{i18n("discard")}</button>
-                <button type="button" onClick={handleSaveDraft} disabled={submitting} className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm hover:bg-[var(--surface)] disabled:opacity-50">{i18n("save")}</button>
+                <button type="button" onClick={() => setComposeOpen(false)} className="rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--surface)]">{i18n("discard")}</button>
+                <button type="button" onClick={handleSaveDraft} disabled={submitting} className="rounded-[var(--panel-radius)] border border-[var(--border)] px-3 py-2 text-sm hover:bg-[var(--surface)] disabled:opacity-50">{i18n("save")}</button>
                 {composeScheduledAt && (
-                  <button type="button" onClick={handleSchedule} disabled={submitting} className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm hover:bg-[var(--surface)] disabled:opacity-50">{i18n("schedule")}</button>
+                  <button type="button" onClick={handleSchedule} disabled={submitting} className="rounded-[var(--panel-radius)] border border-[var(--border)] px-3 py-2 text-sm hover:bg-[var(--surface)] disabled:opacity-50">{i18n("schedule")}</button>
                 )}
-                <button type="button" onClick={handleSend} disabled={submitting} className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{i18n("send")}</button>
+                <button type="button" onClick={handleSend} disabled={submitting} className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{i18n("send")}</button>
               </div>
             </div>
           </div>
@@ -1082,7 +1082,7 @@ export default function MailPage() {
 
       {panel && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => { setPanel(null); setForm({}); }}>
-          <div className="h-[80vh] w-full max-w-2xl overflow-auto rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="h-[80vh] w-full max-w-2xl overflow-auto rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-semibold">{i18n(panel)}</h2>
               <button type="button" onClick={() => { setPanel(null); setForm({}); }} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface)]"><Icon name="x" className="h-4 w-4" /></button>
@@ -1092,13 +1092,13 @@ export default function MailPage() {
               <div className="space-y-4">
                 <form onSubmit={onPanelSubmit} className="flex gap-2">
                   <input type="hidden" name="_action" value="createLabel" />
-                  <input type="text" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value, _action: "createLabel" })} placeholder={i18n("labels")} className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                  <input type="text" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value, _action: "createLabel" })} placeholder={i18n("labels")} className="flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
                   <input type="color" value={form.color || "#6366f1"} onChange={(e) => setForm({ ...form, color: e.target.value })} className="h-10 w-10 rounded" />
-                  <button type="submit" className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{i18n("create")}</button>
+                  <button type="submit" className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{i18n("create")}</button>
                 </form>
                 <div className="space-y-2">
                   {labels.map((l) => (
-                    <div key={l.id} className="flex items-center justify-between rounded-xl border border-[var(--border)] p-2">
+                    <div key={l.id} className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--border)] p-2">
                       <span className="text-sm" style={{ color: l.color }}>{l.name}</span>
                       <button type="button" onClick={() => deleteLabel(l.id).catch((err) => toastError(String(err)))} className="text-red-400"><Icon name="trash-2" className="h-4 w-4" /></button>
                     </div>
@@ -1111,14 +1111,14 @@ export default function MailPage() {
               <div className="space-y-4">
                 <form onSubmit={onPanelSubmit} className="space-y-2">
                   <input type="hidden" name="_action" value="createSignature" />
-                  <input type="text" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value, _action: "createSignature" })} placeholder={i18n("name")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                  <textarea value={form.content || ""} onChange={(e) => setForm({ ...form, content: e.target.value })} placeholder={i18n("body")} className="h-24 w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2 text-sm" />
+                  <input type="text" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value, _action: "createSignature" })} placeholder={i18n("name")} className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                  <textarea value={form.content || ""} onChange={(e) => setForm({ ...form, content: e.target.value })} placeholder={i18n("body")} className="h-24 w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-2 text-sm" />
                   <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.is_default === "true"} onChange={(e) => setForm({ ...form, is_default: e.target.checked ? "true" : "false" })} /> {i18n("default")}</label>
-                  <button type="submit" className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{i18n("create")}</button>
+                  <button type="submit" className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{i18n("create")}</button>
                 </form>
                 <div className="space-y-2">
                   {signatures.map((s) => (
-                    <div key={s.id} className="rounded-xl border border-[var(--border)] p-2">
+                    <div key={s.id} className="rounded-[var(--panel-radius)] border border-[var(--border)] p-2">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium">{s.name} {s.is_default && "(default)"}</span>
                         <button type="button" onClick={() => deleteSignature(s.id).catch((err) => toastError(String(err)))} className="text-red-400"><Icon name="trash-2" className="h-4 w-4" /></button>
@@ -1135,15 +1135,15 @@ export default function MailPage() {
                 <form onSubmit={onPanelSubmit} className="space-y-2">
                   <input type="hidden" name="_action" value={form._action || "createTemplate"} />
                   {form.id && <input type="hidden" name="id" value={form.id} />}
-                  <input type="text" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={i18n("name")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                  <input type="text" value={form.subject || ""} onChange={(e) => setForm({ ...form, subject: e.target.value })} placeholder={i18n("subject")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                  <textarea value={form.content || ""} onChange={(e) => setForm({ ...form, content: e.target.value })} placeholder={i18n("body")} className="h-24 w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2 text-sm" />
+                  <input type="text" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={i18n("name")} className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                  <input type="text" value={form.subject || ""} onChange={(e) => setForm({ ...form, subject: e.target.value })} placeholder={i18n("subject")} className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                  <textarea value={form.content || ""} onChange={(e) => setForm({ ...form, content: e.target.value })} placeholder={i18n("body")} className="h-24 w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-2 text-sm" />
                   <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.is_default === "true"} onChange={(e) => setForm({ ...form, is_default: e.target.checked ? "true" : "false" })} /> {i18n("default")}</label>
-                  <button type="submit" className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{form._action === "updateTemplate" ? i18n("save") : i18n("create")}</button>
+                  <button type="submit" className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{form._action === "updateTemplate" ? i18n("save") : i18n("create")}</button>
                 </form>
                 <div className="space-y-2">
                   {templates.map((t) => (
-                    <div key={t.id} className="rounded-xl border border-[var(--border)] p-2">
+                    <div key={t.id} className="rounded-[var(--panel-radius)] border border-[var(--border)] p-2">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium">{t.name} {t.is_default && <span className="text-[var(--accent)]">★</span>}</span>
                         <div className="flex gap-2">
@@ -1163,12 +1163,12 @@ export default function MailPage() {
                 <form onSubmit={onPanelSubmit} className="space-y-2">
                   <input type="hidden" name="_action" value={form._action || "createRule"} />
                   {form.id && <input type="hidden" name="id" value={form.id} />}
-                  <input type="text" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={i18n("name")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                  <input type="number" value={form.priority || ""} onChange={(e) => setForm({ ...form, priority: e.target.value })} placeholder={i18n("priority")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                  <input type="text" value={form.condition_from || ""} onChange={(e) => setForm({ ...form, condition_from: e.target.value })} placeholder={i18n("from")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                  <input type="text" value={form.condition_domain || ""} onChange={(e) => setForm({ ...form, condition_domain: e.target.value })} placeholder={i18n("domain")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                  <input type="text" value={form.condition_subject || ""} onChange={(e) => setForm({ ...form, condition_subject: e.target.value })} placeholder={i18n("subject")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                  <input type="text" value={form.condition_body || ""} onChange={(e) => setForm({ ...form, condition_body: e.target.value })} placeholder={i18n("body")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                  <input type="text" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={i18n("name")} className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                  <input type="number" value={form.priority || ""} onChange={(e) => setForm({ ...form, priority: e.target.value })} placeholder={i18n("priority")} className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                  <input type="text" value={form.condition_from || ""} onChange={(e) => setForm({ ...form, condition_from: e.target.value })} placeholder={i18n("from")} className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                  <input type="text" value={form.condition_domain || ""} onChange={(e) => setForm({ ...form, condition_domain: e.target.value })} placeholder={i18n("domain")} className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                  <input type="text" value={form.condition_subject || ""} onChange={(e) => setForm({ ...form, condition_subject: e.target.value })} placeholder={i18n("subject")} className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                  <input type="text" value={form.condition_body || ""} onChange={(e) => setForm({ ...form, condition_body: e.target.value })} placeholder={i18n("body")} className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
                   <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.condition_has_attachments === "true"} onChange={(e) => setForm({ ...form, condition_has_attachments: e.target.checked ? "true" : "false" })} /> {i18n("hasAttachments")}</label>
                   <p className="text-xs font-medium text-[var(--muted)]">{i18n("actions")}</p>
                   <Select
@@ -1181,20 +1181,20 @@ export default function MailPage() {
                     aria-label={i18n("moveTo")}
                     className="w-full"
                   />
-                  <input type="text" value={form.action_label || ""} onChange={(e) => setForm({ ...form, action_label: e.target.value })} placeholder={i18n("labels")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                  <input type="text" value={form.action_forward || ""} onChange={(e) => setForm({ ...form, action_forward: e.target.value })} placeholder={i18n("forwardTo")} className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                  <textarea value={form.action_auto_reply || ""} onChange={(e) => setForm({ ...form, action_auto_reply: e.target.value })} placeholder={i18n("autoReply")} className="h-20 w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2 text-sm" />
+                  <input type="text" value={form.action_label || ""} onChange={(e) => setForm({ ...form, action_label: e.target.value })} placeholder={i18n("labels")} className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                  <input type="text" value={form.action_forward || ""} onChange={(e) => setForm({ ...form, action_forward: e.target.value })} placeholder={i18n("forwardTo")} className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                  <textarea value={form.action_auto_reply || ""} onChange={(e) => setForm({ ...form, action_auto_reply: e.target.value })} placeholder={i18n("autoReply")} className="h-20 w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-2 text-sm" />
                   <div className="flex flex-wrap gap-3 text-sm">
                     <label className="flex items-center gap-2"><input type="checkbox" checked={form.action_mark_read === "true"} onChange={(e) => setForm({ ...form, action_mark_read: e.target.checked ? "true" : "false" })} /> {i18n("markRead")}</label>
                     <label className="flex items-center gap-2"><input type="checkbox" checked={form.action_mark_important === "true"} onChange={(e) => setForm({ ...form, action_mark_important: e.target.checked ? "true" : "false" })} /> {i18n("important")}</label>
                     <label className="flex items-center gap-2"><input type="checkbox" checked={form.action_mark_spam === "true"} onChange={(e) => setForm({ ...form, action_mark_spam: e.target.checked ? "true" : "false" })} /> {i18n("markSpam")}</label>
                     <label className="flex items-center gap-2"><input type="checkbox" checked={form.action_archive === "true"} onChange={(e) => setForm({ ...form, action_archive: e.target.checked ? "true" : "false" })} /> {i18n("archive")}</label>
                   </div>
-                  <button type="submit" className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{form._action === "updateRule" ? i18n("save") : i18n("create")}</button>
+                  <button type="submit" className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{form._action === "updateRule" ? i18n("save") : i18n("create")}</button>
                 </form>
                 <div className="space-y-2">
                   {rules.map((r) => (
-                    <div key={r.id} className="rounded-xl border border-[var(--border)] p-2 text-sm">
+                    <div key={r.id} className="rounded-[var(--panel-radius)] border border-[var(--border)] p-2 text-sm">
                       <div className="flex items-center justify-between">
                         <span className="font-medium">{r.name} ({r.priority})</span>
                         <div className="flex gap-2">
@@ -1213,13 +1213,13 @@ export default function MailPage() {
               <div className="space-y-4">
                 <form onSubmit={onPanelSubmit} className="flex gap-2">
                   <input type="hidden" name="_action" value="block" />
-                  <input type="text" value={form.email || ""} onChange={(e) => setForm({ ...form, email: e.target.value, _action: "block" })} placeholder={i18n("email")} className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                  <input type="text" value={form.reason || ""} onChange={(e) => setForm({ ...form, reason: e.target.value })} placeholder={i18n("reason")} className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                  <button type="submit" className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{i18n("add")}</button>
+                  <input type="text" value={form.email || ""} onChange={(e) => setForm({ ...form, email: e.target.value, _action: "block" })} placeholder={i18n("email")} className="flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                  <input type="text" value={form.reason || ""} onChange={(e) => setForm({ ...form, reason: e.target.value })} placeholder={i18n("reason")} className="flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                  <button type="submit" className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{i18n("add")}</button>
                 </form>
                 <div className="space-y-2">
                   {blocked.map((b) => (
-                    <div key={b.id} className="flex items-center justify-between rounded-xl border border-[var(--border)] p-2">
+                    <div key={b.id} className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--border)] p-2">
                       <span className="text-sm">{b.email || b.domain} {b.reason && `(${b.reason})`}</span>
                       <button type="button" onClick={() => unblockSender(b.id).catch((err) => toastError(String(err)))} className="text-red-400"><Icon name="trash-2" className="h-4 w-4" /></button>
                     </div>
@@ -1232,13 +1232,13 @@ export default function MailPage() {
               <div className="space-y-4">
                 <form onSubmit={onPanelSubmit} className="flex gap-2">
                   <input type="hidden" name="_action" value="trust" />
-                  <input type="text" value={form.email || ""} onChange={(e) => setForm({ ...form, email: e.target.value, _action: "trust" })} placeholder={i18n("email")} className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                  <input type="text" value={form.domain || ""} onChange={(e) => setForm({ ...form, domain: e.target.value })} placeholder="Domain" className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                  <button type="submit" className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{i18n("add")}</button>
+                  <input type="text" value={form.email || ""} onChange={(e) => setForm({ ...form, email: e.target.value, _action: "trust" })} placeholder={i18n("email")} className="flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                  <input type="text" value={form.domain || ""} onChange={(e) => setForm({ ...form, domain: e.target.value })} placeholder="Domain" className="flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                  <button type="submit" className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{i18n("add")}</button>
                 </form>
                 <div className="space-y-2">
                   {trusted.map((t) => (
-                    <div key={t.id} className="flex items-center justify-between rounded-xl border border-[var(--border)] p-2">
+                    <div key={t.id} className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--border)] p-2">
                       <span className="text-sm">{t.email || t.domain}</span>
                       <button type="button" onClick={() => untrustSender(t.id).catch((err) => toastError(String(err)))} className="text-red-400"><Icon name="trash-2" className="h-4 w-4" /></button>
                     </div>
@@ -1251,13 +1251,13 @@ export default function MailPage() {
               <div className="space-y-4">
                 <form onSubmit={onPanelSubmit} className="flex gap-2">
                   <input type="hidden" name="_action" value="createAlias" />
-                  <input type="text" value={form.alias || ""} onChange={(e) => setForm({ ...form, alias: e.target.value, _action: "createAlias" })} placeholder={i18n("alias")} className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                  <input type="text" value={form.display_name || ""} onChange={(e) => setForm({ ...form, display_name: e.target.value })} placeholder={i18n("name")} className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                  <button type="submit" className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{i18n("create")}</button>
+                  <input type="text" value={form.alias || ""} onChange={(e) => setForm({ ...form, alias: e.target.value, _action: "createAlias" })} placeholder={i18n("alias")} className="flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                  <input type="text" value={form.display_name || ""} onChange={(e) => setForm({ ...form, display_name: e.target.value })} placeholder={i18n("name")} className="flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                  <button type="submit" className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{i18n("create")}</button>
                 </form>
                 <div className="space-y-2">
                   {aliases.map((a) => (
-                    <div key={a.id} className="rounded-xl border border-[var(--border)] p-2 text-sm">
+                    <div key={a.id} className="rounded-[var(--panel-radius)] border border-[var(--border)] p-2 text-sm">
                       <span className="font-medium">{a.alias}</span> {a.is_primary && "(primary)"} — {a.display_name}
                     </div>
                   ))}
@@ -1293,7 +1293,7 @@ function MailRecipients({ label, values, onChange }: { label: string; values: st
           onChange(e.target.value.split(/[,;]/).map((s) => s.trim()).filter(Boolean));
         }}
         placeholder={label}
-        className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+        className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
       />
     </div>
   );

@@ -117,7 +117,7 @@ function ForecastRow({ day, lang }: { day: WeatherData; lang: string }) {
   const code = asNum(day.weatherCode);
 
   return (
-    <div className="flex items-center justify-between rounded-lg bg-[var(--surface)] px-3 py-2 text-sm">
+    <div className="flex items-center justify-between rounded-[var(--panel-radius)] bg-[var(--surface)] px-3 py-2 text-sm">
       <span className="text-[var(--muted)]">{dayLabel(date, lang)}</span>
       <div className="flex items-center gap-2">
         <Icon name={weatherIconFromCode(code, condition)} className="h-4 w-4" />
@@ -185,7 +185,7 @@ function WeatherDetailContent({ open, onClose, referenceRef, weather }: ContentP
             initial={{ opacity: 0, y: -8, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.96 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            transition={{ duration: 0.15, ease: "easeOut" as const }}
             style={floatingStyles}
             className="z-[90] w-80 max-w-[calc(100vw-1rem)]"
             role="dialog"
@@ -217,14 +217,14 @@ function WeatherDetailContent({ open, onClose, referenceRef, weather }: ContentP
                 {(humidity !== undefined || wind !== undefined) && (
                   <div className="grid grid-cols-2 gap-2">
                     {humidity !== undefined && (
-                      <div className="flex items-center gap-2 rounded-xl bg-[var(--surface)] px-3 py-2 text-sm">
+                      <div className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--surface)] px-3 py-2 text-sm">
                         <Icon name="droplets" className="h-4 w-4 text-sky-400" />
                         <span className="font-medium">{humidity}%</span>
                         <span className="text-[var(--muted)]">{i18n("humidity")}</span>
                       </div>
                     )}
                     {wind !== undefined && (
-                      <div className="flex items-center gap-2 rounded-xl bg-[var(--surface)] px-3 py-2 text-sm">
+                      <div className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--surface)] px-3 py-2 text-sm">
                         <Icon name="wind" className="h-4 w-4 text-emerald-400" />
                         <span className="font-medium">{wind} km/h</span>
                         <span className="text-[var(--muted)]">{i18n("wind")}</span>
@@ -249,7 +249,7 @@ function WeatherDetailContent({ open, onClose, referenceRef, weather }: ContentP
                 <Link
                   href="/weather"
                   onClick={onClose}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                  className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
                 >
                   {i18n("weatherSeePage")}
                   <Icon name="arrowRight" className="h-4 w-4" />

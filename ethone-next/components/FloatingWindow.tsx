@@ -72,7 +72,7 @@ export function FloatingWindow({ win }: { win: WindowState }) {
         resize: win.maximized ? "none" : "both",
         overflow: "hidden",
       }}
-      className="absolute flex flex-col rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] shadow-2xl"
+      className="absolute flex flex-col rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] shadow-2xl"
     >
       <div className={`flex h-10 items-center justify-between border-b border-[var(--border)] bg-[var(--surface)] px-3 ${win.maximized ? "" : "cursor-grab active:cursor-grabbing"}`}>
         <span className="select-none text-sm font-semibold">{win.title}</span>
@@ -111,7 +111,7 @@ export function FloatingWindow({ win }: { win: WindowState }) {
         <iframe
           src={win.route}
           title={win.title}
-          className="h-full w-full rounded-xl border-0 bg-[var(--surface)]"
+          className="h-full w-full rounded-[var(--panel-radius)] border-0 bg-[var(--surface)]"
           sandbox="allow-scripts allow-same-origin allow-popups"
         />
       </div>

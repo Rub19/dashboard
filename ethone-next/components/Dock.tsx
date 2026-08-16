@@ -179,20 +179,18 @@ export default function Dock() {
   }
 
   const baseControlClass =
-    "!rounded-full v8-icon-radius flex h-11 w-11 items-center justify-center border border-transparent text-[var(--foreground)] transition-all hover:border-[var(--accent)]/30 hover:bg-[var(--surface)] hover:shadow-lg";
+    "!rounded-full v8-icon-radius flex h-11 w-11 items-center justify-center border border-transparent text-[var(--foreground)] transition-colors duration-150 hover:border-[var(--accent)]/30 hover:bg-[var(--surface)] hover:shadow-lg active:scale-[0.98]";
 
   const controlInactive = "text-[var(--muted)]";
   const controlActive = "bg-[var(--accent)]/10 text-[var(--accent)]";
 
   return (
     <div
-      className="v8-floating-dock fixed bottom-4 z-50 hidden md:block"
+      className="v8-floating-dock fixed bottom-4 z-50 hidden md:block pointer-events-none bg-transparent border-0 shadow-none"
       style={{ left: "calc(50% + var(--dock-offset))", transform: "translateX(-50%)" }}
-      data-dock-magnify="true"
-      data-dock-pulse="true"
     >
       {launcherOpen && (
-        <div className="v8-dock-launcher absolute bottom-full left-1/2 z-50 mb-4 w-[min(90vw,420px)] -translate-x-1/2">
+        <div className="v8-dock-launcher pointer-events-auto absolute bottom-full left-1/2 z-50 mb-4 w-[min(90vw,420px)] -translate-x-1/2">
           <Card3D>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -217,7 +215,7 @@ export default function Dock() {
                       onClick={() => toggleDockItem(app.id)}
                       aria-label={active ? i18n("dockRemove") : i18n("dockAdd")}
                       data-haptic
-                      className={`flex flex-col items-center gap-1 rounded-xl border border-[var(--border)] p-2 text-[var(--foreground)] transition-colors hover:border-[var(--accent)]/30 hover:bg-[var(--surface)] ${
+                      className={`flex flex-col items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--border)] p-2 text-[var(--foreground)] transition-colors hover:border-[var(--accent)]/30 hover:bg-[var(--surface)] ${
                         active ? "border-[var(--accent)] text-[var(--accent)]" : ""
                       }`}
                     >
@@ -237,7 +235,7 @@ export default function Dock() {
 
       <div
         data-dock
-        className={`flex items-end gap-1 !rounded-full overflow-hidden border border-[var(--border)] bg-[var(--surface-raised)]/95 p-2 shadow-2xl backdrop-blur-md transition-all ${
+        className={`pointer-events-auto relative flex items-center gap-1.5 overflow-hidden rounded-full border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 py-2 shadow-2xl shadow-black/70 backdrop-blur-2xl ${
           expanded ? "min-w-[320px] flex-wrap justify-center" : ""
         }`}
       >

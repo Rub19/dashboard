@@ -243,7 +243,7 @@ export default function RichTextEditor({
   return (
     <div className="v8-rich-text space-y-2">
       <div
-        className="v8-rich-text__toolbar flex flex-wrap gap-1 rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] p-1"
+        className="v8-rich-text__toolbar flex flex-wrap gap-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-1"
         role="toolbar"
         aria-label="Formatage du texte"
         onMouseDown={(e) => e.preventDefault()}
@@ -294,7 +294,7 @@ export default function RichTextEditor({
         <ToolbarButton active={false} onClick={clearFormatting} label="Effacer le format" icon="remove-formatting" data-rich-command="removeFormat" />
       </div>
       <div
-        className="v8-rich-text__body relative min-h-[6rem] w-full cursor-text rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus-within:border-[var(--accent)]"
+        className="v8-rich-text__body relative min-h-[6rem] w-full cursor-text rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus-within:border-[var(--accent)]"
         onClick={() => ref.current?.focus()}
       >
         {empty && placeholder && (

@@ -116,7 +116,7 @@ export default function ProfileSelectionPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder={i18n("profileNamePlaceholder")}
-            className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+            className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
           />
 
           <div className="space-y-1">
@@ -130,7 +130,7 @@ export default function ProfileSelectionPage() {
                     setType(t);
                     setAccent(PROFILE_ACCENTS[t as Profile["type"]]);
                   }}
-                  className={`rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs ${type === t ? "bg-[var(--accent)] text-white" : "hover:bg-[var(--surface-raised)]"}`}
+                  className={`rounded-[var(--panel-radius)] border border-[var(--border)] px-3 py-1.5 text-xs ${type === t ? "bg-[var(--accent)] text-white" : "hover:bg-[var(--surface-raised)]"}`}
                 >
                   {i18n(t)}
                 </button>
@@ -146,7 +146,7 @@ export default function ProfileSelectionPage() {
                   key={w}
                   type="button"
                   onClick={() => setWorkspace(w)}
-                  className={`flex items-center gap-1.5 rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs ${workspace === w ? "bg-[var(--accent)] text-white" : "hover:bg-[var(--surface-raised)]"}`}
+                  className={`flex items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--border)] px-3 py-1.5 text-xs ${workspace === w ? "bg-[var(--accent)] text-white" : "hover:bg-[var(--surface-raised)]"}`}
                 >
                   <Icon name={WORKSPACE_ICONS[w]} className="h-3.5 w-3.5" />
                   {i18n(w)}
@@ -176,7 +176,7 @@ export default function ProfileSelectionPage() {
             type="button"
             onClick={handleCreate}
             disabled={creating || !name.trim()}
-            className="rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
+            className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
           >
             {i18n("create")}
           </button>
@@ -242,7 +242,7 @@ export default function ProfileSelectionPage() {
             <button
               type="button"
               onClick={() => handleSelect(p.id)}
-              className={`mt-3 w-full rounded-xl px-3 py-2 text-sm font-semibold text-white ${active === p.id ? "bg-emerald-500" : "bg-[var(--accent)]"}`}
+              className={`mt-3 w-full rounded-[var(--panel-radius)] px-3 py-2 text-sm font-semibold text-white ${active === p.id ? "bg-emerald-500" : "bg-[var(--accent)]"}`}
             >
               {active === p.id ? i18n("active") : i18n("select")}
             </button>

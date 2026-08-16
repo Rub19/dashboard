@@ -32,7 +32,7 @@ export default function PluginClient() {
   return (
     <div className="space-y-6 p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--surface-raised)] text-[var(--accent)]">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--surface-raised)] text-[var(--accent)]">
           <Icon name={plugin.icon} className="h-6 w-6" />
         </span>
         <div className="min-w-0 flex-1">
@@ -53,7 +53,7 @@ export default function PluginClient() {
                 width={128}
                 height={128}
                 unoptimized
-                className="h-32 w-32 rounded-2xl object-cover shadow-lg"
+                className="h-32 w-32 rounded-[var(--panel-radius)] object-cover shadow-lg"
               />
             </div>
           )}
@@ -65,7 +65,7 @@ export default function PluginClient() {
           <button
             type="button"
             onClick={() => router.push("/connections/")}
-            className="w-full rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
+            className="w-full rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
           >
             {i18n("configure")}
           </button>

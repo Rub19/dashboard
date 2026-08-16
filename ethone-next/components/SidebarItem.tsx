@@ -29,7 +29,7 @@ export default function SidebarItem({
       aria-label={label}
       data-tooltip={expanded ? undefined : label}
       data-haptic
-      className={`group relative z-10 flex h-10 shrink-0 items-center !rounded-xl transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/50 ${
+      className={`group relative z-10 flex h-10 shrink-0 items-center !rounded-[var(--panel-radius)] transition-colors duration-150 duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/50 ${
         isActive
           ? "bg-[var(--accent)]/15 text-[var(--accent)] border border-[var(--accent)]/30"
           : "text-[var(--muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
@@ -44,7 +44,7 @@ export default function SidebarItem({
     >
       <Icon name={icon} className="h-5 w-5 shrink-0" />
       <span
-        className="whitespace-nowrap text-sm font-medium transition-all duration-300 ease-out"
+        className="whitespace-nowrap text-sm font-medium transition-colors duration-150 duration-300 ease-out"
         style={{
           maxWidth: expanded ? 180 : 0,
           opacity: expanded ? 1 : 0,
@@ -63,7 +63,7 @@ export default function SidebarItem({
         <motion.div
           layoutId="sidebarActivePill"
           className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-[var(--accent)]"
-          transition={{ type: "spring", stiffness: 400, damping: 30 }}
+          transition={{ duration: 0.15, ease: "easeOut" as const }}
         />
       )}
       {expanded ? link : <Tooltip label={label} position="right">{link}</Tooltip>}

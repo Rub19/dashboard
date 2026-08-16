@@ -573,7 +573,7 @@ export default function LiveWidgets({
             </p>
           </div>
           {record.image && (
-            <Image src={record.image} alt="" width={48} height={48} unoptimized className="h-12 w-12 rounded-lg object-cover shadow-md" />
+            <Image src={record.image} alt="" width={48} height={48} unoptimized className="h-12 w-12 rounded-[var(--panel-radius)] object-cover shadow-md" />
           )}
         </div>
 
@@ -714,7 +714,7 @@ export default function LiveWidgets({
           {activities.length > 0 ? (
             <ul className="space-y-1.5">
               {activities.slice(0, 6).map((a, i) => (
-                <li key={i} className="rounded-lg bg-[var(--surface)]/50 p-1.5 text-sm">
+                <li key={i} className="rounded-[var(--panel-radius)] bg-[var(--surface)]/50 p-1.5 text-sm">
                   <p className="truncate font-medium text-[var(--foreground)]">{a.name}</p>
                   {a.details && <p className="truncate text-[10px] text-[var(--muted)]">{a.details}</p>}
                   {a.state && <p className="truncate text-[10px] text-[var(--muted)]">{a.state}</p>}
@@ -727,7 +727,7 @@ export default function LiveWidgets({
         </div>
 
         {lanyard.spotify?.playing && lanyard.spotify.title && (
-          <div className="rounded-lg bg-[var(--surface)]/70 p-2">
+          <div className="rounded-[var(--panel-radius)] bg-[var(--surface)]/70 p-2">
             <p className="mb-1 text-[10px] font-medium text-emerald-400">Spotify</p>
             <p className="truncate text-xs font-medium text-[var(--foreground)]">{lanyard.spotify.title}</p>
             <p className="truncate text-[10px] text-[var(--muted)]">
@@ -754,11 +754,11 @@ export default function LiveWidgets({
         <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
 
         {body ? (
-          <div className="flex items-center justify-center rounded-2xl bg-[var(--surface)]/60 p-2">
+          <div className="flex items-center justify-center rounded-[var(--panel-radius)] bg-[var(--surface)]/60 p-2">
             <Image src={body} alt="" width={200} height={200} unoptimized className="h-28 w-28 object-contain drop-shadow-lg" />
           </div>
         ) : (
-          <div className="flex h-28 items-center justify-center rounded-2xl bg-[var(--surface)]/60">
+          <div className="flex h-28 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--surface)]/60">
             <span className="text-3xl">⛏️</span>
           </div>
         )}
@@ -791,7 +791,7 @@ export default function LiveWidgets({
           {names.length > 0 ? (
             <ul className="space-y-1.5">
               {names.slice(-8).map((n, i) => (
-                <li key={i} className="flex items-center justify-between rounded-lg bg-[var(--surface)]/40 px-2 py-1 text-sm">
+                <li key={i} className="flex items-center justify-between rounded-[var(--panel-radius)] bg-[var(--surface)]/40 px-2 py-1 text-sm">
                   <span className="truncate text-[var(--foreground)]">{toStr(n.name) || "—"}</span>
                   {Boolean(n.changedAt) && (
                     <span className="text-[10px] text-[var(--muted)]">
@@ -836,7 +836,7 @@ export default function LiveWidgets({
                 const category = toStr(b.category) || "other";
                 const catKey = `billCategory${category.charAt(0).toUpperCase() + category.slice(1)}`;
                 return (
-                  <li key={i} className="rounded-lg bg-[var(--surface)]/50 p-1.5 text-sm">
+                  <li key={i} className="rounded-[var(--panel-radius)] bg-[var(--surface)]/50 p-1.5 text-sm">
                     <div className="flex items-center justify-between gap-2">
                       <span className="min-w-0 flex-1 truncate font-medium text-[var(--foreground)]" title={label}>{label}</span>
                       <span className="shrink-0 text-xs font-semibold text-[var(--accent)]">
@@ -901,10 +901,10 @@ export default function LiveWidgets({
         </div>
         <div className="flex flex-wrap gap-2 text-[10px] text-[var(--muted)]">
           {humidity !== undefined && (
-            <span className="rounded-lg bg-[var(--surface)] px-2 py-1">{humidity}% {i18n("humidity")}</span>
+            <span className="rounded-[var(--panel-radius)] bg-[var(--surface)] px-2 py-1">{humidity}% {i18n("humidity")}</span>
           )}
           {wind !== undefined && (
-            <span className="rounded-lg bg-[var(--surface)] px-2 py-1">{wind} km/h {i18n("wind")}</span>
+            <span className="rounded-[var(--panel-radius)] bg-[var(--surface)] px-2 py-1">{wind} km/h {i18n("wind")}</span>
           )}
         </div>
         <div className="flex-1 overflow-y-auto pr-1">
@@ -916,7 +916,7 @@ export default function LiveWidgets({
                 const min = toNum(day.min);
                 const max = toNum(day.max);
                 return (
-                  <li key={i} className="flex items-center justify-between rounded-lg bg-[var(--surface)]/50 px-2 py-1 text-sm">
+                  <li key={i} className="flex items-center justify-between rounded-[var(--panel-radius)] bg-[var(--surface)]/50 px-2 py-1 text-sm">
                     <span className="text-[var(--muted)]">
                       {date ? formatLocalShortDate(date, mounted) : "—"}
                     </span>
@@ -980,7 +980,7 @@ export default function LiveWidgets({
                   alt=""
                   fill
                   unoptimized
-                  className="rounded-xl object-cover"
+                  className="rounded-[var(--panel-radius)] object-cover"
                 />
               </div>
             )}
@@ -1023,7 +1023,7 @@ export default function LiveWidgets({
         </div>
 
         {activity && (
-          <div className="mb-2 rounded-xl bg-[var(--surface)]/60 p-2.5">
+          <div className="mb-2 rounded-[var(--panel-radius)] bg-[var(--surface)]/60 p-2.5">
             <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">{i18n("activity")}</p>
             <p className="truncate text-sm font-medium text-[var(--foreground)]">{activity.name}</p>
             {activity.details && <p className="truncate text-xs text-[var(--muted)]">{activity.details}</p>}
@@ -1032,11 +1032,11 @@ export default function LiveWidgets({
         )}
 
         {spotify?.playing && spotify.title && (
-          <div className="mt-auto rounded-xl bg-emerald-500/10 p-2.5">
+          <div className="mt-auto rounded-[var(--panel-radius)] bg-emerald-500/10 p-2.5">
             <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-emerald-400">Spotify</p>
             <div className="flex items-center gap-2">
               {spotify.artwork ? (
-                <Image src={spotify.artwork} alt="" width={40} height={40} unoptimized className="h-10 w-10 rounded-lg object-cover" />
+                <Image src={spotify.artwork} alt="" width={40} height={40} unoptimized className="h-10 w-10 rounded-[var(--panel-radius)] object-cover" />
               ) : (
                 <Icon name="music" className="h-10 w-10 text-emerald-400" />
               )}
@@ -1097,7 +1097,7 @@ export default function LiveWidgets({
               const date = toStr(day.date);
               const dayIcon = weatherIconFromCode(toNum(day.weatherCode), toStr(day.condition));
               return (
-                <div key={i} className="flex flex-col items-center gap-1 rounded-xl bg-[var(--surface)]/60 p-2">
+                <div key={i} className="flex flex-col items-center gap-1 rounded-[var(--panel-radius)] bg-[var(--surface)]/60 p-2">
                   <span className="text-[10px] text-[var(--muted)]">{formatDateShort(date, mounted)}</span>
                   <Icon name={dayIcon} className="h-5 w-5 text-amber-400" />
                   <span className="text-xs font-medium text-[var(--foreground)]">
@@ -1124,9 +1124,9 @@ export default function LiveWidgets({
       <div className="flex h-full flex-col">
         <div className="mb-3 flex items-center gap-3">
           {avatar ? (
-            <Image src={avatar} alt="" width={56} height={56} unoptimized className="h-14 w-14 rounded-xl border-2 border-[var(--border)] object-cover shadow-md" />
+            <Image src={avatar} alt="" width={56} height={56} unoptimized className="h-14 w-14 rounded-[var(--panel-radius)] border-2 border-[var(--border)] object-cover shadow-md" />
           ) : (
-            <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-emerald-500/10 text-2xl shadow-md">
+            <span className="flex h-14 w-14 items-center justify-center rounded-[var(--panel-radius)] bg-emerald-500/10 text-2xl shadow-md">
               ⛏️
             </span>
           )}
@@ -1151,7 +1151,7 @@ export default function LiveWidgets({
           )}
         </div>
 
-        <div className="mt-auto rounded-xl bg-[var(--surface)]/60 p-2.5">
+        <div className="mt-auto rounded-[var(--panel-radius)] bg-[var(--surface)]/60 p-2.5">
           <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">{i18n("nameHistory")}</p>
           <p className="text-xs text-[var(--foreground)]">
             {(minecraftNameHistory || []).slice(-3).map((n) => toStr(n.name)).filter(Boolean).join(" → ") || "—"}
@@ -1207,7 +1207,7 @@ export default function LiveWidgets({
         >
           <div className="absolute inset-0 h-full" style={{ backfaceVisibility: "hidden" }}>
             <div
-              className={`h-full min-w-0 overflow-hidden rounded-2xl border bg-gradient-to-br p-4 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl ${gradient}`}
+              className={`h-full min-w-0 overflow-hidden rounded-[var(--panel-radius)] border bg-gradient-to-br p-4 shadow-sm transition-colors duration-150 ${gradient}`}
             >
               <div className={`absolute right-3 top-3 h-2.5 w-2.5 rounded-full ${STATUS_DOT[record.status]}`} />
 
@@ -1246,7 +1246,7 @@ export default function LiveWidgets({
 
               {isSpotify && record.image && (
                 <div className="mb-3 flex items-end gap-4">
-                  <Image src={record.image} alt="" width={96} height={96} unoptimized className="h-24 w-24 rounded-xl object-cover shadow-lg" />
+                  <Image src={record.image} alt="" width={96} height={96} unoptimized className="h-24 w-24 rounded-[var(--panel-radius)] object-cover shadow-lg" />
                   <div className="flex flex-col gap-1 pb-1">
                     <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">LIVE</span>
                     <Equalizer bars={6} className="h-5" />
@@ -1339,14 +1339,14 @@ export default function LiveWidgets({
 
               {isYoutube && record.image && (
                 <div className="relative mt-3 h-32 w-full">
-                  <Image src={record.image} alt="" fill unoptimized className="rounded-xl object-cover" />
+                  <Image src={record.image} alt="" fill unoptimized className="rounded-[var(--panel-radius)] object-cover" />
                 </div>
               )}
             </div>
           </div>
 
           <div
-            className="absolute inset-0 h-full rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] p-4"
+            className="absolute inset-0 h-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-4"
             style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
           >
             {renderBack(record)}

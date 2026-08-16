@@ -124,7 +124,7 @@ export default function SearchBar() {
         ref={containerRef}
         initial={{ clipPath: "inset(0 100% 0 0)" }}
         animate={{ clipPath: open ? "inset(0 0% 0 0)" : "inset(0 100% 0 0)" }}
-        transition={{ type: "spring", stiffness: 500, damping: 35 }}
+        transition={{ duration: 0.15, ease: "easeOut" as const }}
         className="relative hidden h-10 w-80 items-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 text-sm text-[var(--foreground)] outline-none transition-colors hover:border-[var(--accent)] focus-within:border-[var(--accent)] md:flex"
       >
         <button

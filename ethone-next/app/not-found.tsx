@@ -18,7 +18,7 @@ export default function NotFound() {
         actions={
           <Link
             href="/"
-            className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            className="inline-flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
           >
             <Icon name="home" className="h-4 w-4" />
             {i18n("notFoundBack")}

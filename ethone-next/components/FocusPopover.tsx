@@ -116,9 +116,9 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
             initial={{ opacity: 0, y: -8, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.96 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            transition={{ duration: 0.15, ease: "easeOut" as const }}
             style={floatingStyles}
-            className="z-[90] w-72 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] p-4 shadow-2xl outline-none"
+            className="z-[90] w-72 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-4 shadow-2xl outline-none"
             role="dialog"
             aria-modal="true"
             aria-label={i18n("focus")}
@@ -164,7 +164,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
 
             {state.phase !== "idle" && (
               <div className="mb-4 h-2 w-full overflow-hidden rounded-full bg-[var(--surface)]">
-                <div className="h-full rounded-full bg-[var(--accent)] transition-all" style={{ width: `${progress}%` }} />
+                <div className="h-full rounded-full bg-[var(--accent)] transition-colors duration-150" style={{ width: `${progress}%` }} />
               </div>
             )}
 
@@ -178,7 +178,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
                     start(p.id);
                     onClose();
                   }}
-                  className="flex flex-col items-center gap-1 rounded-xl bg-[var(--surface)] p-2 text-center text-xs transition-colors hover:bg-[var(--accent)]/10"
+                  className="flex flex-col items-center gap-1 rounded-[var(--panel-radius)] bg-[var(--surface)] p-2 text-center text-xs transition-colors hover:bg-[var(--accent)]/10"
                 >
                   <Icon name={p.icon} className={`h-4 w-4 ${p.color}`} />
                   <span className="font-medium">{i18n(p.id)}</span>

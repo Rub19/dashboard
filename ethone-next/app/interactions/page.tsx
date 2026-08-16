@@ -185,7 +185,7 @@ export default function InteractionsPage() {
           type="button"
           onClick={() => { reload(); success(i18n("refreshed")); }}
           disabled={loading}
-          className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm font-medium transition-colors hover:bg-[var(--surface)] disabled:opacity-50"
+          className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm font-medium transition-colors hover:bg-[var(--surface)] disabled:opacity-50"
         >
           <Icon name="refresh-cw" className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           {i18n("refresh")}
@@ -240,7 +240,7 @@ export default function InteractionsPage() {
                 key={kind}
                 type="button"
                 onClick={() => setFilterKind(kind)}
-                className={`flex items-center gap-2 rounded-xl border px-2.5 py-2 text-left text-xs transition-colors ${
+                className={`flex items-center gap-2 rounded-[var(--panel-radius)] border px-2.5 py-2 text-left text-xs transition-colors ${
                   filterKind === kind ? "border-[var(--accent)] bg-[var(--accent)]/10" : "border-[var(--border)] bg-[var(--surface)]"
                 }`}
               >
@@ -279,21 +279,21 @@ export default function InteractionsPage() {
               onChange={(e) => setNewTarget(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && addReaction()}
               aria-label={i18n("target")} placeholder={i18n("target")}
-              className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+              className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
             <button
               type="button"
               aria-label={i18n("add")}
               onClick={() => { medium(); addReaction(); }}
               disabled={loading}
-              className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
             >
               <Icon name="plus" className="h-4 w-4" />
             </button>
             <button
               type="button"
               onClick={() => { medium(); toggleLive(); }}
-              className="inline-flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-2 text-sm font-semibold transition-colors hover:border-[var(--accent)]"
+              className="inline-flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-2 text-sm font-semibold transition-colors hover:border-[var(--accent)]"
             >
               <Icon name="radio" className={`h-4 w-4 ${live ? "animate-pulse text-emerald-400" : "text-[var(--muted)]"}`} />
               {live ? i18n("stop") : i18n("live")}
@@ -301,7 +301,7 @@ export default function InteractionsPage() {
             <button
               type="button"
               onClick={() => { medium(); reload(); }}
-              className="inline-flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-2 text-sm font-semibold transition-colors hover:border-[var(--accent)]"
+              className="inline-flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-2 text-sm font-semibold transition-colors hover:border-[var(--accent)]"
             >
               <Icon name="refresh-cw" className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
               {i18n("refresh")}
@@ -325,7 +325,7 @@ export default function InteractionsPage() {
                   key={r}
                   type="button"
                   onClick={() => setRange(r as 30 | 90 | 365)}
-                  className={`rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors ${
+                  className={`rounded-[var(--panel-radius)] border px-3 py-1.5 text-xs font-medium transition-colors ${
                     range === r
                       ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
                       : "border-[var(--border)] bg-[var(--surface-raised)] hover:border-[var(--accent)]"
@@ -384,7 +384,7 @@ export default function InteractionsPage() {
                                 type="button"
                                 onPointerDown={medium}
                                 aria-label={`${formatDayLabel(day.date, settings.language)}: ${day.count} ${i18n("interactions")}`}
-                                className={`h-3 w-3 rounded-[3px] transition-all hover:scale-125 hover:brightness-110 ${intensityBg(InteractionsHeatmap.intensity(day.count, stats.maxInDay || 1))}`}
+                                className={`h-3 w-3 rounded-[3px] transition-colors duration-150 active:scale-[0.98] ${intensityBg(InteractionsHeatmap.intensity(day.count, stats.maxInDay || 1))}`}
                               />
                             </Tooltip>
                           ) : (

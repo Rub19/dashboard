@@ -49,7 +49,7 @@ export default function LiveOverlay() {
             initial={{ opacity: 0, y: 20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            className={`cursor-grab overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]/95 p-3 shadow-2xl backdrop-blur-md active:cursor-grabbing ${
+            className={`cursor-grab overflow-hidden rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)]/95 p-3 shadow-2xl backdrop-blur-md active:cursor-grabbing ${
               expanded ? "w-[720px]" : "w-64"
             }`}
           >
@@ -79,7 +79,7 @@ export default function LiveOverlay() {
               <div className="space-y-3">
                 {nowPlaying?.isPlaying ? (
                   <div className="flex items-center gap-3">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-500/10 text-violet-400">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-violet-500/10 text-violet-400">
                       <Icon name="disc" className={`h-5 w-5 ${nowPlaying.isPlaying ? "animate-spin" : ""}`} />
                     </span>
                     <div className="min-w-0 flex-1">
@@ -92,7 +92,7 @@ export default function LiveOverlay() {
                 ) : null}
 
                 {nowPlaying && (
-                  <div className="flex items-center justify-center gap-2 rounded-xl bg-[var(--surface)] p-1">
+                  <div className="flex items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--surface)] p-1">
                     <button type="button" aria-label={i18n("previous")} onClick={() => controlSpotify("previous")} className="rounded p-1 text-[var(--foreground)] hover:bg-[var(--surface-raised)]">
                       <Icon name="skipBack" className="h-4 w-4" />
                     </button>
@@ -107,7 +107,7 @@ export default function LiveOverlay() {
 
                 {lanyard?.discord_status && (
                   <div className="flex items-center gap-3">
-                    <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
+                    <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--panel-radius)] ${
                       lanyard.discord_status === "online" ? "bg-emerald-500/10 text-emerald-400" :
                       lanyard.discord_status === "idle" ? "bg-amber-500/10 text-amber-400" :
                       lanyard.discord_status === "dnd" ? "bg-rose-500/10 text-rose-400" :

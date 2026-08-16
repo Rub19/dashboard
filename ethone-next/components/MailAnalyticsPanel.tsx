@@ -65,7 +65,7 @@ export default function MailAnalyticsPanel({
             key={p}
             type="button"
             onClick={() => setPeriod(p)}
-            className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+            className={`rounded-[var(--panel-radius)] px-3 py-1.5 text-xs font-medium transition-colors ${
               period === p
                 ? "bg-[var(--accent)] text-white"
                 : "bg-[var(--surface-raised)] text-[var(--muted)] hover:text-[var(--foreground)]"
@@ -113,7 +113,7 @@ export default function MailAnalyticsPanel({
                   return (
                     <div key={i} className="group flex h-full flex-1 flex-col justify-end" title={title}>
                       <div
-                        className="w-full rounded-t bg-[var(--accent)]/80 transition-all group-hover:bg-[var(--accent)]"
+                        className="w-full rounded-t bg-[var(--accent)]/80 transition-colors duration-150 group-hover:bg-[var(--accent)]"
                         style={{ height: `${pct}%` }}
                       />
                       <span className="mt-1 text-[8px] text-[var(--muted)] truncate text-center">

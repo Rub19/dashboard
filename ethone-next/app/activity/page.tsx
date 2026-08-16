@@ -268,13 +268,13 @@ export default function ActivityPage() {
           <h1 className="text-2xl font-bold">{i18n("activityJournal")}</h1>
           <p className="text-sm text-[var(--muted)]">{i18n("activityJournalDescription")}</p>
         </div>
-        <div className="flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] p-1">
+        <div className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-1">
           {PERIODS.map((p) => (
             <button
               key={p}
               type="button"
               onClick={() => setPeriod(p)}
-              className={`rounded-xl px-3 py-1.5 text-xs font-medium transition-colors ${
+              className={`rounded-[var(--panel-radius)] px-3 py-1.5 text-xs font-medium transition-colors ${
                 period === p ? "bg-[var(--accent)] text-white" : "text-[var(--muted)] hover:text-[var(--foreground)]"
               }`}
             >
@@ -349,7 +349,7 @@ export default function ActivityPage() {
               onChange={(e) => setQuery(e.target.value)}
               placeholder={i18n("journalSearchPlaceholder")}
               aria-label={i18n("journalSearchPlaceholder")}
-              className="h-9 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--accent)]"
+              className="h-9 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--background)] px-3 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--accent)]"
             />
             <Select
               value={categoryFilter}
@@ -380,7 +380,7 @@ export default function ActivityPage() {
               type="button"
               onClick={() => sync()}
               disabled={syncing}
-              className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-[var(--accent)] px-3 text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+              className="inline-flex h-8 items-center gap-1.5 rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
             >
               {syncing ? (
                 <>
@@ -407,9 +407,9 @@ export default function ActivityPage() {
                   {formatLocalDate(new Date(key), mounted)}
                 </h3>
                 {group.map((event, i) => (
-                  <Card3D bump key={event.id || i}>
+                  <Card3D key={event.id || i}>
                     <div className="flex items-start gap-3">
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-violet-500/10 text-violet-400">
                         <Icon name={event.icon || "activity"} className="h-4 w-4" />
                       </span>
                       <div className="min-w-0 flex-1">
@@ -448,7 +448,7 @@ export default function ActivityPage() {
         </div>
 
         {showDetails && (
-          <div className="mt-3 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] p-3">
+          <div className="mt-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-3">
             <p className="text-xs text-[var(--muted)]">{i18n("activityDescription")}</p>
           </div>
         )}

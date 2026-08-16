@@ -36,25 +36,25 @@ export default function LiveStats() {
   const hasHistory = Object.values(historyCounts).some((n) => n > 0);
 
   return (
-    <Card3D bump>
+    <Card3D>
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-sm font-semibold text-[var(--foreground)]">{i18n("liveStats")}</h2>
         <LiveFreshness updatedAt={updatedAt} />
       </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-xl bg-emerald-500/10 p-3 text-emerald-400">
+        <div className="rounded-[var(--panel-radius)] bg-emerald-500/10 p-3 text-emerald-400">
           <p className="text-2xl font-bold">{loading ? "-" : byStatus.connected}</p>
           <p className="text-xs">{i18n("connected")}</p>
         </div>
-        <div className="rounded-xl bg-sky-500/10 p-3 text-sky-400">
+        <div className="rounded-[var(--panel-radius)] bg-sky-500/10 p-3 text-sky-400">
           <p className="text-2xl font-bold">{loading ? "-" : byStatus.loading}</p>
           <p className="text-xs">{i18n("loading")}</p>
         </div>
-        <div className="rounded-xl bg-[var(--surface-raised)] p-3 text-[var(--muted)]">
+        <div className="rounded-[var(--panel-radius)] bg-[var(--surface-raised)] p-3 text-[var(--muted)]">
           <p className="text-2xl font-bold">{loading ? "-" : byStatus.empty}</p>
           <p className="text-xs">{i18n("empty")}</p>
         </div>
-        <div className="rounded-xl bg-red-500/10 p-3 text-red-400">
+        <div className="rounded-[var(--panel-radius)] bg-red-500/10 p-3 text-red-400">
           <p className="text-2xl font-bold">{loading ? "-" : byStatus.error}</p>
           <p className="text-xs">{i18n("error")}</p>
         </div>
@@ -62,23 +62,23 @@ export default function LiveStats() {
 
       {hasHistory && (
         <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-5">
-          <div className="rounded-xl bg-rose-500/10 p-3 text-rose-400">
+          <div className="rounded-[var(--panel-radius)] bg-rose-500/10 p-3 text-rose-400">
             <p className="text-xl font-bold">{historyCounts.topArtists}</p>
             <p className="text-[10px]">{i18n("topArtists")}</p>
           </div>
-          <div className="rounded-xl bg-rose-500/10 p-3 text-rose-400">
+          <div className="rounded-[var(--panel-radius)] bg-rose-500/10 p-3 text-rose-400">
             <p className="text-xl font-bold">{historyCounts.topTracks}</p>
             <p className="text-[10px]">{i18n("topTracks")}</p>
           </div>
-          <div className="rounded-xl bg-sky-500/10 p-3 text-sky-400">
+          <div className="rounded-[var(--panel-radius)] bg-sky-500/10 p-3 text-sky-400">
             <p className="text-xl font-bold">{historyCounts.recentGames}</p>
             <p className="text-[10px]">{i18n("recentGames")}</p>
           </div>
-          <div className="rounded-xl bg-sky-500/10 p-3 text-sky-400">
+          <div className="rounded-[var(--panel-radius)] bg-sky-500/10 p-3 text-sky-400">
             <p className="text-xl font-bold">{historyCounts.ownedGames}</p>
             <p className="text-[10px]">{i18n("ownedGames")}</p>
           </div>
-          <div className="rounded-xl bg-emerald-500/10 p-3 text-emerald-400">
+          <div className="rounded-[var(--panel-radius)] bg-emerald-500/10 p-3 text-emerald-400">
             <p className="text-xl font-bold">{historyCounts.nameHistory}</p>
             <p className="text-[10px]">{i18n("nameHistory")}</p>
           </div>

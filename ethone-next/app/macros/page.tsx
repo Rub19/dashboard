@@ -56,7 +56,7 @@ export default function MacrosPage() {
               onChange={(e) => setLabel(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && add()}
               aria-label={i18n("create")} placeholder={i18n("create")}
-              className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+              className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
             <Select
               value={action}
@@ -72,14 +72,14 @@ export default function MacrosPage() {
                 onChange={(e) => setHref(e.target.value)}
                 aria-label={i18n("url")}
                 placeholder="/page"
-                className="min-w-0 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                className="min-w-0 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
               />
             )}
             <button
               type="button"
               aria-label={i18n("add")}
               onClick={add}
-              className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white"
+              className="inline-flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white"
             >
               <Icon name="plus" className="h-4 w-4" />
             </button>
@@ -94,7 +94,7 @@ export default function MacrosPage() {
             <Card3D key={m.id}>
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-violet-500/10 text-violet-400">
                     <Icon name="workflow" className="h-4 w-4" />
                   </span>
                   <div>

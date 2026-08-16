@@ -126,7 +126,7 @@ export default function WeatherPage() {
           />
           <button
             type="submit"
-            className="rounded-xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
           >
             {i18n("search")}
           </button>
@@ -135,7 +135,7 @@ export default function WeatherPage() {
 
       {loading ? (
         <div className="grid gap-4 md:grid-cols-3">
-          <div className="col-span-full h-64 animate-pulse rounded-2xl bg-[var(--surface-raised)]" />
+          <div className="col-span-full h-64 animate-pulse rounded-[var(--panel-radius)] bg-[var(--surface-raised)]" />
         </div>
       ) : error ? (
         <Card3D className="p-5" radius="1.5rem">
@@ -146,7 +146,7 @@ export default function WeatherPage() {
           <Card3D className="col-span-full p-5" radius="1.5rem">
             <div className="flex flex-col items-center justify-between gap-4 sm:flex-row sm:items-start">
               <div className="flex items-center gap-5">
-                <div className={`flex h-24 w-24 items-center justify-center rounded-2xl bg-[var(--surface-raised)] ${iconColor}`}>
+                <div className={`flex h-24 w-24 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--surface-raised)] ${iconColor}`}>
                   <Icon name={iconName} className="h-14 w-14" />
                 </div>
                 <div>
@@ -160,28 +160,28 @@ export default function WeatherPage() {
                 </div>
               </div>
               <div className="grid w-full gap-2 sm:w-auto sm:grid-cols-2">
-                <div className="flex items-center gap-3 rounded-xl bg-[var(--surface-raised)] px-3 py-2">
+                <div className="flex items-center gap-3 rounded-[var(--panel-radius)] bg-[var(--surface-raised)] px-3 py-2">
                   <Icon name="droplets" className="h-4 w-4 text-sky-400" />
                   <div>
                     <p className="text-xs text-[var(--muted)]">{i18n("humidity")}</p>
                     <p className="text-sm font-semibold">{weather.humidityPercent}%</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 rounded-xl bg-[var(--surface-raised)] px-3 py-2">
+                <div className="flex items-center gap-3 rounded-[var(--panel-radius)] bg-[var(--surface-raised)] px-3 py-2">
                   <Icon name="wind" className="h-4 w-4 text-emerald-400" />
                   <div>
                     <p className="text-xs text-[var(--muted)]">{i18n("wind")}</p>
                     <p className="text-sm font-semibold">{weather.windSpeedKmh} km/h</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 rounded-xl bg-[var(--surface-raised)] px-3 py-2">
+                <div className="flex items-center gap-3 rounded-[var(--panel-radius)] bg-[var(--surface-raised)] px-3 py-2">
                   <Icon name={weather.isDay ? "sun" : "moon"} className="h-4 w-4 text-amber-400" />
                   <div>
                     <p className="text-xs text-[var(--muted)]">{i18n("dayNight")}</p>
                     <p className="text-sm font-semibold">{weather.isDay ? i18n("day") : i18n("night")}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 rounded-xl bg-[var(--surface-raised)] px-3 py-2">
+                <div className="flex items-center gap-3 rounded-[var(--panel-radius)] bg-[var(--surface-raised)] px-3 py-2">
                   <Icon name="thermometer" className="h-4 w-4 text-rose-400" />
                   <div>
                     <p className="text-xs text-[var(--muted)]">{i18n("temperature")}</p>
@@ -195,7 +195,7 @@ export default function WeatherPage() {
           {weather.forecast.map((day, i) => (
             <Card3D key={i} className="p-4" radius="1.5rem">
               <div className="flex items-center gap-3">
-                <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--surface-raised)] ${weatherColor(weather.weatherCode)}`}>
+                <div className={`flex h-12 w-12 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--surface-raised)] ${weatherColor(weather.weatherCode)}`}>
                   <Icon name={weatherIcon(weather.weatherCode, true)} className="h-7 w-7" />
                 </div>
                 <div className="min-w-0 flex-1">

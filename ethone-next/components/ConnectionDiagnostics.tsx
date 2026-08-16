@@ -44,7 +44,7 @@ export default function ConnectionDiagnostics() {
       </div>
       <div className="space-y-2">
         {checks.map((c) => (
-          <div key={c.label} className="flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3">
+          <div key={c.label} className="flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-3">
             <Icon name={c.ok ? "circle-check" : "alert-circle"} className={`h-5 w-5 ${c.ok ? "text-emerald-400" : "text-amber-400"}`} />
             <div className="min-w-0 flex-1">
               <p className="font-medium">{c.label}</p>

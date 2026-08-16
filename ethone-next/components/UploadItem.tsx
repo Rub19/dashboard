@@ -43,9 +43,9 @@ export default function UploadItem({
     task.status === "success" ? "bg-emerald-500" : task.status === "error" ? "bg-rose-500" : "bg-accent";
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-white/5 bg-surface/60 p-4 shadow-xl backdrop-blur-xl">
+    <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-surface/60 p-4 shadow-xl backdrop-blur-xl">
       <div className="flex items-start gap-4">
-        <div className="relative flex h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-surface-raised ring-1 ring-white/5">
+        <div className="relative flex h-14 w-14 shrink-0 overflow-hidden rounded-[var(--panel-radius)] bg-surface-raised ring-1 ring-white/5">
           {isImage && objectUrl ? (
             <Image
               src={objectUrl}
@@ -77,7 +77,7 @@ export default function UploadItem({
                 <button
                   type="button"
                   onClick={onRetry}
-                  className="rounded-lg p-1.5 text-amber-400 transition hover:bg-amber-500/10"
+                  className="rounded-[var(--panel-radius)] p-1.5 text-amber-400 transition hover:bg-amber-500/10"
                   aria-label={i18n("retry")}
                 >
                   <RefreshCcw className="h-4 w-4" />
@@ -86,7 +86,7 @@ export default function UploadItem({
               <button
                 type="button"
                 onClick={onReplace}
-                className="rounded-lg p-1.5 text-muted transition hover:text-foreground hover:bg-surface-raised"
+                className="rounded-[var(--panel-radius)] p-1.5 text-muted transition hover:text-foreground hover:bg-surface-raised"
                 aria-label={i18n("replace")}
               >
                 <Replace className="h-4 w-4" />
@@ -94,7 +94,7 @@ export default function UploadItem({
               <button
                 type="button"
                 onClick={onRemove}
-                className="rounded-lg p-1.5 text-muted transition hover:text-rose-400 hover:bg-rose-500/10"
+                className="rounded-[var(--panel-radius)] p-1.5 text-muted transition hover:text-rose-400 hover:bg-rose-500/10"
                 aria-label={i18n("remove")}
               >
                 <Trash2 className="h-4 w-4" />
@@ -107,7 +107,7 @@ export default function UploadItem({
               <motion.div
                 initial={false}
                 animate={{ width: `${progress}%` }}
-                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                transition={{ duration: 0.15, ease: "easeOut" as const }}
                 className={`h-full ${trackColor}`}
               />
             </div>

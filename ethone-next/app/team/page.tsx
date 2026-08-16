@@ -133,7 +133,7 @@ export default function TeamPage() {
               aria-label={i18n("add")}
               onClick={submit}
               disabled={inviting}
-              className="flex shrink-0 items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+              className="flex shrink-0 items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
             >
               {inviting ? <Icon name="loader-2" className="h-4 w-4 animate-spin" /> : <Icon name="plus" className="h-4 w-4" />}
             </button>
@@ -177,7 +177,7 @@ export default function TeamPage() {
             <Card3D key={m.id}>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-raised)] text-[var(--muted)]">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--surface-raised)] text-[var(--muted)]">
                     <Icon name="users" className="h-5 w-5" />
                   </span>
                   <div className="min-w-0">

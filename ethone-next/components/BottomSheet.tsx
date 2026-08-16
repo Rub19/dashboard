@@ -73,7 +73,7 @@ export default function BottomSheet({
             initial={isCenter ? { opacity: 0, scale: 0.96, y: 20 } : { y: "100%" }}
             animate={isCenter ? { opacity: 1, scale: 1, y: 0 } : { y: 0 }}
             exit={isCenter ? { opacity: 0, scale: 0.96, y: 20 } : { y: "100%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            transition={{ duration: 0.15, ease: "easeOut" as const }}
             onDragEnd={handleDragEnd}
             drag={draggable ? (isCenter ? true : "y") : false}
             dragControls={draggable ? dragControls : undefined}
@@ -87,7 +87,7 @@ export default function BottomSheet({
             tabIndex={-1}
             className={`ethone-bottom-sheet fixed z-50 max-h-[85dvh] overflow-hidden rounded-t-2xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl outline-none ${
               isCenter
-                ? "left-1/2 top-1/2 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-2xl"
+                ? "left-1/2 top-1/2 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-[var(--panel-radius)]"
                 : "bottom-0 left-0 right-0 pb-safe"
             }`}
           >

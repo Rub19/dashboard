@@ -173,13 +173,13 @@ export default function FilesAdminPanel() {
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-1 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] p-1">
+      <div className="flex gap-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-1">
         {tabs.map((t) => (
           <button
             key={t.id}
             type="button"
             onClick={() => setTab(t.id)}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-medium transition-colors sm:text-sm ${
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-[var(--panel-radius)] py-2 text-xs font-medium transition-colors sm:text-sm ${
               tab === t.id ? "bg-[var(--accent)] text-white" : "text-[var(--muted)] hover:text-[var(--foreground)]"
             }`}
           >
@@ -207,7 +207,7 @@ export default function FilesAdminPanel() {
           {[...Array(3)].map((_, i) => (
             <Card3D key={i}>
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 animate-pulse rounded-xl bg-[var(--border)]" />
+                <div className="h-10 w-10 animate-pulse rounded-[var(--panel-radius)] bg-[var(--border)]" />
                 <div className="min-w-0 flex-1 space-y-2">
                   <div className="h-3 w-1/3 animate-pulse rounded bg-[var(--border)]" />
                   <div className="h-2.5 w-1/4 animate-pulse rounded bg-[var(--border)]" />
@@ -249,7 +249,7 @@ export default function FilesAdminPanel() {
               type="button"
               onClick={cleanup}
               disabled={cleaning}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-400 transition-colors hover:bg-red-500/20 disabled:opacity-50"
+              className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-400 transition-colors hover:bg-red-500/20 disabled:opacity-50"
             >
               <Icon name="trash-2" className="h-4 w-4" />
               {cleaning ? i18n("cleaning") : i18n("cleanupExpired")}
@@ -280,7 +280,7 @@ export default function FilesAdminPanel() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={i18n("search")}
-              className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+              className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
             <Select
               value={visibility}

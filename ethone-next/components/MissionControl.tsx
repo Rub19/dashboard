@@ -316,7 +316,7 @@ function MissionControlDialog() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={i18n("searchWindows")}
-            className="w-full rounded-2xl border border-[var(--border)] bg-[var(--surface)] py-2.5 pl-10 pr-4 text-sm text-[var(--foreground)] placeholder:text-[var(--muted)] outline-none transition-colors focus:border-[var(--accent)]"
+            className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] py-2.5 pl-10 pr-4 text-sm text-[var(--foreground)] placeholder:text-[var(--muted)] outline-none transition-colors focus:border-[var(--accent)]"
             autoFocus
             aria-label={i18n("searchWindows")}
           />
@@ -336,13 +336,13 @@ function MissionControlDialog() {
                   aria-current={w.id === activeWorkspace.id ? "true" : undefined}
                   aria-label={`${i18n(w.id)} · ${i18n(w.flow)}`}
                   onClick={() => navigateAndClose("/spaces")}
-                  className={`group relative flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)] ${
+                  className={`group relative flex w-full items-center gap-3 rounded-[var(--panel-radius)] border p-3 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)] ${
                     w.id === activeWorkspace.id
                       ? "border-[var(--accent)] bg-[var(--accent)]/5"
                       : "border-[var(--border)] bg-[var(--surface)]"
                   }`}
                 >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent)]/10 text-[var(--accent)]">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent)]/10 text-[var(--accent)]">
                     <Icon name={w.icon} className="h-5 w-5" />
                   </span>
                   <span className="min-w-0 flex-1">
@@ -378,14 +378,14 @@ function MissionControlDialog() {
                   aria-current={w.id === activeWorkspace.id ? "true" : undefined}
                   aria-label={`${i18n("flows")} · ${i18n(w.flow)}`}
                   onClick={() => navigateAndClose("/flows")}
-                  className={`group flex w-full flex-col gap-2 rounded-2xl border p-3 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)] ${
+                  className={`group flex w-full flex-col gap-2 rounded-[var(--panel-radius)] border p-3 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)] ${
                     w.id === activeWorkspace.id
                       ? "border-[var(--accent)] bg-[var(--accent)]/5"
                       : "border-[var(--border)] bg-[var(--surface)]"
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent)]/10 text-[var(--accent)]">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent)]/10 text-[var(--accent)]">
                       <Icon name="workflow" className="h-5 w-5" />
                     </span>
                     <span className="min-w-0 flex-1">
@@ -412,12 +412,12 @@ function MissionControlDialog() {
 
           <Section title={i18n("missionWindows")} count={windows.length}>
             {windows.length === 0 ? (
-              <div className="flex flex-col items-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-8 text-center text-[var(--muted)]">
+              <div className="flex flex-col items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-8 text-center text-[var(--muted)]">
                 <Icon name="scan-search" className="h-10 w-10 opacity-50" />
                 <p>{i18n("noOpenWindows")}</p>
               </div>
             ) : filtered.length === 0 ? (
-              <div className="flex flex-col items-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-8 text-center text-[var(--muted)]">
+              <div className="flex flex-col items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-8 text-center text-[var(--muted)]">
                 <Icon name="scan-search" className="h-10 w-10 opacity-50" />
                 <p>{i18n("noWindowsMatch")}</p>
               </div>
@@ -437,10 +437,10 @@ function MissionControlDialog() {
                         focusWindow(win.id);
                         setMissionControl(false);
                       }}
-                      className="relative flex aspect-video w-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-white/10 bg-[var(--surface-raised)] p-4 text-left shadow-2xl"
+                      className="relative flex aspect-video w-full cursor-pointer flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-4 text-left shadow-2xl"
                     >
                       <div className="mb-3 flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--accent)]/10 text-[var(--accent)]">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent)]/10 text-[var(--accent)]">
                           <Icon name={routeIcon(win.route)} className="h-5 w-5" />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -449,7 +449,7 @@ function MissionControlDialog() {
                         </div>
                       </div>
 
-                      <div className="mt-auto h-16 w-full overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2">
+                      <div className="mt-auto h-16 w-full overflow-hidden rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-2">
                         <div className="flex h-full w-full flex-col gap-1.5 opacity-40">
                           <div className="h-2 w-3/4 rounded bg-[var(--accent)]/30" />
                           <div className="h-2 w-1/2 rounded bg-[var(--muted)]/20" />
@@ -497,7 +497,7 @@ function MissionControlDialog() {
                     setMissionControl(false);
                     openWindow(i18n(r.id), r.route);
                   }}
-                  className={`group flex w-full items-center gap-3 rounded-xl border p-2.5 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)] ${
+                  className={`group flex w-full items-center gap-3 rounded-[var(--panel-radius)] border p-2.5 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)] ${
                     pathname === r.route
                       ? "border-[var(--accent)] bg-[var(--accent)]/5"
                       : "border-[var(--border)] bg-[var(--surface)]"
@@ -534,7 +534,7 @@ function MissionControlDialog() {
                     setMissionControl(false);
                     openWindow(i18n("connections"), "/connections");
                   }}
-                  className="group flex w-full items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2.5 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)]"
+                  className="group flex w-full items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-2.5 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)]"
                 >
                   <span className={`h-2 w-2 shrink-0 rounded-full ${STATUS_DOT[record.status] || "bg-zinc-500"}`} />
                   <span className="min-w-0 flex-1">
@@ -557,7 +557,7 @@ function MissionControlDialog() {
           {settings.brainEnabled && (
             <Section title={i18n("missionBrainActivity")} count={brainActivity.length}>
               {brainActivity.length === 0 ? (
-                <div className="flex flex-col items-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 text-center text-[var(--muted)]">
+                <div className="flex flex-col items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-6 text-center text-[var(--muted)]">
                   <Icon name="brain" className="h-8 w-8 opacity-50" />
                   <p>{i18n("missionNoBrainActivity")}</p>
                   <button
@@ -566,7 +566,7 @@ function MissionControlDialog() {
                       setMissionControl(false);
                       openWindow(i18n("brain"), "/brain");
                     }}
-                    className="flex items-center gap-2 rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white"
+                    className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white"
                   >
                     <Icon name="brain" className="h-4 w-4" />
                     {i18n("missionOpenBrain")}
@@ -585,7 +585,7 @@ function MissionControlDialog() {
                         setMissionControl(false);
                         openWindow(i18n("brain"), "/brain");
                       }}
-                      className="group flex w-full items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2.5 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)]"
+                      className="group flex w-full items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-2.5 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)]"
                     >
                       <Icon name={b.icon} className="h-5 w-5 shrink-0 text-[var(--accent)]" />
                       <span className="min-w-0 flex-1">

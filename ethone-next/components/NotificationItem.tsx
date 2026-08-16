@@ -140,11 +140,11 @@ export default function NotificationItem({
   }
 
   const cardBase =
-    "relative group cursor-pointer rounded-xl border p-3.5 transition-colors active:scale-[0.98] touch-manipulation";
+    "relative group cursor-pointer rounded-[var(--panel-radius)] border p-3.5 transition-colors active:scale-[0.98] touch-manipulation";
   const cardState = isCritical
-    ? "border-l-red-400 border-t border-r border-b border-white/10 bg-red-500/[0.03]"
+    ? "border-l-red-400 border-t border-r border-b border-[var(--panel-border)] bg-red-500/[0.03]"
     : isUnread
-    ? "border-l-emerald-400 border-t border-r border-b border-white/10 bg-zinc-900/80"
+    ? "border-l-emerald-400 border-t border-r border-b border-[var(--panel-border)] bg-zinc-900/80"
     : "border-white/[0.06] bg-zinc-900/40";
 
   const actionMenu = (
@@ -157,7 +157,7 @@ export default function NotificationItem({
           setSnoozeOpen(false);
         }}
         data-tooltip={i18n("moreActions")}
-        className="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-white/[0.08] hover:text-[var(--foreground)]"
+        className="flex h-9 w-9 items-center justify-center rounded-[var(--panel-radius)] text-[var(--muted)] transition-colors hover:bg-white/[0.08] hover:text-[var(--foreground)]"
         aria-label={i18n("moreActions")}
         aria-expanded={menuOpen}
       >
@@ -165,7 +165,7 @@ export default function NotificationItem({
       </button>
 
       {menuOpen && (
-        <div className="absolute right-0 top-full z-20 mt-1 w-[min(16rem,80vw)] rounded-xl border border-white/10 bg-zinc-900 p-1 shadow-xl">
+        <div className="absolute right-0 top-full z-20 mt-1 w-[min(16rem,80vw)] rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-zinc-900 p-1 shadow-xl">
           {snoozeOpen ? (
             <div className="space-y-0.5">
               <button
@@ -174,7 +174,7 @@ export default function NotificationItem({
                   e.stopPropagation();
                   setSnoozeOpen(false);
                 }}
-                className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--muted)] hover:bg-white/[0.08]"
+                className="flex h-9 w-full items-center gap-2 rounded-[var(--panel-radius)] px-2 text-left text-xs text-[var(--muted)] hover:bg-white/[0.08]"
               >
                 <Icon name="chevron-left" className="h-3.5 w-3.5" />
                 {i18n("back")}
@@ -184,7 +184,7 @@ export default function NotificationItem({
                   key={dur}
                   type="button"
                   onClick={(e) => handleSnooze(e, dur)}
-                  className="h-9 w-full rounded-lg px-2 text-left text-xs text-[var(--foreground)] hover:bg-white/[0.08]"
+                  className="h-9 w-full rounded-[var(--panel-radius)] px-2 text-left text-xs text-[var(--foreground)] hover:bg-white/[0.08]"
                 >
                   {i18n(SNOOZE_KEYS[dur])}
                 </button>
@@ -198,7 +198,7 @@ export default function NotificationItem({
                   e.stopPropagation();
                   setSnoozeOpen(true);
                 }}
-                className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--foreground)] hover:bg-white/[0.08]"
+                className="flex h-9 w-full items-center gap-2 rounded-[var(--panel-radius)] px-2 text-left text-xs text-[var(--foreground)] hover:bg-white/[0.08]"
               >
                 <Icon name="clock-3" className="h-3.5 w-3.5" />
                 {i18n("snooze")}
@@ -206,7 +206,7 @@ export default function NotificationItem({
               <button
                 type="button"
                 onClick={handleImportant}
-                className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--foreground)] hover:bg-white/[0.08]"
+                className="flex h-9 w-full items-center gap-2 rounded-[var(--panel-radius)] px-2 text-left text-xs text-[var(--foreground)] hover:bg-white/[0.08]"
               >
                 <Icon name="alert-circle" className="h-3.5 w-3.5" />
                 {i18n("markImportant")}
@@ -214,7 +214,7 @@ export default function NotificationItem({
               <button
                 type="button"
                 onClick={handleMute}
-                className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--foreground)] hover:bg-white/[0.08]"
+                className="flex h-9 w-full items-center gap-2 rounded-[var(--panel-radius)] px-2 text-left text-xs text-[var(--foreground)] hover:bg-white/[0.08]"
               >
                 <Icon name={isMuted(n.category) ? "bell" : "bell-off"} className="h-3.5 w-3.5" />
                 {i18n(isMuted(n.category) ? "unmute" : "mute")}
@@ -222,7 +222,7 @@ export default function NotificationItem({
               <button
                 type="button"
                 onClick={handleDelete}
-                className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-rose-400 hover:bg-rose-500/10"
+                className="flex h-9 w-full items-center gap-2 rounded-[var(--panel-radius)] px-2 text-left text-xs text-rose-400 hover:bg-rose-500/10"
               >
                 <Icon name="trash-2" className="h-3.5 w-3.5" />
                 {i18n("delete")}
@@ -240,12 +240,12 @@ export default function NotificationItem({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+      transition={{ duration: 0.15, ease: "easeOut" as const }}
       onClick={() => onOpen(n)}
       className={`${cardBase} ${cardState}`}
     >
       <div className="flex items-start gap-3 pr-14">
-        <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${iconTone}`}>
+        <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] ${iconTone}`}>
           <Icon name={iconName} className="h-4 w-4" />
         </span>
         <div className="min-w-0 flex-1">
@@ -284,7 +284,7 @@ export default function NotificationItem({
               type="button"
               onClick={handleMarkRead}
               data-tooltip={isUnread ? i18n("markAsRead") : i18n("markAsUnread")}
-              className="hidden h-9 w-9 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-white/[0.08] hover:text-[var(--foreground)] md:flex"
+              className="hidden h-9 w-9 items-center justify-center rounded-[var(--panel-radius)] text-[var(--muted)] transition-colors hover:bg-white/[0.08] hover:text-[var(--foreground)] md:flex"
               aria-label={isUnread ? i18n("markAsRead") : i18n("markAsUnread")}
             >
               <Icon name="check" className="h-4 w-4" />
@@ -293,7 +293,7 @@ export default function NotificationItem({
               type="button"
               onClick={handleArchive}
               data-tooltip={i18n("archive")}
-              className="hidden h-9 w-9 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-white/[0.08] hover:text-[var(--foreground)] md:flex"
+              className="hidden h-9 w-9 items-center justify-center rounded-[var(--panel-radius)] text-[var(--muted)] transition-colors hover:bg-white/[0.08] hover:text-[var(--foreground)] md:flex"
               aria-label={i18n("archive")}
             >
               <Icon name="archive" className="h-4 w-4" />

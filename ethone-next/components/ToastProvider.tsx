@@ -64,7 +64,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: 20, scale: 0.95 }}
               layout
-              className={`flex items-center gap-3 rounded-2xl border bg-[var(--surface)]/95 px-4 py-3 shadow-lg backdrop-blur-md ${
+              className={`flex items-center gap-3 rounded-[var(--panel-radius)] border bg-[var(--surface)]/95 px-4 py-3 shadow-lg backdrop-blur-md ${
                 toast.type === "success"
                   ? "border-emerald-500/30 text-emerald-400"
                   : toast.type === "error"

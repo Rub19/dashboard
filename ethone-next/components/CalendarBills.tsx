@@ -114,9 +114,9 @@ export default function CalendarBills({ items = MOCK_ITEMS }: { items?: Calendar
 
   return (
     <div className="mx-auto w-full max-w-5xl p-4 sm:p-6">
-      <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] shadow-2xl backdrop-blur-xl">
+      <div className="overflow-hidden rounded-[2rem] border border-[var(--panel-border)] bg-white/[0.04] shadow-2xl backdrop-blur-xl">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/5 px-6 py-5">
+        <div className="flex items-center justify-between border-b border-[var(--panel-border)] px-6 py-5">
           <h2 className="text-xl font-semibold tracking-tight text-[var(--foreground)]">
             {formatMonthYear(currentDate)}
           </h2>
@@ -152,7 +152,7 @@ export default function CalendarBills({ items = MOCK_ITEMS }: { items?: Calendar
           <button
             type="button"
             onClick={openAdd}
-            className="flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-500 text-white shadow-lg shadow-orange-500/30 transition-transform hover:scale-105 active:scale-95"
+            className="flex h-11 w-11 items-center justify-center rounded-[var(--panel-radius)] bg-orange-500 text-white shadow-lg shadow-orange-500/30 transition-transform active:scale-[0.98]"
             aria-label="Add item"
           >
             <Icon name="plus" className="h-5 w-5" />
@@ -160,7 +160,7 @@ export default function CalendarBills({ items = MOCK_ITEMS }: { items?: Calendar
         </div>
 
         {/* Weekday headers */}
-        <div className="grid grid-cols-7 border-b border-white/5 bg-white/[0.03]">
+        <div className="grid grid-cols-7 border-b border-[var(--panel-border)] bg-white/[0.03]">
           {WEEK_DAYS.map((day) => (
             <div
               key={day}
@@ -182,7 +182,7 @@ export default function CalendarBills({ items = MOCK_ITEMS }: { items?: Calendar
               <div
                 key={idx}
                 onClick={() => dayItems.length > 0 && openItem(dayItems[0])}
-                className={`group relative min-h-[6.5rem] cursor-pointer border-b border-r border-white/5 p-2 transition-colors hover:bg-white/[0.03] ${
+                className={`group relative min-h-[6.5rem] cursor-pointer border-b border-r border-[var(--panel-border)] p-2 transition-colors hover:bg-white/[0.03] ${
                   !inMonth ? "bg-black/[0.08] text-[var(--muted)]" : "text-[var(--foreground)]"
                 } ${isToday ? "bg-orange-500/10 ring-1 ring-inset ring-orange-500/30" : ""}`}
               >
@@ -198,7 +198,7 @@ export default function CalendarBills({ items = MOCK_ITEMS }: { items?: Calendar
                   {dayItems.slice(0, 3).map((item) => (
                     <div
                       key={item.id}
-                      className="flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.08] px-1.5 py-1"
+                      className="flex items-center gap-1.5 rounded-md border border-[var(--panel-border)] bg-white/[0.08] px-1.5 py-1"
                       title={item.title}
                     >
                       <span
@@ -235,7 +235,7 @@ export default function CalendarBills({ items = MOCK_ITEMS }: { items?: Calendar
         </div>
 
         {/* Footer */}
-        <div className="flex flex-col items-start justify-between gap-4 border-t border-white/5 bg-white/[0.03] px-6 py-4 sm:flex-row sm:items-center">
+        <div className="flex flex-col items-start justify-between gap-4 border-t border-[var(--panel-border)] bg-white/[0.03] px-6 py-4 sm:flex-row sm:items-center">
           <div className="flex items-center gap-4 text-xs text-[var(--muted)]">
             <span className="flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-full bg-purple-500" />
@@ -291,7 +291,7 @@ export default function CalendarBills({ items = MOCK_ITEMS }: { items?: Calendar
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 12 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-sm rounded-3xl border border-white/10 bg-[var(--surface)] p-6 shadow-2xl"
+              className="w-full max-w-sm rounded-3xl border border-[var(--panel-border)] bg-[var(--surface)] p-6 shadow-2xl"
             >
               <h3 className="text-lg font-semibold text-[var(--foreground)]">
                 {selected ? selected.title : "Add bill or event"}
@@ -318,7 +318,7 @@ export default function CalendarBills({ items = MOCK_ITEMS }: { items?: Calendar
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="mt-6 w-full rounded-2xl bg-[var(--accent)] py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                className="mt-6 w-full rounded-[var(--panel-radius)] bg-[var(--accent)] py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
               >
                 Close
               </button>

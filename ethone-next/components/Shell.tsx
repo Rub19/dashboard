@@ -42,7 +42,7 @@ export default function Shell({ children }: { children: ReactNode }) {
           <Sidebar />
             <div
               data-v8-shell
-              className="min-h-dvh overflow-x-hidden transition-all duration-300 md:ml-[72px]"
+              className="min-h-dvh overflow-x-hidden transition-colors duration-150 duration-300 md:ml-[72px]"
             >
               <header
                 data-v8-topbar

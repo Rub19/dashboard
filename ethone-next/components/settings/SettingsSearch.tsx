@@ -85,7 +85,7 @@ export default function SettingsSearch() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Rechercher un paramètre…"
-          className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] py-2 pl-10 pr-16 text-sm outline-none focus:border-[var(--accent)]"
+          className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] py-2 pl-10 pr-16 text-sm outline-none focus:border-[var(--accent)]"
         />
         {query && (
           <button
@@ -111,7 +111,7 @@ export default function SettingsSearch() {
       <button
         type="button"
         onClick={() => setShowAdvanced(!showAdvanced)}
-        className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition-colors ${
+        className={`flex items-center gap-2 rounded-[var(--panel-radius)] border px-3 py-2 text-xs font-medium transition-colors ${
           showAdvanced ? "border-[var(--accent)] text-[var(--accent)]" : "border-[var(--border)] bg-[var(--surface-raised)]"
         }`}
       >

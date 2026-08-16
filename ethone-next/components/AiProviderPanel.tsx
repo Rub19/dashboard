@@ -15,7 +15,7 @@ export function AiProviderPanel() {
 
   if (error) {
     return (
-      <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">
+      <div className="rounded-[var(--panel-radius)] border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">
         Impossible de charger l&apos;état IA.
       </div>
     );
@@ -26,7 +26,7 @@ export function AiProviderPanel() {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] p-4">
+      <div className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-4">
         <p className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">Primary AI</p>
         <div className="mt-2 flex items-center gap-2">
           <span className="h-2 w-2 rounded-full bg-emerald-500" />
@@ -35,7 +35,7 @@ export function AiProviderPanel() {
         <p className="mt-1 text-xs text-[var(--muted)]">{primary?.defaultModel || status?.cloudflare?.model}</p>
       </div>
 
-      <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] p-4">
+      <div className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-4">
         <p className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">Fallback AI</p>
         <div className="mt-2 flex items-center gap-2">
           <span className={`h-2 w-2 rounded-full ${fallback ? "bg-amber-500" : "bg-red-500"}`} />
@@ -45,7 +45,7 @@ export function AiProviderPanel() {
       </div>
 
       {quota && (
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] p-4">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-4">
           <p className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">Cloudflare Quota</p>
           <div className="mt-2 flex items-center justify-between text-sm">
             <span>{Math.round(quota.used)} / {quota.budget} neurons</span>
@@ -55,7 +55,7 @@ export function AiProviderPanel() {
           </div>
           <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[var(--surface)]">
             <div
-              className={`h-full transition-all ${quota.exhausted ? "bg-red-500" : quota.prepare ? "bg-amber-500" : quota.warning ? "bg-yellow-500" : "bg-emerald-500"}`}
+              className={`h-full transition-colors duration-150 ${quota.exhausted ? "bg-red-500" : quota.prepare ? "bg-amber-500" : quota.warning ? "bg-yellow-500" : "bg-emerald-500"}`}
               style={{ width: `${Math.min(100, Math.round(quota.percent * 100))}%` }}
             />
           </div>

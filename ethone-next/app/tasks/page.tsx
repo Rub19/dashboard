@@ -158,7 +158,7 @@ export default function TasksPage() {
             key={f.id}
             type="button"
             onClick={() => setFilter(f.id)}
-            className={`rounded-xl border px-3 py-2 text-sm font-medium transition-colors ${
+            className={`rounded-[var(--panel-radius)] border px-3 py-2 text-sm font-medium transition-colors ${
               filter === f.id
                 ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
                 : "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--foreground)]"
@@ -184,7 +184,7 @@ export default function TasksPage() {
             aria-label={i18n("add")}
             onClick={addTask}
             disabled={loading}
-            className="flex shrink-0 items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+            className="flex shrink-0 items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
           >
             <Icon name="plus" className="h-4 w-4" />
           </button>

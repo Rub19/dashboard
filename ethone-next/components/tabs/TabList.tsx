@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Icon } from "@/lib/icons";
 import type { TabItem } from "./types";
 
-const SPRING = { type: "spring" as const, damping: 22, stiffness: 200 };
+const SPRING = { duration: 0.15, ease: "easeOut" as const };
 
 function cn(...parts: (string | false | undefined)[]) {
   return parts.filter(Boolean).join(" ");
@@ -100,7 +100,7 @@ export default function TabList({
         <button
           type="button"
           onClick={() => setShowDrawer(true)}
-          className="flex w-full items-center justify-between rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-3 text-sm font-medium text-[var(--foreground)]"
+          className="flex w-full items-center justify-between rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-3 text-sm font-medium text-[var(--foreground)]"
           aria-haspopup="listbox"
           aria-expanded={showDrawer}
           aria-label={label || "Select tab"}
@@ -122,7 +122,7 @@ export default function TabList({
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={SPRING}
-              className="w-full max-w-lg rounded-t-3xl border border-white/10 bg-[var(--surface)] p-4 shadow-2xl"
+              className="w-full max-w-lg rounded-t-3xl border border-[var(--panel-border)] bg-[var(--surface)] p-4 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
               role="listbox"
               aria-label={label || "Tabs"}
@@ -143,7 +143,7 @@ export default function TabList({
                   }}
                   disabled={tab.disabled}
                   className={cn(
-                    "flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-medium transition-colors",
+                    "flex w-full items-center gap-3 rounded-[var(--panel-radius)] px-4 py-3 text-left text-sm font-medium transition-colors",
                     activeId === tab.id
                       ? "bg-[var(--accent)] text-white"
                       : "text-[var(--foreground)] hover:bg-[var(--surface-raised)]",
@@ -178,7 +178,7 @@ export default function TabList({
         ref={listRef}
         className={cn(
           "flex gap-1 overflow-x-auto scrollbar-hide",
-          isMobile ? "justify-between rounded-2xl bg-[var(--surface-raised)] p-1" : "nowrap"
+          isMobile ? "justify-between rounded-[var(--panel-radius)] bg-[var(--surface-raised)] p-1" : "nowrap"
         )}
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
@@ -201,7 +201,7 @@ export default function TabList({
               onClick={() => onSelect(tab.id)}
               onKeyDown={(e) => handleKeyDown(e, index)}
               className={cn(
-                "relative z-0 flex min-h-[44px] min-w-[44px] items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
+                "relative z-0 flex min-h-[44px] min-w-[44px] items-center justify-center gap-2 whitespace-nowrap rounded-[var(--panel-radius)] px-4 py-2 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
                 active
                   ? "text-white"
                   : "text-[var(--muted)] hover:text-[var(--foreground)]",
@@ -209,7 +209,7 @@ export default function TabList({
               )}
             >
               {active && (
-                <div className="absolute inset-0 -z-10 rounded-xl bg-[var(--accent)]" />
+                <div className="absolute inset-0 -z-10 rounded-[var(--panel-radius)] bg-[var(--accent)]" />
               )}
               <span className="relative z-10 flex items-center gap-2">
                 {tab.icon}

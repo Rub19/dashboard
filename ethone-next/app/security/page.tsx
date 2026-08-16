@@ -55,7 +55,7 @@ export default function SecurityPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">{i18n("securityTitle")}</h1>
-        <button type="button" onClick={reload} aria-label={i18n("refresh")} className="rounded-xl border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"><Icon name="refresh-cw" className="h-4 w-4" /></button>
+        <button type="button" onClick={reload} aria-label={i18n("refresh")} className="rounded-[var(--panel-radius)] border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"><Icon name="refresh-cw" className="h-4 w-4" /></button>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -106,12 +106,12 @@ export default function SecurityPage() {
             onChange={(e) => setPasskeyName(e.target.value)}
             placeholder={i18n("passkeyName")}
             aria-label={i18n("passkeyName")}
-            className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm"
+            className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm"
           />
           <button
             type="button"
             onClick={handleRegisterPasskey}
-            className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white hover:opacity-90"
+            className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white hover:opacity-90"
           >
             {i18n("addPasskey")}
           </button>
@@ -133,7 +133,7 @@ export default function SecurityPage() {
                       onChange={(e) => setNewName(e.target.value)}
                       onKeyDown={(e) => { if (e.key === "Enter") handleRename(p.id); }}
                       aria-label={i18n("passkeyName")}
-                      className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-sm"
+                      className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-sm"
                     />
                   ) : (
                     <p className="font-medium">{p.name}</p>

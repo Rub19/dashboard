@@ -239,7 +239,7 @@ export default function FileUploader({
 
       {queue.length > 0 && (
         <div className="space-y-3">
-          <div className="flex items-center justify-between rounded-2xl border border-white/5 bg-surface/60 px-4 py-3 backdrop-blur-xl">
+          <div className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-surface/60 px-4 py-3 backdrop-blur-xl">
             <div className="flex items-center gap-2 text-sm font-medium text-foreground">
               <UploadCloud className="h-4 w-4 text-accent" />
               <span>
@@ -262,7 +262,7 @@ export default function FileUploader({
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.96 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  transition={{ duration: 0.15, ease: "easeOut" as const }}
                 >
                   <UploadItem
                     task={task}
@@ -279,7 +279,7 @@ export default function FileUploader({
             <button
               type="button"
               onClick={() => setQueue([])}
-              className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-medium text-muted transition hover:bg-surface-raised hover:text-foreground"
+              className="flex items-center gap-1.5 rounded-[var(--panel-radius)] px-3 py-2 text-xs font-medium text-muted transition hover:bg-surface-raised hover:text-foreground"
             >
               <X className="h-3.5 w-3.5" />
               {i18n("close")}

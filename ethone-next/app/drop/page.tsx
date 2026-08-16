@@ -115,7 +115,7 @@ function DropContent() {
                 <button
                   type="button"
                   onClick={() => { setDrop(null); setError(null); }}
-                  className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white"
+                  className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white"
                 >
                   {i18n("unlock")}
                 </button>
@@ -130,11 +130,11 @@ function DropContent() {
           {drop && (
             <div className="space-y-4">
               <div className="grid grid-cols-1 gap-2 text-xs text-[var(--muted)] sm:grid-cols-2 sm:gap-4">
-                <div className="rounded-xl bg-[var(--surface)] p-2 text-center">
+                <div className="rounded-[var(--panel-radius)] bg-[var(--surface)] p-2 text-center">
                   <p className="text-lg font-bold text-[var(--foreground)]">{drop.fileCount || 0}</p>
                   <p>{i18n("files")}</p>
                 </div>
-                <div className="rounded-xl bg-[var(--surface)] p-2 text-center">
+                <div className="rounded-[var(--panel-radius)] bg-[var(--surface)] p-2 text-center">
                   <p className="text-lg font-bold text-[var(--foreground)]">{drop.maxFiles || "∞"}</p>
                   <p>{i18n("maxFiles")}</p>
                 </div>
@@ -145,7 +145,7 @@ function DropContent() {
                 {drop.expiresAt ? ` · ${i18n("expiresAt")}: ${new Date(drop.expiresAt).toLocaleString()}` : null}
               </div>
 
-              <label className="flex w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-[var(--border)] p-8 text-[var(--muted)] transition-colors hover:border-[var(--accent)] hover:text-[var(--foreground)]">
+              <label className="flex w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-[var(--panel-radius)] border-2 border-dashed border-[var(--border)] p-8 text-[var(--muted)] transition-colors hover:border-[var(--accent)] hover:text-[var(--foreground)]">
                 <Icon name="upload-cloud" className="h-8 w-8" />
                 <span className="text-sm font-medium">{i18n("dropFilesHere")}</span>
                 <input
@@ -161,7 +161,7 @@ function DropContent() {
               <button
                 type="button"
                 onClick={copyLink}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] py-2.5 text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--surface)]"
+                className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] py-2.5 text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--surface)]"
               >
                 <Icon name="copy" className="h-4 w-4" /> {i18n("copyLink")}
               </button>

@@ -49,14 +49,14 @@ export default function MobileNav() {
                 href={item.href}
                 aria-current={isActive ? "page" : undefined}
                 data-haptic
-                className="relative flex min-h-[44px] min-w-[56px] flex-col items-center justify-center gap-0.5 rounded-2xl px-2 py-1 text-[10px] font-medium transition-colors active:scale-[0.98] touch-manipulation"
+                className="relative flex min-h-[44px] min-w-[56px] flex-col items-center justify-center gap-0.5 rounded-[var(--panel-radius)] px-2 py-1 text-[10px] font-medium transition-colors active:scale-[0.98] touch-manipulation"
               >
                 {isActive && (
                   <motion.div
                     layoutId="mobileNavPill"
                     initial={false}
-                    transition={{ type: "spring", damping: 22, stiffness: 200 }}
-                    className="absolute inset-0 -z-10 rounded-2xl bg-[var(--accent)]/10"
+                    transition={{ duration: 0.15, ease: "easeOut" as const }}
+                    className="absolute inset-0 -z-10 rounded-[var(--panel-radius)] bg-[var(--accent)]/10"
                   />
                 )}
                 <Icon
@@ -76,7 +76,7 @@ export default function MobileNav() {
             aria-haspopup="dialog"
             aria-expanded={drawerOpen}
             data-haptic
-            className="relative flex min-h-[44px] min-w-[56px] flex-col items-center justify-center gap-0.5 rounded-2xl px-2 py-1 text-[10px] font-medium transition-colors active:scale-[0.98] touch-manipulation"
+            className="relative flex min-h-[44px] min-w-[56px] flex-col items-center justify-center gap-0.5 rounded-[var(--panel-radius)] px-2 py-1 text-[10px] font-medium transition-colors active:scale-[0.98] touch-manipulation"
           >
             <Icon name="menu" className="h-5 w-5 text-[var(--muted)]" />
             <span className="max-w-[3.5rem] truncate text-[var(--muted)]">
@@ -102,7 +102,7 @@ export default function MobileNav() {
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
-              transition={{ type: "spring", damping: 28, stiffness: 280 }}
+              transition={{ duration: 0.15, ease: "easeOut" as const }}
               drag="x"
               dragConstraints={{ left: -340, right: 0 }}
               dragElastic={0.05}
@@ -120,7 +120,7 @@ export default function MobileNav() {
                   type="button"
                   onClick={() => setDrawerOpen(false)}
                   aria-label={i18n("close")}
-                  className="flex h-10 w-10 items-center justify-center rounded-xl text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
+                  className="flex h-10 w-10 items-center justify-center rounded-[var(--panel-radius)] text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
                 >
                   <Icon name="close" className="h-5 w-5" />
                 </button>
@@ -135,7 +135,7 @@ export default function MobileNav() {
                       onClick={() => setDrawerOpen(false)}
                       aria-current={isActive ? "page" : undefined}
                       className={cn(
-                        "flex items-center gap-3 rounded-xl px-3 py-3.5 text-sm font-medium transition-colors",
+                        "flex items-center gap-3 rounded-[var(--panel-radius)] px-3 py-3.5 text-sm font-medium transition-colors",
                         isActive
                           ? "bg-[var(--accent)]/10 text-[var(--accent)]"
                           : "text-[var(--foreground)] hover:bg-[var(--surface-raised)]"

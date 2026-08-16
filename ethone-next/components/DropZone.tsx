@@ -58,8 +58,8 @@ export default function DropZone({
         scale: dragging ? 1.015 : 1,
         borderColor: dragging ? "var(--accent)" : "rgba(255,255,255,0.10)",
       }}
-      transition={{ type: "spring", stiffness: 400, damping: 25 }}
-      className={`group relative flex min-h-[14rem] cursor-pointer flex-col items-center justify-center gap-4 overflow-hidden rounded-3xl border-2 border-dashed border-white/10 bg-surface/60 p-8 text-center backdrop-blur-xl transition-colors ${
+      transition={{ duration: 0.15, ease: "easeOut" as const }}
+      className={`group relative flex min-h-[14rem] cursor-pointer flex-col items-center justify-center gap-4 overflow-hidden rounded-3xl border-2 border-dashed border-[var(--panel-border)] bg-surface/60 p-8 text-center backdrop-blur-xl transition-colors ${
         dragging ? "border-solid border-accent bg-accent/5" : ""
       } ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
     >
@@ -73,8 +73,8 @@ export default function DropZone({
           y: dragging ? -4 : 0,
           scale: dragging ? 1.15 : 1,
         }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        className="flex h-16 w-16 items-center justify-center rounded-2xl bg-surface-raised shadow-inner ring-1 ring-white/5"
+        transition={{ duration: 0.15, ease: "easeOut" as const }}
+        className="flex h-16 w-16 items-center justify-center rounded-[var(--panel-radius)] bg-surface-raised shadow-inner ring-1 ring-white/5"
       >
         {dragging ? (
           <Upload className="h-7 w-7 text-accent" />

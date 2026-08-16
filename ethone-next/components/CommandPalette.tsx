@@ -198,7 +198,7 @@ export default function CommandPalette() {
         key={cmd.id}
         onClick={() => run(cmd)}
         onMouseEnter={() => setIndex(itemIndex)}
-        className={`group relative flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm transition-colors ${
+        className={`group relative flex w-full items-center justify-between rounded-[var(--panel-radius)] px-3 py-2 text-sm transition-colors ${
           active ? "bg-[var(--accent)] text-white" : "cursor-pointer text-[var(--foreground)] hover:bg-[var(--surface)]"
         }`}
         role="button"
@@ -258,8 +258,8 @@ export default function CommandPalette() {
               initial={{ opacity: 0, y: -20, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.96 }}
-              transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              className="w-full max-w-lg overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] shadow-2xl"
+              transition={{ duration: 0.15, ease: "easeOut" as const }}
+              className="w-full max-w-lg overflow-hidden rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center gap-3 border-b border-[var(--border)] px-4 py-3">

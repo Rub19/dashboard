@@ -57,7 +57,7 @@ export default function ScratchpadPage() {
         <button
           type="button"
           onClick={() => { setSheetOpen(true); haptics.trigger(8); }}
-          className="rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
+          className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
         >
           {i18n("scratchpadOptions")}
         </button>
@@ -82,14 +82,14 @@ export default function ScratchpadPage() {
           <button
             type="button"
             onClick={() => { setNote(""); setSheetOpen(false); }}
-            className="w-full rounded-xl border border-[var(--border)] px-3 py-2 text-left text-sm hover:bg-[var(--surface-raised)]"
+            className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] px-3 py-2 text-left text-sm hover:bg-[var(--surface-raised)]"
           >
             {i18n("scratchpadClear")}
           </button>
           <button
             type="button"
             onClick={() => { navigator.clipboard?.writeText(note); setSheetOpen(false); }}
-            className="w-full rounded-xl border border-[var(--border)] px-3 py-2 text-left text-sm hover:bg-[var(--surface-raised)]"
+            className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] px-3 py-2 text-left text-sm hover:bg-[var(--surface-raised)]"
           >
             {i18n("scratchpadCopy")}
           </button>

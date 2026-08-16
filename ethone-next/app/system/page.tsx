@@ -139,7 +139,7 @@ export default function SystemPage() {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Card3D>
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-violet-500/10 text-violet-400">
               <Icon name="layout-grid" className="h-5 w-5" />
             </span>
             <div>
@@ -150,7 +150,7 @@ export default function SystemPage() {
         </Card3D>
         <Card3D>
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-emerald-500/10 text-emerald-400">
               <Icon name="activity" className="h-5 w-5" />
             </span>
             <div>
@@ -161,7 +161,7 @@ export default function SystemPage() {
         </Card3D>
         <Card3D>
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-amber-500/10 text-amber-400">
               <Icon name="workflow" className="h-5 w-5" />
             </span>
             <div>
@@ -172,7 +172,7 @@ export default function SystemPage() {
         </Card3D>
         <Card3D>
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-500/10 text-sky-400">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-sky-500/10 text-sky-400">
               <Icon name="zap" className="h-5 w-5" />
             </span>
             <div>
@@ -188,10 +188,10 @@ export default function SystemPage() {
           const isActive = activeSpace === w.id;
           return (
             <Card3D key={w.id}>
-              <div className={`rounded-2xl p-1 ${isActive ? `ring-1 ${w.accent.ring}` : ""}`}>
+              <div className={`rounded-[var(--panel-radius)] p-1 ${isActive ? `ring-1 ${w.accent.ring}` : ""}`}>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${w.accent.icon}`}>
+                    <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] ${w.accent.icon}`}>
                       <Icon name={w.icon} className="h-5 w-5" />
                     </span>
                     <div>
@@ -214,7 +214,7 @@ export default function SystemPage() {
                   {w.steps.map((step, i) => (
                     <span
                       key={i}
-                      className="rounded-lg bg-[var(--surface-raised)] px-2 py-1 text-[10px] text-[var(--foreground)]"
+                      className="rounded-[var(--panel-radius)] bg-[var(--surface-raised)] px-2 py-1 text-[10px] text-[var(--foreground)]"
                     >
                       <b className="mr-1 text-[var(--accent)]">{i + 1}</b>
                       {step}
@@ -226,7 +226,7 @@ export default function SystemPage() {
                   {w.widgets.map((widgetId) => (
                     <span
                       key={widgetId}
-                      className="flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--surface-raised)] text-[var(--muted)]"
+                      className="flex h-7 w-7 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--surface-raised)] text-[var(--muted)]"
                       title={widgetId}
                     >
                       <Icon name={WIDGET_ICONS[widgetId]} className="h-3.5 w-3.5" />
@@ -238,7 +238,7 @@ export default function SystemPage() {
                   <button
                     type="button"
                     onClick={() => runWorkspace(w.id)}
-                    className={`inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-semibold transition-opacity hover:opacity-90 ${
+                    className={`inline-flex items-center gap-2 rounded-[var(--panel-radius)] px-3 py-1.5 text-xs font-semibold transition-opacity hover:opacity-90 ${
                       isActive
                         ? "bg-[var(--accent)] text-white"
                         : "bg-[var(--surface-raised)] text-[var(--foreground)] hover:text-[var(--accent)]"
@@ -272,10 +272,10 @@ export default function SystemPage() {
                 const isActive = wsId === activeSpace;
                 const workspace = WORKSPACES.find((w) => w.id === wsId);
                 return (
-                  <div key={space.id} className="flex items-center justify-between rounded-xl bg-[var(--surface-raised)] p-2">
+                  <div key={space.id} className="flex items-center justify-between rounded-[var(--panel-radius)] bg-[var(--surface-raised)] p-2">
                     <div className="flex items-center gap-2">
                       <span
-                        className={`flex h-8 w-8 items-center justify-center rounded-lg ${
+                        className={`flex h-8 w-8 items-center justify-center rounded-[var(--panel-radius)] ${
                           workspace?.accent.icon ?? "bg-zinc-500/10 text-zinc-400"
                         }`}
                       >
@@ -311,10 +311,10 @@ export default function SystemPage() {
                 const isActive = wsId === activeSpace;
                 const workspace = WORKSPACES.find((w) => w.id === wsId);
                 return (
-                  <div key={flow.id} className="flex items-center justify-between rounded-xl bg-[var(--surface-raised)] p-2">
+                  <div key={flow.id} className="flex items-center justify-between rounded-[var(--panel-radius)] bg-[var(--surface-raised)] p-2">
                     <div className="flex items-center gap-2">
                       <span
-                        className={`flex h-8 w-8 items-center justify-center rounded-lg ${
+                        className={`flex h-8 w-8 items-center justify-center rounded-[var(--panel-radius)] ${
                           workspace?.accent.icon ?? "bg-zinc-500/10 text-zinc-400"
                         }`}
                       >

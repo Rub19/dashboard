@@ -44,13 +44,13 @@ export default function PasswordRecoveryPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={i18n("emailPlaceholder")}
                 required
-                className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
               />
             </div>
             <button
               type="submit"
               disabled={loading || !email}
-              className="rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
+              className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
             >
               {loading ? i18n("sending") : i18n("send")}
             </button>

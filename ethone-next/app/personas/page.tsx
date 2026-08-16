@@ -100,7 +100,7 @@ export default function PersonasPage() {
               aria-label={i18n("theme")}
               className="min-w-0"
             />
-            <button type="button" aria-label={i18n("add")} onClick={add} className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white">
+            <button type="button" aria-label={i18n("add")} onClick={add} className="inline-flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white">
               <Icon name="plus" className="h-4 w-4" />
             </button>
           </div>
@@ -129,14 +129,14 @@ export default function PersonasPage() {
                     className="w-full"
                   />
                   <div className="flex gap-2">
-                    <button type="button" onClick={() => saveEdit(p.id)} className="flex-1 rounded-xl bg-[var(--accent)] py-2 text-sm font-semibold text-white">{i18n("save")}</button>
-                    <button type="button" onClick={cancelEdit} className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm text-[var(--muted)] hover:text-[var(--foreground)]">{i18n("cancel")}</button>
+                    <button type="button" onClick={() => saveEdit(p.id)} className="flex-1 rounded-[var(--panel-radius)] bg-[var(--accent)] py-2 text-sm font-semibold text-white">{i18n("save")}</button>
+                    <button type="button" onClick={cancelEdit} className="rounded-[var(--panel-radius)] border border-[var(--border)] px-3 py-2 text-sm text-[var(--muted)] hover:text-[var(--foreground)]">{i18n("cancel")}</button>
                   </div>
                 </div>
               ) : (
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-violet-500/10 text-violet-400">
                       <Icon name="users" className="h-5 w-5" />
                     </span>
                     <div>

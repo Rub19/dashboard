@@ -168,7 +168,7 @@ export default function PasswordField({
           onPaste={handlePaste}
           autoComplete={autoComplete}
           placeholder={placeholder}
-          className="w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] py-2.5 pl-10 pr-20 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-all placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10"
+          className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] py-2.5 pl-10 pr-20 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10"
           aria-label={placeholder}
         />
         <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1">
@@ -204,7 +204,7 @@ export default function PasswordField({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               layout
-              transition={{ type: "spring", stiffness: 500, damping: 35 }}
+              transition={{ duration: 0.15, ease: "easeOut" as const }}
               className="space-y-2 overflow-hidden pt-2"
             >
               <StrengthMeter result={result} show={hasContent} />
@@ -235,7 +235,7 @@ export default function PasswordField({
                 <button
                   type="button"
                   onClick={handleGenerate}
-                  className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-xs font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)]"
+                  className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-xs font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)]"
                 >
                   <Icon name="sparkles" className="h-3.5 w-3.5 text-[var(--accent)]" />
                   Utiliser un mot de passe fort suggéré

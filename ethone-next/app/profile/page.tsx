@@ -79,7 +79,7 @@ export default function ProfilePage() {
 
       <Card3D>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[var(--accent)] text-2xl font-bold text-white">
+          <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent)] text-2xl font-bold text-white">
             {profile?.display_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "?"}
           </span>
           <div className="min-w-0">
@@ -96,7 +96,7 @@ export default function ProfilePage() {
         <Card3D>
           <div className="space-y-2">
             <label className="text-sm font-medium">{i18n("publicId")}</label>
-            <div className="flex min-w-0 items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm">
+            <div className="flex min-w-0 items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm">
               <code className="break-all text-xs text-[var(--muted)]">{profile.public_id}</code>
               <button
                 type="button"
@@ -124,7 +124,7 @@ export default function ProfilePage() {
               value={form.username}
               onChange={(e) => setForm({ ...form, username: e.target.value })}
               aria-label={i18n("usernamePlaceholder")} placeholder={i18n("usernamePlaceholder")}
-              className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+              className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
             <p className="break-words text-xs text-[var(--muted)]">{i18n("displayNameHint")}</p>
           </div>
@@ -136,7 +136,7 @@ export default function ProfilePage() {
               value={form.display_name}
               onChange={(e) => setForm({ ...form, display_name: e.target.value })}
               aria-label={i18n("yourNamePlaceholder")} placeholder={i18n("yourNamePlaceholder")}
-              className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+              className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
           </div>
 
@@ -147,9 +147,9 @@ export default function ProfilePage() {
               value={form.avatar_url}
               onChange={(e) => setForm({ ...form, avatar_url: e.target.value })}
               placeholder="https://..."
-              className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+              className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
             />
-            <label className="mt-2 flex cursor-pointer items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)]">
+            <label className="mt-2 flex cursor-pointer items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)]">
               <Icon name="upload" className="h-4 w-4" />
               {uploadingMedia ? i18n("loading") : i18n("uploadAvatar")}
               <input
@@ -174,7 +174,7 @@ export default function ProfilePage() {
               type="button"
               onClick={submit}
               disabled={saving}
-              className="flex items-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+              className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
             >
               {saving ? <Icon name="loader-2" className="h-4 w-4 animate-spin" /> : <Icon name="save" className="h-4 w-4" />}
               {i18n("save")}
@@ -183,7 +183,7 @@ export default function ProfilePage() {
             <button
               type="button"
               onClick={() => router.push("/settings")}
-              className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm font-medium transition-colors hover:border-[var(--accent)]"
+              className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm font-medium transition-colors hover:border-[var(--accent)]"
             >
               {i18n("cancel")}
             </button>
@@ -191,7 +191,7 @@ export default function ProfilePage() {
             <button
               type="button"
               onClick={() => router.push("/profile-selection")}
-              className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm font-medium transition-colors hover:border-[var(--accent)]"
+              className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm font-medium transition-colors hover:border-[var(--accent)]"
             >
               <Icon name="users" className="h-4 w-4" />
               {i18n("manageProfiles")}
@@ -210,7 +210,7 @@ export default function ProfilePage() {
         <Card3D>
           <div className="space-y-2">
             <h2 className="text-sm font-medium">{i18n("publicProfilePreview")}</h2>
-            <div className="flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3">
+            <div className="flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-3">
               {publicProfile.profile.avatarUrl ? (
                 <Image src={publicProfile.profile.avatarUrl} alt="" width={48} height={48} unoptimized className="h-12 w-12 rounded-full object-cover" />
               ) : (

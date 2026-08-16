@@ -193,12 +193,19 @@ export function useIconName(name: string, pack: IconPack = "lucide") {
   return `${PREFIXES.lucide}:${entry?.lucide || name}`;
 }
 
-function IconComponent({ name, ...props }: { name: string } & Omit<IconProps, "icon">) {
+function IconComponent({
+  name,
+  pack,
+  ...props
+}: {
+  name: string;
+  pack?: IconPack;
+} & Omit<IconProps, "icon">) {
   const { settings } = useSettings();
-  const pack = settings.iconPack;
-  const iconId = useIconName(name, pack);
+  const iconPack = pack ?? settings.iconPack;
+  const iconId = useIconName(name, iconPack);
   const [prefix, suffix] = iconId.split(":");
-  const valid = prefix && suffix && (pack === "lucide" ? true : iconExists(pack as IconPack, suffix));
+  const valid = prefix && suffix && (iconPack === "lucide" ? true : iconExists(iconPack, suffix));
   return <IconifyIcon icon={valid ? iconId : `${PREFIXES.lucide}:help-circle`} aria-hidden="true" focusable="false" {...props} />;
 }
 

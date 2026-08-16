@@ -31,6 +31,12 @@
   --accent-soft: #ede9fe;
   --card-radius: 1rem;
   --dock-radius: 1rem;
+  --panel-radius: 1rem;
+  --panel-border: var(--border);
+  --panel-bg: var(--surface-raised);
+  --panel-blur: 0px;
+  --panel-padding: var(--density-pad, 1.25rem);
+  --item-gap: var(--density-gap, 1rem);
   --density-gap: 1rem;
   --density-pad: 1.25rem;
   --glass: 0.95;
@@ -341,8 +347,8 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  transition: background var(--v8-ambient-transition, 3200ms) var(--ease-drift, ease-in-out),
-              color var(--v8-ambient-transition, 3200ms) var(--ease-drift, ease-in-out),
+  transition: background var(--v8-ambient-transition, 150ms) var(--ease-out, ease-out),
+              color var(--v8-ambient-transition, 150ms) var(--ease-out, ease-out),
               font-family 0.3s ease;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
@@ -1119,28 +1125,19 @@ a:focus:not(:focus-visible) {
 }
 
 /* ============================================================
-   Dock magnify / pulse
+   Dock magnify / pulse — disabled to reduce visual latency
    ============================================================ */
 
-[data-dock-magnify="true"] [data-dock-item]:hover {
-  transform: scale(1.15) translateY(-6px);
-  transition: transform 160ms var(--ease-spring, ease);
-}
-
+[data-dock-magnify="true"] [data-dock-item]:hover,
 [data-dock-magnify="true"] [data-dock-item]:hover ~ [data-dock-item],
 [data-dock-magnify="true"] [data-dock-item]:has(~ [data-dock-item]:hover) {
-  transform: scale(0.95);
-  opacity: 0.8;
-  transition: transform 160ms var(--ease-spring, ease), opacity 160ms ease;
+  transform: none;
+  opacity: 1;
+  transition: none;
 }
 
 [data-dock-pulse="true"] [data-dock-item-active="true"] {
-  animation: dock-pulse 2s var(--ease-standard, ease) infinite;
-}
-
-@keyframes dock-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 30%, transparent); }
-  50% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--accent) 0%, transparent); }
+  animation: none;
 }
 
 /* ============================================================
@@ -1714,8 +1711,8 @@ html {
 
 [data-dock] {
   display: flex;
-  align-items: flex-end;
-  gap: var(--density-section-gap);
+  align-items: center;
+  gap: 0.375rem;
   border-radius: 9999px !important;
 }
 
@@ -1777,17 +1774,20 @@ html {
 }
 
 [data-dock-glass="vitrified"] [data-dock] {
-  background-color: color-mix(in srgb, var(--surface-raised) 90%, transparent);
+  background: color-mix(in srgb, var(--surface-raised) 90%, transparent);
+  border-color: color-mix(in srgb, var(--border) 65%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
 [data-dock-glass="ultra-blur"] [data-dock] {
-  background-color: color-mix(in srgb, var(--surface-raised) 70%, transparent);
+  background: color-mix(in srgb, var(--surface-raised) 70%, transparent);
+  border-color: color-mix(in srgb, var(--border) 50%, transparent);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
 }
 [data-dock-glass="sober"] [data-dock] {
-  background-color: var(--surface-2);
+  background: var(--surface-2);
+  border-color: var(--border);
   backdrop-filter: none;
 }
 
@@ -1995,5 +1995,52 @@ a[href]:active,
 [tabindex]:not([disabled]):active {
   transform: scale(0.98);
   transition: transform 100ms ease-out;
+}
+
+/* ============================================================
+   Global design-token utilities
+   ============================================================ */
+
+.v8-panel,
+.v8-card {
+  border-radius: var(--panel-radius);
+  border: 1px solid var(--panel-border);
+  background: var(--panel-bg);
+  backdrop-filter: blur(var(--panel-blur));
+  -webkit-backdrop-filter: blur(var(--panel-blur));
+}
+
+.v8-dock {
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--surface-raised) 90%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* ============================================================
+   Disable heavy ambient / presence UI animations
+   ============================================================ */
+
+[data-ambient],
+[data-ambient-shell],
+[data-ambient-particle],
+[data-ambient-surface],
+[data-ambient-wash],
+[data-ambient-light],
+[data-presence-engine="active"] [data-live-widget][data-presence-live="enter"],
+[data-presence-engine="active"] [data-brain-aura]::after,
+[data-presence-engine="active"] [data-brain-dot],
+[data-presence-engine="active"] [data-sync-spinner],
+[data-presence-engine="active"] [data-sync-dot],
+[data-presence-engine="active"] [data-notification-badge],
+[data-presence-engine="active"] [data-mail-signal],
+[data-presence-engine="active"] [data-dock-item-active="true"]::before,
+[data-presence-engine="active"] [data-dock-item-active="true"]::after,
+[data-presence-engine="active"] [data-media-aura],
+[data-presence-engine="active"] [data-equalizer] > i,
+[data-presence-engine="active"] [data-dock-artwork] {
+  animation: none !important;
+  will-change: auto;
 }
 

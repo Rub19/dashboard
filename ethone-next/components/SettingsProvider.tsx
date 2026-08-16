@@ -135,9 +135,27 @@ export default function SettingsProvider({
     root.style.setProperty("--accent", accent);
     root.style.setProperty("--accent-soft", accent + "33");
 
+    const densityValues = DENSITY_PRESETS[settings.densityMode as keyof typeof DENSITY_PRESETS] || DENSITY_PRESETS.comfortable;
+
     root.style.setProperty("--font-size", `${settings.fontSize}%`);
     root.style.setProperty("--card-radius", `${settings.radius / 16}rem`);
     root.style.setProperty("--dock-radius", `${settings.dockRadius / 16}rem`);
+
+    const radiusStyleMultiplier =
+      settings.radiusStyle === "sharp" ? 0.25 :
+      settings.radiusStyle === "soft" ? 0.5 : 1;
+    root.style.setProperty("--panel-radius", `${(settings.radius / 16) * radiusStyleMultiplier}rem`);
+
+    const panelBase = settings.glassEnabled ? "var(--surface-raised)" : "var(--surface-raised)";
+    const panelOpacity = settings.glassEnabled ? "88%" : "100%";
+    const panelBlur = settings.interfaceBlurEnabled ? "14px" : "0px";
+    const panelBorderOpacity = settings.glassEnabled ? "65%" : "100%";
+    root.style.setProperty("--panel-bg", `color-mix(in srgb, ${panelBase} ${panelOpacity}, transparent)`);
+    root.style.setProperty("--panel-blur", panelBlur);
+    root.style.setProperty("--panel-border", `color-mix(in srgb, var(--border) ${panelBorderOpacity}, transparent)`);
+    root.style.setProperty("--panel-padding", `${densityValues.cardPadding || 16}px`);
+    root.style.setProperty("--item-gap", `${densityValues.sectionGap || 16}px`);
+
     root.style.setProperty("--icon-radius", {
       square: "0px",
       rounded: "0.5rem",
@@ -177,8 +195,8 @@ export default function SettingsProvider({
     root.dataset.sessionMode = settings.sessionMode;
     root.style.fontSize = `${settings.fontSize}%`;
     root.style.setProperty("--aurora-speed", `${60 - settings.backgroundSpeed}s`);
-    root.style.setProperty("--v8-breathe-duration", settings.ambientEffectsEnabled ? "26s" : "0s");
-    root.style.setProperty("--v8-ambient-transition", settings.uiAnimations === "snappy" ? "800ms" : settings.uiAnimations === "reduced" ? "1ms" : "3200ms");
+    root.style.setProperty("--v8-breathe-duration", "0s");
+    root.style.setProperty("--v8-ambient-transition", settings.uiAnimations === "snappy" ? "100ms" : settings.uiAnimations === "reduced" ? "1ms" : "150ms");
     root.style.setProperty("--v8-accent", accent);
     if (settings.reducedMotion) {
       root.setAttribute("data-reduced-motion", "true");
@@ -186,7 +204,6 @@ export default function SettingsProvider({
       root.removeAttribute("data-reduced-motion");
     }
 
-    const densityValues = DENSITY_PRESETS[settings.densityMode as keyof typeof DENSITY_PRESETS] || DENSITY_PRESETS.comfortable;
     Object.entries(densityValues).forEach(([key, value]) => {
       root.style.setProperty(`--density-${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`, `${value}${UNIT[key] || ""}`);
     });

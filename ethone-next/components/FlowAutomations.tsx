@@ -89,7 +89,7 @@ export default function FlowAutomations({ activeFlow }: { activeFlow?: string })
               type="time"
               value={triggerValue}
               onChange={(e) => setTriggerValue(e.target.value)}
-              className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none"
+              className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none"
             />
           ) : (
             <Select
@@ -110,7 +110,7 @@ export default function FlowAutomations({ activeFlow }: { activeFlow?: string })
           <button
             type="button"
             onClick={addAutomation}
-            className="rounded-xl bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white"
+            className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white"
           >
             {i18n("add")}
           </button>
@@ -123,7 +123,7 @@ export default function FlowAutomations({ activeFlow }: { activeFlow?: string })
             {rules.map((rule: AutomationRule) => {
               const actionLabelText = actionLabel(rule.actionId);
               return (
-                <div key={rule.id} className="flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2">
+                <div key={rule.id} className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-2">
                   <span className="text-sm">{triggerLabel(rule.trigger)} → {actionLabelText}</span>
                   <div className="flex items-center gap-2">
                     <button

@@ -174,14 +174,14 @@ export default function BootProvider({ children }: { children: ReactNode }) {
             <button
               type="button"
               onClick={retry}
-              className="rounded-xl bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
             >
               Réessayer
             </button>
             <button
               type="button"
               onClick={continueOffline}
-              className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-5 py-2.5 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--surface-raised)]"
+              className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-5 py-2.5 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--surface-raised)]"
             >
               Continuer hors ligne
             </button>
@@ -210,14 +210,14 @@ export default function BootProvider({ children }: { children: ReactNode }) {
             <button
               type="button"
               onClick={retry}
-              className="rounded-xl bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
             >
               Réessayer
             </button>
             <button
               type="button"
               onClick={continueOffline}
-              className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-5 py-2.5 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--surface-raised)]"
+              className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-5 py-2.5 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--surface-raised)]"
             >
               Continuer hors ligne
             </button>

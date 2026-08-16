@@ -29,7 +29,7 @@ export default function LiquidSidebar({
 
   return (
     <div
-      className="w-56 space-y-1 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-2"
+      className="w-56 space-y-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-2"
       role="tablist"
       aria-label="Panneau latéral"
     >
@@ -42,7 +42,7 @@ export default function LiquidSidebar({
             role="tab"
             aria-selected={isActive}
             onClick={() => handleClick(item.id)}
-            className={`relative flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
+            className={`relative flex w-full items-center gap-3 rounded-[var(--panel-radius)] px-3 py-2 text-sm font-medium transition-colors ${
               isActive
                 ? "bg-[var(--accent)] text-white"
                 : "text-[var(--muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"

@@ -266,20 +266,20 @@ export default function LoginPage() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          transition={{ duration: 0.15, ease: "easeOut" as const }}
           className="w-full min-w-[min(100%,20rem)] max-w-sm"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ type: "spring", stiffness: 320, damping: 32 }}
+            transition={{ duration: 0.15, ease: "easeOut" as const }}
             className="relative flex max-h-[calc(100vh-2rem)] w-full flex-col overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)]/80 p-5 shadow-2xl backdrop-blur-xl sm:p-6"
           >
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/50 to-transparent" />
             <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[var(--accent)]/10 blur-3xl" />
 
             <div className="relative flex w-full flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--accent)]/10 ring-1 ring-[var(--accent)]/20">
+              <div className="flex h-14 w-14 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent)]/10 ring-1 ring-[var(--accent)]/20">
                 <BrandMark size={40} />
               </div>
               <h2 className="mt-3 text-2xl font-bold tracking-tight">{i18n("welcomeBack")}</h2>
@@ -289,7 +289,7 @@ export default function LoginPage() {
             {(() => {
               const modes: AuthMode[] = ["otp", "password", "register"];
               return (
-                <div className="relative mt-4 flex rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]/50 p-1">
+                <div className="relative mt-4 flex rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)]/50 p-1">
                   {modes.map((m) => {
                     const active = mode === m;
                     return (
@@ -301,7 +301,7 @@ export default function LoginPage() {
                           setStep("email");
                           setError(null);
                         }}
-                        className={`relative z-10 min-w-0 flex-1 select-none whitespace-nowrap rounded-xl px-0.5 py-2 text-[10px] font-semibold tracking-wide transition-colors sm:px-2 sm:text-[11px] ${
+                        className={`relative z-10 min-w-0 flex-1 select-none whitespace-nowrap rounded-[var(--panel-radius)] px-0.5 py-2 text-[10px] font-semibold tracking-wide transition-colors sm:px-2 sm:text-[11px] ${
                           active ? "text-white" : "text-[var(--muted)] hover:text-[var(--foreground)]"
                         }`}
                       >
@@ -309,8 +309,8 @@ export default function LoginPage() {
                           <motion.div
                             layoutId="activeAuthTab"
                             initial={false}
-                            transition={{ type: "spring", bounce: 0.15, duration: 0.3 }}
-                            className="absolute inset-0 rounded-xl bg-[var(--accent)]"
+                            transition={{ duration: 0.15, ease: "easeOut" as const }}
+                            className="absolute inset-0 rounded-[var(--panel-radius)] bg-[var(--accent)]"
                           />
                         )}
                         <span className="relative z-10 block truncate">
@@ -324,14 +324,14 @@ export default function LoginPage() {
             })()}
 
             {error && (
-              <div className="relative mt-3 rounded-2xl border border-red-500/20 bg-red-500/10 p-2.5 text-xs text-red-400">
+              <div className="relative mt-3 rounded-[var(--panel-radius)] border border-red-500/20 bg-red-500/10 p-2.5 text-xs text-red-400">
                 {error}
               </div>
             )}
 
             <motion.div
               layout
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              transition={{ duration: 0.15, ease: "easeOut" as const }}
               className="relative mt-3 overflow-hidden"
             >
               <AnimatePresence mode="wait" initial={false}>
@@ -340,7 +340,7 @@ export default function LoginPage() {
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -6 }}
-                  transition={{ duration: 0.15, ease: "easeOut" }}
+                  transition={{ duration: 0.15, ease: "easeOut" as const }}
                   className="relative"
                 >
                 {isOtp && step === "code" ? (
@@ -358,7 +358,7 @@ export default function LoginPage() {
                     required
                     value={code}
                     onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                    className="w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] py-2.5 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-all placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10"
+                    className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] py-2.5 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10"
                     aria-label={i18n("codePlaceholder")}
                     placeholder={i18n("codePlaceholder")}
                   />
@@ -366,7 +366,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[var(--accent)]/20 transition-all hover:opacity-90 hover:shadow-[var(--accent)]/30 disabled:opacity-50"
+                  className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[var(--accent)]/20 transition-colors duration-150 hover:opacity-90 hover:shadow-[var(--accent)]/30 disabled:opacity-50"
                 >
                   {loading ? <Icon name="loader-2" className="h-4 w-4 animate-spin" /> : i18n("verify")}
                 </button>
@@ -393,7 +393,7 @@ export default function LoginPage() {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] py-2.5 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-all placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10"
+                      className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] py-2.5 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10"
                       aria-label={i18n("emailPlaceholderLogin")}
                       placeholder={i18n("emailPlaceholderLogin")}
                     />
@@ -416,7 +416,7 @@ export default function LoginPage() {
                         maxLength={64}
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        className="w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] py-2.5 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-all placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10"
+                        className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] py-2.5 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10"
                         aria-label={i18n("username")}
                         placeholder={i18n("username")}
                       />
@@ -483,7 +483,7 @@ export default function LoginPage() {
                   type="submit"
                   data-testid="sign-in-button"
                   disabled={loading}
-                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[var(--accent)]/20 transition-all hover:opacity-90 hover:shadow-[var(--accent)]/30 disabled:opacity-50"
+                  className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[var(--accent)]/20 transition-colors duration-150 hover:opacity-90 hover:shadow-[var(--accent)]/30 disabled:opacity-50"
                 >
                   {loading ? (
                     <>
@@ -518,7 +518,7 @@ export default function LoginPage() {
                         type="button"
                         onClick={() => handleOAuth("google")}
                         disabled={loading}
-                        className="flex w-full items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--surface)] disabled:opacity-50"
+                        className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--surface)] disabled:opacity-50"
                       >
                         <GoogleIcon className="h-5 w-5" /> {i18n("signInWithGoogle")}
                       </button>
@@ -526,7 +526,7 @@ export default function LoginPage() {
                         type="button"
                         onClick={() => handleOAuth("github")}
                         disabled={loading}
-                        className="flex w-full items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--surface)] disabled:opacity-50"
+                        className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--surface)] disabled:opacity-50"
                       >
                         <GithubIcon className="h-5 w-5" /> {i18n("signInWithGithub")}
                       </button>
@@ -536,7 +536,7 @@ export default function LoginPage() {
                       type="button"
                       onClick={handlePasskey}
                       disabled={loading}
-                      className="flex w-full items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--surface)] disabled:opacity-50"
+                      className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--surface)] disabled:opacity-50"
                     >
                       <Icon name="key-round" className="h-4 w-4" /> {i18n("signInWithPasskey")}
                     </button>

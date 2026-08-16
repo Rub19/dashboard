@@ -19,7 +19,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
         <input
           ref={ref}
-          className={`w-full rounded-xl border bg-[var(--surface)] px-3 py-2 text-sm text-[var(--foreground)] outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--accent)] ${
+          className={`w-full rounded-[var(--panel-radius)] border bg-[var(--surface)] px-3 py-2 text-sm text-[var(--foreground)] outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--accent)] ${
             icon ? "pl-9" : ""
           } ${error ? "border-red-400" : "border-[var(--border)]"} ${className}`}
           {...props}

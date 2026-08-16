@@ -78,7 +78,7 @@ export default function FocusPage() {
         <button
           type="button"
           onClick={toggle}
-          className={`flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors ${
+          className={`flex items-center gap-2 rounded-[var(--panel-radius)] border px-3 py-1.5 text-xs font-medium transition-colors ${
             zenMode
               ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
               : "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--foreground)]"
@@ -97,7 +97,7 @@ export default function FocusPage() {
               key={p.id}
               type="button"
               onClick={() => select(p.id)}
-              className={`rounded-xl px-3 py-1.5 text-xs font-medium transition-colors ${
+              className={`rounded-[var(--panel-radius)] px-3 py-1.5 text-xs font-medium transition-colors ${
                 activePreset === p.id && state.phase === "focus"
                   ? "bg-[var(--accent)] text-white"
                   : "bg-[var(--surface-raised)] text-[var(--muted)] hover:text-[var(--foreground)]"

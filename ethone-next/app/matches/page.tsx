@@ -61,7 +61,7 @@ function MatchCard({ match, game }: { match: Record<string, string | number | un
     <Card3D>
       <div className="space-y-3">
         <div className="flex items-center gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-violet-500/10 text-violet-400">
             <Icon name="trophy" className="h-5 w-5" />
           </span>
           <div className="min-w-0 flex-1">
@@ -81,7 +81,7 @@ function MatchCard({ match, game }: { match: Record<string, string | number | un
         </div>
 
         {open && hasScoreboard && (
-          <div className="space-y-3 rounded-xl bg-[var(--surface)] p-2 text-xs">
+          <div className="space-y-3 rounded-[var(--panel-radius)] bg-[var(--surface)] p-2 text-xs">
             {game.roundsWon !== undefined && game.roundsLost !== undefined && (
               <div className="flex items-center justify-between font-semibold">
                 <span>{i18n("roundsWon")}: {game.roundsWon}</span>
@@ -97,7 +97,7 @@ function MatchCard({ match, game }: { match: Record<string, string | number | un
                     return (
                       <div
                         key={gi}
-                        className="divide-y divide-[var(--border)] rounded-lg border border-[var(--border)] bg-[var(--surface-raised)]"
+                        className="divide-y divide-[var(--border)] rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)]"
                       >
                         {group.map((p, pi) => (
                           <div key={pi} className="space-y-1 px-2 py-1.5">
@@ -190,7 +190,7 @@ export default function MatchesPage() {
               }
             }}
             disabled={syncing}
-            className="flex shrink-0 items-center gap-2 rounded-xl bg-[var(--surface-raised)] px-3 py-2 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--accent)]/20 disabled:opacity-50"
+            className="flex shrink-0 items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--surface-raised)] px-3 py-2 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--accent)]/20 disabled:opacity-50"
           >
             <Icon name="refresh-cw" className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
             {i18n("sync")}
@@ -220,13 +220,13 @@ export default function MatchesPage() {
                 value={apexIdentifier}
                 onChange={(e) => setApexIdentifier(e.target.value)}
                 placeholder={i18n("liveTrackerApexIdentifier")}
-                className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)]"
+                className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)]"
               />
             </div>
             <button
               type="button"
               onClick={() => update({ liveTrackerApexPlatform: apexPlatform, liveTrackerApexIdentifier: apexIdentifier })}
-              className="shrink-0 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              className="shrink-0 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
             >
               {i18n("apply")}
             </button>
@@ -241,7 +241,7 @@ export default function MatchesPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={i18n("liveTrackerRiotName")}
-                className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)]"
+                className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)]"
               />
             </div>
             <div className="min-w-0 flex-1">
@@ -252,13 +252,13 @@ export default function MatchesPage() {
                 value={tag}
                 onChange={(e) => setTag(e.target.value)}
                 placeholder="#1234"
-                className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)]"
+                className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)]"
               />
             </div>
             <button
               type="button"
               onClick={() => update({ liveTrackerRiotName: name, liveTrackerRiotTag: tag })}
-              className="shrink-0 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              className="shrink-0 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
             >
               {i18n("apply")}
             </button>
@@ -275,8 +275,8 @@ export default function MatchesPage() {
 
         {loading && !items ? (
           <div className="space-y-3">
-            <div className="h-20 animate-pulse rounded-2xl bg-[var(--border)]" />
-            <div className="h-20 animate-pulse rounded-2xl bg-[var(--border)]" />
+            <div className="h-20 animate-pulse rounded-[var(--panel-radius)] bg-[var(--border)]" />
+            <div className="h-20 animate-pulse rounded-[var(--panel-radius)] bg-[var(--border)]" />
           </div>
         ) : items && items.length > 0 ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

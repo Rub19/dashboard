@@ -203,14 +203,14 @@ export default function AppearanceSettings() {
                 key={id}
                 type="button"
                 onClick={() => handleChange("theme", id)}
-                className={`group relative overflow-hidden rounded-2xl border p-3 text-left transition-all ${
+                className={`group relative overflow-hidden rounded-[var(--panel-radius)] border p-3 text-left transition-colors duration-150 ${
                   selected
                     ? "border-[var(--accent)] bg-[var(--accent)]/10 ring-2 ring-[var(--accent)]"
                     : "border-[var(--border)] bg-[var(--surface-raised)] hover:border-[var(--accent)]/50"
                 }`}
               >
                 <div
-                  className="mb-3 h-16 w-full overflow-hidden rounded-xl border shadow-inner"
+                  className="mb-3 h-16 w-full overflow-hidden rounded-[var(--panel-radius)] border shadow-inner"
                   style={{
                     background: `linear-gradient(135deg, ${theme.background}, ${theme.background}00)`,
                     borderColor: `${theme.accent}40`,
@@ -238,7 +238,7 @@ export default function AppearanceSettings() {
           <button
             type="button"
             onClick={() => setMoreThemesOpen(!moreThemesOpen)}
-            className="flex w-full items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-xs font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)]/50"
+            className="flex w-full items-center justify-between rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-xs font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)]/50"
           >
             <span className="flex items-center gap-2">
               <Palette className="h-4 w-4 text-[var(--muted)]" />
@@ -252,7 +252,7 @@ export default function AppearanceSettings() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                transition={{ duration: 0.15, ease: "easeOut" as const }}
                 className="mt-2 overflow-hidden"
               >
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
@@ -264,7 +264,7 @@ export default function AppearanceSettings() {
                         key={id}
                         type="button"
                         onClick={() => handleChange("theme", id)}
-                        className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-left text-xs transition-all ${
+                        className={`flex items-center gap-2 rounded-[var(--panel-radius)] border px-3 py-2 text-left text-xs transition-colors duration-150 ${
                           selected
                             ? "border-[var(--accent)] bg-[var(--accent)]/10"
                             : "border-[var(--border)] bg-[var(--surface-raised)] hover:border-[var(--accent)]/50"
@@ -298,10 +298,10 @@ export default function AppearanceSettings() {
               return (
                 <Tooltip key={color.id} label={i18n(color.id)}>
                   <label
-                    className={`relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 transition-all hover:scale-110 active:scale-95 ${
+                    className={`relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 transition-colors duration-150 active:scale-[0.98] ${
                       currentAccent === "custom"
                         ? "border-white shadow-[0_0_12px_rgba(255,255,255,0.35)]"
-                        : "border-[var(--border)] hover:border-white/50"
+                        : "border-[var(--border)] hover:border-[var(--panel-border)]"
                     }`}
                     style={{ background: settings.customAccent }}
                   >
@@ -328,7 +328,7 @@ export default function AppearanceSettings() {
                 <button
                   type="button"
                   onClick={() => handleChange("accentColor", color.id)}
-                  className={`relative h-7 w-7 rounded-full transition-all hover:scale-110 active:scale-95 ${
+                  className={`relative h-7 w-7 rounded-full transition-colors duration-150 active:scale-[0.98] ${
                     selected
                       ? "ring-2 ring-white shadow-[0_0_12px_rgba(255,255,255,0.35)]"
                       : "ring-1 ring-white/10 hover:ring-white/40"
@@ -346,7 +346,7 @@ export default function AppearanceSettings() {
 
       {/* Pack d'icônes */}
       <SettingRow label={i18n("iconPack")} description={i18n("iconPackDescription")}>
-        <div className="flex items-center gap-1 rounded-xl bg-[var(--surface-raised)] p-1">
+        <div className="flex items-center gap-1 rounded-[var(--panel-radius)] bg-[var(--surface-raised)] p-1">
           {PACKS.map((pack) => {
             const active = settings.iconPack === pack.id;
             const sample = getSampleIcon(pack.id);
@@ -355,13 +355,13 @@ export default function AppearanceSettings() {
                 key={pack.id}
                 type="button"
                 onClick={() => handleChange("iconPack", pack.id)}
-                className="relative flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] font-medium transition-colors"
+                className="relative flex flex-1 items-center justify-center gap-1.5 rounded-[var(--panel-radius)] px-2 py-1.5 text-[11px] font-medium transition-colors"
               >
                 {active && (
                   <motion.div
                     layoutId="activeIconPack"
-                    className="absolute inset-0 rounded-lg bg-[var(--accent)]"
-                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    className="absolute inset-0 rounded-[var(--panel-radius)] bg-[var(--accent)]"
+                    transition={{ duration: 0.15, ease: "easeOut" as const }}
                   />
                 )}
                 <span className={`relative z-10 flex items-center gap-1.5 ${active ? "text-white" : "text-[var(--muted)] hover:text-[var(--foreground)]"}`}>
@@ -384,7 +384,7 @@ export default function AppearanceSettings() {
       </SettingRow>
 
       {/* Effets */}
-      <section className="space-y-3 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]/40 p-3">
+      <section className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)]/40 p-3">
         <h3 className="text-sm font-semibold text-[var(--foreground)]">{i18n("effects")}</h3>
 
         <SettingRow label={i18n("glassmorphism")} description={i18n("glassmorphismDescription")}>

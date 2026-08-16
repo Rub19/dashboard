@@ -173,7 +173,7 @@ export default function Dock() {
 
   return (
     <div
-      className="v8-floating-dock fixed bottom-8 left-1/2 -translate-x-1/2 z-50 hidden md:block pointer-events-none bg-transparent border-0 shadow-none"
+      className="v8-floating-dock fixed bottom-12 left-1/2 -translate-x-1/2 z-50 hidden md:block pointer-events-none bg-transparent border-0 shadow-none"
     >
       {launcherOpen && (
         <div className="pointer-events-auto absolute bottom-full left-1/2 z-50 mb-4 w-[min(90vw,420px)] -translate-x-1/2">
@@ -220,7 +220,7 @@ export default function Dock() {
       )}
 
       <div
-        className="pointer-events-auto inline-flex min-h-14 items-center gap-2 rounded-2xl border border-white/[0.12] bg-zinc-950/90 px-3 py-2 shadow-[0_20px_50px_rgba(0,0,0,0.85)] backdrop-blur-2xl transition-all select-none hover:border-white/15"
+        className="pointer-events-auto inline-flex min-h-16 items-center gap-3 rounded-2xl border border-white/[0.12] bg-zinc-950/90 px-4 py-3 shadow-[0_24px_60px_rgba(0,0,0,0.9)] backdrop-blur-2xl transition-all select-none hover:border-white/15"
       >
         <DockMediaFlyout nowPlaying={spotifyNow} clientId={settings.liveSpotifyClientId} />
 

@@ -141,19 +141,19 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
       <button
         type="button"
         aria-label={buttonLabel}
-        className="relative flex h-11 w-11 flex-col items-center justify-center rounded-xl text-emerald-400 transition-all hover:bg-white/[0.08] active:scale-95"
+        className="relative flex h-12 w-12 flex-col items-center justify-center rounded-xl text-emerald-400 transition-all hover:bg-white/[0.08] active:scale-95"
       >
         {artwork && hasTrack ? (
           <Image
             src={artwork}
             alt={title}
-            width={20}
-            height={20}
+            width={24}
+            height={24}
             unoptimized
-            className="h-5 w-5 rounded object-cover transition-transform group-hover:scale-110"
+            className="h-6 w-6 rounded object-cover transition-transform group-hover:scale-110"
           />
         ) : (
-          <Music className="h-5 w-5 text-emerald-400 transition-transform group-hover:scale-110" />
+          <Music className="h-6 w-6 text-emerald-400 transition-transform group-hover:scale-110" />
         )}
 
         {isPlaying && hasTrack && (
@@ -178,12 +178,12 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.95 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="absolute bottom-full left-1/2 z-50 mb-2 w-72 -translate-x-1/2 rounded-2xl border border-white/10 bg-zinc-950/95 p-3.5 shadow-2xl backdrop-blur-2xl"
+            className="absolute bottom-full left-1/2 z-50 mb-3 w-80 -translate-x-1/2 rounded-2xl border border-white/10 bg-zinc-950/95 p-4 shadow-2xl backdrop-blur-2xl"
           >
             {!hasTrack ? (
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.05]">
-                  <Music className="h-5 w-5 text-zinc-400" />
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.05]">
+                  <Music className="h-6 w-6 text-zinc-400" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <h4 className="truncate text-xs font-bold text-white">{i18n("noLive")}</h4>
@@ -191,20 +191,20 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col gap-2.5">
+              <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-3">
                   {artwork ? (
                     <Image
                       src={artwork}
                       alt={title}
-                      width={96}
-                      height={96}
+                      width={112}
+                      height={112}
                       unoptimized
-                      className="h-12 w-12 shrink-0 rounded-xl border border-white/10 object-cover shadow-md"
+                      className="h-14 w-14 shrink-0 rounded-xl border border-white/10 object-cover shadow-md"
                     />
                   ) : (
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.05]">
-                      <Music className="h-5 w-5 text-zinc-400" />
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.05]">
+                      <Music className="h-6 w-6 text-zinc-400" />
                     </div>
                   )}
                   <div className="min-w-0 flex-1">

@@ -59,7 +59,7 @@ const DockItem = forwardRef<HTMLButtonElement | HTMLAnchorElement, DockItemProps
     const content = (
       <>
         <span className="relative z-10 flex items-center justify-center">
-          {children || <Icon name={icon} className="h-5 w-5" />}
+          {children || <Icon name={icon} className="h-6 w-6" />}
         </span>
         {active && (
           <motion.span
@@ -90,7 +90,7 @@ const DockItem = forwardRef<HTMLButtonElement | HTMLAnchorElement, DockItemProps
     );
 
     const baseClass = [
-      "group relative flex h-11 w-11 items-center justify-center rounded-xl text-zinc-400 transition-all",
+      "group relative flex h-12 w-12 items-center justify-center rounded-xl text-zinc-400 transition-all",
       "hover:bg-white/[0.08] hover:text-white",
       "active:scale-95",
       active ? "text-white" : "",

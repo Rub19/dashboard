@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "@/lib/icons";
+import Modal from "@/components/ui/Modal";
 
 export default function DangerZone({ confirmText = "SUPPRIMER" }: { confirmText?: string }) {
   const [open, setOpen] = useState(false);
@@ -13,6 +13,11 @@ export default function DangerZone({ confirmText = "SUPPRIMER" }: { confirmText?
   const handleConfirm = () => {
     if (!canConfirm) return;
     // action destructive à brancher ici
+    setOpen(false);
+    setInput("");
+  };
+
+  const handleClose = () => {
     setOpen(false);
     setInput("");
   };
@@ -36,55 +41,45 @@ export default function DangerZone({ confirmText = "SUPPRIMER" }: { confirmText?
         </button>
       </div>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--panel-bg)]/60 p-4 backdrop-blur-sm"
+      <Modal
+        isOpen={open}
+        onClose={handleClose}
+        title="Supprimer définitivement"
+        description={`Cette action est irréversible. Tapez ${confirmText} pour confirmer.`}
+        size="md"
+        hideFooter
+      >
+        <div className="mb-4 flex items-center gap-2 text-rose-400">
+          <Icon name="triangle-alert" className="h-5 w-5" />
+          <span className="text-sm font-medium">Action irréversible</span>
+        </div>
+
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder={confirmText}
+          className="mb-4 w-full rounded-[var(--panel-radius)] border border-rose-500/30 bg-rose-500/5 px-3 py-2 text-sm text-[var(--foreground)] outline-none placeholder:text-rose-400/50 focus:border-rose-500"
+        />
+
+        <div className="flex items-center justify-end gap-2">
+          <button
+            type="button"
+            onClick={handleClose}
+            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-transparent px-4 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--panel-bg)]"
           >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="w-full max-w-md rounded-[var(--panel-radius)] border border-rose-500/30 bg-[var(--panel-bg)] p-6 shadow-2xl"
-            >
-              <div className="mb-4 flex items-center gap-2">
-                <Icon name="triangle-alert" className="h-5 w-5 text-rose-400" />
-                <h3 className="text-lg font-semibold text-rose-400">Supprimer définitivement</h3>
-              </div>
-              <p className="mb-4 text-sm text-[var(--foreground)]">
-                Cette action est irréversible. Tapez <strong>{confirmText}</strong> pour confirmer.
-              </p>
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder={confirmText}
-                className="mb-4 w-full rounded-[var(--panel-radius)] border border-rose-500/30 bg-rose-500/5 px-3 py-2 text-sm text-[var(--foreground)] outline-none placeholder:text-rose-400/50 focus:border-rose-500"
-              />
-              <div className="flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => { setOpen(false); setInput(""); }}
-                  className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-4 py-2 text-sm transition-colors hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
-                >
-                  Annuler
-                </button>
-                <button
-                  type="button"
-                  disabled={!canConfirm}
-                  onClick={handleConfirm}
-                  className="rounded-[var(--panel-radius)] bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-rose-600"
-                >
-                  Supprimer définitivement
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            Annuler
+          </button>
+          <button
+            type="button"
+            disabled={!canConfirm}
+            onClick={handleConfirm}
+            className="rounded-[var(--panel-radius)] bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition-colors disabled:cursor-not-allowed disabled:opacity-40 hover:bg-rose-600"
+          >
+            Supprimer définitivement
+          </button>
+        </div>
+      </Modal>
     </>
   );
 }

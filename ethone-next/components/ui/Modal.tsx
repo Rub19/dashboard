@@ -17,6 +17,7 @@ export type ModalProps = {
   confirmLabel?: string;
   cancelLabel?: string;
   onConfirm?: () => void;
+  confirmDisabled?: boolean;
   hideFooter?: boolean;
   className?: string;
 };
@@ -38,6 +39,7 @@ export default function Modal({
   confirmLabel = "Confirmer",
   cancelLabel = "Annuler",
   onConfirm,
+  confirmDisabled = false,
   hideFooter = false,
   className = "",
 }: ModalProps) {
@@ -130,11 +132,12 @@ export default function Modal({
                 {onConfirm && (
                   <button
                     type="button"
+                    disabled={confirmDisabled}
                     onClick={onConfirm}
                     className={
                       variant === "danger"
-                        ? "rounded-xl border border-red-500/30 bg-red-500/20 px-4 py-2 text-sm font-medium text-red-300 transition-all hover:bg-red-500/30"
-                        : "rounded-xl bg-purple-600 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-purple-600/25 transition-all hover:bg-purple-500"
+                        ? "rounded-xl border border-red-500/30 bg-red-500/20 px-4 py-2 text-sm font-medium text-red-300 transition-all hover:bg-red-500/30 disabled:cursor-not-allowed disabled:opacity-40"
+                        : "rounded-xl bg-purple-600 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-purple-600/25 transition-all hover:bg-purple-500 disabled:cursor-not-allowed disabled:opacity-40"
                     }
                   >
                     {confirmLabel}

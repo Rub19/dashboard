@@ -87,7 +87,7 @@ export default function Dock() {
         title: lanyard.spotify.title || "",
         artist: lanyard.spotify.artist || "",
         album: lanyard.spotify.album || "",
-        cover: lanyard.spotify.artwork,
+        cover: lanyard.spotify.artworkUrl || lanyard.spotify.artwork,
         isPlaying: true,
         isSaved: false,
       };

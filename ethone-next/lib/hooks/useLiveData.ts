@@ -35,6 +35,7 @@ export type LanyardPresence = {
     artist?: string;
     album?: string;
     artwork?: string;
+    artworkUrl?: string;
   };
   activities?: Array<{
     name: string;
@@ -375,7 +376,8 @@ export function useLiveData(pollMs = 60000) {
                   title: asStr((d.spotify as ApiData).title),
                   artist: asStr((d.spotify as ApiData).artist),
                   album: asStr((d.spotify as ApiData).album),
-                  artwork: asStr((d.spotify as ApiData).artwork),
+                  artwork: asStr((d.spotify as ApiData).artworkUrl ?? (d.spotify as ApiData).artwork),
+                  artworkUrl: asStr((d.spotify as ApiData).artworkUrl ?? (d.spotify as ApiData).artwork),
                 }
               : undefined,
             activities: Array.isArray(d.activities)

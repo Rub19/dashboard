@@ -1005,8 +1005,8 @@ export default function LiveWidgets({
           <div className="mt-auto rounded-[var(--panel-radius)] bg-emerald-500/10 p-2.5">
             <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-emerald-400">Spotify</p>
             <div className="flex items-center gap-2">
-              {spotify.artwork ? (
-                <Image src={spotify.artwork} alt="" width={40} height={40} unoptimized className="h-10 w-10 rounded-[var(--panel-radius)] object-cover" />
+              {spotify.artworkUrl || spotify.artwork ? (
+                <Image src={spotify.artworkUrl || spotify.artwork || ""} alt="" width={40} height={40} unoptimized className="h-10 w-10 rounded-[var(--panel-radius)] object-cover" />
               ) : (
                 <Icon name="music" className="h-10 w-10 text-emerald-400" />
               )}

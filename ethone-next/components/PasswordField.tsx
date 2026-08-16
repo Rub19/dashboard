@@ -156,7 +156,9 @@ export default function PasswordField({
         </label>
       )}
       <div className="relative">
-        <Icon name="lock" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
+        <div className="absolute left-2.5 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg bg-white/[0.06] text-[var(--accent)]">
+          <Icon name="lock" className="h-4 w-4" />
+        </div>
         <input
           ref={inputRef}
           id={id}
@@ -168,7 +170,7 @@ export default function PasswordField({
           onPaste={handlePaste}
           autoComplete={autoComplete}
           placeholder={placeholder}
-          className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] py-2.5 pl-10 pr-20 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10 backdrop-blur-[var(--panel-blur)]"
+          className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] py-2.5 pl-12 pr-20 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10 backdrop-blur-[var(--panel-blur)]"
           aria-label={placeholder}
         />
         <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1">

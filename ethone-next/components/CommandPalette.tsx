@@ -1,12 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { Search } from "lucide-react";
 import { useSettings, useActiveProfile } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
+import Modal from "@/components/ui/Modal";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useLayer } from "@/components/LayerProvider";
 import { useCommandItems, type CommandItem } from "@/lib/commands";
@@ -298,26 +298,19 @@ export default function CommandPalette() {
         </kbd>
       </button>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.1 }}
-            className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 px-4 pt-[15vh] backdrop-blur-md"
-            onClick={() => setOpen(false)}
-          >
-            <motion.div
-              ref={dialogRef}
-              initial={{ opacity: 0, scale: 0.95, y: -10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -10 }}
-              transition={{ duration: 0.15, ease: "easeOut" }}
-              className="w-full max-w-xl overflow-hidden rounded-2xl border border-white/10 bg-zinc-950/90 shadow-[0_0_50px_rgba(0,0,0,0.8)] backdrop-blur-2xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center gap-3 border-b border-white/10 px-4 py-3">
+      <Modal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        title={i18n("commands")}
+        size="md"
+        position="top"
+        hideFooter
+        hideCloseButton
+        className="p-0 sm:max-w-xl"
+        contentClassName="!m-0 overflow-hidden"
+      >
+        <div ref={dialogRef}>
+          <div className="flex items-center gap-3 border-b border-white/10 px-4 py-3">
                 <Search className="h-5 w-5 text-zinc-400" />
                 <input
                   ref={inputRef}
@@ -365,10 +358,8 @@ export default function CommandPalette() {
                   </span>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </div>
+          </Modal>
     </>
   );
 }

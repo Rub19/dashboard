@@ -4,6 +4,7 @@ import { useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, ty
 import { useRouter, usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { Icon } from "@/lib/icons";
+import Modal from "@/components/ui/Modal";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useWindowManager } from "./WindowManagerProvider";
 import { useLayer } from "./LayerProvider";
@@ -266,18 +267,23 @@ function MissionControlDialog() {
   }
 
   return (
-    <motion.div
-      ref={dialogRef}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-start overflow-y-auto bg-[var(--panel-bg)]/80 p-4 pt-12 backdrop-blur-sm sm:justify-center sm:p-8 sm:pt-8"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="mission-title"
-      onKeyDown={handleKeyDown}
+    <Modal
+      isOpen={missionControl}
+      onClose={() => setMissionControl(false)}
+      title={i18n("missionControlTitle")}
+      size="lg"
+      hideFooter
+      hideCloseButton
+      fullScreen
+      className="p-0 sm:max-w-7xl"
+      contentClassName="!m-0 overflow-hidden"
     >
-      <div className="mb-4 flex w-full max-w-7xl items-end justify-between gap-4">
+      <div
+        ref={dialogRef}
+        onKeyDown={handleKeyDown}
+        className="flex h-full w-full flex-col items-center overflow-y-auto p-4 pt-12 sm:p-8 sm:pt-8"
+      >
+        <div className="mb-4 flex w-full max-w-7xl items-end justify-between gap-4">
         <div>
           <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">
             {i18n("missionNavigationSystem")}
@@ -604,6 +610,7 @@ function MissionControlDialog() {
           )}
         </aside>
       </div>
-    </motion.div>
+      </div>
+    </Modal>
   );
 }

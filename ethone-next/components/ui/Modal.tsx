@@ -20,7 +20,7 @@ export type ModalProps = {
   confirmDisabled?: boolean;
   hideFooter?: boolean;
   hideCloseButton?: boolean;
-  position?: "center" | "bottom";
+  position?: "center" | "bottom" | "top";
   fullScreen?: boolean;
   className?: string;
   contentClassName?: string;
@@ -35,11 +35,13 @@ const sizeMap = {
 const positionOuter = {
   center: "items-center",
   bottom: "items-end",
+  top: "items-start pt-[15vh]",
 };
 
 const positionInner = {
   center: "rounded-2xl",
   bottom: "rounded-t-2xl sm:rounded-2xl",
+  top: "rounded-2xl",
 };
 
 export default function Modal({

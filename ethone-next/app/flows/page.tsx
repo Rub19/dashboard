@@ -1,7 +1,8 @@
 ﻿"use client";
 
 import { useMemo, useState } from "react";
-import Card3D from "@/components/Card3D";
+import { Zap, Workflow, CheckCircle2, Plus } from "lucide-react";
+import FlowCard from "@/components/FlowCard";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useUserData } from "@/lib/hooks/useUserData";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
@@ -70,6 +71,7 @@ export default function FlowsPage() {
   const [activeFlow, setActiveFlow] = useLocalStorage<string>("ethone-active-workspace", "personal");
   const { automations, addAutomationRule, toggleAutomationRule, removeAutomationRule } = useBrain();
   const [selectedAuto, setSelectedAuto] = useState<Record<string, string>>({});
+  const [pendingId, setPendingId] = useState<string | null>(null);
 
   const activeCount = flows.filter((f) => f.count > 0).length;
   const executions = flows.reduce((sum, f) => sum + f.count, 0);
@@ -111,12 +113,15 @@ export default function FlowsPage() {
     const flow = flows.find((f) => f.id === id);
     if (!flow) return;
     const workspaceId = getFlowWorkspace(flow);
+    setPendingId(id);
     try {
       await update(id, { count: current + 1 });
       if (workspaceId) setActiveFlow(workspaceId);
       success(i18n("started"));
     } catch {
       showError(i18n("error"));
+    } finally {
+      setPendingId(null);
     }
   }
 
@@ -124,6 +129,7 @@ export default function FlowsPage() {
     const template = TEMPLATES.find((t) => t.id === templateId);
     if (!template) return;
     const existing = flows.find((f) => getFlowWorkspace(f) === templateId);
+    setPendingId(templateId);
     try {
       if (existing) {
         await update(existing.id, { count: existing.count + 1 });
@@ -134,6 +140,8 @@ export default function FlowsPage() {
       success(i18n("started"));
     } catch {
       showError(i18n("error"));
+    } finally {
+      setPendingId(null);
     }
   }
 
@@ -141,6 +149,18 @@ export default function FlowsPage() {
     try {
       await remove(id);
       success(i18n("deleted"));
+    } catch {
+      showError(i18n("error"));
+    }
+  }
+
+  async function duplicateFlow(flow: (typeof flows)[number]) {
+    try {
+      const data = (flow.data || {}) as { templateId?: string; workspaceId?: string };
+      const templateId = data.templateId || data.workspaceId;
+      const workspaceId = getFlowWorkspace(flow);
+      await create(`${flow.label} (copie)`, "", { templateId, workspaceId }, flow.count);
+      success(i18n("created"));
     } catch {
       showError(i18n("error"));
     }
@@ -157,223 +177,151 @@ export default function FlowsPage() {
     success(i18n("added"));
   }
 
+  const statCards = [
+    {
+      icon: <Zap className="h-5 w-5 text-emerald-400" />,
+      value: activeCount,
+      label: "Flows actifs",
+    },
+    {
+      icon: <Workflow className="h-5 w-5 text-amber-400" />,
+      value: executions,
+      label: "Automatisations déclenchées",
+    },
+    {
+      icon: <CheckCircle2 className="h-5 w-5 text-purple-400" />,
+      value: executions,
+      label: "Runs",
+    },
+  ];
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">{i18n("flowsTitle")}</h1>
-        <span className="rounded-full bg-[var(--panel-bg)] px-3 py-1 text-sm text-[var(--muted)]">
-          {flows.length} {flows.length > 1 ? i18n("flows") : i18n("flow")}
-        </span>
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-3 mb-6">
+        {statCards.map((stat, i) => (
+          <div
+            key={i}
+            className="flex items-center justify-between rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-4 backdrop-blur-xl transition-all hover:border-white/15"
+          >
+            <div>
+              <p className="text-2xl font-bold font-mono text-white">{stat.value}</p>
+              <p className="text-xs text-zinc-400">{stat.label}</p>
+            </div>
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03]">
+              {stat.icon}
+            </span>
+          </div>
+        ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Card3D>
-          <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-emerald-500/10 text-emerald-400">
-              <Icon name="workflow" className="h-5 w-5" />
-            </span>
-            <div>
-              <p className="text-2xl font-bold">{activeCount}</p>
-              <p className="text-xs text-[var(--muted)]">
-                {i18n(activeCount > 1 ? "flows" : "flow")} {i18n(activeCount > 1 ? "actives" : "active")}
-              </p>
-            </div>
-          </div>
-        </Card3D>
+      <div className="mb-6 flex flex-col items-start justify-between gap-4 rounded-2xl border border-white/[0.06] bg-zinc-950/50 p-4 backdrop-blur-md sm:flex-row sm:items-center">
+        <div>
+          <h1 className="text-sm font-semibold text-white">Gestionnaire de Flows</h1>
+          <p className="text-xs text-zinc-500">Créez, exécutez et automatisez vos flows.</p>
+        </div>
 
-        <Card3D>
-          <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-amber-500/10 text-amber-400">
-              <Icon name="timer" className="h-5 w-5" />
-            </span>
-            <div>
-              <p className="text-2xl font-bold">{flows.length}</p>
-              <p className="text-xs text-[var(--muted)]">{i18n("automations")}</p>
-            </div>
-          </div>
-        </Card3D>
-
-        <Card3D>
-          <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-violet-500/10 text-violet-400">
-              <Icon name="zap" className="h-5 w-5" />
-            </span>
-            <div>
-              <p className="text-2xl font-bold">{executions}</p>
-              <p className="text-xs text-[var(--muted)]">{i18n("executions")}</p>
-            </div>
-          </div>
-        </Card3D>
+        <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
+          <Select
+            value={selectedTemplate}
+            onChange={setSelectedTemplate}
+            options={TEMPLATES.map((t) => ({ id: t.id, label: i18n(t.id) }))}
+            aria-label={i18n("workspace")}
+            className="min-w-0 sm:min-w-[9rem]"
+          />
+          <button
+            type="button"
+            onClick={addFlow}
+            disabled={loading}
+            className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold text-white transition-all hover:brightness-110 active:scale-95 disabled:opacity-50"
+            style={{
+              background: "var(--accent-color, #a855f7)",
+              boxShadow: "0 0 16px var(--accent-glow, rgba(168, 85, 247, 0.3))",
+            }}
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Nouveau Flow
+          </button>
+        </div>
       </div>
+
+      <input
+        type="text"
+        value={newLabel}
+        onChange={(e) => setNewLabel(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && addFlow()}
+        aria-label={i18n("create")}
+        placeholder={i18n("create")}
+        className="w-full rounded-2xl border border-white/[0.08] bg-zinc-950/50 px-4 py-2.5 text-sm text-white outline-none placeholder:text-zinc-600 focus:border-white/15 backdrop-blur-md"
+      />
 
       {error && (
-        <Card3D>
-          <p className="text-sm text-red-400">{error.message}</p>
-        </Card3D>
+        <div className="rounded-2xl border border-red-500/20 bg-red-500/[0.05] p-4 text-sm text-red-400">
+          {error.message}
+        </div>
       )}
 
-      <Card3D>
-        <div className="space-y-4">
-          <div>
-            <h2 className="font-semibold">{i18n("flowsTitle")}</h2>
-            <p className="text-sm leading-relaxed text-[var(--muted)]">{i18n("fromTemplates")}</p>
-          </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Select
-              value={selectedTemplate}
-              onChange={setSelectedTemplate}
-              options={TEMPLATES.map((t) => ({ id: t.id, label: i18n(t.id) }))}
-              aria-label={i18n("template")}
-              className="min-w-0"
-            />
-            <input
-              type="text"
-              value={newLabel}
-              onChange={(e) => setNewLabel(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && addFlow()}
-              aria-label={i18n("create")}
-              placeholder={i18n("create")}
-              className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
-            />
-            <button
-              type="button"
-              onClick={addFlow}
-              disabled={loading}
-              className="inline-flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
-            >
-              <Icon name="plus" className="h-4 w-4" /> {i18n("add")}
-            </button>
-          </div>
-        </div>
-      </Card3D>
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {TEMPLATES.map((template) => {
-          const isActive = activeFlow === template.id;
-          return (
-            <Card3D key={template.id}>
-              <div className="space-y-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] ${template.color}`}>
-                      <Icon name={template.icon} className="h-5 w-5" />
-                    </span>
-                    <div>
-                      <h2 className="text-sm font-semibold">{i18n(template.id)}</h2>
-                      <p className="text-xs text-[var(--muted)]">{templateStats[template.id] || 0} flows</p>
-                    </div>
-                  </div>
-                  {isActive && (
-                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${template.badge}`}>
-                      {i18n("active")}
-                    </span>
-                  )}
-                </div>
-
-                <p className="text-sm text-[var(--muted)]">{i18n(`${template.id}Desc`)}</p>
-
-                <div className="flex flex-wrap gap-1.5">
-                  {template.steps.map((step, i) => (
-                    <span
-                      key={i}
-                      className="rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--foreground)]"
-                    >
-                      <b className="mr-1 text-[var(--accent)]">{i + 1}</b>
-                      {step}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="flex items-center gap-2 border-t border-[var(--panel-border)] pt-3">
-                  {template.widgets.map((widgetId) => (
-                    <span
-                      key={widgetId}
-                      className="flex h-7 w-7 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--panel-bg)] text-[var(--muted)]"
-                      title={widgetId}
-                    >
-                      <Icon name={WIDGET_ICONS[widgetId]} className="h-3.5 w-3.5" />
-                    </span>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => runTemplate(template.id)}
-                    className={`ml-auto inline-flex items-center gap-1.5 rounded-[var(--panel-radius)] px-2.5 py-1.5 text-xs font-semibold transition-opacity hover:opacity-90 ${
-                      isActive ? "bg-[var(--accent)] text-white" : "bg-[var(--panel-bg)] text-[var(--foreground)]"
-                    } backdrop-blur-[var(--panel-blur)]`}
-                  >
-                    <Icon name={isActive ? "check" : "play"} className="h-3.5 w-3.5" />
-                    {isActive ? i18n("active") : i18n("start")}
-                  </button>
-                </div>
-              </div>
-            </Card3D>
-          );
-        })}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {TEMPLATES.map((template) => (
+          <FlowCard
+            key={template.id}
+            id={template.id}
+            title={i18n(template.id)}
+            description={i18n(`${template.id}Desc`) || template.desc}
+            icon={template.icon}
+            iconClass={template.color}
+            steps={template.steps}
+            active={activeFlow === template.id}
+            running={pendingId === template.id}
+            count={templateStats[template.id] || 0}
+            widgets={template.widgets}
+            widgetIcons={WIDGET_ICONS}
+            onRun={() => runTemplate(template.id)}
+          />
+        ))}
       </div>
 
       {flows.length > 0 && (
         <div className="space-y-3">
-          <h2 className="text-sm font-semibold">{i18n("yourFlows")}</h2>
-          {flows.map((flow) => {
-            const workspaceId = getFlowWorkspace(flow);
-            const template = TEMPLATES.find((t) => t.id === workspaceId) || TEMPLATES[0];
-            const isActive = workspaceId === activeFlow;
-            const rules = workspaceId ? automationsForWorkspace(workspaceId) : [];
-            const canAutomate = workspaceId && ATTACHABLE_WORKSPACES.includes(workspaceId);
+          <h2 className="text-sm font-semibold text-white">{i18n("yourFlows")}</h2>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            {flows.map((flow) => {
+              const workspaceId = getFlowWorkspace(flow);
+              const template = TEMPLATES.find((t) => t.id === workspaceId) || TEMPLATES[0];
+              const isActive = workspaceId === activeFlow;
+              const rules = workspaceId ? automationsForWorkspace(workspaceId) : [];
+              const canAutomate = workspaceId && ATTACHABLE_WORKSPACES.includes(workspaceId);
 
-            return (
-              <Card3D key={flow.id}>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--panel-radius)] ${template.color}`}>
-                        <Icon name="zap" className="h-4 w-4" />
-                      </span>
-                      <div>
-                        <p className="font-medium">{flow.label}</p>
-                        <p className="text-xs text-[var(--muted)]">
-                          {flow.count} {i18n(flow.count > 1 ? "executions" : "execution")}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {isActive && (
-                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${template.badge}`}>
-                          {i18n("active")}
-                        </span>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => runFlow(flow.id, flow.count)}
-                        className="rounded-[var(--panel-radius)] bg-emerald-500/10 p-2 text-emerald-400 hover:bg-emerald-500/20"
-                      >
-                        <Icon name="play" className="h-4 w-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => deleteFlow(flow.id)}
-                        className="rounded-[var(--panel-radius)] p-2 text-[var(--muted)] hover:text-red-400"
-                      >
-                        <Icon name="trash-2" className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-wrap gap-1.5">
-                    {template.steps.map((step, i) => (
-                      <span
-                        key={i}
-                        className="rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--foreground)]"
-                      >
-                        <b className="mr-1 text-[var(--accent)]">{i + 1}</b>
-                        {step}
-                      </span>
-                    ))}
-                  </div>
-
+              return (
+                <FlowCard
+                  key={flow.id}
+                  id={flow.id}
+                  title={flow.label}
+                  description={i18n(`${template.id}Desc`) || template.desc}
+                  icon="zap"
+                  iconClass={template.color}
+                  steps={template.steps}
+                  active={isActive}
+                  running={pendingId === flow.id}
+                  count={flow.count}
+                  widgets={template.widgets}
+                  widgetIcons={WIDGET_ICONS}
+                  onRun={() => runFlow(flow.id, flow.count)}
+                  onEdit={() => showError("Édition non disponible")}
+                  onDuplicate={() => duplicateFlow(flow)}
+                  onLogs={() => success("Logs à venir")}
+                  onDelete={() => deleteFlow(flow.id)}
+                  menuActions={[
+                    {
+                      label: "Supprimer",
+                      icon: "trash-2",
+                      onClick: () => deleteFlow(flow.id),
+                      danger: true,
+                    },
+                  ]}
+                >
                   {canAutomate && (
-                    <div className="rounded-[var(--panel-radius)] bg-[var(--panel-bg)] p-3">
-                      <p className="mb-2 text-xs font-medium text-[var(--muted)]">
+                    <div className="mt-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+                      <p className="mb-2 text-xs font-medium text-zinc-500">
                         {i18n("automations")}
                       </p>
                       {rules.length > 0 ? (
@@ -381,11 +329,11 @@ export default function FlowsPage() {
                           {rules.map((rule) => (
                             <div
                               key={rule.id}
-                              className={`flex items-center gap-2 rounded-[var(--panel-radius)] border px-2 py-1 text-xs ${
+                              className={`flex items-center gap-2 rounded-xl border px-2 py-1 text-xs ${
                                 rule.enabled
                                   ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-                                  : "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--muted)]"
-                              } backdrop-blur-[var(--panel-blur)]`}
+                                  : "border-white/[0.06] bg-white/[0.02] text-zinc-400"
+                              }`}
                             >
                               <Icon name="workflow" className="h-3 w-3" />
                               <span className="truncate">{actionLabel(rule.actionId)}</span>
@@ -423,7 +371,7 @@ export default function FlowsPage() {
                           type="button"
                           onClick={() => attachAutomation(flow.id, workspaceId)}
                           disabled={attachableActions.length === 0}
-                          className="inline-flex items-center gap-1.5 rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-1.5 text-xs font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-white/[0.06] px-3 py-1.5 text-xs font-semibold text-zinc-200 transition-colors hover:bg-white/10 disabled:opacity-50"
                         >
                           <Icon name="workflow" className="h-3.5 w-3.5" />
                           {i18n("add")}
@@ -431,10 +379,10 @@ export default function FlowsPage() {
                       </div>
                     </div>
                   )}
-                </div>
-              </Card3D>
-            );
-          })}
+                </FlowCard>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>

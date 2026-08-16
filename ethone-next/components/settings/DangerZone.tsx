@@ -35,7 +35,7 @@ export default function DangerZone({ confirmText = "SUPPRIMER" }: { confirmText?
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="rounded-[var(--panel-radius)] border border-rose-500/50 bg-rose-500/10 px-4 py-2 text-sm font-medium text-rose-400 transition-colors hover:bg-rose-500/20"
+          className="rounded-xl border border-rose-500/50 bg-rose-500/10 px-4 py-2 text-sm font-medium text-rose-400 transition-all hover:bg-rose-500/20 hover:brightness-110 active:scale-[0.98]"
         >
           Supprimer le compte
         </button>
@@ -66,7 +66,7 @@ export default function DangerZone({ confirmText = "SUPPRIMER" }: { confirmText?
           <button
             type="button"
             onClick={handleClose}
-            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-transparent px-4 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--panel-bg)]"
+            className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/[0.08] hover:text-white"
           >
             Annuler
           </button>
@@ -74,7 +74,7 @@ export default function DangerZone({ confirmText = "SUPPRIMER" }: { confirmText?
             type="button"
             disabled={!canConfirm}
             onClick={handleConfirm}
-            className="rounded-[var(--panel-radius)] bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition-colors disabled:cursor-not-allowed disabled:opacity-40 hover:bg-rose-600"
+            className="rounded-xl bg-rose-500 px-4 py-2 text-xs font-semibold text-white transition-all disabled:cursor-not-allowed disabled:opacity-40 hover:bg-rose-600 active:scale-[0.98]"
           >
             Supprimer définitivement
           </button>

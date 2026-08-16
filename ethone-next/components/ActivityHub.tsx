@@ -2,27 +2,24 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Activity, Flame, TrendingUp, Target, Search, RefreshCw, Loader2, AlertCircle } from "lucide-react";
+import { Activity, Flame, TrendingUp, CheckCircle2, Search, RefreshCw, Loader2, AlertCircle } from "lucide-react";
 import { useItems } from "@/lib/hooks/useItems";
 import { useCloudFiles } from "@/lib/hooks/useCloudFiles";
 import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
 import { useI18n } from "@/lib/hooks/useI18n";
-import type { ActivityCategory, ActivitySnapshot } from "@/lib/activity-journal";
+import type { ActivityCategory, ActivityEntry, ActivitySnapshot } from "@/lib/activity-journal";
 import { Icon } from "@/lib/icons";
 import Select from "@/components/ui/Select";
 import AnimatedFilterTabs from "@/components/ui/AnimatedFilterTabs";
+import ActivityHeatmap from "./ActivityHeatmap";
 
-function dateKey(iso = "") {
+function dateKey(iso = ""): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-function isSameDay(d1: Date, d2: Date) {
-  return d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate();
-}
-
-function startOfWeek(d: Date) {
+function startOfWeek(d: Date): Date {
   const copy = new Date(d);
   const day = copy.getDay();
   const diff = (day + 6) % 7;
@@ -31,17 +28,17 @@ function startOfWeek(d: Date) {
   return copy;
 }
 
-function addDays(d: Date, days: number) {
+function addDays(d: Date, days: number): Date {
   const copy = new Date(d);
   copy.setDate(copy.getDate() + days);
   return copy;
 }
 
-function formatLocalDate(d: Date, mounted: boolean) {
+function formatLocalDate(d: Date, mounted: boolean): string {
   return mounted ? d.toLocaleDateString() : dateKey(d.toISOString());
 }
 
-function formatLocalTime(iso: string, mounted: boolean) {
+function formatLocalTime(iso: string, mounted: boolean): string {
   return mounted ? new Date(iso).toLocaleTimeString() : "";
 }
 
@@ -51,22 +48,6 @@ const PERIODS = [
   { id: "90", label: "90j" },
   { id: "365", label: "365j" },
 ];
-
-type HeatLevel = 0 | 1 | 2 | 3;
-
-const HEATMAP_LEVELS: Record<HeatLevel, string> = {
-  0: "bg-white/[0.03] border border-white/[0.04]",
-  1: "bg-emerald-950/60 border border-emerald-500/20",
-  2: "bg-emerald-700/60 border border-emerald-500/40",
-  3: "bg-emerald-500 border border-emerald-400/50 shadow-[0_0_8px_rgba(16,185,129,0.35)]",
-};
-
-function heatLevelByCount(count: number): HeatLevel {
-  if (count === 0) return 0;
-  if (count === 1) return 1;
-  if (count <= 3) return 2;
-  return 3;
-}
 
 const CATEGORIES: { id: ActivityCategory | "all"; labelKey: string; icon: string }[] = [
   { id: "all", labelKey: "all", icon: "layout-grid" },
@@ -94,7 +75,19 @@ const CATEGORY_META: Record<ActivityCategory, { color: string; bg: string; borde
   brain: { color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
 };
 
-function matchesType(eventType: string | undefined, type: string) {
+const TONE_META: Record<string, { labelKey: string; color: string; bg: string }> = {
+  success: { labelKey: "statusSuccess", color: "text-emerald-300", bg: "bg-emerald-500/15 border border-emerald-500/25" },
+  error: { labelKey: "statusError", color: "text-red-300", bg: "bg-red-500/15 border border-red-500/25" },
+  failure: { labelKey: "statusError", color: "text-red-300", bg: "bg-red-500/15 border border-red-500/25" },
+  warning: { labelKey: "statusWarning", color: "text-amber-300", bg: "bg-amber-500/15 border border-amber-500/25" },
+  note: { labelKey: "journalTypeNote", color: "text-zinc-300", bg: "bg-white/[0.06] border border-white/[0.08]" },
+  task: { labelKey: "journalTypeTask", color: "text-zinc-300", bg: "bg-white/[0.06] border border-white/[0.08]" },
+  calendar: { labelKey: "journalTypeEvent", color: "text-zinc-300", bg: "bg-white/[0.06] border border-white/[0.08]" },
+  file: { labelKey: "journalTypeFile", color: "text-zinc-300", bg: "bg-white/[0.06] border border-white/[0.08]" },
+  navigation: { labelKey: "journalTypeRoute", color: "text-zinc-300", bg: "bg-white/[0.06] border border-white/[0.08]" },
+};
+
+function matchesType(eventType: string | undefined, type: string): boolean {
   if (!eventType) return type === "all";
   if (type === "all") return true;
   if (type === "action") return eventType.startsWith("v8.") || eventType === "v8.brain.call";
@@ -112,40 +105,89 @@ type StatCardProps = {
   value: string | number;
   sub: string;
   icon: React.ReactNode;
+  tone?: "emerald" | "amber" | "cyan" | "purple";
 };
 
-function StatCard({ label, value, sub, icon }: StatCardProps) {
+function StatCard({ label, value, sub, icon, tone = "emerald" }: StatCardProps) {
+  const toneRing = {
+    emerald: "hover:border-emerald-500/30",
+    amber: "hover:border-amber-500/30",
+    cyan: "hover:border-cyan-500/30",
+    purple: "hover:border-purple-500/30",
+  }[tone];
+
   return (
-    <div className="group bg-zinc-950/70 border border-white/[0.08] backdrop-blur-xl p-4 rounded-2xl shadow-lg hover:border-white/15 transition-all">
+    <div
+      className={`group bg-zinc-950/80 border border-white/[0.08] backdrop-blur-xl p-4 rounded-2xl shadow-lg hover:border-white/15 transition-all ${toneRing}`}
+    >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider">{label}</p>
-          <p className="text-2xl md:text-3xl font-bold font-mono tracking-tight text-white mt-1">{value}</p>
+          <p className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider">{label}</p>
+          <p className="text-2xl font-mono font-bold tracking-tight text-white mt-1">{value}</p>
           <p className="text-[11px] text-zinc-500 mt-1">{sub}</p>
         </div>
-        <div className="shrink-0 mt-0.5">{icon}</div>
+        <div className="shrink-0 rounded-xl bg-white/[0.04] p-2 ring-1 ring-inset ring-white/[0.06]">{icon}</div>
       </div>
     </div>
   );
 }
 
-function HeatmapCell({ date, count, isToday }: { date: Date; count: number; isToday: boolean }) {
-  const mounted = typeof window !== "undefined";
-  const formatted = formatLocalDate(date, mounted);
-  const title = count === 0 ? `${formatted} · Aucune action` : `${count} actions le ${formatted}`;
-  const level = heatLevelByCount(count);
+function StatSkeleton() {
+  return (
+    <div className="bg-zinc-950/80 border border-white/[0.08] backdrop-blur-xl p-4 rounded-2xl shadow-lg animate-pulse">
+      <div className="flex items-start justify-between gap-3">
+        <div className="w-full space-y-2">
+          <div className="h-3 w-16 rounded bg-white/[0.06]" />
+          <div className="h-8 w-20 rounded bg-white/[0.08]" />
+          <div className="h-3 w-28 rounded bg-white/[0.04]" />
+        </div>
+        <div className="h-10 w-10 rounded-xl bg-white/[0.04]" />
+      </div>
+    </div>
+  );
+}
+
+function TimelineItem({
+  event,
+  mounted,
+  i18n,
+}: {
+  event: ActivityEntry;
+  mounted: boolean;
+  i18n: (key: string, ...args: unknown[]) => string;
+}) {
+  const meta = CATEGORY_META[event.category] || CATEGORY_META.system;
+  const tone = event.tone || event.category;
+  const toneMeta = TONE_META[tone] || { labelKey: event.category, color: "text-zinc-300", bg: "bg-white/[0.06] border border-white/[0.08]" };
+  const date = new Date(event.timestamp);
 
   return (
-    <div
-      title={title}
-      className={`h-3.5 w-3.5 rounded-[3px] ${HEATMAP_LEVELS[level]} ${isToday ? "ring-2 ring-emerald-300 z-10" : ""}`}
-    />
+    <div className="relative flex gap-3">
+      <div className="relative flex flex-col items-center">
+        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${meta.bg} ${meta.border}`}>
+          <Icon name={event.icon || "activity"} className={`h-4 w-4 ${meta.color}`} />
+        </span>
+        <div className="mt-1 h-full w-px border-l border-white/[0.08]" />
+      </div>
+      <div className="min-w-0 flex-1 pb-5">
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="text-xs font-semibold text-zinc-100">{event.title}</p>
+          <span className={`text-[10px] px-1.5 py-0.5 rounded ${toneMeta.color} ${toneMeta.bg}`}>
+            {i18n(toneMeta.labelKey)}
+          </span>
+        </div>
+        <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">{event.description}</p>
+        <p className="text-[11px] font-mono text-zinc-500 mt-1">
+          {formatLocalDate(date, mounted)} · {formatLocalTime(event.timestamp, mounted)}
+        </p>
+      </div>
+    </div>
   );
 }
 
 export default function ActivityHub() {
   const i18n = useI18n();
-  const [period, setPeriod] = useState<string>("30");
+  const [period, setPeriod] = useState<string>("365");
   const [query, setQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<ActivityCategory | "all">("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
@@ -181,7 +223,7 @@ export default function ActivityHub() {
     syncInterval: 30000,
   });
 
-  const periodDays = Number(period) || 30;
+  const periodDays = Number(period) || 365;
   const cutoff = useMemo(() => {
     const d = new Date();
     d.setDate(d.getDate() - periodDays);
@@ -190,8 +232,7 @@ export default function ActivityHub() {
   }, [periodDays]);
 
   const filteredEntries = useMemo(() => {
-    let list = entries;
-    list = list.filter((e) => new Date(e.timestamp) >= cutoff);
+    let list = entries.filter((e) => new Date(e.timestamp) >= cutoff);
     if (categoryFilter !== "all") list = list.filter((e) => e.category === categoryFilter);
     if (typeFilter !== "all") list = list.filter((e) => matchesType(e.eventType, typeFilter));
     if (query.trim()) {
@@ -207,82 +248,79 @@ export default function ActivityHub() {
     return list;
   }, [entries, cutoff, categoryFilter, typeFilter, query]);
 
-  const heatmapEntries = useMemo(
-    () => entries.filter((e) => new Date(e.timestamp) >= cutoff),
-    [entries, cutoff]
-  );
+  const todayDate = useMemo(() => today ?? new Date(0), [today]);
 
   const counts = useMemo(() => {
     const map = new Map<string, number>();
-    for (const e of heatmapEntries) {
+    for (const e of entries) {
       const key = dateKey(e.timestamp);
+      if (!key) continue;
       map.set(key, (map.get(key) || 0) + 1);
     }
     return map;
-  }, [heatmapEntries]);
-
-  const activeToday = useMemo(() => today ?? new Date(0), [today]);
-  const gridStart = useMemo(() => startOfWeek(addDays(activeToday, -periodDays + 1)), [activeToday, periodDays]);
-  const weeks = useMemo(
-    () => Math.ceil((activeToday.getTime() - gridStart.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1,
-    [activeToday, gridStart]
-  );
-
-  const grid = useMemo(() => {
-    const rows: { date: Date; count: number; isToday: boolean }[][] = [];
-    for (let w = 0; w < weeks; w++) {
-      const col: { date: Date; count: number; isToday: boolean }[] = [];
-      for (let day = 0; day < 7; day++) {
-        const d = addDays(gridStart, w * 7 + day);
-        const key = dateKey(d.toISOString());
-        const count = counts.get(key) || 0;
-        col.push({ date: d, count, isToday: isSameDay(d, activeToday) });
-      }
-      rows.push(col);
-    }
-    return rows;
-  }, [counts, gridStart, weeks, activeToday]);
+  }, [entries]);
 
   const stats = useMemo(() => {
-    const todayKey = dateKey(activeToday.toISOString());
+    const todayKey = dateKey(todayDate.toISOString());
+    const yesterday = addDays(todayDate, -1);
+    const yesterdayKey = dateKey(yesterday.toISOString());
     const todayCount = counts.get(todayKey) || 0;
+    const yesterdayCount = counts.get(yesterdayKey) || 0;
+    const diff = todayCount - yesterdayCount;
 
+    // Current streak (today counts only if it has activity)
     let streak = 0;
-    const d = new Date(activeToday);
-    while (streak < periodDays) {
+    const d = new Date(todayDate);
+    for (let i = 0; i < 366; i++) {
       const key = dateKey(d.toISOString());
       if ((counts.get(key) || 0) > 0) {
         streak++;
-        d.setDate(d.getDate() - 1);
-      } else if (streak === 0 && key === todayKey) {
         d.setDate(d.getDate() - 1);
       } else {
         break;
       }
     }
 
-    const weekStart = startOfWeek(new Date(activeToday));
-    let weekActiveDays = 0;
+    // Record streak over the last year
+    let record = 0;
+    let current = 0;
+    const r = new Date(todayDate);
+    for (let i = 0; i < 366; i++) {
+      const key = dateKey(r.toISOString());
+      if ((counts.get(key) || 0) > 0) {
+        current++;
+        record = Math.max(record, current);
+      } else {
+        current = 0;
+      }
+      r.setDate(r.getDate() - 1);
+    }
+
+    const weekStart = startOfWeek(new Date(todayDate));
+    let weekTotal = 0;
     for (let i = 0; i < 7; i++) {
       const key = dateKey(addDays(weekStart, i).toISOString());
-      if ((counts.get(key) || 0) > 0) weekActiveDays++;
+      weekTotal += counts.get(key) || 0;
     }
 
-    const periodStart = new Date(activeToday);
+    const periodStart = new Date(todayDate);
     periodStart.setDate(periodStart.getDate() - periodDays);
     let activeDays = 0;
+    let totalActions = 0;
     for (let i = 0; i < periodDays; i++) {
       const key = dateKey(addDays(periodStart, i + 1).toISOString());
-      if ((counts.get(key) || 0) > 0) activeDays++;
+      const count = counts.get(key) || 0;
+      totalActions += count;
+      if (count > 0) activeDays++;
     }
-    const consistency = periodDays > 0 ? Math.round((activeDays / periodDays) * 100) : 0;
-    const weekPct = Math.round((weekActiveDays / 7) * 100);
+    const average = activeDays > 0 ? (totalActions / activeDays).toFixed(1) : "0";
+    const successRate = periodDays > 0 ? Math.round((activeDays / periodDays) * 100) : 0;
 
-    return { todayCount, streak, weekPct, consistency };
-  }, [counts, periodDays, activeToday]);
+    return { todayCount, yesterdayCount, diff, streak, record, weekTotal, average, successRate };
+  }, [counts, periodDays, todayDate]);
 
   const grouped = useMemo(() => {
-    const map = new Map<string, typeof filteredEntries>();
+    const map = new Map<string, ActivityEntry[]>();
     for (const e of filteredEntries) {
       const key = dateKey(e.timestamp);
       if (!map.has(key)) map.set(key, []);
@@ -296,17 +334,14 @@ export default function ActivityHub() {
   const lastSyncText = useMemo(() => {
     if (!lastSync || !now) return "";
     const seconds = Math.floor((now - lastSync.getTime()) / 1000);
-    if (seconds < 60) return i18n("journalJustNow") || "à l'instant";
+    if (seconds < 60) return i18n("journalJustNow");
     const minutes = Math.floor(seconds / 60);
     if (minutes < 60) return i18n("journalMinutesAgo").replace("{{count}}", String(minutes));
     const hours = Math.floor(minutes / 60);
     return i18n("journalHoursAgo").replace("{{count}}", String(hours));
   }, [lastSync, i18n, now]);
 
-  const periodTabs = useMemo(
-    () => PERIODS.map((p) => ({ id: p.id, label: p.label })),
-    []
-  );
+  const periodTabs = useMemo(() => PERIODS.map((p) => ({ id: p.id, label: p.label })), []);
 
   const categoryOptions = useMemo(
     () => CATEGORIES.map((c) => ({ id: c.id, label: i18n(c.labelKey) })),
@@ -318,77 +353,81 @@ export default function ActivityHub() {
     [i18n]
   );
 
+  const diffText = useMemo(() => {
+    if (stats.diff === 0) return i18n("sameAsYesterday") || "= hier";
+    if (stats.diff > 0) return `+${stats.diff} ${i18n("sinceYesterday") || "vs hier"}`;
+    return `${stats.diff} ${i18n("sinceYesterday") || "vs hier"}`;
+  }, [stats.diff, i18n]);
+
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">{i18n("activityJournal")}</h1>
           <p className="text-sm text-zinc-500 mt-1">{i18n("activityJournalDescription")}</p>
         </div>
-        <AnimatedFilterTabs
-          tabs={periodTabs}
-          activeId={period}
-          onChange={setPeriod}
-        />
+        <AnimatedFilterTabs tabs={periodTabs} activeId={period} onChange={setPeriod} />
       </div>
 
+      {/* Stat cards */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <StatCard
-          label={i18n("today")}
-          value={stats.todayCount}
-          sub={i18n("eventsToday")}
-          icon={<Activity className="h-5 w-5 text-emerald-400" />}
-        />
-        <StatCard
-          label={i18n("currentStreak")}
-          value={`${stats.streak}j`}
-          sub={i18n("active")}
-          icon={<Flame className="h-5 w-5 text-amber-400" />}
-        />
-        <StatCard
-          label={i18n("thisWeek")}
-          value={`${stats.weekPct}%`}
-          sub={`${Math.round((stats.weekPct / 100) * 7)}/7 ${i18n("activeDays")}`}
-          icon={<TrendingUp className="h-5 w-5 text-cyan-400" />}
-        />
-        <StatCard
-          label={i18n("consistency")}
-          value={`${stats.consistency}%`}
-          sub={i18n("periodActive")}
-          icon={<Target className="h-5 w-5 text-violet-400" />}
-        />
+        {mounted ? (
+          <>
+            <StatCard
+              label={i18n("today")}
+              value={stats.todayCount}
+              sub={diffText}
+              icon={<Activity className="h-5 w-5 text-emerald-400" />}
+              tone="emerald"
+            />
+            <StatCard
+              label={i18n("currentStreak")}
+              value={`${stats.streak}j`}
+              sub={`${i18n("record") || "Record"}: ${stats.record}j`}
+              icon={<Flame className="h-5 w-5 text-amber-400" />}
+              tone="amber"
+            />
+            <StatCard
+              label={i18n("averagePerDay") || "Moyenne / jour"}
+              value={stats.average}
+              sub={`${stats.weekTotal} ${i18n("thisWeek") || "cette semaine"}`}
+              icon={<TrendingUp className="h-5 w-5 text-cyan-400" />}
+              tone="cyan"
+            />
+            <StatCard
+              label={i18n("successRate") || "Taux de succès"}
+              value={`${stats.successRate}%`}
+              sub={i18n("consistency")}
+              icon={<CheckCircle2 className="h-5 w-5 text-purple-400" />}
+              tone="purple"
+            />
+          </>
+        ) : (
+          <>
+            <StatSkeleton />
+            <StatSkeleton />
+            <StatSkeleton />
+            <StatSkeleton />
+          </>
+        )}
       </div>
 
-      <div className="bg-zinc-950/70 border border-white/[0.08] backdrop-blur-xl rounded-2xl p-4 shadow-lg">
+      {/* Heatmap */}
+      <div className="bg-zinc-950/80 border border-white/[0.08] backdrop-blur-xl rounded-2xl p-4 shadow-lg">
         <div className="mb-4 flex items-center justify-between gap-3">
           <h2 className="text-sm font-semibold text-white">{i18n("activityHeatmap")}</h2>
-          <div className="flex items-center gap-2 text-[10px] text-zinc-500">
-            <span>{i18n("less")}</span>
-            <div className="flex gap-1">
-              {(Object.keys(HEATMAP_LEVELS) as unknown as HeatLevel[]).map((l) => (
-                <span key={l} className={`h-3 w-3 rounded-[3px] ${HEATMAP_LEVELS[l]}`} />
-              ))}
-            </div>
-            <span>{i18n("more")}</span>
-          </div>
+          <span className="text-[10px] text-zinc-500">{i18n("activityLastDays").replace("{{count}}", "365")}</span>
         </div>
-        <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-          <div className="grid grid-flow-col gap-1.5">
-            {grid.map((col, w) => (
-              <div key={w} className="grid grid-rows-7 gap-1.5">
-                {col.map((cell, d) => (
-                  <HeatmapCell key={d} date={cell.date} count={cell.count} isToday={cell.isToday} />
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
+        {mounted ? <ActivityHeatmap entries={entries} /> : <div className="h-40 animate-pulse rounded-xl bg-white/[0.04]" />}
       </div>
 
-      <div className="bg-zinc-950/70 border border-white/[0.08] backdrop-blur-xl rounded-2xl p-4 shadow-lg">
-        <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      {/* Toolbar */}
+      <div className="bg-zinc-950/80 border border-white/[0.08] backdrop-blur-xl rounded-2xl p-4 shadow-lg">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <h2 className="text-sm font-semibold text-white">{i18n("activityJournalEntries")}</h2>
-          <div className="flex flex-wrap items-center gap-2">
+
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:flex-wrap">
             <div className="relative">
               <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-500" />
               <input
@@ -397,63 +436,68 @@ export default function ActivityHub() {
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={i18n("journalSearchPlaceholder")}
                 aria-label={i18n("journalSearchPlaceholder")}
-                className="h-8 w-64 rounded-xl border border-white/10 bg-white/[0.04] pl-8 pr-3 text-xs text-zinc-200 placeholder-zinc-500 outline-none focus:border-emerald-500/50"
+                className="h-9 w-full sm:w-56 rounded-xl border border-white/10 bg-white/[0.03] pl-8 pr-3 text-xs text-zinc-200 placeholder-zinc-500 outline-none focus:border-emerald-500/50 transition-colors"
               />
             </div>
-            <Select
-              value={categoryFilter}
-              onChange={(value) => setCategoryFilter(value as ActivityCategory | "all")}
-              options={categoryOptions}
-              aria-label={i18n("journalFilterCategory")}
-              className="h-8 min-w-0 text-xs"
-            />
-            <Select
-              value={typeFilter}
-              onChange={setTypeFilter}
-              options={typeOptions}
-              aria-label={i18n("journalFilterType")}
-              className="h-8 min-w-0 text-xs"
-            />
-          </div>
-        </div>
 
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-          <p className="text-xs text-zinc-500">
-            {i18n("journalShowing").replace("{{count}}", String(filteredEntries.length))}
-            {pendingCount > 0 ? ` · ${i18n("journalPending").replace("{{count}}", String(pendingCount))}` : ""}
-          </p>
-          <div className="flex items-center gap-2">
-            {syncError && (
+            <div className="flex items-center gap-2">
+              <Select
+                value={categoryFilter}
+                onChange={(value) => setCategoryFilter(value as ActivityCategory | "all")}
+                options={categoryOptions}
+                aria-label={i18n("journalFilterCategory")}
+                className="h-9 w-36 text-xs"
+              />
+              <Select
+                value={typeFilter}
+                onChange={setTypeFilter}
+                options={typeOptions}
+                aria-label={i18n("journalFilterType")}
+                className="h-9 w-36 text-xs"
+              />
+            </div>
+
+            <div className="flex items-center gap-2 ml-auto">
+              {syncError && (
+                <button
+                  type="button"
+                  onClick={() => sync()}
+                  disabled={syncing}
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-xs px-3 py-1.5 transition-colors hover:bg-red-500/20 disabled:opacity-50"
+                >
+                  <AlertCircle className="h-3.5 w-3.5" />
+                  {i18n("journalSyncError")}
+                  {syncing ? i18n("journalRetrying") || "..." : i18n("journalRetry") || "Réessayer"}
+                </button>
+              )}
+
+              {lastSyncText && !syncError && (
+                <span className="text-[11px] text-zinc-500 hidden sm:inline">{lastSyncText}</span>
+              )}
+
               <button
                 type="button"
                 onClick={() => sync()}
                 disabled={syncing}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-300 text-xs px-2.5 py-1 transition-colors hover:bg-red-500/20 disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-medium px-3.5 py-1.5 transition-all disabled:opacity-50"
               >
-                <AlertCircle className="h-3.5 w-3.5" />
-                {i18n("journalSyncError")}
-                {syncing ? i18n("journalRetrying") : i18n("journalRetry")}
+                {syncing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+                {syncing ? i18n("journalSyncing") : i18n("journalSyncNow")}
               </button>
-            )}
-            {lastSyncText && !syncError && (
-              <span className="text-[11px] text-zinc-500">{lastSyncText}</span>
-            )}
-            <button
-              type="button"
-              onClick={() => sync()}
-              disabled={syncing}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-medium px-3 py-1.5 transition-all disabled:opacity-50"
-            >
-              {syncing ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <RefreshCw className="h-3.5 w-3.5" />
-              )}
-              {syncing ? i18n("journalSyncing") : i18n("journalSyncNow")}
-            </button>
+            </div>
           </div>
         </div>
 
+        <div className="mt-3 flex items-center justify-between">
+          <p className="text-xs text-zinc-500">
+            {i18n("journalShowing").replace("{{count}}", String(filteredEntries.length))}
+            {pendingCount > 0 ? ` · ${i18n("journalPending").replace("{{count}}", String(pendingCount))}` : ""}
+          </p>
+        </div>
+      </div>
+
+      {/* Timeline */}
+      <div className="bg-zinc-950/80 border border-white/[0.08] backdrop-blur-xl rounded-2xl p-4 shadow-lg">
         {grouped.length === 0 ? (
           <p className="text-sm text-zinc-500">{i18n("journalNoEntries")}</p>
         ) : (
@@ -471,40 +515,10 @@ export default function ActivityHub() {
                   <span className="text-xs font-mono text-zinc-500 bg-white/[0.03] px-2.5 py-1 rounded-md border border-white/[0.05] inline-block">
                     {formatLocalDate(new Date(key), mounted)}
                   </span>
-                  <div className="space-y-2">
-                    {group.map((event, i) => {
-                      const meta = CATEGORY_META[event.category] || CATEGORY_META.system;
-                      return (
-                        <div
-                          key={event.id || i}
-                          className="group flex items-start gap-3 rounded-xl border border-white/[0.06] bg-zinc-950/50 p-3 transition-colors hover:border-white/[0.12] hover:bg-zinc-900/40"
-                        >
-                          <span
-                            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${meta.bg} ${meta.border} border`}
-                          >
-                            <Icon name={event.icon || "activity"} className={`h-4 w-4 ${meta.color}`} />
-                          </span>
-                          <div className="min-w-0 flex-1">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <p className="text-xs font-semibold text-zinc-100">{event.title}</p>
-                              <span className="text-[10px] bg-white/[0.05] text-zinc-400 px-1.5 py-0.5 rounded">
-                                {i18n(event.category)}
-                              </span>
-                              {event.tone && (
-                                <span className="text-[10px] bg-white/[0.05] text-zinc-400 px-1.5 py-0.5 rounded font-mono">
-                                  {event.eventType}
-                                </span>
-                              )}
-                            </div>
-                            <p className="text-[11px] font-mono text-zinc-500 mt-1">
-                              {formatLocalTime(event.timestamp, mounted)}
-                              {mounted ? " · " : ""}
-                              <span className="text-zinc-400">{event.description}</span>
-                            </p>
-                          </div>
-                        </div>
-                      );
-                    })}
+                  <div className="space-y-0">
+                    {group.map((event) => (
+                      <TimelineItem key={event.id} event={event} mounted={mounted} i18n={i18n} />
+                    ))}
                   </div>
                 </motion.div>
               ))}

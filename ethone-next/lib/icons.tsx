@@ -179,6 +179,11 @@ const MAP: Record<string, Partial<Record<IconPack, string>>> = {
   thermometer: { lucide: "thermometer", phosphor: "thermometer", tabler: "thermometer", heroicons: "fire", radix: "value" },
   umbrella: { lucide: "umbrella", phosphor: "umbrella", tabler: "umbrella", heroicons: "cloud", radix: "cover" },
   sunrise: { lucide: "sunrise", phosphor: "sun-horizon", tabler: "sunrise", heroicons: "sun", radix: "sun" },
+  "circle-check-big": { lucide: "circle-check-big", phosphor: "check-circle", tabler: "circle-check", heroicons: "check-circle", radix: "check" },
+  "calendar-plus": { lucide: "calendar-plus", phosphor: "calendar-plus", tabler: "calendar-plus", heroicons: "calendar-plus", radix: "calendar" },
+  "folder-plus": { lucide: "folder-plus", phosphor: "folder-plus", tabler: "folder-plus", heroicons: "folder-plus", radix: "file" },
+  "user-round": { lucide: "user-round", phosphor: "user", tabler: "user", heroicons: "user", radix: "person" },
+  "settings-2": { lucide: "settings-2", phosphor: "gear", tabler: "settings", heroicons: "cog-8-tooth", radix: "gear" },
 };
 
 export function useIconName(name: string, pack: IconPack = "lucide") {

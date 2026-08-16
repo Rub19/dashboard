@@ -4,6 +4,17 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : refonte des paramètres avec thème dynamique et sidebar coulissante**
+
+### Corrige
+- `ethone-next/components/settings/ThemePicker.tsx` : nouveau composant de sélection de thème avec cartes interactives, mini-palette (fond, texte, accent), bordure active `var(--accent-color)`, badge `CheckCircle2` et transitions.
+- `ethone-next/components/settings/SettingsSidebar.tsx` : barre de navigation latérale avec indicateur coulissant `layoutId`, style glassmorphism, synchronisation au défilement via `IntersectionObserver`.
+- `ethone-next/components/settings/Settings.tsx` : nouveau layout principal de la page Réglages avec header épuré, recherche, sidebar sticky et contenu.
+- `ethone-next/app/settings/page.tsx` : simplifié pour utiliser `Settings`.
+- `ethone-next/components/settings/SettingsBottomBar.tsx` : boutons `Enregistrer` et `Annuler` stylisés avec `var(--accent-color)` et `var(--accent-glow)`.
+- `ethone-next/components/settings/DangerZone.tsx` : boutons secondaires et danger modernisés.
+- `ethone-next/components/settings/AppearanceSettings.tsx` : utilise `ThemePicker`, suppression du picker inline.
+
 **Migration Next.js : refonte du Activity Hub / Journal d'activité**
 
 ### Corrige

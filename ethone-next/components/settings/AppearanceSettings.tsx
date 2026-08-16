@@ -1,18 +1,18 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
+import { useId, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Moon, Sun, Sparkles, Palette } from "lucide-react";
-import { Icon } from "@/lib/icons";
+import { Check, Moon, Sun, Sparkles } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon as IconifyIcon } from "@iconify/react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useSettingsForm } from "./SettingsFormContext";
+import ThemePicker from "./ThemePicker";
 import Switch from "@/components/Switch";
 import Select from "@/components/ui/Select";
 import Slider from "@/components/ui/Slider";
 import Tooltip from "@/components/Tooltip";
-import { THEMES, ACCENTS } from "@/components/SettingsProvider";
+import { ACCENTS } from "@/components/SettingsProvider";
 import { type Settings, type ThemeMode, DEFAULTS } from "@/lib/settings";
 
 const THEME_ORDER: ThemeMode[] = [
@@ -33,28 +33,6 @@ const THEME_ORDER: ThemeMode[] = [
   "glass",
   "oled",
 ];
-
-const FEATURED_THEMES: ThemeMode[] = ["default", "cyberpunk", "obsidian", "minimal", "aurora"];
-const MORE_THEMES: ThemeMode[] = THEME_ORDER.filter((t) => !FEATURED_THEMES.includes(t));
-
-const THEME_LABELS: Record<ThemeMode, string> = {
-  default: "Aura ETHONE",
-  boreal: "Boréale",
-  cyberpunk: "Cyberpunk",
-  eclipse: "Éclipse",
-  emerald: "Émeraude",
-  night: "Nuit",
-  graphite: "Graphite",
-  day: "Jour",
-  auto: "Auto",
-  midnight: "Minuit",
-  obsidian: "Obsidienne",
-  aurora: "Aurore",
-  minimal: "Minimal",
-  focus: "Focus",
-  glass: "Verre",
-  oled: "OLED",
-};
 
 const ACCENT_COLORS = [
   { id: "violet", label: "Violet" },
@@ -128,10 +106,6 @@ function getSampleIcon(pack: string) {
   }
 }
 
-function themeLabel(i18n: ReturnType<typeof useI18n>, id: ThemeMode) {
-  return i18n(`theme${id.charAt(0).toUpperCase() + id.slice(1)}` as keyof typeof THEME_LABELS) || THEME_LABELS[id];
-}
-
 function isDirty(key: keyof Settings, value: unknown) {
   return JSON.stringify(value) !== JSON.stringify(DEFAULTS[key]);
 }
@@ -140,7 +114,6 @@ export default function AppearanceSettings() {
   const i18n = useI18n();
   const { settings, update } = useSettings();
   const form = useSettingsForm();
-  const [moreThemesOpen, setMoreThemesOpen] = useState(false);
   const colorInputId = useId();
 
   const handleChange = <K extends keyof Settings>(key: K, value: Settings[K]) => {
@@ -193,101 +166,12 @@ export default function AppearanceSettings() {
           <h3 className="text-sm font-semibold text-[var(--foreground)]">{i18n("theme")}</h3>
           <p className="text-xs text-[var(--muted)]">{i18n("themeDescription")}</p>
         </div>
-
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          {FEATURED_THEMES.map((id) => {
-            const theme = THEMES[id];
-            const selected = currentTheme === id;
-            return (
-              <button
-                key={id}
-                type="button"
-                onClick={() => handleChange("theme", id)}
-                className={`group relative overflow-hidden rounded-[var(--panel-radius)] border p-3 text-left transition-colors duration-150 ${
-                  selected
-                    ? "border-[var(--accent)] bg-[var(--accent)]/10 ring-2 ring-[var(--accent)]"
-                    : "border-[var(--panel-border)] bg-[var(--panel-bg)] hover:border-[var(--accent)]/50"
-                } backdrop-blur-[var(--panel-blur)]`}
-              >
-                <div
-                  className="mb-3 h-16 w-full overflow-hidden rounded-[var(--panel-radius)] border shadow-inner"
-                  style={{
-                    background: `linear-gradient(135deg, ${theme.background}, ${theme.background}00)`,
-                    borderColor: `${theme.accent}40`,
-                  }}
-                >
-                  <div className="flex h-full items-end gap-2 p-2">
-                    <span
-                      className="h-6 w-6 rounded-full shadow-lg"
-                      style={{ backgroundColor: theme.accent, boxShadow: `0 0 12px ${theme.accent}80` }}
-                    />
-                    <span className="h-2 w-12 rounded-full opacity-60" style={{ backgroundColor: theme.foreground }} />
-                    <span className="h-2 w-8 rounded-full opacity-40" style={{ backgroundColor: theme.foreground }} />
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium text-[var(--foreground)]">{themeLabel(i18n, id)}</span>
-                  {selected && <Check className="h-3.5 w-3.5 text-[var(--accent)]" />}
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => setMoreThemesOpen(!moreThemesOpen)}
-            className="flex w-full items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-xs font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)]/50 backdrop-blur-[var(--panel-blur)]"
-          >
-            <span className="flex items-center gap-2">
-              <Palette className="h-4 w-4 text-[var(--muted)]" />
-              {i18n("moreThemes")}
-            </span>
-            <Icon name={moreThemesOpen ? "chevronUp" : "chevronDown"} className="h-4 w-4 text-[var(--muted)]" />
-          </button>
-          <AnimatePresence>
-            {moreThemesOpen && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.15, ease: "easeOut" as const }}
-                className="mt-2 overflow-hidden"
-              >
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
-                  {MORE_THEMES.map((id) => {
-                    const theme = THEMES[id];
-                    const selected = currentTheme === id;
-                    return (
-                      <button
-                        key={id}
-                        type="button"
-                        onClick={() => handleChange("theme", id)}
-                        className={`flex items-center gap-2 rounded-[var(--panel-radius)] border px-3 py-2 text-left text-xs transition-colors duration-150 ${
-                          selected
-                            ? "border-[var(--accent)] bg-[var(--accent)]/10"
-                            : "border-[var(--panel-border)] bg-[var(--panel-bg)] hover:border-[var(--accent)]/50"
-                        } backdrop-blur-[var(--panel-blur)]`}
-                      >
-                        <span
-                          className="h-5 w-5 flex-shrink-0 rounded-full border"
-                          style={{
-                            backgroundColor: theme.background,
-                            borderColor: theme.accent,
-                            boxShadow: `inset 0 0 0 2px ${theme.accent}40`,
-                          }}
-                        />
-                        <span className="truncate text-[var(--foreground)]">{themeLabel(i18n, id)}</span>
-                        {selected && <Check className="ml-auto h-3.5 w-3.5 text-[var(--accent)]" />}
-                      </button>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+        <ThemePicker
+          themes={THEME_ORDER}
+          value={currentTheme}
+          onChange={(theme) => handleChange("theme", theme)}
+          showMore
+        />
       </section>
 
       {/* Couleur d'accent */}

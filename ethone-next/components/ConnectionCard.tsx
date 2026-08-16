@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   AlertCircle,
@@ -15,7 +15,10 @@ import {
   Unlink,
   Plug,
   Save,
+  Copy,
+  Check,
 } from "lucide-react";
+import { useIntegrationStore } from "@/lib/hooks/useIntegrationStore";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -62,6 +65,7 @@ export default function ConnectionCard({
   const i18n = useI18n();
   const { settings, update } = useSettings();
   const { success, error: showError } = useToast();
+  const { values: integrationValues, setField, setFields } = useIntegrationStore();
 
   const guide = useMemo<ConnectionGuide | undefined>(() => getConnectionGuide(integration.id), [integration.id]);
 
@@ -106,36 +110,57 @@ export default function ConnectionCard({
         ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
         : "bg-zinc-800 text-zinc-400";
 
+  const storeValues = integrationValues[integration.id] || {};
+
   const [publicValues, setPublicValues] = useState<Record<string, string>>(() => {
     const map: Record<string, string> = {};
     publicFields.forEach((f) => {
-      const v = settings[f.key];
-      map[f.label] = typeof v === "string" ? v : "";
+      const fromStore = storeValues[f.key as string];
+      const fromSettings = settings[f.key];
+      map[f.label] = typeof fromStore === "string" ? fromStore : typeof fromSettings === "string" ? fromSettings : "";
     });
     return map;
   });
 
   useEffect(() => {
-    const map: Record<string, string> = {};
-    publicFields.forEach((f) => {
-      const v = settings[f.key];
-      map[f.label] = typeof v === "string" ? v : "";
+    setPublicValues((prev) => {
+      const map = { ...prev };
+      publicFields.forEach((f) => {
+        const fromStore = storeValues[f.key as string];
+        const fromSettings = settings[f.key];
+        const next = typeof fromStore === "string" ? fromStore : typeof fromSettings === "string" ? fromSettings : "";
+        if (!prev[f.label] && next) map[f.label] = next;
+      });
+      return map;
     });
-    setPublicValues(map);
-  }, [publicFields, settings]);
+  }, [publicFields, settings, storeValues]);
 
   const [credValues, setCredValues] = useState<Record<string, string>>(() => {
     const map: Record<string, string> = {};
     credentialFields.forEach((f) => {
-      map[f.label] = "";
+      const fromStore = storeValues[f.key as string];
+      map[f.label] = typeof fromStore === "string" ? fromStore : "";
     });
     return map;
   });
+
+  useEffect(() => {
+    setCredValues((prev) => {
+      const map = { ...prev };
+      credentialFields.forEach((f) => {
+        const fromStore = storeValues[f.key as string];
+        const next = typeof fromStore === "string" ? fromStore : "";
+        if (!prev[f.label] && next) map[f.label] = next;
+      });
+      return map;
+    });
+  }, [credentialFields, storeValues]);
 
   const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});
   const [rawOpen, setRawOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [openGuideField, setOpenGuideField] = useState<string | null>(null);
+  const [copied, setCopied] = useState<string | null>(null);
 
   useEffect(() => {
     if (rawOpen && onTest) onTest(integration.id);
@@ -186,11 +211,20 @@ export default function ConnectionCard({
           update(patch);
         }
       }
+      setPublicValues((prev) => {
+        const next = { ...prev };
+        publicFields.forEach((f) => (next[f.label] = ""));
+        return next;
+      });
       setCredValues((prev) => {
         const next = { ...prev };
         credentialFields.forEach((f) => (next[f.label] = ""));
         return next;
       });
+      setFields(integration.id, {});
+      if (integration.id === "spotify") {
+        try { localStorage.removeItem(`ethone:clientId:${integration.id}`); } catch {}
+      }
       success(i18n("disconnectSuccess"));
     } catch {
       showError(i18n("error"));
@@ -199,9 +233,30 @@ export default function ConnectionCard({
     }
   }
 
+  function syncPublicStore() {
+    const fields: Record<string, string> = {};
+    publicFields.forEach((f) => {
+      const v = publicValues[f.label];
+      if (v !== undefined) fields[f.key as string] = v;
+    });
+    if (Object.keys(fields).length > 0) setFields(integration.id, fields);
+  }
+
+  function syncCredStore() {
+    const fields: Record<string, string> = {};
+    credentialFields.forEach((f) => {
+      const v = credValues[f.label];
+      if (v !== undefined) fields[f.key as string] = v;
+    });
+    if (Object.keys(fields).length > 0) setFields(integration.id, fields);
+  }
+
   async function handleSave() {
     setSubmitting(true);
     try {
+      syncPublicStore();
+      syncCredStore();
+
       if (publicFields.length > 0) {
         const patch: Partial<Settings> = {};
         publicFields.forEach((f) => {
@@ -227,6 +282,34 @@ export default function ConnectionCard({
     } finally {
       setSubmitting(false);
     }
+  }
+
+  async function handleTest() {
+    if (onTest) await onTest(integration.id);
+  }
+
+  async function handleCopy(value: string, key: string) {
+    if (!value) return;
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(key);
+      success(i18n("copied"));
+      window.setTimeout(() => setCopied(null), 1500);
+    } catch {
+      // ignore
+    }
+  }
+
+  function updatePublicValue(label: string, value: string) {
+    setPublicValues((v) => ({ ...v, [label]: value }));
+    const field = publicFields.find((f) => f.label === label);
+    if (field) setField(integration.id, field.key as string, value);
+  }
+
+  function updateCredValue(label: string, value: string) {
+    setCredValues((v) => ({ ...v, [label]: value }));
+    const field = credentialFields.find((f) => f.label === label);
+    if (field) setField(integration.id, field.key as string, value);
   }
 
   function toggleGuide(fieldKey: string) {
@@ -336,7 +419,7 @@ export default function ConnectionCard({
               <Select
                 key={f.label}
                 value={publicValues[f.label] || ""}
-                onChange={(value) => setPublicValues((v) => ({ ...v, [f.label]: value }))}
+                onChange={(value) => updatePublicValue(f.label, value)}
                 options={f.options.map((o) => ({ id: o, label: o }))}
                 aria-label={i18n(f.label)}
                 className="w-full"
@@ -346,7 +429,7 @@ export default function ConnectionCard({
                 key={f.label}
                 type={f.type || "text"}
                 value={publicValues[f.label] || ""}
-                onChange={(e) => setPublicValues((v) => ({ ...v, [f.label]: e.target.value }))}
+                onChange={(e) => updatePublicValue(f.label, e.target.value)}
                 aria-label={i18n(f.label)}
                 placeholder={i18n(f.label)}
                 className={inputClass}
@@ -358,28 +441,40 @@ export default function ConnectionCard({
             const isPassword = f.type === "password";
             const visible = showPassword[f.key];
             const fieldGuideOpen = openGuideField === f.key;
+            const value = credValues[f.label] || "";
             return (
               <div key={f.label} className="flex flex-col">
                 <div className="relative">
                   <input
                     type={isPassword && !visible ? "password" : "text"}
-                    value={credValues[f.label] || ""}
-                    onChange={(e) => setCredValues((v) => ({ ...v, [f.label]: e.target.value }))}
+                    value={value}
+                    onChange={(e) => updateCredValue(f.label, e.target.value)}
                     aria-label={i18n(f.label)}
                     placeholder={i18n(f.label)}
-                    className={`${inputClass} pr-10`}
+                    className={`${inputClass} ${isPassword ? "pr-20" : "pr-10"}`}
                   />
-                  {isPassword && (
+                  <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1">
                     <button
                       type="button"
-                      onClick={() => setShowPassword((s) => ({ ...s, [f.key]: !s[f.key] }))}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted transition hover:text-foreground"
-                      aria-label={visible ? i18n("hide") : i18n("show")}
+                      onClick={() => handleCopy(value, f.key)}
+                      className="text-muted transition hover:text-foreground"
+                      aria-label={i18n("copy")}
                       tabIndex={-1}
                     >
-                      {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {copied === f.key ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
                     </button>
-                  )}
+                    {isPassword && (
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((s) => ({ ...s, [f.key]: !s[f.key] }))}
+                        className="text-muted transition hover:text-foreground"
+                        aria-label={visible ? i18n("hide") : i18n("show")}
+                        tabIndex={-1}
+                      >
+                        {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {guide && (
@@ -413,7 +508,7 @@ export default function ConnectionCard({
             );
           })}
 
-          <div className="mt-1 flex gap-2">
+          <div className="mt-1 flex flex-wrap gap-2">
             <button
               type="button"
               onClick={handleSave}
@@ -422,6 +517,15 @@ export default function ConnectionCard({
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
               {i18n("save")}
+            </button>
+            <button
+              type="button"
+              onClick={handleTest}
+              disabled={submitting || !onTest}
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-[var(--panel-radius)] border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-sm font-medium text-zinc-300 transition hover:bg-white/[0.06] disabled:opacity-50"
+            >
+              <Plug className="h-4 w-4" />
+              {i18n("testConnection")}
             </button>
             <button
               type="button"

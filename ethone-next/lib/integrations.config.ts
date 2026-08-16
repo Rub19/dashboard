@@ -417,7 +417,7 @@ export const INTEGRATIONS_CONFIG: Record<string, IntegrationConfig> = {
       },
       {
         title: "Remplir le formulaire",
-        description: "Remplissez le nom, la catégorie et l'URL de redirection de l'application.",
+        description: "Remplissez le nom, la catégorie et indiquez une URL de redirection (ex: https://ethone.dev).",
       },
       {
         title: "Récupérer le Client ID",
@@ -426,6 +426,10 @@ export const INTEGRATIONS_CONFIG: Record<string, IntegrationConfig> = {
       {
         title: "Générer le Client Secret",
         description: "Générez un Client Secret dans l'onglet Secret.",
+      },
+      {
+        title: "Renseigner la chaîne",
+        description: "Saisissez le nom (login) de la chaîne à surveiller, ex: Rub10Off.",
       },
     ],
   },

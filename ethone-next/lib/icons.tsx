@@ -179,11 +179,14 @@ const MAP: Record<string, Partial<Record<IconPack, string>>> = {
   thermometer: { lucide: "thermometer", phosphor: "thermometer", tabler: "thermometer", heroicons: "fire", radix: "value" },
   umbrella: { lucide: "umbrella", phosphor: "umbrella", tabler: "umbrella", heroicons: "cloud", radix: "cover" },
   sunrise: { lucide: "sunrise", phosphor: "sun-horizon", tabler: "sunrise", heroicons: "sun", radix: "sun" },
+  leaf: { lucide: "leaf", phosphor: "plant", tabler: "leaf", heroicons: "sparkles", radix: "magic-wand" },
+  navigation: { lucide: "navigation", phosphor: "compass", tabler: "navigation", heroicons: "arrow-path", radix: "triangle-right" },
   "circle-check-big": { lucide: "circle-check-big", phosphor: "check-circle", tabler: "circle-check", heroicons: "check-circle", radix: "check" },
   "calendar-plus": { lucide: "calendar-plus", phosphor: "calendar-plus", tabler: "calendar-plus", heroicons: "calendar-plus", radix: "calendar" },
   "folder-plus": { lucide: "folder-plus", phosphor: "folder-plus", tabler: "folder-plus", heroicons: "folder-plus", radix: "file" },
   "user-round": { lucide: "user-round", phosphor: "user", tabler: "user", heroicons: "user", radix: "person" },
   "settings-2": { lucide: "settings-2", phosphor: "gear", tabler: "settings", heroicons: "cog-8-tooth", radix: "gear" },
+  "more-horizontal": { lucide: "more-horizontal", phosphor: "dots-three", tabler: "dots", heroicons: "ellipsis-horizontal", radix: "dots-horizontal" },
 };
 
 export function useIconName(name: string, pack: IconPack = "lucide") {

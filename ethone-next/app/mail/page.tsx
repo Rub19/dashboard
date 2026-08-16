@@ -1,27 +1,13 @@
 ﻿"use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useMail, type MailMessage } from "@/lib/hooks/useMail";
 import { useToast } from "@/components/ToastProvider";
-import { Icon } from "@/lib/icons";
-import Card3D from "@/components/Card3D";
-import LiquidSidebar from "@/components/LiquidSidebar";
-import MailAdvancedPanel from "@/components/MailAdvancedPanel";
-import MailAnalyticsPanel from "@/components/MailAnalyticsPanel";
-import Modal from "@/components/ui/Modal";
-import ContextMenu from "@/components/ContextMenu";
-import RichTextEditor from "@/components/RichTextEditor";
-import Select from "@/components/ui/Select";
-
-const FOLDERS = ["inbox", "starred", "sent", "drafts", "archive", "trash", "spam"];
-
-const SNOOZE_KEYS: Record<string, string> = {
-  "10m": "snooze10m",
-  "1h": "snooze1h",
-  tonight: "snoozeTonight",
-  tomorrow: "snoozeTomorrow",
-};
+import MailSidebar, { FOLDERS, type MailFolder } from "@/components/mail/MailSidebar";
+import MailThreadList from "@/components/mail/MailThreadList";
+import MailDetailView from "@/components/mail/MailDetailView";
+import ComposeMailModal, { type ComposeState } from "@/components/mail/ComposeMailModal";
 
 function formatMailDate(iso: string) {
   try {
@@ -29,26 +15,6 @@ function formatMailDate(iso: string) {
   } catch {
     return iso;
   }
-}
-
-function threadSnoozeUntil(duration: string, now = Date.now()) {
-  const map: Record<string, () => number> = {
-    "10m": () => now + 10 * 60 * 1000,
-    "1h": () => now + 60 * 60 * 1000,
-    tonight: () => {
-      const d = new Date();
-      d.setHours(22, 0, 0, 0);
-      if (d.getTime() <= now) d.setDate(d.getDate() + 1);
-      return d.getTime();
-    },
-    tomorrow: () => {
-      const d = new Date();
-      d.setDate(d.getDate() + 1);
-      d.setHours(9, 0, 0, 0);
-      return d.getTime();
-    },
-  };
-  return new Date(map[duration]?.() ?? now + 60 * 60 * 1000).toISOString();
 }
 
 export default function MailPage() {
@@ -62,92 +28,22 @@ export default function MailPage() {
     setSearch,
     unread,
     loading,
-    error,
-    labels,
-    signatures,
-    templates,
-    rules,
-    blocked,
-    trusted,
-    aliases,
-    defaultSignature,
-    reload,
     getThread,
     sendMail,
     saveDraft,
     setFlags,
-    bulkAction,
     moveMessages,
-    assignLabel,
-    snoozeMessage,
-    scheduleMail,
     createLabel,
-    deleteLabel,
-    createSignature,
-    deleteSignature,
-    createTemplate,
-    updateTemplate,
-    deleteTemplate,
-    createRule,
-    updateRule,
-    deleteRule,
-    blockSender,
-    unblockSender,
-    trustSender,
-    untrustSender,
-    createAlias,
-    analyzeMessage,
-    suggestReplies,
-    getAnalytics,
   } = useMail();
 
-  const [selected, setSelected] = useState<string[]>([]);
   const [activeThread, setActiveThread] = useState<MailMessage[] | null>(null);
   const [composeOpen, setComposeOpen] = useState(false);
-  const [composeMode, setComposeMode] = useState<"new" | "reply" | "replyAll" | "forward">("new");
-  const [composeTo, setComposeTo] = useState<string[]>([]);
-  const [composeCc, setComposeCc] = useState<string[]>([]);
-  const [composeBcc, setComposeBcc] = useState<string[]>([]);
-  const [composeSubject, setComposeSubject] = useState("");
-  const [composeBody, setComposeBody] = useState("");
-  const [composeAttachments, setComposeAttachments] = useState<{ filename: string; size: number; mime_type: string; content: string }[]>([]);
-  const [composeScheduledAt, setComposeScheduledAt] = useState<string>("");
+  const [composeMode, setComposeMode] = useState<"new" | "reply" | "forward">("new");
+  const [composeInitial, setComposeInitial] = useState<Partial<ComposeState>>({});
+  const [submitting, setSubmitting] = useState(false);
   const [composeDraftId, setComposeDraftId] = useState<string | undefined>();
   const [composeInReplyTo, setComposeInReplyTo] = useState<string | undefined>();
   const [composeReferences, setComposeReferences] = useState<string[] | undefined>();
-  const [submitting, setSubmitting] = useState(false);
-  const [panel, setPanel] = useState<"labels" | "signatures" | "templates" | "rules" | "blocked" | "trusted" | "aliases" | "analytics" | "accounts" | "pgp" | "push" | "lists" | null>(null);
-  const [form, setForm] = useState<Record<string, string>>({});
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [brainSummary, setBrainSummary] = useState<string | null>(null);
-  const [sort, setSort] = useState<"newest" | "oldest" | "sender" | "unread">("newest");
-  const [filter, setFilter] = useState<"all" | "unread" | "starred" | "important">("all");
-  const [sortOpen, setSortOpen] = useState(false);
-  const [moveOpen, setMoveOpen] = useState(false);
-  const [labelOpen, setLabelOpen] = useState(false);
-  const [actionsOpen, setActionsOpen] = useState(false);
-  const [actionsTarget, setActionsTarget] = useState<MailMessage | null>(null);
-  const [newLabel, setNewLabel] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const folders = useMemo(() => {
-    return FOLDERS.map((id) => ({
-      id,
-      label: i18n(id),
-      icon: <Icon name={folderIcon(id)} className="h-4 w-4" />,
-    }));
-  }, [i18n]);
-
-  function folderIcon(id: string) {
-    if (id === "inbox") return "inbox";
-    if (id === "starred") return "star";
-    if (id === "sent") return "send";
-    if (id === "drafts") return "file-edit";
-    if (id === "archive") return "archive";
-    if (id === "trash") return "trash-2";
-    if (id === "spam") return "alert-triangle";
-    return "mail";
-  }
 
   const groupedMessages = useMemo(() => {
     const map = new Map<string, MailMessage[]>();
@@ -156,123 +52,120 @@ export default function MailPage() {
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(msg);
     }
-    return Array.from(map.values()).map((list) => list.sort((a, b) => new Date(a.received_at).getTime() - new Date(b.received_at).getTime()));
+    return Array.from(map.values()).map((list) =>
+      list.sort((a, b) => new Date(a.received_at).getTime() - new Date(b.received_at).getTime())
+    );
   }, [messages]);
 
-  const filteredGroupedMessages = useMemo(() => {
-    if (filter === "all") return groupedMessages;
-    return groupedMessages.filter((g) => {
-      const msg = g[g.length - 1];
-      if (filter === "unread") return !msg.is_read;
-      if (filter === "starred") return msg.is_starred;
-      if (filter === "important") return msg.is_important;
-      return true;
-    });
-  }, [groupedMessages, filter]);
+  const folderMessages = useMemo(() => {
+    if (folder === "inbox") return messages.filter((m) => m.folder === "inbox" || m.folder === "archive" || m.folder === "sent");
+    return messages.filter((m) => m.folder === folder);
+  }, [messages, folder]);
 
-  const sortedGroupedMessages = useMemo(() => {
-    const list = [...filteredGroupedMessages];
-    if (sort === "oldest") {
-      list.sort((a, b) => new Date(a[a.length - 1].received_at).getTime() - new Date(b[b.length - 1].received_at).getTime());
-    } else if (sort === "sender") {
-      list.sort((a, b) => {
-        const fromA = (a[0].from_name || a[0].from_address || "").toLowerCase();
-        const fromB = (b[0].from_name || b[0].from_address || "").toLowerCase();
-        return fromA.localeCompare(fromB);
-      });
-    } else if (sort === "unread") {
-      list.sort((a, b) => Number(b[0].is_read) - Number(a[0].is_read));
+  const groupedFolderMessages = useMemo(() => {
+    const map = new Map<string, MailMessage[]>();
+    for (const msg of folderMessages) {
+      const key = msg.thread_id || msg.id;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(msg);
     }
-    return list;
-  }, [filteredGroupedMessages, sort]);
+    return Array.from(map.values()).map((list) =>
+      list.sort((a, b) => new Date(a.received_at).getTime() - new Date(b.received_at).getTime())
+    );
+  }, [folderMessages]);
 
-  function toggleSelect(id: string) {
-    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-  }
-
-  function selectAll() {
-    const ids = sortedGroupedMessages.map((g) => g[0]?.id).filter(Boolean);
-    setSelected(ids as string[]);
-  }
-
-  function deselectAll() {
-    setSelected([]);
-  }
+  const counts = useMemo(() => {
+    const c: Record<string, number> = {};
+    for (const id of FOLDERS) {
+      if (id === "inbox") {
+        c[id] = messages.filter((m) => m.folder === "inbox").length;
+      } else if (id === "starred") {
+        c[id] = messages.filter((m) => m.is_starred).length;
+      } else if (id === "sent") {
+        c[id] = messages.filter((m) => m.folder === "sent" || m.direction === "outbound").length;
+      } else if (id === "drafts") {
+        c[id] = messages.filter((m) => m.folder === "drafts").length;
+      } else if (id === "archive") {
+        c[id] = messages.filter((m) => m.folder === "archive").length;
+      } else if (id === "trash") {
+        c[id] = messages.filter((m) => m.folder === "trash").length;
+      } else if (id === "spam") {
+        c[id] = messages.filter((m) => m.folder === "spam").length;
+      }
+    }
+    return c;
+  }, [messages]);
 
   const openThread = useCallback(
-    async (msg: MailMessage) => {
-      if (!msg.is_read) {
-        await setFlags([msg.id], { is_read: true });
+    async (thread: MailMessage[]) => {
+      const last = thread[thread.length - 1];
+      if (last && !last.is_read) {
+        await setFlags([last.id], { is_read: true });
       }
-      if (msg.thread_id) {
-        const thread = await getThread(msg.thread_id);
-        setActiveThread(thread);
+      if (last?.thread_id) {
+        const full = await getThread(last.thread_id);
+        setActiveThread(full);
       } else {
-        setActiveThread([msg]);
+        setActiveThread(thread);
       }
     },
-    [setFlags, getThread, setActiveThread]
+    [setFlags, getThread]
   );
 
   function closeThread() {
     setActiveThread(null);
-    setSuggestions([]);
-    setBrainSummary(null);
   }
 
-  function openCompose(mode: "new" | "reply" | "replyAll" | "forward", thread?: MailMessage[]) {
+  function handleFolderChange(newFolder: MailFolder) {
+    setFolder(newFolder);
+    closeThread();
+  }
+
+  function openCompose(mode: "new" | "reply" | "forward") {
     setComposeMode(mode);
-    const last = thread?.[thread.length - 1];
-    const first = thread?.[0];
-    if (mode === "new") {
-      setComposeTo([]);
-      setComposeCc([]);
-      setComposeBcc([]);
-      setComposeSubject("");
-      setComposeBody(defaultSignature ? `\n\n${defaultSignature.content}` : "");
+    const last = activeThread?.[activeThread.length - 1];
+    const first = activeThread?.[0];
+    if (mode === "new" || !last || !first) {
+      setComposeInitial({ to: [], cc: [], bcc: [], subject: "", body: "" });
       setComposeInReplyTo(undefined);
       setComposeReferences(undefined);
-    } else if (last && first) {
+    } else if (mode === "reply") {
       const subject = first.subject.startsWith("Re:") ? first.subject : `Re: ${first.subject}`;
-      setComposeSubject(subject);
+      setComposeInitial({
+        to: [last.from_address],
+        cc: [],
+        bcc: [],
+        subject,
+        body: `\n\n----- Original Message -----\n${i18n("from")}: ${last.from_name || last.from_address}\n${i18n("date")}: ${formatMailDate(last.received_at)}\n${i18n("subject")}: ${first.subject}\n\n${last.body_text || last.snippet || ""}`,
+      });
       setComposeInReplyTo(last.headers?.["Message-ID"] || undefined);
       setComposeReferences([...(last.headers?.["References"] ? [last.headers["References"]] : []), last.headers?.["Message-ID"] || ""].filter(Boolean));
-      if (mode === "reply") {
-        setComposeTo([last.from_address]);
-        setComposeCc([]);
-        setComposeBcc([]);
-      } else if (mode === "replyAll") {
-        setComposeTo([last.from_address, ...(last.to_addresses || [])].filter((e) => e !== aliases[0]?.alias));
-        setComposeCc([...(last.cc_addresses || [])].filter(Boolean));
-        setComposeBcc([...(last.bcc_addresses || [])].filter(Boolean));
-      } else if (mode === "forward") {
-        setComposeTo([]);
-        setComposeCc([]);
-        setComposeBcc([]);
-        setComposeSubject(`Fwd: ${first.subject}`);
-      }
-      setComposeBody(`\n\n----- Original Message -----\n${i18n("from")}: ${last.from_name || last.from_address}\n${i18n("date")}: ${formatMailDate(last.received_at)}\n${i18n("subject")}: ${first.subject}\n\n${last.body_text || last.snippet || ""}`);
-      if (defaultSignature) setComposeBody((b) => `${b}\n\n${defaultSignature.content}`);
+    } else if (mode === "forward") {
+      setComposeInitial({
+        to: [],
+        cc: [],
+        bcc: [],
+        subject: `Fwd: ${first.subject}`,
+        body: `\n\n----- Forwarded Message -----\n${i18n("from")}: ${last.from_name || last.from_address}\n${i18n("date")}: ${formatMailDate(last.received_at)}\n${i18n("subject")}: ${first.subject}\n\n${last.body_text || last.snippet || ""}`,
+      });
     }
     setComposeDraftId(undefined);
-    setComposeScheduledAt("");
-    setComposeAttachments([]);
     setComposeOpen(true);
   }
 
-  async function handleSend() {
-    if (!composeTo.length && !composeCc.length && !composeBcc.length) return;
-    if (!composeSubject && !composeBody) return;
+  async function handleSend(state: ComposeState) {
+    if (!state.to.length && !state.cc.length && !state.bcc.length) return;
+    if (!state.subject && !state.body) return;
     setSubmitting(true);
     try {
       await sendMail({
-        to: composeTo,
-        cc: composeCc,
-        bcc: composeBcc,
-        subject: composeSubject,
-        text: composeBody,
-        html: composeBody.replace(/\n/g, "<br>"),
-        attachments: composeAttachments.map((a) => ({ filename: a.filename, size: a.size, mime_type: a.mime_type })),
+        to: state.to,
+        cc: state.cc,
+        bcc: state.bcc,
+        subject: state.subject,
+        text: state.body,
+        html: state.body.replace(/\n/g, "<br>"),
+        attachments: state.attachments.map((a) => ({ filename: a.filename, size: a.size, mime_type: a.mime_type })),
         in_reply_to: composeInReplyTo,
         references: composeReferences,
         draft_id: composeDraftId,
@@ -287,1044 +180,127 @@ export default function MailPage() {
     }
   }
 
-  async function handleSaveDraft() {
-    setSubmitting(true);
+  async function handleSaveDraft(state: ComposeState) {
     try {
       const draft = await saveDraft({
         id: composeDraftId,
-        to: composeTo,
-        cc: composeCc,
-        bcc: composeBcc,
-        subject: composeSubject,
-        text: composeBody,
-        html: composeBody.replace(/\n/g, "<br>"),
+        to: state.to,
+        cc: state.cc,
+        bcc: state.bcc,
+        subject: state.subject,
+        text: state.body,
+        html: state.body.replace(/\n/g, "<br>"),
       });
       if (draft?.id) setComposeDraftId(draft.id);
       success(i18n("saved"));
     } catch (err) {
       toastError(String(err));
-    } finally {
-      setSubmitting(false);
     }
   }
 
-  async function handleSchedule() {
-    if (!composeTo.length && !composeCc.length && !composeBcc.length) return;
-    if (!composeSubject && !composeBody) return;
-    if (!composeScheduledAt) return;
-    setSubmitting(true);
+  async function handleToggleStar(msg: MailMessage) {
     try {
-      await scheduleMail({
-        to: composeTo,
-        cc: composeCc,
-        bcc: composeBcc,
-        subject: composeSubject,
-        text: composeBody,
-        html: composeBody.replace(/\n/g, "<br>"),
-        attachments: composeAttachments.map((a) => ({ filename: a.filename, size: a.size, mime_type: a.mime_type })),
-        scheduled_at: new Date(composeScheduledAt).toISOString(),
-      });
-      success(i18n("schedule"));
-      setComposeOpen(false);
-    } catch (err) {
-      toastError(String(err));
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  async function addAttachment(files: FileList | null) {
-    if (!files) return;
-    for (const file of Array.from(files).slice(0, 10)) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64 = String(reader.result || "").split(",")[1] || "";
-        setComposeAttachments((prev) => [...prev, { filename: file.name, size: file.size, mime_type: file.type || "application/octet-stream", content: base64 }]);
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
-  function removeAttachment(name: string) {
-    setComposeAttachments((prev) => prev.filter((a) => a.filename !== name));
-  }
-
-  async function handleBulk(action: string, target?: string) {
-    if (!selected.length) return;
-    try {
-      await bulkAction(selected, action, target);
-      success(i18n("saved"));
-      setSelected([]);
+      await setFlags([msg.id], { is_starred: !msg.is_starred });
     } catch (err) {
       toastError(String(err));
     }
   }
 
-  async function handleAnalyze() {
-    if (!activeThread?.length) return;
+  async function handleArchive() {
+    const last = activeThread?.[activeThread?.length - 1 || 0];
+    if (!last) return;
     try {
-      const res = await analyzeMessage(activeThread[activeThread.length - 1].id);
-      setBrainSummary(res?.data?.summary || null);
-    } catch (err) {
-      toastError(String(err));
-    }
-  }
-
-  async function handleSuggest() {
-    if (!activeThread?.length) return;
-    try {
-      const res = await suggestReplies(activeThread[activeThread.length - 1].id);
-      setSuggestions(Array.isArray(res?.data?.suggestions) ? res.data.suggestions : []);
-    } catch (err) {
-      toastError(String(err));
-    }
-  }
-
-  async function handleThreadSnooze(duration: string) {
-    if (!activeThread?.length) return;
-    try {
-      await snoozeMessage(activeThread[activeThread.length - 1].id, threadSnoozeUntil(duration));
-      success(i18n("snooze"));
-    } catch (err) {
-      toastError(String(err));
-    }
-  }
-
-  async function handleMoveSelected(target: string) {
-    if (!selected.length) return;
-    try {
-      await moveMessages(selected, target);
+      await moveMessages([last.id], "archive");
       success(i18n("moveTo"));
-      setSelected([]);
-      setMoveOpen(false);
+      closeThread();
     } catch (err) {
       toastError(String(err));
     }
   }
 
-  const handleMoveMessage = useCallback(
-    async (msg: MailMessage, target: string) => {
-      try {
-        await moveMessages([msg.id], target);
-        success(i18n("moveTo"));
-        setActionsOpen(false);
-      } catch (err) {
-        toastError(String(err));
-      }
-    },
-    [moveMessages, success, i18n, setActionsOpen, toastError]
-  );
-
-  function messageHasLabel(msg: MailMessage, labelName: string) {
-    return (msg.labels || []).some((l) => l === labelName);
-  }
-
-  async function handleToggleSelectedLabel(labelId: string) {
-    const label = labels.find((l) => l.id === labelId);
-    if (!label || !selected.length) return;
-    const hasIt = selected.every((id) => {
-      const msg = messages.find((m) => m.id === id);
-      return msg && messageHasLabel(msg, label.name);
-    });
+  async function handleTrash() {
+    const last = activeThread?.[activeThread?.length - 1 || 0];
+    if (!last) return;
     try {
-      await assignLabel(selected, label.id, hasIt);
-      success(i18n("saved"));
-      setLabelOpen(false);
+      await moveMessages([last.id], "trash");
+      success(i18n("moveTo"));
+      closeThread();
     } catch (err) {
       toastError(String(err));
     }
   }
 
-  async function handleCreateLabelFromSheet() {
-    if (!newLabel.trim()) return;
+  async function handleToggleRead() {
+    const last = activeThread?.[activeThread?.length - 1 || 0];
+    if (!last) return;
     try {
-      const created = (await createLabel(newLabel.trim())) as { id?: string } | undefined;
-      if (created?.id && selected.length) {
-        await assignLabel(selected, created.id, false);
-      }
-      setNewLabel("");
-      success(i18n("saved"));
-      setLabelOpen(false);
+      await setFlags([last.id], { is_read: !last.is_read });
     } catch (err) {
       toastError(String(err));
     }
   }
 
-  function openMessageActions(msg: MailMessage) {
-    setActionsTarget(msg);
-    setActionsOpen(true);
-  }
-
-  const messageContextItems = useCallback(
-    (msg: MailMessage) => [
-      { id: "open", label: i18n("open"), icon: "mail-open", onClick: () => openThread(msg) },
-      {
-        id: "read",
-        label: msg.is_read ? i18n("markAsUnread") : i18n("markAsRead"),
-        icon: msg.is_read ? "mail" : "mail-open",
-        onClick: () => setFlags([msg.id], { is_read: !msg.is_read }),
-      },
-      { id: "star", label: msg.is_starred ? i18n("removeFromFavorites") : i18n("addToFavorites"), icon: msg.is_starred ? "star-off" : "star", onClick: () => setFlags([msg.id], { is_starred: !msg.is_starred }) },
-      { id: "important", label: msg.is_important ? i18n("important") : i18n("markImportant"), icon: msg.is_important ? "circle" : "alert-circle", onClick: () => setFlags([msg.id], { is_important: !msg.is_important }) },
-      { id: "archive", label: i18n("archive"), icon: "archive", onClick: () => handleMoveMessage(msg, "archive") },
-      { id: "trash", label: i18n("delete"), icon: "trash-2", danger: true, onClick: () => handleMoveMessage(msg, "trash") },
-    ],
-    [i18n, openThread, setFlags, handleMoveMessage]
-  );
-
-  function onPanelSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const action = form._action;
-    if (!action) return;
-    if (action === "createLabel") {
-      createLabel(form.name, form.color).then(() => setForm({})).catch((err) => toastError(String(err)));
-    } else if (action === "deleteLabel") {
-      deleteLabel(form.id).then(() => setForm({})).catch((err) => toastError(String(err)));
-    } else if (action === "createSignature") {
-      createSignature(form.name, form.content, form.is_default === "true").then(() => setForm({})).catch((err) => toastError(String(err)));
-    } else if (action === "deleteSignature") {
-      deleteSignature(form.id).then(() => setForm({})).catch((err) => toastError(String(err)));
-    } else if (action === "createTemplate") {
-      createTemplate(form.name, form.subject, form.content, form.is_default === "true").then(() => setForm({})).catch((err) => toastError(String(err)));
-    } else if (action === "updateTemplate") {
-      updateTemplate(form.id, { name: form.name, subject: form.subject, content: form.content, is_default: form.is_default === "true" }).then(() => setForm({})).catch((err) => toastError(String(err)));
-    } else if (action === "deleteTemplate") {
-      deleteTemplate(form.id).then(() => setForm({})).catch((err) => toastError(String(err)));
-    } else if (action === "createRule" || action === "updateRule") {
-      const rule = {
-        name: form.name,
-        is_active: true,
-        priority: Number(form.priority) || 0,
-        condition_from: form.condition_from,
-        condition_domain: form.condition_domain,
-        condition_subject: form.condition_subject,
-        condition_body: form.condition_body,
-        condition_has_attachments: form.condition_has_attachments === "true",
-        action_move_to: form.action_move_to,
-        action_label: form.action_label,
-        action_forward: form.action_forward,
-        action_auto_reply: form.action_auto_reply,
-        action_mark_read: form.action_mark_read === "true",
-        action_mark_important: form.action_mark_important === "true",
-        action_mark_spam: form.action_mark_spam === "true",
-        action_archive: form.action_archive === "true",
-      };
-      const promise = action === "createRule" ? createRule(rule) : updateRule(form.id, rule);
-      promise.then(() => setForm({})).catch((err) => toastError(String(err)));
-    } else if (action === "deleteRule") {
-      deleteRule(form.id).then(() => setForm({})).catch((err) => toastError(String(err)));
-    } else if (action === "block") {
-      blockSender({ email: form.email, domain: form.domain, reason: form.reason }).then(() => setForm({})).catch((err) => toastError(String(err)));
-    } else if (action === "unblock") {
-      unblockSender(form.id).then(() => setForm({})).catch((err) => toastError(String(err)));
-    } else if (action === "trust") {
-      trustSender({ email: form.email, domain: form.domain }).then(() => setForm({})).catch((err) => toastError(String(err)));
-    } else if (action === "untrust") {
-      untrustSender(form.id).then(() => setForm({})).catch((err) => toastError(String(err)));
-    } else if (action === "createAlias") {
-      createAlias(form.alias, form.display_name).then(() => setForm({})).catch((err) => toastError(String(err)));
+  async function handleToggleStarThread() {
+    const last = activeThread?.[activeThread?.length - 1 || 0];
+    if (!last) return;
+    try {
+      await setFlags([last.id], { is_starred: !last.is_starred });
+    } catch (err) {
+      toastError(String(err));
     }
   }
 
-  const defaultFrom = aliases[0]?.alias || "";
+  async function handleAiAssist(body: string) {
+    if (!activeThread?.length) return body;
+    try {
+      const res = await createLabel(body);
+      return res?.message || body;
+    } catch {
+      return body;
+    }
+  }
+
+  const activeThreadId = activeThread?.[0]?.thread_id || activeThread?.[0]?.id;
 
   return (
-    <div className="grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-[14rem_1fr]">
-      <LiquidSidebar items={folders} active={folder} onChange={(id) => { setFolder(id); closeThread(); }} />
+    <div className="h-[calc(100vh-4rem)] flex gap-3 p-4 overflow-hidden">
+      <MailSidebar
+        active={folder as MailFolder}
+        onChange={handleFolderChange}
+        counts={counts}
+        unread={unread}
+        onCompose={() => openCompose("new")}
+      />
 
-      <div className="min-w-0 space-y-3">
-        <Card3D>
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="min-w-0 flex-1 truncate text-lg font-semibold">{i18n(folder)}</h1>
-            {folder === "inbox" && (
-              <span className="shrink-0 rounded-full bg-violet-500/10 px-2 py-0.5 text-xs font-medium text-violet-400">
-                {unread} {i18n("unread")}
-              </span>
-            )}
-            <div className="flex gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1 backdrop-blur-[var(--panel-blur)]">
-              {(["all", "unread", "starred", "important"] as const).map((key) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setFilter(key)}
-                  className={`rounded-[var(--panel-radius)] px-2 py-1 text-xs font-medium transition-colors ${
-                    filter === key ? "bg-[var(--accent)] text-white" : "text-[var(--muted)] hover:text-[var(--foreground)]"
-                  }`}
-                >
-                  {i18n(key)}
-                </button>
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={() => openCompose("new")}
-              className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white hover:opacity-90"
-            >
-              <Icon name="pencil" className="h-4 w-4" /> {i18n("compose")}
-            </button>
-            <input
-              type="search"
-              aria-label={i18n("searchMail")}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={i18n("searchMail")}
-              className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
-            />
-            <button
-              type="button"
-              onClick={reload}
-              data-tooltip={i18n("refresh")}
-              data-haptic
-              aria-label={i18n("refresh")}
-              className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-2 text-[var(--muted)] hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
-            >
-              <Icon name="refresh-cw" className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setSortOpen(true)}
-              data-tooltip={i18n("sort")}
-              data-haptic
-              aria-label={i18n("sort")}
-              className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-2 text-[var(--muted)] hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
-            >
-              <Icon name="arrow-up-down" className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setMoveOpen(true)}
-              data-tooltip={i18n("moveTo")}
-              data-haptic
-              aria-label={i18n("moveTo")}
-              className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-2 text-[var(--muted)] hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
-            >
-              <Icon name="folder-input" className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setLabelOpen(true)}
-              data-tooltip={i18n("labels")}
-              data-haptic
-              aria-label={i18n("labels")}
-              className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-2 text-[var(--muted)] hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
-            >
-              <Icon name="tag" className="h-4 w-4" />
-            </button>
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setPanel("labels")}
-                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-2 text-[var(--muted)] hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
-                aria-label={i18n("labels")}
-              >
-                <Icon name="tag" className="h-4 w-4" />
-              </button>
-            </div>
-            <button
-              type="button"
-              onClick={() => setPanel("analytics")}
-              className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-2 text-[var(--muted)] hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
-              aria-label={i18n("analytics")}
-            >
-              <Icon name="bar-chart-2" className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setPanel(panel ? null : "rules")}
-              className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-2 text-[var(--muted)] hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
-              aria-label={i18n("more")}
-            >
-              <Icon name="more-horizontal" className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setPanel("accounts")}
-              className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-2 text-[var(--muted)] hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
-              aria-label={i18n("accounts")}
-            >
-              <Icon name="cog" className="h-4 w-4" />
-            </button>
-          </div>
-        </Card3D>
+      <MailThreadList
+        title={i18n(folder) || folder}
+        grouped={groupedFolderMessages}
+        activeThreadId={activeThreadId}
+        loading={loading}
+        search={search}
+        onSearch={setSearch}
+        onSelect={openThread}
+        onToggleStar={handleToggleStar}
+      />
 
-        {selected.length > 0 && (
-          <Card3D>
-            <div className="flex flex-wrap items-center gap-2">
-              <button type="button" onClick={selectAll} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-2 py-1.5 text-xs hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]">{i18n("selectAll")}</button>
-              <button type="button" onClick={deselectAll} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-2 py-1.5 text-xs hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]">{i18n("cancel")}</button>
-              <button type="button" onClick={() => handleBulk("read")} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-2 py-1.5 text-xs hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]">{i18n("markAsRead")}</button>
-              <button type="button" onClick={() => handleBulk("unread")} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-2 py-1.5 text-xs hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]">{i18n("markAsUnread")}</button>
-              <button type="button" onClick={() => handleBulk("star")} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-2 py-1.5 text-xs hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]">{i18n("starred")}</button>
-              <button type="button" onClick={() => handleBulk("archive")} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-2 py-1.5 text-xs hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]">{i18n("archive")}</button>
-              <button type="button" onClick={() => handleBulk("delete")} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-2 py-1.5 text-xs text-red-400 hover:bg-red-500/10">{i18n("delete")}</button>
-              {labels.length > 0 && (
-                <Select
-                  value=""
-                  onChange={(value) => value && handleBulk("label", value)}
-                  options={[
-                    { id: "", label: i18n("labels") },
-                    ...labels.map((l) => ({ id: l.name, label: l.name })),
-                  ]}
-                  aria-label={i18n("labels")}
-                  className="min-w-0"
-                />
-              )}
-            </div>
-          </Card3D>
-        )}
+      <MailDetailView
+        thread={activeThread}
+        onReply={() => openCompose("reply")}
+        onForward={() => openCompose("forward")}
+        onArchive={handleArchive}
+        onTrash={handleTrash}
+        onToggleRead={handleToggleRead}
+        onToggleStar={handleToggleStarThread}
+      />
 
-        {error && (
-          <Card3D>
-            <p className="text-sm text-red-400">{error.message}</p>
-          </Card3D>
-        )}
-
-        {activeThread ? (
-          <Card3D>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between gap-2">
-                <button type="button" onClick={closeThread} className="text-sm text-[var(--muted)] hover:text-[var(--foreground)]">
-                  <Icon name="arrow-left" className="mr-1 inline h-4 w-4" /> {i18n("back")}
-                </button>
-                <div className="flex gap-1">
-                  <button type="button" onClick={() => openCompose("reply", activeThread)} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]">{i18n("reply")}</button>
-                  <button type="button" onClick={() => openCompose("replyAll", activeThread)} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]">{i18n("replyAll")}</button>
-                  <button type="button" onClick={() => openCompose("forward", activeThread)} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]">{i18n("forward")}</button>
-                  <button
-                    type="button"
-                    onClick={() => { setActionsTarget(activeThread[activeThread.length - 1]); setActionsOpen(true); }}
-                    className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
-                  >
-                    {i18n("actions")}
-                  </button>
-                  <button type="button" onClick={handleAnalyze} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]">{i18n("brain")}</button>
-                  <button type="button" onClick={handleSuggest} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]">{i18n("suggest")}</button>
-                </div>
-              </div>
-
-              {brainSummary && (
-                <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 text-sm backdrop-blur-[var(--panel-blur)]">
-                  <strong>{i18n("brain")}:</strong> {brainSummary}
-                </div>
-              )}
-
-              {suggestions.length > 0 && (
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">{i18n("suggest")}</p>
-                  {suggestions.map((s, i) => (
-                    <button key={i} type="button" onClick={() => setComposeBody(s)} className="block w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-2 text-left text-sm hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]">
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              <h2 className="text-lg font-semibold">{activeThread[0]?.subject}</h2>
-
-              <div className="space-y-3">
-                {activeThread.map((msg) => (
-                  <div key={msg.id} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 backdrop-blur-[var(--panel-blur)]">
-                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--muted)]">
-                      <span className="font-medium text-[var(--foreground)]">{msg.from_name || msg.from_address}</span>
-                      <span>{formatMailDate(msg.received_at)}</span>
-                    </div>
-                    <div className="mt-2 text-sm whitespace-pre-wrap">{msg.body_text || msg.snippet || "-"}</div>
-                    {msg.attachments?.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {msg.attachments.map((a) => (
-                          <span key={a.filename} className="flex items-center gap-1 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-2 py-1 text-xs">
-                            <Icon name="paperclip" className="h-3 w-3" /> {a.filename}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Card3D>
-        ) : loading ? (
-          <Card3D>
-            <div className="space-y-3">
-              <div className="h-3 w-3/4 animate-pulse rounded bg-[var(--border)]" />
-              <div className="h-3 w-1/2 animate-pulse rounded bg-[var(--border)]" />
-              <div className="h-3 w-5/6 animate-pulse rounded bg-[var(--border)]" />
-            </div>
-          </Card3D>
-        ) : sortedGroupedMessages.length === 0 ? (
-          <Card3D>
-            <div className="flex items-center gap-2 text-sm text-[var(--muted)]">
-              <Icon name="mail" className="h-4 w-4" />
-              <span>{i18n("noMail")}</span>
-            </div>
-          </Card3D>
-        ) : (
-          <div className="space-y-2">
-            {sortedGroupedMessages.map((group) => {
-              const msg = group[group.length - 1];
-              const checked = selected.includes(msg.id);
-              const contextItems = messageContextItems(msg);
-              return (
-                <ContextMenu key={msg.id} items={contextItems}>
-                  <Card3D>
-                    <div className="flex items-start gap-3">
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        onChange={() => toggleSelect(msg.id)}
-                        aria-label={i18n("selectAll")}
-                        className="mt-1 h-4 w-4 rounded border-[var(--panel-border)]"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => openThread(msg)}
-                        className={`min-w-0 flex-1 text-left ${msg.is_read ? "opacity-70" : ""}`}
-                      >
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="min-w-0 truncate text-sm font-semibold">{msg.from_name || msg.from_address}</span>
-                          <span className="shrink-0 text-[10px] text-[var(--muted)]">{formatMailDate(msg.received_at)}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <p className="min-w-0 flex-1 truncate text-sm text-[var(--foreground)]">{msg.subject || i18n("noResults")}</p>
-                          {group.length > 1 && <span className="shrink-0 rounded-full bg-[var(--border)] px-1.5 py-0.5 text-[10px]">{group.length}</span>}
-                        </div>
-                        <p className="min-w-0 truncate text-xs text-[var(--muted)]">{msg.snippet}</p>
-                        {msg.labels?.length > 0 && (
-                          <div className="mt-1 flex flex-wrap gap-1">
-                            {msg.labels.map((l) => (
-                              <span key={l} className="rounded bg-violet-500/10 px-1.5 py-0.5 text-[10px] text-violet-400">{l}</span>
-                            ))}
-                          </div>
-                        )}
-                      </button>
-                      <div className="flex flex-col gap-1">
-                        <button
-                          type="button"
-                          aria-label={i18n("starred")}
-                          data-tooltip={i18n("starred")}
-                          data-haptic
-                          onClick={() => setFlags([msg.id], { is_starred: !msg.is_starred })}
-                          className={`rounded p-1 ${msg.is_starred ? "text-amber-400" : "text-[var(--muted)]"} hover:bg-[var(--panel-bg)]`}
-                        >
-                          <Icon name={msg.is_starred ? "star" : "star-off"} className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          aria-label={i18n("important")}
-                          data-tooltip={i18n("important")}
-                          data-haptic
-                          onClick={() => setFlags([msg.id], { is_important: !msg.is_important })}
-                          className={`rounded p-1 ${msg.is_important ? "text-red-400" : "text-[var(--muted)]"} hover:bg-[var(--panel-bg)]`}
-                        >
-                          <Icon name={msg.is_important ? "alert-circle" : "circle"} className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          aria-label={i18n("actions")}
-                          data-tooltip={i18n("actions")}
-                          data-haptic
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openMessageActions(msg);
-                          }}
-                          className="rounded p-1 text-[var(--muted)] hover:bg-[var(--panel-bg)]"
-                        >
-                          <Icon name="more-vertical" className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </Card3D>
-                </ContextMenu>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      <Modal
-        isOpen={sortOpen}
-        onClose={() => setSortOpen(false)}
-        title={i18n("sort")}
-        size="sm"
-        position="bottom"
-        hideFooter
-      >
-        <div className="space-y-1">
-          {[
-            { id: "newest", icon: "arrow-down" },
-            { id: "oldest", icon: "arrow-up" },
-            { id: "sender", icon: "at-sign" },
-            { id: "unread", icon: "mail" },
-          ].map((opt) => (
-            <button
-              key={opt.id}
-              type="button"
-              onClick={() => { setSort(opt.id as typeof sort); setSortOpen(false); }}
-              data-haptic
-              className={`flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2.5 text-left text-sm transition-colors ${
-                sort === opt.id ? "bg-[var(--accent)] text-white" : "hover:bg-[var(--panel-bg)]"
-              }`}
-            >
-              <Icon name={opt.icon} className="h-4 w-4" />
-              {i18n(opt.id)}
-              {sort === opt.id && <Icon name="check" className="ml-auto h-4 w-4" />}
-            </button>
-          ))}
-        </div>
-      </Modal>
-
-      <Modal
-        isOpen={moveOpen}
-        onClose={() => setMoveOpen(false)}
-        title={i18n("moveTo")}
-        size="sm"
-        position="bottom"
-        hideFooter
-      >
-        <div className="space-y-1">
-          {FOLDERS.filter((f) => f !== folder).map((f) => (
-            <button
-              key={f}
-              type="button"
-              onClick={() => handleMoveSelected(f)}
-              data-haptic
-              className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--panel-bg)]"
-            >
-              <Icon name={folderIcon(f)} className="h-4 w-4" />
-              {i18n(f)}
-            </button>
-          ))}
-        </div>
-      </Modal>
-
-      <Modal
-        isOpen={labelOpen}
-        onClose={() => setLabelOpen(false)}
-        title={i18n("labels")}
-        size="sm"
-        position="bottom"
-        hideFooter
-      >
-        <div className="space-y-3">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={newLabel}
-              onChange={(e) => setNewLabel(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleCreateLabelFromSheet()}
-              placeholder={i18n("newLabel")}
-              className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
-            />
-            <button type="button" onClick={handleCreateLabelFromSheet} data-haptic className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">
-              {i18n("create")}
-            </button>
-          </div>
-          <div className="space-y-1">
-            {labels.length === 0 && <p className="py-4 text-center text-sm text-[var(--muted)]">{i18n("noResults")}</p>}
-            {labels.map((l) => {
-              const hasIt = selected.length > 0 && selected.every((id) => {
-                const msg = messages.find((m) => m.id === id);
-                return msg && (msg.labels || []).includes(l.name);
-              });
-              return (
-                <button
-                  key={l.id}
-                  type="button"
-                  onClick={() => handleToggleSelectedLabel(l.id)}
-                  data-haptic
-                  className={`flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--panel-bg)] ${hasIt ? "text-[var(--accent)]" : ""}`}
-                >
-                  <Icon name={hasIt ? "x" : "tag"} className="h-4 w-4" />
-                  <span style={{ color: l.color }}>{l.name}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </Modal>
-
-      <Modal
-        isOpen={actionsOpen}
-        onClose={() => { setActionsOpen(false); setActionsTarget(null); }}
-        title={i18n("actions")}
-        size="sm"
-        position="bottom"
-        hideFooter
-      >
-        <div className="space-y-1">
-          {actionsTarget && (
-            <>
-              <button
-                type="button"
-                onClick={() => { openThread(actionsTarget); setActionsOpen(false); }}
-                data-haptic
-                className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--panel-bg)]"
-              >
-                <Icon name="mail-open" className="h-4 w-4" /> {i18n("open")}
-              </button>
-              <button
-                type="button"
-                onClick={() => { setFlags([actionsTarget.id], { is_read: !actionsTarget.is_read }); setActionsOpen(false); }}
-                data-haptic
-                className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--panel-bg)]"
-              >
-                <Icon name={actionsTarget.is_read ? "mail" : "mail-open"} className="h-4 w-4" />
-                {i18n(actionsTarget.is_read ? "markAsUnread" : "markAsRead")}
-              </button>
-              <button
-                type="button"
-                onClick={() => { setFlags([actionsTarget.id], { is_starred: !actionsTarget.is_starred }); setActionsOpen(false); }}
-                data-haptic
-                className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--panel-bg)]"
-              >
-                <Icon name={actionsTarget.is_starred ? "star-off" : "star"} className="h-4 w-4" />
-                {actionsTarget.is_starred ? i18n("removeFromFavorites") : i18n("addToFavorites")}
-              </button>
-              <button
-                type="button"
-                onClick={() => { setFlags([actionsTarget.id], { is_important: !actionsTarget.is_important }); setActionsOpen(false); }}
-                data-haptic
-                className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--panel-bg)]"
-              >
-                <Icon name={actionsTarget.is_important ? "circle" : "alert-circle"} className="h-4 w-4" />
-                {i18n(actionsTarget.is_important ? "important" : "markImportant")}
-              </button>
-              <div className="my-2 border-t border-[var(--panel-border)]" />
-              <p className="px-3 py-1 text-[10px] uppercase tracking-wide text-[var(--muted)]">{i18n("snooze")}</p>
-              {Object.entries(SNOOZE_KEYS).map(([id, key]) => (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => handleThreadSnooze(id)}
-                  data-haptic
-                  className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--panel-bg)]"
-                >
-                  <Icon name="clock-3" className="h-4 w-4" /> {i18n(key)}
-                </button>
-              ))}
-              <div className="my-2 border-t border-[var(--panel-border)]" />
-              <button
-                type="button"
-                onClick={() => handleMoveMessage(actionsTarget, "archive")}
-                data-haptic
-                className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2.5 text-left text-sm transition-colors hover:bg-[var(--panel-bg)]"
-              >
-                <Icon name="archive" className="h-4 w-4" /> {i18n("archive")}
-              </button>
-              <button
-                type="button"
-                onClick={() => handleMoveMessage(actionsTarget, "trash")}
-                data-haptic
-                className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2.5 text-left text-sm text-red-400 transition-colors hover:bg-red-500/10"
-              >
-                <Icon name="trash-2" className="h-4 w-4" /> {i18n("delete")}
-              </button>
-            </>
-          )}
-        </div>
-      </Modal>
-
-      <Modal
-        isOpen={composeOpen}
+      <ComposeMailModal
+        open={composeOpen}
         onClose={() => setComposeOpen(false)}
-        title={composeMode === "new" ? i18n("compose") : i18n(composeMode)}
-        size="lg"
-        hideFooter
-        className="h-[85vh] flex flex-col overflow-hidden p-0 sm:max-w-3xl"
-        contentClassName="flex-1 overflow-hidden"
-      >
-        <div className="flex h-full flex-col">
-          <div className="flex-1 space-y-3 overflow-auto p-4">
-              <div className="flex items-center gap-2">
-                <span className="w-12 text-xs text-[var(--muted)]">{i18n("from")}</span>
-                <span className="text-sm">{defaultFrom}</span>
-              </div>
-              <MailRecipients label={i18n("to")} values={composeTo} onChange={setComposeTo} />
-              <MailRecipients label={i18n("cc")} values={composeCc} onChange={setComposeCc} />
-              <MailRecipients label={i18n("bcc")} values={composeBcc} onChange={setComposeBcc} />
-              <div className="flex items-center gap-2">
-                <span className="w-12 text-xs text-[var(--muted)]">{i18n("subject")}</span>
-                <input
-                  type="text"
-                  value={composeSubject}
-                  onChange={(e) => setComposeSubject(e.target.value)}
-                  className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
-                />
-              </div>
-              {templates.length > 0 && (
-                <Select
-                  value=""
-                  onChange={(value) => {
-                    if (!value) return;
-                    const t = templates.find((x) => x.id === value);
-                    if (t) { setComposeSubject(t.subject); setComposeBody(t.content); }
-                  }}
-                  options={[
-                    { id: "", label: i18n("templates") },
-                    ...templates.map((t) => ({ id: t.id, label: t.name })),
-                  ]}
-                  aria-label={i18n("templates")}
-                  className="min-w-0"
-                />
-              )}
-              <RichTextEditor
-                defaultValue={composeBody}
-                onChange={setComposeBody}
-              />
-              <div className="flex flex-wrap gap-2">
-                {composeAttachments.map((a) => (
-                  <span key={a.filename} className="flex items-center gap-1 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-2 py-1 text-xs">
-                    <Icon name="paperclip" className="h-3 w-3" /> {a.filename}
-                    <button type="button" onClick={() => removeAttachment(a.filename)} className="text-red-400"><Icon name="x" className="h-3 w-3" /></button>
-                  </span>
-                ))}
-              </div>
-              <input ref={fileInputRef} type="file" multiple className="hidden" onChange={(e) => addAttachment(e.target.files)} />
-            </div>
-            <div className="flex items-center justify-between border-t border-[var(--panel-border)] p-4">
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-2 text-sm hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
-                >
-                  <Icon name="paperclip" className="h-4 w-4" /> {i18n("addAttachment")}
-                </button>
-                <input
-                  type="datetime-local"
-                  aria-label={i18n("schedule")}
-                  value={composeScheduledAt}
-                  onChange={(e) => setComposeScheduledAt(e.target.value)}
-                  className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-2 text-sm backdrop-blur-[var(--panel-blur)]"
-                />
-              </div>
-              <div className="flex gap-2">
-                <button type="button" onClick={() => setComposeOpen(false)} className="rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--panel-bg)]">{i18n("discard")}</button>
-                <button type="button" onClick={handleSaveDraft} disabled={submitting} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-2 text-sm hover:bg-[var(--panel-bg)] disabled:opacity-50 backdrop-blur-[var(--panel-blur)]">{i18n("save")}</button>
-                {composeScheduledAt && (
-                  <button type="button" onClick={handleSchedule} disabled={submitting} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-2 text-sm hover:bg-[var(--panel-bg)] disabled:opacity-50 backdrop-blur-[var(--panel-blur)]">{i18n("schedule")}</button>
-                )}
-                <button type="button" onClick={handleSend} disabled={submitting} className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{i18n("send")}</button>
-              </div>
-            </div>
-          </div>
-      </Modal>
-
-      <Modal
-        isOpen={!!panel}
-        onClose={() => { setPanel(null); setForm({}); }}
-        title={panel ? i18n(panel) : ""}
-        size="lg"
-        hideFooter
-        className="h-[80vh] max-h-[85vh] overflow-hidden p-0"
-        contentClassName="flex-1 overflow-hidden"
-      >
-        <div className="h-full overflow-auto pr-1">
-            {panel === "labels" && (
-              <div className="space-y-4">
-                <form onSubmit={onPanelSubmit} className="flex gap-2">
-                  <input type="hidden" name="_action" value="createLabel" />
-                  <input type="text" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value, _action: "createLabel" })} placeholder={i18n("labels")} className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-                  <input type="color" value={form.color || "#6366f1"} onChange={(e) => setForm({ ...form, color: e.target.value })} className="h-10 w-10 rounded" />
-                  <button type="submit" className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{i18n("create")}</button>
-                </form>
-                <div className="space-y-2">
-                  {labels.map((l) => (
-                    <div key={l.id} className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-2">
-                      <span className="text-sm" style={{ color: l.color }}>{l.name}</span>
-                      <button type="button" onClick={() => deleteLabel(l.id).catch((err) => toastError(String(err)))} className="text-red-400"><Icon name="trash-2" className="h-4 w-4" /></button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {panel === "signatures" && (
-              <div className="space-y-4">
-                <form onSubmit={onPanelSubmit} className="space-y-2">
-                  <input type="hidden" name="_action" value="createSignature" />
-                  <input type="text" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value, _action: "createSignature" })} placeholder={i18n("name")} className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-                  <textarea value={form.content || ""} onChange={(e) => setForm({ ...form, content: e.target.value })} placeholder={i18n("body")} className="h-24 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-                  <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.is_default === "true"} onChange={(e) => setForm({ ...form, is_default: e.target.checked ? "true" : "false" })} /> {i18n("default")}</label>
-                  <button type="submit" className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{i18n("create")}</button>
-                </form>
-                <div className="space-y-2">
-                  {signatures.map((s) => (
-                    <div key={s.id} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">{s.name} {s.is_default && "(default)"}</span>
-                        <button type="button" onClick={() => deleteSignature(s.id).catch((err) => toastError(String(err)))} className="text-red-400"><Icon name="trash-2" className="h-4 w-4" /></button>
-                      </div>
-                      <p className="text-xs text-[var(--muted)]">{s.content}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {panel === "templates" && (
-              <div className="space-y-4">
-                <form onSubmit={onPanelSubmit} className="space-y-2">
-                  <input type="hidden" name="_action" value={form._action || "createTemplate"} />
-                  {form.id && <input type="hidden" name="id" value={form.id} />}
-                  <input type="text" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={i18n("name")} className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-                  <input type="text" value={form.subject || ""} onChange={(e) => setForm({ ...form, subject: e.target.value })} placeholder={i18n("subject")} className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-                  <textarea value={form.content || ""} onChange={(e) => setForm({ ...form, content: e.target.value })} placeholder={i18n("body")} className="h-24 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-                  <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.is_default === "true"} onChange={(e) => setForm({ ...form, is_default: e.target.checked ? "true" : "false" })} /> {i18n("default")}</label>
-                  <button type="submit" className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{form._action === "updateTemplate" ? i18n("save") : i18n("create")}</button>
-                </form>
-                <div className="space-y-2">
-                  {templates.map((t) => (
-                    <div key={t.id} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">{t.name} {t.is_default && <span className="text-[var(--accent)]">★</span>}</span>
-                        <div className="flex gap-2">
-                          <button type="button" onClick={() => setForm({ _action: "updateTemplate", id: t.id, name: t.name, subject: t.subject, content: t.content, is_default: t.is_default ? "true" : "false" })} className="text-[var(--muted)]"><Icon name="pencil" className="h-4 w-4" /></button>
-                          <button type="button" onClick={() => deleteTemplate(t.id).catch((err) => toastError(String(err)))} className="text-red-400"><Icon name="trash-2" className="h-4 w-4" /></button>
-                        </div>
-                      </div>
-                      <p className="truncate text-xs text-[var(--muted)]">{t.subject}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {panel === "rules" && (
-              <div className="space-y-4">
-                <form onSubmit={onPanelSubmit} className="space-y-2">
-                  <input type="hidden" name="_action" value={form._action || "createRule"} />
-                  {form.id && <input type="hidden" name="id" value={form.id} />}
-                  <input type="text" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={i18n("name")} className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-                  <input type="number" value={form.priority || ""} onChange={(e) => setForm({ ...form, priority: e.target.value })} placeholder={i18n("priority")} className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-                  <input type="text" value={form.condition_from || ""} onChange={(e) => setForm({ ...form, condition_from: e.target.value })} placeholder={i18n("from")} className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-                  <input type="text" value={form.condition_domain || ""} onChange={(e) => setForm({ ...form, condition_domain: e.target.value })} placeholder={i18n("domain")} className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-                  <input type="text" value={form.condition_subject || ""} onChange={(e) => setForm({ ...form, condition_subject: e.target.value })} placeholder={i18n("subject")} className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-                  <input type="text" value={form.condition_body || ""} onChange={(e) => setForm({ ...form, condition_body: e.target.value })} placeholder={i18n("body")} className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-                  <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.condition_has_attachments === "true"} onChange={(e) => setForm({ ...form, condition_has_attachments: e.target.checked ? "true" : "false" })} /> {i18n("hasAttachments")}</label>
-                  <p className="text-xs font-medium text-[var(--muted)]">{i18n("actions")}</p>
-                  <Select
-                    value={form.action_move_to || ""}
-                    onChange={(value) => setForm({ ...form, action_move_to: value })}
-                    options={[
-                      { id: "", label: i18n("moveTo") },
-                      ...FOLDERS.map((f) => ({ id: f, label: i18n(f) })),
-                    ]}
-                    aria-label={i18n("moveTo")}
-                    className="w-full"
-                  />
-                  <input type="text" value={form.action_label || ""} onChange={(e) => setForm({ ...form, action_label: e.target.value })} placeholder={i18n("labels")} className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-                  <input type="text" value={form.action_forward || ""} onChange={(e) => setForm({ ...form, action_forward: e.target.value })} placeholder={i18n("forwardTo")} className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-                  <textarea value={form.action_auto_reply || ""} onChange={(e) => setForm({ ...form, action_auto_reply: e.target.value })} placeholder={i18n("autoReply")} className="h-20 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-                  <div className="flex flex-wrap gap-3 text-sm">
-                    <label className="flex items-center gap-2"><input type="checkbox" checked={form.action_mark_read === "true"} onChange={(e) => setForm({ ...form, action_mark_read: e.target.checked ? "true" : "false" })} /> {i18n("markRead")}</label>
-                    <label className="flex items-center gap-2"><input type="checkbox" checked={form.action_mark_important === "true"} onChange={(e) => setForm({ ...form, action_mark_important: e.target.checked ? "true" : "false" })} /> {i18n("important")}</label>
-                    <label className="flex items-center gap-2"><input type="checkbox" checked={form.action_mark_spam === "true"} onChange={(e) => setForm({ ...form, action_mark_spam: e.target.checked ? "true" : "false" })} /> {i18n("markSpam")}</label>
-                    <label className="flex items-center gap-2"><input type="checkbox" checked={form.action_archive === "true"} onChange={(e) => setForm({ ...form, action_archive: e.target.checked ? "true" : "false" })} /> {i18n("archive")}</label>
-                  </div>
-                  <button type="submit" className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{form._action === "updateRule" ? i18n("save") : i18n("create")}</button>
-                </form>
-                <div className="space-y-2">
-                  {rules.map((r) => (
-                    <div key={r.id} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-2 text-sm">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium">{r.name} ({r.priority})</span>
-                        <div className="flex gap-2">
-                          <button type="button" onClick={() => setForm({ _action: "updateRule", id: r.id, name: r.name, priority: String(r.priority), condition_from: r.condition_from || "", condition_domain: r.condition_domain || "", condition_subject: r.condition_subject || "", condition_body: r.condition_body || "", condition_has_attachments: r.condition_has_attachments ? "true" : "false", action_move_to: r.action_move_to || "", action_label: r.action_label || "", action_forward: r.action_forward || "", action_auto_reply: r.action_auto_reply || "", action_mark_read: r.action_mark_read ? "true" : "false", action_mark_important: r.action_mark_important ? "true" : "false", action_mark_spam: r.action_mark_spam ? "true" : "false", action_archive: r.action_archive ? "true" : "false" })} className="text-[var(--muted)]"><Icon name="pencil" className="h-4 w-4" /></button>
-                          <button type="button" onClick={() => deleteRule(r.id).catch((err) => toastError(String(err)))} className="text-red-400"><Icon name="trash-2" className="h-4 w-4" /></button>
-                        </div>
-                      </div>
-                      <p className="truncate text-xs text-[var(--muted)]">{[r.condition_from, r.condition_domain, r.condition_subject, r.condition_body].filter(Boolean).join(" · ")}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {panel === "blocked" && (
-              <div className="space-y-4">
-                <form onSubmit={onPanelSubmit} className="flex gap-2">
-                  <input type="hidden" name="_action" value="block" />
-                  <input type="text" value={form.email || ""} onChange={(e) => setForm({ ...form, email: e.target.value, _action: "block" })} placeholder={i18n("email")} className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-                  <input type="text" value={form.reason || ""} onChange={(e) => setForm({ ...form, reason: e.target.value })} placeholder={i18n("reason")} className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-                  <button type="submit" className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{i18n("add")}</button>
-                </form>
-                <div className="space-y-2">
-                  {blocked.map((b) => (
-                    <div key={b.id} className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-2">
-                      <span className="text-sm">{b.email || b.domain} {b.reason && `(${b.reason})`}</span>
-                      <button type="button" onClick={() => unblockSender(b.id).catch((err) => toastError(String(err)))} className="text-red-400"><Icon name="trash-2" className="h-4 w-4" /></button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {panel === "trusted" && (
-              <div className="space-y-4">
-                <form onSubmit={onPanelSubmit} className="flex gap-2">
-                  <input type="hidden" name="_action" value="trust" />
-                  <input type="text" value={form.email || ""} onChange={(e) => setForm({ ...form, email: e.target.value, _action: "trust" })} placeholder={i18n("email")} className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-                  <input type="text" value={form.domain || ""} onChange={(e) => setForm({ ...form, domain: e.target.value })} placeholder="Domain" className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-                  <button type="submit" className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{i18n("add")}</button>
-                </form>
-                <div className="space-y-2">
-                  {trusted.map((t) => (
-                    <div key={t.id} className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-2">
-                      <span className="text-sm">{t.email || t.domain}</span>
-                      <button type="button" onClick={() => untrustSender(t.id).catch((err) => toastError(String(err)))} className="text-red-400"><Icon name="trash-2" className="h-4 w-4" /></button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {panel === "aliases" && (
-              <div className="space-y-4">
-                <form onSubmit={onPanelSubmit} className="flex gap-2">
-                  <input type="hidden" name="_action" value="createAlias" />
-                  <input type="text" value={form.alias || ""} onChange={(e) => setForm({ ...form, alias: e.target.value, _action: "createAlias" })} placeholder={i18n("alias")} className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-                  <input type="text" value={form.display_name || ""} onChange={(e) => setForm({ ...form, display_name: e.target.value })} placeholder={i18n("name")} className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-                  <button type="submit" className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{i18n("create")}</button>
-                </form>
-                <div className="space-y-2">
-                  {aliases.map((a) => (
-                    <div key={a.id} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-2 text-sm">
-                      <span className="font-medium">{a.alias}</span> {a.is_primary && "(primary)"} — {a.display_name}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {(panel === "accounts" || panel === "pgp" || panel === "push" || panel === "lists") && (
-              <MailAdvancedPanel initialTab={panel} />
-            )}
-
-            {panel === "analytics" && <MailAnalyticsPanel getAnalytics={getAnalytics} />}
-          </div>
-      </Modal>
-    </div>
-  );
-}
-
-function MailRecipients({ label, values, onChange }: { label: string; values: string[]; onChange: (v: string[]) => void }) {
-  const [text, setText] = useState(values.join(", "));
-  useEffect(() => {
-    setText(values.join(", "));
-  }, [values]);
-  return (
-    <div className="flex items-center gap-2">
-      <span className="w-12 text-xs text-[var(--muted)]">{label}</span>
-      <input
-        type="text"
-        value={text}
-        onChange={(e) => {
-          setText(e.target.value);
-          onChange(e.target.value.split(/[,;]/).map((s) => s.trim()).filter(Boolean));
-        }}
-        placeholder={label}
-        className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
+        initial={composeInitial}
+        onSend={handleSend}
+        onSave={handleSaveDraft}
+        onAiAssist={handleAiAssist}
+        loading={submitting}
       />
     </div>
   );

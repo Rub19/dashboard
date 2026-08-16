@@ -4,6 +4,17 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : refonte du module Focus / Pomodoro**
+
+### Corrige
+- `ethone-next/components/FocusTimerRing.tsx` : anneau SVG de progression circulaire avec double cercle, `stroke-linecap-round`, style dynamique `var(--accent-color)` + `var(--accent-glow)`, affichage central du temps restant et du cycle.
+- `ethone-next/components/FocusPage.tsx` : interface de concentration complète avec :
+  - Sélecteur de préréglages animé par `layoutId="activeFocusPreset"` (Pomodoro, Deep Work, Sprint, Personnalisé).
+  - Contrôles Play/Pause/Reset/Skip stylisés avec le thème actif.
+  - Mode Zen intégré avec plein écran, fond subtil et sortie discrète.
+  - Grille Bento des statistiques (Pomodoros, Temps Focus, Pauses) avec `rounded-2xl`.
+- `ethone-next/app/focus/page.tsx` : simplifié pour utiliser `FocusPage`.
+
 **Migration Next.js : Bento Grid et refonte de la Vue d'ensemble**
 
 ### Corrige

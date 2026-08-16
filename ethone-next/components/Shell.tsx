@@ -23,7 +23,7 @@ import StatusBar from "@/components/layout/StatusBar";
 import Dock from "@/components/Dock";
 import SkipLink from "@/components/SkipLink";
 
-const LiveOverlay = dynamic(() => import("@/components/LiveOverlay"), { ssr: false });
+const LiveWidget = dynamic(() => import("@/components/LiveWidget"), { ssr: false });
 const CosmicBackground = dynamic(() => import("@/components/CosmicBackground"), { ssr: false });
 const Spotlight = dynamic(() => import("@/components/Spotlight"), { ssr: false });
 const VisualHaptics = dynamic(() => import("@/components/VisualHaptics"), { ssr: false });
@@ -59,7 +59,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                 </div>
               </header>
               <DocumentMetadata />
-              <LiveOverlay />
+              <LiveWidget />
               <CosmicBackground />
               <Spotlight />
               <VisualHaptics />

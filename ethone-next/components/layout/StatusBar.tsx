@@ -12,7 +12,9 @@ import {
   Shield,
   AlertCircle,
   Circle,
+  Radio,
 } from "lucide-react";
+import { useLiveWidgetStore } from "@/lib/hooks/useLiveWidgetStore";
 import { useAuth } from "@/components/AuthProvider";
 import { useActiveProfile } from "@/components/SettingsProvider";
 import { useNotifications } from "@/lib/hooks/useNotifications";
@@ -131,6 +133,7 @@ export default function StatusBar() {
   const { updatedAt, error: liveError } = useLiveData(300000);
   const { loading: notesLoading } = useItems("notes");
   const { loading: tasksLoading } = useItems("tasks");
+  const { isOpen, isMinimized, openLive, closeLive } = useLiveWidgetStore();
   const online = useOnlineStatus();
   const { ping, pingging } = usePing();
 
@@ -202,6 +205,26 @@ export default function StatusBar() {
         </div>
 
         <div className="flex min-w-0 items-center gap-2">
+          {isOpen ? (
+            <button
+              type="button"
+              onClick={() => (isMinimized ? openLive() : closeLive())}
+              className="flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/15 px-2.5 py-1 text-xs font-medium text-emerald-300 transition-all hover:bg-emerald-500/25"
+            >
+              <Radio className="h-3.5 w-3.5 animate-pulse text-emerald-400" />
+              <span>{isMinimized ? i18n("liveMinimized") || "Live réduit" : i18n("liveActive") || "Live actif"}</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => openLive()}
+              aria-label={i18n("openLive") || "Ouvrir Live"}
+              className="rounded p-1 text-zinc-500 transition-colors hover:text-white"
+            >
+              <Radio className="h-3.5 w-3.5" />
+            </button>
+          )}
+
           <StatusPill
             icon={
               online ? (

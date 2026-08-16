@@ -1,20 +1,21 @@
 "use client";
 
 import { useMemo, useState, useEffect, useRef, type DragEvent } from "react";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { isActiveRoute } from "@/lib/navigation";
 import { useSettings } from "@/components/SettingsProvider";
 import { useWindowManager } from "@/components/WindowManagerProvider";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { Icon } from "@/lib/icons";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useNotifications } from "@/lib/hooks/useNotifications";
-import { Icon } from "@/lib/icons";
 import ContextMenu from "@/components/ContextMenu";
 import Card3D from "@/components/Card3D";
 import DockControlCenter from "@/components/DockControlCenter";
 import FocusPopover from "@/components/FocusPopover";
+import DockItem from "@/components/DockItem";
+import MediaDockItem from "@/components/MediaDockItem";
 
 const ICONS: Record<string, string> = {
   home: "home",
@@ -58,13 +59,13 @@ export default function Dock() {
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [launcherOpen, setLauncherOpen] = useState(false);
   const [controlCenterOpen, setControlCenterOpen] = useState(false);
-  const [controlCenterEl, setControlCenterEl] = useState<HTMLButtonElement | null>(null);
+  const [controlCenterEl, setControlCenterEl] = useState<HTMLButtonElement | HTMLAnchorElement | null>(null);
 
   const [focusPopover, setFocusPopover] = useState<{ open: boolean; anchor: HTMLElement | null }>({
     open: false,
     anchor: null,
   });
-  const [pomodoroEl, setPomodoroEl] = useState<HTMLButtonElement | null>(null);
+  const [pomodoroEl, setPomodoroEl] = useState<HTMLButtonElement | HTMLAnchorElement | null>(null);
   const [focusAppEl, setFocusAppEl] = useState<HTMLDivElement | null>(null);
   const focusSuppressRef = useRef(false);
   const focusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -178,29 +179,22 @@ export default function Dock() {
     }
   }
 
-  const baseControlClass =
-    "!rounded-full v8-icon-radius flex h-11 w-11 items-center justify-center border border-transparent text-[var(--foreground)] transition-colors duration-150 hover:border-[var(--accent)]/30 hover:bg-[var(--panel-bg)] hover:shadow-lg active:scale-[0.98]";
-
-  const controlInactive = "text-[var(--muted)]";
-  const controlActive = "bg-[var(--accent)]/10 text-[var(--accent)]";
-
   return (
     <div
-      className="v8-floating-dock fixed bottom-4 z-50 hidden md:block pointer-events-none bg-transparent border-0 shadow-none"
-      style={{ left: "calc(50% + var(--dock-offset))", transform: "translateX(-50%)" }}
+      className="v8-floating-dock fixed bottom-4 left-1/2 -translate-x-1/2 z-50 hidden md:block pointer-events-none bg-transparent border-0 shadow-none"
     >
       {launcherOpen && (
-        <div className="v8-dock-launcher pointer-events-auto absolute bottom-full left-1/2 z-50 mb-4 w-[min(90vw,420px)] -translate-x-1/2">
+        <div className="pointer-events-auto absolute bottom-full left-1/2 z-50 mb-4 w-[min(90vw,420px)] -translate-x-1/2">
           <Card3D>
-            <div className="space-y-3">
+            <div className="space-y-3 rounded-2xl border border-white/10 bg-zinc-950/80 p-4 shadow-[0_10px_35px_rgba(0,0,0,0.8)] backdrop-blur-2xl">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium text-[var(--foreground)]">{i18n("dockLauncher")}</h3>
+                <h3 className="text-sm font-medium text-white">{i18n("dockLauncher")}</h3>
                 <button
                   type="button"
                   onClick={() => setLauncherOpen(false)}
                   aria-label={i18n("close")}
                   data-haptic
-                  className="rounded p-1 text-[var(--muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)]"
+                  className="rounded p-1 text-zinc-500 transition-colors hover:bg-white/[0.08] hover:text-white"
                 >
                   <Icon name="close" className="h-4 w-4" />
                 </button>
@@ -215,13 +209,13 @@ export default function Dock() {
                       onClick={() => toggleDockItem(app.id)}
                       aria-label={active ? i18n("dockRemove") : i18n("dockAdd")}
                       data-haptic
-                      className={`flex flex-col items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-2 text-[var(--foreground)] transition-colors hover:border-[var(--accent)]/30 hover:bg-[var(--panel-bg)] ${
-                        active ? "border-[var(--accent)] text-[var(--accent)]" : ""
-                      } backdrop-blur-[var(--panel-blur)]`}
+                      className={`flex flex-col items-center gap-1 rounded-xl border border-white/[0.08] bg-white/[0.03] p-2 text-zinc-300 transition-colors hover:border-white/15 hover:bg-white/[0.06] ${
+                        active ? "border-emerald-500/30 text-emerald-400" : ""
+                      }`}
                     >
                       <Icon name={app.icon} className="h-5 w-5" />
                       <span className="w-full truncate text-center text-[10px] leading-tight">{app.label}</span>
-                      <span className="rounded-full border border-[var(--panel-border)] p-0.5">
+                      <span className="rounded-full border border-white/[0.08] bg-white/[0.03] p-0.5">
                         <Icon name={active ? "minus" : "plus"} className="h-3 w-3" />
                       </span>
                     </button>
@@ -234,10 +228,7 @@ export default function Dock() {
       )}
 
       <div
-        data-dock
-        className={`pointer-events-auto relative flex items-center gap-1.5 overflow-hidden rounded-full border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 py-2 shadow-2xl shadow-black/70 backdrop-blur-2xl ${
-          expanded ? "min-w-[320px] flex-wrap justify-center" : ""
-        }`}
+        className="pointer-events-auto inline-flex items-center gap-1.5 rounded-2xl border border-white/10 bg-zinc-950/80 p-1.5 shadow-[0_10px_35px_rgba(0,0,0,0.8)] backdrop-blur-2xl"
       >
         {visibleItems().map((item) => {
           const active = isActiveRoute(pathname, item.href);
@@ -256,38 +247,6 @@ export default function Dock() {
               onClick: () => openFocus(focusAppEl),
             });
           }
-
-          const link = (
-            <Link
-              href={item.href}
-              onClick={(e) => {
-                if (draggingId) {
-                  e.preventDefault();
-                  return;
-                }
-                if (isFocus) {
-                  if (focusSuppressRef.current) {
-                    e.preventDefault();
-                    focusSuppressRef.current = false;
-                    return;
-                  }
-                  if (focusPopover.open && focusPopover.anchor === focusAppEl) {
-                    e.preventDefault();
-                    closeFocus();
-                    return;
-                  }
-                }
-              }}
-              aria-label={item.label}
-              data-tooltip={item.label}
-              data-haptic
-              data-dock-item
-              data-dock-item-active={active ? "true" : "false"}
-              className={`${baseControlClass} ${active ? controlActive : ""}`}
-            >
-              <Icon name={item.icon} className="h-5 w-5" />
-            </Link>
-          );
 
           const dragHandlers = {
             onDragStart: (e: DragEvent<HTMLDivElement>) => {
@@ -312,6 +271,55 @@ export default function Dock() {
             onDragEnd: () => setDraggingId(null),
           };
 
+          const itemNode = (
+            <DockItem
+              icon={item.icon}
+              label={item.label}
+              href={item.href}
+              active={active}
+              onClick={(e) => {
+                if (draggingId) {
+                  e?.preventDefault();
+                  return;
+                }
+                if (isFocus) {
+                  if (focusSuppressRef.current) {
+                    e?.preventDefault();
+                    focusSuppressRef.current = false;
+                    return;
+                  }
+                  if (focusPopover.open && focusPopover.anchor === focusAppEl) {
+                    e?.preventDefault();
+                    closeFocus();
+                    return;
+                  }
+                }
+              }}
+            />
+          );
+
+          const body = (
+            <>
+              {itemNode}
+              {expanded && (
+                <div className="mt-1 flex gap-0.5">
+                  <button
+                    onClick={() => move(item.id, -1)}
+                    className="rounded p-0.5 text-[10px] text-zinc-500 hover:bg-white/[0.06]"
+                  >
+                    ◀
+                  </button>
+                  <button
+                    onClick={() => move(item.id, 1)}
+                    className="rounded p-0.5 text-[10px] text-zinc-500 hover:bg-white/[0.06]"
+                  >
+                    ▶
+                  </button>
+                </div>
+              )}
+            </>
+          );
+
           if (isFocus) {
             return (
               <ContextMenu key={item.id} items={contextItems}>
@@ -328,13 +336,7 @@ export default function Dock() {
                   onPointerLeave={clearFocusHold}
                   onPointerCancel={clearFocusHold}
                 >
-                  {link}
-                  {expanded && (
-                    <div className="mt-1 flex gap-0.5">
-                      <button onClick={() => move(item.id, -1)} className="rounded p-0.5 text-[10px] text-[var(--muted)] hover:bg-[var(--panel-bg)]">◀</button>
-                      <button onClick={() => move(item.id, 1)} className="rounded p-0.5 text-[10px] text-[var(--muted)] hover:bg-[var(--panel-bg)]">▶</button>
-                    </div>
-                  )}
+                  {body}
                 </div>
               </ContextMenu>
             );
@@ -347,80 +349,43 @@ export default function Dock() {
                 draggable={expanded}
                 {...dragHandlers}
               >
-                {link}
-                {expanded && (
-                  <div className="mt-1 flex gap-0.5">
-                    <button onClick={() => move(item.id, -1)} className="rounded p-0.5 text-[10px] text-[var(--muted)] hover:bg-[var(--panel-bg)]">◀</button>
-                    <button onClick={() => move(item.id, 1)} className="rounded p-0.5 text-[10px] text-[var(--muted)] hover:bg-[var(--panel-bg)]">▶</button>
-                  </div>
-                )}
+                {body}
               </div>
             </ContextMenu>
           );
         })}
 
-        {spotifyNow && (
-          <span
-            role="img"
-            aria-label={i18n("spotifyPlaying")}
-            data-tooltip={`${spotifyNow.title} - ${spotifyNow.artist}`}
-            data-dock-item
-            className={`${baseControlClass} relative text-[#1DB954]`}
-          >
-            {spotifyNow.artwork ? (
-              <span
-                className="h-5 w-5 rounded bg-cover bg-center"
-                style={{ backgroundImage: `url(${spotifyNow.artwork})` }}
-                aria-hidden="true"
-              />
-            ) : (
-              <Icon name="music" className="h-5 w-5" />
-            )}
-            <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-[#1DB954] ring-1 ring-[var(--surface-raised)]" />
-            {spotifyNow.playing && (
-              <span className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-px" aria-hidden="true">
-                <span className="h-2 w-0.5 animate-pulse bg-[#1DB954]" />
-                <span className="h-2 w-0.5 animate-pulse bg-[#1DB954]" style={{ animationDelay: "120ms" }} />
-                <span className="h-2 w-0.5 animate-pulse bg-[#1DB954]" style={{ animationDelay: "240ms" }} />
-              </span>
-            )}
-          </span>
-        )}
+        <MediaDockItem nowPlaying={spotifyNow} />
 
-        <button
-          type="button"
+        <DockItem
+          id="launcher"
+          icon="layoutGrid"
+          label={i18n("dockLauncher")}
+          active={launcherOpen}
           onClick={() => {
             setLauncherOpen((v) => !v);
             setControlCenterOpen(false);
           }}
-          aria-label={i18n("dockLauncher")}
           aria-expanded={launcherOpen}
-          data-tooltip={i18n("dockLauncher")}
-          data-haptic
-          data-dock-item
-          className={`${baseControlClass} ${launcherOpen ? controlActive : controlInactive}`}
-        >
-          <Icon name="layoutGrid" className="h-5 w-5" />
-        </button>
+        />
 
-        <span className="h-9 w-px self-center bg-[var(--border)]" aria-hidden="true" />
+        <span className="w-[1px] h-5 bg-white/10 mx-1" aria-hidden="true" />
 
-        <button
-          type="button"
+        <DockItem
+          id="spotlight"
+          icon="search"
+          label={i18n("dockSpotlight")}
+          active={commandPaletteOpen}
           onClick={() => setCommandPaletteOpen(true)}
-          aria-label={i18n("dockSpotlight")}
           aria-pressed={commandPaletteOpen}
-          data-tooltip={i18n("dockSpotlight")}
-          data-haptic
-          data-dock-item
-          className={`${baseControlClass} ${commandPaletteOpen ? controlActive : controlInactive}`}
-        >
-          <Icon name="search" className="h-5 w-5" />
-        </button>
+        />
 
-        <button
+        <DockItem
           ref={setPomodoroEl}
-          type="button"
+          id="pomodoro"
+          icon="timer"
+          label={i18n("dockPomodoro")}
+          active={focusPopover.open && focusPopover.anchor === pomodoroEl}
           onClick={() => {
             if (focusPopover.open && focusPopover.anchor === pomodoroEl) {
               closeFocus();
@@ -428,81 +393,51 @@ export default function Dock() {
               openFocus(pomodoroEl);
             }
           }}
-          aria-label={i18n("dockPomodoro")}
-          aria-expanded={focusPopover.open && focusPopover.anchor === pomodoroEl}
-          data-tooltip={i18n("dockPomodoro")}
-          data-haptic
-          data-dock-item
-          className={`${baseControlClass} ${focusPopover.open && focusPopover.anchor === pomodoroEl ? controlActive : controlInactive}`}
-        >
-          <Icon name="timer" className="h-5 w-5" />
-        </button>
+        />
 
-        <button
-          type="button"
+        <DockItem
+          id="mission-control"
+          icon="appWindow"
+          label={i18n("dockMissionControl")}
+          active={missionControl}
           onClick={() => {
             toggleMissionControl();
             setLauncherOpen(false);
           }}
-          aria-label={i18n("dockMissionControl")}
           aria-pressed={missionControl}
-          data-tooltip={i18n("dockMissionControl")}
-          data-haptic
-          data-dock-item
-          className={`${baseControlClass} ${missionControl ? controlActive : controlInactive}`}
-        >
-          <Icon name="appWindow" className="h-5 w-5" />
-        </button>
+        />
 
-        <button
-          type="button"
+        <DockItem
+          id="notifications"
+          icon="bell"
+          label={i18n("openNotifications")}
           onClick={() => {
             handleOpenNotifications();
             setLauncherOpen(false);
           }}
-          aria-label={`${i18n("openNotifications")}${unreadCount > 0 ? ` (${unreadCount})` : ""}`}
-          aria-live="polite"
-          data-tooltip={i18n("openNotifications")}
-          data-haptic
-          data-dock-item
-          className={`${baseControlClass} relative ${controlInactive}`}
-        >
-          <Icon name="bell" className="h-5 w-5" />
-          {unreadCount > 0 && (
-            <span aria-hidden="true" className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold text-white">
-              {unreadCount > 99 ? "99+" : unreadCount}
-            </span>
-          )}
-        </button>
+          badge={unreadCount}
+        />
 
-        <button
+        <DockItem
           ref={setControlCenterEl}
-          type="button"
+          id="control-center"
+          icon="sliders"
+          label={i18n("controlCenter")}
+          active={controlCenterOpen}
           onClick={() => {
             setControlCenterOpen((v) => !v);
             setLauncherOpen(false);
           }}
-          aria-label={i18n("controlCenter")}
           aria-expanded={controlCenterOpen}
-          data-tooltip={i18n("controlCenter")}
-          data-haptic
-          data-dock-item
-          className={`${baseControlClass} ${controlCenterOpen ? controlActive : controlInactive}`}
-        >
-          <Icon name="sliders" className="h-5 w-5" />
-        </button>
+        />
 
-        <button
-          type="button"
+        <DockItem
+          id="expand"
+          icon="chevronUp"
+          label={i18n("expand")}
           onClick={() => setExpanded((v) => !v)}
-          aria-label={i18n("expand")}
-          data-tooltip={i18n("expand")}
-          data-haptic
-          data-dock-item
-          className={`${baseControlClass} ${expanded ? "rotate-180" : ""} ${controlInactive}`}
-        >
-          <Icon name="chevronUp" className="h-5 w-5" />
-        </button>
+          className={expanded ? "rotate-180" : ""}
+        />
 
         {controlCenterOpen && controlCenterEl && (
           <DockControlCenter

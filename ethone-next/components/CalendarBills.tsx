@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "@/lib/icons";
+import Modal from "@/components/ui/Modal";
 import VendorLogo from "@/components/logos/VendorLogo";
 
 export type BillCategory = "monthly" | "yearly" | "event";
@@ -277,55 +277,40 @@ export default function CalendarBills({ items = MOCK_ITEMS }: { items?: Calendar
       </div>
 
       {/* Add / Detail modal */}
-      <AnimatePresence>
-        {modalOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setModalOpen(false)}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--panel-bg)]/60 p-4 backdrop-blur-sm"
-          >
-            <motion.div
-              initial={{ scale: 0.95, y: 12 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 12 }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-sm rounded-3xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-6 shadow-2xl backdrop-blur-[var(--panel-blur)]"
-            >
-              <h3 className="text-lg font-semibold text-[var(--foreground)]">
-                {selected ? selected.title : "Add bill or event"}
-              </h3>
-              {selected ? (
-                <div className="mt-4 space-y-2 text-sm text-[var(--muted)]">
-                  <p>
-                    Category: <span className="text-[var(--foreground)]">{selected.category}</span>
-                  </p>
-                  <p>
-                    Date: <span className="text-[var(--foreground)]">{selected.date}</span>
-                  </p>
-                  {selected.amount ? (
-                    <p>
-                      Amount: <span className="text-[var(--foreground)]">${selected.amount.toFixed(2)}</span>
-                    </p>
-                  ) : null}
-                </div>
-              ) : (
-                <p className="mt-2 text-sm text-[var(--muted)]">
-                  Modal placeholder: form to create a new monthly/yearly bill or one-time event.
-                </p>
-              )}
-              <button
-                type="button"
-                onClick={() => setModalOpen(false)}
-                className="mt-6 w-full rounded-[var(--panel-radius)] bg-[var(--accent)] py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-              >
-                Close
-              </button>
-            </motion.div>
-          </motion.div>
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={selected ? selected.title : "Add bill or event"}
+        size="sm"
+        hideFooter
+      >
+        {selected ? (
+          <div className="mt-2 space-y-2 text-sm text-[var(--muted)]">
+            <p>
+              Category: <span className="text-[var(--foreground)]">{selected.category}</span>
+            </p>
+            <p>
+              Date: <span className="text-[var(--foreground)]">{selected.date}</span>
+            </p>
+            {selected.amount ? (
+              <p>
+                Amount: <span className="text-[var(--foreground)]">${selected.amount.toFixed(2)}</span>
+              </p>
+            ) : null}
+          </div>
+        ) : (
+          <p className="text-sm text-[var(--muted)]">
+            Modal placeholder: form to create a new monthly/yearly bill or one-time event.
+          </p>
         )}
-      </AnimatePresence>
+        <button
+          type="button"
+          onClick={() => setModalOpen(false)}
+          className="mt-6 w-full rounded-[var(--panel-radius)] bg-[var(--accent)] py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+        >
+          Close
+        </button>
+      </Modal>
     </div>
   );
 }

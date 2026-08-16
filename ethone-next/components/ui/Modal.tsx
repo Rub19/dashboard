@@ -19,13 +19,27 @@ export type ModalProps = {
   onConfirm?: () => void;
   confirmDisabled?: boolean;
   hideFooter?: boolean;
+  hideCloseButton?: boolean;
+  position?: "center" | "bottom";
+  fullScreen?: boolean;
   className?: string;
+  contentClassName?: string;
 };
 
 const sizeMap = {
   sm: "sm:max-w-md",
   md: "sm:max-w-lg",
   lg: "sm:max-w-2xl",
+};
+
+const positionOuter = {
+  center: "items-center",
+  bottom: "items-end",
+};
+
+const positionInner = {
+  center: "rounded-2xl",
+  bottom: "rounded-t-2xl sm:rounded-2xl",
 };
 
 export default function Modal({
@@ -41,7 +55,11 @@ export default function Modal({
   onConfirm,
   confirmDisabled = false,
   hideFooter = false,
+  hideCloseButton = false,
+  position = "center",
+  fullScreen = false,
   className = "",
+  contentClassName = "",
 }: ModalProps) {
   const [mounted, setMounted] = useState(false);
   const titleId = useId();
@@ -78,7 +96,7 @@ export default function Modal({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15 }}
           onClick={onClose}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-md"
+          className={`fixed inset-0 z-50 flex justify-center bg-black/70 p-4 backdrop-blur-md ${positionOuter[position]}`}
         >
           <motion.div
             ref={trapRef}
@@ -90,21 +108,23 @@ export default function Modal({
             exit={{ scale: 0.95, y: 12, opacity: 0 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
             onClick={(event) => event.stopPropagation()}
-            className={`relative w-full overflow-hidden rounded-2xl border border-white/10 bg-zinc-950/90 p-6 shadow-[0_0_60px_rgba(0,0,0,0.9)] backdrop-blur-2xl ${sizeMap[size]} ${className}`}
+            className={`relative w-full overflow-hidden border border-white/10 bg-zinc-950/90 p-6 shadow-[0_0_60px_rgba(0,0,0,0.9)] backdrop-blur-2xl ${positionInner[position]} ${fullScreen ? "h-[calc(100dvh-2rem)] sm:h-auto sm:max-h-[90vh]" : ""} ${fullScreen ? "w-full sm:max-w-6xl" : sizeMap[size]} ${className}`}
           >
             <div
               className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-purple-500/5 blur-3xl"
               aria-hidden="true"
             />
 
-            <button
-              type="button"
-              onClick={onClose}
-              className="absolute right-4 top-4 rounded p-1 text-zinc-400 transition-colors hover:bg-white/5 hover:text-zinc-100"
-              aria-label={cancelLabel}
-            >
-              <X className="h-4 w-4" />
-            </button>
+            {!hideCloseButton && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="absolute right-4 top-4 rounded p-1 text-zinc-400 transition-colors hover:bg-white/5 hover:text-zinc-100"
+                aria-label={cancelLabel}
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
 
             <h2
               id={titleId}
@@ -117,7 +137,7 @@ export default function Modal({
               <p className="mt-1 text-xs text-zinc-400">{description}</p>
             )}
 
-            <div className="mt-4 text-sm text-zinc-300">{children}</div>
+            <div className={`mt-4 text-sm text-zinc-300 ${contentClassName}`}>{children}</div>
 
             {!hideFooter && (
               <div className="mt-6 flex items-center justify-end gap-3">

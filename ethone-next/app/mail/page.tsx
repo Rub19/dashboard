@@ -9,7 +9,7 @@ import Card3D from "@/components/Card3D";
 import LiquidSidebar from "@/components/LiquidSidebar";
 import MailAdvancedPanel from "@/components/MailAdvancedPanel";
 import MailAnalyticsPanel from "@/components/MailAnalyticsPanel";
-import BottomSheet from "@/components/BottomSheet";
+import Modal from "@/components/ui/Modal";
 import ContextMenu from "@/components/ContextMenu";
 import RichTextEditor from "@/components/RichTextEditor";
 import Select from "@/components/ui/Select";
@@ -841,7 +841,14 @@ export default function MailPage() {
         )}
       </div>
 
-      <BottomSheet open={sortOpen} onClose={() => setSortOpen(false)} title={i18n("sort")} position="bottom">
+      <Modal
+        isOpen={sortOpen}
+        onClose={() => setSortOpen(false)}
+        title={i18n("sort")}
+        size="sm"
+        position="bottom"
+        hideFooter
+      >
         <div className="space-y-1">
           {[
             { id: "newest", icon: "arrow-down" },
@@ -864,9 +871,16 @@ export default function MailPage() {
             </button>
           ))}
         </div>
-      </BottomSheet>
+      </Modal>
 
-      <BottomSheet open={moveOpen} onClose={() => setMoveOpen(false)} title={i18n("moveTo")} position="bottom">
+      <Modal
+        isOpen={moveOpen}
+        onClose={() => setMoveOpen(false)}
+        title={i18n("moveTo")}
+        size="sm"
+        position="bottom"
+        hideFooter
+      >
         <div className="space-y-1">
           {FOLDERS.filter((f) => f !== folder).map((f) => (
             <button
@@ -881,9 +895,16 @@ export default function MailPage() {
             </button>
           ))}
         </div>
-      </BottomSheet>
+      </Modal>
 
-      <BottomSheet open={labelOpen} onClose={() => setLabelOpen(false)} title={i18n("labels")} position="bottom">
+      <Modal
+        isOpen={labelOpen}
+        onClose={() => setLabelOpen(false)}
+        title={i18n("labels")}
+        size="sm"
+        position="bottom"
+        hideFooter
+      >
         <div className="space-y-3">
           <div className="flex gap-2">
             <input
@@ -920,9 +941,16 @@ export default function MailPage() {
             })}
           </div>
         </div>
-      </BottomSheet>
+      </Modal>
 
-      <BottomSheet open={actionsOpen} onClose={() => { setActionsOpen(false); setActionsTarget(null); }} title={i18n("actions")} position="bottom">
+      <Modal
+        isOpen={actionsOpen}
+        onClose={() => { setActionsOpen(false); setActionsTarget(null); }}
+        title={i18n("actions")}
+        size="sm"
+        position="bottom"
+        hideFooter
+      >
         <div className="space-y-1">
           {actionsTarget && (
             <>
@@ -994,16 +1022,19 @@ export default function MailPage() {
             </>
           )}
         </div>
-      </BottomSheet>
+      </Modal>
 
-      {composeOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--panel-bg)]/50 p-4" onClick={() => setComposeOpen(false)}>
-          <div className="flex h-[85vh] w-full max-w-3xl flex-col rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-2xl backdrop-blur-[var(--panel-blur)]" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between border-b border-[var(--panel-border)] p-4">
-              <h2 className="text-lg font-semibold">{composeMode === "new" ? i18n("compose") : i18n(composeMode)}</h2>
-              <button type="button" onClick={() => setComposeOpen(false)} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--panel-bg)]"><Icon name="x" className="h-4 w-4" /></button>
-            </div>
-            <div className="flex-1 space-y-3 overflow-auto p-4">
+      <Modal
+        isOpen={composeOpen}
+        onClose={() => setComposeOpen(false)}
+        title={composeMode === "new" ? i18n("compose") : i18n(composeMode)}
+        size="lg"
+        hideFooter
+        className="h-[85vh] flex flex-col overflow-hidden p-0 sm:max-w-3xl"
+        contentClassName="flex-1 overflow-hidden"
+      >
+        <div className="flex h-full flex-col">
+          <div className="flex-1 space-y-3 overflow-auto p-4">
               <div className="flex items-center gap-2">
                 <span className="w-12 text-xs text-[var(--muted)]">{i18n("from")}</span>
                 <span className="text-sm">{defaultFrom}</span>
@@ -1077,17 +1108,18 @@ export default function MailPage() {
               </div>
             </div>
           </div>
-        </div>
-      )}
+      </Modal>
 
-      {panel && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--panel-bg)]/50 p-4" onClick={() => { setPanel(null); setForm({}); }}>
-          <div className="h-[80vh] w-full max-w-2xl overflow-auto rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-6 shadow-2xl backdrop-blur-[var(--panel-blur)]" onClick={(e) => e.stopPropagation()}>
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold">{i18n(panel)}</h2>
-              <button type="button" onClick={() => { setPanel(null); setForm({}); }} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--panel-bg)]"><Icon name="x" className="h-4 w-4" /></button>
-            </div>
-
+      <Modal
+        isOpen={!!panel}
+        onClose={() => { setPanel(null); setForm({}); }}
+        title={panel ? i18n(panel) : ""}
+        size="lg"
+        hideFooter
+        className="h-[80vh] max-h-[85vh] overflow-hidden p-0"
+        contentClassName="flex-1 overflow-hidden"
+      >
+        <div className="h-full overflow-auto pr-1">
             {panel === "labels" && (
               <div className="space-y-4">
                 <form onSubmit={onPanelSubmit} className="flex gap-2">
@@ -1271,8 +1303,7 @@ export default function MailPage() {
 
             {panel === "analytics" && <MailAnalyticsPanel getAnalytics={getAnalytics} />}
           </div>
-        </div>
-      )}
+      </Modal>
     </div>
   );
 }

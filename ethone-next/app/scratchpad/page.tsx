@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Card3D from "@/components/Card3D";
-import BottomSheet from "@/components/BottomSheet";
+import Modal from "@/components/ui/Modal";
 import FormField from "@/components/FormField";
 import Textarea from "@/components/Textarea";
 import { useHaptics } from "@/lib/hooks/useHaptics";
@@ -77,7 +77,14 @@ export default function ScratchpadPage() {
         </FormField>
       </Card3D>
 
-      <BottomSheet open={sheetOpen} onClose={() => setSheetOpen(false)} title={i18n("scratchpadOptions")}>
+      <Modal
+        isOpen={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        title={i18n("scratchpadOptions")}
+        size="sm"
+        position="bottom"
+        hideFooter
+      >
         <div className="space-y-2">
           <button
             type="button"
@@ -94,7 +101,7 @@ export default function ScratchpadPage() {
             {i18n("scratchpadCopy")}
           </button>
         </div>
-      </BottomSheet>
+      </Modal>
     </div>
   );
 }

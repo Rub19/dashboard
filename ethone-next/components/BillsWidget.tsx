@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Card3D from "@/components/Card3D";
-import BottomSheet from "@/components/BottomSheet";
+import Modal from "@/components/ui/Modal";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
 import { listBills, upcomingBills, getNextDueDate, type Bill } from "@/lib/bills-manager";
@@ -88,7 +88,14 @@ export default function BillsWidget() {
         </Link>
       </Card3D>
 
-      <BottomSheet open={!!selected} onClose={() => setSelected(null)} title={selected?.label} position="bottom" draggable>
+      <Modal
+        isOpen={!!selected}
+        onClose={() => setSelected(null)}
+        title={selected?.label || ""}
+        size="sm"
+        position="bottom"
+        hideFooter
+      >
         {selected && (
           <div className="space-y-4 p-1">
             <div className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 backdrop-blur-[var(--panel-blur)]">
@@ -115,7 +122,7 @@ export default function BillsWidget() {
             </Link>
           </div>
         )}
-      </BottomSheet>
+      </Modal>
     </>
   );
 }

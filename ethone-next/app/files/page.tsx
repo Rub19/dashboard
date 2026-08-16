@@ -10,13 +10,13 @@ import { useToast } from "@/components/ToastProvider";
 import { fetchWorker } from "@/lib/api";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
+import Modal from "@/components/ui/Modal";
 import TabList from "@/components/tabs/TabList";
 import ContextMenu from "@/components/ContextMenu";
 import { useSelection } from "@/lib/hooks/useSelection";
 import BulkActionBar from "@/components/BulkActionBar";
 import { formatBytes, mimeIcon, sortFiles } from "@/lib/files";
 import FilesAdminPanel from "@/components/FilesAdminPanel";
-import BottomSheet from "@/components/BottomSheet";
 import FileUploader from "@/components/FileUploader";
 import Select from "@/components/ui/Select";
 
@@ -611,12 +611,21 @@ export default function FilesPage() {
         )}
       </div>
 
-      {modal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--panel-bg)]/50 p-4" onClick={() => setModal(null)}>
-          <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-6 shadow-2xl backdrop-blur-[var(--panel-blur)]" onClick={(e) => e.stopPropagation()}>
-            {modal.type === "create-folder" && (
+      <Modal
+        isOpen={!!modal}
+        onClose={() => setModal(null)}
+        title={
+          modal?.type === "create-folder" ? i18n("createFolder") :
+          modal?.type === "rename" ? i18n("renameFile") :
+          modal?.type === "move" ? i18n("moveTo") :
+          modal?.type === "share" ? i18n("shareFile") :
+          modal?.type === "drop" ? i18n("createDrop") : ""
+        }
+        size="md"
+        hideFooter
+      >
+            {modal?.type === "create-folder" && (
               <form onSubmit={handleCreateFolder} className="space-y-4">
-                <h2 className="text-lg font-semibold">{i18n("createFolder")}</h2>
                 <input
                   autoFocus
                   type="text"
@@ -632,9 +641,8 @@ export default function FilesPage() {
               </form>
             )}
 
-            {modal.type === "rename" && (
+            {modal?.type === "rename" && (
               <form onSubmit={handleRename} className="space-y-4">
-                <h2 className="text-lg font-semibold">{i18n("renameFile")}</h2>
                 <input
                   autoFocus
                   type="text"
@@ -649,9 +657,8 @@ export default function FilesPage() {
               </form>
             )}
 
-            {modal.type === "move" && (
+            {modal?.type === "move" && (
               <div className="space-y-4">
-                <h2 className="text-lg font-semibold">{i18n("moveTo")}</h2>
                 <div className="max-h-60 space-y-1 overflow-auto">
                   <button
                     type="button"
@@ -674,10 +681,9 @@ export default function FilesPage() {
               </div>
             )}
 
-            {modal.type === "share" && (
+            {modal?.type === "share" && (
               <form onSubmit={handleShare} className="space-y-4">
-                <h2 className="text-lg font-semibold">{i18n("shareFile")}</h2>
-                <p className="text-sm text-[var(--muted)]">{modal.file.name}</p>
+                <p className="text-sm text-[var(--muted)]">{modal?.file?.name}</p>
                 <Select
                   value={form.visibility || "public"}
                   onChange={(value) => setForm({ ...form, visibility: value })}
@@ -718,9 +724,8 @@ export default function FilesPage() {
               </form>
             )}
 
-            {modal.type === "drop" && (
+            {modal?.type === "drop" && (
               <form onSubmit={handleDrop} className="space-y-4">
-                <h2 className="text-lg font-semibold">{i18n("createDrop")}</h2>
                 <input
                   autoFocus
                   type="text"
@@ -781,13 +786,17 @@ export default function FilesPage() {
                 </div>
               </form>
             )}
-          </div>
-        </div>
-      )}
+      </Modal>
 
-      <BottomSheet open={adminOpen} onClose={() => setAdminOpen(false)} title={i18n("filesAdminPanel")} position="center">
+      <Modal
+        isOpen={adminOpen}
+        onClose={() => setAdminOpen(false)}
+        title={i18n("filesAdminPanel")}
+        size="lg"
+        hideFooter
+      >
         <FilesAdminPanel />
-      </BottomSheet>
+      </Modal>
     </div>
   );
 }

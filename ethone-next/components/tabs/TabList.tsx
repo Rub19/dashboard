@@ -1,11 +1,10 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback, useId } from "react";
-import { motion } from "framer-motion";
 import { Icon } from "@/lib/icons";
+import Modal from "@/components/ui/Modal";
 import type { TabItem } from "./types";
 
-const SPRING = { duration: 0.15, ease: "easeOut" as const };
 
 function cn(...parts: (string | false | undefined)[]) {
   return parts.filter(Boolean).join(" ");
@@ -112,28 +111,17 @@ export default function TabList({
           <Icon name="chevron-down" className="h-4 w-4 text-[var(--muted)]" />
         </button>
 
-        {showDrawer && (
-          <div
-            className="fixed inset-0 z-50 flex items-end justify-center bg-[var(--panel-bg)]/50 backdrop-blur-sm"
-            onClick={() => setShowDrawer(false)}
-          >
-            <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={SPRING}
-              className="w-full max-w-lg rounded-t-3xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-2xl backdrop-blur-[var(--panel-blur)]"
-              onClick={(e) => e.stopPropagation()}
-              role="listbox"
-              aria-label={label || "Tabs"}
-            >
-              <div className="mx-auto mb-4 h-1 w-12 rounded-full bg-white/20" />
-              {label && (
-                <p className="mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
-                  {label}
-                </p>
-              )}
-              {tabs.map((tab) => (
+        <Modal
+          isOpen={showDrawer}
+          onClose={() => setShowDrawer(false)}
+          title={label || "Tabs"}
+          size="sm"
+          position="bottom"
+          hideFooter
+          hideCloseButton
+        >
+          <div role="listbox" aria-label={label || "Tabs"}>
+            {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   type="button"
@@ -156,9 +144,8 @@ export default function TabList({
                   {tab.label}
                 </button>
               ))}
-            </motion.div>
           </div>
-        )}
+        </Modal>
       </div>
     );
   }

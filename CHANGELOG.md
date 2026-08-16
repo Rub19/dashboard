@@ -4,6 +4,22 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : remplacement des modales brutes par le composant Modal générique**
+
+### Corrige
+- `ethone-next/components/ui/Modal.tsx` : ajout des props `position` (center/bottom), `fullScreen`, `hideCloseButton` et `contentClassName` pour couvrir les tiroirs et panneaux plein écran.
+- Remplacement des modales brutes et `BottomSheet` par `Modal` dans :
+  - `components/ConnectionInspector.tsx`
+  - `components/CalendarBills.tsx`
+  - `components/tabs/TabList.tsx`
+  - `components/BillsWidget.tsx`
+  - `components/NotificationCenter.tsx` (mode mobile)
+  - `app/mail/page.tsx` (composer, panneau et tiroirs d'action)
+  - `app/files/page.tsx` (création/renommage/déplacement/partage/drop et admin)
+  - `app/brain/page.tsx` (préparer demain)
+  - `app/scratchpad/page.tsx`
+- Suppression des imports `BottomSheet` là où il n'est plus utilisé.
+
 **Migration Next.js : arrière-plan cosmique performant avec fallback statique**
 
 ### Corrige

@@ -9,7 +9,7 @@ import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
 import TabList from "@/components/tabs/TabList";
 import { useToast } from "@/components/ToastProvider";
-import BottomSheet from "@/components/BottomSheet";
+import Modal from "@/components/ui/Modal";
 import { useItems } from "@/lib/hooks/useItems";
 import BrainContextPanel from "@/components/BrainContextPanel";
 import BrainBriefingPanel from "@/components/BrainBriefingPanel";
@@ -534,7 +534,14 @@ export default function BrainPage() {
     const tomorrowEvents = events.items.filter((e) => isTomorrow(e.startAt));
 
     return (
-      <BottomSheet open={wrapupOpen} onClose={() => setWrapupOpen(false)} title={i18n("prepareTomorrow")} position="bottom" draggable>
+      <Modal
+        isOpen={wrapupOpen}
+        onClose={() => setWrapupOpen(false)}
+        title={i18n("prepareTomorrow")}
+        size="sm"
+        position="bottom"
+        hideFooter
+      >
         <div className="space-y-4">
           <p className="text-sm text-[var(--muted)]">{i18n("brainWrapupTitle")}</p>
 
@@ -586,7 +593,7 @@ export default function BrainPage() {
             {i18n("brainWrapup")}
           </button>
         </div>
-      </BottomSheet>
+      </Modal>
     );
   }
 

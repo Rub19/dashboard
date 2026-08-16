@@ -9,7 +9,7 @@ import { useIsMobile } from "@/lib/hooks/useMediaQuery";
 import { usePresence } from "@/components/PresenceProvider";
 import { Icon } from "@/lib/icons";
 import NotificationItem from "@/components/NotificationItem";
-import BottomSheet from "@/components/BottomSheet";
+import Modal from "@/components/ui/Modal";
 
 const FILTERS: { id: string; labelKey: string; icon: string }[] = [
   { id: "all", labelKey: "all", icon: "layout-grid" },
@@ -205,9 +205,16 @@ export default function NotificationCenter() {
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           {isMobile ? (
-            <BottomSheet open={open} onClose={() => setOpen(false)} title={i18n("notifications")} position="bottom" draggable>
+            <Modal
+              isOpen={open}
+              onClose={() => setOpen(false)}
+              title={i18n("notifications")}
+              size="sm"
+              position="bottom"
+              hideFooter
+            >
               {content}
-            </BottomSheet>
+            </Modal>
           ) : (
             <div className="absolute right-0 top-12 z-50 w-80 sm:w-96 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 p-4 shadow-2xl backdrop-blur-md">
               {content}

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
+import Modal from "@/components/ui/Modal";
 import { fetchWorker } from "@/lib/api";
 import { useI18n } from "@/lib/hooks/useI18n";
 
@@ -189,59 +190,45 @@ export default function ConnectionInspector({
   const setup = useMemo(() => sectionFor(integration.id), [integration.id]);
   const methods = useMemo(() => methodsFor(integration.id), [integration.id]);
 
-  if (!isOpen) return null;
-
   const statusColor = connected
     ? "bg-emerald-500/10 text-emerald-400"
     : integration.status === "oauth" || integration.status === "api"
     ? "bg-sky-500/10 text-sky-400"
     : "bg-amber-500/10 text-amber-400";
 
+  if (!isOpen) return null;
+
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      role="dialog"
-      aria-modal="true"
-      onClick={onClose}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={integration.name}
+      size="lg"
+      hideFooter
+      className="max-h-[85vh]"
     >
-      <div className="absolute inset-0 bg-[var(--panel-bg)]/60 backdrop-blur-sm" />
-      <div
-        className="relative z-10 w-full max-w-2xl max-h-[80vh] overflow-y-auto rounded-3xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-5 shadow-2xl backdrop-blur-[var(--panel-blur)]"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="mb-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className={`rounded-[var(--panel-radius)] px-2.5 py-1 text-xs font-semibold ${statusColor}`}>
-              {connected ? i18n("connected") : i18n(integration.status)}
-            </span>
-            <h2 className="text-xl font-bold">{integration.name}</h2>
-          </div>
+      <div className="mb-4">
+        <span className={`rounded-[var(--panel-radius)] px-2.5 py-1 text-xs font-semibold ${statusColor}`}>
+          {connected ? i18n("connected") : i18n(integration.status)}
+        </span>
+      </div>
+
+      <div className="mb-4 flex gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1 backdrop-blur-[var(--panel-blur)]">
+        {(["overview", "setup", "methods", "diagnostics"] as Tab[]).map((t) => (
           <button
+            key={t}
             type="button"
-            onClick={onClose}
-            className="rounded-full p-2 text-[var(--muted)] hover:bg-[var(--panel-bg)]"
-            aria-label={i18n("close")}
+            onClick={() => setTab(t)}
+            className={`flex-1 rounded-[var(--panel-radius)] py-1.5 text-xs font-medium transition-colors ${
+              tab === t ? "bg-[var(--accent)] text-white" : "text-[var(--muted)]"
+            }`}
           >
-            <Icon name="x" className="h-5 w-5" />
+            {i18n(t)}
           </button>
-        </div>
+        ))}
+      </div>
 
-        <div className="mb-4 flex gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1 backdrop-blur-[var(--panel-blur)]">
-          {(["overview", "setup", "methods", "diagnostics"] as Tab[]).map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setTab(t)}
-              className={`flex-1 rounded-[var(--panel-radius)] py-1.5 text-xs font-medium transition-colors ${
-                tab === t ? "bg-[var(--accent)] text-white" : "text-[var(--muted)]"
-              }`}
-            >
-              {i18n(t)}
-            </button>
-          ))}
-        </div>
-
-        <div className="space-y-4">
+      <div className="space-y-4">
           {tab === "overview" && (
             <Card3D>
               <p className="text-sm font-medium">{integration.description}</p>
@@ -307,7 +294,6 @@ export default function ConnectionInspector({
             </Card3D>
           )}
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 }

@@ -516,7 +516,6 @@ body {
 [data-interface-blur="true"] .sticky,
 [data-interface-blur="true"] header,
 [data-interface-blur="true"] aside,
-[data-interface-blur="true"] .v8-floating-dock,
 [data-interface-blur="true"] .v8-panel {
   backdrop-filter: blur(14px) saturate(160%);
   -webkit-backdrop-filter: blur(14px) saturate(160%);
@@ -524,8 +523,7 @@ body {
 
 [data-glass-enabled="true"] .v8-glass,
 [data-glass-enabled="true"] header,
-[data-glass-enabled="true"] aside,
-[data-glass-enabled="true"] .v8-floating-dock {
+[data-glass-enabled="true"] aside {
   background: color-mix(in srgb, var(--surface-raised) 85%, transparent);
 }
 

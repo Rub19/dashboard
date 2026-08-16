@@ -141,23 +141,23 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
       <button
         type="button"
         aria-label={buttonLabel}
-        className="relative flex h-12 w-12 flex-col items-center justify-center rounded-xl text-emerald-400 transition-all hover:bg-white/[0.08] active:scale-95"
+        className="relative flex h-11 w-11 flex-col items-center justify-center rounded-xl text-emerald-400 transition-all hover:bg-white/[0.08] active:scale-95"
       >
         {artwork && hasTrack ? (
           <Image
             src={artwork}
             alt={title}
-            width={24}
-            height={24}
+            width={48}
+            height={48}
             unoptimized
-            className="h-6 w-6 rounded object-cover transition-transform group-hover:scale-110"
+            className="h-5 w-5 rounded object-cover transition-transform group-hover:scale-110"
           />
         ) : (
-          <Music className="h-6 w-6 text-emerald-400 transition-transform group-hover:scale-110" />
+          <Music className="h-5 w-5 text-emerald-400 transition-transform group-hover:scale-110" />
         )}
 
         {isPlaying && hasTrack && (
-          <span className="absolute bottom-1.5 flex h-2.5 items-end gap-0.5" aria-hidden="true">
+          <span className="absolute bottom-1.5 flex h-1.5 items-end gap-0.5" aria-hidden="true">
             <span className="h-1 w-0.5 animate-pulse rounded-full bg-emerald-400" />
             <span
               className="h-2.5 w-0.5 animate-pulse rounded-full bg-emerald-400"
@@ -175,15 +175,15 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
         {open && (
           <motion.div
             initial={{ opacity: 0, y: 8, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
+            animate={{ opacity: 1, y: -12, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.95 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="absolute bottom-full left-1/2 z-50 mb-3 w-80 -translate-x-1/2 rounded-2xl border border-white/10 bg-zinc-950/95 p-4 shadow-2xl backdrop-blur-2xl"
+            className="absolute bottom-full left-0 z-50 w-80 -translate-x-6 rounded-2xl border border-white/10 bg-zinc-950/95 p-4 shadow-2xl backdrop-blur-2xl"
           >
             {!hasTrack ? (
               <div className="flex items-center gap-3">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.05]">
-                  <Music className="h-6 w-6 text-zinc-400" />
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.05]">
+                  <Music className="h-5 w-5 text-zinc-400" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <h4 className="truncate text-xs font-bold text-white">{i18n("noLive")}</h4>
@@ -197,14 +197,14 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                     <Image
                       src={artwork}
                       alt={title}
-                      width={112}
-                      height={112}
+                      width={96}
+                      height={96}
                       unoptimized
-                      className="h-14 w-14 shrink-0 rounded-xl border border-white/10 object-cover shadow-md"
+                      className="h-12 w-12 shrink-0 rounded-xl border border-white/10 object-cover shadow-md"
                     />
                   ) : (
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.05]">
-                      <Music className="h-6 w-6 text-zinc-400" />
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.05]">
+                      <Music className="h-5 w-5 text-zinc-400" />
                     </div>
                   )}
                   <div className="min-w-0 flex-1">

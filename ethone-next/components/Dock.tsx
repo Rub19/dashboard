@@ -1,20 +1,26 @@
 "use client";
 
-import { useMemo, useState, useEffect, useRef, type DragEvent } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import { isActiveRoute } from "@/lib/navigation";
+import { useMemo, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import {
+  LayoutGrid,
+  Search,
+  Clock,
+  AppWindow,
+  Bell,
+  Sliders,
+  ChevronUp,
+} from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useWindowManager } from "@/components/WindowManagerProvider";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { Icon } from "@/lib/icons";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useNotifications } from "@/lib/hooks/useNotifications";
-import ContextMenu from "@/components/ContextMenu";
+import { Icon } from "@/lib/icons";
 import Card3D from "@/components/Card3D";
 import DockControlCenter from "@/components/DockControlCenter";
 import FocusPopover from "@/components/FocusPopover";
-import DockItem from "@/components/DockItem";
 import DockMediaFlyout from "@/components/DockMediaFlyout";
 import type { NowPlaying } from "@/lib/hooks/useLiveData";
 
@@ -40,29 +46,19 @@ const ICONS: Record<string, string> = {
 };
 
 export default function Dock() {
-  const { settings, update } = useSettings();
-  const pathname = usePathname();
+  const { settings } = useSettings();
   const router = useRouter();
-  const { openWindow, missionControl, toggleMissionControl } = useWindowManager();
-  const { open: commandPaletteOpen, setOpen: setCommandPaletteOpen } = useCommandPalette();
+  const { missionControl, toggleMissionControl } = useWindowManager();
+  const { setOpen: setCommandOpen } = useCommandPalette();
   const i18n = useI18n();
   const { nowPlaying, lanyard } = useLiveData(120_000);
   const { unreadCount } = useNotifications();
 
-  const [expanded, setExpanded] = useState(false);
-  const [draggingId, setDraggingId] = useState<string | null>(null);
   const [launcherOpen, setLauncherOpen] = useState(false);
   const [controlCenterOpen, setControlCenterOpen] = useState(false);
-  const [controlCenterEl, setControlCenterEl] = useState<HTMLButtonElement | HTMLAnchorElement | null>(null);
-
-  const [focusPopover, setFocusPopover] = useState<{ open: boolean; anchor: HTMLElement | null }>({
-    open: false,
-    anchor: null,
-  });
-  const [pomodoroEl, setPomodoroEl] = useState<HTMLButtonElement | HTMLAnchorElement | null>(null);
-  const [focusAppEl, setFocusAppEl] = useState<HTMLDivElement | null>(null);
-  const focusSuppressRef = useRef(false);
-  const focusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [controlCenterEl, setControlCenterEl] = useState<HTMLButtonElement | null>(null);
+  const [pomodoroEl, setPomodoroEl] = useState<HTMLButtonElement | null>(null);
+  const [focusOpen, setFocusOpen] = useState(false);
 
   const allApps = useMemo(
     () =>
@@ -104,64 +100,24 @@ export default function Dock() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [launcherOpen]);
 
-  if (!settings.dockVisible || settings.layoutPreset === "sidebar-only" || settings.layoutPreset === "minimal") return null;
-
-  function visibleItems() {
-    return settings.dockItems
-      .filter((id) => ICONS[id])
-      .map((id) => ({ id, href: id === "home" ? "/" : `/${id}/`, icon: ICONS[id], label: i18n(id) }));
+  if (!settings.dockVisible || settings.layoutPreset === "sidebar-only" || settings.layoutPreset === "minimal") {
+    return null;
   }
 
-  function move(id: string, delta: number) {
-    const order = [...settings.dockItems];
-    const idx = order.indexOf(id);
-    const to = Math.min(order.length - 1, Math.max(0, idx + delta));
-    if (idx < 0 || idx === to) return;
-    order.splice(to, 0, order.splice(idx, 1)[0]);
-    update({ dockItems: order });
-  }
-
-  function moveTo(draggedId: string, targetId: string) {
-    const order = [...settings.dockItems];
-    const from = order.indexOf(draggedId);
-    const to = order.indexOf(targetId);
-    if (from < 0 || to < 0) return;
-    const next = order.filter((id) => id !== draggedId);
-    const insertAt = from < to ? to : to;
-    next.splice(insertAt, 0, draggedId);
-    update({ dockItems: next });
-  }
-
-  function toggleDockItem(id: string) {
-    const next = settings.dockItems.includes(id)
-      ? settings.dockItems.filter((x) => x !== id)
-      : [...settings.dockItems, id];
-    update({ dockItems: next });
-  }
-
-  function openFocus(anchor: HTMLElement | null) {
-    if (!anchor) return;
-    setFocusPopover({ open: true, anchor });
+  function openFocus() {
+    if (!pomodoroEl) return;
+    setFocusOpen(true);
   }
 
   function closeFocus() {
-    setFocusPopover({ open: false, anchor: null });
+    setFocusOpen(false);
   }
 
-  function startFocusHold(anchor: HTMLElement | null) {
-    if (expanded || !anchor) return;
-    clearFocusHold();
-    focusTimerRef.current = setTimeout(() => {
-      focusSuppressRef.current = true;
-      openFocus(anchor);
-      focusTimerRef.current = null;
-    }, 520);
-  }
-
-  function clearFocusHold() {
-    if (focusTimerRef.current) {
-      clearTimeout(focusTimerRef.current);
-      focusTimerRef.current = null;
+  function toggleFocus() {
+    if (focusOpen) {
+      closeFocus();
+    } else {
+      openFocus();
     }
   }
 
@@ -171,9 +127,15 @@ export default function Dock() {
     }
   }
 
+  function handleScrollTop() {
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }
+
   return (
     <div
-      className="v8-floating-dock fixed bottom-12 left-1/2 -translate-x-1/2 z-50 hidden md:block pointer-events-none bg-transparent border-0 shadow-none"
+      className="v8-floating-dock fixed bottom-8 left-1/2 -translate-x-1/2 z-50 hidden md:block pointer-events-none bg-transparent p-0 m-0 border-none shadow-none outline-none"
     >
       {launcherOpen && (
         <div className="pointer-events-auto absolute bottom-full left-1/2 z-50 mb-4 w-[min(90vw,420px)] -translate-x-1/2">
@@ -185,259 +147,134 @@ export default function Dock() {
                   type="button"
                   onClick={() => setLauncherOpen(false)}
                   aria-label={i18n("close")}
-                  data-haptic
                   className="rounded p-1 text-zinc-500 transition-colors hover:bg-white/[0.08] hover:text-white"
                 >
                   <Icon name="close" className="h-4 w-4" />
                 </button>
               </div>
               <div className="grid max-h-[60vh] grid-cols-3 gap-2 overflow-y-auto sm:grid-cols-4">
-                {allApps.map((app) => {
-                  const active = settings.dockItems.includes(app.id);
-                  return (
-                    <button
-                      key={app.id}
-                      type="button"
-                      onClick={() => toggleDockItem(app.id)}
-                      aria-label={active ? i18n("dockRemove") : i18n("dockAdd")}
-                      data-haptic
-                      className={`flex flex-col items-center gap-1 rounded-xl border border-white/[0.08] bg-white/[0.03] p-2 text-zinc-300 transition-colors hover:border-white/15 hover:bg-white/[0.06] ${
-                        active ? "border-emerald-500/30 text-emerald-400" : ""
-                      }`}
-                    >
-                      <Icon name={app.icon} className="h-5 w-5" />
-                      <span className="w-full truncate text-center text-[10px] leading-tight">{app.label}</span>
-                      <span className="rounded-full border border-white/[0.08] bg-white/[0.03] p-0.5">
-                        <Icon name={active ? "minus" : "plus"} className="h-3 w-3" />
-                      </span>
-                    </button>
-                  );
-                })}
+                {allApps.map((app) => (
+                  <button
+                    key={app.id}
+                    type="button"
+                    onClick={() => {
+                      router.push(app.href);
+                      setLauncherOpen(false);
+                    }}
+                    className="flex flex-col items-center gap-1 rounded-xl border border-white/[0.08] bg-white/[0.03] p-2 text-zinc-300 transition-colors hover:border-white/15 hover:bg-white/[0.06]"
+                  >
+                    <Icon name={app.icon} className="h-5 w-5" />
+                    <span className="w-full truncate text-center text-[10px] leading-tight">{app.label}</span>
+                  </button>
+                ))}
               </div>
             </div>
           </Card3D>
         </div>
       )}
 
-      <div
-        className="pointer-events-auto inline-flex min-h-16 items-center gap-3 rounded-2xl border border-white/[0.12] bg-zinc-950/90 px-4 py-3 shadow-[0_24px_60px_rgba(0,0,0,0.9)] backdrop-blur-2xl transition-all select-none hover:border-white/15"
+      <nav
+        className="pointer-events-auto inline-flex items-center gap-2 px-3 py-2 bg-zinc-950/90 border border-white/[0.12] backdrop-blur-2xl rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] select-none"
+        aria-label={i18n("dock")}
       >
         <DockMediaFlyout nowPlaying={spotifyNow} clientId={settings.liveSpotifyClientId} />
 
-        {visibleItems().map((item) => {
-          const active = isActiveRoute(pathname, item.href);
-          const isFocus = item.id === "focus";
-
-          const contextItems = [
-            { id: "open", label: i18n("openHere"), icon: "arrow-right", onClick: () => router.push(item.href) },
-            { id: "window", label: i18n("openInWindow"), icon: "maximize", onClick: () => openWindow(item.label, item.href) },
-          ];
-
-          if (isFocus && focusAppEl) {
-            contextItems.push({
-              id: "pomodoro",
-              label: i18n("dockPomodoro"),
-              icon: "timer",
-              onClick: () => openFocus(focusAppEl),
-            });
-          }
-
-          const dragHandlers = {
-            onDragStart: (e: DragEvent<HTMLDivElement>) => {
-              setDraggingId(item.id);
-              e.dataTransfer.setData("text/plain", item.id);
-              e.dataTransfer.effectAllowed = "move";
-            },
-            onDragOver: (e: DragEvent<HTMLDivElement>) => {
-              e.preventDefault();
-              if (draggingId && draggingId !== item.id) {
-                e.dataTransfer.dropEffect = "move";
-              }
-            },
-            onDrop: (e: DragEvent<HTMLDivElement>) => {
-              e.preventDefault();
-              const draggedId = e.dataTransfer.getData("text/plain");
-              if (draggedId && draggedId !== item.id) {
-                moveTo(draggedId, item.id);
-              }
-              setDraggingId(null);
-            },
-            onDragEnd: () => setDraggingId(null),
-          };
-
-          const itemNode = (
-            <DockItem
-              icon={item.icon}
-              label={item.label}
-              href={item.href}
-              active={active}
-              onClick={(e) => {
-                if (draggingId) {
-                  e?.preventDefault();
-                  return;
-                }
-                if (isFocus) {
-                  if (focusSuppressRef.current) {
-                    e?.preventDefault();
-                    focusSuppressRef.current = false;
-                    return;
-                  }
-                  if (focusPopover.open && focusPopover.anchor === focusAppEl) {
-                    e?.preventDefault();
-                    closeFocus();
-                    return;
-                  }
-                }
-              }}
-            />
-          );
-
-          const body = (
-            <>
-              {itemNode}
-              {expanded && (
-                <div className="mt-1 flex gap-0.5">
-                  <button
-                    onClick={() => move(item.id, -1)}
-                    className="rounded p-0.5 text-[10px] text-zinc-500 hover:bg-white/[0.06]"
-                  >
-                    ◀
-                  </button>
-                  <button
-                    onClick={() => move(item.id, 1)}
-                    className="rounded p-0.5 text-[10px] text-zinc-500 hover:bg-white/[0.06]"
-                  >
-                    ▶
-                  </button>
-                </div>
-              )}
-            </>
-          );
-
-          if (isFocus) {
-            return (
-              <ContextMenu key={item.id} items={contextItems}>
-                <div
-                  ref={setFocusAppEl}
-                  className="group relative flex flex-col items-center"
-                  draggable={expanded}
-                  {...dragHandlers}
-                  onPointerDown={(e) => {
-                    if (e.button !== 0 || !e.isPrimary || expanded) return;
-                    startFocusHold(focusAppEl);
-                  }}
-                  onPointerUp={clearFocusHold}
-                  onPointerLeave={clearFocusHold}
-                  onPointerCancel={clearFocusHold}
-                >
-                  {body}
-                </div>
-              </ContextMenu>
-            );
-          }
-
-          return (
-            <ContextMenu key={item.id} items={contextItems}>
-              <div
-                className="group relative flex flex-col items-center"
-                draggable={expanded}
-                {...dragHandlers}
-              >
-                {body}
-              </div>
-            </ContextMenu>
-          );
-        })}
-
-        <DockItem
-          icon="layoutGrid"
-          label={i18n("dockLauncher")}
-          active={launcherOpen}
+        <button
+          type="button"
           onClick={() => {
             setLauncherOpen((v) => !v);
             setControlCenterOpen(false);
           }}
+          aria-label={i18n("dockLauncher")}
           aria-expanded={launcherOpen}
-        />
+          className="w-11 h-11 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer"
+        >
+          <LayoutGrid className="w-5 h-5" />
+        </button>
 
-        <span className="h-6 w-[1px] shrink-0 bg-white/10 mx-1.5" aria-hidden="true" />
+        <div className="w-[1px] h-6 bg-white/10 mx-1 shrink-0" aria-hidden="true" />
 
-        <DockItem
-          icon="search"
-          label={i18n("dockSpotlight")}
-          active={commandPaletteOpen}
-          onClick={() => setCommandPaletteOpen(true)}
-          aria-pressed={commandPaletteOpen}
-        />
+        <button
+          type="button"
+          onClick={() => setCommandOpen(true)}
+          aria-label={i18n("dockSpotlight")}
+          aria-pressed={false}
+          className="w-11 h-11 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer"
+        >
+          <Search className="w-5 h-5" />
+        </button>
 
-        <DockItem
+        <button
           ref={setPomodoroEl}
-          icon="timer"
-          label={i18n("dockPomodoro")}
-          active={focusPopover.open && focusPopover.anchor === pomodoroEl}
-          onClick={() => {
-            if (focusPopover.open && focusPopover.anchor === pomodoroEl) {
-              closeFocus();
-            } else {
-              openFocus(pomodoroEl);
-            }
-          }}
-        />
+          type="button"
+          onClick={toggleFocus}
+          aria-label={i18n("dockPomodoro")}
+          className="w-11 h-11 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer"
+        >
+          <Clock className="w-5 h-5" />
+        </button>
 
-        <DockItem
-          icon="appWindow"
-          label={i18n("dockMissionControl")}
-          active={missionControl}
+        <button
+          type="button"
           onClick={() => {
             toggleMissionControl();
             setLauncherOpen(false);
           }}
           aria-pressed={missionControl}
-        />
+          aria-label={i18n("dockMissionControl")}
+          className="w-11 h-11 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer"
+        >
+          <AppWindow className="w-5 h-5" />
+        </button>
 
-        <DockItem
-          icon="bell"
-          label={i18n("openNotifications")}
+        <button
+          type="button"
           onClick={() => {
             handleOpenNotifications();
             setLauncherOpen(false);
           }}
-          badge={unreadCount}
-        />
+          aria-label={i18n("openNotifications")}
+          className="relative w-11 h-11 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer"
+        >
+          <Bell className="w-5 h-5" />
+          {unreadCount > 0 && (
+            <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-zinc-950" aria-hidden="true" />
+          )}
+        </button>
 
-        <DockItem
+        <button
           ref={setControlCenterEl}
-          icon="sliders"
-          label={i18n("controlCenter")}
-          active={controlCenterOpen}
+          type="button"
           onClick={() => {
             setControlCenterOpen((v) => !v);
             setLauncherOpen(false);
           }}
           aria-expanded={controlCenterOpen}
-        />
+          aria-label={i18n("controlCenter")}
+          className="w-11 h-11 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer"
+        >
+          <Sliders className="w-5 h-5" />
+        </button>
 
-        <DockItem
-          icon="chevronUp"
-          label={i18n("expand")}
-          onClick={() => setExpanded((v) => !v)}
-          className={expanded ? "rotate-180" : ""}
-        />
+        <button
+          type="button"
+          onClick={handleScrollTop}
+          aria-label={i18n("expand")}
+          className="w-11 h-11 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/[0.08] active:scale-95 transition-all cursor-pointer"
+        >
+          <ChevronUp className="w-5 h-5" />
+        </button>
+      </nav>
 
-        {controlCenterOpen && controlCenterEl && (
-          <DockControlCenter
-            open={controlCenterOpen}
-            onClose={() => setControlCenterOpen(false)}
-            referenceRef={controlCenterEl}
-          />
-        )}
-
-        <FocusPopover
-          open={focusPopover.open}
-          onClose={closeFocus}
-          referenceRef={focusPopover.anchor}
+      {controlCenterOpen && controlCenterEl && (
+        <DockControlCenter
+          open={controlCenterOpen}
+          onClose={() => setControlCenterOpen(false)}
+          referenceRef={controlCenterEl}
         />
-      </div>
+      )}
+
+      <FocusPopover open={focusOpen} onClose={closeFocus} referenceRef={pomodoroEl} />
     </div>
   );
 }

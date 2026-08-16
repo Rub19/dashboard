@@ -4,6 +4,26 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : correction des widgets Gaming, Social & Météo**
+
+### Corrige
+- `ethone-next/components/GamingCard.tsx` : nouveau widget gaming compact avec avatar Minecraft résilient (`mc-heads.net` avec fallback `minotar.net` via `onError`) et badges `Slim` / `Cape`.
+- `ethone-next/components/SocialDiscordCard.tsx` : nouveau widget social Discord avec construction du CDN Discord, fallback d'avatar par défaut, pastille de statut sur l'avatar et détails d'activité sur plusieurs lignes sans tronquage.
+- `ethone-next/components/WeatherWidget.tsx` : suppression des hauteurs fixes bloquantes (`h-full`), padding augmenté à `p-5`, prévisions en pillules `min-h-[64px]`, grille de 4 indicateurs et correction du libellé UV (`UV 0` au lieu de `UV UV 0`).
+- `ethone-next/components/LiveTopBento.tsx` : intégration de `GamingCard`, `SocialDiscordCard` et suppression des `min-h-[170px]` sur le conteneur météo.
+- `ethone-next/components/DashboardOverview.tsx` : utilisation de `GamingCard` et `SocialDiscordCard` dans la rangée inférieure.
+- `ethone-next/lib/hooks/useLiveData.ts` : ajout de `username`, `avatarHash` et `discriminator` à `LanyardPresence`.
+
+**Migration Next.js : refonte du tableau de bord en Bento 12 colonnes dense**
+
+### Corrige
+- `ethone-next/components/DashboardOverview.tsx` : grille 12 colonnes (`grid-cols-12 gap-4 max-w-7xl`) avec sections `homeHiddenSections` préservées, mode de personnalisation, et nouvelle disposition Bento.
+- `ethone-next/components/HeroBriefingCard.tsx` : carte principale regroupant le salut dynamique, la date, le prompt rapide Brain, la réponse assistante et des compteurs compact (tâches, événements, notes, stockage).
+- `ethone-next/components/SystemControlCard.tsx` : centre de contrôle unifié pour la présence (4 statuts), les auras thématiques et le mode de session.
+- `ethone-next/components/ProductivityCards.tsx` : triptyque `DayTimelineCard`, `ProjectsTasksCard`, `RecentNotesCard` — agendas du jour, indicateurs circulaires de tâches, focus et courriel non lu, et deux dernières notes avec création rapide.
+- `ethone-next/app/page.tsx` : point d'entrée vers `DashboardOverview`.
+- `ethone-next/components/IntegrationCard.tsx` : re-export temporaire de `ConnectionCard` pour résoudre l'import manquant dans `IntegrationsSettings`.
+
 **Migration Next.js : refactorisation du Dock flottant**
 
 ### Corrige

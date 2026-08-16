@@ -24,7 +24,10 @@ export type NowPlaying = {
 export type LanyardPresence = {
   userId?: string;
   displayName?: string;
+  username?: string;
   avatarUrl?: string;
+  avatarHash?: string;
+  discriminator?: string;
   discord_status?: "online" | "idle" | "dnd" | "offline";
   spotify?: {
     playing?: boolean;
@@ -356,11 +359,15 @@ export function useLiveData(pollMs = 60000) {
           });
         }
         if (la.status === "fulfilled") {
-          const d = la.value || {};
+          const d = (la.value || {}) as ApiData;
+          const discordUser = (d.discord_user as ApiData) || {};
           setLanyard({
             userId: asStr(d.userId),
             displayName: asStr(d.displayName),
+            username: asStr(discordUser.username) || asStr(d.username),
             avatarUrl: asStr(d.avatarUrl),
+            avatarHash: asStr(discordUser.avatar) || asStr(d.avatarHash),
+            discriminator: asStr(discordUser.discriminator) || asStr(d.discriminator),
             discord_status: (d.status as LanyardPresence["discord_status"]) || "offline",
             spotify: d.spotify
               ? {

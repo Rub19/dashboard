@@ -181,7 +181,7 @@ function WeatherBadge({
   }[tone];
 
   return (
-    <div className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.04] px-2.5 py-1.5 text-xs font-medium text-zinc-200 ring-1 ring-inset ring-white/[0.06] backdrop-blur-sm">
+    <div className="flex w-full items-center gap-1.5 rounded-full bg-white/[0.04] px-2.5 py-1.5 text-xs font-medium text-zinc-200 ring-1 ring-inset ring-white/[0.06] backdrop-blur-sm">
       <Icon name={icon} className={`h-3 w-3 ${toneClass}`} />
       {label && <span className="text-zinc-500">{label}</span>}
       <span>{value}</span>
@@ -196,13 +196,9 @@ function ForecastPill({ day, icon, colorClass, compact }: { day: ForecastDay; ic
   const max = toNum(day.max);
 
   return (
-    <div
-      className={`flex flex-col items-center rounded-xl bg-white/[0.03] p-2 ring-1 ring-inset ring-white/[0.06] transition-colors hover:bg-white/[0.06] ${
-        compact ? "gap-0.5" : "gap-1"
-      }`}
-    >
+    <div className="flex min-h-[64px] flex-col items-center gap-1 rounded-xl border border-white/[0.06] bg-white/[0.03] p-2.5 transition-colors hover:bg-white/[0.06]">
       <span className="text-[11px] font-medium uppercase text-zinc-400">{formatShortDay(day.date, locale)}</span>
-      <Icon name={icon} className={`my-1 ${compact ? "h-4 w-4" : "h-5 w-5"} ${colorClass}`} />
+      <Icon name={icon} className={`my-0.5 ${compact ? "h-4 w-4" : "h-5 w-5"} ${colorClass}`} />
       <span className={`font-mono font-semibold text-white ${compact ? "text-[10px]" : "text-xs"}`}>
         {min !== undefined ? `${Math.round(min)}°` : "—"}{" "}
         <span className="text-zinc-500">/ {max !== undefined ? `${Math.round(max)}°` : "—"}</span>
@@ -214,8 +210,8 @@ function ForecastPill({ day, icon, colorClass, compact }: { day: ForecastDay; ic
 function WeatherSkeleton({ compact }: { compact?: boolean }) {
   return (
     <div
-      className={`animate-pulse space-y-4 rounded-2xl bg-white/[0.04] p-4 backdrop-blur-xl ${
-        compact ? "h-full" : "min-h-[320px]"
+      className={`animate-pulse space-y-4 rounded-2xl bg-white/[0.04] p-5 backdrop-blur-2xl ${
+        compact ? "min-h-[160px]" : "min-h-[260px]"
       }`}
     >
       <div className="flex items-start justify-between">
@@ -273,8 +269,8 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
   if (!data) {
     return (
       <div
-        className={`flex flex-col items-center justify-center gap-3 rounded-2xl border border-white/[0.06] bg-zinc-950/60 p-6 text-center backdrop-blur-xl ${
-          compact ? "h-full" : "min-h-[320px]"
+        className={`flex flex-col items-center justify-center gap-3 rounded-2xl border border-white/[0.06] bg-zinc-950/60 p-5 text-center backdrop-blur-2xl ${
+          compact ? "min-h-[160px]" : "min-h-[260px]"
         } ${className || ""}`}
       >
         <Icon name="cloud" className="h-10 w-10 text-zinc-600" />
@@ -295,9 +291,9 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
 
   return (
     <div
-      className={`group relative overflow-hidden rounded-2xl border bg-zinc-950/80 p-4 backdrop-blur-xl transition-colors ${gradient} ${border} ${
-        compact ? "h-full" : ""
-      } ${className || ""}`}
+      className={`group relative h-auto min-h-0 overflow-hidden rounded-2xl border bg-zinc-950/70 p-5 backdrop-blur-2xl transition-colors ${gradient} ${border} ${
+        className || ""
+      }`}
     >
       {/* Ambient neon glow */}
       <div
@@ -305,7 +301,7 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
         aria-hidden="true"
       />
 
-      <div className="relative z-10 flex h-full flex-col">
+      <div className="relative z-10 flex min-h-0 flex-col">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 md:gap-4">
@@ -344,7 +340,7 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
         </div>
 
         {/* Quick indicators */}
-        <div className={`flex flex-wrap gap-2 ${compact ? "mt-2" : "mt-4"}`}>
+        <div className={`grid grid-cols-2 gap-1.5 sm:grid-cols-4 ${compact ? "mt-2" : "mt-4"}`}>
           {feelsLike !== undefined && (
             <WeatherBadge
               icon="thermometer"
@@ -360,12 +356,7 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
             <WeatherBadge icon="wind" value={`${Math.round(wind)} km/h`} label={i18n("wind")} tone="emerald" />
           )}
           {uv !== undefined && (
-            <WeatherBadge
-              icon="sun"
-              value={`UV ${Math.round(uv)}`}
-              label={i18n("weatherUV") || "UV"}
-              tone="amber"
-            />
+            <WeatherBadge icon="sun" value={String(Math.round(uv))} label={i18n("weatherUV") || "UV"} tone="amber" />
           )}
         </div>
 

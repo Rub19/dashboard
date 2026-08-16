@@ -4,6 +4,15 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : refonte du Calendrier & Factures**
+
+### Corrige
+- `ethone-next/components/CalendarGrid.tsx` : grille mensuelle générée sans `0`, jours hors mois affichés avec de vraies dates estompées (`text-zinc-600 opacity-40`), en-tête des jours `Lun–Dim`, cellules `rounded-2xl` avec bordure d'accent thématique, pastille d'aujourd'hui et micro-puces (bleu = réunion, violet = facture, vert = flow).
+- `ethone-next/components/CalendarInvoicesPage.tsx` : layout Bento 2 colonnes (`grid-cols-12 gap-5`) avec calendrier principal à gauche et volet latéral à droite (`DayEventsCard` + `InvoicesSummaryCard`), header épuré avec mois/année, flèches et bouton "Aujourd'hui".
+- `ethone-next/components/DayEventsCard.tsx` : carte d'agenda du jour sélectionné, liste des échéances/factures, état vide avec icône `Calendar`, bouton d'ajout rapide.
+- `ethone-next/components/InvoicesSummaryCard.tsx` : carte financière avec total mensuel, échéances à 30 jours, actions "Nouvelle facture" et "Scanner reçu".
+- `ethone-next/app/calendar-bills/page.tsx` : simplifié pour utiliser `CalendarInvoicesPage`.
+
 **Migration Next.js : refonte du module Focus / Pomodoro**
 
 ### Corrige

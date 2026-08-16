@@ -1,0 +1,155 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import { Calendar, X } from "lucide-react";
+import CalendarGrid from "@/components/CalendarGrid";
+import DayEventsCard from "@/components/DayEventsCard";
+import InvoicesSummaryCard from "@/components/InvoicesSummaryCard";
+import type { CalendarItem } from "@/components/CalendarBills";
+import Modal from "@/components/ui/Modal";
+import VendorLogo from "@/components/logos/VendorLogo";
+
+const MOCK_ITEMS: CalendarItem[] = [
+  { id: "1", title: "Netflix", amount: 15.49, date: "2026-01-05", category: "monthly", vendor: "netflix", color: "#E50914" },
+  { id: "2", title: "Adobe CC", amount: 59.99, date: "2026-01-08", category: "monthly", vendor: "adobe", color: "#FF0000" },
+  { id: "3", title: "Apple iCloud", amount: 2.99, date: "2026-01-12", category: "monthly", vendor: "apple", color: "#555555" },
+  { id: "4", title: "Figma Pro", amount: 12.00, date: "2026-01-15", category: "monthly", vendor: "figma", color: "#A259FF" },
+  { id: "5", title: "Spotify", amount: 10.99, date: "2026-01-18", category: "monthly", vendor: "spotify", color: "#1DB954" },
+  { id: "6", title: "Notion", amount: 8.00, date: "2026-01-22", category: "monthly", vendor: "notion", color: "#000000" },
+  { id: "7", title: "Domain renewal", amount: 12.00, date: "2026-01-25", category: "yearly", color: "#F59E0B" },
+  { id: "8", title: "Team dinner", amount: 0, date: "2026-01-28", category: "event", color: "#3B82F6" },
+];
+
+function toISODate(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function formatMonthYear(date: Date) {
+  return date.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+}
+
+export default function CalendarInvoicesPage() {
+  const [currentDate, setCurrentDate] = useState(new Date(2026, 0, 1));
+  const [selectedDate, setSelectedDate] = useState(new Date(2026, 0, 16));
+  const [today] = useState(new Date(2026, 0, 16));
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<CalendarItem | null>(null);
+  const [items] = useState<CalendarItem[]>(MOCK_ITEMS);
+
+  const dots = useMemo(
+    () =>
+      items.map((it) => ({
+        date: it.date,
+        category: (it.category === "monthly" || it.category === "yearly" ? "bill" : "meeting") as "bill" | "meeting" | "flow",
+      })),
+    [items]
+  );
+
+  const dayItems = useMemo(
+    () => items.filter((it) => it.date === toISODate(selectedDate)),
+    [items, selectedDate]
+  );
+
+  function openAdd() {
+    setSelectedItem(null);
+    setModalOpen(true);
+  }
+
+  return (
+    <div className="mx-auto w-full max-w-7xl p-4">
+      <div className="grid grid-cols-12 gap-5">
+        <div className="col-span-12 lg:col-span-8">
+          <CalendarGrid
+            currentDate={currentDate}
+            selectedDate={selectedDate}
+            today={today}
+            dots={dots}
+            onSelect={setSelectedDate}
+            onChange={setCurrentDate}
+            monthLabel={formatMonthYear(currentDate)}
+          />
+        </div>
+
+        <div className="col-span-12 flex flex-col gap-4 lg:col-span-4">
+          <DayEventsCard
+            date={selectedDate}
+            items={dayItems}
+            onAdd={openAdd}
+          />
+          <InvoicesSummaryCard
+            items={items}
+            currentDate={currentDate}
+            onAdd={openAdd}
+          />
+
+          <div className="flex flex-wrap items-center gap-2 text-[10px] text-zinc-500">
+            <span className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+              Réunion
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-purple-500" />
+              Facture
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              Flow
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={selectedItem ? selectedItem.title : "Ajouter une facture ou un événement"}
+        size="sm"
+        hideFooter
+      >
+        {selectedItem ? (
+          <div className="mt-2 space-y-2 text-sm text-zinc-400">
+            <p>
+              Catégorie : <span className="text-white">{selectedItem.category}</span>
+            </p>
+            <p>
+              Date : <span className="text-white">{selectedItem.date}</span>
+            </p>
+            {selectedItem.amount ? (
+              <p>
+                Montant : <span className="text-white">${selectedItem.amount.toFixed(2)}</span>
+              </p>
+            ) : null}
+            {selectedItem.vendor && (
+              <div className="mt-3 flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] p-3">
+                <span
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-white"
+                  style={{ backgroundColor: selectedItem.color || "#A259FF" }}
+                >
+                  <VendorLogo vendor={selectedItem.vendor} className="h-4 w-4" />
+                </span>
+                <span className="text-sm font-medium text-white">{selectedItem.title}</span>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="mt-2 flex flex-col items-center justify-center gap-2 py-8 text-center text-zinc-500">
+            <Calendar className="h-6 w-6" />
+            <p className="text-sm">Le formulaire d&apos;ajout sera intégré prochainement.</p>
+          </div>
+        )}
+        <button
+          type="button"
+          onClick={() => setModalOpen(false)}
+          className="mt-6 inline-flex w-full items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold text-zinc-900 transition-opacity hover:opacity-90"
+          style={{ background: "var(--accent-color, #10b981)" }}
+        >
+          <X className="h-4 w-4" />
+          Fermer
+        </button>
+      </Modal>
+    </div>
+  );
+}

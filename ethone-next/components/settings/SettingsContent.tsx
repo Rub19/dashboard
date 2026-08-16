@@ -1099,7 +1099,7 @@ export default function SettingsContent() {
   );
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-3">
+    <div className="w-full space-y-4">
       <div className="grid grid-cols-1 gap-3">
         {mainSections.map((section) => (
           <SettingsSection

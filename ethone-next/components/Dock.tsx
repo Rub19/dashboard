@@ -15,7 +15,8 @@ import Card3D from "@/components/Card3D";
 import DockControlCenter from "@/components/DockControlCenter";
 import FocusPopover from "@/components/FocusPopover";
 import DockItem from "@/components/DockItem";
-import MediaDockItem from "@/components/MediaDockItem";
+import DockMediaFlyout from "@/components/DockMediaFlyout";
+import type { NowPlaying } from "@/lib/hooks/useLiveData";
 
 const ICONS: Record<string, string> = {
   home: "home",
@@ -36,13 +37,6 @@ const ICONS: Record<string, string> = {
   team: "team",
   mail: "mail",
   settings: "settings",
-};
-
-type SpotifyNow = {
-  playing: boolean;
-  title: string;
-  artist: string;
-  artwork?: string;
 };
 
 export default function Dock() {
@@ -83,21 +77,19 @@ export default function Dock() {
     [i18n]
   );
 
-  const spotifyNow = useMemo<SpotifyNow | null>(() => {
+  const spotifyNow = useMemo<NowPlaying | null>(() => {
     if (nowPlaying?.source?.toLowerCase() === "spotify" && nowPlaying?.isPlaying) {
-      return {
-        playing: true,
-        title: nowPlaying.title || "",
-        artist: nowPlaying.artist || "",
-        artwork: nowPlaying.cover || nowPlaying.artworkUrl,
-      };
+      return { ...nowPlaying };
     }
     if (lanyard?.spotify?.playing) {
       return {
-        playing: true,
+        source: "lanyard",
         title: lanyard.spotify.title || "",
         artist: lanyard.spotify.artist || "",
-        artwork: lanyard.spotify.artwork,
+        album: lanyard.spotify.album || "",
+        cover: lanyard.spotify.artwork,
+        isPlaying: true,
+        isSaved: false,
       };
     }
     return null;
@@ -181,7 +173,7 @@ export default function Dock() {
 
   return (
     <div
-      className="v8-floating-dock fixed bottom-14 left-1/2 -translate-x-1/2 z-50 hidden md:block pointer-events-none bg-transparent border-0 shadow-none"
+      className="v8-floating-dock fixed bottom-8 left-1/2 -translate-x-1/2 z-50 hidden md:block pointer-events-none bg-transparent border-0 shadow-none"
     >
       {launcherOpen && (
         <div className="pointer-events-auto absolute bottom-full left-1/2 z-50 mb-4 w-[min(90vw,420px)] -translate-x-1/2">
@@ -228,8 +220,10 @@ export default function Dock() {
       )}
 
       <div
-        className="pointer-events-auto inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-zinc-950/85 px-3 py-2 shadow-[0_12px_40px_rgba(0,0,0,0.75)] backdrop-blur-2xl transition-all hover:border-white/15"
+        className="pointer-events-auto inline-flex min-h-14 items-center gap-2 rounded-2xl border border-white/[0.12] bg-zinc-950/90 px-3 py-2 shadow-[0_20px_50px_rgba(0,0,0,0.85)] backdrop-blur-2xl transition-all select-none hover:border-white/15"
       >
+        <DockMediaFlyout nowPlaying={spotifyNow} clientId={settings.liveSpotifyClientId} />
+
         {visibleItems().map((item) => {
           const active = isActiveRoute(pathname, item.href);
           const isFocus = item.id === "focus";
@@ -354,8 +348,6 @@ export default function Dock() {
             </ContextMenu>
           );
         })}
-
-        <MediaDockItem nowPlaying={spotifyNow} />
 
         <DockItem
           icon="layoutGrid"

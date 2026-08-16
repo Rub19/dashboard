@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Inbox, Reply, Forward, Archive, Trash2, MailOpen, Star, Paperclip, Download } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import type { MailMessage, MailAttachment } from "@/lib/hooks/useMail";
@@ -65,7 +65,6 @@ export default function MailDetailView({
 }: MailDetailViewProps) {
   const i18n = useI18n();
   const endRef = useRef<HTMLDivElement>(null);
-  const [showRaw, setShowRaw] = useState(false);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });

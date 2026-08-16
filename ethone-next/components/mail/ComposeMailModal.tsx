@@ -180,6 +180,25 @@ export default function ComposeMailModal({
               </div>
 
               <div className="flex items-center gap-2 py-1.5">
+                <span className="shrink-0 text-[11px] font-medium text-zinc-500">{i18n("bcc") || "Cci"}</span>
+                <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1">
+                  {bcc.map((b, i) => (
+                    <span key={`${b}-${i}`} className="flex items-center gap-1 rounded-md bg-white/[0.06] px-1.5 py-0.5 text-[11px] text-zinc-300">
+                      {b}
+                      <button type="button" onClick={() => removeTag(bcc, setBcc, i)} className="text-zinc-400 hover:text-white">&times;</button>
+                    </span>
+                  ))}
+                  <input
+                    type="text"
+                    value={bccInput}
+                    onChange={(e) => setBccInput(e.target.value)}
+                    onKeyDown={(e) => handleKeyDown(e, bcc, setBcc, bccInput, setBccInput)}
+                    className="min-w-[4rem] flex-1 bg-transparent text-xs text-zinc-200 placeholder-zinc-600 outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 py-1.5">
                 <span className="shrink-0 text-[11px] font-medium text-zinc-500">{i18n("subject") || "Objet"}</span>
                 <input
                   type="text"

@@ -8,11 +8,6 @@ export const FOLDERS = ["inbox", "starred", "sent", "drafts", "archive", "trash"
 
 export type MailFolder = (typeof FOLDERS)[number];
 
-type FolderMeta = {
-  icon: React.ReactNode;
-  label: string;
-};
-
 type MailSidebarProps = {
   active: MailFolder;
   onChange: (folder: MailFolder) => void;

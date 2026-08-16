@@ -38,24 +38,11 @@ export default function MailPage() {
 
   const [activeThread, setActiveThread] = useState<MailMessage[] | null>(null);
   const [composeOpen, setComposeOpen] = useState(false);
-  const [composeMode, setComposeMode] = useState<"new" | "reply" | "forward">("new");
   const [composeInitial, setComposeInitial] = useState<Partial<ComposeState>>({});
   const [submitting, setSubmitting] = useState(false);
   const [composeDraftId, setComposeDraftId] = useState<string | undefined>();
   const [composeInReplyTo, setComposeInReplyTo] = useState<string | undefined>();
   const [composeReferences, setComposeReferences] = useState<string[] | undefined>();
-
-  const groupedMessages = useMemo(() => {
-    const map = new Map<string, MailMessage[]>();
-    for (const msg of messages) {
-      const key = msg.thread_id || msg.id;
-      if (!map.has(key)) map.set(key, []);
-      map.get(key)!.push(msg);
-    }
-    return Array.from(map.values()).map((list) =>
-      list.sort((a, b) => new Date(a.received_at).getTime() - new Date(b.received_at).getTime())
-    );
-  }, [messages]);
 
   const folderMessages = useMemo(() => {
     if (folder === "inbox") return messages.filter((m) => m.folder === "inbox" || m.folder === "archive" || m.folder === "sent");
@@ -122,7 +109,7 @@ export default function MailPage() {
   }
 
   function openCompose(mode: "new" | "reply" | "forward") {
-    setComposeMode(mode);
+    setComposeOpen(true);
     const last = activeThread?.[activeThread.length - 1];
     const first = activeThread?.[0];
     if (mode === "new" || !last || !first) {

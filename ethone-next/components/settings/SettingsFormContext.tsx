@@ -115,13 +115,13 @@ export function SettingsFormProvider({ children }: { children: React.ReactNode }
 
   const saveExplicit = useCallback(() => {
     const known = Object.fromEntries(
-      Object.entries(draft).filter(([key]) => key in defaults)
+      Object.entries(draft).filter(([key]) => key !== "accountPassword")
     );
     if (Object.keys(known).length > 0) {
       update(known as Partial<Settings>);
     }
     setDraft({});
-  }, [draft, update, defaults]);
+  }, [draft, update]);
 
   const cancelExplicit = useCallback(() => {
     setDraft({});

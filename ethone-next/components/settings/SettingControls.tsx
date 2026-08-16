@@ -139,11 +139,13 @@ export function TextControl({
   onChange,
   type = "text",
   placeholder,
+  autoComplete,
 }: {
   value: string;
   onChange: (v: string) => void;
   type?: "text" | "email" | "password";
   placeholder?: string;
+  autoComplete?: string;
 }) {
   return (
     <input
@@ -151,6 +153,7 @@ export function TextControl({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
+      autoComplete={autoComplete}
       className="w-56 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
     />
   );

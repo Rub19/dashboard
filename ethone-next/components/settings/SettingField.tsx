@@ -35,6 +35,7 @@ type BaseFieldDef = {
   defaultValue?: unknown;
   keywords?: string[];
   onAfterChange?: (value: unknown) => void | Promise<void>;
+  autoComplete?: string;
 };
 
 export type FieldDef =
@@ -153,6 +154,7 @@ export default function SettingField({ field }: { field: FieldDef }) {
             value={String(value ?? "")}
             onChange={(v) => onChange(v)}
             type={field.type}
+            autoComplete={field.autoComplete}
           />
         );
       case "custom":

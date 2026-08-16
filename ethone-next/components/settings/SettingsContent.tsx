@@ -854,6 +854,7 @@ export default function SettingsContent() {
         type: "email",
         saveMode: "explicit",
         defaultValue: "",
+        autoComplete: "off",
         keywords: ["compte", "email", "identité"],
       },
       {
@@ -862,6 +863,7 @@ export default function SettingsContent() {
         type: "text",
         saveMode: "explicit",
         defaultValue: "",
+        autoComplete: "off",
         keywords: ["compte", "utilisateur", "pseudo", "identité"],
       },
       {
@@ -870,6 +872,7 @@ export default function SettingsContent() {
         type: "password",
         saveMode: "explicit",
         defaultValue: "",
+        autoComplete: "new-password",
         keywords: ["compte", "mot de passe", "sécurité"],
       },
       {

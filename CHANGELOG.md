@@ -4,6 +4,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : refactorisation du Dock flottant**
+
+### Corrige
+- `ethone-next/components/Dock.tsx` : position remontée à `bottom-14` pour laisser un espace de 24 px au-dessus de la `StatusBar`, conteneur agrandi (`px-3 py-2 gap-2`), bordure et ombre renforcées, effet de survol `hover:border-white/15`.
+- `ethone-next/components/DockItem.tsx` : cibles cliquables agrandies à `44×44 px` (`h-11 w-11`), icônes à `20×20 px` (`h-5 w-5`), pastille active repositionnée.
+- `ethone-next/components/MediaDockItem.tsx` : agrandissement à `44×44 px` et icônes à `20×20 px` pour cohérence.
+
 **Migration Next.js : refonte du Live / Home avec Bento Grid supérieur**
 
 ### Corrige

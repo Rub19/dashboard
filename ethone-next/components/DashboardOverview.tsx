@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { LayoutGrid } from "lucide-react";
-import BentoCard from "@/components/ui/BentoCard";
+import BentoCard from "@/components/BentoCard";
 import BrandMark from "@/components/BrandMark";
 import MinecraftWidget from "@/components/MinecraftWidget";
 import WeatherWidget, { type WeatherData } from "@/components/WeatherWidget";
@@ -642,7 +642,7 @@ export default function DashboardOverview() {
               </BentoCard>
 
               <BentoCard title={i18n("weather")} icon="cloudSun" className="col-span-12 h-full sm:col-span-6 lg:col-span-4">
-                <WeatherWidget data={weather} loading={loading && !weather} className="!h-full !max-w-none !min-h-0 !border-0 !bg-transparent !p-0 !shadow-none !overflow-y-auto" />
+                <WeatherWidget data={weather} loading={live.loading && !weather} className="!h-full !max-w-none !min-h-0 !border-0 !bg-transparent !p-0 !shadow-none !overflow-y-auto" />
               </BentoCard>
 
               <BentoCard title={i18n("nowPlaying")} icon="disc" className="col-span-12 h-full sm:col-span-6 lg:col-span-4">

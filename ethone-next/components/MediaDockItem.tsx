@@ -33,16 +33,16 @@ export default function MediaDockItem({
       onMouseLeave={() => setHovered(false)}
       aria-label={label}
       data-tooltip={label}
-      className="group relative flex h-9 w-9 flex-col items-center justify-center rounded-xl text-[#1DB954] transition-all hover:bg-white/[0.08] hover:text-[#1DB954] active:scale-95"
+      className="group relative flex h-11 w-11 flex-col items-center justify-center rounded-xl text-[#1DB954] transition-all hover:bg-white/[0.08] hover:text-[#1DB954] active:scale-95"
     >
       {nowPlaying.artwork ? (
         <span
-          className="h-4 w-4 rounded bg-cover bg-center"
+          className="h-5 w-5 rounded bg-cover bg-center"
           style={{ backgroundImage: `url(${nowPlaying.artwork})` }}
           aria-hidden="true"
         />
       ) : (
-        <Icon name="music" className="h-4 w-4" />
+        <Icon name="music" className="h-5 w-5" />
       )}
 
       {playing && (

@@ -181,7 +181,7 @@ export default function Dock() {
 
   return (
     <div
-      className="v8-floating-dock fixed bottom-4 left-1/2 -translate-x-1/2 z-50 hidden md:block pointer-events-none bg-transparent border-0 shadow-none"
+      className="v8-floating-dock fixed bottom-14 left-1/2 -translate-x-1/2 z-50 hidden md:block pointer-events-none bg-transparent border-0 shadow-none"
     >
       {launcherOpen && (
         <div className="pointer-events-auto absolute bottom-full left-1/2 z-50 mb-4 w-[min(90vw,420px)] -translate-x-1/2">
@@ -228,7 +228,7 @@ export default function Dock() {
       )}
 
       <div
-        className="pointer-events-auto inline-flex items-center gap-1.5 rounded-2xl border border-white/10 bg-zinc-950/80 p-1.5 shadow-[0_10px_35px_rgba(0,0,0,0.8)] backdrop-blur-2xl"
+        className="pointer-events-auto inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-zinc-950/85 px-3 py-2 shadow-[0_12px_40px_rgba(0,0,0,0.75)] backdrop-blur-2xl transition-all hover:border-white/15"
       >
         {visibleItems().map((item) => {
           const active = isActiveRoute(pathname, item.href);
@@ -368,7 +368,7 @@ export default function Dock() {
           aria-expanded={launcherOpen}
         />
 
-        <span className="w-[1px] h-5 bg-white/10 mx-1" aria-hidden="true" />
+        <span className="h-6 w-[1px] shrink-0 bg-white/10 mx-1.5" aria-hidden="true" />
 
         <DockItem
           icon="search"

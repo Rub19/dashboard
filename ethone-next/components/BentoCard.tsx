@@ -46,17 +46,7 @@ export default function BentoCard({
 
             <div className="flex items-center gap-2">
               {badge}
-              {action ? (
-                action
-              ) : (
-                <button
-                  type="button"
-                  className="text-zinc-500 transition-colors hover:text-zinc-300"
-                  aria-label="Options"
-                >
-                  <Icon name="more-horizontal" className="h-4 w-4" />
-                </button>
-              )}
+              {action}
             </div>
           </div>
         )}

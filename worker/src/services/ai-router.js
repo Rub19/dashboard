@@ -88,14 +88,44 @@ function shouldUseCloudflare(config, validated) {
   return false;
 }
 
+function createRemoteQuotaManager(stub) {
+  async function call(path, body) {
+    const res = await stub.fetch(`https://do.internal${path}`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      throw new Error(`DO ${res.status}: ${text}`);
+    }
+    return res.json();
+  }
+  return {
+    reserve: (estimated, force = false) => call("/reserve", { estimated, force }),
+    commitUsage: (record) => call("/commit", record),
+    getStatus: async () => {
+      const res = await stub.fetch("https://do.internal/status");
+      if (!res.ok) throw new Error(`DO ${res.status}`);
+      return res.json();
+    },
+  };
+}
+
 async function getQuotaManager(env) {
   const binding = env.AI_QUOTA_MANAGER;
   if (binding && typeof binding.idFromName === "function") {
     const id = binding.idFromName("global");
-    return binding.get(id);
+    const stub = binding.get(id);
+    return createRemoteQuotaManager(stub);
   }
   // In-memory fallback for tests or DO-unavailable environments
-  return new AiQuotaManager(new InMemoryState(), env);
+  const manager = new AiQuotaManager(new InMemoryState(), env);
+  return {
+    reserve: (estimated, force = false) => manager.reserve(estimated, force),
+    commitUsage: (record) => manager.commitUsage(record),
+    getStatus: () => manager.getStatus(),
+  };
 }
 
 class InMemoryStorage {

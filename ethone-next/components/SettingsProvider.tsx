@@ -171,6 +171,7 @@ export default function SettingsProvider({
     root.dataset.dataSpace = active || "personal";
     root.dataset.shadow = settings.shadow;
     root.dataset.background = settings.backgroundEffect;
+    root.dataset.backgroundQuality = settings.backgroundQuality;
     root.dataset.wallpaper = settings.wallpaper;
     root.dataset.font = settings.fontFamily;
     root.dataset.accent = settings.accentColor;

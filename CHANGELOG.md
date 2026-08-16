@@ -4,6 +4,14 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : arrière-plan cosmique performant avec fallback statique**
+
+### Corrige
+- `ethone-next/lib/hooks/useCosmicPerformance.ts` : détection mobile/tablette (pixel ratio limité), surveillance FPS, Page Visibility API.
+- `ethone-next/components/CosmicBackground.tsx` : rendu Canvas optimisé avec modes `high` / `balanced` / `low` / `static`. Pause immédiate sur onglet inactif, réduction automatique si FPS < 40 pendant plus de 3 secondes, nettoyage des listeners et `cancelAnimationFrame`. Fallback statique CSS pur en mode `static`.
+- `ethone-next/lib/settings.ts`, `components/SettingsProvider.tsx`, `components/settings/SettingsContent.tsx` : ajout du réglage `backgroundQuality` avec les options Élevé / Équilibré / Économique / Statique.
+- `ethone-next/components/Shell.tsx` : remplacement de `<AmbientParticles />` par `<CosmicBackground />`.
+
 **Migration Next.js : composant Modal générique accessible**
 
 ### Corrige

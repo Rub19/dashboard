@@ -24,7 +24,7 @@ import Dock from "@/components/Dock";
 import SkipLink from "@/components/SkipLink";
 
 const LiveOverlay = dynamic(() => import("@/components/LiveOverlay"), { ssr: false });
-const AmbientParticles = dynamic(() => import("@/components/AmbientParticles"), { ssr: false });
+const CosmicBackground = dynamic(() => import("@/components/CosmicBackground"), { ssr: false });
 const Spotlight = dynamic(() => import("@/components/Spotlight"), { ssr: false });
 const VisualHaptics = dynamic(() => import("@/components/VisualHaptics"), { ssr: false });
 const DepthEffect = dynamic(() => import("@/components/DepthEffect"), { ssr: false });
@@ -60,7 +60,7 @@ export default function Shell({ children }: { children: ReactNode }) {
               </header>
               <DocumentMetadata />
               <LiveOverlay />
-              <AmbientParticles />
+              <CosmicBackground />
               <Spotlight />
               <VisualHaptics />
               <DepthEffect />

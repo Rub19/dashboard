@@ -172,6 +172,13 @@ const PERFORMANCE_MODES = [
   { id: "low", label: "performanceLow" },
 ] as const;
 
+const BACKGROUND_QUALITY = [
+  { id: "high", label: "Élevé" },
+  { id: "balanced", label: "Équilibré" },
+  { id: "low", label: "Économique" },
+  { id: "static", label: "Statique" },
+] as const;
+
 const STATUSES = [
   { id: "online", label: "statusOnline" },
   { id: "busy", label: "statusBusy" },
@@ -841,6 +848,14 @@ export default function SettingsContent() {
         options: makeOptions([...PERFORMANCE_MODES], true),
         cols: 2,
         keywords: ["density", "performance", "économique"],
+      },
+      {
+        key: "backgroundQuality",
+        label: "Graphismes de l’arrière-plan",
+        type: "button-grid",
+        options: makeOptions([...BACKGROUND_QUALITY], false),
+        cols: 4,
+        keywords: ["arrière-plan", "performance", "gpu", "cosmic"],
       },
     ],
     [i18n, makeOptions]

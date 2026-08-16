@@ -142,6 +142,7 @@ export type Settings = {
   haptics: boolean;
   lowData: boolean;
   performanceMode: "normal" | "low";
+  backgroundQuality: "high" | "balanced" | "low" | "static";
   status: "online" | "busy" | "focus" | "away" | "invisible";
   presenceShowSignals?: boolean;
   sessionMode: SessionMode;
@@ -277,6 +278,7 @@ export const DEFAULTS: Settings = {
   haptics: true,
   lowData: false,
   performanceMode: "normal",
+  backgroundQuality: "balanced",
   status: "online",
   presenceShowSignals: false,
   sessionMode: "default",

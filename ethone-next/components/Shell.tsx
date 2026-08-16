@@ -68,7 +68,7 @@ export default function Shell({ children }: { children: ReactNode }) {
               <main
                 data-v8-main
                 id="main-content"
-                className="w-full overflow-x-hidden p-4 pb-[calc(5rem+env(safe-area-inset-bottom))] pt-safe md:p-6 md:pb-32"
+                className="w-full overflow-x-hidden p-4 pb-[calc(5rem+env(safe-area-inset-bottom))] md:p-6 md:pb-32"
                 tabIndex={-1}
               >
                 <ActivityJournalProvider>

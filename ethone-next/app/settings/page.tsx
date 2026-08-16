@@ -13,7 +13,7 @@ export default function SettingsPage() {
 
   return (
     <SettingsFormProvider>
-      <main className="min-h-screen space-y-6 p-4 pb-24 sm:p-6 lg:p-8">
+      <main className="space-y-4 p-4 pb-24 sm:p-5 lg:p-6">
         <motion.header
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}

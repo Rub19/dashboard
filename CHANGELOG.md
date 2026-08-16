@@ -4,6 +4,19 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : réduire espaces vides Settings**
+
+### Corrige
+- `app/settings/page.tsx` : padding et espacement réduits.
+- `components/settings/SettingsContent.tsx` : passage en une seule colonne centrée `max-w-3xl`, plus de grille 2 colonnes qui laissait des trous.
+- `components/settings/SettingsSection.tsx` : padding réduit.
+- `components/settings/SettingField.tsx` : padding vertical réduit.
+- `components/settings/SettingControls.tsx` : boutons plus compacts.
+- `components/settings/AppearanceSettings.tsx` : espacement réduit, section effets plus compacte.
+- `components/LiveSettings.tsx` : espacement et gap réduits.
+- `components/Shell.tsx` : suppression du `pt-safe` doublon sur `main`.
+- `components/BottomSheet.tsx` : suppression du `pb-safe` doublon sur le contenu.
+
 **Migration Next.js : refonte mobile navigation et notifications**
 
 ### Corrige

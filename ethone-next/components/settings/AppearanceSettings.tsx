@@ -170,7 +170,7 @@ export default function AppearanceSettings() {
   const currentAccent = settings.accentColor;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-xs text-[var(--muted)]">{i18n("appearanceDescription")}</p>
         <AnimatePresence>
@@ -384,7 +384,7 @@ export default function AppearanceSettings() {
       </SettingRow>
 
       {/* Effets */}
-      <section className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]/40 p-4">
+      <section className="space-y-3 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]/40 p-3">
         <h3 className="text-sm font-semibold text-[var(--foreground)]">{i18n("effects")}</h3>
 
         <SettingRow label={i18n("glassmorphism")} description={i18n("glassmorphismDescription")}>

@@ -26,9 +26,9 @@ export default function SettingsSection({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-1 shadow-sm"
+      className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-0.5 shadow-sm"
     >
-      <div className="flex items-center justify-between px-4 py-3">
+      <div className="flex items-center justify-between px-4 py-2.5">
         <div className="flex items-center gap-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--accent)]/10 text-[var(--accent)]">
             <Icon name={icon} className="h-4 w-4" />

@@ -1081,8 +1081,8 @@ export default function SettingsContent() {
   );
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 items-start gap-3 lg:grid-cols-2">
+    <div className="mx-auto w-full max-w-3xl space-y-3">
+      <div className="grid grid-cols-1 gap-3">
         {mainSections.map((section) => (
           <SettingsSection
             key={section.id}
@@ -1121,7 +1121,7 @@ export default function SettingsContent() {
               modifiedCount={advancedModifiedCount}
               visible
             >
-              <div className="grid grid-cols-1 items-start gap-3 lg:grid-cols-2">
+              <div className="grid grid-cols-1 gap-3">
                 {visibleAdvancedSections.map((section) => (
                   <SettingsSection
                     key={section.id}

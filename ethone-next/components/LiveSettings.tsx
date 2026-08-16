@@ -47,10 +47,10 @@ export default function LiveSettings() {
   const selectId = useId();
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <p className="text-xs text-[var(--muted)]">{i18n("configureToEnable")}</p>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <div>
           <label htmlFor={selectId} className="mb-1 block text-xs text-[var(--muted)]">{i18n("liveNowPlayingSource")}</label>
           <Select
@@ -80,7 +80,7 @@ export default function LiveSettings() {
         placeholder="Discord user ID"
       />
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
         <SettingsTextInput
           label={i18n("liveSpotifyClientId")}
           value={settings.liveSpotifyClientId}
@@ -101,7 +101,7 @@ export default function LiveSettings() {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2">
         <SettingsTextInput
           label={i18n("liveTrackerRiotName")}
           value={settings.liveTrackerRiotName}

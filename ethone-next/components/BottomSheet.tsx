@@ -119,7 +119,7 @@ export default function BottomSheet({
               </div>
             )}
 
-            <div className="max-h-[calc(85dvh-4rem)] overflow-y-auto p-4 pb-safe [-webkit-overflow-scrolling:touch]">
+            <div className="max-h-[calc(85dvh-4rem)] overflow-y-auto p-4 [-webkit-overflow-scrolling:touch]">
               {children}
             </div>
           </motion.div>

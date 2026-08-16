@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { Icon } from "@/lib/icons";
 
 const LANGUAGES = ["fr", "en", "es", "de"] as const;
 
@@ -108,7 +107,6 @@ export default function LanguageSwitcher() {
         aria-expanded={open}
         className="flex h-10 items-center gap-2 rounded-full border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 text-sm font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
       >
-        <Icon name="globe" className="h-4 w-4" />
         <Flag code={current} className="h-4 w-5" />
         <span className="hidden uppercase 2xl:inline">{current}</span>
       </button>

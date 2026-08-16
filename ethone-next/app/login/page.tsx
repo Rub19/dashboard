@@ -231,9 +231,9 @@ export default function LoginPage() {
       : handlePassword;
 
   return (
-    <div className="relative flex h-screen w-full overflow-hidden bg-[#030712]">
+    <div className="relative flex min-h-[100dvh] w-full select-none items-stretch overflow-hidden bg-zinc-950">
       <LoginCosmicBackground />
-      <div className="relative z-10 hidden h-screen w-1/2 flex-col justify-between p-10 lg:flex lg:bg-gradient-to-r lg:from-[#030712]/70 lg:via-[#030712]/25 lg:to-transparent">
+      <div className="relative z-10 hidden min-h-[100dvh] w-1/2 flex-col justify-between p-10 lg:flex lg:bg-gradient-to-r lg:from-[#030712]/70 lg:via-[#030712]/25 lg:to-transparent">
         <div className="z-10 flex items-center gap-2">
           <BrandMark size={28} />
           <span className="text-lg font-bold tracking-tight">ETHONE</span>
@@ -259,7 +259,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div className="relative z-10 flex h-full w-full flex-col items-center justify-center overflow-hidden p-4 lg:w-1/2 lg:p-6">
+      <div className="relative z-10 flex min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden p-4 lg:w-1/2 lg:p-6">
         <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
           <LanguageSwitcher />
         </div>
@@ -301,7 +301,7 @@ export default function LoginPage() {
                           setStep("email");
                           setError(null);
                         }}
-                        className={`relative z-10 min-w-0 flex-1 select-none whitespace-nowrap rounded-[var(--panel-radius)] px-0.5 py-2 text-[10px] font-semibold tracking-wide transition-colors sm:px-2 sm:text-[11px] ${
+                        className={`relative z-10 min-w-0 flex-1 select-none whitespace-nowrap rounded-[var(--panel-radius)] px-0.5 py-2 text-[10px] font-semibold tracking-wide transition-colors active:scale-[0.98] sm:px-2 sm:text-[11px] ${
                           active ? "text-white" : "text-[var(--muted)] hover:text-[var(--foreground)]"
                         }`}
                       >
@@ -366,14 +366,14 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[var(--accent)]/20 transition-colors duration-150 hover:opacity-90 hover:shadow-[var(--accent)]/30 disabled:opacity-50"
+                  className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[var(--accent)]/20 transition-colors duration-150 hover:opacity-90 hover:shadow-[var(--accent)]/30 active:scale-[0.98] disabled:opacity-50"
                 >
                   {loading ? <Icon name="loader-2" className="h-4 w-4 animate-spin" /> : i18n("verify")}
                 </button>
                 <button
                   type="button"
                   onClick={() => setStep("email")}
-                  className="w-full text-center text-xs text-[var(--muted)] hover:text-[var(--foreground)]"
+                  className="w-full text-center text-xs text-[var(--muted)] hover:text-[var(--foreground)] active:scale-[0.98]"
                 >
                   {i18n("modifyEmail")}
                 </button>
@@ -433,7 +433,7 @@ export default function LoginPage() {
                       {!isRegister && (
                         <Link
                           href="/password-recovery/"
-                          className="text-[11px] text-[var(--accent)] transition-opacity hover:opacity-80"
+                          className="text-[11px] text-[var(--accent)] transition-opacity hover:opacity-80 active:scale-[0.98]"
                         >
                           {i18n("forgotPassword")}
                         </Link>
@@ -483,7 +483,7 @@ export default function LoginPage() {
                   type="submit"
                   data-testid="sign-in-button"
                   disabled={loading}
-                  className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[var(--accent)]/20 transition-colors duration-150 hover:opacity-90 hover:shadow-[var(--accent)]/30 disabled:opacity-50"
+                  className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[var(--accent)]/20 transition-colors duration-150 hover:opacity-90 hover:shadow-[var(--accent)]/30 active:scale-[0.98] disabled:opacity-50"
                 >
                   {loading ? (
                     <>
@@ -518,7 +518,7 @@ export default function LoginPage() {
                         type="button"
                         onClick={() => handleOAuth("google")}
                         disabled={loading}
-                        className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--panel-bg)] disabled:opacity-50 backdrop-blur-[var(--panel-blur)]"
+                        className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--panel-bg)] active:scale-[0.98] disabled:opacity-50 backdrop-blur-[var(--panel-blur)]"
                       >
                         <GoogleIcon className="h-5 w-5" /> {i18n("signInWithGoogle")}
                       </button>
@@ -526,7 +526,7 @@ export default function LoginPage() {
                         type="button"
                         onClick={() => handleOAuth("github")}
                         disabled={loading}
-                        className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--panel-bg)] disabled:opacity-50 backdrop-blur-[var(--panel-blur)]"
+                        className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--panel-bg)] active:scale-[0.98] disabled:opacity-50 backdrop-blur-[var(--panel-blur)]"
                       >
                         <GithubIcon className="h-5 w-5" /> {i18n("signInWithGithub")}
                       </button>
@@ -536,7 +536,7 @@ export default function LoginPage() {
                       type="button"
                       onClick={handlePasskey}
                       disabled={loading}
-                      className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--panel-bg)] disabled:opacity-50 backdrop-blur-[var(--panel-blur)]"
+                      className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--panel-bg)] active:scale-[0.98] disabled:opacity-50 backdrop-blur-[var(--panel-blur)]"
                     >
                       <Icon name="key-round" className="h-4 w-4" /> {i18n("signInWithPasskey")}
                     </button>
@@ -547,7 +547,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setMode(isRegister ? "password" : "register")}
-                    className="text-center text-xs text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
+                    className="text-center text-xs text-[var(--muted)] transition-colors hover:text-[var(--foreground)] active:scale-[0.98]"
                   >
                     {isRegister ? i18n("hasAccount") : i18n("noAccount")}
                     <span className="ml-1 font-medium text-[var(--accent)]">

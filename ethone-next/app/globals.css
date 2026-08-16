@@ -1988,14 +1988,8 @@ a:has(> svg) {
   to { background-position: 480px 240px; }
 }
 
-/* Instant tactile feedback on interactive elements */
-button:not([disabled]):active,
-[role="button"]:not([aria-disabled="true"]):active,
-a[href]:active,
-[tabindex]:not([disabled]):active {
-  transform: scale(0.98);
-  transition: transform 100ms ease-out;
-}
+/* Tactile feedback is now scoped to components via active:scale or data-haptic
+   to avoid scaling entire containers / auth pages on click. */
 
 /* ============================================================
    Global design-token utilities

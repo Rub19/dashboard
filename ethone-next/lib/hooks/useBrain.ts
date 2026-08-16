@@ -22,7 +22,7 @@ import { listBrainMemories, createBrainMemory, updateBrainMemory, removeBrainMem
 import { createBrainActionRegistry, type BrainMailClient } from "@/lib/brain/action-registry";
 import { createAutomationWatcher, sanitizeAutomationTrigger, type AutomationRule } from "@/lib/brain/automation";
 
-export type BrainMessage = { role: "user" | "assistant"; content: string; createdAt: number };
+export type BrainMessage = { role: "user" | "assistant"; content: string; createdAt: number; provider?: string; fallback?: boolean };
 
 export function useBrain(mailClient?: BrainMailClient) {
   const router = useRouter();
@@ -126,7 +126,7 @@ export function useBrain(mailClient?: BrainMailClient) {
         baseUrl,
       });
       const content = res?.data?.content || res?.data?.text || "Réponse vide.";
-      setMessages((prev) => [...prev, { role: "assistant", content, createdAt: Date.now() }]);
+      setMessages((prev) => [...prev, { role: "assistant", content, createdAt: Date.now(), provider: res?.data?.provider, fallback: res?.data?.fallback }]);
       activityJournal.capture("v8.brain.call", { ok: true, prompt: prompt.trim().slice(0, 80) });
     } catch (err) {
       setError(err instanceof Error ? err : new Error(String(err)));
@@ -258,3 +258,5 @@ export function useBrain(mailClient?: BrainMailClient) {
     pruneExpired: brainCtx.pruneExpired,
   };
 }
+
+export type ReturnTypeOfUseBrain = ReturnType<typeof useBrain>;

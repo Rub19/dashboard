@@ -4,6 +4,15 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : Bento Grid et refonte de la Vue d'ensemble**
+
+### Corrige
+- `ethone-next/components/ui/BentoCard.tsx` : nouvelle carte générique Bento avec arrondis `rounded-2xl` maîtrisés, glassmorphism précis (`bg-zinc-950/70`, `backdrop-blur-2xl`, bordure `white/[0.08]`), lueur interne au survol, en-tête uniformisé (icône carrée arrondie + titre uppercase + action).
+- `ethone-next/components/DashboardOverview.tsx` : refonte complète de la page d'accueil en grille Bento 12 colonnes, répartition responsive des modules (Minecraft/Compte, Météo, Media, Stats), header moderne avec titre, sous-titre, sélecteur de workspace et bouton "Personnaliser la grille".
+- `ethone-next/app/page.tsx` : simplifié pour utiliser `DashboardOverview`.
+- Remplacement des `Card3D` et `SectionWrap` par `BentoCard` dans le dashboard : sections Continuité, Daystream, Récent, Productivité, Signaux, Recommandation, Brain, Live.
+- Suppression des arrondis "bulle de savon" au profit de `rounded-2xl` cohérent.
+
 **Migration Next.js : refonte des paramètres avec thème dynamique et sidebar coulissante**
 
 ### Corrige

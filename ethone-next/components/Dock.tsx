@@ -358,7 +358,6 @@ export default function Dock() {
         <MediaDockItem nowPlaying={spotifyNow} />
 
         <DockItem
-          id="launcher"
           icon="layoutGrid"
           label={i18n("dockLauncher")}
           active={launcherOpen}
@@ -372,7 +371,6 @@ export default function Dock() {
         <span className="w-[1px] h-5 bg-white/10 mx-1" aria-hidden="true" />
 
         <DockItem
-          id="spotlight"
           icon="search"
           label={i18n("dockSpotlight")}
           active={commandPaletteOpen}
@@ -382,7 +380,6 @@ export default function Dock() {
 
         <DockItem
           ref={setPomodoroEl}
-          id="pomodoro"
           icon="timer"
           label={i18n("dockPomodoro")}
           active={focusPopover.open && focusPopover.anchor === pomodoroEl}
@@ -396,7 +393,6 @@ export default function Dock() {
         />
 
         <DockItem
-          id="mission-control"
           icon="appWindow"
           label={i18n("dockMissionControl")}
           active={missionControl}
@@ -408,7 +404,6 @@ export default function Dock() {
         />
 
         <DockItem
-          id="notifications"
           icon="bell"
           label={i18n("openNotifications")}
           onClick={() => {
@@ -420,7 +415,6 @@ export default function Dock() {
 
         <DockItem
           ref={setControlCenterEl}
-          id="control-center"
           icon="sliders"
           label={i18n("controlCenter")}
           active={controlCenterOpen}
@@ -432,7 +426,6 @@ export default function Dock() {
         />
 
         <DockItem
-          id="expand"
           icon="chevronUp"
           label={i18n("expand")}
           onClick={() => setExpanded((v) => !v)}

@@ -45,7 +45,7 @@ const SOURCE_ICON: Record<string, { icon: React.ReactNode; color: string; label:
   jellyfin: { icon: <Server className="h-3 w-3" />, color: "bg-violet-500 text-white", label: "Jellyfin" },
 };
 
-export default function MediaWidget() {
+export default function MediaWidget({ className = "" }: { className?: string }) {
   const i18n = useI18n();
   const router = useRouter();
   const { settings } = useSettings();
@@ -124,7 +124,7 @@ export default function MediaWidget() {
 
   if (!nowPlaying && !loading) {
     return (
-      <div className="w-full rounded-2xl border border-white/10 bg-zinc-950/70 p-4 shadow-2xl shadow-black/80 backdrop-blur-xl">
+      <div className={`w-full rounded-2xl border border-white/10 bg-zinc-950/70 p-4 shadow-2xl shadow-black/80 backdrop-blur-xl ${className}`}>
         <div className="flex flex-col items-center justify-center gap-3 text-center">
           <div className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/[0.03]">
             <Music className="h-5 w-5 text-zinc-500" />
@@ -170,7 +170,7 @@ export default function MediaWidget() {
   }
 
   return (
-    <div className="group w-full rounded-2xl border border-white/10 bg-zinc-950/70 p-4 shadow-2xl shadow-black/80 backdrop-blur-xl">
+    <div className={`group w-full rounded-2xl border border-white/10 bg-zinc-950/70 p-4 shadow-2xl shadow-black/80 backdrop-blur-xl ${className}`}>
       <div className="flex items-center gap-4">
         <div className="relative shrink-0">
           <div className="relative h-16 w-16 overflow-hidden rounded-xl border border-white/10 shadow-lg">

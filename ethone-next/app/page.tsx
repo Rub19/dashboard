@@ -7,12 +7,15 @@ import BrandMark from "@/components/BrandMark";
 import { useHomeData } from "@/lib/hooks/useDashboard";
 import { useMail } from "@/lib/hooks/useMail";
 import { useItems } from "@/lib/hooks/useItems";
-import { useSettings } from "@/components/SettingsProvider";
+import { useSettings, useActiveProfile } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useFocus } from "@/components/FocusProvider";
 import { type SessionMode } from "@/lib/settings";
 import Link from "next/link";
+import { fetchWorker } from "@/lib/api";
+import Select from "@/components/Select";
+import DashboardOverview from "@/components/DashboardOverview";
 
 const LiveWidgets = dynamic(() => import("@/components/LiveWidgets"));
 const LiveStats = dynamic(() => import("@/components/LiveStats"));
@@ -77,8 +80,6 @@ function SessionModeSelector() {
     </Card3D>
   );
 }
-
-type SectionDef = { id: string; label: string; icon: string };
 
 type Continuation = {
   type: string;
@@ -216,7 +217,21 @@ export default function Home() {
   const { items: notes } = useItems("notes");
   const { items: events } = useItems("events");
   const { start } = useFocus();
+  const { activeProfile, reload } = useActiveProfile();
   const [customizing, setCustomizing] = useState(false);
+
+  async function handleWorkspaceChange(value: string) {
+    if (!activeProfile?.id) return;
+    try {
+      await fetchWorker("/api/profiles", {
+        method: "PATCH",
+        body: JSON.stringify({ id: activeProfile.id, workspace_id: value }),
+      });
+      await reload();
+    } catch {
+      // ignore
+    }
+  }
 
   const matches = [...(valorant || []), ...(lol || [])].slice(0, 6);
 
@@ -230,19 +245,6 @@ export default function Home() {
     { id: "invisible", label: i18n("statusInvisible"), icon: "eye-off" },
   ] as const;
 
-  const sections: SectionDef[] = useMemo(
-    () => [
-      { id: "continuity", label: i18n("continuity"), icon: "activity" },
-      { id: "daystream", label: i18n("daystream"), icon: "calendar" },
-      { id: "recent", label: i18n("recent"), icon: "history" },
-      { id: "productivity", label: i18n("productivityAndRhythm"), icon: "zap" },
-      { id: "signals", label: i18n("signals"), icon: "radio" },
-      { id: "recommendation", label: i18n("recommendation"), icon: "sparkles" },
-      { id: "brain", label: i18n("brain"), icon: "brain" },
-      { id: "live", label: i18n("live"), icon: "radio" },
-    ],
-    [i18n]
-  );
 
   const today = useMemo(() => new Date(), []);
 
@@ -363,13 +365,6 @@ export default function Home() {
       icon: "brain",
     };
   }, [openTasksList, todayEvents, recentNotes, i18n, start]);
-
-  function toggleSection(id: string) {
-    const next = hidden.has(id)
-      ? (settings.homeHiddenSections || []).filter((x) => x !== id)
-      : [...(settings.homeHiddenSections || []), id];
-    updateSettings({ homeHiddenSections: next });
-  }
 
   return (
     <div className="space-y-6">

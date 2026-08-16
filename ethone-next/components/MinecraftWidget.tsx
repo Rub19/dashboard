@@ -45,7 +45,7 @@ function formatLastSeen(value?: string | null) {
   }
 }
 
-export default function MinecraftWidget() {
+export default function MinecraftWidget({ className = "" }: { className?: string }) {
   const router = useRouter();
   const { settings, update } = useSettings();
   const { success, error: showError } = useToast();
@@ -160,7 +160,7 @@ export default function MinecraftWidget() {
 
   if (!settings.liveMinecraftUsername) {
     return (
-      <div className="w-full max-w-md rounded-2xl border border-white/10 bg-zinc-950/70 p-6 text-center shadow-2xl shadow-black/80 backdrop-blur-xl">
+      <div className={`w-full max-w-md rounded-2xl border border-white/10 bg-zinc-950/70 p-6 text-center shadow-2xl shadow-black/80 backdrop-blur-xl ${className}`}>
         <div className="mb-3 flex items-center justify-center">
           <div className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/[0.04]">
             <Gamepad2 className="h-6 w-6 text-zinc-400" />
@@ -181,7 +181,7 @@ export default function MinecraftWidget() {
 
   if (loading && !profile) {
     return (
-      <div className="w-full max-w-md animate-pulse rounded-2xl border border-white/10 bg-zinc-950/70 p-5 shadow-2xl shadow-black/80 backdrop-blur-xl">
+      <div className={`w-full max-w-md animate-pulse rounded-2xl border border-white/10 bg-zinc-950/70 p-5 shadow-2xl shadow-black/80 backdrop-blur-xl ${className}`}>
         <div className="mb-4 flex items-center gap-3">
           <div className="h-12 w-12 rounded-xl bg-white/[0.05]" />
           <div className="flex-1 space-y-2">
@@ -200,7 +200,7 @@ export default function MinecraftWidget() {
 
   if (error) {
     return (
-      <div className="w-full max-w-md rounded-2xl border border-red-500/20 bg-red-500/[0.05] p-5 text-center shadow-2xl shadow-black/80 backdrop-blur-xl">
+      <div className={`w-full max-w-md rounded-2xl border border-red-500/20 bg-red-500/[0.05] p-5 text-center shadow-2xl shadow-black/80 backdrop-blur-xl ${className}`}>
         <AlertCircle className="mx-auto h-8 w-8 text-red-400" />
         <p className="mt-2 text-sm font-semibold text-red-200">Compte introuvable</p>
         <p className="text-xs text-red-300/70">{error.message}</p>
@@ -217,7 +217,7 @@ export default function MinecraftWidget() {
   }
 
   return (
-    <div className="w-full max-w-md rounded-2xl border border-white/10 bg-zinc-950/70 p-5 shadow-2xl shadow-black/80 backdrop-blur-xl">
+    <div className={`w-full max-w-md rounded-2xl border border-white/10 bg-zinc-950/70 p-5 shadow-2xl shadow-black/80 backdrop-blur-xl ${className}`}>
       <div className="flex items-start gap-4">
         <div className="relative flex h-48 w-36 shrink-0 flex-col items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-black/40 p-3 shadow-xl group">
           {currentSkin && (

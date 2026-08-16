@@ -45,8 +45,6 @@ function clientIdFromStorage(provider: string): string {
   }
 }
 
-const DEDICATED = new Set(["discord", "spotify"]);
-
 export default function IntegrationsSettings() {
   const [filter, setFilter] = useState("all");
   const [connected, setConnected] = useState<Record<string, boolean>>({});

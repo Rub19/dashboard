@@ -13,6 +13,7 @@ import Modal from "@/components/ui/Modal";
 import { useItems } from "@/lib/hooks/useItems";
 import BrainContextPanel from "@/components/BrainContextPanel";
 import BrainBriefingPanel from "@/components/BrainBriefingPanel";
+import BrainChat from "@/components/BrainChat";
 import { BRAIN_MEMORY_CATEGORIES, BRAIN_PERSONAS, BRAIN_TONES, BRAIN_DETAIL, BRAIN_PROVIDERS, BRAIN_PERMISSION_CATEGORIES, type BrainMemoryCategory } from "@/lib/brain/preferences";
 import { AUTOMATION_ACTIONS } from "@/lib/brain/automation";
 import { sanitizeMemory, type BrainMemoryItem } from "@/lib/brain-context";
@@ -61,7 +62,6 @@ export default function BrainPage() {
   const brain = useBrain(mailClient);
   const { setBrain } = usePresence();
   const [activeTab, setActiveTab] = useState<Tab>("chat");
-  const [prompt, setPrompt] = useState("");
   const [memoryCategory, setMemoryCategory] = useState<BrainMemoryCategory>("interface");
   const [memoryKey, setMemoryKey] = useState("");
   const [memoryValue, setMemoryValue] = useState("");
@@ -71,11 +71,6 @@ export default function BrainPage() {
   const [wrapupOpen, setWrapupOpen] = useState(false);
   const tasks = useItems("tasks");
   const events = useItems("events");
-  const bottomRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [brain.messages, brain.loading]);
 
   useEffect(() => {
     if (brain.loading) {
@@ -145,69 +140,7 @@ export default function BrainPage() {
   }
 
   function renderChat() {
-    return (
-      <div className="flex h-[60vh] flex-col gap-4">
-        <div className="flex-1 space-y-3 overflow-y-auto pr-1">
-          {brain.messages.length === 0 ? (
-            <p className="py-8 text-center text-sm text-[var(--muted)]">{i18n("noBrainMessages")}</p>
-          ) : (
-            brain.messages.map((message, i) => (
-              <div key={i} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
-                <div className={`flex max-w-[80%] items-start gap-2 rounded-[var(--panel-radius)] px-4 py-2.5 text-sm leading-relaxed ${message.role === "user" ? "bg-[var(--accent)] text-white" : "bg-[var(--panel-bg)] text-[var(--foreground)]"}`}>
-                  {message.role === "assistant" && <Icon name="brain" className="mt-0.5 h-4 w-4 shrink-0 text-[var(--accent)]" />}
-                  <p className="whitespace-pre-wrap">{message.content}</p>
-                </div>
-              </div>
-            ))
-          )}
-          {brain.loading && (
-            <div className="flex justify-start">
-              <div className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-4 py-2.5 text-sm text-[var(--muted)]" data-brain-aura>
-                <Icon name="loader-2" className="h-4 w-4 animate-spin" />
-                <Icon name="brain" className="h-4 w-4 text-[var(--accent)]" data-brain-dot />
-              </div>
-            </div>
-          )}
-          {brain.error && <p className="text-center text-sm text-red-400">{brain.error.message}</p>}
-          <div ref={bottomRef} />
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          {brain.suggestions.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => { setActionParams({ [s.action]: s.parameters }); brain.executeAction(s.action, s.parameters, false).then((r) => r.ok ? success(r.message || i18n("completed")) : showError(r.message || i18n("error"))).catch((err) => showError(String(err))); }}
-              className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-1 text-xs hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
-            >
-              {s.title}
-            </button>
-          ))}
-        </div>
-
-        <form onSubmit={handleSend} className="flex items-end gap-2 border-t border-[var(--panel-border)] pt-4">
-          <textarea
-            id="brain-prompt"
-            rows={2}
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(e); } }}
-            aria-label={i18n("askQuestion")}
-            className="min-h-[2.75rem] w-full flex-1 resize-none rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 text-sm text-[var(--foreground)] outline-none transition-colors focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
-            placeholder={i18n("placeholder")}
-            disabled={brain.loading}
-          />
-          <button
-            type="submit"
-            disabled={brain.loading || !prompt.trim()}
-            className="flex shrink-0 items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
-          >
-            {brain.loading ? <Icon name="loader-2" className="h-4 w-4 animate-spin" /> : <Icon name="send" className="h-4 w-4" />}
-            {i18n("send")}
-          </button>
-        </form>
-      </div>
-    );
+    return <BrainChat brain={brain} className="h-[64vh]" />;
   }
 
   function renderMemory() {

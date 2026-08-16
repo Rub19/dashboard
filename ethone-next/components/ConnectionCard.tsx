@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   AlertCircle,
@@ -110,7 +110,7 @@ export default function ConnectionCard({
         ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
         : "bg-zinc-800 text-zinc-400";
 
-  const storeValues = integrationValues[integration.id] || {};
+  const storeValues = useMemo(() => integrationValues[integration.id] || {}, [integrationValues, integration.id]);
 
   const [publicValues, setPublicValues] = useState<Record<string, string>>(() => {
     const map: Record<string, string> = {};

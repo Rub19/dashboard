@@ -27,6 +27,7 @@ import { useToast } from "@/components/ToastProvider";
 import { fetchWorker } from "@/lib/api";
 import { buildAuthUrl, PROVIDERS as OAUTH_PROVIDERS } from "@/lib/oauth";
 import { getConnectionGuide, type ConnectionGuide } from "@/config/connectionsGuide";
+import { getIntegrationConfig, type IntegrationConfig } from "@/lib/integrations.config";
 import type { Integration } from "@/lib/integrations";
 import type { Settings } from "@/lib/settings";
 import type { ProviderCredential } from "@/lib/hooks/useProviderCredentials";
@@ -70,6 +71,7 @@ export default function ConnectionCard({
   const { values: integrationValues, setField, setFields } = useIntegrationStore();
 
   const guide = useMemo<ConnectionGuide | undefined>(() => getConnectionGuide(integration.id), [integration.id]);
+  const config = useMemo<IntegrationConfig | undefined>(() => getIntegrationConfig(integration.id), [integration.id]);
 
   const publicFields = useMemo(() => PUBLIC_FIELDS[integration.id] || [], [integration.id]);
   const credentialFields = useMemo(() => CREDENTIAL_FIELDS[integration.id] || [], [integration.id]);
@@ -95,9 +97,14 @@ export default function ConnectionCard({
           ? i18n(integration.status)
           : i18n("notConfigured") || "Non configuré";
 
-  const methodKey = getServiceMethodKey(integration.status);
-  const methodClass =
-    integration.status === "oauth"
+  const methodKey = config ? config.category : getServiceMethodKey(integration.status);
+  const methodClass = config
+    ? config.category === "oauth"
+      ? "bg-purple-500/10 text-purple-300 border-purple-500/20"
+      : config.category === "api_key"
+        ? "bg-cyan-500/10 text-cyan-300 border-cyan-500/20"
+        : "bg-amber-500/10 text-amber-300 border-amber-500/20"
+    : integration.status === "oauth"
       ? "bg-purple-500/10 text-purple-300 border-purple-500/20"
       : integration.status === "api"
         ? "bg-cyan-500/10 text-cyan-300 border-cyan-500/20"
@@ -163,10 +170,18 @@ export default function ConnectionCard({
   const [submitting, setSubmitting] = useState(false);
   const [openGuideField, setOpenGuideField] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  const [clientSecret, setClientSecret] = useState((storeValues.clientSecret as string) || "");
+  const [showClientSecret, setShowClientSecret] = useState(false);
+  const [showConfigGuide, setShowConfigGuide] = useState(false);
+  const [origin, setOrigin] = useState("");
 
   useEffect(() => {
     if (rawOpen && onTest) onTest(integration.id);
   }, [rawOpen, onTest, integration.id]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") setOrigin(window.location.origin);
+  }, []);
 
   async function handleConnect() {
     const trimmed = clientId.trim();
@@ -185,6 +200,9 @@ export default function ConnectionCard({
       try {
         localStorage.setItem(`ethone:clientId:${integration.id}`, trimmed);
       } catch {}
+      if (clientSecret.trim()) {
+        setField(integration.id, "clientSecret", clientSecret.trim());
+      }
       success(i18n("connectSuccess"));
       window.location.href = buildAuthUrl(integration.id, trimmed, { provider: integration.id, clientId: trimmed });
     } catch {
@@ -340,10 +358,10 @@ export default function ConnectionCard({
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-bold text-white">{integration.name}</h3>
                 <span className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${methodClass}`}>
-                  {i18n(methodKey)}
+                  {config ? config.badge : i18n(methodKey)}
                 </span>
               </div>
-              <p className="truncate text-xs text-zinc-400">{i18n(integration.description)}</p>
+              <p className="truncate text-xs text-zinc-400">{config ? config.description : i18n(integration.description)}</p>
             </div>
           </div>
           <span className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-semibold ${statusClass}`}>{statusText}</span>
@@ -356,19 +374,80 @@ export default function ConnectionCard({
               type="text"
               value={clientId}
               onChange={(e) => onClientIdChange(integration.id, e.target.value)}
-              aria-label={i18n("clientId")}
-              placeholder={i18n("clientId")}
+              aria-label={config ? config.idLabel : i18n("clientId")}
+              placeholder={config ? config.idPlaceholder : i18n("clientId")}
               className={inputClass}
             />
 
-            {guide && (
+            {config?.requiresClientSecret && (
+              <div className="relative">
+                <input
+                type={showClientSecret ? "text" : "password"}
+                value={clientSecret}
+                onChange={(e) => setClientSecret(e.target.value)}
+                aria-label={config.secretLabel || i18n("clientSecret")}
+                placeholder={config.secretPlaceholder || i18n("clientSecret")}
+                className={`${inputClass} pr-16`}
+              />
+              <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => handleCopy(clientSecret, "clientSecret")}
+                  className="text-zinc-500 transition hover:text-zinc-200"
+                  aria-label={i18n("copy")}
+                  tabIndex={-1}
+                >
+                  {copied === "clientSecret" ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowClientSecret((v) => !v)}
+                  className="text-zinc-500 transition hover:text-zinc-200"
+                  aria-label={showClientSecret ? i18n("hide") : i18n("show")}
+                  tabIndex={-1}
+                >
+                  {showClientSecret ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                </button>
+              </div>
+            </div>
+            )}
+
+            {config?.requiresRedirectUri && origin && (
+              <div className="rounded-xl border border-white/10 bg-white/[0.03] p-2.5">
+                <p className="text-[11px] font-medium text-zinc-300">{i18n("redirectUri")}</p>
+                <div className="mt-1.5 flex items-center gap-2">
+                  <code className="flex-1 truncate rounded-lg bg-zinc-950 px-2 py-1 text-[10px] text-zinc-400">
+                    {`${origin}${config.callbackPath}`}
+                  </code>
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(`${origin}${config.callbackPath}`, "redirectUri")}
+                    className="text-zinc-500 transition hover:text-zinc-200"
+                    aria-label={i18n("copy")}
+                  >
+                    {copied === "redirectUri" ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {config ? (
+              <ConfigGuidePanel
+                config={config}
+                origin={origin}
+                isOpen={showConfigGuide}
+                onToggle={() => setShowConfigGuide((v) => !v)}
+                copied={copied}
+                onCopy={handleCopy}
+              />
+            ) : guide ? (
               <FieldGuide
                 guide={guide}
                 isOpen={openGuideField === "oauth"}
                 onToggle={() => toggleGuide("oauth")}
                 label={i18n("clientId") || "Client ID"}
               />
-            )}
+            ) : null}
 
             <div className="grid grid-cols-3 gap-2">
               <button
@@ -541,13 +620,17 @@ export default function ConnectionCard({
                 {health ? (
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-xs">
-                      {health.ok ? (
+                      {health.status === "connected" || health.ok ? (
                         <CheckCircle2 className="h-4 w-4 text-emerald-400" />
                       ) : (
                         <AlertCircle className="h-4 w-4 text-rose-400" />
                       )}
                       <span className={health.ok ? "text-emerald-400" : "text-rose-400"}>
-                        {health.ok ? i18n("connected") : health.error || i18n("connectionError")}
+                        {health.status === "unconfigured"
+                          ? i18n("notConfigured") || "Non configuré"
+                          : health.ok
+                            ? i18n("connected")
+                            : health.error || i18n("connectionError")}
                       </span>
                       <span className="ml-auto text-zinc-500">{health.ms}ms</span>
                     </div>
@@ -685,6 +768,102 @@ function FieldGuide({
             className="overflow-hidden"
           >
             <GuidePanel guide={guide} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function ConfigGuidePanel({
+  config,
+  origin,
+  isOpen,
+  onToggle,
+  copied,
+  onCopy,
+}: {
+  config: IntegrationConfig;
+  origin: string;
+  isOpen: boolean;
+  onToggle: () => void;
+  copied: string | null;
+  onCopy: (value: string, key: string) => void;
+}) {
+  return (
+    <div className="flex flex-col">
+      <div className="mb-2.5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <a
+          href={config.developerUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-purple-500/20 px-3 py-1.5 text-xs font-semibold text-purple-300 transition-all hover:bg-purple-500/30"
+        >
+          {config.developerButtonLabel}
+          <ExternalLink className="h-3 w-3" />
+        </a>
+        {config.docsUrl && (
+          <a
+            href={config.docsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-500/20 px-3 py-1.5 text-xs font-medium text-zinc-300 transition-all hover:bg-zinc-500/30"
+          >
+            Documentation
+            <ExternalLink className="h-3 w-3" />
+          </a>
+        )}
+      </div>
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        className="flex w-fit items-center gap-1.5 text-[11px] text-purple-400 transition-colors hover:text-purple-300"
+      >
+        <HelpCircle className="h-3.5 w-3.5" />
+        {isOpen ? "Masquer le guide" : "Guide pas-à-pas"}
+      </button>
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" as const }}
+            className="overflow-hidden"
+          >
+            <div className="mt-2 rounded-xl border border-purple-500/20 bg-purple-500/[0.06] p-3.5">
+              <ol className="list-decimal space-y-2 pl-4">
+                {config.steps.map((step, idx) => {
+                  const copyValue =
+                    step.copyValueType === "callback"
+                      ? `${origin}${config.callbackPath}`
+                      : step.copyValueType === "homepage"
+                        ? `${origin}/`
+                        : "";
+                  const copyKey = `${config.id}-${step.copyValueType}-${idx}`;
+                  return (
+                    <li key={idx} className="text-xs leading-relaxed text-zinc-300">
+                      <p className="font-medium text-purple-200">{step.title}</p>
+                      <p className="text-zinc-400">{step.description}</p>
+                      {copyValue && (
+                        <div className="mt-1.5 flex items-center gap-2">
+                          <code className="flex-1 truncate rounded-lg bg-zinc-950 px-2 py-1 text-[10px] text-zinc-400">{copyValue}</code>
+                          <button
+                            type="button"
+                            onClick={() => onCopy(copyValue, copyKey)}
+                            className="text-zinc-500 transition hover:text-zinc-200"
+                            aria-label="Copier"
+                          >
+                            {copied === copyKey ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+                          </button>
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
+              </ol>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

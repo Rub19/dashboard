@@ -19,7 +19,7 @@ import DocumentMetadata from "@/components/DocumentMetadata";
 import { ActivityJournalProvider } from "@/components/ActivityJournalProvider";
 import PageTransition from "@/components/PageTransition";
 import AutomationRuntime from "@/components/AutomationRuntime";
-import V8StatusBar from "@/components/V8StatusBar";
+import StatusBar from "@/components/layout/StatusBar";
 import Dock from "@/components/Dock";
 import SkipLink from "@/components/SkipLink";
 
@@ -76,7 +76,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                   <AutomationRuntime />
                 </ActivityJournalProvider>
               </main>
-              <V8StatusBar />
+              <StatusBar />
             </div>
             <MobileNav />
             <Dock />

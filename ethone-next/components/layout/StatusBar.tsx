@@ -1,0 +1,262 @@
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import {
+  CheckCircle2,
+  Loader2,
+  Wifi,
+  WifiOff,
+  User,
+  LogOut,
+  Shield,
+  AlertCircle,
+  Circle,
+} from "lucide-react";
+import { useAuth } from "@/components/AuthProvider";
+import { useActiveProfile } from "@/components/SettingsProvider";
+import { useNotifications } from "@/lib/hooks/useNotifications";
+import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
+import { useLiveData } from "@/lib/hooks/useLiveData";
+import { useItems } from "@/lib/hooks/useItems";
+import { useI18n } from "@/lib/hooks/useI18n";
+import { WORKER_URL } from "@/lib/api";
+
+function useOnlineStatus() {
+  const [online, setOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const update = () => setOnline(navigator.onLine);
+    window.addEventListener("online", update);
+    window.addEventListener("offline", update);
+    return () => {
+      window.removeEventListener("online", update);
+      window.removeEventListener("offline", update);
+    };
+  }, []);
+  return online;
+}
+
+function usePing() {
+  const online = useOnlineStatus();
+  const [ping, setPing] = useState<number | null>(null);
+  const [pingging, setPinging] = useState(false);
+
+  const measure = useCallback(async () => {
+    if (!online || !WORKER_URL) {
+      setPing(null);
+      return;
+    }
+    setPinging(true);
+    const start = typeof performance !== "undefined" ? performance.now() : Date.now();
+    try {
+      await fetch(`${WORKER_URL}/health?cache=${Date.now()}`, {
+        method: "HEAD",
+        cache: "no-store",
+        mode: "no-cors",
+      });
+      const end = typeof performance !== "undefined" ? performance.now() : Date.now();
+      setPing(Math.round(end - start));
+    } catch {
+      setPing(null);
+    } finally {
+      setPinging(false);
+    }
+  }, [online]);
+
+  useEffect(() => {
+    measure();
+    const interval = setInterval(measure, 10000);
+    return () => clearInterval(interval);
+  }, [measure]);
+
+  return { ping, pingging };
+}
+
+function useSessionRole() {
+  const { user } = useAuth();
+  if (!user) return { id: "guest" as const, label: "Invité", color: "text-zinc-400" };
+  const role =
+    (user.user_metadata?.role as string | undefined) ||
+    (user.app_metadata?.role as string | undefined) ||
+    user.role;
+  if (role === "admin" || role === "owner") {
+    return { id: "admin" as const, label: "Admin", color: "text-amber-400" };
+  }
+  return { id: "normal" as const, label: "Normal", color: "text-emerald-400" };
+}
+
+type StatusPillProps = {
+  icon?: React.ReactNode;
+  label?: string;
+  value?: string;
+  children?: React.ReactNode;
+  onClick?: () => void;
+  tone?: "default" | "success" | "warning" | "error" | "info";
+};
+
+function StatusPill({ icon, label, value, children, onClick, tone = "default" }: StatusPillProps) {
+  const toneClass = {
+    default: "hover:bg-white/[0.04] hover:text-zinc-200 text-zinc-400",
+    success: "hover:bg-emerald-500/[0.08] hover:text-emerald-300 text-emerald-400",
+    warning: "hover:bg-amber-500/[0.08] hover:text-amber-300 text-amber-400",
+    error: "hover:bg-red-500/[0.08] hover:text-red-300 text-red-400",
+    info: "hover:bg-sky-500/[0.08] hover:text-sky-300 text-sky-400",
+  }[tone];
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`group flex min-w-0 items-center gap-1.5 rounded px-2 py-0.5 text-xs transition-colors ${
+        onClick ? `${toneClass} cursor-pointer` : "text-zinc-400"
+      }`}
+    >
+      {icon && <span className="shrink-0">{icon}</span>}
+      {label && <span className="hidden whitespace-nowrap opacity-60 md:inline">{label}</span>}
+      {value && <span className="truncate font-medium">{value}</span>}
+      {children}
+    </button>
+  );
+}
+
+export default function StatusBar() {
+  const i18n = useI18n();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { user, signOut } = useAuth();
+  const { activeProfile } = useActiveProfile();
+  const { unreadCount } = useNotifications();
+  const { syncing } = useActivityJournal();
+  const { updatedAt, error: liveError } = useLiveData(300000);
+  const { loading: notesLoading } = useItems("notes");
+  const { loading: tasksLoading } = useItems("tasks");
+  const online = useOnlineStatus();
+  const { ping, pingging } = usePing();
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const userLabel = activeProfile?.name || user?.email || i18n("guest");
+  const sessionRole = useSessionRole();
+
+  const saving = notesLoading || tasksLoading;
+  const syncActive = syncing || saving;
+  const syncDone = !syncActive && online && updatedAt;
+
+  const systemOk = online && !liveError && unreadCount === 0;
+  const alertCount = liveError ? 1 : unreadCount;
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    function onClick(e: MouseEvent) {
+      if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false);
+    }
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [menuOpen]);
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  async function handleSignOut() {
+    setMenuOpen(false);
+    await signOut();
+    router.push("/login");
+  }
+
+  return (
+    <footer
+      data-v8-status-bar
+      data-status-bar
+      className="fixed bottom-0 left-0 z-30 h-8 w-full select-none border-t border-white/[0.06] bg-zinc-950/90 px-4 text-xs text-zinc-400 backdrop-blur-md"
+    >
+      <div className="flex h-full w-full items-center justify-between">
+        <div className="flex min-w-0 items-center gap-2">
+          <StatusPill
+            icon={<Shield className="h-3.5 w-3.5" />}
+            value={sessionRole.label}
+            tone={
+              sessionRole.id === "admin"
+                ? "warning"
+                : sessionRole.id === "guest"
+                ? "default"
+                : "success"
+            }
+          />
+
+          {syncActive ? (
+            <StatusPill
+              icon={<Loader2 className="h-3.5 w-3.5 animate-spin text-purple-400" />}
+              value="Synchronisation..."
+              tone="info"
+            />
+          ) : (
+            <StatusPill
+              icon={<CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />}
+              value={online && syncDone ? "Enregistré" : online ? "Prêt" : "Hors ligne"}
+              tone={online ? "success" : "error"}
+            />
+          )}
+        </div>
+
+        <div className="flex min-w-0 items-center gap-2">
+          <StatusPill
+            icon={
+              online ? (
+                pingging ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin text-zinc-400" />
+                ) : (
+                  <Wifi className="h-3.5 w-3.5" />
+                )
+              ) : (
+                <WifiOff className="h-3.5 w-3.5" />
+              )
+            }
+            value={online ? (ping !== null ? `${ping} ms` : i18n("v8NetworkOnline")) : i18n("v8NetworkOffline")}
+            tone={online ? "success" : "error"}
+          />
+
+          <div className="relative" ref={menuRef}>
+            <StatusPill
+              icon={<User className="h-3.5 w-3.5" />}
+              value={userLabel}
+              onClick={() => setMenuOpen((v) => !v)}
+            />
+            {menuOpen && (
+              <div className="absolute bottom-full left-1/2 z-40 mb-2 w-40 -translate-x-1/2 rounded-xl border border-white/10 bg-zinc-950/95 p-1 shadow-2xl shadow-black/80 backdrop-blur-md">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    router.push("/profile");
+                  }}
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs text-zinc-300 transition-colors hover:bg-white/[0.04] hover:text-white"
+                >
+                  <User className="h-3.5 w-3.5" />
+                  Profil
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs text-zinc-300 transition-colors hover:bg-red-500/[0.08] hover:text-red-300"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                  Déconnexion
+                </button>
+              </div>
+            )}
+          </div>
+
+          <StatusPill
+            icon={systemOk ? <Circle className="h-3.5 w-3.5 fill-emerald-400 text-emerald-400" /> : <AlertCircle className="h-3.5 w-3.5 text-red-400" />}
+            value={systemOk ? "Opérationnel" : `${alertCount} alerte${alertCount > 1 ? "s" : ""}`}
+            tone={systemOk ? "success" : "error"}
+            onClick={() => router.push("/notifications")}
+          />
+        </div>
+      </div>
+    </footer>
+  );
+}

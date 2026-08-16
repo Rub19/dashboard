@@ -1,16 +1,41 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
-import { Icon } from "@/lib/icons";
+import { Search } from "lucide-react";
+import { useSettings, useActiveProfile } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { useSettings } from "@/components/SettingsProvider";
+import { Icon } from "@/lib/icons";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useLayer } from "@/components/LayerProvider";
 import { useCommandItems, type CommandItem } from "@/lib/commands";
-import { searchCommands, commandScore, createCommandHistory } from "@/lib/command-search";
-import { useActiveProfile } from "@/components/SettingsProvider";
+import { searchCommands, createCommandHistory } from "@/lib/command-search";
+
+const SECTION_ORDER = ["Navigation", "Actions Rapides", "Intégrations", "Thèmes & Apparence"];
+
+const SECTION_MAP: Record<string, string> = {
+  Navigation: "Navigation",
+  Créer: "Actions Rapides",
+  "Fenêtres": "Actions Rapides",
+  "Spaces": "Actions Rapides",
+  "Focus": "Actions Rapides",
+  "Brain": "Actions Rapides",
+  "Système": "Actions Rapides",
+  "Compte": "Actions Rapides",
+  "Presets": "Actions Rapides",
+  "Ambiance": "Thèmes & Apparence",
+  "Réglages": "Thèmes & Apparence",
+  "Plugins": "Intégrations",
+  "RSS": "Intégrations",
+  "Scratchpad": "Intégrations",
+  "Matchs": "Intégrations",
+  "Drops": "Intégrations",
+  "Météo": "Intégrations",
+  "Macros": "Intégrations",
+  "Facturation": "Intégrations",
+  "Mail": "Intégrations",
+};
 
 const ROUTE_CATEGORIES: Record<string, string> = {
   "/bills/": "Facturation",
@@ -49,16 +74,31 @@ function getRouteCategory(path: string): string | null {
   return null;
 }
 
+function getSection(category: string) {
+  return SECTION_MAP[category] ?? "Actions Rapides";
+}
+
 export default function CommandPalette() {
-  const [query, setQuery] = useState("");
-  const [index, setIndex] = useState(0);
   const i18n = useI18n();
   const { settings, update } = useSettings();
   const { activeProfile } = useActiveProfile();
-  const { open, setOpen } = useCommandPalette();
-  const dialogRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname() ?? "/";
+  const { open, setOpen } = useCommandPalette();
+
+  const [query, setQuery] = useState("");
+  const [index, setIndex] = useState(0);
+
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const commandHistory = useMemo(() => createCommandHistory(), []);
+  const [frequency, setFrequency] = useState(() => commandHistory.frequency());
+
+  const COMMANDS = useCommandItems(setOpen);
   const routeCategory = useMemo(() => getRouteCategory(pathname), [pathname]);
+  const space = activeProfile?.workspace ?? "personal";
+  const pinned = useMemo(() => new Set(settings.pinnedCommands || []), [settings.pinnedCommands]);
+  const recent = useMemo(() => new Set(settings.commandHistory || []), [settings.commandHistory]);
 
   useLayer(open, () => setOpen(false), {
     boundary: dialogRef,
@@ -71,13 +111,24 @@ export default function CommandPalette() {
     closeOnScroll: true,
     initialFocus: false,
   });
-  const COMMANDS = useCommandItems(setOpen);
 
-  const pinned = useMemo(() => new Set(settings.pinnedCommands || []), [settings.pinnedCommands]);
-  const recent = useMemo(() => new Set(settings.commandHistory || []), [settings.commandHistory]);
-  const space = activeProfile?.workspace ?? "personal";
-  const commandHistory = useMemo(() => createCommandHistory(), []);
-  const [frequency, setFrequency] = useState(() => commandHistory.frequency());
+  const context = useMemo(
+    () => ({ route: pathname, routeCategory, space, pinned, recent, frequency }),
+    [pathname, routeCategory, space, pinned, recent, frequency]
+  );
+
+  const filtered = useMemo<CommandItem[]>(() => {
+    return searchCommands(COMMANDS, query.trim(), context) as CommandItem[];
+  }, [COMMANDS, query, context]);
+
+  const sections = useMemo(() => {
+    const groups: Record<string, CommandItem[]> = {};
+    for (const cmd of filtered) {
+      const section = getSection(cmd.category);
+      (groups[section] ??= []).push(cmd);
+    }
+    return SECTION_ORDER.filter((s) => groups[s]?.length).map((s) => ({ title: s, items: groups[s] }));
+  }, [filtered]);
 
   const run = useCallback(
     (cmd: CommandItem) => {
@@ -88,8 +139,9 @@ export default function CommandPalette() {
       setFrequency(commandHistory.frequency());
       setOpen(false);
       setQuery("");
+      setIndex(0);
     },
-    [setOpen, settings.commandHistory, update, commandHistory, setFrequency]
+    [settings.commandHistory, update, commandHistory, setOpen]
   );
 
   const togglePin = useCallback(
@@ -105,78 +157,60 @@ export default function CommandPalette() {
     [pinned, settings.pinnedCommands, update, commandHistory]
   );
 
-  const { pinnedItems, recentItems, otherItems } = useMemo(() => {
-    const pinnedItems = (settings.pinnedCommands || [])
-      .map((id) => COMMANDS.find((c) => c.id === id))
-      .filter(Boolean) as CommandItem[];
-
-    const recentItems = (settings.commandHistory || [])
-      .filter((id) => !pinned.has(id))
-      .map((id) => COMMANDS.find((c) => c.id === id))
-      .filter(Boolean) as CommandItem[];
-
-    const used = new Set([...pinnedItems, ...recentItems].map((c) => c.id));
-    const rest = COMMANDS.filter((c) => !used.has(c.id));
-
-    const otherItems = [...rest]
-      .map((cmd) => ({
-        cmd,
-        score: commandScore(cmd, "", { routeCategory, route: pathname, space, pinned, recent, frequency }),
-      }))
-      .sort((a, b) => b.score - a.score || a.cmd.label.localeCompare(b.cmd.label, "fr"))
-      .map((s) => s.cmd);
-
-    return { pinnedItems, recentItems, otherItems };
-  }, [COMMANDS, settings.commandHistory, settings.pinnedCommands, pinned, recent, routeCategory, pathname, space, frequency]);
-
-  const filtered = useMemo<CommandItem[]>(() => {
-    const active = query.trim() !== "";
-    if (!active) return [...pinnedItems, ...recentItems, ...otherItems];
-    return searchCommands(COMMANDS, query, { routeCategory, route: pathname, space, pinned, recent, frequency }) as CommandItem[];
-  }, [query, COMMANDS, pinnedItems, recentItems, otherItems, routeCategory, pathname, space, pinned, recent, frequency]);
-
-  const sections = useMemo(() => {
-    if (query.trim()) return [{ title: i18n("results"), items: filtered }];
-    return [
-      ...(pinnedItems.length ? [{ title: i18n("pinned"), items: pinnedItems, color: "text-amber-400" }] : []),
-      ...(recentItems.length ? [{ title: i18n("recent"), items: recentItems }] : []),
-      { title: i18n("all"), items: otherItems },
-    ];
-  }, [query, filtered, pinnedItems, recentItems, otherItems, i18n]);
-
   useEffect(() => {
     setIndex(0);
   }, [query]);
+
+  useEffect(() => {
+    if (open) {
+      inputRef.current?.focus();
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const active = dialogRef.current?.querySelector('[data-active="true"]') as HTMLElement | null;
+    active?.scrollIntoView({ block: "nearest" });
+  }, [open, index, filtered]);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
         setOpen(!open);
+        return;
       }
+
       if (!open) return;
 
-      const hasResults = filtered.length > 0;
-      const lastIndex = Math.max(0, filtered.length - 1);
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setOpen(false);
+        return;
+      }
+
+      const count = filtered.length;
+      if (count === 0) return;
+      const last = Math.max(0, count - 1);
 
       if (event.key === "ArrowDown" || (event.key === "Tab" && !event.shiftKey)) {
         event.preventDefault();
-        if (hasResults) setIndex((i) => (i + 1) % filtered.length);
+        setIndex((i) => (i + 1) % count);
       } else if (event.key === "ArrowUp" || (event.key === "Tab" && event.shiftKey)) {
         event.preventDefault();
-        if (hasResults) setIndex((i) => (i - 1 + filtered.length) % filtered.length);
+        setIndex((i) => (i - 1 + count) % count);
       } else if (event.key === "Home") {
         event.preventDefault();
-        if (hasResults) setIndex(0);
+        setIndex(0);
       } else if (event.key === "End") {
         event.preventDefault();
-        if (hasResults) setIndex(lastIndex);
+        setIndex(last);
       } else if (event.key === "PageDown") {
         event.preventDefault();
-        if (hasResults) setIndex((i) => (i + 5) % filtered.length);
+        setIndex((i) => (i + 5) % count);
       } else if (event.key === "PageUp") {
         event.preventDefault();
-        if (hasResults) setIndex((i) => (i - 5 + filtered.length) % filtered.length);
+        setIndex((i) => (i - 5 + count) % count);
       } else if (event.key === "Enter" && filtered[index]) {
         event.preventDefault();
         run(filtered[index]);
@@ -185,40 +219,61 @@ export default function CommandPalette() {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open, filtered, index, setOpen, run]);
+  }, [open, filtered, index, run, setOpen]);
 
   useEffect(() => {
     if (!open) setQuery("");
   }, [open]);
 
-  function renderItem(cmd: CommandItem, itemIndex: number) {
+  let globalIndex = 0;
+
+  function renderItem(cmd: CommandItem) {
+    const itemIndex = globalIndex++;
     const active = itemIndex === index;
+    const shortcut = cmd.shortcut ? `⌘${cmd.shortcut.toUpperCase()}` : null;
+
     return (
       <div
         key={cmd.id}
+        role="button"
+        tabIndex={-1}
+        data-active={active}
         onClick={() => run(cmd)}
         onMouseEnter={() => setIndex(itemIndex)}
-        className={`group relative flex w-full items-center justify-between rounded-[var(--panel-radius)] px-3 py-2 text-sm transition-colors ${
-          active ? "bg-[var(--accent)] text-white" : "cursor-pointer text-[var(--foreground)] hover:bg-[var(--panel-bg)]"
+        onMouseMove={() => setIndex(itemIndex)}
+        className={`group relative flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm transition-colors ${
+          active ? "bg-white/[0.08] text-white" : "cursor-pointer text-zinc-300 hover:bg-white/[0.04]"
         }`}
-        role="button"
       >
-        <span className="flex min-w-0 items-center gap-2">
-          {cmd.icon && <span className="opacity-70">{cmd.icon}</span>}
+        <span className="flex min-w-0 items-center gap-3">
+          {cmd.icon ? (
+            <span className={`shrink-0 ${active ? "text-white" : "text-zinc-400"}`}>{cmd.icon}</span>
+          ) : (
+            <Icon name="chevron-right" className={`h-4 w-4 shrink-0 ${active ? "text-white" : "text-zinc-500"}`} />
+          )}
           <span className="truncate">{cmd.label}</span>
-          <span className={`whitespace-nowrap text-[10px] ${active ? "text-white/70" : "text-[var(--muted)]"}`}>{cmd.category}</span>
         </span>
-        <span className="flex items-center gap-2">
-          {cmd.shortcut && (
-            <span className="flex items-center gap-1 text-[10px] opacity-60">
-              <Icon name="command" className="h-3 w-3" />
-              {cmd.shortcut}
-            </span>
+        <span className="ml-3 flex shrink-0 items-center gap-2">
+          {cmd.category && (
+            <span className={`text-[10px] ${active ? "text-zinc-300" : "text-zinc-500"}`}>{cmd.category}</span>
+          )}
+          {shortcut && (
+            <kbd
+              className={`rounded border px-1.5 py-0.5 text-[10px] font-medium ${
+                active
+                  ? "border-white/20 bg-white/10 text-white"
+                  : "border-white/10 bg-white/[0.03] text-zinc-500"
+              }`}
+            >
+              {shortcut}
+            </kbd>
           )}
           <button
             type="button"
             onClick={(e) => togglePin(cmd, e)}
-            className={`rounded p-1 transition-colors ${active ? "text-white/70 hover:bg-white/20" : "text-[var(--muted)] hover:bg-[var(--panel-bg)]"}`}
+            className={`rounded p-1 transition-colors ${
+              active ? "text-white/70 hover:bg-white/20" : "text-zinc-500 hover:bg-white/[0.06]"
+            }`}
             aria-label={pinned.has(cmd.id) ? i18n("unpin") : i18n("pin")}
             title={pinned.has(cmd.id) ? i18n("unpin") : i18n("pin")}
           >
@@ -229,19 +284,17 @@ export default function CommandPalette() {
     );
   }
 
-  let globalIndex = 0;
-
   return (
     <>
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="hidden items-center gap-2 rounded-full border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-1.5 text-xs text-[var(--muted)] transition-colors hover:border-[var(--accent)] hover:text-[var(--foreground)] xl:flex backdrop-blur-[var(--panel-blur)]"
+        className="hidden items-center gap-2 rounded-full border border-white/10 bg-zinc-950/80 px-3 py-1.5 text-xs text-zinc-400 backdrop-blur-md transition-colors hover:border-white/20 hover:text-zinc-100 xl:flex"
       >
-        <Icon name="search" className="h-3.5 w-3.5" />
+        <Search className="h-3.5 w-3.5" />
         <span>{i18n("commands")}</span>
-        <kbd className="rounded bg-[var(--panel-bg)] px-1 py-0.5 text-[10px]">
-          <Icon name="command" className="inline h-3 w-3" />K
+        <kbd className="rounded bg-white/[0.05] px-1.5 py-0.5 text-[10px]">
+          <span className="mr-0.5">⌘</span>K
         </kbd>
       </button>
 
@@ -251,64 +304,65 @@ export default function CommandPalette() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] flex items-start justify-center bg-[var(--panel-bg)]/60 p-6 pt-32 backdrop-blur-sm"
+            transition={{ duration: 0.1 }}
+            className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 px-4 pt-[15vh] backdrop-blur-md"
+            onClick={() => setOpen(false)}
           >
             <motion.div
               ref={dialogRef}
-              initial={{ opacity: 0, y: -20, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -20, scale: 0.96 }}
-              transition={{ duration: 0.15, ease: "easeOut" as const }}
-              className="w-full max-w-lg overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-2xl backdrop-blur-[var(--panel-blur)]"
+              initial={{ opacity: 0, scale: 0.95, y: -10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: -10 }}
+              transition={{ duration: 0.15, ease: "easeOut" }}
+              className="w-full max-w-xl overflow-hidden rounded-2xl border border-white/10 bg-zinc-950/90 shadow-[0_0_50px_rgba(0,0,0,0.8)] backdrop-blur-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center gap-3 border-b border-[var(--panel-border)] px-4 py-3">
-                <Icon name="search" className="h-5 w-5 text-[var(--muted)]" />
+              <div className="flex items-center gap-3 border-b border-white/10 px-4 py-3">
+                <Search className="h-5 w-5 text-zinc-400" />
                 <input
+                  ref={inputRef}
                   autoFocus
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder={i18n("search")}
-                  className="flex-1 bg-transparent text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted)]"
+                  className="flex-1 bg-transparent border-0 py-4 px-3 text-base text-zinc-100 placeholder-zinc-500 outline-none focus:ring-0"
                 />
-                <kbd className="rounded bg-[var(--panel-bg)] px-1.5 py-0.5 text-[10px] text-[var(--muted)]">ESC</kbd>
+                <kbd className="rounded border border-white/10 bg-white/[0.05] px-1.5 py-0.5 text-[10px] text-zinc-500">
+                  ESC
+                </kbd>
               </div>
 
-              <div className="max-h-80 overflow-y-auto p-2">
+              <div className="max-h-[60vh] min-h-[8rem] overflow-y-auto p-2">
                 {filtered.length === 0 ? (
-                  <p className="p-4 text-center text-sm text-[var(--muted)]">{i18n("noResults")}</p>
+                  <p className="py-8 text-center text-sm text-zinc-500">{i18n("noResults")}</p>
                 ) : (
                   sections.map((section) => (
-                    <div key={section.title} className="mb-2 last:mb-0">
-                      <p className={`mb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)] ${section.color || ""}`}>
+                    <div key={section.title} className="mb-3 last:mb-0">
+                      <p className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
                         {section.title}
                       </p>
-                      {section.items.map((cmd) => renderItem(cmd, globalIndex++))}
+                      {section.items.map((cmd) => renderItem(cmd))}
                     </div>
                   ))
                 )}
               </div>
 
-              <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[var(--panel-border)] px-4 py-2.5 text-[10px] text-[var(--muted)]">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/10 px-4 py-2.5 text-[10px] text-zinc-500">
                 <div className="flex items-center gap-3">
                   <span className="flex items-center gap-1">
-                    <kbd className="rounded bg-[var(--panel-bg)] px-1.5 py-0.5 text-[10px]">Esc</kbd>
+                    <kbd className="rounded border border-white/10 bg-white/[0.05] px-1.5 py-0.5">Esc</kbd>
                     <span>{i18n("close")}</span>
                   </span>
                   <span className="flex items-center gap-1">
-                    <kbd className="rounded bg-[var(--panel-bg)] px-1.5 py-0.5 text-[10px]">↑</kbd>
-                    <kbd className="rounded bg-[var(--panel-bg)] px-1.5 py-0.5 text-[10px]">↓</kbd>
+                    <kbd className="rounded border border-white/10 bg-white/[0.05] px-1.5 py-0.5">↑</kbd>
+                    <kbd className="rounded border border-white/10 bg-white/[0.05] px-1.5 py-0.5">↓</kbd>
                     <span>{i18n("spotlightNav")}</span>
                   </span>
                   <span className="flex items-center gap-1">
-                    <kbd className="rounded bg-[var(--panel-bg)] px-1.5 py-0.5 text-[10px]">Enter</kbd>
+                    <kbd className="rounded border border-white/10 bg-white/[0.05] px-1.5 py-0.5">Enter</kbd>
                     <span>{i18n("openHere")}</span>
                   </span>
-                </div>
-                <div className="flex items-center gap-1 opacity-60">
-                  <Icon name="command" className="h-3 w-3" />
-                  <span>{i18n("commands")}</span>
                 </div>
               </div>
             </motion.div>

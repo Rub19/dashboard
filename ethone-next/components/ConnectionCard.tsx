@@ -361,7 +361,7 @@ export default function ConnectionCard({
                   {config ? config.badge : i18n(methodKey)}
                 </span>
               </div>
-              <p className="truncate text-xs text-zinc-400">{config ? config.description : i18n(integration.description)}</p>
+              <p className="truncate text-xs text-zinc-400">{config?.description || i18n(integration.description)}</p>
             </div>
           </div>
           <span className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-semibold ${statusClass}`}>{statusText}</span>
@@ -508,6 +508,17 @@ export default function ConnectionCard({
         {/* Inputs */}
         {hasInputs && (
           <div className="flex flex-col gap-2.5">
+            {config && (
+              <ConfigGuidePanel
+                config={config}
+                origin={origin}
+                isOpen={showConfigGuide}
+                onToggle={() => setShowConfigGuide((v) => !v)}
+                copied={copied}
+                onCopy={handleCopy}
+              />
+            )}
+
             {publicFields.map((f) =>
               f.options ? (
                 <Select

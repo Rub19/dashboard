@@ -12,6 +12,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `ethone-next/components/Dock.tsx` : conteneur externe transparent et `pointer-events-none`, dock interne isolé en pill arrondi avec `pointer-events-auto` et `overflow-hidden`. Contrôles en `transition-colors duration-150` et `active:scale-[0.98]`.
 - `ethone-next/components/Card3D.tsx` : suppression de la 3D, des spotlights et des ressorts Framer Motion. Passage à une `div` simple utilisant `.v8-card` et `var(--panel-radius)`.
 - Synchronisation de 108 fichiers `.tsx` : `rounded-xl/2xl/lg` → `rounded-[var(--panel-radius)]`, `transition-all` → `transition-colors duration-150`, ressorts `type: "spring"` → `duration: 0.15 ease: "easeOut"`. Nettoyage des `hover:scale` superflus.
+- Finalisation de la tokenisation : remplacement des arrière-plans (`bg-[var(--surface)]`, `bg-surface/60`, `bg-white/[...]`, `bg-zinc-900/...`) par `bg-[var(--panel-bg)]` et des bordures `border-[var(--border)]` par `border-[var(--panel-border)]`. Ajout de `backdrop-blur-[var(--panel-blur)]` sur les conteneurs concernés.
 - `ethone-next/lib/icons.tsx` : le composant `Icon` accepte maintenant une prop `pack` optionnelle.
 
 **Migration Next.js : réduire espaces vides Settings**

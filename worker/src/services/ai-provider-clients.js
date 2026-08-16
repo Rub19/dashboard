@@ -337,6 +337,40 @@ export async function askLocalLlm(env, { provider, model, messages, context, bas
   }
 }
 
+export async function askXai(env, { model, messages, context }) {
+  const apiKey = env.XAI_API_KEY || env.GROK_API_KEY || await requireApiKey(env, env.__AUTH_USER_ID, "xai");
+  if (!apiKey) throw httpError("SERVICE_NOT_CONFIGURED", 501, { detail: "xai_api_key_missing" });
+
+  const ALLOWED_MODELS = new Set(["grok-beta", "grok-2"]);
+  const resolved = ALLOWED_MODELS.has(safeText(model, 80)) ? safeText(model, 80) : "grok-beta";
+  const chatMessages = sanitizeMessages(messages, 8, 1200);
+  if (!chatMessages.length) throw httpError("INVALID_REQUEST", 400);
+
+  const contextJson = buildContext(context);
+  const response = await requestExternal(new URL("https://api.x.ai/v1/chat/completions"), {
+    env,
+    expectedOrigin: "https://api.x.ai",
+    service: "xai",
+    method: "POST",
+    headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
+    body: JSON.stringify({
+      model: resolved,
+      max_tokens: 1024,
+      temperature: 0.4,
+      messages: [
+        { role: "system", content: `${SYSTEM_PROMPT}\n\nContexte : ${contextJson}` },
+        ...chatMessages,
+      ],
+    }),
+    timeoutMs: 15000,
+    maxBytes: 512 * 1024,
+    retries: 0,
+  });
+  const content = safeText(response.data?.choices?.[0]?.message?.content, 4000);
+  if (!content) throw httpError("UPSTREAM_INVALID_RESPONSE", 502);
+  return Object.freeze({ content, model: resolved, provider: "xai" });
+}
+
 export async function askUserProvider(env, { provider, model, messages, context, baseUrl }) {
   switch (provider) {
     case "openai":
@@ -349,6 +383,8 @@ export async function askUserProvider(env, { provider, model, messages, context,
       return askGroq(env, { model, messages, context });
     case "deepseek":
       return askDeepSeek(env, { model, messages, context });
+    case "xai":
+      return askXai(env, { model, messages, context });
     case "openrouter":
       return askOpenRouter(env, { model, messages, context });
     case "ollama":

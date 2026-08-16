@@ -98,6 +98,20 @@ export const AI_PROVIDERS = Object.freeze({
     maxRetries: 0,
     priority: 60,
   }),
+  xai: Object.freeze({
+    id: "xai",
+    label: "xAI Grok",
+    kind: "cloud",
+    defaultModel: "grok-beta",
+    allowedModels: Object.freeze(new Set(["grok-beta", "grok-2"])),
+    maxTokens: 1024,
+    maxContextChars: 12000,
+    maxOutputChars: 4000,
+    timeoutMs: 15000,
+    retryable: true,
+    maxRetries: 0,
+    priority: 55,
+  }),
   openrouter: Object.freeze({
     id: "openrouter",
     label: "OpenRouter",
@@ -165,8 +179,8 @@ export function resolveAiConfig(env) {
   return Object.freeze({
     primaryProvider: env.AI_PRIMARY_PROVIDER || "cloudflare",
     primaryModel: env.AI_PRIMARY_MODEL || AI_PROVIDERS.cloudflare.defaultModel,
-    fallbackProvider: env.AI_FALLBACK_PROVIDER || "groq",
-    fallbackModel: env.AI_FALLBACK_MODEL || AI_PROVIDERS.groq.defaultModel,
+    fallbackProvider: env.AI_FALLBACK_PROVIDER || "xai",
+    fallbackModel: env.AI_FALLBACK_MODEL || AI_PROVIDERS.xai.defaultModel,
     cloudflare: Object.freeze({
       allocation: cloudflareAllocation,
       budget: internalBudget,

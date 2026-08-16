@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
@@ -197,10 +198,13 @@ export default function BillsCalendarWidget() {
                     {dayBills.slice(0, 3).map((b) => {
                       const brand = detectBrandMeta(b.label, { icon: "receipt", color: "var(--muted)" });
                       return brand.logo ? (
-                        <img
+                        <Image
                           key={b.id}
                           src={brand.logo}
                           alt=""
+                          width={16}
+                          height={16}
+                          unoptimized
                           className="h-4 w-4 rounded-full border border-white/10 bg-black/20 object-contain p-0.5"
                         />
                       ) : (
@@ -308,7 +312,14 @@ export default function BillsCalendarWidget() {
               return (
                 <div key={b.id} className="flex items-center gap-3 rounded-2xl bg-[var(--surface-raised)] p-2.5">
                   {brand.logo ? (
-                    <img src={brand.logo} alt="" className="h-9 w-9 rounded-xl border border-white/10 bg-black/20 object-contain p-1.5" />
+                    <Image
+                      src={brand.logo}
+                      alt=""
+                      width={36}
+                      height={36}
+                      unoptimized
+                      className="h-9 w-9 rounded-xl border border-white/10 bg-black/20 object-contain p-1.5"
+                    />
                   ) : (
                     <span
                       className="flex h-9 w-9 items-center justify-center rounded-xl text-white"

@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : composant Modal générique accessible**
+
+### Corrige
+- `ethone-next/components/ui/Modal.tsx` : ajout d'une modale en verre dépoli avec backdrop, focus trap, fermeture `Échap` et clic extérieur, verrouillage du scroll, animation Framer Motion. Support des variants `danger`/`primary`, des tailles `sm`/`md`/`lg`, et des pieds d'actions Annuler/Confirmer.
+
 **Migration Next.js : stabilisation UI/UX ETHONE — dock macOS, tokens globaux et animations**
 
 ### Corrige

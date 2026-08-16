@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "@/lib/icons";
-import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
+import Modal from "@/components/ui/Modal";
 import { useSettings } from "@/components/SettingsProvider";
 import { useShortcuts } from "@/components/ShortcutsProvider";
 
@@ -78,7 +77,6 @@ function isEditable(target: EventTarget | null) {
 
 export default function ShortcutsOverlay() {
   const [open, setOpen] = useState(false);
-  const trapRef = useFocusTrap<HTMLElement>(open);
   const { settings } = useSettings();
   const { shortcuts } = useShortcuts();
 
@@ -138,43 +136,17 @@ export default function ShortcutsOverlay() {
   }, [open]);
 
   return (
-    <AnimatePresence>
-      {open && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[70] bg-[var(--panel-bg)]/70 backdrop-blur-sm"
-            onClick={() => setOpen(false)}
-          />
-          <motion.aside
-            ref={trapRef}
-            role="dialog"
-            aria-label="Raccourcis clavier ETHONE"
-            aria-modal="true"
-            initial={{ opacity: 0, scale: 0.96, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: 20 }}
-            transition={{ duration: 0.15, ease: "easeOut" as const }}
-            className="fixed left-1/2 top-1/2 z-[71] w-[min(90vw,800px)] max-h-[90vh] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-3xl border border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-2xl backdrop-blur-[var(--panel-blur)]"
-          >
-            <header className="flex items-center justify-between border-b border-[var(--panel-border)] p-5">
-              <div className="flex items-center gap-3">
-                <Icon name="keyboard" className="h-5 w-5 text-[var(--accent)]" />
-                <strong className="text-lg">Raccourcis clavier</strong>
-                <span className="text-xs text-[var(--muted)]">ETHONE</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="rounded-[var(--panel-radius)] p-2 transition-colors hover:bg-[var(--panel-bg)]"
-                aria-label="Fermer les raccourcis"
-              >
-                <Icon name="x" className="h-5 w-5" />
-              </button>
-            </header>
-            <div className="grid max-h-[60vh] gap-4 overflow-y-auto p-5 sm:grid-cols-2">
+    <Modal
+      isOpen={open}
+      onClose={() => setOpen(false)}
+      title="Raccourcis clavier"
+      description="ETHONE"
+      size="lg"
+      hideFooter
+      className="sm:max-w-3xl p-0"
+      contentClassName="overflow-hidden"
+    >
+      <div className="grid max-h-[60vh] gap-4 overflow-y-auto p-5 sm:grid-cols-2">
               {groups.map((group) => (
                 <section
                   key={group.label}
@@ -210,9 +182,6 @@ export default function ShortcutsOverlay() {
               <kbd className="rounded bg-[var(--panel-bg)] px-1 py-0.5">/</kbd>
               <span>pour ouvrir / fermer cette vue</span>
             </footer>
-          </motion.aside>
-        </>
-      )}
-    </AnimatePresence>
+    </Modal>
   );
 }

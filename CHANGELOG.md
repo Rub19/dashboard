@@ -8,7 +8,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ### Corrige
 - `ethone-next/components/ui/Modal.tsx` : ajout des props `position` (center/bottom/top), `fullScreen`, `hideCloseButton` et `contentClassName` pour couvrir les tiroirs, panneaux plein écran et palette de commandes.
-- Remplacement complémentaires : `components/MissionControl.tsx` et `components/CommandPalette.tsx`.
+- Remplacement complémentaires : `components/MissionControl.tsx`, `components/CommandPalette.tsx` et `components/ShortcutsOverlay.tsx`.
 - Remplacement des modales brutes et `BottomSheet` par `Modal` dans :
   - `components/ConnectionInspector.tsx`
   - `components/CalendarBills.tsx`

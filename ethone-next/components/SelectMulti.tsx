@@ -134,7 +134,7 @@ export default function SelectMulti({
         disabled={disabled}
         onClick={() => setOpen((v) => !v)}
         onKeyDown={handleKeyDown}
-        className="flex w-full items-center justify-between gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none transition-colors hover:border-[var(--accent)]/40 focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] disabled:opacity-50"
+        className="flex w-full items-center justify-between gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-colors hover:border-[var(--accent)]/40 focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] disabled:opacity-50 backdrop-blur-[var(--panel-blur)]"
       >
         <span className="truncate text-left">{activeLabel}</span>
         <Icon name="chevron-down" className="h-4 w-4 text-[var(--muted)]" />
@@ -154,7 +154,7 @@ export default function SelectMulti({
               exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.12 }}
               onKeyDown={handleKeyDown}
-              className="z-50 overflow-auto rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-1 shadow-xl outline-none"
+              className="z-50 overflow-auto rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1 shadow-xl outline-none backdrop-blur-[var(--panel-blur)]"
               style={floatingStyles}
             >
               {searchable && (
@@ -163,7 +163,7 @@ export default function SelectMulti({
                   value={query}
                   onChange={(e) => { setQuery(e.target.value); setActiveIndex(0); }}
                   placeholder="Rechercher…"
-                  className="mb-1 w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-2.5 py-1.5 text-sm outline-none focus:border-[var(--accent)]"
+                  className="mb-1 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2.5 py-1.5 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
                   onKeyDown={handleKeyDown}
                 />
               )}
@@ -189,10 +189,10 @@ export default function SelectMulti({
                         onClick={() => toggle(option.value)}
                         onMouseEnter={() => !option.disabled && setActiveIndex(flatIndex)}
                         className={`flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-2.5 py-1.5 text-left text-sm transition-colors ${
-                          active ? "bg-[var(--accent)]/10 text-[var(--accent)]" : "hover:bg-[var(--surface)]"
+                          active ? "bg-[var(--accent)]/10 text-[var(--accent)]" : "hover:bg-[var(--panel-bg)]"
                         } ${option.disabled ? "cursor-not-allowed opacity-40" : ""}`}
                       >
-                        <span className="flex h-4 w-4 items-center justify-center rounded border border-[var(--border)] text-[var(--accent)]">
+                        <span className="flex h-4 w-4 items-center justify-center rounded border border-[var(--panel-border)] text-[var(--accent)]">
                           {selected && <Icon name="check" className="h-3 w-3" />}
                         </span>
                         <span className="truncate">{option.label}</span>

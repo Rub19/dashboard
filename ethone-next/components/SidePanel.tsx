@@ -78,7 +78,7 @@ export default function SidePanel() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
+        className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)]"
         aria-label={i18n("openPanel")}
       >
         <Icon name="panels-right-bottom" className="h-5 w-5" />
@@ -91,7 +91,7 @@ export default function SidePanel() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm"
+              className="fixed inset-0 z-[60] bg-[var(--panel-bg)]/50 backdrop-blur-sm"
               onClick={() => setOpen(false)}
             />
             <motion.aside
@@ -103,9 +103,9 @@ export default function SidePanel() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ duration: 0.15, ease: "easeOut" as const }}
-              className="fixed right-0 top-0 z-[61] flex h-full w-[min(100vw,420px)] flex-col border-l border-[var(--border)] bg-[var(--surface-raised)] shadow-2xl"
+              className="fixed right-0 top-0 z-[61] flex h-full w-[min(100vw,420px)] flex-col border-l border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-2xl backdrop-blur-[var(--panel-blur)]"
             >
-              <header className="flex items-center justify-between border-b border-[var(--border)] p-4">
+              <header className="flex items-center justify-between border-b border-[var(--panel-border)] p-4">
                 <div className="flex items-center gap-2">
                   <Icon name="panels-right-bottom" className="h-5 w-5 text-[var(--accent)]" />
                   <strong className="text-lg">{i18n("panel")}</strong>
@@ -113,14 +113,14 @@ export default function SidePanel() {
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="rounded-[var(--panel-radius)] p-2 hover:bg-[var(--surface)]"
+                  className="rounded-[var(--panel-radius)] p-2 hover:bg-[var(--panel-bg)]"
                   aria-label={i18n("close")}
                 >
                   <Icon name="x" className="h-5 w-5" />
                 </button>
               </header>
 
-              <nav className="flex border-b border-[var(--border)] p-2" role="tablist" aria-label={i18n("panelTabs")}>
+              <nav className="flex border-b border-[var(--panel-border)] p-2" role="tablist" aria-label={i18n("panelTabs")}>
                 {TABS.map((t) => (
                   <button
                     key={t.id}
@@ -129,7 +129,7 @@ export default function SidePanel() {
                     aria-selected={tab === t.id}
                     onClick={() => setTab(t.id)}
                     className={`flex flex-1 items-center justify-center gap-2 rounded-[var(--panel-radius)] py-2 text-sm font-medium transition-colors ${
-                      tab === t.id ? "bg-[var(--surface)] text-[var(--accent)]" : "text-[var(--muted)] hover:text-[var(--foreground)]"
+                      tab === t.id ? "bg-[var(--panel-bg)] text-[var(--accent)]" : "text-[var(--muted)] hover:text-[var(--foreground)]"
                     }`}
                   >
                     <Icon name={t.icon} className="h-4 w-4" />
@@ -197,7 +197,7 @@ function WidgetsTab({ now }: { now: Date }) {
         <Metric icon="radio" value={i18n(presenceLabel)} label={i18n("presence")} />
       </section>
 
-      <section className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-4">
+      <section className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 backdrop-blur-[var(--panel-blur)]">
         <strong className="mb-2 block text-sm">{i18n("quickActions")}</strong>
         <div className="grid grid-cols-2 gap-2">
           <QuickAction icon="file-plus-2" label={i18n("note")} href="/notes" />
@@ -207,7 +207,7 @@ function WidgetsTab({ now }: { now: Date }) {
         </div>
       </section>
 
-      <section className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-4">
+      <section className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 backdrop-blur-[var(--panel-blur)]">
         <strong className="mb-2 block text-sm">{i18n("worldClocks")}</strong>
         <div className="grid grid-cols-2 gap-2">
           {HUBS.map((hub) => {
@@ -216,7 +216,7 @@ function WidgetsTab({ now }: { now: Date }) {
             return (
               <div
                 key={hub.city}
-                className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-3"
+                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 backdrop-blur-[var(--panel-blur)]"
               >
                 <div className="flex items-center justify-between text-xs text-[var(--muted)]">
                   <span>{hub.city}</span>
@@ -229,12 +229,12 @@ function WidgetsTab({ now }: { now: Date }) {
         </div>
       </section>
 
-      <section className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-4">
+      <section className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 backdrop-blur-[var(--panel-blur)]">
         <div className="mb-2 flex items-center justify-between">
           <strong className="text-sm">{i18n("focusExpress")}</strong>
           <span className="text-xs text-[var(--muted)]">{state.format(state.remaining)}</span>
         </div>
-        <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
+        <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--panel-bg)]">
           <div className="h-full rounded-full bg-[var(--accent)] transition-colors duration-150" style={{ width: `${progress}%` }} />
         </div>
       </section>
@@ -244,7 +244,7 @@ function WidgetsTab({ now }: { now: Date }) {
 
 function Metric({ icon, value, label }: { icon: string; value: string | number; label: string }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-3 text-center" data-live-widget="metric" data-live-kind="metric">
+    <div className="flex flex-col items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 text-center backdrop-blur-[var(--panel-blur)]" data-live-widget="metric" data-live-kind="metric">
       <Icon name={icon} className="h-5 w-5 text-[var(--accent)]" />
       <strong className="text-lg font-bold" data-live-number={value}>{value}</strong>
       <span className="text-[10px] text-[var(--muted)]">{label}</span>
@@ -256,7 +256,7 @@ function QuickAction({ icon, label, href }: { icon: string; label: string; href:
   return (
     <Link
       href={href}
-      className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--surface-raised)] p-2 text-sm transition-colors hover:bg-[var(--accent)]/10"
+      className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] p-2 text-sm transition-colors hover:bg-[var(--accent)]/10"
       data-interactive
     >
       <Icon name={icon} className="h-4 w-4 text-[var(--accent)]" />
@@ -292,7 +292,7 @@ function NotificationsTab() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={i18n("search")}
-          className="flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+          className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
         />
         <Select
           value={filter}
@@ -305,13 +305,13 @@ function NotificationsTab() {
           aria-label={i18n("filter")}
           className="min-w-[6rem]"
         />
-        <button type="button" onClick={() => markAllRead()} className="rounded-[var(--panel-radius)] p-2 hover:bg-[var(--surface)]" aria-label={i18n("markAllRead")}>
+        <button type="button" onClick={() => markAllRead()} className="rounded-[var(--panel-radius)] p-2 hover:bg-[var(--panel-bg)]" aria-label={i18n("markAllRead")}>
           <Icon name="check-check" className="h-4 w-4" />
         </button>
       </div>
       <div className="space-y-2" role="list">
         {filtered.length === 0 && (
-          <div className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-6 text-center text-sm text-[var(--muted)]">
+          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-6 text-center text-sm text-[var(--muted)] backdrop-blur-[var(--panel-blur)]">
             {i18n("noNotifications")}
           </div>
         )}
@@ -319,23 +319,23 @@ function NotificationsTab() {
           <article
             key={item.id}
             role="listitem"
-            className={`rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-3 ${item.read ? "opacity-70" : ""}`}
+            className={`rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 ${item.read ? "opacity-70" : ""}`}
           >
             <div className="flex items-start gap-3">
               <Icon name={item.icon || "info"} className="h-5 w-5 shrink-0 text-[var(--accent)]" />
               <div className="min-w-0 flex-1">
                 <div className="mb-1 flex items-center justify-between gap-2 text-xs text-[var(--muted)]">
                   <span>{formatTime(item.timestamp)}</span>
-                  {item.category && <span className="rounded bg-[var(--surface-raised)] px-1.5 py-0.5">{item.category}</span>}
+                  {item.category && <span className="rounded bg-[var(--panel-bg)] px-1.5 py-0.5">{item.category}</span>}
                 </div>
                 <p className="font-medium text-sm">{item.title}</p>
                 <p className="text-xs text-[var(--muted)]">{item.message}</p>
               </div>
               <div className="flex gap-1">
-                <button type="button" onClick={() => markRead(item.id)} className="rounded p-1 hover:bg-[var(--surface-raised)]" aria-label={i18n("markRead")}>
+                <button type="button" onClick={() => markRead(item.id)} className="rounded p-1 hover:bg-[var(--panel-bg)]" aria-label={i18n("markRead")}>
                   <Icon name={item.read ? "mail" : "mail-check"} className="h-4 w-4" />
                 </button>
-                <button type="button" onClick={() => archive(item.id)} className="rounded p-1 hover:bg-[var(--surface-raised)]" aria-label={i18n("archive")}>
+                <button type="button" onClick={() => archive(item.id)} className="rounded p-1 hover:bg-[var(--panel-bg)]" aria-label={i18n("archive")}>
                   <Icon name="archive" className="h-4 w-4" />
                 </button>
               </div>
@@ -363,7 +363,7 @@ function ChangelogTab() {
   return (
     <div className="space-y-4">
       {CHANGELOG.map((entry) => (
-        <article key={entry.version} className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-4">
+        <article key={entry.version} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 backdrop-blur-[var(--panel-blur)]">
           <header className="mb-2 flex items-center justify-between text-xs text-[var(--muted)]">
             <span className="font-mono">{entry.version}</span>
             <time>{entry.date}</time>
@@ -390,7 +390,7 @@ function ProfileTab() {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-4 text-center">
+      <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 text-center backdrop-blur-[var(--panel-blur)]">
         <div className="relative mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--accent)] text-2xl text-white">
           {name.charAt(0).toUpperCase()}
           <div className="absolute bottom-0 right-0">
@@ -408,14 +408,14 @@ function ProfileTab() {
         <strong className="block text-lg">{name}</strong>
         <span className="text-sm text-[var(--muted)]">{email}</span>
       </div>
-      <Link href="/settings" className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-3 text-sm hover:bg-[var(--surface-raised)]" data-interactive>
+      <Link href="/settings" className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 text-sm hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]" data-interactive>
         <span className="flex items-center gap-2">
           <Icon name="settings" className="h-4 w-4" />
           {i18n("settings")}
         </span>
         <Icon name="chevron-right" className="h-4 w-4" />
       </Link>
-      <Link href="/profile" className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-3 text-sm hover:bg-[var(--surface-raised)]" data-interactive>
+      <Link href="/profile" className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 text-sm hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]" data-interactive>
         <span className="flex items-center gap-2">
           <Icon name="user" className="h-4 w-4" />
           {i18n("profile")}

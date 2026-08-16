@@ -36,7 +36,7 @@ export default function MobileNav() {
       <nav
         data-zen-hidden
         className={cn(
-          "fixed bottom-0 left-0 right-0 z-40 rounded-t-2xl border-t border-[var(--border)] bg-[var(--surface)]/95 pb-safe backdrop-blur-xl transition-transform md:hidden",
+          "fixed bottom-0 left-0 right-0 z-40 rounded-t-2xl border-t border-[var(--panel-border)] bg-[var(--panel-bg)]/95 pb-safe backdrop-blur-xl transition-transform md:hidden",
           drawerOpen ? "translate-y-full" : "translate-y-0"
         )}
       >
@@ -94,7 +94,7 @@ export default function MobileNav() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
-              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm md:hidden"
+              className="fixed inset-0 z-50 bg-[var(--panel-bg)]/60 backdrop-blur-sm md:hidden"
               onClick={() => setDrawerOpen(false)}
               aria-hidden="true"
             />
@@ -107,7 +107,7 @@ export default function MobileNav() {
               dragConstraints={{ left: -340, right: 0 }}
               dragElastic={0.05}
               onDragEnd={handleDrawerDragEnd}
-              className="fixed left-0 top-0 z-50 h-dvh w-[min(85vw,320px)] overflow-y-auto overscroll-contain border-r border-[var(--border)] bg-[var(--surface)] p-4 shadow-2xl no-scrollbar md:hidden"
+              className="fixed left-0 top-0 z-50 h-dvh w-[min(85vw,320px)] overflow-y-auto overscroll-contain border-r border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-2xl no-scrollbar md:hidden backdrop-blur-[var(--panel-blur)]"
               role="dialog"
               aria-label={i18n("navigation")}
             >
@@ -120,7 +120,7 @@ export default function MobileNav() {
                   type="button"
                   onClick={() => setDrawerOpen(false)}
                   aria-label={i18n("close")}
-                  className="flex h-10 w-10 items-center justify-center rounded-[var(--panel-radius)] text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
+                  className="flex h-10 w-10 items-center justify-center rounded-[var(--panel-radius)] text-[var(--muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)]"
                 >
                   <Icon name="close" className="h-5 w-5" />
                 </button>
@@ -138,7 +138,7 @@ export default function MobileNav() {
                         "flex items-center gap-3 rounded-[var(--panel-radius)] px-3 py-3.5 text-sm font-medium transition-colors",
                         isActive
                           ? "bg-[var(--accent)]/10 text-[var(--accent)]"
-                          : "text-[var(--foreground)] hover:bg-[var(--surface-raised)]"
+                          : "text-[var(--foreground)] hover:bg-[var(--panel-bg)]"
                       )}
                     >
                       <Icon name={item.icon} className="h-5 w-5" />

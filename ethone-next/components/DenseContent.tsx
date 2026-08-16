@@ -239,7 +239,7 @@ export function CollectionDensityControl({
 
   return (
     <div
-      className={`v8-collection-density inline-flex items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-1 ${className}`}
+      className={`v8-collection-density inline-flex items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1 ${className} backdrop-blur-[var(--panel-blur)]`}
       role="group"
       aria-label={i18n("listDensity")}
     >
@@ -249,8 +249,8 @@ export function CollectionDensityControl({
           <button
             key={entry.id}
             type="button"
-            className={`flex h-8 w-8 items-center justify-center rounded-[var(--panel-radius)] text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)] ${
-              active ? "is-active bg-[var(--surface-raised)] text-[var(--accent)]" : ""
+            className={`flex h-8 w-8 items-center justify-center rounded-[var(--panel-radius)] text-[var(--muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)] ${
+              active ? "is-active bg-[var(--panel-bg)] text-[var(--accent)]" : ""
             }`}
             aria-label={entry.label}
             aria-pressed={active}
@@ -289,9 +289,9 @@ export function SelectionControl({
       aria-checked={isChecked}
       aria-label={label || "Sélectionner"}
       data-collection-select={id}
-      className={`v8-selection-control flex h-8 w-8 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)] ${
+      className={`v8-selection-control flex h-8 w-8 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)] ${
         isChecked ? "is-selected bg-[var(--accent)]/10 text-[var(--accent)]" : ""
-      } ${className}`}
+      } ${className} backdrop-blur-[var(--panel-blur)]`}
       onClick={() => {
         if (onToggle) {
           onToggle(!isChecked);
@@ -340,9 +340,9 @@ export function DenseBulkActionBar({
 
   return (
     <div
-      className={`v8-bulk-bar flex flex-wrap items-center justify-between gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-3 shadow-lg ${
+      className={`v8-bulk-bar flex flex-wrap items-center justify-between gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 shadow-lg ${
         resolvedCount ? "" : "hidden"
-      } ${className}`}
+      } ${className} backdrop-blur-[var(--panel-blur)]`}
       role="toolbar"
       aria-label={i18n("actions")}
     >
@@ -382,7 +382,7 @@ export function DenseBulkActionBar({
             className={`v8-button inline-flex items-center gap-1.5 rounded-[var(--panel-radius)] px-3 py-1.5 text-xs font-medium transition-colors ${
               action.tone === "danger"
                 ? "v8-button--danger bg-red-500/10 text-red-400 hover:bg-red-500/20"
-                : "bg-[var(--surface)] text-[var(--foreground)] hover:bg-[var(--accent)]/10"
+                : "bg-[var(--panel-bg)] text-[var(--foreground)] hover:bg-[var(--accent)]/10"
             } disabled:opacity-50`}
           >
             {action.icon && <Icon name={action.icon} className="h-3.5 w-3.5" />}
@@ -396,7 +396,7 @@ export function DenseBulkActionBar({
             if (onClear) onClear();
             else if (selection) selection.clear();
           }}
-          className="v8-icon-button flex h-8 w-8 items-center justify-center rounded-[var(--panel-radius)] text-[var(--muted)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
+          className="v8-icon-button flex h-8 w-8 items-center justify-center rounded-[var(--panel-radius)] text-[var(--muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)]"
         >
           <Icon name="x" className="h-4 w-4" />
         </button>
@@ -473,7 +473,7 @@ export function useRowMenu() {
       return (
         <div
           ref={menuRef}
-          className="v8-row-menu fixed z-50 min-w-[12rem] max-w-[18rem] rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-1 shadow-[var(--shadow)] outline-none"
+          className="v8-row-menu fixed z-50 min-w-[12rem] max-w-[18rem] rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1 shadow-[var(--shadow)] outline-none backdrop-blur-[var(--panel-blur)]"
           role="menu"
           aria-label={label}
           style={{ left: pos.x, top: pos.y }}
@@ -482,7 +482,7 @@ export function useRowMenu() {
             entry.separator ? (
               <hr
                 key={entry.id}
-                className="v8-row-menu__separator my-1 border-[var(--border)]"
+                className="v8-row-menu__separator my-1 border-[var(--panel-border)]"
                 role="separator"
               />
             ) : (
@@ -491,7 +491,7 @@ export function useRowMenu() {
                 type="button"
                 role="menuitem"
                 disabled={entry.disabled}
-                className={`flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-left text-sm transition-colors hover:bg-[var(--surface)] focus:bg-[var(--surface)] disabled:opacity-40 disabled:hover:bg-transparent ${
+                className={`flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-left text-sm transition-colors hover:bg-[var(--panel-bg)] focus:bg-[var(--panel-bg)] disabled:opacity-40 disabled:hover:bg-transparent ${
                   entry.danger ? "is-danger text-red-400" : "text-[var(--foreground)]"
                 }`}
                 onClick={() => {
@@ -502,7 +502,7 @@ export function useRowMenu() {
                 {entry.icon && <Icon name={entry.icon} className="h-4 w-4 text-[var(--muted)]" />}
                 <span className="flex-1 truncate">{entry.label}</span>
                 {entry.shortcut && (
-                  <kbd className="rounded bg-[var(--surface)] px-1 py-0.5 text-[10px] text-[var(--muted)]">
+                  <kbd className="rounded bg-[var(--panel-bg)] px-1 py-0.5 text-[10px] text-[var(--muted)]">
                     {entry.shortcut}
                   </kbd>
                 )}

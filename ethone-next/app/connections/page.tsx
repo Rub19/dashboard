@@ -151,8 +151,8 @@ export default function ConnectionsPage() {
             className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium transition ${
               filter === cat.id
                 ? "bg-accent text-white shadow-[0_0_20px_-4px_rgba(139,92,246,0.4)]"
-                : "border border-[var(--panel-border)] bg-surface/60 text-muted hover:border-accent/30 hover:text-foreground"
-            }`}
+                : "border border-[var(--panel-border)] bg-[var(--panel-bg)]/60 text-muted hover:border-accent/30 hover:text-foreground"
+            } backdrop-blur-[var(--panel-blur)]`}
           >
             {CATEGORY_ICONS[cat.id] || <Plug className="h-3.5 w-3.5" />}
             {i18n(cat.id)}
@@ -161,7 +161,7 @@ export default function ConnectionsPage() {
       </div>
 
       {(loading || credentials.loading) && (
-        <div className="flex items-center gap-3 rounded-3xl border border-[var(--panel-border)] bg-surface/60 p-5 text-sm text-muted backdrop-blur-2xl">
+        <div className="flex items-center gap-3 rounded-3xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/60 p-5 text-sm text-muted backdrop-blur-2xl">
           <Plug className="h-5 w-5 animate-spin" />
           {i18n("loading")}
         </div>
@@ -185,7 +185,7 @@ export default function ConnectionsPage() {
         </AnimatePresence>
       </motion.div>
 
-      <div className="rounded-3xl border border-[var(--panel-border)] bg-surface/60 p-5 text-sm text-muted backdrop-blur-2xl">
+      <div className="rounded-3xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/60 p-5 text-sm text-muted backdrop-blur-2xl">
         <div className="flex items-center gap-2">
           <Plug className="h-4 w-4" />
           <p>{i18n("oauthInfo")}</p>

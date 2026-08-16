@@ -117,7 +117,7 @@ export default function ContextMenu({
       {open && (
         <div
           ref={menuRef}
-          className="v8-context-menu ethone-context-menu fixed z-50 min-w-[10rem] max-w-[18rem] rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-1 shadow-[var(--shadow)] outline-none"
+          className="v8-context-menu ethone-context-menu fixed z-50 min-w-[10rem] max-w-[18rem] rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1 shadow-[var(--shadow)] outline-none backdrop-blur-[var(--panel-blur)]"
           style={{ left: adjusted.x, top: adjusted.y }}
           role="menu"
           aria-label={i18n("actions")}
@@ -184,7 +184,7 @@ export default function ContextMenu({
         >
           {items.map((item) =>
             item.separator ? (
-              <hr key={item.id} className="my-1 border-[var(--border)]" role="separator" />
+              <hr key={item.id} className="my-1 border-[var(--panel-border)]" role="separator" />
             ) : (
               <button
                 key={item.id}
@@ -201,8 +201,8 @@ export default function ContextMenu({
                 }}
                 onMouseEnter={() => setActiveId(item.id)}
                 onPointerEnter={() => setActiveId(item.id)}
-                className={`flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-left text-sm transition-colors hover:bg-[var(--surface-raised)] focus:bg-[var(--surface-raised)] disabled:opacity-40 disabled:hover:bg-transparent ${
-                  item.id === activeId ? "bg-[var(--surface-raised)]" : ""
+                className={`flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-left text-sm transition-colors hover:bg-[var(--panel-bg)] focus:bg-[var(--panel-bg)] disabled:opacity-40 disabled:hover:bg-transparent ${
+                  item.id === activeId ? "bg-[var(--panel-bg)]" : ""
                 } ${item.danger ? "text-red-400" : "text-[var(--foreground)]"}`}
               >
                 {item.icon && <Icon name={item.icon} className="h-4 w-4 text-[var(--muted)]" />}

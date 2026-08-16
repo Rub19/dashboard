@@ -193,7 +193,7 @@ export default function Select({ options, value, onChange, placeholder = "Sélec
         disabled={disabled}
         onClick={() => setOpen((v) => !v)}
         onKeyDown={handleKeyDown}
-        className="flex w-full items-center justify-between gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none transition-colors hover:border-[var(--accent)]/40 focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] disabled:opacity-50"
+        className="flex w-full items-center justify-between gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-colors hover:border-[var(--accent)]/40 focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] disabled:opacity-50 backdrop-blur-[var(--panel-blur)]"
       >
         <span className="truncate">{activeLabel}</span>
         <Icon name="chevron-down" className="h-4 w-4 text-[var(--muted)]" />
@@ -212,7 +212,7 @@ export default function Select({ options, value, onChange, placeholder = "Sélec
               exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.12 }}
               onKeyDown={handleKeyDown}
-              className="z-50 overflow-auto rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-1 shadow-xl outline-none"
+              className="z-50 overflow-auto rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1 shadow-xl outline-none backdrop-blur-[var(--panel-blur)]"
               style={floatingStyles}
             >
               {options.map((option, i) => {
@@ -233,7 +233,7 @@ export default function Select({ options, value, onChange, placeholder = "Sélec
                     onClick={() => select(option)}
                     onMouseEnter={() => !option.disabled && setActiveIndex(i)}
                     className={`v8-select__option flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-2.5 py-1.5 text-left text-sm transition-colors ${
-                      active ? "bg-[var(--accent)]/10 text-[var(--accent)]" : "hover:bg-[var(--surface)]"
+                      active ? "bg-[var(--accent)]/10 text-[var(--accent)]" : "hover:bg-[var(--panel-bg)]"
                     } ${selected ? "font-medium" : ""} ${
                       option.disabled ? "cursor-not-allowed opacity-40" : ""
                     }`}

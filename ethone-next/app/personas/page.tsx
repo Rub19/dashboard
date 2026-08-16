@@ -130,7 +130,7 @@ export default function PersonasPage() {
                   />
                   <div className="flex gap-2">
                     <button type="button" onClick={() => saveEdit(p.id)} className="flex-1 rounded-[var(--panel-radius)] bg-[var(--accent)] py-2 text-sm font-semibold text-white">{i18n("save")}</button>
-                    <button type="button" onClick={cancelEdit} className="rounded-[var(--panel-radius)] border border-[var(--border)] px-3 py-2 text-sm text-[var(--muted)] hover:text-[var(--foreground)]">{i18n("cancel")}</button>
+                    <button type="button" onClick={cancelEdit} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-2 text-sm text-[var(--muted)] hover:text-[var(--foreground)]">{i18n("cancel")}</button>
                   </div>
                 </div>
               ) : (

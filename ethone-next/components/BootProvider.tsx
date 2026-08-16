@@ -181,7 +181,7 @@ export default function BootProvider({ children }: { children: ReactNode }) {
             <button
               type="button"
               onClick={continueOffline}
-              className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-5 py-2.5 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--surface-raised)]"
+              className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-5 py-2.5 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
             >
               Continuer hors ligne
             </button>
@@ -217,7 +217,7 @@ export default function BootProvider({ children }: { children: ReactNode }) {
             <button
               type="button"
               onClick={continueOffline}
-              className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-5 py-2.5 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--surface-raised)]"
+              className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-5 py-2.5 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
             >
               Continuer hors ligne
             </button>

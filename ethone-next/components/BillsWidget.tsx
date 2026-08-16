@@ -71,7 +71,7 @@ export default function BillsWidget() {
                 key={b.id}
                 type="button"
                 onClick={() => setSelected(b)}
-                className="flex w-full items-center justify-between rounded-[var(--panel-radius)] px-2 py-1.5 text-sm transition-colors hover:bg-[var(--surface)]"
+                className="flex w-full items-center justify-between rounded-[var(--panel-radius)] px-2 py-1.5 text-sm transition-colors hover:bg-[var(--panel-bg)]"
               >
                 <span className="min-w-0 flex-1 truncate text-left">{b.label}</span>
                 <span className="shrink-0 text-xs text-[var(--muted)]">{formatCurrency(b.amount, b.currency)}</span>
@@ -82,7 +82,7 @@ export default function BillsWidget() {
 
         <Link
           href="/bills"
-          className="mt-4 flex items-center justify-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs font-medium text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
+          className="mt-4 flex items-center justify-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-xs font-medium text-[var(--muted)] transition-colors hover:text-[var(--foreground)] backdrop-blur-[var(--panel-blur)]"
         >
           <Icon name="arrow-right" className="h-3.5 w-3.5" /> {i18n("billsManage")}
         </Link>
@@ -91,15 +91,15 @@ export default function BillsWidget() {
       <BottomSheet open={!!selected} onClose={() => setSelected(null)} title={selected?.label} position="bottom" draggable>
         {selected && (
           <div className="space-y-4 p-1">
-            <div className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-3">
+            <div className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 backdrop-blur-[var(--panel-blur)]">
               <span className="text-sm text-[var(--muted)]">{i18n("due")}</span>
               <span className="font-semibold">{formatDate(getNextDueDate(selected) || selected.dueDate)}</span>
             </div>
-            <div className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-3">
+            <div className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 backdrop-blur-[var(--panel-blur)]">
               <span className="text-sm text-[var(--muted)]">{i18n("amount")}</span>
               <span className="font-semibold">{formatCurrency(selected.amount, selected.currency)}</span>
             </div>
-            <div className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-3">
+            <div className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 backdrop-blur-[var(--panel-blur)]">
               <span className="text-sm text-[var(--muted)]">{i18n("status")}</span>
               <span className={`flex items-center gap-1.5 font-semibold ${selected.paid ? "text-emerald-400" : "text-amber-400"}`}>
                 <Icon name={selected.paid ? "check" : "circle"} className="h-4 w-4" />

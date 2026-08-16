@@ -123,12 +123,12 @@ function ShareContent() {
               </div>
 
               <div className="grid grid-cols-1 gap-2 text-xs text-[var(--muted)] sm:grid-cols-2 sm:gap-4">
-                <div className="rounded-[var(--panel-radius)] bg-[var(--surface)] p-2 text-center">
+                <div className="rounded-[var(--panel-radius)] bg-[var(--panel-bg)] p-2 text-center">
                   <p className="text-lg font-bold text-[var(--foreground)]">{downloads}</p>
                   <p>{i18n("downloads")}</p>
                 </div>
                 {maxDownloads !== undefined && (
-                  <div className="rounded-[var(--panel-radius)] bg-[var(--surface)] p-2 text-center">
+                  <div className="rounded-[var(--panel-radius)] bg-[var(--panel-bg)] p-2 text-center">
                     <p className="text-lg font-bold text-[var(--foreground)]">{maxDownloads}</p>
                     <p>{i18n("maxDownloads")}</p>
                   </div>
@@ -149,7 +149,7 @@ function ShareContent() {
               />
 
               {data.file.brain_summary && (
-                <blockquote className="break-words rounded-[var(--panel-radius)] border-l-4 border-[var(--accent)] bg-[var(--surface)] p-3 text-sm italic text-[var(--muted)]">
+                <blockquote className="break-words rounded-[var(--panel-radius)] border-l-4 border-[var(--accent)] bg-[var(--panel-bg)] p-3 text-sm italic text-[var(--muted)]">
                   {data.file.brain_summary}
                 </blockquote>
               )}
@@ -164,7 +164,7 @@ function ShareContent() {
               <button
                 type="button"
                 onClick={copyLink}
-                className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] py-2.5 text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--surface)]"
+                className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] py-2.5 text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
               >
                 <Icon name="copy" className="h-4 w-4" /> {i18n("copyLink")}
               </button>

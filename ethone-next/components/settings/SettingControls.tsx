@@ -50,8 +50,8 @@ export function ButtonGridControl<T extends string>({
             className={`group relative flex items-center justify-center gap-1.5 rounded-[var(--panel-radius)] border px-2 py-1.5 text-xs font-medium transition-colors duration-150 ${
               active
                 ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)] shadow-sm"
-                : "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--foreground)] hover:border-[var(--accent)]/50 hover:bg-[var(--surface)]"
-            }`}
+                : "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--foreground)] hover:border-[var(--accent)]/50 hover:bg-[var(--panel-bg)]"
+            } backdrop-blur-[var(--panel-blur)]`}
           >
             {active && <Icon name="check" className="h-3 w-3" />}
             <span className="relative z-10">{opt.label}</span>
@@ -86,13 +86,13 @@ export function CheckboxListControl({
             className={`flex items-center gap-2.5 rounded-[var(--panel-radius)] border px-3 py-2 text-left text-sm transition-colors duration-150 ${
               checked
                 ? "border-[var(--accent)]/50 bg-[var(--accent)]/10 text-[var(--foreground)]"
-                : "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted)] hover:border-[var(--accent)]/30 hover:text-[var(--foreground)]"
-            }`}
+                : "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--muted)] hover:border-[var(--accent)]/30 hover:text-[var(--foreground)]"
+            } backdrop-blur-[var(--panel-blur)]`}
           >
             <span
               className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-md border transition-colors ${
-                checked ? "border-[var(--accent)] bg-[var(--accent)]" : "border-[var(--border)] bg-[var(--surface)]"
-              }`}
+                checked ? "border-[var(--accent)] bg-[var(--accent)]" : "border-[var(--panel-border)] bg-[var(--panel-bg)]"
+              } backdrop-blur-[var(--panel-blur)]`}
             >
               {checked && <Icon name="check" className="h-3 w-3 text-white" />}
             </span>
@@ -154,7 +154,7 @@ export function TextControl({
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       autoComplete={autoComplete}
-      className="w-56 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+      className="w-56 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
     />
   );
 }

@@ -30,7 +30,7 @@ export default function PluginsPage() {
             <Card3D key={p.id}>
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--surface-raised)] text-[var(--accent)]">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--panel-bg)] text-[var(--accent)]">
                     <Icon name={p.icon} className="h-5 w-5" />
                   </span>
                   <div>
@@ -45,7 +45,7 @@ export default function PluginsPage() {
                     type="button"
                     aria-label={i18n("configure")}
                     onClick={() => router.push("/connections/")}
-                    className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+                    className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--panel-bg)]"
                   >
                     <Icon name="plug" className="h-4 w-4" />
                   </button>
@@ -56,7 +56,7 @@ export default function PluginsPage() {
                       openWindow(p.label, p.route);
                       success(i18n("open"));
                     }}
-                    className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+                    className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--panel-bg)]"
                   >
                     <Icon name="maximize-2" className="h-4 w-4" />
                   </button>

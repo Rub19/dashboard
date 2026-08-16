@@ -34,7 +34,7 @@ function Kda({ kills, deaths, assists }: { kills?: number; deaths?: number; assi
 
 function StatBadge({ label, value, color = "text-[var(--muted)]" }: { label: string; value?: number | string; color?: string }) {
   if (value === undefined || value === null || value === "") return null;
-  return <span className="rounded bg-[var(--surface)] px-1.5 py-0.5 text-[10px] text-[var(--muted)]"><span className={`font-semibold ${color}`}>{value}</span> {label}</span>;
+  return <span className="rounded bg-[var(--panel-bg)] px-1.5 py-0.5 text-[10px] text-[var(--muted)]"><span className={`font-semibold ${color}`}>{value}</span> {label}</span>;
 }
 
 function MatchCard({ match, game }: { match: Record<string, string | number | undefined>; game: TrackerGame }) {
@@ -72,7 +72,7 @@ function MatchCard({ match, game }: { match: Record<string, string | number | un
             <button
               type="button"
               onClick={() => setOpen((v) => !v)}
-              className="rounded-full p-1.5 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+              className="rounded-full p-1.5 text-[var(--muted)] hover:bg-[var(--panel-bg)]"
               aria-label={i18n("scoreboard")}
             >
               <Icon name={open ? "chevron-up" : "chevron-down"} className="h-4 w-4" />
@@ -81,7 +81,7 @@ function MatchCard({ match, game }: { match: Record<string, string | number | un
         </div>
 
         {open && hasScoreboard && (
-          <div className="space-y-3 rounded-[var(--panel-radius)] bg-[var(--surface)] p-2 text-xs">
+          <div className="space-y-3 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] p-2 text-xs">
             {game.roundsWon !== undefined && game.roundsLost !== undefined && (
               <div className="flex items-center justify-between font-semibold">
                 <span>{i18n("roundsWon")}: {game.roundsWon}</span>
@@ -97,14 +97,14 @@ function MatchCard({ match, game }: { match: Record<string, string | number | un
                     return (
                       <div
                         key={gi}
-                        className="divide-y divide-[var(--border)] rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)]"
+                        className="divide-y divide-[var(--border)] rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
                       >
                         {group.map((p, pi) => (
                           <div key={pi} className="space-y-1 px-2 py-1.5">
                             <div className="flex items-center gap-2">
                               <span className="min-w-0 flex-1 truncate font-medium">{p.name}</span>
                               {partySize > 1 && <PartyBadge partySize={partySize} />}
-                              {p.rank && <span className="rounded bg-[var(--surface)] px-1.5 text-[var(--muted)]">{p.rank}</span>}
+                              {p.rank && <span className="rounded bg-[var(--panel-bg)] px-1.5 text-[var(--muted)]">{p.rank}</span>}
                               <span className="ml-auto shrink-0 font-mono text-[var(--foreground)]">
                                 {p.kills ?? "-"}/{p.deaths ?? "-"}/{p.assists ?? "-"}
                               </span>
@@ -190,7 +190,7 @@ export default function MatchesPage() {
               }
             }}
             disabled={syncing}
-            className="flex shrink-0 items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--surface-raised)] px-3 py-2 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--accent)]/20 disabled:opacity-50"
+            className="flex shrink-0 items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--accent)]/20 disabled:opacity-50"
           >
             <Icon name="refresh-cw" className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
             {i18n("sync")}
@@ -220,7 +220,7 @@ export default function MatchesPage() {
                 value={apexIdentifier}
                 onChange={(e) => setApexIdentifier(e.target.value)}
                 placeholder={i18n("liveTrackerApexIdentifier")}
-                className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)]"
+                className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
               />
             </div>
             <button
@@ -241,7 +241,7 @@ export default function MatchesPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={i18n("liveTrackerRiotName")}
-                className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)]"
+                className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
               />
             </div>
             <div className="min-w-0 flex-1">
@@ -252,7 +252,7 @@ export default function MatchesPage() {
                 value={tag}
                 onChange={(e) => setTag(e.target.value)}
                 placeholder="#1234"
-                className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)]"
+                className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
               />
             </div>
             <button

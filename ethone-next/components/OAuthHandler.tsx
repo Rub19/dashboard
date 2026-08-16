@@ -45,7 +45,7 @@ export default function OAuthHandler() {
   if (!status) return null;
 
   return (
-    <div className="fixed right-4 top-14 z-[80] rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-2 text-sm shadow-xl">
+    <div className="fixed right-4 top-14 z-[80] rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 py-2 text-sm shadow-xl backdrop-blur-[var(--panel-blur)]">
       {status}
     </div>
   );

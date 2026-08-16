@@ -83,7 +83,7 @@ export default function TeamPage() {
       case "revoked":
         return "bg-red-500/10 text-red-400";
       default:
-        return "bg-[var(--surface-raised)] text-[var(--muted)]";
+        return "bg-[var(--panel-bg)] text-[var(--muted)]";
     }
   }
 
@@ -177,7 +177,7 @@ export default function TeamPage() {
             <Card3D key={m.id}>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--surface-raised)] text-[var(--muted)]">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--panel-bg)] text-[var(--muted)]">
                     <Icon name="users" className="h-5 w-5" />
                   </span>
                   <div className="min-w-0">

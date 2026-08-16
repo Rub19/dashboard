@@ -68,7 +68,7 @@ export default function MailAnalyticsPanel({
             className={`rounded-[var(--panel-radius)] px-3 py-1.5 text-xs font-medium transition-colors ${
               period === p
                 ? "bg-[var(--accent)] text-white"
-                : "bg-[var(--surface-raised)] text-[var(--muted)] hover:text-[var(--foreground)]"
+                : "bg-[var(--panel-bg)] text-[var(--muted)] hover:text-[var(--foreground)]"
             }`}
           >
             {p} {i18n("days")}
@@ -78,7 +78,7 @@ export default function MailAnalyticsPanel({
 
       {loading ? (
         <div className="flex items-center gap-2 text-[var(--muted)]">
-          <span className="h-4 w-4 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--accent)]" />
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-[var(--panel-border)] border-t-[var(--accent)]" />
           {i18n("loading")}
         </div>
       ) : (
@@ -138,7 +138,7 @@ export default function MailAnalyticsPanel({
                         <span className="truncate">{s.email}</span>
                         <span className="text-[var(--muted)]">{s.count}</span>
                       </div>
-                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--panel-bg)]">
                         <div className="h-full rounded-full bg-[var(--accent)]" style={{ width: `${pct}%` }} />
                       </div>
                     </div>
@@ -160,7 +160,7 @@ export default function MailAnalyticsPanel({
                         <span className="truncate">{l.label}</span>
                         <span className="text-[var(--muted)]">{l.count}</span>
                       </div>
-                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--panel-bg)]">
                         <div className="h-full rounded-full bg-emerald-400" style={{ width: `${pct}%` }} />
                       </div>
                     </div>

@@ -106,7 +106,7 @@ export default function LanguageSwitcher() {
         aria-label={i18n("language")}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex h-10 items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-raised)] px-3 text-sm font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+        className="flex h-10 items-center gap-2 rounded-full border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 text-sm font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
       >
         <Icon name="globe" className="h-4 w-4" />
         <Flag code={current} className="h-4 w-5" />
@@ -116,7 +116,7 @@ export default function LanguageSwitcher() {
       {open && (
         <div
           role="listbox"
-          className="absolute right-0 top-full z-50 mt-2 min-w-[11rem] overflow-hidden rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-1.5 shadow-2xl backdrop-blur-xl"
+          className="absolute right-0 top-full z-50 mt-2 min-w-[11rem] overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1.5 shadow-2xl backdrop-blur-xl"
         >
           {LANGUAGES.map((lang) => {
             const active = lang === current;
@@ -130,7 +130,7 @@ export default function LanguageSwitcher() {
                 className={`flex w-full items-center gap-2.5 rounded-[var(--panel-radius)] px-3 py-2 text-sm font-medium transition-colors ${
                   active
                     ? "bg-[var(--accent)] text-white"
-                    : "text-[var(--foreground)] hover:bg-[var(--surface-raised)]"
+                    : "text-[var(--foreground)] hover:bg-[var(--panel-bg)]"
                 }`}
               >
                 <Flag code={lang} className="h-4 w-5" />

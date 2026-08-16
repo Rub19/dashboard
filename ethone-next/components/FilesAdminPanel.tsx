@@ -173,7 +173,7 @@ export default function FilesAdminPanel() {
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-1">
+      <div className="flex gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1 backdrop-blur-[var(--panel-blur)]">
         {tabs.map((t) => (
           <button
             key={t.id}
@@ -235,7 +235,7 @@ export default function FilesAdminPanel() {
               <span className="text-[var(--muted)]">{i18n("storageUsed")}</span>
               <span className="font-medium">{dashboard ? formatBytes(dashboard.totalSize) : "-"} / {formatBytes(STORAGE_CAP)}</span>
             </div>
-            <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
+            <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[var(--panel-bg)]">
               <div
                 className={`h-full rounded-full ${usagePct > 90 ? "bg-red-400" : usagePct > 70 ? "bg-amber-400" : "bg-emerald-400"}`}
                 style={{ width: `${usagePct}%` }}
@@ -280,7 +280,7 @@ export default function FilesAdminPanel() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={i18n("search")}
-              className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+              className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
             />
             <Select
               value={visibility}

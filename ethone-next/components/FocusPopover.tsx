@@ -118,7 +118,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
             exit={{ opacity: 0, y: -8, scale: 0.96 }}
             transition={{ duration: 0.15, ease: "easeOut" as const }}
             style={floatingStyles}
-            className="z-[90] w-72 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-4 shadow-2xl outline-none"
+            className="z-[90] w-72 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-2xl outline-none backdrop-blur-[var(--panel-blur)]"
             role="dialog"
             aria-modal="true"
             aria-label={i18n("focus")}
@@ -133,7 +133,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
                   <button
                     type="button"
                     onClick={() => (state.paused ? resume() : pause())}
-                    className="rounded-full bg-[var(--surface)] p-2 transition-colors hover:bg-[var(--accent)]/10"
+                    className="rounded-full bg-[var(--panel-bg)] p-2 transition-colors hover:bg-[var(--accent)]/10"
                     aria-label={state.paused ? i18n("resume") : i18n("pause")}
                   >
                     <Icon name={state.paused ? "play" : "pause"} className="h-4 w-4" />
@@ -143,7 +143,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
                   <button
                     type="button"
                     onClick={stop}
-                    className="rounded-full bg-[var(--surface)] p-2 transition-colors hover:bg-red-500/10"
+                    className="rounded-full bg-[var(--panel-bg)] p-2 transition-colors hover:bg-red-500/10"
                     aria-label={i18n("stop")}
                   >
                     <Icon name="square" className="h-4 w-4" />
@@ -153,7 +153,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
                   <button
                     type="button"
                     onClick={skip}
-                    className="rounded-full bg-[var(--surface)] p-2 transition-colors hover:bg-[var(--accent)]/10"
+                    className="rounded-full bg-[var(--panel-bg)] p-2 transition-colors hover:bg-[var(--accent)]/10"
                     aria-label={i18n("skip")}
                   >
                     <Icon name="skipForward" className="h-4 w-4" />
@@ -163,7 +163,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
             </div>
 
             {state.phase !== "idle" && (
-              <div className="mb-4 h-2 w-full overflow-hidden rounded-full bg-[var(--surface)]">
+              <div className="mb-4 h-2 w-full overflow-hidden rounded-full bg-[var(--panel-bg)]">
                 <div className="h-full rounded-full bg-[var(--accent)] transition-colors duration-150" style={{ width: `${progress}%` }} />
               </div>
             )}
@@ -178,7 +178,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
                     start(p.id);
                     onClose();
                   }}
-                  className="flex flex-col items-center gap-1 rounded-[var(--panel-radius)] bg-[var(--surface)] p-2 text-center text-xs transition-colors hover:bg-[var(--accent)]/10"
+                  className="flex flex-col items-center gap-1 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] p-2 text-center text-xs transition-colors hover:bg-[var(--accent)]/10"
                 >
                   <Icon name={p.icon} className={`h-4 w-4 ${p.color}`} />
                   <span className="font-medium">{i18n(p.id)}</span>

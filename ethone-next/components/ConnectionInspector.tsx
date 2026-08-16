@@ -204,9 +204,9 @@ export default function ConnectionInspector({
       aria-modal="true"
       onClick={onClose}
     >
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-[var(--panel-bg)]/60 backdrop-blur-sm" />
       <div
-        className="relative z-10 w-full max-w-2xl max-h-[80vh] overflow-y-auto rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-2xl"
+        className="relative z-10 w-full max-w-2xl max-h-[80vh] overflow-y-auto rounded-3xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-5 shadow-2xl backdrop-blur-[var(--panel-blur)]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">
@@ -219,14 +219,14 @@ export default function ConnectionInspector({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+            className="rounded-full p-2 text-[var(--muted)] hover:bg-[var(--panel-bg)]"
             aria-label={i18n("close")}
           >
             <Icon name="x" className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="mb-4 flex gap-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-1">
+        <div className="mb-4 flex gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1 backdrop-blur-[var(--panel-blur)]">
           {(["overview", "setup", "methods", "diagnostics"] as Tab[]).map((t) => (
             <button
               key={t}
@@ -279,7 +279,7 @@ export default function ConnectionInspector({
               <p className="mb-2 font-semibold">{i18n("availableRoutes")}</p>
               <div className="space-y-2">
                 {methods.map((m, i) => (
-                  <div key={i} className="rounded-[var(--panel-radius)] bg-[var(--surface-raised)] px-3 py-2 font-mono text-xs">
+                  <div key={i} className="rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 font-mono text-xs">
                     {m}
                   </div>
                 ))}

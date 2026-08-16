@@ -123,7 +123,7 @@ export default function SpacesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{i18n("spacesTitle")}</h1>
-        <span className="rounded-full bg-[var(--surface-raised)] px-3 py-1 text-sm text-[var(--muted)]">
+        <span className="rounded-full bg-[var(--panel-bg)] px-3 py-1 text-sm text-[var(--muted)]">
           {spaces.length} {spaces.length > 1 ? i18n("opens") : i18n("open")}
         </span>
       </div>
@@ -141,8 +141,8 @@ export default function SpacesPage() {
                 className={`relative rounded-[var(--panel-radius)] border p-3 text-left transition-colors duration-150 ${
                   isActive
                     ? `border-[var(--accent)] bg-[var(--accent)]/5 ring-1 ${w.accent.ring}`
-                    : "border-[var(--border)] bg-[var(--surface-raised)] hover:border-[var(--accent)]"
-                }`}
+                    : "border-[var(--panel-border)] bg-[var(--panel-bg)] hover:border-[var(--accent)]"
+                } backdrop-blur-[var(--panel-blur)]`}
               >
                 <div className="flex items-center gap-2">
                   <span className={`flex h-8 w-8 items-center justify-center rounded-[var(--panel-radius)] ${w.accent.icon}`}>
@@ -215,7 +215,7 @@ export default function SpacesPage() {
               onKeyDown={(e) => e.key === "Enter" && add()}
               aria-label={i18n("create")}
               placeholder={i18n("create")}
-              className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+              className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
             />
             <button
               type="button"
@@ -267,7 +267,7 @@ export default function SpacesPage() {
                     {workspace.steps.map((step, i) => (
                       <span
                         key={i}
-                        className="rounded-[var(--panel-radius)] bg-[var(--surface-raised)] px-2 py-0.5 text-[10px] text-[var(--foreground)]"
+                        className="rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--foreground)]"
                       >
                         <b className="mr-1 text-[var(--accent)]">{i + 1}</b>
                         {step}
@@ -276,11 +276,11 @@ export default function SpacesPage() {
                   </div>
                 )}
 
-                <div className="flex items-center gap-2 border-t border-[var(--border)] pt-2">
+                <div className="flex items-center gap-2 border-t border-[var(--panel-border)] pt-2">
                   {(workspace?.widgets ?? ["notes", "tasks", "calendar", "brain"]).map((widgetId) => (
                     <span
                       key={widgetId}
-                      className="flex h-7 w-7 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--surface-raised)] text-[var(--muted)]"
+                      className="flex h-7 w-7 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--panel-bg)] text-[var(--muted)]"
                       title={widgetId}
                     >
                       <Icon name={WIDGET_ICONS[widgetId]} className="h-3.5 w-3.5" />

@@ -55,7 +55,7 @@ export default function SecurityPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">{i18n("securityTitle")}</h1>
-        <button type="button" onClick={reload} aria-label={i18n("refresh")} className="rounded-[var(--panel-radius)] border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"><Icon name="refresh-cw" className="h-4 w-4" /></button>
+        <button type="button" onClick={reload} aria-label={i18n("refresh")} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-2 text-[var(--muted)] hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"><Icon name="refresh-cw" className="h-4 w-4" /></button>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -106,7 +106,7 @@ export default function SecurityPage() {
             onChange={(e) => setPasskeyName(e.target.value)}
             placeholder={i18n("passkeyName")}
             aria-label={i18n("passkeyName")}
-            className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm"
+            className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]"
           />
           <button
             type="button"
@@ -133,7 +133,7 @@ export default function SecurityPage() {
                       onChange={(e) => setNewName(e.target.value)}
                       onKeyDown={(e) => { if (e.key === "Enter") handleRename(p.id); }}
                       aria-label={i18n("passkeyName")}
-                      className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-sm"
+                      className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-1 text-sm backdrop-blur-[var(--panel-blur)]"
                     />
                   ) : (
                     <p className="font-medium">{p.name}</p>
@@ -142,11 +142,11 @@ export default function SecurityPage() {
                 </div>
                 <div className="flex items-center gap-1">
                   {renaming === p.id ? (
-                    <button type="button" onClick={() => handleRename(p.id)} className="rounded p-1 text-emerald-400 hover:bg-[var(--surface-raised)]"><Icon name="check" className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => handleRename(p.id)} className="rounded p-1 text-emerald-400 hover:bg-[var(--panel-bg)]"><Icon name="check" className="h-4 w-4" /></button>
                   ) : (
-                    <button type="button" onClick={() => { setRenaming(p.id); setNewName(p.name); }} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface-raised)]"><Icon name="pencil" className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => { setRenaming(p.id); setNewName(p.name); }} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--panel-bg)]"><Icon name="pencil" className="h-4 w-4" /></button>
                   )}
-                  <button type="button" onClick={() => revokePasskey(p.id).then(() => success(i18n("removed"))).catch((err) => showError(String(err)))} className="rounded p-1 text-red-400 hover:bg-[var(--surface-raised)]"><Icon name="trash-2" className="h-4 w-4" /></button>
+                  <button type="button" onClick={() => revokePasskey(p.id).then(() => success(i18n("removed"))).catch((err) => showError(String(err)))} className="rounded p-1 text-red-400 hover:bg-[var(--panel-bg)]"><Icon name="trash-2" className="h-4 w-4" /></button>
                 </div>
               </div>
             </Card3D>
@@ -167,10 +167,10 @@ export default function SecurityPage() {
                   <p className="text-xs text-[var(--muted)]">{i18n(d.trusted ? "trusted" : "untrusted")} — {formatDate(d.last_seen_at)}</p>
                 </div>
                 <div className="flex items-center gap-1">
-                  <button type="button" onClick={() => trustDevice(d.id, !d.trusted).then(() => success(i18n("saved"))).catch((err) => showError(String(err)))} className="rounded border border-[var(--border)] px-2 py-1 text-xs hover:bg-[var(--surface-raised)]">
+                  <button type="button" onClick={() => trustDevice(d.id, !d.trusted).then(() => success(i18n("saved"))).catch((err) => showError(String(err)))} className="rounded border border-[var(--panel-border)] px-2 py-1 text-xs hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]">
                     {i18n(d.trusted ? "revoke" : "trust")}
                   </button>
-                  <button type="button" onClick={() => removeDevice(d.id).then(() => success(i18n("removed"))).catch((err) => showError(String(err)))} className="rounded p-1 text-red-400 hover:bg-[var(--surface-raised)]"><Icon name="trash-2" className="h-4 w-4" /></button>
+                  <button type="button" onClick={() => removeDevice(d.id).then(() => success(i18n("removed"))).catch((err) => showError(String(err)))} className="rounded p-1 text-red-400 hover:bg-[var(--panel-bg)]"><Icon name="trash-2" className="h-4 w-4" /></button>
                 </div>
               </div>
             </Card3D>
@@ -192,7 +192,7 @@ export default function SecurityPage() {
                   <p className="truncate font-medium">{event.kind || event.action || i18n("event")}</p>
                   <p className="truncate text-xs text-[var(--muted)]">{formatDate(event.created_at)}</p>
                 </div>
-                <span className="shrink-0 rounded-full bg-[var(--surface-raised)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
+                <span className="shrink-0 rounded-full bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
                   {event.ip || event.status || "-"}
                 </span>
               </div>

@@ -100,9 +100,9 @@ function ActionButton({ icon, label, active, onClick }: ActionButtonProps) {
     <button
       type="button"
       onClick={onClick}
-      className={`flex flex-col items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent)] ${
+      className={`flex flex-col items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent)] ${
         active ? "border-[var(--accent)] text-[var(--accent)]" : ""
-      }`}
+      } backdrop-blur-[var(--panel-blur)]`}
     >
       <Icon name={icon} className="h-4 w-4" />
       {label}
@@ -196,7 +196,7 @@ export default function DockControlCenter({
                     type="button"
                     onClick={onClose}
                     aria-label={i18n("close")}
-                    className="rounded p-1 text-[var(--muted)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
+                    className="rounded p-1 text-[var(--muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)]"
                   >
                     <Icon name="close" className="h-4 w-4" />
                   </button>
@@ -212,9 +212,9 @@ export default function DockControlCenter({
                         key={id}
                         type="button"
                         onClick={() => update({ uiAnimations: id })}
-                        className={`rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-1.5 text-[10px] font-medium transition-colors hover:border-[var(--accent)] ${
+                        className={`rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-1.5 text-[10px] font-medium transition-colors hover:border-[var(--accent)] ${
                           settings.uiAnimations === id ? "border-[var(--accent)] text-[var(--accent)]" : ""
-                        }`}
+                        } backdrop-blur-[var(--panel-blur)]`}
                       >
                         {i18n(`uiAnimations${id.charAt(0).toUpperCase() + id.slice(1)}`)}
                       </button>
@@ -265,9 +265,9 @@ export default function DockControlCenter({
                         key={pack}
                         type="button"
                         onClick={() => update({ soundPack: pack })}
-                        className={`flex flex-col items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent)] ${
+                        className={`flex flex-col items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent)] ${
                           settings.soundPack === pack ? "border-[var(--accent)] text-[var(--accent)]" : ""
-                        }`}
+                        } backdrop-blur-[var(--panel-blur)]`}
                       >
                         <Icon name={PACK_ICONS[pack] || "music"} className="h-4 w-4" />
                         {i18n(`soundPack${pack.charAt(0).toUpperCase() + pack.slice(1)}`)}
@@ -293,9 +293,9 @@ export default function DockControlCenter({
                         key={id}
                         type="button"
                         onClick={() => setAmbience(id)}
-                        className={`flex flex-col items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent)] ${
+                        className={`flex flex-col items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent)] ${
                           ambience === id ? "border-[var(--accent)] text-[var(--accent)]" : ""
-                        }`}
+                        } backdrop-blur-[var(--panel-blur)]`}
                       >
                         <Icon name={AMBIENCE_ICONS[id] || "disc"} className="h-4 w-4" />
                         {i18n(`ambience${id.charAt(0).toUpperCase() + id.slice(1)}`)}

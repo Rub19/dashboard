@@ -64,8 +64,8 @@ export default function EmptyState({
       className={`v8-empty-state flex flex-col items-center justify-center text-center ${compact ? "v8-empty-state--compact gap-2 p-4" : "gap-4 p-6"} ${inline ? "v8-empty-state--inline" : ""} ${className}`}
     >
       <div className="v8-empty-state__visual relative" aria-hidden="true">
-        <span className="v8-empty-state__frame v8-empty-state__frame--back absolute inset-0 rounded-[var(--panel-radius)] bg-[var(--surface-raised)] opacity-60" />
-        <span className="v8-empty-state__frame v8-empty-state__frame--front relative z-10 flex items-center justify-center rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-sm">
+        <span className="v8-empty-state__frame v8-empty-state__frame--back absolute inset-0 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] opacity-60" />
+        <span className="v8-empty-state__frame v8-empty-state__frame--front relative z-10 flex items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-sm backdrop-blur-[var(--panel-blur)]">
           <Icon name={resolvedIcon} className="v8-empty-state__glyph h-8 w-8 text-[var(--accent)]" />
         </span>
       </div>

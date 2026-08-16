@@ -101,7 +101,7 @@ function Avatar({
         height={wh}
         unoptimized
         onError={() => setImgError(true)}
-        className={`${className} object-cover border border-[var(--border)]`}
+        className={`${className} object-cover border border-[var(--panel-border)]`}
       />
     );
   }
@@ -141,9 +141,9 @@ function QuickAction({
       aria-label={label}
       aria-pressed={active}
       data-tooltip={label}
-      className={`flex h-8 w-8 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)] ${
+      className={`flex h-8 w-8 items-center justify-center rounded-full border border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:bg-[var(--panel-bg)] ${
         active ? "border-[var(--accent)] text-[var(--accent)]" : ""
-      }`}
+      } backdrop-blur-[var(--panel-blur)]`}
     >
       <Icon name={icon} className="h-4 w-4" />
     </button>
@@ -169,9 +169,9 @@ function ActionButton({
       onClick={onClick}
       disabled={disabled}
       title={label}
-      className={`flex flex-col items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-2 text-[10px] font-medium transition-colors hover:bg-[var(--surface-raised)] disabled:opacity-50 ${
+      className={`flex flex-col items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-[10px] font-medium transition-colors hover:bg-[var(--panel-bg)] disabled:opacity-50 ${
         danger ? "text-red-400 hover:bg-red-500/10" : "text-[var(--foreground)]"
-      }`}
+      } backdrop-blur-[var(--panel-blur)]`}
     >
       <Icon name={icon} className="h-4 w-4" />
       <span className="w-full truncate">{label}</span>
@@ -383,7 +383,7 @@ export default function ProfileDropdown() {
         type="button"
         onClick={() => setOpen(!open)}
         disabled={pending}
-        className="flex h-10 items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-2 text-[var(--foreground)] transition-colors hover:bg-[var(--surface-raised)]"
+        className="flex h-10 items-center gap-2 rounded-full border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 text-[var(--foreground)] transition-colors hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
         aria-label={i18n("profile")}
         aria-expanded={open}
         aria-haspopup="true"
@@ -408,11 +408,11 @@ export default function ProfileDropdown() {
             exit={{ opacity: 0, y: -12, scale: 0.95 }}
             transition={{ duration: 0.15, ease: "easeOut" as const }}
             style={{ originX: 1, originY: 0 }}
-            className="absolute right-0 top-full z-50 mt-2 w-80 max-w-[calc(100vw-1rem)] overflow-hidden rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] shadow-2xl"
+            className="absolute right-0 top-full z-50 mt-2 w-80 max-w-[calc(100vw-1rem)] overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-2xl backdrop-blur-[var(--panel-blur)]"
           >
             <div className="max-h-[80vh] overflow-y-auto p-0">
               {/* Breadcrumb context */}
-              <div className="border-b border-[var(--border)] p-3">
+              <div className="border-b border-[var(--panel-border)] p-3">
                 <nav
                   aria-label={i18n("v8BreadcrumbAria")}
                   className="mb-2 flex flex-wrap items-center gap-1 text-[10px] text-[var(--muted)]"
@@ -444,20 +444,20 @@ export default function ProfileDropdown() {
                 </div>
 
                 <div className="mt-2 flex flex-wrap gap-1.5 text-[10px]">
-                  <span className="rounded-md border border-[var(--border)] bg-[var(--surface)] px-1.5 py-0.5">
+                  <span className="rounded-md border border-[var(--panel-border)] bg-[var(--panel-bg)] px-1.5 py-0.5 backdrop-blur-[var(--panel-blur)]">
                     {i18n("v8Workspace")}: {workspaceLabel}
                   </span>
-                  <span className="rounded-md border border-[var(--border)] bg-[var(--surface)] px-1.5 py-0.5">
+                  <span className="rounded-md border border-[var(--panel-border)] bg-[var(--panel-bg)] px-1.5 py-0.5 backdrop-blur-[var(--panel-blur)]">
                     {i18n("v8DataSpace")}: {spaceLabel}
                   </span>
-                  <span className="rounded-md border border-[var(--border)] bg-[var(--surface)] px-1.5 py-0.5">
+                  <span className="rounded-md border border-[var(--panel-border)] bg-[var(--panel-bg)] px-1.5 py-0.5 backdrop-blur-[var(--panel-blur)]">
                     {i18n("v8Mode")}: {i18n(currentFlow) || currentFlow}
                   </span>
                 </div>
               </div>
 
               {/* Quick actions topbar */}
-              <div className="border-b border-[var(--border)] p-3">
+              <div className="border-b border-[var(--panel-border)] p-3">
                 <SectionTitle>{i18n("v8QuickActions")}</SectionTitle>
                 <div className="flex items-center justify-between gap-2">
                   <QuickAction
@@ -478,7 +478,7 @@ export default function ProfileDropdown() {
               </div>
 
               {/* Workspace switch */}
-              <div className="border-b border-[var(--border)] p-3">
+              <div className="border-b border-[var(--panel-border)] p-3">
                 <SectionTitle>{i18n("switchWorkspace")}</SectionTitle>
                 <div className="grid grid-cols-2 gap-1.5">
                   {WORKSPACES.map((w) => {
@@ -491,8 +491,8 @@ export default function ProfileDropdown() {
                         className={`flex items-center gap-2 rounded-[var(--panel-radius)] border px-2 py-1.5 text-left text-xs transition-colors ${
                           isActive
                             ? `border-[var(--accent)] bg-[var(--accent)]/5 ring-1 ${w.ring}`
-                            : "border-[var(--border)] bg-[var(--surface)] hover:border-[var(--accent)] hover:bg-[var(--surface-raised)]"
-                        }`}
+                            : "border-[var(--panel-border)] bg-[var(--panel-bg)] hover:border-[var(--accent)] hover:bg-[var(--panel-bg)]"
+                        } backdrop-blur-[var(--panel-blur)]`}
                       >
                         <Icon name={w.icon} className="h-4 w-4" />
                         <span className="font-medium">{i18n(w.id)}</span>
@@ -504,7 +504,7 @@ export default function ProfileDropdown() {
 
               {/* Space switch */}
               {userSpaces.length > 0 && (
-                <div className="border-b border-[var(--border)] p-3">
+                <div className="border-b border-[var(--panel-border)] p-3">
                   <SectionTitle>{i18n("mySpaces")}</SectionTitle>
                   <div className="flex flex-wrap gap-1.5">
                     {userSpaces.slice(0, 8).map((s) => {
@@ -517,8 +517,8 @@ export default function ProfileDropdown() {
                           className={`rounded-md border px-2 py-1 text-xs transition-colors ${
                             isActive
                               ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
-                              : "border-[var(--border)] bg-[var(--surface)] hover:border-[var(--accent)] hover:bg-[var(--surface-raised)]"
-                          }`}
+                              : "border-[var(--panel-border)] bg-[var(--panel-bg)] hover:border-[var(--accent)] hover:bg-[var(--panel-bg)]"
+                          } backdrop-blur-[var(--panel-blur)]`}
                         >
                           {s.label}
                         </button>
@@ -529,7 +529,7 @@ export default function ProfileDropdown() {
               )}
 
               {/* Multi-profile selection */}
-              <div className="border-b border-[var(--border)] p-3">
+              <div className="border-b border-[var(--panel-border)] p-3">
                 <div className="mb-2 flex items-center justify-between">
                   <SectionTitle>{i18n("manageProfiles")}</SectionTitle>
                   {loaded && (
@@ -557,8 +557,8 @@ export default function ProfileDropdown() {
                           onClick={() => handleSelectProfile(p)}
                           className={`flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-2 py-1.5 text-left text-sm transition-colors ${
                             isActive
-                              ? "bg-[var(--surface-raised)] ring-1 ring-[var(--accent)]"
-                              : "hover:bg-[var(--surface)]"
+                              ? "bg-[var(--panel-bg)] ring-1 ring-[var(--accent)]"
+                              : "hover:bg-[var(--panel-bg)]"
                           }`}
                         >
                           <Avatar
@@ -586,7 +586,7 @@ export default function ProfileDropdown() {
 
               {/* Profile actions */}
               {activeProfile && (
-                <div className="border-b border-[var(--border)] p-3">
+                <div className="border-b border-[var(--panel-border)] p-3">
                   <SectionTitle>{i18n("profileActions")}</SectionTitle>
                   <div className="grid grid-cols-4 gap-1.5">
                     <ActionButton
@@ -625,7 +625,7 @@ export default function ProfileDropdown() {
               )}
 
               {/* Team quick access */}
-              <div className="border-b border-[var(--border)] p-3">
+              <div className="border-b border-[var(--panel-border)] p-3">
                 <div className="mb-2 flex items-center justify-between">
                   <SectionTitle>{i18n("teamTitle")}</SectionTitle>
                   <button
@@ -654,7 +654,7 @@ export default function ProfileDropdown() {
                         </div>
                       ))}
                       {extraMembers > 0 && (
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-[var(--surface-raised)] bg-[var(--surface)] text-[10px] font-medium text-[var(--muted)]">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-[var(--surface-raised)] bg-[var(--panel-bg)] text-[10px] font-medium text-[var(--muted)]">
                           +{extraMembers}
                         </div>
                       )}
@@ -674,7 +674,7 @@ export default function ProfileDropdown() {
                     setOpen(false);
                     router.push("/profile");
                   }}
-                  className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--surface)]"
+                  className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--panel-bg)]"
                 >
                   <Icon name="user" className="h-4 w-4 text-[var(--muted)]" />
                   {i18n("myProfile")}
@@ -685,7 +685,7 @@ export default function ProfileDropdown() {
                     setOpen(false);
                     router.push("/settings");
                   }}
-                  className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--surface)]"
+                  className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--panel-bg)]"
                 >
                   <Icon name="settings" className="h-4 w-4 text-[var(--muted)]" />
                   {i18n("settings")}
@@ -696,7 +696,7 @@ export default function ProfileDropdown() {
                     setOpen(false);
                     router.push("/changelog");
                   }}
-                  className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--surface)]"
+                  className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--panel-bg)]"
                 >
                   <Icon name="sparkles" className="h-4 w-4 text-[var(--muted)]" />
                   {i18n("changelog")}

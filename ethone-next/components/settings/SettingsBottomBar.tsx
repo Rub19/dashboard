@@ -17,13 +17,13 @@ export default function SettingsBottomBar() {
           exit={{ opacity: 0, y: 40 }}
           className="fixed inset-x-0 bottom-20 z-40 mx-auto w-[calc(100%-3rem)] max-w-2xl"
         >
-          <div className="flex items-center justify-between gap-4 rounded-[var(--panel-radius)] border border-[var(--accent)]/30 bg-[var(--surface)]/95 px-4 py-3 shadow-2xl backdrop-blur-xl">
+          <div className="flex items-center justify-between gap-4 rounded-[var(--panel-radius)] border border-[var(--accent)]/30 bg-[var(--panel-bg)]/95 px-4 py-3 shadow-2xl backdrop-blur-xl">
             <span className="text-sm text-[var(--foreground)]">{i18n("unsavedChanges")}</span>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={cancelExplicit}
-                className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-transparent px-4 py-2 text-sm font-medium transition-colors hover:bg-[var(--surface-raised)]"
+                className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-transparent px-4 py-2 text-sm font-medium transition-colors hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
               >
                 {i18n("cancel")}
               </button>

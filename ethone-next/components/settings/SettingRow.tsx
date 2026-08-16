@@ -54,7 +54,7 @@ export default function SettingRow({
     <div
       data-setting-key={settingKey}
       data-setting-label={label}
-      className={`relative border-b border-[var(--border)]/50 py-3 transition-opacity ${hidden ? "hidden" : ""}`}
+      className={`relative border-b border-[var(--panel-border)]/50 py-3 transition-opacity ${hidden ? "hidden" : ""}`}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex min-w-0 flex-1 flex-col">

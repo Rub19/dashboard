@@ -206,8 +206,8 @@ export default function AppearanceSettings() {
                 className={`group relative overflow-hidden rounded-[var(--panel-radius)] border p-3 text-left transition-colors duration-150 ${
                   selected
                     ? "border-[var(--accent)] bg-[var(--accent)]/10 ring-2 ring-[var(--accent)]"
-                    : "border-[var(--border)] bg-[var(--surface-raised)] hover:border-[var(--accent)]/50"
-                }`}
+                    : "border-[var(--panel-border)] bg-[var(--panel-bg)] hover:border-[var(--accent)]/50"
+                } backdrop-blur-[var(--panel-blur)]`}
               >
                 <div
                   className="mb-3 h-16 w-full overflow-hidden rounded-[var(--panel-radius)] border shadow-inner"
@@ -238,7 +238,7 @@ export default function AppearanceSettings() {
           <button
             type="button"
             onClick={() => setMoreThemesOpen(!moreThemesOpen)}
-            className="flex w-full items-center justify-between rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-xs font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)]/50"
+            className="flex w-full items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-xs font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)]/50 backdrop-blur-[var(--panel-blur)]"
           >
             <span className="flex items-center gap-2">
               <Palette className="h-4 w-4 text-[var(--muted)]" />
@@ -267,8 +267,8 @@ export default function AppearanceSettings() {
                         className={`flex items-center gap-2 rounded-[var(--panel-radius)] border px-3 py-2 text-left text-xs transition-colors duration-150 ${
                           selected
                             ? "border-[var(--accent)] bg-[var(--accent)]/10"
-                            : "border-[var(--border)] bg-[var(--surface-raised)] hover:border-[var(--accent)]/50"
-                        }`}
+                            : "border-[var(--panel-border)] bg-[var(--panel-bg)] hover:border-[var(--accent)]/50"
+                        } backdrop-blur-[var(--panel-blur)]`}
                       >
                         <span
                           className="h-5 w-5 flex-shrink-0 rounded-full border"
@@ -301,7 +301,7 @@ export default function AppearanceSettings() {
                     className={`relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 transition-colors duration-150 active:scale-[0.98] ${
                       currentAccent === "custom"
                         ? "border-white shadow-[0_0_12px_rgba(255,255,255,0.35)]"
-                        : "border-[var(--border)] hover:border-[var(--panel-border)]"
+                        : "border-[var(--panel-border)] hover:border-[var(--panel-border)]"
                     }`}
                     style={{ background: settings.customAccent }}
                   >
@@ -346,7 +346,7 @@ export default function AppearanceSettings() {
 
       {/* Pack d'icônes */}
       <SettingRow label={i18n("iconPack")} description={i18n("iconPackDescription")}>
-        <div className="flex items-center gap-1 rounded-[var(--panel-radius)] bg-[var(--surface-raised)] p-1">
+        <div className="flex items-center gap-1 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] p-1">
           {PACKS.map((pack) => {
             const active = settings.iconPack === pack.id;
             const sample = getSampleIcon(pack.id);
@@ -364,7 +364,7 @@ export default function AppearanceSettings() {
                     transition={{ duration: 0.15, ease: "easeOut" as const }}
                   />
                 )}
-                <span className={`relative z-10 flex items-center gap-1.5 ${active ? "text-white" : "text-[var(--muted)] hover:text-[var(--foreground)]"}`}>
+                <span className={`relative z-10 flex items-center gap-1.5 ${active ? "text-white" : "text-[var(--muted)] hover:text-[var(--foreground)]"} backdrop-blur-[var(--panel-blur)]`}>
                   <IconifyIcon icon={sample.icon} className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">{pack.label}</span>
                 </span>
@@ -384,7 +384,7 @@ export default function AppearanceSettings() {
       </SettingRow>
 
       {/* Effets */}
-      <section className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)]/40 p-3">
+      <section className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/40 p-3 backdrop-blur-[var(--panel-blur)]">
         <h3 className="text-sm font-semibold text-[var(--foreground)]">{i18n("effects")}</h3>
 
         <SettingRow label={i18n("glassmorphism")} description={i18n("glassmorphismDescription")}>

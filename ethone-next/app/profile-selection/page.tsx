@@ -116,7 +116,7 @@ export default function ProfileSelectionPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder={i18n("profileNamePlaceholder")}
-            className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+            className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
           />
 
           <div className="space-y-1">
@@ -130,7 +130,7 @@ export default function ProfileSelectionPage() {
                     setType(t);
                     setAccent(PROFILE_ACCENTS[t as Profile["type"]]);
                   }}
-                  className={`rounded-[var(--panel-radius)] border border-[var(--border)] px-3 py-1.5 text-xs ${type === t ? "bg-[var(--accent)] text-white" : "hover:bg-[var(--surface-raised)]"}`}
+                  className={`rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs ${type === t ? "bg-[var(--accent)] text-white" : "hover:bg-[var(--panel-bg)]"} backdrop-blur-[var(--panel-blur)]`}
                 >
                   {i18n(t)}
                 </button>
@@ -146,7 +146,7 @@ export default function ProfileSelectionPage() {
                   key={w}
                   type="button"
                   onClick={() => setWorkspace(w)}
-                  className={`flex items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--border)] px-3 py-1.5 text-xs ${workspace === w ? "bg-[var(--accent)] text-white" : "hover:bg-[var(--surface-raised)]"}`}
+                  className={`flex items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs ${workspace === w ? "bg-[var(--accent)] text-white" : "hover:bg-[var(--panel-bg)]"} backdrop-blur-[var(--panel-blur)]`}
                 >
                   <Icon name={WORKSPACE_ICONS[w]} className="h-3.5 w-3.5" />
                   {i18n(w)}
@@ -164,7 +164,7 @@ export default function ProfileSelectionPage() {
                   type="button"
                   onClick={() => setAccent(a)}
                   aria-label={i18n(`accent${a.charAt(0).toUpperCase() + a.slice(1)}` as `${string}`)}
-                  className={`flex h-8 w-8 items-center justify-center rounded-full border border-[var(--border)] ${accent === a ? "ring-2 ring-white" : "hover:opacity-80"}`}
+                  className={`flex h-8 w-8 items-center justify-center rounded-full border border-[var(--panel-border)] ${accent === a ? "ring-2 ring-white" : "hover:opacity-80"}`}
                 >
                   <span className={`h-5 w-5 rounded-full ${ACCENT_CLASSES[a]}`} />
                 </button>
@@ -229,13 +229,13 @@ export default function ProfileSelectionPage() {
                 </p>
               </div>
               <div className="flex items-center gap-1">
-                <button type="button" onClick={() => duplicate(p.id)} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface-raised)]"><Icon name="copy" className="h-4 w-4" /></button>
-                <button type="button" onClick={() => remove(p.id)} className="rounded p-1 text-red-400 hover:bg-[var(--surface-raised)]"><Icon name="trash-2" className="h-4 w-4" /></button>
+                <button type="button" onClick={() => duplicate(p.id)} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--panel-bg)]"><Icon name="copy" className="h-4 w-4" /></button>
+                <button type="button" onClick={() => remove(p.id)} className="rounded p-1 text-red-400 hover:bg-[var(--panel-bg)]"><Icon name="trash-2" className="h-4 w-4" /></button>
               </div>
             </div>
 
             <div className="mt-3 flex items-center gap-2">
-              <span className={`inline-block h-3 w-3 rounded-full ${ACCENT_CLASSES[p.accent] || "bg-violet-500"}`} />
+              <span className={`inline-block h-3 w-3 rounded-full ${ACCENT_CLASSES[p.accent] || "bg-violet-500"} backdrop-blur-[var(--panel-blur)]`} />
               <span className="text-xs text-[var(--muted)]">{i18n(`accent${p.accent.charAt(0).toUpperCase() + p.accent.slice(1)}` as `${string}`)}</span>
             </div>
 

@@ -161,8 +161,8 @@ export default function TasksPage() {
             className={`rounded-[var(--panel-radius)] border px-3 py-2 text-sm font-medium transition-colors ${
               filter === f.id
                 ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
-                : "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--foreground)]"
-            }`}
+                : "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--foreground)]"
+            } backdrop-blur-[var(--panel-blur)]`}
           >
             {f.label} <span className="text-[var(--muted)]">({f.count})</span>
           </button>
@@ -253,8 +253,8 @@ export default function TasksPage() {
                   className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
                     task.done
                       ? "border-[var(--accent)] bg-[var(--accent)] text-white"
-                      : "border-[var(--border)]"
-                  }`}
+                      : "border-[var(--panel-border)]"
+                  } backdrop-blur-[var(--panel-blur)]`}
                 >
                   {task.done && <Icon name="circle-check" className="h-4 w-4" />}
                 </button>

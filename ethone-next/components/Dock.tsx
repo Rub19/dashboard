@@ -179,7 +179,7 @@ export default function Dock() {
   }
 
   const baseControlClass =
-    "!rounded-full v8-icon-radius flex h-11 w-11 items-center justify-center border border-transparent text-[var(--foreground)] transition-colors duration-150 hover:border-[var(--accent)]/30 hover:bg-[var(--surface)] hover:shadow-lg active:scale-[0.98]";
+    "!rounded-full v8-icon-radius flex h-11 w-11 items-center justify-center border border-transparent text-[var(--foreground)] transition-colors duration-150 hover:border-[var(--accent)]/30 hover:bg-[var(--panel-bg)] hover:shadow-lg active:scale-[0.98]";
 
   const controlInactive = "text-[var(--muted)]";
   const controlActive = "bg-[var(--accent)]/10 text-[var(--accent)]";
@@ -200,7 +200,7 @@ export default function Dock() {
                   onClick={() => setLauncherOpen(false)}
                   aria-label={i18n("close")}
                   data-haptic
-                  className="rounded p-1 text-[var(--muted)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
+                  className="rounded p-1 text-[var(--muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)]"
                 >
                   <Icon name="close" className="h-4 w-4" />
                 </button>
@@ -215,13 +215,13 @@ export default function Dock() {
                       onClick={() => toggleDockItem(app.id)}
                       aria-label={active ? i18n("dockRemove") : i18n("dockAdd")}
                       data-haptic
-                      className={`flex flex-col items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--border)] p-2 text-[var(--foreground)] transition-colors hover:border-[var(--accent)]/30 hover:bg-[var(--surface)] ${
+                      className={`flex flex-col items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-2 text-[var(--foreground)] transition-colors hover:border-[var(--accent)]/30 hover:bg-[var(--panel-bg)] ${
                         active ? "border-[var(--accent)] text-[var(--accent)]" : ""
-                      }`}
+                      } backdrop-blur-[var(--panel-blur)]`}
                     >
                       <Icon name={app.icon} className="h-5 w-5" />
                       <span className="w-full truncate text-center text-[10px] leading-tight">{app.label}</span>
-                      <span className="rounded-full border border-[var(--border)] p-0.5">
+                      <span className="rounded-full border border-[var(--panel-border)] p-0.5">
                         <Icon name={active ? "minus" : "plus"} className="h-3 w-3" />
                       </span>
                     </button>
@@ -331,8 +331,8 @@ export default function Dock() {
                   {link}
                   {expanded && (
                     <div className="mt-1 flex gap-0.5">
-                      <button onClick={() => move(item.id, -1)} className="rounded p-0.5 text-[10px] text-[var(--muted)] hover:bg-[var(--surface)]">◀</button>
-                      <button onClick={() => move(item.id, 1)} className="rounded p-0.5 text-[10px] text-[var(--muted)] hover:bg-[var(--surface)]">▶</button>
+                      <button onClick={() => move(item.id, -1)} className="rounded p-0.5 text-[10px] text-[var(--muted)] hover:bg-[var(--panel-bg)]">◀</button>
+                      <button onClick={() => move(item.id, 1)} className="rounded p-0.5 text-[10px] text-[var(--muted)] hover:bg-[var(--panel-bg)]">▶</button>
                     </div>
                   )}
                 </div>
@@ -350,8 +350,8 @@ export default function Dock() {
                 {link}
                 {expanded && (
                   <div className="mt-1 flex gap-0.5">
-                    <button onClick={() => move(item.id, -1)} className="rounded p-0.5 text-[10px] text-[var(--muted)] hover:bg-[var(--surface)]">◀</button>
-                    <button onClick={() => move(item.id, 1)} className="rounded p-0.5 text-[10px] text-[var(--muted)] hover:bg-[var(--surface)]">▶</button>
+                    <button onClick={() => move(item.id, -1)} className="rounded p-0.5 text-[10px] text-[var(--muted)] hover:bg-[var(--panel-bg)]">◀</button>
+                    <button onClick={() => move(item.id, 1)} className="rounded p-0.5 text-[10px] text-[var(--muted)] hover:bg-[var(--panel-bg)]">▶</button>
                   </div>
                 )}
               </div>

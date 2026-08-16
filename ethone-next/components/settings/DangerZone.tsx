@@ -42,13 +42,13 @@ export default function DangerZone({ confirmText = "SUPPRIMER" }: { confirmText?
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--panel-bg)]/60 p-4 backdrop-blur-sm"
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="w-full max-w-md rounded-[var(--panel-radius)] border border-rose-500/30 bg-[var(--surface)] p-6 shadow-2xl"
+              className="w-full max-w-md rounded-[var(--panel-radius)] border border-rose-500/30 bg-[var(--panel-bg)] p-6 shadow-2xl"
             >
               <div className="mb-4 flex items-center gap-2">
                 <Icon name="triangle-alert" className="h-5 w-5 text-rose-400" />
@@ -68,7 +68,7 @@ export default function DangerZone({ confirmText = "SUPPRIMER" }: { confirmText?
                 <button
                   type="button"
                   onClick={() => { setOpen(false); setInput(""); }}
-                  className="rounded-[var(--panel-radius)] border border-[var(--border)] px-4 py-2 text-sm transition-colors hover:bg-[var(--surface-raised)]"
+                  className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-4 py-2 text-sm transition-colors hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
                 >
                   Annuler
                 </button>

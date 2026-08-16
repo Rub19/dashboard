@@ -65,7 +65,7 @@ function SessionModeSelector() {
         onClick={cycle}
         title={i18n("changeSessionMode")}
         aria-label={i18n("changeSessionMode")}
-        className="group flex w-full items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-3 text-left text-sm font-medium transition-colors hover:border-[var(--accent)] hover:text-[var(--foreground)]"
+        className="group flex w-full items-center justify-between gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 py-3 text-left text-sm font-medium transition-colors hover:border-[var(--accent)] hover:text-[var(--foreground)] backdrop-blur-[var(--panel-blur)]"
       >
         <span className="flex items-center gap-2 text-[var(--foreground)]">
           <Icon name={active.icon} className="h-4 w-4 text-[var(--accent)]" />
@@ -130,7 +130,7 @@ function SectionWrap({
 
 function Summary({ icon, label, value }: { icon: string; label: string; value: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-3 rounded-[var(--panel-radius)] bg-[var(--surface-raised)] p-3">
+    <div className="flex items-center gap-3 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] p-3">
       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent)]/10 text-[var(--accent)]">
         <Icon name={icon} className="h-4 w-4" />
       </span>
@@ -164,8 +164,8 @@ function AuraSelector() {
               className={`flex flex-col items-center gap-1 rounded-[var(--panel-radius)] border p-2 text-center text-xs font-medium transition-colors ${
                 active
                   ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
-                  : "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--foreground)]"
-              }`}
+                  : "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--foreground)]"
+              } backdrop-blur-[var(--panel-blur)]`}
             >
               <Icon name={a.icon} className="h-4 w-4" />
               <span>{i18n(key)}</span>
@@ -195,7 +195,7 @@ function SignalRow({
     violet: { bg: "bg-violet-500/10", text: "text-violet-400" },
   }[color];
   return (
-    <div className="flex items-center justify-between rounded-[var(--panel-radius)] bg-[var(--surface-raised)] p-3">
+    <div className="flex items-center justify-between rounded-[var(--panel-radius)] bg-[var(--panel-bg)] p-3">
       <div className="flex items-center gap-3">
         <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--panel-radius)] ${styles.bg} ${styles.text}`}>
           <Icon name={icon} className="h-4 w-4" />
@@ -384,7 +384,7 @@ export default function Home() {
         <button
           type="button"
           onClick={() => setCustomizing((v) => !v)}
-          className="flex items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+          className="flex items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-1.5 text-xs font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
         >
           <Icon name={customizing ? "x" : "sliders-horizontal"} className="h-3.5 w-3.5" />
           {customizing ? i18n("done") : i18n("customize")}
@@ -404,7 +404,7 @@ export default function Home() {
                 onClick={() => toggleSection(s.id)}
                 className={`flex items-center gap-2 rounded-[var(--panel-radius)] border px-3 py-2 text-xs font-medium transition-colors ${
                   hidden.has(s.id)
-                    ? "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted)]"
+                    ? "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--muted)]"
                     : "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
                 }`}
               >
@@ -432,8 +432,8 @@ export default function Home() {
               className={`flex items-center justify-center gap-2 rounded-[var(--panel-radius)] border px-3 py-2 text-xs font-medium transition-colors ${
                 settings.status === s.id
                   ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
-                  : "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--foreground)]"
-              }`}
+                  : "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--foreground)]"
+              } backdrop-blur-[var(--panel-blur)]`}
             >
               <Icon name={s.icon} className="h-3.5 w-3.5" />
               {s.label}
@@ -480,21 +480,21 @@ export default function Home() {
           </div>
           <ul className="space-y-2">
             {todayEvents.slice(0, 3).map((e) => (
-              <li key={e.id} className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--surface-raised)] p-2 text-sm">
+              <li key={e.id} className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] p-2 text-sm">
                 <Icon name="calendar-days" className="h-4 w-4 text-sky-400" />
                 <span className="min-w-0 flex-1 truncate">{e.title}</span>
                 <span className="text-[10px] text-[var(--muted)]">{i18n("events")}</span>
               </li>
             ))}
             {nextTasks.map((t) => (
-              <li key={t.id} className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--surface-raised)] p-2 text-sm">
+              <li key={t.id} className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] p-2 text-sm">
                 <Icon name="circle" className="h-4 w-4 text-emerald-400" />
                 <span className="min-w-0 flex-1 truncate">{t.title}</span>
                 <span className="text-[10px] text-[var(--muted)]">{i18n("tasks")}</span>
               </li>
             ))}
             {todayEvents.length === 0 && nextTasks.length === 0 && (
-              <li className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--surface-raised)] p-2 text-sm text-[var(--muted)]">
+              <li className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] p-2 text-sm text-[var(--muted)]">
                 <Icon name="coffee" className="h-4 w-4" />
                 <span>{i18n("noImperative")} — {i18n("freeDay")}</span>
               </li>
@@ -511,7 +511,7 @@ export default function Home() {
                 <Link
                   key={n.id}
                   href="/notes"
-                  className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--surface-raised)] p-2 text-sm transition-colors hover:bg-[var(--surface)]"
+                  className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] p-2 text-sm transition-colors hover:bg-[var(--panel-bg)]"
                 >
                   <Icon name="file-text" className="h-4 w-4 text-violet-400" />
                   <span className="min-w-0 flex-1 truncate">{n.title}</span>
@@ -524,7 +524,7 @@ export default function Home() {
           )}
           <Link
             href="/notes"
-            className="mt-4 inline-flex items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs font-medium text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
+            className="mt-4 inline-flex items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-xs font-medium text-[var(--muted)] transition-colors hover:text-[var(--foreground)] backdrop-blur-[var(--panel-blur)]"
           >
             <Icon name="plus" className="h-3.5 w-3.5" />
             {i18n("createNote")}
@@ -539,7 +539,7 @@ export default function Home() {
               <span className="text-xs text-[var(--muted)]">{i18n("tasksDone")}</span>
               <span className="text-lg font-bold tabular-nums text-[var(--accent)]">{percentage}%</span>
             </div>
-            <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
+            <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[var(--panel-bg)]">
               <div
                 className="h-full rounded-full bg-[var(--accent)] transition-colors duration-150"
                 style={{ width: `${percentage}%` }}

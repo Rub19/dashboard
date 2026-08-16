@@ -100,7 +100,7 @@ export default function TabList({
         <button
           type="button"
           onClick={() => setShowDrawer(true)}
-          className="flex w-full items-center justify-between rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-3 text-sm font-medium text-[var(--foreground)]"
+          className="flex w-full items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 py-3 text-sm font-medium text-[var(--foreground)] backdrop-blur-[var(--panel-blur)]"
           aria-haspopup="listbox"
           aria-expanded={showDrawer}
           aria-label={label || "Select tab"}
@@ -114,7 +114,7 @@ export default function TabList({
 
         {showDrawer && (
           <div
-            className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-end justify-center bg-[var(--panel-bg)]/50 backdrop-blur-sm"
             onClick={() => setShowDrawer(false)}
           >
             <motion.div
@@ -122,7 +122,7 @@ export default function TabList({
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={SPRING}
-              className="w-full max-w-lg rounded-t-3xl border border-[var(--panel-border)] bg-[var(--surface)] p-4 shadow-2xl"
+              className="w-full max-w-lg rounded-t-3xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-2xl backdrop-blur-[var(--panel-blur)]"
               onClick={(e) => e.stopPropagation()}
               role="listbox"
               aria-label={label || "Tabs"}
@@ -146,7 +146,7 @@ export default function TabList({
                     "flex w-full items-center gap-3 rounded-[var(--panel-radius)] px-4 py-3 text-left text-sm font-medium transition-colors",
                     activeId === tab.id
                       ? "bg-[var(--accent)] text-white"
-                      : "text-[var(--foreground)] hover:bg-[var(--surface-raised)]",
+                      : "text-[var(--foreground)] hover:bg-[var(--panel-bg)]",
                     tab.disabled && "opacity-40 cursor-not-allowed"
                   )}
                   role="option"
@@ -178,7 +178,7 @@ export default function TabList({
         ref={listRef}
         className={cn(
           "flex gap-1 overflow-x-auto scrollbar-hide",
-          isMobile ? "justify-between rounded-[var(--panel-radius)] bg-[var(--surface-raised)] p-1" : "nowrap"
+          isMobile ? "justify-between rounded-[var(--panel-radius)] bg-[var(--panel-bg)] p-1" : "nowrap"
         )}
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
@@ -226,7 +226,7 @@ export default function TabList({
             <button
               type="button"
               onClick={() => scrollBy(-1)}
-              className="absolute -left-2 top-1/2 z-20 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--surface)] text-[var(--muted)] shadow-md ring-1 ring-[var(--border)] hover:text-[var(--foreground)]"
+              className="absolute -left-2 top-1/2 z-20 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--panel-bg)] text-[var(--muted)] shadow-md ring-1 ring-[var(--border)] hover:text-[var(--foreground)]"
               aria-label="Scroll tabs left"
             >
               <Icon name="chevron-left" className="h-4 w-4" />
@@ -236,7 +236,7 @@ export default function TabList({
             <button
               type="button"
               onClick={() => scrollBy(1)}
-              className="absolute -right-2 top-1/2 z-20 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--surface)] text-[var(--muted)] shadow-md ring-1 ring-[var(--border)] hover:text-[var(--foreground)]"
+              className="absolute -right-2 top-1/2 z-20 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--panel-bg)] text-[var(--muted)] shadow-md ring-1 ring-[var(--border)] hover:text-[var(--foreground)]"
               aria-label="Scroll tabs right"
             >
               <Icon name="chevron-right" className="h-4 w-4" />

@@ -45,7 +45,7 @@ export default function DiagnosticPanel({
   const statusTone = errors > 0 ? "danger" : unconfigured > 0 ? "warning" : "success";
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-[var(--panel-border)] bg-surface/60 shadow-2xl backdrop-blur-2xl">
+    <div className="overflow-hidden rounded-3xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/60 shadow-2xl backdrop-blur-2xl">
       <div className="flex items-center justify-between gap-4 p-4 sm:p-5">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-accent/10 text-accent">
@@ -85,7 +85,7 @@ export default function DiagnosticPanel({
           <button
             type="button"
             onClick={() => setExpanded((v) => !v)}
-            className="rounded-[var(--panel-radius)] p-2 text-muted transition hover:bg-surface-raised hover:text-foreground"
+            className="rounded-[var(--panel-radius)] p-2 text-muted transition hover:bg-[var(--panel-bg)] hover:text-foreground"
             aria-label={expanded ? i18n("collapse") : i18n("expand")}
           >
             {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -111,9 +111,9 @@ export default function DiagnosticPanel({
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.96 }}
                   transition={{ duration: 0.2 }}
-                  className="flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-surface-raised/50 p-3 backdrop-blur-sm"
+                  className="flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/50 p-3 backdrop-blur-sm"
                 >
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-surface text-foreground">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--panel-bg)] text-foreground">
                     <ServiceIcon id={integration.id} icon={integration.icon} className="h-4 w-4" colored />
                   </div>
                   <div className="min-w-0 flex-1">

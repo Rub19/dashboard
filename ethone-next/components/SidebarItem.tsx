@@ -32,7 +32,7 @@ export default function SidebarItem({
       className={`group relative z-10 flex h-10 shrink-0 items-center !rounded-[var(--panel-radius)] transition-colors duration-150 duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/50 ${
         isActive
           ? "bg-[var(--accent)]/15 text-[var(--accent)] border border-[var(--accent)]/30"
-          : "text-[var(--muted)] hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
+          : "text-[var(--muted)] hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)]"
       }`}
       style={{
         width: expanded ? "100%" : 40,

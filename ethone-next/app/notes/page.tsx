@@ -166,7 +166,7 @@ export default function NotesPage() {
           <button
             type="button"
             onClick={bulkDuplicate}
-            className="flex items-center gap-1.5 rounded-[var(--panel-radius)] bg-[var(--surface)] px-3 py-1.5 text-xs hover:bg-[var(--accent)]/10"
+            className="flex items-center gap-1.5 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-1.5 text-xs hover:bg-[var(--accent)]/10"
           >
             <Icon name="copy-plus" className="h-3.5 w-3.5" /> {i18n("duplicate")}
           </button>

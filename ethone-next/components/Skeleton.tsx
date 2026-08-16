@@ -13,7 +13,7 @@ export default function Skeleton({ className = "", width, height, circle }: Skel
   const { settings } = useSettings();
   return (
     <span
-      className={`inline-block animate-pulse bg-[var(--surface-raised)] ${
+      className={`inline-block animate-pulse bg-[var(--panel-bg)] ${
         settings.reducedMotion ? "" : "skeleton-shimmer"
       } ${circle ? "rounded-full" : "rounded-[var(--panel-radius)]"} ${className}`}
       style={{ width, height }}
@@ -24,7 +24,7 @@ export default function Skeleton({ className = "", width, height, circle }: Skel
 
 export function SkeletonCard({ children }: { children?: React.ReactNode }) {
   return (
-    <div className="min-w-0 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-5" aria-hidden="true">
+    <div className="min-w-0 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-5 backdrop-blur-[var(--panel-blur)]" aria-hidden="true">
       <div className="space-y-3">
         <div className="flex items-center gap-3">
           <Skeleton width="2.5rem" height="2.5rem" circle />
@@ -48,7 +48,7 @@ export function SkeletonList({ count = 4, label = "Chargement..." }: { count?: n
   return (
     <div className="space-y-2" role="status" aria-busy="true" aria-label={label}>
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-3">
+        <div key={i} className="flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 backdrop-blur-[var(--panel-blur)]">
           <Skeleton width="2rem" height="2rem" circle />
           <div className="flex-1 space-y-2">
             <Skeleton width="70%" height="0.875rem" />

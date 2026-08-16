@@ -185,7 +185,7 @@ export default function InteractionsPage() {
           type="button"
           onClick={() => { reload(); success(i18n("refreshed")); }}
           disabled={loading}
-          className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm font-medium transition-colors hover:bg-[var(--surface)] disabled:opacity-50"
+          className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm font-medium transition-colors hover:bg-[var(--panel-bg)] disabled:opacity-50 backdrop-blur-[var(--panel-blur)]"
         >
           <Icon name="refresh-cw" className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           {i18n("refresh")}
@@ -241,8 +241,8 @@ export default function InteractionsPage() {
                 type="button"
                 onClick={() => setFilterKind(kind)}
                 className={`flex items-center gap-2 rounded-[var(--panel-radius)] border px-2.5 py-2 text-left text-xs transition-colors ${
-                  filterKind === kind ? "border-[var(--accent)] bg-[var(--accent)]/10" : "border-[var(--border)] bg-[var(--surface)]"
-                }`}
+                  filterKind === kind ? "border-[var(--accent)] bg-[var(--accent)]/10" : "border-[var(--panel-border)] bg-[var(--panel-bg)]"
+                } backdrop-blur-[var(--panel-blur)]`}
               >
                 {iconFor(kind)}
                 <span className="font-medium">{i18n(kind)}</span>
@@ -279,7 +279,7 @@ export default function InteractionsPage() {
               onChange={(e) => setNewTarget(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && addReaction()}
               aria-label={i18n("target")} placeholder={i18n("target")}
-              className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+              className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
             />
             <button
               type="button"
@@ -293,7 +293,7 @@ export default function InteractionsPage() {
             <button
               type="button"
               onClick={() => { medium(); toggleLive(); }}
-              className="inline-flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-2 text-sm font-semibold transition-colors hover:border-[var(--accent)]"
+              className="inline-flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 py-2 text-sm font-semibold transition-colors hover:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
             >
               <Icon name="radio" className={`h-4 w-4 ${live ? "animate-pulse text-emerald-400" : "text-[var(--muted)]"}`} />
               {live ? i18n("stop") : i18n("live")}
@@ -301,7 +301,7 @@ export default function InteractionsPage() {
             <button
               type="button"
               onClick={() => { medium(); reload(); }}
-              className="inline-flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-2 text-sm font-semibold transition-colors hover:border-[var(--accent)]"
+              className="inline-flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 py-2 text-sm font-semibold transition-colors hover:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
             >
               <Icon name="refresh-cw" className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
               {i18n("refresh")}
@@ -328,8 +328,8 @@ export default function InteractionsPage() {
                   className={`rounded-[var(--panel-radius)] border px-3 py-1.5 text-xs font-medium transition-colors ${
                     range === r
                       ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
-                      : "border-[var(--border)] bg-[var(--surface-raised)] hover:border-[var(--accent)]"
-                  }`}
+                      : "border-[var(--panel-border)] bg-[var(--panel-bg)] hover:border-[var(--accent)]"
+                  } backdrop-blur-[var(--panel-blur)]`}
                 >
                   {r}j
                 </button>

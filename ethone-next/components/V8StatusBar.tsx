@@ -158,7 +158,7 @@ export default function V8StatusBar() {
     <footer
       data-v8-status-bar
       data-v8-bar
-      className="v8-status-bar fixed bottom-0 left-0 z-30 hidden w-full flex-wrap items-center justify-between gap-y-1 border-t border-[var(--border)] bg-[var(--background)]/90 px-4 py-1.5 text-[10px] text-[var(--muted)] backdrop-blur-md md:flex"
+      className="v8-status-bar fixed bottom-0 left-0 z-30 hidden w-full flex-wrap items-center justify-between gap-y-1 border-t border-[var(--panel-border)] bg-[var(--background)]/90 px-4 py-1.5 text-[10px] text-[var(--muted)] backdrop-blur-md md:flex"
     >
       <StatusItem
         icon="timer"

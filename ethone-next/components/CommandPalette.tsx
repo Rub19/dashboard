@@ -199,7 +199,7 @@ export default function CommandPalette() {
         onClick={() => run(cmd)}
         onMouseEnter={() => setIndex(itemIndex)}
         className={`group relative flex w-full items-center justify-between rounded-[var(--panel-radius)] px-3 py-2 text-sm transition-colors ${
-          active ? "bg-[var(--accent)] text-white" : "cursor-pointer text-[var(--foreground)] hover:bg-[var(--surface)]"
+          active ? "bg-[var(--accent)] text-white" : "cursor-pointer text-[var(--foreground)] hover:bg-[var(--panel-bg)]"
         }`}
         role="button"
       >
@@ -218,7 +218,7 @@ export default function CommandPalette() {
           <button
             type="button"
             onClick={(e) => togglePin(cmd, e)}
-            className={`rounded p-1 transition-colors ${active ? "text-white/70 hover:bg-white/20" : "text-[var(--muted)] hover:bg-[var(--surface-raised)]"}`}
+            className={`rounded p-1 transition-colors ${active ? "text-white/70 hover:bg-white/20" : "text-[var(--muted)] hover:bg-[var(--panel-bg)]"}`}
             aria-label={pinned.has(cmd.id) ? i18n("unpin") : i18n("pin")}
             title={pinned.has(cmd.id) ? i18n("unpin") : i18n("pin")}
           >
@@ -236,11 +236,11 @@ export default function CommandPalette() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="hidden items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--muted)] transition-colors hover:border-[var(--accent)] hover:text-[var(--foreground)] xl:flex"
+        className="hidden items-center gap-2 rounded-full border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-1.5 text-xs text-[var(--muted)] transition-colors hover:border-[var(--accent)] hover:text-[var(--foreground)] xl:flex backdrop-blur-[var(--panel-blur)]"
       >
         <Icon name="search" className="h-3.5 w-3.5" />
         <span>{i18n("commands")}</span>
-        <kbd className="rounded bg-[var(--surface-raised)] px-1 py-0.5 text-[10px]">
+        <kbd className="rounded bg-[var(--panel-bg)] px-1 py-0.5 text-[10px]">
           <Icon name="command" className="inline h-3 w-3" />K
         </kbd>
       </button>
@@ -251,7 +251,7 @@ export default function CommandPalette() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] flex items-start justify-center bg-black/60 p-6 pt-32 backdrop-blur-sm"
+            className="fixed inset-0 z-[60] flex items-start justify-center bg-[var(--panel-bg)]/60 p-6 pt-32 backdrop-blur-sm"
           >
             <motion.div
               ref={dialogRef}
@@ -259,10 +259,10 @@ export default function CommandPalette() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.96 }}
               transition={{ duration: 0.15, ease: "easeOut" as const }}
-              className="w-full max-w-lg overflow-hidden rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] shadow-2xl"
+              className="w-full max-w-lg overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-2xl backdrop-blur-[var(--panel-blur)]"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center gap-3 border-b border-[var(--border)] px-4 py-3">
+              <div className="flex items-center gap-3 border-b border-[var(--panel-border)] px-4 py-3">
                 <Icon name="search" className="h-5 w-5 text-[var(--muted)]" />
                 <input
                   autoFocus
@@ -272,7 +272,7 @@ export default function CommandPalette() {
                   placeholder={i18n("search")}
                   className="flex-1 bg-transparent text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted)]"
                 />
-                <kbd className="rounded bg-[var(--surface)] px-1.5 py-0.5 text-[10px] text-[var(--muted)]">ESC</kbd>
+                <kbd className="rounded bg-[var(--panel-bg)] px-1.5 py-0.5 text-[10px] text-[var(--muted)]">ESC</kbd>
               </div>
 
               <div className="max-h-80 overflow-y-auto p-2">
@@ -290,19 +290,19 @@ export default function CommandPalette() {
                 )}
               </div>
 
-              <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[var(--border)] px-4 py-2.5 text-[10px] text-[var(--muted)]">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[var(--panel-border)] px-4 py-2.5 text-[10px] text-[var(--muted)]">
                 <div className="flex items-center gap-3">
                   <span className="flex items-center gap-1">
-                    <kbd className="rounded bg-[var(--surface)] px-1.5 py-0.5 text-[10px]">Esc</kbd>
+                    <kbd className="rounded bg-[var(--panel-bg)] px-1.5 py-0.5 text-[10px]">Esc</kbd>
                     <span>{i18n("close")}</span>
                   </span>
                   <span className="flex items-center gap-1">
-                    <kbd className="rounded bg-[var(--surface)] px-1.5 py-0.5 text-[10px]">↑</kbd>
-                    <kbd className="rounded bg-[var(--surface)] px-1.5 py-0.5 text-[10px]">↓</kbd>
+                    <kbd className="rounded bg-[var(--panel-bg)] px-1.5 py-0.5 text-[10px]">↑</kbd>
+                    <kbd className="rounded bg-[var(--panel-bg)] px-1.5 py-0.5 text-[10px]">↓</kbd>
                     <span>{i18n("spotlightNav")}</span>
                   </span>
                   <span className="flex items-center gap-1">
-                    <kbd className="rounded bg-[var(--surface)] px-1.5 py-0.5 text-[10px]">Enter</kbd>
+                    <kbd className="rounded bg-[var(--panel-bg)] px-1.5 py-0.5 text-[10px]">Enter</kbd>
                     <span>{i18n("openHere")}</span>
                   </span>
                 </div>

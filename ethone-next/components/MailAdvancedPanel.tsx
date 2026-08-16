@@ -268,13 +268,13 @@ export default function MailAdvancedPanel({ initialTab }: { initialTab: Tab }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-2 border-b border-[var(--border)] pb-2">
+      <div className="flex flex-wrap gap-2 border-b border-[var(--panel-border)] pb-2">
         {(["accounts", "pgp", "push", "lists"] as Tab[]).map((t) => (
           <button
             key={t}
             type="button"
             onClick={() => setTab(t)}
-            className={`rounded-t-xl px-3 py-1.5 text-sm font-medium ${tab === t ? "bg-[var(--accent)] text-white" : "text-[var(--muted)] hover:bg-[var(--surface)]"}`}
+            className={`rounded-t-xl px-3 py-1.5 text-sm font-medium ${tab === t ? "bg-[var(--accent)] text-white" : "text-[var(--muted)] hover:bg-[var(--panel-bg)]"}`}
           >
             {i18n(t)}
           </button>
@@ -296,33 +296,33 @@ export default function MailAdvancedPanel({ initialTab }: { initialTab: Tab }) {
                 aria-label={i18n("provider")}
                 className="min-w-0"
               />
-              <input type="text" value={accountForm.email || ""} onChange={(e) => setAccountForm({ ...accountForm, email: e.target.value })} placeholder={i18n("email")} className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-              <input type="text" value={accountForm.name || ""} onChange={(e) => setAccountForm({ ...accountForm, name: e.target.value })} placeholder={i18n("name")} className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+              <input type="text" value={accountForm.email || ""} onChange={(e) => setAccountForm({ ...accountForm, email: e.target.value })} placeholder={i18n("email")} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
+              <input type="text" value={accountForm.name || ""} onChange={(e) => setAccountForm({ ...accountForm, name: e.target.value })} placeholder={i18n("name")} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
               <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={accountForm.is_enabled === "true"} onChange={(e) => setAccountForm({ ...accountForm, is_enabled: e.target.checked ? "true" : "false" })} /> {i18n("enabled")}</label>
             </div>
             {accountForm.provider === "imap" && (
               <div className="grid gap-2 sm:grid-cols-2">
-                <input type="text" value={accountForm.imap_host || ""} onChange={(e) => setAccountForm({ ...accountForm, imap_host: e.target.value })} placeholder="IMAP host" className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                <input type="text" value={accountForm.imap_port || "993"} onChange={(e) => setAccountForm({ ...accountForm, imap_port: e.target.value })} placeholder="IMAP port" className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                <input type="text" value={accountForm.imap_username || ""} onChange={(e) => setAccountForm({ ...accountForm, imap_username: e.target.value })} placeholder="IMAP username" className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                <input type="password" value={accountForm.imap_password || ""} onChange={(e) => setAccountForm({ ...accountForm, imap_password: e.target.value })} placeholder="IMAP password" className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                <input type="text" value={accountForm.smtp_host || ""} onChange={(e) => setAccountForm({ ...accountForm, smtp_host: e.target.value })} placeholder="SMTP host" className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                <input type="text" value={accountForm.smtp_port || "587"} onChange={(e) => setAccountForm({ ...accountForm, smtp_port: e.target.value })} placeholder="SMTP port" className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                <input type="text" value={accountForm.smtp_username || ""} onChange={(e) => setAccountForm({ ...accountForm, smtp_username: e.target.value })} placeholder="SMTP username" className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                <input type="password" value={accountForm.smtp_password || ""} onChange={(e) => setAccountForm({ ...accountForm, smtp_password: e.target.value })} placeholder="SMTP password" className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                <input type="text" value={accountForm.imap_host || ""} onChange={(e) => setAccountForm({ ...accountForm, imap_host: e.target.value })} placeholder="IMAP host" className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
+                <input type="text" value={accountForm.imap_port || "993"} onChange={(e) => setAccountForm({ ...accountForm, imap_port: e.target.value })} placeholder="IMAP port" className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
+                <input type="text" value={accountForm.imap_username || ""} onChange={(e) => setAccountForm({ ...accountForm, imap_username: e.target.value })} placeholder="IMAP username" className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
+                <input type="password" value={accountForm.imap_password || ""} onChange={(e) => setAccountForm({ ...accountForm, imap_password: e.target.value })} placeholder="IMAP password" className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
+                <input type="text" value={accountForm.smtp_host || ""} onChange={(e) => setAccountForm({ ...accountForm, smtp_host: e.target.value })} placeholder="SMTP host" className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
+                <input type="text" value={accountForm.smtp_port || "587"} onChange={(e) => setAccountForm({ ...accountForm, smtp_port: e.target.value })} placeholder="SMTP port" className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
+                <input type="text" value={accountForm.smtp_username || ""} onChange={(e) => setAccountForm({ ...accountForm, smtp_username: e.target.value })} placeholder="SMTP username" className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
+                <input type="password" value={accountForm.smtp_password || ""} onChange={(e) => setAccountForm({ ...accountForm, smtp_password: e.target.value })} placeholder="SMTP password" className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
                 <label className="col-span-full flex items-center gap-2 text-sm"><input type="checkbox" checked={accountForm.imap_secure === "true"} onChange={(e) => setAccountForm({ ...accountForm, imap_secure: e.target.checked ? "true" : "false" })} /> IMAP SSL</label>
                 <label className="col-span-full flex items-center gap-2 text-sm"><input type="checkbox" checked={accountForm.smtp_secure === "true"} onChange={(e) => setAccountForm({ ...accountForm, smtp_secure: e.target.checked ? "true" : "false" })} /> SMTP TLS</label>
               </div>
             )}
             {accountForm.provider !== "imap" && (
-              <input type="text" value={accountForm.access_token || ""} onChange={(e) => setAccountForm({ ...accountForm, access_token: e.target.value })} placeholder="OAuth access token" className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+              <input type="text" value={accountForm.access_token || ""} onChange={(e) => setAccountForm({ ...accountForm, access_token: e.target.value })} placeholder="OAuth access token" className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
             )}
             <button type="submit" disabled={busy} className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{editingAccount ? i18n("update") : i18n("create")}</button>
           </form>
 
           <div className="space-y-2">
             {accounts.map((a) => (
-              <div key={a.id} className="rounded-[var(--panel-radius)] border border-[var(--border)] p-3 text-sm">
+              <div key={a.id} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-3 text-sm">
                 <div className="flex items-center justify-between">
                   <span className="font-medium">{a.name || a.email}</span>
                   <div className="flex gap-2">
@@ -343,11 +343,11 @@ export default function MailAdvancedPanel({ initialTab }: { initialTab: Tab }) {
           <Card3D>
             <p className="mb-2 text-sm font-medium">{i18n("pgpGenerate")}</p>
             <div className="space-y-2">
-              <input type="email" value={pgpEmail} onChange={(e) => setPgpEmail(e.target.value)} placeholder={i18n("email")} className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-              <input type="password" value={pgpPassphrase} onChange={(e) => setPgpPassphrase(e.target.value)} placeholder={i18n("passphrase")} className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+              <input type="email" value={pgpEmail} onChange={(e) => setPgpEmail(e.target.value)} placeholder={i18n("email")} className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
+              <input type="password" value={pgpPassphrase} onChange={(e) => setPgpPassphrase(e.target.value)} placeholder={i18n("passphrase")} className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
               <button type="button" onClick={onGeneratePgp} disabled={busy} className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{i18n("pgpGenerate")}</button>
               {pgpGenerated && (
-                <div className="space-y-1 rounded-[var(--panel-radius)] bg-[var(--surface)] p-2 text-xs text-[var(--muted)] break-all">
+                <div className="space-y-1 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] p-2 text-xs text-[var(--muted)] break-all">
                   <p><strong>{i18n("fingerprint")}:</strong> {pgpGenerated.fingerprint}</p>
                   <p className="truncate">{i18n("publicKey")}: {pgpGenerated.public_key?.slice(0, 40)}...</p>
                 </div>
@@ -358,16 +358,16 @@ export default function MailAdvancedPanel({ initialTab }: { initialTab: Tab }) {
           <Card3D>
             <p className="mb-2 text-sm font-medium">{i18n("pgpImport")}</p>
             <div className="space-y-2">
-              <input type="email" value={pgpEmail} onChange={(e) => setPgpEmail(e.target.value)} placeholder={i18n("email")} className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-              <textarea value={pgpPublic} onChange={(e) => setPgpPublic(e.target.value)} placeholder={i18n("publicKey")} className="h-24 w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-2 text-xs" />
-              <textarea value={pgpPrivate} onChange={(e) => setPgpPrivate(e.target.value)} placeholder={i18n("privateKey")} className="h-24 w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-2 text-xs" />
+              <input type="email" value={pgpEmail} onChange={(e) => setPgpEmail(e.target.value)} placeholder={i18n("email")} className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
+              <textarea value={pgpPublic} onChange={(e) => setPgpPublic(e.target.value)} placeholder={i18n("publicKey")} className="h-24 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-xs backdrop-blur-[var(--panel-blur)]" />
+              <textarea value={pgpPrivate} onChange={(e) => setPgpPrivate(e.target.value)} placeholder={i18n("privateKey")} className="h-24 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-xs backdrop-blur-[var(--panel-blur)]" />
               <button type="button" onClick={onImportPgp} disabled={busy} className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{i18n("pgpImport")}</button>
             </div>
           </Card3D>
 
           <div className="space-y-2">
             {pgpKeys.map((k) => (
-              <div key={k.id} className="rounded-[var(--panel-radius)] border border-[var(--border)] p-2 text-sm">
+              <div key={k.id} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-2 text-sm">
                 <div className="flex items-center justify-between">
                   <span className="font-medium">{k.email}</span>
                   <button type="button" onClick={() => deletePgpKey(k.id)} className="text-red-400"><Icon name="trash-2" className="h-4 w-4" /></button>
@@ -390,8 +390,8 @@ export default function MailAdvancedPanel({ initialTab }: { initialTab: Tab }) {
               </div>
               <div className="flex flex-wrap gap-2">
                 {!pushEnabled && <button type="button" onClick={handleSubscribePush} className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white">{i18n("subscribe")}</button>}
-                {pushEnabled && <button type="button" onClick={handleUnsubscribePush} className="rounded-[var(--panel-radius)] border border-[var(--border)] px-3 py-2 text-sm">{i18n("unsubscribe")}</button>}
-                {pushEnabled && <button type="button" onClick={handleTestPush} className="rounded-[var(--panel-radius)] border border-[var(--border)] px-3 py-2 text-sm">{i18n("pushTest")}</button>}
+                {pushEnabled && <button type="button" onClick={handleUnsubscribePush} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-2 text-sm">{i18n("unsubscribe")}</button>}
+                {pushEnabled && <button type="button" onClick={handleTestPush} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-2 text-sm">{i18n("pushTest")}</button>}
               </div>
               <div className="space-y-1">
                 {pushSubscriptions.map((s, i) => (
@@ -406,9 +406,9 @@ export default function MailAdvancedPanel({ initialTab }: { initialTab: Tab }) {
       {tab === "lists" && (
         <div className="space-y-4">
           <div className="grid gap-2 sm:grid-cols-2">
-            <input type="text" value={listForm.name} onChange={(e) => setListForm({ ...listForm, name: e.target.value })} placeholder={i18n("name")} className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-            <input type="email" value={listForm.alias_address} onChange={(e) => setListForm({ ...listForm, alias_address: e.target.value })} placeholder={i18n("alias")} className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-            <input type="text" value={listForm.description} onChange={(e) => setListForm({ ...listForm, description: e.target.value })} placeholder={i18n("description")} className="sm:col-span-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+            <input type="text" value={listForm.name} onChange={(e) => setListForm({ ...listForm, name: e.target.value })} placeholder={i18n("name")} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
+            <input type="email" value={listForm.alias_address} onChange={(e) => setListForm({ ...listForm, alias_address: e.target.value })} placeholder={i18n("alias")} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
+            <input type="text" value={listForm.description} onChange={(e) => setListForm({ ...listForm, description: e.target.value })} placeholder={i18n("description")} className="sm:col-span-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
             <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={listForm.is_public} onChange={(e) => setListForm({ ...listForm, is_public: e.target.checked })} /> {i18n("public")}</label>
             <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={listForm.reply_to_list} onChange={(e) => setListForm({ ...listForm, reply_to_list: e.target.checked })} /> {i18n("replyToList")}</label>
             <button type="button" onClick={onCreateList} disabled={busy} className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{editingList ? i18n("update") : i18n("create")}</button>
@@ -416,7 +416,7 @@ export default function MailAdvancedPanel({ initialTab }: { initialTab: Tab }) {
 
           <div className="space-y-2">
             {lists.map((l) => (
-              <div key={l.id} className={`cursor-pointer rounded-[var(--panel-radius)] border border-[var(--border)] p-3 text-sm ${selectedList?.id === l.id ? "bg-[var(--accent)]/10" : ""}`} onClick={() => onSelectList(l)}>
+              <div key={l.id} className={`cursor-pointer rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-3 text-sm ${selectedList?.id === l.id ? "bg-[var(--accent)]/10" : ""}`} onClick={() => onSelectList(l)}>
                 <div className="flex items-center justify-between">
                   <span className="font-medium">{l.name}</span>
                   <div className="flex gap-2">
@@ -434,23 +434,23 @@ export default function MailAdvancedPanel({ initialTab }: { initialTab: Tab }) {
               <div className="space-y-3">
               <p className="font-medium">{selectedList.name} — {i18n("members")}</p>
               <div className="flex gap-2">
-                <input type="email" value={memberEmail} onChange={(e) => setMemberEmail(e.target.value)} placeholder={i18n("email")} className="flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                <input type="text" value={memberName} onChange={(e) => setMemberName(e.target.value)} placeholder={i18n("name")} className="flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
+                <input type="email" value={memberEmail} onChange={(e) => setMemberEmail(e.target.value)} placeholder={i18n("email")} className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
+                <input type="text" value={memberName} onChange={(e) => setMemberName(e.target.value)} placeholder={i18n("name")} className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
                 <button type="button" onClick={onAddMember} disabled={busy} className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{i18n("add")}</button>
               </div>
               <div className="space-y-2">
                 {members.map((m) => (
-                  <div key={m.id} className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--border)] p-2 text-sm">
+                  <div key={m.id} className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-2 text-sm">
                     <span>{m.name || m.email}</span>
                     <button type="button" onClick={() => onRemoveMember(m.id)} className="text-red-400"><Icon name="trash-2" className="h-4 w-4" /></button>
                   </div>
                 ))}
               </div>
 
-              <div className="space-y-2 border-t border-[var(--border)] pt-3">
+              <div className="space-y-2 border-t border-[var(--panel-border)] pt-3">
                 <p className="text-sm font-medium">{i18n("sendToList")}</p>
-                <input type="text" value={listMessage.subject} onChange={(e) => setListMessage({ ...listMessage, subject: e.target.value })} placeholder={i18n("subject")} className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm" />
-                <textarea value={listMessage.body_text} onChange={(e) => setListMessage({ ...listMessage, body_text: e.target.value })} placeholder={i18n("body")} className="h-24 w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-2 text-sm" />
+                <input type="text" value={listMessage.subject} onChange={(e) => setListMessage({ ...listMessage, subject: e.target.value })} placeholder={i18n("subject")} className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
+                <textarea value={listMessage.body_text} onChange={(e) => setListMessage({ ...listMessage, body_text: e.target.value })} placeholder={i18n("body")} className="h-24 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-sm backdrop-blur-[var(--panel-blur)]" />
                 <button type="button" onClick={onSendToList} disabled={busy} className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{i18n("send")}</button>
               </div>
               </div>

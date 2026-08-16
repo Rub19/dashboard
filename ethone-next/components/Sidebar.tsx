@@ -46,15 +46,15 @@ export default function Sidebar() {
       initial={false}
       animate={{ width: expanded ? 256 : 64 }}
       transition={{ duration: 0.15, ease: "easeOut" as const }}
-      className={`v8-rail fixed left-0 top-0 z-40 hidden h-dvh flex-col overflow-hidden border-r border-[var(--border)] bg-[var(--surface)] shadow-2xl will-change-[width] md:flex ${
-        settings.glassEnabled ? "bg-[var(--surface)]/90 backdrop-blur-xl" : "bg-[var(--surface)]"
+      className={`v8-rail fixed left-0 top-0 z-40 hidden h-dvh flex-col overflow-hidden border-r border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-2xl will-change-[width] md:flex ${
+        settings.glassEnabled ? "bg-[var(--panel-bg)]/90 backdrop-blur-xl" : "bg-[var(--panel-bg)]"
       }`}
     >
       {/* Header */}
       <div className="flex h-16 shrink-0 items-center px-3">
         <button
           type="button"
-          className="flex h-10 w-10 shrink-0 items-center justify-center !rounded-[var(--panel-radius)] text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/50"
+          className="flex h-10 w-10 shrink-0 items-center justify-center !rounded-[var(--panel-radius)] text-[var(--muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/50"
           aria-label="Menu"
         >
           <Icon name="menu" className="h-5 w-5" />
@@ -85,7 +85,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Bottom */}
-      <div className="flex w-full shrink-0 flex-col gap-1.5 border-t border-[var(--border)] px-2 py-3">
+      <div className="flex w-full shrink-0 flex-col gap-1.5 border-t border-[var(--panel-border)] px-2 py-3">
         {bottomItems.map((item) => (
           <SidebarItem
             key={item.id}

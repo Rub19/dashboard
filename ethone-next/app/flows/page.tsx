@@ -161,7 +161,7 @@ export default function FlowsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{i18n("flowsTitle")}</h1>
-        <span className="rounded-full bg-[var(--surface-raised)] px-3 py-1 text-sm text-[var(--muted)]">
+        <span className="rounded-full bg-[var(--panel-bg)] px-3 py-1 text-sm text-[var(--muted)]">
           {flows.length} {flows.length > 1 ? i18n("flows") : i18n("flow")}
         </span>
       </div>
@@ -233,7 +233,7 @@ export default function FlowsPage() {
               onKeyDown={(e) => e.key === "Enter" && addFlow()}
               aria-label={i18n("create")}
               placeholder={i18n("create")}
-              className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+              className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
             />
             <button
               type="button"
@@ -276,7 +276,7 @@ export default function FlowsPage() {
                   {template.steps.map((step, i) => (
                     <span
                       key={i}
-                      className="rounded-[var(--panel-radius)] bg-[var(--surface-raised)] px-2 py-0.5 text-[10px] text-[var(--foreground)]"
+                      className="rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--foreground)]"
                     >
                       <b className="mr-1 text-[var(--accent)]">{i + 1}</b>
                       {step}
@@ -284,11 +284,11 @@ export default function FlowsPage() {
                   ))}
                 </div>
 
-                <div className="flex items-center gap-2 border-t border-[var(--border)] pt-3">
+                <div className="flex items-center gap-2 border-t border-[var(--panel-border)] pt-3">
                   {template.widgets.map((widgetId) => (
                     <span
                       key={widgetId}
-                      className="flex h-7 w-7 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--surface-raised)] text-[var(--muted)]"
+                      className="flex h-7 w-7 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--panel-bg)] text-[var(--muted)]"
                       title={widgetId}
                     >
                       <Icon name={WIDGET_ICONS[widgetId]} className="h-3.5 w-3.5" />
@@ -298,8 +298,8 @@ export default function FlowsPage() {
                     type="button"
                     onClick={() => runTemplate(template.id)}
                     className={`ml-auto inline-flex items-center gap-1.5 rounded-[var(--panel-radius)] px-2.5 py-1.5 text-xs font-semibold transition-opacity hover:opacity-90 ${
-                      isActive ? "bg-[var(--accent)] text-white" : "bg-[var(--surface-raised)] text-[var(--foreground)]"
-                    }`}
+                      isActive ? "bg-[var(--accent)] text-white" : "bg-[var(--panel-bg)] text-[var(--foreground)]"
+                    } backdrop-blur-[var(--panel-blur)]`}
                   >
                     <Icon name={isActive ? "check" : "play"} className="h-3.5 w-3.5" />
                     {isActive ? i18n("active") : i18n("start")}
@@ -363,7 +363,7 @@ export default function FlowsPage() {
                     {template.steps.map((step, i) => (
                       <span
                         key={i}
-                        className="rounded-[var(--panel-radius)] bg-[var(--surface-raised)] px-2 py-0.5 text-[10px] text-[var(--foreground)]"
+                        className="rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--foreground)]"
                       >
                         <b className="mr-1 text-[var(--accent)]">{i + 1}</b>
                         {step}
@@ -372,7 +372,7 @@ export default function FlowsPage() {
                   </div>
 
                   {canAutomate && (
-                    <div className="rounded-[var(--panel-radius)] bg-[var(--surface-raised)] p-3">
+                    <div className="rounded-[var(--panel-radius)] bg-[var(--panel-bg)] p-3">
                       <p className="mb-2 text-xs font-medium text-[var(--muted)]">
                         {i18n("automations")}
                       </p>
@@ -384,8 +384,8 @@ export default function FlowsPage() {
                               className={`flex items-center gap-2 rounded-[var(--panel-radius)] border px-2 py-1 text-xs ${
                                 rule.enabled
                                   ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-                                  : "border-[var(--border)] bg-[var(--surface)] text-[var(--muted)]"
-                              }`}
+                                  : "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--muted)]"
+                              } backdrop-blur-[var(--panel-blur)]`}
                             >
                               <Icon name="workflow" className="h-3 w-3" />
                               <span className="truncate">{actionLabel(rule.actionId)}</span>

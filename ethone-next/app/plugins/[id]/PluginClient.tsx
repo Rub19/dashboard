@@ -32,7 +32,7 @@ export default function PluginClient() {
   return (
     <div className="space-y-6 p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--surface-raised)] text-[var(--accent)]">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--panel-bg)] text-[var(--accent)]">
           <Icon name={plugin.icon} className="h-6 w-6" />
         </span>
         <div className="min-w-0 flex-1">

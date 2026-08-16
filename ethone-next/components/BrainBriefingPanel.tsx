@@ -88,9 +88,9 @@ export default function BrainBriefingPanel() {
               onClick={() => toggle(s.id)}
               className={`rounded-[var(--panel-radius)] border px-2 py-1 text-xs font-medium transition-colors ${
                 hidden.has(s.id)
-                  ? "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted)]"
+                  ? "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--muted)]"
                   : "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
-              }`}
+              } backdrop-blur-[var(--panel-blur)]`}
             >
               {s.label}
             </button>

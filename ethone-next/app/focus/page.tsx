@@ -81,8 +81,8 @@ export default function FocusPage() {
           className={`flex items-center gap-2 rounded-[var(--panel-radius)] border px-3 py-1.5 text-xs font-medium transition-colors ${
             zenMode
               ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
-              : "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--foreground)]"
-          }`}
+              : "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--foreground)]"
+          } backdrop-blur-[var(--panel-blur)]`}
         >
           <Icon name={zenMode ? "shrink" : "expand"} className="h-3.5 w-3.5" />
           {zenMode ? i18n("disableZen") : i18n("enableZen")}
@@ -100,7 +100,7 @@ export default function FocusPage() {
               className={`rounded-[var(--panel-radius)] px-3 py-1.5 text-xs font-medium transition-colors ${
                 activePreset === p.id && state.phase === "focus"
                   ? "bg-[var(--accent)] text-white"
-                  : "bg-[var(--surface-raised)] text-[var(--muted)] hover:text-[var(--foreground)]"
+                  : "bg-[var(--panel-bg)] text-[var(--muted)] hover:text-[var(--foreground)]"
               }`}
             >
               {i18n(p.label)}
@@ -159,7 +159,7 @@ export default function FocusPage() {
             type="button"
             aria-label={i18n("stop")}
             onClick={stop}
-            className="flex h-12 w-12 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
+            className="flex h-12 w-12 items-center justify-center rounded-full border border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--muted)] transition-colors hover:text-[var(--foreground)] backdrop-blur-[var(--panel-blur)]"
           >
             <Icon name="square" className="h-5 w-5" />
           </button>
@@ -170,8 +170,8 @@ export default function FocusPage() {
             disabled={!isBreak}
             className={`flex h-12 w-12 items-center justify-center rounded-full border transition-colors ${
               isBreak
-                ? "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--muted)] hover:text-[var(--foreground)]"
-                : "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--border)]"
+                ? "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--muted)] hover:text-[var(--foreground)]"
+                : "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--border)]"
             }`}
           >
             <Icon name="skipForward" className="h-5 w-5" />

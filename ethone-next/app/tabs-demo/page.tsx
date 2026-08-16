@@ -22,12 +22,12 @@ export default function TabsDemoPage() {
 
   return (
     <div className="min-h-screen w-full space-y-8 bg-[var(--background)] p-6">
-      <div className="mx-auto max-w-3xl rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-6">
+      <div className="mx-auto max-w-3xl rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-6 backdrop-blur-[var(--panel-blur)]">
         <h1 className="mb-6 text-lg font-semibold text-[var(--foreground)]">Tabs Demo (5 tabs)</h1>
         <Tabs tabs={DEMO_TABS} value={active} onChange={setActive} />
       </div>
 
-      <div className="mx-auto max-w-2xl rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-6">
+      <div className="mx-auto max-w-2xl rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-6 backdrop-blur-[var(--panel-blur)]">
         <h1 className="mb-6 text-lg font-semibold text-[var(--foreground)]">Tabs Demo (overflow)</h1>
         <Tabs tabs={MANY_TABS} defaultTab="overview" />
       </div>

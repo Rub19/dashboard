@@ -237,7 +237,7 @@ export default function LoginPage() {
         <div className="z-10 flex items-center gap-2">
           <BrandMark size={28} />
           <span className="text-lg font-bold tracking-tight">ETHONE</span>
-          <span className="rounded border border-[var(--border)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--muted)]">OS</span>
+          <span className="rounded border border-[var(--panel-border)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--muted)]">OS</span>
         </div>
 
         <div className="z-10 max-w-md">
@@ -252,7 +252,7 @@ export default function LoginPage() {
         </div>
 
         <div className="z-10 text-xs text-[var(--muted)]">
-          <span className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)]/50 px-3 py-1.5">
+          <span className="inline-flex items-center gap-2 rounded-full border border-[var(--panel-border)] bg-[var(--panel-bg)]/50 px-3 py-1.5 backdrop-blur-[var(--panel-blur)]">
             <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)]" />
             {i18n("systemOperational")}
           </span>
@@ -273,7 +273,7 @@ export default function LoginPage() {
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.15, ease: "easeOut" as const }}
-            className="relative flex max-h-[calc(100vh-2rem)] w-full flex-col overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)]/80 p-5 shadow-2xl backdrop-blur-xl sm:p-6"
+            className="relative flex max-h-[calc(100vh-2rem)] w-full flex-col overflow-hidden rounded-3xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/80 p-5 shadow-2xl backdrop-blur-xl sm:p-6"
           >
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/50 to-transparent" />
             <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[var(--accent)]/10 blur-3xl" />
@@ -289,7 +289,7 @@ export default function LoginPage() {
             {(() => {
               const modes: AuthMode[] = ["otp", "password", "register"];
               return (
-                <div className="relative mt-4 flex rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)]/50 p-1">
+                <div className="relative mt-4 flex rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/50 p-1 backdrop-blur-[var(--panel-blur)]">
                   {modes.map((m) => {
                     const active = mode === m;
                     return (
@@ -358,7 +358,7 @@ export default function LoginPage() {
                     required
                     value={code}
                     onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                    className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] py-2.5 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10"
+                    className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] py-2.5 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10 backdrop-blur-[var(--panel-blur)]"
                     aria-label={i18n("codePlaceholder")}
                     placeholder={i18n("codePlaceholder")}
                   />
@@ -393,7 +393,7 @@ export default function LoginPage() {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] py-2.5 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10"
+                      className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] py-2.5 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10 backdrop-blur-[var(--panel-blur)]"
                       aria-label={i18n("emailPlaceholderLogin")}
                       placeholder={i18n("emailPlaceholderLogin")}
                     />
@@ -416,7 +416,7 @@ export default function LoginPage() {
                         maxLength={64}
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] py-2.5 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10"
+                        className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] py-2.5 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10 backdrop-blur-[var(--panel-blur)]"
                         aria-label={i18n("username")}
                         placeholder={i18n("username")}
                       />
@@ -506,11 +506,11 @@ export default function LoginPage() {
                 {!isRegister && (
                   <>
                     <div className="relative flex items-center py-1">
-                      <div className="flex-1 border-t border-[var(--border)]" />
+                      <div className="flex-1 border-t border-[var(--panel-border)]" />
                       <span className="px-2 text-[11px] font-medium uppercase tracking-wide text-[var(--muted)]">
                         {i18n("orContinueWith")}
                       </span>
-                      <div className="flex-1 border-t border-[var(--border)]" />
+                      <div className="flex-1 border-t border-[var(--panel-border)]" />
                     </div>
 
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -518,7 +518,7 @@ export default function LoginPage() {
                         type="button"
                         onClick={() => handleOAuth("google")}
                         disabled={loading}
-                        className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--surface)] disabled:opacity-50"
+                        className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--panel-bg)] disabled:opacity-50 backdrop-blur-[var(--panel-blur)]"
                       >
                         <GoogleIcon className="h-5 w-5" /> {i18n("signInWithGoogle")}
                       </button>
@@ -526,7 +526,7 @@ export default function LoginPage() {
                         type="button"
                         onClick={() => handleOAuth("github")}
                         disabled={loading}
-                        className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--surface)] disabled:opacity-50"
+                        className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--panel-bg)] disabled:opacity-50 backdrop-blur-[var(--panel-blur)]"
                       >
                         <GithubIcon className="h-5 w-5" /> {i18n("signInWithGithub")}
                       </button>
@@ -536,7 +536,7 @@ export default function LoginPage() {
                       type="button"
                       onClick={handlePasskey}
                       disabled={loading}
-                      className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--surface)] disabled:opacity-50"
+                      className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--panel-bg)] disabled:opacity-50 backdrop-blur-[var(--panel-blur)]"
                     >
                       <Icon name="key-round" className="h-4 w-4" /> {i18n("signInWithPasskey")}
                     </button>

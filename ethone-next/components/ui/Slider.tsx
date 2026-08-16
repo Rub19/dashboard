@@ -100,7 +100,7 @@ export default function Slider({
         onKeyDown={handleKeyDown}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="relative h-1.5 w-full cursor-pointer rounded-full bg-white/[0.08] outline-none transition-colors duration-200 hover:bg-white/[0.12] focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
+        className="relative h-1.5 w-full cursor-pointer rounded-full bg-[var(--panel-bg)]/[0.08] outline-none transition-colors duration-200 hover:bg-[var(--panel-bg)]/[0.12] focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
       >
         <div
           className="pointer-events-none absolute left-0 top-0 h-full rounded-full transition-colors duration-150 duration-75"
@@ -118,7 +118,7 @@ export default function Slider({
         />
       </div>
       {showValue && (
-        <span className="min-w-[42px] shrink-0 rounded-md border border-[var(--panel-border)] bg-white/[0.06] px-2 py-0.5 text-center text-xs font-mono text-[var(--muted)]">
+        <span className="min-w-[42px] shrink-0 rounded-md border border-[var(--panel-border)] bg-[var(--panel-bg)]/[0.06] px-2 py-0.5 text-center text-xs font-mono text-[var(--muted)] backdrop-blur-[var(--panel-blur)]">
           {clamped}
           {unit}
         </span>

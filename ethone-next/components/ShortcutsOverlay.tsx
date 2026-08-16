@@ -145,7 +145,7 @@ export default function ShortcutsOverlay() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[70] bg-black/70 backdrop-blur-sm"
+            className="fixed inset-0 z-[70] bg-[var(--panel-bg)]/70 backdrop-blur-sm"
             onClick={() => setOpen(false)}
           />
           <motion.aside
@@ -157,9 +157,9 @@ export default function ShortcutsOverlay() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 20 }}
             transition={{ duration: 0.15, ease: "easeOut" as const }}
-            className="fixed left-1/2 top-1/2 z-[71] w-[min(90vw,800px)] max-h-[90vh] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface-raised)] shadow-2xl"
+            className="fixed left-1/2 top-1/2 z-[71] w-[min(90vw,800px)] max-h-[90vh] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-3xl border border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-2xl backdrop-blur-[var(--panel-blur)]"
           >
-            <header className="flex items-center justify-between border-b border-[var(--border)] p-5">
+            <header className="flex items-center justify-between border-b border-[var(--panel-border)] p-5">
               <div className="flex items-center gap-3">
                 <Icon name="keyboard" className="h-5 w-5 text-[var(--accent)]" />
                 <strong className="text-lg">Raccourcis clavier</strong>
@@ -168,7 +168,7 @@ export default function ShortcutsOverlay() {
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="rounded-[var(--panel-radius)] p-2 transition-colors hover:bg-[var(--surface)]"
+                className="rounded-[var(--panel-radius)] p-2 transition-colors hover:bg-[var(--panel-bg)]"
                 aria-label="Fermer les raccourcis"
               >
                 <Icon name="x" className="h-5 w-5" />
@@ -178,7 +178,7 @@ export default function ShortcutsOverlay() {
               {groups.map((group) => (
                 <section
                   key={group.label}
-                  className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-4"
+                  className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 backdrop-blur-[var(--panel-blur)]"
                 >
                   <header className="flex items-center gap-2 text-sm font-semibold text-[var(--accent)]">
                     <Icon name={group.icon} className="h-4 w-4" />
@@ -191,7 +191,7 @@ export default function ShortcutsOverlay() {
                         <span className="flex shrink-0 items-center gap-1">
                           {shortcut.keys.map((key, j) => (
                             <span key={j}>
-                              <kbd className="rounded bg-[var(--surface-raised)] px-1.5 py-0.5 text-[10px] text-[var(--foreground)]">
+                              <kbd className="rounded bg-[var(--panel-bg)] px-1.5 py-0.5 text-[10px] text-[var(--foreground)]">
                                 {key}
                               </kbd>
                               {j < shortcut.keys.length - 1 && <span className="text-[var(--muted)]">+</span>}
@@ -204,10 +204,10 @@ export default function ShortcutsOverlay() {
                 </section>
               ))}
             </div>
-            <footer className="flex items-center justify-center gap-2 border-t border-[var(--border)] p-3 text-xs text-[var(--muted)]">
-              <kbd className="rounded bg-[var(--surface)] px-1 py-0.5">Ctrl</kbd>
+            <footer className="flex items-center justify-center gap-2 border-t border-[var(--panel-border)] p-3 text-xs text-[var(--muted)]">
+              <kbd className="rounded bg-[var(--panel-bg)] px-1 py-0.5">Ctrl</kbd>
               <span>+</span>
-              <kbd className="rounded bg-[var(--surface)] px-1 py-0.5">/</kbd>
+              <kbd className="rounded bg-[var(--panel-bg)] px-1 py-0.5">/</kbd>
               <span>pour ouvrir / fermer cette vue</span>
             </footer>
           </motion.aside>

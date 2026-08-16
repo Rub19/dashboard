@@ -96,7 +96,7 @@ export default function ProfilePage() {
         <Card3D>
           <div className="space-y-2">
             <label className="text-sm font-medium">{i18n("publicId")}</label>
-            <div className="flex min-w-0 items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm">
+            <div className="flex min-w-0 items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]">
               <code className="break-all text-xs text-[var(--muted)]">{profile.public_id}</code>
               <button
                 type="button"
@@ -104,7 +104,7 @@ export default function ProfilePage() {
                   navigator.clipboard.writeText(profile.public_id || "");
                   success(i18n("copied"));
                 }}
-                className="ml-auto rounded p-1 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+                className="ml-auto rounded p-1 text-[var(--muted)] hover:bg-[var(--panel-bg)]"
                 aria-label={i18n("copy")}
               >
                 <Icon name="copy" className="h-4 w-4" />
@@ -124,7 +124,7 @@ export default function ProfilePage() {
               value={form.username}
               onChange={(e) => setForm({ ...form, username: e.target.value })}
               aria-label={i18n("usernamePlaceholder")} placeholder={i18n("usernamePlaceholder")}
-              className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+              className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
             />
             <p className="break-words text-xs text-[var(--muted)]">{i18n("displayNameHint")}</p>
           </div>
@@ -136,7 +136,7 @@ export default function ProfilePage() {
               value={form.display_name}
               onChange={(e) => setForm({ ...form, display_name: e.target.value })}
               aria-label={i18n("yourNamePlaceholder")} placeholder={i18n("yourNamePlaceholder")}
-              className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+              className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
             />
           </div>
 
@@ -147,9 +147,9 @@ export default function ProfilePage() {
               value={form.avatar_url}
               onChange={(e) => setForm({ ...form, avatar_url: e.target.value })}
               placeholder="https://..."
-              className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+              className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
             />
-            <label className="mt-2 flex cursor-pointer items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)]">
+            <label className="mt-2 flex cursor-pointer items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]">
               <Icon name="upload" className="h-4 w-4" />
               {uploadingMedia ? i18n("loading") : i18n("uploadAvatar")}
               <input
@@ -183,7 +183,7 @@ export default function ProfilePage() {
             <button
               type="button"
               onClick={() => router.push("/settings")}
-              className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm font-medium transition-colors hover:border-[var(--accent)]"
+              className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 py-2 text-sm font-medium transition-colors hover:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
             >
               {i18n("cancel")}
             </button>
@@ -191,7 +191,7 @@ export default function ProfilePage() {
             <button
               type="button"
               onClick={() => router.push("/profile-selection")}
-              className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm font-medium transition-colors hover:border-[var(--accent)]"
+              className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 py-2 text-sm font-medium transition-colors hover:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
             >
               <Icon name="users" className="h-4 w-4" />
               {i18n("manageProfiles")}
@@ -210,7 +210,7 @@ export default function ProfilePage() {
         <Card3D>
           <div className="space-y-2">
             <h2 className="text-sm font-medium">{i18n("publicProfilePreview")}</h2>
-            <div className="flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-3">
+            <div className="flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 backdrop-blur-[var(--panel-blur)]">
               {publicProfile.profile.avatarUrl ? (
                 <Image src={publicProfile.profile.avatarUrl} alt="" width={48} height={48} unoptimized className="h-12 w-12 rounded-full object-cover" />
               ) : (

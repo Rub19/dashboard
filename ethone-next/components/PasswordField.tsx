@@ -80,7 +80,7 @@ function CoachingBadges({ badges }: { badges: string[] }) {
           initial={{ opacity: 0, scale: 0.8, y: 6 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ delay: i * 0.05 }}
-          className="rounded-full border border-[var(--border)] bg-[var(--surface-raised)] px-2 py-0.5 text-[10px] text-[var(--muted)]"
+          className="rounded-full border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--muted)] backdrop-blur-[var(--panel-blur)]"
         >
           {badge}
         </motion.span>
@@ -168,7 +168,7 @@ export default function PasswordField({
           onPaste={handlePaste}
           autoComplete={autoComplete}
           placeholder={placeholder}
-          className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] py-2.5 pl-10 pr-20 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10"
+          className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] py-2.5 pl-10 pr-20 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10 backdrop-blur-[var(--panel-blur)]"
           aria-label={placeholder}
         />
         <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1">
@@ -235,7 +235,7 @@ export default function PasswordField({
                 <button
                   type="button"
                   onClick={handleGenerate}
-                  className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-xs font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)]"
+                  className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-xs font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
                 >
                   <Icon name="sparkles" className="h-3.5 w-3.5 text-[var(--accent)]" />
                   Utiliser un mot de passe fort suggéré

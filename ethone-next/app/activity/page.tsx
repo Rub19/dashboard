@@ -57,7 +57,7 @@ function colorByCount(count: number): Level {
 }
 
 const LEVELS: Record<Level, string> = {
-  0: "bg-[var(--surface-raised)]",
+  0: "bg-[var(--panel-bg)]",
   1: "bg-emerald-500/25",
   2: "bg-emerald-500/45",
   3: "bg-emerald-500/70",
@@ -268,7 +268,7 @@ export default function ActivityPage() {
           <h1 className="text-2xl font-bold">{i18n("activityJournal")}</h1>
           <p className="text-sm text-[var(--muted)]">{i18n("activityJournalDescription")}</p>
         </div>
-        <div className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-1">
+        <div className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1 backdrop-blur-[var(--panel-blur)]">
           {PERIODS.map((p) => (
             <button
               key={p}
@@ -349,7 +349,7 @@ export default function ActivityPage() {
               onChange={(e) => setQuery(e.target.value)}
               placeholder={i18n("journalSearchPlaceholder")}
               aria-label={i18n("journalSearchPlaceholder")}
-              className="h-9 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--background)] px-3 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--accent)]"
+              className="h-9 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--background)] px-3 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--accent)]"
             />
             <Select
               value={categoryFilter}
@@ -415,11 +415,11 @@ export default function ActivityPage() {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           <p className="font-medium">{event.title}</p>
-                          <span className="rounded-full bg-[var(--surface-raised)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
+                          <span className="rounded-full bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
                             {i18n(event.category)}
                           </span>
                           {event.tone && (
-                            <span className="rounded-full bg-[var(--surface-raised)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
+                            <span className="rounded-full bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
                               {event.eventType}
                             </span>
                           )}
@@ -448,7 +448,7 @@ export default function ActivityPage() {
         </div>
 
         {showDetails && (
-          <div className="mt-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-3">
+          <div className="mt-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 backdrop-blur-[var(--panel-blur)]">
             <p className="text-xs text-[var(--muted)]">{i18n("activityDescription")}</p>
           </div>
         )}

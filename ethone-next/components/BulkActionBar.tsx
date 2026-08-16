@@ -23,7 +23,7 @@ export default function BulkActionBar({
   const i18n = useI18n();
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-3 shadow-lg">
+    <div className="flex flex-wrap items-center justify-between gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 shadow-lg backdrop-blur-[var(--panel-blur)]">
       <div className="flex items-center gap-2 text-sm font-medium">
         <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--accent)] text-[10px] font-bold text-white">
           {count}
@@ -32,17 +32,17 @@ export default function BulkActionBar({
       </div>
       <div className="flex items-center gap-2">
         {onDone && (
-          <button type="button" onClick={onDone} className="flex items-center gap-1.5 rounded-[var(--panel-radius)] bg-[var(--surface)] px-3 py-1.5 text-xs hover:bg-[var(--accent)]/10">
+          <button type="button" onClick={onDone} className="flex items-center gap-1.5 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-1.5 text-xs hover:bg-[var(--accent)]/10">
             <Icon name="circle-check" className="h-3.5 w-3.5" /> {i18n("markDone")}
           </button>
         )}
         {onUndone && (
-          <button type="button" onClick={onUndone} className="flex items-center gap-1.5 rounded-[var(--panel-radius)] bg-[var(--surface)] px-3 py-1.5 text-xs hover:bg-[var(--accent)]/10">
+          <button type="button" onClick={onUndone} className="flex items-center gap-1.5 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-1.5 text-xs hover:bg-[var(--accent)]/10">
             <Icon name="circle" className="h-3.5 w-3.5" /> {i18n("markUndone")}
           </button>
         )}
         {onFavorite && (
-          <button type="button" onClick={onFavorite} className="flex items-center gap-1.5 rounded-[var(--panel-radius)] bg-[var(--surface)] px-3 py-1.5 text-xs hover:bg-[var(--accent)]/10">
+          <button type="button" onClick={onFavorite} className="flex items-center gap-1.5 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-1.5 text-xs hover:bg-[var(--accent)]/10">
             <Icon name="heart" className="h-3.5 w-3.5" /> {i18n("favorite")}
           </button>
         )}
@@ -52,7 +52,7 @@ export default function BulkActionBar({
           </button>
         )}
         {children}
-        <button type="button" onClick={onClear} className="rounded-[var(--panel-radius)] px-3 py-1.5 text-xs text-[var(--muted)] hover:bg-[var(--surface)]">
+        <button type="button" onClick={onClear} className="rounded-[var(--panel-radius)] px-3 py-1.5 text-xs text-[var(--muted)] hover:bg-[var(--panel-bg)]">
           {i18n("cancel")}
         </button>
       </div>

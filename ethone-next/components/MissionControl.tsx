@@ -168,7 +168,7 @@ function Section({ title, count, children }: { title: string; count: number; chi
     <section className="space-y-2">
       <header className="flex items-center gap-2">
         <h3 className="text-sm font-semibold text-[var(--foreground)]">{title}</h3>
-        <span className="rounded-full bg-[var(--surface)] px-2 py-0.5 text-xs text-[var(--muted)]">{count}</span>
+        <span className="rounded-full bg-[var(--panel-bg)] px-2 py-0.5 text-xs text-[var(--muted)]">{count}</span>
       </header>
       {children}
     </section>
@@ -271,7 +271,7 @@ function MissionControlDialog() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-start overflow-y-auto bg-black/80 p-4 pt-12 backdrop-blur-sm sm:justify-center sm:p-8 sm:pt-8"
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-start overflow-y-auto bg-[var(--panel-bg)]/80 p-4 pt-12 backdrop-blur-sm sm:justify-center sm:p-8 sm:pt-8"
       role="dialog"
       aria-modal="true"
       aria-labelledby="mission-title"
@@ -292,7 +292,7 @@ function MissionControlDialog() {
         </div>
         <div className="flex items-center gap-2">
           <span
-            className="rounded border border-[var(--border)] bg-[var(--surface)] px-1.5 py-0.5 font-mono text-xs text-[var(--muted)]"
+            className="rounded border border-[var(--panel-border)] bg-[var(--panel-bg)] px-1.5 py-0.5 font-mono text-xs text-[var(--muted)] backdrop-blur-[var(--panel-blur)]"
             aria-label={i18n("missionF2Open")}
           >
             F2
@@ -300,7 +300,7 @@ function MissionControlDialog() {
           <button
             type="button"
             onClick={() => setMissionControl(false)}
-            className="rounded-full bg-[var(--surface)] p-2 text-[var(--foreground)] transition-colors hover:bg-[var(--surface-raised)]"
+            className="rounded-full bg-[var(--panel-bg)] p-2 text-[var(--foreground)] transition-colors hover:bg-[var(--panel-bg)]"
             aria-label={i18n("close")}
           >
             <Icon name="close" className="h-5 w-5" />
@@ -316,7 +316,7 @@ function MissionControlDialog() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={i18n("searchWindows")}
-            className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] py-2.5 pl-10 pr-4 text-sm text-[var(--foreground)] placeholder:text-[var(--muted)] outline-none transition-colors focus:border-[var(--accent)]"
+            className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] py-2.5 pl-10 pr-4 text-sm text-[var(--foreground)] placeholder:text-[var(--muted)] outline-none transition-colors focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
             autoFocus
             aria-label={i18n("searchWindows")}
           />
@@ -336,11 +336,11 @@ function MissionControlDialog() {
                   aria-current={w.id === activeWorkspace.id ? "true" : undefined}
                   aria-label={`${i18n(w.id)} · ${i18n(w.flow)}`}
                   onClick={() => navigateAndClose("/spaces")}
-                  className={`group relative flex w-full items-center gap-3 rounded-[var(--panel-radius)] border p-3 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)] ${
+                  className={`group relative flex w-full items-center gap-3 rounded-[var(--panel-radius)] border p-3 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--panel-bg)] ${
                     w.id === activeWorkspace.id
                       ? "border-[var(--accent)] bg-[var(--accent)]/5"
-                      : "border-[var(--border)] bg-[var(--surface)]"
-                  }`}
+                      : "border-[var(--panel-border)] bg-[var(--panel-bg)]"
+                  } backdrop-blur-[var(--panel-blur)]`}
                 >
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent)]/10 text-[var(--accent)]">
                     <Icon name={w.icon} className="h-5 w-5" />
@@ -378,11 +378,11 @@ function MissionControlDialog() {
                   aria-current={w.id === activeWorkspace.id ? "true" : undefined}
                   aria-label={`${i18n("flows")} · ${i18n(w.flow)}`}
                   onClick={() => navigateAndClose("/flows")}
-                  className={`group flex w-full flex-col gap-2 rounded-[var(--panel-radius)] border p-3 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)] ${
+                  className={`group flex w-full flex-col gap-2 rounded-[var(--panel-radius)] border p-3 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--panel-bg)] ${
                     w.id === activeWorkspace.id
                       ? "border-[var(--accent)] bg-[var(--accent)]/5"
-                      : "border-[var(--border)] bg-[var(--surface)]"
-                  }`}
+                      : "border-[var(--panel-border)] bg-[var(--panel-bg)]"
+                  } backdrop-blur-[var(--panel-blur)]`}
                 >
                   <div className="flex items-center gap-3">
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent)]/10 text-[var(--accent)]">
@@ -399,7 +399,7 @@ function MissionControlDialog() {
                     {w.steps.map((step, i) => (
                       <span
                         key={i}
-                        className="rounded bg-[var(--surface-raised)] px-1.5 py-0.5 text-[10px] text-[var(--muted)]"
+                        className="rounded bg-[var(--panel-bg)] px-1.5 py-0.5 text-[10px] text-[var(--muted)]"
                       >
                         {i + 1}. {step}
                       </span>
@@ -412,12 +412,12 @@ function MissionControlDialog() {
 
           <Section title={i18n("missionWindows")} count={windows.length}>
             {windows.length === 0 ? (
-              <div className="flex flex-col items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-8 text-center text-[var(--muted)]">
+              <div className="flex flex-col items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-8 text-center text-[var(--muted)] backdrop-blur-[var(--panel-blur)]">
                 <Icon name="scan-search" className="h-10 w-10 opacity-50" />
                 <p>{i18n("noOpenWindows")}</p>
               </div>
             ) : filtered.length === 0 ? (
-              <div className="flex flex-col items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-8 text-center text-[var(--muted)]">
+              <div className="flex flex-col items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-8 text-center text-[var(--muted)] backdrop-blur-[var(--panel-blur)]">
                 <Icon name="scan-search" className="h-10 w-10 opacity-50" />
                 <p>{i18n("noWindowsMatch")}</p>
               </div>
@@ -437,7 +437,7 @@ function MissionControlDialog() {
                         focusWindow(win.id);
                         setMissionControl(false);
                       }}
-                      className="relative flex aspect-video w-full cursor-pointer flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--surface-raised)] p-4 text-left shadow-2xl"
+                      className="relative flex aspect-video w-full cursor-pointer flex-col overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 text-left shadow-2xl backdrop-blur-[var(--panel-blur)]"
                     >
                       <div className="mb-3 flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent)]/10 text-[var(--accent)]">
@@ -449,7 +449,7 @@ function MissionControlDialog() {
                         </div>
                       </div>
 
-                      <div className="mt-auto h-16 w-full overflow-hidden rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-2">
+                      <div className="mt-auto h-16 w-full overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 backdrop-blur-[var(--panel-blur)]">
                         <div className="flex h-full w-full flex-col gap-1.5 opacity-40">
                           <div className="h-2 w-3/4 rounded bg-[var(--accent)]/30" />
                           <div className="h-2 w-1/2 rounded bg-[var(--muted)]/20" />
@@ -465,7 +465,7 @@ function MissionControlDialog() {
                         e.stopPropagation();
                         closeWindow(win.id);
                       }}
-                      className="absolute right-2 top-2 z-10 rounded-full bg-black/40 p-1.5 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                      className="absolute right-2 top-2 z-10 rounded-full bg-[var(--panel-bg)]/40 p-1.5 text-white opacity-0 transition-opacity group-hover:opacity-100"
                       aria-label={i18n("closeWindow")}
                     >
                       <Icon name="close" className="h-3.5 w-3.5" />
@@ -497,11 +497,11 @@ function MissionControlDialog() {
                     setMissionControl(false);
                     openWindow(i18n(r.id), r.route);
                   }}
-                  className={`group flex w-full items-center gap-3 rounded-[var(--panel-radius)] border p-2.5 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)] ${
+                  className={`group flex w-full items-center gap-3 rounded-[var(--panel-radius)] border p-2.5 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--panel-bg)] ${
                     pathname === r.route
                       ? "border-[var(--accent)] bg-[var(--accent)]/5"
-                      : "border-[var(--border)] bg-[var(--surface)]"
-                  }`}
+                      : "border-[var(--panel-border)] bg-[var(--panel-bg)]"
+                  } backdrop-blur-[var(--panel-blur)]`}
                 >
                   <Icon name={r.icon} className="h-5 w-5 text-[var(--accent)]" />
                   <span className="min-w-0 flex-1">
@@ -534,7 +534,7 @@ function MissionControlDialog() {
                     setMissionControl(false);
                     openWindow(i18n("connections"), "/connections");
                   }}
-                  className="group flex w-full items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-2.5 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)]"
+                  className="group flex w-full items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2.5 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
                 >
                   <span className={`h-2 w-2 shrink-0 rounded-full ${STATUS_DOT[record.status] || "bg-zinc-500"}`} />
                   <span className="min-w-0 flex-1">
@@ -557,7 +557,7 @@ function MissionControlDialog() {
           {settings.brainEnabled && (
             <Section title={i18n("missionBrainActivity")} count={brainActivity.length}>
               {brainActivity.length === 0 ? (
-                <div className="flex flex-col items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-6 text-center text-[var(--muted)]">
+                <div className="flex flex-col items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-6 text-center text-[var(--muted)] backdrop-blur-[var(--panel-blur)]">
                   <Icon name="brain" className="h-8 w-8 opacity-50" />
                   <p>{i18n("missionNoBrainActivity")}</p>
                   <button
@@ -585,7 +585,7 @@ function MissionControlDialog() {
                         setMissionControl(false);
                         openWindow(i18n("brain"), "/brain");
                       }}
-                      className="group flex w-full items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-2.5 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)]"
+                      className="group flex w-full items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2.5 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
                     >
                       <Icon name={b.icon} className="h-5 w-5 shrink-0 text-[var(--accent)]" />
                       <span className="min-w-0 flex-1">

@@ -43,9 +43,9 @@ export default function UploadItem({
     task.status === "success" ? "bg-emerald-500" : task.status === "error" ? "bg-rose-500" : "bg-accent";
 
   return (
-    <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-surface/60 p-4 shadow-xl backdrop-blur-xl">
+    <div className="relative overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/60 p-4 shadow-xl backdrop-blur-xl">
       <div className="flex items-start gap-4">
-        <div className="relative flex h-14 w-14 shrink-0 overflow-hidden rounded-[var(--panel-radius)] bg-surface-raised ring-1 ring-white/5">
+        <div className="relative flex h-14 w-14 shrink-0 overflow-hidden rounded-[var(--panel-radius)] bg-[var(--panel-bg)] ring-1 ring-white/5">
           {isImage && objectUrl ? (
             <Image
               src={objectUrl}
@@ -86,7 +86,7 @@ export default function UploadItem({
               <button
                 type="button"
                 onClick={onReplace}
-                className="rounded-[var(--panel-radius)] p-1.5 text-muted transition hover:text-foreground hover:bg-surface-raised"
+                className="rounded-[var(--panel-radius)] p-1.5 text-muted transition hover:text-foreground hover:bg-[var(--panel-bg)]"
                 aria-label={i18n("replace")}
               >
                 <Replace className="h-4 w-4" />
@@ -103,7 +103,7 @@ export default function UploadItem({
           </div>
 
           <div className="mt-3 space-y-1.5">
-            <div className="flex h-2 overflow-hidden rounded-full bg-surface-raised ring-1 ring-white/5">
+            <div className="flex h-2 overflow-hidden rounded-full bg-[var(--panel-bg)] ring-1 ring-white/5">
               <motion.div
                 initial={false}
                 animate={{ width: `${progress}%` }}

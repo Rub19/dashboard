@@ -188,7 +188,7 @@ export default function BillsCalendarWidget() {
                     ? "bg-[var(--accent)] text-white"
                     : isToday
                       ? "bg-[var(--accent)]/10 text-[var(--accent)] ring-1 ring-[var(--accent)]"
-                      : "bg-[var(--surface-raised)] text-[var(--foreground)] hover:bg-[var(--surface)]"
+                      : "bg-[var(--panel-bg)] text-[var(--foreground)] hover:bg-[var(--panel-bg)]"
                 }`}
               >
                 <span className={`text-[10px] uppercase ${isSelected ? "text-white/70" : "text-[var(--muted)]"}`}>{weekdayFormatter.format(d)}</span>
@@ -205,7 +205,7 @@ export default function BillsCalendarWidget() {
                           width={16}
                           height={16}
                           unoptimized
-                          className="h-4 w-4 rounded-full border border-[var(--panel-border)] bg-black/20 object-contain p-0.5"
+                          className="h-4 w-4 rounded-full border border-[var(--panel-border)] bg-[var(--panel-bg)]/20 object-contain p-0.5 backdrop-blur-[var(--panel-blur)]"
                         />
                       ) : (
                         <span
@@ -237,7 +237,7 @@ export default function BillsCalendarWidget() {
             type="button"
             onClick={() => fileRef.current?.click()}
             disabled={scanning}
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-xs font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--surface)] disabled:opacity-50"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-xs font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--panel-bg)] disabled:opacity-50 backdrop-blur-[var(--panel-blur)]"
           >
             <Icon name={scanning ? "loader-2" : "scan"} className={`h-3.5 w-3.5 ${scanning ? "animate-spin" : ""}`} />
             {i18n("scan")}
@@ -256,7 +256,7 @@ export default function BillsCalendarWidget() {
         </div>
 
         {adding && (
-          <div className="space-y-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)]/50 p-3">
+          <div className="space-y-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/50 p-3 backdrop-blur-[var(--panel-blur)]">
             <Input value={label} onChange={(e) => setLabel(e.target.value)} placeholder={i18n("billLabel")} />
             <div className="flex gap-2">
               <input
@@ -264,7 +264,7 @@ export default function BillsCalendarWidget() {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder={i18n("billAmount")}
-                className="w-28 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                className="w-28 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
               />
               <Select
                 value={currency}
@@ -310,7 +310,7 @@ export default function BillsCalendarWidget() {
             selectedBills.map((b) => {
               const brand = detectBrandMeta(b.label, { icon: "receipt", color: "var(--muted)" });
               return (
-                <div key={b.id} className="flex items-center gap-3 rounded-[var(--panel-radius)] bg-[var(--surface-raised)] p-2.5">
+                <div key={b.id} className="flex items-center gap-3 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] p-2.5">
                   {brand.logo ? (
                     <Image
                       src={brand.logo}
@@ -318,7 +318,7 @@ export default function BillsCalendarWidget() {
                       width={36}
                       height={36}
                       unoptimized
-                      className="h-9 w-9 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-black/20 object-contain p-1.5"
+                      className="h-9 w-9 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/20 object-contain p-1.5 backdrop-blur-[var(--panel-blur)]"
                     />
                   ) : (
                     <span
@@ -338,7 +338,7 @@ export default function BillsCalendarWidget() {
                   <button
                     type="button"
                     onClick={() => handleDelete(b.id)}
-                    className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--surface)] hover:text-red-400"
+                    className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--panel-bg)] hover:text-red-400"
                     aria-label={i18n("delete")}
                   >
                     <Icon name="trash-2" className="h-4 w-4" />

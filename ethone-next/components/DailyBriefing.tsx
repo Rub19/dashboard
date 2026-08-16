@@ -51,7 +51,7 @@ export default function DailyBriefing({
           {stats.map((s) => (
             <div
               key={s.label}
-              className="flex min-w-[5.5rem] flex-col items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] p-2"
+              className="flex min-w-[5.5rem] flex-col items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 backdrop-blur-[var(--panel-blur)]"
             >
               <Icon name={s.icon} className={`h-4 w-4 ${s.color}`} />
               <span className="text-lg font-bold tabular-nums">{loading ? "-" : s.value}</span>

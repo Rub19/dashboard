@@ -117,7 +117,7 @@ function ForecastRow({ day, lang }: { day: WeatherData; lang: string }) {
   const code = asNum(day.weatherCode);
 
   return (
-    <div className="flex items-center justify-between rounded-[var(--panel-radius)] bg-[var(--surface)] px-3 py-2 text-sm">
+    <div className="flex items-center justify-between rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm">
       <span className="text-[var(--muted)]">{dayLabel(date, lang)}</span>
       <div className="flex items-center gap-2">
         <Icon name={weatherIconFromCode(code, condition)} className="h-4 w-4" />
@@ -217,14 +217,14 @@ function WeatherDetailContent({ open, onClose, referenceRef, weather }: ContentP
                 {(humidity !== undefined || wind !== undefined) && (
                   <div className="grid grid-cols-2 gap-2">
                     {humidity !== undefined && (
-                      <div className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--surface)] px-3 py-2 text-sm">
+                      <div className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm">
                         <Icon name="droplets" className="h-4 w-4 text-sky-400" />
                         <span className="font-medium">{humidity}%</span>
                         <span className="text-[var(--muted)]">{i18n("humidity")}</span>
                       </div>
                     )}
                     {wind !== undefined && (
-                      <div className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--surface)] px-3 py-2 text-sm">
+                      <div className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm">
                         <Icon name="wind" className="h-4 w-4 text-emerald-400" />
                         <span className="font-medium">{wind} km/h</span>
                         <span className="text-[var(--muted)]">{i18n("wind")}</span>

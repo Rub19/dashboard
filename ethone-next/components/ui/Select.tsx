@@ -231,9 +231,9 @@ export default function Select({
           disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
         } ${
           open
-            ? "border-purple-500/50 bg-white/[0.04] text-zinc-200 ring-1 ring-purple-500/30"
-            : "border-[var(--panel-border)] bg-zinc-900/70 text-zinc-200 hover:border-white/20"
-        }`}
+            ? "border-purple-500/50 bg-[var(--panel-bg)]/[0.04] text-zinc-200 ring-1 ring-purple-500/30"
+            : "border-[var(--panel-border)] bg-[var(--panel-bg)]/70 text-zinc-200 hover:border-white/20"
+        } backdrop-blur-[var(--panel-blur)]`}
       >
         <span className="truncate">{selected ? selected.label : placeholder}</span>
         <motion.span

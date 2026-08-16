@@ -50,7 +50,7 @@ export default function LiveStats() {
           <p className="text-2xl font-bold">{loading ? "-" : byStatus.loading}</p>
           <p className="text-xs">{i18n("loading")}</p>
         </div>
-        <div className="rounded-[var(--panel-radius)] bg-[var(--surface-raised)] p-3 text-[var(--muted)]">
+        <div className="rounded-[var(--panel-radius)] bg-[var(--panel-bg)] p-3 text-[var(--muted)]">
           <p className="text-2xl font-bold">{loading ? "-" : byStatus.empty}</p>
           <p className="text-xs">{i18n("empty")}</p>
         </div>

@@ -194,7 +194,7 @@ export default function SettingField({ field }: { field: FieldDef }) {
             <button
               type="button"
               onClick={handleUndo}
-              className="rounded-[var(--panel-radius)] p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--accent)]"
+              className="rounded-[var(--panel-radius)] p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--accent)]"
               title="Rétablir la valeur par défaut"
               aria-label="Rétablir"
             >

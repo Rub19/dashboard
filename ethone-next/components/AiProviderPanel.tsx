@@ -26,7 +26,7 @@ export function AiProviderPanel() {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-4">
+      <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 backdrop-blur-[var(--panel-blur)]">
         <p className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">Primary AI</p>
         <div className="mt-2 flex items-center gap-2">
           <span className="h-2 w-2 rounded-full bg-emerald-500" />
@@ -35,7 +35,7 @@ export function AiProviderPanel() {
         <p className="mt-1 text-xs text-[var(--muted)]">{primary?.defaultModel || status?.cloudflare?.model}</p>
       </div>
 
-      <div className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-4">
+      <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 backdrop-blur-[var(--panel-blur)]">
         <p className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">Fallback AI</p>
         <div className="mt-2 flex items-center gap-2">
           <span className={`h-2 w-2 rounded-full ${fallback ? "bg-amber-500" : "bg-red-500"}`} />
@@ -45,7 +45,7 @@ export function AiProviderPanel() {
       </div>
 
       {quota && (
-        <div className="rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-4">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 backdrop-blur-[var(--panel-blur)]">
           <p className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">Cloudflare Quota</p>
           <div className="mt-2 flex items-center justify-between text-sm">
             <span>{Math.round(quota.used)} / {quota.budget} neurons</span>
@@ -53,7 +53,7 @@ export function AiProviderPanel() {
               {formatPercent(quota.percent)}
             </span>
           </div>
-          <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[var(--surface)]">
+          <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[var(--panel-bg)]">
             <div
               className={`h-full transition-colors duration-150 ${quota.exhausted ? "bg-red-500" : quota.prepare ? "bg-amber-500" : quota.warning ? "bg-yellow-500" : "bg-emerald-500"}`}
               style={{ width: `${Math.min(100, Math.round(quota.percent * 100))}%` }}

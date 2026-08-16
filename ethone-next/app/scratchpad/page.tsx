@@ -82,14 +82,14 @@ export default function ScratchpadPage() {
           <button
             type="button"
             onClick={() => { setNote(""); setSheetOpen(false); }}
-            className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] px-3 py-2 text-left text-sm hover:bg-[var(--surface-raised)]"
+            className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-2 text-left text-sm hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
           >
             {i18n("scratchpadClear")}
           </button>
           <button
             type="button"
             onClick={() => { navigator.clipboard?.writeText(note); setSheetOpen(false); }}
-            className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] px-3 py-2 text-left text-sm hover:bg-[var(--surface-raised)]"
+            className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-2 text-left text-sm hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
           >
             {i18n("scratchpadCopy")}
           </button>

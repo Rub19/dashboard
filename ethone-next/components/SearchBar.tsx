@@ -35,7 +35,7 @@ function MobileSearchPanel({
         >
           <form
             onSubmit={onSubmit}
-            className="flex h-16 items-center gap-2 border-b border-[var(--border)] px-4"
+            className="flex h-16 items-center gap-2 border-b border-[var(--panel-border)] px-4"
           >
             <Icon name="search" className="h-5 w-5 text-[var(--muted)]" />
             <input
@@ -52,7 +52,7 @@ function MobileSearchPanel({
                 setQuery("");
                 onClose();
               }}
-              className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
+              className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)]"
               aria-label={i18n("close")}
             >
               <Icon name="x" className="h-5 w-5" />
@@ -114,7 +114,7 @@ export default function SearchBar() {
       <button
         type="button"
         onClick={() => setMobileOpen(true)}
-        className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)] md:hidden"
+        className="flex h-10 w-10 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)] md:hidden"
         aria-label={i18n("search")}
       >
         <Icon name="search" className="h-5 w-5" />
@@ -125,7 +125,7 @@ export default function SearchBar() {
         initial={{ clipPath: "inset(0 100% 0 0)" }}
         animate={{ clipPath: open ? "inset(0 0% 0 0)" : "inset(0 100% 0 0)" }}
         transition={{ duration: 0.15, ease: "easeOut" as const }}
-        className="relative hidden h-10 w-80 items-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 text-sm text-[var(--foreground)] outline-none transition-colors hover:border-[var(--accent)] focus-within:border-[var(--accent)] md:flex"
+        className="relative hidden h-10 w-80 items-center overflow-hidden rounded-full border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 text-sm text-[var(--foreground)] outline-none transition-colors hover:border-[var(--accent)] focus-within:border-[var(--accent)] md:flex backdrop-blur-[var(--panel-blur)]"
       >
         <button
           type="button"

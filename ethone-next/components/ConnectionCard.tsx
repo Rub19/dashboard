@@ -234,7 +234,7 @@ export default function ConnectionCard({
   }
 
   const inputClass =
-    "w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white/[0.03] px-3 py-2 text-sm text-foreground outline-none transition placeholder:text-muted/60 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/30";
+    "w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/[0.03] px-3 py-2 text-sm text-foreground outline-none transition placeholder:text-muted/60 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/30";
 
   return (
     <motion.div
@@ -244,12 +244,12 @@ export default function ConnectionCard({
       whileHover={{ y: -2 }}
       whileTap={{ scale: 0.985 }}
       transition={{ duration: 0.15, ease: "easeOut" as const }}
-      className="group relative flex flex-col gap-4 overflow-hidden rounded-3xl border border-[var(--panel-border)] bg-surface/60 p-5 shadow-2xl backdrop-blur-2xl transition hover:border-purple-500/20 hover:shadow-[0_0_40px_-12px_rgba(139,92,246,0.12)]"
+      className="group relative flex flex-col gap-4 overflow-hidden rounded-3xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/60 p-5 shadow-2xl backdrop-blur-2xl transition hover:border-purple-500/20 hover:shadow-[0_0_40px_-12px_rgba(139,92,246,0.12)]"
     >
       <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-accent/[0.03] to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
 
       <div className="flex items-start gap-3">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-surface-raised shadow-inner">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--panel-bg)] shadow-inner">
           <ServiceIcon id={integration.id} icon={integration.icon} className="h-5 w-5" colored />
         </div>
         <div className="min-w-0 flex-1">
@@ -439,7 +439,7 @@ export default function ConnectionCard({
       <button
         type="button"
         onClick={() => setRawOpen((v) => !v)}
-        className="mt-auto flex w-full items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-surface-raised/50 px-3 py-2 text-sm text-muted transition hover:border-accent/20 hover:text-foreground"
+        className="mt-auto flex w-full items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/50 px-3 py-2 text-sm text-muted transition hover:border-accent/20 hover:text-foreground backdrop-blur-[var(--panel-blur)]"
       >
         <span className="flex items-center gap-2">
           {rawOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -458,7 +458,7 @@ export default function ConnectionCard({
             layout
             className="overflow-hidden"
           >
-            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3">
+            <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 backdrop-blur-[var(--panel-blur)]">
               {health ? (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-xs">
@@ -473,7 +473,7 @@ export default function ConnectionCard({
                     <span className="ml-auto text-muted">{health.ms}ms</span>
                   </div>
                   {health.data ? (
-                    <pre className="max-h-48 overflow-auto rounded-[var(--panel-radius)] bg-surface p-3 font-mono text-[10px] leading-relaxed text-foreground">
+                    <pre className="max-h-48 overflow-auto rounded-[var(--panel-radius)] bg-[var(--panel-bg)] p-3 font-mono text-[10px] leading-relaxed text-foreground">
                       {JSON.stringify(health.data, null, 2)}
                     </pre>
                   ) : (

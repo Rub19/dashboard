@@ -60,7 +60,7 @@ export default function BottomSheet({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-black/50"
+            className="fixed inset-0 z-40 bg-[var(--panel-bg)]/50"
             aria-hidden="true"
             data-testid="bottom-sheet-backdrop"
             onClick={onClose}
@@ -85,11 +85,11 @@ export default function BottomSheet({
             }
             dragElastic={0.2}
             tabIndex={-1}
-            className={`ethone-bottom-sheet fixed z-50 max-h-[85dvh] overflow-hidden rounded-t-2xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl outline-none ${
+            className={`ethone-bottom-sheet fixed z-50 max-h-[85dvh] overflow-hidden rounded-t-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-2xl outline-none ${
               isCenter
                 ? "left-1/2 top-1/2 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-[var(--panel-radius)]"
                 : "bottom-0 left-0 right-0 pb-safe"
-            }`}
+            } backdrop-blur-[var(--panel-blur)]`}
           >
             {draggable && (
               <div
@@ -102,14 +102,14 @@ export default function BottomSheet({
             )}
 
             {title && (
-              <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[var(--border)] bg-[var(--surface)] px-4 py-3">
+              <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 py-3 backdrop-blur-[var(--panel-blur)]">
                 <h3 id={titleId} className="text-lg font-semibold">
                   {title}
                 </h3>
                 <button
                   type="button"
                   onClick={() => onClose()}
-                  className="flex h-9 w-9 items-center justify-center rounded text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+                  className="flex h-9 w-9 items-center justify-center rounded text-[var(--muted)] hover:bg-[var(--panel-bg)]"
                   aria-label={i18n("close")}
                 >
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

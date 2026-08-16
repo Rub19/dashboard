@@ -72,28 +72,28 @@ export function FloatingWindow({ win }: { win: WindowState }) {
         resize: win.maximized ? "none" : "both",
         overflow: "hidden",
       }}
-      className="absolute flex flex-col rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] shadow-2xl"
+      className="absolute flex flex-col rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-2xl backdrop-blur-[var(--panel-blur)]"
     >
-      <div className={`flex h-10 items-center justify-between border-b border-[var(--border)] bg-[var(--surface)] px-3 ${win.maximized ? "" : "cursor-grab active:cursor-grabbing"}`}>
+      <div className={`flex h-10 items-center justify-between border-b border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 ${win.maximized ? "" : "cursor-grab active:cursor-grabbing"} backdrop-blur-[var(--panel-blur)]`}>
         <span className="select-none text-sm font-semibold">{win.title}</span>
         <div className="flex items-center gap-1">
           <button
             onClick={() => updateWindow(win.id, { height: win.height > 100 ? 48 : 360 })}
-            className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+            className="rounded p-1 text-[var(--muted)] hover:bg-[var(--panel-bg)]"
             aria-label={i18n("minimize")}
           >
             <Icon name="minus" className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={toggleFullscreen}
-            className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+            className="rounded p-1 text-[var(--muted)] hover:bg-[var(--panel-bg)]"
             aria-label={i18n("fullscreen")}
           >
             <Icon name="expand" className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={toggleMaximize}
-            className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+            className="rounded p-1 text-[var(--muted)] hover:bg-[var(--panel-bg)]"
             aria-label={i18n(win.maximized ? "restore" : "maximize")}
           >
             <Icon name={win.maximized ? "minimize" : "maximize"} className="h-3.5 w-3.5" />
@@ -111,7 +111,7 @@ export function FloatingWindow({ win }: { win: WindowState }) {
         <iframe
           src={win.route}
           title={win.title}
-          className="h-full w-full rounded-[var(--panel-radius)] border-0 bg-[var(--surface)]"
+          className="h-full w-full rounded-[var(--panel-radius)] border-0 bg-[var(--panel-bg)]"
           sandbox="allow-scripts allow-same-origin allow-popups"
         />
       </div>

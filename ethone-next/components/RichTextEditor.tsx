@@ -186,7 +186,7 @@ export default function RichTextEditor({
       const selection = window.getSelection();
       if (selection && !selection.isCollapsed) {
         const text = selection.toString();
-        document.execCommand("insertHTML", false, `<code class="rounded bg-[var(--surface-raised)] px-1 py-0.5 font-mono text-xs">${escapeHtml(text)}</code>`);
+        document.execCommand("insertHTML", false, `<code class="rounded bg-[var(--panel-bg)] px-1 py-0.5 font-mono text-xs">${escapeHtml(text)}</code>`);
       }
     } else {
       document.execCommand(cmd, false, value);
@@ -243,7 +243,7 @@ export default function RichTextEditor({
   return (
     <div className="v8-rich-text space-y-2">
       <div
-        className="v8-rich-text__toolbar flex flex-wrap gap-1 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-1"
+        className="v8-rich-text__toolbar flex flex-wrap gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1 backdrop-blur-[var(--panel-blur)]"
         role="toolbar"
         aria-label="Formatage du texte"
         onMouseDown={(e) => e.preventDefault()}
@@ -294,7 +294,7 @@ export default function RichTextEditor({
         <ToolbarButton active={false} onClick={clearFormatting} label="Effacer le format" icon="remove-formatting" data-rich-command="removeFormat" />
       </div>
       <div
-        className="v8-rich-text__body relative min-h-[6rem] w-full cursor-text rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus-within:border-[var(--accent)]"
+        className="v8-rich-text__body relative min-h-[6rem] w-full cursor-text rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus-within:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
         onClick={() => ref.current?.focus()}
       >
         {empty && placeholder && (
@@ -348,7 +348,7 @@ function ToolbarButton({
       className={`v8-rich-text__btn rounded-md p-1.5 transition-colors ${
         active
           ? "bg-[var(--accent)]/10 text-[var(--accent)]"
-          : "text-[var(--muted)] hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
+          : "text-[var(--muted)] hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)]"
       }`}
       aria-label={label}
     >

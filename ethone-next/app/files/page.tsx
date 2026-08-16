@@ -320,7 +320,7 @@ export default function FilesPage() {
             <button
               type="button"
               onClick={connectDrive}
-              className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm font-medium hover:bg-[var(--surface)]"
+              className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm font-medium hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
             >
               <Icon name="cloud" className="h-4 w-4" /> {i18n("connectDrive")}
             </button>
@@ -329,21 +329,21 @@ export default function FilesPage() {
               <button
                 type="button"
                 onClick={() => { setForm({}); setModal({ type: "create-folder" }); }}
-                className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm font-medium hover:bg-[var(--surface)]"
+                className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm font-medium hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
               >
                 <Icon name="folder-plus" className="h-4 w-4" /> {i18n("createFolder")}
               </button>
               <button
                 type="button"
                 onClick={() => setAdminOpen(true)}
-                className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm font-medium hover:bg-[var(--surface)]"
+                className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm font-medium hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
               >
                 <Icon name="shield" className="h-4 w-4" /> {i18n("admin")}
               </button>
               <button
                 type="button"
                 onClick={() => { setForm({ visibility: "public" }); setModal({ type: "drop" }); }}
-                className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2 text-sm font-medium hover:bg-[var(--surface)]"
+                className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm font-medium hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
               >
                 <Icon name="inbox" className="h-4 w-4" /> {i18n("createDrop")}
               </button>
@@ -352,7 +352,7 @@ export default function FilesPage() {
           <button
             type="button"
             onClick={reload}
-            className="rounded-[var(--panel-radius)] border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-2 text-[var(--muted)] hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
             aria-label={i18n("refresh")}
           >
             <Icon name="refresh-cw" className="h-4 w-4" />
@@ -398,7 +398,7 @@ export default function FilesPage() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={i18n("searchFiles")}
-          className="min-w-0 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+          className="min-w-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
         />
         <Select
           value={sort}
@@ -498,7 +498,7 @@ export default function FilesPage() {
                     data-haptic
                     className="flex min-w-0 flex-1 items-center gap-3 text-left"
                   >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--surface-raised)] text-[var(--muted)]">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--panel-bg)] text-[var(--muted)]">
                     <Icon name={mimeIcon(file.mimeType, file.isFolder)} className="h-5 w-5" />
                   </span>
                   <div className="min-w-0 flex-1">
@@ -516,7 +516,7 @@ export default function FilesPage() {
                     data-tooltip={file.isFavorite ? i18n("removeFromFavorites") : i18n("addToFavorites")}
                     data-haptic
                     onClick={() => favoriteFile(file.driveFileId, !file.isFavorite)}
-                    className={`rounded p-1.5 ${file.isFavorite ? "text-red-400" : "text-[var(--muted)]"} hover:bg-[var(--surface-raised)]`}
+                    className={`rounded p-1.5 ${file.isFavorite ? "text-red-400" : "text-[var(--muted)]"} hover:bg-[var(--panel-bg)]`}
                   >
                     <Icon name={file.isFavorite ? "heart" : "heart-off"} className="h-4 w-4" />
                   </button>
@@ -528,7 +528,7 @@ export default function FilesPage() {
                       data-tooltip={i18n("download")}
                       data-haptic
                       onClick={() => downloadDriveFile(file)}
-                      className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+                      className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--panel-bg)]"
                     >
                       <Icon name="download" className="h-4 w-4" />
                     </button>
@@ -540,7 +540,7 @@ export default function FilesPage() {
                     data-tooltip={i18n("share")}
                     data-haptic
                     onClick={() => openShare(file)}
-                    className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+                    className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--panel-bg)]"
                   >
                     <Icon name="share-2" className="h-4 w-4" />
                   </button>
@@ -551,7 +551,7 @@ export default function FilesPage() {
                     data-tooltip={i18n("rename")}
                     data-haptic
                     onClick={() => { setForm({ name: file.name }); setModal({ type: "rename", file }); }}
-                    className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+                    className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--panel-bg)]"
                   >
                     <Icon name="pencil" className="h-4 w-4" />
                   </button>
@@ -562,7 +562,7 @@ export default function FilesPage() {
                     data-tooltip={i18n("move")}
                     data-haptic
                     onClick={() => { setModal({ type: "move", file }); }}
-                    className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+                    className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--panel-bg)]"
                   >
                     <Icon name="folder-input" className="h-4 w-4" />
                   </button>
@@ -612,8 +612,8 @@ export default function FilesPage() {
       </div>
 
       {modal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setModal(null)}>
-          <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--panel-bg)]/50 p-4" onClick={() => setModal(null)}>
+          <div className="w-full max-w-md rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-6 shadow-2xl backdrop-blur-[var(--panel-blur)]" onClick={(e) => e.stopPropagation()}>
             {modal.type === "create-folder" && (
               <form onSubmit={handleCreateFolder} className="space-y-4">
                 <h2 className="text-lg font-semibold">{i18n("createFolder")}</h2>
@@ -623,10 +623,10 @@ export default function FilesPage() {
                   value={form.folderName || ""}
                   onChange={(e) => setForm({ ...form, folderName: e.target.value })}
                   placeholder={i18n("newFolder")}
-                  className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                  className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
                 />
                 <div className="flex justify-end gap-2">
-                  <button type="button" onClick={() => setModal(null)} className="rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--surface)]">{i18n("cancel")}</button>
+                  <button type="button" onClick={() => setModal(null)} className="rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--panel-bg)]">{i18n("cancel")}</button>
                   <button type="submit" disabled={submitting} className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{i18n("create")}</button>
                 </div>
               </form>
@@ -640,10 +640,10 @@ export default function FilesPage() {
                   type="text"
                   value={form.name || ""}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                  className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
                 />
                 <div className="flex justify-end gap-2">
-                  <button type="button" onClick={() => setModal(null)} className="rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--surface)]">{i18n("cancel")}</button>
+                  <button type="button" onClick={() => setModal(null)} className="rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--panel-bg)]">{i18n("cancel")}</button>
                   <button type="submit" disabled={submitting} className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{i18n("save")}</button>
                 </div>
               </form>
@@ -656,7 +656,7 @@ export default function FilesPage() {
                   <button
                     type="button"
                     onClick={() => handleMove(null)}
-                    className="w-full rounded-[var(--panel-radius)] px-3 py-2 text-left text-sm hover:bg-[var(--surface)]"
+                    className="w-full rounded-[var(--panel-radius)] px-3 py-2 text-left text-sm hover:bg-[var(--panel-bg)]"
                   >
                     {i18n("filesTitle")}
                   </button>
@@ -665,7 +665,7 @@ export default function FilesPage() {
                       key={folder.driveFileId}
                       type="button"
                       onClick={() => handleMove(folder.driveFileId)}
-                      className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-left text-sm hover:bg-[var(--surface)]"
+                      className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-left text-sm hover:bg-[var(--panel-bg)]"
                     >
                       <Icon name="folder" className="h-4 w-4" /> {folder.name}
                     </button>
@@ -695,24 +695,24 @@ export default function FilesPage() {
                     value={form.password || ""}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
                     placeholder={i18n("password")}
-                    className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                    className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
                   />
                 )}
                 <input
                   type="datetime-local"
                   value={form.expiresAt || ""}
                   onChange={(e) => setForm({ ...form, expiresAt: e.target.value })}
-                  className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                  className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
                 />
                 <input
                   type="number"
                   value={form.maxDownloads || ""}
                   onChange={(e) => setForm({ ...form, maxDownloads: e.target.value })}
                   placeholder={i18n("maxDownloads")}
-                  className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                  className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
                 />
                 <div className="flex justify-end gap-2">
-                  <button type="button" onClick={() => setModal(null)} className="rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--surface)]">{i18n("cancel")}</button>
+                  <button type="button" onClick={() => setModal(null)} className="rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--panel-bg)]">{i18n("cancel")}</button>
                   <button type="submit" disabled={submitting} className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{i18n("shareThis")}</button>
                 </div>
               </form>
@@ -727,14 +727,14 @@ export default function FilesPage() {
                   value={form.title || ""}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                   placeholder={i18n("title")}
-                  className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                  className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
                 />
                 <input
                   type="text"
                   value={form.description || ""}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   placeholder={i18n("description")}
-                  className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                  className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
                 />
                 <Select
                   value={form.visibility || "public"}
@@ -752,31 +752,31 @@ export default function FilesPage() {
                     value={form.password || ""}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
                     placeholder={i18n("password")}
-                    className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                    className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
                   />
                 )}
                 <input
                   type="datetime-local"
                   value={form.expiresAt || ""}
                   onChange={(e) => setForm({ ...form, expiresAt: e.target.value })}
-                  className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                  className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
                 />
                 <input
                   type="number"
                   value={form.maxFiles || ""}
                   onChange={(e) => setForm({ ...form, maxFiles: e.target.value })}
                   placeholder={i18n("maxFiles")}
-                  className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                  className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
                 />
                 <input
                   type="number"
                   value={form.maxSize || ""}
                   onChange={(e) => setForm({ ...form, maxSize: e.target.value })}
                   placeholder={i18n("maxSize")}
-                  className="w-full rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+                  className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
                 />
                 <div className="flex justify-end gap-2">
-                  <button type="button" onClick={() => setModal(null)} className="rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--surface)]">{i18n("cancel")}</button>
+                  <button type="button" onClick={() => setModal(null)} className="rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--panel-bg)]">{i18n("cancel")}</button>
                   <button type="submit" disabled={submitting} className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{i18n("create")}</button>
                 </div>
               </form>

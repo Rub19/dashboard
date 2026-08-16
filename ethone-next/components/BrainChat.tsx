@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { useActiveProfile } from "@/components/SettingsProvider";
 import type { BrainMessage, ReturnTypeOfUseBrain } from "@/lib/hooks/useBrain";
@@ -177,14 +177,14 @@ function TypingDots() {
   );
 }
 
-export default function BrainChat({ brain, activeFlow, className = "" }: { brain: ReturnTypeOfUseBrain; activeFlow?: string; className?: string }) {
+export default function BrainChat({ brain, className = "" }: { brain: ReturnTypeOfUseBrain; className?: string }) {
   const i18n = useI18n();
   const { user } = useAuth();
   const { activeProfile } = useActiveProfile();
   const { success, error: showError } = useToast();
   const { records } = useLiveData(60000);
   const { items: flows } = useUserData("flow");
-  const nowPlaying = useNowPlaying();
+  const { nowPlaying } = useNowPlaying();
   const [activeWorkspace] = useLocalStorage<string>("ethone-active-workspace", "personal");
 
   const [prompt, setPrompt] = useState("");
@@ -195,6 +195,34 @@ export default function BrainChat({ brain, activeFlow, className = "" }: { brain
 
   const userName = activeProfile?.name || user?.user_metadata?.full_name || user?.email || i18n("guest");
   const activeFlows = flows.filter((f) => f.count > 0).length;
+
+  const handleSend = useCallback(
+    (value = prompt) => {
+      const text = value.trim();
+      if (!text || pending) return;
+      setPrompt("");
+      setPending(true);
+      brain
+        .send(text)
+        .then(() => {
+          setPending(false);
+        })
+        .catch((err) => {
+          setPending(false);
+          showError(String(err));
+        });
+    },
+    [brain, pending, prompt, showError]
+  );
+
+  const handleExecute = useCallback(
+    async (actionId: string, parameters: Record<string, unknown> = {}) => {
+      const res = await brain.executeAction(actionId, parameters, true);
+      if (res.ok) success(res.message || i18n("completed"));
+      else showError(res.message || i18n("error"));
+    },
+    [brain, i18n, showError, success]
+  );
 
   const welcomeChips = useMemo<ActionChip[]>(() => {
     return [
@@ -223,29 +251,7 @@ export default function BrainChat({ brain, activeFlow, className = "" }: { brain
         onClick: () => handleSend("Fais-moi un rapport de mon activité récente"),
       },
     ];
-  }, [activeWorkspace, nowPlaying, i18n]);
-
-  function handleSend(value = prompt) {
-    const text = value.trim();
-    if (!text || pending) return;
-    setPrompt("");
-    setPending(true);
-    brain
-      .send(text)
-      .then(() => {
-        setPending(false);
-      })
-      .catch((err) => {
-        setPending(false);
-        showError(String(err));
-      });
-  }
-
-  async function handleExecute(actionId: string, parameters: Record<string, unknown> = {}) {
-    const res = await brain.executeAction(actionId, parameters, true);
-    if (res.ok) success(res.message || i18n("completed"));
-    else showError(res.message || i18n("error"));
-  }
+  }, [activeWorkspace, handleExecute, handleSend, i18n, nowPlaying]);
 
   const actionHandlers = useMemo(
     () => ({
@@ -255,7 +261,7 @@ export default function BrainChat({ brain, activeFlow, className = "" }: { brain
       openMail: () => handleExecute("v8.navigate", { route: "mail" }),
       openPlanning: () => handleExecute("planning.prepare", { tasks: [], events: [] }),
     }),
-    [activeWorkspace]
+    [activeWorkspace, handleExecute]
   );
 
   useEffect(() => {
@@ -280,6 +286,7 @@ export default function BrainChat({ brain, activeFlow, className = "" }: { brain
       });
     }, 12);
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [brain.messages]);
 
   useEffect(() => {

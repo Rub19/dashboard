@@ -1,26 +1,70 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Card3D from "@/components/Card3D";
-import Input from "@/components/Input";
+import { Users, UserCheck, Clock, Send } from "lucide-react";
+import { motion } from "framer-motion";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useTeam } from "@/lib/hooks/useTeam";
-import { Icon } from "@/lib/icons";
 import { useToast } from "@/components/ToastProvider";
 import Select from "@/components/ui/Select";
+import TeamMemberTable from "@/components/team/TeamMemberTable";
+import type { TeamRole } from "@/lib/team-manager";
 
-const ROLES = ["owner", "admin", "senior", "junior", "assistant", "viewer"] as const;
+const ROLES: TeamRole[] = ["viewer", "assistant", "admin"];
+
+const ROLE_LABELS: Record<TeamRole, string> = {
+  owner: "Propriétaire",
+  admin: "Admin",
+  senior: "Développeur",
+  junior: "Éditeur",
+  assistant: "Éditeur",
+  viewer: "Lecteur",
+};
+
+function StatCard({
+  icon,
+  value,
+  label,
+  sub,
+  tone,
+}: {
+  icon: React.ReactNode;
+  value: string | number;
+  label: string;
+  sub: string;
+  tone?: "default" | "emerald" | "amber";
+}) {
+  const valueColor = tone === "emerald" ? "text-emerald-400" : tone === "amber" ? "text-amber-400" : "text-white";
+  const borderColor = tone === "emerald" ? "hover:border-emerald-500/30" : tone === "amber" ? "hover:border-amber-500/30" : "hover:border-white/15";
+
+  return (
+    <div className={`bg-zinc-950/70 border border-white/[0.08] backdrop-blur-xl rounded-2xl p-4 flex items-center justify-between hover:border-white/15 transition-all ${borderColor}`}>
+      <div>
+        <p className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider">{label}</p>
+        <p className={`text-2xl font-bold font-mono ${valueColor} mt-0.5`}>{value}</p>
+        <p className="text-[11px] text-zinc-500 mt-0.5">{sub}</p>
+      </div>
+      <div className="shrink-0 rounded-xl bg-white/[0.04] p-2.5 ring-1 ring-inset ring-white/[0.06]">{icon}</div>
+    </div>
+  );
+}
 
 export default function TeamPage() {
   const i18n = useI18n();
   const { success: toastSuccess, error: showError } = useToast();
   const { members, loading, error, invite, remove, update } = useTeam();
+
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<(typeof ROLES)[number]>("viewer");
+  const [role, setRole] = useState<TeamRole>("viewer");
   const [inviting, setInviting] = useState(false);
   const [inviteError, setInviteError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [query, setQuery] = useState("");
+
+  const stats = useMemo(() => ({
+    total: members.length,
+    active: members.filter((m) => m.status === "active").length,
+    pending: members.filter((m) => m.status === "pending").length,
+  }), [members]);
 
   async function submit() {
     if (!email.trim()) return;
@@ -41,7 +85,7 @@ export default function TeamPage() {
     }
   }
 
-  async function deleteMember(id: string) {
+  async function handleRemove(id: string) {
     try {
       await remove(id);
       toastSuccess(i18n("deleted"));
@@ -50,168 +94,112 @@ export default function TeamPage() {
     }
   }
 
-  async function changeRole(id: string, role: string) {
+  async function handleUpdateRole(id: string, newRole: TeamRole) {
     try {
-      await update(id, role);
+      await update(id, newRole);
       toastSuccess(i18n("updated"));
     } catch {
       showError(i18n("error"));
     }
   }
 
-  const filtered = useMemo(() => {
-    if (!query.trim()) return members;
-    const q = query.toLowerCase();
-    return members.filter(
-      (m) => m.email.toLowerCase().includes(q) || (m.display_name || "").toLowerCase().includes(q)
-    );
-  }, [members, query]);
-
-  const stats = useMemo(() => ({
-    total: members.length,
-    active: members.filter((m) => m.status === "active").length,
-    pending: members.filter((m) => m.status === "pending").length,
-  }), [members]);
-
-  function statusClass(status: string) {
-    switch (status) {
-      case "active":
-        return "bg-emerald-500/10 text-emerald-400";
-      case "pending":
-        return "bg-amber-500/10 text-amber-400";
-      case "declined":
-      case "revoked":
-        return "bg-red-500/10 text-red-400";
-      default:
-        return "bg-[var(--panel-bg)] text-[var(--muted)]";
-    }
-  }
+  const roleOptions = ROLES.map((r) => ({ id: r, label: i18n(r) || ROLE_LABELS[r] }));
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">{i18n("teamTitle")}</h1>
-
-      <div className="grid grid-cols-3 gap-3">
-        <Card3D>
-          <p className="text-xs text-[var(--muted)]">{i18n("total")}</p>
-          <p className="text-2xl font-bold">{loading ? "-" : stats.total}</p>
-        </Card3D>
-        <Card3D>
-          <p className="text-xs text-[var(--muted)]">{i18n("active")}</p>
-          <p className="text-2xl font-bold text-emerald-400">{loading ? "-" : stats.active}</p>
-        </Card3D>
-        <Card3D>
-          <p className="text-xs text-[var(--muted)]">{i18n("pending")}</p>
-          <p className="text-2xl font-bold text-amber-400">{loading ? "-" : stats.pending}</p>
-        </Card3D>
+      <div>
+        <h1 className="text-2xl font-bold text-white">{i18n("teamTitle")}</h1>
+        <p className="text-sm text-zinc-500 mt-1">{i18n("teamDescription")}</p>
       </div>
 
-      <Card3D>
-        <div className="space-y-3">
-          <label className="text-sm font-medium">{i18n("inviteMember")}</label>
-          <div className="flex gap-2">
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && submit()}
-              aria-label={i18n("emailPlaceholder")}
-              placeholder={i18n("emailPlaceholder")}
-              disabled={inviting}
-              className="min-w-0 flex-1"
-            />
-            <Select
-              value={role}
-              onChange={(value) => setRole(value as (typeof ROLES)[number])}
-              options={ROLES.map((r) => ({ id: r, label: i18n(r) }))}
-              aria-label={i18n("role")}
-              disabled={inviting}
-              className="min-w-0"
-            />
-            <button
-              type="button"
-              aria-label={i18n("add")}
-              onClick={submit}
-              disabled={inviting}
-              className="flex shrink-0 items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
-            >
-              {inviting ? <Icon name="loader-2" className="h-4 w-4 animate-spin" /> : <Icon name="plus" className="h-4 w-4" />}
-            </button>
-          </div>
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <StatCard
+          icon={<Users className="h-5 w-5 text-zinc-400" />}
+          value={loading ? "-" : stats.total}
+          label={i18n("total") || "Total"}
+          sub={i18n("teamSeatsAvailable") || `Places disponibles : ${Math.max(0, 10 - stats.total)}/10`}
+        />
+        <StatCard
+          icon={<UserCheck className="h-5 w-5 text-emerald-400" />}
+          value={loading ? "-" : stats.active}
+          label={i18n("active") || "Actifs"}
+          sub={i18n("activeThisWeek") || "Actifs cette semaine"}
+          tone="emerald"
+        />
+        <StatCard
+          icon={<Clock className="h-5 w-5 text-amber-400" />}
+          value={loading ? "-" : stats.pending}
+          label={i18n("pending") || "En attente"}
+          sub={i18n("pendingConfirmation") || "En attente de confirmation"}
+          tone="amber"
+        />
+      </div>
 
-          {inviteError && (
-            <p className="flex items-center gap-2 text-sm text-red-400">
-              <Icon name="alert-circle" className="h-4 w-4" />
-              {inviteError}
-            </p>
-          )}
+      {/* Invite banner */}
+      <div className="bg-zinc-950/80 border border-white/[0.08] backdrop-blur-xl rounded-2xl p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && submit()}
+          placeholder={i18n("emailPlaceholder") || "E-mail du collaborateur..."}
+          aria-label={i18n("emailPlaceholder")}
+          disabled={inviting}
+          className="flex-1 rounded-xl border border-white/10 bg-white/[0.03] px-3.5 py-2 text-xs text-zinc-200 placeholder-zinc-500 outline-none focus:border-emerald-500/50 disabled:opacity-50"
+        />
 
-          {success && (
-            <p className="flex items-center gap-2 text-sm text-emerald-400">
-              <Icon name="check" className="h-4 w-4" />
-              {i18n("invitationSent")}
-            </p>
+        <Select
+          value={role}
+          onChange={(value) => setRole(value as TeamRole)}
+          options={roleOptions}
+          aria-label={i18n("role")}
+          disabled={inviting}
+          className="h-9 w-full md:w-36 text-xs"
+        />
+
+        <motion.button
+          type="button"
+          onClick={submit}
+          disabled={inviting || !email.trim()}
+          whileTap={{ scale: 0.97 }}
+          style={{ background: "var(--accent-color, #10b981)" }}
+          className="px-4 py-2 rounded-xl text-xs font-semibold text-zinc-950 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {inviting ? (
+            <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-950/30 border-t-zinc-950" />
+          ) : (
+            <Send className="h-3.5 w-3.5" />
           )}
+          {i18n("sendInvitation") || "Envoyer l'invitation"}
+        </motion.button>
+      </div>
+
+      {inviteError && (
+        <p className="flex items-center gap-2 text-sm text-red-400">
+          <span className="h-4 w-4 rounded-full bg-red-400/20" />
+          {inviteError}
+        </p>
+      )}
+
+      {success && (
+        <p className="flex items-center gap-2 text-sm text-emerald-400">
+          <span className="h-4 w-4 rounded-full bg-emerald-400/20" />
+          {i18n("invitationSent") || "Invitation envoyée"}
+        </p>
+      )}
+
+      {error ? (
+        <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">
+          {error.message}
         </div>
-      </Card3D>
-
-      <Input
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder={i18n("search")}
-        aria-label={i18n("search")}
-        icon="search"
-      />
-
-      {loading ? (
-        <Card3D>
-          <div className="h-4 w-1/3 animate-pulse rounded bg-[var(--border)]" />
-        </Card3D>
-      ) : error ? (
-        <Card3D>
-          <p className="text-sm text-red-400">{error.message}</p>
-        </Card3D>
       ) : (
-        <div className="space-y-3">
-          {filtered.map((m) => (
-            <Card3D key={m.id}>
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--panel-bg)] text-[var(--muted)]">
-                    <Icon name="users" className="h-5 w-5" />
-                  </span>
-                  <div className="min-w-0">
-                    <p className="truncate font-medium">{m.email}</p>
-                    <p className="text-xs text-[var(--muted)]">{m.display_name || "—"}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium capitalize ${statusClass(m.status)}`}>
-                    {i18n(m.status)}
-                  </span>
-                  {m.role === "owner" ? (
-                    <span className="shrink-0 rounded-full bg-violet-500/10 px-2 py-0.5 text-[10px] font-medium text-violet-400">
-                      {i18n(m.role)}
-                    </span>
-                  ) : (
-                    <Select
-                      value={m.role}
-                      onChange={(value) => changeRole(m.id, value)}
-                      options={ROLES.map((r) => ({ id: r, label: i18n(r) }))}
-                      aria-label={i18n("role")}
-                      className="shrink-0 min-w-0"
-                    />
-                  )}
-                  {m.role !== "owner" && (
-                    <button type="button" onClick={() => deleteMember(m.id)} className="rounded p-1 text-[var(--muted)] hover:bg-red-500/10 hover:text-red-400">
-                      <Icon name="trash-2" className="h-4 w-4" />
-                    </button>
-                  )}
-                </div>
-              </div>
-            </Card3D>
-          ))}
-        </div>
+        <TeamMemberTable
+          members={members}
+          loading={loading}
+          onUpdateRole={handleUpdateRole}
+          onRemove={handleRemove}
+        />
       )}
     </div>
   );

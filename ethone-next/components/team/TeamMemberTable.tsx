@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, Shield, UserX, Users } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Select from "@/components/ui/Select";
-import { Icon } from "@/lib/icons";
 import type { TeamMember, TeamRole, TeamStatus } from "@/lib/team-manager";
 
 const FILTERS = ["all", "admins", "members", "pending"] as const;
@@ -20,8 +19,6 @@ const ROLE_META: Record<TeamRole, { label: string; color: string; border: string
 };
 
 const ROLES: TeamRole[] = ["owner", "admin", "senior", "junior", "assistant", "viewer"];
-
-const INVITE_ROLES: TeamRole[] = ["viewer", "assistant", "admin"];
 
 const FILTER_LABELS: Record<(typeof FILTERS)[number], string> = {
   all: "Tous",
@@ -115,8 +112,6 @@ export default function TeamMemberTable({ members, loading, onUpdateRole, onRemo
 
     return list;
   }, [members, query, filter]);
-
-  const filterOptions = FILTERS.map((id) => ({ id, label: i18n(`teamFilter${id}`) || FILTER_LABELS[id] }));
 
   return (
     <div className="space-y-3">

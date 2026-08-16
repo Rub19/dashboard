@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : indicateur de filtre glissant avec AnimatedFilterTabs**
+
+### Corrige
+- `ethone-next/components/ui/AnimatedFilterTabs.tsx` : nouveau composant de filtre d'onglets avec pilule active coulissante via Framer Motion `layoutId`, transition spring (`stiffness: 450, damping: 35`), style glassmorphism avec fond teinté discret et compteurs optionnels.
+- `ethone-next/components/NotificationCenter.tsx` : remplacement de la barre de filtres bruts par `AnimatedFilterTabs`, avec calcul du nombre d'éléments par filtre.
+
 **Migration Next.js : remplacement des modales brutes par le composant Modal générique**
 
 ### Corrige

@@ -30,6 +30,7 @@ export type MinecraftLive = {
   loading: boolean;
   error: Error | null;
   updatedAt: Date | null;
+  refresh: () => Promise<void>;
 };
 
 function deriveAvatarUrl(profile: MinecraftProfile | null): string | undefined {
@@ -50,7 +51,7 @@ export function useMinecraftLive(pollMs = 60000): MinecraftLive {
     ? `/api/minecraft/profile?username=${encodeURIComponent(username)}`
     : null;
 
-  const { data, loading, error, updatedAt } = useLiveFetch<MinecraftProfile>(path, {
+  const { data, loading, error, updatedAt, refresh } = useLiveFetch<MinecraftProfile>(path, {
     pollMs,
     ttlMs: pollMs,
   });
@@ -66,5 +67,6 @@ export function useMinecraftLive(pollMs = 60000): MinecraftLive {
     loading,
     error,
     updatedAt,
+    refresh,
   };
 }

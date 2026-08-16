@@ -1,250 +1,284 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useId, useRef, useState } from "react";
+import { motion, useAnimation, AnimatePresence } from "framer-motion";
 
 export type OtpInputProps = {
-  length?: number;
-  value?: string;
-  onChange?: (value: string) => void;
-  onComplete?: (code: string) => void;
+  value: string;
+  onChange: (value: string) => void;
+  onComplete?: (value: string) => void;
+  onResend?: () => void;
   error?: boolean;
   success?: boolean;
   disabled?: boolean;
   resendDelay?: number;
-  onResend?: () => void;
+  autoFocus?: boolean;
   className?: string;
+  resendLabel?: string;
+  countdownLabel?: string;
+  ariaLabel?: string;
 };
 
-const PLACEHOLDER = " ";
+const LENGTH = 6;
+const DIGIT_RE = /^[0-9]$/;
 
-function formatCountdown(seconds: number) {
-  const m = Math.floor(seconds / 60)
-    .toString()
-    .padStart(2, "0");
-  const s = (seconds % 60).toString().padStart(2, "0");
-  return `${m}:${s}`;
+function formatTime(totalSeconds: number): string {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
+function clean(value: string): string {
+  return value.replace(/\D/g, "").slice(0, LENGTH);
 }
 
 export default function OtpInput({
-  length = 6,
   value,
   onChange,
   onComplete,
+  onResend,
   error = false,
   success = false,
   disabled = false,
   resendDelay = 45,
-  onResend,
+  autoFocus = true,
   className = "",
+  resendLabel = "Renvoyer le code",
+  countdownLabel = "Renvoyer le code dans",
+  ariaLabel = "Code de vérification à 6 chiffres",
 }: OtpInputProps) {
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const [digits, setDigits] = useState<string[]>(() => {
-    const raw = value ? String(value).replace(/[^0-9 ]/g, "").split("") : [];
-    return Array.from({ length }, (_, i) => raw[i] || PLACEHOLDER);
-  });
+  const baseId = useId();
+  const inputsRef = useRef<(HTMLInputElement | null)[]>(Array(LENGTH).fill(null));
   const [focusedIndex, setFocusedIndex] = useState(-1);
-  const [shake, setShake] = useState(0);
-  const [flash, setFlash] = useState(0);
-  const [remaining, setRemaining] = useState(resendDelay);
+  const [resendTimer, setResendTimer] = useState(resendDelay);
+  const [canResend, setCanResend] = useState(false);
+  const autoFocused = useRef(false);
+  const shakeControls = useAnimation();
+
+  const code = clean(value);
+  const display = code.padEnd(LENGTH, " ").split("");
 
   useEffect(() => {
-    if (typeof value !== "string") return;
-    const raw = value.replace(/[^0-9 ]/g, "").split("");
-    const next = Array.from({ length }, (_, i) => raw[i] || PLACEHOLDER);
-    setDigits(next);
-  }, [value, length]);
-
-  useEffect(() => {
-    if (error) setShake((s) => s + 1);
-  }, [error]);
-
-  useEffect(() => {
-    if (success) setFlash((f) => f + 1);
-  }, [success]);
-
-  useEffect(() => {
-    if (remaining <= 0) return;
-    const interval = setInterval(() => setRemaining((r) => r - 1), 1000);
-    return () => clearInterval(interval);
-  }, [remaining]);
-
-  useEffect(() => {
-    setRemaining(resendDelay);
+    setResendTimer(resendDelay);
+    setCanResend(false);
   }, [resendDelay]);
 
-  const updateValue = useCallback(
-    (next: string[], triggerComplete = true) => {
-      setDigits(next);
-      const full = next.join("");
-      onChange?.(full);
-      if (triggerComplete) {
-        const complete = next.every((d) => /\d/.test(d));
-        if (complete) onComplete?.(next.map((d) => (/\d/.test(d) ? d : "")).join(""));
-      }
-    },
-    [onChange, onComplete]
-  );
+  useEffect(() => {
+    if (resendTimer <= 0) {
+      setCanResend(true);
+      return;
+    }
 
-  const focusIndex = useCallback((i: number) => {
-    const clamped = Math.max(0, Math.min(length - 1, i));
-    setFocusedIndex(clamped);
-    inputRefs.current[clamped]?.focus();
-    inputRefs.current[clamped]?.select();
-  }, [length]);
-
-  const handleChange = useCallback(
-    (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
-      const raw = e.target.value.replace(/\D/g, "").slice(0, length - index);
-      if (!raw) return;
-
-      setDigits((prev) => {
-        const next = [...prev];
-        for (let i = 0; i < raw.length; i++) {
-          if (index + i < length) next[index + i] = raw[i];
+    const id = window.setInterval(() => {
+      setResendTimer((t) => {
+        if (t <= 1) {
+          window.clearInterval(id);
+          setCanResend(true);
+          return 0;
         }
-        const full = next.join("");
-        onChange?.(full);
-        const complete = next.every((d) => /\d/.test(d));
-        if (complete) onComplete?.(next.map((d) => (/\d/.test(d) ? d : "")).join(""));
-        return next;
+        return t - 1;
       });
+    }, 1000);
 
-      const nextIndex = index + raw.length;
-      if (nextIndex < length) {
-        setTimeout(() => focusIndex(nextIndex), 0);
+    return () => window.clearInterval(id);
+  }, [resendTimer]);
+
+  useEffect(() => {
+    if (error) {
+      shakeControls.start({
+        x: [0, -6, 6, -6, 6, 0],
+        transition: { duration: 0.35, ease: "easeInOut" },
+      });
+    } else {
+      shakeControls.set({ x: 0 });
+    }
+  }, [error, shakeControls]);
+
+  useEffect(() => {
+    if (code.length === LENGTH) {
+      onComplete?.(code);
+    }
+  }, [code, onComplete]);
+
+  useEffect(() => {
+    if (autoFocus && !disabled && !autoFocused.current) {
+      autoFocused.current = true;
+      const index = Math.min(code.length, LENGTH - 1);
+      inputsRef.current[index]?.focus();
+    }
+  }, [autoFocus, disabled, code.length]);
+
+  function focusInput(index: number) {
+    const input = inputsRef.current[index];
+    if (input) {
+      input.focus();
+      input.select();
+    }
+  }
+
+  function updateValue(next: string, focusIndex: number) {
+    const cleaned = clean(next);
+    onChange(cleaned);
+
+    if (cleaned.length === LENGTH) {
+      inputsRef.current[LENGTH - 1]?.blur();
+    } else {
+      const index = Math.min(Math.max(focusIndex, 0), LENGTH - 1);
+      window.requestAnimationFrame(() => focusInput(index));
+    }
+  }
+
+  function handleBackspace(index: number) {
+    if (index < code.length) {
+      const next = code.slice(0, index) + code.slice(index + 1);
+      updateValue(next, index);
+    } else if (index > 0) {
+      const prev = index - 1;
+      const next = code.slice(0, prev) + code.slice(prev + 1);
+      updateValue(next, prev);
+    }
+  }
+
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>, index: number) {
+    const raw = event.target.value;
+
+    if (!raw) {
+      handleBackspace(index);
+      return;
+    }
+
+    const digit = raw.slice(-1);
+    if (!DIGIT_RE.test(digit)) return;
+
+    const sourceIndex = Math.min(index, code.length);
+    const next = code.slice(0, sourceIndex) + digit + code.slice(sourceIndex + 1);
+    updateValue(next, sourceIndex + 1);
+  }
+
+  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>, index: number) {
+    if (event.key === "Backspace") {
+      event.preventDefault();
+      handleBackspace(index);
+      return;
+    }
+
+    if (event.key === "Delete") {
+      event.preventDefault();
+      if (index < code.length) {
+        const next = code.slice(0, index) + code.slice(index + 1);
+        updateValue(next, index);
       }
-    },
-    [length, onChange, onComplete, focusIndex]
-  );
+      return;
+    }
 
-  const handleKeyDown = useCallback(
-    (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (disabled) return;
+    if (event.key === "ArrowLeft" && index > 0) {
+      event.preventDefault();
+      focusInput(index - 1);
+      return;
+    }
 
-      if (e.key === "ArrowLeft" && index > 0) {
-        e.preventDefault();
-        focusIndex(index - 1);
-        return;
+    if (event.key === "ArrowRight" && index < LENGTH - 1) {
+      event.preventDefault();
+      focusInput(index + 1);
+      return;
+    }
+
+    if (event.key === "Home") {
+      event.preventDefault();
+      focusInput(0);
+      return;
+    }
+
+    if (event.key === "End") {
+      event.preventDefault();
+      focusInput(LENGTH - 1);
+      return;
+    }
+
+    if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      if (!DIGIT_RE.test(event.key)) {
+        event.preventDefault();
       }
+    }
+  }
 
-      if (e.key === "ArrowRight" && index < length - 1) {
-        e.preventDefault();
-        focusIndex(index + 1);
-        return;
-      }
+  function handlePaste(event: React.ClipboardEvent<HTMLInputElement>, index: number) {
+    event.preventDefault();
+    if (disabled) return;
 
-      if (e.key === "Backspace") {
-        if (!/\d/.test(digits[index]) && index > 0) {
-          e.preventDefault();
-          const next = [...digits];
-          next[index - 1] = PLACEHOLDER;
-          updateValue(next);
-          focusIndex(index - 1);
-        } else if (/\d/.test(digits[index])) {
-          e.preventDefault();
-          const next = [...digits];
-          next[index] = PLACEHOLDER;
-          updateValue(next, false);
-        }
-        return;
-      }
+    const raw = event.clipboardData.getData("text");
+    const pasted = clean(raw);
+    if (!pasted) return;
 
-      if (/^[0-9]$/.test(e.key)) {
-        e.preventDefault();
-        const next = [...digits];
-        next[index] = e.key;
-        updateValue(next);
-        if (index < length - 1) {
-          focusIndex(index + 1);
-        }
-      }
-    },
-    [digits, disabled, focusIndex, length, updateValue]
-  );
+    const sourceIndex = Math.min(index, code.length);
+    const next = (code.slice(0, sourceIndex) + pasted + code.slice(sourceIndex + pasted.length)).slice(0, LENGTH);
+    const endIndex = Math.min(sourceIndex + pasted.length, LENGTH);
+    updateValue(next, endIndex);
+  }
 
-  const handlePaste = useCallback(
-    (e: React.ClipboardEvent<HTMLInputElement>) => {
-      e.preventDefault();
-      const raw = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, length);
-      if (!raw) return;
-
-      const next = Array.from({ length }, (_, i) => raw[i] || PLACEHOLDER);
-      updateValue(next);
-
-      const focusAfter = Math.min(raw.length, length - 1);
-      setTimeout(() => focusIndex(focusAfter), 0);
-    },
-    [length, updateValue, focusIndex]
-  );
-
-  const handleResend = useCallback(() => {
-    setRemaining(resendDelay);
+  function handleResend() {
+    if (!canResend || disabled) return;
     onResend?.();
-  }, [resendDelay, onResend]);
-
-  const handleFocus = useCallback((index: number) => {
-    setFocusedIndex(index);
-    inputRefs.current[index]?.select();
-  }, []);
+    setResendTimer(resendDelay);
+    setCanResend(false);
+  }
 
   return (
-    <div className={`flex flex-col items-center gap-4 ${className}`}>
+    <div className={`flex flex-col items-center gap-5 ${className}`}>
       <motion.div
-        key={shake}
-        animate={{
-          x: error ? [0, -8, 8, -8, 8, 0] : 0,
-          scale: success ? [1, 1.02, 1] : 1,
-        }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        className="flex items-center justify-center gap-2"
+        animate={shakeControls}
+        className="flex gap-2"
+        role="group"
+        aria-label={ariaLabel}
       >
-        {Array.from({ length }).map((_, i) => {
-          const filled = /\d/.test(digits[i]);
-          const isActive = focusedIndex === i;
-
-          let stateClasses =
-            "bg-white/[0.04] border-white/10 text-white";
-          if (error) {
-            stateClasses =
-              "border-red-500/50 bg-red-500/[0.05] text-red-100";
-          } else if (success) {
-            stateClasses =
-              "border-emerald-400/80 bg-emerald-500/[0.08] text-emerald-100";
-          } else if (isActive) {
-            stateClasses =
-              "border-emerald-400/60 ring-2 ring-emerald-500/20 bg-emerald-500/[0.05] text-white";
-          }
+        {display.map((digit, index) => {
+          const isActive = focusedIndex === index;
+          const isFilled = digit.trim().length > 0;
 
           return (
             <motion.div
-              key={`${i}-${flash}`}
-              initial={false}
-              animate={{
-                scale: success && filled ? [1, 1.05, 1] : 1,
-              }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
-              className={`h-14 w-12 md:h-16 md:w-14 ${stateClasses} rounded-xl border text-xl font-bold font-mono transition-all duration-150 ${
-                disabled ? "cursor-not-allowed opacity-50" : ""
-              }`}
+              key={`${baseId}-${index}`}
+              animate={
+                success && isFilled
+                  ? {
+                      scale: [1, 1.08, 1],
+                      backgroundColor: ["rgba(52, 211, 153, 0.05)", "rgba(52, 211, 153, 0.2)", "rgba(52, 211, 153, 0.05)"],
+                      borderColor: ["rgba(52, 211, 153, 0.6)", "rgba(52, 211, 153, 1)", "rgba(52, 211, 153, 0.6)"],
+                      transition: { duration: 0.45, ease: "easeOut" },
+                    }
+                  : {}
+              }
+              className={[
+                "flex h-14 w-12 items-center justify-center rounded-xl border text-xl font-mono font-bold transition-colors duration-150 md:h-16 md:w-14",
+                "bg-white/[0.04] text-white",
+                error
+                  ? "border-red-500/50 bg-red-500/[0.05]"
+                  : isActive
+                    ? "border-emerald-400/60 bg-emerald-500/[0.05] ring-2 ring-emerald-500/20"
+                    : isFilled
+                      ? "border-white/20 bg-white/[0.06]"
+                      : "border-white/10",
+              ].join(" ")}
             >
               <input
                 ref={(el) => {
-                  inputRefs.current[i] = el;
+                  inputsRef.current[index] = el;
                 }}
                 type="text"
                 inputMode="numeric"
                 pattern="[0-9]*"
-                maxLength={length - i}
-                autoComplete={i === 0 ? "one-time-code" : "off"}
+                autoComplete="one-time-code"
+                maxLength={1}
                 disabled={disabled}
-                value={filled ? digits[i] : ""}
-                onChange={(e) => handleChange(i, e)}
-                onKeyDown={(e) => handleKeyDown(i, e)}
-                onPaste={handlePaste}
-                onFocus={() => handleFocus(i)}
-                onBlur={() => setFocusedIndex(-1)}
-                aria-label={`Chiffre ${i + 1}`}
+                value={digit.trim()}
+                onChange={(e) => handleChange(e, index)}
+                onKeyDown={(e) => handleKeyDown(e, index)}
+                onPaste={(e) => handlePaste(e, index)}
+                onFocus={() => setFocusedIndex(index)}
+                onBlur={() => setFocusedIndex((i) => (i === index ? -1 : i))}
+                aria-label={`Chiffre ${index + 1} sur ${LENGTH}`}
+                aria-invalid={error}
+                aria-disabled={disabled}
                 className="h-full w-full appearance-none bg-transparent text-center outline-none"
               />
             </motion.div>
@@ -252,22 +286,35 @@ export default function OtpInput({
         })}
       </motion.div>
 
-      {onResend && (
-        <div className="text-xs text-zinc-500">
-          {remaining > 0 ? (
-            <span>Renvoyer le code dans {formatCountdown(remaining)}</span>
-          ) : (
-            <button
+      <div className="flex items-center gap-1 text-sm text-[var(--muted)]">
+        <AnimatePresence mode="wait" initial={false}>
+          {canResend ? (
+            <motion.button
+              key="resend"
               type="button"
-              onClick={handleResend}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.15 }}
               disabled={disabled}
-              className="text-zinc-300 underline-offset-2 transition-colors hover:text-white hover:underline disabled:opacity-40"
+              onClick={handleResend}
+              className="rounded-lg px-2 py-1 text-emerald-400 transition-colors hover:bg-emerald-500/10 hover:text-emerald-300 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              Renvoyer le code
-            </button>
+              {resendLabel}
+            </motion.button>
+          ) : (
+            <motion.span
+              key="countdown"
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.15 }}
+            >
+              {countdownLabel} {formatTime(resendTimer)}
+            </motion.span>
           )}
-        </div>
-      )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

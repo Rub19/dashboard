@@ -10,6 +10,7 @@ import { usePresence } from "@/components/PresenceProvider";
 import { Icon } from "@/lib/icons";
 import NotificationItem from "@/components/NotificationItem";
 import Modal from "@/components/ui/Modal";
+import AnimatedFilterTabs from "@/components/ui/AnimatedFilterTabs";
 
 const FILTERS: { id: string; labelKey: string; icon: string }[] = [
   { id: "all", labelKey: "all", icon: "layout-grid" },
@@ -63,6 +64,29 @@ export default function NotificationCenter() {
     else if (importantCount > 0) setNotification("important");
     else setNotification("idle");
   }, [unreadCount, importantCount, setNotification]);
+
+  const filterCounts = useMemo(() => {
+    return FILTERS.map((f) => {
+      let count = activeItems.length;
+      if (f.id === "unread") count = activeItems.filter((n) => !n.read).length;
+      else if (f.id === "important") count = activeItems.filter((n) => n.priority === "critical" || n.priority === "important").length;
+      else if (f.id === "system") count = activeItems.filter((n) => n.category === "system").length;
+      else if (f.id === "github") count = activeItems.filter((n) => n.category === "integration" || n.type === "github-pr").length;
+      else if (f.id === "security") count = activeItems.filter((n) => n.category === "security").length;
+      return { id: f.id, count };
+    });
+  }, [activeItems]);
+
+  const filterTabs = useMemo(
+    () =>
+      FILTERS.map((f) => ({
+        id: f.id,
+        label: i18n(f.labelKey),
+        count: filterCounts.find((c) => c.id === f.id)?.count ?? 0,
+        icon: <Icon name={f.icon} className="h-3.5 w-3.5" />,
+      })),
+    [filterCounts, i18n]
+  );
 
   const filtered = useMemo(() => {
     let list = activeItems;
@@ -137,26 +161,11 @@ export default function NotificationCenter() {
         />
       </div>
 
-      <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar snap-x snap-mandatory scroll-smooth">
-        {FILTERS.map((f) => {
-          const active = filter === f.id;
-          return (
-            <button
-              key={f.id}
-              type="button"
-              onClick={() => setFilter(f.id)}
-              className={`flex shrink-0 snap-start items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-medium transition-transform active:scale-[0.98] ${
-                active
-                  ? "border border-[var(--accent)]/30 bg-[var(--accent)]/20 text-[var(--accent)]"
-                  : "border border-transparent bg-[var(--panel-bg)]/[0.04] text-[var(--muted)] hover:bg-[var(--panel-bg)]/[0.08] hover:text-[var(--foreground)]"
-              }`}
-            >
-              <Icon name={f.icon} className="h-3.5 w-3.5" />
-              {i18n(f.labelKey)}
-            </button>
-          );
-        })}
-      </div>
+      <AnimatedFilterTabs
+        tabs={filterTabs}
+        activeId={filter}
+        onChange={setFilter}
+      />
 
       <div className="min-h-0 flex-1 overflow-y-auto pr-1 [-webkit-overflow-scrolling:touch]">
         <AnimatePresence initial={false} mode="popLayout">

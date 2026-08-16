@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useLiveData, LASTFM_PERIODS, type LastfmPeriod, type LiveRecord } from "@/lib/hooks/useLiveData";
 import { fetchWorker } from "@/lib/api";
 import { Icon } from "@/lib/icons";
+import WeatherWidget from "./WeatherWidget";
 import Equalizer from "./Equalizer";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -157,30 +158,6 @@ function ImageFallback({
   return <Image src={src} alt={alt || ""} width={size} height={size} unoptimized className={`${className} object-cover`} onError={() => setError(true)} />;
 }
 
-function weatherIconFromCondition(condition?: string): string | null {
-  if (!condition) return null;
-  const c = condition.toLowerCase();
-  if (c.includes("thunder")) return "cloud-lightning";
-  if (c.includes("rain") || c.includes("drizzle")) return "cloud-rain";
-  if (c.includes("snow")) return "snowflake";
-  if (c.includes("fog") || c.includes("mist")) return "cloud";
-  if (c.includes("cloud")) return "cloud-sun";
-  if (c.includes("clear") || c.includes("sun")) return "sun";
-  return null;
-}
-
-function weatherIconFromCode(code?: number, condition?: string): string {
-  if (typeof code === "number") {
-    if (code === 0) return "sun";
-    if (code >= 1 && code <= 3) return "cloud-sun";
-    if (code === 45 || code === 48) return "cloud";
-    if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return "cloud-rain";
-    if ((code >= 71 && code <= 77) || (code >= 85 && code <= 86)) return "snowflake";
-    if (code >= 95) return "cloud-lightning";
-  }
-  return weatherIconFromCondition(condition || "") || "cloud-sun";
-}
-
 function discordStatusTone(status?: string) {
   switch (status) {
     case "online":
@@ -192,13 +169,6 @@ function discordStatusTone(status?: string) {
     default:
       return { dot: "bg-zinc-500", shadow: "", label: "statusInvisible" };
   }
-}
-
-function formatDateShort(iso?: string, mounted = true): string {
-  if (!iso || !mounted) return "—";
-  const d = new Date(`${iso}T00:00:00`);
-  if (Number.isNaN(d.getTime())) return iso;
-  return d.toLocaleDateString(undefined, { weekday: "short" });
 }
 
 function toNum(value: unknown): number | undefined {
@@ -1051,67 +1021,6 @@ export default function LiveWidgets({
     );
   }
 
-  function renderWeatherFront(record: LiveRecord) {
-    const w = weather as Record<string, unknown> | null;
-    const condition = toStr(w?.description) || toStr(w?.condition) || record.subtitle || "—";
-    const code = toNum(w?.weatherCode);
-    const icon = weatherIconFromCode(code, condition);
-    const city = toStr(w?.location) || toStr(w?.city) || "—";
-    const humidity = toNum(w?.humidityPercent);
-    const wind = toNum(w?.windSpeedKmh);
-    const forecast = (Array.isArray(w?.forecast) ? (w.forecast as Record<string, unknown>[]) : []).slice(0, 3);
-
-    return (
-      <div className="flex h-full flex-col">
-        <div className="mb-3 flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <Icon name={icon} className="h-12 w-12 shrink-0 text-amber-400" />
-            <div>
-              <p className="text-2xl font-bold text-[var(--foreground)]">{record.title}</p>
-              <p className="text-xs text-[var(--muted)] capitalize">{condition}</p>
-              <p className="text-[10px] text-[var(--muted)]">{city}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mb-3 flex flex-wrap gap-2">
-          {humidity !== undefined && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-sky-500/10 px-2 py-1 text-[10px] text-sky-400">
-              <Icon name="droplets" className="h-3 w-3" />
-              {humidity}% {i18n("humidity")}
-            </span>
-          )}
-          {wind !== undefined && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] text-emerald-400">
-              <Icon name="wind" className="h-3 w-3" />
-              {wind} km/h
-            </span>
-          )}
-        </div>
-
-        {forecast.length > 0 && (
-          <div className="mt-auto grid grid-cols-3 gap-2">
-            {forecast.map((day, i) => {
-              const min = toNum(day.min);
-              const max = toNum(day.max);
-              const date = toStr(day.date);
-              const dayIcon = weatherIconFromCode(toNum(day.weatherCode), toStr(day.condition));
-              return (
-                <div key={i} className="flex flex-col items-center gap-1 rounded-[var(--panel-radius)] bg-[var(--panel-bg)]/60 p-2">
-                  <span className="text-[10px] text-[var(--muted)]">{formatDateShort(date, mounted)}</span>
-                  <Icon name={dayIcon} className="h-5 w-5 text-amber-400" />
-                  <span className="text-xs font-medium text-[var(--foreground)]">
-                    {min ?? "—"}° / {max ?? "—"}°
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-    );
-  }
-
   function renderMinecraftFront(record: LiveRecord) {
     const profile = (minecraft as Record<string, unknown>) || {};
     const username = toStr(profile.username) || toStr(profile.name) || record.title;
@@ -1207,9 +1116,11 @@ export default function LiveWidgets({
         >
           <div className="absolute inset-0 h-full" style={{ backfaceVisibility: "hidden" }}>
             <div
-              className={`h-full min-w-0 overflow-hidden rounded-[var(--panel-radius)] border bg-gradient-to-br p-4 shadow-sm transition-colors duration-150 ${gradient}`}
+              className={`h-full min-w-0 overflow-hidden rounded-[var(--panel-radius)] shadow-sm transition-colors duration-150 ${
+                isWeather ? "relative" : `border bg-gradient-to-br p-4 ${gradient}`
+              }`}
             >
-              <div className={`absolute right-3 top-3 h-2.5 w-2.5 rounded-full ${STATUS_DOT[record.status]}`} />
+              <div className={`absolute right-3 top-3 z-10 h-2.5 w-2.5 rounded-full ${STATUS_DOT[record.status]}`} />
 
               {customizing && (
                 <>
@@ -1219,11 +1130,11 @@ export default function LiveWidgets({
                       e.stopPropagation();
                       toggleHidden(record.id);
                     }}
-                    className="absolute left-3 top-3 rounded-full bg-[var(--panel-bg)] p-1.5 text-[var(--foreground)] hover:bg-[var(--panel-bg)]"
+                    className="absolute left-3 top-3 z-10 rounded-full bg-[var(--panel-bg)] p-1.5 text-[var(--foreground)] hover:bg-[var(--panel-bg)]"
                   >
                     <Icon name={hidden.has(record.id) ? "eye-off" : "eye"} className="h-3.5 w-3.5" />
                   </button>
-                  <div className="absolute right-3 bottom-3 flex gap-1.5 rounded-full bg-[var(--panel-bg)] p-1">
+                  <div className="absolute right-3 bottom-3 z-10 flex gap-1.5 rounded-full bg-[var(--panel-bg)] p-1">
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); moveRecord(record.id, "up"); }}
@@ -1272,7 +1183,16 @@ export default function LiveWidgets({
 
               {isDiscord && renderDiscordFront(record)}
 
-              {isWeather && renderWeatherFront(record)}
+              {isWeather && (
+                <div className="absolute inset-0 z-0">
+                  <WeatherWidget
+                    compact
+                    data={weather as Record<string, unknown>}
+                    loading={loading && !weather}
+                    className="h-full rounded-[var(--panel-radius)]"
+                  />
+                </div>
+              )}
 
               {isMinecraft && renderMinecraftFront(record)}
 

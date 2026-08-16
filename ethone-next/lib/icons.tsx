@@ -173,6 +173,7 @@ const MAP: Record<string, Partial<Record<IconPack, string>>> = {
   cloudLightning: { lucide: "cloud-lightning", phosphor: "cloud-lightning", tabler: "cloud-lightning", heroicons: "bolt", radix: "lightning-bolt" },
   cloudFog: { lucide: "cloud-fog", phosphor: "cloud-fog", tabler: "cloud-fog", heroicons: "cloud", radix: "cloud" },
   cloudMoon: { lucide: "cloud-moon", phosphor: "cloud-moon", tabler: "cloud-moon", heroicons: "cloud", radix: "moon" },
+  snowflake: { lucide: "snowflake", phosphor: "snowflake", tabler: "snowflake", heroicons: "snowflake", radix: "component-1" },
   wind: { lucide: "wind", phosphor: "wind", tabler: "wind", heroicons: "arrow-path", radix: "dimensions" },
   droplets: { lucide: "droplets", phosphor: "drop", tabler: "droplet", heroicons: "beaker", radix: "drop" },
   thermometer: { lucide: "thermometer", phosphor: "thermometer", tabler: "thermometer", heroicons: "fire", radix: "value" },

@@ -16,12 +16,10 @@ import {
   WifiOff,
   Gamepad2,
   Users,
-  MessageSquare,
   Check,
 } from "lucide-react";
 import { useMinecraftLive } from "@/lib/hooks/useMinecraftLive";
 import { useSettings } from "@/components/SettingsProvider";
-import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 
 type McStatus = {
@@ -48,7 +46,6 @@ function formatLastSeen(value?: string | null) {
 }
 
 export default function MinecraftWidget() {
-  const i18n = useI18n();
   const router = useRouter();
   const { settings, update } = useSettings();
   const { success, error: showError } = useToast();
@@ -56,7 +53,6 @@ export default function MinecraftWidget() {
   const { profile, username, uuid, avatarUrl, lastSeen, loading, error, refresh } = useMinecraftLive(60000);
 
   const [skinIndex, setSkinIndex] = useState(0);
-  const [capeLoaded, setCapeLoaded] = useState(false);
   const [serverAddress, setServerAddress] = useState("");
   const [serverStatus, setServerStatus] = useState<McStatus | null>(null);
   const [serverLoading, setServerLoading] = useState(false);
@@ -111,7 +107,9 @@ export default function MinecraftWidget() {
   useEffect(() => {
     if (serverTimeoutRef.current) clearTimeout(serverTimeoutRef.current);
     serverTimeoutRef.current = setTimeout(() => fetchServer(serverAddress), 500);
-    return () => clearTimeout(serverTimeoutRef.current);
+    return () => {
+      if (serverTimeoutRef.current) clearTimeout(serverTimeoutRef.current);
+    };
   }, [serverAddress, fetchServer]);
 
   const handleCopyUuid = useCallback(async () => {
@@ -386,18 +384,6 @@ export default function MinecraftWidget() {
         </button>
       </div>
 
-      {profile?.capeUrl && capeType && (
-        <Image
-          src={profile.capeUrl}
-          alt=""
-          width={64}
-          height={64}
-          unoptimized
-          onLoad={() => setCapeLoaded(true)}
-          onError={() => setCapeLoaded(false)}
-          className="hidden"
-        />
-      )}
     </div>
   );
 }

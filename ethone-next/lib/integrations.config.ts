@@ -37,7 +37,7 @@ export const INTEGRATIONS_CONFIG: Record<string, IntegrationConfig> = {
     idPlaceholder: "ex: 198a2b3c-4d5e-6f7g-8h9i-0123456789ab",
     secretLabel: "Client Secret (ou Secret interne)",
     secretPlaceholder: "secret_xxxxxxxxxxxxxxxxxxxxxxxxxx",
-    callbackPath: "/api/integrations/notion/callback",
+    callbackPath: "/",
     steps: [
       {
         title: "Créer une intégration",

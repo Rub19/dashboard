@@ -5,7 +5,7 @@ import LiveFreshness from "@/components/LiveFreshness";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 
-export default function LiveStats() {
+export default function LiveStats({ className = "" }: { className?: string }) {
   const i18n = useI18n();
   const {
     records,
@@ -36,7 +36,7 @@ export default function LiveStats() {
   const hasHistory = Object.values(historyCounts).some((n) => n > 0);
 
   return (
-    <Card3D>
+    <Card3D className={className}>
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-sm font-semibold text-[var(--foreground)]">{i18n("liveStats")}</h2>
         <LiveFreshness updatedAt={updatedAt} />

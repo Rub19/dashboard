@@ -336,13 +336,16 @@ html[data-space="studio"][data-theme="day"] {
 html,
 body {
   width: 100%;
-  min-height: 100%;
+  min-height: 100dvh;
+  overflow-x: hidden;
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   transition: background var(--v8-ambient-transition, 3200ms) var(--ease-drift, ease-in-out),
               color var(--v8-ambient-transition, 3200ms) var(--ease-drift, ease-in-out),
               font-family 0.3s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 [data-font="sans"] body { font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif; }
@@ -615,6 +618,24 @@ a:focus:not(:focus-visible) {
 
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.px-safe {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* Force 16px on inputs/selects to prevent iOS auto-zoom on focus */
+@media (hover: none) and (pointer: coarse) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
 }
 
 /* Fluid clamped type scale */

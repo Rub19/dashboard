@@ -95,11 +95,11 @@ export default function NotificationCenter() {
   }
 
   const content = (
-    <div className="space-y-3">
+    <div className="flex h-full flex-col gap-3">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="font-semibold text-zinc-100">{i18n("notifications")}</h3>
-          <p className="text-[10px] text-zinc-500">
+          <h3 className="font-semibold text-[var(--foreground)]">{i18n("notifications")}</h3>
+          <p className="text-[10px] text-[var(--muted)]">
             {unreadCount} {i18n("unread")} · {importantCount} {i18n("importantCount")}
           </p>
         </div>
@@ -108,36 +108,36 @@ export default function NotificationCenter() {
             type="button"
             onClick={markAllRead}
             disabled={unreadCount === 0}
-            className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-[11px] font-medium text-zinc-300 transition-colors hover:bg-white/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex h-9 items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 text-[11px] font-medium text-[var(--foreground)] transition-colors hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-40"
           >
             <Icon name="mail-open" className="h-3.5 w-3.5" />
-            {i18n("markAllRead")}
+            <span className="hidden sm:inline">{i18n("markAllRead")}</span>
           </button>
           <button
             type="button"
             onClick={clear}
             disabled={activeItems.length === 0}
-            className="flex items-center gap-1.5 rounded-lg border border-rose-500/20 bg-rose-500/10 px-2.5 py-1.5 text-[11px] font-medium text-rose-400 transition-colors hover:bg-rose-500/20 disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex h-9 items-center gap-1.5 rounded-lg border border-rose-500/20 bg-rose-500/10 px-2.5 text-[11px] font-medium text-rose-400 transition-colors hover:bg-rose-500/20 disabled:cursor-not-allowed disabled:opacity-40"
           >
             <Icon name="trash-2" className="h-3.5 w-3.5" />
-            {i18n("clearAll")}
+            <span className="hidden sm:inline">{i18n("clearAll")}</span>
           </button>
         </div>
       </div>
 
       <div className="relative">
-        <Icon name="search" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+        <Icon name="search" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
         <input
           ref={searchRef}
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={i18n("search")}
-          className="h-10 w-full rounded-xl border border-white/10 bg-zinc-900/50 py-2 pl-10 pr-4 text-sm text-zinc-100 outline-none placeholder:text-zinc-500 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30"
+          className="h-11 w-full rounded-xl border border-white/10 bg-zinc-900/50 py-2 pl-10 pr-4 text-base outline-none placeholder:text-[var(--muted)] focus:border-[var(--accent)]/50 focus:ring-1 focus:ring-[var(--accent)]/30 md:text-sm"
         />
       </div>
 
-      <div className="flex gap-1.5 overflow-x-auto py-1 no-scrollbar">
+      <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar snap-x snap-mandatory scroll-smooth">
         {FILTERS.map((f) => {
           const active = filter === f.id;
           return (
@@ -145,27 +145,27 @@ export default function NotificationCenter() {
               key={f.id}
               type="button"
               onClick={() => setFilter(f.id)}
-              className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-xs transition-colors ${
+              className={`flex shrink-0 snap-start items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-medium transition-transform active:scale-[0.98] ${
                 active
-                  ? "border border-emerald-500/30 bg-emerald-500/20 text-emerald-300"
-                  : "bg-white/[0.04] text-zinc-400 hover:bg-white/[0.08] hover:text-white"
+                  ? "border border-[var(--accent)]/30 bg-[var(--accent)]/20 text-[var(--accent)]"
+                  : "border border-transparent bg-white/[0.04] text-[var(--muted)] hover:bg-white/[0.08] hover:text-[var(--foreground)]"
               }`}
             >
-              <Icon name={f.icon} className="h-3 w-3" />
+              <Icon name={f.icon} className="h-3.5 w-3.5" />
               {i18n(f.labelKey)}
             </button>
           );
         })}
       </div>
 
-      <div className="max-h-[60vh] space-y-2 overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-800 [&::-webkit-scrollbar-track]:bg-transparent">
+      <div className="min-h-0 flex-1 overflow-y-auto pr-1 [-webkit-overflow-scrolling:touch]">
         <AnimatePresence initial={false} mode="popLayout">
           {filtered.length === 0 && (
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="py-8 text-center text-sm text-zinc-500"
+              className="py-8 text-center text-sm text-[var(--muted)]"
             >
               {i18n("noNotifications")}
             </motion.p>
@@ -184,14 +184,14 @@ export default function NotificationCenter() {
         type="button"
         onClick={() => setOpen(!open)}
         data-tooltip={i18n("notifications")}
-        className="relative rounded-full p-2 text-zinc-400 transition-colors hover:bg-zinc-900/60 hover:text-zinc-100"
+        className="relative flex h-10 w-10 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
         aria-label={i18n("notifications")}
       >
         <Icon name="bell" className="h-5 w-5" />
         {unreadCount > 0 && (
           <span
             data-notification-badge
-            className="absolute right-1 top-1 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-emerald-500 px-1 text-[10px] font-bold text-white"
+            className="absolute right-1 top-1 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-[var(--accent)] px-1 text-[10px] font-bold text-white"
           >
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>

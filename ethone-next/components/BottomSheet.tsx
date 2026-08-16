@@ -3,7 +3,7 @@
 import { useRef, type ReactNode } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useLayer } from "@/components/LayerProvider";
-import { motion, AnimatePresence, type PanInfo } from "framer-motion";
+import { motion, AnimatePresence, useDragControls, type PanInfo } from "framer-motion";
 
 export default function BottomSheet({
   open,
@@ -22,6 +22,7 @@ export default function BottomSheet({
 }) {
   const i18n = useI18n();
   const panelRef = useRef<HTMLDivElement>(null);
+  const dragControls = useDragControls();
   const titleId = title ? "ethone-bottom-sheet-title" : undefined;
 
   useLayer(open, onClose, {
@@ -43,7 +44,7 @@ export default function BottomSheet({
     const shouldClose =
       position === "bottom"
         ? info.offset.y > threshold || info.velocity.y > velocity
-        : Math.abs(info.offset.y) > threshold || info.velocity.y > velocity;
+        : Math.abs(info.offset.y) > threshold || Math.abs(info.velocity.y) > velocity;
     if (shouldClose) {
       onClose();
     }
@@ -62,6 +63,7 @@ export default function BottomSheet({
             className="fixed inset-0 z-40 bg-black/50"
             aria-hidden="true"
             data-testid="bottom-sheet-backdrop"
+            onClick={onClose}
           />
           <motion.div
             ref={panelRef}
@@ -74,6 +76,8 @@ export default function BottomSheet({
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             onDragEnd={handleDragEnd}
             drag={draggable ? (isCenter ? true : "y") : false}
+            dragControls={draggable ? dragControls : undefined}
+            dragListener={false}
             dragConstraints={
               isCenter
                 ? { left: -120, right: 120, top: -120, bottom: 120 }
@@ -81,14 +85,18 @@ export default function BottomSheet({
             }
             dragElastic={0.2}
             tabIndex={-1}
-            className={`fixed z-50 max-h-[80vh] overflow-y-auto rounded-t-2xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl outline-none ${
+            className={`ethone-bottom-sheet fixed z-50 max-h-[85dvh] overflow-hidden rounded-t-2xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl outline-none ${
               isCenter
                 ? "left-1/2 top-1/2 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-2xl"
-                : "bottom-0 left-0 right-0"
+                : "bottom-0 left-0 right-0 pb-safe"
             }`}
           >
             {draggable && (
-              <div className="flex items-center justify-center py-3 cursor-grab">
+              <div
+                className="flex items-center justify-center py-4 cursor-grab touch-manipulation"
+                onPointerDown={(e) => dragControls.start(e)}
+                aria-hidden="true"
+              >
                 <div className="h-1.5 w-12 rounded-full bg-[var(--border)]" />
               </div>
             )}
@@ -101,7 +109,7 @@ export default function BottomSheet({
                 <button
                   type="button"
                   onClick={() => onClose()}
-                  className="rounded p-1 text-[var(--muted)] hover:bg-[var(--surface-raised)]"
+                  className="flex h-9 w-9 items-center justify-center rounded text-[var(--muted)] hover:bg-[var(--surface-raised)]"
                   aria-label={i18n("close")}
                 >
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -111,7 +119,9 @@ export default function BottomSheet({
               </div>
             )}
 
-            <div className="p-4">{children}</div>
+            <div className="max-h-[calc(85dvh-4rem)] overflow-y-auto p-4 pb-safe [-webkit-overflow-scrolling:touch]">
+              {children}
+            </div>
           </motion.div>
         </>
       )}

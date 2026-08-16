@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type PanInfo } from "framer-motion";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
 import BrandMark from "@/components/BrandMark";
@@ -23,6 +23,14 @@ export default function MobileNav() {
   const items = NAVIGATION_ITEMS.map((item) => ({ ...item, label: i18n(item.label) }));
   const visibleItems = items.filter((item) => VISIBLE_MOBILE_IDS.includes(item.id));
 
+  function handleDrawerDragEnd(_event: unknown, info: PanInfo) {
+    const threshold = 80;
+    const velocity = 500;
+    if (info.offset.x < -threshold || info.velocity.x < -velocity) {
+      setDrawerOpen(false);
+    }
+  }
+
   return (
     <>
       <nav
@@ -41,7 +49,7 @@ export default function MobileNav() {
                 href={item.href}
                 aria-current={isActive ? "page" : undefined}
                 data-haptic
-                className="relative flex min-h-[44px] min-w-[56px] flex-col items-center justify-center gap-0.5 rounded-2xl px-2 py-1 text-[10px] font-medium transition-colors"
+                className="relative flex min-h-[44px] min-w-[56px] flex-col items-center justify-center gap-0.5 rounded-2xl px-2 py-1 text-[10px] font-medium transition-colors active:scale-[0.98] touch-manipulation"
               >
                 {isActive && (
                   <motion.div
@@ -68,7 +76,7 @@ export default function MobileNav() {
             aria-haspopup="dialog"
             aria-expanded={drawerOpen}
             data-haptic
-            className="relative flex min-h-[44px] min-w-[56px] flex-col items-center justify-center gap-0.5 rounded-2xl px-2 py-1 text-[10px] font-medium transition-colors"
+            className="relative flex min-h-[44px] min-w-[56px] flex-col items-center justify-center gap-0.5 rounded-2xl px-2 py-1 text-[10px] font-medium transition-colors active:scale-[0.98] touch-manipulation"
           >
             <Icon name="menu" className="h-5 w-5 text-[var(--muted)]" />
             <span className="max-w-[3.5rem] truncate text-[var(--muted)]">
@@ -95,7 +103,11 @@ export default function MobileNav() {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 280 }}
-              className="fixed left-0 top-0 z-50 h-full w-[min(85vw,320px)] border-r border-[var(--border)] bg-[var(--surface)] p-4 shadow-2xl md:hidden"
+              drag="x"
+              dragConstraints={{ left: -340, right: 0 }}
+              dragElastic={0.05}
+              onDragEnd={handleDrawerDragEnd}
+              className="fixed left-0 top-0 z-50 h-dvh w-[min(85vw,320px)] overflow-y-auto overscroll-contain border-r border-[var(--border)] bg-[var(--surface)] p-4 shadow-2xl no-scrollbar md:hidden"
               role="dialog"
               aria-label={i18n("navigation")}
             >
@@ -108,12 +120,12 @@ export default function MobileNav() {
                   type="button"
                   onClick={() => setDrawerOpen(false)}
                   aria-label={i18n("close")}
-                  className="rounded-xl p-2 text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
+                  className="flex h-10 w-10 items-center justify-center rounded-xl text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--foreground)]"
                 >
                   <Icon name="close" className="h-5 w-5" />
                 </button>
               </div>
-              <nav className="space-y-1">
+              <nav className="space-y-1 pb-6">
                 {items.map((item) => {
                   const isActive = isActiveRoute(pathname ?? "/", item.href);
                   return (
@@ -123,7 +135,7 @@ export default function MobileNav() {
                       onClick={() => setDrawerOpen(false)}
                       aria-current={isActive ? "page" : undefined}
                       className={cn(
-                        "flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-colors",
+                        "flex items-center gap-3 rounded-xl px-3 py-3.5 text-sm font-medium transition-colors",
                         isActive
                           ? "bg-[var(--accent)]/10 text-[var(--accent)]"
                           : "text-[var(--foreground)] hover:bg-[var(--surface-raised)]"

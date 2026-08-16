@@ -4,6 +4,20 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : refonte mobile navigation et notifications**
+
+### Corrige
+- `ethone-next/app/globals.css` : `html/body` passent en `min-height: 100dvh`, `overflow-x: hidden`, `touch-action: manipulation`. Ajout des helpers `.pt-safe`, `.px-safe` et forçage de `16px` sur les inputs tactiles.
+- `ethone-next/app/layout.tsx` : `body` en `min-h-dvh overflow-x-hidden`.
+- `ethone-next/components/Shell.tsx` : coque en `min-h-dvh`, `overflow-x-hidden`, padding bas mobile avec `env(safe-area-inset-bottom)`, header avec `pt-safe`.
+- `ethone-next/components/Sidebar.tsx` : `h-screen` → `h-dvh`.
+- `ethone-next/components/MobileNav.tsx` : drawer `h-dvh` scrollable/swipeable, targets tactiles `44px`, effet `active:scale`.
+- `ethone-next/components/BottomSheet.tsx` : hauteur en `dvh`, poignée drag agrandie, `pb-safe`, contenu en `max-h-[calc(85dvh-4rem)]`.
+- `ethone-next/components/NotificationCenter.tsx` : Bottom Sheet notifications en `dvh`, filtres tactiles `snap-x`, input en `text-base md:text-sm`.
+- `ethone-next/components/NotificationItem.tsx` : menu d'actions mobile `more-vertical`, targets `44px`, couleurs tokenisées.
+- `ethone-next/components/ui/Select.tsx` : trigger `text-base md:text-sm`, hauteur `44px` mobile.
+- `ethone-next/components/SidePanel.tsx`, `SearchBar.tsx`, `LanguageSwitcher.tsx` : boutons topbar agrandis pour respecter `44×44px`.
+
 **Migration Next.js : compacter Settings**
 
 ### Corrige

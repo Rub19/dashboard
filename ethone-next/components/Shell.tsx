@@ -42,11 +42,11 @@ export default function Shell({ children }: { children: ReactNode }) {
           <Sidebar />
             <div
               data-v8-shell
-              className="min-h-screen transition-all duration-300 md:ml-[72px]"
+              className="min-h-dvh overflow-x-hidden transition-all duration-300 md:ml-[72px]"
             >
               <header
                 data-v8-topbar
-                className="v8-topbar sticky top-0 z-30 flex h-16 min-w-0 items-center justify-between gap-2 rounded-b-2xl border-b border-[var(--border)] bg-[var(--background)]/80 px-4 backdrop-blur-md lg:px-6"
+                className="v8-topbar sticky top-0 z-30 flex h-16 min-w-0 items-center justify-between gap-2 rounded-b-2xl border-b border-[var(--border)] bg-[var(--background)]/80 px-4 pt-safe backdrop-blur-md lg:px-6"
               >
                 <V8Breadcrumbs />
                 <SearchBar />
@@ -68,7 +68,7 @@ export default function Shell({ children }: { children: ReactNode }) {
               <main
                 data-v8-main
                 id="main-content"
-                className="w-full p-6 pb-28 md:pb-32"
+                className="w-full overflow-x-hidden p-4 pb-[calc(5rem+env(safe-area-inset-bottom))] pt-safe md:p-6 md:pb-32"
                 tabIndex={-1}
               >
                 <ActivityJournalProvider>

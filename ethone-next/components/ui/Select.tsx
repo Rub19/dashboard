@@ -227,7 +227,7 @@ export default function Select({
         aria-controls={listboxId}
         aria-label={ariaLabel}
         aria-labelledby={label ? labelId : undefined}
-        className={`flex w-full items-center justify-between gap-2 rounded-xl border px-3.5 py-2 text-left text-sm font-medium transition-all focus:outline-none ${
+        className={`flex h-11 w-full items-center justify-between gap-2 rounded-xl border px-3.5 text-left text-base font-medium transition-all focus:outline-none md:h-10 md:text-sm ${
           disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
         } ${
           open

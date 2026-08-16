@@ -9,15 +9,15 @@ const API_ORIGIN = "https://api.todoist.com";
 const REDIRECT_URI = "https://ethone.dev/";
 const PROVIDER = "todoist";
 
-export async function exchangeTodoistCode(env, userId, { code, clientId }) {
-  const clientSecret = requireSecret(env, "TODOIST_CLIENT_SECRET");
+export async function exchangeTodoistCode(env, userId, { code, clientId, clientSecret }) {
+  const secret = clientSecret ? clientSecret : requireSecret(env, "TODOIST_CLIENT_SECRET");
   const response = await requestExternal(new URL("/oauth/access_token", TOKEN_ORIGIN), {
     env,
     expectedOrigin: TOKEN_ORIGIN,
     service: "todoist",
     method: "POST",
     headers: { "content-type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ client_id: clientId, client_secret: clientSecret, code, redirect_uri: REDIRECT_URI }).toString(),
+    body: new URLSearchParams({ client_id: clientId, client_secret: secret, code, redirect_uri: REDIRECT_URI }).toString(),
     retries: 0,
     maxBytes: 8192
   });

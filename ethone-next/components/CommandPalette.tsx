@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Search } from "lucide-react";
+
 import { useSettings, useActiveProfile } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
@@ -285,20 +286,7 @@ export default function CommandPalette() {
   }
 
   return (
-    <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="hidden items-center gap-2 rounded-full border border-white/10 bg-zinc-950/80 px-3 py-1.5 text-xs text-zinc-400 backdrop-blur-md transition-colors hover:border-white/20 hover:text-zinc-100 xl:flex"
-      >
-        <Search className="h-3.5 w-3.5" />
-        <span>{i18n("commands")}</span>
-        <kbd className="rounded bg-white/[0.05] px-1.5 py-0.5 text-[10px]">
-          <span className="mr-0.5">⌘</span>K
-        </kbd>
-      </button>
-
-      <Modal
+    <Modal
         isOpen={open}
         onClose={() => setOpen(false)}
         title={i18n("commands")}
@@ -360,6 +348,5 @@ export default function CommandPalette() {
               </div>
             </div>
           </Modal>
-    </>
   );
 }

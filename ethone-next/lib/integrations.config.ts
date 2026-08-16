@@ -73,7 +73,7 @@ export const INTEGRATIONS_CONFIG: Record<string, IntegrationConfig> = {
     idPlaceholder: "ex: 7a8b9c0d1e2f3g4h",
     secretLabel: "Client Secret Todoist",
     secretPlaceholder: "ex: 4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d",
-    callbackPath: "/api/integrations/todoist/callback",
+    callbackPath: "/",
     steps: [
       {
         title: "Créer une application Todoist",
@@ -110,7 +110,7 @@ export const INTEGRATIONS_CONFIG: Record<string, IntegrationConfig> = {
     idPlaceholder: "ex: Ov23li7gnklQJ7ipkgZG",
     secretLabel: "Client Secret GitHub",
     secretPlaceholder: "ex: 5c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
-    callbackPath: "/api/github/oauth/callback",
+    callbackPath: "/",
     steps: [
       {
         title: "Créer une OAuth App",
@@ -147,7 +147,7 @@ export const INTEGRATIONS_CONFIG: Record<string, IntegrationConfig> = {
     idPlaceholder: "ex: 6619fbf6315e4e68948dc08532251912",
     secretLabel: "Client Secret Spotify",
     secretPlaceholder: "ex: 1234567890abcdef1234567890abcdef",
-    callbackPath: "/api/spotify/oauth/callback",
+    callbackPath: "/",
     steps: [
       {
         title: "Créer une application Spotify",
@@ -179,7 +179,7 @@ export const INTEGRATIONS_CONFIG: Record<string, IntegrationConfig> = {
     idPlaceholder: "ex: 1234567890123456789",
     secretLabel: "Client Secret Discord",
     secretPlaceholder: "ex: abcdef-ghijkl-mnopqr-stuvwxyz",
-    callbackPath: "/api/discord/oauth/callback",
+    callbackPath: "/",
     steps: [
       {
         title: "Créer une application Discord",
@@ -213,7 +213,7 @@ export const INTEGRATIONS_CONFIG: Record<string, IntegrationConfig> = {
     requiresRedirectUri: false,
     secretLabel: "Token personnel Linear",
     secretPlaceholder: "lin_api_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-    callbackPath: "/api/integrations/linear/callback",
+    callbackPath: "/",
     steps: [
       {
         title: "Ouvrir les paramètres API",

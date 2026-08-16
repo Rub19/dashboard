@@ -80,12 +80,14 @@ export function buildAuthUrl(provider: string, clientId: string, state?: object)
   return url.toString();
 }
 
-export async function exchangeCode(provider: string, code: string, clientId: string) {
+export async function exchangeCode(provider: string, code: string, clientId: string, clientSecret?: string) {
   const cfg = PROVIDERS[provider];
   if (!cfg) throw new Error("Unknown provider: " + provider);
+  const body: Record<string, string> = { code, clientId };
+  if (clientSecret) body.clientSecret = clientSecret;
   return fetchWorker(cfg.exchangePath, {
     method: "POST",
-    body: JSON.stringify({ code, clientId }),
+    body: JSON.stringify(body),
   });
 }
 

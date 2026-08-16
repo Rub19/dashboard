@@ -34,12 +34,13 @@ export function useProfile() {
   }, [load]);
 
   async function save(input: Partial<Profile>) {
-    const res = await fetchWorker("/api/profile", {
+    await fetchWorker("/api/profile", {
       method: profile ? "PATCH" : "POST",
       body: JSON.stringify(input),
     });
-    setProfile(res.data);
-    return res.data;
+    const res = await fetchWorker("/api/profile");
+    setProfile(res?.data || null);
+    return res?.data;
   }
 
   return { profile, loading, error, reload: load, save };

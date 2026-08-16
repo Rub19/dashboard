@@ -12,8 +12,10 @@ import { isConfigured, pingIntegration, type PingResult } from "@/lib/connection
 import SystemHealthBanner from "@/components/SystemHealthBanner";
 import CategoryTabs from "@/components/CategoryTabs";
 import ConnectionCard from "@/components/ConnectionCard";
+import IntegrationCard from "@/components/IntegrationCard";
 import DiscordConfig from "@/components/DiscordConfig";
 import SpotifyConfig from "@/components/SpotifyConfig";
+import { getIntegrationConfig } from "@/lib/integrations.config";
 
 function clientIdFromStorage(provider: string): string {
   if (typeof window === "undefined") return "";
@@ -114,6 +116,21 @@ export default function IntegrationsSettings() {
   const renderCard = (integration: (typeof INTEGRATIONS)[number]) => {
     if (integration.id === "discord") return <DiscordConfig key={integration.id} />;
     if (integration.id === "spotify") return <SpotifyConfig key={integration.id} />;
+    if (getIntegrationConfig(integration.id)) {
+      return (
+        <IntegrationCard
+          key={integration.id}
+          integration={integration}
+          clientId={clientIds[integration.id] || ""}
+          onClientIdChange={handleClientIdChange}
+          credentialConnected={credentials.connected}
+          oauthConnected={connected}
+          credentials={credentials}
+          health={health[integration.id]}
+          onTest={testOne}
+        />
+      );
+    }
     return (
       <ConnectionCard
         key={integration.id}

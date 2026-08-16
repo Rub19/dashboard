@@ -25,10 +25,11 @@ function requireField(body, key, pattern) {
 
 export async function notionOAuthExchangeRoute({ request, env, auth }) {
   if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
-  const body = await readJsonBody(request, 2);
+  const body = await readJsonBody(request, 3);
   const code = requireField(body, "code", CODE_RE);
   const clientId = requireField(body, "clientId", PATTERNS.notionClientId);
-  await exchangeNotionCode(env, auth.userId, { code, clientId });
+  const clientSecret = body.clientSecret ? String(body.clientSecret) : undefined;
+  await exchangeNotionCode(env, auth.userId, { code, clientId, clientSecret });
   return { data: { connected: true } };
 }
 

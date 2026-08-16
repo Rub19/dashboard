@@ -11,8 +11,10 @@ function projectOrigin(env) {
   }
 }
 
-function supabaseHeaders(secret) {
-  return { apikey: secret, "content-type": "application/json", Authorization: `Bearer ${secret}` };
+function supabaseHeaders(secret, prefer) {
+  const headers = { apikey: secret, "content-type": "application/json", Authorization: `Bearer ${secret}` };
+  if (prefer) headers.Prefer = prefer;
+  return headers;
 }
 
 async function supabaseRequest(env, path, options = {}) {
@@ -25,7 +27,7 @@ async function supabaseRequest(env, path, options = {}) {
     expectedOrigin: origin,
     service: "supabase",
     method: options.method || "GET",
-    headers: supabaseHeaders(secret),
+    headers: supabaseHeaders(secret, options.prefer),
     body: options.body,
     maxBytes: options.maxBytes || 4096
   });
@@ -63,9 +65,10 @@ export async function profileRoute({ request, env, auth }) {
       updates.updated_at = new Date().toISOString();
       const updated = await supabaseRequest(env, `/rest/v1/ethone_public_profiles?user_id=eq.${encodeURIComponent(auth.userId)}`, {
         method: "PATCH",
-        body: JSON.stringify(updates)
+        body: JSON.stringify(updates),
+        prefer: "return=representation",
       });
-      return { data: updated?.[0] || updated };
+      return { data: Array.isArray(updated) && updated[0] ? updated[0] : null };
     }
 
     if (!username) throw httpError("INVALID_PARAMETER", 400, { detail: "username" });
@@ -76,9 +79,10 @@ export async function profileRoute({ request, env, auth }) {
         username,
         display_name: displayName,
         avatar_url: avatarUrl
-      })
+      }),
+      prefer: "return=representation",
     });
-    return { data: insert?.[0] || insert };
+    return { data: Array.isArray(insert) && insert[0] ? insert[0] : null };
   }
 
   throw httpError("METHOD_NOT_ALLOWED", 405);

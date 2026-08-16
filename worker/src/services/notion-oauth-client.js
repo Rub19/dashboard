@@ -13,14 +13,14 @@ function basicAuth(clientId, clientSecret) {
   return `Basic ${btoa(`${clientId}:${clientSecret}`)}`;
 }
 
-export async function exchangeNotionCode(env, userId, { code, clientId }) {
-  const clientSecret = requireSecret(env, "NOTION_CLIENT_SECRET");
+export async function exchangeNotionCode(env, userId, { code, clientId, clientSecret }) {
+  const secret = clientSecret ? clientSecret : requireSecret(env, "NOTION_CLIENT_SECRET");
   const response = await requestExternal(new URL("/v1/oauth/token", API_ORIGIN), {
     env,
     expectedOrigin: API_ORIGIN,
     service: "notion",
     method: "POST",
-    headers: { "content-type": "application/json", authorization: basicAuth(clientId, clientSecret) },
+    headers: { "content-type": "application/json", authorization: basicAuth(clientId, secret) },
     body: JSON.stringify({ grant_type: "authorization_code", code, redirect_uri: REDIRECT_URI }),
     retries: 0,
     maxBytes: 8192

@@ -24,7 +24,7 @@ export default function OAuthHandler() {
     if (!provider || !clientId) return;
     handled.current = true;
 
-    const clientSecret = provider === "github" ? getField("github", "clientSecret") : "";
+    const clientSecret = getField(provider, "clientSecret");
     exchangeCode(provider, code, clientId, clientSecret || undefined)
       .then(() => {
         localStorage.setItem(`ethone:clientId:${provider}`, clientId);

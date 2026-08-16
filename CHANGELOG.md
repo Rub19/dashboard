@@ -4,6 +4,16 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : refonte du Activity Hub / Journal d'activité**
+
+### Corrige
+- `ethone-next/components/ActivityHub.tsx` : nouveau composant complet avec :
+  - Matrice de contribution (heatmap) à 4 niveaux d'intensité emerald, infobulle `x actions le {date}`, légende "Moins / Plus".
+  - 4 cartes de statistiques modernes (Aujourd'hui, Série active, Semaine, Cohérence) avec icônes thématiques, typographie contrastée et fond glassmorphism.
+  - Barre d'outils avec recherche, filtres catégorie/type, pilule unifiée de synchronisation (erreur + Réessayer, état + bouton Synchroniser).
+  - Liste des entrées groupées par date avec séparateurs clairs, icônes de catégorie, badges et horodatages monospace.
+- `ethone-next/app/activity/page.tsx` : simplifié pour utiliser `ActivityHub` tout en conservant `LiveWidgets`.
+
 **Migration Next.js : indicateur de filtre glissant avec AnimatedFilterTabs**
 
 ### Corrige

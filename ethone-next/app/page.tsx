@@ -1,5 +1,5 @@
-import DashboardOverview from "@/components/DashboardOverview";
+import LiveOverview from "@/components/LiveOverview";
 
 export default function Home() {
-  return <DashboardOverview />;
+  return <LiveOverview />;
 }

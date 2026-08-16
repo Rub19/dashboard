@@ -4,6 +4,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : refonte du Live / Home avec Bento Grid supérieur**
+
+### Corrige
+- `ethone-next/components/LiveTopBento.tsx` : rangée Bento 12 colonnes en haut de page regroupant Gaming (`LiveGamingCard`), Social & Spotify (`LiveSocialCard`) et Météo (`LiveWeatherCard` via `WeatherWidget` compact).
+- `ethone-next/components/LiveOverview.tsx` : page d'accueil Live épurée avec titre, point néon pulsant et sous-titre.
+- `ethone-next/app/page.tsx` : simplifié pour utiliser `LiveOverview`.
+
 **Migration Next.js : refonte du Calendrier & Factures**
 
 ### Corrige

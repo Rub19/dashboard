@@ -1,14 +1,48 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Icon } from "@/lib/icons";
-import Select from "@/components/ui/Select";
 
-const ALLOWED_TAGS = new Set(["P", "BR", "STRONG", "B", "EM", "I", "U", "UL", "OL", "LI", "H2", "H3", "BLOCKQUOTE", "A", "PRE", "CODE"]);
-const STRIP_ENTIRELY = new Set(["SCRIPT", "STYLE", "IFRAME", "OBJECT", "EMBED", "SVG", "FORM", "INPUT", "BUTTON", "LINK", "META", "BASE", "IMG", "VIDEO", "AUDIO", "SOURCE", "NOSCRIPT"]);
+const ALLOWED_TAGS = new Set([
+  "P",
+  "BR",
+  "STRONG",
+  "B",
+  "EM",
+  "I",
+  "U",
+  "UL",
+  "OL",
+  "LI",
+  "H1",
+  "H2",
+  "H3",
+  "BLOCKQUOTE",
+  "A",
+  "PRE",
+  "CODE",
+  "IMG",
+]);
+const STRIP_ENTIRELY = new Set([
+  "SCRIPT",
+  "STYLE",
+  "IFRAME",
+  "OBJECT",
+  "EMBED",
+  "SVG",
+  "FORM",
+  "INPUT",
+  "BUTTON",
+  "LINK",
+  "META",
+  "BASE",
+  "NOSCRIPT",
+]);
 const ALLOWED_ATTRS: Record<string, Set<string>> = {
   A: new Set(["href", "target", "rel"]),
   CODE: new Set(["class"]),
+  IMG: new Set(["src", "alt", "class"]),
 };
 
 function safeHref(value: string): string {
@@ -16,7 +50,7 @@ function safeHref(value: string): string {
   if (!raw) return "";
   try {
     const url = new URL(raw, "https://ethone.invalid/");
-    if (!["http:", "https:", "mailto:"].includes(url.protocol)) return "";
+    if (!["http:", "https:"].includes(url.protocol)) return "";
     return raw;
   } catch {
     return "";
@@ -96,6 +130,16 @@ function sanitizeChildren(node: Node) {
         el.removeAttribute("href");
       }
     }
+    if (tag === "IMG") {
+      const safe = safeHref(el.getAttribute("src") || "");
+      if (safe) {
+        el.setAttribute("src", safe);
+        el.classList.add("rounded", "max-w-full");
+      } else {
+        el.remove();
+        return;
+      }
+    }
     sanitizeChildren(el);
   });
 }
@@ -124,21 +168,23 @@ const LIST_TOOLS = [
 ];
 
 const BLOCK_TOOLS = [
-  { command: "formatBlock", value: "P", icon: "text", label: "Paragraphe" },
-  { command: "formatBlock", value: "H2", icon: "heading-2", label: "Titre 2" },
-  { command: "formatBlock", value: "H3", icon: "heading-3", label: "Titre 3" },
-  { command: "formatBlock", value: "BLOCKQUOTE", icon: "quote", label: "Citation" },
-  { command: "formatBlock", value: "PRE", icon: "code", label: "Code" },
+  { command: "formatBlock", value: "P", label: "Paragraphe" },
+  { command: "formatBlock", value: "H1", label: "Titre 1" },
+  { command: "formatBlock", value: "H2", label: "Titre 2" },
+  { command: "formatBlock", value: "BLOCKQUOTE", label: "Citation" },
+  { command: "formatBlock", value: "PRE", label: "Bloc de code" },
 ];
 
 export default function RichTextEditor({
   defaultValue = "",
   onChange,
   placeholder = "",
+  className = "",
 }: {
   defaultValue?: string;
   onChange?: (html: string) => void;
   placeholder?: string;
+  className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [empty, setEmpty] = useState(!defaultValue);
@@ -152,6 +198,8 @@ export default function RichTextEditor({
     list: false,
     orderedList: false,
   });
+  const [blockOpen, setBlockOpen] = useState(false);
+  const blockButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (ref.current && ref.current.innerHTML !== defaultValue) {
@@ -160,12 +208,24 @@ export default function RichTextEditor({
     }
   }, [defaultValue]);
 
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (blockButtonRef.current?.contains(e.target as Node)) return;
+      const listbox = document.querySelector("[data-rich-block-listbox]");
+      if (listbox && !listbox.contains(e.target as Node)) {
+        setBlockOpen(false);
+      }
+    }
+    if (blockOpen) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [blockOpen]);
+
   function updateFormat() {
     if (!ref.current) return;
     let block = "P";
     try {
       const val = document.queryCommandValue("formatBlock");
-      if (typeof val === "string" && /h2|h3|blockquote|pre/i.test(val)) {
+      if (typeof val === "string" && /h1|h2|h3|blockquote|pre/i.test(val)) {
         block = val.toUpperCase().replace(/[<>]/g, "");
       }
     } catch { /* ignore */ }
@@ -186,7 +246,7 @@ export default function RichTextEditor({
       const selection = window.getSelection();
       if (selection && !selection.isCollapsed) {
         const text = selection.toString();
-        document.execCommand("insertHTML", false, `<code class="rounded bg-[var(--panel-bg)] px-1 py-0.5 font-mono text-xs">${escapeHtml(text)}</code>`);
+        document.execCommand("insertHTML", false, `<code class="rounded bg-zinc-800/60 px-1 py-0.5 font-mono text-xs text-emerald-300">${escapeHtml(text)}</code>`);
       }
     } else {
       document.execCommand(cmd, false, value);
@@ -235,15 +295,26 @@ export default function RichTextEditor({
     }
   }
 
+  function insertImage() {
+    const url = window.prompt("URL de l'image");
+    if (url) {
+      if (!/^https?:\/\//.test(url)) return;
+      document.execCommand("insertHTML", false, `<img src="${escapeHtml(url)}" alt="" class="rounded max-w-full my-2" />`);
+      handleInput();
+    }
+  }
+
   function clearFormatting() {
     exec("removeFormat");
     exec("formatBlock", "P");
   }
 
+  const selectedBlock = BLOCK_TOOLS.find((t) => t.value === format.block) || BLOCK_TOOLS[0];
+
   return (
-    <div className="v8-rich-text space-y-2">
+    <div className={`v8-rich-text flex flex-col ${className}`}>
       <div
-        className="v8-rich-text__toolbar flex flex-wrap gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1 backdrop-blur-[var(--panel-blur)]"
+        className="mb-4 flex flex-wrap items-center gap-1 rounded-xl border border-white/[0.06] bg-white/[0.03] p-1.5 backdrop-blur-md"
         role="toolbar"
         aria-label="Formatage du texte"
         onMouseDown={(e) => e.preventDefault()}
@@ -258,7 +329,9 @@ export default function RichTextEditor({
             data-rich-command={tool.command}
           />
         ))}
-        <div className="mx-1 w-px self-stretch bg-[var(--border)]" />
+
+        <span className="mx-1 h-4 w-[1px] bg-white/10" />
+
         {ALIGN_TOOLS.map((tool) => (
           <ToolbarButton
             key={tool.command}
@@ -269,7 +342,9 @@ export default function RichTextEditor({
             data-rich-command={tool.command}
           />
         ))}
-        <div className="mx-1 w-px self-stretch bg-[var(--border)]" />
+
+        <span className="mx-1 h-4 w-[1px] bg-white/10" />
+
         {LIST_TOOLS.map((tool) => (
           <ToolbarButton
             key={tool.command}
@@ -280,30 +355,66 @@ export default function RichTextEditor({
             data-rich-command={tool.command}
           />
         ))}
-        <div className="mx-1 w-px self-stretch bg-[var(--border)]" />
-        <Select
-          value={format.block}
-          onChange={(value) => exec("formatBlock", value)}
-          options={BLOCK_TOOLS.map((t) => ({ id: t.value, label: t.label }))}
-          aria-label="Style de bloc"
-          className="min-w-0 w-28"
-        />
-        <div className="mx-1 w-px self-stretch bg-[var(--border)]" />
+
+        <span className="mx-1 h-4 w-[1px] bg-white/10" />
+
+        <div className="relative">
+          <button
+            ref={blockButtonRef}
+            type="button"
+            onClick={() => setBlockOpen((v) => !v)}
+            className="flex min-w-fit items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/[0.08]"
+          >
+            <span>{selectedBlock.label}</span>
+            <Icon name="chevronDown" className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
+          </button>
+          <AnimatePresence>
+            {blockOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -4, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -4, scale: 0.98 }}
+                transition={{ duration: 0.12, ease: "easeOut" }}
+                data-rich-block-listbox
+                className="absolute left-0 top-full z-50 mt-1.5 min-w-fit overflow-hidden rounded-xl border border-white/10 bg-zinc-900/95 p-1 shadow-2xl backdrop-blur-xl"
+              >
+                {BLOCK_TOOLS.map((tool) => (
+                  <button
+                    key={tool.value}
+                    type="button"
+                    onClick={() => {
+                      exec("formatBlock", tool.value);
+                      setBlockOpen(false);
+                    }}
+                    className={`flex w-full items-center justify-between gap-4 whitespace-nowrap rounded-lg px-3 py-1.5 text-left text-xs transition-colors ${
+                      format.block === tool.value
+                        ? "bg-white/[0.10] text-white"
+                        : "text-zinc-300 hover:bg-white/[0.06] hover:text-white"
+                    }`}
+                  >
+                    <span>{tool.label}</span>
+                    {format.block === tool.value && <Icon name="check" className="h-3.5 w-3.5 text-emerald-400" />}
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <span className="mx-1 h-4 w-[1px] bg-white/10" />
+
         <ToolbarButton active={false} onClick={insertLink} label="Lien" icon="link" data-rich-command="createLink" />
         <ToolbarButton active={false} onClick={() => exec("unlink")} label="Supprimer le lien" icon="unlink" data-rich-command="unlink" />
+        <ToolbarButton active={false} onClick={insertImage} label="Image" icon="image" data-rich-command="insertImage" />
         <ToolbarButton active={false} onClick={clearFormatting} label="Effacer le format" icon="remove-formatting" data-rich-command="removeFormat" />
       </div>
+
       <div
-        className="v8-rich-text__body relative min-h-[6rem] w-full cursor-text rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus-within:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
+        className="relative flex-1 cursor-text rounded-2xl border border-white/[0.08] bg-zinc-950/70 px-4 py-3 backdrop-blur-2xl focus-within:border-white/20"
         onClick={() => ref.current?.focus()}
       >
         {empty && placeholder && (
-          <span
-            className="pointer-events-none absolute left-3 top-2 text-sm text-[var(--muted)]"
-            data-placeholder={placeholder}
-          >
-            {placeholder}
-          </span>
+          <span className="pointer-events-none absolute left-4 top-3 text-sm text-zinc-600">{placeholder}</span>
         )}
         <div
           ref={ref}
@@ -316,7 +427,7 @@ export default function RichTextEditor({
           onKeyDown={handleKeyDown}
           onKeyUp={updateFormat}
           onMouseUp={updateFormat}
-          className={`min-h-[5rem] w-full whitespace-pre-wrap outline-none ${empty ? "is-empty" : ""}`}
+          className="min-h-[280px] w-full flex-1 resize-none whitespace-pre-wrap text-xs leading-relaxed text-zinc-300 outline-none sm:text-sm"
           suppressContentEditableWarning
         />
       </div>
@@ -345,14 +456,12 @@ function ToolbarButton({
       aria-pressed={active}
       data-rich-active={active}
       data-rich-command={command}
-      className={`v8-rich-text__btn rounded-md p-1.5 transition-colors ${
-        active
-          ? "bg-[var(--accent)]/10 text-[var(--accent)]"
-          : "text-[var(--muted)] hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)]"
+      className={`flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 transition-colors ${
+        active ? "bg-white/[0.12] text-white" : "hover:bg-white/[0.08] hover:text-white"
       }`}
       aria-label={label}
     >
-      <Icon name={icon} className="h-4 w-4" />
+      <Icon name={icon} className="h-3.5 w-3.5" />
     </button>
   );
 }

@@ -5,7 +5,11 @@ import dynamic from "next/dynamic";
 import { LayoutGrid } from "lucide-react";
 import BentoCard from "@/components/ui/BentoCard";
 import BrandMark from "@/components/BrandMark";
+import MinecraftWidget from "@/components/MinecraftWidget";
+import WeatherWidget, { type WeatherData } from "@/components/WeatherWidget";
+import MediaWidget from "@/components/MediaWidget";
 import { useHomeData } from "@/lib/hooks/useDashboard";
+import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useMail } from "@/lib/hooks/useMail";
 import { useItems } from "@/lib/hooks/useItems";
 import { useSettings } from "@/components/SettingsProvider";
@@ -15,7 +19,6 @@ import { useFocus } from "@/components/FocusProvider";
 import { type SessionMode } from "@/lib/settings";
 import Link from "next/link";
 
-const LiveWidgets = dynamic(() => import("@/components/LiveWidgets"));
 const LiveStats = dynamic(() => import("@/components/LiveStats"));
 const BillsWidget = dynamic(() => import("@/components/BillsWidget"));
 const DailyBriefing = dynamic(() => import("@/components/DailyBriefing"));
@@ -174,15 +177,15 @@ function SignalRow({
 export default function DashboardOverview() {
   const i18n = useI18n();
   const { settings, update: updateSettings } = useSettings();
-  const { greeting, dashboard, nowPlaying, lanyard, valorant, lol, loading, error } = useHomeData();
+  const { greeting, dashboard, nowPlaying, loading, error } = useHomeData();
+  const live = useLiveData();
+  const weather = live.weather as WeatherData | null;
   const { unread: unreadMail, loading: mailLoading } = useMail();
   const { items: tasks } = useItems("tasks");
   const { items: notes } = useItems("notes");
   const { items: events } = useItems("events");
   const { start } = useFocus();
   const [customizing, setCustomizing] = useState(false);
-
-  const matches = [...(valorant || []), ...(lol || [])].slice(0, 6);
 
   const hidden = new Set(settings.homeHiddenSections || []);
 
@@ -599,10 +602,6 @@ export default function DashboardOverview() {
                 <SignalRow icon="wifi" label={i18n("network")} value={i18n("online")} color="emerald" />
               </div>
             </BentoCard>
-
-            <div className="mt-4">
-              <LiveStats />
-            </div>
           </BentoCard>
         )}
 
@@ -637,114 +636,22 @@ export default function DashboardOverview() {
 
         {!hidden.has("live") && (
           <BentoCard title={i18n("live")} icon="radio" className="col-span-12">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <BentoCard title={i18n("live")} icon="music">
-                {loading ? (
-                  <div className="space-y-3">
-                    <div className="h-2 w-3/4 animate-pulse rounded bg-[var(--border)]" />
-                    <div className="h-2 w-1/2 animate-pulse rounded bg-[var(--border)]" />
-                  </div>
-                ) : nowPlaying?.title ? (
-                  <div className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-green-500/10 text-green-400">
-                      <Icon name="disc" className="h-5 w-5 animate-spin-slow" />
-                    </span>
-                    <div className="min-w-0">
-                      <p className="truncate font-medium">{nowPlaying.title}</p>
-                      <p className="truncate text-xs text-[var(--muted)]">{nowPlaying.artist}</p>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-sm text-[var(--muted)]">{i18n("noLive")}</p>
-                )}
+            <div className="grid grid-cols-12 gap-4">
+              <BentoCard title="Minecraft" icon="gamepad-2" className="col-span-12 h-full lg:col-span-4">
+                <MinecraftWidget className="!h-full !max-w-none !min-h-0 !border-0 !bg-transparent !p-0 !shadow-none !overflow-y-auto" />
               </BentoCard>
 
-              <BentoCard title={i18n("cloud")} icon="cloud">
-                {loading ? (
-                  <div className="space-y-3">
-                    <div className="h-2 w-3/4 animate-pulse rounded bg-[var(--border)]" />
-                    <div className="h-2 w-1/2 animate-pulse rounded bg-[var(--border)]" />
-                  </div>
-                ) : dashboard ? (
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="flex items-center gap-2">
-                      <Icon name="folder" className="h-4 w-4 text-[var(--muted)]" />
-                      <span className="text-sm">{dashboard.folders} {i18n("folders")}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Icon name="heart" className="h-4 w-4 text-[var(--muted)]" />
-                      <span className="text-sm">{dashboard.favorites} {i18n("favorites")}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Icon name="share-2" className="h-4 w-4 text-[var(--muted)]" />
-                      <span className="text-sm">{dashboard.activeShares} {i18n("shared")}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Icon name="cloud" className="h-4 w-4 text-[var(--muted)]" />
-                      <span className="text-sm">{dashboard.activeDrops} {i18n("drops")}</span>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-sm text-[var(--muted)]">{i18n("cloudUnavailable")}</p>
-                )}
+              <BentoCard title={i18n("weather")} icon="cloudSun" className="col-span-12 h-full sm:col-span-6 lg:col-span-4">
+                <WeatherWidget data={weather} loading={loading && !weather} className="!h-full !max-w-none !min-h-0 !border-0 !bg-transparent !p-0 !shadow-none !overflow-y-auto" />
               </BentoCard>
 
-              <BentoCard title={i18n("recentMatches")} icon="swords">
-                {loading ? (
-                  <div className="space-y-3">
-                    <div className="h-2 w-3/4 animate-pulse rounded bg-[var(--border)]" />
-                    <div className="h-2 w-1/2 animate-pulse rounded bg-[var(--border)]" />
-                  </div>
-                ) : matches.length > 0 ? (
-                  <div className="space-y-2">
-                    {matches.map((m, i) => (
-                      <div key={m.id || i} className="flex items-center gap-2">
-                        {m.agent || m.champion ? (
-                          <Icon name="swords" className="h-4 w-4 text-violet-400" />
-                        ) : (
-                          <Icon name="shield" className="h-4 w-4 text-sky-400" />
-                        )}
-                        <span className="min-w-0 flex-1 truncate text-sm">
-                          {m.map || m.mode || "Match"}
-                        </span>
-                        <span className="text-xs text-[var(--muted)]">
-                          {m.kills ?? "-"}/{m.deaths ?? "-"}/{m.assists ?? "-"}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-[var(--muted)]">{i18n("noMatches")}</p>
-                )}
+              <BentoCard title={i18n("nowPlaying")} icon="disc" className="col-span-12 h-full sm:col-span-6 lg:col-span-4">
+                <MediaWidget className="!h-full !max-w-none !min-h-0 !border-0 !bg-transparent !p-0 !shadow-none !overflow-y-auto" />
               </BentoCard>
-            </div>
 
-            {lanyard?.discord_status && (
-              <BentoCard title={i18n("discord")} icon="discord" className="mt-4">
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`h-3 w-3 rounded-full ${
-                      lanyard.discord_status === "online"
-                        ? "bg-emerald-500"
-                        : lanyard.discord_status === "idle"
-                        ? "bg-amber-500"
-                        : lanyard.discord_status === "dnd"
-                        ? "bg-red-500"
-                        : "bg-zinc-500"
-                    }`}
-                  />
-                  <span className="text-sm capitalize">{lanyard.discord_status}</span>
-                  {lanyard.activities?.[0] && (
-                    <span className="ml-2 text-sm text-[var(--muted)]">
-                      {lanyard.activities[0].name}
-                    </span>
-                  )}
-                </div>
+              <BentoCard title={i18n("liveStats")} icon="activity" className="col-span-12 h-full">
+                <LiveStats />
               </BentoCard>
-            )}
-
-            <div className="mt-4">
-              <LiveWidgets showHeader={false} customizing={customizing} />
             </div>
           </BentoCard>
         )}

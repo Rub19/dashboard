@@ -1,19 +1,19 @@
 "use client";
 
 import { useId, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Check, Moon, Sun, Sparkles } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon as IconifyIcon } from "@iconify/react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useSettingsForm } from "./SettingsFormContext";
+import { ACCENTS } from "@/components/SettingsProvider";
+import { type Settings, type ThemeMode, DEFAULTS } from "@/lib/settings";
+import BentoCard from "@/components/ui/BentoCard";
 import ThemePicker from "./ThemePicker";
 import Switch from "@/components/Switch";
 import Select from "@/components/ui/Select";
 import Slider from "@/components/ui/Slider";
-import Tooltip from "@/components/Tooltip";
-import { ACCENTS } from "@/components/SettingsProvider";
-import { type Settings, type ThemeMode, DEFAULTS } from "@/lib/settings";
 
 const THEME_ORDER: ThemeMode[] = [
   "default",
@@ -53,37 +53,51 @@ const PACKS = [
   { id: "radix", label: "Radix" },
 ] as const;
 
-const WALLPAPERS = [
-  { id: "none", label: "wallpaperNone" },
-  { id: "aurora", label: "wallpaperAurora" },
-  { id: "nebula", label: "wallpaperNebula" },
-  { id: "mesh", label: "wallpaperMesh" },
-  { id: "noise", label: "wallpaperNoise" },
-  { id: "grain", label: "wallpaperGrain" },
-  { id: "mineral", label: "wallpaperMineral" },
+const FONTS = [
+  { id: "inter", label: "Inter" },
+  { id: "outfit", label: "Outfit" },
+  { id: "jetbrains", label: "JetBrains Mono" },
+  { id: "editorial", label: "Editorial Serif" },
+  { id: "sans", label: "Sans système" },
+  { id: "mono", label: "Mono" },
+  { id: "serif", label: "Serif" },
+] as const;
+
+const DOCK_SCALES = [
+  { id: "compact", label: "Compact" },
+  { id: "normal", label: "Normal" },
+  { id: "large", label: "Large" },
+] as const;
+
+const DOCK_ALIGNS = [
+  { id: "center", label: "Centre" },
+  { id: "left", label: "Gauche" },
+  { id: "right", label: "Droite" },
+  { id: "stretch", label: "Étiré" },
+] as const;
+
+const DOCK_GLASS = [
+  { id: "vitrified", label: "Vitrifié" },
+  { id: "ultra-blur", label: "Ultra-blur" },
+  { id: "sober", label: "Sobre" },
+] as const;
+
+const BACKGROUND_EFFECTS = [
+  { id: "solid", label: "Solide" },
+  { id: "gradient", label: "Dégradé" },
+  { id: "mesh", label: "Mesh" },
+  { id: "aurora", label: "Aurore" },
+  { id: "nebula", label: "Nébuleuse" },
+  { id: "noise", label: "Bruit" },
 ] as const;
 
 const AURAS = [
-  { id: "classic", label: "auraClassic" },
-  { id: "boreal", label: "auraBoreal" },
-  { id: "cyberpunk", label: "auraCyberpunk" },
-  { id: "eclipse", label: "auraEclipse" },
-  { id: "emerald", label: "auraEmerald" },
-  { id: "mineral", label: "auraMineral" },
-] as const;
-
-const BACKGROUNDS = [
-  { id: "solid", label: "backgroundSolid" },
-  { id: "gradient", label: "backgroundGradient" },
-  { id: "mesh", label: "backgroundMesh" },
-  { id: "aurora", label: "backgroundAurora" },
-] as const;
-
-const SHADOWS = [
-  { id: "none", label: "shadowNone" },
-  { id: "sm", label: "shadowSm" },
-  { id: "md", label: "shadowMd" },
-  { id: "glow", label: "shadowGlow" },
+  { id: "classic", label: "Classique" },
+  { id: "boreal", label: "Boréale" },
+  { id: "cyberpunk", label: "Cyberpunk" },
+  { id: "eclipse", label: "Éclipse" },
+  { id: "emerald", label: "Émeraude" },
+  { id: "mineral", label: "Minéral" },
 ] as const;
 
 const ICON_PACK_SAMPLE = "smile";
@@ -108,6 +122,24 @@ function getSampleIcon(pack: string) {
 
 function isDirty(key: keyof Settings, value: unknown) {
   return JSON.stringify(value) !== JSON.stringify(DEFAULTS[key]);
+}
+
+type RowProps = {
+  label: string;
+  description?: string;
+  children: React.ReactNode;
+};
+
+function SettingsRow({ label, description, children }: RowProps) {
+  return (
+    <div className="flex flex-col gap-2 border-b border-white/[0.04] py-3 last:border-none sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+      <div className="flex-1">
+        <h4 className="text-xs font-semibold text-white">{label}</h4>
+        {description && <p className="text-[11px] text-zinc-400">{description}</p>}
+      </div>
+      <div className="flex items-center justify-end gap-2">{children}</div>
+    </div>
+  );
 }
 
 export default function AppearanceSettings() {
@@ -135,221 +167,328 @@ export default function AppearanceSettings() {
       "shadow",
       "backgroundEffect",
       "backgroundSpeed",
+      "fontFamily",
+      "fontSize",
+      "reducedMotion",
+      "uiGlow",
+      "interfaceBlurEnabled",
+      "dockAutoHide",
+      "dockMagnify",
+      "dockVisible",
+      "presenceShowSignals",
     ];
     return keys.filter((k) => isDirty(k, settings[k])).length;
   }, [settings]);
 
   const currentTheme = settings.theme;
   const currentAccent = settings.accentColor;
+  const isGrain = settings.wallpaper === "grain";
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <p className="text-xs text-[var(--muted)]">{i18n("appearanceDescription")}</p>
-        <AnimatePresence>
-          {modifiedCount > 0 && (
-            <motion.span
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
-              className="text-[10px] font-medium text-emerald-400"
-            >
-              {modifiedCount} {i18n("modified")}
-            </motion.span>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* Thèmes */}
-      <section className="space-y-3">
-        <div>
-          <h3 className="text-sm font-semibold text-[var(--foreground)]">{i18n("theme")}</h3>
-          <p className="text-xs text-[var(--muted)]">{i18n("themeDescription")}</p>
-        </div>
-        <ThemePicker
-          themes={THEME_ORDER}
-          value={currentTheme}
-          onChange={(theme) => handleChange("theme", theme)}
-          showMore
-        />
-      </section>
-
-      {/* Couleur d'accent */}
-      <SettingRow label={i18n("accentColor")} description={i18n("accentColorDescription")}>
-        <div className="flex flex-wrap items-center gap-3">
-          {ACCENT_COLORS.map((color) => {
-            if (color.id === "custom") {
-              return (
-                <Tooltip key={color.id} label={i18n(color.id)}>
-                  <label
-                    className={`relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 transition-colors duration-150 active:scale-[0.98] ${
-                      currentAccent === "custom"
-                        ? "border-white shadow-[0_0_12px_rgba(255,255,255,0.35)]"
-                        : "border-[var(--panel-border)] hover:border-[var(--panel-border)]"
-                    }`}
-                    style={{ background: settings.customAccent }}
-                  >
-                    <Sparkles className="h-3.5 w-3.5 text-white/80" />
-                    <input
-                      id={colorInputId}
-                      type="color"
-                      value={settings.customAccent}
-                      onChange={(e) => {
-                        handleChange("customAccent", e.target.value);
-                        handleChange("accentColor", "custom");
-                      }}
-                      className="sr-only"
-                      aria-label={i18n("customAccent")}
-                    />
-                  </label>
-                </Tooltip>
-              );
-            }
-            const hex = ACCENTS[color.id] || "#8b5cf6";
-            const selected = currentAccent === color.id;
-            return (
-              <Tooltip key={color.id} label={i18n(color.id)}>
-                <button
-                  type="button"
-                  onClick={() => handleChange("accentColor", color.id)}
-                  className={`relative h-7 w-7 rounded-full transition-colors duration-150 active:scale-[0.98] ${
-                    selected
-                      ? "ring-2 ring-white shadow-[0_0_12px_rgba(255,255,255,0.35)]"
-                      : "ring-1 ring-white/10 hover:ring-white/40"
-                  }`}
-                  style={{ backgroundColor: hex }}
-                  aria-label={i18n(color.id)}
-                >
-                  {selected && <Check className="h-3.5 w-3.5 text-white" />}
-                </button>
-              </Tooltip>
-            );
-          })}
-        </div>
-      </SettingRow>
-
-      {/* Pack d'icônes */}
-      <SettingRow label={i18n("iconPack")} description={i18n("iconPackDescription")}>
-        <div className="flex items-center gap-1 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] p-1">
-          {PACKS.map((pack) => {
-            const active = settings.iconPack === pack.id;
-            const sample = getSampleIcon(pack.id);
-            return (
-              <button
-                key={pack.id}
-                type="button"
-                onClick={() => handleChange("iconPack", pack.id)}
-                className="relative flex flex-1 items-center justify-center gap-1.5 rounded-[var(--panel-radius)] px-2 py-1.5 text-[11px] font-medium transition-colors"
-              >
-                {active && (
-                  <motion.div
-                    layoutId="activeIconPack"
-                    className="absolute inset-0 rounded-[var(--panel-radius)] bg-[var(--accent)]"
-                    transition={{ duration: 0.15, ease: "easeOut" as const }}
-                  />
-                )}
-                <span className={`relative z-10 flex items-center gap-1.5 ${active ? "text-white" : "text-[var(--muted)] hover:text-[var(--foreground)]"} backdrop-blur-[var(--panel-blur)]`}>
-                  <IconifyIcon icon={sample.icon} className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">{pack.label}</span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </SettingRow>
-
-      {/* Mode sombre */}
-      <SettingRow label={i18n("darkMode")} description={i18n("darkModeDescription")}>
-        <div className="flex items-center gap-3">
-          <Sun className="h-4 w-4 text-[var(--muted)]" />
-          <Switch checked={settings.darkMode} onChange={(v) => handleChange("darkMode", v)} labels={false} size="md" />
-          <Moon className="h-4 w-4 text-[var(--foreground)]" />
-        </div>
-      </SettingRow>
-
-      {/* Effets */}
-      <section className="space-y-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/40 p-3 backdrop-blur-[var(--panel-blur)]">
-        <h3 className="text-sm font-semibold text-[var(--foreground)]">{i18n("effects")}</h3>
-
-        <SettingRow label={i18n("glassmorphism")} description={i18n("glassmorphismDescription")}>
-          <Switch checked={settings.glassEnabled} onChange={(v) => handleChange("glassEnabled", v)} labels={false} size="sm" />
-        </SettingRow>
-
-        <SettingRow label={i18n("cardTilt3d")} description={i18n("cardTilt3dDescription")}>
-          <Switch checked={settings.cardTilt} onChange={(v) => handleChange("cardTilt", v)} labels={false} size="sm" />
-        </SettingRow>
-
-        <SettingRow label={i18n("shadow")} description={i18n("shadowDescription")}>
-          <Select
-            value={settings.shadow}
-            onChange={(v) => handleChange("shadow", v as Settings["shadow"])}
-            options={SHADOWS.map((s) => ({ id: s.id, label: i18n(s.label) }))}
-            aria-label={i18n("shadow")}
-          />
-        </SettingRow>
-
-        <SettingRow label={i18n("background")} description={i18n("backgroundDescription")}>
-          <Select
-            value={settings.backgroundEffect}
-            onChange={(v) => handleChange("backgroundEffect", v as Settings["backgroundEffect"])}
-            options={BACKGROUNDS.map((b) => ({ id: b.id, label: i18n(b.label) }))}
-            aria-label={i18n("background")}
-          />
-        </SettingRow>
-
-        <SettingRow label={i18n("backgroundSpeed")} description={i18n("backgroundSpeedDescription")}>
-          <div className="w-40">
-            <Slider
-              value={settings.backgroundSpeed}
-              onChange={(v) => handleChange("backgroundSpeed", v)}
-              min={0}
-              max={100}
-              step={1}
-              unit="%"
-              showValue
-              aria-label={i18n("backgroundSpeed")}
-            />
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      {/* Card 1 : Thème & Accent */}
+      <BentoCard title="Thème & Accent" icon="palette" className="md:col-span-2">
+        <div className="space-y-5">
+          <div>
+            <h3 className="mb-2 text-xs font-semibold text-zinc-300">{i18n("theme")}</h3>
+            <ThemePicker themes={THEME_ORDER} value={currentTheme} onChange={(theme) => handleChange("theme", theme)} showMore />
           </div>
-        </SettingRow>
 
-        <SettingRow label={i18n("wallpaper")} description={i18n("wallpaperDescription")}>
-          <Select
-            value={settings.wallpaper}
-            onChange={(v) => handleChange("wallpaper", v as Settings["wallpaper"])}
-            options={WALLPAPERS.map((w) => ({ id: w.id, label: i18n(w.label) }))}
-            aria-label={i18n("wallpaper")}
-          />
-        </SettingRow>
+          <SettingsRow label="Pack d'icônes" description="Set d'icônes utilisé dans l'interface.">
+            <div className="flex items-center gap-1 rounded-xl border border-white/[0.08] bg-white/[0.03] p-1">
+              {PACKS.map((pack) => {
+                const active = settings.iconPack === pack.id;
+                const sample = getSampleIcon(pack.id);
+                return (
+                  <button
+                    key={pack.id}
+                    type="button"
+                    onClick={() => handleChange("iconPack", pack.id)}
+                    className={`relative flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] font-medium transition-colors ${
+                      active ? "text-white" : "text-zinc-400 hover:text-zinc-200"
+                    }`}
+                  >
+                    {active && (
+                      <motion.div
+                        layoutId="activeIconPack"
+                        className="absolute inset-0 rounded-lg bg-white/[0.08]"
+                        transition={{ duration: 0.15, ease: "easeOut" as const }}
+                      />
+                    )}
+                    <span className="relative z-10 flex items-center gap-1.5">
+                      <IconifyIcon icon={sample.icon} className="h-3.5 w-3.5" />
+                      <span className="hidden sm:inline">{pack.label}</span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </SettingsRow>
 
-        <SettingRow label={i18n("aura")} description={i18n("auraDescription")}>
-          <Select
-            value={settings.aura}
-            onChange={(v) => handleChange("aura", v as Settings["aura"])}
-            options={AURAS.map((a) => ({ id: a.id, label: i18n(a.label) }))}
-            aria-label={i18n("aura")}
-          />
-        </SettingRow>
-      </section>
-    </div>
-  );
-}
+          <SettingsRow label="Couleur d'accent" description="Teinte dominante de l'interface.">
+            <div className="flex flex-wrap items-center gap-2.5">
+              {ACCENT_COLORS.map((color) => {
+                if (color.id === "custom") {
+                  return (
+                    <label
+                      key={color.id}
+                      className={`relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 transition-all active:scale-95 ${
+                        currentAccent === "custom"
+                          ? "border-white shadow-[0_0_16px_rgba(255,255,255,0.35)]"
+                          : "border-white/10 hover:border-white/40"
+                      }`}
+                      style={{ background: settings.customAccent }}
+                    >
+                      <Sparkles className="h-3.5 w-3.5 text-white/80" />
+                      <input
+                        id={colorInputId}
+                        type="color"
+                        value={settings.customAccent}
+                        onChange={(e) => {
+                          handleChange("customAccent", e.target.value);
+                          handleChange("accentColor", "custom");
+                        }}
+                        className="sr-only"
+                        aria-label={color.label}
+                      />
+                    </label>
+                  );
+                }
+                const hex = ACCENTS[color.id] || "#8b5cf6";
+                const selected = currentAccent === color.id;
+                return (
+                  <button
+                    key={color.id}
+                    type="button"
+                    onClick={() => handleChange("accentColor", color.id)}
+                    className={`relative h-7 w-7 rounded-full transition-all active:scale-95 ${
+                      selected
+                        ? "ring-2 ring-white shadow-[0_0_14px_currentColor]"
+                        : "ring-1 ring-white/10 hover:ring-white/40"
+                    }`}
+                    style={{ backgroundColor: hex, color: hex }}
+                    aria-label={color.label}
+                  >
+                    {selected && <Check className="mx-auto h-3.5 w-3.5 text-white" />}
+                  </button>
+                );
+              })}
+            </div>
+          </SettingsRow>
+        </div>
+      </BentoCard>
 
-function SettingRow({
-  label,
-  description,
-  children,
-}: {
-  label: string;
-  description?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-      <div className="flex-1">
-        <h4 className="text-sm font-semibold text-[var(--foreground)]">{label}</h4>
-        {description && <p className="text-xs text-[var(--muted)]">{description}</p>}
-      </div>
-      <div className="flex items-center justify-end">{children}</div>
+      {/* Card 2 : Typographie & Échelle */}
+      <BentoCard title="Typographie" icon="type">
+        <div className="space-y-1">
+          <SettingsRow label="Police" description="Famille de caractères principale.">
+            <Select
+              value={settings.fontFamily}
+              onChange={(v) => handleChange("fontFamily", v as Settings["fontFamily"])}
+              options={FONTS.map((f) => ({ id: f.id, label: f.label }))}
+              className="min-w-[9rem]"
+            />
+          </SettingsRow>
+
+          <SettingsRow label="Échelle du texte" description="Ajuste la taille globale du texte.">
+            <div className="w-40">
+              <Slider
+                value={settings.fontSize}
+                onChange={(v) => handleChange("fontSize", v)}
+                min={80}
+                max={130}
+                step={1}
+                unit="%"
+                showValue
+              />
+            </div>
+          </SettingsRow>
+
+          <SettingsRow label="Mode sombre" description="Forcer le thème sombre.">
+            <div className="flex items-center gap-3">
+              <Sun className="h-4 w-4 text-zinc-500" />
+              <Switch
+                checked={settings.darkMode}
+                onChange={(v) => handleChange("darkMode", v)}
+                labels={false}
+                size="sm"
+              />
+              <Moon className="h-4 w-4 text-zinc-300" />
+            </div>
+          </SettingsRow>
+        </div>
+      </BentoCard>
+
+      {/* Card 3 : Verre & Effets */}
+      <BentoCard title="Verre & Effets" icon="glass-water">
+        <div className="space-y-1">
+          <SettingsRow label="Flou d'arrière-plan" description="Active l'effet de flou sur les panneaux.">
+            <Switch
+              checked={settings.interfaceBlurEnabled}
+              onChange={(v) => handleChange("interfaceBlurEnabled", v)}
+              labels={false}
+              size="sm"
+            />
+          </SettingsRow>
+
+          <SettingsRow label="Verre dépoli" description="Transparence des panneaux de l'interface.">
+            <Switch
+              checked={settings.glassEnabled}
+              onChange={(v) => handleChange("glassEnabled", v)}
+              labels={false}
+              size="sm"
+            />
+          </SettingsRow>
+
+          <SettingsRow label="Bordures lumineuses" description="Halo subtil sur les contours actifs.">
+            <Switch
+              checked={settings.uiGlow}
+              onChange={(v) => handleChange("uiGlow", v)}
+              labels={false}
+              size="sm"
+            />
+          </SettingsRow>
+
+          <SettingsRow label="Grain sombre" description="Applique un motif de grain en arrière-plan.">
+            <Switch
+              checked={isGrain}
+              onChange={(v) => handleChange("wallpaper", v ? "grain" : "none")}
+              labels={false}
+              size="sm"
+            />
+          </SettingsRow>
+
+          <SettingsRow label="Mouvements réduits" description="Diminue les animations de l'interface.">
+            <Switch
+              checked={settings.reducedMotion}
+              onChange={(v) => handleChange("reducedMotion", v)}
+              labels={false}
+              size="sm"
+            />
+          </SettingsRow>
+
+          <SettingsRow label="Ombre des cartes" description="Style d'ombre des panneaux.">
+            <Select
+              value={settings.shadow}
+              onChange={(v) => handleChange("shadow", v as Settings["shadow"])}
+              options={[
+                { id: "none", label: "Aucune" },
+                { id: "sm", label: "Légère" },
+                { id: "md", label: "Moyenne" },
+                { id: "glow", label: "Néon" },
+              ]}
+              className="min-w-[7rem]"
+            />
+          </SettingsRow>
+
+          <SettingsRow label="Arrière-plan" description="Effet appliqué au fond d'écran.">
+            <Select
+              value={settings.backgroundEffect}
+              onChange={(v) => handleChange("backgroundEffect", v as Settings["backgroundEffect"])}
+              options={BACKGROUND_EFFECTS.map((b) => ({ id: b.id, label: b.label }))}
+              className="min-w-[9rem]"
+            />
+          </SettingsRow>
+
+          <SettingsRow label="Vitesse d'animation" description="Rapidité de l'effet d'arrière-plan.">
+            <div className="w-40">
+              <Slider
+                value={settings.backgroundSpeed}
+                onChange={(v) => handleChange("backgroundSpeed", v)}
+                min={0}
+                max={100}
+                step={1}
+                unit="%"
+                showValue
+              />
+            </div>
+          </SettingsRow>
+
+          <SettingsRow label="Aura" description="Ambiance chromatique globale.">
+            <Select
+              value={settings.aura}
+              onChange={(v) => handleChange("aura", v)}
+              options={AURAS.map((a) => ({ id: a.id, label: a.label }))}
+              className="min-w-[9rem]"
+            />
+          </SettingsRow>
+        </div>
+      </BentoCard>
+
+      {/* Card 4 : Dock & Barre d'État */}
+      <BentoCard title="Dock & Barre d'État" icon="anchor" className="md:col-span-2">
+        <div className="grid grid-cols-1 gap-0 md:grid-cols-2 md:gap-4">
+          <SettingsRow label="Dock visible" description="Afficher le dock en bas de l'écran.">
+            <Switch
+              checked={settings.dockVisible}
+              onChange={(v) => handleChange("dockVisible", v)}
+              labels={false}
+              size="sm"
+            />
+          </SettingsRow>
+
+          <SettingsRow label="Masquage auto" description="Réduire le dock lorsqu'il est inactif.">
+            <Switch
+              checked={settings.dockAutoHide}
+              onChange={(v) => handleChange("dockAutoHide", v)}
+              labels={false}
+              size="sm"
+            />
+          </SettingsRow>
+
+          <SettingsRow label="Magnification" description="Zoom au survol des icônes.">
+            <Switch
+              checked={settings.dockMagnify}
+              onChange={(v) => handleChange("dockMagnify", v)}
+              labels={false}
+              size="sm"
+            />
+          </SettingsRow>
+
+          <SettingsRow label="Métriques système" description="Afficher CPU/RAM dans la barre d'état.">
+            <Switch
+              checked={!!settings.presenceShowSignals}
+              onChange={(v) => handleChange("presenceShowSignals", v)}
+              labels={false}
+              size="sm"
+            />
+          </SettingsRow>
+
+          <SettingsRow label="Taille du dock" description="Échelle visuelle du dock.">
+            <Select
+              value={settings.dockScale}
+              onChange={(v) => handleChange("dockScale", v as Settings["dockScale"])}
+              options={DOCK_SCALES.map((s) => ({ id: s.id, label: s.label }))}
+              className="min-w-[7rem]"
+            />
+          </SettingsRow>
+
+          <SettingsRow label="Position du dock" description="Alignement horizontal du dock.">
+            <Select
+              value={settings.dockAlign}
+              onChange={(v) => handleChange("dockAlign", v as Settings["dockAlign"])}
+              options={DOCK_ALIGNS.map((a) => ({ id: a.id, label: a.label }))}
+              className="min-w-[7rem]"
+            />
+          </SettingsRow>
+
+          <SettingsRow label="Style du dock" description="Finition en verre du dock.">
+            <Select
+              value={settings.dockGlass}
+              onChange={(v) => handleChange("dockGlass", v as Settings["dockGlass"])}
+              options={DOCK_GLASS.map((g) => ({ id: g.id, label: g.label }))}
+              className="min-w-[7rem]"
+            />
+          </SettingsRow>
+        </div>
+      </BentoCard>
+
+      {modifiedCount > 0 && (
+        <div className="md:col-span-2 flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] px-3 py-2 text-[11px] text-emerald-300">
+          <Sparkles className="h-3.5 w-3.5" />
+          {modifiedCount} option{modifiedCount > 1 ? "s" : ""} modifiée{modifiedCount > 1 ? "s" : ""}
+        </div>
+      )}
     </div>
   );
 }

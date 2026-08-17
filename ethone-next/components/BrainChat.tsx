@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { useActiveProfile } from "@/components/SettingsProvider";
 import type { BrainMessage, ReturnTypeOfUseBrain } from "@/lib/hooks/useBrain";
+import { useBrainActivityStore } from "@/lib/stores/brain-activity";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useNowPlaying } from "@/lib/hooks/useNowPlaying";
 import { useToast } from "@/components/ToastProvider";
@@ -187,6 +188,11 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
   const { items: flows } = useUserData("flow");
   const { nowPlaying } = useNowPlaying();
   const [activeWorkspace] = useLocalStorage<string>("ethone-active-workspace", "personal");
+  const setIsThinking = useBrainActivityStore((s) => s.setIsThinking);
+
+  useEffect(() => {
+    setIsThinking(brain.loading);
+  }, [brain.loading, setIsThinking]);
 
   const [prompt, setPrompt] = useState("");
   const [pending, setPending] = useState(false);

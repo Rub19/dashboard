@@ -57,7 +57,12 @@ export default function HeroBriefingCard({
   const i18n = useI18n();
   const { settings } = useSettings();
   const brain = useBrain();
+  const setIsThinking = useBrainActivityStore((s) => s.setIsThinking);
   const [prompt, setPrompt] = useState("");
+
+  useEffect(() => {
+    setIsThinking(brain.loading);
+  }, [brain.loading, setIsThinking]);
 
   const date = useMemo(
     () =>

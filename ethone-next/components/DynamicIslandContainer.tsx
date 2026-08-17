@@ -304,11 +304,6 @@ export default function DynamicIslandContainer() {
     [spotifyControl],
   );
 
-  const remainingMs = useMemo(() => {
-    const duration = nowPlaying?.durationMs ?? 0;
-    return Math.max(0, duration - localProgress);
-  }, [nowPlaying?.durationMs, localProgress]);
-
   const phaseLabels: Record<string, string> = {
     focus: i18n("focus"),
     shortBreak: i18n("shortBreak"),

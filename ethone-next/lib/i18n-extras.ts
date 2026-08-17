@@ -188,7 +188,10 @@ export const EXTRAS: Record<string, Record<string, string>> = {
     clientIdRequired: "Client ID requis",
     spotifyNoPlayback: "Spotify connecté, aucune lecture détectée.",
     spotifyNotConfigured: "Spotify non configuré.",
-  
+    dynamicIsland: "Dynamic Island",
+    brainGenerating: "Génération en cours…",
+    brainGeneratingHint: "Le Brain réfléchit à votre demande.",
+
     settingsGeneral: "Général",
     settingsGeneralDesc: "Personnalisez l'apparence et le comportement global d'ETHONE OS.",
     settingsTheme: "Thème d'affichage",
@@ -574,7 +577,10 @@ export const EXTRAS: Record<string, Record<string, string>> = {
     clientIdRequired: "Client ID required",
     spotifyNoPlayback: "Spotify connected, no playback detected.",
     spotifyNotConfigured: "Spotify not configured.",
-  
+    dynamicIsland: "Dynamic Island",
+    brainGenerating: "Generating…",
+    brainGeneratingHint: "Brain is thinking about your request.",
+
     settingsGeneral: "General",
     settingsGeneralDesc: "Customize the look and feel of ETHONE OS.",
     settingsTheme: "Display theme",
@@ -960,7 +966,10 @@ export const EXTRAS: Record<string, Record<string, string>> = {
     clientIdRequired: "Client ID requerido",
     spotifyNoPlayback: "Spotify conectado, no se detecta reproducción.",
     spotifyNotConfigured: "Spotify no configurado.",
-  
+    dynamicIsland: "Dynamic Island",
+    brainGenerating: "Generando…",
+    brainGeneratingHint: "El Brain está pensando en tu solicitud.",
+
     settingsGeneral: "Général",
     settingsGeneralDesc: "Personnalisez l'apparence et le comportement global d'ETHONE OS.",
     settingsTheme: "Thème d'affichage",
@@ -1345,7 +1354,10 @@ export const EXTRAS: Record<string, Record<string, string>> = {
     clientIdRequired: "Client-ID erforderlich",
     spotifyNoPlayback: "Spotify verbunden, keine Wiedergabe erkannt.",
     spotifyNotConfigured: "Spotify nicht konfiguriert.",
-  
+    dynamicIsland: "Dynamic Island",
+    brainGenerating: "Generieren…",
+    brainGeneratingHint: "Brain denkt über deine Anfrage nach.",
+
     settingsGeneral: "Général",
     settingsGeneralDesc: "Personnalisez l'apparence et le comportement global d'ETHONE OS.",
     settingsTheme: "Thème d'affichage",

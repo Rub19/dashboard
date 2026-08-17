@@ -3,10 +3,9 @@
 import { User, Mail, Shield, Key, Camera } from "lucide-react";
 import { useProfile } from "@/lib/hooks/useProfile";
 import { useProfiles } from "@/lib/hooks/useProfiles";
+import { useAuth } from "@/components/AuthProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Image from "next/image";
-
-const ROLES = ["Admin", "Développeur", "Bêta"];
 
 export default function UserProfileCard({
   onEditProfile,
@@ -17,11 +16,12 @@ export default function UserProfileCard({
 }) {
   const i18n = useI18n();
   const { profile } = useProfile();
-  const { active } = useProfiles();
+  const { active, activeProfile } = useProfiles();
+  const { user } = useAuth();
 
   const displayName = profile?.display_name || profile?.username || i18n("guest") || "Utilisateur";
-  const email = "ethoneofficial@gmail.com"; // placeholder pour l'exemple visuel
-  const publicId = profile?.public_id || active || "local";
+  const email = user?.email || "";
+  const publicId = profile?.public_id || active || user?.id || "local";
   const avatarUrl = profile?.avatar_url;
 
   return (
@@ -49,10 +49,12 @@ export default function UserProfileCard({
         </div>
 
         <div className="space-y-2.5">
-          <div className="flex min-w-0 items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2">
-            <Mail className="h-3.5 w-3.5 shrink-0 text-zinc-500" />
-            <span className="truncate text-xs font-mono text-zinc-300">{email}</span>
-          </div>
+          {email && (
+            <div className="flex min-w-0 items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2">
+              <Mail className="h-3.5 w-3.5 shrink-0 text-zinc-500" />
+              <span className="truncate text-xs font-mono text-zinc-300">{email}</span>
+            </div>
+          )}
 
           <div className="flex min-w-0 items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2">
             <Shield className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
@@ -60,16 +62,20 @@ export default function UserProfileCard({
           </div>
         </div>
 
-        <div className="mt-4 flex flex-wrap gap-1.5">
-          {ROLES.map((role) => (
-            <span
-              key={role}
-              className="rounded-lg border border-white/[0.08] bg-white/[0.03] px-2 py-0.5 text-[10px] font-medium text-zinc-300"
-            >
-              {role}
-            </span>
-          ))}
-        </div>
+        {activeProfile && (
+          <div className="mt-4 flex flex-wrap gap-1.5">
+            {activeProfile.name && (
+              <span className="rounded-lg border border-white/[0.08] bg-white/[0.03] px-2 py-0.5 text-[10px] font-medium text-zinc-300">
+                {activeProfile.name}
+              </span>
+            )}
+            {activeProfile.workspace && (
+              <span className="rounded-lg border border-white/[0.08] bg-white/[0.03] px-2 py-0.5 text-[10px] font-medium text-zinc-300">
+                {i18n(activeProfile.workspace) || activeProfile.workspace}
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="mt-auto flex flex-col gap-2 border-t border-white/[0.04] pt-3">

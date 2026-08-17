@@ -8,6 +8,7 @@ import MailSidebar, { FOLDERS, type MailFolder } from "@/components/mail/MailSid
 import MailThreadList from "@/components/mail/MailThreadList";
 import MailDetailView from "@/components/mail/MailDetailView";
 import ComposeMailModal, { type ComposeState } from "@/components/mail/ComposeMailModal";
+import MailAliasSetup from "@/components/mail/MailAliasSetup";
 
 function formatMailDate(iso: string) {
   try {
@@ -261,28 +262,41 @@ export default function MailPage() {
         counts={counts}
         unread={unread}
         onCompose={() => openCompose("new")}
+        canCompose={aliases.length > 0}
       />
 
-      <MailThreadList
-        title={i18n(folder) || folder}
-        grouped={groupedFolderMessages}
-        activeThreadId={activeThreadId}
-        loading={loading}
-        search={search}
-        onSearch={setSearch}
-        onSelect={openThread}
-        onToggleStar={handleToggleStar}
-      />
+      {aliases.length === 0 ? (
+        <MailAliasSetup
+          createAlias={createAlias}
+          onCreated={() => {
+            setActiveThread(null);
+            setComposeOpen(false);
+          }}
+        />
+      ) : (
+        <>
+          <MailThreadList
+            title={i18n(folder) || folder}
+            grouped={groupedFolderMessages}
+            activeThreadId={activeThreadId}
+            loading={loading}
+            search={search}
+            onSearch={setSearch}
+            onSelect={openThread}
+            onToggleStar={handleToggleStar}
+          />
 
-      <MailDetailView
-        thread={activeThread}
-        onReply={() => openCompose("reply")}
-        onForward={() => openCompose("forward")}
-        onArchive={handleArchive}
-        onTrash={handleTrash}
-        onToggleRead={handleToggleRead}
-        onToggleStar={handleToggleStarThread}
-      />
+          <MailDetailView
+            thread={activeThread}
+            onReply={() => openCompose("reply")}
+            onForward={() => openCompose("forward")}
+            onArchive={handleArchive}
+            onTrash={handleTrash}
+            onToggleRead={handleToggleRead}
+            onToggleStar={handleToggleStarThread}
+          />
+        </>
+      )}
 
       <ComposeMailModal
         open={composeOpen}

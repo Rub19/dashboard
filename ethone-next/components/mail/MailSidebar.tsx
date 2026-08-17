@@ -14,6 +14,7 @@ type MailSidebarProps = {
   counts: Record<string, number>;
   unread: number;
   onCompose: () => void;
+  canCompose?: boolean;
 };
 
 const FOLDER_ICONS: Record<MailFolder, React.ReactNode> = {
@@ -26,7 +27,7 @@ const FOLDER_ICONS: Record<MailFolder, React.ReactNode> = {
   spam: <AlertTriangle className="h-4 w-4" />,
 };
 
-export default function MailSidebar({ active, onChange, counts, unread, onCompose }: MailSidebarProps) {
+export default function MailSidebar({ active, onChange, counts, unread, onCompose, canCompose = true }: MailSidebarProps) {
   const i18n = useI18n();
 
   return (
@@ -35,12 +36,13 @@ export default function MailSidebar({ active, onChange, counts, unread, onCompos
         <button
           type="button"
           onClick={onCompose}
+          disabled={!canCompose}
           style={{
-            background: "var(--accent-color, #a855f7)",
+            background: canCompose ? "var(--accent-color, #a855f7)" : "rgba(255,255,255,0.06)",
             color: "#ffffff",
-            boxShadow: "0 0 16px var(--accent-glow, rgba(168,85,247,0.25))",
+            boxShadow: canCompose ? "0 0 16px var(--accent-glow, rgba(168,85,247,0.25))" : "none",
           }}
-          className="flex w-full items-center justify-center gap-2 rounded-xl py-2.5 px-3 text-xs font-semibold transition-all hover:brightness-110 active:scale-[0.98]"
+          className="flex w-full items-center justify-center gap-2 rounded-xl py-2.5 px-3 text-xs font-semibold transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <SquarePen className="h-4 w-4" />
           {i18n("newMessage") || "Nouveau message"}

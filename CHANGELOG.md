@@ -12,7 +12,9 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `worker/src/routes/mail.js` : `mailSendRoute`, `mailDraftsRoute` et `mailScheduleRoute` acceptent un `alias_id` (ou `from_alias`) pour choisir l'adresse d'envoi ; `mailAliasRoute` accepte une adresse personnalisée, un format local sans domaine ou l'option `random: true`.
 - `ethone-next/lib/hooks/useMail.ts` : `createAlias` accepte un objet `{ random: true }` ou un alias texte, `sendMail` et `saveDraft` acceptent `alias_id`.
 - `ethone-next/components/mail/ComposeMailModal.tsx` : ajout du champ "De" avec sélecteur d'alias, création d'une adresse personnalisée et génération d'une adresse aléatoire avant l'envoi.
-- `ethone-next/app/mail/page.tsx` : transmet les alias et le créateur d'alias au modal de composition et envoie l'`alias_id` au Worker.
+- `ethone-next/components/mail/MailAliasSetup.tsx` : nouvel écran de configuration sur la page Mail lorsqu'aucun alias n'existe, avec saisie personnalisée, bouton aléatoire et création rapide.
+- `ethone-next/components/mail/MailSidebar.tsx` : le bouton "Nouveau message" est désactivé tant qu'aucun alias n'est configuré.
+- `ethone-next/app/mail/page.tsx` : affiche `MailAliasSetup` si l'utilisateur n'a pas d'alias, transmet les alias au modal de composition et envoie l'`alias_id` au Worker.
 - `worker/test/mail.test.mjs` : tests d'unicité, d'appartenance, d'alias aléatoire et de routage réception uniquement vers le propriétaire de l'alias.
 
 **Migration Next.js : 404 glitch et menu contextuel générique**

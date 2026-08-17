@@ -105,9 +105,9 @@ export default function LanguageSwitcher() {
         aria-label={i18n("language")}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex h-10 items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 text-sm font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
+        className="flex h-10 items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 text-sm font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
       >
-        <Flag code={current} className="h-4 w-5" />
+        <Flag code={current} className="h-5 w-6" />
         <span className="hidden uppercase 2xl:inline">{current}</span>
       </button>
 

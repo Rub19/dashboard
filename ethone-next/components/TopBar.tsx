@@ -48,10 +48,10 @@ function WeatherQuickButton() {
     <button
       type="button"
       onClick={() => router.push("/weather")}
-      className="flex items-center gap-1.5 rounded-lg border border-white/[0.06] bg-white/[0.03] px-2.5 py-1 text-xs transition-colors hover:bg-white/[0.06]"
+      className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 text-sm transition-colors hover:bg-white/[0.06]"
       title="Météo"
     >
-      <CloudSun className="h-3.5 w-3.5 pointer-events-none text-amber-400" />
+      <CloudSun className="h-4 w-4 pointer-events-none text-amber-400" />
       <span className="font-mono text-zinc-200">{temp}</span>
     </button>
   );
@@ -66,10 +66,10 @@ function ThemeToggle() {
     <button
       type="button"
       onClick={() => update({ darkMode: !isDark })}
-      className="relative flex h-9 w-9 items-center justify-center rounded-xl text-zinc-400 transition-all duration-150 hover:bg-white/[0.08] hover:text-white active:scale-95 cursor-pointer select-none"
+      className="relative flex h-10 w-10 items-center justify-center rounded-xl text-zinc-400 transition-all duration-150 hover:bg-white/[0.08] hover:text-white active:scale-95 cursor-pointer select-none"
       aria-label="Thème"
     >
-      <Icon className="h-4 w-4 pointer-events-none" />
+      <Icon className="h-5 w-5 pointer-events-none" />
     </button>
   );
 }
@@ -82,14 +82,14 @@ function FocusToggle() {
     <button
       type="button"
       onClick={() => (isActive ? focus.stop() : focus.start("pomodoro"))}
-      className={`relative flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-150 cursor-pointer select-none ${
+      className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150 cursor-pointer select-none ${
         isActive
           ? "bg-emerald-500/15 text-emerald-400"
           : "text-zinc-400 hover:bg-white/[0.08] hover:text-white active:scale-95"
       }`}
       aria-label={isActive ? "Arrêter le minuteur" : "Démarrer le minuteur"}
     >
-      <Timer className="h-4 w-4 pointer-events-none" />
+      <Timer className="h-5 w-5 pointer-events-none" />
     </button>
   );
 }
@@ -101,7 +101,7 @@ function DynamicIslandToggle() {
     <button
       type="button"
       onClick={toggle}
-      className={`relative flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-150 cursor-pointer select-none ${
+      className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150 cursor-pointer select-none ${
         visible
           ? "text-zinc-400 hover:bg-white/[0.08] hover:text-white active:scale-95"
           : "text-zinc-600 hover:bg-white/[0.08] hover:text-zinc-400 active:scale-95"
@@ -109,7 +109,7 @@ function DynamicIslandToggle() {
       aria-label={visible ? "Masquer la Dynamic Island" : "Afficher la Dynamic Island"}
       title={visible ? "Masquer la Dynamic Island" : "Afficher la Dynamic Island"}
     >
-      {visible ? <Eye className="h-4 w-4 pointer-events-none" /> : <EyeOff className="h-4 w-4 pointer-events-none" />}
+      {visible ? <Eye className="h-5 w-5 pointer-events-none" /> : <EyeOff className="h-5 w-5 pointer-events-none" />}
     </button>
   );
 }
@@ -120,22 +120,22 @@ export default function TopBar() {
   return (
     <header
       data-v8-topbar
-      className="sticky top-0 z-50 flex h-12 w-full select-none items-center justify-between border-b border-white/[0.08] bg-zinc-950/80 px-4 backdrop-blur-2xl"
+      className="sticky top-0 z-50 flex h-14 w-full select-none items-center justify-between border-b border-white/[0.08] bg-zinc-950/80 px-4 backdrop-blur-2xl"
     >
       {/* Left — Identity & Breadcrumb */}
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <AnimatedSidebarTrigger
           type="button"
-          className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-white/[0.05] text-xs font-bold text-white shadow-inner transition-colors hover:bg-white/[0.08]"
+          className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.05] text-sm font-bold text-white shadow-inner transition-colors hover:bg-white/[0.08]"
           aria-label="Basculer la barre latérale"
         >
           E
         </AnimatedSidebarTrigger>
-        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-medium text-zinc-400">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm font-medium text-zinc-400">
           <Link href="/" className="transition-colors hover:text-white">
             {home}
           </Link>
-          <ChevronRight className="h-3.5 w-3.5 text-zinc-600" />
+          <ChevronRight className="h-4 w-4 text-zinc-600" />
           <span className="font-semibold text-white capitalize">{page}</span>
         </nav>
       </div>
@@ -146,8 +146,8 @@ export default function TopBar() {
       </div>
 
       {/* Right — Quick tools, palette, profile */}
-      <div className="relative z-40 flex min-w-0 flex-1 items-center justify-end gap-2 pointer-events-auto">
-        <div className="hidden items-center gap-1.5 sm:flex pointer-events-auto">
+      <div className="relative z-40 flex min-w-0 flex-1 items-center justify-end gap-3 pointer-events-auto">
+        <div className="hidden items-center gap-2 sm:flex pointer-events-auto">
           <WeatherQuickButton />
           <ThemeToggle />
           <FocusToggle />

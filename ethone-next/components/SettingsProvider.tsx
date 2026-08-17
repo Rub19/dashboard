@@ -3,8 +3,10 @@
 import { activityJournal } from "@/lib/activity-journal";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useProfiles, type Profile } from "@/lib/hooks/useProfiles";
-import { loadSettings, saveSettings, saveSettingsAsync, loadSettingsAsync, Settings, DEFAULTS, type ThemeMode } from "@/lib/settings";
+import { loadSettings, saveSettings, saveSettingsAsync, loadSettingsAsync, migrateSettings, Settings, DEFAULTS, type ThemeMode } from "@/lib/settings";
 import { applyPreset, type Preset } from "@/lib/preset-engine";
+import { supabase } from "@/lib/supabase";
+import { useSyncStore } from "@/lib/stores/sync";
 
 export const THEMES: Record<ThemeMode, { background: string; foreground: string; accent: string }> = {
   default: { background: "#0a0a0a", foreground: "#ededed", accent: "#8b5cf6" },
@@ -114,10 +116,54 @@ export default function SettingsProvider({
     if (!loaded) return;
     const local = loadSettings(active || undefined);
     setSettings(local);
-    loadSettingsAsync(active || undefined).then((remote) => {
-      setSettings({ ...DEFAULTS, ...local, ...remote });
-    });
+    useSyncStore.getState().setStatus("user_settings", "syncing");
+    loadSettingsAsync()
+      .then((remote) => {
+        setSettings({ ...DEFAULTS, ...local, ...remote });
+        useSyncStore.getState().setStatus("user_settings", "idle");
+      })
+      .catch(() => {
+        useSyncStore.getState().setStatus("user_settings", "error");
+      });
   }, [loaded, active]);
+
+  useEffect(() => {
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+
+    async function subscribe() {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const userId = sessionData?.session?.user?.id;
+      if (!userId) return;
+
+      channel = supabase
+        .channel("user_settings_changes")
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "user_settings",
+            filter: `user_id=eq.${userId}`,
+          },
+          (payload) => {
+            if (payload.new && typeof payload.new === "object") {
+              const next = (payload.new as Record<string, unknown>).settings as Partial<Settings>;
+              if (next) setSettings((prev) => ({ ...DEFAULTS, ...prev, ...migrateSettings(next) }));
+            }
+          }
+        )
+        .subscribe((status) => {
+          if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+            useSyncStore.getState().setStatus("user_settings", "offline");
+          }
+        });
+    }
+
+    subscribe();
+    return () => {
+      channel?.unsubscribe();
+    };
+  }, [loaded]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -220,7 +266,10 @@ export default function SettingsProvider({
       const next = { ...settings, ...partial };
       setSettings(next);
       saveSettings(next, active || undefined);
-      saveSettingsAsync(next, active || undefined);
+      useSyncStore.getState().setStatus("user_settings", "syncing");
+      saveSettingsAsync(next)
+        .then(() => useSyncStore.getState().setStatus("user_settings", "idle"))
+        .catch(() => useSyncStore.getState().setStatus("user_settings", "error"));
     },
     [settings, active]
   );

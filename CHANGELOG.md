@@ -4,6 +4,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : branchement Cloud Sync sur les paramètres**
+
+### Corrige
+- `supabase/migrations/202608300001_user_settings_payload.sql` : ajout d'une colonne `settings jsonb` à `user_settings` pour stocker l'objet `Settings` complet.
+- `ethone-next/lib/settings.ts` : `loadSettingsAsync` et `saveSettingsAsync` passent de `ethone_user_state` à la table `user_settings` (payload JSONB). Ajout des champs `dynamicIslandVisible`, `dockPosition` et `wallpaperUrl` au type `Settings`.
+- `ethone-next/components/SettingsProvider.tsx` : charge `user_settings` au montage, écoute Realtime pour les changements distants, signale l'état de synchronisation au store et maintient le `localStorage` comme fallback offline.
+
 **Migration Next.js : branchement Cloud Sync sur les tâches**
 
 ### Corrige

@@ -1,3 +1,5 @@
+import { supabase } from "./supabase";
+
 export type BrainPermissions = {
   notes: boolean;
   tasks: boolean;
@@ -136,6 +138,9 @@ export type Settings = {
   brainMemoryCategories: BrainMemoryCategories;
   liveOverlay: boolean;
   language: string;
+  dynamicIslandVisible: boolean;
+  dockPosition: string;
+  wallpaperUrl: string | null;
   accentColor: "violet" | "mint" | "sky" | "amber" | "rose" | "teal" | "coral" | "custom";
   customAccent: string;
   reducedMotion: boolean;
@@ -272,6 +277,9 @@ export const DEFAULTS: Settings = {
   },
   liveOverlay: true,
   language: "fr",
+  dynamicIslandVisible: true,
+  dockPosition: "bottom",
+  wallpaperUrl: null,
   accentColor: "violet",
   customAccent: "#8b5cf6",
   reducedMotion: false,
@@ -325,10 +333,7 @@ export const DEFAULTS: Settings = {
   billsCategories: ["housing", "utilities", "transport", "health", "insurance", "subscriptions", "food", "education", "taxes", "other"],
 };
 
-import { getUserState, setUserState } from "@/lib/user-state";
-
 const KEY = "ethone-settings-v1";
-const STATE_KEY = "settings";
 
 const DOCK_GLASS_VALUES: DockGlass[] = ["vitrified", "ultra-blur", "sober"];
 const DOCK_SCALE_VALUES: DockScale[] = ["compact", "normal", "large"];
@@ -356,7 +361,7 @@ const SOUND_PACK_LEGACY: Record<string, SoundPack> = {
 
 const SESSION_MODE_VALUES: SessionMode[] = ["default", "focus", "intense", "zen", "night"];
 
-function migrateSettings(raw: Partial<Settings>): Partial<Settings> {
+export function migrateSettings(raw: Partial<Settings>): Partial<Settings> {
   const next: Partial<Settings> = {};
   for (const [key, value] of Object.entries(raw)) {
     if (value !== undefined) {
@@ -394,10 +399,6 @@ function localSettingsKey(profileId?: string): string {
   return profileId ? `${KEY}:${profileId}` : KEY;
 }
 
-function remoteSettingsKey(profileId?: string): string {
-  return profileId ? `${STATE_KEY}:${profileId}` : STATE_KEY;
-}
-
 export function loadSettings(profileId?: string): Settings {
   if (typeof window === "undefined") return DEFAULTS;
   try {
@@ -416,24 +417,52 @@ export function saveSettings(settings: Settings, profileId?: string) {
   localStorage.setItem(localSettingsKey(profileId), JSON.stringify(settings));
 }
 
-export async function loadSettingsAsync(profileId?: string): Promise<Partial<Settings>> {
+export async function loadSettingsAsync(): Promise<Partial<Settings>> {
   try {
-    const scopedKey = remoteSettingsKey(profileId);
-    let remote = await getUserState<Partial<Settings> | null>(scopedKey, null);
-    if (profileId && !remote) {
-      remote = await getUserState<Partial<Settings> | null>(STATE_KEY, null);
-    }
-    return migrateSettings(remote || {});
+    const { data: sessionData } = await supabase.auth.getSession();
+    const userId = sessionData?.session?.user?.id;
+    if (!userId) return migrateSettings({});
+
+    const { data, error } = await supabase
+      .from("user_settings")
+      .select("settings")
+      .eq("user_id", userId)
+      .single();
+
+    if (error || !data) return migrateSettings({});
+    const remote = (data.settings || {}) as Partial<Settings>;
+    return migrateSettings(remote);
   } catch {
     return migrateSettings({});
   }
 }
 
-export async function saveSettingsAsync(settings: Settings, profileId?: string): Promise<void> {
-  saveSettings(settings, profileId);
+export async function saveSettingsAsync(settings: Settings): Promise<void> {
+  saveSettings(settings);
   try {
-    await setUserState(remoteSettingsKey(profileId), settings);
-  } catch {
-    // localStorage already holds the fallback
+    const { data: sessionData } = await supabase.auth.getSession();
+    const userId = sessionData?.session?.user?.id;
+    if (!userId) return;
+
+    // Keep frequently-queried columns in sync with the settings JSONB payload.
+    const payload = {
+      user_id: userId,
+      settings,
+      theme: settings.theme,
+      language: settings.language,
+      dynamic_island_visible: settings.dynamicIslandVisible ?? true,
+      dock_position: settings.dockPosition ?? "bottom",
+      wallpaper_url: settings.wallpaperUrl ?? null,
+      updated_at: new Date().toISOString(),
+    };
+
+    const { error } = await supabase
+      .from("user_settings")
+      .upsert(payload, { onConflict: "user_id" });
+
+    if (error) throw error;
+  } catch (err) {
+    // localStorage already holds the fallback for offline scenarios.
+    throw err;
   }
 }

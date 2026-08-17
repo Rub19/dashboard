@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : avertissement de perturbation GitHub dans la carte d'intégration**
+
+### Corrige
+- `ethone-next/lib/hooks/useGitHubStatus.ts` : nouveau hook qui interroge le statut public de GitHub (`www.githubstatus.com/api/v2/status.json`) toutes les minutes.
+- `ethone-next/components/ConnectionCard.tsx` : pour l'intégration `github`, affiche un bandeau ambre "GitHub rencontre actuellement des perturbations" avec la description officielle dès que l'indicateur n'est pas `none`.
+
 **Migration Next.js : pastille de version dans la barre de statut**
 
 ### Corrige

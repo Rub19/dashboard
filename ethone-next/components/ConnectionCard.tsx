@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useIntegrationStore } from "@/lib/hooks/useIntegrationStore";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useGitHubStatus } from "@/lib/hooks/useGitHubStatus";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { fetchWorker } from "@/lib/api";
@@ -70,6 +71,7 @@ export default function ConnectionCard({
   const { settings, update } = useSettings();
   const { success, error: showError } = useToast();
   const { values: integrationValues, setField, setFields } = useIntegrationStore();
+  const gitHubStatus = useGitHubStatus(integration.id === "github");
 
   const guide = useMemo<ConnectionGuide | undefined>(() => getConnectionGuide(integration.id), [integration.id]);
   const config = useMemo<IntegrationConfig | undefined>(() => getIntegrationConfig(integration.id), [integration.id]);
@@ -367,6 +369,16 @@ export default function ConnectionCard({
           </div>
           <span className={`shrink-0 rounded-lg border px-2.5 py-1 text-[10px] font-semibold ${statusClass}`}>{statusText}</span>
         </div>
+
+        {integration.id === "github" && gitHubStatus && gitHubStatus.indicator !== "none" && (
+          <div className="mb-3 flex items-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-300">
+            <AlertCircle className="h-3.5 w-3.5 shrink-0 text-amber-400" />
+            <span className="min-w-0 flex-1">
+              {i18n("githubServiceDisruption", "GitHub rencontre actuellement des perturbations")}
+              {gitHubStatus.description ? ` : ${gitHubStatus.description}` : ""}
+            </span>
+          </div>
+        )}
 
         {/* OAuth connect */}
         {isOauth && !isConnected && (

@@ -18,6 +18,7 @@ import { BRAIN_MEMORY_CATEGORIES, BRAIN_PERSONAS, BRAIN_TONES, BRAIN_DETAIL, BRA
 import { AUTOMATION_ACTIONS } from "@/lib/brain/automation";
 import { sanitizeMemory, type BrainMemoryItem } from "@/lib/brain-context";
 import Select from "@/components/ui/Select";
+import { Checkbox } from "@/components/ui/Checkbox";
 
 type Tab = "chat" | "briefing" | "context" | "memory" | "actions" | "automations" | "providers" | "preferences" | "privacy" | "history" | "diagnostics" | "wrapup";
 
@@ -349,14 +350,12 @@ export default function BrainPage() {
         <Card3D>
           <div className="grid grid-cols-2 gap-2">
             {BRAIN_PERMISSION_CATEGORIES.map((p) => (
-              <label key={p} className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={brain.preferences.permissions[p]}
-                  onChange={(e) => brain.patch(`permissions.${p}`, e.target.checked)}
-                />
-                {p}
-              </label>
+              <Checkbox
+                key={p}
+                checked={brain.preferences.permissions[p]}
+                onCheckedChange={(checked) => brain.patch(`permissions.${p}`, checked)}
+                label={p}
+              />
             ))}
           </div>
         </Card3D>
@@ -573,14 +572,12 @@ export default function BrainPage() {
           <p className="mb-2 text-sm font-medium">{i18n("permissions")}</p>
           <div className="grid grid-cols-2 gap-2">
             {BRAIN_PERMISSION_CATEGORIES.map((p) => (
-              <label key={p} className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={brain.preferences.permissions[p]}
-                  onChange={(e) => brain.patch(`permissions.${p}`, e.target.checked)}
-                />
-                {p}
-              </label>
+              <Checkbox
+                key={p}
+                checked={brain.preferences.permissions[p]}
+                onCheckedChange={(checked) => brain.patch(`permissions.${p}`, checked)}
+                label={p}
+              />
             ))}
           </div>
         </Card3D>
@@ -588,14 +585,12 @@ export default function BrainPage() {
           <p className="mb-2 text-sm font-medium">{i18n("memoryCategories")}</p>
           <div className="grid grid-cols-2 gap-2">
             {BRAIN_MEMORY_CATEGORIES.map((c) => (
-              <label key={c} className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={brain.preferences.memory.categories[c]}
-                  onChange={(e) => brain.patch(`memory.categories.${c}`, e.target.checked)}
-                />
-                {c}
-              </label>
+              <Checkbox
+                key={c}
+                checked={brain.preferences.memory.categories[c]}
+                onCheckedChange={(checked) => brain.patch(`memory.categories.${c}`, checked)}
+                label={c}
+              />
             ))}
           </div>
         </Card3D>

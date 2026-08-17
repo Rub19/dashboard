@@ -3,6 +3,7 @@
 import { Icon } from "@/lib/icons";
 import Switch from "@/components/Switch";
 import Select from "@/components/ui/Select";
+import { Checkbox } from "@/components/ui/Checkbox";
 import Slider from "@/components/ui/Slider";
 
 export function SwitchControl({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
@@ -73,33 +74,18 @@ export function CheckboxListControl({
 }) {
   return (
     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-      {options.map((opt) => {
-        const checked = value.includes(opt.id);
-        return (
-          <button
-            key={opt.id}
-            type="button"
-            onClick={() => {
-              const next = checked ? value.filter((id) => id !== opt.id) : [...value, opt.id];
-              onChange(next);
-            }}
-            className={`flex items-center gap-2.5 rounded-[var(--panel-radius)] border px-3 py-2 text-left text-sm transition-colors duration-150 ${
-              checked
-                ? "border-[var(--accent)]/50 bg-[var(--accent)]/10 text-[var(--foreground)]"
-                : "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--muted)] hover:border-[var(--accent)]/30 hover:text-[var(--foreground)]"
-            } backdrop-blur-[var(--panel-blur)]`}
-          >
-            <span
-              className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-md border transition-colors ${
-                checked ? "border-[var(--accent)] bg-[var(--accent)]" : "border-[var(--panel-border)] bg-[var(--panel-bg)]"
-              } backdrop-blur-[var(--panel-blur)]`}
-            >
-              {checked && <Icon name="check" className="h-3 w-3 text-white" />}
-            </span>
-            <span className="min-w-0 flex-1 truncate">{opt.label}</span>
-          </button>
-        );
-      })}
+      {options.map((opt) => (
+        <Checkbox
+          key={opt.id}
+          checked={value.includes(opt.id)}
+          onCheckedChange={(checked) => {
+            const next = checked ? [...value, opt.id] : value.filter((id) => id !== opt.id);
+            onChange(next);
+          }}
+          label={opt.label}
+          className="min-w-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 backdrop-blur-[var(--panel-blur)]"
+        />
+      ))}
     </div>
   );
 }

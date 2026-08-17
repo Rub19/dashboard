@@ -29,6 +29,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useUserData, type UserDataRecord } from "@/lib/hooks/useUserData";
 import { InteractionsHeatmap } from "@/lib/interactions-heatmap";
 import Tooltip from "@/components/Tooltip";
+import { TiltCard } from "@/components/ui/TiltCard";
 
 const INTERACTION_KINDS = [
   "like",
@@ -545,7 +546,7 @@ export default function InteractionsPage() {
         </div>
 
         {/* Live feed */}
-        <div className="col-span-12 flex flex-col justify-between gap-3 rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 shadow-xl backdrop-blur-2xl lg:col-span-5">
+        <TiltCard className="col-span-12 flex h-full flex-col justify-between gap-3 border border-white/[0.08] bg-zinc-950/70 p-5 shadow-xl backdrop-blur-2xl lg:col-span-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Zap className="h-4 w-4 text-amber-400" />
@@ -593,7 +594,7 @@ export default function InteractionsPage() {
             <span>Voir tout l&apos;historique</span>
             <ChevronRight className="h-3.5 w-3.5 text-zinc-500" />
           </button>
-        </div>
+        </TiltCard>
       </div>
 
       {error && (

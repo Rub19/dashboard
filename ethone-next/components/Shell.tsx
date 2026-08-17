@@ -7,8 +7,6 @@ import PresenceProvider from "@/components/PresenceProvider";
 import { ShortcutsProvider } from "@/components/ShortcutsProvider";
 import PublicProfileProvider from "@/components/PublicProfileProvider";
 import ProfileSync from "@/components/ProfileSync";
-import Sidebar from "@/components/Sidebar";
-import { AnimatedSidebarProvider } from "@/components/motion/animated-sidebar";
 import TopBar from "@/components/TopBar";
 import CommandPalette from "@/components/CommandPalette";
 import MobileNav from "@/components/MobileNav";
@@ -36,14 +34,12 @@ export default function Shell({ children }: { children: ReactNode }) {
         <PublicProfileProvider>
         <PresenceProvider>
           <ShortcutsProvider>
-            <AnimatedSidebarProvider className="contents" defaultOpen={false} style={{ "--sidebar-width-icon": "4.5rem" }}>
-              <SkipLink />
-              <ProfileSync />
-              <Sidebar />
-              <div
-                data-v8-shell
-                className="min-h-dvh overflow-x-hidden transition-colors duration-150 duration-300 md:ml-[72px]"
-              >
+            <SkipLink />
+            <ProfileSync />
+            <div
+              data-v8-shell
+              className="min-h-dvh overflow-x-hidden transition-colors duration-150 duration-300"
+            >
                 <TopBar />
                 <CommandPalette />
                 <DocumentMetadata />
@@ -65,11 +61,10 @@ export default function Shell({ children }: { children: ReactNode }) {
                 </main>
                 <StatusBar />
               </div>
-              <MobileNav />
-              <Dock />
-              <ShortcutsOverlay />
-              <KeyboardShortcuts />
-            </AnimatedSidebarProvider>
+            <MobileNav />
+            <Dock />
+            <ShortcutsOverlay />
+            <KeyboardShortcuts />
           </ShortcutsProvider>
         </PresenceProvider>
       </PublicProfileProvider>

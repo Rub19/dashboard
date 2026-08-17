@@ -329,7 +329,7 @@ export default function DynamicIslandContainer() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -20, scale: 0.9 }}
           transition={{ duration: 0.25, ease: EASE_OUT }}
-          className="fixed left-1/2 top-4 z-50 -translate-x-1/2 pointer-events-auto select-none"
+          className="fixed left-1/2 top-14 z-40 -translate-x-1/2 pointer-events-auto select-none"
         >
           <DynamicIsland
             view={expanded ? activeView : null}

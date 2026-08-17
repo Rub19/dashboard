@@ -19,6 +19,7 @@ import { formatBytes, mimeIcon, sortFiles } from "@/lib/files";
 import FilesAdminPanel from "@/components/FilesAdminPanel";
 import FileUploader from "@/components/FileUploader";
 import Select from "@/components/ui/Select";
+import { Checkbox } from "@/components/ui/Checkbox";
 
 function folderPath(files: CloudFile[], folderId: string | null) {
   const path: CloudFile[] = [];
@@ -422,16 +423,12 @@ export default function FilesPage() {
         />
       )}
 
-      <div className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          checked={isAllSelected}
-          onChange={() => (isAllSelected ? clear() : selectAll())}
-          className="accent-[var(--accent)]"
-          aria-label={i18n("selectAll")}
-        />
-        <span className="text-sm text-[var(--muted)]">{i18n("selectAll")}</span>
-      </div>
+      <Checkbox
+        checked={isAllSelected}
+        onCheckedChange={() => (isAllSelected ? clear() : selectAll())}
+        label={i18n("selectAll")}
+        className="text-sm text-[var(--muted)]"
+      />
 
       {parentId !== null && (
         <nav aria-label={i18n("folders")} className="flex flex-wrap items-center gap-2 text-sm text-[var(--muted)]">
@@ -484,11 +481,9 @@ export default function FilesPage() {
             <ContextMenu key={file.id} items={fileContextItems(file)}>
               <Card3D>
                 <div className="flex min-w-0 flex-col items-start gap-3 sm:flex-row sm:items-center">
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     checked={isSelected(file.id)}
-                    onChange={() => toggle(file.id)}
-                    className="accent-[var(--accent)]"
+                    onCheckedChange={() => toggle(file.id)}
                     aria-label={i18n("select")}
                     onClick={(e) => e.stopPropagation()}
                   />

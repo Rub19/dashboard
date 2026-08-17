@@ -7,6 +7,7 @@ import { useToast } from "@/components/ToastProvider";
 import { Icon } from "@/lib/icons";
 import Card3D from "@/components/Card3D";
 import Select from "@/components/ui/Select";
+import { Checkbox } from "@/components/ui/Checkbox";
 
 type Tab = "accounts" | "pgp" | "push" | "lists";
 
@@ -298,7 +299,11 @@ export default function MailAdvancedPanel({ initialTab }: { initialTab: Tab }) {
               />
               <input type="text" value={accountForm.email || ""} onChange={(e) => setAccountForm({ ...accountForm, email: e.target.value })} placeholder={i18n("email")} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
               <input type="text" value={accountForm.name || ""} onChange={(e) => setAccountForm({ ...accountForm, name: e.target.value })} placeholder={i18n("name")} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-              <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={accountForm.is_enabled === "true"} onChange={(e) => setAccountForm({ ...accountForm, is_enabled: e.target.checked ? "true" : "false" })} /> {i18n("enabled")}</label>
+              <Checkbox
+                checked={accountForm.is_enabled === "true"}
+                onCheckedChange={(checked) => setAccountForm({ ...accountForm, is_enabled: checked ? "true" : "false" })}
+                label={i18n("enabled")}
+              />
             </div>
             {accountForm.provider === "imap" && (
               <div className="grid gap-2 sm:grid-cols-2">
@@ -310,8 +315,18 @@ export default function MailAdvancedPanel({ initialTab }: { initialTab: Tab }) {
                 <input type="text" value={accountForm.smtp_port || "587"} onChange={(e) => setAccountForm({ ...accountForm, smtp_port: e.target.value })} placeholder="SMTP port" className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
                 <input type="text" value={accountForm.smtp_username || ""} onChange={(e) => setAccountForm({ ...accountForm, smtp_username: e.target.value })} placeholder="SMTP username" className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
                 <input type="password" value={accountForm.smtp_password || ""} onChange={(e) => setAccountForm({ ...accountForm, smtp_password: e.target.value })} placeholder="SMTP password" className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-                <label className="col-span-full flex items-center gap-2 text-sm"><input type="checkbox" checked={accountForm.imap_secure === "true"} onChange={(e) => setAccountForm({ ...accountForm, imap_secure: e.target.checked ? "true" : "false" })} /> IMAP SSL</label>
-                <label className="col-span-full flex items-center gap-2 text-sm"><input type="checkbox" checked={accountForm.smtp_secure === "true"} onChange={(e) => setAccountForm({ ...accountForm, smtp_secure: e.target.checked ? "true" : "false" })} /> SMTP TLS</label>
+                <Checkbox
+                  className="col-span-full"
+                  checked={accountForm.imap_secure === "true"}
+                  onCheckedChange={(checked) => setAccountForm({ ...accountForm, imap_secure: checked ? "true" : "false" })}
+                  label="IMAP SSL"
+                />
+                <Checkbox
+                  className="col-span-full"
+                  checked={accountForm.smtp_secure === "true"}
+                  onCheckedChange={(checked) => setAccountForm({ ...accountForm, smtp_secure: checked ? "true" : "false" })}
+                  label="SMTP TLS"
+                />
               </div>
             )}
             {accountForm.provider !== "imap" && (
@@ -409,8 +424,16 @@ export default function MailAdvancedPanel({ initialTab }: { initialTab: Tab }) {
             <input type="text" value={listForm.name} onChange={(e) => setListForm({ ...listForm, name: e.target.value })} placeholder={i18n("name")} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
             <input type="email" value={listForm.alias_address} onChange={(e) => setListForm({ ...listForm, alias_address: e.target.value })} placeholder={i18n("alias")} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
             <input type="text" value={listForm.description} onChange={(e) => setListForm({ ...listForm, description: e.target.value })} placeholder={i18n("description")} className="sm:col-span-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-            <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={listForm.is_public} onChange={(e) => setListForm({ ...listForm, is_public: e.target.checked })} /> {i18n("public")}</label>
-            <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={listForm.reply_to_list} onChange={(e) => setListForm({ ...listForm, reply_to_list: e.target.checked })} /> {i18n("replyToList")}</label>
+            <Checkbox
+              checked={listForm.is_public}
+              onCheckedChange={(checked) => setListForm({ ...listForm, is_public: checked })}
+              label={i18n("public")}
+            />
+            <Checkbox
+              checked={listForm.reply_to_list}
+              onCheckedChange={(checked) => setListForm({ ...listForm, reply_to_list: checked })}
+              label={i18n("replyToList")}
+            />
             <button type="button" onClick={onCreateList} disabled={busy} className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{editingList ? i18n("update") : i18n("create")}</button>
           </div>
 

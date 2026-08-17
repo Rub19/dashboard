@@ -35,7 +35,7 @@ export default function CategoryTabs({ active, onChange }: { active: string; onC
             key={cat.id}
             type="button"
             onClick={() => onChange(cat.id)}
-            className={`relative flex items-center gap-1.5 whitespace-nowrap rounded-xl border px-3 py-1.5 text-xs font-medium transition-all ${
+            className={`relative flex items-center gap-1.5 whitespace-nowrap rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors ${
               isActive
                 ? "border-white/20 bg-white/[0.08] text-white"
                 : "border-transparent text-zinc-400 hover:bg-white/[0.03] hover:text-zinc-200"

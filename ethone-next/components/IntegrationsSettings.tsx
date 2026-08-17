@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Plug } from "lucide-react";
 import { fetchWorker } from "@/lib/api";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -158,7 +158,7 @@ export default function IntegrationsSettings() {
         key={integration.id}
         id={integration.id}
         data-service={integration.id}
-        className={`scroll-mt-6 rounded-2xl transition-all ${
+        className={`scroll-mt-6 rounded-2xl transition-shadow ${
           isHighlighted
             ? "ring-2 ring-emerald-500/50 ring-offset-0"
             : "ring-0 ring-transparent"
@@ -193,9 +193,7 @@ export default function IntegrationsSettings() {
       )}
 
       <motion.div layout className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <AnimatePresence mode="popLayout">
-          {filtered.map((integration) => renderCard(integration))}
-        </AnimatePresence>
+        {filtered.map((integration) => renderCard(integration))}
       </motion.div>
 
       <div className="rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 text-sm text-zinc-400 backdrop-blur-2xl">

@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
+import { useSettingsForm } from "./SettingsFormContext";
 import { useToast } from "@/components/ToastProvider";
 import { DEFAULTS } from "@/lib/settings";
 import { forceAppReload } from "@/lib/force-reload";
@@ -113,16 +114,23 @@ export default function SettingsLayout() {
   const i18n = useI18n();
   const { settings, update } = useSettings();
   const { success, error: showError } = useToast();
-  const [query, setQuery] = useState("");
+  const form = useSettingsForm();
   const searchParams = useSearchParams();
   const router = useRouter();
   const queryString = searchParams?.toString() ?? "";
 
   const [activeTab, setActiveTab] = useState(() => resolveTab(searchParams?.get("tab") ?? null));
 
+  function navigateToSection(tab: string, section?: string) {
+    form.setQuery("");
+    const url = `/settings?tab=${tab}${section ? `&section=${section}` : ""}`;
+    router.push(url, { scroll: false });
+  }
+
   useEffect(() => {
     const params = new URLSearchParams(queryString);
     const tab = params.get("tab");
+    const section = params.get("section");
     const targetTab = resolveTab(tab);
     setActiveTab((prev) => (targetTab !== prev ? targetTab : prev));
 
@@ -135,7 +143,9 @@ export default function SettingsLayout() {
       }, 200);
     };
 
-    if (tab === "profile") {
+    if (section) {
+      scrollTo(`[data-section="${section}"]`);
+    } else if (tab === "profile") {
       scrollTo("#profile-card");
     } else if (tab === "security") {
       scrollTo('[data-section="security"]');
@@ -182,8 +192,8 @@ export default function SettingsLayout() {
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
             <input
               type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              value={form.query}
+              onChange={(e) => form.setQuery(e.target.value)}
               placeholder={i18n("journalSearchPlaceholder") || "Rechercher..."}
               aria-label={i18n("journalSearchPlaceholder") || "Rechercher"}
               className="h-9 w-full rounded-xl border border-white/10 bg-white/[0.04] pl-9 pr-3 text-xs text-zinc-200 placeholder-zinc-500 outline-none transition-colors focus:border-emerald-500/40 sm:w-56"
@@ -241,7 +251,10 @@ export default function SettingsLayout() {
             className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
           >
             <div id="profile-card" className="md:col-span-2 xl:col-span-1">
-              <UserProfileCard />
+              <UserProfileCard
+                onEditProfile={() => navigateToSection("general", "account")}
+                onChangePassword={() => navigateToSection("general", "account")}
+              />
             </div>
             <SettingCard
               icon={Palette}
@@ -250,6 +263,7 @@ export default function SettingsLayout() {
               value={`Thème : ${settings.theme || "default"} · Pack : ${settings.iconPack || "lucide"}`}
               action="Personnaliser"
               accent="emerald"
+              onClick={() => navigateToSection("general", "appearance")}
             />
             <SettingCard
               icon={Laptop}
@@ -258,6 +272,7 @@ export default function SettingsLayout() {
               value={(settings.language || "fr").toUpperCase()}
               action="Modifier"
               accent="sky"
+              onClick={() => navigateToSection("general", "language")}
             />
             <SettingCard
               icon={Bell}
@@ -266,6 +281,7 @@ export default function SettingsLayout() {
               value={settings.pushNotifications ? "Activées" : "Désactivées"}
               action="Gérer"
               accent="amber"
+              onClick={() => navigateToSection("general", "notifications")}
             />
             <SettingCard
               icon={Volume2}
@@ -274,6 +290,7 @@ export default function SettingsLayout() {
               value={`Pack : ${settings.soundPack || "ethone"}`}
               action="Configurer"
               accent="emerald"
+              onClick={() => navigateToSection("general", "sound")}
             />
             <SettingCard
               icon={Lock}
@@ -282,6 +299,7 @@ export default function SettingsLayout() {
               value={settings.securityAlerts ? "Alertes activées" : "Alertes désactivées"}
               action="Renforcer"
               accent="rose"
+              onClick={() => navigateToSection("security", "security")}
             />
             <SettingCard
               icon={SlidersHorizontal}
@@ -290,6 +308,7 @@ export default function SettingsLayout() {
               value={`Layout : ${settings.layoutPreset || "default"}`}
               action="Ajuster"
               accent="sky"
+              onClick={() => navigateToSection("general", "workspace")}
             />
             <SettingCard
               icon={RefreshCw}

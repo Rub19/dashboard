@@ -2,13 +2,13 @@
 
 import { motion } from "framer-motion";
 import BrandMark from "./BrandMark";
+import { Loader } from "@/components/motion/Loader";
 
 export default function Loading({ message = "Initialisation" }: { message?: string }) {
   return (
     <div
       className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-5 bg-[var(--background)]"
-      role="status"
-      aria-label={message}
+      aria-busy="true"
       data-v8-boot
     >
       <motion.div
@@ -21,18 +21,7 @@ export default function Loading({ message = "Initialisation" }: { message?: stri
         <span className="text-2xl font-semibold tracking-tight text-[var(--foreground)]">ETHONE</span>
       </motion.div>
 
-      <motion.div
-        className="h-1 w-32 overflow-hidden rounded-xl bg-[var(--panel-bg)]"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-      >
-        <motion.div
-          className="h-full w-full bg-gradient-to-r from-transparent via-[var(--accent)] to-transparent"
-          animate={{ x: ["-100%", "100%"] }}
-          transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
-        />
-      </motion.div>
+      <Loader variant="comet" size={48} speed={1.2} label={message} />
 
       <motion.p
         className="text-sm text-[var(--muted)]"

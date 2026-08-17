@@ -8,7 +8,13 @@ import Image from "next/image";
 
 const ROLES = ["Admin", "Développeur", "Bêta"];
 
-export default function UserProfileCard() {
+export default function UserProfileCard({
+  onEditProfile,
+  onChangePassword,
+}: {
+  onEditProfile?: () => void;
+  onChangePassword?: () => void;
+}) {
   const i18n = useI18n();
   const { profile } = useProfile();
   const { active } = useProfiles();
@@ -69,6 +75,7 @@ export default function UserProfileCard() {
       <div className="mt-auto flex flex-col gap-2 border-t border-white/[0.04] pt-3">
         <button
           type="button"
+          onClick={onEditProfile}
           className="flex items-center justify-center gap-1.5 rounded-xl bg-white/[0.04] py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/[0.08]"
         >
           <Camera className="h-3.5 w-3.5" />
@@ -76,6 +83,7 @@ export default function UserProfileCard() {
         </button>
         <button
           type="button"
+          onClick={onChangePassword}
           className="flex items-center justify-center gap-1.5 rounded-xl border border-white/[0.08] bg-white/[0.02] py-2 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/[0.06]"
         >
           <Key className="h-3.5 w-3.5" />

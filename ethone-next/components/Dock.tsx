@@ -120,8 +120,15 @@ export default function Dock() {
   }
 
   function handleScrollTop() {
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    if (typeof document === "undefined") return;
+    const root = document.documentElement;
+    const body = document.body;
+    const target = (root.scrollTop || 0) >= (body.scrollTop || 0) ? root : body;
+    if (target.scrollTop > 0) {
+      target.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      root.scrollTo({ top: 0, behavior: "smooth" });
+      body.scrollTo({ top: 0, behavior: "smooth" });
     }
   }
 
@@ -257,7 +264,7 @@ export default function Dock() {
         <button
           type="button"
           onClick={handleScrollTop}
-          aria-label={i18n("expand")}
+          aria-label={i18n("scrollToTop", "Remonter en haut")}
           className={dockButton}
         >
           <ChevronUp className="w-5 h-5" />

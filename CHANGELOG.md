@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : correction du bouton Remonter en haut du Dock**
+
+### Corrige
+- `ethone-next/components/Dock.tsx` : le bouton `ChevronUp` du Dock scroll maintenant vers le haut en détectant le bon élément scrollable (`document.documentElement` ou `body`) ; l'`aria-label` a été corrigé (`scrollToTop`, "Remonter en haut").
+
 **Migration Next.js : amélioration de la GamingCard Minecraft**
 
 ### Corrige

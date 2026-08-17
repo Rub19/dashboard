@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Search,
@@ -27,6 +28,12 @@ const TABS = [
   { id: "overview", label: "Vue d'ensemble" },
   { id: "advanced", label: "Avancé" },
 ];
+
+const TAB_OVERRIDES: Record<string, string> = {
+  security: "advanced",
+  billing: "advanced",
+  account: "advanced",
+};
 
 function SettingCard({
   icon: Icon,
@@ -82,7 +89,39 @@ export default function SettingsLayout() {
   const { settings, update } = useSettings();
   const { success, error: showError } = useToast();
   const [query, setQuery] = useState("");
-  const [activeTab, setActiveTab] = useState("overview");
+  const searchParams = useSearchParams();
+
+  const [activeTab, setActiveTab] = useState(() => {
+    const tab = searchParams.get("tab");
+    return (tab && TAB_OVERRIDES[tab]) || "overview";
+  });
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (!tab) return;
+
+    const targetTab = TAB_OVERRIDES[tab] || "overview";
+    if (targetTab !== activeTab) {
+      setActiveTab(targetTab);
+    }
+
+    const scrollTo = (selector: string) => {
+      window.setTimeout(() => {
+        const el = document.querySelector(selector) as HTMLElement | null;
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 200);
+    };
+
+    if (tab === "profile") {
+      scrollTo("#profile-card");
+    } else if (tab === "security") {
+      scrollTo('[data-section="security"]');
+    } else if (tab === "billing" || tab === "account") {
+      scrollTo('[data-section="account"]');
+    }
+  }, [searchParams, activeTab]);
 
   function handleReset() {
     if (!window.confirm(i18n("resetSettingsConfirm") || "Rétablir tous les paramètres par défaut ?")) return;
@@ -178,7 +217,7 @@ export default function SettingsLayout() {
             transition={{ duration: 0.15 }}
             className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
           >
-            <div className="md:col-span-2 xl:col-span-1">
+            <div id="profile-card" className="md:col-span-2 xl:col-span-1">
               <UserProfileCard />
             </div>
             <SettingCard

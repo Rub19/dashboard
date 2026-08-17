@@ -97,8 +97,8 @@ export default function UserProfileDropdown() {
         setOpen(false);
       }
     }
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
   }, [open]);
 
   async function handleSignOut() {
@@ -148,7 +148,7 @@ export default function UserProfileDropdown() {
       icon: User,
       iconBoxClass:
         "bg-emerald-500/15 border-emerald-500/30 text-emerald-300 shadow-[0_0_10px_rgba(52,211,153,0.2)]",
-      action: () => router.push("/profile"),
+      action: () => router.push("/settings?tab=profile"),
     },
     {
       id: "settings",
@@ -167,7 +167,7 @@ export default function UserProfileDropdown() {
       icon: ShieldCheck,
       iconBoxClass:
         "bg-cyan-500/15 border-cyan-500/30 text-cyan-300 shadow-[0_0_10px_rgba(6,182,212,0.2)]",
-      action: () => router.push("/security"),
+      action: () => router.push("/settings?tab=security"),
     },
     {
       id: "billing",
@@ -176,7 +176,7 @@ export default function UserProfileDropdown() {
       icon: CreditCard,
       iconBoxClass:
         "bg-amber-500/15 border-amber-500/30 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]",
-      action: () => router.push("/settings"),
+      action: () => router.push("/settings?tab=billing"),
     },
     {
       id: "shortcuts",
@@ -196,7 +196,10 @@ export default function UserProfileDropdown() {
       {/* Trigger */}
       <button
         type="button"
-        onClick={() => setOpen(!open)}
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen(!open);
+        }}
         className="group relative flex items-center gap-2.5 rounded-xl border border-white/[0.08] bg-zinc-950/70 p-1.5 text-zinc-200 transition-all hover:border-white/20 dark:border-white/[0.08]"
         aria-label={i18n("profile")}
         aria-expanded={open}
@@ -234,6 +237,7 @@ export default function UserProfileDropdown() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.95 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
+            onClick={(e) => e.stopPropagation()}
             className="absolute right-0 top-full z-50 mt-2 w-[340px] select-none flex flex-col gap-2.5 rounded-xl border border-white/[0.08] bg-zinc-950/90 p-3 shadow-[0_16px_50px_rgba(0,0,0,0.7)] backdrop-blur-3xl"
           >
             {/* Header */}
@@ -285,7 +289,10 @@ export default function UserProfileDropdown() {
                 <button
                   key={st}
                   type="button"
-                  onClick={() => setStatus(st)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setStatus(st);
+                  }}
                   className={`flex items-center gap-1.5 rounded-lg px-2 py-1.5 transition-all ${
                     currentStatus === st
                       ? "bg-white/[0.08] font-bold text-white shadow-sm"
@@ -327,7 +334,8 @@ export default function UserProfileDropdown() {
                   <button
                     key={item.id}
                     type="button"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       setOpen(false);
                       item.action();
                     }}
@@ -364,7 +372,10 @@ export default function UserProfileDropdown() {
             <div className="border-t border-white/[0.04] pt-2">
               <button
                 type="button"
-                onClick={handleSignOut}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleSignOut();
+                }}
                 className="group flex w-full items-center justify-between rounded-lg border border-transparent p-2 text-xs text-rose-400 transition-all hover:border-rose-500/20 hover:bg-rose-500/10 hover:text-rose-300"
               >
                 <div className="flex items-center gap-2.5">

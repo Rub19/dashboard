@@ -23,6 +23,7 @@ import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useItems } from "@/lib/hooks/useItems";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { WORKER_URL } from "@/lib/api";
+import VersionPill from "./VersionPill";
 
 function useOnlineStatus() {
   const [online, setOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
@@ -271,6 +272,8 @@ export default function StatusBar() {
               </div>
             )}
           </div>
+
+          <VersionPill />
 
           <StatusPill
             icon={systemOk ? <Circle className="h-3.5 w-3.5 fill-emerald-400 text-emerald-400" /> : <AlertCircle className="h-3.5 w-3.5 text-red-400" />}

@@ -5,14 +5,7 @@ import { RefreshCw, X, ArrowUpCircle } from "lucide-react";
 import { useVersionChecker } from "@/lib/hooks/useVersionChecker";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { forceAppReload } from "@/lib/force-reload";
-
-function formatVersion(version: string | null) {
-  if (!version) return "";
-  if (version.length >= 12 && /^[a-f0-9]+$/i.test(version)) {
-    return `v${version.slice(0, 7)}`;
-  }
-  return `v${version}`;
-}
+import { formatVersion } from "@/lib/version";
 
 export default function VersionUpdateToast() {
   const i18n = useI18n();

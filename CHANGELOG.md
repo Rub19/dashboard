@@ -4,6 +4,14 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : pastille de version dans la barre de statut**
+
+### Corrige
+- `ethone-next/components/layout/VersionPill.tsx` : nouvelle pastille fixe dans la barre de statut affichant la version courante (`v1a2b3c4`) ; devient ambre avec une flèche quand une nouvelle version est disponible et force un rechargement propre au clic.
+- `ethone-next/components/layout/StatusBar.tsx` : intégration de `VersionPill` à droite, juste avant l'indicateur `Opérationnel`.
+- `ethone-next/lib/hooks/useVersionChecker.ts` : expose désormais `currentVersion` pour permettre l'affichage de la version en cours.
+- `ethone-next/lib/version.ts` : utilitaire `formatVersion()` partagé entre `VersionPill` et `VersionUpdateToast`.
+
 **Migration Next.js : bouton "Tout rafraîchir" dans les réglages**
 
 ### Corrige

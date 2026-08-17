@@ -14,6 +14,7 @@ export type VersionData = {
 
 export type UseVersionChecker = {
   hasUpdate: boolean;
+  currentVersion: string | null;
   newVersion: string | null;
   dismiss: () => void;
   check: () => void;
@@ -42,6 +43,7 @@ async function fetchVersion(): Promise<VersionData | null> {
 
 export function useVersionChecker(): UseVersionChecker {
   const [hasUpdate, setHasUpdate] = useState(false);
+  const [currentVersion, setCurrentVersion] = useState<string | null>(null);
   const [newVersion, setNewVersion] = useState<string | null>(null);
 
   const initialVersionRef = useRef<string | null>(null);
@@ -70,6 +72,7 @@ export function useVersionChecker(): UseVersionChecker {
 
       if (!initialVersionRef.current) {
         initialVersionRef.current = remote.version;
+        setCurrentVersion(remote.version);
         try {
           localStorage.setItem(STORAGE_KEY, remote.version);
         } catch {}
@@ -99,7 +102,10 @@ export function useVersionChecker(): UseVersionChecker {
 
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) initialVersionRef.current = stored;
+      if (stored) {
+        initialVersionRef.current = stored;
+        setCurrentVersion(stored);
+      }
     } catch {
       initialVersionRef.current = null;
     }
@@ -138,5 +144,5 @@ export function useVersionChecker(): UseVersionChecker {
     };
   }, [check]);
 
-  return { hasUpdate, newVersion, dismiss, check };
+  return { hasUpdate, currentVersion, newVersion, dismiss, check };
 }

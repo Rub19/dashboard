@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Search } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
@@ -81,6 +81,91 @@ function getRouteCategory(path: string): string | null {
 function getSection(category: string) {
   return SECTION_MAP[category] ?? "Actions Rapides";
 }
+
+const CommandItemRow = memo(function CommandItemRow({
+  cmd,
+  activeIndex,
+  isActive,
+  hasIcons,
+  open,
+  uid,
+  setIndex,
+  run,
+  togglePin,
+  isPinned,
+  pinTitle,
+  unpinTitle,
+}: {
+  cmd: CommandItem;
+  activeIndex: number;
+  isActive: boolean;
+  hasIcons: boolean;
+  open: boolean;
+  uid: string;
+  setIndex: (i: number) => void;
+  run: (cmd: CommandItem) => void;
+  togglePin: (cmd: CommandItem, e: React.MouseEvent<HTMLElement>) => void;
+  isPinned: boolean;
+  pinTitle: string;
+  unpinTitle: string;
+}) {
+  const shortcut = cmd.shortcut ? `⌘${cmd.shortcut.toUpperCase()}` : null;
+  return (
+    <button
+      type="button"
+      id={`${uid}-opt-${activeIndex}`}
+      role="option"
+      aria-selected={isActive}
+      data-index={activeIndex}
+      onMouseEnter={() => setIndex(activeIndex)}
+      onClick={() => run(cmd)}
+      tabIndex={open ? 0 : -1}
+      className={cn(
+        "relative isolate flex w-full items-center gap-3 rounded-md px-2 py-2 text-left text-sm transition-colors",
+        isActive ? "text-[var(--accent)]" : "text-[var(--muted)]"
+      )}
+    >
+      {cmd.icon ? (
+        <span className="relative z-10 h-4 w-4 shrink-0">{cmd.icon}</span>
+      ) : hasIcons ? (
+        <span className="relative z-10 h-4 w-4 shrink-0" />
+      ) : null}
+      <span className="relative z-10 flex-1 truncate">{cmd.label}</span>
+      <span className="relative z-10 flex shrink-0 items-center gap-2">
+        {cmd.category && (
+          <span
+            className={cn(
+              "text-[10px]",
+              isActive ? "text-[var(--muted)]" : "text-[var(--muted)]/70"
+            )}
+          >
+            {cmd.category}
+          </span>
+        )}
+        {shortcut && (
+          <kbd className="rounded border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5 text-[10px] text-[var(--muted)]">
+            {shortcut}
+          </kbd>
+        )}
+        <span
+          role="button"
+          tabIndex={-1}
+          onClick={(e) => togglePin(cmd, e)}
+          className={cn(
+            "relative z-10 rounded p-1 transition-colors",
+            isActive
+              ? "text-[var(--accent)] hover:bg-[var(--accent)]/10"
+              : "text-[var(--muted)] hover:bg-[var(--surface)]"
+          )}
+          aria-label={isPinned ? unpinTitle : pinTitle}
+          title={isPinned ? unpinTitle : pinTitle}
+        >
+          <Icon name={isPinned ? "pin-off" : "pin"} className="h-3.5 w-3.5" />
+        </span>
+      </span>
+    </button>
+  );
+});
 
 // Opened via a keyboard shortcut many times a day — entrance must read as
 // instant. Tight spring, even faster exit.
@@ -206,12 +291,6 @@ export default function CommandPalette() {
     };
   }, [open]);
 
-  useEffect(() => {
-    if (!open) return;
-    const el = listRef.current?.querySelector<HTMLButtonElement>(`[data-index="${index}"]`);
-    el?.scrollIntoView({ block: "nearest" });
-  }, [index, open]);
-
   const onKeyDown = (e: React.KeyboardEvent) => {
     const count = filtered.length;
     if (count === 0) return;
@@ -242,25 +321,28 @@ export default function CommandPalette() {
 
   const hasIcons = useMemo(() => filtered.some((it) => it.icon), [filtered]);
 
-  function PinButton({ cmd, isActive }: { cmd: CommandItem; isActive: boolean }) {
-    return (
-      <span
-        role="button"
-        onClick={(e) => togglePin(cmd, e)}
-        tabIndex={-1}
-        className={cn(
-          "relative z-10 rounded p-1 transition-colors",
-          isActive
-            ? "text-[var(--accent)] hover:bg-[var(--accent)]/10"
-            : "text-[var(--muted)] hover:bg-[var(--surface)]"
-        )}
-        aria-label={pinned.has(cmd.id) ? i18n("unpin") : i18n("pin")}
-        title={pinned.has(cmd.id) ? i18n("unpin") : i18n("pin")}
-      >
-        <Icon name={pinned.has(cmd.id) ? "pin-off" : "pin"} className="h-3.5 w-3.5" />
-      </span>
-    );
-  }
+  const [activePos, setActivePos] = useState({ top: 0, height: 0 });
+  const [activeVisible, setActiveVisible] = useState(false);
+
+  useEffect(() => {
+    if (!open || filtered.length === 0) {
+      setActiveVisible(false);
+      return;
+    }
+    const list = listRef.current;
+    const el = list?.querySelector<HTMLButtonElement>(`[data-index="${index}"]`);
+    if (!list || !el) {
+      setActiveVisible(false);
+      return;
+    }
+    el.scrollIntoView({ block: "nearest" });
+    requestAnimationFrame(() => {
+      const listRect = list.getBoundingClientRect();
+      const elRect = el.getBoundingClientRect();
+      setActivePos({ top: elRect.top - listRect.top, height: elRect.height });
+      setActiveVisible(true);
+    });
+  }, [index, open, filtered.length]);
 
   if (!mounted) return null;
 
@@ -342,8 +424,29 @@ export default function CommandPalette() {
             id={`${uid}-list`}
             role="listbox"
             aria-label="Commands"
-            className="max-h-[54vh] overflow-y-auto overscroll-contain p-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="relative max-h-[54vh] overflow-y-auto overscroll-contain p-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
+            {filtered.length > 0 && (
+              <motion.div
+                aria-hidden
+                initial={false}
+                className="pointer-events-none absolute left-2 right-2 z-0 rounded-md bg-[var(--accent)]/[0.08] will-change-[transform,height]"
+                animate={{
+                  y: activePos.top,
+                  height: activePos.height,
+                  opacity: activeVisible ? 1 : 0,
+                }}
+                transition={
+                  reduce
+                    ? { duration: 0 }
+                    : {
+                        type: "spring",
+                        stiffness: 480,
+                        damping: 38,
+                      }
+                }
+              />
+            )}
             {filtered.length === 0 ? (
               <div className="p-8 text-center text-sm text-[var(--muted)]">
                 {i18n("noResults")}
@@ -360,70 +463,23 @@ export default function CommandPalette() {
                   {section.items.map((cmd) => {
                     const activeIndex = flatIndex++;
                     const isActive = activeIndex === index;
-                    const shortcut = cmd.shortcut ? `⌘${cmd.shortcut.toUpperCase()}` : null;
 
                     return (
-                      <button
+                      <CommandItemRow
                         key={cmd.id}
-                        type="button"
-                        id={`${uid}-opt-${activeIndex}`}
-                        role="option"
-                        aria-selected={isActive}
-                        data-index={activeIndex}
-                        onMouseEnter={() => setIndex(activeIndex)}
-                        onClick={() => run(cmd)}
-                        tabIndex={open ? 0 : -1}
-                        className={cn(
-                          "relative isolate flex w-full items-center gap-3 rounded-md px-2 py-2 text-left text-sm transition-colors",
-                          isActive
-                            ? "text-[var(--accent)]"
-                            : "text-[var(--muted)]",
-                        )}
-                      >
-                        {isActive ? (
-                          <motion.span
-                            layoutId={`${uid}-active`}
-                            className="absolute inset-0 z-0 rounded-md bg-[var(--accent)]/[0.08]"
-                            transition={
-                              reduce
-                                ? { duration: 0 }
-                                : {
-                                    type: "spring",
-                                    stiffness: 480,
-                                    damping: 38,
-                                  }
-                            }
-                          />
-                        ) : null}
-                        {cmd.icon ? (
-                          <span className="relative z-10 h-4 w-4 shrink-0">
-                            {cmd.icon}
-                          </span>
-                        ) : hasIcons ? (
-                          <span className="relative z-10 h-4 w-4 shrink-0" />
-                        ) : null}
-                        <span className="relative z-10 flex-1 truncate">
-                          {cmd.label}
-                        </span>
-                        <span className="relative z-10 flex shrink-0 items-center gap-2">
-                          {cmd.category && (
-                            <span
-                              className={cn(
-                                "text-[10px]",
-                                isActive ? "text-[var(--muted)]" : "text-[var(--muted)]/70"
-                              )}
-                            >
-                              {cmd.category}
-                            </span>
-                          )}
-                          {shortcut && (
-                            <kbd className="rounded border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5 text-[10px] text-[var(--muted)]">
-                              {shortcut}
-                            </kbd>
-                          )}
-                          <PinButton cmd={cmd} isActive={isActive} />
-                        </span>
-                      </button>
+                        cmd={cmd}
+                        activeIndex={activeIndex}
+                        isActive={isActive}
+                        hasIcons={hasIcons}
+                        open={open}
+                        uid={uid}
+                        setIndex={setIndex}
+                        run={run}
+                        togglePin={togglePin}
+                        isPinned={pinned.has(cmd.id)}
+                        pinTitle={i18n("pin")}
+                        unpinTitle={i18n("unpin")}
+                      />
                     );
                   })}
                 </div>

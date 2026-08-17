@@ -25,7 +25,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { fetchWorker } from "@/lib/api";
-import { buildAuthUrl, PROVIDERS as OAUTH_PROVIDERS } from "@/lib/oauth";
+import { startOAuthConnect, PROVIDERS as OAUTH_PROVIDERS } from "@/lib/oauth";
 import { getConnectionGuide, type ConnectionGuide } from "@/config/connectionsGuide";
 import { getIntegrationConfig, type IntegrationConfig } from "@/lib/integrations.config";
 import type { Integration } from "@/lib/integrations";
@@ -204,7 +204,7 @@ export default function ConnectionCard({
         setField(integration.id, "clientSecret", clientSecret.trim());
       }
       success(i18n("connectSuccess"));
-      window.location.href = buildAuthUrl(integration.id, trimmed, { provider: integration.id, clientId: trimmed });
+      window.location.href = await startOAuthConnect(integration.id, trimmed, { provider: integration.id, clientId: trimmed });
     } catch (err) {
       showError(err instanceof Error ? err.message : i18n("error"));
       setSubmitting(false);

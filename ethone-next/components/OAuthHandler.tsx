@@ -25,7 +25,16 @@ export default function OAuthHandler() {
     handled.current = true;
 
     const clientSecret = getField(provider, "clientSecret");
-    exchangeCode(provider, code, clientId, clientSecret || undefined)
+    let token: string | { codeVerifier?: string; clientSecret?: string } | undefined = clientSecret || undefined;
+    if (provider === "spotify") {
+      const verifier = localStorage.getItem(`ethone:oauth:verifier:${provider}`);
+      if (!verifier) {
+        setStatus("Code verifier manquant, reconnectez-vous.");
+        return;
+      }
+      token = { codeVerifier: verifier };
+    }
+    exchangeCode(provider, code, clientId, token)
       .then(() => {
         localStorage.setItem(`ethone:clientId:${provider}`, clientId);
         setUserState(`clientId:${provider}`, clientId).catch(() => {});

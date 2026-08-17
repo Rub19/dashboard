@@ -13,6 +13,7 @@ import {
   SkipForward,
 } from "lucide-react";
 import { fetchWorker } from "@/lib/api";
+import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import type { NowPlaying } from "@/lib/hooks/useLiveData";
@@ -32,6 +33,7 @@ function formatMs(ms: number): string {
 
 export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyoutProps) {
   const i18n = useI18n();
+  const router = useRouter();
   const { success, error: showError } = useToast();
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
@@ -187,8 +189,17 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                 </div>
                 <div className="min-w-0 flex-1">
                   <h4 className="truncate text-xs font-bold text-white">{i18n("noLive")}</h4>
-                  <p className="truncate text-[11px] text-zinc-400">{i18n("notConnected")}</p>
+                  <p className="truncate text-[11px] text-zinc-400">
+                    {hasClientId ? i18n("spotifyNoPlayback") : i18n("spotifyNotConfigured")}
+                  </p>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => router.push(hasClientId ? "/settings" : "/settings")}
+                  className="shrink-0 rounded-lg bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-400 transition hover:bg-emerald-500/20"
+                >
+                  {hasClientId ? i18n("reconnect") : i18n("configure")}
+                </button>
               </div>
             ) : (
               <div className="flex flex-col gap-3">

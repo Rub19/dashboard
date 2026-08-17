@@ -8,6 +8,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { pingIntegration, type PingResult } from "@/lib/connection-config";
 import { integrationById } from "@/lib/integrations";
+import { startOAuthConnect } from "@/lib/oauth";
 import SecureInput from "@/components/ui/SecureInput";
 
 const PROVIDER = "spotify";
@@ -68,6 +69,23 @@ export default function SpotifyConfig() {
     } catch {
       showError(i18n("error"));
     } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleConnect() {
+    const trimmed = rawValue.trim();
+    if (!trimmed) {
+      showError(i18n("clientIdRequired"));
+      return;
+    }
+    setSubmitting(true);
+    try {
+      setField(PROVIDER, FIELD, trimmed);
+      update({ [SETTINGS_KEY]: trimmed } as Partial<typeof settings>);
+      window.location.href = await startOAuthConnect(PROVIDER, trimmed, { provider: PROVIDER, clientId: trimmed });
+    } catch (err) {
+      showError(err instanceof Error ? err.message : i18n("error"));
       setSubmitting(false);
     }
   }
@@ -138,6 +156,15 @@ export default function SpotifyConfig() {
         >
           {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
           {submitting ? i18n("saving") : i18n("save")}
+        </button>
+        <button
+          type="button"
+          onClick={handleConnect}
+          disabled={!rawValue.trim() || submitting || testing}
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-400 transition hover:bg-emerald-500/20 disabled:opacity-50"
+        >
+          {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plug className="h-4 w-4" />}
+          {submitting ? i18n("connecting") : i18n("connect")}
         </button>
         <button
           type="button"

@@ -2,6 +2,7 @@
 
 import { ReactNode } from "react";
 import { Icon } from "@/lib/icons";
+import { TiltCard } from "@/components/ui/TiltCard";
 
 export type BentoCardProps = {
   title?: string;
@@ -23,10 +24,13 @@ export default function BentoCard({
   noHeader,
 }: BentoCardProps) {
   return (
-    <div
-      className={`group relative flex flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 shadow-xl shadow-black/50 backdrop-blur-2xl transition-all duration-200 hover:border-white/[0.16] ${className}`}
+    <TiltCard
+      className={`group h-full w-full border border-white/[0.08] bg-zinc-950/70 p-5 shadow-xl shadow-black/50 backdrop-blur-2xl transition-all duration-200 hover:border-white/[0.16] ${className}`}
     >
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent" aria-hidden="true" />
+      <div
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent"
+        aria-hidden="true"
+      />
 
       <div className="relative z-10 flex h-full min-h-0 flex-1 flex-col">
         {!noHeader && (title || icon) && (
@@ -53,6 +57,6 @@ export default function BentoCard({
 
         <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
       </div>
-    </div>
+    </TiltCard>
   );
 }

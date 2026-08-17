@@ -7,6 +7,7 @@ import { Gamepad2, User } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import type { MinecraftProfile } from "@/lib/hooks/useMinecraftLive";
+import { TiltCard } from "@/components/ui/TiltCard";
 
 type MinecraftServer = {
   players?: number;
@@ -52,8 +53,8 @@ export default function GamingCard({ minecraft, className = "" }: { minecraft?: 
   const serverVersion = server?.version || null;
 
   return (
-    <div
-      className={`flex h-full min-h-0 flex-col justify-between gap-4 rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 shadow-xl shadow-black/50 backdrop-blur-2xl transition-all hover:border-white/15 ${className}`}
+    <TiltCard
+      className={`flex h-full min-h-0 flex-col justify-between gap-4 border border-white/[0.08] bg-zinc-950/70 p-5 shadow-xl shadow-black/50 backdrop-blur-2xl transition-all hover:border-white/15 ${className}`}
     >
       <div className="flex items-center justify-between">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Gaming</span>
@@ -158,6 +159,6 @@ export default function GamingCard({ minecraft, className = "" }: { minecraft?: 
           )}
         </div>
       )}
-    </div>
+    </TiltCard>
   );
 }

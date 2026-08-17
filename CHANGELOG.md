@@ -4,6 +4,15 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : effet 3D tilt sur les cartes**
+
+### Corrige
+- `ethone-next/components/ui/TiltCard.tsx` : nouveau composant `TiltCard` (tilt 3D au survol, glare, `useHoverCapable`, `useReducedMotion`, spring `SPRING_MOUSE`).
+- `ethone-next/lib/hooks/use-hover-capable.ts` : détecte les appareils avec support du hover souris.
+- `ethone-next/lib/ease.ts` : ajout de `SPRING_MOUSE` et des constantes d'easing.
+- `ethone-next/components/BentoCard.tsx` : le BentoCard est maintenant un TiltCard (tous les widgets qui l'utilisent ont le tilt).
+- `ethone-next/components/ConnectionCard.tsx`, `GamingCard.tsx`, `WeatherWidget.tsx`, `SocialDiscordCard.tsx`, `MinecraftWidget.tsx` : enveloppés dans `TiltCard` pour obtenir le tilt 3D au survol.
+
 **Migration Next.js : ajout de l'icône Mail dans le Dock**
 
 ### Corrige

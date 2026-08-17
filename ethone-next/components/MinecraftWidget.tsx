@@ -21,6 +21,7 @@ import {
 import { useMinecraftLive } from "@/lib/hooks/useMinecraftLive";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
+import { TiltCard } from "@/components/ui/TiltCard";
 
 type McStatus = {
   online: boolean;
@@ -217,7 +218,7 @@ export default function MinecraftWidget({ className = "" }: { className?: string
   }
 
   return (
-    <div className={`w-full max-w-md rounded-2xl border border-white/10 bg-zinc-950/70 p-5 shadow-2xl shadow-black/80 backdrop-blur-xl ${className}`}>
+    <TiltCard className={`w-full max-w-md border border-white/10 bg-zinc-950/70 p-5 shadow-2xl shadow-black/80 backdrop-blur-xl ${className}`}>
       <div className="flex items-start gap-4">
         <div className="relative flex h-48 w-36 shrink-0 flex-col items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-black/40 p-3 shadow-xl group">
           {currentSkin && (
@@ -384,6 +385,6 @@ export default function MinecraftWidget({ className = "" }: { className?: string
         </button>
       </div>
 
-    </div>
+    </TiltCard>
   );
 }

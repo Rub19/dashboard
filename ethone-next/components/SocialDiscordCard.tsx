@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Music, Radio, RadioOff, ExternalLink } from "lucide-react";
 import type { LanyardPresence, NowPlaying } from "@/lib/hooks/useLiveData";
+import { TiltCard } from "@/components/ui/TiltCard";
 
 type SocialDiscordCardProps = {
   lanyard?: LanyardPresence | null;
@@ -121,8 +122,8 @@ export default function SocialDiscordCard({ lanyard, nowPlaying, className = "" 
       : 0;
 
   return (
-    <div
-      className={`flex h-full min-h-0 flex-col justify-between gap-4 rounded-2xl border border-zinc-200/80 bg-white/80 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-2xl transition-all hover:border-zinc-300/80 dark:border-white/[0.08] dark:bg-zinc-950/70 dark:shadow-xl dark:hover:border-white/15 ${className}`}
+    <TiltCard
+      className={`flex h-full min-h-0 flex-col justify-between gap-4 border border-zinc-200/80 bg-white/80 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-2xl transition-all hover:border-zinc-300/80 dark:border-white/[0.08] dark:bg-zinc-950/70 dark:shadow-xl dark:hover:border-white/15 ${className}`}
     >
       <div className="flex items-center justify-between">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Social & Media</span>
@@ -230,6 +231,6 @@ export default function SocialDiscordCard({ lanyard, nowPlaying, className = "" 
           <p className="text-[11px] text-zinc-500">Aucune activité en cours.</p>
         </div>
       )}
-    </div>
+    </TiltCard>
   );
 }

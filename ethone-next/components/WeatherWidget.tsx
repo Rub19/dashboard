@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
+import { TiltCard } from "@/components/ui/TiltCard";
 
 export type ForecastDay = {
   date?: string;
@@ -290,8 +291,8 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
   }
 
   return (
-    <div
-      className={`group relative h-full min-h-0 overflow-hidden rounded-2xl border bg-zinc-950/70 p-5 shadow-xl shadow-black/50 backdrop-blur-2xl transition-colors ${gradient} ${border} ${
+    <TiltCard
+      className={`group h-full min-h-0 border bg-zinc-950/70 p-5 shadow-xl shadow-black/50 backdrop-blur-2xl transition-colors ${gradient} ${border} ${
         className || ""
       }`}
     >
@@ -406,6 +407,6 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
           </div>
         )}
       </div>
-    </div>
+    </TiltCard>
   );
 }

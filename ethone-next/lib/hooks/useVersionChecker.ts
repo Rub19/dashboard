@@ -9,6 +9,7 @@ const COOLDOWN = 5_000; // 5 seconds
 
 export type VersionData = {
   version: string;
+  commit?: string | null;
   buildAt?: string;
 };
 
@@ -16,6 +17,8 @@ export type UseVersionChecker = {
   hasUpdate: boolean;
   currentVersion: string | null;
   newVersion: string | null;
+  currentData: VersionData | null;
+  newData: VersionData | null;
   dismiss: () => void;
   check: () => void;
 };
@@ -43,8 +46,8 @@ async function fetchVersion(): Promise<VersionData | null> {
 
 export function useVersionChecker(): UseVersionChecker {
   const [hasUpdate, setHasUpdate] = useState(false);
-  const [currentVersion, setCurrentVersion] = useState<string | null>(null);
-  const [newVersion, setNewVersion] = useState<string | null>(null);
+  const [currentData, setCurrentData] = useState<VersionData | null>(null);
+  const [newData, setNewData] = useState<VersionData | null>(null);
 
   const initialVersionRef = useRef<string | null>(null);
   const checkingRef = useRef(false);
@@ -72,30 +75,30 @@ export function useVersionChecker(): UseVersionChecker {
 
       if (!initialVersionRef.current) {
         initialVersionRef.current = remote.version;
-        setCurrentVersion(remote.version);
+        setCurrentData(remote);
         try {
           localStorage.setItem(STORAGE_KEY, remote.version);
         } catch {}
         return;
       }
 
-      if (remote.version !== initialVersionRef.current && remote.version !== newVersion) {
+      if (remote.version !== initialVersionRef.current && remote.version !== newData?.version) {
         try {
           const dismissedAt = Number(localStorage.getItem(DISMISS_KEY) || "0");
           if (now - dismissedAt > 60 * 60_000) {
             // dismissed more than 1 hour ago
-            setNewVersion(remote.version);
+            setNewData(remote);
             setHasUpdate(true);
           }
         } catch {
-          setNewVersion(remote.version);
+          setNewData(remote);
           setHasUpdate(true);
         }
       }
     } finally {
       checkingRef.current = false;
     }
-  }, [newVersion]);
+  }, [newData?.version]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -104,7 +107,7 @@ export function useVersionChecker(): UseVersionChecker {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         initialVersionRef.current = stored;
-        setCurrentVersion(stored);
+        setCurrentData({ version: stored });
       }
     } catch {
       initialVersionRef.current = null;
@@ -144,5 +147,13 @@ export function useVersionChecker(): UseVersionChecker {
     };
   }, [check]);
 
-  return { hasUpdate, currentVersion, newVersion, dismiss, check };
+  return {
+    hasUpdate,
+    currentVersion: currentData?.version ?? null,
+    newVersion: newData?.version ?? null,
+    currentData,
+    newData,
+    dismiss,
+    check,
+  };
 }

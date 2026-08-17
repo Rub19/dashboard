@@ -15,6 +15,7 @@ import {
   HelpCircle,
   Loader2,
   LogOut,
+  Plug,
   PlugZap,
   RefreshCw,
   Save,
@@ -90,12 +91,12 @@ export default function ConnectionCard({
 
   const statusText =
     status === "connected"
-      ? i18n("connected") || "Opérationnel"
+      ? i18n("connected", "Connecté")
       : status === "error"
-        ? i18n("error") || "Erreur"
+        ? i18n("error", "Erreur")
         : integration.status === "restricted" || integration.status === "limited"
-          ? i18n(integration.status)
-          : i18n("notConfigured") || "Non configuré";
+          ? i18n(integration.status, integration.status)
+          : i18n("notConfigured", "Non connecté");
 
   const methodKey = config ? config.category : getServiceMethodKey(integration.status);
   const methodClass = config
@@ -117,7 +118,7 @@ export default function ConnectionCard({
       ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
       : status === "error"
         ? "bg-rose-500/10 text-rose-400 border-rose-500/20"
-        : "bg-zinc-800 text-zinc-400 border-white/[0.06]";
+        : "bg-white/[0.04] text-zinc-400 border-white/[0.08]";
 
   const storeValues = useMemo(() => integrationValues[integration.id] || {}, [integrationValues, integration.id]);
 
@@ -454,10 +455,10 @@ export default function ConnectionCard({
                 type="button"
                 onClick={handleConnect}
                 disabled={!clientId.trim() || !OAUTH_PROVIDERS[integration.id] || submitting}
-                className="col-span-2 flex items-center justify-center gap-1.5 rounded-xl bg-purple-600 py-2 px-3 text-xs font-semibold text-white shadow-lg shadow-purple-600/20 transition-all hover:bg-purple-500 active:scale-[0.98] disabled:opacity-50"
+                className="col-span-2 flex items-center justify-center gap-1.5 rounded-xl bg-emerald-500 py-2 px-3 text-xs font-bold text-zinc-950 shadow-md shadow-emerald-500/20 transition-all hover:bg-emerald-400 active:scale-95 disabled:opacity-50"
               >
                 {submitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <PlugZap className="h-3.5 w-3.5" />}
-                <span>{i18n("connect")}</span>
+                <span>{i18n("connect", "Connecter")}</span>
               </button>
               <button
                 type="button"
@@ -474,21 +475,12 @@ export default function ConnectionCard({
 
         {/* OAuth disconnect */}
         {isOauth && isConnected && (
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={submitting}
-              className="col-span-1 flex items-center justify-center gap-1.5 rounded-xl bg-purple-600 py-2 px-2 text-xs font-semibold text-white shadow-lg shadow-purple-600/20 transition-all hover:bg-purple-500 active:scale-[0.98] disabled:opacity-50"
-            >
-              {submitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-              <span className="truncate">{i18n("save")}</span>
-            </button>
+          <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
               onClick={handleTest}
               disabled={submitting || !onTest}
-              className="col-span-1 flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] py-2 px-2 text-xs font-medium text-zinc-300 transition-all hover:bg-white/[0.08] hover:text-white disabled:opacity-50"
+              className="flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] py-2 px-2 text-xs font-medium text-zinc-300 transition-all hover:bg-white/[0.08] hover:text-white disabled:opacity-50"
             >
               <RefreshCw className="h-3.5 w-3.5" />
               <span className="truncate">{i18n("testConnection")}</span>
@@ -497,10 +489,10 @@ export default function ConnectionCard({
               type="button"
               onClick={handleDisconnect}
               disabled={submitting}
-              className="col-span-1 flex items-center justify-center gap-1.5 rounded-xl border border-red-500/20 bg-red-500/10 py-2 px-2 text-xs font-medium text-red-400 transition-all hover:bg-red-500/20 hover:text-red-300 disabled:opacity-50"
+              className="flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/20 px-3 py-2 text-xs font-medium text-rose-400 transition-all hover:border-rose-500/40 hover:bg-rose-500/10 disabled:opacity-50"
             >
               <LogOut className="h-3.5 w-3.5" />
-              <span className="truncate">{i18n("disconnect")}</span>
+              <span className="truncate">{i18n("disconnect", "Déconnecter")}</span>
             </button>
           </div>
         )}
@@ -572,10 +564,20 @@ export default function ConnectionCard({
                 type="button"
                 onClick={handleSave}
                 disabled={submitting}
-                className="col-span-1 flex items-center justify-center gap-1.5 rounded-xl bg-purple-600 py-2 px-2 text-xs font-semibold text-white shadow-lg shadow-purple-600/20 transition-all hover:bg-purple-500 active:scale-[0.98] disabled:opacity-50"
+                className={`flex items-center justify-center gap-1.5 rounded-xl py-2 px-2 text-xs font-bold transition-all active:scale-95 disabled:opacity-50 ${
+                  isConnected
+                    ? "col-span-1 bg-purple-600 text-white shadow-lg shadow-purple-600/20 hover:bg-purple-500"
+                    : "col-span-2 bg-emerald-500 text-zinc-950 shadow-md shadow-emerald-500/20 hover:bg-emerald-400"
+                }`}
               >
-                {submitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-                <span className="truncate">{i18n("save")}</span>
+                {submitting ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : isConnected ? (
+                  <Save className="h-3.5 w-3.5" />
+                ) : (
+                  <Plug className="h-3.5 w-3.5" />
+                )}
+                <span className="truncate">{isConnected ? i18n("save", "Sauvegarder") : i18n("connect", "Connecter")}</span>
               </button>
               <button
                 type="button"
@@ -586,15 +588,17 @@ export default function ConnectionCard({
                 <RefreshCw className="h-3.5 w-3.5" />
                 <span className="truncate">{i18n("testConnection")}</span>
               </button>
-              <button
-                type="button"
-                onClick={handleDisconnect}
-                disabled={submitting}
-                className="col-span-1 flex items-center justify-center gap-1.5 rounded-xl border border-red-500/20 bg-red-500/10 py-2 px-2 text-xs font-medium text-red-400 transition-all hover:bg-red-500/20 hover:text-red-300 disabled:opacity-50"
-              >
-                <Unlink className="h-3.5 w-3.5" />
-                <span className="truncate">{i18n("disconnect")}</span>
-              </button>
+              {isConnected && (
+                <button
+                  type="button"
+                  onClick={handleDisconnect}
+                  disabled={submitting}
+                  className="col-span-1 flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/20 px-2 py-2 text-xs font-medium text-rose-400 transition-all hover:border-rose-500/40 hover:bg-rose-500/10 disabled:opacity-50"
+                >
+                  <Unlink className="h-3.5 w-3.5" />
+                  <span className="truncate">{i18n("disconnect", "Déconnecter")}</span>
+                </button>
+              )}
             </div>
           </div>
         )}

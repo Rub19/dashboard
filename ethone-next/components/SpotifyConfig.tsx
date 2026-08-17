@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, Check, Unlink, Plug } from "lucide-react";
+import { Loader2, Plug, RefreshCw, Unlink } from "lucide-react";
 import { useIntegrationStore } from "@/lib/hooks/useIntegrationStore";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { fetchWorker } from "@/lib/api";
 import { pingIntegration, type PingResult } from "@/lib/connection-config";
 import { integrationById } from "@/lib/integrations";
+import { getIntegrationConfig } from "@/lib/integrations.config";
 import { startOAuthConnect } from "@/lib/oauth";
 import SecureInput from "@/components/ui/SecureInput";
 
@@ -20,14 +22,24 @@ export default function SpotifyConfig() {
   const { success, error: showError } = useToast();
   const { settings, update } = useSettings();
   const { setField, getField } = useIntegrationStore();
+  const config = useMemo(() => getIntegrationConfig(PROVIDER), []);
 
   const [submitting, setSubmitting] = useState(false);
   const [testing, setTesting] = useState(false);
   const [health, setHealth] = useState<PingResult | undefined>();
   const [rawValue, setRawValue] = useState("");
+  const [clientSecret, setClientSecret] = useState((getField(PROVIDER, "clientSecret") as string) || "");
+  const [showClientSecret, setShowClientSecret] = useState(false);
+  const [origin, setOrigin] = useState("");
+  const [oauthConnected, setOauthConnected] = useState(false);
+  const [checking, setChecking] = useState(true);
 
   const integration = useMemo(() => integrationById(PROVIDER), []);
   const storedValue = getField(PROVIDER, FIELD);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") setOrigin(window.location.origin);
+  }, []);
 
   useEffect(() => {
     const settingsValue = settings[SETTINGS_KEY] as string | undefined;
@@ -39,53 +51,62 @@ export default function SpotifyConfig() {
     }
   }, [storedValue, settings, setField]);
 
+  useEffect(() => {
+    setChecking(true);
+    fetchWorker("/api/connections")
+      .then((res) => {
+        const rows = Array.isArray(res?.data) ? res.data : [];
+        const map: Record<string, boolean> = {};
+        rows.forEach((row: { provider: string; connected: boolean }) => {
+          map[row.provider] = row.connected;
+        });
+        setOauthConnected(!!map[PROVIDER]);
+      })
+      .catch(() => setOauthConnected(false))
+      .finally(() => setChecking(false));
+  }, []);
+
+  const isConnected = oauthConnected;
+
   const status: PingResult["status"] = useMemo(() => {
     if (health) return health.status;
-    if (rawValue.trim()) return "connected";
+    if (isConnected) return "connected";
     return "unconfigured";
-  }, [health, rawValue]);
+  }, [health, isConnected]);
 
   const statusText = useMemo(() => {
-    if (status === "connected") return i18n("connected");
-    if (status === "error") return i18n("error");
-    return i18n("notConfigured");
+    if (status === "connected") return i18n("connected", "Connecté");
+    if (status === "error") return i18n("error", "Erreur");
+    return i18n("notConfigured", "Non connecté");
   }, [status, i18n]);
 
   const statusClass =
     status === "connected"
       ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
       : status === "error"
-        ? "bg-red-500/15 text-red-300 border border-red-500/30"
-        : "bg-zinc-800 text-zinc-400 border border-zinc-700";
-
-  async function handleSave() {
-    const trimmed = rawValue.trim();
-    if (!trimmed) return;
-    setSubmitting(true);
-    try {
-      setField(PROVIDER, FIELD, trimmed);
-      update({ [SETTINGS_KEY]: trimmed } as Partial<typeof settings>);
-      success(i18n("saved"));
-    } catch {
-      showError(i18n("error"));
-    } finally {
-      setSubmitting(false);
-    }
-  }
+        ? "bg-rose-500/15 text-rose-300 border border-rose-500/30"
+        : "bg-white/[0.04] text-zinc-400 border border-white/[0.08]";
 
   async function handleConnect() {
     const trimmed = rawValue.trim();
     if (!trimmed) {
-      showError(i18n("clientIdRequired"));
+      showError(i18n("clientIdRequired", "Client ID requis"));
       return;
     }
     setSubmitting(true);
     try {
       setField(PROVIDER, FIELD, trimmed);
       update({ [SETTINGS_KEY]: trimmed } as Partial<typeof settings>);
+      try {
+        localStorage.setItem(`ethone:clientId:${PROVIDER}`, trimmed);
+      } catch {}
+      if (clientSecret.trim()) {
+        setField(PROVIDER, "clientSecret", clientSecret.trim());
+      }
+      success(i18n("connecting", "Connexion..."));
       window.location.href = await startOAuthConnect(PROVIDER, trimmed, { provider: PROVIDER, clientId: trimmed });
     } catch (err) {
-      showError(err instanceof Error ? err.message : i18n("error"));
+      showError(err instanceof Error ? err.message : i18n("error", "Erreur"));
       setSubmitting(false);
     }
   }
@@ -101,28 +122,45 @@ export default function SpotifyConfig() {
         { ...settings, [SETTINGS_KEY]: trimmed },
         clientIds,
         {},
-        { [PROVIDER]: true }
+        { [PROVIDER]: isConnected }
       );
       setHealth(result);
       if (result.ok) {
-        success(i18n("connected"));
+        success(i18n("connected", "Connecté"));
       } else {
-        showError(result.error || i18n("error"));
+        showError(result.error || i18n("error", "Erreur"));
       }
     } catch (err) {
-      showError(err instanceof Error ? err.message : i18n("error"));
+      showError(err instanceof Error ? err.message : i18n("error", "Erreur"));
     } finally {
       setTesting(false);
     }
   }
 
-  function handleDisconnect() {
-    if (!window.confirm(`${i18n("disconnect")} Spotify ?`)) return;
-    setRawValue("");
-    setField(PROVIDER, FIELD, "");
-    update({ [SETTINGS_KEY]: "" } as Partial<typeof settings>);
-    setHealth(undefined);
-    success(i18n("disconnectSuccess"));
+  async function handleDisconnect() {
+    if (!window.confirm(`${i18n("disconnect", "Déconnecter")} Spotify ?`)) return;
+    setSubmitting(true);
+    try {
+      await fetchWorker(`/api/${PROVIDER}/oauth/disconnect`, {
+        method: "POST",
+        body: JSON.stringify({}),
+      });
+    } catch (err) {
+      showError(err instanceof Error ? err.message : i18n("error", "Erreur"));
+    } finally {
+      setRawValue("");
+      setClientSecret("");
+      setField(PROVIDER, FIELD, "");
+      setField(PROVIDER, "clientSecret", "");
+      update({ [SETTINGS_KEY]: "" } as Partial<typeof settings>);
+      try {
+        localStorage.removeItem(`ethone:clientId:${PROVIDER}`);
+      } catch {}
+      setHealth(undefined);
+      setOauthConnected(false);
+      setSubmitting(false);
+      success(i18n("disconnectSuccess", "Déconnecté"));
+    }
   }
 
   if (!integration) return null;
@@ -134,59 +172,95 @@ export default function SpotifyConfig() {
           <h3 className="font-semibold text-white">Spotify</h3>
           <p className="text-xs text-zinc-500">{i18n("descSpotify")}</p>
         </div>
-        <span className={`rounded-lg px-2.5 py-1 text-[10px] font-semibold ${statusClass}`}>
-          {statusText}
-        </span>
+        <span className={`rounded-lg px-2.5 py-1 text-[10px] font-semibold ${statusClass}`}>{statusText}</span>
       </div>
 
-      <SecureInput
-        value={rawValue}
-        onChange={setRawValue}
-        label={i18n("clientId")}
-        placeholder="xxxxxxxxxxxxxxxxxxxx"
-        disabled={submitting || testing}
-      />
+      {!isConnected && (
+        <>
+          <SecureInput
+            value={rawValue}
+            onChange={setRawValue}
+            label={config?.idLabel || i18n("clientId")}
+            placeholder={config?.idPlaceholder || "xxxxxxxxxxxxxxxxxxxx"}
+            disabled={submitting || testing || checking}
+          />
 
-      <div className="flex gap-2">
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={!rawValue.trim() || submitting || testing}
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-purple-600 px-3 py-2 text-sm font-medium text-white shadow-lg shadow-purple-600/20 transition hover:bg-purple-500 disabled:opacity-50"
-        >
-          {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-          {submitting ? i18n("saving") : i18n("save")}
-        </button>
-        <button
-          type="button"
-          onClick={handleConnect}
-          disabled={!rawValue.trim() || submitting || testing}
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-400 transition hover:bg-emerald-500/20 disabled:opacity-50"
-        >
-          {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plug className="h-4 w-4" />}
-          {submitting ? i18n("connecting") : i18n("connect")}
-        </button>
-        <button
-          type="button"
-          onClick={handleTest}
-          disabled={!rawValue.trim() || testing}
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-sm font-medium text-zinc-300 transition hover:bg-white/[0.06] disabled:opacity-50"
-        >
-          {testing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plug className="h-4 w-4" />}
-          {testing ? i18n("testingInProgress") : i18n("testConnection")}
-        </button>
-      </div>
+          {config?.requiresClientSecret && (
+            <div className="relative">
+              <input
+                type={showClientSecret ? "text" : "password"}
+                value={clientSecret}
+                onChange={(e) => setClientSecret(e.target.value)}
+                aria-label={config?.secretLabel || i18n("clientSecret")}
+                placeholder={config?.secretPlaceholder || i18n("clientSecret")}
+                className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-100 placeholder-zinc-600 outline-none transition focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30"
+              />
+              <button
+                type="button"
+                onClick={() => setShowClientSecret((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-zinc-500 hover:text-zinc-300"
+              >
+                {showClientSecret ? i18n("hide") : i18n("show")}
+              </button>
+            </div>
+          )}
 
-      {rawValue.trim() && (
-        <button
-          type="button"
-          onClick={handleDisconnect}
-          className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm font-medium text-red-400 transition hover:bg-red-500/20"
-        >
-          <Unlink className="h-4 w-4" />
-          {i18n("disconnect")}
-        </button>
+          {config?.requiresRedirectUri && origin && (
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-2.5">
+              <p className="text-[11px] font-medium text-zinc-300">{i18n("redirectUri")}</p>
+              <code className="mt-1 block break-all rounded-lg bg-zinc-950 px-2 py-1 text-[10px] text-zinc-400">
+                {`${origin}${config.callbackPath}`}
+              </code>
+            </div>
+          )}
+        </>
       )}
+
+      <div className="grid grid-cols-2 gap-2">
+        {!isConnected ? (
+          <>
+            <button
+              type="button"
+              onClick={handleConnect}
+              disabled={!rawValue.trim() || submitting || testing || checking}
+              className="flex items-center justify-center gap-1.5 rounded-xl bg-emerald-500 px-3 py-2 text-sm font-bold text-zinc-950 shadow-md shadow-emerald-500/20 transition hover:bg-emerald-400 active:scale-95 disabled:opacity-50"
+            >
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plug className="h-4 w-4" />}
+              {submitting ? i18n("connecting") : i18n("connect", "Connecter")}
+            </button>
+            <button
+              type="button"
+              onClick={handleTest}
+              disabled={!rawValue.trim() || testing}
+              className="flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-medium text-zinc-300 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-50"
+            >
+              {testing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+              {testing ? i18n("testingInProgress") : i18n("testConnection")}
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={handleTest}
+              disabled={testing}
+              className="flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-medium text-zinc-300 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-50"
+            >
+              {testing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+              {testing ? i18n("testingInProgress") : i18n("testConnection")}
+            </button>
+            <button
+              type="button"
+              onClick={handleDisconnect}
+              disabled={submitting}
+              className="flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/20 px-3 py-2 text-sm font-medium text-rose-400 transition hover:border-rose-500/40 hover:bg-rose-500/10 disabled:opacity-50"
+            >
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Unlink className="h-4 w-4" />}
+              {submitting ? i18n("disconnecting") : i18n("disconnect", "Déconnecter")}
+            </button>
+          </>
+        )}
+      </div>
 
       {!!health?.data && (
         <pre className="max-h-40 overflow-auto rounded-xl bg-black/30 p-3 font-mono text-[10px] text-zinc-300">

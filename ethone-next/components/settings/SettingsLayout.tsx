@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Search,
@@ -28,16 +28,15 @@ import IntegrationsSettings from "@/components/IntegrationsSettings";
 
 const TABS = [
   { id: "overview", label: "Vue d'ensemble" },
-  { id: "advanced", label: "Avancé" },
+  { id: "general", label: "Général" },
+  { id: "security", label: "Sécurité" },
   { id: "billing", label: "Facturation" },
   { id: "integrations", label: "Intégrations" },
 ];
 
 const TAB_OVERRIDES: Record<string, string> = {
-  security: "advanced",
-  account: "advanced",
-  billing: "billing",
-  integrations: "integrations",
+  account: "general",
+  profile: "overview",
 };
 
 function SettingCard({
@@ -89,26 +88,26 @@ function SettingCard({
   );
 }
 
+function resolveTab(tab: string | null): string {
+  if (!tab) return "overview";
+  if (TABS.some((t) => t.id === tab)) return tab;
+  return TAB_OVERRIDES[tab] || "overview";
+}
+
 export default function SettingsLayout() {
   const i18n = useI18n();
   const { settings, update } = useSettings();
   const { success, error: showError } = useToast();
   const [query, setQuery] = useState("");
   const searchParams = useSearchParams();
+  const router = useRouter();
 
-  const [activeTab, setActiveTab] = useState(() => {
-    const tab = searchParams.get("tab");
-    return (tab && TAB_OVERRIDES[tab]) || "overview";
-  });
+  const [activeTab, setActiveTab] = useState(() => resolveTab(searchParams.get("tab")));
 
   useEffect(() => {
     const tab = searchParams.get("tab");
-    if (!tab) return;
-
-    const targetTab = TAB_OVERRIDES[tab] || "overview";
-    if (targetTab !== activeTab) {
-      setActiveTab(targetTab);
-    }
+    const targetTab = resolveTab(tab);
+    setActiveTab((prev) => (targetTab !== prev ? targetTab : prev));
 
     const scrollTo = (selector: string) => {
       window.setTimeout(() => {
@@ -126,7 +125,7 @@ export default function SettingsLayout() {
     } else if (tab === "account") {
       scrollTo('[data-section="account"]');
     }
-  }, [searchParams, activeTab]);
+  }, [searchParams]);
 
   function handleReset() {
     if (!window.confirm(i18n("resetSettingsConfirm") || "Rétablir tous les paramètres par défaut ?")) return;
@@ -200,7 +199,10 @@ export default function SettingsLayout() {
         {TABS.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => {
+              setActiveTab(tab.id);
+              router.push(`/settings?tab=${tab.id}`, { scroll: false });
+            }}
             className={`rounded-lg px-4 py-1.5 text-xs font-medium transition-all ${
               activeTab === tab.id
                 ? "border border-white/10 bg-white/[0.08] text-white shadow-sm"
@@ -274,9 +276,9 @@ export default function SettingsLayout() {
               accent="sky"
             />
           </motion.div>
-        ) : activeTab === "advanced" ? (
+        ) : activeTab === "general" || activeTab === "security" || activeTab === "account" ? (
           <motion.div
-            key="advanced"
+            key="settings"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}

@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : branchement Cloud Sync sur les tâches**
+
+### Corrige
+- `ethone-next/lib/hooks/useCloudTasks.ts` : adaptateur autour de `useTasks` exposant le même contrat `Item` que `useItems` pour la compatibilité `TasksWidget`.
+- `ethone-next/components/TasksWidget.tsx`, `DashboardOverview.tsx` : remplacement de `useItems("tasks")` par `useCloudTasks`. Les tâches sont désormais lues/écrites dans la table Supabase `tasks` avec synchronisation Realtime.
+
 **Migration Next.js : ajustements UI et version check avant branchement Cloud Sync**
 
 ### Corrige

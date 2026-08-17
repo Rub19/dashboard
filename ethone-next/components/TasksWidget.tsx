@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import { Plus, CheckSquare } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { useItems, type Item } from "@/lib/hooks/useItems";
+import { type Item } from "@/lib/hooks/useItems";
+import { useCloudTasks } from "@/lib/hooks/useCloudTasks";
 import { useToast } from "@/components/ToastProvider";
 import BentoCard from "@/components/BentoCard";
 import TodoList from "./TodoList";
@@ -35,7 +36,7 @@ export type TasksWidgetProps = {
 export default function TasksWidget({ className = "", data }: TasksWidgetProps) {
   const i18n = useI18n();
   const { success, error: showError } = useToast();
-  const own = useItems("tasks");
+  const own = useCloudTasks();
 
   const { items, loading, error, create, update, remove } = data ?? own;
 

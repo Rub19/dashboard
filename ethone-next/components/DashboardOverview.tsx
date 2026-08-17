@@ -10,6 +10,7 @@ import HeroBriefingCard from "@/components/HeroBriefingCard";
 import SystemControlCard from "@/components/SystemControlCard";
 import { DayTimelineCard, RecentNotesCard } from "@/components/ProductivityCards";
 import TasksWidget from "@/components/TasksWidget";
+import { useCloudTasks } from "@/lib/hooks/useCloudTasks";
 import { useHomeData } from "@/lib/hooks/useDashboard";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 
@@ -30,7 +31,7 @@ export default function DashboardOverview() {
   const { settings, update: updateSettings } = useSettings();
   const { greeting, dashboard, nowPlaying, loading, error } = useHomeData();
   const live = useLiveData();
-  const tasksApi = useItems("tasks");
+  const tasksApi = useCloudTasks();
   const { items: notes } = useItems("notes");
   const { items: events } = useItems("events");
   const focus = useFocus();

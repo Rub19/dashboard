@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : branchement Cloud Sync sur le layout du bureau**
+
+### Corrige
+- `ethone-next/components/DashboardOverview.tsx` : utilise `useDesktopLayout` pour charger/sauvegarder la visibilité et l'ordre des widgets depuis Supabase (`desktop_layout`). Fallback sur `settings.homeHiddenSections` lorsqu'aucun layout cloud n'existe. Les widgets sont rendus selon l'ordre du layout cloud.
+- `ethone-next/lib/hooks/useDesktopLayout.ts` : hook de chargement, mutation optimiste, rollback et écoute Realtime sur `desktop_layout`.
+
 **Migration Next.js : branchement Cloud Sync sur le Focus / Pomodoro**
 
 ### Corrige

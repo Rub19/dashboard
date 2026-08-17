@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, Fragment } from "react";
 import dynamic from "next/dynamic";
 import { LayoutGrid } from "lucide-react";
 import Select from "@/components/ui/Select";
@@ -18,6 +18,7 @@ import { useItems } from "@/lib/hooks/useItems";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useFocus } from "@/components/FocusProvider";
+import { useDesktopLayout, type WidgetLayout } from "@/lib/hooks/useDesktopLayout";
 import { Icon } from "@/lib/icons";
 
 const LiveBentoGrid = dynamic(() => import("@/components/LiveBentoGrid"));
@@ -26,9 +27,20 @@ const BrainBriefingPanel = dynamic(() => import("@/components/BrainBriefingPanel
 
 type SectionDef = { id: string; label: string; icon: string };
 
+const DEFAULT_WIDGETS: WidgetLayout[] = [
+  { id: "hero", x: 0, y: 0, w: 12, h: 2, visible: true },
+  { id: "system", x: 0, y: 1, w: 4, h: 1, visible: true },
+  { id: "daystream", x: 4, y: 1, w: 4, h: 1, visible: true },
+  { id: "productivity", x: 8, y: 1, w: 4, h: 1, visible: true },
+  { id: "recent", x: 0, y: 2, w: 4, h: 1, visible: true },
+  { id: "brain", x: 0, y: 3, w: 6, h: 1, visible: true },
+  { id: "bills", x: 6, y: 3, w: 6, h: 1, visible: true },
+  { id: "live", x: 0, y: 4, w: 12, h: 2, visible: true },
+];
+
 export default function DashboardOverview() {
   const i18n = useI18n();
-  const { settings, update: updateSettings } = useSettings();
+  const { settings } = useSettings();
   const { greeting, dashboard, nowPlaying, loading, error } = useHomeData();
   const live = useLiveData();
   const tasksApi = useCloudTasks();
@@ -37,21 +49,30 @@ export default function DashboardOverview() {
   const focus = useFocus();
   const [customizing, setCustomizing] = useState(false);
   const [workspace, setWorkspace] = useState("ethone");
+  const { layout, update: updateLayout } = useDesktopLayout();
 
-  const hidden = new Set(settings.homeHiddenSections || []);
+  const widgets = useMemo<WidgetLayout[]>(() => {
+    if (layout && layout.widgets.length > 0) return layout.widgets;
+    const hidden = new Set(settings.homeHiddenSections || []);
+    return DEFAULT_WIDGETS.map((w) => ({ ...w, visible: !hidden.has(w.id) }));
+  }, [layout, settings.homeHiddenSections]);
 
   const sections: SectionDef[] = useMemo(
-    () => [
-      { id: "hero", label: i18n("home"), icon: "sun" },
-      { id: "system", label: i18n("system"), icon: "sliders-horizontal" },
-      { id: "daystream", label: i18n("daystream"), icon: "calendar" },
-      { id: "productivity", label: i18n("productivityAndRhythm"), icon: "zap" },
-      { id: "recent", label: i18n("recent"), icon: "history" },
-      { id: "brain", label: i18n("brain"), icon: "brain" },
-      { id: "bills", label: i18n("billsTitle"), icon: "bills" },
-      { id: "live", label: i18n("live"), icon: "radio" },
-    ],
-    [i18n]
+    () =>
+      widgets.map((w) => {
+        const meta: Record<string, { label: string; icon: string }> = {
+          hero: { label: i18n("home"), icon: "sun" },
+          system: { label: i18n("system"), icon: "sliders-horizontal" },
+          daystream: { label: i18n("daystream"), icon: "calendar" },
+          productivity: { label: i18n("productivityAndRhythm"), icon: "zap" },
+          recent: { label: i18n("recent"), icon: "history" },
+          brain: { label: i18n("brain"), icon: "brain" },
+          bills: { label: i18n("billsTitle"), icon: "bills" },
+          live: { label: i18n("live"), icon: "radio" },
+        };
+        return { id: w.id, ...meta[w.id] };
+      }),
+    [widgets, i18n]
   );
 
   const today = useMemo(() => new Date(), []);
@@ -76,10 +97,70 @@ export default function DashboardOverview() {
   const openTasksCount = openTasksList.length;
 
   function toggleSection(id: string) {
-    const next = hidden.has(id)
-      ? (settings.homeHiddenSections || []).filter((x) => x !== id)
-      : [...(settings.homeHiddenSections || []), id];
-    updateSettings({ homeHiddenSections: next });
+    const next = widgets.map((w) => (w.id === id ? { ...w, visible: !w.visible } : w));
+    void updateLayout(next);
+  }
+
+  const visibleSet = useMemo(() => new Set(widgets.filter((w) => w.visible).map((w) => w.id)), [widgets]);
+
+  function renderWidget(id: string) {
+    switch (id) {
+      case "hero":
+        return (
+          <HeroBriefingCard
+            greeting={greeting}
+            dashboard={dashboard}
+            nowPlaying={nowPlaying}
+            loading={loading}
+            openTasksCount={openTasksCount}
+            todayEventsCount={todayEvents.length}
+            notesCount={notes.length}
+            className="col-span-12 lg:col-span-8"
+          />
+        );
+      case "system":
+        return <SystemControlCard className="col-span-12 lg:col-span-4" />;
+      case "daystream":
+        return (
+          <DayTimelineCard
+            todayEvents={todayEvents}
+            nextTasks={nextTasks}
+            focus={focus}
+            className="col-span-12 md:col-span-6 lg:col-span-4"
+          />
+        );
+      case "productivity":
+        return <TasksWidget data={tasksApi} className="col-span-12 md:col-span-6 lg:col-span-4" />;
+      case "recent":
+        return <RecentNotesCard notes={notes} className="col-span-12 lg:col-span-4" />;
+      case "brain":
+        return (
+          <BentoCard title={i18n("brain")} icon="brain" className="col-span-12 md:col-span-6 lg:col-span-6">
+            <BrainBriefingPanel />
+          </BentoCard>
+        );
+      case "bills":
+        return (
+          <BentoCard title={i18n("billsTitle")} icon="bills" className="col-span-12 md:col-span-6 lg:col-span-6">
+            <BillsWidget />
+          </BentoCard>
+        );
+      case "live":
+        return (
+          <LiveBentoGrid
+            nowPlaying={live.nowPlaying}
+            lanyard={live.lanyard}
+            weather={live.weather}
+            minecraft={live.minecraft}
+            records={live.records}
+            updatedAt={live.updatedAt}
+            loading={live.loading}
+            className="col-span-12 h-full"
+          />
+        );
+      default:
+        return null;
+    }
   }
 
   return (
@@ -137,12 +218,12 @@ export default function DashboardOverview() {
                   type="button"
                   onClick={() => toggleSection(s.id)}
                   className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition-colors ${
-                    hidden.has(s.id)
-                      ? "border-white/[0.06] bg-white/[0.02] text-zinc-500"
-                      : "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
+                    visibleSet.has(s.id)
+                      ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
+                      : "border-white/[0.06] bg-white/[0.02] text-zinc-500"
                   }`}
                 >
-                  <Icon name={hidden.has(s.id) ? "eye-off" : "eye"} className="h-4 w-4" />
+                  <Icon name={visibleSet.has(s.id) ? "eye" : "eye-off"} className="h-4 w-4" />
                   {s.label}
                 </button>
               ))}
@@ -156,58 +237,7 @@ export default function DashboardOverview() {
           </div>
         )}
 
-        {!hidden.has("hero") && (
-          <HeroBriefingCard
-            greeting={greeting}
-            dashboard={dashboard}
-            nowPlaying={nowPlaying}
-            loading={loading}
-            openTasksCount={openTasksCount}
-            todayEventsCount={todayEvents.length}
-            notesCount={notes.length}
-            className="col-span-12 lg:col-span-8"
-          />
-        )}
-
-        {!hidden.has("system") && <SystemControlCard className="col-span-12 lg:col-span-4" />}
-
-        {!hidden.has("daystream") && (
-          <DayTimelineCard
-            todayEvents={todayEvents}
-            nextTasks={nextTasks}
-            focus={focus}
-            className="col-span-12 md:col-span-6 lg:col-span-4"
-          />
-        )}
-
-        {!hidden.has("productivity") && <TasksWidget data={tasksApi} className="col-span-12 md:col-span-6 lg:col-span-4" />}
-
-        {!hidden.has("recent") && <RecentNotesCard notes={notes} className="col-span-12 lg:col-span-4" />}
-
-        {!hidden.has("brain") && (
-          <BentoCard title={i18n("brain")} icon="brain" className="col-span-12 md:col-span-6 lg:col-span-6">
-            <BrainBriefingPanel />
-          </BentoCard>
-        )}
-
-        {!hidden.has("bills") && (
-          <BentoCard title={i18n("billsTitle")} icon="bills" className="col-span-12 md:col-span-6 lg:col-span-6">
-            <BillsWidget />
-          </BentoCard>
-        )}
-
-        {!hidden.has("live") && (
-          <LiveBentoGrid
-            nowPlaying={live.nowPlaying}
-            lanyard={live.lanyard}
-            weather={live.weather}
-            minecraft={live.minecraft}
-            records={live.records}
-            updatedAt={live.updatedAt}
-            loading={live.loading}
-            className="col-span-12 h-full"
-          />
-        )}
+        {widgets.map((w) => (w.visible ? <Fragment key={w.id}>{renderWidget(w.id)}</Fragment> : null))}
       </div>
     </main>
   );

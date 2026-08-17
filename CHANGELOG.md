@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : amélioration de la GamingCard Minecraft**
+
+### Corrige
+- `ethone-next/components/GamingCard.tsx` : utilise l'`avatarUrl` du profil Minecraft renvoyé par l'API (`crafatar.com`) en priorité, avec un fallback `mc-heads.net` ; remplacement de l'image `<img>` par `next/image` ; masque le bloc Serveur quand aucune donnée serveur n'est disponible ; affiche un état vide avec bouton "Configurer Minecraft" quand aucun pseudo n'est lié.
+
 **Migration Next.js : avertissement de perturbation GitHub dans la carte d'intégration**
 
 ### Corrige

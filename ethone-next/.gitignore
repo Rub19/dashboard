@@ -40,6 +40,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# auto-generated build version
+/public/version.json
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

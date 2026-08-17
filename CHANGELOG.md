@@ -4,6 +4,16 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : version checker et notification de mise à jour**
+
+### Corrige
+- `ethone-next/lib/hooks/useVersionChecker.ts` : hook client qui interroge `/api/version` puis `/version.json` pour détecter un nouveau build, avec cooldown, intervalle 5 minutes et re-vérification au focus/visibilité.
+- `ethone-next/components/VersionUpdateToast.tsx` : toast fixe en haut à droite affichant la version détectée, avec actions "Mettre à jour" (purge Service Worker / caches + reload) ou "Plus tard".
+- `ethone-next/app/api/version/route.ts` : route API statique retournant `version` et `buildAt` avec `Cache-Control: no-store`.
+- `ethone-next/next.config.ts` : génération de `public/version.json` au build à partir des variables d’environnement `CF_PAGES_COMMIT_SHA`, `VERCEL_GIT_COMMIT_SHA` ou `NEXT_PUBLIC_APP_VERSION`.
+- `ethone-next/app/layout.tsx` : intégration de `<VersionUpdateToast />` dans l’arbre de providers.
+- `ethone-next/.gitignore` : ignore `public/version.json` auto-généré.
+
 **Migration Next.js : restauration i18n et contrôles des réglages**
 
 ### Corrige

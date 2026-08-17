@@ -8,6 +8,7 @@ import { FocusProvider } from "@/components/FocusProvider";
 import { SoundProvider } from "@/lib/sound";
 import { ToastProvider } from "@/components/ui/ToastContext";
 import OfflineIndicator from "@/components/OfflineIndicator";
+import VersionUpdateToast from "@/components/VersionUpdateToast";
 import HtmlLang from "@/components/HtmlLang";
 import CommandPaletteProvider from "@/components/CommandPaletteProvider";
 import OAuthHandler from "@/components/OAuthHandler";
@@ -75,6 +76,7 @@ export default function RootLayout({
                       <HtmlLang />
                       <OfflineIndicator />
                       <ServiceWorker />
+                      <VersionUpdateToast />
                       <OAuthHandler />
                       <BootProvider>{children}</BootProvider>
                     </ToastProvider>

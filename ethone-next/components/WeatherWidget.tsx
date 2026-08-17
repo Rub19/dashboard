@@ -228,7 +228,7 @@ function WeatherSkeleton({ compact }: { compact?: boolean }) {
           <div key={i} className="h-7 w-20 rounded-full bg-white/[0.04]" />
         ))}
       </div>
-      <div className={`grid gap-2 ${compact ? "grid-cols-3" : "grid-cols-3 md:grid-cols-5"}`}>
+      <div className="grid grid-cols-5 gap-2">
         {[...Array(compact ? 3 : 5)].map((_, i) => (
           <div key={i} className="h-16 rounded-xl bg-white/[0.04]" />
         ))}
@@ -255,7 +255,7 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
   const aqiLabel = toStr(data?.airQualityLabel);
   const sunrise = toStr(data?.sunrise);
   const sunset = toStr(data?.sunset);
-  const forecast = useMemo(() => (data?.forecast || []).slice(0, compact ? 3 : 5), [data?.forecast, compact]);
+  const forecast = useMemo(() => (data?.forecast || []).slice(0, 5), [data?.forecast]);
 
   const { gradient, border, glow } = weatherAmbience(code, isDay);
   const iconColor = weatherIconColor(code, isDay);
@@ -291,7 +291,7 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
 
   return (
     <div
-      className={`group relative h-auto min-h-0 overflow-hidden rounded-2xl border bg-zinc-950/70 p-5 backdrop-blur-2xl transition-colors ${gradient} ${border} ${
+      className={`group relative h-full min-h-0 overflow-hidden rounded-2xl border bg-zinc-950/70 p-5 shadow-xl shadow-black/50 backdrop-blur-2xl transition-colors ${gradient} ${border} ${
         className || ""
       }`}
     >
@@ -301,7 +301,7 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
         aria-hidden="true"
       />
 
-      <div className="relative z-10 flex min-h-0 flex-col">
+      <div className="relative z-10 flex h-full min-h-0 flex-col">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 md:gap-4">
@@ -397,7 +397,7 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
         {/* Forecast pills */}
         {forecast.length > 0 && (
           <div className={`mt-auto ${compact ? "pt-2" : "pt-4"}`}>
-            <div className={`grid gap-2 ${compact ? "grid-cols-3" : "grid-cols-3 md:grid-cols-5"}`}>
+            <div className="grid grid-cols-5 gap-2">
               {forecast.map((day, i) => {
                 const dayIcon = weatherIconFromCode(day.weatherCode, day.condition, true);
                 return <ForecastPill key={i} day={day} icon={dayIcon} colorClass={weatherIconColor(day.weatherCode, true)} compact={compact} />;

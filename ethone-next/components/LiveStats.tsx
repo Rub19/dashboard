@@ -1,89 +1,58 @@
 "use client";
 
-import Card3D from "@/components/Card3D";
+import { Activity } from "lucide-react";
 import LiveFreshness from "@/components/LiveFreshness";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { useLiveData } from "@/lib/hooks/useLiveData";
+import type { LiveRecord } from "@/lib/hooks/useLiveData";
 
-export default function LiveStats({ className = "" }: { className?: string }) {
+export type LiveStatsProps = {
+  records?: LiveRecord[];
+  updatedAt?: Date | null;
+  loading?: boolean;
+  className?: string;
+};
+
+export default function LiveStats({ records = [], updatedAt, loading, className = "" }: LiveStatsProps) {
   const i18n = useI18n();
-  const {
-    records,
-    loading,
-    updatedAt,
-    lastfmTopArtists,
-    lastfmTopTracks,
-    steamRecentGames,
-    steamOwnedGames,
-    minecraftNameHistory,
-  } = useLiveData(60000);
 
   const byStatus = {
     connected: records.filter((r) => r.status === "connected").length,
     loading: records.filter((r) => r.status === "loading").length,
-    empty: records.filter((r) => r.status === "empty").length,
     error: records.filter((r) => r.status === "error").length,
   };
 
-  const historyCounts = {
-    topArtists: lastfmTopArtists?.length ?? 0,
-    topTracks: lastfmTopTracks?.length ?? 0,
-    recentGames: steamRecentGames?.length ?? 0,
-    ownedGames: steamOwnedGames?.length ?? 0,
-    nameHistory: minecraftNameHistory?.length ?? 0,
-  };
-
-  const hasHistory = Object.values(historyCounts).some((n) => n > 0);
+  const statItems = [
+    { label: i18n("connected"), value: byStatus.connected, color: "text-emerald-400" },
+    { label: i18n("pending"), value: byStatus.loading, color: "text-cyan-400" },
+    { label: i18n("events"), value: records.length, color: "text-zinc-200" },
+    { label: i18n("error"), value: byStatus.error, color: "text-rose-400" },
+  ];
 
   return (
-    <Card3D className={className}>
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-[var(--foreground)]">{i18n("liveStats")}</h2>
+    <div
+      className={`w-full rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-4 shadow-xl backdrop-blur-2xl ${className}`}
+    >
+      <div className="flex items-center justify-between gap-3 border-b border-white/[0.04] pb-3">
+        <div className="flex items-center gap-2">
+          <Activity className="h-4 w-4 text-emerald-400" />
+          <span className="text-xs font-bold uppercase tracking-wider text-white">{i18n("liveStats")}</span>
+        </div>
         <LiveFreshness updatedAt={updatedAt} />
       </div>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-[var(--panel-radius)] bg-emerald-500/10 p-3 text-emerald-400">
-          <p className="text-2xl font-bold">{loading ? "-" : byStatus.connected}</p>
-          <p className="text-xs">{i18n("connected")}</p>
-        </div>
-        <div className="rounded-[var(--panel-radius)] bg-sky-500/10 p-3 text-sky-400">
-          <p className="text-2xl font-bold">{loading ? "-" : byStatus.loading}</p>
-          <p className="text-xs">{i18n("loading")}</p>
-        </div>
-        <div className="rounded-[var(--panel-radius)] bg-[var(--panel-bg)] p-3 text-[var(--muted)]">
-          <p className="text-2xl font-bold">{loading ? "-" : byStatus.empty}</p>
-          <p className="text-xs">{i18n("empty")}</p>
-        </div>
-        <div className="rounded-[var(--panel-radius)] bg-red-500/10 p-3 text-red-400">
-          <p className="text-2xl font-bold">{loading ? "-" : byStatus.error}</p>
-          <p className="text-xs">{i18n("error")}</p>
-        </div>
-      </div>
 
-      {hasHistory && (
-        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-5">
-          <div className="rounded-[var(--panel-radius)] bg-rose-500/10 p-3 text-rose-400">
-            <p className="text-xl font-bold">{historyCounts.topArtists}</p>
-            <p className="text-[10px]">{i18n("topArtists")}</p>
+      <div className="mt-3 grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+        {statItems.map((item) => (
+          <div
+            key={item.label}
+            className="flex items-center justify-between rounded-xl border border-white/[0.05] bg-white/[0.02] p-3"
+          >
+            <span className="text-[10px] uppercase text-zinc-400">{item.label}</span>
+            <span className={`font-mono text-xl font-bold ${item.color}`}>
+              {loading ? "-" : item.value}
+            </span>
           </div>
-          <div className="rounded-[var(--panel-radius)] bg-rose-500/10 p-3 text-rose-400">
-            <p className="text-xl font-bold">{historyCounts.topTracks}</p>
-            <p className="text-[10px]">{i18n("topTracks")}</p>
-          </div>
-          <div className="rounded-[var(--panel-radius)] bg-sky-500/10 p-3 text-sky-400">
-            <p className="text-xl font-bold">{historyCounts.recentGames}</p>
-            <p className="text-[10px]">{i18n("recentGames")}</p>
-          </div>
-          <div className="rounded-[var(--panel-radius)] bg-sky-500/10 p-3 text-sky-400">
-            <p className="text-xl font-bold">{historyCounts.ownedGames}</p>
-            <p className="text-[10px]">{i18n("ownedGames")}</p>
-          </div>
-          <div className="rounded-[var(--panel-radius)] bg-emerald-500/10 p-3 text-emerald-400">
-            <p className="text-xl font-bold">{historyCounts.nameHistory}</p>
-            <p className="text-[10px]">{i18n("nameHistory")}</p>
-          </div>
-        </div>
-      )}
-    </Card3D>
+        ))}
+      </div>
+    </div>
   );
 }

@@ -5,9 +5,6 @@ import dynamic from "next/dynamic";
 import { LayoutGrid } from "lucide-react";
 import BentoCard from "@/components/BentoCard";
 import BrandMark from "@/components/BrandMark";
-import WeatherWidget, { type WeatherData } from "@/components/WeatherWidget";
-import GamingCard from "@/components/GamingCard";
-import SocialDiscordCard from "@/components/SocialDiscordCard";
 import HeroBriefingCard from "@/components/HeroBriefingCard";
 import SystemControlCard from "@/components/SystemControlCard";
 import { DayTimelineCard, ProjectsTasksCard, RecentNotesCard } from "@/components/ProductivityCards";
@@ -20,7 +17,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useFocus } from "@/components/FocusProvider";
 import { Icon } from "@/lib/icons";
 
-const LiveStats = dynamic(() => import("@/components/LiveStats"));
+const LiveBentoGrid = dynamic(() => import("@/components/LiveBentoGrid"));
 const BillsWidget = dynamic(() => import("@/components/BillsWidget"));
 const BrainBriefingPanel = dynamic(() => import("@/components/BrainBriefingPanel"));
 
@@ -31,7 +28,6 @@ export default function DashboardOverview() {
   const { settings, update: updateSettings } = useSettings();
   const { greeting, dashboard, nowPlaying, loading, error } = useHomeData();
   const live = useLiveData();
-  const weather = live.weather as WeatherData | null;
   const { unread: unreadMail, loading: mailLoading } = useMail();
   const { items: tasks } = useItems("tasks");
   const { items: notes } = useItems("notes");
@@ -51,9 +47,6 @@ export default function DashboardOverview() {
       { id: "brain", label: i18n("brain"), icon: "brain" },
       { id: "bills", label: i18n("billsTitle"), icon: "bills" },
       { id: "live", label: i18n("live"), icon: "radio" },
-      { id: "minecraft", label: "Minecraft", icon: "gamepad-2" },
-      { id: "weather", label: i18n("weather"), icon: "cloudSun" },
-      { id: "media", label: i18n("nowPlaying"), icon: "disc" },
     ],
     [i18n]
   );
@@ -213,30 +206,15 @@ export default function DashboardOverview() {
         )}
 
         {!hidden.has("live") && (
-          <BentoCard noHeader className="col-span-12 h-full">
-            <LiveStats className="!h-full !border-0 !bg-transparent !p-0 !shadow-none" />
-          </BentoCard>
-        )}
-
-        {!hidden.has("minecraft") && (
-          <GamingCard minecraft={live.minecraft} className="col-span-12 md:col-span-6 lg:col-span-4 h-full" />
-        )}
-
-        {!hidden.has("weather") && (
-          <BentoCard title={i18n("weather")} icon="cloudSun" className="col-span-12 md:col-span-6 lg:col-span-4">
-            <WeatherWidget
-              data={weather}
-              loading={live.loading && !weather}
-              className="!h-full !max-w-none !min-h-0 !border-0 !bg-transparent !p-0 !shadow-none !overflow-y-auto"
-            />
-          </BentoCard>
-        )}
-
-        {!hidden.has("media") && (
-          <SocialDiscordCard
+          <LiveBentoGrid
+            nowPlaying={live.nowPlaying}
             lanyard={live.lanyard}
-            nowPlaying={nowPlaying}
-            className="col-span-12 md:col-span-6 lg:col-span-4 h-full"
+            weather={live.weather}
+            minecraft={live.minecraft}
+            records={live.records}
+            updatedAt={live.updatedAt}
+            loading={live.loading}
+            className="col-span-12 h-full"
           />
         )}
       </div>

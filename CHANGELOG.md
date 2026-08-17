@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Worker : correction de la sauvegarde des clés fournisseur (Twitch, etc.)**
+
+### Corrige
+- `worker/src/routes/provider-credentials.js` : ajout du paramètre `on_conflict=owner_id,provider` sur l'appel Supabase pour transformer l'insert en `upsert` et éviter la violation d'unicité lors de l'enregistrement d'une clé déjà existante.
+- `worker/src/services/ai-credential-vault.js` : même correction pour `saveUserCredential` afin d'upserter les credentials chiffrés des providers IA sans conflit.
+
 **Version : passage en 1.5.0**
 
 ### Corrige

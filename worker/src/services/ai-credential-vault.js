@@ -53,7 +53,7 @@ export async function saveUserCredential(env, userId, provider, credential) {
   const encrypted = await encryptCredential(env, credential);
   await supabaseRequest(
     env,
-    "/rest/v1/user_provider_credentials",
+    "/rest/v1/user_provider_credentials?on_conflict=owner_id,provider",
     {
       method: "POST",
       headers: { Prefer: "resolution=merge-duplicates" },

@@ -66,7 +66,7 @@ export async function providerCredentialsRoute({ request, env, auth, url }) {
       ? await encryptCredential(env, credential)
       : credential;
 
-    await supabaseRequest(env, "/rest/v1/user_provider_credentials", {
+    await supabaseRequest(env, "/rest/v1/user_provider_credentials?on_conflict=owner_id,provider", {
       method: "POST",
       headers: { Prefer: "resolution=merge-duplicates" },
       body: {

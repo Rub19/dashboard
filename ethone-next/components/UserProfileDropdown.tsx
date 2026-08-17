@@ -25,7 +25,11 @@ import { useActiveProfile, useSettings } from "@/components/SettingsProvider";
 import { useProfile } from "@/lib/hooks/useProfile";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
-import { CHANGELOG, CHANGELOG_BY_LANG, type ChangelogEntry } from "@/data/changelog";
+import {
+  CHANGELOG,
+  CHANGELOG_BY_LANG,
+  type ChangelogEntry,
+} from "@/data/changelog";
 
 function initials(name?: string) {
   if (!name) return "E";
@@ -68,7 +72,11 @@ export default function UserProfileDropdown() {
   const { profile: publicProfile } = useProfile();
   const { settings, update } = useSettings();
 
-  const displayName = publicProfile?.display_name || activeProfile?.name || user?.email || i18n("guest");
+  const displayName =
+    publicProfile?.display_name ||
+    activeProfile?.name ||
+    user?.email ||
+    i18n("guest");
   const avatarUrl = publicProfile?.avatar_url;
   const email = user?.email || "";
 
@@ -93,7 +101,10 @@ export default function UserProfileDropdown() {
   useEffect(() => {
     if (!open) return;
     function onClick(e: MouseEvent) {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(e.target as Node)
+      ) {
         setOpen(false);
       }
     }
@@ -223,9 +234,13 @@ export default function UserProfileDropdown() {
           />
         </div>
         <div className="hidden flex-col text-left pr-1.5 sm:flex">
-          <span className="text-xs font-bold leading-tight text-white">{displayName}</span>
+          <span className="text-xs font-bold leading-tight text-white">
+            {displayName}
+          </span>
         </div>
-        <ChevronDown className={`h-3 w-3 text-zinc-500 transition-transform ${open ? "rotate-180" : ""}`} />
+        <ChevronDown
+          className={`h-3 w-3 text-zinc-500 transition-transform ${open ? "rotate-180" : ""}`}
+        />
       </button>
 
       {/* Dropdown */}
@@ -252,7 +267,9 @@ export default function UserProfileDropdown() {
                     className="h-full w-full rounded-xl object-cover"
                   />
                 ) : (
-                  <span className="text-sm font-bold">{initials(displayName)}</span>
+                  <span className="text-sm font-bold">
+                    {initials(displayName)}
+                  </span>
                 )}
                 <span
                   className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-zinc-950 ${statusConfig[currentStatus].color}`}
@@ -261,7 +278,9 @@ export default function UserProfileDropdown() {
 
               <div className="flex min-w-0 flex-1 flex-col">
                 <div className="flex items-center justify-between">
-                  <span className="truncate text-xs font-bold text-white">{displayName}</span>
+                  <span className="truncate text-xs font-bold text-white">
+                    {displayName}
+                  </span>
                 </div>
                 {email && (
                   <button
@@ -297,7 +316,9 @@ export default function UserProfileDropdown() {
                       : "text-zinc-400 hover:bg-white/[0.03] hover:text-white"
                   }`}
                 >
-                  <span className={`h-1.5 w-1.5 rounded-lg ${statusConfig[st].color}`} />
+                  <span
+                    className={`h-1.5 w-1.5 rounded-lg ${statusConfig[st].color}`}
+                  />
                   <span>{statusConfig[st].label}</span>
                 </button>
               ))}
@@ -380,9 +401,13 @@ export default function UserProfileDropdown() {
                   <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-rose-500/30 bg-rose-500/15 text-rose-400 transition-transform group-hover:scale-105">
                     <LogOut className="h-3.5 w-3.5" />
                   </div>
-                  <span className="font-semibold">{i18n("signOut") || "Se déconnecter"}</span>
+                  <span className="font-semibold">
+                    {i18n("signOut") || "Se déconnecter"}
+                  </span>
                 </div>
-                <span className="font-mono text-[10px] text-rose-400/60">{i18n("quit") || "Quitter"}</span>
+                <span className="font-mono text-[10px] text-rose-400/60">
+                  {i18n("quit") || "Quitter"}
+                </span>
               </button>
             </div>
           </motion.div>
@@ -411,12 +436,17 @@ export default function UserProfileDropdown() {
                   </div>
                   <div>
                     <h3 className="flex items-center gap-2 text-sm font-bold text-white">
-                      <span>{i18n("changelogTitle") || "Changelog ETHONE OS"}</span>
+                      <span>
+                        {i18n("changelogTitle") || "Changelog ETHONE OS"}
+                      </span>
                       <span className="rounded-lg border border-purple-500/25 bg-purple-500/15 px-2 py-0.5 font-mono text-[10px] text-purple-300">
                         {VERSION_LABEL}
                       </span>
                     </h3>
-                    <p className="text-[11px] text-zinc-400">{i18n("changelogDescription") || "Historique des mises à jour"}</p>
+                    <p className="text-[11px] text-zinc-400">
+                      {i18n("changelogDescription") ||
+                        "Historique des mises à jour"}
+                    </p>
                   </div>
                 </div>
                 <button
@@ -436,10 +466,14 @@ export default function UserProfileDropdown() {
                     className={`flex flex-col gap-2.5 rounded-xl border border-white/[0.05] bg-white/[0.02] p-4 ${index > 0 ? "opacity-70" : ""}`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className={`text-xs font-bold ${index === 0 ? "text-emerald-400" : "text-zinc-300"}`}>
+                      <span
+                        className={`text-xs font-bold ${index === 0 ? "text-emerald-400" : "text-zinc-300"}`}
+                      >
                         {entry.version} — {entry.title}
                       </span>
-                      <span className="font-mono text-[10px] text-zinc-500">{formatDate(entry.date, settings.language)}</span>
+                      <span className="font-mono text-[10px] text-zinc-500">
+                        {formatDate(entry.date, settings.language)}
+                      </span>
                     </div>
                     <ul className="flex flex-col gap-1.5 text-xs text-zinc-300">
                       {entry.items.map((item, i) => (

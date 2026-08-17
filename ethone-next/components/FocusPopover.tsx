@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFloating, offset, flip, shift, autoUpdate, FloatingPortal } from "@floating-ui/react";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -23,17 +23,21 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
   const { state, start, pause, resume, stop, skip } = useFocus();
   const panelRef = useRef<HTMLDivElement | null>(null);
 
-  const { refs, floatingStyles, isPositioned } = useFloating({
+  const { refs, floatingStyles, isPositioned, update: recalculate } = useFloating({
     open,
     onOpenChange: onClose,
     placement: "bottom",
     strategy: "fixed",
     whileElementsMounted: autoUpdate,
     middleware: [offset(8), flip({ padding: 8 }), shift({ padding: 8 })],
-    elements: {
-      reference: referenceRef ?? undefined,
-    },
   });
+
+  useLayoutEffect(() => {
+    if (referenceRef) {
+      refs.setReference(referenceRef);
+      recalculate?.();
+    }
+  }, [referenceRef, refs, recalculate]);
 
   const getFocusable = useCallback(() => {
     if (!panelRef.current) return [];
@@ -107,6 +111,9 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
   const setRefs = (el: HTMLDivElement | null) => {
     panelRef.current = el;
     refs.setFloating(el as unknown as HTMLElement);
+    if (el) {
+      recalculate?.();
+    }
   };
 
   return (

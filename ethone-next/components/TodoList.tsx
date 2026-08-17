@@ -1,0 +1,109 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { CheckCircle2 } from "lucide-react";
+import { useI18n } from "@/lib/hooks/useI18n";
+import TasksCard, { type Task } from "./TasksCard";
+
+type Filter = "all" | "open" | "done" | "priority";
+
+export type TodoListProps = {
+  tasks: Task[];
+  loading: boolean;
+  onToggle: (id: string, done: boolean) => void;
+  onDelete: (id: string) => void;
+};
+
+export default function TodoList({ tasks, loading, onToggle, onDelete }: TodoListProps) {
+  const i18n = useI18n();
+  const [filter, setFilter] = useState<Filter>("all");
+
+  const tabs: { id: Filter; label: string; count: number }[] = useMemo(() => {
+    const all = tasks.length;
+    const open = tasks.filter((t) => !t.done).length;
+    const done = tasks.filter((t) => t.done).length;
+    const priority = tasks.filter((t) => t.done ? false : ["high", "urgent"].includes(t.data?.priority || "")).length;
+    return [
+      { id: "all", label: i18n("all", "Toutes"), count: all },
+      { id: "open", label: i18n("open", "En cours"), count: open },
+      { id: "done", label: i18n("done", "Terminées"), count: done },
+      { id: "priority", label: i18n("priorities", "Prioritaires"), count: priority },
+    ];
+  }, [tasks, i18n]);
+
+  const filtered = useMemo(() => {
+    if (filter === "all") return tasks;
+    if (filter === "open") return tasks.filter((t) => !t.done);
+    if (filter === "done") return tasks.filter((t) => t.done);
+    if (filter === "priority") return tasks.filter((t) => !t.done && ["high", "urgent"].includes(t.data?.priority || ""));
+    return tasks;
+  }, [tasks, filter]);
+
+  if (loading && tasks.length === 0) {
+    return (
+      <div className="flex items-center justify-center py-10 text-xs text-zinc-400">
+        {i18n("loading", "Chargement...")}
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center gap-1.5 rounded-xl border border-white/[0.04] bg-white/[0.02] p-1 text-[11px]">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => setFilter(tab.id)}
+            className={`rounded-lg px-3 py-1 transition-all ${
+              filter === tab.id
+                ? "border border-white/10 bg-white/[0.08] font-bold text-white shadow-sm"
+                : "text-zinc-400 hover:text-zinc-200"
+            }`}
+          >
+            {tab.label}{" "}
+            <span className="opacity-60">({tab.count})</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <AnimatePresence mode="popLayout" initial={false}>
+          {filtered.length === 0 ? (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              className="flex flex-col items-center justify-center py-10 text-center"
+            >
+              <CheckCircle2 className="mb-2 h-10 w-10 text-zinc-600/50" />
+              <p className="text-xs font-semibold text-zinc-400">
+                {i18n("tasksAllDone", "Toutes vos tâches sont accomplies !")}
+              </p>
+              <p className="mt-0.5 text-[11px] text-zinc-600">
+                {i18n(
+                  "tasksEmptyHint",
+                  "Profitez de votre temps libre ou ajoutez un nouvel objectif."
+                )}
+              </p>
+            </motion.div>
+          ) : (
+            filtered.map((task, index) => (
+              <motion.div
+                key={task.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.15, delay: index * 0.02 }}
+              >
+                <TasksCard task={task} onToggle={onToggle} onDelete={onDelete} />
+              </motion.div>
+            ))
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}

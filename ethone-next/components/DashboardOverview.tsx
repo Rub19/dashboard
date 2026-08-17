@@ -7,10 +7,11 @@ import BentoCard from "@/components/BentoCard";
 import BrandMark from "@/components/BrandMark";
 import HeroBriefingCard from "@/components/HeroBriefingCard";
 import SystemControlCard from "@/components/SystemControlCard";
-import { DayTimelineCard, ProjectsTasksCard, RecentNotesCard } from "@/components/ProductivityCards";
+import { DayTimelineCard, RecentNotesCard } from "@/components/ProductivityCards";
+import TasksWidget from "@/components/TasksWidget";
 import { useHomeData } from "@/lib/hooks/useDashboard";
 import { useLiveData } from "@/lib/hooks/useLiveData";
-import { useMail } from "@/lib/hooks/useMail";
+
 import { useItems } from "@/lib/hooks/useItems";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -28,8 +29,7 @@ export default function DashboardOverview() {
   const { settings, update: updateSettings } = useSettings();
   const { greeting, dashboard, nowPlaying, loading, error } = useHomeData();
   const live = useLiveData();
-  const { unread: unreadMail, loading: mailLoading } = useMail();
-  const { items: tasks } = useItems("tasks");
+  const tasksApi = useItems("tasks");
   const { items: notes } = useItems("notes");
   const { items: events } = useItems("events");
   const focus = useFocus();
@@ -67,13 +67,10 @@ export default function DashboardOverview() {
     [events, today]
   );
 
-  const openTasksList = useMemo(() => tasks.filter((t) => !t.done), [tasks]);
+  const openTasksList = useMemo(() => tasksApi.items.filter((t) => !t.done), [tasksApi.items]);
   const nextTasks = useMemo(() => openTasksList.slice(0, 3), [openTasksList]);
 
   const openTasksCount = openTasksList.length;
-  const totalTasks = openTasksCount + 3;
-  const completed = Math.max(0, totalTasks - openTasksCount);
-  const percentage = Math.round((completed / Math.max(1, totalTasks)) * 100);
 
   function toggleSection(id: string) {
     const next = hidden.has(id)
@@ -178,18 +175,7 @@ export default function DashboardOverview() {
           />
         )}
 
-        {!hidden.has("productivity") && (
-          <ProjectsTasksCard
-            openTasksCount={openTasksCount}
-            completed={completed}
-            totalTasks={totalTasks}
-            percentage={percentage}
-            unreadMail={unreadMail}
-            mailLoading={mailLoading}
-            focus={focus}
-            className="col-span-12 md:col-span-6 lg:col-span-4"
-          />
-        )}
+        {!hidden.has("productivity") && <TasksWidget data={tasksApi} className="col-span-12 md:col-span-6 lg:col-span-4" />}
 
         {!hidden.has("recent") && <RecentNotesCard notes={notes} className="col-span-12 lg:col-span-4" />}
 

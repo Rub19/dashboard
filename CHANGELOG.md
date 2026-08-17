@@ -4,6 +4,15 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : refonte UI du widget Tâches (TasksWidget, TodoList, TasksCard)**
+
+### Corrige
+- `ethone-next/components/TasksWidget.tsx` : nouveau widget Bento glassmorphic sombre avec en-tête icône badge, compteur `done / total`, barre de progression, input d'ajout rapide et intégration de `TodoList`.
+- `ethone-next/components/TodoList.tsx` : filtres pills "Toutes / En cours / Terminées / Prioritaires", liste animée et état vide avec `CheckCircle2`.
+- `ethone-next/components/TasksCard.tsx` : carte de tâche avec tickbox carré arrondi animé, titre barré si terminé, date d'échéance, badge de priorité (rose/ambre/bleu) et action Supprimer au survol.
+- `ethone-next/app/tasks/page.tsx` : page simplifiée utilisant `TasksWidget`.
+- `ethone-next/components/DashboardOverview.tsx` : section productivité remplacée par `TasksWidget` (données partagées via `useItems("tasks")`).
+
 **Migration Next.js : version checker et notification de mise à jour**
 
 ### Corrige

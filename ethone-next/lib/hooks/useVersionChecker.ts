@@ -6,6 +6,7 @@ const STORAGE_KEY = "ethone:version";
 const DISMISS_KEY = "ethone:update-dismissed";
 const CHECK_INTERVAL = 5 * 60_000; // 5 minutes
 const COOLDOWN = 5_000; // 5 seconds
+const DISMISS_COOLDOWN = 60 * 60_000; // 1 hour
 
 export type VersionData = {
   version: string;
@@ -44,12 +45,60 @@ async function fetchVersion(): Promise<VersionData | null> {
   return (await tryFetch("/api/version")) ?? (await tryFetch("/version.json"));
 }
 
+function parseBuildAt(value?: string): number {
+  if (!value) return 0;
+  const ts = new Date(value).getTime();
+  return Number.isNaN(ts) ? 0 : ts;
+}
+
+function isNewerBuild(current: VersionData, remote: VersionData): boolean {
+  if (current.version !== remote.version) return true;
+
+  const currentCommit = current.commit ?? null;
+  const remoteCommit = remote.commit ?? null;
+  if (currentCommit !== remoteCommit) return true;
+
+  const currentAt = parseBuildAt(current.buildAt);
+  const remoteAt = parseBuildAt(remote.buildAt);
+
+  if (currentAt === 0 || remoteAt === 0) {
+    // cannot compare timestamps, fallback to string comparison to avoid false negatives
+    if (current.buildAt !== remote.buildAt) return true;
+  }
+
+  return remoteAt > currentAt;
+}
+
+function loadStored(): VersionData | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as unknown;
+    if (parsed && typeof parsed === "object" && "version" in parsed && typeof (parsed as VersionData).version === "string") {
+      return parsed as VersionData;
+    }
+    // legacy: a plain version string
+    return { version: raw };
+  } catch {
+    return null;
+  }
+}
+
+function saveStored(data: VersionData) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch {}
+}
+
 export function useVersionChecker(): UseVersionChecker {
   const [hasUpdate, setHasUpdate] = useState(false);
   const [currentData, setCurrentData] = useState<VersionData | null>(null);
   const [newData, setNewData] = useState<VersionData | null>(null);
 
-  const initialVersionRef = useRef<string | null>(null);
+  const lastDataRef = useRef<VersionData | null>(null);
+  const newDataRef = useRef<VersionData | null>(null);
   const checkingRef = useRef(false);
   const lastCheckRef = useRef(0);
 
@@ -58,6 +107,18 @@ export function useVersionChecker(): UseVersionChecker {
     try {
       localStorage.setItem(DISMISS_KEY, Date.now().toString());
     } catch {}
+  }, []);
+
+  const setAsCurrent = useCallback((data: VersionData) => {
+    lastDataRef.current = data;
+    setCurrentData(data);
+    saveStored(data);
+  }, []);
+
+  const setAsNew = useCallback((data: VersionData) => {
+    newDataRef.current = data;
+    setNewData(data);
+    setHasUpdate(true);
   }, []);
 
   const check = useCallback(async () => {
@@ -73,44 +134,40 @@ export function useVersionChecker(): UseVersionChecker {
       const remote = await fetchVersion();
       if (!remote?.version) return;
 
-      if (!initialVersionRef.current) {
-        initialVersionRef.current = remote.version;
-        setCurrentData(remote);
-        try {
-          localStorage.setItem(STORAGE_KEY, remote.version);
-        } catch {}
+      const current = lastDataRef.current;
+      if (!current) {
+        setAsCurrent(remote);
         return;
       }
 
-      if (remote.version !== initialVersionRef.current && remote.version !== newData?.version) {
-        try {
-          const dismissedAt = Number(localStorage.getItem(DISMISS_KEY) || "0");
-          if (now - dismissedAt > 60 * 60_000) {
-            // dismissed more than 1 hour ago
-            setNewData(remote);
-            setHasUpdate(true);
-          }
-        } catch {
-          setNewData(remote);
-          setHasUpdate(true);
+      if (isNewerBuild(current, remote)) {
+        if (
+          newDataRef.current &&
+          newDataRef.current.version === remote.version &&
+          newDataRef.current.commit === remote.commit &&
+          newDataRef.current.buildAt === remote.buildAt
+        ) {
+          // same pending update already surfaced
+          return;
+        }
+
+        const dismissedAt = Number(localStorage.getItem(DISMISS_KEY) || "0");
+        if (now - dismissedAt > DISMISS_COOLDOWN) {
+          setAsNew(remote);
         }
       }
     } finally {
       checkingRef.current = false;
     }
-  }, [newData?.version]);
+  }, [setAsCurrent, setAsNew]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        initialVersionRef.current = stored;
-        setCurrentData({ version: stored });
-      }
-    } catch {
-      initialVersionRef.current = null;
+    const stored = loadStored();
+    if (stored) {
+      lastDataRef.current = stored;
+      setCurrentData(stored);
     }
 
     const run = () => check();

@@ -1,5 +1,11 @@
-export async function forceAppReload(newVersion?: string | null): Promise<void> {
-  if (newVersion) {
+import type { VersionData } from "@/lib/hooks/useVersionChecker";
+
+export async function forceAppReload(newVersion?: string | null, newData?: VersionData | null): Promise<void> {
+  if (newData) {
+    try {
+      localStorage.setItem("ethone:version", JSON.stringify(newData));
+    } catch {}
+  } else if (newVersion) {
     try {
       localStorage.setItem("ethone:version", newVersion);
     } catch {}

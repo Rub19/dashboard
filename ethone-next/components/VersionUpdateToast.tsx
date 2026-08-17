@@ -9,7 +9,7 @@ import { formatVersion } from "@/lib/version";
 
 export default function VersionUpdateToast() {
   const i18n = useI18n();
-  const { hasUpdate, newVersion, dismiss } = useVersionChecker();
+  const { hasUpdate, newVersion, newData, dismiss } = useVersionChecker();
   const versionLabel = formatVersion(newVersion);
 
   return (
@@ -48,7 +48,7 @@ export default function VersionUpdateToast() {
             <div className="flex shrink-0 items-center gap-2">
               <button
                 type="button"
-                onClick={() => forceAppReload(newVersion)}
+                onClick={() => forceAppReload(newVersion, newData)}
                 className="flex shrink-0 items-center gap-1.5 rounded-xl bg-emerald-500 px-3.5 py-2 text-xs font-bold text-zinc-950 shadow-md shadow-emerald-500/20 transition-all hover:bg-emerald-400 hover:shadow-lg active:scale-95"
               >
                 <RefreshCw className="h-3.5 w-3.5" />

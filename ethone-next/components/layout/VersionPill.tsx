@@ -32,7 +32,7 @@ export default function VersionPill() {
   return (
     <button
       type="button"
-      onClick={() => (hasUpdate ? forceAppReload(data?.version ?? null) : undefined)}
+      onClick={() => (hasUpdate ? forceAppReload(data?.version ?? null, data) : undefined)}
       title={title}
       className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[10px] font-mono font-medium transition-all ${
         hasUpdate

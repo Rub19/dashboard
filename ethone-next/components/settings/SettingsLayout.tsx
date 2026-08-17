@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import {
   Search,
   RotateCcw,
@@ -211,24 +212,23 @@ export default function SettingsLayout() {
       </div>
 
       {/* Onglets */}
-      <div className="flex w-fit items-center gap-1 rounded-xl border border-white/[0.08] bg-zinc-950/70 p-1 backdrop-blur-xl">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => {
-              setActiveTab(tab.id);
-              router.push(`/settings?tab=${tab.id}`, { scroll: false });
-            }}
-            className={`rounded-lg px-4 py-1.5 text-xs font-medium transition-all ${
-              activeTab === tab.id
-                ? "border border-white/10 bg-white/[0.08] text-white shadow-sm"
-                : "text-zinc-400 hover:text-zinc-200"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      <Tabs
+        value={activeTab}
+        onValueChange={(tab) => {
+          setActiveTab(tab);
+          router.push(`/settings?tab=${tab}`, { scroll: false });
+        }}
+        variant="pill"
+        className="w-fit"
+      >
+        <TabsList className="backdrop-blur-xl">
+          {TABS.map((tab) => (
+            <TabsTrigger key={tab.id} value={tab.id}>
+              {tab.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
 
       <AnimatePresence mode="wait">
         {activeTab === "overview" ? (

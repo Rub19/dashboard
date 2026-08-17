@@ -26,8 +26,16 @@ export function FocusProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!isRestored.current) {
-      focusTimer.restore();
       isRestored.current = true;
+      FocusTimer.loadFromCloud()
+        .then((session) => {
+          if (session) {
+            focusTimer.restore(session, true);
+          } else {
+            focusTimer.restore();
+          }
+        })
+        .catch(() => focusTimer.restore());
     }
     return focusTimer.subscribe(setState);
   }, []);

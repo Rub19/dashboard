@@ -1,4 +1,8 @@
+import { supabase } from "./supabase";
+import { useSyncStore } from "./stores/sync";
+
 const SESSION_KEY = "ethone-focus-session-v1";
+const CLOUD_SYNC_INTERVAL = 1000; // 1s debounce for continuous ticks
 
 export type FocusPhase = "idle" | "focus" | "shortBreak" | "longBreak";
 export type FocusPreset = "pomodoro" | "deep-work" | "sprint" | "custom" | "quick";
@@ -46,6 +50,9 @@ export class FocusTimer {
   private restored = false;
   private lastTick = 0;
   private activeConfig: PresetConfig = PRESETS.pomodoro;
+  private cloudPersistTimeout: number | null = null;
+  private sessionForCloud: FocusSession | null = null;
+  private isRestoring = false;
 
   constructor() {
     this.state = this.makeState({
@@ -89,64 +96,102 @@ export class FocusTimer {
     };
   }
 
-  restore(): void {
-    if (this.restored) return;
+  static async loadFromCloud(): Promise<FocusSession | null> {
+    useSyncStore.getState().setStatus("pomodoro", "syncing");
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const userId = sessionData?.session?.user?.id;
+      if (!userId) return null;
+
+      const { data, error } = await supabase
+        .from("pomodoro_sessions")
+        .select("data")
+        .eq("user_id", userId)
+        .single();
+
+      if (error || !data?.data) {
+        useSyncStore.getState().setStatus("pomodoro", "idle");
+        return null;
+      }
+      useSyncStore.getState().setStatus("pomodoro", "idle");
+      return data.data as FocusSession;
+    } catch {
+      useSyncStore.getState().setStatus("pomodoro", "error");
+      return null;
+    }
+  }
+
+  restore(session?: FocusSession, fromCloud = false): void {
+    if (this.restored && !session) return;
     this.restored = true;
-    if (typeof window === "undefined") return;
+    this.isRestoring = true;
+    if (typeof window === "undefined") {
+      this.isRestoring = false;
+      return;
+    }
 
     try {
-      const raw = localStorage.getItem(SESSION_KEY);
-      if (!raw) {
-        this.persist();
+      let loaded = session;
+      if (!loaded) {
+        const raw = localStorage.getItem(SESSION_KEY);
+        if (!raw) {
+          this.isRestoring = false;
+          this.persist(fromCloud);
+          return;
+        }
+        loaded = JSON.parse(raw) as FocusSession;
+      }
+
+      if (!loaded || typeof loaded !== "object") {
+        this.isRestoring = false;
+        this.persist(fromCloud);
         return;
       }
 
-      const parsed = JSON.parse(raw) as Partial<FocusSession>;
-      if (!parsed || typeof parsed !== "object") {
-        this.persist();
-        return;
-      }
-
-      const session = parsed as FocusSession;
-      const preset = session.activePreset || "pomodoro";
+      const preset = loaded.activePreset || "pomodoro";
       this.activeConfig = this.configForPreset(preset);
 
       const now = Date.now();
-      const savedLastTick = typeof session.lastTick === "number" && session.lastTick > 0 ? session.lastTick : now;
+      const savedLastTick = typeof loaded.lastTick === "number" && loaded.lastTick > 0 ? loaded.lastTick : now;
       this.lastTick = now;
 
       let elapsed = 0;
-      if (!session.paused && session.phase && session.phase !== "idle") {
+      if (!loaded.paused && loaded.phase && loaded.phase !== "idle") {
         elapsed = Math.floor((now - savedLastTick) / 1000);
       }
 
-      const remaining = Math.max(0, (session.remaining || 0) - elapsed);
+      const remaining = Math.max(0, (loaded.remaining || 0) - elapsed);
 
-      if (session.phase && session.phase !== "idle" && remaining <= 0) {
-        this.advanceFrom(session.phase, session);
+      if (loaded.phase && loaded.phase !== "idle" && remaining <= 0) {
+        this.advanceFrom(loaded.phase, loaded);
+        this.isRestoring = false;
+        this.persist(fromCloud);
+        this.notify();
         return;
       }
 
       this.state = this.makeState({
-        phase: session.phase || "idle",
+        phase: loaded.phase || "idle",
         remaining,
-        total: session.total ?? this.activeConfig.work * 60,
-        paused: session.paused ?? false,
-        activePreset: session.activePreset ?? "",
-        cycle: session.cycle ?? 1,
-        completedPomodoros: session.completedPomodoros ?? 0,
-        completedBreaks: session.completedBreaks ?? 0,
-        totalFocusSeconds: session.totalFocusSeconds ?? 0,
+        total: loaded.total ?? this.activeConfig.work * 60,
+        paused: loaded.paused ?? false,
+        activePreset: loaded.activePreset ?? "",
+        cycle: loaded.cycle ?? 1,
+        completedPomodoros: loaded.completedPomodoros ?? 0,
+        completedBreaks: loaded.completedBreaks ?? 0,
+        totalFocusSeconds: loaded.totalFocusSeconds ?? 0,
       });
 
       if (!this.state.paused && this.state.phase !== "idle") {
         this.startInterval();
       }
 
-      this.persist();
+      this.isRestoring = false;
+      this.persist(fromCloud);
       this.notify();
     } catch {
-      this.persist();
+      this.isRestoring = false;
+      this.persist(fromCloud);
     }
   }
 
@@ -165,6 +210,7 @@ export class FocusTimer {
       this.lastTick = Date.now();
       this.startInterval();
       this.persist();
+      this.flushCloudPersist();
       this.notify();
       return;
     }
@@ -183,6 +229,7 @@ export class FocusTimer {
     this.lastTick = Date.now();
     this.startInterval();
     this.persist();
+    this.flushCloudPersist();
     this.notify();
   }
 
@@ -190,6 +237,7 @@ export class FocusTimer {
     this.stopInterval();
     this.state = this.makeState({ ...this.state, paused: true });
     this.persist();
+    this.flushCloudPersist();
     this.notify();
   }
 
@@ -199,6 +247,7 @@ export class FocusTimer {
     this.lastTick = Date.now();
     this.startInterval();
     this.persist();
+    this.flushCloudPersist();
     this.notify();
   }
 
@@ -214,6 +263,7 @@ export class FocusTimer {
       cycle: 1,
     });
     this.persist();
+    this.flushCloudPersist();
     this.notify();
   }
 
@@ -232,6 +282,7 @@ export class FocusTimer {
     this.lastTick = Date.now();
     this.startInterval();
     this.persist();
+    this.flushCloudPersist();
     this.notify();
   }
 
@@ -292,6 +343,7 @@ export class FocusTimer {
       this.lastTick = Date.now();
       this.startInterval();
       this.persist();
+      this.flushCloudPersist();
       this.notify();
       return;
     }
@@ -309,6 +361,7 @@ export class FocusTimer {
       this.lastTick = Date.now();
       this.startInterval();
       this.persist();
+      this.flushCloudPersist();
       this.notify();
       return;
     }
@@ -326,6 +379,7 @@ export class FocusTimer {
       this.lastTick = Date.now();
       this.startInterval();
       this.persist();
+      this.flushCloudPersist();
       this.notify();
       return;
     }
@@ -367,15 +421,79 @@ export class FocusTimer {
     this.notify();
   }
 
-  private persist(): void {
+  private persist(skipCloud = false): void {
     if (typeof window === "undefined") return;
     try {
       const snapshot = { ...this.state, format: undefined };
       delete (snapshot as Record<string, unknown>).format;
       const session: FocusSession = { ...snapshot, lastTick: this.lastTick };
       localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+
+      if (!skipCloud && !this.isRestoring) {
+        this.sessionForCloud = session;
+        this.queueCloudPersist();
+      }
     } catch {
       // silent
+    }
+  }
+
+  private queueCloudPersist(immediate = false): void {
+    if (this.cloudPersistTimeout !== null) {
+      if (!immediate) return;
+      window.clearTimeout(this.cloudPersistTimeout);
+    }
+    this.cloudPersistTimeout = window.setTimeout(
+      () => this.flushCloudPersist(),
+      immediate ? 0 : CLOUD_SYNC_INTERVAL
+    );
+  }
+
+  private flushCloudPersist(): void {
+    if (this.cloudPersistTimeout) {
+      window.clearTimeout(this.cloudPersistTimeout);
+      this.cloudPersistTimeout = null;
+    }
+    if (this.sessionForCloud) {
+      void this.saveToCloud(this.sessionForCloud);
+      this.sessionForCloud = null;
+    }
+  }
+
+  private async saveToCloud(session: FocusSession): Promise<void> {
+    useSyncStore.getState().setStatus("pomodoro", "syncing");
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const userId = sessionData?.session?.user?.id;
+      if (!userId) return;
+
+      const mode: "work" | "short_break" | "long_break" =
+        session.phase === "shortBreak"
+          ? "short_break"
+          : session.phase === "longBreak"
+          ? "long_break"
+          : "work";
+
+      const isRunning = !session.paused && session.phase !== "idle";
+      const startedAt = isRunning ? new Date(session.lastTick).toISOString() : null;
+
+      const { error } = await supabase.from("pomodoro_sessions").upsert(
+        {
+          user_id: userId,
+          mode,
+          time_remaining_seconds: session.remaining,
+          is_running: isRunning,
+          started_at: startedAt,
+          updated_at: new Date().toISOString(),
+          data: session,
+        },
+        { onConflict: "user_id" }
+      );
+
+      if (error) throw error;
+      useSyncStore.getState().setStatus("pomodoro", "idle");
+    } catch {
+      useSyncStore.getState().setStatus("pomodoro", "error");
     }
   }
 

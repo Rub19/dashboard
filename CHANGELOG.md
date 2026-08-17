@@ -4,6 +4,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : branchement Cloud Sync sur le Focus / Pomodoro**
+
+### Corrige
+- `supabase/migrations/202608310001_pomodoro_sessions_payload.sql` : ajout d'une colonne `data jsonb` à `pomodoro_sessions` pour stocker l'état complet du timer.
+- `ethone-next/lib/focus-timer.ts` : `FocusTimer` sauvegarde l'état dans Supabase (`pomodoro_sessions`) avec debounce 1 s pour les ticks et flush immédiat sur start/pause/resume/stop/skip ; `loadFromCloud` récupère la session distante au démarrage ; `localStorage` reste le fallback offline.
+- `ethone-next/components/FocusProvider.tsx` : charge la session depuis le Cloud au montage, puis restaure le timer localement.
+
 **Migration Next.js : branchement Cloud Sync sur les paramètres**
 
 ### Corrige

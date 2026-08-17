@@ -17,11 +17,11 @@ import {
 import { useLiveWidgetStore } from "@/lib/hooks/useLiveWidgetStore";
 import { useAuth } from "@/components/AuthProvider";
 import { useActiveProfile } from "@/components/SettingsProvider";
+import { useProfile } from "@/lib/hooks/useProfile";
 import { useNotifications } from "@/lib/hooks/useNotifications";
-import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
 import { useLiveData } from "@/lib/hooks/useLiveData";
-import { useItems } from "@/lib/hooks/useItems";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useSyncStore, type SyncState } from "@/lib/stores/sync";
 import { WORKER_URL } from "@/lib/api";
 import VersionPill from "./VersionPill";
 
@@ -89,6 +89,43 @@ function useSessionRole() {
   return { id: "normal" as const, label: "Normal", color: "text-emerald-400" };
 }
 
+function CloudSyncPill({ status, online }: { status: SyncState; online: boolean }) {
+  switch (status) {
+    case "syncing":
+      return (
+        <StatusPill
+          icon={<Loader2 className="h-3.5 w-3.5 animate-spin text-purple-400" />}
+          value="Synchronisation..."
+          tone="info"
+        />
+      );
+    case "error":
+      return (
+        <StatusPill
+          icon={<AlertCircle className="h-3.5 w-3.5 text-red-400" />}
+          value="Erreur sync"
+          tone="error"
+        />
+      );
+    case "offline":
+      return (
+        <StatusPill
+          icon={<WifiOff className="h-3.5 w-3.5 text-amber-400" />}
+          value="Hors ligne"
+          tone="warning"
+        />
+      );
+    default:
+      return (
+        <StatusPill
+          icon={<CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />}
+          value={online ? "Enregistré" : "Prêt"}
+          tone={online ? "success" : "error"}
+        />
+      );
+  }
+}
+
 type StatusPillProps = {
   icon?: React.ReactNode;
   label?: string;
@@ -129,11 +166,9 @@ export default function StatusBar() {
   const pathname = usePathname();
   const { user, signOut } = useAuth();
   const { activeProfile } = useActiveProfile();
+  const { profile: publicProfile } = useProfile();
   const { unreadCount } = useNotifications();
-  const { syncing } = useActivityJournal();
-  const { updatedAt, error: liveError } = useLiveData(300000);
-  const { loading: notesLoading } = useItems("notes");
-  const { loading: tasksLoading } = useItems("tasks");
+  const { error: liveError } = useLiveData(300000);
   const { isOpen, isMinimized, openLive, closeLive } = useLiveWidgetStore();
   const online = useOnlineStatus();
   const { ping, pingging } = usePing();
@@ -141,12 +176,10 @@ export default function StatusBar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const userLabel = activeProfile?.name || user?.email || i18n("guest");
+  const userLabel = publicProfile?.display_name || activeProfile?.name || user?.email || i18n("guest");
   const sessionRole = useSessionRole();
 
-  const saving = notesLoading || tasksLoading;
-  const syncActive = syncing || saving;
-  const syncDone = !syncActive && online && updatedAt;
+  const syncStatus = useSyncStore((s) => s.status);
 
   const systemOk = online && !liveError && unreadCount === 0;
   const alertCount = liveError ? 1 : unreadCount;
@@ -190,19 +223,7 @@ export default function StatusBar() {
             }
           />
 
-          {syncActive ? (
-            <StatusPill
-              icon={<Loader2 className="h-3.5 w-3.5 animate-spin text-purple-400" />}
-              value="Synchronisation..."
-              tone="info"
-            />
-          ) : (
-            <StatusPill
-              icon={<CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />}
-              value={online && syncDone ? "Enregistré" : online ? "Prêt" : "Hors ligne"}
-              tone={online ? "success" : "error"}
-            />
-          )}
+          <CloudSyncPill status={syncStatus} online={online} />
         </div>
 
         <div className="flex min-w-0 items-center gap-2">

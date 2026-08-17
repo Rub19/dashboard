@@ -4,6 +4,18 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : fondation Cloud Sync — settings, tâches, layout et pomodoro dans Supabase**
+
+### Corrige
+- `supabase/migrations/202608290001_cloud_sync_foundation.sql` : nouvelles tables `user_settings`, `desktop_layout`, `tasks` et `pomodoro_sessions`, index et politiques RLS fortes (`auth.uid() = user_id`).
+- `ethone-next/lib/supabase-server.ts` : client Supabase SSR pour Server Actions / Route Handlers.
+- `ethone-next/lib/hooks/useUserSettings.ts` : chargement/écriture depuis `user_settings` avec mises à jour optimistes et canal Realtime.
+- `ethone-next/lib/hooks/useTasks.ts` : CRUD tâches synchronisé via Supabase avec Realtime.
+- `ethone-next/lib/hooks/useDesktopLayout.ts` : chargement/sauvegarde de la disposition Bento depuis `desktop_layout`.
+- `ethone-next/lib/hooks/usePomodoroSession.ts` : session Pomodoro synchronisée depuis `pomodoro_sessions`.
+- `ethone-next/lib/stores/sync.ts` : store global d'état de synchronisation par source.
+- `ethone-next/components/layout/StatusBar.tsx` : badge de sync branché sur le store (`idle / syncing / offline / error`).
+
 **Migration Next.js : sélecteur d'espace de travail Bento et ajustements SidePanel**
 
 ### Corrige

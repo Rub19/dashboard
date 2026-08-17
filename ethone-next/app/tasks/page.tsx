@@ -40,10 +40,27 @@ function getTaskData(task: Task) {
   return task.data || {};
 }
 
-function taskTitleClass(done?: boolean) {
-  return `min-w-0 flex-1 truncate text-xs sm:text-sm font-medium transition-all ${
-    done ? "text-zinc-500 line-through" : "text-zinc-800 group-hover:text-zinc-950 dark:text-zinc-200 dark:group-hover:text-white"
-  }`;
+function TaskTitle({ title, done }: { title: string; done: boolean }) {
+  return (
+    <div className="min-w-0 flex-1">
+      <motion.div
+        initial={false}
+        className={`relative inline-block max-w-full truncate text-xs sm:text-sm font-medium transition-colors duration-300 ${
+          done
+            ? "text-zinc-500 dark:text-zinc-500"
+            : "text-zinc-800 group-hover:text-zinc-950 dark:text-zinc-200 dark:group-hover:text-white"
+        }`}
+      >
+        <span className="relative z-10">{title}</span>
+        <motion.span
+          initial={false}
+          animate={{ scaleX: done ? 1 : 0 }}
+          transition={{ duration: 0.25, ease: "easeOut" }}
+          className="absolute left-0 top-1/2 z-20 h-[1.5px] w-full origin-left -translate-y-1/2 rounded-full bg-current"
+        />
+      </motion.div>
+    </div>
+  );
 }
 
 export default function TasksPage() {
@@ -389,7 +406,11 @@ export default function TasksPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.15, delay: index * 0.02 }}
                 onClick={() => toggleTask(task.id, !!task.done)}
-                className="group flex cursor-pointer items-center justify-between border-b border-zinc-200/60 p-3.5 transition-colors hover:bg-zinc-100/80 last:border-b-0 dark:border-white/[0.04] dark:hover:bg-white/[0.02]"
+                className={`group flex cursor-pointer items-center justify-between border-b p-3.5 transition-colors last:border-b-0 ${
+                  task.done
+                    ? "border-zinc-200/40 bg-zinc-100/40 dark:border-white/[0.03] dark:bg-white/[0.01]"
+                    : "border-zinc-200/60 hover:bg-zinc-100/80 dark:border-white/[0.04] dark:hover:bg-white/[0.02]"
+                }`}
               >
                 <div className="flex min-w-0 flex-1 items-center gap-3">
                   <div onClick={(e) => e.stopPropagation()}>
@@ -408,7 +429,7 @@ export default function TasksPage() {
                     />
                   </div>
 
-                  <span className={taskTitleClass(task.done)}>{task.title}</span>
+                  <TaskTitle title={task.title} done={!!task.done} />
                 </div>
 
                 <div className="flex shrink-0 items-center gap-2">

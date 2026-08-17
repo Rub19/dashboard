@@ -270,11 +270,17 @@ export function useNotifications() {
 
   useEffect(() => {
     const local = load();
-    setItems(local);
+    const withoutDemo = local.filter((n) => !n.demo);
+    if (withoutDemo.length !== local.length) {
+      save(withoutDemo);
+      saveAsync(withoutDemo);
+    }
+    setItems(withoutDemo);
     setLoaded(true);
     loadAsync().then((remote) => {
       if (remote && remote.length > 0) {
-        setItems((prev) => mergeLists(prev, remote));
+        const cleaned = remote.filter((n) => !n.demo);
+        setItems((prev) => mergeLists(prev, cleaned));
       }
     });
 
@@ -321,7 +327,7 @@ export function useNotifications() {
   }, [items, loaded]);
 
   const activeItems = useMemo(
-    () => items.filter((n) => !n.archived && !isSnoozed(n) && !isMuted(n.category)),
+    () => items.filter((n) => !n.demo && !n.archived && !isSnoozed(n) && !isMuted(n.category)),
     [items, isMuted]
   );
 

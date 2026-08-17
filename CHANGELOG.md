@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Version : passage en 1.4.0**
+
+### Corrige
+- `ethone-next/package.json` : version `1.4.0`.
+- `ethone-next/package-lock.json` : synchronisation de la version.
+
 **UI : correction des trous dans la grille des intégrations**
 
 ### Corrige

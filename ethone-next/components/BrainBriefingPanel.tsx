@@ -68,7 +68,7 @@ export default function BrainBriefingPanel() {
         {sections
           .filter((s) => !hidden.has(s.id))
           .map((s) => (
-            <Card3D key={s.id}>
+            <Card3D key={s.id} radius="0.5rem">
               <div className="flex items-center gap-2">
                 <Icon name={s.icon} className="h-4 w-4 text-[var(--accent)]" />
                 <span className="text-xs text-[var(--muted)]">{s.label}</span>
@@ -86,7 +86,7 @@ export default function BrainBriefingPanel() {
               key={s.id}
               type="button"
               onClick={() => toggle(s.id)}
-              className={`rounded-[var(--panel-radius)] border px-2 py-1 text-xs font-medium transition-colors ${
+              className={`rounded border px-2 py-1 text-xs font-medium transition-colors ${
                 hidden.has(s.id)
                   ? "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--muted)]"
                   : "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"

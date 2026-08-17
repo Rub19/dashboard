@@ -1,7 +1,8 @@
 import { httpError } from "../middleware/errors.js";
-import { requireSecret } from "../middleware/validation.js";
+import { PATTERNS, requireSecret } from "../middleware/validation.js";
 import { requestExternal } from "../utils/external-request.js";
 import { safeNumber, safePublicUrl, safeText } from "../utils/normalize.js";
+import { decryptSessionUrl, encryptSessionUrl } from "./upload-session.js";
 import { deleteOAuthToken, getOAuthToken, setOAuthToken } from "./supabase-client.js";
 
 const TOKEN_ORIGIN = "https://oauth2.googleapis.com";
@@ -357,6 +358,115 @@ async function uploadToSession(env, sessionUrl, { size, mimeType, body }) {
   } finally {
     clearTimeout(timer);
   }
+}
+
+function parseContentRange(header) {
+  const match = /^bytes\s+(\d+)-(\d+)\/(\d+)$/.exec(String(header || "").trim());
+  if (!match) return null;
+  return {
+    start: Number(match[1]),
+    end: Number(match[2]),
+    total: Number(match[3])
+  };
+}
+
+async function sendChunkToSession(env, sessionUrl, { start, end, total, body }) {
+  const chunkSize = end - start + 1;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), configuredTimeout(env, DEFAULT_UPLOAD_TIMEOUT_MS * 2));
+  try {
+    const response = await fetcher(env)(sessionUrl, {
+      method: "PUT",
+      headers: {
+        "content-range": `bytes ${start}-${end}/${total}`,
+        "content-length": String(chunkSize)
+      },
+      body,
+      redirect: "manual",
+      signal: controller.signal,
+      duplex: "half"
+    });
+    if (response.status === 308) {
+      const rangeHeader = response.headers.get("range");
+      let uploaded = start;
+      if (rangeHeader) {
+        const match = /^bytes=(\d+)-(\d+)$/.exec(rangeHeader);
+        if (match) uploaded = Number(match[2]) + 1;
+      }
+      await response.body?.cancel?.().catch(() => {});
+      return { complete: false, uploaded, total };
+    }
+    if (!response.ok) {
+      await response.body?.cancel?.().catch(() => {});
+      if (response.status === 401 || response.status === 403) throw httpError("PROVIDER_REQUEST_REJECTED", 502, { retryable: false });
+      throw httpError("UPSTREAM_UNAVAILABLE", 503, { retryable: response.status >= 500 || response.status === 429 });
+    }
+    const contentType = String(response.headers.get("content-type") || "").toLowerCase();
+    if (!contentType.includes("application/json")) {
+      await response.body?.cancel?.().catch(() => {});
+      throw httpError("UPSTREAM_INVALID_RESPONSE", 502);
+    }
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : null;
+    return { complete: true, file: normalizeFile(data) };
+  } catch (error) {
+    if (error?.name === "AbortError") throw httpError("UPSTREAM_TIMEOUT", 504, { retryable: true });
+    if (error?.code) throw error;
+    throw httpError("UPSTREAM_UNAVAILABLE", 503, { retryable: true });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+export async function uploadChunk(env, userId, clientId, request) {
+  if (!PATTERNS.googleClientId.test(clientId)) throw httpError("INVALID_PARAMETER", 400);
+
+  const name = safeText(request.headers.get("x-ethone-file-name"), 500);
+  const mimeType = safeText(request.headers.get("x-ethone-file-mime"), 120);
+  const parentId = safeText(request.headers.get("x-ethone-file-parent"), 128);
+  const fileSize = Number(request.headers.get("x-ethone-file-size"));
+  const contentRangeHeader = request.headers.get("content-range");
+  const contentLengthHeader = request.headers.get("content-length");
+  const contentLength = contentLengthHeader === null ? NaN : Number(contentLengthHeader);
+
+  if (!name || !Number.isSafeInteger(fileSize) || fileSize <= 0) throw httpError("INVALID_PARAMETER", 400);
+
+  let start;
+  let end;
+  let total;
+  if (contentRangeHeader) {
+    const parsed = parseContentRange(contentRangeHeader);
+    if (!parsed || parsed.total !== fileSize) throw httpError("INVALID_PARAMETER", 400);
+    ({ start, end, total } = parsed);
+    if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) || !Number.isSafeInteger(total)) throw httpError("INVALID_PARAMETER", 400);
+    if (start < 0 || end < start || end >= total) throw httpError("INVALID_PARAMETER", 400);
+  } else {
+    start = 0;
+    end = fileSize - 1;
+    total = fileSize;
+  }
+
+  const chunkSize = end - start + 1;
+  if (Number.isFinite(contentLength) && contentLength !== chunkSize) throw httpError("INVALID_PARAMETER", 400);
+
+  const maxBytes = configuredMaxUploadBytes(env);
+  if (chunkSize > maxBytes) throw httpError("FILE_TOO_LARGE", 413, { retryable: false });
+  if (!request.body) throw httpError("INVALID_REQUEST", 400);
+
+  const token = safeText(request.headers.get("x-ethone-upload-token"), 4000);
+  let sessionUrl;
+  if (token) {
+    sessionUrl = await decryptSessionUrl(env, token);
+    if (!safePublicUrl(sessionUrl, ["googleapis.com"])) throw httpError("INVALID_PARAMETER", 400);
+  } else {
+    const accessToken = await validAccessToken(env, userId, clientId);
+    sessionUrl = await initResumableUpload(env, accessToken, { name, mimeType, size: total, parentId: parentId || null });
+  }
+
+  const result = await sendChunkToSession(env, sessionUrl, { start, end, total, body: request.body });
+  if (result.complete) return { complete: true, file: result.file };
+  const newToken = await encryptSessionUrl(env, sessionUrl);
+  return { complete: false, token: newToken, uploaded: result.uploaded, total: result.total };
 }
 
 export async function uploadFile(env, userId, clientId, request) {

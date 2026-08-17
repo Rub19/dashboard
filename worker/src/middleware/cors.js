@@ -2,7 +2,19 @@ import { httpError } from "./errors.js";
 import { emptyResponse } from "../utils/response.js";
 
 const METHODS = Object.freeze(["GET", "POST", "OPTIONS"]);
-const HEADERS = Object.freeze(["authorization", "content-type", "if-none-match", "x-request-id"]);
+const HEADERS = Object.freeze([
+  "authorization",
+  "content-range",
+  "content-type",
+  "if-none-match",
+  "x-ethone-client-id",
+  "x-ethone-file-mime",
+  "x-ethone-file-name",
+  "x-ethone-file-parent",
+  "x-ethone-file-size",
+  "x-ethone-upload-token",
+  "x-request-id"
+]);
 
 function configuredOrigins(env) {
   const origins = String(env.ALLOWED_ORIGINS || "https://ethone.dev")
@@ -42,7 +54,7 @@ function corsHeaders(cors) {
     headers.set("access-control-allow-origin", cors.origin);
     headers.set("access-control-allow-methods", METHODS.join(", "));
     headers.set("access-control-allow-headers", HEADERS.join(", "));
-    headers.set("access-control-expose-headers", "X-Request-Id, Retry-After");
+    headers.set("access-control-expose-headers", "X-Request-Id, Retry-After, X-Ethone-Upload-Token");
     headers.set("access-control-max-age", "600");
   }
   return headers;

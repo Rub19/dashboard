@@ -31,7 +31,7 @@ test("CORS allows the production origin and rejects unknown origins", async () =
   const allowed = await invoke("/health", { auth: false, origin: "https://ethone.dev" });
   assert.equal(allowed.status, 200);
   assert.equal(allowed.headers.get("vary"), "Origin");
-  assert.equal(allowed.headers.get("access-control-expose-headers"), "X-Request-Id, Retry-After");
+  assert.equal(allowed.headers.get("access-control-expose-headers"), "X-Request-Id, Retry-After, X-Ethone-Upload-Token");
   const denied = await invoke("/health", { auth: false, origin: "https://attacker.example" });
   assert.equal(denied.status, 403);
   assert.equal((await payload(denied)).error.code, "CORS_ORIGIN_DENIED");

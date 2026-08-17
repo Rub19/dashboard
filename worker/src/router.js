@@ -178,6 +178,7 @@ export const ROUTES = Object.freeze([
   route("google-drive.files.delete", "/api/google-drive/files/delete", googleDriveFileDeleteRoute, { method: "DELETE", service: "google-drive", rateLimit: "strict" }),
   route("google-drive.quota", "/api/google-drive/quota", googleDriveQuotaRoute, { service: "google-drive" }),
   route("google-drive.upload", "/api/google-drive/upload", googleDriveUploadRoute, { method: "POST", service: "google-drive", rateLimit: "strict" }),
+  route("google-drive.upload.chunk", "/api/google-drive/upload/chunk", googleDriveUploadRoute, { method: "POST", service: "google-drive", rateLimit: "strict" }),
   route("google-drive.download", "/api/google-drive/download", googleDriveDownloadRoute, { service: "google-drive" }),
   route("google-drive.oauth.disconnect", "/api/google-drive/oauth/disconnect", googleDriveOAuthDisconnectRoute, { method: "POST", service: "google-drive", rateLimit: "strict" }),
   route("cloud.files.sync", "/api/cloud/files/sync", cloudFilesSyncRoute, { method: "POST", service: "cloud", rateLimit: "strict" }),

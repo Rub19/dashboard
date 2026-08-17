@@ -246,6 +246,7 @@ test("Google Drive upload sends file and returns metadata", async () => {
     method: "POST",
     headers: {
       "content-type": "text/plain",
+      "content-length": "5",
       "x-ethone-client-id": CLIENT_ID,
       "x-ethone-file-name": "hello.txt",
       "x-ethone-file-size": "5",
@@ -256,6 +257,191 @@ test("Google Drive upload sends file and returns metadata", async () => {
   const body = await payload(response);
   assert.equal(response.status, 200);
   assert.equal(body.data.file.id, "uploaded123");
+});
+
+test("Google Drive chunked upload returns token and completes on next chunk", async () => {
+  const futureExpiry = new Date(Date.now() + 3600000).toISOString();
+  let initCalls = 0;
+  let sessionCalls = 0;
+  const env = testEnv({
+    __TEST_FETCH__: async (input, init = {}) => {
+      const url = new URL(String(input));
+      if (url.hostname === "project-ref.supabase.co") {
+        return supabaseRpcFetch({ getResponse: [{ access_token: "stored-access-token", refresh_token: "stored-refresh-token", scope: "drive", expires_at: futureExpiry }] })(input, init);
+      }
+      if (url.hostname === "www.googleapis.com" && url.pathname === "/upload/drive/v3/files" && url.searchParams.get("uploadType") === "resumable") {
+        initCalls += 1;
+        return new Response(null, { status: 201, headers: { location: "https://www.googleapis.com/upload/session" } });
+      }
+      if (url.href === "https://www.googleapis.com/upload/session") {
+        sessionCalls += 1;
+        const range = init.headers["content-range"];
+        if (range === "bytes 0-5/11") {
+          return new Response(null, { status: 308, headers: { range: "bytes=0-5" } });
+        }
+        if (range === "bytes 6-10/11") {
+          return json({ id: "chunked123", name: "hello.txt", mimeType: "text/plain", size: "11", modifiedTime: "2026-07-28T09:00:00Z" });
+        }
+      }
+      throw new Error(`Unexpected fetch: ${url.href}`);
+    }
+  });
+  const file = new Blob(["hello world"], { type: "text/plain" });
+  const first = await invoke("/api/google-drive/upload/chunk", {
+    env,
+    method: "POST",
+    headers: {
+      "content-type": "text/plain",
+      "content-length": "6",
+      "x-ethone-client-id": CLIENT_ID,
+      "x-ethone-file-name": "hello.txt",
+      "x-ethone-file-size": "11",
+      "x-ethone-file-mime": "text/plain",
+      "content-range": "bytes 0-5/11"
+    },
+    body: file.slice(0, 6)
+  });
+  const firstBody = await payload(first);
+  assert.equal(first.status, 202);
+  assert.equal(firstBody.data.status, "incomplete");
+  assert.equal(firstBody.data.uploaded, 6);
+  assert.equal(firstBody.data.total, 11);
+  assert.ok(typeof firstBody.data.token === "string" && firstBody.data.token.length > 0);
+  assert.equal(initCalls, 1);
+  assert.equal(sessionCalls, 1);
+
+  const second = await invoke("/api/google-drive/upload/chunk", {
+    env,
+    method: "POST",
+    headers: {
+      "content-type": "text/plain",
+      "content-length": "5",
+      "x-ethone-client-id": CLIENT_ID,
+      "x-ethone-file-name": "hello.txt",
+      "x-ethone-file-size": "11",
+      "x-ethone-file-mime": "text/plain",
+      "content-range": "bytes 6-10/11",
+      "x-ethone-upload-token": firstBody.data.token
+    },
+    body: file.slice(6)
+  });
+  const secondBody = await payload(second);
+  assert.equal(second.status, 200);
+  assert.equal(secondBody.data.file.id, "chunked123");
+  assert.equal(initCalls, 1);
+  assert.equal(sessionCalls, 2);
+});
+
+test("Google Drive upload rejects an invalid content range", async () => {
+  const env = testEnv({ __TEST_FETCH__: supabaseRpcFetch() });
+  const file = new Blob(["hello"], { type: "text/plain" });
+  const response = await invoke("/api/google-drive/upload/chunk", {
+    env,
+    method: "POST",
+    headers: {
+      "x-ethone-client-id": CLIENT_ID,
+      "x-ethone-file-name": "hello.txt",
+      "x-ethone-file-size": "5",
+      "x-ethone-file-mime": "text/plain",
+      "content-range": "bytes 5-0/5",
+      "content-length": "5"
+    },
+    body: file
+  });
+  assert.equal(response.status, 400);
+});
+
+test("Google Drive upload rejects a content length mismatch", async () => {
+  const env = testEnv({ __TEST_FETCH__: supabaseRpcFetch() });
+  const file = new Blob(["hello"], { type: "text/plain" });
+  const response = await invoke("/api/google-drive/upload/chunk", {
+    env,
+    method: "POST",
+    headers: {
+      "x-ethone-client-id": CLIENT_ID,
+      "x-ethone-file-name": "hello.txt",
+      "x-ethone-file-size": "5",
+      "x-ethone-file-mime": "text/plain",
+      "content-range": "bytes 0-4/5",
+      "content-length": "10"
+    },
+    body: file
+  });
+  assert.equal(response.status, 400);
+});
+
+test("Google Drive upload rejects a chunk larger than the configured limit", async () => {
+  const futureExpiry = new Date(Date.now() + 3600000).toISOString();
+  const env = testEnv({
+    GOOGLE_DRIVE_MAX_UPLOAD_BYTES: "2",
+    __TEST_FETCH__: supabaseRpcFetch({ getResponse: [{ access_token: "stored-access-token", refresh_token: "stored-refresh-token", scope: "drive", expires_at: futureExpiry }] })
+  });
+  const file = new Blob(["hello"], { type: "text/plain" });
+  const response = await invoke("/api/google-drive/upload/chunk", {
+    env,
+    method: "POST",
+    headers: {
+      "x-ethone-client-id": CLIENT_ID,
+      "x-ethone-file-name": "hello.txt",
+      "x-ethone-file-size": "5",
+      "x-ethone-file-mime": "text/plain",
+      "content-length": "5"
+    },
+    body: file
+  });
+  assert.equal(response.status, 413);
+});
+
+test("Google Drive upload maps provider errors to retryable worker errors", async () => {
+  const futureExpiry = new Date(Date.now() + 3600000).toISOString();
+  const env = testEnv({
+    __TEST_FETCH__: async (input, init = {}) => {
+      const url = new URL(String(input));
+      if (url.hostname === "project-ref.supabase.co") {
+        return supabaseRpcFetch({ getResponse: [{ access_token: "stored-access-token", refresh_token: "stored-refresh-token", scope: "drive", expires_at: futureExpiry }] })(input, init);
+      }
+      if (url.hostname === "www.googleapis.com" && url.pathname === "/upload/drive/v3/files" && url.searchParams.get("uploadType") === "resumable") {
+        return new Response(null, { status: 401 });
+      }
+      return new Response(null, { status: 404 });
+    }
+  });
+  const file = new Blob(["hello"], { type: "text/plain" });
+  const response = await invoke("/api/google-drive/upload/chunk", {
+    env,
+    method: "POST",
+    headers: {
+      "content-length": "5",
+      "x-ethone-client-id": CLIENT_ID,
+      "x-ethone-file-name": "hello.txt",
+      "x-ethone-file-size": "5",
+      "x-ethone-file-mime": "text/plain"
+    },
+    body: file
+  });
+  const body = await payload(response);
+  assert.equal(response.status, 502);
+  assert.equal(body.error.code, "PROVIDER_REQUEST_REJECTED");
+});
+
+test("Google Drive upload accepts a large declared content length without global request-size rejection", async () => {
+  const futureExpiry = new Date(Date.now() + 3600000).toISOString();
+  const env = testEnv({
+    __TEST_FETCH__: supabaseRpcFetch({ getResponse: [{ access_token: "stored-access-token", refresh_token: "stored-refresh-token", scope: "drive", expires_at: futureExpiry }] })
+  });
+  const response = await invoke("/api/google-drive/upload/chunk", {
+    env,
+    method: "POST",
+    headers: {
+      "content-type": "text/plain",
+      "content-length": "1000000",
+      "x-ethone-client-id": CLIENT_ID,
+      "x-ethone-file-name": "hello.txt",
+      "x-ethone-file-size": "5",
+      "x-ethone-file-mime": "text/plain"
+    }
+  });
+  assert.notEqual(response.status, 413);
 });
 
 test("Google Drive quota returns storage quota", async () => {

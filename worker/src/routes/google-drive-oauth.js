@@ -14,7 +14,7 @@ import {
   searchFiles,
   trashFile,
   updateFile,
-  uploadFile
+  uploadChunk
 } from "../services/google-drive-oauth-client.js";
 
 const CODE_RE = /^[A-Za-z0-9_/\.-]{10,512}$/;
@@ -153,8 +153,13 @@ export async function googleDriveUploadRoute({ request, env, auth }) {
   if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
   const clientId = safeText(request.headers.get("x-ethone-client-id"), 100);
   if (!PATTERNS.googleClientId.test(clientId)) throw httpError("INVALID_PARAMETER", 400);
-  const file = await uploadFile(env, auth.userId, clientId, request);
-  return { data: { file } };
+  const result = await uploadChunk(env, auth.userId, clientId, request);
+  if (result.complete) return { data: { file: result.file } };
+  return routeResult(
+    { status: "incomplete", uploaded: result.uploaded, total: result.total, token: result.token },
+    {},
+    { status: 202, headers: { "x-ethone-upload-token": result.token } }
+  );
 }
 
 export async function googleDriveDownloadRoute({ url, env, auth }) {

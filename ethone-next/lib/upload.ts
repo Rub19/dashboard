@@ -1,5 +1,7 @@
 export type UploadStatus = "pending" | "uploading" | "success" | "error";
 
+export const UPLOAD_CHUNK_SIZE = 256 * 1024;
+
 export type UploadTask = {
   id: string;
   file: File;
@@ -12,6 +14,8 @@ export type UploadTask = {
   error?: string;
   startTime: number;
   xhr?: XMLHttpRequest;
+  uploadedBytes?: number;
+  uploadToken?: string;
   resumedFromBytes?: number;
   resumedFromProgress?: number;
 };

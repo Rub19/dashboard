@@ -19,8 +19,13 @@ function securityHeaders(response) {
   return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 }
 
-function validateRequestShape(request, url) {
+function isUploadRoute(route) {
+  return route && (route.id === "google-drive.upload" || route.id === "google-drive.upload.chunk");
+}
+
+function validateRequestShape(request, url, route) {
   if (url.href.length > 4096) throw httpError("INVALID_REQUEST", 414);
+  if (isUploadRoute(route)) return;
   const declared = Number(request.headers.get("content-length"));
   if (Number.isFinite(declared) && declared > 16384) throw httpError("INVALID_REQUEST", 413);
 }
@@ -48,7 +53,7 @@ async function handleRequest(request, env, executionCtx) {
         if (routesForPath(url.pathname).length) throw httpError("METHOD_NOT_ALLOWED", 405);
         throw httpError("ROUTE_NOT_FOUND", 404);
       }
-      validateRequestShape(request, url);
+      validateRequestShape(request, url, context.route);
       const edgeRate = await applyEdgeRateLimit(context);
       if (!context.route.public) context.auth = await authenticateRequest(request, env);
       const userRate = await applyUserRateLimit(context);

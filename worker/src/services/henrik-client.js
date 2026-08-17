@@ -41,20 +41,29 @@ function resolveAgentImage(value, character, catalogue) {
   return catalogue?.get(safeText(character).toLowerCase()) || "";
 }
 
+function resolveCardSmallUrl(card) {
+  if (!card) return "";
+  if (typeof card === "object" && card.small) return safePublicUrl(card.small, ["henrikdev.xyz", "valorant-api.com"]);
+  if (typeof card === "string") {
+    return safePublicUrl(`https://media.valorant-api.com/playercards/${card}/smallart.png`, ["valorant-api.com"]);
+  }
+  return "";
+}
+
 async function getAccount(env, name, tag, apiKey) {
-  const path = `/valorant/v1/account/${encodeURIComponent(name)}/${encodeURIComponent(tag)}`;
+  const path = `/valorant/v2/account/${encodeURIComponent(name)}/${encodeURIComponent(tag)}`;
   const headers = {};
   if (apiKey) headers["Authorization"] = apiKey;
-  
+
   const response = await requestExternal(new URL(path, ORIGIN), {
     env,
     expectedOrigin: ORIGIN,
     service: "tracker",
-    dedupeKey: `henrik:account:${name.toLowerCase()}:${tag.toLowerCase()}`,
+    dedupeKey: `henrik:account:v2:${name.toLowerCase()}:${tag.toLowerCase()}`,
     headers,
     retries: 1
   });
-  
+
   return response.data?.data;
 }
 
@@ -87,7 +96,7 @@ export async function getValorantProfile(env, riotId, apiKeyOverride) {
     platform: "riot",
     identifier: riotId,
     handle: riotId,
-    avatarUrl: safePublicUrl(account.card?.small, ["henrikdev.xyz", "valorant-api.com"]),
+    avatarUrl: resolveCardSmallUrl(account.card),
     segments: Object.freeze([{
       type: "overview",
       name: "Ranked",

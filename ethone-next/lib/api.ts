@@ -26,6 +26,28 @@ export class WorkerError extends Error {
   }
 }
 
+function extractWorkerErrorDetail(detail: unknown): string {
+  if (!detail) return "";
+  if (typeof detail === "string") return detail.slice(0, 200);
+  if (typeof detail === "object" && detail !== null) {
+    if ("errors" in detail && Array.isArray((detail as { errors?: unknown }).errors)) {
+      const errors = (detail as { errors: Array<unknown> }).errors;
+      const messages = errors
+        .map((e) => (typeof e === "object" && e !== null ? (e as { message?: string; status?: number }).message || "" : ""))
+        .filter(Boolean)
+        .join(" — ");
+      if (messages) return messages.slice(0, 200);
+    }
+    if ("message" in detail && typeof (detail as { message?: unknown }).message === "string") {
+      return String((detail as { message: string }).message).slice(0, 200);
+    }
+    try {
+      return JSON.stringify(detail).slice(0, 200);
+    } catch {}
+  }
+  return "";
+}
+
 export async function getToken(): Promise<string | null> {
   if (typeof window === "undefined") return null;
   const { data } = await supabase.auth.getSession();
@@ -64,6 +86,12 @@ export async function fetchWorker(
     } else if (text) {
       message = `Worker ${res.status}: ${text}`;
     }
+
+    const detailText = extractWorkerErrorDetail(detail);
+    if (detailText) {
+      message = `${message} (${detailText})`;
+    }
+
     throw new WorkerError(message, res.status, code, detail, retryable);
   }
 

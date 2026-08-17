@@ -158,7 +158,7 @@ export default function IntegrationsSettings() {
         key={integration.id}
         id={integration.id}
         data-service={integration.id}
-        className={`scroll-mt-6 rounded-2xl transition-shadow ${
+        className={`scroll-mt-6 h-full rounded-2xl transition-shadow ${
           isHighlighted
             ? "ring-2 ring-emerald-500/50 ring-offset-0"
             : "ring-0 ring-transparent"

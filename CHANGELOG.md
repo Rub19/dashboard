@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**UI : correction des trous dans la grille des intégrations**
+
+### Corrige
+- `components/IntegrationsSettings.tsx` : ajout `h-full` sur le wrapper de chaque carte pour que la cellule grid soit remplie.
+- `components/SpotifyConfig.tsx` et `components/DiscordConfig.tsx` : ajout `h-full` sur la racine pour que ces cartes remplissent la hauteur de leur cellule comme `ConnectionCard`.
+
 **Migration Next.js : branchement Cloud Sync sur le layout du bureau**
 
 ### Corrige

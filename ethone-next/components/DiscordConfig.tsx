@@ -107,7 +107,7 @@ export default function DiscordConfig() {
   if (!integration) return null;
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4">
+    <div className="flex h-full flex-col gap-4 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="font-semibold text-white">Discord</h3>

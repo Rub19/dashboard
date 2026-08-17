@@ -101,11 +101,13 @@ export default function SettingsLayout() {
   const [query, setQuery] = useState("");
   const searchParams = useSearchParams();
   const router = useRouter();
+  const queryString = searchParams?.toString() ?? "";
 
-  const [activeTab, setActiveTab] = useState(() => resolveTab(searchParams.get("tab")));
+  const [activeTab, setActiveTab] = useState(() => resolveTab(searchParams?.get("tab") ?? null));
 
   useEffect(() => {
-    const tab = searchParams.get("tab");
+    const params = new URLSearchParams(queryString);
+    const tab = params.get("tab");
     const targetTab = resolveTab(tab);
     setActiveTab((prev) => (targetTab !== prev ? targetTab : prev));
 
@@ -125,7 +127,7 @@ export default function SettingsLayout() {
     } else if (tab === "account") {
       scrollTo('[data-section="account"]');
     }
-  }, [searchParams]);
+  }, [queryString]);
 
   function handleReset() {
     if (!window.confirm(i18n("resetSettingsConfirm") || "Rétablir tous les paramètres par défaut ?")) return;

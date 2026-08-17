@@ -7,7 +7,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 **Migration Next.js : correction navigation Réglages et états des intégrations**
 
 ### Corrige
-- `ethone-next/components/settings/SettingsLayout.tsx` : navigation par onglets pilotée par l'URL (`?tab=...`) avec `useRouter`, ajout des onglets `Général` et `Sécurité`, suppression du `useEffect` qui écrasait l'onglet actif après chaque clic.
+- `ethone-next/components/settings/SettingsLayout.tsx` : navigation par onglets pilotée par l'URL (`?tab=...`) avec `useRouter`, ajout des onglets `Général` et `Sécurité`, suppression du `useEffect` qui écrasait l'onglet actif, synchronisation robuste via `queryString` pour éviter les retours en arrière.
 - `ethone-next/components/ConnectionCard.tsx` : bascule correcte entre "Connecter" (vert émeraude) quand le service n'est pas connecté et "Déconnecter" (rose discret) quand il l'est ; badge de statut "Non connecté" / "Connecté" ; masquage du bouton Déconnecter pour les services non configurés.
 - `ethone-next/components/SpotifyConfig.tsx` : vérification de l'état OAuth via `/api/connections`, affichage conditionnel de Connecter/Déconnecter selon l'état réel, déconnexion via l'API worker.
 - `ethone-next/components/DiscordConfig.tsx` : bouton "Connecter" émeraude à la sauvegarde initiale, affichage du bouton "Déconnecter" uniquement après connexion, badge de statut harmonisé.

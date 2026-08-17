@@ -12,6 +12,8 @@ export type UploadTask = {
   error?: string;
   startTime: number;
   xhr?: XMLHttpRequest;
+  resumedFromBytes?: number;
+  resumedFromProgress?: number;
 };
 
 export function formatSpeed(bytesPerSecond: number): string {

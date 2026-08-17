@@ -1,13 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { UploadCloud, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { getToken, WORKER_URL } from "@/lib/api";
 import type { UploadTask, UploadStatus } from "@/lib/upload";
-import DropZone from "@/components/DropZone";
-import UploadItem from "@/components/UploadItem";
+import FileUploadZone from "@/components/FileUploadZone";
+import UploadQueueList from "@/components/UploadQueueList";
 
 let idCounter = 0;
 
@@ -28,9 +27,6 @@ export default function FileUploader({
   const inputRef = useRef<HTMLInputElement>(null);
   const completedRef = useRef(false);
 
-  const total = queue.length;
-  const completed = queue.filter((t) => t.status === "success").length;
-  const hasActive = queue.some((t) => t.status === "uploading" || t.status === "pending");
 
   const startUpload = useCallback(
     (task: UploadTask) => {
@@ -38,11 +34,13 @@ export default function FileUploader({
       const start = performance.now();
       const id = task.id;
       const xhr = new XMLHttpRequest();
+      const base = task.resumedFromBytes ?? 0;
+      const resumedFromProgress = task.resumedFromProgress ?? 0;
 
       setQueue((prev) =>
         prev.map((t) =>
           t.id === id
-            ? { ...t, status: "uploading" as UploadStatus, startTime: start, loaded: 0, progress: 0, speed: 0, secondsLeft: 0, error: undefined, xhr }
+            ? { ...t, status: "uploading" as UploadStatus, startTime: start, loaded: base, progress: resumedFromProgress, speed: 0, secondsLeft: 0, error: undefined, xhr }
             : t
         )
       );
@@ -62,14 +60,14 @@ export default function FileUploader({
           const elapsed = Math.max(0.001, (now - start) / 1000);
           const loaded = e.loaded;
           const totalBytes = e.total || task.file.size;
-          const progress = totalBytes ? Math.round((loaded / totalBytes) * 100) : 0;
+          const progress = Math.min(100, Math.round(resumedFromProgress + (loaded / totalBytes) * (100 - resumedFromProgress)));
           const speed = loaded / elapsed;
           const secondsLeft = speed > 0 ? (totalBytes - loaded) / speed : 0;
 
           setQueue((prev) =>
             prev.map((t) =>
               t.id === id
-                ? { ...t, loaded, total: totalBytes, progress, speed, secondsLeft }
+                ? { ...t, loaded: Math.min(base + loaded, totalBytes), total: totalBytes, progress, speed, secondsLeft }
                 : t
             )
           );
@@ -135,6 +133,8 @@ export default function FileUploader({
                   secondsLeft: 0,
                   error: undefined,
                   xhr: undefined,
+                  resumedFromBytes: 0,
+                  resumedFromProgress: 0,
                 }
               : t
           );
@@ -161,6 +161,8 @@ export default function FileUploader({
         speed: 0,
         secondsLeft: 0,
         startTime: 0,
+        resumedFromBytes: 0,
+        resumedFromProgress: 0,
       }));
 
       setQueue((prev) => [...prev, ...newTasks]);
@@ -179,7 +181,14 @@ export default function FileUploader({
     setQueue((prev) =>
       prev.map((t) =>
         t.id === id
-          ? { ...t, status: "pending", loaded: 0, progress: 0, speed: 0, secondsLeft: 0, error: undefined, xhr: undefined }
+          ? {
+              ...t,
+              status: "pending" as UploadStatus,
+              error: undefined,
+              xhr: undefined,
+              resumedFromBytes: t.loaded,
+              resumedFromProgress: t.progress,
+            }
           : t
       )
     );
@@ -231,7 +240,7 @@ export default function FileUploader({
         onChange={handleInputChange}
         aria-label={i18n("uploadFile")}
       />
-      <DropZone
+      <FileUploadZone
         onFiles={addFiles}
         onClick={() => inputRef.current?.click()}
         disabled={!clientId}
@@ -239,41 +248,12 @@ export default function FileUploader({
 
       {queue.length > 0 && (
         <div className="space-y-3">
-          <div className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/60 px-4 py-3 backdrop-blur-xl">
-            <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-              <UploadCloud className="h-4 w-4 text-accent" />
-              <span>
-                {i18n("upload")} {total} {i18n("files")} — {completed} / {total} {i18n("completed")}
-              </span>
-            </div>
-            {hasActive && (
-              <span className="text-xs text-muted">
-                {queue.filter((t) => t.status === "uploading").length} {i18n("uploading")}
-              </span>
-            )}
-          </div>
-
-          <div className="grid gap-3">
-            <AnimatePresence initial={false} mode="popLayout">
-              {queue.map((task) => (
-                <motion.div
-                  key={task.id}
-                  layout
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.96 }}
-                  transition={{ duration: 0.15, ease: "easeOut" as const }}
-                >
-                  <UploadItem
-                    task={task}
-                    onRetry={() => retry(task.id)}
-                    onRemove={() => remove(task.id)}
-                    onReplace={() => replace(task.id)}
-                  />
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
+          <UploadQueueList
+            tasks={queue}
+            onRetry={retry}
+            onRemove={remove}
+            onReplace={replace}
+          />
 
           <div className="flex justify-end">
             <button

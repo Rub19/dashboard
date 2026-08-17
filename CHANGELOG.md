@@ -4,6 +4,17 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : alias mail privés par utilisateur**
+
+### Corrige
+- `worker/src/middleware/auth.js` : expose `email` et `displayName` (depuis les claims JWT) pour personnaliser l'alias par défaut.
+- `worker/src/services/mail-client.js` : `getOrCreatePrimaryAlias` génère désormais un alias unique par utilisateur avec suffixe aléatoire en cas de collision ; `createRandomAlias` permet de créer une adresse aléatoire `u-XXXXXXXX@ethone.dev`.
+- `worker/src/routes/mail.js` : `mailSendRoute`, `mailDraftsRoute` et `mailScheduleRoute` acceptent un `alias_id` (ou `from_alias`) pour choisir l'adresse d'envoi ; `mailAliasRoute` accepte une adresse personnalisée, un format local sans domaine ou l'option `random: true`.
+- `ethone-next/lib/hooks/useMail.ts` : `createAlias` accepte un objet `{ random: true }` ou un alias texte, `sendMail` et `saveDraft` acceptent `alias_id`.
+- `ethone-next/components/mail/ComposeMailModal.tsx` : ajout du champ "De" avec sélecteur d'alias, création d'une adresse personnalisée et génération d'une adresse aléatoire avant l'envoi.
+- `ethone-next/app/mail/page.tsx` : transmet les alias et le créateur d'alias au modal de composition et envoie l'`alias_id` au Worker.
+- `worker/test/mail.test.mjs` : tests d'unicité, d'appartenance, d'alias aléatoire et de routage réception uniquement vers le propriétaire de l'alias.
+
 **Migration Next.js : 404 glitch et menu contextuel générique**
 
 ### Corrige

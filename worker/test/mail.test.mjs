@@ -859,3 +859,131 @@ test("mail.analyze calls Groq and returns summary/suggestions/extracted", async 
   assert.ok(Array.isArray(state.groqCalls));
   assert.equal(state.groqCalls.length, 1);
 });
+
+test("mail.alias creates, lists and rejects duplicate custom aliases", async () => {
+  const state = {};
+  const env = makeEnv(state);
+
+  const listRes = await invoke("/api/mail/alias", { env });
+  assert.equal(listRes.status, 200);
+  const listBody = await payload(listRes);
+  assert.deepEqual(listBody.data, []);
+
+  const createRes = await invoke("/api/mail/alias", {
+    method: "POST",
+    env,
+    headers: jsonHeaders(),
+    body: JSON.stringify({ alias: "custom", display_name: "Custom QA" })
+  });
+  assert.equal(createRes.status, 200);
+  const created = await payload(createRes);
+  assert.equal(created.data.alias, "custom@ethone.dev");
+  assert.equal(created.data.is_primary, true);
+
+  const dupRes = await invoke("/api/mail/alias", {
+    method: "POST",
+    env,
+    headers: jsonHeaders(),
+    body: JSON.stringify({ alias: "custom@ethone.dev" })
+  });
+  assert.equal(dupRes.status, 400);
+
+  const listRes2 = await invoke("/api/mail/alias", { env });
+  const listBody2 = await payload(listRes2);
+  assert.equal(listBody2.data.length, 1);
+});
+
+test("mail.alias generates a random alias", async () => {
+  const state = {};
+  const env = makeEnv(state);
+
+  const res = await invoke("/api/mail/alias", {
+    method: "POST",
+    env,
+    headers: jsonHeaders(),
+    body: JSON.stringify({ random: true })
+  });
+  assert.equal(res.status, 200);
+  const body = await payload(res);
+  assert.ok(/^u-[a-z0-9]{8}@ethone\.dev$/.test(body.data.alias));
+  assert.equal(body.data.is_primary, true);
+});
+
+test("mail.send uses requested alias_id", async () => {
+  const state = {};
+  const env = makeEnv(state);
+  state["ethone_mail_aliases"] = [
+    { id: "alias-primary", user_id: USER_ID, alias: "user@ethone.dev", display_name: "Primary", is_primary: true, created_at: new Date().toISOString() },
+    { id: "alias-other", user_id: USER_ID, alias: "other@ethone.dev", display_name: "Other", is_primary: false, created_at: new Date().toISOString() }
+  ];
+
+  const res = await invoke("/api/mail/send", {
+    method: "POST",
+    env,
+    headers: jsonHeaders(),
+    body: JSON.stringify({ to: ["to@example.com"], subject: "Hello", text: "Body", alias_id: "alias-other" })
+  });
+  assert.equal(res.status, 200);
+  const body = await payload(res);
+  assert.ok(body.data.sent);
+  assert.ok(state.resendCalls[0].from.includes("other@ethone.dev"));
+});
+
+test("mail.send falls back to a unique primary alias when the base is taken by another user", async () => {
+  const state = {};
+  const env = makeEnv(state);
+  const otherUser = "9e64d0a1-1111-2222-3333-000000000000";
+  state["ethone_mail_aliases"] = [
+    { id: "alias-other-user", user_id: otherUser, alias: "user@ethone.dev", display_name: "Other", is_primary: true, created_at: new Date().toISOString() }
+  ];
+
+  const res = await invoke("/api/mail/send", {
+    method: "POST",
+    env,
+    headers: jsonHeaders(),
+    body: JSON.stringify({ to: ["to@example.com"], subject: "Hello", text: "Body" })
+  });
+  assert.equal(res.status, 200);
+  const body = await payload(res);
+  assert.ok(body.data.sent);
+  const fromAddress = state.resendCalls[0].from;
+  assert.ok(fromAddress.includes("user."));
+  assert.ok(fromAddress.endsWith("@ethone.dev>"));
+  const created = state["ethone_mail_aliases"].find((a) => a.user_id === USER_ID);
+  assert.ok(created);
+  assert.notEqual(created.alias, "user@ethone.dev");
+});
+
+test("mail.receive only delivers to the alias owner", async () => {
+  const state = {};
+  const env = makeEnv(state);
+  const otherUser = "9e64d0a1-1111-2222-3333-000000000000";
+  state["ethone_mail_aliases"] = [
+    { id: "alias-a", user_id: USER_ID, alias: "user@ethone.dev", display_name: "QA", is_primary: true, created_at: new Date().toISOString() },
+    { id: "alias-b", user_id: otherUser, alias: "shared@ethone.dev", display_name: "Other", is_primary: true, created_at: new Date().toISOString() }
+  ];
+
+  const headers = new Map([
+    ["subject", "Hello"],
+    ["from", "Sender <sender@example.com>"],
+    ["message-id", "<msg-123>"]
+  ]);
+  const message = {
+    to: "shared@ethone.dev",
+    from: "sender@example.com",
+    headers: {
+      get(name) { return headers.get(name.toLowerCase()) || null; },
+      entries() { return headers.entries(); }
+    },
+    text: async () => "Hello",
+    html: async () => "<p>Hello</p>",
+    attachments: [],
+    rawSize: 123
+  };
+
+  await worker.email(message, env, { waitUntil() {} });
+  const stored = state["ethone_mail_messages"];
+  assert.equal(stored.length, 1);
+  assert.equal(stored[0].user_id, otherUser);
+  assert.equal(stored[0].alias_id, "alias-b");
+});

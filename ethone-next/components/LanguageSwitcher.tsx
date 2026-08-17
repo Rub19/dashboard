@@ -114,7 +114,7 @@ export default function LanguageSwitcher() {
       {open && (
         <div
           role="listbox"
-          className="absolute right-0 top-full z-50 mt-2 min-w-[11rem] overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1.5 shadow-2xl backdrop-blur-xl"
+          className="absolute right-0 top-full z-50 mt-2 min-w-[11rem] overflow-hidden rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1.5 shadow-2xl backdrop-blur-xl"
         >
           {LANGUAGES.map((lang) => {
             const active = lang === current;
@@ -125,7 +125,7 @@ export default function LanguageSwitcher() {
                 role="option"
                 aria-selected={active}
                 onClick={() => select(lang)}
-                className={`flex w-full items-center gap-2.5 rounded-[var(--panel-radius)] px-3 py-2 text-sm font-medium transition-colors ${
+                className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                   active
                     ? "bg-[var(--accent)] text-white"
                     : "text-[var(--foreground)] hover:bg-[var(--panel-bg)]"

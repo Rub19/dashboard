@@ -138,8 +138,8 @@ export default function MailAnalyticsPanel({
                         <span className="truncate">{s.email}</span>
                         <span className="text-[var(--muted)]">{s.count}</span>
                       </div>
-                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--panel-bg)]">
-                        <div className="h-full rounded-full bg-[var(--accent)]" style={{ width: `${pct}%` }} />
+                      <div className="h-1.5 w-full overflow-hidden rounded-xl bg-[var(--panel-bg)]">
+                        <div className="h-full rounded-xl bg-[var(--accent)]" style={{ width: `${pct}%` }} />
                       </div>
                     </div>
                   );
@@ -160,8 +160,8 @@ export default function MailAnalyticsPanel({
                         <span className="truncate">{l.label}</span>
                         <span className="text-[var(--muted)]">{l.count}</span>
                       </div>
-                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--panel-bg)]">
-                        <div className="h-full rounded-full bg-emerald-400" style={{ width: `${pct}%` }} />
+                      <div className="h-1.5 w-full overflow-hidden rounded-xl bg-[var(--panel-bg)]">
+                        <div className="h-full rounded-xl bg-emerald-400" style={{ width: `${pct}%` }} />
                       </div>
                     </div>
                   );

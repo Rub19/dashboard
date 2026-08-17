@@ -234,8 +234,8 @@ function WidgetsTab({ now }: { now: Date }) {
           <strong className="text-sm">{i18n("focusExpress")}</strong>
           <span className="text-xs text-[var(--muted)]">{state.format(state.remaining)}</span>
         </div>
-        <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--panel-bg)]">
-          <div className="h-full rounded-full bg-[var(--accent)] transition-colors duration-150" style={{ width: `${progress}%` }} />
+        <div className="h-2 w-full overflow-hidden rounded-xl bg-[var(--panel-bg)]">
+          <div className="h-full rounded-xl bg-[var(--accent)] transition-colors duration-150" style={{ width: `${progress}%` }} />
         </div>
       </section>
     </div>
@@ -399,7 +399,7 @@ function ProfileTab() {
                 presence.badge ? ` (${presence.badge})` : ""
               }`}
             >
-              <span className="inline-flex rounded-full border-2 border-[var(--surface)]">
+              <span className="inline-flex rounded-xl border-2 border-[var(--surface)]">
                 <PresenceIndicator size="sm" />
               </span>
             </Tooltip>

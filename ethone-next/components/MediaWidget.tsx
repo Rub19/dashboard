@@ -23,7 +23,7 @@ function MediaEqualizer({ className = "" }: { className?: string }) {
       {[0, 1, 2, 3].map((i) => (
         <motion.div
           key={i}
-          className="w-1 rounded-full bg-emerald-400"
+          className="w-1 rounded-lg bg-emerald-400"
           initial={{ height: "30%" }}
           animate={{
             height: ["30%", "80%", "40%", "70%", "30%"],
@@ -138,7 +138,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
               <button
                 type="button"
                 onClick={() => router.push("/plugins/spotify/")}
-                className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-400 transition-colors hover:bg-emerald-500/20"
+                className="flex items-center gap-1.5 rounded-xl bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-400 transition-colors hover:bg-emerald-500/20"
               >
                 <Music className="h-3 w-3" />
                 Spotify
@@ -148,7 +148,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
               <button
                 type="button"
                 onClick={() => router.push("/plugins/jellyfin/")}
-                className="flex items-center gap-1.5 rounded-full bg-violet-500/10 px-3 py-1.5 text-xs font-medium text-violet-400 transition-colors hover:bg-violet-500/20"
+                className="flex items-center gap-1.5 rounded-xl bg-violet-500/10 px-3 py-1.5 text-xs font-medium text-violet-400 transition-colors hover:bg-violet-500/20"
               >
                 <Server className="h-3 w-3" />
                 Jellyfin
@@ -158,7 +158,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
               <button
                 type="button"
                 onClick={() => router.push("/connections/")}
-                className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-zinc-300 transition-colors hover:bg-white/[0.05]"
+                className="rounded-xl border border-white/10 px-3 py-1.5 text-xs text-zinc-300 transition-colors hover:bg-white/[0.05]"
               >
                 {i18n("configureConnections")}
               </button>
@@ -209,7 +209,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
           <div className="space-y-1">
             <div
               onClick={handleSeek}
-              className="h-1 w-full cursor-pointer overflow-hidden rounded-full bg-white/10 transition-all duration-200 hover:h-2"
+              className="h-1 w-full cursor-pointer overflow-hidden rounded-xl bg-white/10 transition-all duration-200 hover:h-2"
               aria-label={i18n("seek")}
               role="slider"
               aria-valuemin={0}
@@ -217,7 +217,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
               aria-valuenow={progress}
             >
               <div
-                className="h-full rounded-full bg-white/60 transition-[width] duration-150"
+                className="h-full rounded-xl bg-white/60 transition-[width] duration-150"
                 style={{ width: `${progressPct}%` }}
               />
             </div>
@@ -233,7 +233,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
             type="button"
             onClick={() => control("previous")}
             disabled={!isSpotify || pending}
-            className="rounded-full p-1.5 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white disabled:opacity-40"
+            className="rounded-lg p-1.5 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white disabled:opacity-40"
             aria-label={i18n("previous")}
           >
             <SkipBack className="h-4 w-4" />
@@ -253,7 +253,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
             type="button"
             onClick={() => control("next")}
             disabled={!isSpotify || pending}
-            className="rounded-full p-1.5 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white disabled:opacity-40"
+            className="rounded-lg p-1.5 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white disabled:opacity-40"
             aria-label={i18n("next")}
           >
             <SkipForward className="h-4 w-4" />
@@ -267,20 +267,20 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
             <button
               type="button"
               onClick={() => setVolume((v) => (v > 0 ? 0 : 80))}
-              className="rounded-full p-1.5 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+              className="rounded-lg p-1.5 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
               aria-label={i18n("volume")}
             >
               {volume > 0 ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
             </button>
             {showVolume && (
-              <div className="absolute right-0 top-1/2 z-10 flex w-24 -translate-y-1/2 items-center rounded-full border border-white/10 bg-zinc-900/95 px-2 py-1.5 shadow-xl backdrop-blur-md">
+              <div className="absolute right-0 top-1/2 z-10 flex w-24 -translate-y-1/2 items-center rounded-xl border border-white/10 bg-zinc-900/95 px-2 py-1.5 shadow-xl backdrop-blur-md">
                 <input
                   type="range"
                   min={0}
                   max={100}
                   value={volume}
                   onChange={(e) => setVolume(Number(e.target.value))}
-                  className="h-1 w-full cursor-pointer appearance-none rounded-full bg-white/10 accent-white"
+                  className="h-1 w-full cursor-pointer appearance-none rounded-xl bg-white/10 accent-white"
                 />
               </div>
             )}

@@ -58,7 +58,7 @@ export default function SystemHealthBanner({
 
         <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-start">
           <span
-            className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${
+            className={`inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 text-[10px] font-semibold ${
               tone === "success"
                 ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
                 : tone === "warning"

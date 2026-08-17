@@ -181,7 +181,7 @@ function WeatherBadge({
   }[tone];
 
   return (
-    <div className="flex w-full items-center gap-1.5 rounded-full bg-white/[0.04] px-2.5 py-1.5 text-xs font-medium text-zinc-200 ring-1 ring-inset ring-white/[0.06] backdrop-blur-sm">
+    <div className="flex w-full items-center gap-1.5 rounded-xl bg-white/[0.04] px-2.5 py-1.5 text-xs font-medium text-zinc-200 ring-1 ring-inset ring-white/[0.06] backdrop-blur-sm">
       <Icon name={icon} className={`h-3 w-3 ${toneClass}`} />
       {label && <span className="text-zinc-500">{label}</span>}
       <span>{value}</span>
@@ -216,7 +216,7 @@ function WeatherSkeleton({ compact }: { compact?: boolean }) {
     >
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-4">
-          <div className={`rounded-full bg-white/[0.06] ${compact ? "h-10 w-10" : "h-16 w-16"}`} />
+          <div className={`rounded-xl bg-white/[0.06] ${compact ? "h-10 w-10" : "h-16 w-16"}`} />
           <div className="space-y-2">
             <div className={`rounded bg-white/[0.06] ${compact ? "h-6 w-16" : "h-10 w-24"}`} />
             <div className="h-3 w-32 rounded bg-white/[0.04]" />
@@ -225,7 +225,7 @@ function WeatherSkeleton({ compact }: { compact?: boolean }) {
       </div>
       <div className="flex flex-wrap gap-2">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-7 w-20 rounded-full bg-white/[0.04]" />
+          <div key={i} className="h-7 w-20 rounded-xl bg-white/[0.04]" />
         ))}
       </div>
       <div className="grid grid-cols-5 gap-2">
@@ -279,7 +279,7 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
           <button
             type="button"
             onClick={onRefresh}
-            className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/[0.08] hover:text-white"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/[0.08] hover:text-white"
           >
             <Icon name="refresh-cw" className="h-3 w-3" />
             {i18n("refresh")}
@@ -325,7 +325,7 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
                 onClick={onRefresh}
                 disabled={loading}
                 aria-label={i18n("refresh")}
-                className="rounded-full p-1.5 text-zinc-500 transition-colors hover:text-white disabled:opacity-50"
+                className="rounded-lg p-1.5 text-zinc-500 transition-colors hover:text-white disabled:opacity-50"
               >
                 <motion.span
                   className="inline-block"

@@ -252,7 +252,7 @@ export default function LoginPage() {
         </div>
 
         <div className="z-10 text-xs text-[var(--muted)]">
-          <span className="inline-flex items-center gap-2 rounded-full border border-[var(--panel-border)] bg-[var(--panel-bg)]/50 px-3 py-1.5 backdrop-blur-[var(--panel-blur)]">
+          <span className="inline-flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/50 px-3 py-1.5 backdrop-blur-[var(--panel-blur)]">
             <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)]" />
             {i18n("systemOperational")}
           </span>
@@ -273,7 +273,7 @@ export default function LoginPage() {
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.15, ease: "easeOut" as const }}
-            className="relative flex max-h-[calc(100vh-2rem)] w-full flex-col overflow-hidden rounded-3xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/80 p-5 shadow-2xl backdrop-blur-xl sm:p-6"
+            className="relative flex max-h-[calc(100vh-2rem)] w-full flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/80 p-5 shadow-2xl backdrop-blur-xl sm:p-6"
           >
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/50 to-transparent" />
             <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[var(--accent)]/10 blur-3xl" />

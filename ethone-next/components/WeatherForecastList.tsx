@@ -50,9 +50,9 @@ export default function WeatherForecastList({ days }: { days: ForecastDay[] }) {
           >
             <span className="w-12 text-xs font-medium text-zinc-300">{formatShortDay(day.date, locale)}</span>
             <Icon name={icon} className={`h-4 w-4 ${color}`} />
-            <div className="mx-3 h-1 flex-1 rounded-full bg-white/[0.04]">
+            <div className="mx-3 h-1 flex-1 rounded-xl bg-white/[0.04]">
               <div
-                className="relative h-full rounded-full bg-gradient-to-r from-cyan-400 via-amber-300 to-rose-400"
+                className="relative h-full rounded-xl bg-gradient-to-r from-cyan-400 via-amber-300 to-rose-400"
                 style={{ marginLeft: `${left}%`, width: `${Math.max(width, 4)}%` }}
               />
             </div>

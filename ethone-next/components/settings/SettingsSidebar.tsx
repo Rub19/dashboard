@@ -67,7 +67,7 @@ export default function SettingsSidebar({ sections, activeId, onChange }: Settin
             </span>
             {section.badge ? (
               <span
-                className="relative z-10 rounded-full px-1.5 py-0.5 text-[10px] font-mono"
+                className="relative z-10 rounded-lg px-1.5 py-0.5 text-[10px] font-mono"
                 style={{
                   background: "var(--accent-muted, rgba(168, 85, 247, 0.15))",
                   color: "var(--accent-color, var(--accent, #a855f7))",

@@ -53,7 +53,7 @@ export function AiProviderPanel() {
               {formatPercent(quota.percent)}
             </span>
           </div>
-          <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[var(--panel-bg)]">
+          <div className="mt-2 h-2 w-full overflow-hidden rounded-xl bg-[var(--panel-bg)]">
             <div
               className={`h-full transition-colors duration-150 ${quota.exhausted ? "bg-red-500" : quota.prepare ? "bg-amber-500" : quota.warning ? "bg-yellow-500" : "bg-emerald-500"}`}
               style={{ width: `${Math.min(100, Math.round(quota.percent * 100))}%` }}

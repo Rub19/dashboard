@@ -127,7 +127,7 @@ export default function SocialDiscordCard({ lanyard, nowPlaying, className = "" 
       <div className="flex items-center justify-between">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Social & Media</span>
         <span
-          className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] font-medium ${statusTone(
+          className={`inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 text-[10px] font-medium ${statusTone(
             status
           )}`}
         >
@@ -144,7 +144,7 @@ export default function SocialDiscordCard({ lanyard, nowPlaying, className = "" 
           <button
             type="button"
             onClick={() => router.push("/settings")}
-            className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200/60 bg-zinc-100/80 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-200/80 hover:text-zinc-950 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-zinc-300 dark:hover:bg-white/[0.08] dark:hover:text-white"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200/60 bg-zinc-100/80 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-200/80 hover:text-zinc-950 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-zinc-300 dark:hover:bg-white/[0.08] dark:hover:text-white"
           >
             <ExternalLink className="h-3 w-3" />
             Connecter Spotify / Discord
@@ -212,8 +212,8 @@ export default function SocialDiscordCard({ lanyard, nowPlaying, className = "" 
 
           {nowPlaying?.durationMs && nowPlaying.durationMs > 0 && (
             <div className="flex flex-col gap-1">
-              <div className="h-1 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-white/[0.08]">
-                <div className="h-full rounded-full bg-emerald-500 dark:bg-emerald-400" style={{ width: `${progressPct}%` }} />
+              <div className="h-1 w-full overflow-hidden rounded-xl bg-zinc-200 dark:bg-white/[0.08]">
+                <div className="h-full rounded-xl bg-emerald-500 dark:bg-emerald-400" style={{ width: `${progressPct}%` }} />
               </div>
               <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500">
                 <span>{formatMs(nowPlaying.progressMs)}</span>

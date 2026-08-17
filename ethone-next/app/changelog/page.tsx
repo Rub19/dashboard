@@ -19,7 +19,7 @@ export default function ChangelogPage() {
             <div className="space-y-3">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <h2 className="break-words text-lg font-semibold">{entry.title}</h2>
-                <span className="shrink-0 rounded-full bg-[var(--panel-bg)] px-2.5 py-0.5 text-xs font-medium text-[var(--accent)]">
+                <span className="shrink-0 rounded-lg bg-[var(--panel-bg)] px-2.5 py-0.5 text-xs font-medium text-[var(--accent)]">
                   {entry.version}
                 </span>
               </div>

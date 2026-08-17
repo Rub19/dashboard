@@ -12,7 +12,7 @@ function StrengthMeter({ result, show }: { result: PasswordFieldResult; show: bo
 
   return (
     <div className="space-y-2">
-      <div className="flex h-2 w-full gap-1 overflow-hidden rounded-full">
+      <div className="flex h-2 w-full gap-1 overflow-hidden rounded-xl">
         {[0, 1, 2, 3].map((i) => (
           <motion.div
             key={i}
@@ -22,7 +22,7 @@ function StrengthMeter({ result, show }: { result: PasswordFieldResult; show: bo
               backgroundColor: i < result.score ? result.color : "#3f3f46",
             }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
-            className={`h-full flex-1 rounded-full ${i < result.score ? colors[result.score] : "bg-zinc-700"}`}
+            className={`h-full flex-1 rounded-xl ${i < result.score ? colors[result.score] : "bg-zinc-700"}`}
           />
         ))}
       </div>
@@ -80,7 +80,7 @@ function CoachingBadges({ badges }: { badges: string[] }) {
           initial={{ opacity: 0, scale: 0.8, y: 6 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ delay: i * 0.05 }}
-          className="rounded-full border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--muted)] backdrop-blur-[var(--panel-blur)]"
+          className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--muted)] backdrop-blur-[var(--panel-blur)]"
         >
           {badge}
         </motion.span>
@@ -180,7 +180,7 @@ export default function PasswordField({
                 initial={{ opacity: 0, x: 8, scale: 0.8 }}
                 animate={{ opacity: 1, x: 0, scale: 1 }}
                 exit={{ opacity: 0, x: 8, scale: 0.8 }}
-                className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] text-emerald-400"
+                className="rounded-lg bg-emerald-500/10 px-2 py-0.5 text-[10px] text-emerald-400"
               >
                 ✓ Collé
               </motion.span>
@@ -224,7 +224,7 @@ export default function PasswordField({
                     {["Généré", "Unique", "Sécurisé"].map((badge) => (
                       <span
                         key={badge}
-                        className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400"
+                        className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400"
                       >
                         {badge}
                       </span>

@@ -526,9 +526,9 @@ export default function InteractionsPage() {
                     {item.count} ({item.percent}%)
                   </span>
                 </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/[0.04]">
+                <div className="h-1.5 w-full overflow-hidden rounded-xl bg-white/[0.04]">
                   <div
-                    className={`h-full rounded-full ${item.color} shadow-[0_0_6px_rgba(255,255,255,0.1)]`}
+                    className={`h-full rounded-xl ${item.color} shadow-[0_0_6px_rgba(255,255,255,0.1)]`}
                     style={{ width: `${item.percent}%` }}
                   />
                 </div>

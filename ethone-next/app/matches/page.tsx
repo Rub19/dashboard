@@ -72,7 +72,7 @@ function MatchCard({ match, game }: { match: Record<string, string | number | un
             <button
               type="button"
               onClick={() => setOpen((v) => !v)}
-              className="rounded-full p-1.5 text-[var(--muted)] hover:bg-[var(--panel-bg)]"
+              className="rounded-lg p-1.5 text-[var(--muted)] hover:bg-[var(--panel-bg)]"
               aria-label={i18n("scoreboard")}
             >
               <Icon name={open ? "chevron-up" : "chevron-down"} className="h-4 w-4" />

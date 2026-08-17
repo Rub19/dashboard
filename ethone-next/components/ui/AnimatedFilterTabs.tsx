@@ -49,7 +49,7 @@ export default function AnimatedFilterTabs({
             <span className="relative z-10 whitespace-nowrap">{tab.label}</span>
             {typeof tab.count === "number" && (
               <span
-                className={`relative z-10 text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
+                className={`relative z-10 text-[10px] px-1.5 py-0.5 rounded-lg font-mono ${
                   isActive
                     ? "bg-emerald-500/30 text-emerald-200"
                     : "bg-white/5 text-zinc-500"

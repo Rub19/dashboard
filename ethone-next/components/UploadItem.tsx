@@ -116,12 +116,12 @@ export default function UploadItem({
                   {formatTimeLeft(task.secondsLeft)}s restantes • {formatSpeed(task.speed)}
                 </span>
               </div>
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-white/[0.06]">
+              <div className="h-1.5 w-full overflow-hidden rounded-xl bg-zinc-200 dark:bg-white/[0.06]">
                 <motion.div
                   initial={false}
                   animate={{ width: `${progress}%` }}
                   transition={{ duration: 0.15, ease: "easeOut" }}
-                  className={`h-full rounded-full ${trackColor}`}
+                  className={`h-full rounded-xl ${trackColor}`}
                 />
               </div>
             </div>

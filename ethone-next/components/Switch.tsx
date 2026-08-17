@@ -120,7 +120,7 @@ export default function Switch({
         aria-labelledby={ariaLabelledBy ?? (label ? labelId : undefined)}
         disabled={disabled || isLoading}
         onClick={handleToggle}
-        className={`group relative inline-flex items-center rounded-full border-2 p-0.5 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] disabled:cursor-not-allowed disabled:opacity-50 ${sizeConfig.rail} ${
+        className={`group relative inline-flex items-center rounded-xl border-2 p-0.5 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] disabled:cursor-not-allowed disabled:opacity-50 ${sizeConfig.rail} ${
           current
             ? "border-[var(--accent)] bg-[var(--accent)]"
             : "border-[var(--panel-border)] bg-[var(--panel-bg)]"

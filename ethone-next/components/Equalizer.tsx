@@ -6,7 +6,7 @@ export default function Equalizer({ bars = 5, className = "" }: { bars?: number;
       {Array.from({ length: bars }).map((_, i) => (
         <span
           key={i}
-          className="w-1 animate-eq rounded-full bg-emerald-400"
+          className="w-1 animate-eq rounded-lg bg-emerald-400"
           style={{
             height: "40%",
             animationDelay: `${i * 120}ms`,

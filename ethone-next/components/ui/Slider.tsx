@@ -100,10 +100,10 @@ export default function Slider({
         onKeyDown={handleKeyDown}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="relative h-1.5 w-full cursor-pointer rounded-full bg-zinc-200 outline-none transition-colors duration-200 hover:bg-zinc-300 focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:bg-white/[0.08] dark:hover:bg-white/[0.12]"
+        className="relative h-1.5 w-full cursor-pointer rounded-xl bg-zinc-200 outline-none transition-colors duration-200 hover:bg-zinc-300 focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:bg-white/[0.08] dark:hover:bg-white/[0.12]"
       >
         <div
-          className="pointer-events-none absolute left-0 top-0 h-full rounded-full transition-colors duration-150"
+          className="pointer-events-none absolute left-0 top-0 h-full rounded-xl transition-colors duration-150"
           style={{
             width: `${percentage}%`,
             background: "var(--accent)",

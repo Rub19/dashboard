@@ -4,6 +4,17 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : standardisation des arrondis et refonte cartes Calendrier/Factures**
+
+### Corrige
+- Normalisation globale des rayons Tailwind sur `ethone-next/components/`, `app/` et `lib/hooks/` :
+  - `rounded-3xl` → `rounded-2xl` pour les grandes cartes et modales.
+  - `rounded-[2rem]` / grandes valeurs dynamiques → `rounded-2xl`.
+  - `rounded-full` sur boutons, inputs, badges, pillules et barres remplacé par `rounded-lg` / `rounded-xl`.
+  - Conservation de `rounded-full` pour les vrais cercles : avatars, pastilles d'état, interrupteurs, anneaux et éléments `h-2 w-2`.
+- `ethone-next/components/EventsAndBillsCards.tsx` : nouveau composant regroupant `EventsCard` (sélecteur de source, liste d'événements, CTA `Ajouter`) et `InvoicesCard` (total du mois, échéances 30 jours, sélecteur de semaine 7 jours en grille, actions `Ajouter` / `Scanner`).
+- `ethone-next/components/CalendarInvoicesPage.tsx` : intégration de `EventsCard` et `InvoicesCard` dans la colonne latérale.
+
 **Migration Next.js : correction des widgets Gaming, Social & Météo**
 
 ### Corrige

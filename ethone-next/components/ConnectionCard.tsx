@@ -357,14 +357,14 @@ export default function ConnectionCard({
             <div className="min-w-0">
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-bold text-white">{integration.name}</h3>
-                <span className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${methodClass}`}>
+                <span className={`rounded-lg border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${methodClass}`}>
                   {config ? config.badge : i18n(methodKey)}
                 </span>
               </div>
               <p className="truncate text-xs text-zinc-400">{config?.description || i18n(integration.description)}</p>
             </div>
           </div>
-          <span className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-semibold ${statusClass}`}>{statusText}</span>
+          <span className={`shrink-0 rounded-lg border px-2.5 py-1 text-[10px] font-semibold ${statusClass}`}>{statusText}</span>
         </div>
 
         {/* OAuth connect */}

@@ -186,7 +186,7 @@ export default function FilesAdminPanel() {
             <Icon name={t.icon} className="h-4 w-4" />
             <span className="hidden sm:inline">{t.label}</span>
             <span className="sm:hidden">{t.label}</span>
-            {t.count > 0 && <span className="ml-0.5 rounded-full bg-white/20 px-1.5 py-0.5 text-[10px]">{t.count}</span>}
+            {t.count > 0 && <span className="ml-0.5 rounded-lg bg-white/20 px-1.5 py-0.5 text-[10px]">{t.count}</span>}
           </button>
         ))}
       </div>
@@ -235,9 +235,9 @@ export default function FilesAdminPanel() {
               <span className="text-[var(--muted)]">{i18n("storageUsed")}</span>
               <span className="font-medium">{dashboard ? formatBytes(dashboard.totalSize) : "-"} / {formatBytes(STORAGE_CAP)}</span>
             </div>
-            <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[var(--panel-bg)]">
+            <div className="mt-2 h-2 w-full overflow-hidden rounded-xl bg-[var(--panel-bg)]">
               <div
-                className={`h-full rounded-full ${usagePct > 90 ? "bg-red-400" : usagePct > 70 ? "bg-amber-400" : "bg-emerald-400"}`}
+                className={`h-full rounded-xl ${usagePct > 90 ? "bg-red-400" : usagePct > 70 ? "bg-amber-400" : "bg-emerald-400"}`}
                 style={{ width: `${usagePct}%` }}
               />
             </div>

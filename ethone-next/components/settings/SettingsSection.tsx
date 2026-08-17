@@ -36,7 +36,7 @@ export default function SettingsSection({
           <h2 className="text-sm font-semibold text-[var(--foreground)]">{label}</h2>
         </div>
         {modifiedCount ? (
-          <span className="rounded-full bg-[var(--accent)]/10 px-2.5 py-1 text-[10px] font-medium text-[var(--accent)]">
+          <span className="rounded-lg bg-[var(--accent)]/10 px-2.5 py-1 text-[10px] font-medium text-[var(--accent)]">
             {modifiedCount} modifié{modifiedCount > 1 ? "s" : ""}
           </span>
         ) : null}

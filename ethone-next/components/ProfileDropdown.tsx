@@ -240,7 +240,7 @@ export default function ProfileDropdown() {
         type="button"
         onClick={() => setOpen(!open)}
         disabled={pending}
-        className="flex h-10 items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-2 text-zinc-200 transition-colors hover:bg-white/[0.05]"
+        className="flex h-10 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-2 text-zinc-200 transition-colors hover:bg-white/[0.05]"
         aria-label={i18n("profile")}
         aria-expanded={open}
         aria-haspopup="true"
@@ -269,7 +269,7 @@ export default function ProfileDropdown() {
                   <p className="truncate text-[11px] text-zinc-400 max-w-[160px]">{email}</p>
                 </div>
               </div>
-              <span className="flex shrink-0 items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
+              <span className="flex shrink-0 items-center gap-1 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 {i18n("active") || "Actif"}
               </span>

@@ -26,7 +26,7 @@ export default function DayEventsCard({ date, items, onAdd }: DayEventsCardProps
   return (
     <BentoCard title={label} icon="calendar-days" action={
       isToday ? (
-        <span className="inline-flex items-center rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-300">
+        <span className="inline-flex items-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-300">
           Aujourd&apos;hui
         </span>
       ) : null

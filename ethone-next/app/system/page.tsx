@@ -200,7 +200,7 @@ export default function SystemPage() {
                     </div>
                   </div>
                   {isActive ? (
-                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${w.accent.badge}`}>
+                    <span className={`rounded-lg px-2 py-0.5 text-[10px] font-semibold capitalize ${w.accent.badge}`}>
                       {i18n("active")}
                     </span>
                   ) : null}
@@ -289,7 +289,7 @@ export default function SystemPage() {
                       </div>
                     </div>
                     {isActive && (
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${workspace?.accent.badge ?? "bg-emerald-500/20 text-emerald-400"}`}>
+                      <span className={`rounded-lg px-2 py-0.5 text-[10px] font-semibold capitalize ${workspace?.accent.badge ?? "bg-emerald-500/20 text-emerald-400"}`}>
                         {i18n("active")}
                       </span>
                     )}
@@ -328,7 +328,7 @@ export default function SystemPage() {
                       </div>
                     </div>
                     {isActive && (
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${workspace?.accent.badge ?? "bg-emerald-500/20 text-emerald-400"}`}>
+                      <span className={`rounded-lg px-2 py-0.5 text-[10px] font-semibold capitalize ${workspace?.accent.badge ?? "bg-emerald-500/20 text-emerald-400"}`}>
                         {i18n("active")}
                       </span>
                     )}

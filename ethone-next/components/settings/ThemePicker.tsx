@@ -105,8 +105,8 @@ function ThemeCard({
             className="h-6 w-6 rounded-full shadow-lg"
             style={{ backgroundColor: theme.accent, boxShadow: `0 0 12px ${theme.accent}80` }}
           />
-          <span className="h-2 w-12 rounded-full opacity-60" style={{ backgroundColor: theme.foreground }} />
-          <span className="h-2 w-8 rounded-full opacity-40" style={{ backgroundColor: theme.foreground }} />
+          <span className="h-2 w-12 rounded-lg opacity-60" style={{ backgroundColor: theme.foreground }} />
+          <span className="h-2 w-8 rounded-lg opacity-40" style={{ backgroundColor: theme.foreground }} />
         </div>
       </div>
 

@@ -111,7 +111,7 @@ export default function DiscordConfig() {
           <h3 className="font-semibold text-white">Discord</h3>
           <p className="text-xs text-zinc-500">{i18n("descDiscord")}</p>
         </div>
-        <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${statusClass}`}>
+        <span className={`rounded-lg px-2.5 py-1 text-[10px] font-semibold ${statusClass}`}>
           {statusText}
         </span>
       </div>

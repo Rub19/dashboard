@@ -38,7 +38,7 @@ export default function ConnectionDiagnostics() {
     <Card3D>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold">{i18n("diagnosticsTitle")}</h2>
-        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${ok === checks.length ? "bg-emerald-500/10 text-emerald-400" : "bg-amber-500/10 text-amber-400"}`}>
+        <span className={`rounded-lg px-2 py-0.5 text-xs font-medium ${ok === checks.length ? "bg-emerald-500/10 text-emerald-400" : "bg-amber-500/10 text-amber-400"}`}>
           {ok}/{checks.length}
         </span>
       </div>

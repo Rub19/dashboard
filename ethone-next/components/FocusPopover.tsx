@@ -146,7 +146,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
                   <button
                     type="button"
                     onClick={() => (state.paused ? resume() : pause())}
-                    className="rounded-full bg-[var(--panel-bg)] p-2 transition-colors hover:bg-[var(--accent)]/10"
+                    className="rounded-lg bg-[var(--panel-bg)] p-2 transition-colors hover:bg-[var(--accent)]/10"
                     aria-label={state.paused ? i18n("resume") : i18n("pause")}
                   >
                     <Icon name={state.paused ? "play" : "pause"} className="h-4 w-4" />
@@ -156,7 +156,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
                   <button
                     type="button"
                     onClick={stop}
-                    className="rounded-full bg-[var(--panel-bg)] p-2 transition-colors hover:bg-red-500/10"
+                    className="rounded-lg bg-[var(--panel-bg)] p-2 transition-colors hover:bg-red-500/10"
                     aria-label={i18n("stop")}
                   >
                     <Icon name="square" className="h-4 w-4" />
@@ -166,7 +166,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
                   <button
                     type="button"
                     onClick={skip}
-                    className="rounded-full bg-[var(--panel-bg)] p-2 transition-colors hover:bg-[var(--accent)]/10"
+                    className="rounded-lg bg-[var(--panel-bg)] p-2 transition-colors hover:bg-[var(--accent)]/10"
                     aria-label={i18n("skip")}
                   >
                     <Icon name="skipForward" className="h-4 w-4" />
@@ -176,8 +176,8 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
             </div>
 
             {state.phase !== "idle" && (
-              <div className="mb-4 h-2 w-full overflow-hidden rounded-full bg-[var(--panel-bg)]">
-                <div className="h-full rounded-full bg-[var(--accent)] transition-colors duration-150" style={{ width: `${progress}%` }} />
+              <div className="mb-4 h-2 w-full overflow-hidden rounded-xl bg-[var(--panel-bg)]">
+                <div className="h-full rounded-xl bg-[var(--accent)] transition-colors duration-150" style={{ width: `${progress}%` }} />
               </div>
             )}
 

@@ -371,8 +371,8 @@ export default function FilesPage() {
               <span className="text-[var(--muted)]">{i18n("storageUsed")}</span>
               <span className="font-medium">{formatBytes(quota.used)} / {formatBytes(quota.total)}</span>
             </div>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--border)]">
-              <div className="h-full rounded-full bg-violet-500" style={{ width: `${quotaPercent}%` }} />
+            <div className="h-2 w-full overflow-hidden rounded-xl bg-[var(--border)]">
+              <div className="h-full rounded-xl bg-violet-500" style={{ width: `${quotaPercent}%` }} />
             </div>
           </div>
         </Card3D>

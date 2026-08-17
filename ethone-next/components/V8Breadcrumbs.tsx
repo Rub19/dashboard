@@ -132,7 +132,7 @@ function ContextItem({
 }) {
   return (
     <div
-      className="flex min-w-0 items-center gap-1.5 rounded-full px-2 py-1 text-[10px] text-[var(--foreground)] transition-colors hover:bg-[var(--panel-bg)]"
+      className="flex min-w-0 items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] text-[var(--foreground)] transition-colors hover:bg-[var(--panel-bg)]"
       data-tone={tone}
       title={title}
     >
@@ -197,7 +197,7 @@ function WeatherButton({
         data-tooltip={i18n("weather")}
         data-interactive
         aria-label={`${i18n("weather")} ${temp}`}
-        className="relative flex h-8 items-center gap-1.5 rounded-full border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
+        className="relative flex h-8 items-center gap-1.5 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
       >
         <Icon name={weatherIcon(condition)} className="h-4 w-4" />
         <span className="text-sm font-medium tabular-nums">{temp}</span>

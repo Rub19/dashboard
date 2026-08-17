@@ -59,7 +59,7 @@ export default function PresenceIndicator({
         <Icon name={p.meta.icon} className={`${iconSize} ${p.meta.iconClass}`} />
       )}
       {p.badge !== undefined && p.badge > 0 ? (
-        <span className="absolute -right-1 -top-1 flex h-3.5 min-w-[0.875rem] items-center justify-center rounded-full bg-[var(--accent)] px-1 text-[8px] font-bold text-white">
+        <span className="absolute -right-1 -top-1 flex h-3.5 min-w-[0.875rem] items-center justify-center rounded-lg bg-[var(--accent)] px-1 text-[8px] font-bold text-white">
           {p.badge > 99 ? "99+" : p.badge}
         </span>
       ) : null}

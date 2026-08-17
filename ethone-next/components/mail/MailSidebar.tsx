@@ -85,8 +85,8 @@ export default function MailSidebar({ active, onChange, counts, unread, onCompos
 
       <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
         <p className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider">{i18n("storage") || "Stockage"}</p>
-        <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-white/[0.05]">
-          <div className="h-full w-[12%] rounded-full bg-[var(--accent-color,#a855f7)]" />
+        <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-xl bg-white/[0.05]">
+          <div className="h-full w-[12%] rounded-xl bg-[var(--accent-color,#a855f7)]" />
         </div>
         <p className="mt-1.5 text-[10px] text-zinc-500">{i18n("usedOf") || "12% utilisé"}</p>
       </div>

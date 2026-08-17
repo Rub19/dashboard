@@ -587,7 +587,7 @@ export default function LiveWidgets({
           <button
             type="button"
             onClick={() => controlSpotify("previous")}
-            className="rounded-full p-1.5 text-[var(--foreground)] hover:bg-white/10"
+            className="rounded-lg p-1.5 text-[var(--foreground)] hover:bg-white/10"
             aria-label={i18n("previous")}
           >
             <Icon name="skipBack" className="h-4 w-4" />
@@ -595,7 +595,7 @@ export default function LiveWidgets({
           <button
             type="button"
             onClick={() => controlSpotify(track.isPlaying ? "pause" : "play")}
-            className="rounded-full bg-emerald-500 p-2 text-white hover:bg-emerald-400"
+            className="rounded-lg bg-emerald-500 p-2 text-white hover:bg-emerald-400"
             aria-label={track.isPlaying ? i18n("pause") : i18n("play")}
           >
             {track.isPlaying ? <Icon name="pause" className="h-4 w-4" /> : <Icon name="play" className="h-4 w-4" />}
@@ -603,7 +603,7 @@ export default function LiveWidgets({
           <button
             type="button"
             onClick={() => controlSpotify("next")}
-            className="rounded-full p-1.5 text-[var(--foreground)] hover:bg-white/10"
+            className="rounded-lg p-1.5 text-[var(--foreground)] hover:bg-white/10"
             aria-label={i18n("next")}
           >
             <Icon name="skipForward" className="h-4 w-4" />
@@ -615,7 +615,7 @@ export default function LiveWidgets({
               setSaved(next);
               if (track.id) await controlSpotify(next ? "save" : "unsave", track.id);
             }}
-            className={`ml-auto rounded-full p-1.5 ${saved ? "text-emerald-400" : "text-rose-400"} hover:bg-rose-500/10`}
+            className={`ml-auto rounded-lg p-1.5 ${saved ? "text-emerald-400" : "text-rose-400"} hover:bg-rose-500/10`}
             aria-label={saved ? i18n("unlike") : i18n("like")}
           >
             <Icon name={saved ? "heart-off" : "heart"} className="h-4 w-4" />
@@ -655,7 +655,7 @@ export default function LiveWidgets({
       <div className="flex h-full flex-col gap-3">
         <div className="flex items-center justify-between gap-2">
           <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
-          <div className="flex items-center gap-1.5 rounded-full bg-[var(--panel-bg)] px-2 py-1">
+          <div className="flex items-center gap-1.5 rounded-xl bg-[var(--panel-bg)] px-2 py-1">
             <span className={`h-2.5 w-2.5 rounded-full ${statusColor[status] || statusColor.offline}`} />
             <span className="text-xs font-medium capitalize text-[var(--foreground)]">
               {i18n(statusLabels[status] || "statusOffline")}
@@ -740,13 +740,13 @@ export default function LiveWidgets({
           </div>
           <div className="flex flex-wrap items-center justify-end gap-1.5">
             {model && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] text-emerald-400">
+              <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-500/10 px-2 py-1 text-[10px] text-emerald-400">
                 <Icon name="box" className="h-3 w-3" />
                 {model}
               </span>
             )}
             {cape && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-1 text-[10px] text-amber-400">
+              <span className="inline-flex items-center gap-1 rounded-lg bg-amber-500/10 px-2 py-1 text-[10px] text-amber-400">
                 <Icon name="shirt" className="h-3 w-3" />
                 Cape
               </span>
@@ -785,7 +785,7 @@ export default function LiveWidgets({
       <div className="flex h-full flex-col gap-3">
         <div className="flex items-center justify-between">
           <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
-          <span className="rounded-full bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
+          <span className="rounded-lg bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
             {i18n("billsTotalThisMonth")}
           </span>
         </div>
@@ -1047,13 +1047,13 @@ export default function LiveWidgets({
 
         <div className="mb-3 flex flex-wrap gap-2">
           {model && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] text-emerald-400">
+            <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-500/10 px-2 py-1 text-[10px] text-emerald-400">
               <Icon name="box" className="h-3 w-3" />
               {model}
             </span>
           )}
           {cape && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-1 text-[10px] text-amber-400">
+            <span className="inline-flex items-center gap-1 rounded-lg bg-amber-500/10 px-2 py-1 text-[10px] text-amber-400">
               <Icon name="shirt" className="h-3 w-3" />
               Cape
             </span>
@@ -1130,15 +1130,15 @@ export default function LiveWidgets({
                       e.stopPropagation();
                       toggleHidden(record.id);
                     }}
-                    className="absolute left-3 top-3 z-10 rounded-full bg-[var(--panel-bg)] p-1.5 text-[var(--foreground)] hover:bg-[var(--panel-bg)]"
+                    className="absolute left-3 top-3 z-10 rounded-lg bg-[var(--panel-bg)] p-1.5 text-[var(--foreground)] hover:bg-[var(--panel-bg)]"
                   >
                     <Icon name={hidden.has(record.id) ? "eye-off" : "eye"} className="h-3.5 w-3.5" />
                   </button>
-                  <div className="absolute right-3 bottom-3 z-10 flex gap-1.5 rounded-full bg-[var(--panel-bg)] p-1">
+                  <div className="absolute right-3 bottom-3 z-10 flex gap-1.5 rounded-lg bg-[var(--panel-bg)] p-1">
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); moveRecord(record.id, "up"); }}
-                      className="rounded-full p-1 hover:bg-[var(--panel-bg)]"
+                      className="rounded-lg p-1 hover:bg-[var(--panel-bg)]"
                       aria-label={i18n("moveUp")}
                     >
                       <Icon name="arrow-up" className="h-3.5 w-3.5" />
@@ -1146,7 +1146,7 @@ export default function LiveWidgets({
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); moveRecord(record.id, "down"); }}
-                      className="rounded-full p-1 hover:bg-[var(--panel-bg)]"
+                      className="rounded-lg p-1 hover:bg-[var(--panel-bg)]"
                       aria-label={i18n("moveDown")}
                     >
                       <Icon name="arrow-down" className="h-3.5 w-3.5" />
@@ -1230,16 +1230,16 @@ export default function LiveWidgets({
                     </div>
                   )}
                   <div className="flex items-center gap-2">
-                    <button onClick={() => controlSpotify("previous")} className="rounded-full p-1.5 text-[var(--foreground)] hover:bg-white/10">
+                    <button onClick={() => controlSpotify("previous")} className="rounded-lg p-1.5 text-[var(--foreground)] hover:bg-white/10">
                       <Icon name="skipBack" className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => controlSpotify(nowPlaying.isPlaying ? "pause" : "play")}
-                      className="rounded-full bg-emerald-500 p-2 text-white hover:bg-emerald-400"
+                      className="rounded-lg bg-emerald-500 p-2 text-white hover:bg-emerald-400"
                     >
                       {nowPlaying.isPlaying ? <Icon name="pause" className="h-4 w-4" /> : <Icon name="play" className="h-4 w-4" />}
                     </button>
-                    <button onClick={() => controlSpotify("next")} className="rounded-full p-1.5 text-[var(--foreground)] hover:bg-white/10">
+                    <button onClick={() => controlSpotify("next")} className="rounded-lg p-1.5 text-[var(--foreground)] hover:bg-white/10">
                       <Icon name="skipForward" className="h-4 w-4" />
                     </button>
                     <button
@@ -1248,7 +1248,7 @@ export default function LiveWidgets({
                         setSaved(next);
                         await controlSpotify(next ? "save" : "unsave", nowPlaying?.id);
                       }}
-                      className={`ml-auto rounded-full p-1.5 ${saved ? "text-emerald-400" : "text-rose-400"} hover:bg-rose-500/10`}
+                      className={`ml-auto rounded-lg p-1.5 ${saved ? "text-emerald-400" : "text-rose-400"} hover:bg-rose-500/10`}
                       aria-label={saved ? i18n("unlike") : i18n("like")}
                     >
                       <Icon name={saved ? "heart-off" : "heart"} className="h-4 w-4" />
@@ -1290,7 +1290,7 @@ export default function LiveWidgets({
             <button
               type="button"
               onClick={() => setActiveCategory("all")}
-              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+              className={`rounded-xl px-3 py-1 text-xs font-medium transition-colors ${
                 activeCategory === "all" ? "bg-[var(--accent)] text-white" : "bg-[var(--panel-bg)] text-[var(--muted)] hover:text-[var(--foreground)]"
               }`}
             >
@@ -1304,7 +1304,7 @@ export default function LiveWidgets({
                   key={cat}
                   type="button"
                   onClick={() => setActiveCategory(cat)}
-                  className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                  className={`rounded-xl px-3 py-1 text-xs font-medium transition-colors ${
                     activeCategory === cat ? "bg-[var(--accent)] text-white" : "bg-[var(--panel-bg)] text-[var(--muted)] hover:text-[var(--foreground)]"
                   }`}
                 >

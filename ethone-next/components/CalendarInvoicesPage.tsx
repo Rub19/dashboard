@@ -126,7 +126,7 @@ export default function CalendarInvoicesPage() {
             {selectedItem.vendor && (
               <div className="mt-3 flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] p-3">
                 <span
-                  className="flex h-8 w-8 items-center justify-center rounded-lg text-white"
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-white"
                   style={{ backgroundColor: selectedItem.color || "#A259FF" }}
                 >
                   <VendorLogo vendor={selectedItem.vendor} className="h-4 w-4" />

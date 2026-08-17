@@ -158,13 +158,13 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
 
         {isPlaying && hasTrack && (
           <span className="absolute bottom-1.5 flex h-1.5 items-end gap-0.5" aria-hidden="true">
-            <span className="h-1 w-0.5 animate-pulse rounded-full bg-emerald-400" />
+            <span className="h-1 w-0.5 animate-pulse rounded-lg bg-emerald-400" />
             <span
-              className="h-2.5 w-0.5 animate-pulse rounded-full bg-emerald-400"
+              className="h-2.5 w-0.5 animate-pulse rounded-lg bg-emerald-400"
               style={{ animationDelay: "75ms" }}
             />
             <span
-              className="h-1 w-0.5 animate-pulse rounded-full bg-emerald-400"
+              className="h-1 w-0.5 animate-pulse rounded-lg bg-emerald-400"
               style={{ animationDelay: "150ms" }}
             />
           </span>
@@ -229,7 +229,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
 
                 <div className="flex flex-col gap-1">
                   <div
-                    className="relative h-1 w-full cursor-pointer overflow-hidden rounded-full bg-white/[0.08]"
+                    className="relative h-1 w-full cursor-pointer overflow-hidden rounded-xl bg-white/[0.08]"
                     onClick={(e) => {
                       if (!duration || !clientId) return;
                       const rect = e.currentTarget.getBoundingClientRect();
@@ -241,7 +241,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                     }}
                   >
                     <div
-                      className="h-full rounded-full bg-emerald-400"
+                      className="h-full rounded-xl bg-emerald-400"
                       style={{ width: `${progressPct}%` }}
                     />
                   </div>

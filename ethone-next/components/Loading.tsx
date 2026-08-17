@@ -22,7 +22,7 @@ export default function Loading({ message = "Initialisation" }: { message?: stri
       </motion.div>
 
       <motion.div
-        className="h-1 w-32 overflow-hidden rounded-full bg-[var(--panel-bg)]"
+        className="h-1 w-32 overflow-hidden rounded-xl bg-[var(--panel-bg)]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}

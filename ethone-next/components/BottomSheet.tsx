@@ -97,7 +97,7 @@ export default function BottomSheet({
                 onPointerDown={(e) => dragControls.start(e)}
                 aria-hidden="true"
               >
-                <div className="h-1.5 w-12 rounded-full bg-[var(--border)]" />
+                <div className="h-1.5 w-12 rounded-lg bg-[var(--border)]" />
               </div>
             )}
 

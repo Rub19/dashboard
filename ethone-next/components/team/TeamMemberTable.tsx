@@ -77,7 +77,7 @@ function StatusBadge({ status, invitedAt }: { status: TeamStatus; invitedAt?: st
 function RoleBadge({ role }: { role: TeamRole }) {
   const meta = ROLE_META[role] || ROLE_META.viewer;
   return (
-    <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-medium capitalize ${meta.color} ${meta.border} ${meta.bg}`}>
+    <span className={`inline-flex rounded-lg border px-2 py-0.5 text-[10px] font-medium capitalize ${meta.color} ${meta.border} ${meta.bg}`}>
       {meta.label}
     </span>
   );

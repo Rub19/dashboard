@@ -315,7 +315,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
     const isFallback = m.fallback;
     return (
       <span
-        className={`mt-1 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] ${
+        className={`mt-1 inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 text-[10px] ${
           isFallback
             ? "border-amber-500/30 bg-amber-500/10 text-amber-300"
             : "border-purple-500/30 bg-purple-500/10 text-purple-300"

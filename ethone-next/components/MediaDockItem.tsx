@@ -47,9 +47,9 @@ export default function MediaDockItem({
 
       {playing && (
         <span className="mt-0.5 flex h-2.5 items-end gap-0.5" aria-hidden="true">
-          <span className="h-1 w-0.5 animate-pulse rounded-full bg-emerald-400" />
-          <span className="h-2 w-0.5 animate-pulse rounded-full bg-emerald-400" style={{ animationDelay: "75ms" }} />
-          <span className="h-1.5 w-0.5 animate-pulse rounded-full bg-emerald-400" style={{ animationDelay: "150ms" }} />
+          <span className="h-1 w-0.5 animate-pulse rounded-lg bg-emerald-400" />
+          <span className="h-2 w-0.5 animate-pulse rounded-lg bg-emerald-400" style={{ animationDelay: "75ms" }} />
+          <span className="h-1.5 w-0.5 animate-pulse rounded-lg bg-emerald-400" style={{ animationDelay: "150ms" }} />
         </span>
       )}
 

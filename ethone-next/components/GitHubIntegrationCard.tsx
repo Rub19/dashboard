@@ -114,7 +114,7 @@ export default function GitHubIntegrationCard({ connected: connectedProp, health
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-bold text-white">GitHub</h3>
-              <span className="rounded-full border border-purple-500/20 bg-purple-500/10 px-2 py-0.5 text-[10px] font-semibold text-purple-300">
+              <span className="rounded-lg border border-purple-500/20 bg-purple-500/10 px-2 py-0.5 text-[10px] font-semibold text-purple-300">
                 OAUTH 2.0
               </span>
             </div>

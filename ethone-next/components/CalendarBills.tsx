@@ -114,7 +114,7 @@ export default function CalendarBills({ items = MOCK_ITEMS }: { items?: Calendar
 
   return (
     <div className="mx-auto w-full max-w-5xl p-4 sm:p-6">
-      <div className="overflow-hidden rounded-[2rem] border border-[var(--panel-border)] bg-[var(--panel-bg)]/[0.04] shadow-2xl backdrop-blur-xl">
+      <div className="overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/[0.04] shadow-2xl backdrop-blur-xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--panel-border)] px-6 py-5">
           <h2 className="text-xl font-semibold tracking-tight text-[var(--foreground)]">
@@ -134,7 +134,7 @@ export default function CalendarBills({ items = MOCK_ITEMS }: { items?: Calendar
             <button
               type="button"
               onClick={() => setCurrentDate(new Date(2026, 0, 1))}
-              className="rounded-full bg-white/10 px-4 py-1.5 text-xs font-medium text-[var(--foreground)] transition-colors hover:bg-white/15"
+              className="rounded-xl bg-white/10 px-4 py-1.5 text-xs font-medium text-[var(--foreground)] transition-colors hover:bg-white/15"
             >
               Today
             </button>

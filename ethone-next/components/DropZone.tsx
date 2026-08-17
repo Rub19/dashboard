@@ -59,7 +59,7 @@ export default function DropZone({
         borderColor: dragging ? "var(--accent)" : "rgba(255,255,255,0.10)",
       }}
       transition={{ duration: 0.15, ease: "easeOut" as const }}
-      className={`group relative flex min-h-[14rem] cursor-pointer flex-col items-center justify-center gap-4 overflow-hidden rounded-3xl border-2 border-dashed border-[var(--panel-border)] bg-[var(--panel-bg)]/60 p-8 text-center backdrop-blur-xl transition-colors ${
+      className={`group relative flex min-h-[14rem] cursor-pointer flex-col items-center justify-center gap-4 overflow-hidden rounded-2xl border-2 border-dashed border-[var(--panel-border)] bg-[var(--panel-bg)]/60 p-8 text-center backdrop-blur-xl transition-colors ${
         dragging ? "border-solid border-accent bg-accent/5" : ""
       } ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
     >

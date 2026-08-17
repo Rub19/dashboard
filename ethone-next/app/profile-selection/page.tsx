@@ -193,7 +193,7 @@ export default function ProfileSelectionPage() {
                 alt=""
                 width={24}
                 height={24}
-                className="rounded-full object-cover"
+                className="rounded-xl object-cover"
               />
             ) : preview.avatar.kind === "symbol" ? (
               <span className="text-lg leading-none">{preview.avatar.value}</span>
@@ -219,7 +219,7 @@ export default function ProfileSelectionPage() {
                 <div className="flex items-center gap-2">
                   <p className="font-medium">{p.name}</p>
                   {active === p.id && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
+                    <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
                       <Icon name="check" className="h-3 w-3" /> {i18n("active")}
                     </span>
                   )}

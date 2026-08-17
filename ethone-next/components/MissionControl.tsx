@@ -169,7 +169,7 @@ function Section({ title, count, children }: { title: string; count: number; chi
     <section className="space-y-2">
       <header className="flex items-center gap-2">
         <h3 className="text-sm font-semibold text-[var(--foreground)]">{title}</h3>
-        <span className="rounded-full bg-[var(--panel-bg)] px-2 py-0.5 text-xs text-[var(--muted)]">{count}</span>
+        <span className="rounded-lg bg-[var(--panel-bg)] px-2 py-0.5 text-xs text-[var(--muted)]">{count}</span>
       </header>
       {children}
     </section>
@@ -306,7 +306,7 @@ function MissionControlDialog() {
           <button
             type="button"
             onClick={() => setMissionControl(false)}
-            className="rounded-full bg-[var(--panel-bg)] p-2 text-[var(--foreground)] transition-colors hover:bg-[var(--panel-bg)]"
+            className="rounded-lg bg-[var(--panel-bg)] p-2 text-[var(--foreground)] transition-colors hover:bg-[var(--panel-bg)]"
             aria-label={i18n("close")}
           >
             <Icon name="close" className="h-5 w-5" />
@@ -359,7 +359,7 @@ function MissionControlDialog() {
                     <span className="block truncate text-xs text-[var(--muted)]">{i18n(w.description)}</span>
                   </span>
                   {w.id === activeWorkspace.id ? (
-                    <span className="rounded-full bg-[var(--accent)]/20 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent)]">
+                    <span className="rounded-lg bg-[var(--accent)]/20 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent)]">
                       {i18n("missionActive")}
                     </span>
                   ) : (
@@ -471,7 +471,7 @@ function MissionControlDialog() {
                         e.stopPropagation();
                         closeWindow(win.id);
                       }}
-                      className="absolute right-2 top-2 z-10 rounded-full bg-[var(--panel-bg)]/40 p-1.5 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                      className="absolute right-2 top-2 z-10 rounded-lg bg-[var(--panel-bg)]/40 p-1.5 text-white opacity-0 transition-opacity group-hover:opacity-100"
                       aria-label={i18n("closeWindow")}
                     >
                       <Icon name="close" className="h-3.5 w-3.5" />

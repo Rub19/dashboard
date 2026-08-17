@@ -107,12 +107,12 @@ export default function FlowCard({
             <h3 className="truncate text-sm font-bold text-white">{title}</h3>
             <div className="mt-1 flex items-center gap-2">
               {active || running ? (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
+                <span className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
                   <PulsingDot color="bg-emerald-400" />
                   {running ? "En cours" : "Actif"}
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-700/50 bg-white/[0.03] px-2 py-0.5 text-[10px] font-semibold text-zinc-400">
+                <span className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700/50 bg-white/[0.03] px-2 py-0.5 text-[10px] font-semibold text-zinc-400">
                   <span className="h-1.5 w-1.5 rounded-full bg-zinc-500" />
                   En pause
                 </span>

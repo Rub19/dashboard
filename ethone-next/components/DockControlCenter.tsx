@@ -56,7 +56,7 @@ function Toggle({ label, checked, onChange }: ToggleProps) {
         type="button"
         onClick={() => onChange(!checked)}
         aria-pressed={checked}
-        className={`relative h-5 w-9 rounded-full transition-colors ${
+        className={`relative h-5 w-9 rounded-xl transition-colors ${
           checked ? "bg-[var(--accent)]" : "bg-[var(--border)]"
         }`}
       >

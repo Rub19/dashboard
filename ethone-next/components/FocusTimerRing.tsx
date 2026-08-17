@@ -63,7 +63,7 @@ export default function FocusTimerRing({ progress, remaining, label, size = 288 
         <p className="text-5xl font-bold font-mono tracking-tight text-white sm:text-6xl">
           {remaining}
         </p>
-        <span className="mt-2 inline-flex items-center rounded-full border border-white/[0.06] bg-white/[0.04] px-3 py-1 text-xs font-semibold uppercase tracking-widest text-zinc-400">
+        <span className="mt-2 inline-flex items-center rounded-xl border border-white/[0.06] bg-white/[0.04] px-3 py-1 text-xs font-semibold uppercase tracking-widest text-zinc-400">
           {label}
         </span>
       </div>

@@ -67,7 +67,7 @@ export default function GamingCard({ minecraft, className = "" }: GamingCardProp
       <div className="flex items-center justify-between">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Gaming</span>
         <span
-          className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] font-medium ${
+          className={`inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 text-[10px] font-medium ${
             isOnline
               ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
               : "border-zinc-500/30 bg-zinc-500/10 text-zinc-400"

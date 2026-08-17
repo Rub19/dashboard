@@ -275,7 +275,7 @@ export default function WeatherPage() {
                   type="button"
                   onClick={load}
                   disabled={loading}
-                  className="rounded-full p-1.5 text-zinc-500 transition-colors hover:text-white disabled:opacity-50"
+                  className="rounded-lg p-1.5 text-zinc-500 transition-colors hover:text-white disabled:opacity-50"
                   aria-label={i18n("refresh")}
                 >
                   <Icon name="refresh-cw" className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
@@ -297,12 +297,12 @@ export default function WeatherPage() {
 
               <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-zinc-400">
                 {feelsLike !== undefined && (
-                  <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-2.5 py-1">
+                  <span className="rounded-xl border border-white/[0.06] bg-white/[0.03] px-2.5 py-1">
                     Ressenti {Math.round(feelsLike)}°
                   </span>
                 )}
                 {todayMin !== undefined && todayMax !== undefined && (
-                  <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-2.5 py-1">
+                  <span className="rounded-xl border border-white/[0.06] bg-white/[0.03] px-2.5 py-1">
                     Min: {Math.round(todayMin)}° • Max: {Math.round(todayMax)}°
                   </span>
                 )}

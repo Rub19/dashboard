@@ -123,7 +123,7 @@ export default function SpacesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{i18n("spacesTitle")}</h1>
-        <span className="rounded-full bg-[var(--panel-bg)] px-3 py-1 text-sm text-[var(--muted)]">
+        <span className="rounded-xl bg-[var(--panel-bg)] px-3 py-1 text-sm text-[var(--muted)]">
           {spaces.length} {spaces.length > 1 ? i18n("opens") : i18n("open")}
         </span>
       </div>
@@ -151,7 +151,7 @@ export default function SpacesPage() {
                   <span className="text-sm font-medium">{i18n(w.id)}</span>
                 </div>
                 {isActive && (
-                  <span className={`absolute right-2 top-2 rounded-full px-1.5 py-0.5 text-[9px] font-semibold capitalize ${w.accent.badge}`}>
+                  <span className={`absolute right-2 top-2 rounded-lg px-1.5 py-0.5 text-[9px] font-semibold capitalize ${w.accent.badge}`}>
                     {i18n("active")}
                   </span>
                 )}

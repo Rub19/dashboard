@@ -200,7 +200,7 @@ export default function NotificationCenter() {
         {unreadCount > 0 && (
           <span
             data-notification-badge
-            className="absolute right-1 top-1 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-[var(--accent)] px-1 text-[10px] font-bold text-white"
+            className="absolute right-1 top-1 flex h-4 min-w-[1rem] items-center justify-center rounded-lg bg-[var(--accent)] px-1 text-[10px] font-bold text-white"
           >
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>

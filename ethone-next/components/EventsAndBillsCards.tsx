@@ -94,7 +94,7 @@ export function EventsCard({ date, items, onAdd }: EventsCardProps) {
               className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.03] p-2.5"
             >
               <span
-                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-white"
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-white"
                 style={{ backgroundColor: item.color || "#A259FF" }}
               >
                 <VendorLogo vendor={item.vendor} className="h-3.5 w-3.5" />
@@ -233,7 +233,7 @@ export function InvoicesCard({
           <span className="text-sm font-bold text-white">Factures</span>
         </div>
         <div className="text-right">
-          <p className="text-xl font-bold text-white">{amountText}</p>
+          <p className="text-xl font-bold font-mono tracking-tight text-white">{amountText}</p>
           <p className="text-[10px] text-zinc-400">{upcomingText}</p>
         </div>
       </div>
@@ -250,8 +250,8 @@ export function InvoicesCard({
               onClick={() => onSelectDate?.(day)}
               className={`flex flex-col items-center justify-center gap-0.5 rounded-lg p-2 text-center text-xs transition-colors ${
                 active
-                  ? "bg-emerald-500 font-bold text-zinc-950"
-                  : "text-zinc-400 hover:bg-white/[0.04]"
+                  ? "bg-emerald-500 font-bold text-zinc-950 shadow-sm"
+                  : "text-zinc-400 hover:bg-white/[0.04] hover:text-white"
               }`}
             >
               <span className="text-[9px] opacity-70">{WEEK_DAYS[idx]}</span>
@@ -269,7 +269,7 @@ export function InvoicesCard({
         <button
           type="button"
           onClick={onAdd}
-          className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-500 py-2 text-xs font-semibold text-white transition-colors hover:bg-emerald-400"
+          className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 py-2 text-xs font-semibold text-emerald-400 transition-all hover:bg-emerald-500/20 active:scale-[0.99]"
         >
           <Plus className="h-3.5 w-3.5" />
           Ajouter

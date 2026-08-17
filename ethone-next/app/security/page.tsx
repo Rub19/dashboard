@@ -192,7 +192,7 @@ export default function SecurityPage() {
                   <p className="truncate font-medium">{event.kind || event.action || i18n("event")}</p>
                   <p className="truncate text-xs text-[var(--muted)]">{formatDate(event.created_at)}</p>
                 </div>
-                <span className="shrink-0 rounded-full bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
+                <span className="shrink-0 rounded-lg bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
                   {event.ip || event.status || "-"}
                 </span>
               </div>

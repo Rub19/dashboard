@@ -78,7 +78,7 @@ export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus 
   );
 
   const badge = isLive ? (
-    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400">
+    <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400">
       <Icon name="radio" className="h-3 w-3" />
       <span className="uppercase tracking-wider">{i18n("live")}</span>
     </span>
@@ -140,9 +140,9 @@ export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus 
             )}
           </div>
           {isLive ? (
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/[0.06]">
+            <div className="h-1.5 w-full overflow-hidden rounded-xl bg-white/[0.06]">
               <div
-                className="h-full rounded-full bg-emerald-400 transition-all duration-1000"
+                className="h-full rounded-xl bg-emerald-400 transition-all duration-1000"
                 style={{ width: `${state.total ? ((state.total - state.remaining) / state.total) * 100 : 0}%` }}
               />
             </div>

@@ -235,7 +235,7 @@ export default function MinecraftWidget({ className = "" }: { className?: string
             />
           )}
 
-          <div className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full border border-white/10 bg-black/60 px-2 py-0.5 backdrop-blur-sm">
+          <div className="absolute left-3 top-3 flex items-center gap-1.5 rounded-lg border border-white/10 bg-black/60 px-2 py-0.5 backdrop-blur-sm">
             <span className={`h-2 w-2 rounded-full ${isOnline ? "bg-emerald-400" : "bg-zinc-500"}`} />
             <span className="text-[10px] font-medium text-zinc-200">
               {isOnline ? "En ligne" : "Hors ligne"}
@@ -248,11 +248,11 @@ export default function MinecraftWidget({ className = "" }: { className?: string
             <h3 className="truncate text-base font-bold text-zinc-100">{displayName || "—"}</h3>
           </div>
           <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-            <span className="rounded-full border border-emerald-500/30 bg-emerald-500/20 px-2 py-0.5 text-[10px] font-mono uppercase text-emerald-300">
+            <span className="rounded-lg border border-emerald-500/30 bg-emerald-500/20 px-2 py-0.5 text-[10px] font-mono uppercase text-emerald-300">
               Java Edition
             </span>
             {profile?.model && profile.model !== "classic" && (
-              <span className="rounded-full border border-sky-500/30 bg-sky-500/20 px-2 py-0.5 text-[10px] font-mono uppercase text-sky-300">
+              <span className="rounded-lg border border-sky-500/30 bg-sky-500/20 px-2 py-0.5 text-[10px] font-mono uppercase text-sky-300">
                 {profile.model}
               </span>
             )}
@@ -315,11 +315,11 @@ export default function MinecraftWidget({ className = "" }: { className?: string
         <div className="mb-2 flex items-center gap-2">
           <span className="text-xs font-semibold text-zinc-200">Surveillance serveur</span>
           {serverStatus?.online ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[10px] text-emerald-400">
+            <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-500/10 px-1.5 py-0.5 text-[10px] text-emerald-400">
               <Wifi className="h-3 w-3" /> Online
             </span>
           ) : serverAddress ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-red-500/10 px-1.5 py-0.5 text-[10px] text-red-400">
+            <span className="inline-flex items-center gap-1 rounded-lg bg-red-500/10 px-1.5 py-0.5 text-[10px] text-red-400">
               <WifiOff className="h-3 w-3" /> Offline
             </span>
           ) : null}

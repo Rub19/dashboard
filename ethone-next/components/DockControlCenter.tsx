@@ -100,7 +100,7 @@ function ActionButton({ icon, label, active, onClick }: ActionButtonProps) {
     <button
       type="button"
       onClick={onClick}
-      className={`flex flex-col items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent)] ${
+      className={`flex flex-col items-center gap-1 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent)] ${
         active ? "border-[var(--accent)] text-[var(--accent)]" : ""
       } backdrop-blur-[var(--panel-blur)]`}
     >
@@ -203,7 +203,7 @@ export default function DockControlCenter({
             data-control-center-placement={placement}
           >
             <div
-              className="max-h-[calc(80vh-2.5rem)] space-y-4 overflow-y-auto rounded-[var(--panel-radius)] border border-zinc-200 bg-white/90 p-4 shadow-[0_16px_50px_rgba(0,0,0,0.12)] backdrop-blur-3xl dark:border-white/[0.08] dark:bg-zinc-950/90 dark:shadow-[0_16px_50px_rgba(0,0,0,0.7)]"
+              className="max-h-[calc(80vh-2.5rem)] space-y-4 overflow-y-auto rounded-lg border border-zinc-200 bg-white/90 p-4 shadow-[0_16px_50px_rgba(0,0,0,0.12)] backdrop-blur-3xl dark:border-white/[0.08] dark:bg-zinc-950/90 dark:shadow-[0_16px_50px_rgba(0,0,0,0.7)]"
             >
               <div className="mb-2 flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-[var(--foreground)]">{i18n("controlCenter")}</h3>
@@ -227,7 +227,7 @@ export default function DockControlCenter({
                       key={id}
                       type="button"
                       onClick={() => update({ uiAnimations: id })}
-                      className={`rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-1.5 text-[10px] font-medium transition-colors hover:border-[var(--accent)] ${
+                      className={`rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-1.5 text-[10px] font-medium transition-colors hover:border-[var(--accent)] ${
                         settings.uiAnimations === id ? "border-[var(--accent)] text-[var(--accent)]" : ""
                       } backdrop-blur-[var(--panel-blur)]`}
                     >
@@ -280,7 +280,7 @@ export default function DockControlCenter({
                       key={pack}
                       type="button"
                       onClick={() => update({ soundPack: pack })}
-                      className={`flex flex-col items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent)] ${
+                      className={`flex flex-col items-center gap-1 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent)] ${
                         settings.soundPack === pack ? "border-[var(--accent)] text-[var(--accent)]" : ""
                       } backdrop-blur-[var(--panel-blur)]`}
                     >
@@ -308,7 +308,7 @@ export default function DockControlCenter({
                       key={id}
                       type="button"
                       onClick={() => setAmbience(id)}
-                      className={`flex flex-col items-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent)] ${
+                      className={`flex flex-col items-center gap-1 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent)] ${
                         ambience === id ? "border-[var(--accent)] text-[var(--accent)]" : ""
                       } backdrop-blur-[var(--panel-blur)]`}
                     >
@@ -322,7 +322,7 @@ export default function DockControlCenter({
               <Link
                 href="/settings/"
                 onClick={onClose}
-                className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-zinc-50 transition-opacity hover:opacity-90"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-zinc-50 transition-opacity hover:opacity-90"
               >
                 <Icon name="settings" className="h-4 w-4" />
                 {i18n("openSettings")}

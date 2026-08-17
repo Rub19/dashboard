@@ -258,10 +258,10 @@ export default function ProfileDropdown() {
             exit={{ opacity: 0, y: 8, scale: 0.98 }}
             transition={{ duration: 0.15, ease: "easeOut" as const }}
             style={{ originX: 1, originY: 0 }}
-            className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-2xl border border-white/10 bg-zinc-950/90 p-3 shadow-[0_16px_40px_rgba(0,0,0,0.85)] backdrop-blur-2xl"
+            className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-xl border border-white/10 bg-zinc-950/90 p-3 shadow-[0_16px_40px_rgba(0,0,0,0.85)] backdrop-blur-2xl"
           >
             {/* User Card Header */}
-            <div className="flex items-center justify-between gap-3 rounded-xl border border-white/[0.06] bg-white/[0.03] p-3">
+            <div className="flex items-center justify-between gap-3 rounded-lg border border-white/[0.06] bg-white/[0.03] p-3">
               <div className="flex min-w-0 items-center gap-3">
                 <Avatar url={avatarUrl} name={displayName} size="md" />
                 <div className="min-w-0">
@@ -287,7 +287,7 @@ export default function ProfileDropdown() {
                       key={w.id}
                       type="button"
                       onClick={() => handleWorkspace(w.id)}
-                      className={`flex items-center gap-2 rounded-xl border p-2 text-xs font-medium transition-all ${
+                      className={`flex items-center gap-2 rounded-lg border p-2 text-xs font-medium transition-all ${
                         isActive
                           ? "border-white/20 bg-white/[0.08] text-white shadow-sm"
                           : "border-white/[0.04] bg-white/[0.02] text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200"
@@ -306,7 +306,7 @@ export default function ProfileDropdown() {
 
             {/* Quick Profile Actions */}
             {activeProfile && (
-              <div className="grid grid-cols-4 gap-1.5 rounded-xl border border-white/[0.05] bg-white/[0.02] p-1 pt-3">
+              <div className="grid grid-cols-4 gap-1.5 rounded-lg border border-white/[0.05] bg-white/[0.02] p-1 pt-3">
                 <button
                   type="button"
                 onClick={handleRename}
@@ -366,7 +366,7 @@ export default function ProfileDropdown() {
                         type="button"
                         disabled={pending}
                         onClick={() => handleSelectProfile(p)}
-                        className={`flex w-full items-center gap-2 rounded-xl px-2 py-1.5 text-left text-xs transition-colors ${
+                        className={`flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-xs transition-colors ${
                           isActive ? "bg-white/[0.08] text-white" : "hover:bg-white/[0.04] text-zinc-300"
                         }`}
                       >
@@ -434,7 +434,7 @@ export default function ProfileDropdown() {
                   setOpen(false);
                   router.push("/profile");
                 }}
-                className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/[0.04]"
+                className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/[0.04]"
               >
                 <User className="h-4 w-4 text-zinc-400" />
                 {i18n("myProfile")}
@@ -445,7 +445,7 @@ export default function ProfileDropdown() {
                   setOpen(false);
                   router.push("/settings");
                 }}
-                className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/[0.04]"
+                className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/[0.04]"
               >
                 <Sliders className="h-4 w-4 text-zinc-400" />
                 {i18n("settings")}
@@ -457,7 +457,7 @@ export default function ProfileDropdown() {
                   setOpen(false);
                   router.push("/changelog");
                 }}
-                className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/[0.04]"
+                className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/[0.04]"
               >
                 <Sparkles className="h-4 w-4 text-purple-400" />
                 {i18n("changelog")}
@@ -468,7 +468,7 @@ export default function ProfileDropdown() {
                   type="button"
                   onClick={handleDelete}
                   disabled={pending}
-                  className="flex items-center gap-2.5 rounded-xl border border-transparent px-3 py-2 text-xs font-medium text-red-400 transition-all hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-300"
+                  className="flex items-center gap-2.5 rounded-lg border border-transparent px-3 py-2 text-xs font-medium text-red-400 transition-all hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-300"
                 >
                   <Trash2 className="h-4 w-4" />
                   {i18n("deleteProfile")}
@@ -477,7 +477,7 @@ export default function ProfileDropdown() {
               <button
                 type="button"
                 onClick={handleSignOut}
-                className="mt-1 flex items-center gap-2.5 rounded-xl border border-transparent px-3 py-2 text-xs font-medium text-red-400 transition-all hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-300"
+                className="mt-1 flex items-center gap-2.5 rounded-lg border border-transparent px-3 py-2 text-xs font-medium text-red-400 transition-all hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-300"
               >
                 <LogOut className="h-4 w-4" />
                 {i18n("signOut")}

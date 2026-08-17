@@ -131,7 +131,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
             exit={{ opacity: 0, y: -8, scale: 0.96 }}
             transition={{ duration: 0.15, ease: "easeOut" as const }}
             style={{ ...floatingStyles, visibility: positioned ? "visible" : "hidden" }}
-            className="z-[90] w-72 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-2xl outline-none backdrop-blur-[var(--panel-blur)]"
+            className="z-[90] w-72 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-2xl outline-none backdrop-blur-[var(--panel-blur)]"
             role="dialog"
             aria-modal="true"
             aria-label={i18n("focus")}
@@ -191,7 +191,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
                     start(p.id);
                     onClose();
                   }}
-                  className="flex flex-col items-center gap-1 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] p-2 text-center text-xs transition-colors hover:bg-[var(--accent)]/10"
+                  className="flex flex-col items-center gap-1 rounded-lg bg-[var(--panel-bg)] p-2 text-center text-xs transition-colors hover:bg-[var(--accent)]/10"
                 >
                   <Icon name={p.icon} className={`h-4 w-4 ${p.color}`} />
                   <span className="font-medium">{i18n(p.id)}</span>

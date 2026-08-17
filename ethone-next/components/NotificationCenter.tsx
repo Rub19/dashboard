@@ -132,7 +132,7 @@ export default function NotificationCenter() {
             type="button"
             onClick={markAllRead}
             disabled={unreadCount === 0}
-            className="flex h-9 items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/[0.04] px-2.5 text-[11px] font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--panel-bg)]/[0.08] disabled:cursor-not-allowed disabled:opacity-40 backdrop-blur-[var(--panel-blur)]"
+            className="flex h-9 items-center gap-1.5 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)]/[0.04] px-2.5 text-[11px] font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--panel-bg)]/[0.08] disabled:cursor-not-allowed disabled:opacity-40 backdrop-blur-[var(--panel-blur)]"
           >
             <Icon name="mail-open" className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">{i18n("markAllRead")}</span>
@@ -141,7 +141,7 @@ export default function NotificationCenter() {
             type="button"
             onClick={clear}
             disabled={activeItems.length === 0}
-            className="flex h-9 items-center gap-1.5 rounded-[var(--panel-radius)] border border-rose-500/20 bg-rose-500/10 px-2.5 text-[11px] font-medium text-rose-400 transition-colors hover:bg-rose-500/20 disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex h-9 items-center gap-1.5 rounded-lg border border-rose-500/20 bg-rose-500/10 px-2.5 text-[11px] font-medium text-rose-400 transition-colors hover:bg-rose-500/20 disabled:cursor-not-allowed disabled:opacity-40"
           >
             <Icon name="trash-2" className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">{i18n("clearAll")}</span>
@@ -157,7 +157,7 @@ export default function NotificationCenter() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={i18n("search")}
-          className="h-11 w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/50 py-2 pl-10 pr-4 text-base outline-none placeholder:text-[var(--muted)] focus:border-[var(--accent)]/50 focus:ring-1 focus:ring-[var(--accent)]/30 md:text-sm backdrop-blur-[var(--panel-blur)]"
+          className="h-11 w-full rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)]/50 py-2 pl-10 pr-4 text-base outline-none placeholder:text-[var(--muted)] focus:border-[var(--accent)]/50 focus:ring-1 focus:ring-[var(--accent)]/30 md:text-sm backdrop-blur-[var(--panel-blur)]"
         />
       </div>
 
@@ -193,7 +193,7 @@ export default function NotificationCenter() {
         type="button"
         onClick={() => setOpen(!open)}
         data-tooltip={i18n("notifications")}
-        className="relative flex h-10 w-10 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)]"
+        className="relative flex h-10 w-10 items-center justify-center rounded-xl text-[var(--muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)]"
         aria-label={i18n("notifications")}
       >
         <Icon name="bell" className="h-5 w-5" />
@@ -225,7 +225,7 @@ export default function NotificationCenter() {
               {content}
             </Modal>
           ) : (
-            <div className="absolute right-0 top-12 z-50 w-80 sm:w-96 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 p-4 shadow-2xl backdrop-blur-md">
+            <div className="absolute right-0 top-12 z-50 w-80 sm:w-96 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 p-4 shadow-2xl backdrop-blur-md">
               {content}
             </div>
           )}

@@ -178,7 +178,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
             animate={{ opacity: 1, y: -12, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.95 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="absolute bottom-full left-0 z-50 w-80 -translate-x-6 rounded-2xl border border-white/10 bg-zinc-950/95 p-4 shadow-2xl backdrop-blur-2xl"
+            className="absolute bottom-full left-0 z-50 w-80 -translate-x-6 rounded-xl border border-white/10 bg-zinc-950/95 p-4 shadow-2xl backdrop-blur-2xl"
           >
             {!hasTrack ? (
               <div className="flex items-center gap-3">

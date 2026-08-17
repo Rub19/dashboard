@@ -188,7 +188,7 @@ export default function UserProfileDropdown() {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="group relative flex items-center gap-2.5 rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-1.5 text-zinc-200 transition-all hover:border-white/20 dark:border-white/[0.08]"
+        className="group relative flex items-center gap-2.5 rounded-xl border border-white/[0.08] bg-zinc-950/70 p-1.5 text-zinc-200 transition-all hover:border-white/20 dark:border-white/[0.08]"
         aria-label={i18n("profile")}
         aria-expanded={open}
         aria-haspopup="true"
@@ -225,7 +225,7 @@ export default function UserProfileDropdown() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.95 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
-            className="absolute right-0 top-full z-50 mt-2 w-[340px] select-none flex flex-col gap-2.5 rounded-2xl border border-white/[0.08] bg-zinc-950/90 p-3 shadow-[0_16px_50px_rgba(0,0,0,0.7)] backdrop-blur-3xl"
+            className="absolute right-0 top-full z-50 mt-2 w-[340px] select-none flex flex-col gap-2.5 rounded-xl border border-white/[0.08] bg-zinc-950/90 p-3 shadow-[0_16px_50px_rgba(0,0,0,0.7)] backdrop-blur-3xl"
           >
             {/* Header */}
             <div className="flex items-center gap-3 rounded-xl border border-white/[0.04] bg-white/[0.02] p-2.5">
@@ -271,7 +271,7 @@ export default function UserProfileDropdown() {
             </div>
 
             {/* Status selector */}
-            <div className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-white/[0.02] p-1 text-[10px]">
+            <div className="flex items-center justify-between rounded-lg border border-white/[0.04] bg-white/[0.02] p-1 text-[10px]">
               {(Object.keys(statusConfig) as StatusKey[]).map((st) => (
                 <button
                   key={st}
@@ -290,7 +290,7 @@ export default function UserProfileDropdown() {
             </div>
 
             {/* Storage gauge */}
-            <div className="flex flex-col gap-1.5 rounded-xl border border-white/[0.04] bg-white/[0.02] p-2.5">
+            <div className="flex flex-col gap-1.5 rounded-lg border border-white/[0.04] bg-white/[0.02] p-2.5">
               <div className="flex items-center justify-between text-[11px]">
                 <div className="flex items-center gap-2 text-zinc-300">
                   <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-teal-500/30 bg-teal-500/15 text-teal-300">
@@ -322,7 +322,7 @@ export default function UserProfileDropdown() {
                       setOpen(false);
                       item.action();
                     }}
-                    className="group flex w-full items-center justify-between rounded-xl border border-transparent p-2 text-xs text-zinc-200 transition-all hover:border-white/[0.06] hover:bg-white/[0.04] hover:text-white"
+                    className="group flex w-full items-center justify-between rounded-lg border border-transparent p-2 text-xs text-zinc-200 transition-all hover:border-white/[0.06] hover:bg-white/[0.04] hover:text-white"
                   >
                     <div className="flex items-center gap-2.5">
                       <div
@@ -356,7 +356,7 @@ export default function UserProfileDropdown() {
               <button
                 type="button"
                 onClick={handleSignOut}
-                className="group flex w-full items-center justify-between rounded-xl border border-transparent p-2 text-xs text-rose-400 transition-all hover:border-rose-500/20 hover:bg-rose-500/10 hover:text-rose-300"
+                className="group flex w-full items-center justify-between rounded-lg border border-transparent p-2 text-xs text-rose-400 transition-all hover:border-rose-500/20 hover:bg-rose-500/10 hover:text-rose-300"
               >
                 <div className="flex items-center gap-2.5">
                   <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-rose-500/30 bg-rose-500/15 text-rose-400 transition-transform group-hover:scale-105">
@@ -384,7 +384,7 @@ export default function UserProfileDropdown() {
               exit={{ opacity: 0, scale: 0.95, y: 12 }}
               transition={{ duration: 0.2 }}
               onClick={(e) => e.stopPropagation()}
-              className="flex w-full max-w-lg select-none flex-col gap-4 rounded-2xl border border-white/[0.08] bg-zinc-950/90 p-6 shadow-2xl backdrop-blur-3xl"
+              className="flex w-full max-w-lg select-none flex-col gap-4 rounded-xl border border-white/[0.08] bg-zinc-950/90 p-6 shadow-2xl backdrop-blur-3xl"
             >
               <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
                 <div className="flex items-center gap-2.5">

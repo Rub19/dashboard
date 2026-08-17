@@ -88,7 +88,7 @@ export default function SystemControlCard({ className = "" }: { className?: stri
 
         <div className="space-y-2">
           <p className="text-xs font-medium text-[var(--muted)]">{i18n("aura")}</p>
-          <div className="flex flex-wrap gap-2">
+          <div className="-m-1 flex flex-wrap gap-2 p-1">
             {AURAS.map((aura) => {
               const active = settings.aura === aura;
               const key = `aura${aura.charAt(0).toUpperCase()}${aura.slice(1)}`;

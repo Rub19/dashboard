@@ -6,7 +6,7 @@ import ServiceWorker from "@/components/ServiceWorker";
 import SettingsProvider from "@/components/SettingsProvider";
 import { FocusProvider } from "@/components/FocusProvider";
 import { SoundProvider } from "@/lib/sound";
-import { ToastProvider } from "@/components/ui/ToastContext";
+import { ToastProvider } from "@/context/ToastContext";
 import OfflineIndicator from "@/components/OfflineIndicator";
 import VersionUpdateToast from "@/components/VersionUpdateToast";
 import HtmlLang from "@/components/HtmlLang";

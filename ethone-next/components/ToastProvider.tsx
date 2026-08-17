@@ -1,2 +1,2 @@
-// Re-export for backwards compatibility. New code should prefer `@/components/ui/ToastContext`.
-export { useToast, ToastProvider } from "@/components/ui/ToastContext";
+// Re-export for backwards compatibility. New code should prefer `@/context/ToastContext`.
+export { useToast, ToastProvider } from "@/context/ToastContext";

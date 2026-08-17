@@ -51,7 +51,7 @@ export default function ScratchpadPage() {
   };
 
   return (
-    <div className="w-full sm:max-w-4xl lg:max-w-5xl mx-auto space-y-6">
+    <div className="w-full space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">{i18n("scratchpadTitle")}</h1>
         <button

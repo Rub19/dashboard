@@ -4,6 +4,16 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : ajustements UI et version check avant branchement Cloud Sync**
+
+### Corrige
+- `ethone-next/components/Shell.tsx`, `TopBar.tsx`, `Dock.tsx`, `animated-sidebar.tsx` : réintégration et amélioration de la barre latérale animée, du trigger et du bouton workspace.
+- `ethone-next/components/TopBar.tsx` : remplacement du lien "E" par `AnimatedSidebarTrigger`, styles des icônes top-bar raffinis (`pointer-events-none`, tailles `h-9 w-9`).
+- `ethone-next/components/BrainChat.tsx`, `UserProfileDropdown.tsx` : utilisation du `publicProfile.display_name` pour personnaliser le nom d'utilisateur.
+- `ethone-next/lib/hooks/useVersionChecker.ts`, `components/layout/VersionPill.tsx` : comparaison de versions par `version`, `commit` et `buildAt` ; gestion du `dismiss` sur 1 h ; transmission des données de version à `forceAppReload`.
+- Suppression des `max-w-7xl mx-auto` sur les pages principales (`calendar`, `feature-fallback`, `interactions`, `plugins/[id]`, `profile`, `scratchpad`, `tasks`) pour un rendu pleine largeur.
+- `ethone-next/tsconfig.json` : inclusion de `dist2/types` pour la compatibilité build alternatif.
+
 **Migration Next.js : fondation Cloud Sync — settings, tâches, layout et pomodoro dans Supabase**
 
 ### Corrige

@@ -8,7 +8,7 @@ export default function TasksPage() {
 
   return (
     <main className="min-h-screen p-4 sm:p-6">
-      <div className="mx-auto w-full max-w-2xl">
+      <div className="w-full">
         <div className="mb-5">
           <h1 className="text-2xl font-bold tracking-tight text-white">{i18n("tasksTitle", "Tâches")}</h1>
           <p className="mt-0.5 text-xs text-zinc-400">

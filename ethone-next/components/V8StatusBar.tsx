@@ -6,6 +6,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useNotifications } from "@/lib/hooks/useNotifications";
 import { useActiveProfile, useSettings } from "@/components/SettingsProvider";
 import { useAuth } from "@/components/AuthProvider";
+import { useProfile } from "@/lib/hooks/useProfile";
 import { useFocus } from "@/components/FocusProvider";
 import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
 import { useLiveData } from "@/lib/hooks/useLiveData";
@@ -98,6 +99,7 @@ export default function V8StatusBar() {
   const i18n = useI18n();
   const { activeProfile } = useActiveProfile();
   const { user } = useAuth();
+  const { profile: publicProfile } = useProfile();
   const { settings } = useSettings();
   const focus = useFocus();
   const { unreadCount } = useNotifications();
@@ -110,7 +112,7 @@ export default function V8StatusBar() {
   const time = clock?.time ?? "--:--";
   const online = useOnlineStatus();
 
-  const profileName = activeProfile?.name || user?.email || i18n("guest");
+  const profileName = publicProfile?.display_name || activeProfile?.name || user?.email || i18n("guest");
   const isFocus = focus.state.phase !== "idle";
 
   const syncStatus = useMemo<"syncing" | "synced" | "offline">(() => {

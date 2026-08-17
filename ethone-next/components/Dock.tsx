@@ -7,8 +7,8 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useWindowManager } from "@/components/WindowManagerProvider";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useNotifications } from "@/lib/hooks/useNotifications";
+import { useNowPlaying } from "@/lib/hooks/useNowPlaying";
 import { Icon } from "@/lib/icons";
 import Card3D from "@/components/Card3D";
 import DockControlCenter from "@/components/DockControlCenter";
@@ -43,7 +43,7 @@ export default function Dock() {
   const { missionControl, toggleMissionControl } = useWindowManager();
   const { setOpen: setCommandOpen } = useCommandPalette();
   const i18n = useI18n();
-  const { nowPlaying, lanyard } = useLiveData(120_000);
+  const { nowPlaying } = useNowPlaying(15000);
   const { unreadCount } = useNotifications();
 
   const [launcherOpen, setLauncherOpen] = useState(false);
@@ -67,21 +67,10 @@ export default function Dock() {
 
   const spotifyNow = useMemo<NowPlaying | null>(() => {
     if (nowPlaying?.source?.toLowerCase() === "spotify" && nowPlaying?.isPlaying) {
-      return { ...nowPlaying };
-    }
-    if (lanyard?.spotify?.playing) {
-      return {
-        source: "lanyard",
-        title: lanyard.spotify.title || "",
-        artist: lanyard.spotify.artist || "",
-        album: lanyard.spotify.album || "",
-        cover: lanyard.spotify.artworkUrl || lanyard.spotify.artwork,
-        isPlaying: true,
-        isSaved: false,
-      };
+      return nowPlaying;
     }
     return null;
-  }, [nowPlaying, lanyard]);
+  }, [nowPlaying]);
 
   useEffect(() => {
     if (!launcherOpen) return;

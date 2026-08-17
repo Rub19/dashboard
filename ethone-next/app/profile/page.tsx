@@ -74,7 +74,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="w-full sm:max-w-3xl lg:max-w-4xl mx-auto space-y-6">
+    <div className="w-full space-y-6">
       <h1 className="text-2xl font-bold">{i18n("profileTitle")}</h1>
 
       <Card3D>

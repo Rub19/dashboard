@@ -10,7 +10,7 @@ export default function ChangelogPage() {
   const { settings } = useSettings();
   const changelog = CHANGELOG_BY_LANG[settings.language] || CHANGELOG_BY_LANG.fr;
   return (
-    <div className="w-full sm:max-w-5xl lg:max-w-7xl mx-auto space-y-6">
+    <div className="w-full space-y-6">
       <h1 className="text-2xl font-bold">{i18n("changelog")}</h1>
 
       <div className="space-y-4">

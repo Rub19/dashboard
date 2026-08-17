@@ -58,7 +58,7 @@ export default function CalendarInvoicesPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-7xl p-4">
+    <div className="w-full p-4">
       <div className="grid grid-cols-12 gap-5">
         <div className="col-span-12 lg:col-span-8">
           <CalendarGrid

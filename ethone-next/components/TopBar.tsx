@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ChevronRight, CloudSun, Sun, Moon, Timer, Eye, EyeOff } from "lucide-react";
+import { AnimatedSidebarTrigger } from "@/components/motion/animated-sidebar";
 import SystemStatusPills from "@/components/SystemStatusPills";
 import CommandBarTrigger from "@/components/CommandBarTrigger";
 import NotificationCenter from "@/components/NotificationCenter";
@@ -50,7 +51,7 @@ function WeatherQuickButton() {
       className="flex items-center gap-1.5 rounded-lg border border-white/[0.06] bg-white/[0.03] px-2.5 py-1 text-xs transition-colors hover:bg-white/[0.06]"
       title="Météo"
     >
-      <CloudSun className="h-3.5 w-3.5 text-amber-400" />
+      <CloudSun className="h-3.5 w-3.5 pointer-events-none text-amber-400" />
       <span className="font-mono text-zinc-200">{temp}</span>
     </button>
   );
@@ -65,10 +66,10 @@ function ThemeToggle() {
     <button
       type="button"
       onClick={() => update({ darkMode: !isDark })}
-      className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+      className="relative flex h-9 w-9 items-center justify-center rounded-xl text-zinc-400 transition-all duration-150 hover:bg-white/[0.08] hover:text-white active:scale-95 cursor-pointer select-none"
       aria-label="Thème"
     >
-      <Icon className="h-4 w-4" />
+      <Icon className="h-4 w-4 pointer-events-none" />
     </button>
   );
 }
@@ -81,14 +82,14 @@ function FocusToggle() {
     <button
       type="button"
       onClick={() => (isActive ? focus.stop() : focus.start("pomodoro"))}
-      className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
+      className={`relative flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-150 cursor-pointer select-none ${
         isActive
           ? "bg-emerald-500/15 text-emerald-400"
-          : "text-zinc-400 hover:bg-white/[0.06] hover:text-white"
+          : "text-zinc-400 hover:bg-white/[0.08] hover:text-white active:scale-95"
       }`}
       aria-label={isActive ? "Arrêter le minuteur" : "Démarrer le minuteur"}
     >
-      <Timer className="h-4 w-4" />
+      <Timer className="h-4 w-4 pointer-events-none" />
     </button>
   );
 }
@@ -100,15 +101,15 @@ function DynamicIslandToggle() {
     <button
       type="button"
       onClick={toggle}
-      className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
+      className={`relative flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-150 cursor-pointer select-none ${
         visible
-          ? "text-zinc-400 hover:bg-white/[0.06] hover:text-white"
-          : "text-zinc-600 hover:bg-white/[0.06] hover:text-zinc-400"
+          ? "text-zinc-400 hover:bg-white/[0.08] hover:text-white active:scale-95"
+          : "text-zinc-600 hover:bg-white/[0.08] hover:text-zinc-400 active:scale-95"
       }`}
       aria-label={visible ? "Masquer la Dynamic Island" : "Afficher la Dynamic Island"}
       title={visible ? "Masquer la Dynamic Island" : "Afficher la Dynamic Island"}
     >
-      {visible ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+      {visible ? <Eye className="h-4 w-4 pointer-events-none" /> : <EyeOff className="h-4 w-4 pointer-events-none" />}
     </button>
   );
 }
@@ -123,13 +124,13 @@ export default function TopBar() {
     >
       {/* Left — Identity & Breadcrumb */}
       <div className="flex min-w-0 flex-1 items-center gap-3">
-        <Link
-          href="/"
+        <AnimatedSidebarTrigger
+          type="button"
           className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-white/[0.05] text-xs font-bold text-white shadow-inner transition-colors hover:bg-white/[0.08]"
-          aria-label={home}
+          aria-label="Basculer la barre latérale"
         >
           E
-        </Link>
+        </AnimatedSidebarTrigger>
         <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-medium text-zinc-400">
           <Link href="/" className="transition-colors hover:text-white">
             {home}
@@ -145,8 +146,8 @@ export default function TopBar() {
       </div>
 
       {/* Right — Quick tools, palette, profile */}
-      <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
-        <div className="hidden items-center gap-1.5 sm:flex">
+      <div className="relative z-40 flex min-w-0 flex-1 items-center justify-end gap-2 pointer-events-auto">
+        <div className="hidden items-center gap-1.5 sm:flex pointer-events-auto">
           <WeatherQuickButton />
           <ThemeToggle />
           <FocusToggle />

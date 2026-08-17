@@ -118,7 +118,7 @@ export default function CalendarPage() {
   }
 
   return (
-    <div className="w-full sm:max-w-5xl lg:max-w-7xl mx-auto space-y-6">
+    <div className="w-full space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">{i18n("calendarTitle")}</h1>
         <div className="flex items-center gap-2">

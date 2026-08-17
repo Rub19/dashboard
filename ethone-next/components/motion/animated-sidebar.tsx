@@ -24,7 +24,6 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
-import { createPortal } from "react-dom";
 import { SharedLayoutBg } from "@/components/motion/shared-layout-bg";
 import {
   EASE_DRAWER,
@@ -115,14 +114,6 @@ const REDUCED_TRANSITION = {
   ease: EASE_OUT,
 } as const;
 
-const FOCUSABLE_SELECTOR = [
-  "a[href]",
-  "button:not([disabled])",
-  "input:not([disabled])",
-  "select:not([disabled])",
-  "textarea:not([disabled])",
-  "[tabindex]:not([tabindex='-1'])",
-].join(",");
 
 function subscribeToMobileQuery(callback: () => void) {
   const query = window.matchMedia(MOBILE_QUERY);
@@ -247,9 +238,8 @@ export function AnimatedSidebarProvider({
   );
 
   const toggleSidebar = useCallback(() => {
-    if (isMobile) setOpenMobile(!mobileOpen);
-    else setOpen(!desktopOpen);
-  }, [desktopOpen, isMobile, mobileOpen, setOpen, setOpenMobile]);
+    setOpen(!desktopOpen);
+  }, [desktopOpen, setOpen]);
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
@@ -302,167 +292,6 @@ export function AnimatedSidebarProvider({
   );
 }
 
-function MobileSidebar({
-  ariaLabel,
-  children,
-  className,
-  side,
-}: {
-  ariaLabel: string;
-  children: ReactNode;
-  className?: string;
-  side: SidebarSide;
-}) {
-  const context = useAnimatedSidebar();
-  const panelRef = useRef<HTMLDivElement>(null);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
-
-  useEffect(() => {
-    if (!context.openMobile) return;
-
-    const body = document.body;
-    const scrollY = window.scrollY;
-    const previousBodyStyles = {
-      left: body.style.left,
-      overflow: body.style.overflow,
-      position: body.style.position,
-      right: body.style.right,
-      top: body.style.top,
-    };
-
-    body.style.position = "fixed";
-    body.style.top = `-${scrollY}px`;
-    body.style.left = "0";
-    body.style.right = "0";
-    body.style.overflow = "hidden";
-
-    const focusFrame = requestAnimationFrame(() => {
-      const firstFocusable =
-        panelRef.current?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
-      (firstFocusable ?? panelRef.current)?.focus({ preventScroll: true });
-    });
-
-    return () => {
-      cancelAnimationFrame(focusFrame);
-      body.style.position = previousBodyStyles.position;
-      body.style.top = previousBodyStyles.top;
-      body.style.left = previousBodyStyles.left;
-      body.style.right = previousBodyStyles.right;
-      body.style.overflow = previousBodyStyles.overflow;
-      window.scrollTo(0, scrollY);
-      context.triggerRef.current?.focus({ preventScroll: true });
-    };
-  }, [context.openMobile, context.triggerRef]);
-
-  if (!mounted) return null;
-
-  return createPortal(
-    <div
-      className={cn(
-        "pointer-events-none fixed inset-0 z-50 md:hidden",
-        context.openMobile ? "visible" : "invisible",
-      )}
-    >
-      <motion.button
-        type="button"
-        aria-label="Close sidebar"
-        tabIndex={context.openMobile ? 0 : -1}
-        initial={false}
-        animate={{ opacity: context.openMobile ? 1 : 0 }}
-        transition={
-          context.reduce ? REDUCED_TRANSITION : PANEL_TRANSITION
-        }
-        onClick={() => context.setOpenMobile(false)}
-        className={cn(
-          "absolute inset-0 bg-black/40",
-          context.openMobile
-            ? "pointer-events-auto"
-            : "pointer-events-none",
-        )}
-      />
-
-      <motion.div
-        ref={panelRef}
-        role="dialog"
-        aria-modal="true"
-        aria-label={ariaLabel}
-        aria-hidden={!context.openMobile}
-        inert={!context.openMobile}
-        tabIndex={-1}
-        data-mobile="true"
-        data-state={context.openMobile ? "expanded" : "collapsed"}
-        data-side={side}
-        initial={false}
-        animate={{
-          opacity: context.reduce
-            ? context.openMobile
-              ? 1
-              : 0
-            : 1,
-          x: context.reduce
-            ? 0
-            : context.openMobile
-              ? "0%"
-              : side === "left"
-                ? "-100%"
-                : "100%",
-        }}
-        transition={
-          context.reduce ? REDUCED_TRANSITION : PANEL_TRANSITION
-        }
-        onKeyDown={(event) => {
-          if (event.key === "Escape") {
-            event.preventDefault();
-            context.setOpenMobile(false);
-            return;
-          }
-
-          if (event.key !== "Tab") return;
-          const focusable = panelRef.current
-            ? Array.from(
-                panelRef.current.querySelectorAll<HTMLElement>(
-                  FOCUSABLE_SELECTOR,
-                ),
-              )
-            : [];
-
-          if (focusable.length === 0) {
-            event.preventDefault();
-            panelRef.current?.focus();
-            return;
-          }
-
-          const first = focusable[0];
-          const last = focusable[focusable.length - 1];
-          if (event.shiftKey && document.activeElement === first) {
-            event.preventDefault();
-            last.focus();
-          } else if (!event.shiftKey && document.activeElement === last) {
-            event.preventDefault();
-            first.focus();
-          }
-        }}
-        className={cn(
-          "pointer-events-auto absolute inset-y-0 flex h-dvh w-(--sidebar-width-mobile) max-w-[88vw] flex-col overflow-hidden",
-          "border-border bg-surface-raised shadow-2xl will-change-transform",
-          side === "left" ? "left-0 border-r" : "right-0 border-l",
-          !context.openMobile && "pointer-events-none",
-          className,
-        )}
-      >
-        <AnimatedSidebarPanelContext.Provider
-          value={{ collapsed: false, collapsible: "none", side }}
-        >
-          {children}
-        </AnimatedSidebarPanelContext.Provider>
-      </motion.div>
-    </div>,
-    document.body,
-  );
-}
-
 export interface AnimatedSidebarProps
   extends Omit<HTMLMotionProps<"aside">, "children"> {
   children?: ReactNode;
@@ -497,18 +326,6 @@ export const AnimatedSidebar = forwardRef<HTMLElement, AnimatedSidebarProps>(
         ? "var(--sidebar-width-icon)"
         : "var(--sidebar-width)";
 
-    if (context.isMobile) {
-      return (
-        <MobileSidebar
-          ariaLabel={ariaLabel}
-          className={className}
-          side={side}
-        >
-          {children}
-        </MobileSidebar>
-      );
-    }
-
     return (
       <motion.aside
         {...props}
@@ -526,7 +343,7 @@ export const AnimatedSidebar = forwardRef<HTMLElement, AnimatedSidebarProps>(
         }
         style={style}
         className={cn(
-          "group/sidebar relative hidden h-auto shrink-0 md:block will-change-[width]",
+          "group/sidebar relative block h-auto shrink-0 will-change-[width]",
           "peer",
           side === "right" && "order-last",
           className,

@@ -22,7 +22,7 @@ function FeatureFallbackContent() {
   }
 
   return (
-    <div className="w-full sm:max-w-3xl lg:max-w-5xl mx-auto space-y-6">
+    <div className="w-full space-y-6">
       <h1 className="text-2xl font-bold">{i18n("featureFallbackTitle")}</h1>
       <Card3D>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start">

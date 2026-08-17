@@ -79,7 +79,7 @@ export default function FocusPage() {
     : i18n("focusCycle").replace("{{cycle}}", String(state.cycle)).replace("{{total}}", "4");
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-5 px-4 pb-10 pt-4">
+    <div className="w-full space-y-5 px-4 pb-10 pt-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
@@ -188,7 +188,7 @@ export default function FocusPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 max-w-2xl mx-auto">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 w-full">
         <div className="rounded-2xl bg-zinc-950/70 border border-white/[0.08] p-4 flex flex-col items-center text-center transition-all hover:border-white/[0.16]">
           <Brain className="h-5 w-5 mb-2" style={{ color: "var(--accent-color, #10b981)" }} />
           <p className="text-2xl font-bold font-mono text-white">{state.completedPomodoros}</p>

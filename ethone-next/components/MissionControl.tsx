@@ -275,7 +275,7 @@ function MissionControlDialog() {
       hideFooter
       hideCloseButton
       fullScreen
-      className="p-0 sm:max-w-7xl"
+      className="p-0"
       contentClassName="!m-0 overflow-hidden"
     >
       <div
@@ -283,7 +283,7 @@ function MissionControlDialog() {
         onKeyDown={handleKeyDown}
         className="flex h-full w-full flex-col items-center overflow-y-auto p-4 pt-12 sm:p-8 sm:pt-8"
       >
-        <div className="mb-4 flex w-full max-w-7xl items-end justify-between gap-4">
+        <div className="mb-4 flex w-full items-end justify-between gap-4">
         <div>
           <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">
             {i18n("missionNavigationSystem")}
@@ -314,7 +314,7 @@ function MissionControlDialog() {
         </div>
       </div>
 
-      <div className="mb-6 w-full max-w-7xl">
+      <div className="mb-6 w-full">
         <div className="relative">
           <Icon name="search" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
           <input
@@ -329,7 +329,7 @@ function MissionControlDialog() {
         </div>
       </div>
 
-      <div className="grid w-full max-w-7xl grid-cols-1 gap-4 pb-8 lg:grid-cols-[1fr_320px]">
+      <div className="grid w-full grid-cols-1 gap-4 pb-8 lg:grid-cols-[1fr_320px]">
         <main className="space-y-4">
           <Section title={i18n("missionSpaces")} count={WORKSPACES.length}>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">

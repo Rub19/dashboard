@@ -330,7 +330,7 @@ export default function InteractionsPage() {
   const topCategory = categories.rows.reduce((a, b) => (b.count > a.count ? b : a), categories.rows[0]);
 
   return (
-    <div className="mx-auto flex max-w-7xl select-none flex-col gap-5 p-4 sm:p-6">
+    <div className="flex w-full select-none flex-col gap-5 p-4 sm:p-6">
       {/* Header */}
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <div>

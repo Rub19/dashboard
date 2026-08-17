@@ -140,7 +140,7 @@ export default function NotesPage() {
   }
 
   return (
-    <div className="mx-auto grid max-w-7xl min-h-[calc(100vh-5rem)] grid-cols-12 gap-5 p-4">
+    <div className="grid min-h-[calc(100vh-5rem)] w-full grid-cols-12 gap-5 p-4">
       {/* Left: List & Search */}
       <div className="col-span-12 flex flex-col gap-3 lg:col-span-4">
         <div className="rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-4 backdrop-blur-2xl">

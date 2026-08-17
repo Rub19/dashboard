@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { useActiveProfile } from "@/components/SettingsProvider";
+import { useProfile } from "@/lib/hooks/useProfile";
 import type { BrainMessage, ReturnTypeOfUseBrain } from "@/lib/hooks/useBrain";
 import { useBrainActivityStore } from "@/lib/stores/brain-activity";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -183,6 +184,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
   const i18n = useI18n();
   const { user } = useAuth();
   const { activeProfile } = useActiveProfile();
+  const { profile: publicProfile } = useProfile();
   const { success, error: showError } = useToast();
   const { records } = useLiveData(60000);
   const { items: flows } = useUserData("flow");
@@ -200,7 +202,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const userName = activeProfile?.name || user?.user_metadata?.full_name || user?.email || i18n("guest");
+  const userName = publicProfile?.display_name || activeProfile?.name || user?.user_metadata?.full_name || user?.email || i18n("guest");
   const activeFlows = flows.filter((f) => f.count > 0).length;
 
   const handleSend = useCallback(

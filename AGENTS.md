@@ -20,3 +20,10 @@
 - Style de commit : `Migration Next.js : description`.
 - Attribution : ne pas ajouter `Generated with [Devin]` ni `Co-Authored-By: Devin`. Utiliser le pseudo `Rub19` et l'email `rub19.mailpro@gmail.com` pour toute mention de co-auteur.
 - Auteur des commits : `git config user.name "Rub19"` et `git config user.email "rub19.mailpro@gmail.com"`.
+
+## Versions
+
+- La pastille de version en bas à droite (`VersionPill`) lit `/api/version` en dev et `/version.json` en production statique.
+- `package.json` est la source de vérité ; `public/version.json` doit être synchronisé.
+- Lors d'une session de modifications notables, monter la version dans `package.json` et `public/version.json` (ou laisser le build régénérer `version.json`).
+- Aligner aussi `package-lock.json` (via `npm install --package-lock-only`) et le label `VERSION_LABEL` dans `components/UserProfileDropdown.tsx`.

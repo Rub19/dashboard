@@ -279,7 +279,7 @@ export default function StatusBar() {
             icon={systemOk ? <Circle className="h-3.5 w-3.5 fill-emerald-400 text-emerald-400" /> : <AlertCircle className="h-3.5 w-3.5 text-red-400" />}
             value={systemOk ? "Opérationnel" : `${alertCount} alerte${alertCount > 1 ? "s" : ""}`}
             tone={systemOk ? "success" : "error"}
-            onClick={() => router.push("/notifications")}
+            onClick={() => router.push("/system")}
           />
         </div>
       </div>

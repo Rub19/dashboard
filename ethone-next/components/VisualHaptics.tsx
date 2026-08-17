@@ -48,6 +48,13 @@ export default function VisualHaptics() {
       return target;
     }
 
+    function isTextInput(target: EventTarget | null): boolean {
+      if (!(target instanceof HTMLElement)) return false;
+      const tag = target.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target.isContentEditable) return true;
+      return false;
+    }
+
     function release(source: string, id: string | number) {
       const active = activeRef.current;
       if (!active || active.source !== source || active.id !== id) return;
@@ -91,6 +98,7 @@ export default function VisualHaptics() {
 
     function onKeyDown(event: KeyboardEvent) {
       if (!ACTIVATION_KEYS.has(event.key) || event.repeat || event.isComposing) return;
+      if (isTextInput(event.target)) return;
       const control = findControl(event);
       if (control) press(control, "keyboard", event.key);
     }

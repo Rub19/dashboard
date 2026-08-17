@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useCallback, useState } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFloating, offset, flip, shift, autoUpdate, FloatingPortal } from "@floating-ui/react";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -22,29 +22,18 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
   const i18n = useI18n();
   const { state, start, pause, resume, stop, skip } = useFocus();
   const panelRef = useRef<HTMLDivElement | null>(null);
-  const [positioned, setPositioned] = useState(false);
 
-  const { refs, floatingStyles, update: recalculate } = useFloating({
+  const { refs, floatingStyles, isPositioned } = useFloating({
     open,
     onOpenChange: onClose,
     placement: "bottom",
     strategy: "fixed",
     whileElementsMounted: autoUpdate,
     middleware: [offset(8), flip({ padding: 8 }), shift({ padding: 8 })],
+    elements: {
+      reference: referenceRef ?? undefined,
+    },
   });
-
-  useLayoutEffect(() => {
-    if (referenceRef) {
-      refs.setReference(referenceRef);
-      recalculate?.();
-    }
-  }, [referenceRef, refs, recalculate]);
-
-  useEffect(() => {
-    if (floatingStyles.top !== undefined && floatingStyles.left !== undefined) {
-      setPositioned(true);
-    }
-  }, [floatingStyles]);
 
   const getFocusable = useCallback(() => {
     if (!panelRef.current) return [];
@@ -130,7 +119,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.96 }}
             transition={{ duration: 0.15, ease: "easeOut" as const }}
-            style={{ ...floatingStyles, visibility: positioned ? "visible" : "hidden" }}
+            style={{ ...floatingStyles, visibility: isPositioned ? "visible" : "hidden" }}
             className="z-[90] w-72 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-2xl outline-none backdrop-blur-[var(--panel-blur)]"
             role="dialog"
             aria-modal="true"

@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useBrain } from "@/lib/hooks/useBrain";
+import { useBrainActivityStore } from "@/lib/stores/brain-activity";
 import { Icon } from "@/lib/icons";
 import BentoCard from "@/components/BentoCard";
 import type { CloudDashboard, NowPlaying } from "@/lib/hooks/useDashboard";

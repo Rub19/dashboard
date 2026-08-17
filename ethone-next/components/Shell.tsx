@@ -25,8 +25,7 @@ const LiveWidget = dynamic(() => import("@/components/LiveWidget"), { ssr: false
 const CosmicBackground = dynamic(() => import("@/components/CosmicBackground"), { ssr: false });
 const Spotlight = dynamic(() => import("@/components/Spotlight"), { ssr: false });
 const VisualHaptics = dynamic(() => import("@/components/VisualHaptics"), { ssr: false });
-const DepthEffect = dynamic(() => import("@/components/DepthEffect"), { ssr: false });
-const FocusIsland = dynamic(() => import("@/components/FocusIsland"), { ssr: false });
+const DynamicIslandContainer = dynamic(() => import("@/components/DynamicIslandContainer"), { ssr: false });
 const ShortcutsOverlay = dynamic(() => import("@/components/ShortcutsOverlay"), { ssr: false });
 const KeyboardShortcuts = dynamic(() => import("@/components/KeyboardShortcuts"), { ssr: false });
 
@@ -52,8 +51,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                 <CosmicBackground />
                 <Spotlight />
                 <VisualHaptics />
-                <DepthEffect />
-                <FocusIsland />
+                <DynamicIslandContainer />
                 <main
                   data-v8-main
                   id="main-content"

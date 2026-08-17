@@ -40,6 +40,13 @@ function findControl(event: Event) {
   return target;
 }
 
+function isTextInput(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false;
+  const tag = target.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target.isContentEditable) return true;
+  return false;
+}
+
 function computeTooltipPosition(
   anchor: DOMRect,
   tooltip: DOMRect,
@@ -175,6 +182,7 @@ export default function UIProvider({ children }: { children: React.ReactNode }) 
     function onKeyDown(event: KeyboardEvent) {
       if (event.repeat || event.isComposing) return;
       if (event.key !== "Enter" && event.key !== " ") return;
+      if (isTextInput(event.target)) return;
       const target = findControl(event) || (event.target as HTMLElement);
       if (!target) return;
       haptics.press(target);
@@ -183,6 +191,7 @@ export default function UIProvider({ children }: { children: React.ReactNode }) 
 
     function onKeyUp(event: KeyboardEvent) {
       if (event.key !== "Enter" && event.key !== " ") return;
+      if (isTextInput(event.target)) return;
       haptics.release();
     }
 

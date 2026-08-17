@@ -128,7 +128,10 @@ function validateClaims(payload, env) {
     role: payload.role,
     appRole: typeof payload.app_metadata?.role === "string" ? payload.app_metadata.role : null,
     sessionId: typeof payload.session_id === "string" ? payload.session_id.slice(0, 128) : null,
-    expiresAt: new Date(payload.exp * 1000).toISOString()
+    expiresAt: new Date(payload.exp * 1000).toISOString(),
+    email: typeof payload.email === "string" ? payload.email : null,
+    displayName: typeof payload.user_metadata?.username === "string" ? payload.user_metadata.username
+      : (typeof payload.user_metadata?.name === "string" ? payload.user_metadata.name : null)
   });
 }
 

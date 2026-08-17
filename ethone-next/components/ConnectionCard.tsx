@@ -42,7 +42,6 @@ import {
 } from "@/lib/connection-config";
 import ServiceIcon from "@/components/ServiceIcon";
 import Select from "@/components/ui/Select";
-import { TiltCard } from "@/components/ui/TiltCard";
 
 export type CredentialsApi = {
   save: (provider: string, credential: ProviderCredential) => Promise<unknown>;
@@ -344,11 +343,11 @@ export default function ConnectionCard({
     "w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-100 placeholder-zinc-600 outline-none transition focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/30";
 
   return (
-    <TiltCard
+    <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.15, ease: "easeOut" as const }}
-      className="group flex h-full flex-col justify-between border border-white/[0.08] bg-zinc-950/70 p-5 shadow-xl backdrop-blur-2xl transition hover:border-white/15"
+      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 shadow-xl backdrop-blur-2xl transition hover:border-white/15"
     >
       {/* Header */}
       <div>
@@ -680,7 +679,7 @@ export default function ConnectionCard({
           )}
         </AnimatePresence>
       </div>
-    </TiltCard>
+    </motion.div>
   );
 }
 

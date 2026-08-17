@@ -5,6 +5,15 @@ function safeText(value, limit = 320) {
   return raw.slice(0, limit);
 }
 
+function randomBase(length = 6) {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  const webCrypto = typeof globalThis !== "undefined" && globalThis.crypto ? globalThis.crypto : crypto;
+  const bytes = webCrypto.getRandomValues(new Uint8Array(length));
+  let result = "";
+  for (let i = 0; i < length; i += 1) result += chars[bytes[i] % chars.length];
+  return result;
+}
+
 function safeEmail(value) {
   const email = safeText(value, 320).toLowerCase();
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : "";
@@ -74,23 +83,36 @@ export function getOrCreatePrimaryAlias(env, userId, displayName) {
     method: "GET",
     headers: { "Accept": "application/vnd.pgrst.object+json" },
     maxBytes: 4096
-  }).then(firstRow).then((existing) => {
+  }).then(firstRow).then(async (existing) => {
     if (existing) return existing;
 
-    const base = safeText(displayName || "user", 32)
+    let base = safeText(displayName, 32)
       .toLowerCase()
       .replace(/[^a-z0-9._-]/g, "")
       .replace(/[._-]+/g, ".")
       .replace(/^\.|\.$/g, "")
       .slice(0, 32);
-    const alias = `${base || "user"}@ethone.dev`;
+    if (!base) base = "user";
+    if (!/^[a-z0-9]/.test(base)) base = `u${base}`;
+    if (!base) base = "user";
 
-    return supabaseRequest(env, "/rest/v1/ethone_mail_aliases", {
-      method: "POST",
-      headers: { "Prefer": "return=representation" },
-      body: { user_id: userId, alias, display_name: safeText(displayName, 80), is_primary: true },
-      maxBytes: 4096
-    }).then(firstRow);
+    for (let attempt = 0; attempt < 10; attempt += 1) {
+      const suffix = attempt > 0 ? `.${randomBase(4)}` : "";
+      const local = `${base.slice(0, Math.max(1, 32 - suffix.length))}${suffix}`;
+      const alias = `${local}@ethone.dev`;
+
+      const taken = await resolveAliasByEmail(env, alias);
+      if (!taken) {
+        return supabaseRequest(env, "/rest/v1/ethone_mail_aliases", {
+          method: "POST",
+          headers: { "Prefer": "return=representation" },
+          body: { user_id: userId, alias, display_name: safeText(displayName, 80), is_primary: true },
+          maxBytes: 4096
+        }).then(firstRow);
+      }
+    }
+
+    return null;
   });
 }
 
@@ -120,6 +142,34 @@ export async function createAlias(env, userId, alias, displayName) {
     body: { user_id: userId, alias: safeAlias, display_name: safeText(displayName, 80), is_primary: !hasPrimary },
     maxBytes: 4096
   }).then(firstRow);
+}
+
+export async function createRandomAlias(env, userId, displayName) {
+  const origin = projectOrigin(env);
+  if (!origin || !userId) return null;
+
+  for (let attempt = 0; attempt < 10; attempt += 1) {
+    const local = `u-${randomBase(8)}`;
+    const alias = `${local}@ethone.dev`;
+    const existing = await resolveAliasByEmail(env, alias);
+    if (!existing) {
+      const hasPrimary = await supabaseRequest(env, `/rest/v1/ethone_mail_aliases?user_id=eq.${userId}&is_primary=eq.true&select=id`, {
+        method: "GET",
+        headers: { "Accept": "application/vnd.pgrst.object+json" },
+        maxBytes: 4096
+      }).then(firstRow);
+
+      const created = await supabaseRequest(env, "/rest/v1/ethone_mail_aliases", {
+        method: "POST",
+        headers: { "Prefer": "return=representation" },
+        body: { user_id: userId, alias, display_name: safeText(displayName, 80), is_primary: !hasPrimary },
+        maxBytes: 4096
+      }).then(firstRow);
+      if (created) return created;
+    }
+  }
+
+  return null;
 }
 
 export function storeMailMessage(env, message) {

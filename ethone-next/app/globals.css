@@ -602,6 +602,18 @@ a:focus:not(:focus-visible) {
   transition: transform 200ms ease;
 }
 
+input[data-haptic-state="pressed"],
+textarea[data-haptic-state="pressed"],
+select[data-haptic-state="pressed"],
+[contenteditable][data-haptic-state="pressed"],
+input[data-haptic-state="released"],
+textarea[data-haptic-state="released"],
+select[data-haptic-state="released"],
+[contenteditable][data-haptic-state="released"] {
+  transform: none;
+  transition: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   [data-haptic-state="pressed"],
   [data-haptic-state="released"] {
@@ -1153,6 +1165,18 @@ a:focus:not(:focus-visible) {
 [data-haptic-state="released"] {
   transform: scale(1);
   transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+input[data-haptic-state="pressed"],
+textarea[data-haptic-state="pressed"],
+select[data-haptic-state="pressed"],
+[contenteditable][data-haptic-state="pressed"],
+input[data-haptic-state="released"],
+textarea[data-haptic-state="released"],
+select[data-haptic-state="released"],
+[contenteditable][data-haptic-state="released"] {
+  transform: none;
+  transition: none;
 }
 
 [data-haptic-press]:active,

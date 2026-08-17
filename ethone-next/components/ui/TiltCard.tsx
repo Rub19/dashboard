@@ -6,6 +6,7 @@ import type { TargetAndTransition, Transition } from "framer-motion";
 import { motion, useMotionTemplate, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
 import { SPRING_MOUSE } from "@/lib/ease";
 import { useHoverCapable } from "@/lib/hooks/use-hover-capable";
+import { useSettings } from "@/components/SettingsProvider";
 import { cn } from "@/lib/utils";
 
 export interface TiltCardProps {
@@ -34,8 +35,13 @@ export function TiltCard({
   const ref = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
   const canHover = useHoverCapable();
+  const { settings } = useSettings();
 
-  const enabled = !reduce && canHover;
+  const enabled =
+    !reduce &&
+    canHover &&
+    settings.cardTilt &&
+    settings.performanceMode !== "low";
 
   const rx = useMotionValue(0);
   const ry = useMotionValue(0);
@@ -73,10 +79,14 @@ export function TiltCard({
       animate={animate}
       exit={exit}
       transition={transition}
-      onMouseMove={onMove}
-      onMouseLeave={onLeave}
-      style={{ transform, transformStyle: "preserve-3d" }}
-      className={cn("relative overflow-hidden rounded-2xl will-change-transform", className)}
+      onMouseMove={enabled ? onMove : undefined}
+      onMouseLeave={enabled ? onLeave : undefined}
+      style={enabled ? { transform, transformStyle: "preserve-3d" } : undefined}
+      className={cn(
+        "relative overflow-hidden rounded-2xl",
+        enabled ? "will-change-transform" : "",
+        className,
+      )}
     >
       {children}
       {glare && enabled ? (

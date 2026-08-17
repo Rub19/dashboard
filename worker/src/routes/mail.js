@@ -4,6 +4,7 @@ import {
   countMessages,
   countUnreadInFolder,
   createAlias,
+  createRandomAlias,
   createOrUpdateThread,
   getContacts,
   getDefaultSignature,
@@ -95,6 +96,27 @@ async function requireMailAlias(env, userId, displayName) {
   return alias;
 }
 
+async function resolveAliasForUser(env, auth, body) {
+  const requestedAliasId = safeText(body.alias_id, 64);
+  if (requestedAliasId) {
+    const response = await supabaseRequest(env, `/rest/v1/ethone_mail_aliases?id=eq.${requestedAliasId}&user_id=eq.${auth.userId}&limit=1`, {
+      method: "GET",
+      headers: { "Accept": "application/vnd.pgrst.object+json" },
+      maxBytes: 4096
+    });
+    const row = firstRow(response);
+    if (row) return row;
+  }
+
+  const requestedAlias = safeEmail(body.from_alias || body.alias);
+  if (requestedAlias) {
+    const resolved = await resolveAliasByEmail(env, requestedAlias);
+    if (resolved?.user_id === auth.userId) return resolved;
+  }
+
+  return getOrCreatePrimaryAlias(env, auth.userId, auth.displayName || auth.email);
+}
+
 async function resolveThreadForOutbound(env, userId, { inReplyTo, references, subject, to, cc = [] }) {
   const refs = [inReplyTo, ...(Array.isArray(references) ? references : [references])].filter(Boolean);
   if (refs.length) {
@@ -155,7 +177,8 @@ export async function mailSendRoute({ request, env, auth }) {
   if (!to.length && !cc.length && !bcc.length) throw httpError("INVALID_PARAMETER", 400, { detail: "to" });
   if (!subject && !text && !html) throw httpError("INVALID_PARAMETER", 400, { detail: "subject or body" });
 
-  const alias = await requireMailAlias(env, auth.userId, auth.displayName || auth.email);
+  const alias = await resolveAliasForUser(env, auth, body);
+  if (!alias) throw httpError("SERVICE_ERROR", 500, { detail: "alias" });
   const from = `${fromName || alias.display_name || "ETHONE"} <${alias.alias}>`;
 
   // Resolve the thread before sending.
@@ -413,7 +436,8 @@ export async function mailDraftsRoute({ request, env, auth }) {
   const text = safeText(body.text, 10000);
   const html = safeText(body.html, 50000);
 
-  const alias = await requireMailAlias(env, auth.userId, auth.displayName || auth.email);
+  const alias = await resolveAliasForUser(env, auth, body);
+  if (!alias) throw httpError("SERVICE_ERROR", 500, { detail: "alias" });
 
   if (id) {
     const existing = await supabaseRequest(env, `/rest/v1/ethone_mail_messages?id=eq.${id}&user_id=eq.${auth.userId}&folder=eq.drafts&limit=1`, {
@@ -614,14 +638,24 @@ export async function mailAliasRoute({ request, env, auth }) {
   }
 
   const body = await request.json().catch(() => ({}));
+
+  if (body.random === true) {
+    const alias = await createRandomAlias(env, auth.userId, body.display_name || body.displayName || auth.displayName || auth.email);
+    if (!alias) throw httpError("SERVICE_ERROR", 500, { detail: "alias" });
+    return { data: alias };
+  }
+
   const requestedAlias = safeText(body.alias, 320).toLowerCase();
   if (requestedAlias) {
-    const alias = await createAlias(env, auth.userId, requestedAlias, body.display_name || body.displayName || auth.displayName || auth.email);
+    const fullAlias = requestedAlias.includes("@") ? requestedAlias : `${requestedAlias}@ethone.dev`;
+    const alias = await createAlias(env, auth.userId, fullAlias, body.display_name || body.displayName || auth.displayName || auth.email);
     if (!alias) throw httpError("INVALID_PARAMETER", 400, { detail: "alias_unavailable" });
     return { data: alias };
   }
+
   const displayName = safeText(body.display_name || body.displayName, 80);
   const alias = await getOrCreatePrimaryAlias(env, auth.userId, displayName || auth.displayName || auth.email);
+  if (!alias) throw httpError("SERVICE_ERROR", 500, { detail: "alias" });
   return { data: alias };
 }
 
@@ -833,7 +867,7 @@ export async function mailScheduleRoute({ request, env, auth }) {
   if (!Number.isFinite(scheduledAt.getTime())) throw httpError("INVALID_PARAMETER", 400, { detail: "scheduled_at" });
   if (scheduledAt <= new Date()) throw httpError("INVALID_PARAMETER", 400, { detail: "scheduled_at" });
 
-  const alias = await getOrCreatePrimaryAlias(env, auth.userId, auth.displayName || auth.email);
+  const alias = await resolveAliasForUser(env, auth, body);
   if (!alias) throw httpError("SERVICE_ERROR", 500, { detail: "alias" });
 
   const now = new Date().toISOString();

@@ -336,6 +336,7 @@ export function useMail() {
     in_reply_to?: string;
     references?: string[];
     draft_id?: string;
+    alias_id?: string;
   }) {
     const res = await fetchWorker("/api/mail/send", { method: "POST", body: JSON.stringify(input) });
     await fetchMessages();
@@ -350,6 +351,7 @@ export function useMail() {
     subject?: string;
     text?: string;
     html?: string;
+    alias_id?: string;
   }) {
     const res = await fetchWorker("/api/mail/drafts", { method: "POST", body: JSON.stringify(input) });
     await fetchMessages();
@@ -481,8 +483,9 @@ export function useMail() {
     await fetchTrusted();
   }
 
-  async function createAlias(alias: string, displayName?: string) {
-    const res = await fetchWorker("/api/mail/alias", { method: "POST", body: JSON.stringify({ alias, display_name: displayName }) });
+  async function createAlias(input: string | { alias?: string; display_name?: string; random?: boolean }, displayName?: string) {
+    const body = typeof input === "string" ? { alias: input, display_name: displayName } : input;
+    const res = await fetchWorker("/api/mail/alias", { method: "POST", body: JSON.stringify(body) });
     await fetchAliases();
     return res?.data;
   }

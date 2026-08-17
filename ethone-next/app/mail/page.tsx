@@ -34,6 +34,8 @@ export default function MailPage() {
     setFlags,
     moveMessages,
     createLabel,
+    aliases,
+    createAlias,
   } = useMail();
 
   const [activeThread, setActiveThread] = useState<MailMessage[] | null>(null);
@@ -156,6 +158,7 @@ export default function MailPage() {
         in_reply_to: composeInReplyTo,
         references: composeReferences,
         draft_id: composeDraftId,
+        alias_id: state.aliasId,
       });
       success(i18n("sent"));
       setComposeOpen(false);
@@ -177,6 +180,7 @@ export default function MailPage() {
         subject: state.subject,
         text: state.body,
         html: state.body.replace(/\n/g, "<br>"),
+        alias_id: state.aliasId,
       });
       if (draft?.id) setComposeDraftId(draft.id);
       success(i18n("saved"));
@@ -288,6 +292,8 @@ export default function MailPage() {
         onSave={handleSaveDraft}
         onAiAssist={handleAiAssist}
         loading={submitting}
+        aliases={aliases}
+        createAlias={createAlias}
       />
     </div>
   );

@@ -70,7 +70,7 @@ export default function UserProfileDropdown() {
 
   const displayName = publicProfile?.display_name || activeProfile?.name || user?.email || i18n("guest");
   const avatarUrl = publicProfile?.avatar_url;
-  const email = user?.email || "ethoneofficial@gmail.com";
+  const email = user?.email || "";
 
   const currentStatus = useMemo<StatusKey>(() => {
     if (settings.status === "busy") return "dnd";
@@ -224,7 +224,6 @@ export default function UserProfileDropdown() {
         </div>
         <div className="hidden flex-col text-left pr-1.5 sm:flex">
           <span className="text-xs font-bold leading-tight text-white">{displayName}</span>
-          <span className="font-mono text-[10px] font-medium text-emerald-400">PLAN PRO</span>
         </div>
         <ChevronDown className={`h-3 w-3 text-zinc-500 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
@@ -263,23 +262,22 @@ export default function UserProfileDropdown() {
               <div className="flex min-w-0 flex-1 flex-col">
                 <div className="flex items-center justify-between">
                   <span className="truncate text-xs font-bold text-white">{displayName}</span>
-                  <span className="rounded-md border border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0.5 font-mono text-[9px] font-bold text-emerald-400">
-                    PRO
-                  </span>
                 </div>
-                <button
-                  type="button"
-                  onClick={copyEmail}
-                  className="mt-0.5 flex items-center gap-1 text-left text-[11px] text-zinc-400 transition-colors hover:text-white"
-                  title="Cliquer pour copier l'email"
-                >
-                  <span className="truncate font-mono">{email}</span>
-                  {copied ? (
-                    <Check className="h-3 w-3 shrink-0 text-emerald-400" />
-                  ) : (
-                    <Copy className="h-3 w-3 shrink-0 text-zinc-500" />
-                  )}
-                </button>
+                {email && (
+                  <button
+                    type="button"
+                    onClick={copyEmail}
+                    className="mt-0.5 flex items-center gap-1 text-left text-[11px] text-zinc-400 transition-colors hover:text-white"
+                    title="Cliquer pour copier l'email"
+                  >
+                    <span className="truncate font-mono">{email}</span>
+                    {copied ? (
+                      <Check className="h-3 w-3 shrink-0 text-emerald-400" />
+                    ) : (
+                      <Copy className="h-3 w-3 shrink-0 text-zinc-500" />
+                    )}
+                  </button>
+                )}
               </div>
             </div>
 

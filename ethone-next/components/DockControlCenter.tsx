@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFloating, offset, flip, shift, autoUpdate, FloatingPortal } from "@floating-ui/react";
 import Link from "next/link";
@@ -125,9 +125,7 @@ export default function DockControlCenter({
   const panelRef = useRef<HTMLDivElement | null>(null);
   const [ambience, setAmbience] = useState("none");
 
-  const [positioned, setPositioned] = useState(false);
-
-  const { refs, floatingStyles, placement, update: recalculate } = useFloating({
+  const { refs, floatingStyles, isPositioned, placement } = useFloating({
     open,
     onOpenChange: (next) => {
       if (!next) onClose();
@@ -135,21 +133,11 @@ export default function DockControlCenter({
     placement: "top",
     strategy: "fixed",
     whileElementsMounted: autoUpdate,
-    middleware: [offset(12), flip({ fallbackPlacements: ["top"], padding: 8 }), shift({ padding: 8 })],
+    middleware: [offset(12), flip({ padding: 8 }), shift({ padding: 8 })],
+    elements: {
+      reference: referenceRef ?? undefined,
+    },
   });
-
-  useLayoutEffect(() => {
-    if (referenceRef) {
-      refs.setReference(referenceRef);
-      recalculate?.();
-    }
-  }, [referenceRef, refs, recalculate]);
-
-  useEffect(() => {
-    if (floatingStyles.top !== undefined && floatingStyles.left !== undefined) {
-      setPositioned(true);
-    }
-  }, [floatingStyles]);
 
   useLayer(open, onClose, {
     boundary: panelRef,
@@ -195,7 +183,7 @@ export default function DockControlCenter({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.96 }}
             transition={{ duration: 0.15, ease: "easeOut" as const }}
-            style={{ ...floatingStyles, visibility: positioned ? "visible" : "hidden" }}
+            style={{ ...floatingStyles, visibility: isPositioned ? "visible" : "hidden" }}
             className="z-[90] w-80 max-w-[calc(100vw-1rem)] overflow-hidden"
             role="dialog"
             aria-modal="false"

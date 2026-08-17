@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronRight, CloudSun, Sun, Moon, Timer } from "lucide-react";
+import { ChevronRight, CloudSun, Sun, Moon, Timer, Eye, EyeOff } from "lucide-react";
 import SystemStatusPills from "@/components/SystemStatusPills";
 import CommandBarTrigger from "@/components/CommandBarTrigger";
 import NotificationCenter from "@/components/NotificationCenter";
@@ -12,6 +12,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useSettings } from "@/components/SettingsProvider";
 import { useFocus } from "@/components/FocusProvider";
+import { useDynamicIslandStore } from "@/lib/stores/dynamic-island";
 
 const ROUTE_LABELS: Record<string, string> = {
   "/": "home",
@@ -92,6 +93,26 @@ function FocusToggle() {
   );
 }
 
+function DynamicIslandToggle() {
+  const { visible, toggle } = useDynamicIslandStore();
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
+        visible
+          ? "text-zinc-400 hover:bg-white/[0.06] hover:text-white"
+          : "text-zinc-600 hover:bg-white/[0.06] hover:text-zinc-400"
+      }`}
+      aria-label={visible ? "Masquer la Dynamic Island" : "Afficher la Dynamic Island"}
+      title={visible ? "Masquer la Dynamic Island" : "Afficher la Dynamic Island"}
+    >
+      {visible ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+    </button>
+  );
+}
+
 export default function TopBar() {
   const { home, page } = useBreadcrumb();
 
@@ -129,6 +150,7 @@ export default function TopBar() {
           <WeatherQuickButton />
           <ThemeToggle />
           <FocusToggle />
+          <DynamicIslandToggle />
         </div>
 
         <CommandBarTrigger />

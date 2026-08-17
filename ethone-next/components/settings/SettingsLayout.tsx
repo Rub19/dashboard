@@ -23,16 +23,18 @@ import { DEFAULTS } from "@/lib/settings";
 import UserProfileCard from "./UserProfileCard";
 import SettingsContent from "./SettingsContent";
 import SettingsBottomBar from "./SettingsBottomBar";
+import BillingSettings from "./BillingSettings";
 
 const TABS = [
   { id: "overview", label: "Vue d'ensemble" },
   { id: "advanced", label: "Avancé" },
+  { id: "billing", label: "Facturation" },
 ];
 
 const TAB_OVERRIDES: Record<string, string> = {
   security: "advanced",
-  billing: "advanced",
   account: "advanced",
+  billing: "billing",
 };
 
 function SettingCard({
@@ -118,7 +120,7 @@ export default function SettingsLayout() {
       scrollTo("#profile-card");
     } else if (tab === "security") {
       scrollTo('[data-section="security"]');
-    } else if (tab === "billing" || tab === "account") {
+    } else if (tab === "account") {
       scrollTo('[data-section="account"]');
     }
   }, [searchParams, activeTab]);
@@ -269,7 +271,7 @@ export default function SettingsLayout() {
               accent="sky"
             />
           </motion.div>
-        ) : (
+        ) : activeTab === "advanced" ? (
           <motion.div
             key="advanced"
             initial={{ opacity: 0, y: 8 }}
@@ -279,6 +281,17 @@ export default function SettingsLayout() {
             className="space-y-4"
           >
             <SettingsContent />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="billing"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15 }}
+            className="space-y-4"
+          >
+            <BillingSettings />
           </motion.div>
         )}
       </AnimatePresence>

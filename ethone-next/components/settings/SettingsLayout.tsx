@@ -1,77 +1,88 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
-import { Search, RotateCcw, Save } from "lucide-react";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  Search,
+  RotateCcw,
+  Save,
+  Shield,
+  Palette,
+  Bell,
+  Volume2,
+  Laptop,
+  Lock,
+  SlidersHorizontal,
+  ChevronRight,
+} from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
-import { useSettingsForm } from "./SettingsFormContext";
 import { DEFAULTS } from "@/lib/settings";
+import UserProfileCard from "./UserProfileCard";
 import SettingsContent from "./SettingsContent";
-import SettingsSidebar from "./SettingsSidebar";
 import SettingsBottomBar from "./SettingsBottomBar";
-import DangerZone from "./DangerZone";
 
-const MAIN_SECTIONS = [
-  { id: "appearance", label: "Apparence", icon: "palette" },
-  { id: "typography", label: "Typographie", icon: "type" },
-  { id: "language", label: "Langue", icon: "globe" },
-  { id: "density", label: "Densité", icon: "gauge" },
-  { id: "sound", label: "Audio", icon: "volume" },
-  { id: "account", label: "Profil", icon: "user" },
-  { id: "security", label: "Sécurité", icon: "shield" },
-  { id: "notifications", label: "Notifications", icon: "bell" },
-  { id: "workspace", label: "Dock & Bureau", icon: "layout-grid" },
-  { id: "advanced", label: "Avancé", icon: "sliders-horizontal" },
+const TABS = [
+  { id: "overview", label: "Vue d'ensemble" },
+  { id: "advanced", label: "Avancé" },
 ];
+
+function SettingCard({
+  icon: Icon,
+  title,
+  description,
+  value,
+  action,
+  accent = "emerald",
+}: {
+  icon: React.ElementType;
+  title: string;
+  description: string;
+  value?: string;
+  action?: string;
+  accent?: "emerald" | "amber" | "sky" | "rose";
+}) {
+  const accentMap = {
+    emerald: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+    amber: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+    sky: "text-sky-400 bg-sky-500/10 border-sky-500/20",
+    rose: "text-rose-400 bg-rose-500/10 border-rose-500/20",
+  };
+
+  return (
+    <div className="group flex h-full min-h-0 flex-col justify-between overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 shadow-sm backdrop-blur-2xl transition-all hover:border-white/15">
+      <div>
+        <div className="mb-3 flex items-center gap-2.5">
+          <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${accentMap[accent]}`}>
+            <Icon className="h-4 w-4" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <h3 className="truncate text-sm font-semibold text-white">{title}</h3>
+            <p className="truncate text-[10px] text-zinc-500">{description}</p>
+          </div>
+        </div>
+        {value && <p className="truncate text-xs text-zinc-300">{value}</p>}
+      </div>
+      {action && (
+        <button
+          type="button"
+          className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl bg-white/[0.04] py-2 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/[0.08]"
+        >
+          <span>{action}</span>
+          <ChevronRight className="h-3 w-3" />
+        </button>
+      )}
+    </div>
+  );
+}
 
 export default function SettingsLayout() {
   const i18n = useI18n();
   const { settings, update } = useSettings();
   const { success, error: showError } = useToast();
-  const { query, setQuery, showAdvanced, setShowAdvanced } = useSettingsForm();
-  const [activeSection, setActiveSection] = useState<string>("appearance");
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const root = contentRef.current;
-    if (!root) return;
-
-    const handleIntersection = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting && entry.intersectionRatio > 0.4) {
-          setActiveSection(entry.target.getAttribute("data-section") || "appearance");
-        }
-      });
-    };
-
-    observerRef.current = new IntersectionObserver(handleIntersection, {
-      root,
-      threshold: 0.4,
-      rootMargin: "-80px 0px -40% 0px",
-    });
-
-    const sections = root.querySelectorAll("[data-section]");
-    sections.forEach((el) => observerRef.current?.observe(el));
-
-    return () => observerRef.current?.disconnect();
-  }, [showAdvanced]);
-
-  function handleSectionChange(id: string) {
-    if (id === "advanced") {
-      setShowAdvanced(!showAdvanced);
-      const el = document.querySelector(`[data-section="advanced"]`);
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-      setActiveSection("advanced");
-      return;
-    }
-    const el = document.querySelector(`[data-section="${id}"]`);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    setActiveSection(id);
-  }
+  const [query, setQuery] = useState("");
+  const [activeTab, setActiveTab] = useState("overview");
 
   function handleReset() {
     if (!window.confirm(i18n("resetSettingsConfirm") || "Rétablir tous les paramètres par défaut ?")) return;
@@ -92,74 +103,146 @@ export default function SettingsLayout() {
     }
   }
 
-  const sidebarSections = MAIN_SECTIONS.map((s) =>
-    s.id === "advanced" ? { ...s, badge: showAdvanced ? 1 : undefined } : s
-  );
-
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] w-full flex-col gap-6 p-4 pb-24 sm:p-6">
-      <div className="mx-auto w-full max-w-7xl">
-        <motion.header
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
-        >
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-white">{i18n("settingsTitle")}</h1>
-            <p className="mt-1 text-xs text-zinc-400">{i18n("settingsDescription")}</p>
+    <div className="mx-auto flex w-full max-w-6xl select-none flex-col gap-6 p-4 sm:p-6">
+      {/* Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="flex items-center gap-2.5 text-2xl font-bold tracking-tight text-white">
+            <Shield className="h-6 w-6 text-emerald-400" />
+            <span>{i18n("settingsTitle") || "Paramètres du Compte"}</span>
+          </h1>
+          <p className="mt-0.5 text-xs text-zinc-400">
+            {i18n("settingsDescription") || "Gérez votre profil, vos accès et vos préférences système"}
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={i18n("journalSearchPlaceholder") || "Rechercher..."}
+              aria-label={i18n("journalSearchPlaceholder") || "Rechercher"}
+              className="h-9 w-full rounded-xl border border-white/10 bg-white/[0.04] pl-9 pr-3 text-xs text-zinc-200 placeholder-zinc-500 outline-none transition-colors focus:border-emerald-500/40 sm:w-56"
+            />
           </div>
-
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder={i18n("journalSearchPlaceholder")}
-                aria-label={i18n("journalSearchPlaceholder")}
-                className="h-9 w-full rounded-xl border border-white/10 bg-white/[0.04] pl-9 pr-3 text-xs text-zinc-200 placeholder-zinc-500 outline-none transition-colors focus:border-emerald-500/40 sm:w-64"
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleReset}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-xs text-zinc-300 transition-all hover:bg-white/[0.08]"
-              >
-                <RotateCcw className="h-3.5 w-3.5" />
-                {i18n("reset") || "Rétablir"}
-              </button>
-              <button
-                type="button"
-                onClick={handleSave}
-                className="inline-flex items-center gap-1.5 rounded-xl px-4 py-1.5 text-xs font-semibold text-zinc-950 shadow-lg transition-all hover:brightness-110 active:scale-95"
-                style={{ background: "var(--accent-color, #10b981)" }}
-              >
-                <Save className="h-3.5 w-3.5" />
-                {i18n("save") || "Enregistrer"}
-              </button>
-            </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleReset}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-xs text-zinc-300 transition-all hover:bg-white/[0.08]"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              {i18n("reset") || "Rétablir"}
+            </button>
+            <button
+              type="button"
+              onClick={handleSave}
+              className="inline-flex items-center gap-1.5 rounded-xl px-4 py-1.5 text-xs font-semibold text-zinc-950 shadow-lg transition-all hover:brightness-110 active:scale-95"
+              style={{ background: "var(--accent-color, #10b981)" }}
+            >
+              <Save className="h-3.5 w-3.5" />
+              {i18n("save") || "Enregistrer"}
+            </button>
           </div>
-        </motion.header>
-
-        <div className="flex flex-col gap-6 md:flex-row">
-          <aside className="top-6 h-fit w-full shrink-0 md:sticky md:w-64">
-            <div className="rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-2 shadow-sm backdrop-blur-2xl">
-              <SettingsSidebar
-                sections={sidebarSections}
-                activeId={activeSection}
-                onChange={handleSectionChange}
-              />
-            </div>
-          </aside>
-
-          <main ref={contentRef} className="min-w-0 flex-1 space-y-6">
-            <SettingsContent />
-            <DangerZone />
-          </main>
         </div>
       </div>
+
+      {/* Onglets */}
+      <div className="flex w-fit items-center gap-1 rounded-xl border border-white/[0.08] bg-zinc-950/70 p-1 backdrop-blur-xl">
+        {TABS.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`rounded-lg px-4 py-1.5 text-xs font-medium transition-all ${
+              activeTab === tab.id
+                ? "border border-white/10 bg-white/[0.08] text-white shadow-sm"
+                : "text-zinc-400 hover:text-zinc-200"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      <AnimatePresence mode="wait">
+        {activeTab === "overview" ? (
+          <motion.div
+            key="overview"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15 }}
+            className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
+          >
+            <div className="md:col-span-2 xl:col-span-1">
+              <UserProfileCard />
+            </div>
+            <SettingCard
+              icon={Palette}
+              title={i18n("appearance") || "Apparence"}
+              description="Thème, icônes, couleurs"
+              value={`Thème : ${settings.theme || "default"} · Pack : ${settings.iconPack || "lucide"}`}
+              action="Personnaliser"
+              accent="emerald"
+            />
+            <SettingCard
+              icon={Laptop}
+              title={i18n("language") || "Langue"}
+              description="Langue d'interface"
+              value={(settings.language || "fr").toUpperCase()}
+              action="Modifier"
+              accent="sky"
+            />
+            <SettingCard
+              icon={Bell}
+              title={i18n("notifications") || "Notifications"}
+              description="Alertes et push"
+              value={settings.pushNotifications ? "Activées" : "Désactivées"}
+              action="Gérer"
+              accent="amber"
+            />
+            <SettingCard
+              icon={Volume2}
+              title={i18n("sound") || "Audio"}
+              description="Pack sonore et volumes"
+              value={`Pack : ${settings.soundPack || "ethone"}`}
+              action="Configurer"
+              accent="emerald"
+            />
+            <SettingCard
+              icon={Lock}
+              title={i18n("security") || "Sécurité"}
+              description="Alertes et sessions"
+              value={settings.securityAlerts ? "Alertes activées" : "Alertes désactivées"}
+              action="Renforcer"
+              accent="rose"
+            />
+            <SettingCard
+              icon={SlidersHorizontal}
+              title={i18n("workspace") || "Bureau"}
+              description="Dock, layout, densité"
+              value={`Layout : ${settings.layoutPreset || "default"}`}
+              action="Ajuster"
+              accent="sky"
+            />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="advanced"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15 }}
+            className="space-y-4"
+          >
+            <SettingsContent />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <SettingsBottomBar />
     </div>

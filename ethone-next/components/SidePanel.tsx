@@ -6,8 +6,9 @@ import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
 import { CHANGELOG } from "@/data/changelog";
-import { useNotifications } from "@/lib/hooks/useNotifications";
+import { useNotifications, type Notification } from "@/lib/hooks/useNotifications";
 import Select from "@/components/ui/Select";
+import NotificationItem from "@/components/NotificationItem";
 import { useAuth } from "@/components/AuthProvider";
 import { useProfile } from "@/lib/hooks/useProfile";
 import { useFocus } from "./FocusProvider";
@@ -267,7 +268,7 @@ function QuickAction({ icon, label, href }: { icon: string; label: string; href:
 
 function NotificationsTab() {
   const i18n = useI18n();
-  const { activeItems, markRead, markAllRead, archive } = useNotifications();
+  const { activeItems, markAllRead } = useNotifications();
   const [filter, setFilter] = useState("all");
   const [query, setQuery] = useState("");
 
@@ -284,79 +285,53 @@ function NotificationsTab() {
 
   const categories = useMemo(() => Array.from(new Set(activeItems.map((i) => i.category))), [activeItems]);
 
+  const openItem = (n: Notification) => {
+    if (n.data?.url && typeof n.data.url === "string") {
+      window.open(n.data.url, "_blank");
+    } else if (n.data?.route && typeof n.data.route === "string") {
+      window.location.href = n.data.route === "home" ? "/" : `/${n.data.route}/`;
+    }
+  };
+
   return (
     <div className="space-y-3">
-      <div className="flex gap-2">
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={i18n("search")}
-          className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
-        />
-        <Select
-          value={filter}
-          onChange={setFilter}
-          options={[
-            { id: "all", label: i18n("all") },
-            { id: "unread", label: i18n("unread") },
-            ...categories.map((cat) => ({ id: cat, label: cat })),
-          ]}
-          aria-label={i18n("filter")}
-          className="min-w-[6rem]"
-        />
-        <button type="button" onClick={() => markAllRead()} className="rounded-[var(--panel-radius)] p-2 hover:bg-[var(--panel-bg)]" aria-label={i18n("markAllRead")}>
-          <Icon name="check-check" className="h-4 w-4" />
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex gap-2">
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={i18n("search")}
+            className="flex-1 rounded-xl border border-white/[0.08] bg-zinc-950/50 px-3 py-2 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--accent)]/50"
+          />
+          <Select
+            value={filter}
+            onChange={setFilter}
+            options={[
+              { id: "all", label: i18n("all") },
+              { id: "unread", label: i18n("unread") },
+              ...categories.map((cat) => ({ id: cat, label: i18n(cat) || cat })),
+            ]}
+            aria-label={i18n("filter")}
+            className="min-w-[6rem]"
+          />
+        </div>
+        <button type="button" onClick={() => markAllRead()} className="rounded-xl p-2 hover:bg-white/[0.06]" aria-label={i18n("markAllRead")}>
+          <Icon name="check-check" className="h-4 w-4 text-[var(--muted)]" />
         </button>
       </div>
       <div className="space-y-2" role="list">
         {filtered.length === 0 && (
-          <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-6 text-center text-sm text-[var(--muted)] backdrop-blur-[var(--panel-blur)]">
+          <div className="rounded-2xl border border-white/[0.08] bg-zinc-950/50 p-6 text-center text-sm text-[var(--muted)]">
             {i18n("noNotifications")}
           </div>
         )}
         {filtered.map((item) => (
-          <article
-            key={item.id}
-            role="listitem"
-            className={`rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 ${item.read ? "opacity-70" : ""}`}
-          >
-            <div className="flex items-start gap-3">
-              <Icon name={item.icon || "info"} className="h-5 w-5 shrink-0 text-[var(--accent)]" />
-              <div className="min-w-0 flex-1">
-                <div className="mb-1 flex items-center justify-between gap-2 text-xs text-[var(--muted)]">
-                  <span>{formatTime(item.timestamp)}</span>
-                  {item.category && <span className="rounded bg-[var(--panel-bg)] px-1.5 py-0.5">{item.category}</span>}
-                </div>
-                <p className="font-medium text-sm">{item.title}</p>
-                <p className="text-xs text-[var(--muted)]">{item.message}</p>
-              </div>
-              <div className="flex gap-1">
-                <button type="button" onClick={() => markRead(item.id)} className="rounded p-1 hover:bg-[var(--panel-bg)]" aria-label={i18n("markRead")}>
-                  <Icon name={item.read ? "mail" : "mail-check"} className="h-4 w-4" />
-                </button>
-                <button type="button" onClick={() => archive(item.id)} className="rounded p-1 hover:bg-[var(--panel-bg)]" aria-label={i18n("archive")}>
-                  <Icon name="archive" className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          </article>
+          <NotificationItem key={item.id} n={item} onOpen={openItem} />
         ))}
       </div>
     </div>
   );
-}
-
-function formatTime(ts: number) {
-  const diff = Date.now() - ts;
-  const sec = Math.floor(diff / 1000);
-  if (sec < 60) return "À l'instant";
-  const min = Math.floor(sec / 60);
-  if (min < 60) return `${min} min`;
-  const h = Math.floor(min / 60);
-  if (h < 24) return `${h}h`;
-  const d = Math.floor(h / 24);
-  return `${d}j`;
 }
 
 function ChangelogTab() {

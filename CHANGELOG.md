@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : sélecteur d'espace de travail Bento et ajustements SidePanel**
+
+### Corrige
+- `ethone-next/components/DashboardOverview.tsx` : remplace le `<select>` natif du header par le composant `Select` Bento glassmorphism ; ajout d'un état `workspace` contrôlé et conservation du style sans `max-w-7xl`.
+- `ethone-next/components/SidePanel.tsx` : import du type `Notification` manquant et nettoyage des destructures inutilisées pour corriger le build TypeScript ; refactor visuel du centre de notifications avec `NotificationItem`.
+
 **Migration Next.js : alias mail privés par utilisateur**
 
 ### Corrige

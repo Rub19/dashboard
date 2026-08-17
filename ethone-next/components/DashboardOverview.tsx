@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { LayoutGrid } from "lucide-react";
+import Select from "@/components/ui/Select";
 import BentoCard from "@/components/BentoCard";
 import BrandMark from "@/components/BrandMark";
 import HeroBriefingCard from "@/components/HeroBriefingCard";
@@ -34,6 +35,7 @@ export default function DashboardOverview() {
   const { items: events } = useItems("events");
   const focus = useFocus();
   const [customizing, setCustomizing] = useState(false);
+  const [workspace, setWorkspace] = useState("ethone");
 
   const hidden = new Set(settings.homeHiddenSections || []);
 
@@ -81,7 +83,7 @@ export default function DashboardOverview() {
 
   return (
     <main className="min-h-screen p-4 sm:p-6">
-      <header className="mb-6 flex max-w-7xl mx-auto w-full items-center justify-between gap-4">
+      <header className="mb-6 flex w-full items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <BrandMark size={36} />
           <div>
@@ -90,14 +92,16 @@ export default function DashboardOverview() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <select
-            aria-label="Workspace"
-            className="rounded-lg border border-white/[0.08] bg-zinc-950/70 px-3 py-1.5 text-xs text-zinc-300 outline-none focus:border-white/20"
-            defaultValue="ethone"
-          >
-            <option value="ethone">ETHONE</option>
-            <option value="personal">Personnel</option>
-          </select>
+          <Select
+            value={workspace}
+            onChange={setWorkspace}
+            options={[
+              { id: "ethone", label: "ETHONE" },
+              { id: "personal", label: i18n("personal", "Personnel") },
+            ]}
+            aria-label={i18n("workspace", "Workspace")}
+            className="w-36"
+          />
           <button
             type="button"
             onClick={() => setCustomizing((v) => !v)}
@@ -109,7 +113,7 @@ export default function DashboardOverview() {
         </div>
       </header>
 
-      <div className="grid grid-cols-12 gap-4 max-w-7xl mx-auto w-full">
+      <div className="grid w-full grid-cols-12 gap-4">
         {customizing && (
           <BentoCard
             title={i18n("customizeDashboard")}

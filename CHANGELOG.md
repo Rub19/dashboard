@@ -4,6 +4,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : 404 glitch et menu contextuel générique**
+
+### Corrige
+- `ethone-next/app/not-found.tsx` : nouvelle 404 avec gros code `404` qui se “scramble” au chargement, effet de chromatic aberration au survol, et style ETHONE (verre, bordures, boutons).
+- `ethone-next/components/ContextMenu.tsx` : support de deux modes : menu popup global via `ContextMenuProvider` (flèche, actions rapides) et wrapper `<ContextMenu items={...}>{children}</ContextMenu>` pour afficher un menu contextuel sur n'importe quel élément (Fichiers, LiveWidgets, Notes).
+- `ethone-next/components/ContextMenu.tsx` : les items peuvent utiliser des noms d'icônes (`string`) via `Icon`, accepter `separator: true` et `danger: true`.
+
 **Migration Next.js : effet 3D tilt sur les cartes**
 
 ### Corrige

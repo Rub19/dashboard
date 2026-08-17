@@ -74,7 +74,7 @@ export default function SystemControlCard({ className = "" }: { className?: stri
                   key={s.id}
                   type="button"
                   onClick={() => update({ status: s.id })}
-                  className={`flex items-center justify-center gap-1.5 rounded-xl border border-white/[0.08] px-2 py-2 text-xs font-medium transition-all ${
+                  className={`flex items-center justify-center gap-1.5 rounded-lg border border-white/[0.08] px-2 py-2 text-xs font-medium transition-all ${
                     active ? `${s.classes.bg} ${s.classes.text} ring-1 ${s.classes.ring}` : "bg-white/[0.02] text-zinc-400 hover:bg-white/[0.04]"
                   }`}
                 >
@@ -100,7 +100,7 @@ export default function SystemControlCard({ className = "" }: { className?: stri
                   onClick={() => update({ aura })}
                   title={i18n(key)}
                   style={{ backgroundColor: theme.background }}
-                  className={`flex h-8 w-8 items-center justify-center rounded-full border border-white/[0.08] transition-all hover:scale-105 ${
+                  className={`flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.08] transition-all hover:scale-105 ${
                     active ? "ring-2 ring-[var(--accent)] ring-offset-2 ring-offset-zinc-950" : "opacity-70 hover:opacity-100"
                   }`}
                 >
@@ -117,7 +117,7 @@ export default function SystemControlCard({ className = "" }: { className?: stri
 
         <div className="space-y-1.5">
           <p className="text-xs font-medium text-[var(--muted)]">{i18n("sessionMode")}</p>
-          <div className="flex items-center gap-1 rounded-xl border border-white/[0.08] bg-white/[0.02] p-1">
+          <div className="flex items-center gap-1 rounded-lg border border-white/[0.08] bg-white/[0.02] p-1">
             <button
               type="button"
               onClick={() => cycle(-1)}
@@ -127,7 +127,7 @@ export default function SystemControlCard({ className = "" }: { className?: stri
               <Icon name="chevron-left" className="h-3.5 w-3.5" />
             </button>
             <div className="flex flex-1 items-center justify-center gap-1.5 text-xs font-medium text-white">
-              <Icon name={activeMode.icon} className="h-3.5 w-3.5 text-[var(--accent)]" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[var(--accent)]" aria-hidden="true" />
               {i18n(activeMode.label)}
             </div>
             <button

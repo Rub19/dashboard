@@ -10,6 +10,7 @@ import {
   CreditCard,
   Sparkles,
   Command,
+  Settings as SettingsIcon,
   HardDrive,
   LogOut,
   Check,
@@ -126,15 +127,14 @@ export default function UserProfileDropdown() {
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const latestVersion = changelog[0]?.version || "v1.1";
+  const VERSION_LABEL = "v1.1";
 
   const menuItems = [
     {
       id: "changelog",
-      label: i18n("changelogTitle") || "Notes de version",
-      badge: `${latestVersion} • NOUVEAU`,
-      badgeClass:
-        "text-purple-300 bg-purple-500/15 border-purple-500/30",
+      label: "Notes de version",
+      badge: `${VERSION_LABEL} • NOUVEAU`,
+      badgeClass: "text-purple-300 bg-purple-500/15 border-purple-500/30",
       icon: Sparkles,
       iconBoxClass:
         "bg-purple-500/15 border-purple-500/30 text-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.2)]",
@@ -142,8 +142,8 @@ export default function UserProfileDropdown() {
     },
     {
       id: "profile",
-      label: i18n("myProfile") || "Gérer le profil",
-      badge: i18n("edit") || "Éditer",
+      label: "Mon profil",
+      badge: "Modifier",
       badgeClass: "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
       icon: User,
       iconBoxClass:
@@ -151,9 +151,18 @@ export default function UserProfileDropdown() {
       action: () => router.push("/profile"),
     },
     {
+      id: "settings",
+      label: "Réglages",
+      kbd: "⌘,",
+      icon: SettingsIcon,
+      iconBoxClass:
+        "bg-zinc-500/15 border-zinc-500/30 text-zinc-300 shadow-[0_0_10px_rgba(255,255,255,0.05)]",
+      action: () => router.push("/settings"),
+    },
+    {
       id: "security",
-      label: i18n("security") || "Sécurité & Clés API",
-      badge: i18n("active") || "Actif",
+      label: "Sécurité",
+      badge: "actif",
       badgeClass: "text-cyan-300 bg-cyan-500/15 border-cyan-500/30",
       icon: ShieldCheck,
       iconBoxClass:
@@ -162,7 +171,7 @@ export default function UserProfileDropdown() {
     },
     {
       id: "billing",
-      label: i18n("billing") || "Facturation & Licences",
+      label: "Facturation",
       badge: null,
       icon: CreditCard,
       iconBoxClass:
@@ -171,7 +180,7 @@ export default function UserProfileDropdown() {
     },
     {
       id: "shortcuts",
-      label: i18n("shortcuts") || "Raccourcis Clavier",
+      label: "Raccourcis",
       kbd: "⌘K",
       icon: Command,
       iconBoxClass:
@@ -395,7 +404,7 @@ export default function UserProfileDropdown() {
                     <h3 className="flex items-center gap-2 text-sm font-bold text-white">
                       <span>{i18n("changelogTitle") || "Changelog ETHONE OS"}</span>
                       <span className="rounded-lg border border-purple-500/25 bg-purple-500/15 px-2 py-0.5 font-mono text-[10px] text-purple-300">
-                        {latestVersion}
+                        {VERSION_LABEL}
                       </span>
                     </h3>
                     <p className="text-[11px] text-zinc-400">{i18n("changelogDescription") || "Historique des mises à jour"}</p>

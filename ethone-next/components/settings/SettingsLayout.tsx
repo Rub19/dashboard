@@ -15,11 +15,13 @@ import {
   Lock,
   SlidersHorizontal,
   ChevronRight,
+  RefreshCw,
 } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { DEFAULTS } from "@/lib/settings";
+import { forceAppReload } from "@/lib/force-reload";
 import UserProfileCard from "./UserProfileCard";
 import SettingsContent from "./SettingsContent";
 import SettingsBottomBar from "./SettingsBottomBar";
@@ -46,6 +48,7 @@ function SettingCard({
   value,
   action,
   accent = "emerald",
+  onClick,
 }: {
   icon: React.ElementType;
   title: string;
@@ -53,12 +56,20 @@ function SettingCard({
   value?: string;
   action?: string;
   accent?: "emerald" | "amber" | "sky" | "rose";
+  onClick?: () => void;
 }) {
   const accentMap = {
     emerald: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
     amber: "text-amber-400 bg-amber-500/10 border-amber-500/20",
     sky: "text-sky-400 bg-sky-500/10 border-sky-500/20",
     rose: "text-rose-400 bg-rose-500/10 border-rose-500/20",
+  };
+  const buttonAccentMap = {
+    emerald:
+      "border-emerald-500/20 text-emerald-300 hover:bg-emerald-500/10 hover:text-emerald-200",
+    amber: "border-amber-500/20 text-amber-300 hover:bg-amber-500/10 hover:text-amber-200",
+    sky: "border-sky-500/20 text-sky-300 hover:bg-sky-500/10 hover:text-sky-200",
+    rose: "border-rose-500/20 text-rose-300 hover:bg-rose-500/10 hover:text-rose-200",
   };
 
   return (
@@ -78,7 +89,10 @@ function SettingCard({
       {action && (
         <button
           type="button"
-          className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl bg-white/[0.04] py-2 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/[0.08]"
+          onClick={onClick}
+          className={`mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl border bg-white/[0.02] py-2 text-xs font-medium transition-colors ${
+            onClick ? buttonAccentMap[accent] : "border-white/[0.06] text-zinc-300 hover:bg-white/[0.06]"
+          }`}
         >
           <span>{action}</span>
           <ChevronRight className="h-3 w-3" />
@@ -276,6 +290,14 @@ export default function SettingsLayout() {
               value={`Layout : ${settings.layoutPreset || "default"}`}
               action="Ajuster"
               accent="sky"
+            />
+            <SettingCard
+              icon={RefreshCw}
+              title={i18n("refreshApp") || "Application"}
+              description="Vider le cache et recharger"
+              action={i18n("refreshAll") || "Tout rafraîchir"}
+              accent="emerald"
+              onClick={() => forceAppReload()}
             />
           </motion.div>
         ) : activeTab === "general" || activeTab === "security" || activeTab === "account" ? (

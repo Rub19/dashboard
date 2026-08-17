@@ -4,6 +4,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : bouton "Tout rafraîchir" dans les réglages**
+
+### Corrige
+- `ethone-next/lib/force-reload.ts` : nouvel utilitaire `forceAppReload()` qui désenregistre les Service Workers, vide tous les caches, supprime `ethone:update-dismissed` et recharge avec `?__reload=<timestamp>`.
+- `ethone-next/components/VersionUpdateToast.tsx` : utilisation de `forceAppReload()` pour le bouton "Mettre à jour".
+- `ethone-next/components/settings/SettingsLayout.tsx` : nouvelle carte `Application` dans la vue d'ensemble avec un bouton "Tout rafraîchir" pour forcer un rechargement frais à la demande.
+
 **Migration Next.js : ajustement gauge Productivité et Rythme**
 
 ### Corrige

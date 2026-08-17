@@ -4,8 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { RefreshCw, X, ArrowUpCircle } from "lucide-react";
 import { useVersionChecker } from "@/lib/hooks/useVersionChecker";
 import { useI18n } from "@/lib/hooks/useI18n";
-
-const VERSION_STORAGE_KEY = "ethone:version";
+import { forceAppReload } from "@/lib/force-reload";
 
 function formatVersion(version: string | null) {
   if (!version) return "";
@@ -13,32 +12,6 @@ function formatVersion(version: string | null) {
     return `v${version.slice(0, 7)}`;
   }
   return `v${version}`;
-}
-
-async function applyUpdate(newVersion: string | null) {
-  try {
-    if (newVersion) {
-      try {
-        localStorage.setItem(VERSION_STORAGE_KEY, newVersion);
-      } catch {}
-    }
-
-    if ("serviceWorker" in navigator) {
-      const registrations = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(registrations.map((r) => r.unregister()));
-    }
-
-    if ("caches" in window) {
-      const keys = await caches.keys();
-      await Promise.all(keys.map((k) => caches.delete(k)));
-    }
-  } catch (e) {
-    console.error("[VersionUpdateToast] failed to clear caches", e);
-  } finally {
-    const url = new URL(window.location.href);
-    url.searchParams.set("__reload", Date.now().toString());
-    window.location.href = url.toString();
-  }
 }
 
 export default function VersionUpdateToast() {
@@ -82,7 +55,7 @@ export default function VersionUpdateToast() {
             <div className="flex shrink-0 items-center gap-2">
               <button
                 type="button"
-                onClick={() => applyUpdate(newVersion)}
+                onClick={() => forceAppReload(newVersion)}
                 className="flex shrink-0 items-center gap-1.5 rounded-xl bg-emerald-500 px-3.5 py-2 text-xs font-bold text-zinc-950 shadow-md shadow-emerald-500/20 transition-all hover:bg-emerald-400 hover:shadow-lg active:scale-95"
               >
                 <RefreshCw className="h-3.5 w-3.5" />

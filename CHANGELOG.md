@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : ajout de l'icône Mail dans le Dock**
+
+### Corrige
+- `ethone-next/components/Dock.tsx` : ajout d'un bouton `Mail` (enveloppe) dans le Dock, à côté des notifications, qui ouvre `/mail/` en un clic.
+
 **Migration Next.js : correction du bouton Remonter en haut du Dock**
 
 ### Corrige

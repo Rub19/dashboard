@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { LayoutGrid, Search, Clock, AppWindow, Bell, Sliders, ChevronUp } from "lucide-react";
+import { LayoutGrid, Search, Clock, AppWindow, Bell, Sliders, ChevronUp, Mail } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useWindowManager } from "@/components/WindowManagerProvider";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
@@ -245,6 +245,18 @@ export default function Dock() {
               aria-hidden="true"
             />
           )}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            router.push("/mail/");
+            setLauncherOpen(false);
+          }}
+          aria-label={i18n("openMail", "Ouvrir les mails")}
+          className={dockButton}
+        >
+          <Mail className="w-5 h-5" />
         </button>
 
         <button

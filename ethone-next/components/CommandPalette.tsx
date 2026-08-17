@@ -1,41 +1,44 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Search } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import { createPortal } from "react-dom";
 
+import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useSettings, useActiveProfile } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { Icon } from "@/lib/icons";
-import Modal from "@/components/ui/Modal";
-import { useCommandPalette } from "@/components/CommandPaletteProvider";
-import { useLayer } from "@/components/LayerProvider";
 import { useCommandItems, type CommandItem } from "@/lib/commands";
-import { searchCommands, createCommandHistory } from "@/lib/command-search";
+import { searchCommands, createCommandHistory, type SearchableCommandItem } from "@/lib/command-search";
+import { Icon } from "@/lib/icons";
+import { EASE_OUT } from "@/lib/ease";
+import { useTouchCapable } from "@/lib/hooks/use-touch-capable";
+import { cn } from "@/lib/utils";
 
 const SECTION_ORDER = ["Navigation", "Actions Rapides", "Intégrations", "Thèmes & Apparence"];
 
 const SECTION_MAP: Record<string, string> = {
   Navigation: "Navigation",
   Créer: "Actions Rapides",
-  "Fenêtres": "Actions Rapides",
-  "Spaces": "Actions Rapides",
-  "Focus": "Actions Rapides",
-  "Brain": "Actions Rapides",
-  "Système": "Actions Rapides",
-  "Compte": "Actions Rapides",
-  "Presets": "Actions Rapides",
-  "Ambiance": "Thèmes & Apparence",
-  "Réglages": "Thèmes & Apparence",
-  "Plugins": "Intégrations",
-  "RSS": "Intégrations",
-  "Scratchpad": "Intégrations",
-  "Matchs": "Intégrations",
-  "Drops": "Intégrations",
-  "Météo": "Intégrations",
-  "Macros": "Intégrations",
-  "Facturation": "Intégrations",
-  "Mail": "Intégrations",
+  Fenêtres: "Actions Rapides",
+  Spaces: "Actions Rapides",
+  Focus: "Actions Rapides",
+  Brain: "Actions Rapides",
+  Système: "Actions Rapides",
+  Compte: "Actions Rapides",
+  Presets: "Actions Rapides",
+  Ambiance: "Thèmes & Apparence",
+  Réglages: "Thèmes & Apparence",
+  Plugins: "Intégrations",
+  RSS: "Intégrations",
+  Scratchpad: "Intégrations",
+  Matchs: "Intégrations",
+  Drops: "Intégrations",
+  Météo: "Intégrations",
+  Macros: "Intégrations",
+  Facturation: "Intégrations",
+  Mail: "Intégrations",
 };
 
 const ROUTE_CATEGORIES: Record<string, string> = {
@@ -79,6 +82,15 @@ function getSection(category: string) {
   return SECTION_MAP[category] ?? "Actions Rapides";
 }
 
+// Opened via a keyboard shortcut many times a day — entrance must read as
+// instant. Tight spring, even faster exit.
+const PANEL_SPRING = {
+  type: "spring",
+  stiffness: 560,
+  damping: 40,
+  mass: 0.5,
+} as const;
+
 export default function CommandPalette() {
   const i18n = useI18n();
   const { settings, update } = useSettings();
@@ -88,9 +100,10 @@ export default function CommandPalette() {
 
   const [query, setQuery] = useState("");
   const [index, setIndex] = useState(0);
+  const [mounted, setMounted] = useState(false);
 
-  const dialogRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
   const commandHistory = useMemo(() => createCommandHistory(), []);
   const [frequency, setFrequency] = useState(() => commandHistory.frequency());
@@ -101,17 +114,11 @@ export default function CommandPalette() {
   const pinned = useMemo(() => new Set(settings.pinnedCommands || []), [settings.pinnedCommands]);
   const recent = useMemo(() => new Set(settings.commandHistory || []), [settings.commandHistory]);
 
-  useLayer(open, () => setOpen(false), {
-    boundary: dialogRef,
-    kind: "dialog",
-    modal: true,
-    trapFocus: true,
-    closeOnEscape: true,
-    closeOnOutside: true,
-    closeOnResize: true,
-    closeOnScroll: true,
-    initialFocus: false,
-  });
+  const uid = useId();
+  const reduce = useReducedMotion();
+  const canTouch = useTouchCapable();
+
+  useEffect(() => setMounted(true), []);
 
   const context = useMemo(
     () => ({ route: pathname, routeCategory, space, pinned, recent, frequency }),
@@ -119,7 +126,7 @@ export default function CommandPalette() {
   );
 
   const filtered = useMemo<CommandItem[]>(() => {
-    return searchCommands(COMMANDS, query.trim(), context) as CommandItem[];
+    return searchCommands(COMMANDS as unknown as SearchableCommandItem[], query.trim(), context) as CommandItem[];
   }, [COMMANDS, query, context]);
 
   const sections = useMemo(() => {
@@ -146,7 +153,7 @@ export default function CommandPalette() {
   );
 
   const togglePin = useCallback(
-    (cmd: CommandItem, e: React.MouseEvent) => {
+    (cmd: CommandItem, e: React.MouseEvent<HTMLElement>) => {
       e.stopPropagation();
       const next = pinned.has(cmd.id)
         ? (settings.pinnedCommands || []).filter((id) => id !== cmd.id)
@@ -158,195 +165,292 @@ export default function CommandPalette() {
     [pinned, settings.pinnedCommands, update, commandHistory]
   );
 
-  useEffect(() => {
+  const updateQuery = useCallback((value: string) => {
+    setQuery(value);
     setIndex(0);
-  }, [query]);
+  }, []);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setOpen(!open);
+        return;
+      }
+      if (e.key === "Escape" && open) {
+        e.preventDefault();
+        setOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, setOpen]);
 
   useEffect(() => {
     if (open) {
-      inputRef.current?.focus();
+      updateQuery("");
+      requestAnimationFrame(() => inputRef.current?.focus());
     }
+  }, [open, updateQuery]);
+
+  useEffect(() => {
+    if (!open) return;
+    const root = document.documentElement;
+    const previousRootOverflow = root.style.overflow;
+    const previousBodyOverflow = document.body.style.overflow;
+    root.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    return () => {
+      root.style.overflow = previousRootOverflow;
+      document.body.style.overflow = previousBodyOverflow;
+    };
   }, [open]);
 
   useEffect(() => {
     if (!open) return;
-    const active = dialogRef.current?.querySelector('[data-active="true"]') as HTMLElement | null;
-    active?.scrollIntoView({ block: "nearest" });
-  }, [open, index, filtered]);
+    const el = listRef.current?.querySelector<HTMLButtonElement>(`[data-index="${index}"]`);
+    el?.scrollIntoView({ block: "nearest" });
+  }, [index, open]);
 
-  useEffect(() => {
-    function onKeyDown(event: KeyboardEvent) {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
-        event.preventDefault();
-        setOpen(!open);
-        return;
-      }
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    const count = filtered.length;
+    if (count === 0) return;
 
-      if (!open) return;
-
-      if (event.key === "Escape") {
-        event.preventDefault();
-        setOpen(false);
-        return;
-      }
-
-      const count = filtered.length;
-      if (count === 0) return;
-      const last = Math.max(0, count - 1);
-
-      if (event.key === "ArrowDown" || (event.key === "Tab" && !event.shiftKey)) {
-        event.preventDefault();
-        setIndex((i) => (i + 1) % count);
-      } else if (event.key === "ArrowUp" || (event.key === "Tab" && event.shiftKey)) {
-        event.preventDefault();
-        setIndex((i) => (i - 1 + count) % count);
-      } else if (event.key === "Home") {
-        event.preventDefault();
-        setIndex(0);
-      } else if (event.key === "End") {
-        event.preventDefault();
-        setIndex(last);
-      } else if (event.key === "PageDown") {
-        event.preventDefault();
-        setIndex((i) => (i + 5) % count);
-      } else if (event.key === "PageUp") {
-        event.preventDefault();
-        setIndex((i) => (i - 5 + count) % count);
-      } else if (event.key === "Enter" && filtered[index]) {
-        event.preventDefault();
-        run(filtered[index]);
-      }
+    if (e.key === "ArrowDown" || (e.key === "Tab" && !e.shiftKey)) {
+      e.preventDefault();
+      setIndex((i) => (i + 1) % count);
+    } else if (e.key === "ArrowUp" || (e.key === "Tab" && e.shiftKey)) {
+      e.preventDefault();
+      setIndex((i) => (i - 1 + count) % count);
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      setIndex(0);
+    } else if (e.key === "End") {
+      e.preventDefault();
+      setIndex(count - 1);
+    } else if (e.key === "PageDown") {
+      e.preventDefault();
+      setIndex((i) => Math.min(count - 1, i + 5));
+    } else if (e.key === "PageUp") {
+      e.preventDefault();
+      setIndex((i) => Math.max(0, i - 5));
+    } else if (e.key === "Enter" && filtered[index]) {
+      e.preventDefault();
+      run(filtered[index]);
     }
+  };
 
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open, filtered, index, run, setOpen]);
+  const hasIcons = useMemo(() => filtered.some((it) => it.icon), [filtered]);
 
-  useEffect(() => {
-    if (!open) setQuery("");
-  }, [open]);
-
-  let globalIndex = 0;
-
-  function renderItem(cmd: CommandItem) {
-    const itemIndex = globalIndex++;
-    const active = itemIndex === index;
-    const shortcut = cmd.shortcut ? `⌘${cmd.shortcut.toUpperCase()}` : null;
-
+  function PinButton({ cmd, isActive }: { cmd: CommandItem; isActive: boolean }) {
     return (
-      <div
-        key={cmd.id}
+      <span
         role="button"
+        onClick={(e) => togglePin(cmd, e)}
         tabIndex={-1}
-        data-active={active}
-        onClick={() => run(cmd)}
-        onMouseEnter={() => setIndex(itemIndex)}
-        onMouseMove={() => setIndex(itemIndex)}
-        className={`group relative flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm transition-colors ${
-          active ? "bg-white/[0.08] text-white" : "cursor-pointer text-zinc-300 hover:bg-white/[0.04]"
-        }`}
+        className={cn(
+          "relative z-10 rounded p-1 transition-colors",
+          isActive
+            ? "text-[var(--accent)] hover:bg-[var(--accent)]/10"
+            : "text-[var(--muted)] hover:bg-[var(--surface)]"
+        )}
+        aria-label={pinned.has(cmd.id) ? i18n("unpin") : i18n("pin")}
+        title={pinned.has(cmd.id) ? i18n("unpin") : i18n("pin")}
       >
-        <span className="flex min-w-0 items-center gap-3">
-          {cmd.icon ? (
-            <span className={`shrink-0 ${active ? "text-white" : "text-zinc-400"}`}>{cmd.icon}</span>
-          ) : (
-            <Icon name="chevron-right" className={`h-4 w-4 shrink-0 ${active ? "text-white" : "text-zinc-500"}`} />
-          )}
-          <span className="truncate">{cmd.label}</span>
-        </span>
-        <span className="ml-3 flex shrink-0 items-center gap-2">
-          {cmd.category && (
-            <span className={`text-[10px] ${active ? "text-zinc-300" : "text-zinc-500"}`}>{cmd.category}</span>
-          )}
-          {shortcut && (
-            <kbd
-              className={`rounded border px-1.5 py-0.5 text-[10px] font-medium ${
-                active
-                  ? "border-white/20 bg-white/10 text-white"
-                  : "border-white/10 bg-white/[0.03] text-zinc-500"
-              }`}
-            >
-              {shortcut}
-            </kbd>
-          )}
-          <button
-            type="button"
-            onClick={(e) => togglePin(cmd, e)}
-            className={`rounded p-1 transition-colors ${
-              active ? "text-white/70 hover:bg-white/20" : "text-zinc-500 hover:bg-white/[0.06]"
-            }`}
-            aria-label={pinned.has(cmd.id) ? i18n("unpin") : i18n("pin")}
-            title={pinned.has(cmd.id) ? i18n("unpin") : i18n("pin")}
-          >
-            <Icon name={pinned.has(cmd.id) ? "pin-off" : "pin"} className="h-3.5 w-3.5" />
-          </button>
-        </span>
-      </div>
+        <Icon name={pinned.has(cmd.id) ? "pin-off" : "pin"} className="h-3.5 w-3.5" />
+      </span>
     );
   }
 
-  return (
-    <Modal
-        isOpen={open}
-        onClose={() => setOpen(false)}
-        title={i18n("commands")}
-        size="md"
-        position="top"
-        hideFooter
-        hideCloseButton
-        className="p-0 sm:max-w-xl"
-        contentClassName="!m-0 overflow-hidden"
-      >
-        <div ref={dialogRef}>
-          <div className="flex items-center gap-3 border-b border-white/10 px-4 py-3">
-                <Search className="h-5 w-5 text-zinc-400" />
-                <input
-                  ref={inputRef}
-                  autoFocus
-                  type="text"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder={i18n("search")}
-                  className="flex-1 bg-transparent border-0 py-4 px-3 text-base text-zinc-100 placeholder-zinc-500 outline-none focus:ring-0"
-                />
-                <kbd className="rounded border border-white/10 bg-white/[0.05] px-1.5 py-0.5 text-[10px] text-zinc-500">
-                  ESC
-                </kbd>
-              </div>
+  if (!mounted) return null;
 
-              <div className="max-h-[60vh] min-h-[8rem] overflow-y-auto p-2">
-                {filtered.length === 0 ? (
-                  <p className="py-8 text-center text-sm text-zinc-500">{i18n("noResults")}</p>
-                ) : (
-                  sections.map((section) => (
-                    <div key={section.title} className="mb-3 last:mb-0">
-                      <p className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
-                        {section.title}
-                      </p>
-                      {section.items.map((cmd) => renderItem(cmd))}
-                    </div>
-                  ))
-                )}
-              </div>
+  let flatIndex = 0;
 
-              <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/10 px-4 py-2.5 text-[10px] text-zinc-500">
-                <div className="flex items-center gap-3">
-                  <span className="flex items-center gap-1">
-                    <kbd className="rounded border border-white/10 bg-white/[0.05] px-1.5 py-0.5">Esc</kbd>
-                    <span>{i18n("close")}</span>
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <kbd className="rounded border border-white/10 bg-white/[0.05] px-1.5 py-0.5">↑</kbd>
-                    <kbd className="rounded border border-white/10 bg-white/[0.05] px-1.5 py-0.5">↓</kbd>
-                    <span>{i18n("spotlightNav")}</span>
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <kbd className="rounded border border-white/10 bg-white/[0.05] px-1.5 py-0.5">Enter</kbd>
-                    <span>{i18n("openHere")}</span>
-                  </span>
+  return createPortal(
+    <div
+      aria-hidden={!open}
+      inert={!open}
+      className={cn(
+        "fixed inset-0 z-[100]",
+        open ? "pointer-events-auto" : "pointer-events-none",
+      )}
+    >
+      <motion.button
+        type="button"
+        aria-label="Close command palette"
+        initial={false}
+        animate={{ opacity: open ? 1 : 0 }}
+        transition={{ duration: open ? 0.18 : 0.12, ease: EASE_OUT }}
+        onClick={() => setOpen(false)}
+        className={cn(
+          "absolute inset-0 bg-[var(--background)]/5 [backdrop-filter:blur(12px)_saturate(140%)] [-webkit-backdrop-filter:blur(12px)_saturate(140%)]",
+          open ? "pointer-events-auto" : "pointer-events-none",
+        )}
+      />
+
+      <div className="pointer-events-none absolute inset-0 flex items-start justify-center p-4 pt-[18vh]">
+        <motion.div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Command palette"
+          initial={false}
+          animate={{
+            opacity: open ? 1 : 0,
+            y: open || reduce ? 0 : -8,
+            scale: open || reduce ? 1 : 0.97,
+          }}
+          transition={
+            reduce
+              ? { duration: 0.1 }
+              : open
+                ? PANEL_SPRING
+                : { duration: 0.12, ease: EASE_OUT }
+          }
+          onKeyDown={onKeyDown}
+          className={cn(
+            "w-full max-w-xl overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-surface-raised shadow-2xl will-change-transform",
+            open ? "pointer-events-auto" : "pointer-events-none",
+          )}
+        >
+          <div className="flex items-center gap-3 border-b border-[var(--panel-border)] px-4">
+            <Search className="h-4 w-4 text-[var(--muted)]" />
+            <input
+              ref={inputRef}
+              value={query}
+              onChange={(e) => updateQuery(e.target.value)}
+              placeholder={i18n("search")}
+              tabIndex={open ? 0 : -1}
+              role="combobox"
+              aria-expanded={open}
+              aria-controls={`${uid}-list`}
+              aria-activedescendant={
+                filtered.length > 0 ? `${uid}-opt-${index}` : undefined
+              }
+              aria-autocomplete="list"
+              className={cn(
+                "h-12 flex-1 bg-transparent text-sm text-[var(--foreground)] placeholder:text-[var(--muted)] outline-none",
+                canTouch && "text-base",
+              )}
+            />
+            <kbd className="hidden rounded border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5 text-[10px] text-[var(--muted)] sm:inline-block">
+              ESC
+            </kbd>
+          </div>
+
+          <div
+            ref={listRef}
+            id={`${uid}-list`}
+            role="listbox"
+            aria-label="Commands"
+            className="max-h-[54vh] overflow-y-auto overscroll-contain p-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {filtered.length === 0 ? (
+              <div className="p-8 text-center text-sm text-[var(--muted)]">
+                {i18n("noResults")}
+              </div>
+            ) : (
+              sections.map((section) => (
+                <div key={section.title} className="mb-1 last:mb-0">
+                  <div
+                    aria-hidden
+                    className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]"
+                  >
+                    {section.title}
+                  </div>
+                  {section.items.map((cmd) => {
+                    const activeIndex = flatIndex++;
+                    const isActive = activeIndex === index;
+                    const shortcut = cmd.shortcut ? `⌘${cmd.shortcut.toUpperCase()}` : null;
+
+                    return (
+                      <button
+                        key={cmd.id}
+                        type="button"
+                        id={`${uid}-opt-${activeIndex}`}
+                        role="option"
+                        aria-selected={isActive}
+                        data-index={activeIndex}
+                        onMouseEnter={() => setIndex(activeIndex)}
+                        onClick={() => run(cmd)}
+                        tabIndex={open ? 0 : -1}
+                        className={cn(
+                          "relative isolate flex w-full items-center gap-3 rounded-md px-2 py-2 text-left text-sm transition-colors",
+                          isActive
+                            ? "text-[var(--accent)]"
+                            : "text-[var(--muted)]",
+                        )}
+                      >
+                        {isActive ? (
+                          <motion.span
+                            layoutId={`${uid}-active`}
+                            className="absolute inset-0 z-0 rounded-md bg-[var(--accent)]/[0.08]"
+                            transition={
+                              reduce
+                                ? { duration: 0 }
+                                : {
+                                    type: "spring",
+                                    stiffness: 480,
+                                    damping: 38,
+                                  }
+                            }
+                          />
+                        ) : null}
+                        {cmd.icon ? (
+                          <span className="relative z-10 h-4 w-4 shrink-0">
+                            {cmd.icon}
+                          </span>
+                        ) : hasIcons ? (
+                          <span className="relative z-10 h-4 w-4 shrink-0" />
+                        ) : null}
+                        <span className="relative z-10 flex-1 truncate">
+                          {cmd.label}
+                        </span>
+                        <span className="relative z-10 flex shrink-0 items-center gap-2">
+                          {cmd.category && (
+                            <span
+                              className={cn(
+                                "text-[10px]",
+                                isActive ? "text-[var(--muted)]" : "text-[var(--muted)]/70"
+                              )}
+                            >
+                              {cmd.category}
+                            </span>
+                          )}
+                          {shortcut && (
+                            <kbd className="rounded border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5 text-[10px] text-[var(--muted)]">
+                              {shortcut}
+                            </kbd>
+                          )}
+                          <PinButton cmd={cmd} isActive={isActive} />
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
-              </div>
+              ))
+            )}
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[var(--panel-border)] px-4 py-2.5 text-[10px] text-[var(--muted)]">
+            <div className="flex items-center gap-3">
+              <span className="flex items-center gap-1">
+                <kbd className="rounded border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5">Esc</kbd>
+                <span>{i18n("close")}</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <kbd className="rounded border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5">↑</kbd>
+                <kbd className="rounded border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5">↓</kbd>
+                <span>{i18n("spotlightNav")}</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <kbd className="rounded border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5">Enter</kbd>
+                <span>{i18n("openHere")}</span>
+              </span>
             </div>
-          </Modal>
+          </div>
+        </motion.div>
+      </div>
+    </div>,
+    document.body,
   );
 }

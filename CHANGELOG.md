@@ -4,6 +4,15 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : restauration i18n et contrôles des réglages**
+
+### Corrige
+- `ethone-next/lib/i18n.ts` : `t()` accepte un argument `fallback` pour éviter l'affichage des clés brutes en JSX.
+- `ethone-next/lib/hooks/useI18n.ts` : le hook accepte `...args: unknown[]` et extrait le premier `string` comme fallback.
+- `ethone-next/lib/i18n-extras.ts` : ajout des clés de paramètres manquantes en français, anglais, espagnol et allemand (`settingsGeneral`, `settingsTheme`, `settingsLanguage`, couleurs d'accent, modes d'affichage, options du dock, langues, sons ambiant, etc.).
+- `ethone-next/components/settings/SettingsLayout.tsx` : titre et sous-titre utilisent `settingsGeneral` / `settingsGeneralDesc` avec fallback français.
+- `ethone-next/components/settings/SettingsContent.tsx` : libellés des champs thème, langue, couleur d'accent et effets sonores utilisent `settingsTheme`, `settingsLanguage`, `settingsAccentColor` et `settingsSounds` avec fallback français.
+
 **Migration Next.js : standardisation des arrondis et refonte cartes Calendrier/Factures**
 
 ### Corrige

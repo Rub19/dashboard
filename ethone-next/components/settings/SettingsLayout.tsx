@@ -154,10 +154,10 @@ export default function SettingsLayout() {
         <div>
           <h1 className="flex items-center gap-2.5 text-2xl font-bold tracking-tight text-white">
             <Shield className="h-6 w-6 text-emerald-400" />
-            <span>{i18n("settingsTitle") || "Paramètres du Compte"}</span>
+            <span>{i18n("settingsGeneral", "Général")}</span>
           </h1>
           <p className="mt-0.5 text-xs text-zinc-400">
-            {i18n("settingsDescription") || "Gérez votre profil, vos accès et vos préférences système"}
+            {i18n("settingsGeneralDesc", "Personnalisez l'apparence et le comportement global d'ETHONE OS.")}
           </p>
         </div>
 

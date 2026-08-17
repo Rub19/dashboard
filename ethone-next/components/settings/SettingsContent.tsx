@@ -682,7 +682,7 @@ export default function SettingsContent() {
       { key: "darkMode", label: i18n("darkMode"), type: "toggle", keywords: ["apparence", "sombre", "thème"] },
       {
         key: "theme",
-        label: i18n("theme"),
+        label: i18n("settingsTheme", "Thème d'affichage"),
         type: "button-grid",
         options: makeOptions([...THEMES]),
         cols: 2,
@@ -698,7 +698,7 @@ export default function SettingsContent() {
       },
       {
         key: "accentColor",
-        label: i18n("accentColor"),
+        label: i18n("settingsAccentColor", "Couleur d'accentuation"),
         type: "button-grid",
         options: makeOptions([...ACCENT_COLORS], true),
         cols: 4,
@@ -775,7 +775,7 @@ export default function SettingsContent() {
     () => [
       {
         key: "language",
-        label: i18n("language"),
+        label: i18n("settingsLanguage", "Langue de l'interface"),
         type: "button-grid",
         options: LANGUAGES.map((lang) => ({
           id: lang.id,
@@ -975,7 +975,7 @@ export default function SettingsContent() {
   const soundFields: FieldDef[] = useMemo(
     () => [
       { key: "masterVolume", label: i18n("masterVolume"), type: "toggle", keywords: ["son", "volume", "général"] },
-      { key: "soundEffects", label: i18n("soundEffects"), type: "toggle", keywords: ["son", "effets"] },
+      { key: "soundEffects", label: i18n("settingsSounds", "Effets sonores"), type: "toggle", keywords: ["son", "effets"] },
       { key: "mediaDucking", label: i18n("mediaDucking"), type: "toggle", keywords: ["son", "média", "baisse"] },
       { key: "soundVolume", label: i18n("soundVolume"), type: "range", keywords: ["son", "volume", "effets"] },
       { key: "soundSpatial", label: i18n("soundSpatial"), type: "toggle", keywords: ["son", "spatial", "audio"] },

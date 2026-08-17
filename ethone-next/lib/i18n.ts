@@ -4509,6 +4509,15 @@ export const CATALOG: Record<string, Record<string, string>> = {
 
 import { EXTRAS } from "./i18n-extras";
 
-export function t(lang: string, key: string) {
-  return CATALOG[lang]?.[key] || EXTRAS[lang]?.[key] || CATALOG.fr[key] || EXTRAS.fr?.[key] || CATALOG.en[key] || EXTRAS.en?.[key] || key;
+export function t(lang: string, key: string, fallback?: string) {
+  return (
+    CATALOG[lang]?.[key] ||
+    EXTRAS[lang]?.[key] ||
+    CATALOG.fr[key] ||
+    EXTRAS.fr?.[key] ||
+    CATALOG.en[key] ||
+    EXTRAS.en?.[key] ||
+    fallback ||
+    key
+  );
 }

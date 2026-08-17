@@ -12,7 +12,9 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
   - `rounded-[2rem]` / grandes valeurs dynamiques → `rounded-2xl`.
   - `rounded-full` sur boutons, inputs, badges, pillules et barres remplacé par `rounded-lg` / `rounded-xl`.
   - Conservation de `rounded-full` pour les vrais cercles : avatars, pastilles d'état, interrupteurs, anneaux et éléments `h-2 w-2`.
-- `ethone-next/components/EventsAndBillsCards.tsx` : nouveau composant regroupant `EventsCard` (sélecteur de source, liste d'événements, CTA `Ajouter`) et `InvoicesCard` (total du mois, échéances 30 jours, sélecteur de semaine 7 jours en grille, actions `Ajouter` / `Scanner`).
+- `ethone-next/components/SettingsProvider.tsx` : encadrement des variables CSS `--card-radius` (max 16px), `--dock-radius` (max 16px), `--panel-radius` et `--control-radius` (max 12px) pour éviter les rayons gonflés quel que soit le curseur de réglage.
+- `ethone-next/lib/settings.ts` : valeurs par défaut `radius` et `dockRadius` ramenées à 16.
+- `ethone-next/components/EventsAndBillsCards.tsx` : composant regroupant `EventsCard` (sélecteur de source, liste d'événements, CTA `Ajouter`) et `InvoicesCard` (total du mois, échéances 30 jours, sélecteur de semaine 7 jours en grille, actions `Ajouter` / `Scanner`).
 - `ethone-next/components/CalendarInvoicesPage.tsx` : intégration de `EventsCard` et `InvoicesCard` dans la colonne latérale.
 
 **Migration Next.js : correction des widgets Gaming, Social & Météo**

@@ -138,13 +138,18 @@ export default function SettingsProvider({
     const densityValues = DENSITY_PRESETS[settings.densityMode as keyof typeof DENSITY_PRESETS] || DENSITY_PRESETS.comfortable;
 
     root.style.setProperty("--font-size", `${settings.fontSize}%`);
-    root.style.setProperty("--card-radius", `${settings.radius / 16}rem`);
-    root.style.setProperty("--dock-radius", `${settings.dockRadius / 16}rem`);
+    root.style.setProperty("--card-radius", `${Math.min(settings.radius / 16, 1)}rem`);
+    root.style.setProperty("--dock-radius", `${Math.min(settings.dockRadius / 16, 1)}rem`);
 
     const radiusStyleMultiplier =
       settings.radiusStyle === "sharp" ? 0.25 :
       settings.radiusStyle === "soft" ? 0.5 : 1;
-    root.style.setProperty("--panel-radius", `${(settings.radius / 16) * radiusStyleMultiplier}rem`);
+    // Cap the panel radius at 12px (rounded-xl) so panels stay geometric and
+    // controls (buttons, inputs) do not become pill-shaped. Large Bento cards
+    // can still use the dedicated 16px card radius.
+    const panelRadiusRem = Math.min((settings.radius / 16) * radiusStyleMultiplier, 0.75);
+    root.style.setProperty("--panel-radius", `${panelRadiusRem}rem`);
+    root.style.setProperty("--control-radius", `${panelRadiusRem}rem`);
 
     const panelBase = settings.glassEnabled ? "var(--surface-raised)" : "var(--surface-raised)";
     const panelOpacity = settings.glassEnabled ? "88%" : "100%";

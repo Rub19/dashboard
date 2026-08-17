@@ -136,6 +136,9 @@ html[data-space="studio"][data-theme="day"] {
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
+  --color-muted: var(--surface);
+  --color-muted-foreground: var(--muted);
+  --color-ring: var(--accent);
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
   --color-success-bg: var(--success-bg);

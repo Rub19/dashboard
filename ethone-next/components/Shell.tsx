@@ -8,6 +8,7 @@ import { ShortcutsProvider } from "@/components/ShortcutsProvider";
 import PublicProfileProvider from "@/components/PublicProfileProvider";
 import ProfileSync from "@/components/ProfileSync";
 import Sidebar from "@/components/Sidebar";
+import { AnimatedSidebarProvider } from "@/components/motion/animated-sidebar";
 import TopBar from "@/components/TopBar";
 import CommandPalette from "@/components/CommandPalette";
 import MobileNav from "@/components/MobileNav";
@@ -18,6 +19,7 @@ import AutomationRuntime from "@/components/AutomationRuntime";
 import StatusBar from "@/components/layout/StatusBar";
 import Dock from "@/components/Dock";
 import SkipLink from "@/components/SkipLink";
+import ContextMenuProvider from "@/components/ContextMenuProvider";
 
 const LiveWidget = dynamic(() => import("@/components/LiveWidget"), { ssr: false });
 const CosmicBackground = dynamic(() => import("@/components/CosmicBackground"), { ssr: false });
@@ -31,45 +33,49 @@ const KeyboardShortcuts = dynamic(() => import("@/components/KeyboardShortcuts")
 export default function Shell({ children }: { children: ReactNode }) {
   return (
     <WindowManagerProvider>
-      <PublicProfileProvider>
+      <ContextMenuProvider>
+        <PublicProfileProvider>
         <PresenceProvider>
           <ShortcutsProvider>
-          <SkipLink />
-          <ProfileSync />
-          <Sidebar />
-            <div
-              data-v8-shell
-              className="min-h-dvh overflow-x-hidden transition-colors duration-150 duration-300 md:ml-[72px]"
-            >
-              <TopBar />
-              <CommandPalette />
-              <DocumentMetadata />
-              <LiveWidget />
-              <CosmicBackground />
-              <Spotlight />
-              <VisualHaptics />
-              <DepthEffect />
-              <FocusIsland />
-              <main
-                data-v8-main
-                id="main-content"
-                className="w-full overflow-x-hidden p-4 pb-[calc(5rem+env(safe-area-inset-bottom))] md:p-6 md:pb-32"
-                tabIndex={-1}
+            <AnimatedSidebarProvider className="contents" defaultOpen={false} style={{ "--sidebar-width-icon": "4.5rem" }}>
+              <SkipLink />
+              <ProfileSync />
+              <Sidebar />
+              <div
+                data-v8-shell
+                className="min-h-dvh overflow-x-hidden transition-colors duration-150 duration-300 md:ml-[72px]"
               >
-                <ActivityJournalProvider>
-                  <PageTransition>{children}</PageTransition>
-                  <AutomationRuntime />
-                </ActivityJournalProvider>
-              </main>
-              <StatusBar />
-            </div>
-            <MobileNav />
-            <Dock />
-            <ShortcutsOverlay />
-            <KeyboardShortcuts />
+                <TopBar />
+                <CommandPalette />
+                <DocumentMetadata />
+                <LiveWidget />
+                <CosmicBackground />
+                <Spotlight />
+                <VisualHaptics />
+                <DepthEffect />
+                <FocusIsland />
+                <main
+                  data-v8-main
+                  id="main-content"
+                  className="w-full overflow-x-hidden p-4 pb-[calc(5rem+env(safe-area-inset-bottom))] md:p-6 md:pb-32"
+                  tabIndex={-1}
+                >
+                  <ActivityJournalProvider>
+                    <PageTransition>{children}</PageTransition>
+                    <AutomationRuntime />
+                  </ActivityJournalProvider>
+                </main>
+                <StatusBar />
+              </div>
+              <MobileNav />
+              <Dock />
+              <ShortcutsOverlay />
+              <KeyboardShortcuts />
+            </AnimatedSidebarProvider>
           </ShortcutsProvider>
         </PresenceProvider>
       </PublicProfileProvider>
+      </ContextMenuProvider>
     </WindowManagerProvider>
-    );
+  );
 }

@@ -1,102 +1,100 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
 import BrandMark from "@/components/BrandMark";
-import SidebarItem from "@/components/SidebarItem";
-import { NAVIGATION_ITEMS, type NavigationItem, isActiveRoute } from "@/lib/navigation";
+import { NAVIGATION_ITEMS, isActiveRoute } from "@/lib/navigation";
+import {
+  AnimatedSidebar,
+  AnimatedSidebarClose,
+  AnimatedSidebarContent,
+  AnimatedSidebarFooter,
+  AnimatedSidebarGroup,
+  AnimatedSidebarGroupContent,
+  AnimatedSidebarHeader,
+  AnimatedSidebarMenu,
+  AnimatedSidebarMenuButton,
+  AnimatedSidebarMenuItem,
+  AnimatedSidebarRail,
+  useAnimatedSidebar,
+} from "@/components/motion/animated-sidebar";
 
 export default function Sidebar() {
   const pathname = usePathname();
   const i18n = useI18n();
   const { settings } = useSettings();
-  const [hovered, setHovered] = useState(false);
-  const [focused, setFocused] = useState(false);
-  const expanded = hovered || focused;
+  const { setOpen } = useAnimatedSidebar();
 
-  const navItems = useMemo(
-    () => NAVIGATION_ITEMS.map((item: NavigationItem) => ({ ...item, label: i18n(item.label) })),
-    [i18n]
-  );
+  if (settings.layoutPreset === "dock-only" || settings.layoutPreset === "minimal" || !settings.sidebarVisible) {
+    return null;
+  }
 
-  if (settings.layoutPreset === "dock-only" || settings.layoutPreset === "minimal" || !settings.sidebarVisible) return null;
-
-  const mainItems = navItems.filter((item) => item.id !== "settings");
-  const bottomItems = [navItems.find((item) => item.id === "settings")].filter(Boolean) as NavigationItem[];
-
-  const handleFocus = () => setFocused(true);
-
-  const handleBlur = (e: React.FocusEvent<HTMLElement>) => {
-    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-      setFocused(false);
-    }
-  };
+  const mainItems = NAVIGATION_ITEMS.filter((item) => item.id !== "settings");
+  const settingsItem = NAVIGATION_ITEMS.find((item) => item.id === "settings");
 
   return (
-    <motion.aside
-      data-v8-rail
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onFocusCapture={handleFocus}
-      onBlurCapture={handleBlur}
-      initial={false}
-      animate={{ width: expanded ? 256 : 64 }}
-      transition={{ duration: 0.15, ease: "easeOut" as const }}
-      className={`v8-rail fixed left-0 top-0 z-40 hidden h-dvh flex-col overflow-hidden border-r border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-2xl will-change-[width] md:flex ${
-        settings.glassEnabled ? "bg-[var(--panel-bg)]/90 backdrop-blur-xl" : "bg-[var(--panel-bg)]"
-      }`}
+    <AnimatedSidebar
+      ariaLabel="ETHONE"
+      collapsible="icon"
+      className="!fixed left-0 top-0 z-40"
+      panelClassName="border-[var(--panel-border)]"
+      style={{ position: "fixed", left: 0, top: 0, height: "100dvh", zIndex: 40 }}
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
     >
-      {/* Header */}
-      <div className="flex h-16 shrink-0 items-center px-3">
-        <button
-          type="button"
-          className="flex h-10 w-10 shrink-0 items-center justify-center !rounded-[var(--panel-radius)] text-[var(--muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/50"
-          aria-label="Menu"
-        >
-          <Icon name="menu" className="h-5 w-5" />
-        </button>
-        <span
-          className="ml-3 flex items-center gap-2 overflow-hidden whitespace-nowrap text-lg font-semibold tracking-tight text-[var(--foreground)] transition-colors duration-150 duration-300 ease-out"
-          style={{ maxWidth: expanded ? 160 : 0, opacity: expanded ? 1 : 0, transform: expanded ? "translateX(0)" : "translateX(8px)" }}
-        >
-          <BrandMark size={28} />
-          ETHONE
-        </span>
-      </div>
-
-      {/* Navigation scrollable */}
-      <nav className="flex-1 min-h-0 w-full overflow-y-auto overflow-x-hidden px-2 py-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-        <div className="flex w-full flex-col gap-1.5">
-          {mainItems.map((item) => (
-            <SidebarItem
-              key={item.id}
-              href={item.href}
-              icon={item.icon}
-              label={item.label}
-              isActive={isActiveRoute(pathname ?? "/", item.href)}
-              expanded={expanded}
-            />
-          ))}
+      <AnimatedSidebarHeader className="p-3 pb-2">
+        <div className="flex min-h-11 items-center gap-3 overflow-hidden px-2">
+          <div className="grid size-9 shrink-0 place-items-center rounded-[var(--panel-radius)] bg-[var(--accent)] text-[var(--background)]">
+            <BrandMark size={24} />
+          </div>
+          <span className="truncate text-lg font-semibold tracking-tight text-[var(--foreground)] group-data-[state=collapsed]/sidebar:hidden">
+            ETHONE
+          </span>
+          <AnimatedSidebarClose className="ml-auto text-[var(--muted)] hover:bg-[var(--surface)] md:hidden">
+            <Icon name="close" className="size-4" />
+          </AnimatedSidebarClose>
         </div>
-      </nav>
+      </AnimatedSidebarHeader>
 
-      {/* Bottom */}
-      <div className="flex w-full shrink-0 flex-col gap-1.5 border-t border-[var(--panel-border)] px-2 py-3">
-        {bottomItems.map((item) => (
-          <SidebarItem
-            key={item.id}
-            href={item.href}
-            icon={item.icon}
-            label={item.label}
-            isActive={isActiveRoute(pathname ?? "/", item.href)}
-            expanded={expanded}
-          />
-        ))}
-      </div>
-    </motion.aside>
+      <AnimatedSidebarContent className="px-2 py-2">
+        <AnimatedSidebarGroup className="py-1.5">
+          <AnimatedSidebarGroupContent>
+            <AnimatedSidebarMenu>
+              {mainItems.map((item) => (
+                <AnimatedSidebarMenuItem key={item.id}>
+                  <AnimatedSidebarMenuButton
+                    href={item.href}
+                    isActive={isActiveRoute(pathname ?? "/", item.href)}
+                    icon={<Icon name={item.icon} className="size-5" />}
+                  >
+                    {i18n(item.label)}
+                  </AnimatedSidebarMenuButton>
+                </AnimatedSidebarMenuItem>
+              ))}
+            </AnimatedSidebarMenu>
+          </AnimatedSidebarGroupContent>
+        </AnimatedSidebarGroup>
+      </AnimatedSidebarContent>
+
+      <AnimatedSidebarFooter className="border-t border-[var(--panel-border)] p-3">
+        {settingsItem && (
+          <AnimatedSidebarMenu>
+            <AnimatedSidebarMenuItem>
+              <AnimatedSidebarMenuButton
+                href={settingsItem.href}
+                isActive={isActiveRoute(pathname ?? "/", settingsItem.href)}
+                icon={<Icon name={settingsItem.icon} className="size-5" />}
+              >
+                {i18n(settingsItem.label)}
+              </AnimatedSidebarMenuButton>
+            </AnimatedSidebarMenuItem>
+          </AnimatedSidebarMenu>
+        )}
+      </AnimatedSidebarFooter>
+
+      <AnimatedSidebarRail />
+    </AnimatedSidebar>
   );
 }

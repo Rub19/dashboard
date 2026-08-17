@@ -24,17 +24,20 @@ import UserProfileCard from "./UserProfileCard";
 import SettingsContent from "./SettingsContent";
 import SettingsBottomBar from "./SettingsBottomBar";
 import BillingSettings from "./BillingSettings";
+import IntegrationsSettings from "@/components/IntegrationsSettings";
 
 const TABS = [
   { id: "overview", label: "Vue d'ensemble" },
   { id: "advanced", label: "Avancé" },
   { id: "billing", label: "Facturation" },
+  { id: "integrations", label: "Intégrations" },
 ];
 
 const TAB_OVERRIDES: Record<string, string> = {
   security: "advanced",
   account: "advanced",
   billing: "billing",
+  integrations: "integrations",
 };
 
 function SettingCard({
@@ -281,6 +284,17 @@ export default function SettingsLayout() {
             className="space-y-4"
           >
             <SettingsContent />
+          </motion.div>
+        ) : activeTab === "integrations" ? (
+          <motion.div
+            key="integrations"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15 }}
+            className="space-y-4"
+          >
+            <IntegrationsSettings />
           </motion.div>
         ) : (
           <motion.div

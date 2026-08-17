@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plug } from "lucide-react";
 import { fetchWorker } from "@/lib/api";
@@ -35,6 +36,27 @@ export default function IntegrationsSettings() {
   const i18n = useI18n();
   const { settings } = useSettings();
   const credentials = useProviderCredentials();
+  const searchParams = useSearchParams();
+  const [highlighted, setHighlighted] = useState<string | null>(null);
+
+  useEffect(() => {
+    const service = searchParams?.get("service");
+    if (!service) return;
+    const integration = INTEGRATIONS.find((i) => i.id === service);
+    if (!integration) return;
+    setHighlighted(service);
+    if (integration.category) {
+      setFilter(integration.category);
+    }
+    window.setTimeout(() => {
+      const el = document.getElementById(service);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 120);
+    const timer = window.setTimeout(() => setHighlighted(null), 3500);
+    return () => window.clearTimeout(timer);
+  }, [searchParams]);
 
   useEffect(() => {
     setClientIds((prev) => ({
@@ -112,20 +134,38 @@ export default function IntegrationsSettings() {
   }, []);
 
   const renderCard = (integration: (typeof INTEGRATIONS)[number]) => {
-    if (integration.id === "discord") return <DiscordConfig key={integration.id} />;
-    if (integration.id === "spotify") return <SpotifyConfig key={integration.id} />;
+    const isHighlighted = highlighted === integration.id;
+    const card =
+      integration.id === "discord" ? (
+        <DiscordConfig />
+      ) : integration.id === "spotify" ? (
+        <SpotifyConfig />
+      ) : (
+        <ConnectionCard
+          integration={integration}
+          clientId={clientIds[integration.id] || ""}
+          onClientIdChange={handleClientIdChange}
+          credentialConnected={credentials.connected}
+          oauthConnected={connected}
+          credentials={credentials}
+          health={health[integration.id]}
+          onTest={testOne}
+        />
+      );
+
     return (
-      <ConnectionCard
+      <div
         key={integration.id}
-        integration={integration}
-        clientId={clientIds[integration.id] || ""}
-        onClientIdChange={handleClientIdChange}
-        credentialConnected={credentials.connected}
-        oauthConnected={connected}
-        credentials={credentials}
-        health={health[integration.id]}
-        onTest={testOne}
-      />
+        id={integration.id}
+        data-service={integration.id}
+        className={`scroll-mt-6 rounded-2xl transition-all ${
+          isHighlighted
+            ? "ring-2 ring-emerald-500/50 ring-offset-0"
+            : "ring-0 ring-transparent"
+        }`}
+      >
+        {card}
+      </div>
     );
   };
 

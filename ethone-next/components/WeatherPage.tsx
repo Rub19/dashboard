@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -9,7 +9,7 @@ import { fetchWorker } from "@/lib/api";
 import { Icon } from "@/lib/icons";
 import WeatherMetricCard from "@/components/WeatherMetricCard";
 import WeatherForecastList from "@/components/WeatherForecastList";
-import { weatherAmbience, weatherIconFromCode, weatherIconColor, type WeatherData } from "@/components/WeatherWidget";
+import { weatherIconFromCode, weatherIconColor, type WeatherData } from "@/components/WeatherWidget";
 
 function toNum(value: unknown): number | undefined {
   if (typeof value === "number") return value;
@@ -71,6 +71,22 @@ export default function WeatherPage() {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const isUserEditingRef = useRef(false);
+
+  const cityFromSettings = settings.liveWeatherCity || "Paris";
+
+  useEffect(() => {
+    if (isUserEditingRef.current) return;
+    if (cityFromSettings !== searchTerm) {
+      setQuery(cityFromSettings);
+      setSearchTerm(cityFromSettings);
+    }
+  }, [cityFromSettings, searchTerm]);
+
+  function handleQueryChange(value: string) {
+    isUserEditingRef.current = true;
+    setQuery(value);
+  }
 
   const debouncedTerm = useMemo(() => query.trim(), [query]);
 
@@ -101,7 +117,16 @@ export default function WeatherPage() {
     async function run() {
       try {
         const res = await fetchWorker(`/api/weather?city=${encodeURIComponent(searchTerm)}`);
-        if (!cancelled) setWeather((res?.data as WeatherData) || null);
+        if (cancelled) return;
+        if (res?.data) {
+          setWeather(res.data as WeatherData);
+          isUserEditingRef.current = false;
+          if (settings.liveWeatherCity !== searchTerm) {
+            update({ liveWeatherCity: searchTerm });
+          }
+        } else {
+          setWeather(null);
+        }
       } catch {
         if (!cancelled) setError(i18n("weatherError"));
       } finally {
@@ -110,14 +135,14 @@ export default function WeatherPage() {
     }
     run();
     return () => { cancelled = true; };
-  }, [searchTerm, i18n]);
+  }, [searchTerm, i18n, settings.liveWeatherCity, update]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const term = query.trim();
     if (term.length < 2) return;
+    isUserEditingRef.current = true;
     setSearchTerm(term);
-    update({ liveWeatherCity: term });
   }
 
   function handleGeolocate() {
@@ -135,9 +160,9 @@ export default function WeatherPage() {
           const data = await res.json();
           const city = data.city || data.locality || data.town || data.municipality || data.village;
           if (!city) throw new Error("city not found");
+          isUserEditingRef.current = true;
           setQuery(city);
           setSearchTerm(city);
-          update({ liveWeatherCity: city });
           success(i18n("cityFound"));
         } catch {
           showError(i18n("weatherError"));
@@ -164,7 +189,6 @@ export default function WeatherPage() {
   const sunset = toStr(weather?.sunset);
   const forecast = weather?.forecast || [];
 
-  const { glow } = weatherAmbience(code, isDay);
   const iconColor = weatherIconColor(code, isDay);
   const iconName = weatherIconFromCode(code, condition, isDay);
 
@@ -210,12 +234,12 @@ export default function WeatherPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="flex items-center gap-2">
-          <div className="group flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-1.5 transition-all focus-within:border-white/20">
+          <div className="group flex items-center gap-2 rounded-xl border border-white/10 px-3 py-1.5 transition-all focus-within:border-white/20">
             <Icon name="mapPin" className="h-3.5 w-3.5 text-zinc-500" />
             <input
               type="text"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => handleQueryChange(e.target.value)}
               placeholder={i18n("city")}
               className="w-48 bg-transparent text-xs text-white outline-none placeholder-zinc-500 sm:w-64"
             />
@@ -224,7 +248,7 @@ export default function WeatherPage() {
           <button
             type="button"
             onClick={handleGeolocate}
-            className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+            className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 text-zinc-400 transition-colors hover:text-white"
             aria-label={i18n("geolocate")}
           >
             <Icon name="navigation" className="h-3.5 w-3.5" />
@@ -245,18 +269,14 @@ export default function WeatherPage() {
       ) : loading && !weather ? (
         <WeatherPageSkeleton />
       ) : !weather ? (
-        <div className="flex min-h-[320px] flex-col items-center justify-center gap-3 rounded-2xl border border-white/[0.06] bg-zinc-950/60 p-6 text-center">
+        <div className="flex min-h-[320px] flex-col items-center justify-center gap-3 rounded-2xl border border-white/[0.06] p-6 text-center">
           <Icon name="cloud" className="h-10 w-10 text-zinc-600" />
           <p className="text-sm text-zinc-400">{i18n("noForecast")}</p>
         </div>
       ) : (
-        <div className="mx-auto grid max-w-7xl grid-cols-12 gap-4">
+        <div className="grid w-full grid-cols-12 gap-4">
           {/* Hero */}
-          <div className="relative col-span-12 overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-6 backdrop-blur-2xl lg:col-span-8">
-            <div
-              className={`pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full ${glow} blur-3xl opacity-20`}
-              aria-hidden="true"
-            />
+          <div className="relative col-span-12 overflow-hidden rounded-2xl border border-white/[0.08] p-6 lg:col-span-8">
 
             <div className="relative z-10 flex h-full flex-col justify-between">
               <div className="flex items-start justify-between">
@@ -311,7 +331,7 @@ export default function WeatherPage() {
           </div>
 
           {/* Forecast */}
-          <div className="col-span-12 rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 backdrop-blur-2xl lg:col-span-4">
+          <div className="col-span-12 rounded-2xl border border-white/[0.08] p-5 lg:col-span-4">
             <h3 className="mb-2 text-sm font-semibold text-white">{i18n("weatherForecast") || "Prévisions"}</h3>
             <WeatherForecastList days={forecast} />
           </div>

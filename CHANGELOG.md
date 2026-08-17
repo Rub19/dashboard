@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : ajustement gauge Productivité et Rythme**
+
+### Corrige
+- `ethone-next/components/ProductivityCards.tsx` : agrandissement du conteneur du `CircularGauge` (`h-20 w-20`, SVG `size={72}`, stroke `5`) et réduction du texte de pourcentage (`text-xs`) pour éviter que "100%" ne chevauche le cercle.
+
 **Migration Next.js : toast de mise à jour fiable et forçage de reload**
 
 ### Corrige

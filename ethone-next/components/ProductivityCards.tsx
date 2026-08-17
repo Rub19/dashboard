@@ -185,9 +185,9 @@ export function ProjectsTasksCard({
     <BentoCard title={i18n("productivityAndRhythm")} icon="zap" className={className}>
       <div className="flex h-full min-h-0 flex-col justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="relative flex h-16 w-16 shrink-0 items-center justify-center">
-            <CircularGauge percentage={percentage} />
-            <span className="absolute text-sm font-bold tabular-nums text-white">{percentage}%</span>
+          <div className="relative flex h-20 w-20 shrink-0 items-center justify-center">
+            <CircularGauge percentage={percentage} size={72} stroke={5} />
+            <span className="absolute text-xs font-bold tabular-nums text-white">{percentage}%</span>
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-xs text-[var(--muted)]">{i18n("tasksDone")}</p>

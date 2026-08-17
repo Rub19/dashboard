@@ -4,13 +4,27 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sliders, X, BellRing, PlayCircle, Volume2, Minus, Plus } from "lucide-react";
-import { useFocus } from "@/components/FocusProvider";
-import type { AmbientSound, PresetConfig } from "@/lib/focus-timer";
+
+export type AmbientSound = "none" | "rain" | "white-noise" | "cafe" | "forest";
+
+export type PomodoroSettings = {
+  work: number;
+  shortBreak: number;
+  longBreak: number;
+  cycles: number;
+  autoStartBreaks: boolean;
+  autoStartFocus: boolean;
+  soundAlert: boolean;
+  ambientSound: AmbientSound;
+};
 
 export type PomodoroCustomModalProps = {
   open: boolean;
   onClose: () => void;
+  onSave?: (settings: PomodoroSettings) => void;
 };
+
+const CUSTOM_KEY = "ethone-pomodoro-settings-v1";
 
 const AMBIENT_OPTIONS: { id: AmbientSound; label: string }[] = [
   { id: "none", label: "Aucun" },
@@ -55,53 +69,55 @@ function ToggleRow({ icon: Icon, color, label, active, onClick }: ToggleRowProps
   );
 }
 
-export default function PomodoroCustomModal({ open, onClose }: PomodoroCustomModalProps) {
-  const { setCustomConfig, start, customConfig } = useFocus();
-  const [draft, setDraft] = useState<Required<PresetConfig>>({
-    work: 25,
-    shortBreak: 5,
-    longBreak: 15,
-    cycles: 4,
-    autoStartBreaks: true,
-    autoStartFocus: true,
-    soundAlert: true,
-    ambientSound: "none",
-  });
+const DEFAULTS: PomodoroSettings = {
+  work: 25,
+  shortBreak: 5,
+  longBreak: 15,
+  cycles: 4,
+  autoStartBreaks: true,
+  autoStartFocus: true,
+  soundAlert: true,
+  ambientSound: "none",
+};
+
+function loadSettings(): PomodoroSettings {
+  try {
+    if (typeof window === "undefined") return DEFAULTS;
+    const raw = window.localStorage.getItem(CUSTOM_KEY);
+    if (!raw) return DEFAULTS;
+    return { ...DEFAULTS, ...JSON.parse(raw) } as PomodoroSettings;
+  } catch {
+    return DEFAULTS;
+  }
+}
+
+function saveSettings(settings: PomodoroSettings) {
+  try {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(CUSTOM_KEY, JSON.stringify(settings));
+    }
+  } catch {
+    // silent
+  }
+}
+
+export default function PomodoroCustomModal({ open, onClose, onSave }: PomodoroCustomModalProps) {
+  const [draft, setDraft] = useState<PomodoroSettings>(DEFAULTS);
 
   useEffect(() => {
-    if (!open) return;
-    const config = customConfig();
-    setDraft({
-      work: config.work,
-      shortBreak: config.shortBreak,
-      longBreak: config.longBreak,
-      cycles: config.cycles,
-      autoStartBreaks: config.autoStartBreaks,
-      autoStartFocus: config.autoStartFocus,
-      soundAlert: config.soundAlert,
-      ambientSound: config.ambientSound,
-    });
-  }, [open, customConfig]);
+    if (open) setDraft(loadSettings());
+  }, [open]);
 
   function adjust(field: "work" | "shortBreak" | "longBreak", delta: number) {
     setDraft((prev) => ({
       ...prev,
-      [field]: Math.max(1, Math.min(120, (prev[field] || 0) + delta)),
+      [field]: Math.max(1, Math.min(120, prev[field] + delta)),
     }));
   }
 
   function handleSave() {
-    setCustomConfig({
-      work: draft.work,
-      shortBreak: draft.shortBreak,
-      longBreak: draft.longBreak,
-      cycles: draft.cycles,
-      autoStartBreaks: draft.autoStartBreaks,
-      autoStartFocus: draft.autoStartFocus,
-      soundAlert: draft.soundAlert,
-      ambientSound: draft.ambientSound,
-    });
-    start("custom");
+    saveSettings(draft);
+    onSave?.(draft);
     onClose();
   }
 

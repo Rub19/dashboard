@@ -38,26 +38,26 @@ export function EventsCard({ date, items, onAdd }: EventsCardProps) {
   }, [items, source]);
 
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-zinc-200/80 bg-white/80 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-2xl dark:border-white/[0.08] dark:bg-zinc-950/70 dark:shadow-xl">
+    <div className="flex flex-col gap-3 rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 backdrop-blur-2xl">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
-          <span className="text-sm font-bold text-zinc-900 dark:text-white">Événements</span>
+          <Calendar className="h-4 w-4 text-emerald-400" />
+          <span className="text-sm font-bold text-white">Événements</span>
         </div>
 
         <div className="relative">
           <button
             type="button"
             onClick={() => setMenuOpen((v) => !v)}
-            className="inline-flex items-center gap-1 rounded-lg border border-zinc-200/60 bg-zinc-100/80 px-2.5 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-200/80 hover:text-zinc-950 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-zinc-300 dark:hover:bg-white/[0.06] dark:hover:text-white"
+            className="inline-flex items-center gap-1 rounded-lg border border-white/[0.08] bg-white/[0.03] px-2.5 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/[0.06]"
           >
             {source}
             <ChevronDown className="h-3 w-3" />
           </button>
 
           {menuOpen && (
-            <div className="absolute right-0 top-full z-20 mt-1.5 min-w-[8rem] rounded-xl border border-zinc-200/80 bg-white p-1 shadow-xl backdrop-blur-xl dark:border-white/[0.08] dark:bg-zinc-900">
+            <div className="absolute right-0 top-full z-20 mt-1.5 min-w-[8rem] rounded-xl border border-white/[0.08] bg-zinc-900 p-1 shadow-xl backdrop-blur-xl">
               {EVENT_SOURCES.map((s) => (
                 <button
                   key={s}
@@ -68,8 +68,8 @@ export function EventsCard({ date, items, onAdd }: EventsCardProps) {
                   }}
                   className={`w-full rounded-lg px-2.5 py-1.5 text-left text-xs transition-colors ${
                     source === s
-                      ? "bg-zinc-100/80 text-zinc-900 dark:bg-white/[0.08] dark:text-white"
-                      : "text-zinc-700 hover:bg-zinc-100/80 dark:text-zinc-300 dark:hover:bg-white/[0.04]"
+                      ? "bg-white/[0.08] text-white"
+                      : "text-zinc-300 hover:bg-white/[0.04]"
                   }`}
                 >
                   {s}
@@ -82,16 +82,16 @@ export function EventsCard({ date, items, onAdd }: EventsCardProps) {
 
       {/* Content */}
       {filteredItems.length === 0 ? (
-        <div className="flex flex-col gap-1 rounded-xl border border-zinc-200/60 bg-zinc-100/80 p-3.5 dark:border-white/[0.04] dark:bg-white/[0.02]">
-          <p className="text-xs font-semibold text-zinc-900 dark:text-white">{label}</p>
-          <p className="text-xs text-zinc-600 dark:text-zinc-500">Aucun événement pour cette date.</p>
+        <div className="flex flex-col gap-1 rounded-xl border border-white/[0.04] bg-white/[0.02] p-3.5">
+          <p className="text-xs font-semibold text-white">{label}</p>
+          <p className="text-xs text-zinc-500">Aucun événement pour cette date.</p>
         </div>
       ) : (
         <ul className="flex flex-col gap-2">
           {filteredItems.map((item) => (
             <li
               key={item.id}
-              className="flex items-center gap-3 rounded-xl border border-zinc-200/60 bg-zinc-100/80 p-2.5 dark:border-white/[0.06] dark:bg-white/[0.03]"
+              className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.03] p-2.5"
             >
               <span
                 className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-white"
@@ -100,9 +100,9 @@ export function EventsCard({ date, items, onAdd }: EventsCardProps) {
                 <VendorLogo vendor={item.vendor} className="h-3.5 w-3.5" />
               </span>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-zinc-900 dark:text-white">{item.title}</p>
+                <p className="truncate text-sm font-medium text-white">{item.title}</p>
                 {item.amount !== undefined && (
-                  <p className="text-[10px] text-zinc-600 dark:text-zinc-400">
+                  <p className="text-[10px] text-zinc-400">
                     {item.amount > 0
                       ? item.amount.toLocaleString("fr-FR", {
                           style: "currency",
@@ -110,7 +110,11 @@ export function EventsCard({ date, items, onAdd }: EventsCardProps) {
                         })
                       : "Événement"}
                     {" · "}
-                    {item.category === "monthly" ? "Mensuel" : item.category === "yearly" ? "Annuel" : "Événement"}
+                    {item.category === "monthly"
+                      ? "Mensuel"
+                      : item.category === "yearly"
+                      ? "Annuel"
+                      : "Événement"}
                   </p>
                 )}
               </div>
@@ -123,7 +127,7 @@ export function EventsCard({ date, items, onAdd }: EventsCardProps) {
       <button
         type="button"
         onClick={onAdd}
-        className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-zinc-200/60 bg-zinc-100/80 py-2 text-xs font-medium text-zinc-700 transition-all hover:bg-zinc-200/80 hover:text-zinc-950 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-300 dark:hover:bg-white/[0.08] dark:hover:text-white"
+        className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] py-2 text-xs font-medium text-zinc-300 transition-all hover:bg-white/[0.08] hover:text-white"
       >
         <Plus className="h-3.5 w-3.5" />
         Ajouter un événement
@@ -152,7 +156,11 @@ function toISODate(date: Date) {
 }
 
 function isSameDay(a: Date, b: Date) {
-  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
 }
 
 const WEEK_DAYS = ["L", "M", "M", "J", "V", "S", "D"];
@@ -217,21 +225,21 @@ export function InvoicesCard({
   const upcomingText = `${upcoming.length} à venir dans 30 jours`;
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-zinc-200/80 bg-white/80 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] backdrop-blur-2xl dark:border-white/[0.08] dark:bg-zinc-950/70 dark:shadow-xl">
+    <div className="flex flex-col gap-4 rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 backdrop-blur-2xl">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Receipt className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
-          <span className="text-sm font-bold text-zinc-900 dark:text-white">Factures</span>
+          <Receipt className="h-4 w-4 text-emerald-400" />
+          <span className="text-sm font-bold text-white">Factures</span>
         </div>
         <div className="text-right">
-          <p className="text-xl font-bold text-zinc-900 dark:text-white">{amountText}</p>
-          <p className="text-[10px] text-zinc-600 dark:text-zinc-400">{upcomingText}</p>
+          <p className="text-xl font-bold text-white">{amountText}</p>
+          <p className="text-[10px] text-zinc-400">{upcomingText}</p>
         </div>
       </div>
 
       {/* Day selector */}
-      <div className="grid grid-cols-7 gap-1.5 rounded-xl border border-zinc-200/60 bg-zinc-100/80 p-1 dark:border-white/[0.05] dark:bg-white/[0.02]">
+      <div className="grid grid-cols-7 gap-1.5 rounded-xl border border-white/[0.05] bg-white/[0.02] p-1">
         {days.map((day, idx) => {
           const active = isSameDay(day, activeDate);
           const hasItem = items.some((it) => it.date === toISODate(day));
@@ -242,13 +250,15 @@ export function InvoicesCard({
               onClick={() => onSelectDate?.(day)}
               className={`flex flex-col items-center justify-center gap-0.5 rounded-lg p-2 text-center text-xs transition-colors ${
                 active
-                  ? "bg-emerald-500 font-bold text-zinc-950 shadow-md"
-                  : "text-zinc-600 hover:bg-zinc-200/60 dark:text-zinc-400 dark:hover:bg-white/[0.04]"
+                  ? "bg-emerald-500 font-bold text-zinc-950"
+                  : "text-zinc-400 hover:bg-white/[0.04]"
               }`}
             >
               <span className="text-[9px] opacity-70">{WEEK_DAYS[idx]}</span>
               <span className="leading-none">{day.getDate()}</span>
-              {hasItem && !active && <span className="h-1 w-1 rounded-xl bg-zinc-400 dark:bg-zinc-500" />}
+              {hasItem && !active && (
+                <span className="h-1 w-1 rounded-full bg-zinc-500" />
+              )}
             </button>
           );
         })}
@@ -266,7 +276,7 @@ export function InvoicesCard({
         </button>
         <button
           type="button"
-          className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200/60 bg-zinc-100/80 py-2 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-200/80 hover:text-zinc-950 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-300 dark:hover:bg-white/[0.08] dark:hover:text-white"
+          className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] py-2 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/[0.08] hover:text-white"
         >
           <Scan className="h-3.5 w-3.5" />
           Scanner

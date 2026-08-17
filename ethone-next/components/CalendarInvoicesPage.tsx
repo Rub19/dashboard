@@ -3,8 +3,7 @@
 import { useMemo, useState } from "react";
 import { Calendar, X } from "lucide-react";
 import CalendarGrid from "@/components/CalendarGrid";
-import DayEventsCard from "@/components/DayEventsCard";
-import InvoicesSummaryCard from "@/components/InvoicesSummaryCard";
+import { EventsCard, InvoicesCard } from "@/components/EventsAndBillsCards";
 import type { CalendarItem } from "@/components/CalendarBills";
 import Modal from "@/components/ui/Modal";
 import VendorLogo from "@/components/logos/VendorLogo";
@@ -74,14 +73,16 @@ export default function CalendarInvoicesPage() {
         </div>
 
         <div className="col-span-12 flex flex-col gap-4 lg:col-span-4">
-          <DayEventsCard
+          <EventsCard
             date={selectedDate}
             items={dayItems}
             onAdd={openAdd}
           />
-          <InvoicesSummaryCard
+          <InvoicesCard
             items={items}
             currentDate={currentDate}
+            selectedDate={selectedDate}
+            onSelectDate={setSelectedDate}
             onAdd={openAdd}
           />
 

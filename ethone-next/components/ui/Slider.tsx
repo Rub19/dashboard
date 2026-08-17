@@ -100,10 +100,10 @@ export default function Slider({
         onKeyDown={handleKeyDown}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="relative h-1.5 w-full cursor-pointer rounded-full bg-[var(--panel-bg)]/[0.08] outline-none transition-colors duration-200 hover:bg-[var(--panel-bg)]/[0.12] focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
+        className="relative h-1.5 w-full cursor-pointer rounded-full bg-zinc-200 outline-none transition-colors duration-200 hover:bg-zinc-300 focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] dark:bg-white/[0.08] dark:hover:bg-white/[0.12]"
       >
         <div
-          className="pointer-events-none absolute left-0 top-0 h-full rounded-full transition-colors duration-150 duration-75"
+          className="pointer-events-none absolute left-0 top-0 h-full rounded-full transition-colors duration-150"
           style={{
             width: `${percentage}%`,
             background: "var(--accent)",
@@ -111,7 +111,7 @@ export default function Slider({
           }}
         />
         <div
-          className={`pointer-events-none absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full border-2 border-[var(--accent)] bg-white shadow-md shadow-black/60 transition-transform duration-150 ease-out ${
+          className={`pointer-events-none absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full border-2 border-[var(--accent)] bg-zinc-100 shadow-md shadow-black/60 transition-transform duration-150 ease-out dark:bg-white ${
             dragging || hovered ? "scale-125" : "scale-100"
           } ${dragging ? "cursor-grabbing" : ""}`}
           style={{ left: `calc(${percentage}% - 8px)` }}

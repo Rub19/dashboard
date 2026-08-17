@@ -58,7 +58,7 @@ test("Brain complete calls Groq with the sanitized messages and context, and ret
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
       provider: "groq",
-      model: "llama-3.1-8b-instant",
+      model: "llama-3.3-70b-versatile",
       messages: [{ role: "user", content: "Quelles sont mes taches ?" }],
       context: { route: "brain", tasks: [{ title: "Payer la facture" }] }
     })
@@ -67,7 +67,7 @@ test("Brain complete calls Groq with the sanitized messages and context, and ret
   const body = await payload(response);
   assert.equal(body.data.content, "Bonjour depuis Groq");
   assert.equal(calls.length, 1);
-  assert.equal(calls[0].model, "llama-3.1-8b-instant");
+  assert.equal(calls[0].model, "llama-3.3-70b-versatile");
   assert.ok(calls[0].messages.some((message) => message.role === "system" && message.content.includes("Payer la facture")));
   assert.ok(calls[0].messages.some((message) => message.role === "user" && message.content === "Quelles sont mes taches ?"));
 });
@@ -90,7 +90,39 @@ test("Brain complete falls back to the default model for an unrecognized model i
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ provider: "groq", model: "not-a-real-model", messages: [{ role: "user", content: "Salut" }] })
   });
-  assert.equal(calls[0].model, "llama-3.1-8b-instant");
+  assert.equal(calls[0].model, "llama-3.3-70b-versatile");
+});
+
+test("Brain complete falls back to a valid Groq model when the requested model is not available", async () => {
+  const calls = [];
+  const env = testEnv({
+    __TEST_FETCH__: async (input, init = {}) => {
+      const url = new URL(String(input));
+      if (url.hostname === "api.groq.com") {
+        const body = JSON.parse(init.body);
+        calls.push(body);
+        if (body.model === "llama-3.3-70b-versatile") {
+          return new Response(
+            JSON.stringify({ error: { message: "The model does not exist or you do not have access to it.", type: "invalid_request_error", code: "model_not_found" } }),
+            { status: 404, headers: { "content-type": "application/json" } }
+          );
+        }
+        return json({ choices: [{ message: { role: "assistant", content: "Réponse via fallback" } }], model: body.model });
+      }
+      return providerFetch()(input, init);
+    }
+  });
+  const response = await invoke("/api/brain/complete", {
+    method: "POST",
+    env,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ provider: "groq", model: "llama-3.3-70b-versatile", messages: [{ role: "user", content: "Salut" }] })
+  });
+  assert.equal(response.status, 200);
+  const body = await payload(response);
+  assert.equal(body.data.content, "Réponse via fallback");
+  assert.ok(calls.length > 1);
+  assert.equal(calls[calls.length - 1].model, "llama-3.1-8b-instant");
 });
 
 test("Brain complete diagnostic operation pings Groq without requiring messages", async () => {

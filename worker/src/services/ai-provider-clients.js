@@ -2,6 +2,30 @@ import { httpError } from "../middleware/errors.js";
 import { requestExternal } from "../utils/external-request.js";
 import { safeText } from "../utils/normalize.js";
 import { getUserCredential } from "./ai-credential-vault.js";
+import { AI_PROVIDERS } from "./ai-config.js";
+
+const GROQ_FALLBACK_MODELS = AI_PROVIDERS.groq.fallbackModels;
+
+function isGroqModelNotFound(error) {
+  if (!error) return false;
+  if (error.code !== "PROVIDER_NOT_FOUND") return false;
+  const groqCode = error.detail?.code || error.detail?.error?.code;
+  if (groqCode === "model_not_found") return true;
+  const detail = String(error.detail?.message || error.detail?.error?.message || "").toLowerCase();
+  return detail.includes("does not exist or you do not have access");
+}
+
+function resolveGroqModelList(requested) {
+  const value = safeText(requested, 80);
+  const defaultModel = AI_PROVIDERS.groq.defaultModel;
+  const allowed = AI_PROVIDERS.groq.allowedModels;
+  const first = allowed.has(value) ? value : defaultModel;
+  const list = [first];
+  for (const m of GROQ_FALLBACK_MODELS) {
+    if (m !== first) list.push(m);
+  }
+  return list;
+}
 
 const SYSTEM_PROMPT = "Tu es Brain, l'assistant integre au tableau de bord personnel ETHONE. Reponds en francais, de maniere concise et utile.";
 
@@ -167,34 +191,47 @@ export async function askGroq(env, { model, messages, context }) {
   const apiKey = env.GROQ_API_KEY || await requireApiKey(env, env.__AUTH_USER_ID, "groq");
   if (!apiKey) throw httpError("SERVICE_NOT_CONFIGURED", 501, { detail: "groq_api_key_missing" });
 
-  const ALLOWED_MODELS = new Set(["llama-3.1-8b-instant", "llama-3.3-70b-versatile"]);
-  const resolved = ALLOWED_MODELS.has(safeText(model, 80)) ? safeText(model, 80) : "llama-3.1-8b-instant";
   const chatMessages = sanitizeMessages(messages, 8, 1200);
   if (!chatMessages.length) throw httpError("INVALID_REQUEST", 400);
 
   const contextJson = buildContext(context);
-  const response = await requestExternal(new URL("https://api.groq.com/openai/v1/chat/completions"), {
-    env,
-    expectedOrigin: "https://api.groq.com",
-    service: "groq",
-    method: "POST",
-    headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
-    body: JSON.stringify({
-      model: resolved,
-      max_tokens: 1024,
-      temperature: 0.4,
-      messages: [
-        { role: "system", content: `${SYSTEM_PROMPT}\n\nContexte : ${contextJson}` },
-        ...chatMessages
-      ]
-    }),
-    timeoutMs: 15000,
-    maxBytes: 512 * 1024,
-    retries: 0,
-  });
-  const content = safeText(response.data?.choices?.[0]?.message?.content, 4000);
-  if (!content) throw httpError("UPSTREAM_INVALID_RESPONSE", 502);
-  return Object.freeze({ content, model: resolved, provider: "groq" });
+  const models = resolveGroqModelList(model);
+  let lastError;
+
+  for (const selected of models) {
+    try {
+      const response = await requestExternal(new URL("https://api.groq.com/openai/v1/chat/completions"), {
+        env,
+        expectedOrigin: "https://api.groq.com",
+        service: "groq",
+        method: "POST",
+        headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
+        body: JSON.stringify({
+          model: selected,
+          max_tokens: 1024,
+          temperature: 0.4,
+          messages: [
+            { role: "system", content: `${SYSTEM_PROMPT}\n\nContexte : ${contextJson}` },
+            ...chatMessages
+          ]
+        }),
+        timeoutMs: 15000,
+        maxBytes: 512 * 1024,
+        retries: 0,
+      });
+      const content = safeText(response.data?.choices?.[0]?.message?.content, 4000);
+      if (!content) throw httpError("UPSTREAM_INVALID_RESPONSE", 502);
+      return Object.freeze({ content, model: selected, provider: "groq" });
+    } catch (error) {
+      if (isGroqModelNotFound(error)) {
+        lastError = error;
+        continue;
+      }
+      throw error;
+    }
+  }
+
+  throw lastError || httpError("UPSTREAM_UNAVAILABLE", 503, { retryable: true });
 }
 
 export async function askDeepSeek(env, { model, messages, context }) {

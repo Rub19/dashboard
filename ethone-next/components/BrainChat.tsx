@@ -21,6 +21,7 @@ import {
   History,
   Loader2,
   X,
+  RotateCcw,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -407,10 +408,35 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
       </div>
 
       {brain.error && (
-        <div className="mb-2 rounded-2xl border border-red-500/20 bg-red-500/[0.05] p-3 text-xs text-red-400">
-          {String(brain.error.message)}
-          <button type="button" onClick={() => brain.clearChat()} className="ml-2 text-red-300 hover:text-white">
-            <X className="inline h-3 w-3" />
+        <div className="mb-2 flex items-start gap-3 rounded-2xl border border-amber-500/20 bg-amber-500/[0.08] p-3 shadow-sm backdrop-blur-sm">
+          <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400">
+            <Zap className="h-3.5 w-3.5" />
+          </span>
+          <div className="min-w-0 flex-1 text-xs text-amber-200">
+            <p className="font-medium">{String(brain.error.message)}</p>
+            {(brain.error as { retryable?: boolean }).retryable && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (!brain.lastPrompt || pending) return;
+                  setPending(true);
+                  brain.retry().finally(() => setPending(false));
+                }}
+                disabled={pending || brain.loading}
+                className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1.5 text-[10px] font-medium text-amber-100 transition-colors hover:bg-amber-500/20 disabled:opacity-50"
+              >
+                <RotateCcw className="h-3 w-3" />
+                Réessayer
+              </button>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => brain.clearChat()}
+            className="shrink-0 text-amber-400 transition-colors hover:text-amber-100"
+            aria-label={i18n("close")}
+          >
+            <X className="h-3.5 w-3.5" />
           </button>
         </div>
       )}

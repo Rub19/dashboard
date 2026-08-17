@@ -10,6 +10,22 @@ if (typeof window !== "undefined" && !WORKER_URL) {
   );
 }
 
+export class WorkerError extends Error {
+  status: number;
+  code?: string;
+  detail?: unknown;
+  retryable?: boolean;
+
+  constructor(message: string, status: number, code?: string, detail?: unknown, retryable?: boolean) {
+    super(message);
+    this.name = "WorkerError";
+    this.status = status;
+    this.code = code;
+    this.detail = detail;
+    this.retryable = retryable;
+  }
+}
+
 export async function getToken(): Promise<string | null> {
   if (typeof window === "undefined") return null;
   const { data } = await supabase.auth.getSession();
@@ -32,7 +48,23 @@ export async function fetchWorker(
 
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`Worker ${res.status}: ${text}`);
+    let parsed: { error?: { code?: string; message?: string; detail?: unknown; retryable?: boolean } } | null = null;
+    let message = `Worker ${res.status}`;
+    let code: string | undefined;
+    let detail: unknown;
+    let retryable: boolean | undefined;
+    try {
+      parsed = JSON.parse(text);
+    } catch {}
+    if (parsed?.error) {
+      message = parsed.error.message || `Worker ${res.status}: ${parsed.error.code || ""}`;
+      code = parsed.error.code;
+      detail = parsed.error.detail;
+      retryable = parsed.error.retryable === true;
+    } else if (text) {
+      message = `Worker ${res.status}: ${text}`;
+    }
+    throw new WorkerError(message, res.status, code, detail, retryable);
   }
 
   return res.json().catch(() => null);

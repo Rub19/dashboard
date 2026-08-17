@@ -34,6 +34,7 @@ export function useBrain(mailClient?: BrainMailClient) {
   const [messages, setMessages] = useState<BrainMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [lastPrompt, setLastPrompt] = useState("");
   const [memories, setMemories] = useState<BrainMemory[]>([]);
   const [memoriesLoaded, setMemoriesLoaded] = useState(false);
   const [providerStatus, setProviderStatus] = useState<{ provider: string; latencyMs: number } | null>(null);
@@ -97,13 +98,29 @@ export function useBrain(mailClient?: BrainMailClient) {
 
   const providers = useMemo(() => brainProviderList(), []);
 
-  async function send(prompt: string) {
-    if (!prompt.trim() || loading) return;
-    setLoading(true);
-    setError(null);
-    const userMessage: BrainMessage = { role: "user", content: prompt.trim(), createdAt: Date.now() };
-    const nextMessages = [...messages, userMessage];
-    setMessages(nextMessages);
+  function isModelUnavailable(err: unknown): boolean {
+    if (!(err instanceof Error)) return false;
+    const status = (err as { status?: number }).status;
+    const code = (err as { code?: string }).code;
+    const detail = (err as { detail?: { code?: string; error?: { code?: string } } }).detail;
+    if (status === 404 && code === "PROVIDER_NOT_FOUND") return true;
+    if (detail?.code === "model_not_found") return true;
+    if (detail?.error?.code === "model_not_found") return true;
+    const message = String(err.message).toLowerCase();
+    return message.includes("does not exist or you do not have access") || message.includes("model_not_found");
+  }
+
+  function normalizeBrainError(err: unknown): Error {
+    if (!(err instanceof Error)) return new Error(String(err));
+    if (isModelUnavailable(err)) {
+      const friendly = new Error("Connexion au modèle IA momentanément indisponible. Tentative avec le modèle de secours...");
+      (friendly as { retryable?: boolean }).retryable = true;
+      return friendly;
+    }
+    return err;
+  }
+
+  async function completeBrain(currentMessages: BrainMessage[], promptText: string) {
     const baseUrl =
       preferences.provider.active === "ollama"
         ? settings.liveOllamaUrl
@@ -114,7 +131,7 @@ export function useBrain(mailClient?: BrainMailClient) {
       const res = await brainComplete({
         provider: preferences.provider.active,
         model: preferences.provider.model,
-        messages: nextMessages.map((m) => ({ role: m.role, content: m.content })),
+        messages: currentMessages.map((m) => ({ role: m.role, content: m.content })),
         context: {
           persona: preferences.persona,
           tone: preferences.tone,
@@ -127,13 +144,32 @@ export function useBrain(mailClient?: BrainMailClient) {
       });
       const content = res?.data?.content || res?.data?.text || "Réponse vide.";
       setMessages((prev) => [...prev, { role: "assistant", content, createdAt: Date.now(), provider: res?.data?.provider, fallback: res?.data?.fallback }]);
-      activityJournal.capture("v8.brain.call", { ok: true, prompt: prompt.trim().slice(0, 80) });
+      setError(null);
+      activityJournal.capture("v8.brain.call", { ok: true, prompt: promptText.slice(0, 80) });
     } catch (err) {
-      setError(err instanceof Error ? err : new Error(String(err)));
+      setError(normalizeBrainError(err));
       activityJournal.capture("v8.brain.call", { ok: false });
     } finally {
       setLoading(false);
     }
+  }
+
+  async function send(prompt: string) {
+    if (!prompt.trim() || loading) return;
+    setLoading(true);
+    setError(null);
+    setLastPrompt(prompt.trim());
+    const userMessage: BrainMessage = { role: "user", content: prompt.trim(), createdAt: Date.now() };
+    const nextMessages = [...messages, userMessage];
+    setMessages(nextMessages);
+    await completeBrain(nextMessages, prompt.trim());
+  }
+
+  async function retry() {
+    if (!lastPrompt || loading) return;
+    setLoading(true);
+    setError(null);
+    await completeBrain(messages, lastPrompt);
   }
 
   function clearChat() {
@@ -228,6 +264,8 @@ export function useBrain(mailClient?: BrainMailClient) {
     messages,
     loading,
     error,
+    lastPrompt,
+    retry,
     send,
     clearChat,
     memories,

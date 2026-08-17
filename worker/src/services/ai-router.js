@@ -26,8 +26,21 @@ function parseEnvironmentError(error) {
   return httpError("UPSTREAM_UNAVAILABLE", 503, { retryable: true });
 }
 
+function isModelNotFound(error) {
+  if (!error) return false;
+  if (error.detail?.code === "model_not_found") return true;
+  if (error.detail?.error?.code === "model_not_found") return true;
+  const message = String(error.message || "").toLowerCase();
+  const detail = String(error.detail?.message || error.detail?.error?.message || "").toLowerCase();
+  return (
+    message.includes("model_not_found") ||
+    detail.includes("does not exist or you do not have access")
+  );
+}
+
 function isFallbackError(error) {
   if (!error) return false;
+  if (isModelNotFound(error)) return true;
   const code = String(error.code || "");
   const status = Number(error.status) || 0;
   const message = String(error.message || "").toLowerCase();

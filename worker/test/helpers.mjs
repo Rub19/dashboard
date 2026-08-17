@@ -163,6 +163,8 @@ export function testEnv(overrides = {}) {
     TWITCH_CLIENT_ID: "d".repeat(24),
     TWITCH_CLIENT_SECRET: "e".repeat(32),
     LASTFM_API_KEY: "f".repeat(24),
+    AI_FALLBACK_PROVIDER: "groq",
+    AI_FALLBACK_MODEL: "llama-3.3-70b-versatile",
     GITHUB_CLIENT_SECRET: "g".repeat(32),
     GOOGLE_CLIENT_ID: "google-client-id-mock.apps.googleusercontent.com",
     GOOGLE_CLIENT_SECRET: "h".repeat(32),

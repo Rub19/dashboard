@@ -15,6 +15,8 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `ethone-next/components/mail/MailAliasSetup.tsx` : nouvel écran de configuration sur la page Mail lorsqu'aucun alias n'existe, avec saisie personnalisée, bouton aléatoire et création rapide.
 - `ethone-next/components/mail/MailSidebar.tsx` : le bouton "Nouveau message" est désactivé tant qu'aucun alias n'est configuré.
 - `ethone-next/app/mail/page.tsx` : affiche `MailAliasSetup` si l'utilisateur n'a pas d'alias, transmet les alias au modal de composition et envoie l'`alias_id` au Worker.
+- `ethone-next/components/MailAdvancedPanel.tsx` : nouvel onglet "Aliases" pour lister les alias existants, créer un alias personnalisé, générer un alias aléatoire et identifier l'alias principal.
+- `ethone-next/lib/i18n-extras.ts` : clés i18n pour la gestion des alias (`aliases`, `createAlias`, `createRandomAlias`, `primary`, etc.).
 - `worker/test/mail.test.mjs` : tests d'unicité, d'appartenance, d'alias aléatoire et de routage réception uniquement vers le propriétaire de l'alias.
 
 **Migration Next.js : 404 glitch et menu contextuel générique**

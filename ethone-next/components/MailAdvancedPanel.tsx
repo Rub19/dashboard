@@ -9,7 +9,7 @@ import Card3D from "@/components/Card3D";
 import Select from "@/components/ui/Select";
 import { Checkbox } from "@/components/ui/Checkbox";
 
-type Tab = "accounts" | "pgp" | "push" | "lists";
+type Tab = "accounts" | "pgp" | "push" | "lists" | "aliases";
 
 export default function MailAdvancedPanel({ initialTab }: { initialTab: Tab }) {
   const i18n = useI18n();
@@ -37,6 +37,8 @@ export default function MailAdvancedPanel({ initialTab }: { initialTab: Tab }) {
     addListMember,
     removeListMember,
     sendToList,
+    aliases,
+    createAlias,
   } = useMail();
 
   const [tab, setTab] = useState<Tab>(initialTab);
@@ -61,6 +63,9 @@ export default function MailAdvancedPanel({ initialTab }: { initialTab: Tab }) {
   const [memberEmail, setMemberEmail] = useState("");
   const [memberName, setMemberName] = useState("");
   const [listMessage, setListMessage] = useState({ subject: "", body_text: "" });
+
+  const [aliasForm, setAliasForm] = useState({ local: "", display_name: "" });
+  const [aliasError, setAliasError] = useState<string | null>(null);
 
   const loadPush = useCallback(async () => {
     try {
@@ -267,10 +272,56 @@ export default function MailAdvancedPanel({ initialTab }: { initialTab: Tab }) {
     }
   }
 
+  async function onCreateCustomAlias() {
+    const local = aliasForm.local.trim().toLowerCase();
+    if (!local) {
+      setAliasError(i18n("aliasRequired", "Choisissez une adresse."));
+      return;
+    }
+    const full = local.includes("@") ? local : `${local}@ethone.dev`;
+    setBusy(true);
+    setAliasError(null);
+    try {
+      const created = await createAlias({ alias: full, display_name: aliasForm.display_name.trim() || undefined });
+      if (created?.id) {
+        setAliasForm({ local: "", display_name: "" });
+        success(i18n("aliasCreated", "Adresse créée."));
+      } else {
+        setAliasError(i18n("aliasUnavailable", "Cette adresse n’est pas disponible."));
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      setAliasError(message);
+      toastError(message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onCreateRandomAlias() {
+    setBusy(true);
+    setAliasError(null);
+    try {
+      const created = await createAlias({ random: true, display_name: aliasForm.display_name.trim() || undefined });
+      if (created?.id) {
+        setAliasForm({ local: "", display_name: "" });
+        success(i18n("aliasCreated", "Adresse créée."));
+      } else {
+        setAliasError(i18n("aliasCreationFailed", "Impossible de générer une adresse aléatoire."));
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      setAliasError(message);
+      toastError(message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2 border-b border-[var(--panel-border)] pb-2">
-        {(["accounts", "pgp", "push", "lists"] as Tab[]).map((t) => (
+        {(["accounts", "aliases", "pgp", "push", "lists"] as Tab[]).map((t) => (
           <button
             key={t}
             type="button"
@@ -349,6 +400,77 @@ export default function MailAdvancedPanel({ initialTab }: { initialTab: Tab }) {
                 <p className="text-xs text-[var(--muted)]">{a.provider} — {a.email} {a.is_enabled ? `(${i18n("enabled")})` : `(${i18n("disabled")})`}</p>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {tab === "aliases" && (
+        <div className="space-y-4">
+          <Card3D>
+            <p className="mb-2 text-sm font-medium">{i18n("aliases", "Alias")}</p>
+            <div className="space-y-2">
+              <input
+                type="text"
+                value={aliasForm.display_name}
+                onChange={(e) => setAliasForm({ ...aliasForm, display_name: e.target.value })}
+                placeholder={i18n("displayName", "Nom affiché")}
+                className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]"
+              />
+              <div className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 focus-within:border-[var(--accent)]/50">
+                <input
+                  type="text"
+                  value={aliasForm.local}
+                  onChange={(e) => setAliasForm({ ...aliasForm, local: e.target.value.replace(/[^a-zA-Z0-9._-]/g, "") })}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      onCreateCustomAlias();
+                    }
+                  }}
+                  placeholder={i18n("aliasPlaceholder", "votre-alias")}
+                  className="min-w-0 flex-1 bg-transparent text-sm text-zinc-200 placeholder-zinc-500 outline-none"
+                />
+                <span className="shrink-0 text-xs text-[var(--muted)]">@ethone.dev</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={onCreateRandomAlias}
+                  disabled={busy}
+                  className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm disabled:opacity-50"
+                >
+                  {i18n("createRandomAlias", "Aléatoire")}
+                </button>
+                <button
+                  type="button"
+                  onClick={onCreateCustomAlias}
+                  disabled={busy || !aliasForm.local.trim()}
+                  className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50"
+                >
+                  {i18n("createAlias", "Créer l’adresse")}
+                </button>
+              </div>
+              {aliasError && <p className="text-xs text-rose-400">{aliasError}</p>}
+            </div>
+          </Card3D>
+
+          <div className="space-y-2">
+            {aliases.map((a) => (
+              <div key={a.id} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-3 text-sm">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">{a.alias}</span>
+                    {a.is_primary && (
+                      <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] text-emerald-400">
+                        {i18n("primary", "Principal")}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                {a.display_name && <p className="text-xs text-[var(--muted)]">{a.display_name}</p>}
+              </div>
+            ))}
+            {aliases.length === 0 && <p className="text-sm text-[var(--muted)]">{i18n("noAliases", "Aucun alias configuré.")}</p>}
           </div>
         </div>
       )}

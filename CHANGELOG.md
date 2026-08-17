@@ -4,6 +4,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Migration Next.js : toast de mise à jour fiable et forçage de reload**
+
+### Corrige
+- `ethone-next/lib/hooks/useVersionChecker.ts` : détection plus fréquente (focus, visibility, pageshow, online), gestion du `dismiss` avec délai de réapparition, fonction `check()` exposée, vérification via `/api/version` puis `/version.json`.
+- `ethone-next/components/VersionUpdateToast.tsx` : nouvelle notification flottante en bas de l'écran avec badge de version, bouton vert "Mettre à jour" qui désenregistre les Service Workers, vide tous les caches et recharge avec un paramètre `__reload` anti-cache.
+- `ethone-next/public/sw.js` : le service worker ne met plus en cache `/version.json` pour garantir une détection fiable des nouvelles versions.
+
 **Migration Next.js : correction navigation Réglages et états des intégrations**
 
 ### Corrige

@@ -3,10 +3,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const STORAGE_KEY = "ethone:version";
+const DISMISS_KEY = "ethone:update-dismissed";
 const CHECK_INTERVAL = 5 * 60_000; // 5 minutes
 const COOLDOWN = 5_000; // 5 seconds
 
-type VersionData = {
+export type VersionData = {
   version: string;
   buildAt?: string;
 };
@@ -15,44 +16,28 @@ export type UseVersionChecker = {
   hasUpdate: boolean;
   newVersion: string | null;
   dismiss: () => void;
+  check: () => void;
 };
 
-async function fetchVersionJson(): Promise<VersionData | null> {
-  try {
-    const res = await fetch(`/version.json?t=${Date.now()}`, {
-      cache: "no-store",
-      headers: { Accept: "application/json" },
-    });
-    if (!res.ok) return null;
-    const data = (await res.json()) as unknown;
-    if (data && typeof data === "object" && "version" in data && typeof (data as VersionData).version === "string") {
-      return data as VersionData;
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-async function fetchVersionApi(): Promise<VersionData | null> {
-  try {
-    const res = await fetch(`/api/version?t=${Date.now()}`, {
-      cache: "no-store",
-      headers: { Accept: "application/json" },
-    });
-    if (!res.ok) return null;
-    const data = (await res.json()) as unknown;
-    if (data && typeof data === "object" && "version" in data && typeof (data as VersionData).version === "string") {
-      return data as VersionData;
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
-
 async function fetchVersion(): Promise<VersionData | null> {
-  return (await fetchVersionApi()) ?? (await fetchVersionJson());
+  const tryFetch = async (path: string) => {
+    try {
+      const res = await fetch(`${path}?t=${Date.now()}`, {
+        cache: "no-store",
+        headers: { Accept: "application/json" },
+      });
+      if (!res.ok) return null;
+      const data = (await res.json()) as unknown;
+      if (data && typeof data === "object" && "version" in data && typeof (data as VersionData).version === "string") {
+        return data as VersionData;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  };
+
+  return (await tryFetch("/api/version")) ?? (await tryFetch("/version.json"));
 }
 
 export function useVersionChecker(): UseVersionChecker {
@@ -62,6 +47,13 @@ export function useVersionChecker(): UseVersionChecker {
   const initialVersionRef = useRef<string | null>(null);
   const checkingRef = useRef(false);
   const lastCheckRef = useRef(0);
+
+  const dismiss = useCallback(() => {
+    setHasUpdate(false);
+    try {
+      localStorage.setItem(DISMISS_KEY, Date.now().toString());
+    } catch {}
+  }, []);
 
   const check = useCallback(async () => {
     if (checkingRef.current) return;
@@ -78,52 +70,73 @@ export function useVersionChecker(): UseVersionChecker {
 
       if (!initialVersionRef.current) {
         initialVersionRef.current = remote.version;
-        localStorage.setItem(STORAGE_KEY, remote.version);
+        try {
+          localStorage.setItem(STORAGE_KEY, remote.version);
+        } catch {}
         return;
       }
 
       if (remote.version !== initialVersionRef.current && remote.version !== newVersion) {
-        setNewVersion(remote.version);
-        setHasUpdate(true);
+        try {
+          const dismissedAt = Number(localStorage.getItem(DISMISS_KEY) || "0");
+          if (now - dismissedAt > 60 * 60_000) {
+            // dismissed more than 1 hour ago
+            setNewVersion(remote.version);
+            setHasUpdate(true);
+          }
+        } catch {
+          setNewVersion(remote.version);
+          setHasUpdate(true);
+        }
       }
     } finally {
       checkingRef.current = false;
     }
   }, [newVersion]);
 
-  const dismiss = useCallback(() => {
-    setHasUpdate(false);
-  }, []);
-
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     try {
-      initialVersionRef.current = localStorage.getItem(STORAGE_KEY);
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) initialVersionRef.current = stored;
     } catch {
       initialVersionRef.current = null;
     }
 
-    check();
-    const interval = setInterval(check, CHECK_INTERVAL);
+    const run = () => check();
+    run();
+    const interval = setInterval(run, CHECK_INTERVAL);
 
     function onVisibilityChange() {
-      if (document.visibilityState === "visible") check();
+      if (document.visibilityState === "visible") run();
     }
 
     function onWindowFocus() {
-      check();
+      run();
+    }
+
+    function onPageShow() {
+      run();
+    }
+
+    function onOnline() {
+      run();
     }
 
     document.addEventListener("visibilitychange", onVisibilityChange);
     window.addEventListener("focus", onWindowFocus);
+    window.addEventListener("pageshow", onPageShow);
+    window.addEventListener("online", onOnline);
 
     return () => {
       clearInterval(interval);
       document.removeEventListener("visibilitychange", onVisibilityChange);
       window.removeEventListener("focus", onWindowFocus);
+      window.removeEventListener("pageshow", onPageShow);
+      window.removeEventListener("online", onOnline);
     };
   }, [check]);
 
-  return { hasUpdate, newVersion, dismiss };
+  return { hasUpdate, newVersion, dismiss, check };
 }

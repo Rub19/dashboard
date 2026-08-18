@@ -43,7 +43,7 @@ export default function LiveBentoGrid({
       <div className={cn(
         "grid w-full items-stretch gap-4",
         scrollable
-          ? "min-h-0 flex-1 auto-rows-[minmax(0,1fr)] grid-cols-12 overflow-y-auto overflow-x-hidden [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden"
+          ? "min-h-0 flex-1 auto-rows-fr grid-cols-12 overflow-y-auto overflow-x-hidden os-scroll"
           : "h-auto auto-rows-auto grid-cols-12 overflow-visible"
       )}>
         <GamingCard

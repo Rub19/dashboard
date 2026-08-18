@@ -7,9 +7,10 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 **Dashboard Home : correction critique du layout Bento et chevauchements**
 
 ### Corrige
-- `ethone-next/components/DashboardOverview.tsx` : grille Bento normalisée en `grid-cols-12 auto-rows-[minmax(0,1fr)] overflow-hidden` pour des rangées égales, sans scroll global. Suppression des `h-auto` sur les widgets afin que `BentoCard` conserve `h-full` et `min-h-0`. Ajout des attributs `data-home-grid` et `data-home-widget` pour une inspection Playwright fiable.
-- `ethone-next/components/BentoCard.tsx` : tous les modes passent à `h-full min-h-0 w-full overflow-hidden`, verrouillant la hauteur de la carte et son contenu.
-- `ethone-next/e2e/home-bento-layout.spec.ts` : test Playwright de recoupement des bounding boxes sur 1080p, 1440p, desktop, tablet et mobile, avec sélecteurs `data-home-grid`/`data-home-widget`.
+- `ethone-next/components/DashboardOverview.tsx` : grille Bento refondue en `grid-cols-12 auto-rows-fr` (`minmax(0, 1fr)`) pour des rangées égales et fluides, sans scroll global. Les widgets recoivent `min-h-0 w-full flex-col overflow-hidden` pour ne jamais forcer l'agrandissement de la grille ni déborder sur la rangée suivante. Espacement bas réduit à `pb-6` pour maximiser la surface tout en préservant le Dock flottant. Suppression des `h-auto` sur les widgets afin que `BentoCard` conserve `h-full` et `min-h-0`. Ajout des attributs `data-home-grid` et `data-home-widget` pour une inspection Playwright fiable.
+- `ethone-next/components/BentoCard.tsx` : tous les modes passent à `h-full min-h-0 w-full overflow-hidden`. Le contenu non-scrollable utilise `justify-between overflow-hidden`, verrouillant la hauteur de la carte et empêchant tout débordement extérieur.
+- `ethone-next/components/LiveBentoGrid.tsx` : la grille interne utilise `auto-rows-fr` avec `os-scroll`, garantissant un comportement identique au reste du dashboard.
+- `ethone-next/e2e/home-bento-layout.spec.ts` : test Playwright de recoupement des bounding boxes sur 1080p, 1440p, 1600x900, 1366x768, 1280x800, tablette et mobile, avec sélecteurs `data-home-grid`/`data-home-widget`.
 
 **Mise à jour des modèles Groq et refonte du chat Brain**
 

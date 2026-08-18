@@ -64,7 +64,7 @@ export default function BentoCard({
         <div
           className={cn(
             "flex flex-1 flex-col",
-            scrollable ? "os-scroll min-h-0 overflow-y-auto" : "min-h-0 justify-between"
+            scrollable ? "os-scroll min-h-0 overflow-y-auto" : "min-h-0 justify-between overflow-hidden"
           )}
         >
           {children}

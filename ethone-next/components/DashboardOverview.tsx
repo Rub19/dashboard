@@ -187,7 +187,6 @@ export default function DashboardOverview() {
             updatedAt={live.updatedAt}
             loading={live.loading}
             error={live.error}
-            scrollable={false}
           />
         );
       default:
@@ -255,7 +254,7 @@ export default function DashboardOverview() {
         animate="visible"
         variants={gridVariants}
         data-home-grid
-        className="grid min-h-0 w-full flex-1 auto-rows-[minmax(0,1fr)] grid-cols-12 gap-4 overflow-hidden pb-24"
+        className="grid min-h-0 w-full flex-1 auto-rows-fr grid-cols-12 gap-4 overflow-hidden pb-6"
       >
         {widgets.map((w) =>
           w.visible ? (
@@ -263,7 +262,7 @@ export default function DashboardOverview() {
               key={w.id}
               data-home-widget
               variants={widgetItemVariants}
-              className={`${WIDGET_COL_SPAN[w.id]} flex flex-col min-w-0`}
+              className={`${WIDGET_COL_SPAN[w.id]} flex min-h-0 w-full flex-col overflow-hidden`}
             >
               {renderWidget(w.id)}
             </motion.div>

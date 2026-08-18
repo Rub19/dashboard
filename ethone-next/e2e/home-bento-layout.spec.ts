@@ -2,14 +2,17 @@ import { test, expect } from "@playwright/test";
 import { signInByPassword, requireAuthEnv } from "./auth-helpers";
 
 const VIEWPORTS = [
-  { name: "1080p", width: 1920, height: 1080 },
   { name: "1440p", width: 2560, height: 1440 },
+  { name: "1080p", width: 1920, height: 1080 },
+  { name: "desktop-1600", width: 1600, height: 900 },
+  { name: "desktop-1366", width: 1366, height: 768 },
   { name: "desktop-standard", width: 1280, height: 800 },
   { name: "tablet", width: 768, height: 1024 },
   { name: "mobile", width: 390, height: 844 },
 ];
 
 test.describe("Home Dashboard Bento Grid Layout", () => {
+  test.setTimeout(60000);
   test("no overlapping bounding boxes across all viewports", async ({ page, request }) => {
     const { email, password } = requireAuthEnv();
     await signInByPassword(page, request, email, password);
@@ -18,7 +21,7 @@ test.describe("Home Dashboard Bento Grid Layout", () => {
       await page.setViewportSize({ width: vp.width, height: vp.height });
       await page.goto("/", { waitUntil: "domcontentloaded" });
       await page.waitForSelector("#main-content", { timeout: 10000 });
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(1500);
 
       const cards = await page.evaluate(() => {
         const grid = document.querySelector("[data-home-grid]");
@@ -59,7 +62,7 @@ test.describe("Home Dashboard Bento Grid Layout", () => {
         }
       }
 
-      if (vp.name === "1080p" || vp.name === "1440p") {
+      if (vp.name === "1080p" || vp.name === "1440p" || vp.name === "desktop-1366") {
         await page.screenshot({ path: `e2e/screenshots/home-bento-${vp.name}.png`, fullPage: false });
       }
     }

@@ -114,12 +114,13 @@ test.describe("Spotify player (Dynamic Island & Dock popover)", () => {
     const src = await cover.getAttribute("src");
     expect(src).toContain("i.scdn.co");
 
-    const island = page.locator('[role="status"]');
+    const island = page.locator('div[role="status"]');
     await expect(island).toBeVisible();
-    await island.evaluate((el: HTMLElement) => el.click());
-    await page.waitForTimeout(400);
+    await island.click();
+    await page.waitForTimeout(500);
 
-    await expect(island.getByText("Test Track").first()).toBeVisible();
+    const spotifyPanel = page.getByTestId("dynamic-island-spotify");
+    await expect(spotifyPanel.getByText("Test Track").first()).toBeVisible();
 
     const controlRequests: { action: string; body: unknown }[] = [];
     await page.route(`${WORKER_URL}/api/spotify/control`, async (route, request) => {
@@ -134,7 +135,7 @@ test.describe("Spotify player (Dynamic Island & Dock popover)", () => {
       });
     });
 
-    const progress = island.locator('[aria-label="Progression"]').first();
+    const progress = page.getByTestId("dynamic-island-progress");
     await expect(progress).toBeVisible();
     const box = await progress.boundingBox();
     if (box) {
@@ -143,7 +144,7 @@ test.describe("Spotify player (Dynamic Island & Dock popover)", () => {
       expect(controlRequests.filter((r) => r.action === "seek").length).toBe(1);
     }
 
-    const volume = island.locator('[aria-label="Volume"]').first();
+    const volume = page.getByTestId("dynamic-island-volume");
     await expect(volume).toBeVisible();
     const volBox = await volume.boundingBox();
     if (volBox) {
@@ -155,7 +156,7 @@ test.describe("Spotify player (Dynamic Island & Dock popover)", () => {
       expect(controlRequests.filter((r) => r.action === "volume").length).toBe(1);
     }
 
-    const nextButton = island.locator('button[aria-label="next"]').first();
+    const nextButton = spotifyPanel.getByRole("button", { name: /suivant|next/i }).first();
     await expect(nextButton).toBeVisible();
     await nextButton.click();
     await page.waitForTimeout(300);

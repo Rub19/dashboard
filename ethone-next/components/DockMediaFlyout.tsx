@@ -255,6 +255,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                   max={duration}
                   onChange={handleSeek}
                   disabled={!hasClientId}
+                  data-testid="dock-progress"
                 />
 
                 <div className="flex items-center justify-between border-t border-white/[0.04] px-2 pt-2">
@@ -310,7 +311,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                 </div>
 
                 <div className="flex items-center justify-center">
-                  <VolumeSlider value={localVolume} onChange={setVolume} />
+                  <VolumeSlider value={localVolume} onChange={setVolume} data-testid="dock-volume" />
                 </div>
               </div>
             )}

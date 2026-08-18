@@ -9,6 +9,7 @@ export interface VolumeSliderProps {
   onChange: (value: number) => void;
   className?: string;
   size?: "sm" | "md";
+  "data-testid"?: string;
 }
 
 export default function VolumeSlider({
@@ -16,6 +17,7 @@ export default function VolumeSlider({
   onChange,
   className,
   size = "sm",
+  "data-testid": testId,
 }: VolumeSliderProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [dragging, setDragging] = useState(false);
@@ -83,7 +85,7 @@ export default function VolumeSlider({
   const thumbSize = size === "sm" ? "h-2.5 w-2.5" : "h-3 w-3";
 
   return (
-    <div className={cn("flex items-center gap-1.5", className)}>
+    <div className={cn("flex items-center gap-1.5", className)} data-testid={testId}>
       <button
         type="button"
         onClick={() => onChange(isMuted ? lastNonZeroRef.current || 50 : 0)}

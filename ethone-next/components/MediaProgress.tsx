@@ -16,6 +16,7 @@ export interface MediaProgressProps {
   onChange: (value: number) => void;
   className?: string;
   disabled?: boolean;
+  "data-testid"?: string;
 }
 
 export default function MediaProgress({
@@ -24,6 +25,7 @@ export default function MediaProgress({
   onChange,
   className,
   disabled = false,
+  "data-testid": testId,
 }: MediaProgressProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [dragging, setDragging] = useState(false);
@@ -80,7 +82,7 @@ export default function MediaProgress({
   );
 
   return (
-    <div className={cn("space-y-1.5", className)}>
+    <div className={cn("space-y-1.5", className)} data-testid={testId}>
       <div
         ref={trackRef}
         onPointerDown={handlePointerDown}

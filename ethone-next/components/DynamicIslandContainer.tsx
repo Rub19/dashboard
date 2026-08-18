@@ -476,7 +476,7 @@ export default function DynamicIslandContainer() {
             onMouseLeave={handleLeave}
             aria-label={i18n("dynamicIsland")}
           >
-            <DynamicIslandView id="spotify" className="w-[340px] sm:w-[400px]">
+            <DynamicIslandView id="spotify" data-testid="dynamic-island-spotify" className="w-[340px] sm:w-[400px]">
               <div onClick={stopPropagation} className="flex w-full flex-col gap-4">
                 <div className="flex items-start justify-between gap-2">
                   <span className="text-[10px] font-medium tabular-nums text-zinc-500">
@@ -533,12 +533,13 @@ export default function DynamicIslandContainer() {
                       value={localProgress}
                       max={nowPlaying.durationMs}
                       onChange={onSpotifySeek}
+                      data-testid="dynamic-island-progress"
                     />
                   </div>
                 )}
 
                 <div className="flex items-center justify-center" onPointerDown={stopPropagation}>
-                  <VolumeSlider value={localVolume} onChange={onSpotifyVolume} />
+                  <VolumeSlider value={localVolume} onChange={onSpotifyVolume} data-testid="dynamic-island-volume" />
                 </div>
 
                 <div className="flex items-center justify-center gap-3">

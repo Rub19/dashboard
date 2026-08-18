@@ -196,7 +196,8 @@ export default function FlowsPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
+      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-6">
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3 mb-6">
         {statCards.map((stat, i) => (
           <div
@@ -385,6 +386,7 @@ export default function FlowsPage() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

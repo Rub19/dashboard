@@ -106,12 +106,13 @@ export default function TeamPage() {
   const roleOptions = ROLES.map((r) => ({ id: r, label: i18n(r) || ROLE_LABELS[r] }));
 
   return (
-    <div className="space-y-6">
-      <div>
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
+      <div className="shrink-0 mb-4">
         <h1 className="text-2xl font-bold text-white">{i18n("teamTitle")}</h1>
         <p className="text-sm text-zinc-500 mt-1">{i18n("teamDescription")}</p>
       </div>
 
+      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-6">
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <StatCard
@@ -201,6 +202,7 @@ export default function TeamPage() {
           onRemove={handleRemove}
         />
       )}
+      </div>
     </div>
   );
 }

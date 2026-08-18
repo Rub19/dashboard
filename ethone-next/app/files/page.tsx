@@ -313,8 +313,8 @@ export default function FilesPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
+      <div className="shrink-0 mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">{i18n("filesTitle")}</h1>
         <div className="flex flex-wrap items-center gap-2">
           {!clientId ? (
@@ -360,7 +360,7 @@ export default function FilesPage() {
           </button>
         </div>
       </div>
-
+      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-6">
       {clientId && (
         <FileUploader clientId={clientId} parentId={parentId} onAllComplete={() => { success(i18n("uploadFile")); reload(); }} />
       )}
@@ -604,6 +604,7 @@ export default function FilesPage() {
           </ContextMenu>
           ))
         )}
+      </div>
       </div>
 
       <Modal

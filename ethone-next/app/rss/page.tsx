@@ -30,9 +30,10 @@ export default function RssPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">{i18n("rssTitle")}</h1>
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
+      <h1 className="shrink-0 mb-4 text-2xl font-bold">{i18n("rssTitle")}</h1>
 
+      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-6">
       <Card3D>
         <div className="flex flex-col gap-3 sm:flex-row">
           <label className="min-w-0 flex-1">
@@ -75,6 +76,7 @@ export default function RssPage() {
             </a>
           </Card3D>
         ))}
+      </div>
       </div>
     </div>
   );

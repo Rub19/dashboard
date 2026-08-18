@@ -599,32 +599,36 @@ export default function BrainPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">{i18n("brainTitle")}</h1>
-      <TabList
-        tabs={TABS.map((tab) => ({
-          id: tab.id,
-          label: i18n(tab.label),
-          icon: <Icon name={tab.icon} className="h-4 w-4" />,
-          content: null,
-        }))}
-        activeId={activeTab}
-        onSelect={(id) => setActiveTab(id as Tab)}
-      />
-      <Card3D>
-        {activeTab === "chat" && renderChat()}
-        {activeTab === "briefing" && <BrainBriefingPanel />}
-        {activeTab === "context" && renderContext()}
-        {activeTab === "memory" && renderMemory()}
-        {activeTab === "actions" && renderActions()}
-        {activeTab === "automations" && renderAutomations()}
-        {activeTab === "providers" && renderProviders()}
-        {activeTab === "preferences" && renderPreferences()}
-        {activeTab === "privacy" && renderPrivacy()}
-        {activeTab === "history" && renderHistory()}
-        {activeTab === "diagnostics" && renderDiagnostics()}
-        {activeTab === "wrapup" && renderWrapup()}
-      </Card3D>
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
+      <div className="shrink-0 mb-4 space-y-4">
+        <h1 className="text-2xl font-bold">{i18n("brainTitle")}</h1>
+        <TabList
+          tabs={TABS.map((tab) => ({
+            id: tab.id,
+            label: i18n(tab.label),
+            icon: <Icon name={tab.icon} className="h-4 w-4" />,
+            content: null,
+          }))}
+          activeId={activeTab}
+          onSelect={(id) => setActiveTab(id as Tab)}
+        />
+      </div>
+      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-4">
+        <Card3D>
+          {activeTab === "chat" && renderChat()}
+          {activeTab === "briefing" && <BrainBriefingPanel />}
+          {activeTab === "context" && renderContext()}
+          {activeTab === "memory" && renderMemory()}
+          {activeTab === "actions" && renderActions()}
+          {activeTab === "automations" && renderAutomations()}
+          {activeTab === "providers" && renderProviders()}
+          {activeTab === "preferences" && renderPreferences()}
+          {activeTab === "privacy" && renderPrivacy()}
+          {activeTab === "history" && renderHistory()}
+          {activeTab === "diagnostics" && renderDiagnostics()}
+          {activeTab === "wrapup" && renderWrapup()}
+        </Card3D>
+      </div>
       {renderWrapupSheet()}
     </div>
   );

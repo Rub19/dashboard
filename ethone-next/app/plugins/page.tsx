@@ -17,10 +17,13 @@ export default function PluginsPage() {
   const router = useRouter();
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">{i18n("pluginsTitle")}</h1>
-      <p className="text-sm text-[var(--muted)]">{i18n("pluginsDescription")}</p>
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
+      <div className="shrink-0 mb-4 space-y-2">
+        <h1 className="text-2xl font-bold">{i18n("pluginsTitle")}</h1>
+        <p className="text-sm text-[var(--muted)]">{i18n("pluginsDescription")}</p>
+      </div>
 
+      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-6">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {PLUGINS.map((p) => {
           const live = getPluginRecord(records, p);
@@ -65,6 +68,7 @@ export default function PluginsPage() {
             </Card3D>
           );
         })}
+      </div>
       </div>
     </div>
   );

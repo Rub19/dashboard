@@ -120,14 +120,15 @@ export default function SpacesPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
+      <div className="shrink-0 mb-4 flex items-center justify-between">
         <h1 className="text-2xl font-bold">{i18n("spacesTitle")}</h1>
         <span className="rounded-xl bg-[var(--panel-bg)] px-3 py-1 text-sm text-[var(--muted)]">
           {spaces.length} {spaces.length > 1 ? i18n("opens") : i18n("open")}
         </span>
       </div>
 
+      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-6">
       <Card3D>
         <h2 className="mb-3 text-sm font-semibold capitalize text-[var(--foreground)]">{i18n("active")} {i18n("spaces")}</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -298,6 +299,7 @@ export default function SpacesPage() {
             </Card3D>
           );
         })}
+      </div>
       </div>
     </div>
   );

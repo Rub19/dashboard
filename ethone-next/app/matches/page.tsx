@@ -169,14 +169,15 @@ export default function MatchesPage() {
   const { items, loading, syncing, sync } = useTracker(path, trackerKind);
 
   return (
-    <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-[14rem_1fr]">
+    <div className="h-full min-h-0 w-full flex overflow-hidden gap-6">
       <LiquidSidebar
         items={tabs}
         defaultActive="valorant"
         active={tab}
         onChange={setTab}
       />
-      <div className="min-w-0 space-y-4">
+      <div className="min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden">
+        <div className="shrink-0 space-y-4">
         <div className="flex items-center justify-between gap-4">
           <h1 className="min-w-0 truncate text-2xl font-bold">{i18n("matchesTitle")}</h1>
           <button

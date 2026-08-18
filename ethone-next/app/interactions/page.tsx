@@ -330,9 +330,9 @@ export default function InteractionsPage() {
   const topCategory = categories.rows.reduce((a, b) => (b.count > a.count ? b : a), categories.rows[0]);
 
   return (
-    <div className="flex w-full select-none flex-col gap-5 p-4 sm:p-6">
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden p-4 sm:p-6">
       {/* Header */}
-      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+      <div className="shrink-0 mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <div>
           <h1 className="flex items-center gap-2.5 text-2xl font-bold tracking-tight text-white">
             <Activity className="h-6 w-6 text-emerald-400" />
@@ -349,6 +349,7 @@ export default function InteractionsPage() {
         </div>
       </div>
 
+      <div id="interactions-scroll" className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-5">
       {/* KPIs */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {[
@@ -588,7 +589,7 @@ export default function InteractionsPage() {
 
           <button
             type="button"
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            onClick={() => document.getElementById("interactions-scroll")?.scrollTo({ top: 0, behavior: "smooth" })}
             className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-white/[0.08] bg-white/[0.03] py-2 text-xs font-medium text-zinc-300 transition-all hover:bg-white/[0.06] hover:text-white"
           >
             <span>Voir tout l&apos;historique</span>
@@ -602,6 +603,7 @@ export default function InteractionsPage() {
           {error.message}
         </div>
       )}
+      </div>
     </div>
   );
 }

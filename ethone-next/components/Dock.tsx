@@ -165,7 +165,7 @@ export default function Dock() {
       )}
 
       <nav
-        className="pointer-events-auto inline-flex items-center gap-2 rounded-2xl v8-panel px-3 py-2 shadow-2xl backdrop-blur-xl select-none"
+        className="pointer-events-auto inline-flex items-center gap-2 v8-dock px-3 py-2 backdrop-blur-xl select-none"
         aria-label={i18n("dock")}
       >
         <DockMediaFlyout nowPlaying={spotifyNow} clientId={settings.liveSpotifyClientId} />

@@ -2037,11 +2037,13 @@ a:has(> svg) {
 }
 
 .v8-dock {
-  border-radius: 9999px;
-  background: color-mix(in srgb, var(--surface-raised) 90%, transparent);
-  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  border-radius: var(--panel-radius);
+  border: 1px solid color-mix(in srgb, white 8%, transparent);
+  background-color: color-mix(in srgb, var(--surface-raised) 70%, transparent);
+  background-image: none;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5);
 }
 
 /* Zero-scroll helpers */

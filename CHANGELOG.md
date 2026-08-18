@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Dock : restauration du style d’avant (verre givré)**
+
+### Corrige
+- `ethone-next/app/globals.css` : le token utilitaire `.v8-dock` est redéfini comme un verre givré (`var(--surface-raised) 70 %` transparent, bordure blanche 8 %, flou 24 px, ombre `shadow-2xl`), sans dégradé obsidien.
+- `ethone-next/components/Dock.tsx` : le Dock utilise maintenant `v8-dock` au lieu de `v8-panel`, ce qui le garde clair et flottant comme avant, indépendamment du fond obsidian des panneaux du dashboard.
+
 **Home et cartes : fond black obsidian et meilleure distinction des panneaux**
 
 ### Corrige

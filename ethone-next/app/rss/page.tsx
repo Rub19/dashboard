@@ -7,6 +7,19 @@ import { fetchWorker } from "@/lib/api";
 import { Icon } from "@/lib/icons";
 import { useToast } from "@/components/ToastProvider";
 
+function isAllowedHttpUrl(input: string): boolean {
+  try {
+    const url = new URL(input.trim());
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function stripTags(value: string) {
+  return value.replace(/<[^>]+>/g, " ");
+}
+
 export default function RssPage() {
   const i18n = useI18n();
   const { error: showError } = useToast();
@@ -15,11 +28,16 @@ export default function RssPage() {
   const [feed, setFeed] = useState<{ title: string; description: string; items: { title: string; link: string; description: string; pubDate: string }[] } | null>(null);
 
   async function handleLoad() {
-    if (!url.trim()) return;
+    const trimmed = url.trim();
+    if (!trimmed) return;
+    if (!isAllowedHttpUrl(trimmed)) {
+      showError(i18n("invalidUrl") || "URL invalide");
+      return;
+    }
     setLoading(true);
     setFeed(null);
     try {
-      const res = await fetchWorker(`/api/rss?url=${encodeURIComponent(url.trim())}`);
+      const res = await fetchWorker(`/api/rss?url=${encodeURIComponent(trimmed)}`);
       if (res?.data) setFeed(res.data);
       else showError(i18n("error"));
     } catch (err) {
@@ -67,15 +85,26 @@ export default function RssPage() {
       )}
 
       <div className="space-y-3">
-        {feed?.items.map((item, i) => (
-          <Card3D key={i}>
-            <a href={item.link} target="_blank" rel="noreferrer" className="block hover:opacity-90">
-              <p className="font-medium">{item.title}</p>
-              {item.description && <p className="text-sm text-[var(--muted)] line-clamp-2">{item.description.replace(/<[^>]+>/g, " ")}</p>}
-              {item.pubDate && <p className="mt-1 text-xs text-[var(--muted)]">{new Date(item.pubDate).toLocaleString()}</p>}
-            </a>
-          </Card3D>
-        ))}
+        {feed?.items.map((item, i) => {
+          const safeLink = isAllowedHttpUrl(item.link) ? item.link : undefined;
+          return (
+            <Card3D key={i}>
+              {safeLink ? (
+                <a href={safeLink} target="_blank" rel="noopener noreferrer" className="block hover:opacity-90">
+                  <p className="font-medium">{item.title}</p>
+                  {item.description && <p className="text-sm text-[var(--muted)] line-clamp-2">{stripTags(item.description)}</p>}
+                  {item.pubDate && <p className="mt-1 text-xs text-[var(--muted)]">{new Date(item.pubDate).toLocaleString()}</p>}
+                </a>
+              ) : (
+                <div className="block">
+                  <p className="font-medium">{item.title}</p>
+                  {item.description && <p className="text-sm text-[var(--muted)] line-clamp-2">{stripTags(item.description)}</p>}
+                  {item.pubDate && <p className="mt-1 text-xs text-[var(--muted)]">{new Date(item.pubDate).toLocaleString()}</p>}
+                </div>
+              )}
+            </Card3D>
+          );
+        })}
       </div>
       </div>
     </div>

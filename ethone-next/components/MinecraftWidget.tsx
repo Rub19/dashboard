@@ -348,11 +348,10 @@ export default function MinecraftWidget({ className = "" }: { className?: string
                 Version : <span className="text-zinc-300">{serverStatus.version.name}</span>
               </p>
             )}
-            {serverStatus.motd?.html && (
-              <div
-                className="overflow-hidden text-ellipsis whitespace-nowrap font-mono text-zinc-400"
-                dangerouslySetInnerHTML={{ __html: serverStatus.motd.html }}
-              />
+            {serverStatus.motd && (
+              <p className="overflow-hidden text-ellipsis whitespace-nowrap font-mono text-zinc-400">
+                {serverStatus.motd.clean || serverStatus.motd.raw || ""}
+              </p>
             )}
           </div>
         )}

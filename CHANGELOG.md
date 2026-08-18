@@ -4,6 +4,19 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Nettoyage majeur, purge des composants legacy et optimisation des dépendances**
+
+### Supprime
+- 38 composants legacy et orphelins non utilisés : `AmbientParticles`, `BillsCalendarWidget`, `BottomSheet`, `ConnectionDiagnostics`, `ConnectionInspector`, `DayEventsCard`, `DenseContent`, `DepthEffect`, `DropZone`, `FocusIsland`, `GitHubIntegrationCard`, `InvoicesSummaryCard`, `LiveOverview`, `LoginEight`, `MailAdvancedPanel`, `MailAnalyticsPanel`, `MediaDockItem`, `MediaWidget`, `MinecraftWidget`, `PomodoroCustomModal`, `PresencePulse`, `SearchBar`, `SelectMulti`, `SidePanel`, `SonnerDemo`, `StylizedTaskCheckbox`, `UploadItem`, `V8Breadcrumbs`, `V8StatusBar`, `V8WindowControls`, `WidgetWrapper`, `StatusBar`, `settings/DangerZone`, `settings/SettingRow`, `settings/SettingsSearch`, `settings/SettingsSidebar`, `ui/OtpInput`, `ui/animated-toast-stack`.
+- 12 fichiers lib et hooks orphelins : `brand-icons.ts`, `command-catalog.ts`, `useCalendarEvents.ts`, `useDiscordLive.ts`, `useDriveFiles.ts`, `useLolLive.ts`, `usePomodoroSession.ts`, `useTeamManager.ts`, `useUserSettings.ts`, `lifecycle.ts`, `navigation-session.ts`, `workspaces.ts`.
+- 5 assets SVG create-next-app superflus : `file.svg`, `globe.svg`, `next.svg`, `vercel.svg`, `window.svg`.
+- 4 dépendances npm d'icônes zombies dans `ethone-next/package.json` : `@heroicons/react`, `@phosphor-icons/react`, `@radix-ui/react-icons`, `@tabler/icons-react` (remplacées par `@iconify/react` et `lucide-react`).
+- 11 branches GitHub distantes fusionnées ou obsolètes supprimées du dépôt distant.
+
+### Corrige
+- `.gitignore` : renforcement des règles d'exclusion pour les logs MCP (`*.mcp.log`, `mcp-logs/`, `.mcp/`).
+- `ethone-next/package-lock.json` : régénération et allègement suite au nettoyage des dépendances inutilisées.
+
 **Finalisation zero-scroll, sidebar flottante et validation E2E**
 
 ### Ajoute

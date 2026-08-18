@@ -76,6 +76,9 @@ trace.zip
 # Logs and crash dumps
 logs/
 *.log
+*.mcp.log
+mcp-logs/
+.mcp/
 *.dmp
 *.dump
 /core

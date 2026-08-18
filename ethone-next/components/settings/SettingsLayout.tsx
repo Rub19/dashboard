@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
+import { cn } from "@/lib/utils";
 import {
   Search,
   RotateCcw,
@@ -222,23 +222,39 @@ export default function SettingsLayout() {
       </div>
 
       {/* Onglets */}
-      <Tabs
-        value={activeTab}
-        onValueChange={(tab) => {
-          setActiveTab(tab);
-          router.push(`/settings?tab=${tab}`, { scroll: false });
-        }}
-        variant="pill"
-        className="w-fit"
-      >
-        <TabsList className="backdrop-blur-xl">
-          {TABS.map((tab) => (
-            <TabsTrigger key={tab.id} value={tab.id}>
-              {tab.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
+      <div className="relative inline-flex items-center gap-1 rounded-full border border-white/[0.08] bg-zinc-950/70 p-1.5 shadow-inner backdrop-blur-xl">
+        {TABS.map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => {
+                setActiveTab(tab.id);
+                router.push(`/settings?tab=${tab.id}`, { scroll: false });
+              }}
+              className={cn(
+                "relative z-10 select-none rounded-full px-4 py-2 text-xs font-medium transition-colors duration-200 sm:text-sm",
+                isActive ? "text-zinc-950 font-semibold" : "text-zinc-400 hover:text-zinc-200"
+              )}
+            >
+              {isActive && (
+                <motion.div
+                  layoutId="activeSettingsTab"
+                  className="absolute inset-0 rounded-full bg-emerald-400 shadow-[0_0_20px_rgba(52,211,153,0.4)]"
+                  style={{ zIndex: -1 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 380,
+                    damping: 30,
+                  }}
+                />
+              )}
+              <span className="relative z-10">{tab.label}</span>
+            </button>
+          );
+        })}
+      </div>
 
       <AnimatePresence mode="wait">
         {activeTab === "overview" ? (

@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**UI : onglets des paramètres — contraste et animation de la pilule active**
+
+### Corrige
+- `ethone-next/components/settings/SettingsLayout.tsx` : remplacement de `<Tabs />` générique par une barre d'onglets Bento Dark avec texte inactif `text-zinc-400` et pilule active `bg-emerald-400`. L'indicateur actif utilise un `motion.div` partagé avec `layoutId="activeSettingsTab"` pour un glissement fluide.
+
 **UI : tooltips explicites pour les alertes et erreurs de sync**
 
 ### Corrige

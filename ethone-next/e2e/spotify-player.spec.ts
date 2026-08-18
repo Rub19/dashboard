@@ -135,7 +135,7 @@ test.describe("Spotify player (Dynamic Island & Dock popover)", () => {
       });
     });
 
-    const progress = page.getByTestId("dynamic-island-progress");
+    const progress = spotifyPanel.locator('[aria-label="Progression"]').first();
     await expect(progress).toBeVisible();
     const box = await progress.boundingBox();
     if (box) {
@@ -144,7 +144,7 @@ test.describe("Spotify player (Dynamic Island & Dock popover)", () => {
       expect(controlRequests.filter((r) => r.action === "seek").length).toBe(1);
     }
 
-    const volume = page.getByTestId("dynamic-island-volume");
+    const volume = spotifyPanel.locator('[aria-label="Volume"]').first();
     await expect(volume).toBeVisible();
     const volBox = await volume.boundingBox();
     if (volBox) {

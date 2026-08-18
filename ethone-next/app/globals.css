@@ -32,9 +32,9 @@
   --card-radius: 1rem;
   --dock-radius: 1rem;
   --panel-radius: 1rem;
-  --panel-border: color-mix(in srgb, white 8%, transparent);
-  --panel-obsidian: color-mix(in srgb, var(--surface-raised) 68%, #000000 32%);
-  --panel-bg: color-mix(in srgb, var(--panel-obsidian) 92%, transparent);
+  --panel-border: color-mix(in srgb, white 12%, transparent);
+  --panel-obsidian: color-mix(in srgb, var(--surface-raised) 60%, #000000 40%);
+  --panel-bg: color-mix(in srgb, var(--panel-obsidian) 96%, transparent);
   --panel-blur: 20px;
   --panel-padding: var(--density-pad, 1.25rem);
   --item-gap: var(--density-gap, 1rem);
@@ -2026,7 +2026,12 @@ a:has(> svg) {
 .v8-card {
   border-radius: var(--panel-radius);
   border: 1px solid var(--panel-border);
-  background: var(--panel-bg);
+  background-color: var(--panel-bg);
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in srgb, white 5%, transparent) 0%,
+    transparent 40%
+  );
   backdrop-filter: blur(var(--panel-blur));
   -webkit-backdrop-filter: blur(var(--panel-blur));
 }

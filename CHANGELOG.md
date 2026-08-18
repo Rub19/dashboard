@@ -4,6 +4,16 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Spotify / Dynamic Island / Dock : lecteur fiable et fluide**
+
+### Corrige
+- `ethone-next/components/SafeImage.tsx` : skeleton + fade-in, reset sur changement de `src`, fallback `priority`/`loading` explicites.
+- `ethone-next/components/MediaProgress.tsx` : nouveau slider de progression partagé avec pointer capture, drag local et un seul `onChange` au relâchement, pas de requêtes pendant le drag.
+- `ethone-next/components/VolumeSlider.tsx` : nouveau slider de volume personnalisé, thumb aligné, drag visuel, mute mémorisé, label `aria-label="Volume"` et `data-testid`.
+- `ethone-next/components/DynamicIslandContainer.tsx` et `ethone-next/components/DockMediaFlyout.tsx` : utilisent `MediaProgress` partagé, progression avancée à 250 ms, hitboxes des contrôles élargies (≈ 36 px), pochettes en `priority`/`eager`.
+- `worker/src/services/spotify-oauth-client.js` : sélectionne l'image intermédiaire (`images[1]`) pour les pochetes Spotify.
+- `ethone-next/e2e/spotify-player.spec.ts` : test Playwright mocké pour la pochette, l'expansion du Dynamic Island, le scrub progress, le drag volume et les contrôles transport.
+
 **Spotify / Media : sliders glassmorphism moins noirs**
 
 ### Corrige

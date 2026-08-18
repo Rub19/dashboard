@@ -92,8 +92,8 @@ export default function TasksWidget({ className = "", data, scrollable = true }:
   );
 
   return (
-    <BentoCard className={className} noHeader scrollable={scrollable}>
-      <div className={cn("flex flex-col gap-4", scrollable ? "h-full min-h-0 overflow-hidden" : "h-auto overflow-visible")}>
+    <BentoCard className={cn("h-full", className)} noHeader scrollable={scrollable}>
+      <div className={cn("flex flex-col gap-4", scrollable ? "h-full min-h-0 overflow-hidden" : "h-full justify-between")}>
         {/* Header */}
         <div className="shrink-0 flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5">

@@ -8,6 +8,7 @@ import { useBrain } from "@/lib/hooks/useBrain";
 import { useBrainActivityStore } from "@/lib/stores/brain-activity";
 import { Icon } from "@/lib/icons";
 import BentoCard from "@/components/BentoCard";
+import { cn } from "@/lib/utils";
 import type { CloudDashboard, NowPlaying } from "@/lib/hooks/useDashboard";
 
 function formatBytes(bytes = 0) {
@@ -99,8 +100,8 @@ export default function HeroBriefingCard({
   }
 
   return (
-    <BentoCard noHeader scrollable={scrollable} className={className}>
-      <div className="flex h-full min-h-0 flex-col justify-between gap-4">
+    <BentoCard noHeader scrollable={scrollable} className={cn("h-full", className)}>
+      <div className="flex flex-1 flex-col justify-between gap-4">
         <div className="flex flex-col gap-1">
           <p className="text-xs font-medium uppercase tracking-wider text-[var(--muted)]">{date}</p>
           <h2 className="text-2xl font-bold tracking-tight text-white">{greeting.label}</h2>

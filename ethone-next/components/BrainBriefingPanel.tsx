@@ -7,7 +7,6 @@ import { useNotifications } from "@/lib/hooks/useNotifications";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useWorker } from "@/lib/hooks/useWorker";
-import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
 
 type Section = "weather" | "agenda" | "tasks" | "mail" | "notifications" | "activity" | "nowPlaying";
@@ -64,17 +63,20 @@ export default function BrainBriefingPanel() {
         <p className="text-sm font-medium text-[var(--accent)]">{greeting.label}</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
         {sections
           .filter((s) => !hidden.has(s.id))
           .map((s) => (
-            <Card3D key={s.id} radius="0.5rem">
-              <div className="flex items-center gap-2">
-                <Icon name={s.icon} className="h-4 w-4 text-[var(--accent)]" />
-                <span className="text-xs text-[var(--muted)]">{s.label}</span>
+            <div
+              key={s.id}
+              className="flex flex-col justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5 transition-colors hover:border-white/10"
+            >
+              <div className="flex items-center gap-1.5">
+                <Icon name={s.icon} className="h-3.5 w-3.5 text-[var(--accent)]" />
+                <span className="text-xs text-[var(--muted)] truncate">{s.label}</span>
               </div>
-              <p className="mt-1 truncate text-lg font-bold">{s.value}</p>
-            </Card3D>
+              <p className="mt-1 truncate text-base font-bold text-zinc-100">{s.value}</p>
+            </div>
           ))}
       </div>
 

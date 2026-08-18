@@ -28,22 +28,17 @@ export default function BentoCard({
   return (
     <div
       className={cn(
-        "group relative w-full rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-5 shadow-xl shadow-black/50 backdrop-blur-[var(--panel-blur)] transition-all duration-200 hover:border-[var(--accent)]/20",
-        scrollable ? "h-full overflow-hidden" : "h-auto min-h-fit overflow-visible",
+        "group relative flex w-full flex-col rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-5 shadow-xl shadow-black/50 backdrop-blur-[var(--panel-blur)] transition-all duration-200 hover:border-[var(--accent)]/20",
+        "h-full min-h-0 w-full overflow-hidden",
         className
       )}
     >
       <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent"
+        className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-b from-white/[0.03] to-transparent"
         aria-hidden="true"
       />
 
-      <div
-        className={cn(
-          "relative z-10 flex flex-col",
-          scrollable ? "h-full min-h-0 flex-1" : "h-auto overflow-visible"
-        )}
-      >
+      <div className="relative z-10 flex flex-1 flex-col min-h-0">
         {!noHeader && (title || icon) && (
           <div className="mb-4 flex flex-none items-center justify-between border-b border-white/[0.05] pb-3">
             <div className="flex items-center gap-2.5">
@@ -68,8 +63,8 @@ export default function BentoCard({
 
         <div
           className={cn(
-            "flex flex-col",
-            scrollable ? "os-scroll min-h-0 flex-1 overflow-y-auto" : "h-auto overflow-visible"
+            "flex flex-1 flex-col",
+            scrollable ? "os-scroll min-h-0 overflow-y-auto" : "min-h-0 justify-between"
           )}
         >
           {children}

@@ -147,11 +147,10 @@ export default function DashboardOverview() {
             todayEventsCount={todayEvents.length}
             notesCount={notes.length}
             scrollable={false}
-            className="h-auto"
           />
         );
       case "system":
-        return <SystemControlCard scrollable={false} className="h-auto" />;
+        return <SystemControlCard scrollable={false}  />;
       case "daystream":
         return (
           <DayTimelineCard
@@ -159,22 +158,21 @@ export default function DashboardOverview() {
             nextTasks={nextTasks}
             focus={focus}
             scrollable={false}
-            className="h-auto"
           />
         );
       case "productivity":
-        return <TasksWidget data={tasksApi} scrollable={false} className="h-auto" />;
+        return <TasksWidget data={tasksApi} scrollable={false}  />;
       case "recent":
-        return <RecentNotesCard notes={notes} scrollable={false} className="h-auto" />;
+        return <RecentNotesCard notes={notes} scrollable={false}  />;
       case "brain":
         return (
-          <BentoCard title={i18n("brain")} icon="brain" scrollable={false} className="h-auto">
+          <BentoCard title={i18n("brain")} icon="brain" scrollable={false} >
             <BrainBriefingPanel />
           </BentoCard>
         );
       case "bills":
         return (
-          <BentoCard title={i18n("billsTitle")} icon="bills" scrollable={false} className="h-auto">
+          <BentoCard title={i18n("billsTitle")} icon="bills" scrollable={false} >
             <BillsWidget />
           </BentoCard>
         );
@@ -190,7 +188,6 @@ export default function DashboardOverview() {
             loading={live.loading}
             error={live.error}
             scrollable={false}
-            className="h-auto"
           />
         );
       default:
@@ -257,14 +254,16 @@ export default function DashboardOverview() {
         initial="hidden"
         animate="visible"
         variants={gridVariants}
-        className="grid min-h-0 w-full flex-1 grid-cols-12 gap-4 overflow-y-auto overflow-x-hidden pb-32 [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden auto-rows-auto"
+        data-home-grid
+        className="grid min-h-0 w-full flex-1 auto-rows-[minmax(0,1fr)] grid-cols-12 gap-4 overflow-hidden pb-24"
       >
         {widgets.map((w) =>
           w.visible ? (
             <motion.div
               key={w.id}
+              data-home-widget
               variants={widgetItemVariants}
-              className={`${WIDGET_COL_SPAN[w.id]} h-auto min-h-fit overflow-visible`}
+              className={`${WIDGET_COL_SPAN[w.id]} flex flex-col min-w-0`}
             >
               {renderWidget(w.id)}
             </motion.div>

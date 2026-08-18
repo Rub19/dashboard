@@ -17,7 +17,7 @@ const LANGUAGE_LABELS: Record<Language, string> = {
 };
 
 function Flag({ code, className = "h-4 w-6" }: { code: Language; className?: string }) {
-  const base = `rounded-[2px] ${className}`;
+  const base = `pointer-events-none rounded-[2px] ${className}`;
   switch (code) {
     case "fr":
       return (
@@ -105,7 +105,7 @@ export default function LanguageSwitcher() {
         aria-label={i18n("language")}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex h-10 items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 text-sm font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
+        className="flex h-11 min-w-11 items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] px-5 text-sm font-medium text-[var(--foreground)] transition-all hover:border-[var(--accent)] hover:text-[var(--accent)] active:scale-95 cursor-pointer select-none backdrop-blur-[var(--panel-blur)]"
       >
         <Flag code={current} className="h-5 w-6" />
         <span className="hidden uppercase 2xl:inline">{current}</span>

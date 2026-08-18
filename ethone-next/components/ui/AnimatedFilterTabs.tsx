@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 
@@ -23,9 +24,13 @@ export default function AnimatedFilterTabs({
   onChange,
   className = "",
 }: AnimatedFilterTabsProps) {
+  const uid = useId();
+  const pillLayoutId = `active-filter-pill-${uid}`;
+
   return (
-    <div
-      className={`inline-flex items-center gap-1 p-1 bg-zinc-950/70 border border-white/[0.08] backdrop-blur-xl rounded-xl overflow-x-auto no-scrollbar ${className}`}
+    <motion.div
+      layoutRoot
+      className={`relative inline-flex items-center gap-1 p-1 bg-zinc-950/70 border border-white/[0.08] backdrop-blur-xl rounded-xl overflow-x-auto no-scrollbar ${className}`}
     >
       {tabs.map((tab) => {
         const isActive = activeId === tab.id;
@@ -40,7 +45,8 @@ export default function AnimatedFilterTabs({
           >
             {isActive && (
               <motion.div
-                layoutId="activeFilterPill"
+                layoutId={pillLayoutId}
+                initial={false}
                 className="absolute inset-0 rounded-lg bg-emerald-500/15 border border-emerald-500/30 shadow-[0_0_12px_rgba(52,211,153,0.15)] -z-10"
                 transition={{ type: "spring", stiffness: 450, damping: 35 }}
               />
@@ -61,6 +67,6 @@ export default function AnimatedFilterTabs({
           </button>
         );
       })}
-    </div>
+    </motion.div>
   );
 }

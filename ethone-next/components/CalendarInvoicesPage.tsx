@@ -2,22 +2,12 @@
 
 import { useMemo, useState } from "react";
 import { Calendar, X } from "lucide-react";
+import { useI18n } from "@/lib/hooks/useI18n";
 import CalendarGrid from "@/components/CalendarGrid";
 import { EventsCard, InvoicesCard } from "@/components/EventsAndBillsCards";
 import type { CalendarItem } from "@/components/CalendarBills";
 import Modal from "@/components/ui/Modal";
 import VendorLogo from "@/components/logos/VendorLogo";
-
-const MOCK_ITEMS: CalendarItem[] = [
-  { id: "1", title: "Netflix", amount: 15.49, date: "2026-01-05", category: "monthly", vendor: "netflix", color: "#E50914" },
-  { id: "2", title: "Adobe CC", amount: 59.99, date: "2026-01-08", category: "monthly", vendor: "adobe", color: "#FF0000" },
-  { id: "3", title: "Apple iCloud", amount: 2.99, date: "2026-01-12", category: "monthly", vendor: "apple", color: "#555555" },
-  { id: "4", title: "Figma Pro", amount: 12.00, date: "2026-01-15", category: "monthly", vendor: "figma", color: "#A259FF" },
-  { id: "5", title: "Spotify", amount: 10.99, date: "2026-01-18", category: "monthly", vendor: "spotify", color: "#1DB954" },
-  { id: "6", title: "Notion", amount: 8.00, date: "2026-01-22", category: "monthly", vendor: "notion", color: "#000000" },
-  { id: "7", title: "Domain renewal", amount: 12.00, date: "2026-01-25", category: "yearly", color: "#F59E0B" },
-  { id: "8", title: "Team dinner", amount: 0, date: "2026-01-28", category: "event", color: "#3B82F6" },
-];
 
 function toISODate(date: Date) {
   const year = date.getFullYear();
@@ -31,12 +21,13 @@ function formatMonthYear(date: Date) {
 }
 
 export default function CalendarInvoicesPage() {
-  const [currentDate, setCurrentDate] = useState(new Date(2026, 0, 1));
-  const [selectedDate, setSelectedDate] = useState(new Date(2026, 0, 16));
-  const [today] = useState(new Date(2026, 0, 16));
+  const i18n = useI18n();
+  const [currentDate, setCurrentDate] = useState(() => new Date());
+  const [selectedDate, setSelectedDate] = useState(() => new Date());
+  const [today] = useState(() => new Date());
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<CalendarItem | null>(null);
-  const [items] = useState<CalendarItem[]>(MOCK_ITEMS);
+  const [items] = useState<CalendarItem[]>([]);
 
   const dots = useMemo(
     () =>
@@ -138,7 +129,7 @@ export default function CalendarInvoicesPage() {
         ) : (
           <div className="mt-2 flex flex-col items-center justify-center gap-2 py-8 text-center text-zinc-500">
             <Calendar className="h-6 w-6" />
-            <p className="text-sm">Le formulaire d&apos;ajout sera intégré prochainement.</p>
+            <p className="text-sm">{i18n("addInvoiceSoon", "Le formulaire d'ajout sera intégré prochainement.")}</p>
           </div>
         )}
         <button

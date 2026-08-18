@@ -5,42 +5,6 @@ import { Download, FileText, Filter } from "lucide-react";
 import { listBills, type Bill } from "@/lib/bills-manager";
 import { useI18n } from "@/lib/hooks/useI18n";
 
-const DEMO_BILLS: Bill[] = [
-  {
-    id: "inv-demo-1",
-    label: "Netflix",
-    amount: 15.49,
-    currency: "EUR",
-    dueDate: "2026-07-15",
-    paid: true,
-    category: "subscriptions",
-    recurrence: "monthly",
-    createdAt: "2026-07-15T00:00:00.000Z",
-  },
-  {
-    id: "inv-demo-2",
-    label: "Adobe Creative Cloud",
-    amount: 59.99,
-    currency: "EUR",
-    dueDate: "2026-08-08",
-    paid: true,
-    category: "subscriptions",
-    recurrence: "monthly",
-    createdAt: "2026-08-08T00:00:00.000Z",
-  },
-  {
-    id: "inv-demo-3",
-    label: "Figma Pro",
-    amount: 12.0,
-    currency: "EUR",
-    dueDate: "2026-08-22",
-    paid: false,
-    category: "subscriptions",
-    recurrence: "monthly",
-    createdAt: "2026-08-22T00:00:00.000Z",
-  },
-];
-
 function formatCurrency(amount: number, currency = "EUR") {
   return new Intl.NumberFormat("fr-FR", { style: "currency", currency }).format(amount);
 }
@@ -62,8 +26,7 @@ export default function InvoicesHistory() {
   }, []);
 
   const rows = useMemo(() => {
-    const source = bills.length ? bills : DEMO_BILLS;
-    return [...source].sort(
+    return [...bills].sort(
       (a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime()
     );
   }, [bills]);
@@ -106,49 +69,57 @@ export default function InvoicesHistory() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((bill) => (
-              <tr
-                key={bill.id}
-                className="border-b border-white/[0.04] transition-colors hover:bg-white/[0.03]"
-              >
-                <td className="px-4 py-3 text-sm text-zinc-200">{bill.label}</td>
-                <td className="px-4 py-3 font-mono text-xs text-zinc-400 whitespace-nowrap">
-                  {formatDate(bill.dueDate)}
-                </td>
-                <td className="px-4 py-3 text-right font-mono text-sm text-zinc-200 whitespace-nowrap">
-                  {formatCurrency(bill.amount, bill.currency)}
-                </td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-mono text-[11px] ${
-                      bill.paid
-                        ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
-                        : "border-amber-500/20 bg-amber-500/10 text-amber-400"
-                    }`}
-                  >
-                    {bill.paid ? i18n("paidInvoice") || "Payée" : i18n("pendingInvoice") || "En attente"}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center justify-end gap-1">
-                    <button
-                      type="button"
-                      aria-label={i18n("downloadPdf") || "Télécharger le PDF"}
-                      className="rounded-lg p-1.5 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
-                    >
-                      <FileText className="h-3.5 w-3.5" />
-                    </button>
-                    <button
-                      type="button"
-                      aria-label={i18n("downloadReceipt") || "Télécharger le reçu"}
-                      className="rounded-lg p-1.5 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
-                    >
-                      <Download className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
+            {rows.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="px-4 py-8 text-center text-xs text-zinc-500">
+                  {i18n("noInvoices", "Aucune facture enregistrée.")}
                 </td>
               </tr>
-            ))}
+            ) : (
+              rows.map((bill) => (
+                <tr
+                  key={bill.id}
+                  className="border-b border-white/[0.04] transition-colors hover:bg-white/[0.03]"
+                >
+                  <td className="px-4 py-3 text-sm text-zinc-200">{bill.label}</td>
+                  <td className="px-4 py-3 font-mono text-xs text-zinc-400 whitespace-nowrap">
+                    {formatDate(bill.dueDate)}
+                  </td>
+                  <td className="px-4 py-3 text-right font-mono text-sm text-zinc-200 whitespace-nowrap">
+                    {formatCurrency(bill.amount, bill.currency)}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-mono text-[11px] ${
+                        bill.paid
+                          ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
+                          : "border-amber-500/20 bg-amber-500/10 text-amber-400"
+                      }`}
+                    >
+                      {bill.paid ? i18n("paidInvoice") || "Payée" : i18n("pendingInvoice") || "En attente"}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-end gap-1">
+                      <button
+                        type="button"
+                        aria-label={i18n("downloadPdf") || "Télécharger le PDF"}
+                        className="rounded-lg p-1.5 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+                      >
+                        <FileText className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        aria-label={i18n("downloadReceipt") || "Télécharger le reçu"}
+                        className="rounded-lg p-1.5 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+                      >
+                        <Download className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

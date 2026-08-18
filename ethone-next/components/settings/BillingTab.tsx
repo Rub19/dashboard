@@ -46,14 +46,6 @@ function BillingCard({
   );
 }
 
-function formatCurrency(amount: number, currency = "EUR") {
-  return new Intl.NumberFormat("fr-FR", { style: "currency", currency }).format(amount);
-}
-
-function formatDate(date: Date) {
-  return date.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
-}
-
 export default function BillingTab() {
   const i18n = useI18n();
   const [storage, setStorage] = useState({ used: 1.2, total: 10 });
@@ -77,15 +69,6 @@ export default function BillingTab() {
     [storage]
   );
 
-  const nextRenewal = useMemo(() => {
-    const now = new Date();
-    const date = new Date(now.getFullYear(), now.getMonth(), 22);
-    if (date < now) {
-      date.setMonth(date.getMonth() + 1);
-    }
-    return date;
-  }, []);
-
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
       {/* Plan actuel */}
@@ -97,17 +80,18 @@ export default function BillingTab() {
       >
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-2xl font-bold tracking-tight text-white">PRO</span>
-            <span className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400">
-              {i18n("active") || "Actif"}
+            <span className="text-2xl font-bold tracking-tight text-white">—</span>
+            <span className="rounded-lg border border-zinc-500/20 bg-zinc-500/10 px-2 py-0.5 text-[10px] font-medium text-zinc-400">
+              {i18n("noPlan", "Aucun abonnement")}
             </span>
           </div>
-          <p className="text-xs text-zinc-400">
-            {formatCurrency(9.99)} <span className="text-zinc-500">/ mois</span>
+          <p className="text-xs text-zinc-500">
+            {i18n("noPlanDescription", "Aucun plan actif pour le moment.")}
           </p>
           <button
             type="button"
-            className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-white/[0.08] bg-white/[0.04] py-2 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/[0.08] hover:text-white"
+            disabled
+            className="flex w-full cursor-not-allowed items-center justify-center gap-1.5 rounded-xl border border-white/[0.08] bg-white/[0.04] py-2 text-xs font-medium text-zinc-500"
           >
             <CreditCard className="h-3.5 w-3.5" />
             {i18n("managePlan") || "Gérer le plan"}
@@ -148,13 +132,12 @@ export default function BillingTab() {
       >
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-2xl font-bold tracking-tight text-white">Mensuel</span>
-            <Icon name="refresh-cw" className="h-4 w-4 text-amber-400" />
+            <span className="text-2xl font-bold tracking-tight text-white">—</span>
+            <Icon name="refresh-cw" className="h-4 w-4 text-zinc-500" />
           </div>
-          <p className="text-xs text-zinc-400">
-            {i18n("nextRenewal") || "Prochain renouvellement"} : {formatDate(nextRenewal)}
+          <p className="text-xs text-zinc-500">
+            {i18n("noBillingCycle", "Aucun cycle de facturation configuré.")}
           </p>
-          <p className="text-[10px] text-zinc-500">{i18n("billingCycleHint") || "Facture émise à chaque échéance."}</p>
         </div>
       </BillingCard>
     </div>

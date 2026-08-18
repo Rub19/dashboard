@@ -216,7 +216,7 @@ export default function NotificationCenter() {
         type="button"
         onClick={() => setOpen(!open)}
         data-tooltip={i18n("notifications")}
-        className="relative flex h-10 w-10 items-center justify-center rounded-xl text-zinc-400 transition-all duration-150 hover:bg-white/[0.08] hover:text-white active:scale-95 cursor-pointer select-none"
+        className="relative flex h-11 w-11 items-center justify-center rounded-xl text-zinc-400 transition-all duration-150 hover:bg-white/[0.08] hover:text-white active:scale-95 cursor-pointer select-none"
         aria-label={i18n("notifications")}
       >
         <Icon name="bell" className="h-5 w-5 pointer-events-none" />

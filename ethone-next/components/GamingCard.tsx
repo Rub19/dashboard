@@ -8,6 +8,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import type { MinecraftProfile } from "@/lib/hooks/useMinecraftLive";
 import { TiltCard } from "@/components/ui/TiltCard";
+import { cn } from "@/lib/utils";
 
 type MinecraftServer = {
   players?: number;
@@ -44,19 +45,39 @@ export default function GamingCard({
   const profile = useMemo(() => (minecraft ?? {}) as unknown as GamingMinecraft, [minecraft]);
   const username = profile?.username || profile?.name || settings.liveMinecraftUsername;
   const uuid = profile?.uuid;
-  const hasProfile = Boolean(username && uuid);
+  const uuidWithDashes = profile?.uuidWithDashes;
+  const hasProfile = Boolean(username && (uuid || profile?.uuidWithDashes));
   const hasUsername = Boolean(username);
   const configured = Boolean(settings.liveMinecraftUsername);
 
+  const [bodyErrored, setBodyErrored] = useState(false);
   const [avatarErrored, setAvatarErrored] = useState(false);
 
   const avatarUrl = useMemo(() => {
     if (avatarErrored) return null;
     if (profile?.avatarUrl) return profile.avatarUrl;
     if (profile?.uuidWithDashes) return `https://crafatar.com/avatars/${profile.uuidWithDashes}?overlay&size=128`;
-    if (username) return `https://mc-heads.net/avatar/${encodeURIComponent(username)}/64`;
+    if (profile?.uuid) return `https://crafatar.com/avatars/${profile.uuid}?overlay&size=128`;
+    if (profile?.username) return `https://mc-heads.net/avatar/${encodeURIComponent(profile.username)}/128`;
     return null;
-  }, [profile?.avatarUrl, profile?.uuidWithDashes, username, avatarErrored]);
+  }, [profile, avatarErrored]);
+
+  const bodyUrl = useMemo(() => {
+    if (bodyErrored) return null;
+    if (profile?.bodyUrl) return profile.bodyUrl;
+    if (profile?.uuidWithDashes) {
+      return `https://crafatar.com/renders/body/${profile.uuidWithDashes}?overlay&scale=10&size=256`;
+    }
+    if (profile?.uuid) {
+      return `https://crafatar.com/renders/body/${profile.uuid}?overlay&scale=10&size=256`;
+    }
+    if (profile?.username) {
+      return `https://mc-heads.net/body/${encodeURIComponent(profile.username)}/200`;
+    }
+    return null;
+  }, [profile, bodyErrored]);
+
+  const renderUrl = bodyUrl || avatarUrl;
 
   const server = profile?.server;
   const isOnline = server?.online ?? hasProfile;
@@ -104,56 +125,119 @@ export default function GamingCard({
   const ping = server?.ping !== undefined ? `${server.ping} ms` : null;
   const serverVersion = server?.version || null;
 
+  const onRenderError = () => {
+    if (bodyUrl) setBodyErrored(true);
+    else setAvatarErrored(true);
+  };
+
   return (
     <TiltCard
-      className={`flex h-full min-h-0 flex-col justify-between gap-4 border border-white/[0.08] bg-zinc-950/70 p-5 shadow-xl shadow-black/50 backdrop-blur-2xl transition-all hover:border-white/15 ${className}`}
+      className={cn(
+        "flex h-full min-h-0 flex-col border border-white/[0.08] bg-zinc-950/70 p-5 shadow-xl shadow-black/50 backdrop-blur-2xl transition-all hover:border-white/15",
+        className
+      )}
     >
       <div className="flex items-center justify-between">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Gaming</span>
         <span
-          className={`inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 text-[10px] font-medium ${statusClass}`}
+          className={cn(
+            "inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 text-[10px] font-medium",
+            statusClass
+          )}
         >
-          <span className={`h-1.5 w-1.5 rounded-full ${statusDot}`} />
+          <span className={cn("h-1.5 w-1.5 rounded-full", statusDot)} />
           {statusText}
         </span>
       </div>
 
       {hasUsername ? (
-        <div className="flex items-center gap-3">
-          <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-white/[0.04]">
-            {avatarUrl ? (
+        <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 py-2">
+          <div className="relative w-full flex-1 min-h-[7rem]">
+            {renderUrl ? (
               <Image
-                src={avatarUrl}
+                src={renderUrl}
                 alt={username}
                 fill
-                sizes="48px"
+                sizes="(max-width: 768px) 100vw, 33vw"
                 unoptimized
-                onError={() => setAvatarErrored(true)}
-                className="object-cover [image-rendering:pixelated]"
+                onError={onRenderError}
+                className={cn(
+                  "object-contain drop-shadow-2xl",
+                  bodyErrored ? "[image-rendering:pixelated]" : ""
+                )}
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
                 {loading && !hasProfile ? (
-                  <Loader2 className="h-5 w-5 animate-spin text-zinc-400" />
+                  <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
                 ) : error && configured && !hasProfile ? (
-                  <AlertCircle className="h-5 w-5 text-rose-400" />
+                  <AlertCircle className="h-8 w-8 text-rose-400" />
                 ) : (
-                  <Gamepad2 className="h-5 w-5 text-zinc-400" />
+                  <Gamepad2 className="h-8 w-8 text-zinc-400" />
                 )}
               </div>
             )}
           </div>
-          <div className="min-w-0">
-            <h4 className="truncate text-sm font-bold text-white">{username}</h4>
-            <p className="text-[10px] font-mono text-zinc-500">
-              {hasProfile ? `ID: ${truncateId(uuid)}` : error && configured ? i18n("loadFailed", "Chargement échoué") : i18n("noLive", "Aucune donnée")}
-            </p>
+
+          <div className="w-full text-center">
+            <h4 className="truncate text-lg font-bold text-white">{username}</h4>
+            {hasProfile && (
+              <p className="text-[10px] font-mono text-zinc-500">ID: {truncateId(uuid || uuidWithDashes)}</p>
+            )}
           </div>
+
+          {hasProfile && server && (
+            <div className="w-full rounded-xl border border-white/[0.05] bg-white/[0.02] p-3">
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
+                {i18n("minecraftServer", "Serveur Minecraft")}
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                {playerCount !== null && (
+                  <div className="text-center">
+                    <p className="font-mono text-xs font-semibold text-zinc-200">{playerCount}</p>
+                    <p className="text-[9px] text-zinc-500">{i18n("players", "Joueurs")}</p>
+                  </div>
+                )}
+                {ping !== null && (
+                  <div className="text-center">
+                    <p className="font-mono text-xs font-semibold text-zinc-200">{ping}</p>
+                    <p className="text-[9px] text-zinc-500">{i18n("ping", "Ping")}</p>
+                  </div>
+                )}
+                {serverVersion !== null && (
+                  <div className="text-center">
+                    <p className="truncate font-mono text-xs font-semibold text-zinc-200">{serverVersion}</p>
+                    <p className="text-[9px] text-zinc-500">{i18n("version", "Version")}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {hasProfile && (
+            <div className="flex flex-wrap justify-center gap-1.5">
+              {profile?.model && (
+                <span className="rounded-md border border-white/[0.06] bg-white/[0.04] px-2 py-0.5 text-[10px] text-zinc-300">
+                  {profile.model === "slim" ? "Slim" : "Classic"}
+                </span>
+              )}
+              {profile?.capeUrl && (
+                <span className="rounded-md border border-white/[0.06] bg-white/[0.04] px-2 py-0.5 text-[10px] text-zinc-300">
+                  {i18n("cape", "Cape")}
+                </span>
+              )}
+              {isOnline && (
+                <span className="rounded-md border border-emerald-500/[0.15] bg-emerald-500/10 px-2 py-0.5 text-[10px] text-emerald-300">
+                  {i18n("serverActive", "Serveur actif")}
+                </span>
+              )}
+            </div>
+          )}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center gap-3 py-2 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
-            <User className="h-5 w-5 text-zinc-400" />
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 py-2 text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04]">
+            <User className="h-7 w-7 text-zinc-400" />
           </div>
           <div>
             <p className="text-sm font-semibold text-zinc-200">{i18n("minecraftNotLinked", "Aucun compte Minecraft lié")}</p>
@@ -165,54 +249,6 @@ export default function GamingCard({
           >
             {i18n("configureMinecraft", "Configurer Minecraft")}
           </Link>
-        </div>
-      )}
-
-      {hasProfile && server && (
-        <div className="rounded-xl border border-white/[0.05] bg-white/[0.02] p-3">
-          <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
-            {i18n("minecraftServer", "Serveur Minecraft")}
-          </p>
-          <div className="grid grid-cols-3 gap-2">
-            {playerCount !== null && (
-              <div className="text-center">
-                <p className="font-mono text-xs font-semibold text-zinc-200">{playerCount}</p>
-                <p className="text-[9px] text-zinc-500">{i18n("players", "Joueurs")}</p>
-              </div>
-            )}
-            {ping !== null && (
-              <div className="text-center">
-                <p className="font-mono text-xs font-semibold text-zinc-200">{ping}</p>
-                <p className="text-[9px] text-zinc-500">{i18n("ping", "Ping")}</p>
-              </div>
-            )}
-            {serverVersion !== null && (
-              <div className="text-center">
-                <p className="truncate font-mono text-xs font-semibold text-zinc-200">{serverVersion}</p>
-                <p className="text-[9px] text-zinc-500">{i18n("version", "Version")}</p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {hasProfile && (
-        <div className="flex flex-wrap gap-1.5">
-          {profile?.model && (
-            <span className="rounded-md border border-white/[0.06] bg-white/[0.04] px-2 py-0.5 text-[10px] text-zinc-300">
-              {profile.model === "slim" ? "Slim" : "Classic"}
-            </span>
-          )}
-          {profile?.capeUrl && (
-            <span className="rounded-md border border-white/[0.06] bg-white/[0.04] px-2 py-0.5 text-[10px] text-zinc-300">
-              {i18n("cape", "Cape")}
-            </span>
-          )}
-          {isOnline && (
-            <span className="rounded-md border border-emerald-500/[0.15] bg-emerald-500/10 px-2 py-0.5 text-[10px] text-emerald-300">
-              {i18n("serverActive", "Serveur actif")}
-            </span>
-          )}
         </div>
       )}
     </TiltCard>

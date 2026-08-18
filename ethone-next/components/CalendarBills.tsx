@@ -20,17 +20,6 @@ export type CalendarItem = {
 
 const WEEK_DAYS = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 
-const MOCK_ITEMS: CalendarItem[] = [
-  { id: "1", title: "Netflix", amount: 15.49, date: "2026-01-05", category: "monthly", vendor: "netflix", color: "#E50914" },
-  { id: "2", title: "Adobe CC", amount: 59.99, date: "2026-01-08", category: "monthly", vendor: "adobe", color: "#FF0000" },
-  { id: "3", title: "Apple iCloud", amount: 2.99, date: "2026-01-12", category: "monthly", vendor: "apple", color: "#555555" },
-  { id: "4", title: "Figma Pro", amount: 12.00, date: "2026-01-15", category: "monthly", vendor: "figma", color: "#A259FF" },
-  { id: "5", title: "Spotify", amount: 10.99, date: "2026-01-18", category: "monthly", vendor: "spotify", color: "#1DB954" },
-  { id: "6", title: "Notion", amount: 8.00, date: "2026-01-22", category: "monthly", vendor: "notion", color: "#000000" },
-  { id: "7", title: "Domain renewal", amount: 12.00, date: "2026-01-25", category: "yearly", color: "#F59E0B" },
-  { id: "8", title: "Team dinner", amount: 0, date: "2026-01-28", category: "event", color: "#3B82F6" },
-];
-
 function startOfMonth(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), 1);
 }
@@ -60,9 +49,9 @@ function toISODate(date: Date) {
   return `${year}-${month}-${day}`;
 }
 
-export default function CalendarBills({ items = MOCK_ITEMS }: { items?: CalendarItem[] }) {
-  const [currentDate, setCurrentDate] = useState(new Date(2026, 0, 1)); // January 2026
-  const [today] = useState(new Date(2026, 0, 15)); // Today mock
+export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }) {
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [today] = useState(new Date());
   const [modalOpen, setModalOpen] = useState(false);
   const [selected, setSelected] = useState<CalendarItem | null>(null);
 
@@ -133,7 +122,7 @@ export default function CalendarBills({ items = MOCK_ITEMS }: { items?: Calendar
 
             <button
               type="button"
-              onClick={() => setCurrentDate(new Date(2026, 0, 1))}
+              onClick={() => setCurrentDate(new Date())}
               className="rounded-xl bg-white/10 px-4 py-1.5 text-xs font-medium text-[var(--foreground)] transition-colors hover:bg-white/15"
             >
               Today
@@ -300,7 +289,7 @@ export default function CalendarBills({ items = MOCK_ITEMS }: { items?: Calendar
           </div>
         ) : (
           <p className="text-sm text-[var(--muted)]">
-            Modal placeholder: form to create a new monthly/yearly bill or one-time event.
+            Le formulaire d&apos;ajout sera intégré prochainement.
           </p>
         )}
         <button

@@ -9,7 +9,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useWindowManager } from "./WindowManagerProvider";
 import { useLayer } from "./LayerProvider";
 import { useSettings, useActiveProfile } from "@/components/SettingsProvider";
-import { useLiveData, type LiveRecord } from "@/lib/hooks/useLiveData";
+import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useBrain } from "@/lib/hooks/useBrain";
 
 const ROUTE_ICONS: Record<string, string> = {
@@ -82,70 +82,6 @@ const WORKSPACES: Workspace[] = [
   },
 ];
 
-const MOCK_LIVE_CARDS: LiveRecord[] = [
-  {
-    id: "mock-weather",
-    source: "weather",
-    label: "Météo",
-    title: "Paris",
-    subtitle: "18°C, ensoleillé",
-    status: "connected",
-  },
-  {
-    id: "mock-github",
-    source: "github",
-    label: "GitHub",
-    title: "ethone-next",
-    subtitle: "3 commits aujourd'hui",
-    status: "connected",
-  },
-  {
-    id: "mock-nowplaying",
-    source: "nowplaying",
-    label: "Lecture",
-    title: "Midnight City",
-    subtitle: "M83",
-    status: "connected",
-  },
-  {
-    id: "mock-todoist",
-    source: "todoist",
-    label: "Todoist",
-    title: "12 tâches",
-    subtitle: "Aujourd'hui",
-    status: "empty",
-  },
-  {
-    id: "mock-bills",
-    source: "bills",
-    label: "Factures",
-    title: "2 factures",
-    subtitle: "Cette semaine",
-    status: "empty",
-  },
-];
-
-const MOCK_BRAIN_ACTIVITY = [
-  {
-    id: "brain-mock-1",
-    title: "Planifier la journée",
-    description: "2 priorités détectées dans vos tâches",
-    icon: "brain",
-  },
-  {
-    id: "brain-mock-2",
-    title: "Rappel calendrier",
-    description: "Rendez-vous à 14h00",
-    icon: "calendar",
-  },
-  {
-    id: "brain-mock-3",
-    title: "Résumé de la semaine",
-    description: "5 notes, 3 tâches et 2 événements",
-    icon: "notebook-pen",
-  },
-];
-
 const STATUS_DOT: Record<string, string> = {
   connected: "bg-emerald-500",
   loading: "bg-zinc-500",
@@ -210,7 +146,7 @@ function MissionControlDialog() {
     [activeProfile]
   );
 
-  const liveCards = useMemo(() => (records.length ? records.slice(0, 6) : MOCK_LIVE_CARDS), [records]);
+  const liveCards = useMemo(() => records.slice(0, 6), [records]);
 
   const brainActivity = useMemo(() => {
     const assistant = brain.messages.filter((msg) => msg.role === "assistant");
@@ -225,7 +161,7 @@ function MissionControlDialog() {
           icon: "brain" as const,
         }));
     }
-    return MOCK_BRAIN_ACTIVITY;
+    return [];
   }, [brain.messages, i18n]);
 
   const filtered = useMemo(() => {

@@ -16,6 +16,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 ### Corrige
 - `ethone-next/app/password-recovery/page.tsx`, `ethone-next/components/WeatherPage.tsx` : correction des imbrications JSX des wrappers scrollables.
 - Scroll interne des pages et des panneaux pour éviter les double scrolls.
+- `ethone-next/context/ToastContext.tsx` : les notifications Sonner passent en noir (`bg-black/90`, texte blanc) quelle que soit leur type.
 
 **Mini player Live : lecture des liens YouTube**
 

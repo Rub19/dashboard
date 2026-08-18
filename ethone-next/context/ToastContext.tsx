@@ -159,24 +159,23 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {children}
       <Toaster
         position="bottom-right"
-        richColors
         closeButton
         toastOptions={{
           unstyled: true,
           classNames: {
             toast:
-              "group relative flex w-[22rem] max-w-[calc(100vw-1.5rem)] items-start gap-3 rounded-2xl border border-white/[0.08] bg-zinc-950/85 p-4 text-sm text-zinc-100 shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-2xl",
-            title: "font-medium text-zinc-100",
-            description: "mt-0.5 text-xs text-zinc-400",
+              "group relative flex w-[22rem] max-w-[calc(100vw-1.5rem)] items-start gap-3 rounded-2xl border border-white/[0.08] bg-black/90 p-4 text-sm text-white shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-2xl",
+            title: "font-medium text-white",
+            description: "mt-0.5 text-xs text-zinc-300",
             actionButton:
-              "ml-auto rounded-lg border border-white/[0.08] bg-white/[0.05] px-2.5 py-1.5 text-[11px] font-semibold text-zinc-200 transition-colors hover:bg-white/[0.1]",
+              "ml-auto rounded-lg border border-white/[0.08] bg-white/[0.1] px-2.5 py-1.5 text-[11px] font-semibold text-white transition-colors hover:bg-white/[0.2]",
             cancelButton: "hidden",
             closeButton:
-              "absolute right-2 top-2 rounded-md p-1 text-zinc-500 opacity-0 transition-all hover:bg-white/[0.06] hover:text-zinc-200 group-hover:opacity-100",
-            error: "border-rose-500/20 bg-rose-950/85 text-rose-100",
-            success: "border-emerald-500/20 bg-emerald-950/85 text-emerald-100",
-            warning: "border-amber-500/20 bg-amber-950/85 text-amber-100",
-            info: "border-sky-500/20 bg-sky-950/85 text-sky-100",
+              "absolute right-2 top-2 rounded-md p-1 text-zinc-400 opacity-0 transition-all hover:bg-white/[0.1] hover:text-white group-hover:opacity-100",
+            error: "border-white/10 bg-black/90 text-white",
+            success: "border-white/10 bg-black/90 text-white",
+            warning: "border-white/10 bg-black/90 text-white",
+            info: "border-white/10 bg-black/90 text-white",
           },
         }}
         icons={{

@@ -15,8 +15,9 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
   * Textes en français sans clés i18n brutes (`Créez votre adresse ETHONE`, `Choisissez votre identifiant unique...`, labels et placeholders).
   * Suppression du doublon de boutons aléatoires au profit d'un seul bouton `Générer un alias`.
   * Modal bloquant centré (`fixed inset-0 z-50 ... bg-black/80 backdrop-blur-xl`) avec carte Bento (`bg-zinc-950/90`, `rounded-3xl`, ombre profonde).
-  * Validation de l'entrée (minuscules, suppression des caractères non autorisés) et bouton `Créer l&apos;adresse` style purple avec spinner.
+  * Validation de l'entrée (minuscules, suppression des caractères non autorisés) et bouton `Créer l'adresse` style purple avec spinner.
   * Nettoyage automatique de l'alias, suffixe fixe `@ethone.dev` et mise à jour immédiate de l'état après création.
+  * Correction du message d'erreur d'indisponibilité d'alias.
 
 **Calendrier billing et refonte des layouts de page**
 
@@ -31,6 +32,10 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `ethone-next/app/password-recovery/page.tsx`, `ethone-next/components/WeatherPage.tsx` : correction des imbrications JSX des wrappers scrollables.
 - Scroll interne des pages et des panneaux pour éviter les double scrolls.
 - `ethone-next/context/ToastContext.tsx` : les notifications Sonner passent en noir (`bg-black/90`, texte blanc) quelle que soit leur type.
+- `ethone-next/app/calendar/page.tsx` : colonnes calendrier et facturation en `h-full` pour occuper toute la hauteur du workspace.
+- `ethone-next/components/ui/calendar.tsx` : grille `grid-rows-6` et cellules `min-h-0` pour adapter le calendrier à la hauteur disponible sans scroll global.
+- `ethone-next/components/CalendarBillingPanel.tsx` : panneau en flex `h-full` avec `overflow-y-auto` interne sur la liste et le formulaire d'ajout.
+- `ethone-next/components/mail/MailAliasSetup.tsx` : correction d'un caractère déclenchant `react/no-unescaped-entities` et scroll interne sur l'overlay d'onboarding.
 
 **Contrôle du volume Spotify**
 

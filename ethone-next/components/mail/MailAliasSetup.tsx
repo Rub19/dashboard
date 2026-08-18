@@ -50,7 +50,7 @@ export default function MailAliasSetup({ createAlias, onCreated }: MailAliasSetu
         success("Adresse créée");
         onCreated();
       } else {
-        setError("Cette adresse n&apos;est pas disponible.");
+        setError("Cette adresse n'est pas disponible.");
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);

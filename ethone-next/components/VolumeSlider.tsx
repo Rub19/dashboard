@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -11,30 +11,83 @@ export interface VolumeSliderProps {
   size?: "sm" | "md";
 }
 
-export default function VolumeSlider({ value, onChange, className, size = "sm" }: VolumeSliderProps) {
-  const ref = useRef<HTMLDivElement>(null);
+export default function VolumeSlider({
+  value,
+  onChange,
+  className,
+  size = "sm",
+}: VolumeSliderProps) {
+  const trackRef = useRef<HTMLDivElement>(null);
   const [dragging, setDragging] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const [dragValue, setDragValue] = useState(value);
+  const lastNonZeroRef = useRef(value || 50);
 
-  const pct = useMemo(() => Math.max(0, Math.min(100, value)), [value]);
-  const isMuted = pct === 0;
+  const pct = Math.max(0, Math.min(100, dragging ? dragValue : value));
+  const isMuted = value === 0;
+
+  useEffect(() => {
+    if (!dragging) setDragValue(value);
+    if (value > 0) lastNonZeroRef.current = value;
+  }, [value, dragging]);
 
   const updateFromClientX = useCallback(
     (clientX: number) => {
-      const rect = ref.current?.getBoundingClientRect();
+      const rect = trackRef.current?.getBoundingClientRect();
       if (!rect) return;
       const next = Math.min(100, Math.max(0, ((clientX - rect.left) / rect.width) * 100));
-      onChange(Math.round(next));
+      setDragValue(Math.round(next));
+    },
+    [],
+  );
+
+  const commit = useCallback(
+    (next: number) => {
+      onChange(Math.max(0, Math.min(100, Math.round(next))));
     },
     [onChange],
   );
+
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      (e.currentTarget as HTMLDivElement).setPointerCapture?.(e.pointerId);
+      setDragging(true);
+      updateFromClientX(e.clientX);
+    },
+    [updateFromClientX],
+  );
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!dragging) return;
+      updateFromClientX(e.clientX);
+    },
+    [dragging, updateFromClientX],
+  );
+
+  const handlePointerUp = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      setDragging(false);
+      commit(dragValue);
+      try {
+        (e.currentTarget as HTMLDivElement).releasePointerCapture?.(e.pointerId);
+      } catch {
+        // ignore
+      }
+    },
+    [commit, dragValue],
+  );
+
+  const trackHeight = size === "sm" ? "h-1.5" : "h-2";
+  const trackWidth = size === "sm" ? "w-20" : "w-28";
+  const thumbSize = size === "sm" ? "h-2.5 w-2.5" : "h-3 w-3";
 
   return (
     <div className={cn("flex items-center gap-1.5", className)}>
       <button
         type="button"
-        onClick={() => onChange(isMuted ? 50 : 0)}
-        className="rounded p-1 text-zinc-400 transition-colors hover:text-white"
+        onClick={() => onChange(isMuted ? lastNonZeroRef.current || 50 : 0)}
+        className="flex h-6 w-6 shrink-0 items-center justify-center rounded text-zinc-400 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-400"
         aria-label={isMuted ? "Activer le son" : "Couper le son"}
       >
         {isMuted ? (
@@ -45,41 +98,37 @@ export default function VolumeSlider({ value, onChange, className, size = "sm" }
       </button>
 
       <div
-        ref={ref}
+        ref={trackRef}
+        aria-label="Volume"
+        role="slider"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={pct}
         className={cn(
-          "group relative cursor-pointer overflow-hidden rounded-full bg-white/[0.08] transition-all",
-          size === "sm" ? "h-1.5 w-20" : "h-2 w-28",
+          "group relative cursor-pointer rounded-full",
+          trackHeight,
+          trackWidth,
         )}
-        onPointerDown={(e) => {
-          (e.target as HTMLDivElement).setPointerCapture?.(e.pointerId);
-          setDragging(true);
-          updateFromClientX(e.clientX);
-        }}
-        onPointerMove={(e) => {
-          if (!dragging) return;
-          updateFromClientX(e.clientX);
-        }}
-        onPointerUp={(e) => {
-          setDragging(false);
-          try {
-            (e.target as HTMLDivElement).releasePointerCapture?.(e.pointerId);
-          } catch {
-            // ignore
-          }
-        }}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerLeave={() => setHovered(false)}
+        onPointerEnter={() => setHovered(true)}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
+        <div className="absolute inset-0 rounded-full bg-white/[0.08]" />
         <div
-          className="pointer-events-none h-full rounded-full bg-emerald-400 transition-all"
+          className="absolute left-0 top-0 h-full rounded-full bg-emerald-400 transition-[width] duration-75 ease-out"
           style={{ width: `${pct}%` }}
         />
         <div
           className={cn(
-            "pointer-events-none absolute top-1/2 h-2.5 w-2.5 -translate-y-1/2 rounded-full border-2 border-emerald-400 bg-zinc-950 shadow-md transition-transform",
+            "pointer-events-none absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-emerald-400 bg-zinc-950 shadow-md transition-transform",
+            thumbSize,
             dragging || hovered ? "scale-125" : "scale-100",
           )}
-          style={{ left: `calc(${pct}% - 5px)` }}
+          style={{ left: `${pct}%` }}
         />
       </div>
     </div>

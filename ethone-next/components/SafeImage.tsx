@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Music } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -43,56 +43,90 @@ export default function SafeImage({
   sizes,
   loading,
 }: SafeImageProps) {
+  const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
   const validSrc = isValidImageUrl(src) ? src : "";
 
-  if (!validSrc || error) {
-    if (fallback === "initials" && initial) {
+  useEffect(() => {
+    setLoaded(false);
+    setError(false);
+  }, [validSrc]);
+
+  const showSkeleton = !!validSrc && !loaded && !error;
+
+  const content = (() => {
+    if (!validSrc || error) {
+      if (fallback === "initials" && initial) {
+        return (
+          <span
+            className={cn(
+              "inline-flex h-full w-full items-center justify-center overflow-hidden bg-[var(--panel-bg)] text-[10px] font-medium text-[var(--foreground)]",
+              fill && "absolute inset-0",
+            )}
+            aria-hidden="true"
+          >
+            {initial.slice(0, 2).toUpperCase()}
+          </span>
+        );
+      }
+
+      if (fallback === "none") {
+        return null;
+      }
+
       return (
         <span
           className={cn(
-            "inline-flex shrink-0 items-center justify-center overflow-hidden bg-[var(--panel-bg)] text-[10px] font-medium text-[var(--foreground)]",
+            "inline-flex h-full w-full items-center justify-center overflow-hidden bg-white/[0.05]",
             fill && "absolute inset-0",
-            className
           )}
           aria-hidden="true"
         >
-          {initial.slice(0, 2).toUpperCase()}
+          <Music className={cn("text-zinc-400", iconClassName)} />
         </span>
       );
     }
 
-    if (fallback === "none") {
-      return null;
-    }
-
     return (
-      <span
+      <Image
+        src={validSrc}
+        alt={alt}
+        width={fill ? undefined : size}
+        height={fill ? undefined : size}
+        fill={fill}
+        sizes={sizes}
+        unoptimized
         className={cn(
-          "inline-flex shrink-0 items-center justify-center overflow-hidden bg-white/[0.05]",
-          fill && "absolute inset-0",
-          className
+          "h-full w-full object-cover transition-opacity duration-300",
+          loaded ? "opacity-100" : "opacity-0",
         )}
-        aria-hidden="true"
-      >
-        <Music className={cn("text-zinc-400", iconClassName)} />
-      </span>
+        onLoadingComplete={() => setLoaded(true)}
+        onError={() => setError(true)}
+        priority={priority}
+        loading={loading}
+      />
     );
-  }
+  })();
 
   return (
-    <Image
-      src={validSrc}
-      alt={alt}
-      width={fill ? undefined : size}
-      height={fill ? undefined : size}
-      fill={fill}
-      sizes={sizes}
-      unoptimized
-      className={cn("object-cover", className)}
-      onError={() => setError(true)}
-      priority={priority}
-      loading={loading}
-    />
+    <span
+      className={cn(
+        "relative inline-flex shrink-0 items-center justify-center overflow-hidden",
+        fill && "absolute inset-0",
+        className,
+      )}
+      aria-label={alt || undefined}
+    >
+      {showSkeleton && (
+        <span
+          className={cn(
+            "absolute inset-0 z-10 animate-pulse bg-white/[0.06]",
+            fill ? "h-full w-full" : "",
+          )}
+          aria-hidden="true"
+        />
+      )}
+      {content}
+    </span>
   );
 }

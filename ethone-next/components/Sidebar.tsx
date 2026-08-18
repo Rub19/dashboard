@@ -94,7 +94,7 @@ function SyncBadge({ collapsed }: { collapsed: boolean }) {
   return (
     <div
       className={cn(
-        "flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-2.5 py-2 text-[10px] font-medium text-zinc-400",
+        "flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-white/[0.03] px-2.5 py-2 text-[10px] font-medium text-zinc-400",
         collapsed && "justify-center px-2"
       )}
       title={config.label}
@@ -117,7 +117,7 @@ function SidebarProfile({ collapsed }: { collapsed: boolean }) {
   return (
     <div
       className={cn(
-        "flex items-center gap-2.5 rounded-xl border border-white/[0.06] bg-white/[0.03] p-2",
+        "flex items-center gap-2.5 rounded-xl border border-[var(--panel-border)] bg-white/[0.03] p-2",
         collapsed && "justify-center"
       )}
     >
@@ -134,6 +134,7 @@ function SidebarProfile({ collapsed }: { collapsed: boolean }) {
         ) : (
           <User className="h-4 w-4 text-zinc-400" />
         )}
+        <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--background)] bg-emerald-400" aria-hidden="true" />
       </div>
       {!collapsed && (
         <span className="min-w-0 flex-1 truncate text-[11px] font-medium text-zinc-200">
@@ -199,7 +200,7 @@ export default function Sidebar() {
 
   return (
     <div
-      className="relative h-auto min-h-svh w-auto shrink-0"
+      className="relative h-full min-h-0 w-auto shrink-0"
       onPointerEnter={() => setOpen(true)}
       onPointerLeave={() => setOpen(false)}
     >
@@ -207,7 +208,7 @@ export default function Sidebar() {
         collapsible="icon"
         variant="floating"
         ariaLabel="Navigation principale"
-        panelClassName="m-0 h-full shrink-0 rounded-2xl border border-white/[0.08] bg-zinc-950/75 p-3 backdrop-blur-2xl"
+        panelClassName="m-2 h-[calc(100%-1rem)] shrink-0 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 shadow-2xl backdrop-blur-[var(--panel-blur)]"
       >
         <AnimatedSidebarHeader>
           <SidebarBrand />

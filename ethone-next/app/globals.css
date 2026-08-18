@@ -32,9 +32,9 @@
   --card-radius: 1rem;
   --dock-radius: 1rem;
   --panel-radius: 1rem;
-  --panel-border: var(--border);
-  --panel-bg: var(--surface-raised);
-  --panel-blur: 0px;
+  --panel-border: color-mix(in srgb, white 8%, transparent);
+  --panel-bg: color-mix(in srgb, var(--surface-raised) 65%, transparent);
+  --panel-blur: 20px;
   --panel-padding: var(--density-pad, 1.25rem);
   --item-gap: var(--density-gap, 1rem);
   --density-gap: 1rem;
@@ -2036,6 +2036,38 @@ a:has(> svg) {
   border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
+}
+
+/* Zero-scroll helpers */
+.overflow-clip {
+  overflow: clip;
+}
+
+/* Zero-scroll, theme-integrated scrollbar styling
+   Apply alongside overflow-y-auto / overflow-x-auto utilities */
+.os-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.06) transparent;
+}
+.os-scroll::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+.os-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.os-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
+}
+.os-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Minimum hitbox for interactive controls */
+.hitbox {
+  min-height: 36px;
+  min-width: 36px;
 }
 
 /* ============================================================

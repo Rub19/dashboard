@@ -31,7 +31,7 @@ export default function MailSidebar({ active, onChange, counts, unread, onCompos
   const i18n = useI18n();
 
   return (
-    <div className="flex h-full w-56 shrink-0 flex-col justify-between rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-3 backdrop-blur-xl">
+    <div className="flex h-full w-56 shrink-0 flex-col justify-between rounded-2xl v8-panel p-3 backdrop-blur-xl">
       <div className="space-y-3">
         <button
           type="button"

@@ -39,13 +39,13 @@ export default function Shell({ children }: { children: ReactNode }) {
             <ProfileSync />
             <AnimatedSidebarProvider
               defaultOpen={true}
-              style={{ "--sidebar-width-icon": "7.5rem" }}
-              className="h-screen max-h-screen w-screen max-w-full overflow-hidden gap-3 p-3 sm:gap-4 sm:p-4"
+              style={{ "--sidebar-width": "18rem", "--sidebar-width-icon": "5rem" }}
+              className="h-dvh max-h-dvh w-screen max-w-full overflow-clip gap-3 p-3 sm:gap-4 sm:p-4"
             >
               <Sidebar />
               <div
                 data-v8-shell
-                className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 overflow-hidden transition-colors duration-150"
+                className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 overflow-clip transition-colors duration-150"
               >
                 <TopBar />
                 <CommandPalette />
@@ -58,7 +58,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                 <main
                   data-v8-main
                   id="main-content"
-                  className="min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-[calc(5rem+env(safe-area-inset-bottom))]"
+                  className="min-h-0 min-w-0 flex-1 flex flex-col overflow-clip rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)] pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-[calc(5rem+env(safe-area-inset-bottom))]"
                   tabIndex={-1}
                 >
                   <ActivityJournalProvider>

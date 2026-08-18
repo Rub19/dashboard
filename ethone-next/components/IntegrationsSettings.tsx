@@ -187,9 +187,9 @@ export default function IntegrationsSettings() {
         <CategoryTabs active={filter} onChange={setFilter} />
       </div>
 
-      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-4">
+      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-4">
       {(loading || credentials.loading) && (
-        <div className="flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 text-sm text-zinc-400 backdrop-blur-2xl">
+        <div className="flex items-center gap-3 rounded-2xl v8-panel p-5 text-sm text-zinc-400 backdrop-blur-2xl">
           <Plug className="h-5 w-5 animate-spin" />
           {i18n("loading")}
         </div>
@@ -199,7 +199,7 @@ export default function IntegrationsSettings() {
         {filtered.map((integration) => renderCard(integration))}
       </motion.div>
 
-      <div className="rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 text-sm text-zinc-400 backdrop-blur-2xl">
+      <div className="rounded-2xl v8-panel p-5 text-sm text-zinc-400 backdrop-blur-2xl">
         <div className="flex items-center gap-2">
           <Plug className="h-4 w-4" />
           <p>{i18n("oauthInfo")}</p>

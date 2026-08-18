@@ -80,7 +80,7 @@ export default function FocusPage() {
 
   return (
     <div className="flex h-full min-h-0 w-full flex-col overflow-hidden">
-      <div className="min-h-0 flex-1 w-full overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden]">
+      <div className="min-h-0 flex-1 w-full overflow-y-auto os-scroll">
         <div className="w-full space-y-5 px-0 pb-10 pt-0">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -137,7 +137,7 @@ export default function FocusPage() {
         })}
       </div>
 
-      <div className="rounded-2xl bg-zinc-950/70 border border-white/[0.08] p-5 shadow-xl shadow-black/50 backdrop-blur-2xl">
+      <div className="v8-panel p-5 shadow-xl shadow-black/50">
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent rounded-2xl" />
         <FocusTimerRing
           progress={progress}
@@ -191,19 +191,19 @@ export default function FocusPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 w-full">
-        <div className="rounded-2xl bg-zinc-950/70 border border-white/[0.08] p-4 flex flex-col items-center text-center transition-all hover:border-white/[0.16]">
+        <div className="v8-panel p-4 flex flex-col items-center text-center transition-all hover:border-white/[0.16]">
           <Brain className="h-5 w-5 mb-2" style={{ color: "var(--accent-color, #10b981)" }} />
           <p className="text-2xl font-bold font-mono text-white">{state.completedPomodoros}</p>
           <p className="text-xs text-zinc-400 mt-1">{i18n("pomodoros")}</p>
         </div>
 
-        <div className="rounded-2xl bg-zinc-950/70 border border-white/[0.08] p-4 flex flex-col items-center text-center transition-all hover:border-white/[0.16]">
+        <div className="v8-panel p-4 flex flex-col items-center text-center transition-all hover:border-white/[0.16]">
           <Clock className="h-5 w-5 text-amber-400 mb-2" />
           <p className="text-2xl font-bold font-mono text-white">{formatTotalFocus(state.totalFocusSeconds)}</p>
           <p className="text-xs text-zinc-400 mt-1">{i18n("totalFocus")}</p>
         </div>
 
-        <div className="rounded-2xl bg-zinc-950/70 border border-white/[0.08] p-4 flex flex-col items-center text-center transition-all hover:border-white/[0.16]">
+        <div className="v8-panel p-4 flex flex-col items-center text-center transition-all hover:border-white/[0.16]">
           <Coffee className="h-5 w-5 text-cyan-400 mb-2" />
           <p className="text-2xl font-bold font-mono text-white">{state.completedBreaks}</p>
           <p className="text-xs text-zinc-400 mt-1">{i18n("breaks")}</p>

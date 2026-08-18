@@ -263,7 +263,7 @@ export default function WeatherPage() {
         </form>
       </header>
 
-      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-5">
+      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-5">
       {error ? (
         <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-5 text-red-400">{error}</div>
       ) : loading && !weather ? (

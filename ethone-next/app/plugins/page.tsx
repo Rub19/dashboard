@@ -23,7 +23,7 @@ export default function PluginsPage() {
         <p className="text-sm text-[var(--muted)]">{i18n("pluginsDescription")}</p>
       </div>
 
-      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-6">
+      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {PLUGINS.map((p) => {
           const live = getPluginRecord(records, p);

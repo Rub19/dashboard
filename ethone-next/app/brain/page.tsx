@@ -613,7 +613,7 @@ export default function BrainPage() {
           onSelect={(id) => setActiveTab(id as Tab)}
         />
       </div>
-      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-4">
+      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-4">
         <Card3D>
           {activeTab === "chat" && renderChat()}
           {activeTab === "briefing" && <BrainBriefingPanel />}

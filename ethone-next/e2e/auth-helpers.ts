@@ -3,18 +3,6 @@ import type { Page, APIRequestContext } from "@playwright/test";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
-function getAuthKey() {
-  try {
-    const url = new URL(SUPABASE_URL);
-    const ref = url.hostname.split(".")[0];
-    return `sb-${ref}-auth-token`;
-  } catch {
-    return "sb-auth-token";
-  }
-}
-
-const AUTH_KEY = getAuthKey();
-
 export async function signInByPassword(
   page: Page,
   request: APIRequestContext,
@@ -35,14 +23,24 @@ export async function signInByPassword(
   }
 
   const session = await response.json();
-  const storage = JSON.stringify(session);
+  const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
+
+  const entries: [string, string][] = [
+    ["ethone-remember-token", session.access_token],
+    ["ethone-remember-refresh", session.refresh_token],
+    ["ethone-remember-me", "true"],
+    ["ethone-auth-type", "password"],
+    ["ethone-remember-expires", String(expiresAt)],
+  ];
 
   await page.context().addInitScript((args) => {
-    const [key, value] = args;
-    localStorage.setItem(key, value);
-  }, [AUTH_KEY, storage]);
+    const pairs = args as [string, string][];
+    pairs.forEach(([key, value]) => {
+      localStorage.setItem(key, value);
+    });
+  }, entries);
 
-  // Reload any already-open page so the localStorage token is picked up.
+  // Reload any already-open page so the localStorage tokens are picked up.
   await page.goto("/");
   await page.waitForURL("/", { waitUntil: "domcontentloaded" });
 }

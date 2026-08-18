@@ -42,7 +42,7 @@ export default function SystemHealthBanner({
   const tone = errors > 0 ? "error" : unconfigured > 0 ? "warning" : "success";
 
   return (
-    <div className="mb-4 w-full overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-4 shadow-xl backdrop-blur-2xl">
+    <div className="mb-4 w-full overflow-hidden rounded-2xl v8-panel p-4 shadow-xl backdrop-blur-2xl">
       <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-color)]/10 text-[var(--accent-color)]">

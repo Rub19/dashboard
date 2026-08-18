@@ -38,7 +38,7 @@ export function EventsCard({ date, items, onAdd }: EventsCardProps) {
   }, [items, source]);
 
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 backdrop-blur-2xl">
+    <div className="flex flex-col gap-3 rounded-2xl v8-panel p-5 backdrop-blur-2xl">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -225,7 +225,7 @@ export function InvoicesCard({
   const upcomingText = `${upcoming.length} à venir dans 30 jours`;
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 backdrop-blur-2xl">
+    <div className="flex flex-col gap-4 rounded-2xl v8-panel p-5 backdrop-blur-2xl">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">

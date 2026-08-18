@@ -206,7 +206,7 @@ export default function DashboardOverview() {
           onClick={() => setCustomizing((v) => !v)}
           title={customizing ? i18n("done") : i18n("customize")}
           aria-label={customizing ? i18n("done") : i18n("customize")}
-          className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.08] bg-zinc-950/70 text-zinc-400 transition-colors hover:border-white/20 hover:text-white active:scale-95"
+          className="flex h-8 w-8 items-center justify-center rounded-lg v8-panel text-zinc-400 transition-colors hover:border-white/20 hover:text-white active:scale-95"
         >
           <LayoutGrid className="h-4 w-4" />
         </button>

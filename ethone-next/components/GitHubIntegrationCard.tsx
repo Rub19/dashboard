@@ -104,7 +104,7 @@ export default function GitHubIntegrationCard({ connected: connectedProp, health
   const canConnect = clientId.trim().length > 0 && clientSecret.trim().length > 0;
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-5 rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-6 shadow-2xl backdrop-blur-2xl">
+    <div className="mx-auto flex max-w-2xl flex-col gap-5 rounded-2xl v8-panel p-6 shadow-2xl backdrop-blur-2xl">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">

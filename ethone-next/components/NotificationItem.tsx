@@ -155,7 +155,7 @@ export default function NotificationItem({
       exit={{ opacity: 0, height: 0, marginBottom: 0 }}
       transition={{ duration: 0.15, ease: "easeOut" as const }}
       onClick={() => onOpen?.(n)}
-      className={`group relative cursor-pointer overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-3.5 transition-all hover:border-white/[0.14] hover:bg-zinc-900/80 active:scale-[0.99] ${
+      className={`group relative cursor-pointer overflow-hidden rounded-2xl v8-panel p-3.5 transition-all hover:border-white/[0.14] hover:bg-zinc-900/80 active:scale-[0.99] ${
         n.read ? "opacity-80" : ""
       } ${accent} border-l-2`}
       data-notification-item

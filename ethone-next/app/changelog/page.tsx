@@ -13,7 +13,7 @@ export default function ChangelogPage() {
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
       <h1 className="shrink-0 mb-4 text-2xl font-bold">{i18n("changelog")}</h1>
 
-      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-4">
+      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-4">
         {changelog.map((entry) => (
           <Card3D key={entry.version}>
             <div className="space-y-3">

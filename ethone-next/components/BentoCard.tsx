@@ -28,7 +28,7 @@ export default function BentoCard({
   return (
     <div
       className={cn(
-        "group relative w-full rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 shadow-xl shadow-black/50 backdrop-blur-xl transition-all duration-200 hover:border-white/[0.16]",
+        "group relative w-full rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-5 shadow-xl shadow-black/50 backdrop-blur-[var(--panel-blur)] transition-all duration-200 hover:border-[var(--accent)]/20",
         scrollable ? "h-full overflow-hidden" : "h-auto min-h-fit overflow-visible",
         className
       )}
@@ -69,7 +69,7 @@ export default function BentoCard({
         <div
           className={cn(
             "flex flex-col",
-            scrollable ? "min-h-0 flex-1 overflow-y-auto" : "h-auto overflow-visible"
+            scrollable ? "os-scroll min-h-0 flex-1 overflow-y-auto" : "h-auto overflow-visible"
           )}
         >
           {children}

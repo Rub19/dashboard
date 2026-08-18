@@ -25,7 +25,7 @@ export default function UserProfileCard({
   const avatarUrl = profile?.avatar_url;
 
   return (
-    <div className="flex h-full min-h-0 flex-col justify-between overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 shadow-xl backdrop-blur-2xl">
+    <div className="flex h-full min-h-0 flex-col justify-between overflow-hidden rounded-2xl v8-panel p-5 shadow-xl backdrop-blur-2xl">
       <div>
         <div className="mb-4 flex items-center gap-3">
           <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04]">

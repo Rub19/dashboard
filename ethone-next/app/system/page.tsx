@@ -244,7 +244,7 @@ export default function SystemPage() {
 
   return (
     <div className="flex h-full min-h-0 w-full flex-col overflow-hidden">
-      <div className="min-h-0 w-full flex-1 space-y-5 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden]">
+      <div className="min-h-0 w-full flex-1 space-y-5 overflow-y-auto os-scroll">
         <div>
           <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Mission Control</p>
           <h1 className="text-2xl font-bold text-white">{i18n("systemTitle")}</h1>

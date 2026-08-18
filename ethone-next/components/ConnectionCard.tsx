@@ -347,7 +347,7 @@ export default function ConnectionCard({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.15, ease: "easeOut" as const }}
-      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 shadow-xl backdrop-blur-2xl transition hover:border-white/15"
+      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl v8-panel p-5 shadow-xl backdrop-blur-2xl transition hover:border-white/15"
     >
       {/* Header */}
       <div>

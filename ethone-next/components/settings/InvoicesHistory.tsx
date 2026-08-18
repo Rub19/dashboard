@@ -32,7 +32,7 @@ export default function InvoicesHistory() {
   }, [bills]);
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 shadow-sm backdrop-blur-2xl">
+    <div className="flex flex-col gap-4 rounded-2xl v8-panel p-5 shadow-sm backdrop-blur-2xl">
       {/* Header */}
       <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
         <div>

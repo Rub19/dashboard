@@ -133,7 +133,7 @@ export default function GamingCard({
   return (
     <TiltCard
       className={cn(
-        "flex h-full min-h-0 flex-col border border-white/[0.08] bg-zinc-950/70 p-5 shadow-xl shadow-black/50 backdrop-blur-2xl transition-all hover:border-white/15",
+        "flex h-full min-h-0 flex-col v8-panel p-5 shadow-xl shadow-black/50 backdrop-blur-2xl transition-all hover:border-white/15",
         className
       )}
     >

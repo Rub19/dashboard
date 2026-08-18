@@ -79,7 +79,7 @@ export default function MailDetailView({
 
   if (!thread || !first || !last) {
     return (
-      <div className="flex h-full flex-1 flex-col items-center justify-center rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-8 text-center backdrop-blur-xl">
+      <div className="flex h-full flex-1 flex-col items-center justify-center rounded-2xl v8-panel p-8 text-center backdrop-blur-xl">
         <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.03] text-zinc-500 shadow-inner">
           <Inbox className="h-6 w-6" />
         </div>
@@ -97,7 +97,7 @@ export default function MailDetailView({
   const isRead = last.is_read;
 
   return (
-    <div className="flex h-full flex-1 flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/70 backdrop-blur-xl">
+    <div className="flex h-full flex-1 flex-col overflow-hidden rounded-2xl v8-panel backdrop-blur-xl">
       {/* Toolbar */}
       <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-2.5">
         <div className="flex items-center gap-1">

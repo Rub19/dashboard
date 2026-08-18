@@ -360,7 +360,7 @@ export default function FilesPage() {
           </button>
         </div>
       </div>
-      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-6">
+      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
       {clientId && (
         <FileUploader clientId={clientId} parentId={parentId} onAllComplete={() => { success(i18n("uploadFile")); reload(); }} />
       )}

@@ -116,7 +116,7 @@ test.describe("Spotify player (Dynamic Island & Dock popover)", () => {
 
     const island = page.locator('div[role="status"]');
     await expect(island).toBeVisible();
-    await island.click();
+    await island.evaluate((el: HTMLElement) => el.click());
     await page.waitForTimeout(500);
 
     const spotifyPanel = page.getByTestId("dynamic-island-spotify");

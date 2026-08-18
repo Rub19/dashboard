@@ -4,10 +4,19 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Hitbox et UX des boutons droits de la TopBar**
+
+### Corrige
+- `ethone-next/components/TopBar.tsx` : le groupe de droite repasse en `relative z-30 pointer-events-auto` pour rester au-dessus et recevoir les clics.
+- `ethone-next/components/CommandBarTrigger.tsx` : pilule `⌘K` en `rounded-full bg-zinc-900/80 border-white/[0.08]`, icône, texte et raccourci clavier en `pointer-events-none select-none`.
+- `ethone-next/components/NotificationCenter.tsx` : bouton Cloche en `w-9 h-9 rounded-full` avec icône et badge `pointer-events-none`.
+- `ethone-next/components/LanguageSwitcher.tsx` : bouton Langue en `rounded-full bg-zinc-900/60 border-white/[0.06]` avec drapeau, code et labels du menu en `pointer-events-none`.
+- `ethone-next/components/UserProfileDropdown.tsx` : bouton Profil en `h-9 rounded-full bg-zinc-900/80 pl-1.5 pr-3`, avatar, nom, chevron et badge en `pointer-events-none`.
+
 **Inscription : nom d'utilisateur déjà pris**
 
 ### Corrige
-- `supabase/migrations/202609010001_signup_username_dedup.sql` : la fonction `public.handle_new_user()` détecte les collisions sur `public.profiles.username` et ajoute un suffixe aléatoire (4 caractères hex) au nom demandé avant insertion. Cela corrige l'erreur `Database error saving new user` et `duplicate key value violates unique constraint "profiles_username_key"` lorsqu'un nouvel utilisateur choisit un username déjà utilisé.
+- `supabase/migrations/20260818014140_signup_username_dedup.sql` : la fonction `public.handle_new_user()` détecte les collisions sur `public.profiles.username` et ajoute un suffixe aléatoire (4 caractères hex) au nom demandé avant insertion. Cela corrige l'erreur `Database error saving new user` et `duplicate key value violates unique constraint "profiles_username_key"` lorsqu'un nouvel utilisateur choisit un username déjà utilisé.
 
 **Centrage du panneau sync/heure dans la TopBar**
 

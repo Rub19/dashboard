@@ -105,10 +105,10 @@ export default function LanguageSwitcher() {
         aria-label={i18n("language")}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex h-11 min-w-11 items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] px-5 text-sm font-medium text-[var(--foreground)] transition-all hover:border-[var(--accent)] hover:text-[var(--accent)] active:scale-95 cursor-pointer select-none backdrop-blur-[var(--panel-blur)]"
+        className="flex h-9 items-center gap-2 rounded-full border border-white/[0.06] bg-zinc-900/60 px-3 text-xs font-medium text-white transition-all hover:border-white/15 hover:bg-white/[0.08] active:scale-95 cursor-pointer select-none"
       >
         <Flag code={current} className="h-5 w-6" />
-        <span className="hidden uppercase 2xl:inline">{current}</span>
+        <span className="pointer-events-none hidden uppercase 2xl:inline">{current}</span>
       </button>
 
       {open && (
@@ -132,8 +132,8 @@ export default function LanguageSwitcher() {
                 }`}
               >
                 <Flag code={lang} className="h-4 w-5" />
-                <span className="uppercase">{lang}</span>
-                <span className={active ? "text-white/80" : "text-[var(--muted)]"}>
+                <span className="pointer-events-none uppercase">{lang}</span>
+                <span className={active ? "pointer-events-none text-white/80" : "pointer-events-none text-[var(--muted)]"}>
                   {LANGUAGE_LABELS[lang]}
                 </span>
               </button>

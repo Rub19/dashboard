@@ -156,7 +156,7 @@ export default function TopBar() {
       </div>
 
       {/* Right — Quick tools, palette, profile */}
-      <div className="relative z-40 flex min-w-0 flex-1 items-center justify-end gap-3 pointer-events-auto">
+      <div className="relative z-30 flex min-w-0 flex-1 items-center justify-end gap-3 pointer-events-auto">
         <div className="hidden items-center gap-2 sm:flex pointer-events-auto">
           <WeatherQuickButton />
           <ThemeToggle />

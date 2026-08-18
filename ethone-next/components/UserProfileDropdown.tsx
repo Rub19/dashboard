@@ -211,12 +211,12 @@ export default function UserProfileDropdown() {
           e.stopPropagation();
           setOpen(!open);
         }}
-        className="group relative flex h-11 min-w-11 items-center gap-2.5 rounded-xl border border-white/[0.08] bg-zinc-950/70 p-2.5 text-zinc-200 transition-all hover:border-white/20 active:scale-95 cursor-pointer select-none dark:border-white/[0.08]"
+        className="group relative flex h-9 items-center gap-2.5 rounded-full border border-white/[0.08] bg-zinc-900/80 pl-1.5 pr-3 text-white transition-all hover:border-white/20 active:scale-95 cursor-pointer select-none"
         aria-label={i18n("profile")}
         aria-expanded={open}
         aria-haspopup="true"
       >
-        <div className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 text-emerald-400">
+        <div className="pointer-events-none relative flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 text-emerald-400">
           {avatarUrl ? (
             <Image
               src={avatarUrl}
@@ -224,22 +224,22 @@ export default function UserProfileDropdown() {
               width={36}
               height={36}
               unoptimized
-              className="pointer-events-none h-full w-full rounded-xl object-cover"
+              className="pointer-events-none h-full w-full object-cover"
             />
           ) : (
-            <User className="h-5 w-5 pointer-events-none" />
+            <User className="pointer-events-none h-4 w-4" />
           )}
           <span
             className={`pointer-events-none absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-zinc-950 ${statusConfig[currentStatus].color}`}
           />
         </div>
-        <div className="hidden flex-col text-left pr-1.5 sm:flex">
-          <span className="text-sm font-bold leading-tight text-white">
+        <div className="pointer-events-none hidden flex-col text-left sm:flex">
+          <span className="pointer-events-none text-sm font-bold leading-tight text-white">
             {displayName}
           </span>
         </div>
         <ChevronDown
-          className={`h-4 w-4 pointer-events-none text-zinc-500 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`pointer-events-none h-4 w-4 text-zinc-500 transition-transform ${open ? "rotate-180" : ""}`}
         />
       </button>
 

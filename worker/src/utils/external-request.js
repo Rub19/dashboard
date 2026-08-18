@@ -25,10 +25,18 @@ function wait(delay) {
 async function readJson(response, maximumBytes) {
   const contentType = String(response.headers.get("content-type") || "").toLowerCase();
   if (!/^application\/(?:[a-z0-9.+-]+\+)?json(?:\s*;|$)/i.test(contentType)) {
-    throw httpError("UPSTREAM_INVALID_RESPONSE", 502, { retryable: false });
+    throw httpError("UPSTREAM_INVALID_RESPONSE", 502, {
+      retryable: false,
+      detail: { contentType, status: response.status, statusText: response.statusText },
+    });
   }
   const declared = Number(response.headers.get("content-length"));
-  if (Number.isFinite(declared) && declared > maximumBytes) throw httpError("UPSTREAM_INVALID_RESPONSE", 502);
+  if (Number.isFinite(declared) && declared > maximumBytes) {
+    throw httpError("UPSTREAM_INVALID_RESPONSE", 502, {
+      retryable: false,
+      detail: { contentType, status: response.status, declared, maximumBytes },
+    });
+  }
   let bytes;
   if (response.body?.getReader) {
     const reader = response.body.getReader();
@@ -40,7 +48,10 @@ async function readJson(response, maximumBytes) {
       total += value.byteLength;
       if (total > maximumBytes) {
         await reader.cancel();
-        throw httpError("UPSTREAM_INVALID_RESPONSE", 502);
+        throw httpError("UPSTREAM_INVALID_RESPONSE", 502, {
+          retryable: false,
+          detail: { contentType, status: response.status, total, maximumBytes },
+        });
       }
       chunks.push(value);
     }
@@ -52,14 +63,22 @@ async function readJson(response, maximumBytes) {
     }
   } else {
     const buffer = await response.arrayBuffer();
-    if (buffer.byteLength > maximumBytes) throw httpError("UPSTREAM_INVALID_RESPONSE", 502);
+    if (buffer.byteLength > maximumBytes) {
+      throw httpError("UPSTREAM_INVALID_RESPONSE", 502, {
+        retryable: false,
+        detail: { contentType, status: response.status, size: buffer.byteLength, maximumBytes },
+      });
+    }
     bytes = new Uint8Array(buffer);
   }
   const text = new TextDecoder().decode(bytes);
   try {
     return JSON.parse(text);
   } catch {
-    throw httpError("UPSTREAM_INVALID_RESPONSE", 502);
+    throw httpError("UPSTREAM_INVALID_RESPONSE", 502, {
+      retryable: false,
+      detail: { contentType, status: response.status, preview: text.slice(0, 200) },
+    });
   }
 }
 
@@ -123,6 +142,18 @@ export function requestExternal(input, options = {}) {
           if (!response.ok) throw providerError(response, null);
           return Object.freeze({ data: null, attempts: attempt + 1, status: response.status });
         }
+
+        const contentType = String(response.headers.get("content-type") || "").toLowerCase();
+        const looksLikeJson = /^application\/(?:[a-z0-9.+-]+\+)?json(?:\s*;|$)/i.test(contentType);
+
+        if (!response.ok && !looksLikeJson) {
+          await response.body?.cancel?.().catch(() => {});
+          throw providerError(
+            response,
+            { message: `HTTP ${response.status} — ${response.statusText || ""}`.trim() }
+          );
+        }
+
         const data = await readJson(response, Math.max(1024, Math.min(4 * 1024 * 1024, Number(options.maxBytes) || 1024 * 1024)));
         if (!response.ok) throw providerError(response, data);
         return Object.freeze({ data, attempts: attempt + 1, status: response.status });

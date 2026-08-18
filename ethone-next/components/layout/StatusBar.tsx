@@ -89,7 +89,24 @@ function useSessionRole() {
   return { id: "normal" as const, label: "Normal", color: "text-emerald-400" };
 }
 
-function CloudSyncPill({ status, online }: { status: SyncState; online: boolean }) {
+function CloudSyncPill({
+  status,
+  online,
+  sources,
+  i18n,
+}: {
+  status: SyncState;
+  online: boolean;
+  sources: Record<string, SyncState>;
+  i18n: (key: string, fallback?: string) => string;
+}) {
+  const errorSources = Object.entries(sources)
+    .filter(([, v]) => v === "error")
+    .map(([k]) => i18n(`syncSource.${k}`, k));
+  const errorTitle = errorSources.length
+    ? `${i18n("syncErrorSources", "Sources en erreur")} : ${errorSources.join(", ")}`
+    : i18n("syncError", "La synchronisation a échoué");
+
   switch (status) {
     case "syncing":
       return (
@@ -104,6 +121,7 @@ function CloudSyncPill({ status, online }: { status: SyncState; online: boolean 
         <StatusPill
           icon={<AlertCircle className="h-3.5 w-3.5 text-red-400" />}
           value="Erreur sync"
+          title={errorTitle}
           tone="error"
         />
       );
@@ -130,12 +148,13 @@ type StatusPillProps = {
   icon?: React.ReactNode;
   label?: string;
   value?: string;
+  title?: string;
   children?: React.ReactNode;
   onClick?: () => void;
   tone?: "default" | "success" | "warning" | "error" | "info";
 };
 
-function StatusPill({ icon, label, value, children, onClick, tone = "default" }: StatusPillProps) {
+function StatusPill({ icon, label, value, title, children, onClick, tone = "default" }: StatusPillProps) {
   const toneClass = {
     default: "hover:bg-white/[0.04] hover:text-zinc-200 text-zinc-400",
     success: "hover:bg-emerald-500/[0.08] hover:text-emerald-300 text-emerald-400",
@@ -148,6 +167,7 @@ function StatusPill({ icon, label, value, children, onClick, tone = "default" }:
     <button
       type="button"
       onClick={onClick}
+      title={title}
       className={`group flex min-w-0 items-center gap-1.5 rounded px-2 py-0.5 text-xs transition-colors ${
         onClick ? `${toneClass} cursor-pointer` : "text-zinc-400"
       }`}
@@ -180,9 +200,15 @@ export default function StatusBar() {
   const sessionRole = useSessionRole();
 
   const syncStatus = useSyncStore((s) => s.status);
+  const syncSources = useSyncStore((s) => s.sources);
 
   const systemOk = online && !liveError && unreadCount === 0;
   const alertCount = liveError ? 1 : unreadCount;
+  const alertTitle = liveError
+    ? `${i18n("liveError", "Erreur live")} : ${liveError.message}`
+    : unreadCount > 0
+      ? `${unreadCount} ${i18n("unreadNotifications", "notifications non lues")}`
+      : undefined;
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -223,7 +249,7 @@ export default function StatusBar() {
             }
           />
 
-          <CloudSyncPill status={syncStatus} online={online} />
+          <CloudSyncPill status={syncStatus} online={online} sources={syncSources} i18n={i18n} />
         </div>
 
         <div className="flex min-w-0 items-center gap-2">
@@ -299,6 +325,7 @@ export default function StatusBar() {
           <StatusPill
             icon={systemOk ? <Circle className="h-3.5 w-3.5 fill-emerald-400 text-emerald-400" /> : <AlertCircle className="h-3.5 w-3.5 text-red-400" />}
             value={systemOk ? "Opérationnel" : `${alertCount} alerte${alertCount > 1 ? "s" : ""}`}
+            title={alertTitle}
             tone={systemOk ? "success" : "error"}
             onClick={() => router.push("/system")}
           />

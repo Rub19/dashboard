@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**UI : tooltips explicites pour les alertes et erreurs de sync**
+
+### Corrige
+- `ethone-next/components/layout/StatusBar.tsx` : ajout d'un `title` sur `CloudSyncPill` pour afficher la source exacte de l'erreur de synchronisation au survol, et sur le pill d'alerte système pour indiquer s'il s'agit d'une erreur live ou de notifications non lues.
+
 **UI : sidebar automatique et ajustements divers**
 
 ### Corrige

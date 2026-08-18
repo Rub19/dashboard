@@ -41,7 +41,7 @@ export default function Shell({ children }: { children: ReactNode }) {
             <AnimatedSidebarProvider
               defaultOpen={true}
               style={{ "--sidebar-width-icon": "7.5rem" }}
-              className="h-screen w-screen gap-3 overflow-hidden bg-black p-3 sm:gap-4 sm:p-4"
+              className="h-screen max-h-screen w-screen max-w-full overflow-hidden bg-black gap-3 p-3 sm:gap-4 sm:p-4"
             >
               <Sidebar />
               <div
@@ -59,7 +59,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                 <main
                   data-v8-main
                   id="main-content"
-                  className="min-h-0 min-w-0 flex-1 overflow-x-clip overflow-y-auto pb-[calc(7rem+env(safe-area-inset-bottom))] md:pb-[calc(7rem+env(safe-area-inset-bottom))]"
+                  className="min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden pb-[calc(7rem+env(safe-area-inset-bottom))] md:pb-[calc(7rem+env(safe-area-inset-bottom))]"
                   tabIndex={-1}
                 >
                   <ActivityJournalProvider>

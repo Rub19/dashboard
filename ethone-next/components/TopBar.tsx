@@ -134,10 +134,10 @@ export default function TopBar() {
   return (
     <header
       data-v8-topbar
-      className="flex h-12 shrink-0 select-none items-center justify-between rounded-2xl border border-white/[0.08] bg-zinc-950/75 px-4 backdrop-blur-2xl"
+      className="relative flex h-12 shrink-0 select-none items-center justify-between rounded-2xl border border-white/[0.08] bg-zinc-950/75 px-4 backdrop-blur-2xl"
     >
       {/* Left — Identity & Breadcrumb */}
-      <div className="flex min-w-0 flex-1 items-center gap-3">
+      <div className="relative z-10 flex min-w-0 flex-1 items-center gap-3">
         <SidebarTopToggle />
         <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm font-medium text-zinc-400">
           <Link href="/" className="transition-colors hover:text-white">
@@ -149,8 +149,10 @@ export default function TopBar() {
       </div>
 
       {/* Center — System status */}
-      <div className="hidden flex-1 justify-center lg:flex">
-        <SystemStatusPills />
+      <div className="absolute inset-y-0 left-0 right-0 z-0 hidden items-center justify-center lg:flex pointer-events-none">
+        <div className="pointer-events-auto">
+          <SystemStatusPills />
+        </div>
       </div>
 
       {/* Right — Quick tools, palette, profile */}

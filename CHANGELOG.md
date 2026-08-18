@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Centrage du panneau sync/heure dans la TopBar**
+
+### Corrige
+- `ethone-next/components/TopBar.tsx` : le panneau `SystemStatusPills` (workspace, sync, heure) est maintenant positionné en `absolute inset-y-0 left-0 right-0 z-0` avec `justify-center` pour être visuellement centré quelle que soit la largeur des zones gauche/droite.
+- `ethone-next/components/Shell.tsx` : `main` passe `min-h-0` pour éviter un débordement vertical.
+
 **Fluidification des animations et dashboard**
 
 ### Corrige

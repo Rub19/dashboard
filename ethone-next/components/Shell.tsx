@@ -41,7 +41,7 @@ export default function Shell({ children }: { children: ReactNode }) {
             <AnimatedSidebarProvider
               defaultOpen={true}
               style={{ "--sidebar-width-icon": "7.5rem" }}
-              className="h-screen max-h-screen w-screen max-w-full overflow-hidden bg-black gap-3 p-3 sm:gap-4 sm:p-4"
+              className="h-screen max-h-screen w-screen max-w-full overflow-hidden gap-3 p-3 sm:gap-4 sm:p-4"
             >
               <Sidebar />
               <div

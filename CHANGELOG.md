@@ -4,6 +4,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Dock / StatusBar : suppression du fond noir opaque**
+
+### Corrige
+- `ethone-next/components/Shell.tsx` : suppression du `bg-black` du conteneur `AnimatedSidebarProvider` pour laisser le fond d'écran / gradient du body visible autour du contenu.
+- `ethone-next/components/Dock.tsx` : conteneur global du Dock passé en `fixed bottom-8 inset-x-0 flex justify-center pointer-events-none` ; la pilule conserve uniquement le verre `bg-zinc-950/70 backdrop-blur-xl border border-white/[0.08] shadow-2xl` ; icônes, séparateur et anneau de notification ajustés pour le thème sombre.
+- `ethone-next/components/layout/StatusBar.tsx` : fond opaque `bg-zinc-950/90` remplacé par `bg-black/40 backdrop-blur-md border-t border-white/[0.05]` pour une barre d'état fine et transparente qui ne masque plus le fond d'écran.
+
 **Dashboard : scroll global et widgets sans scroll interne**
 
 ### Ajoute

@@ -122,11 +122,11 @@ export default function Dock() {
   }
 
   const dockButton =
-    "flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl text-zinc-700 transition-all hover:bg-zinc-100/80 hover:text-zinc-950 active:scale-95 dark:text-zinc-400 dark:hover:bg-white/[0.08] dark:hover:text-white";
+    "flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl text-zinc-300 transition-all hover:bg-white/[0.08] hover:text-white active:scale-95";
 
   return (
     <div
-      className="v8-floating-dock fixed bottom-8 left-1/2 -translate-x-1/2 z-50 hidden md:block pointer-events-none bg-transparent p-0 m-0 border-none shadow-none outline-none"
+      className="v8-floating-dock fixed bottom-8 inset-x-0 z-50 hidden md:flex pointer-events-none justify-center bg-transparent p-0 m-0 border-none shadow-none outline-none"
     >
       {launcherOpen && (
         <div className="pointer-events-auto absolute bottom-full left-1/2 z-50 mb-4 w-[min(90vw,420px)] -translate-x-1/2">
@@ -165,7 +165,7 @@ export default function Dock() {
       )}
 
       <nav
-        className="pointer-events-auto inline-flex items-center gap-2 rounded-2xl border border-zinc-200/80 bg-white/70 px-3 py-2 shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur-2xl select-none dark:border-white/[0.1] dark:bg-zinc-950/75 dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)]"
+        className="pointer-events-auto inline-flex items-center gap-2 rounded-2xl border border-white/[0.08] bg-zinc-950/70 px-3 py-2 shadow-2xl backdrop-blur-xl select-none"
         aria-label={i18n("dock")}
       >
         <DockMediaFlyout nowPlaying={spotifyNow} clientId={settings.liveSpotifyClientId} />
@@ -183,7 +183,7 @@ export default function Dock() {
           <LayoutGrid className="w-5 h-5" />
         </button>
 
-        <div className="mx-1 h-6 w-[1px] shrink-0 bg-zinc-200/80 dark:bg-white/10" aria-hidden="true" />
+        <div className="mx-1 h-6 w-[1px] shrink-0 bg-white/10" aria-hidden="true" />
 
         <button
           type="button"
@@ -230,7 +230,7 @@ export default function Dock() {
           <Bell className="w-5 h-5" />
           {unreadCount > 0 && (
             <span
-              className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white dark:ring-zinc-950"
+              className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white/80"
               aria-hidden="true"
             />
           )}

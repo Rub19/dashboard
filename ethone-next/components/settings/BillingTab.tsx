@@ -29,7 +29,7 @@ function BillingCard({
   accent?: Accent;
 }) {
   return (
-    <div className="group relative flex min-h-0 flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 shadow-sm backdrop-blur-2xl transition-all hover:border-white/15">
+    <div className="group relative flex min-h-0 flex-col overflow-hidden rounded-2xl v8-panel p-5 shadow-sm backdrop-blur-2xl transition-all hover:border-white/15">
       <div className="mb-4 flex items-center gap-2.5">
         <div
           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${accentMap[accent]}`}

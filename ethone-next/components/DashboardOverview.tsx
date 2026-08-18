@@ -5,9 +5,7 @@ import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { LayoutGrid } from "lucide-react";
 import { EASE_OUT } from "@/lib/ease";
-import Select from "@/components/ui/Select";
 import BentoCard from "@/components/BentoCard";
-import BrandMark from "@/components/BrandMark";
 import HeroBriefingCard from "@/components/HeroBriefingCard";
 import SystemControlCard from "@/components/SystemControlCard";
 import { DayTimelineCard, RecentNotesCard } from "@/components/ProductivityCards";
@@ -82,7 +80,6 @@ export default function DashboardOverview() {
   const { items: events } = useItems("events");
   const focus = useFocus();
   const [customizing, setCustomizing] = useState(false);
-  const [workspace, setWorkspace] = useState("ethone");
   const { layout, update: updateLayout } = useDesktopLayout();
 
   const widgets = useMemo<WidgetLayout[]>(() => {
@@ -203,34 +200,16 @@ export default function DashboardOverview() {
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden">
-      <header className="shrink-0 mb-4 flex w-full items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <BrandMark size={36} />
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-white">ETHONE</h1>
-            <p className="text-sm text-zinc-400">{i18n("home")}</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Select
-            value={workspace}
-            onChange={setWorkspace}
-            options={[
-              { id: "ethone", label: "ETHONE" },
-              { id: "personal", label: i18n("personal", "Personnel") },
-            ]}
-            aria-label={i18n("workspace", "Workspace")}
-            className="w-36"
-          />
-          <button
-            type="button"
-            onClick={() => setCustomizing((v) => !v)}
-            className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-zinc-950/70 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:border-white/20 hover:text-zinc-200"
-          >
-            <LayoutGrid className="h-3.5 w-3.5" />
-            {customizing ? i18n("done") : i18n("customize")}
-          </button>
-        </div>
+      <header className="shrink-0 mb-2 flex w-full items-center justify-end">
+        <button
+          type="button"
+          onClick={() => setCustomizing((v) => !v)}
+          title={customizing ? i18n("done") : i18n("customize")}
+          aria-label={customizing ? i18n("done") : i18n("customize")}
+          className="flex h-8 w-8 items-center justify-center rounded-lg v8-panel text-zinc-400 transition-colors hover:border-white/20 hover:text-white active:scale-95"
+        >
+          <LayoutGrid className="h-4 w-4" />
+        </button>
       </header>
 
       {customizing && (

@@ -151,7 +151,7 @@ export default function TeamMemberTable({ members, loading, onUpdateRole, onRemo
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/70 backdrop-blur-xl">
+      <div className="overflow-hidden rounded-2xl v8-panel backdrop-blur-xl">
         <div className="grid grid-cols-12 px-4 py-2.5 bg-white/[0.02] border-b border-white/[0.05] text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
           <span className="col-span-5">{i18n("member")}</span>
           <span className="col-span-3">{i18n("role")}</span>

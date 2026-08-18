@@ -62,7 +62,7 @@ function WeatherQuickButton() {
     <button
       type="button"
       onClick={() => router.push("/weather")}
-      className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 text-sm transition-colors hover:bg-white/[0.06]"
+      className="flex h-9 items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm transition-colors hover:bg-white/[0.06]"
       title="Météo"
     >
       <CloudSun className="h-4 w-4 pointer-events-none text-amber-400" />
@@ -134,7 +134,7 @@ export default function TopBar() {
   return (
     <header
       data-v8-topbar
-      className="relative flex h-12 shrink-0 select-none items-center justify-between rounded-2xl border border-white/[0.08] bg-zinc-950/75 px-4 backdrop-blur-2xl"
+      className="relative flex h-12 shrink-0 select-none items-center justify-between rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 backdrop-blur-[var(--panel-blur)]"
     >
       {/* Left — Identity & Breadcrumb */}
       <div className="relative z-10 flex min-w-0 flex-1 items-center gap-3">

@@ -197,12 +197,12 @@ export default function FlowsPage() {
 
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
-      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-6">
+      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3 mb-6">
         {statCards.map((stat, i) => (
           <div
             key={i}
-            className="flex items-center justify-between rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-4 backdrop-blur-xl transition-all hover:border-white/15"
+            className="flex items-center justify-between rounded-2xl v8-panel p-4 backdrop-blur-xl transition-all hover:border-white/15"
           >
             <div>
               <p className="text-2xl font-bold font-mono text-white">{stat.value}</p>

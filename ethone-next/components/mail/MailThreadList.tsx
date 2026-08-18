@@ -61,7 +61,7 @@ export default function MailThreadList({
   const total = grouped.length;
 
   return (
-    <div className="flex h-full w-96 shrink-0 flex-col rounded-2xl border border-white/[0.08] bg-zinc-950/70 backdrop-blur-xl overflow-hidden">
+    <div className="flex h-full w-96 shrink-0 flex-col rounded-2xl v8-panel backdrop-blur-xl overflow-hidden">
       <div className="shrink-0 space-y-2 border-b border-white/[0.06] p-3">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-white">{title}</h2>

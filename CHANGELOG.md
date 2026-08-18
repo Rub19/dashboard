@@ -4,6 +4,60 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Finalisation zero-scroll, sidebar flottante et validation E2E**
+
+### Ajoute
+- `ethone-next/app/globals.css` : utilitaire `.overflow-clip` pour verrouiller le contenu dans le viewport sans scroll parasite.
+- `ethone-next/e2e/ui-harmony.spec.ts` : test Playwright authentifié qui parcourt chaque onglet de la sidebar et valide le zero-scroll, le sidebar flottant, la visibilité du fond d'écran et l'absence d'overflow global sur desktop et mobile.
+
+### Corrige
+- `ethone-next/components/Shell.tsx` : `AnimatedSidebarProvider`, `data-v8-shell` et `#main-content` passent en `overflow-clip` pour éviter tout scroll global accidentel (focus, programmatique) tout en préservant les scrolls internes `os-scroll`.
+- `ethone-next/components/Sidebar.tsx` : wrapper `h-full min-h-0` au lieu de `h-auto min-h-svh` pour que la sidebar reste contenue dans le Shell sans déborder.
+- `ethone-next/components/motion/animated-sidebar.tsx` : `AnimatedSidebar` et son panneau floating utilisent `h-full` et `h-[calc(100%-1rem)]` afin de respecter la hauteur du conteneur parent et maintenir la marge visuelle flottante.
+- `ethone-next/e2e/auth-helpers.ts` : connexion authentifiée Playwright basée sur les clés `ethone-remember-*` du `AuthProvider` (correction du storage token Supabase précédent).
+- Remplacement des 39 occurrences restantes du pattern malformé `overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden]` par `overflow-y-auto os-scroll` dans 32 composants/pages.
+
+### Supprime
+- `ethone-next/e2e/live-cards.spec.ts` : test obsolète ciblant un `data-testid="live-cards"` retiré du dashboard.
+
+**Harmonisation UI complète : sidebar flottante, verre unifié et zero-scroll**
+
+### Ajoute
+- `ethone-next/app/globals.css` : nouveaux tokens glassmorphiques partagés (`--panel-bg` translucide via `color-mix`, `--panel-border` blanc à 8 %, `--panel-blur: 20px`) et utilitaires `.v8-panel`/`.v8-card` centralisés.
+- `.os-scroll` : barre de défilement ultra-fine et discrète intégrée au thème sombre.
+- `.hitbox` : utilitaire de touch target minimal 36×36 px.
+
+### Corrige
+- `ethone-next/components/Shell.tsx` : conteneur principal en `h-dvh max-h-dvh`, largeur de sidebar augmentée (`--sidebar-width: 18rem`, `--sidebar-width-icon: 5rem`) ; `main` transformé en panneau glassmorphic (`rounded-2xl border bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]`) pour unifier l'arrière-plan de toutes les pages.
+- `ethone-next/components/Sidebar.tsx` : suppression du fond noir opaque collé au bord ; la sidebar devient un panneau flottant glassmorphic (`m-2 h-[calc(100%-1rem)]`, `bg-[var(--panel-bg)]`, `backdrop-blur-[var(--panel-blur)]`) avec navigation active émeraude subtile.
+- `ethone-next/components/TopBar.tsx` et `ethone-next/components/BentoCard.tsx` : utilisation des tokens `--panel-bg`, `--panel-border`, `--panel-blur` pour unifier fond, bordures et flou.
+- `ethone-next/components/motion/animated-sidebar.tsx` : états actif/inactif harmonisés (`text-zinc-500` → `text-zinc-100`, actif `text-emerald-300 font-semibold`).
+- `ethone-next/components/Sidebar.tsx` : carte profil avec indicateur de statut en ligne discret.
+- `ethone-next/components/PageTransition.tsx` : conteneur de page verrouillé en `h-full min-h-0 w-full overflow-hidden` pour renforcer la philosophie zero-scroll.
+- Remplacement des centaines de `bg-zinc-950/70 border border-white/[0.08] backdrop-blur-2xl` par la classe `.v8-panel` sur les composants Bento/pages (voir commit détaillé).
+
+**Dashboard : en-tête allégé et sélecteur workspace retiré**
+
+### Corrige
+- `ethone-next/components/DashboardOverview.tsx` : suppression de l'en-tête redondant (`BrandMark` + titre `ETHONE` + sous-titre `Accueil` déjà présents dans la `TopBar`) et du sélecteur d'espace de travail non fonctionnel. Le bouton de personnalisation du Bento est réduit à une icône discrète en haut à droite pour libérer l'espace en tête de page.
+
+**StatusBar : suppression du bandeau fixe en bas**
+
+### Corrige
+- `ethone-next/components/Shell.tsx` : suppression de `<StatusBar />` pour retirer le bandeau sombre pleine largeur en bas de l'écran.
+
+**Command Palette : indicateur actif, auto-scroll et épinglettes**
+
+### Corrige
+- `ethone-next/components/CommandPalette.tsx` : suppression du contour vert parasite sur le champ de recherche (`outline: none` / `outline-0 focus-visible:outline-0`), séparateurs header/footer plus subtils (`border-white/[0.06]`), fond de sélection neutre (`bg-white/[0.08]`) et texte/icône accentués.
+- Synchronisation de l'indicateur actif avec l'index réel : passage à `useLayoutEffect` et mesure via `offsetTop`/`offsetHeight` pour que le fond suive l'élément sélectionné sans décalage.
+- Navigation clavier plus fluide : défilement automatique centré (`list.scrollTo` avec `behavior: smooth`) pour `ArrowUp`, `ArrowDown`, `PageUp`, `PageDown`, `Home`, `End` et `Tab`/`Shift+Tab`.
+- `CommandItemRow` : restructuration de la ligne pour extraire l'épinglette en bouton indépendant, corrigeant l'interaction d'épinglage/désépinglage et la propagation d'événements.
+
+### Ajoute
+- `ethone-next/e2e/command-palette.spec.ts` : tests Playwright dédiés couvrant l'ouverture, la navigation flèches/Tab, l'auto-scroll, le maintien de l'élément actif visible, la fermeture par Escape, l'activation par Enter et la persistance de l'épinglette après rechargement.
+- Migrations `supabase/migrations/202608290001_cloud_sync_foundation.sql` et `202608300001_user_settings_payload.sql` appliquées sur le projet Supabase, activant la table `user_settings` et la persistence de `pinnedCommands`/`commandHistory`.
+
 **Weather : bandeau de recherche transparent**
 
 ### Corrige

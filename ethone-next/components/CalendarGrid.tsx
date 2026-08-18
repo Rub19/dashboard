@@ -84,7 +84,7 @@ export default function CalendarGrid({
   }
 
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-zinc-950/70 border border-white/[0.08] p-4 shadow-xl shadow-black/50 backdrop-blur-2xl">
+    <div className="relative overflow-hidden rounded-2xl v8-panel p-4 shadow-xl shadow-black/50 backdrop-blur-2xl">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent rounded-2xl" />
 
       <div className="relative z-10 mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">

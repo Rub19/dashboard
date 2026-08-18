@@ -278,7 +278,7 @@ export default function LoginPage() {
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/50 to-transparent" />
             <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[var(--accent)]/10 blur-3xl" />
 
-            <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] px-0.5">
+            <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll px-0.5">
             <div className="relative flex w-full flex-col items-center text-center">
               <div className="flex h-14 w-14 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent)]/10 ring-1 ring-[var(--accent)]/20">
                 <BrandMark size={40} />

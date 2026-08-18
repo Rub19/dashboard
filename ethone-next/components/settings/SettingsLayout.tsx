@@ -75,7 +75,7 @@ function SettingCard({
   };
 
   return (
-    <div className="group flex h-full min-h-0 flex-col justify-between overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 shadow-sm backdrop-blur-2xl transition-all hover:border-white/15">
+    <div className="group flex h-full min-h-0 flex-col justify-between overflow-hidden rounded-2xl v8-panel p-5 shadow-sm backdrop-blur-2xl transition-all hover:border-white/15">
       <div>
         <div className="mb-3 flex items-center gap-2.5">
           <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${accentMap[accent]}`}>
@@ -222,7 +222,7 @@ export default function SettingsLayout() {
       </div>
 
       {/* Onglets */}
-      <div className="shrink-0 relative inline-flex items-center gap-1 rounded-full border border-white/[0.08] bg-zinc-950/70 p-1.5 shadow-inner backdrop-blur-xl">
+      <div className="shrink-0 relative inline-flex items-center gap-1 rounded-full v8-panel p-1.5 shadow-inner backdrop-blur-xl">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -256,7 +256,7 @@ export default function SettingsLayout() {
         })}
       </div>
 
-      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] pr-1">
+      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll pr-1">
       <AnimatePresence mode="wait">
         {activeTab === "overview" ? (
           <motion.div

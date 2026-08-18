@@ -30,7 +30,7 @@ export default function LiveStats({ records = [], updatedAt, loading, className 
 
   return (
     <div
-      className={`w-full rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-4 shadow-xl backdrop-blur-2xl ${className}`}
+      className={`w-full rounded-2xl v8-panel p-4 shadow-xl backdrop-blur-2xl ${className}`}
     >
       <div className="flex items-center justify-between gap-3 border-b border-white/[0.04] pb-3">
         <div className="flex items-center gap-2">

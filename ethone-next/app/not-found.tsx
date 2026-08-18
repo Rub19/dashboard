@@ -60,7 +60,7 @@ export default function NotFound() {
 
   return (
     <main className="flex min-h-[80dvh] w-full flex-col items-center justify-center px-6 py-12">
-      <div className="flex w-full max-w-2xl flex-col items-center gap-8 rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-8 shadow-2xl shadow-black/50 backdrop-blur-2xl">
+      <div className="flex w-full max-w-2xl flex-col items-center gap-8 rounded-2xl v8-panel p-8 shadow-2xl shadow-black/50 backdrop-blur-2xl">
         <div className="group relative select-none font-mono font-bold leading-none tracking-tighter text-white [font-size:clamp(5rem,18vw,11rem)]">
           <span
             aria-hidden

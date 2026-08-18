@@ -410,7 +410,7 @@ export default function RichTextEditor({
       </div>
 
       <div
-        className="relative flex-1 cursor-text rounded-2xl border border-white/[0.08] bg-zinc-950/70 px-4 py-3 backdrop-blur-2xl focus-within:border-white/20"
+        className="relative flex-1 cursor-text rounded-2xl v8-panel px-4 py-3 backdrop-blur-2xl focus-within:border-white/20"
         onClick={() => ref.current?.focus()}
       >
         {empty && placeholder && (

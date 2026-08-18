@@ -340,12 +340,12 @@ export const AnimatedSidebar = forwardRef<HTMLElement, AnimatedSidebarProps>(
             context.reduce ? REDUCED_TRANSITION : PANEL_TRANSITION
           }
           className={cn(
-            "sticky top-0 flex h-svh w-full flex-col overflow-hidden bg-background",
+            "sticky top-0 flex h-full w-full flex-col overflow-hidden bg-background",
             collapsible === "offcanvas" && "w-[var(--sidebar-width)]",
             variant === "sidebar" &&
               (side === "left" ? "border-border border-r" : "border-border border-l"),
             variant === "floating" &&
-              "m-2 h-[calc(100svh-1rem)] rounded-2xl border border-border shadow-sm",
+              "m-2 h-[calc(100%-1rem)] rounded-2xl border border-border shadow-sm",
             variant === "inset" && "m-2 h-[calc(100svh-1rem)] rounded-2xl",
             panelClassName,
           )}
@@ -898,10 +898,10 @@ export function AnimatedSidebarMenuButton({
   );
 
   const interactiveClassName = cn(
-    "group relative flex w-full min-w-0 items-center gap-3 overflow-hidden rounded-2xl px-3 py-2.5 text-left text-xs font-medium outline-none",
-    "text-zinc-400 transition-colors hover:text-white",
+    "group relative flex w-full min-w-0 items-center gap-3 overflow-hidden rounded-2xl px-3 py-2.5 text-left text-xs font-medium outline-none transition-all duration-200",
+    "text-zinc-500 hover:text-zinc-100",
     "focus-visible:bg-white/[0.08] focus-visible:ring-2 focus-visible:ring-ring",
-    isActive && "text-emerald-400",
+    isActive && "font-semibold text-emerald-300",
     disabled && "cursor-not-allowed opacity-40",
     className,
   );

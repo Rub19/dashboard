@@ -63,7 +63,7 @@ export default function ScratchpadPage() {
         </button>
       </div>
 
-      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden]">
+      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll">
       <Card3D className="h-full">
         <FormField
           label={i18n("scratchpadTitle")}

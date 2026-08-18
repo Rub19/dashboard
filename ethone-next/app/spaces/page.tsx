@@ -128,7 +128,7 @@ export default function SpacesPage() {
         </span>
       </div>
 
-      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-6">
+      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
       <Card3D>
         <h2 className="mb-3 text-sm font-semibold capitalize text-[var(--foreground)]">{i18n("active")} {i18n("spaces")}</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">

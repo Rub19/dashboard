@@ -38,7 +38,7 @@ function StatCard({
   const borderColor = tone === "emerald" ? "hover:border-emerald-500/30" : tone === "amber" ? "hover:border-amber-500/30" : "hover:border-white/15";
 
   return (
-    <div className={`bg-zinc-950/70 border border-white/[0.08] backdrop-blur-xl rounded-2xl p-4 flex items-center justify-between hover:border-white/15 transition-all ${borderColor}`}>
+    <div className={`v8-panel backdrop-blur-xl rounded-2xl p-4 flex items-center justify-between hover:border-white/15 transition-all ${borderColor}`}>
       <div>
         <p className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider">{label}</p>
         <p className={`text-2xl font-bold font-mono ${valueColor} mt-0.5`}>{value}</p>
@@ -112,7 +112,7 @@ export default function TeamPage() {
         <p className="text-sm text-zinc-500 mt-1">{i18n("teamDescription")}</p>
       </div>
 
-      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-6">
+      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <StatCard

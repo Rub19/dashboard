@@ -82,7 +82,7 @@ function DropContent() {
 
   if (!slug) {
     return (
-      <div className="flex h-full min-h-0 w-full items-center justify-center overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden]">
+      <div className="flex h-full min-h-0 w-full items-center justify-center overflow-y-auto os-scroll">
         <Card3D>
           <p className="text-sm text-[var(--muted)]">{i18n("noDropLink")}</p>
         </Card3D>
@@ -91,7 +91,7 @@ function DropContent() {
   }
 
   return (
-    <div className="flex h-full min-h-0 w-full items-center justify-center overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden]">
+    <div className="flex h-full min-h-0 w-full items-center justify-center overflow-y-auto os-scroll">
       <div className="w-full max-w-sm sm:max-w-md lg:max-w-lg space-y-4">
         <Card3D>
           <h1 className="mb-4 flex flex-wrap items-center gap-2 break-words text-xl font-bold">
@@ -176,7 +176,7 @@ function DropContent() {
 export default function DropPage() {
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
-      <Suspense fallback={<div className="flex h-full min-h-0 w-full items-center justify-center overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden]"><Card3D><p className="text-sm text-[var(--muted)]">Loading...</p></Card3D></div>}>
+      <Suspense fallback={<div className="flex h-full min-h-0 w-full items-center justify-center overflow-y-auto os-scroll"><Card3D><p className="text-sm text-[var(--muted)]">Loading...</p></Card3D></div>}>
         <DropContent />
       </Suspense>
     </div>

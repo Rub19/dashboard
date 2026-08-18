@@ -15,6 +15,7 @@ import {
   Timer,
   Clock,
   ChevronRight,
+  Heart,
 } from "lucide-react";
 
 import { DynamicIsland, DynamicIslandView } from "@/components/ui/DynamicIsland";
@@ -27,7 +28,6 @@ import { fetchWorker } from "@/lib/api";
 import { useDynamicIslandStore } from "@/lib/stores/dynamic-island";
 import { useBrainActivityStore } from "@/lib/stores/brain-activity";
 import { cn } from "@/lib/utils";
-import Slider from "@/components/ui/Slider";
 import type { NowPlaying } from "@/lib/hooks/useLiveData";
 
 type View = "spotify" | "pomodoro" | "brain";
@@ -87,23 +87,120 @@ function AudioWave({ playing, className = "" }: { playing: boolean; className?: 
   );
 }
 
-function SpotifyCompact({ track, remainingMs, playing }: { track: NowPlaying; remainingMs: number; playing: boolean }) {
-  const display = playing
-    ? `-${formatMs(remainingMs)}`
-    : track.title
-    ? track.title.length > 18
-      ? `${track.title.slice(0, 16)}…`
-      : track.title
-    : "Spotify";
+function MediaProgress({
+  value,
+  max,
+  onChange,
+}: {
+  value: number;
+  max: number;
+  onChange: (v: number) => void;
+}) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [dragging, setDragging] = useState(false);
+  const [hovered, setHovered] = useState(false);
+
+  const percentage = max > 0 ? Math.min(100, Math.max(0, (value / max) * 100)) : 0;
+
+  const updateFromClientX = useCallback(
+    (clientX: number) => {
+      const rect = trackRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const pct = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+      const next = Math.round(pct * max / 1000) * 1000;
+      onChange(Math.min(max, Math.max(0, next)));
+    },
+    [max, onChange],
+  );
+
+  useEffect(() => {
+    if (!dragging) return;
+    const handleMove = (e: PointerEvent) => updateFromClientX(e.clientX);
+    const handleUp = () => setDragging(false);
+    window.addEventListener("pointermove", handleMove);
+    window.addEventListener("pointerup", handleUp);
+    return () => {
+      window.removeEventListener("pointermove", handleMove);
+      window.removeEventListener("pointerup", handleUp);
+    };
+  }, [dragging, updateFromClientX]);
 
   return (
-    <div className="flex w-full items-center justify-between gap-3 px-1">
-      <div className="flex items-center gap-2">
-        <Music className={cn("h-4 w-4", playing ? "text-emerald-400" : "text-zinc-400")} />
-        <AudioWave playing={playing} />
+    <div className="space-y-1.5">
+      <div
+        ref={trackRef}
+        onPointerDown={(e) => {
+          (e.target as HTMLDivElement).setPointerCapture?.(e.pointerId);
+          setDragging(true);
+          updateFromClientX(e.clientX);
+        }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        className="group relative h-1.5 w-full cursor-pointer overflow-hidden rounded-full bg-white/[0.10] transition-all duration-200 hover:h-2"
+      >
+        <div
+          className="pointer-events-none h-full rounded-full bg-emerald-400 transition-all"
+          style={{ width: `${percentage}%` }}
+        />
+        <div
+          className={cn(
+            "pointer-events-none absolute top-1/2 h-3.5 w-3.5 -translate-y-1/2 rounded-full border-2 border-emerald-400 bg-zinc-950 shadow-md transition-transform duration-150",
+            dragging || hovered ? "scale-125" : "scale-100",
+          )}
+          style={{ left: `calc(${percentage}% - 7px)` }}
+        />
       </div>
-      <span className={cn("text-xs font-medium tabular-nums", playing ? "text-emerald-300" : "text-zinc-300")}>
-        {display}
+      <div className="flex justify-between font-mono text-[10px] text-zinc-500">
+        <span>{formatMs(value)}</span>
+        <span>-{formatMs(Math.max(0, max - value))}</span>
+      </div>
+    </div>
+  );
+}
+
+function SpotifyCompact({
+  track,
+  remainingMs,
+  playing,
+  date,
+}: {
+  track: NowPlaying;
+  remainingMs: number;
+  playing: boolean;
+  date: Date | null;
+}) {
+  const time = date ? formatClock(date) : "--:--";
+  const title = track.title || "Spotify";
+  const remaining = `-${formatMs(remainingMs)}`;
+
+  return (
+    <div className="flex h-[38px] w-full min-w-[200px] items-center gap-2.5 px-3 py-1.5">
+      <div className="flex items-center gap-1.5 text-zinc-300">
+        <Clock className="h-3 w-3 text-zinc-500" />
+        <span className="text-[10px] font-medium tabular-nums">{time}</span>
+      </div>
+
+      {track.cover || track.artworkUrl ? (
+        <Image
+          src={track.cover || track.artworkUrl || ""}
+          alt={track.title || "Spotify"}
+          width={20}
+          height={20}
+          className="h-5 w-5 shrink-0 rounded-md object-cover"
+          unoptimized
+        />
+      ) : (
+        <Music className={cn("h-4 w-4 shrink-0", playing ? "text-emerald-400" : "text-zinc-400")} />
+      )}
+
+      <AudioWave playing={playing} className="shrink-0" />
+
+      <span className="min-w-0 flex-1 truncate text-xs font-medium text-white" title={title}>
+        {title}
+      </span>
+
+      <span className={cn("shrink-0 text-[10px] font-medium tabular-nums", playing ? "text-emerald-300" : "text-zinc-400")}>
+        {remaining}
       </span>
     </div>
   );
@@ -160,10 +257,13 @@ export default function DynamicIslandContainer() {
   // Local progress for Spotify
   const [localProgress, setLocalProgress] = useState(nowPlaying?.progressMs ?? 0);
   const [pendingSpotify, setPendingSpotify] = useState(false);
+  const [isSaved, setIsSaved] = useState(nowPlaying?.isSaved ?? false);
+  const [likeLoading, setLikeLoading] = useState(false);
 
   useEffect(() => {
     setLocalProgress(nowPlaying?.progressMs ?? 0);
-  }, [nowPlaying?.progressMs]);
+    setIsSaved(nowPlaying?.isSaved ?? false);
+  }, [nowPlaying?.progressMs, nowPlaying?.isSaved, nowPlaying?.id]);
 
   useEffect(() => {
     if (!nowPlaying?.isPlaying) return;
@@ -229,7 +329,7 @@ export default function DynamicIslandContainer() {
 
   const handleLeave = useCallback(() => {
     if (!activeView) return;
-    collapseTimer.current = setTimeout(() => setExpanded(false), 700);
+    collapseTimer.current = setTimeout(() => setExpanded(false), 200);
   }, [activeView]);
 
   const toggleExpanded = useCallback(() => {
@@ -246,6 +346,7 @@ export default function DynamicIslandContainer() {
           track={nowPlaying}
           remainingMs={remaining}
           playing={!!nowPlaying.isPlaying}
+          date={clock}
         />
       );
     }
@@ -296,6 +397,28 @@ export default function DynamicIslandContainer() {
     });
   }, [nowPlaying?.isPlaying, spotifyControl]);
 
+  const toggleLike = useCallback(async () => {
+    const clientId = settings.liveSpotifyClientId;
+    const trackId = nowPlaying?.id;
+    if (!clientId || !trackId) {
+      showError(i18n("configureToEnable"));
+      return;
+    }
+    setLikeLoading(true);
+    try {
+      const action = isSaved ? "unsave" : "save";
+      await fetchWorker("/api/spotify/control", {
+        method: "POST",
+        body: JSON.stringify({ action, clientId, trackId }),
+      });
+      setIsSaved((s) => !s);
+    } catch {
+      showError(i18n("playbackControlFailed"));
+    } finally {
+      setLikeLoading(false);
+    }
+  }, [settings.liveSpotifyClientId, nowPlaying?.id, isSaved, i18n, showError]);
+
   const onSpotifySeek = useCallback(
     (value: number) => {
       setLocalProgress(value);
@@ -339,78 +462,99 @@ export default function DynamicIslandContainer() {
             onMouseLeave={handleLeave}
             aria-label={i18n("dynamicIsland")}
           >
-            <DynamicIslandView id="spotify" className="w-[320px] sm:w-[380px]">
-              <div onClick={stopPropagation} className="flex w-full flex-col gap-3">
-                <div className="flex items-center gap-3">
+            <DynamicIslandView id="spotify" className="w-[340px] sm:w-[400px]">
+              <div onClick={stopPropagation} className="flex w-full flex-col gap-4">
+                <div className="flex items-start justify-between gap-2">
+                  <span className="text-[10px] font-medium tabular-nums text-zinc-500">
+                    {clock ? formatClock(clock) : "--:--"}
+                  </span>
+                  <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 text-[10px] font-medium text-emerald-300">
+                    {nowPlaying?.source || "Spotify"}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-4">
                   {nowPlaying?.cover || nowPlaying?.artworkUrl ? (
                     <Image
                       src={nowPlaying.cover || nowPlaying.artworkUrl || ""}
-                      alt={nowPlaying.title || i18n("spotify")}
-                      width={64}
-                      height={64}
-                      className="rounded-lg object-cover shadow-lg"
+                      alt={nowPlaying.title || "Spotify"}
+                      width={56}
+                      height={56}
+                      className="h-14 w-14 shrink-0 rounded-xl object-cover shadow-lg ring-1 ring-white/10"
                       unoptimized
                     />
                   ) : (
-                    <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-white/[0.05]">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white/[0.05] ring-1 ring-white/10">
                       <Music className="h-6 w-6 text-emerald-400" />
                     </div>
                   )}
-                  <div className="flex min-w-0 flex-1 flex-col justify-center">
+                  <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5">
                     <p className="truncate text-sm font-semibold text-white">
-                      {nowPlaying?.title || i18n("spotify")}
+                      {nowPlaying?.title || "Spotify"}
                     </p>
                     <p className="truncate text-xs text-zinc-400">
                       {nowPlaying?.artist || i18n("spotifyPlaying")}
                     </p>
                   </div>
+                  <button
+                    type="button"
+                    onClick={toggleLike}
+                    disabled={likeLoading || !nowPlaying?.id}
+                    className={cn(
+                      "flex h-8 w-8 items-center justify-center rounded-full transition-all duration-200",
+                      isSaved
+                        ? "bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25"
+                        : "text-zinc-400 hover:bg-white/10 hover:text-white",
+                    )}
+                    aria-label={isSaved ? i18n("unlike") : i18n("like")}
+                    title={isSaved ? i18n("unlike") : i18n("like")}
+                  >
+                    <motion.div
+                      whileTap={{ scale: 1.2 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                    >
+                      <Heart className={cn("h-4 w-4", isSaved && "fill-current")} />
+                    </motion.div>
+                  </button>
                 </div>
 
                 {nowPlaying?.durationMs !== undefined && (
-                  <div className="space-y-1.5" onPointerDown={stopPropagation}>
-                    <Slider
+                  <div className="space-y-2" onPointerDown={stopPropagation}>
+                    <MediaProgress
                       value={localProgress}
-                      onChange={onSpotifySeek}
-                      min={0}
                       max={nowPlaying.durationMs}
-                      step={1000}
-                      showValue={false}
-                      aria-label={i18n("seek")}
+                      onChange={onSpotifySeek}
                     />
-                    <div className="flex justify-between text-[10px] text-zinc-500">
-                      <span>{formatMs(localProgress)}</span>
-                      <span>{formatMs(nowPlaying.durationMs)}</span>
-                    </div>
                   </div>
                 )}
 
-                <div className="flex items-center justify-center gap-4">
+                <div className="flex items-center justify-center gap-3">
                   <button
                     type="button"
                     onClick={() => spotifyControl("previous")}
                     disabled={pendingSpotify || npLoading}
-                    className="rounded-xl p-2 text-zinc-300 transition-colors hover:bg-white/[0.08] hover:text-white disabled:opacity-40"
+                    className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-40"
                     aria-label={i18n("previous")}
                   >
-                    <SkipBack className="h-5 w-5" />
+                    <SkipBack className="h-4 w-4" />
                   </button>
                   <button
                     type="button"
                     onClick={togglePlay}
                     disabled={pendingSpotify || npLoading}
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 transition-colors hover:bg-emerald-400 disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-zinc-950 shadow-lg transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
                     aria-label={nowPlaying?.isPlaying ? i18n("pause") : i18n("play")}
                   >
-                    {nowPlaying?.isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+                    {nowPlaying?.isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 fill-current" />}
                   </button>
                   <button
                     type="button"
                     onClick={() => spotifyControl("next")}
                     disabled={pendingSpotify || npLoading}
-                    className="rounded-xl p-2 text-zinc-300 transition-colors hover:bg-white/[0.08] hover:text-white disabled:opacity-40"
+                    className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-40"
                     aria-label={i18n("next")}
                   >
-                    <SkipForward className="h-5 w-5" />
+                    <SkipForward className="h-4 w-4" />
                   </button>
                 </div>
               </div>

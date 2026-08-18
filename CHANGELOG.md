@@ -4,6 +4,19 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Dynamic Island : lecteur audio enrichi (heure permanente, pochette, contrôles, Like)**
+
+### Corrige
+- `ethone-next/components/DynamicIslandContainer.tsx` : amélioration de la vue compacte Spotify avec heure système, pochette miniature, onde audio, titre tronqué et temps restant.
+- Vue dépliée au survol avec en-tête heure + badge source, pochette `w-14 h-14`, titre, artiste, bouton Like (via `/api/spotify/control` `save`/`unsave`), barre de progression interactive et glissable, et contrôles précédent / play-pause / suivant.
+- Nouveau composant `MediaProgress` local avec piste `h-1.5 hover:h-2`, jauge `bg-emerald-400` et affichage des temps écoulé / restant.
+- Réduction du délai de fermeture au survol à 200 ms.
+
+**Worker : correction des contrôles Spotify renvoyant une réponse vide**
+
+### Corrige
+- `worker/src/utils/external-request.js` : `readJson` accepte désormais un corps de réponse vide (`Content-Length: 0` ou corps vide) et retourne `null`. Cela évite `UPSTREAM_INVALID_RESPONSE` quand Spotify répond `200`/`202` avec un body vide sur `play`, `pause`, `save` ou `unsave`, alors que l'action a bien été exécutée.
+
 **UI : onglets des paramètres — contraste et animation de la pilule active**
 
 ### Corrige

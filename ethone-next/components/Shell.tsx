@@ -42,7 +42,7 @@ export default function Shell({ children }: { children: ReactNode }) {
               <Sidebar />
               <div
                 data-v8-shell
-                className="min-w-0 flex-1 overflow-x-hidden transition-colors duration-150 duration-300"
+                className="flex min-w-0 flex-1 flex-col overflow-hidden transition-colors duration-150"
               >
                 <TopBar />
                 <CommandPalette />
@@ -55,7 +55,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                 <main
                   data-v8-main
                   id="main-content"
-                  className="w-full overflow-x-hidden p-4 pb-[calc(5rem+env(safe-area-inset-bottom))] md:p-6 md:pb-32"
+                  className="min-w-0 flex-1 overflow-x-clip overflow-y-auto p-4 pb-[calc(5rem+env(safe-area-inset-bottom))] md:p-6 md:pb-32"
                   tabIndex={-1}
                 >
                   <ActivityJournalProvider>

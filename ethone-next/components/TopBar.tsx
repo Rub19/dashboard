@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronRight, CloudSun, Sun, Moon, Timer, Eye, EyeOff } from "lucide-react";
-import { AnimatedSidebarTrigger } from "@/components/motion/animated-sidebar";
+import { ChevronRight, CloudSun, Sun, Moon, Timer, Eye, EyeOff, PanelLeftOpen, PanelLeftClose } from "lucide-react";
+import { AnimatedSidebarTrigger, useAnimatedSidebar } from "@/components/motion/animated-sidebar";
 import SystemStatusPills from "@/components/SystemStatusPills";
 import CommandBarTrigger from "@/components/CommandBarTrigger";
 import NotificationCenter from "@/components/NotificationCenter";
@@ -37,6 +37,20 @@ function useBreadcrumb() {
   const pathname = usePathname() ?? "/";
   const pageKey = ROUTE_LABELS[pathname] || pathname.split("/").filter(Boolean)[0] || "home";
   return { home: "ETHONE", page: i18n(pageKey) || pageKey };
+}
+
+function SidebarTopToggle() {
+  const { open } = useAnimatedSidebar();
+  return (
+    <AnimatedSidebarTrigger
+      type="button"
+      className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.04] text-zinc-400 shadow-lg backdrop-blur-xl transition-all hover:border-white/20 hover:bg-white/[0.08] hover:text-white active:scale-95 cursor-pointer select-none"
+      aria-label="Basculer la barre latérale"
+      title={open ? "Réduire" : "Ouvrir"}
+    >
+      {open ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
+    </AnimatedSidebarTrigger>
+  );
 }
 
 function WeatherQuickButton() {
@@ -124,13 +138,7 @@ export default function TopBar() {
     >
       {/* Left — Identity & Breadcrumb */}
       <div className="flex min-w-0 flex-1 items-center gap-3">
-        <AnimatedSidebarTrigger
-          type="button"
-          className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.05] text-sm font-bold text-white shadow-inner transition-colors hover:bg-white/[0.08]"
-          aria-label="Basculer la barre latérale"
-        >
-          E
-        </AnimatedSidebarTrigger>
+        <SidebarTopToggle />
         <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm font-medium text-zinc-400">
           <Link href="/" className="transition-colors hover:text-white">
             {home}

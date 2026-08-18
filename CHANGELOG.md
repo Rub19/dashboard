@@ -4,6 +4,14 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Positionnement des popovers Dock et correction erreur Tâches**
+
+### Corrige
+- `ethone-next/components/DockControlCenter.tsx` : positionnement fixe au-dessus du Dock (`bottom-28 left-1/2 -translate-x-1/2`), animation depuis le bas avec spring, clic extérieur via `useLayer`.
+- `ethone-next/components/FocusPopover.tsx` : même ancrage au-dessus du Dock, animation depuis le bas, fermeture Escape / clic extérieur via `useLayer`.
+- `ethone-next/components/TasksWidget.tsx` : affichage robuste de l'erreur (`error?.message || String(error)`).
+- `ethone-next/lib/hooks/useTasks.ts` : extraction du message d'erreur (`errorMessage`) au lieu de `new Error(String(err))` qui générait `[object Object]` sur les objets Supabase.
+
 **OAuth Spotify : scopes manquants pour lecture et bibliothèque**
 
 ### Corrige

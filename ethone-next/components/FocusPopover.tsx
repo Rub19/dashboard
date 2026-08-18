@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useFloating, offset, flip, shift, autoUpdate, FloatingPortal } from "@floating-ui/react";
+import { FloatingPortal } from "@floating-ui/react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
+import { useLayer } from "@/components/LayerProvider";
 import { useFocus, type FocusPhase } from "./FocusProvider";
 
 const PRESETS: { id: string; phase: FocusPhase; minutes: number; icon: string; color: string }[] = [
@@ -23,21 +24,17 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
   const { state, start, pause, resume, stop, skip } = useFocus();
   const panelRef = useRef<HTMLDivElement | null>(null);
 
-  const { refs, floatingStyles, isPositioned, update: recalculate } = useFloating({
-    open,
-    onOpenChange: onClose,
-    placement: "bottom",
-    strategy: "fixed",
-    whileElementsMounted: autoUpdate,
-    middleware: [offset(8), flip({ padding: 8 }), shift({ padding: 8 })],
+  useLayer(open, onClose, {
+    boundary: panelRef,
+    anchor: referenceRef,
+    kind: "popover",
+    closeOnEscape: true,
+    closeOnOutside: true,
+    closeOnResize: true,
+    closeOnScroll: true,
+    initialFocus: false,
+    trapFocus: false,
   });
-
-  useLayoutEffect(() => {
-    if (referenceRef) {
-      refs.setReference(referenceRef);
-      recalculate?.();
-    }
-  }, [referenceRef, refs, recalculate]);
 
   const getFocusable = useCallback(() => {
     if (!panelRef.current) return [];
@@ -52,11 +49,6 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
     elements[0]?.focus({ preventScroll: true });
 
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        onClose();
-        return;
-      }
       if (e.key !== "Tab" || !panelRef.current) return;
       const all = getFocusable();
       if (all.length === 0) {
@@ -79,25 +71,11 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
       }
     }
 
-    function onPointerDown(e: MouseEvent) {
-      const target = e.target as Node;
-      if (
-        panelRef.current &&
-        !panelRef.current.contains(target) &&
-        referenceRef &&
-        !referenceRef.contains(target)
-      ) {
-        onClose();
-      }
-    }
-
     window.addEventListener("keydown", onKeyDown);
-    document.addEventListener("pointerdown", onPointerDown);
     return () => {
       window.removeEventListener("keydown", onKeyDown);
-      document.removeEventListener("pointerdown", onPointerDown);
     };
-  }, [open, onClose, referenceRef, getFocusable]);
+  }, [open, onClose, getFocusable]);
 
   const progress = state.total > 0 ? ((state.total - state.remaining) / state.total) * 100 : 0;
 
@@ -110,10 +88,6 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
 
   const setRefs = (el: HTMLDivElement | null) => {
     panelRef.current = el;
-    refs.setFloating(el as unknown as HTMLElement);
-    if (el) {
-      recalculate?.();
-    }
   };
 
   return (
@@ -122,12 +96,12 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
         {open && (
           <motion.div
             ref={setRefs}
-            initial={{ opacity: 0, y: -8, scale: 0.96 }}
+            initial={{ opacity: 0, y: 16, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.96 }}
-            transition={{ duration: 0.15, ease: "easeOut" as const }}
-            style={{ ...floatingStyles, visibility: isPositioned ? "visible" : "hidden" }}
-            className="z-[90] w-72 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-2xl outline-none backdrop-blur-[var(--panel-blur)]"
+            exit={{ opacity: 0, y: 16, scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 350, damping: 28 }}
+            style={{ transformOrigin: "bottom center" }}
+            className="fixed bottom-28 left-1/2 z-[90] w-72 -translate-x-1/2 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-2xl outline-none backdrop-blur-[var(--panel-blur)]"
             role="dialog"
             aria-modal="true"
             aria-label={i18n("focus")}

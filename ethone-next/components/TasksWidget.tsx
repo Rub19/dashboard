@@ -38,7 +38,7 @@ export default function TasksWidget({ className = "", data }: TasksWidgetProps) 
   const { success, error: showError } = useToast();
   const own = useCloudTasks();
 
-  const { items, loading, error, create, update, remove } = data ?? own;
+  const { items, loading, create, update, remove } = data ?? own;
 
   const [newTaskTitle, setNewTaskTitle] = useState("");
 
@@ -141,12 +141,6 @@ export default function TasksWidget({ className = "", data }: TasksWidgetProps) 
             <Plus className="h-4 w-4" />
           </button>
         </form>
-
-        {error && (
-          <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-400">
-            {error.message}
-          </div>
-        )}
 
         {/* List */}
         <TodoList

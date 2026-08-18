@@ -4,6 +4,21 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useSyncStore } from "@/lib/stores/sync";
 
+function errorMessage(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  if (err && typeof (err as { message?: unknown }).message === "string") {
+    return (err as { message: string }).message;
+  }
+  if (err && typeof err === "object" && !(err instanceof Error)) {
+    try {
+      return JSON.stringify(err);
+    } catch {
+      return String(err);
+    }
+  }
+  return String(err);
+}
+
 export type Task = {
   id: string;
   title: string;
@@ -46,7 +61,7 @@ export function useTasks() {
       if (fetchError) throw fetchError;
       setItems((data as Task[]) || []);
     } catch (err) {
-      setError(err instanceof Error ? err : new Error(String(err)));
+      setError(new Error(errorMessage(err)));
     } finally {
       setLoading(false);
     }
@@ -129,7 +144,7 @@ export function useTasks() {
         return next;
       } catch (err) {
         setStatus("error");
-        setError(err instanceof Error ? err : new Error(String(err)));
+        setError(new Error(errorMessage(err)));
         return null;
       }
     },
@@ -157,7 +172,7 @@ export function useTasks() {
         return next;
       } catch (err) {
         setStatus("error");
-        setError(err instanceof Error ? err : new Error(String(err)));
+        setError(new Error(errorMessage(err)));
         await load();
         return null;
       }
@@ -177,7 +192,7 @@ export function useTasks() {
         setStatus("idle");
       } catch (err) {
         setStatus("error");
-        setError(err instanceof Error ? err : new Error(String(err)));
+        setError(new Error(errorMessage(err)));
         setItems(previous);
       }
     },

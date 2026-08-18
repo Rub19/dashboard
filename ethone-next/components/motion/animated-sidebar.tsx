@@ -169,7 +169,7 @@ export function useAnimatedSidebar() {
   return context;
 }
 
-function useAnimatedSidebarPanel() {
+export function useAnimatedSidebarPanel() {
   const context = useContext(AnimatedSidebarPanelContext);
   if (!context) {
     throw new Error(
@@ -625,8 +625,8 @@ export const AnimatedSidebarMenu = forwardRef<
       ref={forwardedRef as React.Ref<HTMLElement>}
       as="ul"
       inset={0}
-      pillClassName="rounded-xl bg-[var(--accent)]/[0.08]"
-      pillContainerClassName="inset-y-auto top-0 h-9"
+      pillClassName="rounded-2xl bg-emerald-500/[0.08] border border-emerald-500/[0.12] shadow-[0_0_15px_rgba(16,185,129,0.12)]"
+      pillContainerClassName="inset-y-0.5"
       data-slot="sidebar-menu"
       className={cn("flex w-full min-w-0 list-none flex-col gap-0.5", className)}
     >
@@ -861,9 +861,9 @@ export function AnimatedSidebarMenuButton({
     <>
       {isActive ? (
         <motion.span
-          layoutId={context.layoutId}
+          layoutId="activeSidebarTab"
           transition={context.reduce ? { duration: 0 } : SPRING_LAYOUT}
-          className="absolute inset-0 rounded-xl bg-[var(--accent)]/15"
+          className="absolute inset-0 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.15)]"
         />
       ) : null}
       {icon ? (
@@ -916,10 +916,10 @@ export function AnimatedSidebarMenuButton({
   );
 
   const interactiveClassName = cn(
-    "relative flex min-h-9 w-full min-w-0 items-center gap-2.5 overflow-hidden rounded-xl px-3 text-left text-sm font-medium outline-none",
-    "text-muted-foreground transition-colors hover:text-foreground",
+    "group relative flex w-full min-w-0 items-center gap-3 overflow-hidden rounded-2xl px-3 py-2.5 text-left text-xs font-medium outline-none",
+    "text-zinc-400 transition-colors hover:text-white",
     "focus-visible:bg-white/[0.08] focus-visible:ring-2 focus-visible:ring-ring",
-    isActive && "text-[var(--accent)]",
+    isActive && "text-emerald-400",
     disabled && "cursor-not-allowed opacity-40",
     className,
   );

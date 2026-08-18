@@ -1,8 +1,23 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import {
+  PanelLeftClose,
+  Settings,
+  User,
+  Loader2,
+  AlertCircle,
+  CheckCircle2,
+  WifiOff,
+} from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useProfile } from "@/lib/hooks/useProfile";
+import { useAuth } from "@/components/AuthProvider";
+import { useActiveProfile } from "@/components/SettingsProvider";
+import { useSyncStore } from "@/lib/stores/sync";
+import { cn } from "@/lib/utils";
 import { Icon } from "@/lib/icons";
 import {
   AnimatedSidebar,
@@ -13,8 +28,8 @@ import {
   AnimatedSidebarMenuButton,
   AnimatedSidebarMenuItem,
   AnimatedSidebarRail,
-  AnimatedSidebarTrigger,
   useAnimatedSidebar,
+  useAnimatedSidebarPanel,
 } from "@/components/motion/animated-sidebar";
 
 type AppItem = { id: string; href: string; icon: string };
@@ -44,26 +59,125 @@ function SidebarBrand() {
       <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.05] text-[10px] font-bold">
         E
       </div>
-      <span className="text-sm font-bold tracking-tight">
-        ETHONE
-      </span>
+      <span className="text-sm font-bold tracking-tight">ETHONE</span>
     </Link>
   );
 }
 
-function SidebarToggle() {
-  const { open } = useAnimatedSidebar();
+function SyncBadge({ collapsed }: { collapsed: boolean }) {
+  const i18n = useI18n();
+  const status = useSyncStore((s) => s.status);
+
+  const config = {
+    syncing: {
+      icon: <Loader2 className="h-3 w-3 animate-spin text-purple-400" />,
+      label: i18n("syncing", "Sync"),
+      dot: "bg-purple-400",
+    },
+    error: {
+      icon: <AlertCircle className="h-3 w-3 text-red-400" />,
+      label: i18n("error", "Erreur"),
+      dot: "bg-red-400",
+    },
+    offline: {
+      icon: <WifiOff className="h-3 w-3 text-amber-400" />,
+      label: i18n("offline", "Hors ligne"),
+      dot: "bg-amber-400",
+    },
+    idle: {
+      icon: <CheckCircle2 className="h-3 w-3 text-emerald-400" />,
+      label: i18n("synced", "Sync"),
+      dot: "bg-emerald-400",
+    },
+  }[status];
+
   return (
-    <AnimatedSidebarTrigger
-      type="button"
-      className="h-9 w-full justify-start gap-2.5 rounded-lg px-3 text-zinc-400 hover:bg-white/[0.05] hover:text-white"
-      aria-label="Basculer la sidebar"
+    <div
+      className={cn(
+        "flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-2.5 py-2 text-[10px] font-medium text-zinc-400",
+        collapsed && "justify-center px-2"
+      )}
+      title={config.label}
     >
-      <Icon name={open ? "chevron-left" : "chevron-right"} className="h-4 w-4" />
-      <span className="text-sm">
-        {open ? "Réduire" : "Ouvrir"}
-      </span>
-    </AnimatedSidebarTrigger>
+      {config.icon}
+      {!collapsed && <span className="truncate">{config.label}</span>}
+    </div>
+  );
+}
+
+function SidebarProfile({ collapsed }: { collapsed: boolean }) {
+  const { user } = useAuth();
+  const { activeProfile } = useActiveProfile();
+  const { profile: publicProfile } = useProfile();
+
+  const displayName =
+    publicProfile?.display_name || activeProfile?.name || user?.email || "Invité";
+  const avatarUrl = publicProfile?.avatar_url;
+
+  return (
+    <div
+      className={cn(
+        "flex items-center gap-2.5 rounded-xl border border-white/[0.06] bg-white/[0.03] p-2",
+        collapsed && "justify-center"
+      )}
+    >
+      <div className="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-white/[0.04]">
+        {avatarUrl ? (
+          <Image
+            src={avatarUrl}
+            alt={displayName}
+            width={32}
+            height={32}
+            unoptimized
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <User className="h-4 w-4 text-zinc-400" />
+        )}
+      </div>
+      {!collapsed && (
+        <span className="min-w-0 flex-1 truncate text-[11px] font-medium text-zinc-200">
+          {displayName}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function SidebarFooter() {
+  const i18n = useI18n();
+  const router = useRouter();
+  const { setOpen } = useAnimatedSidebar();
+  const { collapsed } = useAnimatedSidebarPanel();
+
+  return (
+    <div className="flex flex-col gap-2">
+      <SidebarProfile collapsed={collapsed} />
+
+      <div className="flex items-center gap-2">
+        <SyncBadge collapsed={collapsed} />
+
+        <button
+          type="button"
+          onClick={() => router.push("/settings")}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.03] text-zinc-400 transition-colors hover:border-white/10 hover:bg-white/[0.06] hover:text-white"
+          aria-label={i18n("settings")}
+          title={i18n("settings")}
+        >
+          <Settings className="h-4 w-4" />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.03] text-zinc-400 transition-colors hover:border-white/10 hover:bg-white/[0.06] hover:text-white"
+          aria-label={i18n("collapseSidebar", "Réduire")}
+          title={i18n("collapseSidebar", "Réduire")}
+        >
+          <PanelLeftClose className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -91,8 +205,9 @@ export default function Sidebar() {
     >
       <AnimatedSidebar
         collapsible="icon"
-        variant="sidebar"
+        variant="floating"
         ariaLabel="Navigation principale"
+        panelClassName="m-4 h-[calc(100svh-2rem)] rounded-3xl border border-white/[0.08] bg-zinc-950/80 shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-2xl"
       >
         <AnimatedSidebarHeader>
           <SidebarBrand />
@@ -105,7 +220,6 @@ export default function Sidebar() {
                   isActive={isActive(app)}
                   icon={<Icon name={app.icon} className="h-5 w-5" />}
                   onSelect={() => router.push(app.href)}
-                  className="whitespace-nowrap"
                 >
                   {i18n(app.id)}
                 </AnimatedSidebarMenuButton>
@@ -114,7 +228,7 @@ export default function Sidebar() {
           </AnimatedSidebarMenu>
         </AnimatedSidebarContent>
         <AnimatedSidebarFooter>
-          <SidebarToggle />
+          <SidebarFooter />
         </AnimatedSidebarFooter>
         <AnimatedSidebarRail />
       </AnimatedSidebar>

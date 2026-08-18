@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useFloating, offset, flip, shift, autoUpdate, FloatingPortal } from "@floating-ui/react";
+import { FloatingPortal } from "@floating-ui/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -125,17 +125,6 @@ export default function DockControlCenter({
   const panelRef = useRef<HTMLDivElement | null>(null);
   const [ambience, setAmbience] = useState("none");
 
-  const { refs, floatingStyles, isPositioned, placement, update: recalculate } = useFloating({
-    open,
-    onOpenChange: (next) => {
-      if (!next) onClose();
-    },
-    placement: "top",
-    strategy: "fixed",
-    whileElementsMounted: autoUpdate,
-    middleware: [offset(12), flip({ padding: 8 }), shift({ padding: 8 })],
-  });
-
   useLayer(open, onClose, {
     boundary: panelRef,
     anchor: referenceRef,
@@ -148,19 +137,8 @@ export default function DockControlCenter({
     trapFocus: false,
   });
 
-  useLayoutEffect(() => {
-    if (referenceRef) {
-      refs.setReference(referenceRef);
-      recalculate?.();
-    }
-  }, [referenceRef, refs, recalculate]);
-
   function setRefs(el: HTMLDivElement | null) {
     panelRef.current = el;
-    refs.setFloating(el as unknown as HTMLElement);
-    if (el) {
-      recalculate?.();
-    }
   }
 
   function handleZen() {
@@ -186,16 +164,15 @@ export default function DockControlCenter({
         {open && (
           <motion.div
             ref={setRefs}
-            initial={{ opacity: 0, y: -8, scale: 0.96 }}
+            initial={{ opacity: 0, y: 16, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.96 }}
-            transition={{ duration: 0.15, ease: "easeOut" as const }}
-            style={{ ...floatingStyles, visibility: isPositioned ? "visible" : "hidden" }}
-            className="z-[90] w-80 max-w-[calc(100vw-1rem)] overflow-hidden"
+            exit={{ opacity: 0, y: 16, scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 350, damping: 28 }}
+            style={{ transformOrigin: "bottom center" }}
+            className="fixed bottom-28 left-1/2 z-[90] w-80 max-w-[calc(100vw-1rem)] -translate-x-1/2 overflow-hidden"
             role="dialog"
             aria-modal="false"
             aria-label={i18n("controlCenter")}
-            data-control-center-placement={placement}
           >
             <div
               className="max-h-[calc(80vh-2.5rem)] space-y-4 overflow-y-auto rounded-lg border border-zinc-200 bg-white/90 p-4 shadow-[0_16px_50px_rgba(0,0,0,0.12)] backdrop-blur-3xl dark:border-white/[0.08] dark:bg-zinc-950/90 dark:shadow-[0_16px_50px_rgba(0,0,0,0.7)]"

@@ -4,6 +4,23 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Badges de statut BeUI animés**
+
+### Ajoute
+- `ethone-next/components/motion/animated-badge.tsx` : composant `AnimatedBadge` (inspiré beUI) avec variants d'icônes/labels roll, pulse activité, icônes Lucide, tailles `sm`/`md` et support `useReducedMotion`.
+- `ethone-next/components/DashboardOverview.tsx` : badge d'état Brain (`loading` / `success`) dans l'en-tête de la carte Bento.
+- `ethone-next/components/RecentNotesCard` : badge compteur de notes/fichiers dans l'en-tête de la carte.
+
+### Modifie
+- `ethone-next/components/SystemStatusPills.tsx` : pastille de synchro remplacée par `AnimatedBadge` (Syncing / Synced / Offline).
+- `ethone-next/components/layout/StatusBar.tsx` : rôle, synchro cloud, live, réseau, utilisateur et alertes système passés sur `AnimatedBadge`.
+- `ethone-next/components/SystemHealthBanner.tsx` : badge de santé globale, latence et statuts par intégration animés.
+- `ethone-next/components/TasksWidget.tsx` : badge de progression des tâches avec statut dynamique (`success` / `info` / `warning`).
+- `ethone-next/components/ProductivityCards.tsx` : badge `Live` avec pulse sur le focus actif.
+
+### Outils
+- Bump version `1.5.1` -> `1.6.0` (`package.json`, `public/version.json`, `package-lock.json`, `components/UserProfileDropdown.tsx`).
+
 **Weather : bandeau de recherche transparent**
 
 ### Corrige

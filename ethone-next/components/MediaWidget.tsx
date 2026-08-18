@@ -182,6 +182,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
               className="object-cover"
               iconClassName="h-8 w-8"
               loading="eager"
+              priority
             />
           </div>
           <div

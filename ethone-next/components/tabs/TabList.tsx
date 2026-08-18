@@ -133,7 +133,7 @@ export default function TabList({
                   className={cn(
                     "flex w-full items-center gap-3 rounded-[var(--panel-radius)] px-4 py-3 text-left text-sm font-medium transition-colors",
                     activeId === tab.id
-                      ? "bg-[var(--accent)] text-white"
+                      ? "bg-white/[0.12] text-white"
                       : "text-[var(--foreground)] hover:bg-[var(--panel-bg)]",
                     tab.disabled && "opacity-40 cursor-not-allowed"
                   )}
@@ -188,7 +188,7 @@ export default function TabList({
               onClick={() => onSelect(tab.id)}
               onKeyDown={(e) => handleKeyDown(e, index)}
               className={cn(
-                "relative z-0 flex min-h-[44px] min-w-[44px] items-center justify-center gap-2 whitespace-nowrap rounded-[var(--panel-radius)] px-4 py-2 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
+                "relative z-0 flex min-h-[44px] min-w-[44px] items-center justify-center gap-2 whitespace-nowrap rounded-[var(--panel-radius)] px-4 py-2 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
                 active
                   ? "text-white"
                   : "text-[var(--muted)] hover:text-[var(--foreground)]",
@@ -196,7 +196,7 @@ export default function TabList({
               )}
             >
               {active && (
-                <div className="absolute inset-0 -z-10 rounded-[var(--panel-radius)] bg-[var(--accent)]" />
+                <div className="absolute inset-0 -z-10 rounded-[var(--panel-radius)] bg-white/[0.12]" />
               )}
               <span className="relative z-10 flex items-center gap-2">
                 {tab.icon}

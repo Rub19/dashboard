@@ -147,6 +147,7 @@ export function useBrain(mailClient?: BrainMailClient) {
     try {
       const res = await brainComplete({
         provider: preferences.provider.active,
+        fallback: preferences.provider.active === "cloudflare" ? preferences.provider.fallback : undefined,
         model: preferences.provider.model,
         messages: currentMessages.map((m) => ({ role: m.role, content: m.content })),
         context: {

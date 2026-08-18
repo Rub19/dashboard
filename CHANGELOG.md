@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Dashboard : en-tête allégé et sélecteur workspace retiré**
+
+### Corrige
+- `ethone-next/components/DashboardOverview.tsx` : suppression de l'en-tête redondant (`BrandMark` + titre `ETHONE` + sous-titre `Accueil` déjà présents dans la `TopBar`) et du sélecteur d'espace de travail non fonctionnel. Le bouton de personnalisation du Bento est réduit à une icône discrète en haut à droite pour libérer l'espace en tête de page.
+
 **StatusBar : suppression du bandeau fixe en bas**
 
 ### Corrige

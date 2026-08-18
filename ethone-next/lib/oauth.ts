@@ -94,7 +94,7 @@ export const PROVIDERS: Record<string, { authUrl: string; exchangePath: string; 
   spotify: {
     authUrl: "https://accounts.spotify.com/authorize",
     exchangePath: "/api/spotify/oauth/exchange",
-    scopes: "user-read-email user-read-currently-playing user-read-playback-state user-read-recently-played",
+    scopes: "user-read-email user-read-currently-playing user-read-playback-state user-read-recently-played user-library-read user-library-modify user-modify-playback-state",
   },
   youtube: {
     authUrl: "https://accounts.google.com/o/oauth2/v2/auth",

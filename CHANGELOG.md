@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**OAuth Spotify : scopes manquants pour lecture et bibliothèque**
+
+### Corrige
+- `ethone-next/lib/oauth.ts` : ajoute les scopes `user-library-read`, `user-library-modify` et `user-modify-playback-state` à la connexion Spotify. Le Like et les contrôles de lecture (play/pause/next/previous/seek) nécessitent ces scopes.
+
 **Live Widget : identification Discord, avatar, Spotify et clarification du flux direct**
 
 ### Corrige

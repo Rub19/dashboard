@@ -7,7 +7,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 **Home et cartes : fond black obsidian et meilleure distinction des panneaux**
 
 ### Corrige
-- `ethone-next/app/globals.css` : ajout du token `--panel-obsidian` (`color-mix` de `var(--surface-raised)` et `#000000` à 20 %). `--panel-bg` passe de `var(--surface-raised) 65 %` transparent à `var(--panel-obsidian) 82 %` transparent pour un rendu plus sombre, glassmorphique et « obsidian » qui tranche mieux avec `--background`.
+- `ethone-next/app/globals.css` : ajout du token `--panel-obsidian` (`color-mix` de `var(--surface-raised)` et `#000000` à 32 %). `--panel-bg` devient `var(--panel-obsidian) 92 %` transparent pour un rendu plus sombre, plus solide et « black obsidian » qui tranche nettement avec `--background` sur toutes les surfaces de dashboard.
 - `ethone-next/components/DashboardOverview.tsx` : `homeCardClass` se concentre sur le layout (`h-auto min-h-0 overflow-visible`) et laisse `BentoCard` appliquer le fond `--panel-bg`. Suppression de l'override `bg-[var(--surface-raised)]/90` qui cassait l'uniformité du fond des cartes Home.
 - `ethone-next/components/BentoCard.tsx` : la surbrillance du verre obsidien passe de `from-white/[0.03]` à `from-white/[0.04]` pour un reflet subtil cohérent.
 - Les thèmes sont préservés : `--panel-obsidian` dépend de `var(--surface-raised)`, donc `focus`, `studio`, `obsidian`, `aurora`, `minimal` et `day` conservent leur teinte propre tout en profitant du contraste renforcé.

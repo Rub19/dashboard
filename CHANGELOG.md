@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**StatusBar : suppression du bandeau fixe en bas**
+
+### Corrige
+- `ethone-next/components/Shell.tsx` : suppression de `<StatusBar />` pour retirer le bandeau sombre pleine largeur en bas de l'écran.
+
 **Command Palette : indicateur actif, auto-scroll et épinglettes**
 
 ### Corrige

@@ -16,7 +16,6 @@ import DocumentMetadata from "@/components/DocumentMetadata";
 import { ActivityJournalProvider } from "@/components/ActivityJournalProvider";
 import PageTransition from "@/components/PageTransition";
 import AutomationRuntime from "@/components/AutomationRuntime";
-import StatusBar from "@/components/layout/StatusBar";
 import Dock from "@/components/Dock";
 import SkipLink from "@/components/SkipLink";
 import ContextMenuProvider from "@/components/ContextMenuProvider";
@@ -59,7 +58,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                 <main
                   data-v8-main
                   id="main-content"
-                  className="min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden pb-[calc(7rem+env(safe-area-inset-bottom))] md:pb-[calc(7rem+env(safe-area-inset-bottom))]"
+                  className="min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-[calc(5rem+env(safe-area-inset-bottom))]"
                   tabIndex={-1}
                 >
                   <ActivityJournalProvider>
@@ -67,7 +66,6 @@ export default function Shell({ children }: { children: ReactNode }) {
                     <AutomationRuntime />
                   </ActivityJournalProvider>
                 </main>
-                <StatusBar />
               </div>
             </AnimatedSidebarProvider>
             <MobileNav />

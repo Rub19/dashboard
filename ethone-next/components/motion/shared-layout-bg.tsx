@@ -21,7 +21,7 @@ import {
   useId,
   useState,
 } from "react";
-import { SPRING_LAYOUT } from "@/lib/ease";
+import { EASE_OUT, SPRING_LAYOUT } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 
 export interface SharedLayoutBgProps
@@ -38,17 +38,12 @@ export interface SharedLayoutBgProps
 }
 
 const variants: Variants = {
-  initial: { opacity: 0, filter: "blur(6px)" },
-  animate: { opacity: 1, filter: "blur(0px)" },
-  exit: (isActive: boolean) =>
-    !isActive ? { opacity: 0, filter: "blur(6px)" } : {},
-};
-
-const reducedVariants: Variants = {
   initial: { opacity: 0 },
   animate: { opacity: 1 },
-  exit: (isActive: boolean) => (!isActive ? { opacity: 0 } : {}),
+  exit: { opacity: 0 },
 };
+
+const reducedVariants: Variants = variants;
 
 export const SharedLayoutBg = forwardRef<HTMLElement, SharedLayoutBgProps>(
   function SharedLayoutBg(
@@ -95,7 +90,7 @@ export const SharedLayoutBg = forwardRef<HTMLElement, SharedLayoutBgProps>(
                   initial="initial"
                   animate="animate"
                   exit="exit"
-                  custom={activeId !== null}
+                  transition={{ duration: 0.15, ease: EASE_OUT }}
                   className={cn(
                     "pointer-events-none absolute inset-y-0",
                     pillContainerClassName,

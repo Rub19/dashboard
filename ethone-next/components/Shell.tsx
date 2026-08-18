@@ -38,7 +38,11 @@ export default function Shell({ children }: { children: ReactNode }) {
           <ShortcutsProvider>
             <SkipLink />
             <ProfileSync />
-            <AnimatedSidebarProvider defaultOpen={true} style={{ "--sidebar-width-icon": "7.5rem" }}>
+            <AnimatedSidebarProvider
+              defaultOpen={true}
+              style={{ "--sidebar-width-icon": "7.5rem" }}
+              className="h-dvh max-h-dvh min-h-0 w-full overflow-hidden"
+            >
               <Sidebar />
               <div
                 data-v8-shell

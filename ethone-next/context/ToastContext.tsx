@@ -1,12 +1,11 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, useRef, useMemo } from "react";
+import { createContext, useContext, useCallback, useMemo } from "react";
+import { toast as sonnerToast, Toaster } from "sonner";
 import { useSound } from "@/lib/sound";
-import {
-  AnimatedToastStack,
-  type AnimatedToastData,
-  type ToastType,
-} from "@/components/ui/animated-toast-stack";
+import { X } from "lucide-react";
+
+type ToastType = "success" | "error" | "info" | "warning" | "loading";
 
 export type { ToastType };
 
@@ -16,6 +15,7 @@ export type ToastInput = {
   description?: string;
   message?: string; // legacy alias for title
   duration?: number;
+  action?: { label: string; onClick: () => void };
 };
 
 interface ToastApi {
@@ -49,50 +49,56 @@ const SOUND_MAP: Record<ToastType, string | null> = {
 };
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
-  const [toasts, setToasts] = useState<AnimatedToastData[]>([]);
   const { play } = useSound();
-  const timers = useRef<Record<string, NodeJS.Timeout>>({});
-
-  const remove = useCallback((id: string) => {
-    if (timers.current[id]) {
-      clearTimeout(timers.current[id]);
-      delete timers.current[id];
-    }
-    setToasts((prev) => prev.filter((t) => t.id !== id));
-  }, []);
-
-  const dismiss = remove;
 
   const show = useCallback(
     (input: ToastInput) => {
-      const id = Math.random().toString(36).slice(2);
       const type = input.type || "info";
       const title = input.title || input.message || "";
+      const description = input.description;
       const duration =
         type === "loading"
-          ? 0
+          ? Infinity
           : (input.duration ?? DEFAULT_DURATION);
-
-      const toast: AnimatedToastData = {
-        id,
-        title,
-        description: input.description,
-        type,
-        duration,
-      };
-
-      setToasts((prev) => [...prev, toast]);
 
       const sound = SOUND_MAP[type];
       if (sound) play(sound as Parameters<typeof play>[0]);
 
-      if (duration > 0) {
-        timers.current[id] = setTimeout(() => remove(id), duration);
+      const common = {
+        description,
+        duration,
+        ...(input.action
+          ? {
+              action: {
+                label: input.action.label,
+                onClick: input.action.onClick,
+              },
+            }
+          : {}),
+      };
+
+      let id: string | number;
+      switch (type) {
+        case "success":
+          id = sonnerToast.success(title, common);
+          break;
+        case "error":
+          id = sonnerToast.error(title, common);
+          break;
+        case "warning":
+          id = sonnerToast.warning(title, common);
+          break;
+        case "loading":
+          id = sonnerToast.loading(title, common);
+          break;
+        default:
+          id = sonnerToast(title, common);
+          break;
       }
 
-      return id;
+      return String(id);
     },
-    [play, remove]
+    [play]
   );
 
   const success = useCallback(
@@ -125,6 +131,12 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     [show]
   );
 
+  const remove = useCallback((id: string) => {
+    sonnerToast.dismiss(id);
+  }, []);
+
+  const dismiss = remove;
+
   const api = useMemo<ToastApi>(() => {
     const self: ToastApi = {
       show,
@@ -145,12 +157,31 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={api}>
       {children}
-      <AnimatedToastStack
-        toasts={toasts}
-        onRemove={remove}
-        position="top-right"
-        placement="fixed"
-        maxVisible={4}
+      <Toaster
+        position="bottom-right"
+        richColors
+        closeButton
+        toastOptions={{
+          unstyled: true,
+          classNames: {
+            toast:
+              "group relative flex w-[22rem] max-w-[calc(100vw-1.5rem)] items-start gap-3 rounded-2xl border border-white/[0.08] bg-zinc-950/85 p-4 text-sm text-zinc-100 shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-2xl",
+            title: "font-medium text-zinc-100",
+            description: "mt-0.5 text-xs text-zinc-400",
+            actionButton:
+              "ml-auto rounded-lg border border-white/[0.08] bg-white/[0.05] px-2.5 py-1.5 text-[11px] font-semibold text-zinc-200 transition-colors hover:bg-white/[0.1]",
+            cancelButton: "hidden",
+            closeButton:
+              "absolute right-2 top-2 rounded-md p-1 text-zinc-500 opacity-0 transition-all hover:bg-white/[0.06] hover:text-zinc-200 group-hover:opacity-100",
+            error: "border-rose-500/20 bg-rose-950/85 text-rose-100",
+            success: "border-emerald-500/20 bg-emerald-950/85 text-emerald-100",
+            warning: "border-amber-500/20 bg-amber-950/85 text-amber-100",
+            info: "border-sky-500/20 bg-sky-950/85 text-sky-100",
+          },
+        }}
+        icons={{
+          close: <X className="h-3.5 w-3.5" />,
+        }}
       />
     </ToastContext.Provider>
   );

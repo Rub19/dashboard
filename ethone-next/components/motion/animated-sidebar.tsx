@@ -29,6 +29,7 @@ import {
   EASE_OUT,
   SPRING_LAYOUT,
   SPRING_PRESS,
+  SPRING_SWAP,
 } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 
@@ -41,18 +42,16 @@ const MOBILE_QUERY = "(max-width: 767px)";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
 
 const PANEL_TRANSITION = {
-  duration: 0.36,
+  duration: 0.42,
   ease: EASE_DRAWER,
 } as const;
 
-// The desktop rail settles at a hard zero-width boundary. Keep the spring
-// critically damped so it cannot overshoot, pause against that boundary, and
-// then snap back during the final frame.
+// Smooth, slightly bouncy rail morph that never snaps at the zero-width boundary.
 const SIDEBAR_MORPH_TRANSITION = {
   type: "spring",
-  stiffness: 380,
-  damping: 35,
-  mass: 0.75,
+  stiffness: 280,
+  damping: 26,
+  mass: 0.9,
 } as const;
 
 const LABEL_ENTER_TRANSITION = {
@@ -877,18 +876,14 @@ export function AnimatedSidebarMenuButton({
       <motion.span
         initial={false}
         animate={{
-          opacity: 1,
-          x: 0,
+          opacity: panel.collapsed ? 0 : 1,
+          x: panel.collapsed ? 12 : 0,
         }}
-        transition={
-          context.reduce
-            ? REDUCED_TRANSITION
-            : panel.collapsed
-              ? LABEL_EXIT_TRANSITION
-              : LABEL_ENTER_TRANSITION
-        }
-        aria-hidden={false}
-        className="relative z-10 min-w-0 flex-1 truncate"
+        transition={context.reduce ? REDUCED_TRANSITION : SPRING_SWAP}
+        className={cn(
+          "relative z-10 min-w-0 flex-1 truncate",
+          panel.collapsed && "pointer-events-none"
+        )}
       >
         {children}
       </motion.span>

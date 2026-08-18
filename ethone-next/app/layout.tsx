@@ -63,9 +63,9 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} h-full max-h-dvh overflow-hidden antialiased`}
     >
-      <body className="min-h-dvh overflow-x-hidden bg-[var(--background)] text-[var(--foreground)]">
+      <body className="h-dvh max-h-dvh overflow-hidden bg-[var(--background)] text-[var(--foreground)]">
         <AuthProvider>
           <SettingsProvider>
             <FocusProvider>

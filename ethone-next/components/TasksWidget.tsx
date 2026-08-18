@@ -9,6 +9,8 @@ import { useToast } from "@/components/ToastProvider";
 import BentoCard from "@/components/BentoCard";
 import TodoList from "./TodoList";
 import { cn } from "@/lib/utils";
+import { AnimatedBadge } from "@/components/motion/animated-badge";
+import type { AnimatedBadgeStatus } from "@/components/motion/animated-badge";
 
 export type TaskPriority = "low" | "medium" | "high" | "urgent";
 
@@ -85,10 +87,13 @@ export default function TasksWidget({ className = "", data, scrollable = true }:
     }
   }
 
+  const taskStatus: AnimatedBadgeStatus =
+    stats.total === 0 ? "neutral" : stats.open === 0 ? "success" : stats.percentage >= 50 ? "info" : "warning";
+
   const badge = (
-    <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-2.5 py-1 text-[11px] font-mono font-medium text-emerald-400">
+    <AnimatedBadge status={taskStatus} size="sm" contentKey={`${stats.done}/${stats.total}`}>
       {stats.done} / {stats.total} {i18n("done", "terminées")}
-    </span>
+    </AnimatedBadge>
   );
 
   return (

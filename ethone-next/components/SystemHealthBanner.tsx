@@ -2,11 +2,12 @@
 
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Activity, AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Loader2, RefreshCw } from "lucide-react";
+import { Activity, ChevronDown, ChevronUp, Loader2, RefreshCw } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { INTEGRATIONS } from "@/lib/integrations";
 import type { PingResult } from "@/lib/connection-config";
 import ServiceIcon from "@/components/ServiceIcon";
+import { AnimatedBadge } from "@/components/motion/animated-badge";
 
 export type HealthMap = Record<string, PingResult>;
 
@@ -57,29 +58,16 @@ export default function SystemHealthBanner({
         </div>
 
         <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-start">
-          <span
-            className={`inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 text-[10px] font-semibold ${
-              tone === "success"
-                ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
-                : tone === "warning"
-                  ? "border-amber-500/20 bg-amber-500/10 text-amber-400"
-                  : "border-rose-500/20 bg-rose-500/10 text-rose-400"
-            }`}
+          <AnimatedBadge
+            status={tone === "success" ? "success" : tone === "warning" ? "warning" : "danger"}
+            size="sm"
           >
-            {tone === "success" ? (
-              <CheckCircle2 className="h-3 w-3" />
-            ) : tone === "warning" ? (
-              <ChevronDown className="h-3 w-3" />
-            ) : (
-              <AlertCircle className="h-3 w-3" />
-            )}
             {errors > 0 ? `${errors} ${i18n("error")}` : unconfigured > 0 ? `${unconfigured} ${i18n("notConfigured")}` : i18n("all")}
-          </span>
+          </AnimatedBadge>
 
-          <span className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-xs font-mono text-emerald-400">
-            <span className="mr-1 inline-block h-2 w-2 rounded-full bg-emerald-400" />
+          <AnimatedBadge status="info" size="sm" contentKey="latency">
             {i18n("latency")}: 30 ms
-          </span>
+          </AnimatedBadge>
 
           <button
             type="button"
@@ -130,23 +118,11 @@ export default function SystemHealthBanner({
                         {result ? `${result.ms}ms` : i18n(status === "connected" ? "connected" : status === "error" ? "error" : "notConfigured")}
                       </p>
                     </div>
-                    <div
-                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
-                        status === "connected"
-                          ? "bg-emerald-500/10 text-emerald-400"
-                          : status === "error"
-                            ? "bg-rose-500/10 text-rose-400"
-                            : "bg-zinc-500/10 text-zinc-500"
-                      }`}
-                    >
-                      {status === "connected" ? (
-                        <CheckCircle2 className="h-3 w-3" />
-                      ) : status === "error" ? (
-                        <AlertCircle className="h-3 w-3" />
-                      ) : (
-                        <span className="h-1.5 w-1.5 rounded-full bg-current opacity-60" />
-                      )}
-                    </div>
+                    <AnimatedBadge
+                      status={status === "connected" ? "success" : status === "error" ? "danger" : "neutral"}
+                      size="sm"
+                      showIcon
+                    />
                   </div>
                 );
               })}

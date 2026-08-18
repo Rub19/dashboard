@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Briefcase, Cloud, CloudOff, RefreshCw, Clock } from "lucide-react";
+import { Briefcase, Clock } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useActiveProfile } from "@/components/SettingsProvider";
 import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
 import { useClock } from "@/lib/hooks/useClock";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { AnimatedBadge } from "@/components/motion/animated-badge";
+import type { AnimatedBadgeStatus } from "@/components/motion/animated-badge";
 
 function useOnlineStatus() {
   const [online, setOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
@@ -62,15 +64,12 @@ export default function SystemStatusPills() {
   const workspace = activeProfile?.workspace || activeSpace || "personal";
   const workspaceLabel = i18n(workspace) || workspace;
 
-  const syncIcon = syncing ? (
-    <RefreshCw className="h-3 w-3 animate-spin text-sky-400" />
-  ) : online ? (
-    <Cloud className="h-3 w-3 text-emerald-400" />
-  ) : (
-    <CloudOff className="h-3 w-3 text-rose-400" />
-  );
-
-  const syncLabel = syncing ? i18n("v8Syncing") || "Sync" : online ? i18n("v8Synced") || "Sync" : i18n("v8Offline") || "Offline";
+  const syncStatus: AnimatedBadgeStatus = syncing ? "loading" : online ? "success" : "warning";
+  const syncLabel = syncing
+    ? i18n("v8Syncing") || "Syncing"
+    : online
+      ? i18n("v8Synced") || "Synced"
+      : i18n("v8Offline") || "Offline";
 
   return (
     <div className="hidden items-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.03] p-1 md:flex">
@@ -80,15 +79,16 @@ export default function SystemStatusPills() {
 
       <Separator />
 
-      <StatusPill
-        icon={syncIcon}
+      <AnimatedBadge
+        status={syncStatus}
+        size="sm"
         onClick={() => {
           if (!syncing) sync().catch(() => {});
         }}
         title={i18n("sync")}
       >
         {syncLabel}
-      </StatusPill>
+      </AnimatedBadge>
 
       <Separator />
 

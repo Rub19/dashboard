@@ -2,11 +2,13 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
+import { Radio } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useFocus } from "@/components/FocusProvider";
 import BentoCard from "@/components/BentoCard";
 import { Icon } from "@/lib/icons";
 import type { Item } from "@/lib/hooks/useItems";
+import { AnimatedBadge } from "@/components/motion/animated-badge";
 
 type FocusApi = ReturnType<typeof useFocus>;
 
@@ -79,10 +81,9 @@ export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus,
   );
 
   const badge = isLive ? (
-    <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400">
-      <Icon name="radio" className="h-3 w-3" />
-      <span className="uppercase tracking-wider">{i18n("live")}</span>
-    </span>
+    <AnimatedBadge status="info" size="sm" pulse icon={<Radio className="h-3 w-3" />}>
+      {i18n("live")}
+    </AnimatedBadge>
   ) : undefined;
 
   return (
@@ -263,8 +264,14 @@ export function RecentNotesCard({ notes, className = "", scrollable = true }: Re
     </Link>
   );
 
+  const badge = (
+    <AnimatedBadge status={notes.length > 0 ? "info" : "neutral"} size="sm" contentKey={notes.length}>
+      {notes.length} {i18n("notes")}
+    </AnimatedBadge>
+  );
+
   return (
-    <BentoCard title={i18n("recent")} icon="history" className={className} action={action} scrollable={scrollable}>
+    <BentoCard title={i18n("recent")} icon="history" className={className} action={action} badge={badge} scrollable={scrollable}>
       <div className="flex h-full min-h-0 flex-col justify-between gap-2">
         {recent.length > 0 ? (
           <div className="space-y-2">

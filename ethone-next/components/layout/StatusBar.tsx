@@ -3,15 +3,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import {
-  CheckCircle2,
-  Loader2,
   Wifi,
   WifiOff,
   User,
   LogOut,
   Shield,
-  AlertCircle,
-  Circle,
   Radio,
 } from "lucide-react";
 import { useLiveWidgetStore } from "@/lib/hooks/useLiveWidgetStore";
@@ -23,6 +19,8 @@ import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSyncStore, type SyncState } from "@/lib/stores/sync";
 import { WORKER_URL } from "@/lib/api";
+import { AnimatedBadge } from "@/components/motion/animated-badge";
+import type { AnimatedBadgeStatus } from "@/components/motion/animated-badge";
 import VersionPill from "./VersionPill";
 
 function useOnlineStatus() {
@@ -107,76 +105,27 @@ function CloudSyncPill({
     ? `${i18n("syncErrorSources", "Sources en erreur")} : ${errorSources.join(", ")}`
     : i18n("syncError", "La synchronisation a échoué");
 
-  switch (status) {
-    case "syncing":
-      return (
-        <StatusPill
-          icon={<Loader2 className="h-3.5 w-3.5 animate-spin text-purple-400" />}
-          value="Synchronisation..."
-          tone="info"
-        />
-      );
-    case "error":
-      return (
-        <StatusPill
-          icon={<AlertCircle className="h-3.5 w-3.5 text-red-400" />}
-          value="Erreur sync"
-          title={errorTitle}
-          tone="error"
-        />
-      );
-    case "offline":
-      return (
-        <StatusPill
-          icon={<WifiOff className="h-3.5 w-3.5 text-amber-400" />}
-          value="Hors ligne"
-          tone="warning"
-        />
-      );
-    default:
-      return (
-        <StatusPill
-          icon={<CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />}
-          value={online ? "Enregistré" : "Prêt"}
-          tone={online ? "success" : "error"}
-        />
-      );
-  }
-}
-
-type StatusPillProps = {
-  icon?: React.ReactNode;
-  label?: string;
-  value?: string;
-  title?: string;
-  children?: React.ReactNode;
-  onClick?: () => void;
-  tone?: "default" | "success" | "warning" | "error" | "info";
-};
-
-function StatusPill({ icon, label, value, title, children, onClick, tone = "default" }: StatusPillProps) {
-  const toneClass = {
-    default: "hover:bg-white/[0.04] hover:text-zinc-200 text-zinc-400",
-    success: "hover:bg-emerald-500/[0.08] hover:text-emerald-300 text-emerald-400",
-    warning: "hover:bg-amber-500/[0.08] hover:text-amber-300 text-amber-400",
-    error: "hover:bg-red-500/[0.08] hover:text-red-300 text-red-400",
-    info: "hover:bg-sky-500/[0.08] hover:text-sky-300 text-sky-400",
-  }[tone];
+  const badgeStatus: AnimatedBadgeStatus =
+    status === "syncing" ? "loading" : status === "error" ? "danger" : status === "offline" ? "warning" : "success";
+  const badgeLabel =
+    status === "syncing"
+      ? i18n("v8Syncing", "Synchronisation")
+      : status === "error"
+        ? i18n("syncError", "Erreur sync")
+        : status === "offline"
+          ? i18n("v8Offline", "Hors ligne")
+          : online
+            ? i18n("v8Saved", "Enregistré")
+            : i18n("v8Ready", "Prêt");
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      title={title}
-      className={`group flex min-w-0 items-center gap-1.5 rounded px-2 py-0.5 text-xs transition-colors ${
-        onClick ? `${toneClass} cursor-pointer` : "text-zinc-400"
-      }`}
+    <AnimatedBadge
+      status={badgeStatus}
+      size="sm"
+      title={status === "error" ? errorTitle : undefined}
     >
-      {icon && <span className="shrink-0">{icon}</span>}
-      {label && <span className="hidden whitespace-nowrap opacity-60 md:inline">{label}</span>}
-      {value && <span className="truncate font-medium">{value}</span>}
-      {children}
-    </button>
+      {badgeLabel}
+    </AnimatedBadge>
   );
 }
 
@@ -237,64 +186,47 @@ export default function StatusBar() {
     >
       <div className="flex h-full w-full items-center justify-between">
         <div className="flex min-w-0 items-center gap-2">
-          <StatusPill
-            icon={<Shield className="h-3.5 w-3.5" />}
-            value={sessionRole.label}
-            tone={
-              sessionRole.id === "admin"
-                ? "warning"
-                : sessionRole.id === "guest"
-                ? "default"
-                : "success"
-            }
-          />
+          <AnimatedBadge
+            status={sessionRole.id === "admin" ? "warning" : sessionRole.id === "guest" ? "neutral" : "success"}
+            size="sm"
+            icon={<Shield className="h-3 w-3" />}
+          >
+            {sessionRole.label}
+          </AnimatedBadge>
 
           <CloudSyncPill status={syncStatus} online={online} sources={syncSources} i18n={i18n} />
         </div>
 
         <div className="flex min-w-0 items-center gap-2">
-          {isOpen ? (
-            <button
-              type="button"
-              onClick={() => (isMinimized ? openLive() : closeLive())}
-              className="flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/15 px-2.5 py-1 text-xs font-medium text-emerald-300 transition-all hover:bg-emerald-500/25"
-            >
-              <Radio className="h-3.5 w-3.5 animate-pulse text-emerald-400" />
-              <span>{isMinimized ? i18n("liveMinimized") || "Live réduit" : i18n("liveActive") || "Live actif"}</span>
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => openLive()}
-              aria-label={i18n("openLive") || "Ouvrir Live"}
-              className="rounded p-1 text-zinc-500 transition-colors hover:text-white"
-            >
-              <Radio className="h-3.5 w-3.5" />
-            </button>
-          )}
+          <AnimatedBadge
+            status={isOpen ? "info" : "neutral"}
+            size="sm"
+            pulse={isOpen}
+            icon={<Radio className="h-3 w-3" />}
+            onClick={() => (isOpen ? (isMinimized ? openLive() : closeLive()) : openLive())}
+          >
+            {isOpen
+              ? (isMinimized ? i18n("liveMinimized") || "Live réduit" : i18n("liveActive") || "Live actif")
+              : i18n("openLive") || "Live"}
+          </AnimatedBadge>
 
-          <StatusPill
-            icon={
-              online ? (
-                pingging ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin text-zinc-400" />
-                ) : (
-                  <Wifi className="h-3.5 w-3.5" />
-                )
-              ) : (
-                <WifiOff className="h-3.5 w-3.5" />
-              )
-            }
-            value={online ? (ping !== null ? `${ping} ms` : i18n("v8NetworkOnline")) : i18n("v8NetworkOffline")}
-            tone={online ? "success" : "error"}
-          />
+          <AnimatedBadge
+            status={online ? (pingging ? "loading" : "success") : "danger"}
+            size="sm"
+            icon={online ? (pingging ? undefined : <Wifi className="h-3 w-3" />) : <WifiOff className="h-3 w-3" />}
+          >
+            {online ? (ping !== null ? `${ping} ms` : i18n("v8NetworkOnline")) : i18n("v8NetworkOffline")}
+          </AnimatedBadge>
 
           <div className="relative" ref={menuRef}>
-            <StatusPill
-              icon={<User className="h-3.5 w-3.5" />}
-              value={userLabel}
+            <AnimatedBadge
+              status="neutral"
+              size="sm"
+              icon={<User className="h-3 w-3" />}
               onClick={() => setMenuOpen((v) => !v)}
-            />
+            >
+              {userLabel}
+            </AnimatedBadge>
             {menuOpen && (
               <div className="absolute bottom-full left-1/2 z-40 mb-2 w-40 -translate-x-1/2 rounded-xl border border-white/10 bg-zinc-950/95 p-1 shadow-2xl shadow-black/80 backdrop-blur-md">
                 <button
@@ -322,13 +254,14 @@ export default function StatusBar() {
 
           <VersionPill />
 
-          <StatusPill
-            icon={systemOk ? <Circle className="h-3.5 w-3.5 fill-emerald-400 text-emerald-400" /> : <AlertCircle className="h-3.5 w-3.5 text-red-400" />}
-            value={systemOk ? "Opérationnel" : `${alertCount} alerte${alertCount > 1 ? "s" : ""}`}
+          <AnimatedBadge
+            status={systemOk ? "success" : "danger"}
+            size="sm"
             title={alertTitle}
-            tone={systemOk ? "success" : "error"}
             onClick={() => router.push("/system")}
-          />
+          >
+            {systemOk ? "Opérationnel" : `${alertCount} alerte${alertCount > 1 ? "s" : ""}`}
+          </AnimatedBadge>
         </div>
       </div>
     </footer>

@@ -15,6 +15,8 @@ import TasksWidget from "@/components/TasksWidget";
 import { useCloudTasks } from "@/lib/hooks/useCloudTasks";
 import { useHomeData } from "@/lib/hooks/useDashboard";
 import { useLiveData } from "@/lib/hooks/useLiveData";
+import { useBrain } from "@/lib/hooks/useBrain";
+import { AnimatedBadge } from "@/components/motion/animated-badge";
 
 import { useItems } from "@/lib/hooks/useItems";
 import { useSettings } from "@/components/SettingsProvider";
@@ -80,6 +82,7 @@ export default function DashboardOverview() {
   const tasksApi = useCloudTasks();
   const { items: notes } = useItems("notes");
   const { items: events } = useItems("events");
+  const brain = useBrain();
   const focus = useFocus();
   const [customizing, setCustomizing] = useState(false);
   const [workspace, setWorkspace] = useState("ethone");
@@ -171,7 +174,17 @@ export default function DashboardOverview() {
         return <RecentNotesCard notes={notes} scrollable={false} className="h-auto" />;
       case "brain":
         return (
-          <BentoCard title={i18n("brain")} icon="brain" scrollable={false} className="h-auto">
+          <BentoCard
+            title={i18n("brain")}
+            icon="brain"
+            scrollable={false}
+            className="h-auto"
+            badge={
+              <AnimatedBadge status={brain.loading ? "loading" : "success"} size="sm" contentKey={brain.loading ? "thinking" : "ready"}>
+                {brain.loading ? i18n("thinking") || "Réflexion" : i18n("ready") || "Prêt"}
+              </AnimatedBadge>
+            }
+          >
             <BrainBriefingPanel />
           </BentoCard>
         );

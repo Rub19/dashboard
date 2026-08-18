@@ -115,7 +115,8 @@ export class FocusTimer {
       }
       useSyncStore.getState().setStatus("pomodoro", "idle");
       return data.data as FocusSession;
-    } catch {
+    } catch (err) {
+      console.error("Focus timer cloud load failed:", err);
       useSyncStore.getState().setStatus("pomodoro", "error");
       return null;
     }
@@ -492,7 +493,8 @@ export class FocusTimer {
 
       if (error) throw error;
       useSyncStore.getState().setStatus("pomodoro", "idle");
-    } catch {
+    } catch (err) {
+      console.error("Focus timer cloud save failed:", err);
       useSyncStore.getState().setStatus("pomodoro", "error");
     }
   }

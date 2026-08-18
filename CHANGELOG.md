@@ -4,6 +4,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Diagnostics et corrections erreur de sync / alerte live**
+
+### Corrige
+- `ethone-next/lib/focus-timer.ts` : ajout d'un `console.error` explicite dans `loadFromCloud` et `saveToCloud` pour identifier la cause exacte des erreurs de synchronisation Pomodoro (colonne `data` manquante dans `pomodoro_sessions` lorsque la migration `202608310001_pomodoro_sessions_payload.sql` n'est pas appliquée).
+- `ethone-next/lib/hooks/useTasks.ts` : utilisation d'un nom de canal Realtime unique par instance (`tasks_changes:${useId()}`) pour éviter l'erreur `cannot add 'postgres_changes' callbacks for realtime:tasks_changes after 'subscribe()'` quand `DashboardOverview` et `TasksWidget` montent `useCloudTasks` simultanément.
+- Configuration de dev : création de `worker/.dev.vars` (non committé) avec `ENVIRONMENT=development` et bascule de `ethone-next/.env.local` vers `NEXT_PUBLIC_WORKER_URL=http://127.0.0.1:8787` pour résoudre les erreurs CORS en local ; le worker local autorisera automatiquement `http://localhost:3001` quand `ENVIRONMENT` n'est pas `production`.
+
 **Dashboard Home : correction critique du layout Bento et chevauchements**
 
 ### Corrige

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useSyncStore } from "@/lib/stores/sync";
 
@@ -71,6 +71,8 @@ export function useTasks() {
     load();
   }, [load]);
 
+  const realtimeId = useId();
+
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -82,7 +84,7 @@ export function useTasks() {
       if (!userId) return;
 
       channel = supabase
-        .channel("tasks_changes")
+        .channel(`tasks_changes:${realtimeId}`)
         .on(
           "postgres_changes",
           {
@@ -117,7 +119,7 @@ export function useTasks() {
     return () => {
       channel?.unsubscribe();
     };
-  }, []);
+  }, [realtimeId]);
 
   const withUserId = useCallback(async () => {
     const { data: sessionData } = await supabase.auth.getSession();

@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Spotify / Media : sliders glassmorphism moins noirs**
+
+### Corrige
+- `ethone-next/components/MediaProgress.tsx` et `ethone-next/components/VolumeSlider.tsx` : le track est passé à `bg-white/[0.04] backdrop-blur-sm`, le remplissage utilise la couleur d'accent (`var(--accent-color, var(--accent))`) avec un léger glow, et la pastille (thumb) est devenue transparente (`bg-white/[0.08]`) avec une bordure blanche subtile au lieu de `bg-zinc-950`.
+
 **Weather : bandeau de recherche transparent**
 
 ### Corrige

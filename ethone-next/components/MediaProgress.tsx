@@ -94,17 +94,24 @@ export default function MediaProgress({
         )}
         aria-label="Progression"
       >
-        <div className="absolute inset-0 rounded-full bg-white/[0.10]" />
+        <div className="absolute inset-0 rounded-full bg-white/[0.04] backdrop-blur-sm" />
         <div
-          className="pointer-events-none absolute left-0 top-0 h-full rounded-full bg-emerald-400 transition-[width] duration-75 ease-out"
-          style={{ width: `${percentage}%` }}
+          className="pointer-events-none absolute left-0 top-0 h-full rounded-full transition-[width] duration-75 ease-out"
+          style={{
+            width: `${percentage}%`,
+            backgroundColor: "color-mix(in srgb, var(--accent-color, var(--accent, #10b981)) 85%, transparent)",
+            boxShadow: "0 0 10px color-mix(in srgb, var(--accent-color, var(--accent, #10b981)) 30%, transparent)",
+          }}
         />
         <div
           className={cn(
-            "pointer-events-none absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-emerald-400 bg-zinc-950 shadow-md transition-transform duration-150",
+            "pointer-events-none absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/[0.12] bg-white/[0.08] shadow-md transition-transform duration-150",
             dragging || hovered ? "scale-125" : "scale-100",
           )}
-          style={{ left: `${percentage}%` }}
+          style={{
+            left: `${percentage}%`,
+            boxShadow: "0 0 10px color-mix(in srgb, var(--accent-color, var(--accent, #10b981)) 35%, transparent)",
+          }}
         />
       </div>
       <div className="flex items-center justify-between font-mono text-[10px] tabular-nums text-zinc-500">

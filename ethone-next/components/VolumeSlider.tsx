@@ -117,18 +117,25 @@ export default function VolumeSlider({
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        <div className="absolute inset-0 rounded-full bg-white/[0.08]" />
+        <div className="absolute inset-0 rounded-full bg-white/[0.04] backdrop-blur-sm" />
         <div
-          className="absolute left-0 top-0 h-full rounded-full bg-emerald-400 transition-[width] duration-75 ease-out"
-          style={{ width: `${pct}%` }}
+          className="absolute left-0 top-0 h-full rounded-full transition-[width] duration-75 ease-out"
+          style={{
+            width: `${pct}%`,
+            backgroundColor: "color-mix(in srgb, var(--accent-color, var(--accent, #10b981)) 85%, transparent)",
+            boxShadow: "0 0 10px color-mix(in srgb, var(--accent-color, var(--accent, #10b981)) 30%, transparent)",
+          }}
         />
         <div
           className={cn(
-            "pointer-events-none absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-emerald-400 bg-zinc-950 shadow-md transition-transform",
+            "pointer-events-none absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/[0.12] bg-white/[0.08] shadow-md transition-transform",
             thumbSize,
             dragging || hovered ? "scale-125" : "scale-100",
           )}
-          style={{ left: `${pct}%` }}
+          style={{
+            left: `${pct}%`,
+            boxShadow: "0 0 10px color-mix(in srgb, var(--accent-color, var(--accent, #10b981)) 35%, transparent)",
+          }}
         />
       </div>
     </div>

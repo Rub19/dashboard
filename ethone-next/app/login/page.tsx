@@ -231,9 +231,9 @@ export default function LoginPage() {
       : handlePassword;
 
   return (
-    <div className="relative flex min-h-[100dvh] w-full select-none items-stretch overflow-hidden bg-zinc-950">
+    <div className="relative flex h-full min-h-0 w-full select-none items-stretch overflow-hidden bg-zinc-950">
       <LoginCosmicBackground />
-      <div className="relative z-10 hidden min-h-[100dvh] w-1/2 flex-col justify-between p-10 lg:flex lg:bg-gradient-to-r lg:from-[#030712]/70 lg:via-[#030712]/25 lg:to-transparent">
+      <div className="relative z-10 hidden h-full min-h-0 w-1/2 flex-col justify-between p-10 lg:flex lg:bg-gradient-to-r lg:from-[#030712]/70 lg:via-[#030712]/25 lg:to-transparent">
         <div className="z-10 flex items-center gap-2">
           <BrandMark size={28} />
           <span className="text-lg font-bold tracking-tight">ETHONE</span>
@@ -259,7 +259,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div className="relative z-10 flex min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden p-4 lg:w-1/2 lg:p-6">
+      <div className="relative z-10 flex h-full min-h-0 w-full flex-col items-center justify-center overflow-hidden p-4 lg:w-1/2 lg:p-6">
         <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
           <LanguageSwitcher />
         </div>
@@ -267,17 +267,18 @@ export default function LoginPage() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.15, ease: "easeOut" as const }}
-          className="w-full min-w-[min(100%,20rem)] max-w-sm"
+          className="h-full min-h-0 w-full min-w-[min(100%,20rem)] max-w-sm"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.15, ease: "easeOut" as const }}
-            className="relative flex max-h-[calc(100vh-2rem)] w-full flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/80 p-5 shadow-2xl backdrop-blur-xl sm:p-6"
+            className="relative flex h-full min-h-0 w-full flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/80 p-5 shadow-2xl backdrop-blur-xl sm:p-6"
           >
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/50 to-transparent" />
             <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[var(--accent)]/10 blur-3xl" />
 
+            <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] px-0.5">
             <div className="relative flex w-full flex-col items-center text-center">
               <div className="flex h-14 w-14 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent)]/10 ring-1 ring-[var(--accent)]/20">
                 <BrandMark size={40} />
@@ -564,6 +565,7 @@ export default function LoginPage() {
               </motion.div>
             </AnimatePresence>
             </motion.div>
+            </div>
           </motion.div>
 
           <div className="mt-6 flex items-center justify-center gap-2 text-[10px] text-[var(--muted)] lg:hidden">

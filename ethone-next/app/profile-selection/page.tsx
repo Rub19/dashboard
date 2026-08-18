@@ -66,9 +66,11 @@ export default function ProfileSelectionPage() {
 
   if (!loaded) {
     return (
-      <div className="space-y-6">
-        <h1 className="text-2xl font-bold">{i18n("profileSelectionTitle")}</h1>
-        <Card3D><div className="h-8 w-1/3 animate-pulse rounded bg-[var(--border)]" /></Card3D>
+      <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
+        <h1 className="shrink-0 mb-4 text-2xl font-bold">{i18n("profileSelectionTitle")}</h1>
+        <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-6">
+          <Card3D><div className="h-8 w-1/3 animate-pulse rounded bg-[var(--border)]" /></Card3D>
+        </div>
       </div>
     );
   }
@@ -105,9 +107,10 @@ export default function ProfileSelectionPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">{i18n("profileSelectionTitle")}</h1>
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
+      <h1 className="shrink-0 mb-4 text-2xl font-bold">{i18n("profileSelectionTitle")}</h1>
 
+      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-6">
       <Card3D>
         <div className="space-y-4">
           <label className="text-sm font-medium">{i18n("newProfile")}</label>
@@ -267,6 +270,7 @@ export default function ProfileSelectionPage() {
       <Card3D>
         <p className="text-sm text-[var(--muted)]">{i18n("profileSelectionHint")}</p>
       </Card3D>
+      </div>
     </div>
   );
 }

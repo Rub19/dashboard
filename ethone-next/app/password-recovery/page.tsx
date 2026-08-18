@@ -28,35 +28,43 @@ export default function PasswordRecoveryPage() {
   }
 
   return (
-    <div className="w-full sm:max-w-md lg:max-w-lg mx-auto space-y-6">
-      <h1 className="text-2xl font-bold">{i18n("passwordRecoveryTitle")}</h1>
-      <Card3D>
-        {sent ? (
-          <p className="break-words text-sm text-emerald-400">{i18n("recoverySent")}</p>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-1">
-              <label htmlFor="recovery-email" className="text-sm font-medium">{i18n("email")}</label>
-              <input
-                id="recovery-email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={i18n("emailPlaceholder")}
-                required
-                className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={loading || !email}
-              className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
-            >
-              {loading ? i18n("sending") : i18n("send")}
-            </button>
-          </form>
-        )}
-      </Card3D>
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
+      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden]">
+        <div className="flex min-h-full w-full items-center justify-center p-4">
+          <div className="w-full max-w-md space-y-6 lg:max-w-lg">
+            <h1 className="text-2xl font-bold">{i18n("passwordRecoveryTitle")}</h1>
+            <Card3D>
+              {sent ? (
+                <p className="break-words text-sm text-emerald-400">{i18n("recoverySent")}</p>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="space-y-1">
+                    <label htmlFor="recovery-email" className="text-sm font-medium">
+                      {i18n("email")}
+                    </label>
+                    <input
+                      id="recovery-email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder={i18n("emailPlaceholder")}
+                      required
+                      className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={loading || !email}
+                    className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
+                  >
+                    {loading ? i18n("sending") : i18n("send")}
+                  </button>
+                </form>
+              )}
+            </Card3D>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -7,7 +7,7 @@ export function generateStaticParams() {
 
 export default function PluginPage() {
   return (
-    <div className="w-full">
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
       <PluginClient />
     </div>
   );

@@ -64,19 +64,22 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <h1 className="text-2xl font-bold">{i18n("profileTitle")}</h1>
+      <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
+        <h1 className="shrink-0 mb-4 text-2xl font-bold">{i18n("profileTitle")}</h1>
+        <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-6">
         <Card3D>
           <div className="h-8 w-1/3 animate-pulse rounded bg-[var(--border)]" />
         </Card3D>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full space-y-6">
-      <h1 className="text-2xl font-bold">{i18n("profileTitle")}</h1>
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
+      <h1 className="shrink-0 mb-4 text-2xl font-bold">{i18n("profileTitle")}</h1>
 
+      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-6">
       <Card3D>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
           <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent)] text-2xl font-bold text-white">
@@ -226,6 +229,7 @@ export default function ProfilePage() {
           </div>
         </Card3D>
       )}
+      </div>
     </div>
   );
 }

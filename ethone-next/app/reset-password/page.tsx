@@ -58,9 +58,12 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="w-full sm:max-w-md lg:max-w-lg mx-auto space-y-6">
-      <h1 className="text-2xl font-bold">{i18n("resetPasswordTitle")}</h1>
-      <Card3D>
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
+      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden]">
+        <div className="flex min-h-full w-full items-center justify-center p-4">
+          <div className="w-full max-w-md space-y-6 lg:max-w-lg">
+            <h1 className="text-2xl font-bold">{i18n("resetPasswordTitle")}</h1>
+            <Card3D>
         {!session ? (
           <div className="flex items-center gap-3 text-[var(--muted)]">
             <Icon name="loader" className="h-5 w-5 animate-spin" />
@@ -103,6 +106,9 @@ export default function ResetPasswordPage() {
           </form>
         )}
       </Card3D>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -51,8 +51,8 @@ export default function ScratchpadPage() {
   };
 
   return (
-    <div className="w-full space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
+      <div className="shrink-0 mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">{i18n("scratchpadTitle")}</h1>
         <button
           type="button"
@@ -63,7 +63,8 @@ export default function ScratchpadPage() {
         </button>
       </div>
 
-      <Card3D>
+      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden]">
+      <Card3D className="h-full">
         <FormField
           label={i18n("scratchpadTitle")}
           help={`${charCount} ${i18n("characters")} · ${wordCount} ${i18n("words")} · ${statusLabel[status]}`}
@@ -72,7 +73,7 @@ export default function ScratchpadPage() {
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder={i18n("scratchpadPlaceholder")}
-            className="min-h-[40vh] resize-none p-4 leading-relaxed sm:min-h-[50vh]"
+            className="h-full min-h-[40vh] resize-none p-4 leading-relaxed sm:min-h-[50vh]"
           />
         </FormField>
       </Card3D>
@@ -102,6 +103,7 @@ export default function ScratchpadPage() {
           </button>
         </div>
       </Modal>
+      </div>
     </div>
   );
 }

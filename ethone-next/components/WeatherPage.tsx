@@ -226,8 +226,8 @@ export default function WeatherPage() {
   }
 
   return (
-    <div className="space-y-5">
-      <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden p-4 sm:p-6">
+      <header className="shrink-0 mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">{i18n("weather")}</h1>
           <p className="text-sm text-zinc-500">{i18n("weatherDescription")}</p>

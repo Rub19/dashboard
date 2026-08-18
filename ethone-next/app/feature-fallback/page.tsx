@@ -22,8 +22,10 @@ function FeatureFallbackContent() {
   }
 
   return (
-    <div className="w-full space-y-6">
-      <h1 className="text-2xl font-bold">{i18n("featureFallbackTitle")}</h1>
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
+      <h1 className="shrink-0 mb-4 text-2xl font-bold">{i18n("featureFallbackTitle")}</h1>
+
+      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-6">
       <Card3D>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
           <Icon name="alert-triangle" className="mt-1 h-5 w-5 text-amber-400" />
@@ -36,14 +38,17 @@ function FeatureFallbackContent() {
       <Card3D>
         <p className="break-words text-sm text-[var(--muted)]">{i18n("featureFallbackHint")}</p>
       </Card3D>
+      </div>
     </div>
   );
 }
 
 export default function FeatureFallbackPage() {
   return (
-    <Suspense fallback={<div className="space-y-6"><Card3D><div className="h-8 w-1/3 animate-pulse rounded bg-[var(--border)]" /></Card3D></div>}>
-      <FeatureFallbackContent />
-    </Suspense>
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
+      <Suspense fallback={<div className="flex h-full min-h-0 w-full items-center justify-center"><Card3D><div className="h-8 w-1/3 animate-pulse rounded bg-[var(--border)]" /></Card3D></div>}>
+        <FeatureFallbackContent />
+      </Suspense>
+    </div>
   );
 }

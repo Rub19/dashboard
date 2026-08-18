@@ -78,14 +78,38 @@ export default function LiveWidget() {
 
   const streamUrl = liveSource || (settings as { liveStreamUrl?: string }).liveStreamUrl || "";
 
+  const { embedUrl, isYouTube } = useMemo(() => {
+    const raw = streamUrl.trim();
+    if (!raw) return { embedUrl: "", isYouTube: false };
+    try {
+      const url = new URL(raw);
+      const host = url.hostname.replace(/^www\./, "").toLowerCase();
+      const isYouTubeHost = host === "youtube.com" || host === "youtube-nocookie.com" || host === "youtu.be" || host === "music.youtube.com";
+      if (isYouTubeHost) {
+        let id = "";
+        if (host === "youtu.be") id = url.pathname.split("/")[1] || "";
+        else if (url.pathname.startsWith("/embed/")) id = url.pathname.split("/")[2] || "";
+        else if (url.pathname.startsWith("/live/")) id = url.pathname.split("/")[2] || "";
+        else if (url.pathname.startsWith("/shorts/")) id = url.pathname.split("/")[2] || "";
+        else id = url.searchParams.get("v") || "";
+        if (id && /^[a-zA-Z0-9_-]{11,}$/.test(id)) {
+          return { embedUrl: `https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1`, isYouTube: true };
+        }
+      }
+      return { embedUrl: raw, isYouTube: false };
+    } catch {
+      return { embedUrl: raw, isYouTube: false };
+    }
+  }, [streamUrl]);
+
   const isSecureStream = useMemo(() => {
     try {
-      const url = new URL(streamUrl);
+      const url = new URL(embedUrl);
       return url.protocol === "https:" || url.protocol === "http:";
     } catch {
       return false;
     }
-  }, [streamUrl]);
+  }, [embedUrl]);
 
   return (
     <div className="fixed bottom-12 right-6 z-40 flex flex-col items-end gap-2">
@@ -171,11 +195,11 @@ export default function LiveWidget() {
                     <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/[0.06] bg-black">
                       {streamUrl && isSecureStream ? (
                         <iframe
-                          src={streamUrl}
+                          src={embedUrl}
                           title="Live stream"
-                          allow="autoplay; encrypted-media; picture-in-picture"
+                          allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
                           className="h-full w-full border-0"
-                          sandbox="allow-same-origin allow-scripts allow-presentation"
+                          sandbox={isYouTube ? "allow-scripts allow-presentation allow-popups" : "allow-same-origin allow-scripts allow-presentation"}
                         />
                       ) : (
                         <div className="flex h-full w-full flex-col items-center justify-center gap-2 px-4 text-zinc-500">

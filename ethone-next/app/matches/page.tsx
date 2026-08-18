@@ -274,6 +274,8 @@ export default function MatchesPage() {
               <p className="text-sm text-[var(--muted)]">{i18n("trackerMissingRiotId")}</p>
             )}
 
+        </div>
+        <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-4">
         {loading && !items ? (
           <div className="space-y-3">
             <div className="h-20 animate-pulse rounded-[var(--panel-radius)] bg-[var(--border)]" />
@@ -290,6 +292,7 @@ export default function MatchesPage() {
             <p className="text-sm text-[var(--muted)]">{i18n("noMatches")}</p>
           </Card3D>
         )}
+        </div>
       </div>
     </div>
   );

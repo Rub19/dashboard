@@ -140,17 +140,17 @@ export default function NotesPage() {
   }
 
   return (
-    <div className="grid min-h-[calc(100vh-5rem)] w-full grid-cols-12 gap-5 p-4">
+    <div className="h-full min-h-0 w-full grid grid-cols-12 gap-5 overflow-hidden p-4">
       {/* Left: List & Search */}
-      <div className="col-span-12 flex flex-col gap-3 lg:col-span-4">
-        <div className="rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-4 backdrop-blur-2xl">
+      <div className="col-span-12 flex h-full min-h-0 flex-col gap-3 overflow-hidden lg:col-span-4">
+        <div className="shrink-0 rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-4 backdrop-blur-2xl">
           <h1 className="text-2xl font-bold text-white">{i18n("notesTitle")}</h1>
           <p className="mt-0.5 text-xs text-zinc-500">
             {stats.total} {i18n("notes")} · {stats.totalWords} {i18n("words")}
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-3 backdrop-blur-2xl">
+        <div className="shrink-0 flex flex-wrap items-center gap-2 rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-3 backdrop-blur-2xl">
           <CustomCheckbox checked={isAllSelected} onChange={() => (isAllSelected ? clear() : selectAll())} label={i18n("selectAll")} />
           <div className="ml-auto flex items-center gap-2">
             <Input
@@ -187,7 +187,7 @@ export default function NotesPage() {
           </BulkActionBar>
         )}
 
-        <div className="flex flex-col gap-3">
+        <div className="min-h-0 flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-3 pr-1">
           {loading && items.length === 0 && (
             <div className="flex min-h-[160px] items-center justify-center rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-4 backdrop-blur-2xl">
               <Icon name="loader-2" className="h-5 w-5 animate-spin text-zinc-500" />
@@ -240,8 +240,8 @@ export default function NotesPage() {
       </div>
 
       {/* Right: Editor */}
-      <div className="col-span-12 flex flex-col justify-between rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-6 backdrop-blur-2xl lg:col-span-8">
-        <div className="mb-3">
+      <div className="col-span-12 flex h-full min-h-0 flex-col justify-between overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-6 backdrop-blur-2xl lg:col-span-8">
+        <div className="shrink-0 mb-3">
           <input
             type="text"
             value={title}
@@ -252,9 +252,9 @@ export default function NotesPage() {
           />
         </div>
 
-        <RichTextEditor defaultValue={body} onChange={setBody} placeholder={i18n("description")} className="flex-1" />
+        <RichTextEditor defaultValue={body} onChange={setBody} placeholder={i18n("description")} className="min-h-0 flex-1 overflow-hidden" />
 
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+        <div className="shrink-0 mt-4 flex flex-wrap items-center justify-between gap-2">
           <span className="text-[11px] font-mono text-zinc-500">
             {currentWords} {i18n("words")} · {currentChars} caractères
           </span>

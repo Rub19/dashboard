@@ -4,6 +4,22 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Mini player Live : lecture des liens YouTube**
+
+### Corrige
+- `ethone-next/components/LiveWidget.tsx` : les URLs YouTube (`youtube.com/watch`, `youtu.be`, `youtube.com/live`, `youtube.com/shorts`) sont automatiquement converties en `youtube-nocookie.com/embed/{id}` avant d'être injectées dans l'`<iframe>`. Cela contourne l'erreur `ERR_BLOCKED_BY_RESPONSE` et le refus d'affichage de `www.youtube.com`. L'attribut `sandbox` est adapté pour YouTube (`allow-scripts allow-presentation allow-popups`) et `allow` inclut désormais `fullscreen`.
+
+**Calendrier avec billing et refonte des layouts de page**
+
+### Ajoute
+- `ethone-next/package.json` / `package-lock.json` : installation de `@internationalized/date`.
+- `ethone-next/components/ui/calendar.tsx` : nouveau composant `Calendar` avec sélection de date, mois/année dropdowns (`captionLayout="dropdown"`) et marqueurs de factures colorés.
+- `ethone-next/components/CalendarBillingPanel.tsx` : panneau de facturation affichant les échéances du jour sélectionné, avec marquer payé / supprimer / ajouter une facture.
+- `ethone-next/app/calendar/page.tsx` : remplacement du calendrier existant par le nouveau `Calendar` intégré au système de billing (`listBills`, `getNextDueDate`, `parseISODate`).
+
+### Corrige
+- `ethone-next/app/activity/page.tsx`, `ethone-next/app/brain/page.tsx`, `ethone-next/app/changelog/page.tsx`, `ethone-next/app/files/page.tsx`, `ethone-next/app/flows/page.tsx`, `ethone-next/app/interactions/page.tsx`, `ethone-next/app/macros/page.tsx`, `ethone-next/app/matches/page.tsx`, `ethone-next/app/personas/page.tsx`, `ethone-next/app/plugins/page.tsx`, `ethone-next/app/rss/page.tsx`, `ethone-next/app/security/page.tsx`, `ethone-next/app/spaces/page.tsx`, `ethone-next/app/team/page.tsx` : chaque page passe en `h-full min-h-0 w-full flex flex-col overflow-hidden` avec une zone de contenu scrollable interne.
+
 **Hitbox et UX des boutons droits de la TopBar**
 
 ### Corrige

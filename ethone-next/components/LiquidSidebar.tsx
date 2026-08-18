@@ -29,7 +29,7 @@ export default function LiquidSidebar({
 
   return (
     <div
-      className="w-56 space-y-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 backdrop-blur-[var(--panel-blur)]"
+      className="w-56 shrink-0 space-y-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 backdrop-blur-[var(--panel-blur)]"
       role="tablist"
       aria-label="Panneau latéral"
     >

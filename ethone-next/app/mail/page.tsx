@@ -255,7 +255,7 @@ export default function MailPage() {
   const activeThreadId = activeThread?.[0]?.thread_id || activeThread?.[0]?.id;
 
   return (
-    <div className="flex h-full min-h-0 gap-3 overflow-hidden">
+    <div className="flex h-full min-h-0 w-full gap-3 overflow-hidden">
       <MailSidebar
         active={folder as MailFolder}
         onChange={handleFolderChange}

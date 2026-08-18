@@ -174,9 +174,9 @@ export default function SettingsLayout() {
   }
 
   return (
-    <div className="flex w-full select-none flex-col gap-6 p-4 sm:p-6">
+    <div className="flex h-full min-h-0 w-full select-none flex-col overflow-hidden p-4 sm:p-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="shrink-0 mb-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="flex items-center gap-2.5 text-2xl font-bold tracking-tight text-white">
             <Shield className="h-6 w-6 text-emerald-400" />
@@ -222,7 +222,7 @@ export default function SettingsLayout() {
       </div>
 
       {/* Onglets */}
-      <div className="relative inline-flex items-center gap-1 rounded-full border border-white/[0.08] bg-zinc-950/70 p-1.5 shadow-inner backdrop-blur-xl">
+      <div className="shrink-0 relative inline-flex items-center gap-1 rounded-full border border-white/[0.08] bg-zinc-950/70 p-1.5 shadow-inner backdrop-blur-xl">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -256,6 +256,7 @@ export default function SettingsLayout() {
         })}
       </div>
 
+      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] pr-1">
       <AnimatePresence mode="wait">
         {activeTab === "overview" ? (
           <motion.div
@@ -370,6 +371,7 @@ export default function SettingsLayout() {
           </motion.div>
         )}
       </AnimatePresence>
+      </div>
 
       <SettingsBottomBar />
     </div>

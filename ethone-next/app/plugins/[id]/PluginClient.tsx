@@ -17,11 +17,13 @@ export default function PluginClient() {
 
   if (!plugin) {
     return (
-      <div className="space-y-6 p-6">
-        <h1 className="break-words text-2xl font-bold">{i18n("pluginsTitle")}</h1>
-        <Card3D>
-          <p className="break-words text-sm text-[var(--muted)]">{i18n("notFound")}</p>
-        </Card3D>
+      <div className="h-full min-h-0 w-full flex flex-col overflow-hidden p-6">
+        <h1 className="shrink-0 mb-4 break-words text-2xl font-bold">{i18n("pluginsTitle")}</h1>
+        <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-6">
+          <Card3D>
+            <p className="break-words text-sm text-[var(--muted)]">{i18n("notFound")}</p>
+          </Card3D>
+        </div>
       </div>
     );
   }
@@ -30,7 +32,8 @@ export default function PluginClient() {
   const connected = live?.status === "connected";
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden p-6">
+      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--panel-bg)] text-[var(--accent)]">
           <Icon name={plugin.icon} className="h-6 w-6" />
@@ -71,6 +74,7 @@ export default function PluginClient() {
           </button>
         </div>
       </Card3D>
+      </div>
     </div>
   );
 }

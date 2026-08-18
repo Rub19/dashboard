@@ -170,21 +170,24 @@ export default function IntegrationsSettings() {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-bold text-white">{i18n("connectionsTitle")}</h1>
-        <p className="text-sm text-zinc-400">{i18n("connectionsDescription")}</p>
-      </div>
+    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
+      <div className="shrink-0 mb-4 space-y-4">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-2xl font-bold text-white">{i18n("connectionsTitle")}</h1>
+          <p className="text-sm text-zinc-400">{i18n("connectionsDescription")}</p>
+        </div>
 
-      <SystemHealthBanner
+        <SystemHealthBanner
         configuredMap={configuredMap}
         health={health}
         testing={testingAll}
         onTestAll={testAll}
       />
 
-      <CategoryTabs active={filter} onChange={setFilter} />
+        <CategoryTabs active={filter} onChange={setFilter} />
+      </div>
 
+      <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden] space-y-4">
       {(loading || credentials.loading) && (
         <div className="flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 text-sm text-zinc-400 backdrop-blur-2xl">
           <Plug className="h-5 w-5 animate-spin" />
@@ -201,6 +204,7 @@ export default function IntegrationsSettings() {
           <Plug className="h-4 w-4" />
           <p>{i18n("oauthInfo")}</p>
         </div>
+      </div>
       </div>
     </div>
   );

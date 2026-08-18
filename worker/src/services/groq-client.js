@@ -10,9 +10,10 @@ const ALLOWED_MODELS = AI_PROVIDERS.groq.allowedModels;
 const FALLBACK_MODELS = AI_PROVIDERS.groq.fallbackModels;
 const SYSTEM_PROMPT = "Tu es Brain, l'assistant integre au tableau de bord personnel ETHONE. Reponds en francais, de maniere concise et utile. Tu recois un contexte JSON restreint (taches, notes, agenda, etc.) : utilise-le si pertinent, ignore-le sinon. Ne revele jamais de secrets ou de jetons, tu n'y as de toute facon pas acces.";
 
-function resolveModelList(requested) {
+function resolveModelList(requested, env) {
+  const customDefault = env?.GROQ_MODEL || DEFAULT_MODEL;
   const value = safeText(requested, 80);
-  const first = ALLOWED_MODELS.has(value) ? value : DEFAULT_MODEL;
+  const first = ALLOWED_MODELS.has(value) ? value : (ALLOWED_MODELS.has(customDefault) ? customDefault : DEFAULT_MODEL);
   const list = [first];
   for (const m of FALLBACK_MODELS) {
     if (m !== first) list.push(m);
@@ -22,11 +23,14 @@ function resolveModelList(requested) {
 
 function isModelNotFound(error) {
   if (!error) return false;
-  if (error.code !== "PROVIDER_NOT_FOUND") return false;
+  if (error.code !== "PROVIDER_NOT_FOUND" && error.code !== "UPSTREAM_ERROR" && error.status !== 400 && error.status !== 404) return false;
   const groqCode = error.detail?.code || error.detail?.error?.code;
-  if (groqCode === "model_not_found") return true;
-  const detail = String(error.detail?.message || error.detail?.error?.message || "").toLowerCase();
-  return detail.includes("does not exist or you do not have access");
+  if (groqCode === "model_not_found" || groqCode === "model_decommissioned") return true;
+  const detail = String(error.detail?.message || error.detail?.error?.message || error.message || "").toLowerCase();
+  return detail.includes("does not exist or you do not have access") ||
+    detail.includes("model_not_found") ||
+    detail.includes("decommissioned") ||
+    detail.includes("no longer supported");
 }
 
 function sanitizeMessages(messages) {
@@ -44,7 +48,7 @@ export async function askGroq(env, { model, messages, context } = {}) {
   const chatMessages = sanitizeMessages(messages);
   if (!chatMessages.length) throw httpError("INVALID_REQUEST", 400);
   const contextJson = JSON.stringify(context || {}).slice(0, 6000);
-  const models = resolveModelList(model);
+  const models = resolveModelList(model, env);
   let lastError;
 
   for (const selected of models) {

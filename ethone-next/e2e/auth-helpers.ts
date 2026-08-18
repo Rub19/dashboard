@@ -3,6 +3,18 @@ import type { Page, APIRequestContext } from "@playwright/test";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
+function getAuthKey() {
+  try {
+    const url = new URL(SUPABASE_URL);
+    const ref = url.hostname.split(".")[0];
+    return `sb-${ref}-auth-token`;
+  } catch {
+    return "sb-auth-token";
+  }
+}
+
+const AUTH_KEY = getAuthKey();
+
 export async function signInByPassword(
   page: Page,
   request: APIRequestContext,
@@ -26,6 +38,7 @@ export async function signInByPassword(
   const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
 
   const entries: [string, string][] = [
+    [AUTH_KEY, JSON.stringify(session)],
     ["ethone-remember-token", session.access_token],
     ["ethone-remember-refresh", session.refresh_token],
     ["ethone-remember-me", "true"],
@@ -43,6 +56,7 @@ export async function signInByPassword(
   // Reload any already-open page so the localStorage tokens are picked up.
   await page.goto("/");
   await page.waitForURL("/", { waitUntil: "domcontentloaded" });
+  await page.waitForSelector("#main-content", { timeout: 10000 });
 }
 
 export function requireAuthEnv() {

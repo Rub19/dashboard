@@ -2,11 +2,22 @@ import { NextResponse } from "next/server";
 
 export const runtime = "edge";
 
-const CLOUDFLARE_MODEL = "@cf/meta/llama-3.3-70b-instruct-v1";
-const GROK_MODEL = "grok-beta";
+const CLOUDFLARE_MODEL = process.env.CLOUDFLARE_MODEL || "@cf/meta/llama-3.3-70b-instruct-v1";
+const GROQ_MODEL = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
+const GROK_MODEL = process.env.GROK_MODEL || "grok-beta";
 
 function buildCloudflareBody(messages: unknown[]) {
   return JSON.stringify({ messages, stream: true });
+}
+
+function buildGroqBody(messages: unknown[]) {
+  return JSON.stringify({
+    model: GROQ_MODEL,
+    messages,
+    stream: true,
+    temperature: 0.4,
+    max_tokens: 1024,
+  });
 }
 
 function buildGrokBody(messages: unknown[]) {
@@ -27,6 +38,7 @@ export async function POST(req: Request) {
 
   const accountId = process.env.CLOUDFLARE_ACCOUNT_ID || "";
   const cfToken = process.env.CLOUDFLARE_AI_TOKEN || process.env.CLOUDFLARE_API_TOKEN || "";
+  const groqKey = process.env.GROQ_API_KEY || "";
   const grokKey = process.env.GROK_API_KEY || process.env.XAI_API_KEY || "";
 
   const systemMessage = {
@@ -66,14 +78,47 @@ export async function POST(req: Request) {
       }
 
       if (cfResponse.status === 429 || !cfResponse.ok) {
-        console.warn("Cloudflare Workers AI quota / limit atteinte. Bascule vers Grok...", cfResponse.status);
+        console.warn("Cloudflare Workers AI quota / limit atteinte. Bascule vers fallback...", cfResponse.status);
       }
     } catch (err) {
-      console.warn("Erreur Cloudflare AI, bascule vers Grok :", err);
+      console.warn("Erreur Cloudflare AI, bascule vers fallback :", err);
     }
   }
 
-  // 2. Fallback automatique vers xAI Grok
+  // 2. Tentative Groq
+  if (groqKey) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000);
+      const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        signal: controller.signal,
+        headers: {
+          Authorization: `Bearer ${groqKey}`,
+          "Content-Type": "application/json",
+        },
+        body: buildGroqBody(fullMessages),
+      });
+      clearTimeout(timeout);
+
+      if (groqResponse.ok && groqResponse.body) {
+        return new Response(groqResponse.body, {
+          headers: {
+            "Content-Type": "text/event-stream",
+            "X-Provider": "groq",
+            "Cache-Control": "no-cache",
+          },
+        });
+      }
+
+      const errorText = await groqResponse.text().catch(() => "");
+      console.warn("Erreur Groq API, bascule vers Grok :", groqResponse.status, errorText);
+    } catch (err) {
+      console.warn("Exception Groq API, bascule vers Grok :", err);
+    }
+  }
+
+  // 3. Fallback automatique vers xAI Grok
   if (grokKey) {
     try {
       const controller = new AbortController();

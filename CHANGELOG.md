@@ -4,6 +4,16 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Suppression des données de démo / placeholders**
+
+### Corrige
+- `ethone-next/components/settings/BillingTab.tsx` : retire le plan `PRO 9,99 €` et le cycle `Mensuel` statiques ; affiche "—" / "Aucun abonnement" et "Aucun cycle de facturation".
+- `ethone-next/components/settings/InvoicesHistory.tsx` : supprime `DEMO_BILLS` et le fallback ; affiche un état vide "Aucune facture enregistrée".
+- `ethone-next/components/MissionControl.tsx` : supprime `MOCK_LIVE_CARDS` et `MOCK_BRAIN_ACTIVITY` ; n'affiche plus de widgets/activités fictifs.
+- `ethone-next/components/CalendarBills.tsx` : supprime `MOCK_ITEMS`, passe les dates à `new Date()` au lieu de janvier 2026, ajoute un message vide dans le modal.
+- `ethone-next/components/CalendarInvoicesPage.tsx` : supprime `MOCK_ITEMS` et les dates fixes 2026 ; ajoute i18n dans le modal vide.
+- Suppression des fichiers / pages démo inutilisés : `ethone-next/app/tabs-demo/page.tsx`, `ethone-next/components/AdaptiveCardExample.tsx`, `ethone-next/components/TaskSuggestionsBar.tsx`.
+
 **Dynamic Island : lecteur audio enrichi (heure permanente, pochette, contrôles, Like)**
 
 ### Corrige

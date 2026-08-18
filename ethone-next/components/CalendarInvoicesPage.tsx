@@ -58,9 +58,9 @@ export default function CalendarInvoicesPage() {
   }
 
   return (
-    <div className="w-full p-4">
-      <div className="grid grid-cols-12 gap-5">
-        <div className="col-span-12 lg:col-span-8">
+    <div className="w-full p-3">
+      <div className="grid grid-cols-12 gap-4">
+        <div className="col-span-12 lg:col-span-7">
           <CalendarGrid
             currentDate={currentDate}
             selectedDate={selectedDate}
@@ -72,7 +72,7 @@ export default function CalendarInvoicesPage() {
           />
         </div>
 
-        <div className="col-span-12 flex flex-col gap-4 lg:col-span-4">
+        <div className="col-span-12 flex flex-col gap-4 lg:col-span-5">
           <EventsCard
             date={selectedDate}
             items={dayItems}

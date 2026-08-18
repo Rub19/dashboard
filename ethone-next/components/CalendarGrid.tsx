@@ -84,24 +84,24 @@ export default function CalendarGrid({
   }
 
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-zinc-950/70 border border-white/[0.08] p-5 shadow-xl shadow-black/50 backdrop-blur-2xl">
+    <div className="relative overflow-hidden rounded-2xl bg-zinc-950/70 border border-white/[0.08] p-4 shadow-xl shadow-black/50 backdrop-blur-2xl">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent rounded-2xl" />
 
-      <div className="relative z-10 mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-2xl font-bold text-white">{monthLabel}</h2>
+      <div className="relative z-10 mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="text-xl font-bold text-white">{monthLabel}</h2>
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={prev}
             aria-label="Mois précédent"
-            className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-zinc-400 transition-colors hover:bg-white/[0.08] hover:text-white"
+            className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-zinc-400 transition-colors hover:bg-white/[0.08] hover:text-white"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-3.5 w-3.5" />
           </button>
           <button
             type="button"
             onClick={selectToday}
-            className="rounded-xl border border-white/10 bg-white/[0.06] px-3 py-1.5 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/10"
+            className="rounded-lg border border-white/10 bg-white/[0.06] px-2.5 py-1 text-[11px] font-medium text-zinc-200 transition-colors hover:bg-white/10"
           >
             Aujourd&apos;hui
           </button>
@@ -109,9 +109,9 @@ export default function CalendarGrid({
             type="button"
             onClick={next}
             aria-label="Mois suivant"
-            className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-zinc-400 transition-colors hover:bg-white/[0.08] hover:text-white"
+            className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-zinc-400 transition-colors hover:bg-white/[0.08] hover:text-white"
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>
@@ -137,7 +137,7 @@ export default function CalendarGrid({
               key={i}
               type="button"
               onClick={() => onSelect(date)}
-              className={`group relative flex min-h-[70px] flex-col justify-between border border-white/[0.04] p-2 text-left transition-all hover:bg-white/[0.03] sm:min-h-[85px] ${
+              className={`group relative flex min-h-[50px] flex-col justify-between border border-white/[0.04] p-1.5 text-left transition-all hover:bg-white/[0.03] sm:min-h-[58px] ${
                 isSelected
                   ? "z-10 rounded-xl bg-zinc-900/50"
                   : "rounded-none"
@@ -153,7 +153,7 @@ export default function CalendarGrid({
               }
             >
               <span
-                className={`text-xs font-mono font-medium transition-colors ${
+                className={`text-[11px] font-mono font-medium transition-colors ${
                   inMonth
                     ? isSelected
                       ? "text-white"

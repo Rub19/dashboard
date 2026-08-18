@@ -8,6 +8,7 @@ import { useCloudTasks } from "@/lib/hooks/useCloudTasks";
 import { useToast } from "@/components/ToastProvider";
 import BentoCard from "@/components/BentoCard";
 import TodoList from "./TodoList";
+import { cn } from "@/lib/utils";
 
 export type TaskPriority = "low" | "medium" | "high" | "urgent";
 
@@ -31,9 +32,10 @@ export type TasksData = {
 export type TasksWidgetProps = {
   className?: string;
   data?: TasksData;
+  scrollable?: boolean;
 };
 
-export default function TasksWidget({ className = "", data }: TasksWidgetProps) {
+export default function TasksWidget({ className = "", data, scrollable = true }: TasksWidgetProps) {
   const i18n = useI18n();
   const { success, error: showError } = useToast();
   const own = useCloudTasks();
@@ -90,8 +92,8 @@ export default function TasksWidget({ className = "", data }: TasksWidgetProps) 
   );
 
   return (
-    <BentoCard className={className} noHeader>
-      <div className="flex h-full min-h-0 flex-col gap-4 overflow-hidden">
+    <BentoCard className={className} noHeader scrollable={scrollable}>
+      <div className={cn("flex flex-col gap-4", scrollable ? "h-full min-h-0 overflow-hidden" : "h-auto overflow-visible")}>
         {/* Header */}
         <div className="shrink-0 flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5">
@@ -144,11 +146,12 @@ export default function TasksWidget({ className = "", data }: TasksWidgetProps) 
 
         {/* List */}
         <TodoList
-          className="min-h-0 flex-1 overflow-hidden"
+          className={scrollable ? "min-h-0 flex-1 overflow-hidden" : "h-auto overflow-visible"}
           tasks={items as Task[]}
           loading={loading}
           onToggle={toggleTask}
           onDelete={deleteTask}
+          scrollable={scrollable}
         />
       </div>
     </BentoCard>

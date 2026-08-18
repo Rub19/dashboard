@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { cn } from "@/lib/utils";
 import TasksCard, { type Task } from "./TasksCard";
 
 type Filter = "all" | "open" | "done" | "priority";
@@ -14,9 +15,10 @@ export type TodoListProps = {
   onToggle: (id: string, done: boolean) => void;
   onDelete: (id: string) => void;
   className?: string;
+  scrollable?: boolean;
 };
 
-export default function TodoList({ tasks, loading, onToggle, onDelete, className = "" }: TodoListProps) {
+export default function TodoList({ tasks, loading, onToggle, onDelete, className = "", scrollable = true }: TodoListProps) {
   const i18n = useI18n();
   const [filter, setFilter] = useState<Filter>("all");
 
@@ -50,7 +52,11 @@ export default function TodoList({ tasks, loading, onToggle, onDelete, className
   }
 
   return (
-    <div className={`flex h-full min-h-0 flex-col gap-3 overflow-hidden ${className}`}>
+    <div className={cn(
+      "flex flex-col gap-3",
+      scrollable ? "h-full min-h-0 overflow-hidden" : "h-auto overflow-visible",
+      className
+    )}>
       <div className="shrink-0 flex items-center gap-1.5 rounded-xl border border-white/[0.04] bg-white/[0.02] p-1 text-[11px]">
         {tabs.map((tab) => (
           <button
@@ -69,7 +75,10 @@ export default function TodoList({ tasks, loading, onToggle, onDelete, className
         ))}
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto pr-1 [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden">
+      <div className={cn(
+        "flex flex-col",
+        scrollable ? "min-h-0 flex-1 overflow-y-auto pr-1 [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden" : "h-auto overflow-visible"
+      )}>
         <AnimatePresence mode="popLayout" initial={false}>
           {filtered.length === 0 ? (
             <motion.div

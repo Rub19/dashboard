@@ -4,6 +4,7 @@ import LiveStats from "@/components/LiveStats";
 import GamingCard from "@/components/GamingCard";
 import SocialDiscordCard from "@/components/SocialDiscordCard";
 import WeatherWidget, { type WeatherData } from "@/components/WeatherWidget";
+import { cn } from "@/lib/utils";
 import type { NowPlaying, LanyardPresence, LiveRecord } from "@/lib/hooks/useLiveData";
 
 export type LiveBentoGridProps = {
@@ -16,6 +17,7 @@ export type LiveBentoGridProps = {
   loading?: boolean;
   error?: Error | null;
   className?: string;
+  scrollable?: boolean;
 };
 
 export default function LiveBentoGrid({
@@ -28,29 +30,40 @@ export default function LiveBentoGrid({
   loading,
   error,
   className = "",
+  scrollable = true,
 }: LiveBentoGridProps) {
+  const childHeight = scrollable ? "h-full" : "h-auto";
   return (
-    <div className={`flex h-full min-h-0 w-full flex-col gap-4 overflow-hidden ${className}`}>
+    <div className={cn(
+      "flex min-h-0 w-full flex-col gap-4",
+      scrollable ? "h-full overflow-hidden" : "h-auto overflow-visible",
+      className
+    )}>
       <LiveStats records={records} updatedAt={updatedAt} loading={loading} />
-      <div className="grid min-h-0 w-full flex-1 auto-rows-[minmax(0,1fr)] grid-cols-12 items-stretch gap-4 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden">
+      <div className={cn(
+        "grid w-full items-stretch gap-4",
+        scrollable
+          ? "min-h-0 flex-1 auto-rows-[minmax(0,1fr)] grid-cols-12 overflow-y-auto overflow-x-hidden [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden"
+          : "h-auto auto-rows-auto grid-cols-12 overflow-visible"
+      )}>
         <GamingCard
           minecraft={minecraft}
           loading={loading}
           error={error}
-          className="col-span-12 lg:col-span-4 h-full"
+          className={cn("col-span-12 lg:col-span-4", childHeight)}
         />
         <WeatherWidget
           data={(weather as unknown as WeatherData) || null}
           loading={loading}
           compact
-          className="col-span-12 lg:col-span-4 h-full"
+          className={cn("col-span-12 lg:col-span-4", childHeight)}
         />
         <SocialDiscordCard
           lanyard={lanyard}
           nowPlaying={nowPlaying}
           loading={loading}
           error={error}
-          className="col-span-12 lg:col-span-4 h-full"
+          className={cn("col-span-12 lg:col-span-4", childHeight)}
         />
       </div>
     </div>

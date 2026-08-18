@@ -4,6 +4,16 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Dashboard : scroll global et widgets sans scroll interne**
+
+### Ajoute
+- `BentoCard` : prop `scrollable` (défaut `true`) pour basculer entre le mode "carte scrollable" (`h-full` + `overflow-y-auto`) et le mode "hauteur naturelle" (`h-auto min-h-fit overflow-visible`), utilisé par le dashboard.
+- `TasksWidget`, `TodoList`, `LiveBentoGrid`, `HeroBriefingCard`, `SystemControlCard`, `DayTimelineCard`, `RecentNotesCard`, `ProjectsTasksCard` : prop `scrollable` transmis à `BentoCard` ou gérant l'affichage pleine hauteur de leur contenu.
+
+### Corrige
+- `ethone-next/components/DashboardOverview.tsx` : la grille Bento passe en `overflow-y-auto overflow-x-hidden` avec `auto-rows-auto` et `pb-32`, permettant le scroll global du dashboard. Les wrappers de widgets passent en `h-auto min-h-fit overflow-visible`. Chaque widget reçoit `scrollable={false}` et `className="h-auto"`.
+- Suppression des scrollbars internes sur les cartes du dashboard (`hero`, `system`, `daystream`, `productivity`, `recent`, `brain`, `bills`, `live`) tout en conservant le mode scrollable sur les autres pages (`/tasks`, `/mail`, `/focus`, etc.).
+
 **Spotify : images et fallback des covers**
 
 ### Ajoute

@@ -149,33 +149,35 @@ export default function DashboardOverview() {
             openTasksCount={openTasksCount}
             todayEventsCount={todayEvents.length}
             notesCount={notes.length}
-            className="h-full"
+            scrollable={false}
+            className="h-auto"
           />
         );
       case "system":
-        return <SystemControlCard className="h-full" />;
+        return <SystemControlCard scrollable={false} className="h-auto" />;
       case "daystream":
         return (
           <DayTimelineCard
             todayEvents={todayEvents}
             nextTasks={nextTasks}
             focus={focus}
-            className="h-full"
+            scrollable={false}
+            className="h-auto"
           />
         );
       case "productivity":
-        return <TasksWidget data={tasksApi} className="h-full" />;
+        return <TasksWidget data={tasksApi} scrollable={false} className="h-auto" />;
       case "recent":
-        return <RecentNotesCard notes={notes} className="h-full" />;
+        return <RecentNotesCard notes={notes} scrollable={false} className="h-auto" />;
       case "brain":
         return (
-          <BentoCard title={i18n("brain")} icon="brain" className="h-full">
+          <BentoCard title={i18n("brain")} icon="brain" scrollable={false} className="h-auto">
             <BrainBriefingPanel />
           </BentoCard>
         );
       case "bills":
         return (
-          <BentoCard title={i18n("billsTitle")} icon="bills" className="h-full">
+          <BentoCard title={i18n("billsTitle")} icon="bills" scrollable={false} className="h-auto">
             <BillsWidget />
           </BentoCard>
         );
@@ -190,7 +192,8 @@ export default function DashboardOverview() {
             updatedAt={live.updatedAt}
             loading={live.loading}
             error={live.error}
-            className="h-full"
+            scrollable={false}
+            className="h-auto"
           />
         );
       default:
@@ -275,14 +278,14 @@ export default function DashboardOverview() {
         initial="hidden"
         animate="visible"
         variants={gridVariants}
-        className="grid min-h-0 w-full flex-1 grid-cols-12 gap-4 overflow-hidden auto-rows-[minmax(0,1fr)]"
+        className="grid min-h-0 w-full flex-1 grid-cols-12 gap-4 overflow-y-auto overflow-x-hidden pb-32 [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden auto-rows-auto"
       >
         {widgets.map((w) =>
           w.visible ? (
             <motion.div
               key={w.id}
               variants={widgetItemVariants}
-              className={`${WIDGET_COL_SPAN[w.id]} h-full min-h-0`}
+              className={`${WIDGET_COL_SPAN[w.id]} h-auto min-h-fit overflow-visible`}
             >
               {renderWidget(w.id)}
             </motion.div>

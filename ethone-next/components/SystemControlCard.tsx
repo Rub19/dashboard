@@ -48,7 +48,7 @@ const SESSION_MODES: { id: SessionMode; icon: string; label: string; copy: strin
   { id: "night", icon: "moon", label: "sessionModeNight", copy: "sessionModeNightCopy" },
 ];
 
-export default function SystemControlCard({ className = "" }: { className?: string }) {
+export default function SystemControlCard({ className = "", scrollable = true }: { className?: string; scrollable?: boolean }) {
   const i18n = useI18n();
   const { settings, update } = useSettings();
 
@@ -62,7 +62,7 @@ export default function SystemControlCard({ className = "" }: { className?: stri
   }
 
   return (
-    <BentoCard title={i18n("system")} icon="sliders-horizontal" className={className}>
+    <BentoCard title={i18n("system")} icon="sliders-horizontal" className={className} scrollable={scrollable}>
       <div className="flex h-full min-h-0 flex-col justify-between gap-3">
         <div className="space-y-2">
           <p className="text-xs font-medium text-[var(--muted)]">{i18n("presence")}</p>

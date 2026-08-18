@@ -42,6 +42,7 @@ export type HeroBriefingCardProps = {
   todayEventsCount: number;
   notesCount: number;
   className?: string;
+  scrollable?: boolean;
 };
 
 export default function HeroBriefingCard({
@@ -53,6 +54,7 @@ export default function HeroBriefingCard({
   todayEventsCount,
   notesCount,
   className = "",
+  scrollable = true,
 }: HeroBriefingCardProps) {
   const i18n = useI18n();
   const { settings } = useSettings();
@@ -97,7 +99,7 @@ export default function HeroBriefingCard({
   }
 
   return (
-    <BentoCard noHeader className={`${className}`}>
+    <BentoCard noHeader scrollable={scrollable} className={className}>
       <div className="flex h-full min-h-0 flex-col justify-between gap-4">
         <div className="flex flex-col gap-1">
           <p className="text-xs font-medium uppercase tracking-wider text-[var(--muted)]">{date}</p>

@@ -59,9 +59,10 @@ export type DayTimelineCardProps = {
   nextTasks: Item[];
   className?: string;
   focus?: FocusApi;
+  scrollable?: boolean;
 };
 
-export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus }: DayTimelineCardProps) {
+export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus, scrollable = true }: DayTimelineCardProps) {
   const i18n = useI18n();
   const focusCtx = useFocus();
   const { state, format, start } = focus ?? focusCtx;
@@ -85,7 +86,7 @@ export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus 
   ) : undefined;
 
   return (
-    <BentoCard title={i18n("daystream")} icon="calendar" className={className} badge={badge}>
+    <BentoCard title={i18n("daystream")} icon="calendar" className={className} badge={badge} scrollable={scrollable}>
       <div className="flex h-full min-h-0 flex-col justify-between gap-3">
         <div className="space-y-2">
           {events.length > 0 &&
@@ -164,6 +165,7 @@ export type ProjectsTasksCardProps = {
   mailLoading?: boolean;
   className?: string;
   focus?: FocusApi;
+  scrollable?: boolean;
 };
 
 export function ProjectsTasksCard({
@@ -175,6 +177,7 @@ export function ProjectsTasksCard({
   mailLoading,
   className = "",
   focus,
+  scrollable = true,
 }: ProjectsTasksCardProps) {
   const i18n = useI18n();
   const focusCtx = useFocus();
@@ -182,7 +185,7 @@ export function ProjectsTasksCard({
   const focusMinutes = Math.round(state.totalFocusSeconds / 60);
 
   return (
-    <BentoCard title={i18n("productivityAndRhythm")} icon="zap" className={className}>
+    <BentoCard title={i18n("productivityAndRhythm")} icon="zap" className={className} scrollable={scrollable}>
       <div className="flex h-full min-h-0 flex-col justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="relative flex h-20 w-20 shrink-0 items-center justify-center">
@@ -233,9 +236,10 @@ export function ProjectsTasksCard({
 export type RecentNotesCardProps = {
   notes: Item[];
   className?: string;
+  scrollable?: boolean;
 };
 
-export function RecentNotesCard({ notes, className = "" }: RecentNotesCardProps) {
+export function RecentNotesCard({ notes, className = "", scrollable = true }: RecentNotesCardProps) {
   const i18n = useI18n();
   const recent = useMemo(
     () =>
@@ -260,7 +264,7 @@ export function RecentNotesCard({ notes, className = "" }: RecentNotesCardProps)
   );
 
   return (
-    <BentoCard title={i18n("recent")} icon="history" className={className} action={action}>
+    <BentoCard title={i18n("recent")} icon="history" className={className} action={action} scrollable={scrollable}>
       <div className="flex h-full min-h-0 flex-col justify-between gap-2">
         {recent.length > 0 ? (
           <div className="space-y-2">

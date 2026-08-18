@@ -2,6 +2,7 @@
 
 import { ReactNode } from "react";
 import { Icon } from "@/lib/icons";
+import { cn } from "@/lib/utils";
 
 export type BentoCardProps = {
   title?: string;
@@ -11,6 +12,7 @@ export type BentoCardProps = {
   children: ReactNode;
   className?: string;
   noHeader?: boolean;
+  scrollable?: boolean;
 };
 
 export default function BentoCard({
@@ -21,17 +23,27 @@ export default function BentoCard({
   children,
   className = "",
   noHeader,
+  scrollable = true,
 }: BentoCardProps) {
   return (
     <div
-      className={`group relative h-full w-full overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 shadow-xl shadow-black/50 backdrop-blur-xl transition-all duration-200 hover:border-white/[0.16] ${className}`}
+      className={cn(
+        "group relative w-full rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 shadow-xl shadow-black/50 backdrop-blur-xl transition-all duration-200 hover:border-white/[0.16]",
+        scrollable ? "h-full overflow-hidden" : "h-auto min-h-fit overflow-visible",
+        className
+      )}
     >
       <div
         className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent"
         aria-hidden="true"
       />
 
-      <div className="relative z-10 flex h-full min-h-0 flex-1 flex-col">
+      <div
+        className={cn(
+          "relative z-10 flex flex-col",
+          scrollable ? "h-full min-h-0 flex-1" : "h-auto overflow-visible"
+        )}
+      >
         {!noHeader && (title || icon) && (
           <div className="mb-4 flex flex-none items-center justify-between border-b border-white/[0.05] pb-3">
             <div className="flex items-center gap-2.5">
@@ -54,7 +66,14 @@ export default function BentoCard({
           </div>
         )}
 
-        <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
+        <div
+          className={cn(
+            "flex flex-col",
+            scrollable ? "min-h-0 flex-1 overflow-y-auto" : "h-auto overflow-visible"
+          )}
+        >
+          {children}
+        </div>
       </div>
     </div>
   );

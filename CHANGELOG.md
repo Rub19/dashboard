@@ -4,6 +4,18 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Command Palette : indicateur actif, auto-scroll et épinglettes**
+
+### Corrige
+- `ethone-next/components/CommandPalette.tsx` : suppression du contour vert parasite sur le champ de recherche (`outline: none` / `outline-0 focus-visible:outline-0`), séparateurs header/footer plus subtils (`border-white/[0.06]`), fond de sélection neutre (`bg-white/[0.08]`) et texte/icône accentués.
+- Synchronisation de l'indicateur actif avec l'index réel : passage à `useLayoutEffect` et mesure via `offsetTop`/`offsetHeight` pour que le fond suive l'élément sélectionné sans décalage.
+- Navigation clavier plus fluide : défilement automatique centré (`list.scrollTo` avec `behavior: smooth`) pour `ArrowUp`, `ArrowDown`, `PageUp`, `PageDown`, `Home`, `End` et `Tab`/`Shift+Tab`.
+- `CommandItemRow` : restructuration de la ligne pour extraire l'épinglette en bouton indépendant, corrigeant l'interaction d'épinglage/désépinglage et la propagation d'événements.
+
+### Ajoute
+- `ethone-next/e2e/command-palette.spec.ts` : tests Playwright dédiés couvrant l'ouverture, la navigation flèches/Tab, l'auto-scroll, le maintien de l'élément actif visible, la fermeture par Escape, l'activation par Enter et la persistance de l'épinglette après rechargement.
+- Migrations `supabase/migrations/202608290001_cloud_sync_foundation.sql` et `202608300001_user_settings_payload.sql` appliquées sur le projet Supabase, activant la table `user_settings` et la persistence de `pinnedCommands`/`commandHistory`.
+
 **Weather : bandeau de recherche transparent**
 
 ### Corrige

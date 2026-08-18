@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Search } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
@@ -87,7 +87,6 @@ const CommandItemRow = memo(function CommandItemRow({
   activeIndex,
   isActive,
   hasIcons,
-  open,
   uid,
   setIndex,
   run,
@@ -100,7 +99,6 @@ const CommandItemRow = memo(function CommandItemRow({
   activeIndex: number;
   isActive: boolean;
   hasIcons: boolean;
-  open: boolean;
   uid: string;
   setIndex: (i: number) => void;
   run: (cmd: CommandItem) => void;
@@ -111,59 +109,63 @@ const CommandItemRow = memo(function CommandItemRow({
 }) {
   const shortcut = cmd.shortcut ? `⌘${cmd.shortcut.toUpperCase()}` : null;
   return (
-    <button
-      type="button"
+    <div
       id={`${uid}-opt-${activeIndex}`}
       role="option"
       aria-selected={isActive}
       data-index={activeIndex}
       onMouseEnter={() => setIndex(activeIndex)}
       onClick={() => run(cmd)}
-      tabIndex={open ? 0 : -1}
+      tabIndex={-1}
       className={cn(
-        "relative isolate flex w-full items-center gap-3 rounded-md px-2 py-2 text-left text-sm transition-colors",
+        "relative isolate flex w-full items-center rounded-md text-left text-sm transition-all duration-150 ease-out outline-0 focus:outline-0 focus-visible:outline-0",
         isActive ? "text-[var(--accent)]" : "text-[var(--muted)]"
       )}
     >
-      {cmd.icon ? (
-        <span className="relative z-10 h-4 w-4 shrink-0">{cmd.icon}</span>
-      ) : hasIcons ? (
-        <span className="relative z-10 h-4 w-4 shrink-0" />
-      ) : null}
-      <span className="relative z-10 flex-1 truncate">{cmd.label}</span>
-      <span className="relative z-10 flex shrink-0 items-center gap-2">
-        {cmd.category && (
-          <span
-            className={cn(
-              "text-[10px]",
-              isActive ? "text-[var(--muted)]" : "text-[var(--muted)]/70"
-            )}
-          >
-            {cmd.category}
-          </span>
-        )}
-        {shortcut && (
-          <kbd className="rounded border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5 text-[10px] text-[var(--muted)]">
-            {shortcut}
-          </kbd>
-        )}
-        <span
-          role="button"
-          tabIndex={-1}
-          onClick={(e) => togglePin(cmd, e)}
-          className={cn(
-            "relative z-10 rounded p-1 transition-colors",
-            isActive
-              ? "text-[var(--accent)] hover:bg-[var(--accent)]/10"
-              : "text-[var(--muted)] hover:bg-[var(--surface)]"
+      <div className="relative z-10 flex flex-1 items-center gap-3 px-2 py-2">
+        {cmd.icon ? (
+          <span className="h-4 w-4 shrink-0">{cmd.icon}</span>
+        ) : hasIcons ? (
+          <span className="h-4 w-4 shrink-0" />
+        ) : null}
+        <span className="flex-1 truncate">{cmd.label}</span>
+        <span className="flex shrink-0 items-center gap-2">
+          {cmd.category && (
+            <span
+              className={cn(
+                "text-[10px]",
+                isActive ? "text-[var(--muted)]" : "text-[var(--muted)]/70"
+              )}
+            >
+              {cmd.category}
+            </span>
           )}
-          aria-label={isPinned ? unpinTitle : pinTitle}
-          title={isPinned ? unpinTitle : pinTitle}
-        >
-          <Icon name={isPinned ? "pin-off" : "pin"} className="h-3.5 w-3.5" />
+          {shortcut && (
+            <kbd className="rounded border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5 text-[10px] text-[var(--muted)]">
+              {shortcut}
+            </kbd>
+          )}
         </span>
-      </span>
-    </button>
+      </div>
+      <button
+        type="button"
+        tabIndex={-1}
+        onClick={(e) => {
+          e.stopPropagation();
+          togglePin(cmd, e as unknown as React.MouseEvent<HTMLElement>);
+        }}
+        className={cn(
+          "relative z-10 shrink-0 rounded p-1 transition-colors outline-0 focus:outline-0 focus-visible:outline-0",
+          isActive
+            ? "text-[var(--accent)] hover:bg-[var(--accent)]/10"
+            : "text-[var(--muted)] hover:bg-[var(--surface)]"
+        )}
+        aria-label={isPinned ? unpinTitle : pinTitle}
+        title={isPinned ? unpinTitle : pinTitle}
+      >
+        <Icon name={isPinned ? "pin-off" : "pin"} className="h-3.5 w-3.5" />
+      </button>
+    </div>
   );
 });
 
@@ -324,25 +326,26 @@ export default function CommandPalette() {
   const [activePos, setActivePos] = useState({ top: 0, height: 0 });
   const [activeVisible, setActiveVisible] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!open || filtered.length === 0) {
       setActiveVisible(false);
       return;
     }
     const list = listRef.current;
-    const el = list?.querySelector<HTMLButtonElement>(`[data-index="${index}"]`);
+    const el = list?.querySelector<HTMLElement>(`[data-index="${index}"]`);
     if (!list || !el) {
       setActiveVisible(false);
       return;
     }
-    el.scrollIntoView({ block: "nearest" });
-    requestAnimationFrame(() => {
-      const listRect = list.getBoundingClientRect();
-      const elRect = el.getBoundingClientRect();
-      setActivePos({ top: elRect.top - listRect.top, height: elRect.height });
-      setActiveVisible(true);
+    const targetScrollTop =
+      el.offsetTop - list.clientHeight / 2 + el.offsetHeight / 2;
+    list.scrollTo({
+      top: Math.max(0, targetScrollTop),
+      behavior: reduce ? "auto" : "smooth",
     });
-  }, [index, open, filtered.length]);
+    setActivePos({ top: el.offsetTop, height: el.offsetHeight });
+    setActiveVisible(true);
+  }, [index, open, filtered.length, reduce]);
 
   if (!mounted) return null;
 
@@ -394,7 +397,7 @@ export default function CommandPalette() {
             open ? "pointer-events-auto" : "pointer-events-none",
           )}
         >
-          <div className="flex items-center gap-3 border-b border-[var(--panel-border)] px-4">
+          <div className="flex items-center gap-3 border-b border-white/[0.06] px-4">
             <Search className="h-4 w-4 text-[var(--muted)]" />
             <input
               ref={inputRef}
@@ -403,6 +406,7 @@ export default function CommandPalette() {
               placeholder={i18n("search")}
               tabIndex={open ? 0 : -1}
               role="combobox"
+              style={{ outline: "none" }}
               aria-expanded={open}
               aria-controls={`${uid}-list`}
               aria-activedescendant={
@@ -410,7 +414,7 @@ export default function CommandPalette() {
               }
               aria-autocomplete="list"
               className={cn(
-                "h-12 flex-1 bg-transparent text-sm text-[var(--foreground)] placeholder:text-[var(--muted)] outline-none",
+                "h-12 flex-1 border-0 bg-transparent text-sm text-[var(--foreground)] placeholder:text-[var(--muted)] outline-0 focus:outline-0 focus-visible:outline-0 ring-0 focus:ring-0 focus-visible:ring-0",
                 canTouch && "text-base",
               )}
             />
@@ -425,12 +429,13 @@ export default function CommandPalette() {
             role="listbox"
             aria-label="Commands"
             className="relative max-h-[54vh] overflow-y-auto overscroll-contain p-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            style={{ scrollPaddingBlock: "8px" }}
           >
             {filtered.length > 0 && (
               <motion.div
                 aria-hidden
                 initial={false}
-                className="pointer-events-none absolute left-2 right-2 z-0 rounded-md bg-[var(--accent)]/[0.08] will-change-[transform,height]"
+                className="pointer-events-none absolute left-2 right-2 z-0 rounded-md bg-white/[0.08] will-change-[transform,height]"
                 animate={{
                   y: activePos.top,
                   height: activePos.height,
@@ -441,8 +446,8 @@ export default function CommandPalette() {
                     ? { duration: 0 }
                     : {
                         type: "spring",
-                        stiffness: 480,
-                        damping: 38,
+                        stiffness: 520,
+                        damping: 35,
                       }
                 }
               />
@@ -471,7 +476,6 @@ export default function CommandPalette() {
                         activeIndex={activeIndex}
                         isActive={isActive}
                         hasIcons={hasIcons}
-                        open={open}
                         uid={uid}
                         setIndex={setIndex}
                         run={run}
@@ -487,7 +491,7 @@ export default function CommandPalette() {
             )}
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[var(--panel-border)] px-4 py-2.5 text-[10px] text-[var(--muted)]">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/[0.06] px-4 py-2.5 text-[10px] text-[var(--muted)]">
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-1">
                 <kbd className="rounded border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5">Esc</kbd>

@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { GripVertical, Radio, Maximize2, ChevronDown, X, Music } from "lucide-react";
+import { GripVertical, Radio, Maximize2, ChevronDown, X, Music, Link as LinkIcon, ClipboardPaste, X as XIcon } from "lucide-react";
 import { useLiveWidgetStore } from "@/lib/hooks/useLiveWidgetStore";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useLiveData } from "@/lib/hooks/useLiveData";
@@ -320,14 +320,50 @@ export default function LiveWidget() {
                   )}
 
                   {/* Source input */}
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={streamUrl}
-                      onChange={(e) => setLiveSource(e.target.value)}
-                      placeholder={i18n("liveStreamUrlPlaceholder") || "URL du flux (HLS/WebRTC/iframe)..."}
-                      className="flex-1 rounded-lg border border-white/[0.06] bg-white/[0.03] px-2.5 py-1.5 text-[11px] text-zinc-200 placeholder-zinc-600 outline-none focus:border-emerald-500/50"
-                    />
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-medium uppercase tracking-wider text-zinc-500">
+                      {i18n("liveStreamInputLabel", "URL du flux direct")}
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <div className="relative flex-1">
+                        <LinkIcon className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-600" />
+                        <input
+                          type="text"
+                          value={streamUrl}
+                          onChange={(e) => setLiveSource(e.target.value)}
+                          placeholder={i18n("liveStreamUrlPlaceholder") || "URL du flux (HLS/WebRTC/iframe)..."}
+                          className="w-full rounded-lg border border-white/[0.06] bg-white/[0.03] pl-8 pr-2.5 py-1.5 text-[11px] text-zinc-200 placeholder-zinc-600 outline-none focus:border-emerald-500/50"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          try {
+                            const text = await navigator.clipboard.readText();
+                            if (text) setLiveSource(text.trim());
+                          } catch {
+                            showError(i18n("clipboardDenied", "Impossible d'accéder au presse-papiers. Collez manuellement."));
+                          }
+                        }}
+                        title={i18n("paste", "Coller")}
+                        className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/[0.06] bg-white/[0.03] text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+                      >
+                        <ClipboardPaste className="h-3.5 w-3.5" />
+                      </button>
+                      {streamUrl && (
+                        <button
+                          type="button"
+                          onClick={() => setLiveSource("")}
+                          title={i18n("clear", "Effacer")}
+                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/[0.06] bg-white/[0.03] text-zinc-400 transition-colors hover:bg-rose-500/10 hover:text-rose-400"
+                        >
+                          <XIcon className="h-3.5 w-3.5" />
+                        </button>
+                      )}
+                    </div>
+                    <p className="px-0.5 text-[10px] text-zinc-600">
+                      {i18n("liveStreamInputHelp", "Colle une URL HLS (.m3u8), WebRTC ou iframe de caméra/stream.")}
+                    </p>
                   </div>
                 </div>
               )}

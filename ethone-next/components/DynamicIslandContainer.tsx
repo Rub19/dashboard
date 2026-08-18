@@ -187,6 +187,7 @@ function SpotifyCompact({
         className="h-5 w-5 shrink-0 rounded-md object-cover"
         iconClassName={cn("h-3 w-3", playing ? "text-emerald-400" : "text-zinc-400")}
         loading="eager"
+        priority
       />
 
       <AudioWave playing={playing} className="shrink-0" />
@@ -265,13 +266,14 @@ export default function DynamicIslandContainer() {
 
   useEffect(() => {
     if (!nowPlaying?.isPlaying) return;
+    const step = 250;
     const id = setInterval(() => {
       setLocalProgress((p) => {
         const duration = nowPlaying?.durationMs ?? 0;
-        const next = Math.min(duration, p + 1000);
+        const next = Math.min(duration, p + step);
         return next;
       });
-    }, 1000);
+    }, step);
     return () => clearInterval(id);
   }, [nowPlaying?.isPlaying, nowPlaying?.durationMs]);
 
@@ -493,6 +495,7 @@ export default function DynamicIslandContainer() {
                     className="h-14 w-14 shrink-0 rounded-xl object-cover shadow-lg ring-1 ring-white/10"
                     iconClassName="h-6 w-6 text-emerald-400"
                     loading="eager"
+                    priority
                   />
                   <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5">
                     <p className="truncate text-sm font-semibold text-white">
@@ -507,7 +510,7 @@ export default function DynamicIslandContainer() {
                     onClick={toggleLike}
                     disabled={likeLoading || !nowPlaying?.id}
                     className={cn(
-                      "flex h-8 w-8 items-center justify-center rounded-full transition-all duration-200",
+                      "flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200",
                       isSaved
                         ? "bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25"
                         : "text-zinc-400 hover:bg-white/10 hover:text-white",
@@ -543,16 +546,16 @@ export default function DynamicIslandContainer() {
                     type="button"
                     onClick={() => spotifyControl("previous")}
                     disabled={pendingSpotify || npLoading}
-                    className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-40"
                     aria-label={i18n("previous")}
                   >
-                    <SkipBack className="h-4 w-4" />
+                    <SkipBack className="h-5 w-5" />
                   </button>
                   <button
                     type="button"
                     onClick={togglePlay}
                     disabled={pendingSpotify || npLoading}
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-zinc-950 shadow-lg transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-zinc-950 shadow-lg transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
                     aria-label={nowPlaying?.isPlaying ? i18n("pause") : i18n("play")}
                   >
                     {nowPlaying?.isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 fill-current" />}
@@ -561,10 +564,10 @@ export default function DynamicIslandContainer() {
                     type="button"
                     onClick={() => spotifyControl("next")}
                     disabled={pendingSpotify || npLoading}
-                    className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-40"
                     aria-label={i18n("next")}
                   >
-                    <SkipForward className="h-4 w-4" />
+                    <SkipForward className="h-5 w-5" />
                   </button>
                 </div>
               </div>

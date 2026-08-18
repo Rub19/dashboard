@@ -102,18 +102,35 @@ export function useBrain(mailClient?: BrainMailClient) {
     if (!(err instanceof Error)) return false;
     const status = (err as { status?: number }).status;
     const code = (err as { code?: string }).code;
-    const detail = (err as { detail?: { code?: string; error?: { code?: string } } }).detail;
+    const detail = (err as { detail?: { code?: string; error?: { code?: string; message?: string } } }).detail;
     if (status === 404 && code === "PROVIDER_NOT_FOUND") return true;
-    if (detail?.code === "model_not_found") return true;
-    if (detail?.error?.code === "model_not_found") return true;
-    const message = String(err.message).toLowerCase();
-    return message.includes("does not exist or you do not have access") || message.includes("model_not_found");
+    if (detail?.code === "model_not_found" || detail?.code === "model_decommissioned") return true;
+    if (detail?.error?.code === "model_not_found" || detail?.error?.code === "model_decommissioned") return true;
+    const message = String(err.message || "").toLowerCase();
+    const detailMsg = String(detail?.error?.message || "").toLowerCase();
+    return message.includes("does not exist or you do not have access") ||
+      message.includes("model_not_found") ||
+      message.includes("decommissioned") ||
+      message.includes("no longer supported") ||
+      detailMsg.includes("decommissioned") ||
+      detailMsg.includes("no longer supported");
   }
 
   function normalizeBrainError(err: unknown): Error {
     if (!(err instanceof Error)) return new Error(String(err));
     if (isModelUnavailable(err)) {
-      const friendly = new Error("Connexion au modèle IA momentanément indisponible. Tentative avec le modèle de secours...");
+      const friendly = new Error("Le modèle IA demandé est indisponible ou a été mis à jour. Nouvelle tentative avec le modèle de secours...");
+      (friendly as { retryable?: boolean }).retryable = true;
+      return friendly;
+    }
+    const msg = String(err.message || "");
+    if (msg.includes("SERVICE_NOT_CONFIGURED") || msg.includes("501")) {
+      const friendly = new Error("Le service IA n'est pas encore configuré avec une clé API active.");
+      (friendly as { retryable?: boolean }).retryable = false;
+      return friendly;
+    }
+    if (msg.includes("429") || msg.includes("RATE_LIMIT") || msg.includes("quota")) {
+      const friendly = new Error("Limite de requêtes atteinte momentanément. Veuillez patienter quelques secondes.");
       (friendly as { retryable?: boolean }).retryable = true;
       return friendly;
     }

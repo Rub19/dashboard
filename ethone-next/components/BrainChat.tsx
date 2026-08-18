@@ -347,12 +347,12 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
 
   function renderWelcome() {
     return (
-      <div className="flex flex-col gap-3 px-2">
+      <div className="flex flex-col gap-3 px-2 max-w-3xl mx-auto w-full">
         <div className="flex gap-3">
           <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-purple-500/30 bg-purple-500/10">
             <Sparkles className="h-4 w-4 text-purple-400" />
           </span>
-          <div className="max-w-2xl rounded-2xl rounded-tl-sm border border-white/[0.08] bg-zinc-950/80 px-4 py-3 text-sm text-zinc-200 shadow-xl">
+          <div className="max-w-2xl rounded-2xl rounded-tl-sm border border-[var(--panel-border)] bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)] px-4 py-3 text-sm text-zinc-200 shadow-xl">
             <div className="leading-relaxed">{renderMarkdown(welcomeMessage)}</div>
             <div className="mt-3 flex flex-wrap gap-2">
               {welcomeChips.map((chip) => (
@@ -371,33 +371,35 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
     const hasCursor = !isUser && i === brain.messages.length - 1 && (typed[i] ?? 0) < m.content.length;
 
     return (
-      <div key={i} className={`flex ${isUser ? "justify-end" : "justify-start"} gap-3 px-2`}>
-        {!isUser && (
-          <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-purple-500/30 bg-purple-500/10">
-            <Sparkles className="h-4 w-4 text-purple-400" />
-          </span>
-        )}
-        <div className={`relative max-w-2xl text-sm ${isUser ? "text-zinc-100" : "text-zinc-200"}`}>
-          <div
-            className={`px-4 py-2.5 leading-relaxed shadow-sm ${
-              isUser
-                ? "rounded-2xl rounded-tr-sm border border-white/10 bg-white/[0.08]"
-                : "rounded-2xl rounded-tl-sm border border-white/[0.08] bg-zinc-950/80 shadow-xl"
-            }`}
-          >
-            <div className="whitespace-pre-wrap">{renderMarkdown(displayedContent(m, i))}</div>
-            {hasCursor && (
-              <span className="ml-1 inline-block h-4 w-1.5 translate-y-0.5 animate-pulse rounded-sm bg-emerald-400" />
+      <div key={i} className="max-w-3xl mx-auto w-full px-2">
+        <div className={`flex ${isUser ? "justify-end" : "justify-start"} gap-3`}>
+          {!isUser && (
+            <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-purple-500/30 bg-purple-500/10">
+              <Sparkles className="h-4 w-4 text-purple-400" />
+            </span>
+          )}
+          <div className={`relative max-w-2xl text-sm ${isUser ? "text-zinc-100" : "text-zinc-200"}`}>
+            <div
+              className={`px-4 py-2.5 leading-relaxed shadow-sm ${
+                isUser
+                  ? "rounded-2xl rounded-tr-sm border border-white/10 bg-white/[0.08] backdrop-blur-[var(--panel-blur)]"
+                  : "rounded-2xl rounded-tl-sm border border-[var(--panel-border)] bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)] shadow-xl"
+              }`}
+            >
+              <div className="whitespace-pre-wrap">{renderMarkdown(displayedContent(m, i))}</div>
+              {hasCursor && (
+                <span className="ml-1 inline-block h-4 w-1.5 translate-y-0.5 animate-pulse rounded-sm bg-emerald-400" />
+              )}
+            </div>
+            {renderProviderBadge(m, i)}
+            {!isUser && chips.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-2">
+                {chips.map((chip) => (
+                  <ActionChip key={chip.id} chip={chip} />
+                ))}
+              </div>
             )}
           </div>
-          {renderProviderBadge(m, i)}
-          {!isUser && chips.length > 0 && (
-            <div className="mt-2 flex flex-wrap gap-2">
-              {chips.map((chip) => (
-                <ActionChip key={chip.id} chip={chip} />
-              ))}
-            </div>
-          )}
         </div>
       </div>
     );
@@ -405,86 +407,90 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
 
   return (
     <div className={`flex h-[70vh] flex-col ${className}`}>
-      <div className="flex-1 space-y-4 overflow-y-auto pr-1 pb-4">
+      <div className="flex-1 space-y-4 overflow-y-auto os-scroll pr-1 pb-4">
         {brain.messages.length === 0 ? renderWelcome() : brain.messages.map((m, i) => renderMessage(m, i))}
         {pending && (
-          <div className="flex justify-start px-2">
+          <div className="max-w-3xl mx-auto w-full px-2 flex justify-start">
             <TypingDots />
           </div>
         )}
         <div ref={bottomRef} />
       </div>
 
-      {brain.error && (
-        <div className="mb-2 flex items-start gap-3 rounded-2xl border border-amber-500/20 bg-amber-500/[0.08] p-3 shadow-sm backdrop-blur-sm">
-          <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400">
-            <Zap className="h-3.5 w-3.5" />
-          </span>
-          <div className="min-w-0 flex-1 text-xs text-amber-200">
-            <p className="font-medium">{String(brain.error.message)}</p>
-            {(brain.error as { retryable?: boolean }).retryable && (
-              <button
-                type="button"
-                onClick={() => {
-                  if (!brain.lastPrompt || pending) return;
-                  setPending(true);
-                  brain.retry().finally(() => setPending(false));
-                }}
-                disabled={pending || brain.loading}
-                className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1.5 text-[10px] font-medium text-amber-100 transition-colors hover:bg-amber-500/20 disabled:opacity-50"
-              >
-                <RotateCcw className="h-3 w-3" />
-                Réessayer
-              </button>
-            )}
+      <div className="max-w-3xl mx-auto w-full">
+        {brain.error && (
+          <div className="mb-2 flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 shadow-lg backdrop-blur-md">
+            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-300">
+              <Zap className="h-3.5 w-3.5" />
+            </span>
+            <div className="min-w-0 flex-1 text-xs text-amber-200">
+              <p className="font-medium">{String(brain.error.message)}</p>
+              {(brain.error as { retryable?: boolean }).retryable && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!brain.lastPrompt || pending) return;
+                    setPending(true);
+                    brain.retry().finally(() => setPending(false));
+                  }}
+                  disabled={pending || brain.loading}
+                  className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/15 px-2.5 py-1.5 text-[10px] font-medium text-amber-100 transition-colors hover:bg-amber-500/25 disabled:opacity-50"
+                >
+                  <RotateCcw className="h-3 w-3" />
+                  Réessayer
+                </button>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => brain.clearChat()}
+              className="shrink-0 text-amber-400 transition-colors hover:text-amber-100"
+              aria-label={i18n("close")}
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => brain.clearChat()}
-            className="shrink-0 text-amber-400 transition-colors hover:text-amber-100"
-            aria-label={i18n("close")}
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
-        </div>
-      )}
+        )}
 
-      <div className="relative mt-2 rounded-2xl border border-white/10 bg-zinc-950/90 p-2 shadow-2xl backdrop-blur-2xl transition-colors focus-within:border-emerald-500/40">
-        <textarea
-          ref={textareaRef}
-          rows={1}
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Parler à Brain..."
-          disabled={pending}
-          className="w-full resize-none rounded-xl bg-transparent px-3 py-2 text-sm text-zinc-100 outline-none placeholder:text-zinc-500"
-          style={{ maxHeight: 144 }}
-        />
-        <div className="flex items-center justify-between px-1 pt-1">
-          <div className="flex flex-wrap gap-1.5">
-            {brain.suggestions.slice(0, 3).map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => handleExecute(s.action, s.parameters)}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.06] bg-white/[0.03] px-2 py-1 text-[10px] text-zinc-400 transition-colors hover:bg-white/[0.08] hover:text-zinc-200"
-              >
-                <Sparkles className="h-3 w-3" />
-                {s.title}
-              </button>
-            ))}
+        <div className="relative mt-2 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 shadow-2xl backdrop-blur-[var(--panel-blur)] transition-colors focus-within:border-emerald-500/40">
+          <textarea
+            ref={textareaRef}
+            rows={1}
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Parler à Brain..."
+            disabled={pending}
+            data-testid="brain-input"
+            className="w-full resize-none rounded-xl bg-transparent px-3 py-2 text-sm text-zinc-100 outline-none placeholder:text-zinc-500"
+            style={{ maxHeight: 144 }}
+          />
+          <div className="flex items-center justify-between px-1 pt-1">
+            <div className="flex flex-wrap gap-1.5">
+              {brain.suggestions.slice(0, 3).map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => handleExecute(s.action, s.parameters)}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.06] bg-white/[0.03] px-2 py-1 text-[10px] text-zinc-400 transition-colors hover:bg-white/[0.08] hover:text-zinc-200"
+                >
+                  <Sparkles className="h-3 w-3" />
+                  {s.title}
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => handleSend()}
+              disabled={pending || !prompt.trim()}
+              data-testid="brain-send-btn"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-zinc-950 font-bold transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
+              style={{ background: "var(--accent-color, #10b981)" }}
+              aria-label="Envoyer"
+            >
+              {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUp className="h-4 w-4" />}
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => handleSend()}
-            disabled={pending || !prompt.trim()}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-zinc-950 font-bold transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
-            style={{ background: "var(--accent-color, #10b981)" }}
-            aria-label="Envoyer"
-          >
-            {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUp className="h-4 w-4" />}
-          </button>
         </div>
       </div>
     </div>

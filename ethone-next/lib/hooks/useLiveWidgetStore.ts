@@ -29,7 +29,7 @@ const STORAGE_KEY = "ethone-live-widget";
 export const useLiveWidgetStore = create<LiveWidgetStore>()(
   persist(
     (set) => ({
-      isOpen: true,
+      isOpen: false,
       isMinimized: false,
       expanded: false,
       liveSource: "",

@@ -4,6 +4,18 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Mise à jour des modèles Groq et refonte du chat Brain**
+
+### Ajoute
+- `ethone-next/e2e/brain-chat.spec.ts` : test Playwright E2E validant l'envoi de message dans Brain et la réception de réponse sans message d'erreur.
+
+### Corrige
+- Remplacement du modèle déprécié `mixtral-8x7b-32768` par `llama-3.3-70b-versatile` (par défaut) et modèles actifs `llama-3.1-8b-instant`, `openai/gpt-oss-120b`, `openai/gpt-oss-20b`, `qwen/qwen3.6-27b` dans `worker/src/services/ai-config.js`, `worker/src/services/groq-client.js`, `worker/src/services/ai-provider-clients.js`, `ethone-next/lib/brain/providers.ts` et `ethone-next/app/api/brain/chat/route.ts`.
+- Prise en charge des variables d'environnement `GROQ_MODEL`, `CLOUDFLARE_MODEL` et `GROK_MODEL` configurables avec fallbacks automatiques.
+- Détection intelligente des erreurs de dépréciation de modèle (`decommissioned`, `model_decommissioned`, `model_not_found`) côté Worker et client pour basculer automatiquement sur les modèles de secours sans bloquer l'utilisateur.
+- `ethone-next/components/BrainChat.tsx` : centrage et lisibilité des bulles de messages (`max-w-3xl mx-auto`), fond transparent glassmorphic respectant le fond d'écran de l'OS, bannière d'alerte non-bloquante avec bouton Réessayer et réactivation propre de l'input.
+- `ethone-next/lib/hooks/useLiveWidgetStore.ts` : désactivation de l'overlay live par défaut pour ne pas intercepter les clics en bas d'écran.
+
 **Nettoyage majeur, purge des composants legacy et optimisation des dépendances**
 
 ### Supprime

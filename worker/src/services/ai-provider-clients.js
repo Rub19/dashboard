@@ -8,11 +8,14 @@ const GROQ_FALLBACK_MODELS = AI_PROVIDERS.groq.fallbackModels;
 
 function isGroqModelNotFound(error) {
   if (!error) return false;
-  if (error.code !== "PROVIDER_NOT_FOUND") return false;
+  if (error.code !== "PROVIDER_NOT_FOUND" && error.code !== "UPSTREAM_ERROR" && error.status !== 400 && error.status !== 404) return false;
   const groqCode = error.detail?.code || error.detail?.error?.code;
-  if (groqCode === "model_not_found") return true;
-  const detail = String(error.detail?.message || error.detail?.error?.message || "").toLowerCase();
-  return detail.includes("does not exist or you do not have access");
+  if (groqCode === "model_not_found" || groqCode === "model_decommissioned") return true;
+  const detail = String(error.detail?.message || error.detail?.error?.message || error.message || "").toLowerCase();
+  return detail.includes("does not exist or you do not have access") ||
+    detail.includes("model_not_found") ||
+    detail.includes("decommissioned") ||
+    detail.includes("no longer supported");
 }
 
 function resolveGroqModelList(requested) {

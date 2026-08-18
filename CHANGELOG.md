@@ -4,6 +4,14 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Live Widget : identification Discord, avatar, Spotify et clarification du flux direct**
+
+### Corrige
+- `ethone-next/components/LiveWidget.tsx` : dans le panneau Live réduit, la carte Discord affiche désormais l'avatar, le pseudo (`displayName`), le handle (`@user#0000`) et le statut coloré.
+- Si l'utilisateur écoute Spotify via Discord, une carte "Spotify" affiche la pochette, le titre et l'artiste.
+- La carte "Now Playing" affiche la pochette et le nom de la source (`Spotify` par défaut).
+- La zone "En attente du flux direct" a un en-tête `Flux direct` + indication `HLS / WebRTC / iframe` et un message d'aide expliquant qu'il faut coller une URL de flux vidéo.
+
 **Suppression des données de démo / placeholders**
 
 ### Corrige

@@ -2,7 +2,8 @@
 
 import { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { GripVertical, Radio, Maximize2, ChevronDown, X } from "lucide-react";
+import Image from "next/image";
+import { GripVertical, Radio, Maximize2, ChevronDown, X, Music } from "lucide-react";
 import { useLiveWidgetStore } from "@/lib/hooks/useLiveWidgetStore";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useLiveData } from "@/lib/hooks/useLiveData";
@@ -10,6 +11,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { fetchWorker } from "@/lib/api";
 import { Icon } from "@/lib/icons";
+import { cn } from "@/lib/utils";
 import LiveWidgets from "./LiveWidgets";
 
 export default function LiveWidget() {
@@ -29,7 +31,35 @@ export default function LiveWidget() {
     setLiveSource,
   } = useLiveWidgetStore();
 
-  const activity = lanyard?.activities?.[0];
+  const discordUserId = lanyard?.userId;
+  const discordAvatarHash = lanyard?.avatarHash;
+  const discordAvatarUrl = useMemo(() => {
+    if (lanyard?.avatarUrl) return lanyard.avatarUrl;
+    if (discordUserId && discordAvatarHash) {
+      const ext = discordAvatarHash.startsWith("a_") ? "gif" : "png";
+      return `https://cdn.discordapp.com/avatars/${discordUserId}/${discordAvatarHash}.${ext}?size=128`;
+    }
+    return null;
+  }, [lanyard?.avatarUrl, discordUserId, discordAvatarHash]);
+
+  const discordDisplayName = lanyard?.displayName || lanyard?.username || "Discord";
+  const discordHandle = lanyard?.username ? (lanyard?.discriminator ? `${lanyard.username}#${lanyard.discriminator}` : `@${lanyard.username}`) : null;
+
+  const statusTone = {
+    online: "bg-emerald-500/10 text-emerald-400 ring-emerald-500/30",
+    idle: "bg-amber-500/10 text-amber-400 ring-amber-500/30",
+    dnd: "bg-rose-500/10 text-rose-400 ring-rose-500/30",
+    offline: "bg-zinc-500/10 text-zinc-400 ring-zinc-500/30",
+  }[lanyard?.discord_status || "offline"];
+
+  const statusLabel = {
+    online: i18n("statusOnline", "En ligne"),
+    idle: i18n("statusAway", "Absent"),
+    dnd: i18n("statusBusy", "Occupé"),
+    offline: i18n("statusOffline", "Hors ligne"),
+  }[lanyard?.discord_status || "offline"];
+
+  const lanyardSpotify = lanyard?.spotify;
 
   async function controlSpotify(action: "play" | "pause" | "next" | "previous") {
     if (!settings.liveSpotifyClientId) {
@@ -129,34 +159,61 @@ export default function LiveWidget() {
               ) : (
                 <div className="space-y-3">
                   {/* Stream area */}
-                  <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/[0.06] bg-black">
-                    {streamUrl && isSecureStream ? (
-                      <iframe
-                        src={streamUrl}
-                        title="Live stream"
-                        allow="autoplay; encrypted-media; picture-in-picture"
-                        className="h-full w-full border-0"
-                        sandbox="allow-same-origin allow-scripts allow-presentation"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-zinc-500">
-                        <Radio className="h-8 w-8 animate-pulse text-emerald-400" />
-                        <p className="text-[11px] text-center px-4">
-                          {i18n("liveStreamWaiting") || "En attente du flux direct..."}
-                        </p>
-                      </div>
-                    )}
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between px-0.5">
+                      <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-500">
+                        {i18n("liveDirectStream", "Flux direct")}
+                      </span>
+                      <span className="text-[10px] text-zinc-600">
+                        {i18n("liveStreamHint", "HLS / WebRTC / iframe")}
+                      </span>
+                    </div>
+                    <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/[0.06] bg-black">
+                      {streamUrl && isSecureStream ? (
+                        <iframe
+                          src={streamUrl}
+                          title="Live stream"
+                          allow="autoplay; encrypted-media; picture-in-picture"
+                          className="h-full w-full border-0"
+                          sandbox="allow-same-origin allow-scripts allow-presentation"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full flex-col items-center justify-center gap-2 px-4 text-zinc-500">
+                          <Radio className="h-8 w-8 animate-pulse text-emerald-400" />
+                          <p className="text-center text-[11px]">
+                            {i18n("liveStreamWaiting", "En attente du flux direct...")}
+                          </p>
+                          <p className="max-w-[220px] text-center text-[10px] text-zinc-600">
+                            {i18n("liveStreamHelp", "Collez une URL de flux vidéo dans le champ ci-dessous.")}
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* Now playing */}
                   {nowPlaying?.isPlaying ? (
                     <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2">
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-500/10 text-violet-400">
-                        <Icon name="disc" className={`h-5 w-5 ${nowPlaying.isPlaying ? "animate-spin" : ""}`} />
-                      </span>
+                      {nowPlaying.cover || nowPlaying.artworkUrl ? (
+                        <Image
+                          src={nowPlaying.cover || nowPlaying.artworkUrl || ""}
+                          alt={nowPlaying.title || ""}
+                          width={36}
+                          height={36}
+                          unoptimized
+                          className="h-9 w-9 shrink-0 rounded-lg object-cover"
+                        />
+                      ) : (
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-500/10 text-violet-400">
+                          <Icon name="disc" className={`h-5 w-5 ${nowPlaying.isPlaying ? "animate-spin" : ""}`} />
+                        </span>
+                      )}
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-medium text-zinc-100">{nowPlaying.title}</p>
-                        <p className="truncate text-xs text-zinc-500">{nowPlaying.artist}</p>
+                        <p className="truncate text-xs text-zinc-500">
+                          <span className="text-emerald-400">{nowPlaying.source || "Spotify"}</span>
+                          {nowPlaying.artist ? ` — ${nowPlaying.artist}` : ""}
+                        </p>
                       </div>
                     </div>
                   ) : loading ? (
@@ -195,28 +252,69 @@ export default function LiveWidget() {
 
                   {/* Lanyard status */}
                   {lanyard?.discord_status && (
-                    <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2">
-                      <span
-                        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
-                          lanyard.discord_status === "online"
-                            ? "bg-emerald-500/10 text-emerald-400"
-                            : lanyard.discord_status === "idle"
-                              ? "bg-amber-500/10 text-amber-400"
-                              : lanyard.discord_status === "dnd"
-                                ? "bg-rose-500/10 text-rose-400"
-                                : "bg-zinc-500/10 text-zinc-400"
-                        }`}
-                      >
-                        <Icon name="monitor" className="h-5 w-5" />
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-zinc-100 capitalize">{lanyard.discord_status}</p>
-                        {activity && (
-                          <p className="truncate text-xs text-zinc-500">
-                            {activity.name}
-                            {activity.details ? ` — ${activity.details}` : ""}
-                          </p>
+                    <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+                      <div className="relative h-10 w-10 shrink-0">
+                        {discordAvatarUrl ? (
+                          <Image
+                            src={discordAvatarUrl}
+                            alt={discordDisplayName}
+                            width={40}
+                            height={40}
+                            unoptimized
+                            className="h-full w-full rounded-xl object-cover ring-1 ring-white/10"
+                          />
+                        ) : (
+                          <span className={cn("flex h-full w-full items-center justify-center rounded-xl text-sm font-bold", statusTone)}>
+                            {discordDisplayName.slice(0, 2).toUpperCase()}
+                          </span>
                         )}
+                        <span
+                          className={cn(
+                            "absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-zinc-950",
+                            lanyard.discord_status === "online"
+                              ? "bg-emerald-400"
+                              : lanyard.discord_status === "idle"
+                                ? "bg-amber-400"
+                                : lanyard.discord_status === "dnd"
+                                  ? "bg-rose-400"
+                                  : "bg-zinc-400",
+                          )}
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium text-zinc-100">{discordDisplayName}</p>
+                        <p className="truncate text-xs text-zinc-500">
+                          <span className="text-zinc-400">{discordHandle || "Discord"}</span>
+                          {discordHandle ? <span className="mx-1.5 text-zinc-700">·</span> : null}
+                          <span className="text-zinc-400">{statusLabel}</span>
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Discord Spotify activity */}
+                  {lanyardSpotify?.playing && (
+                    <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+                      {lanyardSpotify.artworkUrl || lanyardSpotify.artwork ? (
+                        <Image
+                          src={lanyardSpotify.artworkUrl || lanyardSpotify.artwork || ""}
+                          alt={lanyardSpotify.title || ""}
+                          width={36}
+                          height={36}
+                          unoptimized
+                          className="h-9 w-9 shrink-0 rounded-lg object-cover"
+                        />
+                      ) : (
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
+                          <Music className="h-5 w-5" />
+                        </span>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium text-zinc-100">{lanyardSpotify.title || "—"}</p>
+                        <p className="truncate text-xs text-zinc-500">
+                          <span className="text-emerald-400">Spotify</span>
+                          {lanyardSpotify.artist ? ` — ${lanyardSpotify.artist}` : ""}
+                        </p>
                       </div>
                     </div>
                   )}

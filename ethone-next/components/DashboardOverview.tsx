@@ -27,6 +27,9 @@ const BrainBriefingPanel = dynamic(() => import("@/components/BrainBriefingPanel
 
 type SectionDef = { id: string; label: string; icon: string };
 
+const homeCardClass =
+  "h-auto min-h-0 overflow-visible bg-[var(--surface-raised)]/90 shadow-lg shadow-black/20";
+
 const gridVariants = {
   hidden: { opacity: 1 },
   visible: {
@@ -147,10 +150,11 @@ export default function DashboardOverview() {
             todayEventsCount={todayEvents.length}
             notesCount={notes.length}
             scrollable={false}
+            className={homeCardClass}
           />
         );
       case "system":
-        return <SystemControlCard scrollable={false}  />;
+        return <SystemControlCard scrollable={false} className={homeCardClass} />;
       case "daystream":
         return (
           <DayTimelineCard
@@ -158,21 +162,22 @@ export default function DashboardOverview() {
             nextTasks={nextTasks}
             focus={focus}
             scrollable={false}
+            className={homeCardClass}
           />
         );
       case "productivity":
-        return <TasksWidget data={tasksApi} scrollable={false}  />;
+        return <TasksWidget data={tasksApi} scrollable={false} className={homeCardClass} />;
       case "recent":
-        return <RecentNotesCard notes={notes} scrollable={false}  />;
+        return <RecentNotesCard notes={notes} scrollable={false} className={homeCardClass} />;
       case "brain":
         return (
-          <BentoCard title={i18n("brain")} icon="brain" scrollable={false} >
+          <BentoCard title={i18n("brain")} icon="brain" scrollable={false} className={homeCardClass}>
             <BrainBriefingPanel />
           </BentoCard>
         );
       case "bills":
         return (
-          <BentoCard title={i18n("billsTitle")} icon="bills" scrollable={false} >
+          <BentoCard title={i18n("billsTitle")} icon="bills" scrollable={false} className={homeCardClass}>
             <BillsWidget />
           </BentoCard>
         );
@@ -187,6 +192,8 @@ export default function DashboardOverview() {
             updatedAt={live.updatedAt}
             loading={live.loading}
             error={live.error}
+            scrollable={false}
+            className={homeCardClass}
           />
         );
       default:
@@ -195,7 +202,7 @@ export default function DashboardOverview() {
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden">
+    <div className="flex h-full min-h-0 flex-col overflow-y-auto os-scroll">
       <header className="shrink-0 mb-2 flex w-full items-center justify-end">
         <button
           type="button"
@@ -254,7 +261,7 @@ export default function DashboardOverview() {
         animate="visible"
         variants={gridVariants}
         data-home-grid
-        className="grid min-h-0 w-full flex-1 auto-rows-fr grid-cols-12 gap-4 overflow-hidden pb-6"
+        className="grid w-full h-auto grid-cols-12 gap-4 pb-6"
       >
         {widgets.map((w) =>
           w.visible ? (
@@ -262,7 +269,7 @@ export default function DashboardOverview() {
               key={w.id}
               data-home-widget
               variants={widgetItemVariants}
-              className={`${WIDGET_COL_SPAN[w.id]} flex min-h-0 w-full flex-col overflow-hidden`}
+              className={`${WIDGET_COL_SPAN[w.id]} flex min-w-0 flex-col`}
             >
               {renderWidget(w.id)}
             </motion.div>

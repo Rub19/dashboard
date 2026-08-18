@@ -4,12 +4,21 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Refonte UI / Layout : Sidebar latérale gauche Bento Glassmorphism**
+
+### Corrige
+- `ethone-next/components/TopBar.tsx` : le bouton de toggle sidebar est maintenant une icône `PanelLeftOpen` / `PanelLeftClose` glassmorphism en haut à gauche, toujours visible, sans scroll.
+- `ethone-next/components/Sidebar.tsx` : panneau flottant `rounded-3xl` avec `bg-zinc-950/80`, `backdrop-blur-2xl` et ombre douce ; footer remplacé par un bloc profil/système compact (sync, réglages, repli).
+- `ethone-next/components/Shell.tsx` : contenu principal en `min-w-0 flex-1 overflow-x-clip overflow-y-auto` pour occuper la largeur restante sans scroll horizontal.
+- `ethone-next/components/motion/animated-sidebar.tsx` : style actif Emerald (`text-emerald-400`, `bg-emerald-500/10`, `border-emerald-500/20`, `layoutId="activeSidebarTab"`) et `useAnimatedSidebarPanel` exporté.
+- `ethone-next/app/tasks/page.tsx` : retrait du `<main>` imbriqué pour éviter la double balise et les débordements.
+- `ethone-next/components/TasksWidget.tsx` : retrait du bloc d'erreur rouge `[object Object]` sous le champ d'ajout.
+
 **Positionnement des popovers Dock et correction erreur Tâches**
 
 ### Corrige
 - `ethone-next/components/DockControlCenter.tsx` : positionnement fixe au-dessus du Dock (`bottom-28 left-1/2 -translate-x-1/2`), animation depuis le bas avec spring, clic extérieur via `useLayer`.
 - `ethone-next/components/FocusPopover.tsx` : même ancrage au-dessus du Dock, animation depuis le bas, fermeture Escape / clic extérieur via `useLayer`.
-- `ethone-next/components/TasksWidget.tsx` : affichage robuste de l'erreur (`error?.message || String(error)`).
 - `ethone-next/lib/hooks/useTasks.ts` : extraction du message d'erreur (`errorMessage`) au lieu de `new Error(String(err))` qui générait `[object Object]` sur les objets Supabase.
 
 **OAuth Spotify : scopes manquants pour lecture et bibliothèque**

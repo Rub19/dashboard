@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import Select, { type SelectOption } from "@/components/ui/Select";
 import {
   CalendarDate,
   getLocalTimeZone,
@@ -121,6 +122,22 @@ export function Calendar({
 
   const months = React.useMemo(() => Array.from({ length: 12 }, (_, i) => i + 1), []);
 
+  const monthOptions: SelectOption[] = React.useMemo(
+    () =>
+      months.map((m) => ({
+        id: String(m),
+        label: new Intl.DateTimeFormat(locale, { month: "long" }).format(
+          new Date(focused.year, m - 1, 1),
+        ),
+      })),
+    [months, locale, focused.year],
+  );
+
+  const yearOptions: SelectOption[] = React.useMemo(
+    () => years.map((y) => ({ id: String(y), label: String(y) })),
+    [years],
+  );
+
   return (
     <div
       className={cn(
@@ -140,30 +157,20 @@ export function Calendar({
 
         {captionLayout === "dropdown" ? (
           <div className="flex items-center gap-2">
-            <select
-              value={focused.month}
-              onChange={(e) => changeMonth(Number(e.target.value), focused.year)}
-              className="rounded-lg border border-white/[0.08] bg-zinc-950/50 px-2 py-1 text-sm text-white outline-none"
-            >
-              {months.map((m) => (
-                <option key={m} value={m}>
-                  {new Intl.DateTimeFormat(locale, { month: "long" }).format(
-                    new Date(focused.year, m - 1, 1),
-                  )}
-                </option>
-              ))}
-            </select>
-            <select
-              value={focused.year}
-              onChange={(e) => changeMonth(focused.month, Number(e.target.value))}
-              className="rounded-lg border border-white/[0.08] bg-zinc-950/50 px-2 py-1 text-sm text-white outline-none"
-            >
-              {years.map((y) => (
-                <option key={y} value={y}>
-                  {y}
-                </option>
-              ))}
-            </select>
+            <Select
+              value={String(focused.month)}
+              onChange={(v) => changeMonth(Number(v), focused.year)}
+              options={monthOptions}
+              className="w-36"
+              aria-label="Mois"
+            />
+            <Select
+              value={String(focused.year)}
+              onChange={(v) => changeMonth(focused.month, Number(v))}
+              options={yearOptions}
+              className="w-28"
+              aria-label="Année"
+            />
           </div>
         ) : (
           <span className="text-sm font-medium text-white">{monthYearLabel}</span>

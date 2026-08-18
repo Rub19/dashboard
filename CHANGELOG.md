@@ -13,6 +13,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `ethone-next/e2e/home-bento-layout.spec.ts` : test Playwright de recoupement des bounding boxes sur 1080p, 1440p, 1600x900, 1366x768, 1280x800, tablette et mobile, avec sélecteurs `data-home-grid`/`data-home-widget`.
 - **Ajustement scroll et fond des panneaux Home** : le conteneur Dashboard devient `overflow-y-auto os-scroll`, la grille passe en `h-auto auto-rows-auto` et les cartes recoivent `h-auto min-h-0 overflow-visible` afin de s'adapter à leur contenu tout en conservant un défilement global. Les panneaux Home utilisent `bg-[var(--surface-raised)]/90` et `shadow-lg shadow-black/20` pour un fond distinct du conteneur principal.
 
+**Calendrier : sélecteurs de mois/année glassmorphiques**
+
+### Corrige
+- `ethone-next/components/ui/calendar.tsx` : remplacement des `<select>` natifs par le composant `Select` glassmorphe (`components/ui/Select.tsx`). Les sélecteurs de mois et d'année utilisent `bg-[var(--panel-bg)]`, `backdrop-blur`, une bordure subtile et une icône `ChevronDown`, offrant un rendu cohérent avec le reste de l'OS et supprimant le fond gris du dropdown système.
+
 **Mise à jour des modèles Groq et refonte du chat Brain**
 
 ### Ajoute

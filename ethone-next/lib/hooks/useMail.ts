@@ -161,6 +161,7 @@ export function useMail() {
   const [blocked, setBlocked] = useState<MailSender[]>([]);
   const [trusted, setTrusted] = useState<MailSender[]>([]);
   const [aliases, setAliases] = useState<MailAlias[]>([]);
+  const [aliasesLoading, setAliasesLoading] = useState(true);
   const [accounts, setAccounts] = useState<MailAccount[]>([]);
   const [pgpKeys, setPgpKeys] = useState<MailPgpKey[]>([]);
   const [pushSubscriptions, setPushSubscriptions] = useState<MailPushSubscription[]>([]);
@@ -266,10 +267,15 @@ export function useMail() {
   }, []);
 
   const fetchAliases = useCallback(async () => {
+    setAliasesLoading(true);
     try {
       const res = await fetchWorker("/api/mail/alias");
       setAliases(Array.isArray(res?.data) ? res.data : []);
-    } catch {}
+    } catch {
+      setAliases([]);
+    } finally {
+      setAliasesLoading(false);
+    }
   }, []);
 
   const fetchAccounts = useCallback(async () => {
@@ -654,6 +660,7 @@ export function useMail() {
     blocked,
     trusted,
     aliases,
+    aliasesLoading,
     accounts,
     pgpKeys,
     pushSubscriptions,

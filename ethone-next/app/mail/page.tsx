@@ -36,6 +36,7 @@ export default function MailPage() {
     moveMessages,
     createLabel,
     aliases,
+    aliasesLoading,
     createAlias,
   } = useMail();
 
@@ -254,6 +255,26 @@ export default function MailPage() {
 
   const activeThreadId = activeThread?.[0]?.thread_id || activeThread?.[0]?.id;
 
+  if (aliasesLoading) {
+    return (
+      <div className="flex h-full min-h-0 w-full items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-600 border-t-purple-500" />
+      </div>
+    );
+  }
+
+  if (aliases.length === 0) {
+    return (
+      <MailAliasSetup
+        createAlias={createAlias}
+        onCreated={() => {
+          setActiveThread(null);
+          setComposeOpen(false);
+        }}
+      />
+    );
+  }
+
   return (
     <div className="flex h-full min-h-0 w-full gap-3 overflow-hidden">
       <MailSidebar
@@ -265,38 +286,26 @@ export default function MailPage() {
         canCompose={aliases.length > 0}
       />
 
-      {aliases.length === 0 ? (
-        <MailAliasSetup
-          createAlias={createAlias}
-          onCreated={() => {
-            setActiveThread(null);
-            setComposeOpen(false);
-          }}
-        />
-      ) : (
-        <>
-          <MailThreadList
-            title={i18n(folder) || folder}
-            grouped={groupedFolderMessages}
-            activeThreadId={activeThreadId}
-            loading={loading}
-            search={search}
-            onSearch={setSearch}
-            onSelect={openThread}
-            onToggleStar={handleToggleStar}
-          />
+      <MailThreadList
+        title={i18n(folder) || folder}
+        grouped={groupedFolderMessages}
+        activeThreadId={activeThreadId}
+        loading={loading}
+        search={search}
+        onSearch={setSearch}
+        onSelect={openThread}
+        onToggleStar={handleToggleStar}
+      />
 
-          <MailDetailView
-            thread={activeThread}
-            onReply={() => openCompose("reply")}
-            onForward={() => openCompose("forward")}
-            onArchive={handleArchive}
-            onTrash={handleTrash}
-            onToggleRead={handleToggleRead}
-            onToggleStar={handleToggleStarThread}
-          />
-        </>
-      )}
+      <MailDetailView
+        thread={activeThread}
+        onReply={() => openCompose("reply")}
+        onForward={() => openCompose("forward")}
+        onArchive={handleArchive}
+        onTrash={handleTrash}
+        onToggleRead={handleToggleRead}
+        onToggleStar={handleToggleStarThread}
+      />
 
       <ComposeMailModal
         open={composeOpen}

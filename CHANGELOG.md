@@ -4,6 +4,20 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Onboarding mail @ethone.dev**
+
+### Ajoute
+- `ethone-next/lib/hooks/useMail.ts` : état `aliasesLoading` pour éviter le flicker de l'onboarding en attendant la réponse Supabase.
+- `ethone-next/app/mail/page.tsx` : affichage d'un loader centré pendant le chargement des alias, puis du modal d'onboarding bloquant si aucun alias n'existe.
+
+### Corrige
+- `ethone-next/components/mail/MailAliasSetup.tsx` :
+  * Textes en français sans clés i18n brutes (`Créez votre adresse ETHONE`, `Choisissez votre identifiant unique...`, labels et placeholders).
+  * Suppression du doublon de boutons aléatoires au profit d'un seul bouton `Générer un alias`.
+  * Modal bloquant centré (`fixed inset-0 z-50 ... bg-black/80 backdrop-blur-xl`) avec carte Bento (`bg-zinc-950/90`, `rounded-3xl`, ombre profonde).
+  * Validation de l'entrée (minuscules, suppression des caractères non autorisés) et bouton `Créer l&apos;adresse` style purple avec spinner.
+  * Nettoyage automatique de l'alias, suffixe fixe `@ethone.dev` et mise à jour immédiate de l'état après création.
+
 **Calendrier billing et refonte des layouts de page**
 
 ### Ajoute

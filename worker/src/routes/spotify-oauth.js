@@ -1,10 +1,10 @@
 import { httpError } from "../middleware/errors.js";
 import { PATTERNS, assertAllowedQuery, queryText } from "../middleware/validation.js";
-import { controlSpotifyPlayback, disconnectSpotify, exchangeSpotifyCode, getSpotifyNowPlaying, isSpotifyTrackSaved, saveSpotifyTrack, seekSpotifyPlayback } from "../services/spotify-oauth-client.js";
+import { controlSpotifyPlayback, disconnectSpotify, exchangeSpotifyCode, getSpotifyNowPlaying, isSpotifyTrackSaved, saveSpotifyTrack, seekSpotifyPlayback, setSpotifyVolume } from "../services/spotify-oauth-client.js";
 
 const CODE_RE = /^[A-Za-z0-9_-]{10,512}$/;
 const VERIFIER_RE = /^[A-Za-z0-9_-]{43,128}$/;
-const ACTION_RE = /^(?:play|pause|next|previous|save|unsave|seek)$/;
+const ACTION_RE = /^(?:play|pause|next|previous|save|unsave|seek|volume)$/;
 
 async function readJsonBody(request, maxFields) {
   const contentType = String(request.headers.get("content-type") || "").toLowerCase();
@@ -57,6 +57,13 @@ export async function spotifyControlRoute({ request, env, auth }) {
     const positionMs = Number(body.positionMs);
     if (!Number.isFinite(positionMs) || positionMs < 0) throw httpError("INVALID_PARAMETER", 400);
     const result = await seekSpotifyPlayback(env, auth.userId, clientId, positionMs);
+    return { data: { action, ...result } };
+  }
+  if (action === "volume") {
+    const volumePercent = Number(body.volumePercent);
+    if (!Number.isFinite(volumePercent) || volumePercent < 0 || volumePercent > 100) throw httpError("INVALID_PARAMETER", 400);
+    const deviceId = typeof body.deviceId === "string" ? body.deviceId : undefined;
+    const result = await setSpotifyVolume(env, auth.userId, clientId, volumePercent, deviceId);
     return { data: { action, ...result } };
   }
   await controlSpotifyPlayback(env, auth.userId, clientId, action);

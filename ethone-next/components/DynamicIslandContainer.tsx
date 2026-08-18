@@ -28,6 +28,7 @@ import { fetchWorker } from "@/lib/api";
 import { useDynamicIslandStore } from "@/lib/stores/dynamic-island";
 import { useBrainActivityStore } from "@/lib/stores/brain-activity";
 import { cn } from "@/lib/utils";
+import VolumeSlider from "@/components/VolumeSlider";
 import type { NowPlaying } from "@/lib/hooks/useLiveData";
 
 type View = "spotify" | "pomodoro" | "brain";
@@ -256,14 +257,16 @@ export default function DynamicIslandContainer() {
 
   // Local progress for Spotify
   const [localProgress, setLocalProgress] = useState(nowPlaying?.progressMs ?? 0);
+  const [localVolume, setLocalVolume] = useState(nowPlaying?.volumePercent ?? 50);
   const [pendingSpotify, setPendingSpotify] = useState(false);
   const [isSaved, setIsSaved] = useState(nowPlaying?.isSaved ?? false);
   const [likeLoading, setLikeLoading] = useState(false);
 
   useEffect(() => {
     setLocalProgress(nowPlaying?.progressMs ?? 0);
+    setLocalVolume(nowPlaying?.volumePercent ?? 50);
     setIsSaved(nowPlaying?.isSaved ?? false);
-  }, [nowPlaying?.progressMs, nowPlaying?.isSaved, nowPlaying?.id]);
+  }, [nowPlaying?.progressMs, nowPlaying?.volumePercent, nowPlaying?.isSaved, nowPlaying?.id]);
 
   useEffect(() => {
     if (!nowPlaying?.isPlaying) return;
@@ -366,7 +369,7 @@ export default function DynamicIslandContainer() {
 
   // Spotify controls
   const spotifyControl = useCallback(
-    async (action: "play" | "pause" | "next" | "previous" | "seek", positionMs?: number) => {
+    async (action: string, extras?: Record<string, string | number>) => {
       const clientId = settings.liveSpotifyClientId;
       if (!clientId) {
         showError(i18n("configureToEnable"));
@@ -375,12 +378,15 @@ export default function DynamicIslandContainer() {
       setPendingSpotify(true);
       try {
         const body: Record<string, string | number> = { action, clientId };
-        if (action === "seek" && positionMs !== undefined) body.positionMs = Math.round(positionMs);
+        if (extras) {
+          Object.entries(extras).forEach(([k, v]) => {
+            body[k] = v;
+          });
+        }
         await fetchWorker("/api/spotify/control", {
           method: "POST",
           body: JSON.stringify(body),
         });
-        if (action === "play") setLocalProgress((p) => p);
       } catch {
         showError(i18n("playbackControlFailed"));
       } finally {
@@ -392,10 +398,21 @@ export default function DynamicIslandContainer() {
 
   const togglePlay = useCallback(() => {
     const action = nowPlaying?.isPlaying ? "pause" : "play";
-    spotifyControl(action as "play" | "pause").then(() => {
+    spotifyControl(action).then(() => {
       setLocalProgress((p) => p);
     });
   }, [nowPlaying?.isPlaying, spotifyControl]);
+
+  const onSpotifyVolume = useCallback(
+    (value: number) => {
+      setLocalVolume(value);
+      void spotifyControl("volume", {
+        volumePercent: Math.round(value),
+        deviceId: nowPlaying?.deviceId || "",
+      });
+    },
+    [spotifyControl, nowPlaying?.deviceId],
+  );
 
   const toggleLike = useCallback(async () => {
     const clientId = settings.liveSpotifyClientId;
@@ -422,7 +439,7 @@ export default function DynamicIslandContainer() {
   const onSpotifySeek = useCallback(
     (value: number) => {
       setLocalProgress(value);
-      void spotifyControl("seek", value);
+      void spotifyControl("seek", { positionMs: Math.round(value) });
     },
     [spotifyControl],
   );
@@ -527,6 +544,10 @@ export default function DynamicIslandContainer() {
                     />
                   </div>
                 )}
+
+                <div className="flex items-center justify-center" onPointerDown={stopPropagation}>
+                  <VolumeSlider value={localVolume} onChange={onSpotifyVolume} />
+                </div>
 
                 <div className="flex items-center justify-center gap-3">
                   <button

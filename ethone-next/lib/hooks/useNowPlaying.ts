@@ -81,6 +81,8 @@ export function useNowPlaying(pollMs = 30000) {
               artworkUrl: getArtworkUrl(data) || asStr(track.artworkUrl ?? track.artwork ?? track.cover),
               progressMs: asNum(track.progressMs ?? data.progressMs),
               durationMs: asNum(track.durationMs ?? data.durationMs),
+              volumePercent: typeof track.volumePercent === "number" ? Math.max(0, Math.min(100, track.volumePercent)) : undefined,
+              deviceId: asStr(track.deviceId),
               isPlaying: Boolean(data.isPlaying ?? data.playing ?? track.isPlaying ?? track.playing),
               isSaved: track.isSaved === true,
             }

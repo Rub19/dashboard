@@ -83,7 +83,9 @@ function normalizeTrack(payload) {
       album: safeText(item.album?.name, 180),
       artworkUrl: safePublicUrl(item.album?.images?.[0]?.url, ["scdn.co"]),
       progressMs: safeNumber(payload.progress_ms, 0, 86400000),
-      durationMs: safeNumber(item.duration_ms, 0, 86400000)
+      durationMs: safeNumber(item.duration_ms, 0, 86400000),
+      volumePercent: typeof payload?.device?.volume_percent === "number" ? Math.max(0, Math.min(100, payload.device.volume_percent)) : undefined,
+      deviceId: safeText(payload?.device?.id, 64) || undefined
     })
   });
 }
@@ -144,6 +146,29 @@ export async function seekSpotifyPlayback(env, userId, clientId, positionMs) {
     throw error;
   }
   return { positionMs: Math.round(position) };
+}
+
+export async function setSpotifyVolume(env, userId, clientId, volumePercent, deviceId) {
+  const volume = Number(volumePercent);
+  if (!Number.isFinite(volume) || volume < 0 || volume > 100) throw httpError("INVALID_PARAMETER", 400);
+  const accessToken = await validAccessToken(env, userId, clientId);
+  const params = new URLSearchParams({ volume_percent: String(Math.round(volume)) });
+  if (deviceId) params.set("device_id", String(deviceId));
+  try {
+    await requestExternal(new URL(`/v1/me/player/volume?${params.toString()}`, API_ORIGIN), {
+      env,
+      expectedOrigin: API_ORIGIN,
+      service: "spotify",
+      method: "PUT",
+      headers: { authorization: `Bearer ${accessToken}` },
+      retries: 0,
+      maxBytes: 8192
+    });
+  } catch (error) {
+    if (error?.code === "PROVIDER_NOT_FOUND") throw httpError("PROVIDER_NOT_FOUND", 404, { retryable: false });
+    throw error;
+  }
+  return { volumePercent: Math.round(volume) };
 }
 
 export async function isSpotifyTrackSaved(env, userId, clientId, trackId) {

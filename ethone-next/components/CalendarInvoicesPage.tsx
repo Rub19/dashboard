@@ -49,7 +49,7 @@ export default function CalendarInvoicesPage() {
   }
 
   return (
-    <div className="h-full min-h-0 w-full overflow-hidden p-3">
+    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden p-3">
       <div className="min-h-0 w-full flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden]">
       <div className="grid grid-cols-12 gap-4">
         <div className="col-span-12 lg:col-span-7">

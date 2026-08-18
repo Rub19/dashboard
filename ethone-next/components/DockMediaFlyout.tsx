@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import type { NowPlaying } from "@/lib/hooks/useLiveData";
+import VolumeSlider from "@/components/VolumeSlider";
 import Image from "next/image";
 
 export type DockMediaFlyoutProps = {
@@ -52,13 +53,15 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
   const trackId = nowPlaying?.id || "";
 
   const [localProgress, setLocalProgress] = useState(nowPlaying?.progressMs || 0);
+  const [localVolume, setLocalVolume] = useState(nowPlaying?.volumePercent ?? 50);
 
   useEffect(() => {
     setLocalProgress(nowPlaying?.progressMs || 0);
     progressRef.current = nowPlaying?.progressMs || 0;
     setIsPlaying(!!nowPlaying?.isPlaying);
     setIsLiked(!!nowPlaying?.isSaved);
-  }, [nowPlaying?.progressMs, nowPlaying?.isPlaying, nowPlaying?.isSaved]);
+    setLocalVolume(nowPlaying?.volumePercent ?? 50);
+  }, [nowPlaying?.progressMs, nowPlaying?.isPlaying, nowPlaying?.isSaved, nowPlaying?.volumePercent]);
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -122,6 +125,14 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
 
   async function skipPrevious() {
     await control("previous");
+  }
+
+  async function setVolume(value: number) {
+    setLocalVolume(value);
+    await control("volume", {
+      volumePercent: Math.round(value),
+      deviceId: nowPlaying?.deviceId || "",
+    });
   }
 
   async function seek(deltaMs: number) {
@@ -314,6 +325,10 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                   >
                     <SkipForward className="h-4 w-4" />
                   </button>
+                </div>
+
+                <div className="flex items-center justify-center">
+                  <VolumeSlider value={localVolume} onChange={setVolume} />
                 </div>
               </div>
             )}

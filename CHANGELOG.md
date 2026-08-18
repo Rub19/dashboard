@@ -18,6 +18,14 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - Scroll interne des pages et des panneaux pour éviter les double scrolls.
 - `ethone-next/context/ToastContext.tsx` : les notifications Sonner passent en noir (`bg-black/90`, texte blanc) quelle que soit leur type.
 
+**Contrôle du volume Spotify**
+
+### Ajoute
+- `ethone-next/components/VolumeSlider.tsx` : curseur de volume compact avec icône mute/unmute et thumb animé.
+- `ethone-next/components/DockMediaFlyout.tsx` et `ethone-next/components/DynamicIslandContainer.tsx` : intégration du volume slider dans le lecteur Spotify (dock et Dynamic Island).
+- `ethone-next/lib/hooks/useLiveData.ts` / `useNowPlaying.ts` : ajout de `volumePercent` et `deviceId` au type `NowPlaying`.
+- Worker `spotify-oauth-client.js` et `spotify-oauth.js` : support de l'action `volume` vers l'API Spotify (`PUT /v1/me/player/volume`), avec `volumePercent` et `deviceId`.
+
 **Mini player Live : lecture des liens YouTube**
 
 ### Corrige

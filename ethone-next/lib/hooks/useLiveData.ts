@@ -17,6 +17,8 @@ export type NowPlaying = {
   artworkUrl?: string;
   progressMs?: number;
   durationMs?: number;
+  volumePercent?: number;
+  deviceId?: string;
   isPlaying?: boolean;
   isSaved?: boolean;
 };

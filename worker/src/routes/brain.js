@@ -39,12 +39,16 @@ export async function brainCompleteRoute({ request, env, auth }) {
   if (!Array.isArray(body.messages) || !body.messages.length) throw httpError("INVALID_REQUEST", 400);
 
   const forceProvider = requestedProvider !== "cloudflare";
-  const targetProvider = forceProvider ? requestedProvider : (body.fallbackProvider || undefined);
+  const targetProvider = requestedProvider;
+  const fallback = forceProvider ? undefined : body.fallbackProvider;
+  const fallbackModel = forceProvider ? undefined : body.fallbackModel;
 
   const result = await aiComplete(envWithUser, {
     messages: body.messages,
     context: body.context,
     provider: targetProvider,
+    fallback,
+    fallbackModel,
     model: body.model,
     feature: "brain",
     priority: "normal",

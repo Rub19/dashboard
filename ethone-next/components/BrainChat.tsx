@@ -171,7 +171,7 @@ function TypingDots() {
       {[0, 1, 2].map((i) => (
         <motion.span
           key={i}
-          className="h-1.5 w-1.5 rounded-full bg-emerald-400"
+          className="h-1.5 w-1.5 rounded-full bg-zinc-400"
           animate={{ y: [0, -5, 0] }}
           transition={{ repeat: Infinity, duration: 0.6, delay: i * 0.12, ease: "easeInOut" }}
         />
@@ -352,7 +352,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
           <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-purple-500/30 bg-purple-500/10">
             <Sparkles className="h-4 w-4 text-purple-400" />
           </span>
-          <div className="max-w-2xl rounded-2xl rounded-tl-sm border border-[var(--panel-border)] bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)] px-4 py-3 text-sm text-zinc-200 shadow-xl">
+          <div className="max-w-2xl rounded-2xl rounded-tl-sm border border-[var(--panel-border)] bg-[var(--surface-raised)]/90 px-4 py-3 text-sm text-zinc-200 shadow-xl">
             <div className="leading-relaxed">{renderMarkdown(welcomeMessage)}</div>
             <div className="mt-3 flex flex-wrap gap-2">
               {welcomeChips.map((chip) => (
@@ -382,13 +382,13 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
             <div
               className={`px-4 py-2.5 leading-relaxed shadow-sm ${
                 isUser
-                  ? "rounded-2xl rounded-tr-sm border border-white/10 bg-white/[0.08] backdrop-blur-[var(--panel-blur)]"
-                  : "rounded-2xl rounded-tl-sm border border-[var(--panel-border)] bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)] shadow-xl"
+                  ? "rounded-2xl rounded-tr-sm border border-white/10 bg-white/[0.12]"
+                  : "rounded-2xl rounded-tl-sm border border-[var(--panel-border)] bg-[var(--surface-raised)]/90 shadow-xl"
               }`}
             >
               <div className="whitespace-pre-wrap">{renderMarkdown(displayedContent(m, i))}</div>
               {hasCursor && (
-                <span className="ml-1 inline-block h-4 w-1.5 translate-y-0.5 animate-pulse rounded-sm bg-emerald-400" />
+                <span className="ml-1 inline-block h-4 w-1.5 translate-y-0.5 animate-pulse rounded-sm bg-zinc-400" />
               )}
             </div>
             {renderProviderBadge(m, i)}
@@ -452,7 +452,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
           </div>
         )}
 
-        <div className="relative mt-2 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 shadow-2xl backdrop-blur-[var(--panel-blur)] transition-colors focus-within:border-emerald-500/40">
+        <div className="relative mt-2 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 shadow-2xl backdrop-blur-[var(--panel-blur)] transition-colors focus-within:border-white/20">
           <textarea
             ref={textareaRef}
             rows={1}
@@ -502,7 +502,7 @@ function ActionChip({ chip }: { chip: ActionChip }) {
     <button
       type="button"
       onClick={chip.onClick}
-      className="group inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] px-3 py-1.5 text-xs font-medium text-zinc-100 shadow-sm transition-all hover:border-emerald-500/40 hover:bg-white/[0.12] hover:text-emerald-300 hover:shadow-md"
+      className="group inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] px-3 py-1.5 text-xs font-medium text-zinc-100 shadow-sm transition-all hover:border-white/20 hover:bg-white/[0.12] hover:text-white hover:shadow-md"
     >
       <span className="transition-transform group-hover:scale-110">{chip.icon}</span>
       {chip.label}

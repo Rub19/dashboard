@@ -18,6 +18,17 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 ### Corrige
 - `ethone-next/components/ui/calendar.tsx` : remplacement des `<select>` natifs par le composant `Select` glassmorphe (`components/ui/Select.tsx`). Les sélecteurs de mois et d'année utilisent `bg-[var(--panel-bg)]`, `backdrop-blur`, une bordure subtile et une icône `ChevronDown`, offrant un rendu cohérent avec le reste de l'OS et supprimant le fond gris du dropdown système.
 
+**Brain : correction des artefacts verts, fond des bulles et routing Cloudflare → Groq**
+
+### Corrige
+- `ethone-next/components/motion/animated-sidebar.tsx` : le "pill" de survie/sélection du menu latéral devient neutre (`bg-white/[0.04]`, `border-white/[0.06]`) au lieu d'emerald, éliminant l'effet vert qui apparaissait au clic sur la page Brain.
+- `ethone-next/components/tabs/TabList.tsx` : l'onglet actif et sa bordure `focus-visible` passent au blanc neutre (`bg-white/[0.12]`, `ring-white/30`) au lieu de la couleur d'accent emerald.
+- `ethone-next/components/BrainChat.tsx` : les bulles assistant/utilisateur utilisent `bg-[var(--surface-raised)]/90` et `bg-white/[0.12]` pour être visuellement distinctes du fond de la page ; le curseur, les points de saisie, les chips d'action et la bordure de l'input au focus passent au blanc/zinc neutre, supprimant les accents emerald.
+- `worker/src/services/ai-config.js` : le fournisseur de fallback par défaut passe de `xai` à `groq` avec le modèle `llama-3.3-70b-versatile`.
+- `worker/src/services/ai-router.js` : accepte `fallback` et `fallbackModel` en entrée, en priorité sur la configuration du worker.
+- `worker/src/routes/brain.js` : corrige la transmission de `fallbackProvider`/`fallbackModel` au routeur IA au lieu de les confondre avec le provider principal.
+- `ethone-next/lib/brain/providers.ts` et `ethone-next/lib/hooks/useBrain.ts` : envoient le fournisseur de secours configuré dans les préférences Brain (`provider.fallback`) lors de l'appel à `/api/brain/complete`.
+
 **Mise à jour des modèles Groq et refonte du chat Brain**
 
 ### Ajoute

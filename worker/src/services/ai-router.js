@@ -85,6 +85,8 @@ function validateInput(input, config) {
     messages: input.messages,
     context: input.context || {},
     provider: String(input.provider || "").toLowerCase() || config.primaryProvider,
+    fallback: String(input.fallback || "").toLowerCase() || config.fallbackProvider,
+    fallbackModel: input.fallbackModel || "",
     model: input.model || "",
     feature,
     priority,
@@ -282,8 +284,10 @@ async function tryCloudflare(env, validated, config, quotaManager, requestId) {
 
 async function tryUserProvider(env, validated, config, requestId, fallbackReason) {
   const startedAt = performance.now();
-  const target = validated.provider && validated.provider !== "cloudflare" ? validated.provider : config.fallbackProvider;
-  const targetModel = validated.model || (target === config.fallbackProvider ? config.fallbackModel : aiProviderById(target)?.defaultModel);
+  const fallback = validated.fallback || config.fallbackProvider;
+  const target = validated.provider && validated.provider !== "cloudflare" ? validated.provider : fallback;
+  const fallbackModel = validated.fallbackModel || config.fallbackModel;
+  const targetModel = validated.model || (target === fallback ? fallbackModel : aiProviderById(target)?.defaultModel);
 
   try {
     const result = await askUserProvider(env, {

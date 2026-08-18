@@ -26,6 +26,8 @@ export function brainProviderList() {
 
 export async function brainComplete(input: {
   provider: BrainProvider;
+  fallback?: BrainProvider;
+  fallbackModel?: string;
   model?: string;
   messages: { role: "user" | "assistant" | "system"; content: string }[];
   context?: Record<string, unknown>;
@@ -35,6 +37,8 @@ export async function brainComplete(input: {
     method: "POST",
     body: JSON.stringify({
       provider: input.provider,
+      fallback: input.fallback,
+      fallbackModel: input.fallbackModel,
       model: input.model,
       messages: input.messages,
       context: input.context,

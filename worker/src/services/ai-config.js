@@ -193,8 +193,8 @@ export function resolveAiConfig(env) {
   return Object.freeze({
     primaryProvider: env.AI_PRIMARY_PROVIDER || "cloudflare",
     primaryModel: env.AI_PRIMARY_MODEL || AI_PROVIDERS.cloudflare.defaultModel,
-    fallbackProvider: env.AI_FALLBACK_PROVIDER || "xai",
-    fallbackModel: env.AI_FALLBACK_MODEL || AI_PROVIDERS.xai.defaultModel,
+    fallbackProvider: env.AI_FALLBACK_PROVIDER || "groq",
+    fallbackModel: env.AI_FALLBACK_MODEL || AI_PROVIDERS.groq.defaultModel,
     cloudflare: Object.freeze({
       allocation: cloudflareAllocation,
       budget: internalBudget,

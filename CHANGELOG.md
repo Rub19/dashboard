@@ -4,6 +4,11 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Weather : bandeau de recherche transparent**
+
+### Corrige
+- `ethone-next/components/WeatherPage.tsx` : le bandeau de recherche météo est désormais un pill glassmorphic transparent (`bg-white/[0.03] backdrop-blur-md border border-white/[0.08]`) ; le champ de ville, le bouton de géolocalisation et le bouton `Rechercher` ont perdu leur fond opaque pour laisser le fond d'écran visible derrière.
+
 **Dock / StatusBar : suppression du fond noir opaque**
 
 ### Corrige

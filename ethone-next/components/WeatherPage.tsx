@@ -233,8 +233,8 @@ export default function WeatherPage() {
           <p className="text-sm text-zinc-500">{i18n("weatherDescription")}</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex items-center gap-2">
-          <div className="group flex items-center gap-2 rounded-xl border border-white/10 px-3 py-1.5 transition-all focus-within:border-white/20">
+        <form onSubmit={handleSubmit} className="flex items-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 backdrop-blur-md">
+          <div className="group flex items-center gap-2 transition-colors focus-within:text-white">
             <Icon name="mapPin" className="h-3.5 w-3.5 text-zinc-500" />
             <input
               type="text"
@@ -248,7 +248,7 @@ export default function WeatherPage() {
           <button
             type="button"
             onClick={handleGeolocate}
-            className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 text-zinc-400 transition-colors hover:text-white"
+            className="flex h-8 w-8 items-center justify-center rounded-xl text-zinc-400 transition-colors hover:text-white"
             aria-label={i18n("geolocate")}
           >
             <Icon name="navigation" className="h-3.5 w-3.5" />
@@ -256,8 +256,7 @@ export default function WeatherPage() {
 
           <button
             type="submit"
-            className="rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all active:scale-95"
-            style={{ background: "var(--accent-color, #10b981)", color: "#09090b" }}
+            className="rounded-lg border border-white/[0.08] bg-white/[0.04] px-3.5 py-1.5 text-xs font-semibold text-white transition-all hover:bg-white/[0.08] active:scale-95"
           >
             {i18n("search")}
           </button>

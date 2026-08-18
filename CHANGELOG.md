@@ -4,11 +4,6 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
-**Build : Supabase resilient sans variables d'environnement**
-
-### Corrige
-- `ethone-next/lib/supabase.ts` : si `NEXT_PUBLIC_SUPABASE_URL` ou `NEXT_PUBLIC_SUPABASE_ANON_KEY` ne sont pas définis, le client est initialisé avec une URL factice (`http://localhost:54321`) afin que le build statique / SSG ne plante plus au module evaluation. L'authentification reste impossible sans les vraies variables d'environnement.
-
 **Spotify / Dynamic Island / Dock : lecteur fiable et fluide**
 
 ### Corrige

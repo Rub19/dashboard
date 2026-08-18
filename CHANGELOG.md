@@ -4,6 +4,15 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Fluidification des animations et dashboard**
+
+### Corrige
+- `ethone-next/components/PageTransition.tsx` : animation d'entrée/sortie des pages en `popLayout` avec `opacity`, `y` et `scale` pour une transition fluide vers le contenu de droite.
+- `ethone-next/components/motion/shared-layout-bg.tsx` : hover pill refactorisé avec `AnimatePresence` `popLayout`, morphing `layoutId` partagé et fade nettement plus fluide.
+- `ethone-next/components/motion/animated-sidebar.tsx` : suppression des `filter: blur(...)` sur les sous-menus qui pouvaient créer du jank.
+- `ethone-next/components/DashboardOverview.tsx` : grille de widgets animée avec `staggerChildren` (`0.04`) et `widgetItemVariants` (`opacity`/`y`/`scale`), chaque widget est wrappé dans un `motion.div` avec sa colonne correcte.
+- `ethone-next/components/FocusPage.tsx` : correction de l'imbrication JSX.
+
 **Sonner : toasts en bas à droite**
 
 ### Ajoute
@@ -23,6 +32,15 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `ethone-next/components/TodoList.tsx` : ajout d'un `className`, conteneur `h-full min-h-0 flex-1 overflow-y-auto` avec `scrollbar-width: thin`.
 - `ethone-next/app/mail/page.tsx` : hauteur `h-full min-h-0` pour suivre le shell.
 - `ethone-next/components/TopBar.tsx` : `shrink-0` pour ne pas être compressé.
+
+**Verrouillage du viewport et transitions de page**
+
+### Corrige
+- `ethone-next/components/Shell.tsx` : `<main>` repasse `min-h-0` pour être correctement contraint par le conteneur flex ; reste `overflow-y-auto` comme filet de scroll pour les pages non encore migrées en `h-full`.
+- `ethone-next/components/PageTransition.tsx` : enveloppe chaque page dans un `motion.div` `h-full w-full` avec `AnimatePresence` pour une transition fluide et un remplissage du viewport.
+- `ethone-next/components/DashboardOverview.tsx` : grille animée avec `WIDGET_COL_SPAN`, `h-full min-h-0` sur les items, et conserve le `auto-rows-[minmax(0,1fr)]` pour un Bento scrollable en interne.
+- `ethone-next/components/motion/shared-layout-bg.tsx` : suppression du `filter: blur(...)` jank sur les sous-menus et ajustement du pill de hover.
+- `ethone-next/components/motion/animated-sidebar.tsx` : nettoyage des effets `blur` sur les sous-éléments.
 
 **Refonte UI / Layout : Sidebar latérale gauche Bento Glassmorphism**
 

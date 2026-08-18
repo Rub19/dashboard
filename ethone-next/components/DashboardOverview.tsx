@@ -1,8 +1,10 @@
 "use client";
 
-import { useMemo, useState, Fragment } from "react";
+import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
+import { motion } from "framer-motion";
 import { LayoutGrid } from "lucide-react";
+import { EASE_OUT } from "@/lib/ease";
 import Select from "@/components/ui/Select";
 import BentoCard from "@/components/BentoCard";
 import BrandMark from "@/components/BrandMark";
@@ -26,6 +28,38 @@ const BillsWidget = dynamic(() => import("@/components/BillsWidget"));
 const BrainBriefingPanel = dynamic(() => import("@/components/BrainBriefingPanel"));
 
 type SectionDef = { id: string; label: string; icon: string };
+
+const gridVariants = {
+  hidden: { opacity: 1 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.04,
+      delayChildren: 0.04,
+    },
+  },
+};
+
+const widgetItemVariants = {
+  hidden: { opacity: 0, y: 18, scale: 0.97 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.36, ease: EASE_OUT },
+  },
+};
+
+const WIDGET_COL_SPAN: Record<string, string> = {
+  hero: "col-span-12 lg:col-span-8",
+  system: "col-span-12 lg:col-span-4",
+  daystream: "col-span-12 md:col-span-6 lg:col-span-4",
+  productivity: "col-span-12 md:col-span-6 lg:col-span-4",
+  recent: "col-span-12 lg:col-span-4",
+  brain: "col-span-12 md:col-span-6 lg:col-span-6",
+  bills: "col-span-12 md:col-span-6 lg:col-span-6",
+  live: "col-span-12",
+};
 
 const DEFAULT_WIDGETS: WidgetLayout[] = [
   { id: "hero", x: 0, y: 0, w: 12, h: 2, visible: true },
@@ -115,33 +149,33 @@ export default function DashboardOverview() {
             openTasksCount={openTasksCount}
             todayEventsCount={todayEvents.length}
             notesCount={notes.length}
-            className="col-span-12 lg:col-span-8"
+            className="h-full"
           />
         );
       case "system":
-        return <SystemControlCard className="col-span-12 lg:col-span-4" />;
+        return <SystemControlCard className="h-full" />;
       case "daystream":
         return (
           <DayTimelineCard
             todayEvents={todayEvents}
             nextTasks={nextTasks}
             focus={focus}
-            className="col-span-12 md:col-span-6 lg:col-span-4"
+            className="h-full"
           />
         );
       case "productivity":
-        return <TasksWidget data={tasksApi} className="col-span-12 md:col-span-6 lg:col-span-4" />;
+        return <TasksWidget data={tasksApi} className="h-full" />;
       case "recent":
-        return <RecentNotesCard notes={notes} className="col-span-12 lg:col-span-4" />;
+        return <RecentNotesCard notes={notes} className="h-full" />;
       case "brain":
         return (
-          <BentoCard title={i18n("brain")} icon="brain" className="col-span-12 md:col-span-6 lg:col-span-6">
+          <BentoCard title={i18n("brain")} icon="brain" className="h-full">
             <BrainBriefingPanel />
           </BentoCard>
         );
       case "bills":
         return (
-          <BentoCard title={i18n("billsTitle")} icon="bills" className="col-span-12 md:col-span-6 lg:col-span-6">
+          <BentoCard title={i18n("billsTitle")} icon="bills" className="h-full">
             <BillsWidget />
           </BentoCard>
         );
@@ -156,7 +190,7 @@ export default function DashboardOverview() {
             updatedAt={live.updatedAt}
             loading={live.loading}
             error={live.error}
-            className="col-span-12 h-full"
+            className="h-full"
           />
         );
       default:
@@ -237,9 +271,24 @@ export default function DashboardOverview() {
         </div>
       )}
 
-      <div className="grid min-h-0 w-full flex-1 grid-cols-12 gap-4 overflow-hidden auto-rows-[minmax(0,1fr)]">
-        {widgets.map((w) => (w.visible ? <Fragment key={w.id}>{renderWidget(w.id)}</Fragment> : null))}
-      </div>
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={gridVariants}
+        className="grid min-h-0 w-full flex-1 grid-cols-12 gap-4 overflow-hidden auto-rows-[minmax(0,1fr)]"
+      >
+        {widgets.map((w) =>
+          w.visible ? (
+            <motion.div
+              key={w.id}
+              variants={widgetItemVariants}
+              className={`${WIDGET_COL_SPAN[w.id]} h-full min-h-0`}
+            >
+              {renderWidget(w.id)}
+            </motion.div>
+          ) : null
+        )}
+      </motion.div>
     </div>
   );
 }

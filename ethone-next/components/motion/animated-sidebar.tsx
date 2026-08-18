@@ -86,12 +86,10 @@ const SUBMENU_ITEM_VARIANTS: Variants = {
   closed: {
     opacity: 0,
     y: -6,
-    filter: "blur(3px)",
   },
   open: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
     transition: SUBMENU_TRANSITION,
   },
 };

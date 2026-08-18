@@ -6,18 +6,17 @@ import {
   type HTMLMotionProps,
   motion,
   useReducedMotion,
-  type Variants,
 } from "framer-motion";
 import {
   Children,
   cloneElement,
   forwardRef,
   type HTMLAttributes,
-  isValidElement,
   type MouseEvent,
   type ReactElement,
   type ReactNode,
   type Ref,
+  isValidElement,
   useId,
   useState,
 } from "react";
@@ -31,19 +30,11 @@ export interface SharedLayoutBgProps
   as?: "div" | "ul";
   /** Tailwind class applied to the moving pill. Defaults to a subtle accent tint. */
   pillClassName?: string;
-  /** Horizontal inset of the pill relative to each row (px). Default 20. */
+  /** Horizontal inset of the pill relative to each row (px). Default 16. */
   inset?: number;
   /** Optional positioning override for the pill wrapper inside each item. */
   pillContainerClassName?: string;
 }
-
-const variants: Variants = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1 },
-  exit: { opacity: 0 },
-};
-
-const reducedVariants: Variants = variants;
 
 export const SharedLayoutBg = forwardRef<HTMLElement, SharedLayoutBgProps>(
   function SharedLayoutBg(
@@ -54,7 +45,7 @@ export const SharedLayoutBg = forwardRef<HTMLElement, SharedLayoutBgProps>(
       onMouseLeave,
       pillClassName,
       pillContainerClassName,
-      inset = 20,
+      inset = 16,
       ...props
     },
     forwardedRef,
@@ -62,6 +53,17 @@ export const SharedLayoutBg = forwardRef<HTMLElement, SharedLayoutBgProps>(
     const [activeId, setActiveId] = useState<string | null>(null);
     const uid = useId();
     const reduce = useReducedMotion();
+
+    const pill = activeId !== null ? (
+      <motion.div
+        layoutId={`shared-bg-${uid}`}
+        transition={reduce ? { duration: 0 } : { ...SPRING_LAYOUT, opacity: { duration: 0 } }}
+        className={cn(
+          "pointer-events-none h-full w-full rounded-2xl bg-[var(--accent)]/[0.06]",
+          pillClassName,
+        )}
+      />
+    ) : null;
 
     const renderedChildren = Children.toArray(children)
       .filter(isValidElement)
@@ -83,33 +85,27 @@ export const SharedLayoutBg = forwardRef<HTMLElement, SharedLayoutBgProps>(
             },
           },
           <>
-            <AnimatePresence custom={activeId !== null}>
-              {activeId !== null ? (
-                <motion.div
-                  variants={reduce ? reducedVariants : variants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  transition={{ duration: 0.15, ease: EASE_OUT }}
-                  className={cn(
-                    "pointer-events-none absolute inset-y-0",
-                    pillContainerClassName,
-                  )}
-                  style={{ left: -inset, right: -inset }}
-                >
-                  {activeId === childKey ? (
-                    <motion.div
-                      layoutId={`shared-bg-${uid}`}
-                      transition={reduce ? { duration: 0 } : SPRING_LAYOUT}
-                      className={cn(
-                        "pointer-events-none h-full w-full rounded-2xl bg-[var(--accent)]/[0.06]",
-                        pillClassName,
-                      )}
-                    />
-                  ) : null}
-                </motion.div>
-              ) : null}
-            </AnimatePresence>
+            <div
+              className={cn(
+                "pointer-events-none absolute inset-y-0",
+                pillContainerClassName,
+              )}
+              style={{ left: -inset, right: -inset }}
+            >
+              <AnimatePresence mode="popLayout" initial={false}>
+                {activeId === childKey && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.12, ease: EASE_OUT }}
+                    className="h-full w-full"
+                  >
+                    {pill}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
             <div className="relative z-10">{el.props.children}</div>
           </>,
         );
@@ -120,8 +116,6 @@ export const SharedLayoutBg = forwardRef<HTMLElement, SharedLayoutBgProps>(
       onMouseLeave?.(event);
     };
 
-    // layoutRoot scopes the pill's layout projection to this list, so fixed or
-    // scrolled ancestors can't smear scroll offsets into its movement.
     return as === "ul" ? (
       <motion.ul
         {...(props as HTMLMotionProps<"ul">)}

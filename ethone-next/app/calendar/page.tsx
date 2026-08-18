@@ -102,7 +102,7 @@ export default function CalendarPage() {
       </div>
 
       <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 overflow-hidden lg:grid-cols-12">
-        <div className="flex min-h-0 flex-col lg:col-span-8">
+        <div className="flex h-full min-h-0 flex-col lg:col-span-8">
           <Calendar
             value={selected}
             onChange={setSelected}
@@ -113,7 +113,7 @@ export default function CalendarPage() {
             locale="fr-FR"
           />
         </div>
-        <div className="flex min-h-0 flex-col lg:col-span-4">
+        <div className="flex h-full min-h-0 flex-col lg:col-span-4">
           <CalendarBillingPanel date={selected} bills={bills} onChange={reload} />
         </div>
       </div>

@@ -142,7 +142,7 @@ export default function MailAliasSetup({ createAlias, onCreated }: MailAliasSetu
             className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-purple-600 px-4 text-sm font-semibold text-white shadow-[0_0_20px_rgba(147,51,234,0.3)] transition-all hover:bg-purple-500 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-            Créer l&apos;adresse
+            { "Créer l'adresse" }
           </motion.button>
 
           {error && <p className="text-[11px] text-rose-400">{error}</p>}

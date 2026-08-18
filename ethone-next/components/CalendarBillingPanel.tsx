@@ -114,8 +114,8 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
   const hasUnpaid = dayBills.some((b) => !b.paid);
 
   return (
-    <div className="rounded-2xl border border-white/[0.08] bg-zinc-950/75 p-4 backdrop-blur-2xl">
-      <div className="mb-4 flex items-center justify-between gap-3">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/75 p-4 backdrop-blur-2xl">
+      <div className="mb-4 flex shrink-0 items-center justify-between gap-3">
         <div>
           <p className="text-sm text-zinc-400">
             {selectedDate.toLocaleDateString(settings.language, {
@@ -140,6 +140,7 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
         )}
       </div>
 
+      <div className="min-h-0 flex-1 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden]">
       <div className="space-y-2">
         {dayBills.map((b) => {
           const brand = detectBrandMeta(b.label, { icon: "receipt", color: "var(--muted)" });
@@ -253,6 +254,7 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
           {i18n("addBill")}
         </button>
       )}
+      </div>
     </div>
   );
 }

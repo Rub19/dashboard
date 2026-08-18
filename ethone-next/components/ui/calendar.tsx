@@ -124,11 +124,11 @@ export function Calendar({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-white/[0.08] bg-zinc-950/75 p-4 backdrop-blur-2xl",
+        "flex flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/75 p-4 backdrop-blur-2xl",
         className,
       )}
     >
-      <div className="mb-4 flex items-center justify-between gap-3">
+      <div className="mb-4 flex shrink-0 items-center justify-between gap-3">
         <button
           type="button"
           onClick={() => nav(-1)}
@@ -185,7 +185,7 @@ export function Calendar({
         ))}
       </div>
 
-      <div className="mt-1 grid grid-cols-7 gap-1">
+      <div className="mt-1 grid min-h-0 flex-1 grid-cols-7 grid-rows-6 gap-1 overflow-hidden">
         {cells.map((day) => {
           const inMonth = isSameMonth(day, focused);
           const selected = value ? isSameDay(day, value) : false;
@@ -200,7 +200,7 @@ export function Calendar({
               onClick={() => select(day)}
               aria-pressed={selected}
               className={cn(
-                "relative flex aspect-square flex-col items-center justify-center rounded-xl text-sm transition-colors",
+                "relative flex min-h-0 flex-col items-center justify-center rounded-xl text-sm transition-colors",
                 !inMonth && "pointer-events-none text-transparent",
                 selected
                   ? "bg-emerald-500 text-zinc-950 hover:bg-emerald-500"

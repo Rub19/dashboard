@@ -8,7 +8,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
 import { listBills, upcomingBills, getNextDueDate, type Bill } from "@/lib/bills-manager";
 
-export default function BillsWidget() {
+export default function BillsWidget({ standalone = false }: { standalone?: boolean }) {
   const i18n = useI18n();
   const [bills, setBills] = useState<Bill[]>([]);
   const [selected, setSelected] = useState<Bill | null>(null);
@@ -44,10 +44,10 @@ export default function BillsWidget() {
     return new Date(date).toLocaleDateString();
   };
 
-  return (
-    <>
-      <Card3D>
-        <div className="mb-3 flex items-center justify-between">
+  const content = (
+    <div className="flex flex-1 flex-col justify-between gap-3">
+      {standalone && (
+        <div className="mb-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Icon name="bills" className="h-4 w-4 text-lime-400" />
             <h2 className="text-sm font-semibold text-[var(--foreground)]">{i18n("billsTitle")}</h2>
@@ -56,37 +56,43 @@ export default function BillsWidget() {
             {unpaidBills.length} {i18n("billsToPay")}
           </span>
         </div>
+      )}
 
-        <div className="mb-4">
-          <p className="text-2xl font-bold text-lime-400">{formatCurrency(totalDue)}</p>
-          <p className="text-xs text-[var(--muted)]">{i18n("due")}</p>
-        </div>
+      <div>
+        <p className="text-2xl font-bold text-lime-400">{formatCurrency(totalDue)}</p>
+        <p className="text-xs text-[var(--muted)]">{unpaidBills.length} {i18n("billsToPay")}</p>
+      </div>
 
-        <div className="space-y-2">
-          {upcoming.length === 0 ? (
-            <p className="text-sm text-[var(--muted)]">{i18n("noUpcomingBills")}</p>
-          ) : (
-            upcoming.slice(0, 3).map((b) => (
-              <button
-                key={b.id}
-                type="button"
-                onClick={() => setSelected(b)}
-                className="flex w-full items-center justify-between rounded-[var(--panel-radius)] px-2 py-1.5 text-sm transition-colors hover:bg-[var(--panel-bg)]"
-              >
-                <span className="min-w-0 flex-1 truncate text-left">{b.label}</span>
-                <span className="shrink-0 text-xs text-[var(--muted)]">{formatCurrency(b.amount, b.currency)}</span>
-              </button>
-            ))
-          )}
-        </div>
+      <div className="space-y-1.5 flex-1 min-h-0">
+        {upcoming.length === 0 ? (
+          <p className="text-xs text-[var(--muted)]">{i18n("noUpcomingBills")}</p>
+        ) : (
+          upcoming.slice(0, 3).map((b) => (
+            <button
+              key={b.id}
+              type="button"
+              onClick={() => setSelected(b)}
+              className="flex w-full items-center justify-between rounded-xl border border-white/[0.04] bg-white/[0.02] px-2.5 py-1.5 text-xs transition-colors hover:bg-white/[0.06]"
+            >
+              <span className="min-w-0 flex-1 truncate text-left">{b.label}</span>
+              <span className="shrink-0 font-medium text-zinc-300">{formatCurrency(b.amount, b.currency)}</span>
+            </button>
+          ))
+        )}
+      </div>
 
-        <Link
-          href="/bills"
-          className="mt-4 flex items-center justify-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-xs font-medium text-[var(--muted)] transition-colors hover:text-[var(--foreground)] backdrop-blur-[var(--panel-blur)]"
-        >
-          <Icon name="arrow-right" className="h-3.5 w-3.5" /> {i18n("billsManage")}
-        </Link>
-      </Card3D>
+      <Link
+        href="/bills"
+        className="mt-2 flex items-center justify-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-xs font-medium text-[var(--muted)] transition-colors hover:text-[var(--foreground)] backdrop-blur-[var(--panel-blur)]"
+      >
+        <Icon name="arrow-right" className="h-3.5 w-3.5" /> {i18n("billsManage")}
+      </Link>
+    </div>
+  );
+
+  return (
+    <>
+      {standalone ? <Card3D>{content}</Card3D> : content}
 
       <Modal
         isOpen={!!selected}

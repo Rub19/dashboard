@@ -4,6 +4,7 @@ import { useSettings, THEMES } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
 import BentoCard from "@/components/BentoCard";
+import { cn } from "@/lib/utils";
 import { type SessionMode } from "@/lib/settings";
 
 const STATUSES: {
@@ -62,8 +63,8 @@ export default function SystemControlCard({ className = "", scrollable = true }:
   }
 
   return (
-    <BentoCard title={i18n("system")} icon="sliders-horizontal" className={className} scrollable={scrollable}>
-      <div className="flex h-full min-h-0 flex-col justify-between gap-3">
+    <BentoCard title={i18n("system")} icon="sliders-horizontal" className={cn("h-full", className)} scrollable={scrollable}>
+      <div className="flex flex-1 flex-col justify-between gap-3">
         <div className="space-y-2">
           <p className="text-xs font-medium text-[var(--muted)]">{i18n("presence")}</p>
           <div className="grid grid-cols-2 gap-2">

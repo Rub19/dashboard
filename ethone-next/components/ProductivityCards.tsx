@@ -6,6 +6,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useFocus } from "@/components/FocusProvider";
 import BentoCard from "@/components/BentoCard";
 import { Icon } from "@/lib/icons";
+import { cn } from "@/lib/utils";
 import type { Item } from "@/lib/hooks/useItems";
 
 type FocusApi = ReturnType<typeof useFocus>;
@@ -86,8 +87,8 @@ export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus,
   ) : undefined;
 
   return (
-    <BentoCard title={i18n("daystream")} icon="calendar" className={className} badge={badge} scrollable={scrollable}>
-      <div className="flex h-full min-h-0 flex-col justify-between gap-3">
+    <BentoCard title={i18n("daystream")} icon="calendar" className={cn("h-full", className)} badge={badge} scrollable={scrollable}>
+      <div className="flex flex-1 flex-col justify-between gap-3">
         <div className="space-y-2">
           {events.length > 0 &&
             events.map((e) => (
@@ -185,8 +186,8 @@ export function ProjectsTasksCard({
   const focusMinutes = Math.round(state.totalFocusSeconds / 60);
 
   return (
-    <BentoCard title={i18n("productivityAndRhythm")} icon="zap" className={className} scrollable={scrollable}>
-      <div className="flex h-full min-h-0 flex-col justify-between gap-3">
+    <BentoCard title={i18n("productivityAndRhythm")} icon="zap" className={cn("h-full", className)} scrollable={scrollable}>
+      <div className="flex flex-1 flex-col justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="relative flex h-20 w-20 shrink-0 items-center justify-center">
             <CircularGauge percentage={percentage} size={72} stroke={5} />
@@ -264,8 +265,8 @@ export function RecentNotesCard({ notes, className = "", scrollable = true }: Re
   );
 
   return (
-    <BentoCard title={i18n("recent")} icon="history" className={className} action={action} scrollable={scrollable}>
-      <div className="flex h-full min-h-0 flex-col justify-between gap-2">
+    <BentoCard title={i18n("recent")} icon="history" className={cn("h-full", className)} action={action} scrollable={scrollable}>
+      <div className="flex flex-1 flex-col justify-between gap-2">
         {recent.length > 0 ? (
           <div className="space-y-2">
             {recent.map((n) => (

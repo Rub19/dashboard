@@ -30,7 +30,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 **Inscription : nom d'utilisateur déjà pris**
 
 ### Corrige
-- `supabase/migrations/20260818014140_signup_username_dedup.sql` : la fonction `public.handle_new_user()` détecte les collisions sur `public.profiles.username` et ajoute un suffixe aléatoire (4 caractères hex) au nom demandé avant insertion. Cela corrige l'erreur `Database error saving new user` et `duplicate key value violates unique constraint "profiles_username_key"` lorsqu'un nouvel utilisateur choisit un username déjà utilisé.
+- `supabase/migrations/20260818014140_signup_username_dedup.sql` : la fonction `public.handle_new_user()` détecte les collisions sur `public.profiles.username` et ajoute un suffixe aléatoire (4 caractères hex) au nom demandé avant insertion. Le suffixe utilise `extensions.gen_random_bytes` pour être trouvable quel que soit le `search_path` de la transaction Auth (`gen_random_bytes` n'étant pas dans `pg_catalog`). Cela corrige l'erreur `Database error saving new user` et `duplicate key value violates unique constraint "profiles_username_key"` lorsqu'un nouvel utilisateur choisit un username déjà utilisé.
 
 **Centrage du panneau sync/heure dans la TopBar**
 

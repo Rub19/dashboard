@@ -23,7 +23,7 @@ BEGIN
     IF NOT EXISTS (SELECT 1 FROM public.profiles WHERE username = candidate) THEN
       EXIT;
     END IF;
-    suffix := substring(encode(gen_random_bytes(2), 'hex'), 1, 4);
+    suffix := substring(encode(extensions.gen_random_bytes(2), 'hex'), 1, 4);
     candidate := base_username || '-' || suffix;
   END LOOP;
 

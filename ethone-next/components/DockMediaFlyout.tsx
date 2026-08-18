@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Heart,
-  Music,
   Pause,
   Play,
   RotateCcw,
@@ -18,7 +17,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import type { NowPlaying } from "@/lib/hooks/useLiveData";
 import VolumeSlider from "@/components/VolumeSlider";
-import Image from "next/image";
+import SafeImage from "@/components/SafeImage";
 
 export type DockMediaFlyoutProps = {
   nowPlaying: NowPlaying | null;
@@ -156,18 +155,15 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
         aria-label={buttonLabel}
         className="relative flex h-11 w-11 flex-col items-center justify-center rounded-xl text-emerald-400 transition-all hover:bg-white/[0.08] active:scale-95"
       >
-        {artwork && hasTrack ? (
-          <Image
-            src={artwork}
-            alt={title}
-            width={48}
-            height={48}
-            unoptimized
-            className="h-5 w-5 rounded object-cover transition-transform group-hover:scale-110"
-          />
-        ) : (
-          <Music className="h-5 w-5 text-emerald-400 transition-transform group-hover:scale-110" />
-        )}
+        <SafeImage
+          src={hasTrack ? artwork : undefined}
+          alt={title}
+          size={48}
+          className="h-5 w-5 rounded object-cover transition-transform group-hover:scale-110"
+          iconClassName="h-3 w-3"
+          loading="eager"
+          priority
+        />
 
         {isPlaying && hasTrack && (
           <span className="absolute bottom-1.5 flex h-1.5 items-end gap-0.5" aria-hidden="true">
@@ -195,9 +191,10 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
           >
             {!hasTrack ? (
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.05]">
-                  <Music className="h-5 w-5 text-zinc-400" />
-                </div>
+                <SafeImage
+                  className="h-12 w-12 shrink-0 rounded-xl border border-white/10 bg-white/[0.05]"
+                  iconClassName="h-5 w-5"
+                />
                 <div className="min-w-0 flex-1">
                   <h4 className="truncate text-xs font-bold text-white">{i18n("noLive")}</h4>
                   <p className="truncate text-[11px] text-zinc-400">
@@ -215,20 +212,14 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
             ) : (
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-3">
-                  {artwork ? (
-                    <Image
-                      src={artwork}
-                      alt={title}
-                      width={96}
-                      height={96}
-                      unoptimized
-                      className="h-12 w-12 shrink-0 rounded-xl border border-white/10 object-cover shadow-md"
-                    />
-                  ) : (
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.05]">
-                      <Music className="h-5 w-5 text-zinc-400" />
-                    </div>
-                  )}
+                  <SafeImage
+                    src={artwork}
+                    alt={title}
+                    size={96}
+                    className="h-12 w-12 shrink-0 rounded-xl border border-white/10 object-cover shadow-md"
+                    iconClassName="h-6 w-6"
+                    loading="eager"
+                  />
                   <div className="min-w-0 flex-1">
                     <h4 className="truncate text-xs font-bold text-white">{title || "—"}</h4>
                     <p className="truncate text-[11px] text-zinc-300">{artist || "—"}</p>

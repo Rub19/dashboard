@@ -2,11 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import Image from "next/image";
+import SafeImage from "@/components/SafeImage";
 import { useRouter } from "next/navigation";
 import {
   Brain,
-  Music,
   Play,
   Pause,
   SkipBack,
@@ -181,18 +180,14 @@ function SpotifyCompact({
         <span className="text-[10px] font-medium tabular-nums">{time}</span>
       </div>
 
-      {track.cover || track.artworkUrl ? (
-        <Image
-          src={track.cover || track.artworkUrl || ""}
-          alt={track.title || "Spotify"}
-          width={20}
-          height={20}
-          className="h-5 w-5 shrink-0 rounded-md object-cover"
-          unoptimized
-        />
-      ) : (
-        <Music className={cn("h-4 w-4 shrink-0", playing ? "text-emerald-400" : "text-zinc-400")} />
-      )}
+      <SafeImage
+        src={track.cover || track.artworkUrl}
+        alt={track.title || "Spotify"}
+        size={20}
+        className="h-5 w-5 shrink-0 rounded-md object-cover"
+        iconClassName={cn("h-3 w-3", playing ? "text-emerald-400" : "text-zinc-400")}
+        loading="eager"
+      />
 
       <AudioWave playing={playing} className="shrink-0" />
 
@@ -491,20 +486,14 @@ export default function DynamicIslandContainer() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                  {nowPlaying?.cover || nowPlaying?.artworkUrl ? (
-                    <Image
-                      src={nowPlaying.cover || nowPlaying.artworkUrl || ""}
-                      alt={nowPlaying.title || "Spotify"}
-                      width={56}
-                      height={56}
-                      className="h-14 w-14 shrink-0 rounded-xl object-cover shadow-lg ring-1 ring-white/10"
-                      unoptimized
-                    />
-                  ) : (
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white/[0.05] ring-1 ring-white/10">
-                      <Music className="h-6 w-6 text-emerald-400" />
-                    </div>
-                  )}
+                  <SafeImage
+                    src={nowPlaying?.cover || nowPlaying?.artworkUrl}
+                    alt={nowPlaying?.title || "Spotify"}
+                    size={56}
+                    className="h-14 w-14 shrink-0 rounded-xl object-cover shadow-lg ring-1 ring-white/10"
+                    iconClassName="h-6 w-6 text-emerald-400"
+                    loading="eager"
+                  />
                   <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5">
                     <p className="truncate text-sm font-semibold text-white">
                       {nowPlaying?.title || "Spotify"}

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import SafeImage from "@/components/SafeImage";
 import { useLiveData, LASTFM_PERIODS, type LastfmPeriod, type LiveRecord } from "@/lib/hooks/useLiveData";
 import { fetchWorker } from "@/lib/api";
 import { Icon } from "@/lib/icons";
@@ -400,11 +401,13 @@ export default function LiveWidgets({
               <ul className="space-y-1.5">
                 {lastfmTopArtists.slice(0, 5).map((a, i) => (
                   <li key={i} className="flex items-center gap-2 text-sm">
-                    {a.artworkUrl ? (
-                      <Image src={String(a.artworkUrl)} alt="" width={24} height={24} unoptimized className="h-6 w-6 rounded object-cover" />
-                    ) : (
-                      <span className="flex h-6 w-6 items-center justify-center rounded bg-[var(--panel-bg)] text-[10px]">#</span>
-                    )}
+                    <SafeImage
+                      src={String(a.artworkUrl)}
+                      alt=""
+                      size={24}
+                      className="h-6 w-6 rounded object-cover"
+                      iconClassName="h-3 w-3"
+                    />
                     <span className="min-w-0 flex-1 truncate">{String(a.name ?? "—")}</span>
                     <span className="text-[10px] text-[var(--muted)]">{Number(a.playCount ?? 0)}</span>
                   </li>
@@ -421,11 +424,13 @@ export default function LiveWidgets({
               <ul className="space-y-1.5">
                 {lastfmTopTracks.slice(0, 5).map((t, i) => (
                   <li key={i} className="flex items-center gap-2 text-sm">
-                    {t.artworkUrl ? (
-                      <Image src={String(t.artworkUrl)} alt="" width={24} height={24} unoptimized className="h-6 w-6 rounded object-cover" />
-                    ) : (
-                      <span className="flex h-6 w-6 items-center justify-center rounded bg-[var(--panel-bg)] text-[10px]">#</span>
-                    )}
+                    <SafeImage
+                      src={String(t.artworkUrl)}
+                      alt=""
+                      size={24}
+                      className="h-6 w-6 rounded object-cover"
+                      iconClassName="h-3 w-3"
+                    />
                     <span className="min-w-0 flex-1 truncate">
                       {String(t.name ?? "—")} <span className="text-[var(--muted)]">— {String(t.artist ?? "—")}</span>
                     </span>
@@ -1005,11 +1010,13 @@ export default function LiveWidgets({
           <div className="mt-auto rounded-[var(--panel-radius)] bg-emerald-500/10 p-2.5">
             <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-emerald-400">Spotify</p>
             <div className="flex items-center gap-2">
-              {spotify.artworkUrl || spotify.artwork ? (
-                <Image src={spotify.artworkUrl || spotify.artwork || ""} alt="" width={40} height={40} unoptimized className="h-10 w-10 rounded-[var(--panel-radius)] object-cover" />
-              ) : (
-                <Icon name="music" className="h-10 w-10 text-emerald-400" />
-              )}
+              <SafeImage
+                src={spotify.artworkUrl || spotify.artwork}
+                alt=""
+                size={40}
+                className="h-10 w-10 rounded-[var(--panel-radius)] object-cover"
+                iconClassName="h-6 w-6 text-emerald-400"
+              />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-[var(--foreground)]">{spotify.title}</p>
                 <p className="truncate text-xs text-[var(--muted)]">{spotify.artist}</p>

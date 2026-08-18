@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Image from "next/image";
+import SafeImage from "@/components/SafeImage";
 import { motion } from "framer-motion";
 import { SkipBack, SkipForward, Play, Pause, Volume2, VolumeX, Music, Server } from "lucide-react";
 import { useNowPlaying } from "@/lib/hooks/useNowPlaying";
@@ -115,7 +115,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
     [duration, isSpotify, control]
   );
 
-  const cover = nowPlaying?.artworkUrl || nowPlaying?.cover || "/images/placeholder-cover.png";
+  const cover = nowPlaying?.artworkUrl || nowPlaying?.cover;
 
   const progressPct = useMemo(() => {
     if (!duration) return 0;
@@ -174,15 +174,14 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
       <div className="flex items-center gap-4">
         <div className="relative shrink-0">
           <div className="relative h-16 w-16 overflow-hidden rounded-xl border border-white/10 shadow-lg">
-            <Image
+            <SafeImage
               src={cover}
               alt={nowPlaying?.title || ""}
               fill
-              unoptimized
+              sizes="96px"
               className="object-cover"
-              onError={(e) => {
-                (e.currentTarget as HTMLImageElement).src = "/images/placeholder-cover.png";
-              }}
+              iconClassName="h-8 w-8"
+              loading="eager"
             />
           </div>
           <div

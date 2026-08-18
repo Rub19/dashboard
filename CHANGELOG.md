@@ -4,6 +4,15 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Spotify : images et fallback des covers**
+
+### Ajoute
+- `ethone-next/components/SafeImage.tsx` : composant d'image robuste avec validation de l'URL, `onError` et fallback `Music` pour éviter les icônes cassées quand une cover distante ne charge pas.
+
+### Corrige
+- `ethone-next/components/DockMediaFlyout.tsx`, `ethone-next/components/DynamicIslandContainer.tsx`, `ethone-next/components/MediaWidget.tsx`, `ethone-next/components/LiveWidgets.tsx` : remplacement des `<Image />` next/image directes par `SafeImage` pour les covers Spotify, avec `loading="eager"` et fallback musical si l'image est invalide ou indisponible.
+- Suppression de la référence à `placeholder-cover.png` inexistant dans `MediaWidget`.
+
 **Onboarding mail @ethone.dev**
 
 ### Ajoute

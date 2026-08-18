@@ -20,7 +20,6 @@ import {
   useContext,
   useEffect,
   useId,
-  useRef,
   useState,
   useSyncExternalStore,
 } from "react";
@@ -114,7 +113,6 @@ const REDUCED_TRANSITION = {
   ease: EASE_OUT,
 } as const;
 
-
 function subscribeToMobileQuery(callback: () => void) {
   const query = window.matchMedia(MOBILE_QUERY);
   query.addEventListener("change", callback);
@@ -147,7 +145,6 @@ interface AnimatedSidebarContextValue {
   setOpenMobile: (open: boolean) => void;
   state: SidebarState;
   toggleSidebar: () => void;
-  triggerRef: React.RefObject<HTMLButtonElement | null>;
 }
 
 const AnimatedSidebarContext =
@@ -217,7 +214,6 @@ export function AnimatedSidebarProvider({
   const isMobile = useIsMobile();
   const reduce = useReducedMotion() ?? false;
   const generatedId = useId();
-  const triggerRef = useRef<HTMLButtonElement>(null);
   const desktopOpen = open ?? internalOpen;
   const mobileOpen = openMobile ?? internalOpenMobile;
 
@@ -268,7 +264,6 @@ export function AnimatedSidebarProvider({
         setOpenMobile,
         state: desktopOpen ? "expanded" : "collapsed",
         toggleSidebar,
-        triggerRef,
       }}
     >
       <div
@@ -359,7 +354,7 @@ export const AnimatedSidebar = forwardRef<HTMLElement, AnimatedSidebarProps>(
             context.reduce ? REDUCED_TRANSITION : PANEL_TRANSITION
           }
           className={cn(
-            "sticky top-0 flex h-svh w-full flex-col overflow-hidden bg-surface-raised",
+            "sticky top-0 flex h-svh w-full flex-col overflow-hidden bg-background",
             collapsible === "offcanvas" && "w-[var(--sidebar-width)]",
             variant === "sidebar" &&
               (side === "left" ? "border-border border-r" : "border-border border-l"),
@@ -380,8 +375,9 @@ export const AnimatedSidebar = forwardRef<HTMLElement, AnimatedSidebarProps>(
   },
 );
 
-export type AnimatedSidebarTriggerProps =
-  ButtonHTMLAttributes<HTMLButtonElement>;
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface AnimatedSidebarTriggerProps
+  extends ButtonHTMLAttributes<HTMLButtonElement> {}
 
 export const AnimatedSidebarTrigger = forwardRef<
   HTMLButtonElement,
@@ -396,10 +392,7 @@ export const AnimatedSidebarTrigger = forwardRef<
   return (
     <button
       {...props}
-      // eslint-disable-next-line react-hooks/immutability
       ref={(node) => {
-        // eslint-disable-next-line react-hooks/immutability
-        context.triggerRef.current = node;
         if (typeof forwardedRef === "function") forwardedRef(node);
         else if (forwardedRef) forwardedRef.current = node;
       }}
@@ -414,15 +407,16 @@ export const AnimatedSidebarTrigger = forwardRef<
       }}
       className={cn(
         "inline-flex size-10 shrink-0 items-center justify-center rounded-xl outline-none",
-        "focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         className,
       )}
     />
   );
 });
 
-export type AnimatedSidebarCloseProps =
-  ButtonHTMLAttributes<HTMLButtonElement>;
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface AnimatedSidebarCloseProps
+  extends ButtonHTMLAttributes<HTMLButtonElement> {}
 
 export const AnimatedSidebarClose = forwardRef<
   HTMLButtonElement,
@@ -447,15 +441,16 @@ export const AnimatedSidebarClose = forwardRef<
       }}
       className={cn(
         "inline-flex size-10 shrink-0 items-center justify-center rounded-xl outline-none",
-        "focus-visible:ring-2 focus-visible:ring-[var(--accent)]",
+        "focus-visible:ring-2 focus-visible:ring-ring",
         className,
       )}
     />
   );
 });
 
-export type AnimatedSidebarRailProps =
-  ButtonHTMLAttributes<HTMLButtonElement>;
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface AnimatedSidebarRailProps
+  extends ButtonHTMLAttributes<HTMLButtonElement> {}
 
 export const AnimatedSidebarRail = forwardRef<
   HTMLButtonElement,
@@ -490,7 +485,9 @@ export const AnimatedSidebarRail = forwardRef<
   );
 });
 
-export type AnimatedSidebarInsetProps = HTMLMotionProps<"main">;
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface AnimatedSidebarInsetProps
+  extends HTMLMotionProps<"main"> {}
 
 export const AnimatedSidebarInset = forwardRef<
   HTMLElement,
@@ -551,7 +548,7 @@ export const AnimatedSidebarFooter = forwardRef<
       ref={forwardedRef}
       data-slot="sidebar-footer"
       className={cn(
-        "flex shrink-0 flex-col gap-2 border-t border-border p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]",
+        "flex shrink-0 flex-col gap-2 border-border border-t p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]",
         className,
       )}
     />
@@ -682,9 +679,9 @@ export const AnimatedSidebarMenuSub = forwardRef<
           animate={context.reduce ? { opacity: 1 } : "open"}
           exit={context.reduce ? { opacity: 0 } : "closed"}
           transition={context.reduce ? { duration: 0.12 } : undefined}
-          data-slot="sidebar-menu-sub"
+          data-slot="sidebar-submenu"
           className={cn(
-            "relative mt-1 ml-5 flex min-w-0 flex-col gap-0.5 border-l border-border pl-3",
+            "relative mt-1 ml-5 flex min-w-0 flex-col gap-0.5 border-border border-l pl-3",
             className,
           )}
         >
@@ -765,8 +762,8 @@ export function AnimatedSidebarMenuSubButton({
 
   const interactiveClassName = cn(
     "flex min-h-8 w-full min-w-0 items-center gap-2 rounded-lg px-2 text-left text-xs outline-none",
-    "text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground",
-    "focus-visible:bg-muted/70 focus-visible:ring-2 focus-visible:ring-[var(--accent)]",
+    "text-muted-foreground transition-colors hover:bg-white/[0.08] hover:text-foreground",
+    "focus-visible:bg-white/[0.08] focus-visible:ring-2 focus-visible:ring-ring",
     isActive && "bg-[var(--accent)]/15 text-[var(--accent)]",
     disabled && "cursor-not-allowed opacity-40",
     className,
@@ -880,8 +877,8 @@ export function AnimatedSidebarMenuButton({
       <motion.span
         initial={false}
         animate={{
-          opacity: panel.collapsed ? 0 : 1,
-          x: panel.collapsed ? -4 : 0,
+          opacity: 1,
+          x: 0,
         }}
         transition={
           context.reduce
@@ -890,11 +887,8 @@ export function AnimatedSidebarMenuButton({
               ? LABEL_EXIT_TRANSITION
               : LABEL_ENTER_TRANSITION
         }
-        aria-hidden={panel.collapsed}
-        className={cn(
-          "relative z-10 min-w-0 flex-1 truncate",
-          panel.collapsed && "pointer-events-none",
-        )}
+        aria-hidden={false}
+        className="relative z-10 min-w-0 flex-1 truncate"
       >
         {children}
       </motion.span>
@@ -924,7 +918,7 @@ export function AnimatedSidebarMenuButton({
   const interactiveClassName = cn(
     "relative flex min-h-9 w-full min-w-0 items-center gap-2.5 overflow-hidden rounded-xl px-3 text-left text-sm font-medium outline-none",
     "text-muted-foreground transition-colors hover:text-foreground",
-    "focus-visible:bg-muted/70 focus-visible:ring-2 focus-visible:ring-[var(--accent)]",
+    "focus-visible:bg-white/[0.08] focus-visible:ring-2 focus-visible:ring-ring",
     isActive && "text-[var(--accent)]",
     disabled && "cursor-not-allowed opacity-40",
     className,

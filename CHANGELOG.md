@@ -4,6 +4,14 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Spotify : lecture en cours affichée dans le Dock**
+
+### Corrige
+- `ethone-next/lib/hooks/useNowPlaying.ts` : unwrap `res.data` pour mapper correctement le morceau en cours.
+- `ethone-next/components/SpotifyConfig.tsx` : sélectionne automatiquement Spotify comme source "Now Playing" lors de la connexion et du test.
+- `ethone-next/components/LiveSettings.tsx` : ajoute Spotify dans le sélecteur de source "Now Playing".
+- `ethone-next/components/LiveBentoGrid.tsx` : accepte la prop `error`.
+
 **UI : amélioration des cartes Gaming et Social sur le home**
 
 ### Corrige
@@ -17,10 +25,10 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `worker/src/routes/provider-credentials.js` : ajout du paramètre `on_conflict=owner_id,provider` sur l'appel Supabase pour transformer l'insert en `upsert` et éviter la violation d'unicité lors de l'enregistrement d'une clé déjà existante.
 - `worker/src/services/ai-credential-vault.js` : même correction pour `saveUserCredential` afin d'upserter les credentials chiffrés des providers IA sans conflit.
 
-**Version : passage en 1.5.0**
+**Version : passage en 1.5.1**
 
 ### Corrige
-- `ethone-next/package.json` : version `1.5.0`.
+- `ethone-next/package.json` : version `1.5.1`.
 - `ethone-next/package-lock.json` : synchronisation de la version.
 - `ethone-next/components/UserProfileDropdown.tsx` : `VERSION_LABEL` mis à jour.
 

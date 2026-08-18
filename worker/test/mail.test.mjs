@@ -391,6 +391,8 @@ test("mail.send requires authentication and valid body", async () => {
   assert.equal(invalid.status, 400);
   assert.equal((await payload(invalid)).ok, false);
 
+  seedAlias(state);
+
   const ok = await invoke("/api/mail/send", {
     method: "POST",
     env,
@@ -929,13 +931,9 @@ test("mail.send uses requested alias_id", async () => {
   assert.ok(state.resendCalls[0].from.includes("other@ethone.dev"));
 });
 
-test("mail.send falls back to a unique primary alias when the base is taken by another user", async () => {
+test("mail.send rejects when no alias is configured", async () => {
   const state = {};
   const env = makeEnv(state);
-  const otherUser = "9e64d0a1-1111-2222-3333-000000000000";
-  state["ethone_mail_aliases"] = [
-    { id: "alias-other-user", user_id: otherUser, alias: "user@ethone.dev", display_name: "Other", is_primary: true, created_at: new Date().toISOString() }
-  ];
 
   const res = await invoke("/api/mail/send", {
     method: "POST",
@@ -943,15 +941,9 @@ test("mail.send falls back to a unique primary alias when the base is taken by a
     headers: jsonHeaders(),
     body: JSON.stringify({ to: ["to@example.com"], subject: "Hello", text: "Body" })
   });
-  assert.equal(res.status, 200);
+  assert.equal(res.status, 400);
   const body = await payload(res);
-  assert.ok(body.data.sent);
-  const fromAddress = state.resendCalls[0].from;
-  assert.ok(fromAddress.includes("user."));
-  assert.ok(fromAddress.endsWith("@ethone.dev>"));
-  const created = state["ethone_mail_aliases"].find((a) => a.user_id === USER_ID);
-  assert.ok(created);
-  assert.notEqual(created.alias, "user@ethone.dev");
+  assert.equal(body.ok, false);
 });
 
 test("mail.receive only delivers to the alias owner", async () => {

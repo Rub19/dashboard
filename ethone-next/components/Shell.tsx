@@ -41,12 +41,12 @@ export default function Shell({ children }: { children: ReactNode }) {
             <AnimatedSidebarProvider
               defaultOpen={true}
               style={{ "--sidebar-width-icon": "7.5rem" }}
-              className="h-dvh max-h-dvh min-h-0 w-full overflow-hidden"
+              className="h-screen w-screen gap-3 overflow-hidden bg-black p-3 sm:gap-4 sm:p-4"
             >
               <Sidebar />
               <div
                 data-v8-shell
-                className="flex min-w-0 flex-1 flex-col overflow-hidden transition-colors duration-150"
+                className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 overflow-hidden transition-colors duration-150"
               >
                 <TopBar />
                 <CommandPalette />
@@ -59,7 +59,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                 <main
                   data-v8-main
                   id="main-content"
-                  className="min-w-0 flex-1 overflow-x-clip overflow-y-auto p-4 pb-[calc(5rem+env(safe-area-inset-bottom))] md:p-6 md:pb-32"
+                  className="min-w-0 flex-1 overflow-x-clip overflow-y-auto pb-[calc(7rem+env(safe-area-inset-bottom))] md:pb-[calc(7rem+env(safe-area-inset-bottom))]"
                   tabIndex={-1}
                 >
                   <ActivityJournalProvider>

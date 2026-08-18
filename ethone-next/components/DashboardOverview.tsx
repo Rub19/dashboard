@@ -165,8 +165,8 @@ export default function DashboardOverview() {
   }
 
   return (
-    <main className="min-h-screen p-4 sm:p-6">
-      <header className="mb-6 flex w-full items-center justify-between gap-4">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
+      <header className="shrink-0 mb-4 flex w-full items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <BrandMark size={36} />
           <div>
@@ -196,50 +196,50 @@ export default function DashboardOverview() {
         </div>
       </header>
 
-      <div className="grid w-full grid-cols-12 gap-4">
-        {customizing && (
-          <BentoCard
-            title={i18n("customizeDashboard")}
-            icon="sliders-horizontal"
-            className="col-span-12"
-            action={
+      {customizing && (
+        <BentoCard
+          title={i18n("customizeDashboard")}
+          icon="sliders-horizontal"
+          className="shrink-0 mb-4"
+          action={
+            <button
+              type="button"
+              onClick={() => setCustomizing(false)}
+              className="rounded-lg border border-white/[0.08] bg-white/[0.04] px-2 py-1 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/[0.08] hover:text-white"
+            >
+              {i18n("done")}
+            </button>
+          }
+        >
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {sections.map((s) => (
               <button
+                key={s.id}
                 type="button"
-                onClick={() => setCustomizing(false)}
-                className="rounded-lg border border-white/[0.08] bg-white/[0.04] px-2 py-1 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/[0.08] hover:text-white"
+                onClick={() => toggleSection(s.id)}
+                className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition-colors ${
+                  visibleSet.has(s.id)
+                    ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
+                    : "border-white/[0.06] bg-white/[0.02] text-zinc-500"
+                }`}
               >
-                {i18n("done")}
+                <Icon name={visibleSet.has(s.id) ? "eye" : "eye-off"} className="h-4 w-4" />
+                {s.label}
               </button>
-            }
-          >
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-              {sections.map((s) => (
-                <button
-                  key={s.id}
-                  type="button"
-                  onClick={() => toggleSection(s.id)}
-                  className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition-colors ${
-                    visibleSet.has(s.id)
-                      ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
-                      : "border-white/[0.06] bg-white/[0.02] text-zinc-500"
-                  }`}
-                >
-                  <Icon name={visibleSet.has(s.id) ? "eye" : "eye-off"} className="h-4 w-4" />
-                  {s.label}
-                </button>
-              ))}
-            </div>
-          </BentoCard>
-        )}
-
-        {error && (
-          <div className="col-span-12 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
-            {error.message}
+            ))}
           </div>
-        )}
+        </BentoCard>
+      )}
 
+      {error && (
+        <div className="shrink-0 mb-4 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
+          {error.message}
+        </div>
+      )}
+
+      <div className="grid min-h-0 w-full flex-1 grid-cols-12 gap-4 overflow-hidden auto-rows-[minmax(0,1fr)]">
         {widgets.map((w) => (w.visible ? <Fragment key={w.id}>{renderWidget(w.id)}</Fragment> : null))}
       </div>
-    </main>
+    </div>
   );
 }

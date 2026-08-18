@@ -91,9 +91,9 @@ export default function TasksWidget({ className = "", data }: TasksWidgetProps) 
 
   return (
     <BentoCard className={className} noHeader>
-      <div className="flex flex-col gap-4">
+      <div className="flex h-full min-h-0 flex-col gap-4 overflow-hidden">
         {/* Header */}
-        <div className="flex items-start justify-between gap-3">
+        <div className="shrink-0 flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/15 text-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.25)]">
               <CheckSquare className="h-4 w-4" />
@@ -105,7 +105,7 @@ export default function TasksWidget({ className = "", data }: TasksWidgetProps) 
           {badge}
         </div>
 
-        <div className="w-full">
+        <div className="shrink-0 w-full">
           <div className="h-1 w-full overflow-hidden rounded-full bg-white/[0.04]">
             <div
               className="h-full rounded-full bg-emerald-400 transition-all duration-300"
@@ -120,7 +120,7 @@ export default function TasksWidget({ className = "", data }: TasksWidgetProps) 
             e.preventDefault();
             addTask(newTaskTitle);
           }}
-          className="relative flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] p-1.5 pl-3 transition-all focus-within:border-emerald-500/50 focus-within:ring-1 focus-within:ring-emerald-500/30"
+          className="relative flex shrink-0 items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] p-1.5 pl-3 transition-all focus-within:border-emerald-500/50 focus-within:ring-1 focus-within:ring-emerald-500/30"
         >
           <input
             type="text"
@@ -144,6 +144,7 @@ export default function TasksWidget({ className = "", data }: TasksWidgetProps) 
 
         {/* List */}
         <TodoList
+          className="min-h-0 flex-1 overflow-hidden"
           tasks={items as Task[]}
           loading={loading}
           onToggle={toggleTask}

@@ -243,8 +243,8 @@ export default function SystemPage() {
   }
 
   return (
-    <main className="min-h-screen p-4 sm:p-6">
-      <div className="space-y-5">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
+      <div className="min-h-0 w-full flex-1 space-y-5 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden]">
         <div>
           <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Mission Control</p>
           <h1 className="text-2xl font-bold text-white">{i18n("systemTitle")}</h1>
@@ -417,6 +417,6 @@ export default function SystemPage() {
 
         <FlowAutomations activeFlow={activeSpace} />
       </div>
-    </main>
+    </div>
   );
 }

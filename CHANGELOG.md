@@ -4,6 +4,26 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Sonner : toasts en bas à droite**
+
+### Ajoute
+- `ethone-next/package.json` / `package-lock.json` : installation de `sonner@1.7.4`.
+- `ethone-next/context/ToastContext.tsx` : remplacement de la pile custom par le `Toaster` Sonner positionné en `bottom-right` avec un thème glassmorphism dark (`bg-zinc-950/85`, `backdrop-blur-2xl`, bordures subtiles).
+- `ethone-next/components/SonnerDemo.tsx` : bouton d'exemple déclenchant `toast(...)` avec `description` et `action`.
+- Tous les appels existants à `useToast()` restent fonctionnels et passent par Sonner.
+
+**Fluidification Sidebar / layout et corrections de scroll**
+
+### Corrige
+- `ethone-next/components/motion/shared-layout-bg.tsx` : pilule de hover sans `filter: blur(...)` qui pouvait causer du jank ; fade plus net avec `EASE_OUT`.
+- `ethone-next/components/motion/animated-sidebar.tsx` : ressort `SIDEBAR_MORPH_TRANSITION` adouci (`stiffness: 280, damping: 26, mass: 0.9`), labels d'icônes animés en `opacity`/`x` avec `SPRING_SWAP`, indicateur actif `layoutId="activeSidebarTab"`.
+- `ethone-next/components/Shell.tsx` : container central `min-h-0`, zone `main` en `overflow-hidden` ; les scrolls sont portés par les listes internes (`TodoList`, pages).
+- `ethone-next/app/tasks/page.tsx` : mise en page `flex h-full min-h-0 flex-col overflow-hidden` pour éviter les double scrolls.
+- `ethone-next/components/TasksWidget.tsx` : conteneur `h-full min-h-0 flex-col overflow-hidden` avec liste interne scrollable.
+- `ethone-next/components/TodoList.tsx` : ajout d'un `className`, conteneur `h-full min-h-0 flex-1 overflow-y-auto` avec `scrollbar-width: thin`.
+- `ethone-next/app/mail/page.tsx` : hauteur `h-full min-h-0` pour suivre le shell.
+- `ethone-next/components/TopBar.tsx` : `shrink-0` pour ne pas être compressé.
+
 **Refonte UI / Layout : Sidebar latérale gauche Bento Glassmorphism**
 
 ### Corrige

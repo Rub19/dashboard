@@ -13,9 +13,10 @@ export type TodoListProps = {
   loading: boolean;
   onToggle: (id: string, done: boolean) => void;
   onDelete: (id: string) => void;
+  className?: string;
 };
 
-export default function TodoList({ tasks, loading, onToggle, onDelete }: TodoListProps) {
+export default function TodoList({ tasks, loading, onToggle, onDelete, className = "" }: TodoListProps) {
   const i18n = useI18n();
   const [filter, setFilter] = useState<Filter>("all");
 
@@ -49,8 +50,8 @@ export default function TodoList({ tasks, loading, onToggle, onDelete }: TodoLis
   }
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-center gap-1.5 rounded-xl border border-white/[0.04] bg-white/[0.02] p-1 text-[11px]">
+    <div className={`flex h-full min-h-0 flex-col gap-3 overflow-hidden ${className}`}>
+      <div className="shrink-0 flex items-center gap-1.5 rounded-xl border border-white/[0.04] bg-white/[0.02] p-1 text-[11px]">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -68,7 +69,7 @@ export default function TodoList({ tasks, loading, onToggle, onDelete }: TodoLis
         ))}
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="min-h-0 flex-1 overflow-y-auto pr-1 [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden">
         <AnimatePresence mode="popLayout" initial={false}>
           {filtered.length === 0 ? (
             <motion.div

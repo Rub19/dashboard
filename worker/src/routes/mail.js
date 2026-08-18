@@ -9,7 +9,7 @@ import {
   getContacts,
   getDefaultSignature,
   getLabels,
-  getOrCreatePrimaryAlias,
+  getPrimaryAlias,
   getSignatures,
   getUserIdByAlias,
   listMessages,
@@ -90,12 +90,6 @@ function firstRow(response) {
   return data || null;
 }
 
-async function requireMailAlias(env, userId, displayName) {
-  const alias = await getOrCreatePrimaryAlias(env, userId, displayName);
-  if (!alias) throw httpError("SERVICE_ERROR", 500, { detail: "alias" });
-  return alias;
-}
-
 async function resolveAliasForUser(env, auth, body) {
   const requestedAliasId = safeText(body.alias_id, 64);
   if (requestedAliasId) {
@@ -114,7 +108,9 @@ async function resolveAliasForUser(env, auth, body) {
     if (resolved?.user_id === auth.userId) return resolved;
   }
 
-  return getOrCreatePrimaryAlias(env, auth.userId, auth.displayName || auth.email);
+  const primary = await getPrimaryAlias(env, auth.userId);
+  if (!primary) throw httpError("MAIL_ALIAS_REQUIRED", 400, { detail: "alias_required" });
+  return primary;
 }
 
 async function resolveThreadForOutbound(env, userId, { inReplyTo, references, subject, to, cc = [] }) {
@@ -653,10 +649,7 @@ export async function mailAliasRoute({ request, env, auth }) {
     return { data: alias };
   }
 
-  const displayName = safeText(body.display_name || body.displayName, 80);
-  const alias = await getOrCreatePrimaryAlias(env, auth.userId, displayName || auth.displayName || auth.email);
-  if (!alias) throw httpError("SERVICE_ERROR", 500, { detail: "alias" });
-  return { data: alias };
+  throw httpError("INVALID_PARAMETER", 400, { detail: "alias_required" });
 }
 
 export async function mailReceiveHandler(message, env, context) {

@@ -24,7 +24,7 @@ export default function BentoCard({
 }: BentoCardProps) {
   return (
     <div
-      className={`group relative h-full w-full overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 shadow-xl shadow-black/50 backdrop-blur-2xl transition-all duration-200 hover:border-white/[0.16] ${className}`}
+      className={`group relative h-full w-full overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/70 p-5 shadow-xl shadow-black/50 backdrop-blur-xl transition-all duration-200 hover:border-white/[0.16] ${className}`}
     >
       <div
         className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent"

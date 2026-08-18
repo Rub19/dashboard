@@ -54,17 +54,6 @@ const SIDEBAR_MORPH_TRANSITION = {
   mass: 0.9,
 } as const;
 
-const LABEL_ENTER_TRANSITION = {
-  duration: 0.2,
-  delay: 0.08,
-  ease: EASE_OUT,
-} as const;
-
-const LABEL_EXIT_TRANSITION = {
-  duration: 0.12,
-  ease: EASE_OUT,
-} as const;
-
 const SUBMENU_TRANSITION = {
   duration: 0.18,
   ease: EASE_OUT,

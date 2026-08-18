@@ -75,45 +75,14 @@ export function resolveAliasByEmail(env, email) {
   }).then(firstRow);
 }
 
-export function getOrCreatePrimaryAlias(env, userId, displayName) {
+export function getPrimaryAlias(env, userId) {
   const origin = projectOrigin(env);
   if (!origin || !userId) return Promise.resolve(null);
-
   return supabaseRequest(env, `/rest/v1/ethone_mail_aliases?user_id=eq.${userId}&is_primary=eq.true`, {
     method: "GET",
     headers: { "Accept": "application/vnd.pgrst.object+json" },
     maxBytes: 4096
-  }).then(firstRow).then(async (existing) => {
-    if (existing) return existing;
-
-    let base = safeText(displayName, 32)
-      .toLowerCase()
-      .replace(/[^a-z0-9._-]/g, "")
-      .replace(/[._-]+/g, ".")
-      .replace(/^\.|\.$/g, "")
-      .slice(0, 32);
-    if (!base) base = "user";
-    if (!/^[a-z0-9]/.test(base)) base = `u${base}`;
-    if (!base) base = "user";
-
-    for (let attempt = 0; attempt < 10; attempt += 1) {
-      const suffix = attempt > 0 ? `.${randomBase(4)}` : "";
-      const local = `${base.slice(0, Math.max(1, 32 - suffix.length))}${suffix}`;
-      const alias = `${local}@ethone.dev`;
-
-      const taken = await resolveAliasByEmail(env, alias);
-      if (!taken) {
-        return supabaseRequest(env, "/rest/v1/ethone_mail_aliases", {
-          method: "POST",
-          headers: { "Prefer": "return=representation" },
-          body: { user_id: userId, alias, display_name: safeText(displayName, 80), is_primary: true },
-          maxBytes: 4096
-        }).then(firstRow);
-      }
-    }
-
-    return null;
-  });
+  }).then(firstRow);
 }
 
 export function getUserIdByAlias(env, alias) {

@@ -1,5 +1,5 @@
 import { requestExternal } from "../utils/external-request.js";
-import { sendMailViaResend, updateMailMessage, resolveAliasByEmail, getOrCreatePrimaryAlias, getMessageById } from "./mail-client.js";
+import { sendMailViaResend, updateMailMessage, resolveAliasByEmail, getMessageById } from "./mail-client.js";
 
 function safeText(value, limit = 320) {
   const raw = String(value ?? "").replace(/[\u0000-\u001f\u007f]/g, "").trim();
@@ -131,13 +131,9 @@ async function sendAutoReplyOutbox(env, row) {
   }
 
   const toEmail = safeEmail(Array.isArray(original.to_addresses) ? original.to_addresses[0] : original.to_addresses);
-  let alias = null;
-  if (toEmail) {
-    alias = await resolveAliasByEmail(env, toEmail).catch(() => null);
-  }
-  if (!alias) {
-    alias = await getOrCreatePrimaryAlias(env, row.user_id, "").catch(() => null);
-  }
+  if (!toEmail) return;
+
+  const alias = await resolveAliasByEmail(env, toEmail).catch(() => null);
   if (!alias) return;
 
   const from = `${alias.display_name || "ETHONE"} <${alias.alias}>`;

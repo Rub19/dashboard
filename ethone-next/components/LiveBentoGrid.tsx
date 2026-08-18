@@ -30,9 +30,9 @@ export default function LiveBentoGrid({
   className = "",
 }: LiveBentoGridProps) {
   return (
-    <div className={`flex w-full flex-col gap-4 ${className}`}>
+    <div className={`flex h-full min-h-0 w-full flex-col gap-4 overflow-hidden ${className}`}>
       <LiveStats records={records} updatedAt={updatedAt} loading={loading} />
-      <div className="grid grid-cols-12 items-stretch gap-4">
+      <div className="grid min-h-0 w-full flex-1 auto-rows-[minmax(0,1fr)] grid-cols-12 items-stretch gap-4 overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden">
         <GamingCard
           minecraft={minecraft}
           loading={loading}

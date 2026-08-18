@@ -79,8 +79,10 @@ export default function FocusPage() {
     : i18n("focusCycle").replace("{{cycle}}", String(state.cycle)).replace("{{total}}", "4");
 
   return (
-    <div className="w-full space-y-5 px-4 pb-10 pt-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden">
+      <div className="min-h-0 flex-1 w-full overflow-y-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden]">
+        <div className="w-full space-y-5 px-0 pb-10 pt-0">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
             <span>{i18n("focusTitle")}</span>
@@ -206,6 +208,8 @@ export default function FocusPage() {
           <p className="text-2xl font-bold font-mono text-white">{state.completedBreaks}</p>
           <p className="text-xs text-zinc-400 mt-1">{i18n("breaks")}</p>
         </div>
+      </div>
+      </div>
       </div>
 
       {zenMode && (

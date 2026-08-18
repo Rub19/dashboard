@@ -28,6 +28,7 @@ import { useDynamicIslandStore } from "@/lib/stores/dynamic-island";
 import { useBrainActivityStore } from "@/lib/stores/brain-activity";
 import { cn } from "@/lib/utils";
 import VolumeSlider from "@/components/VolumeSlider";
+import MediaProgress from "@/components/MediaProgress";
 import type { NowPlaying } from "@/lib/hooks/useLiveData";
 
 type View = "spotify" | "pomodoro" | "brain";
@@ -83,77 +84,6 @@ function AudioWave({ playing, className = "" }: { playing: boolean; className?: 
           }
         />
       ))}
-    </div>
-  );
-}
-
-function MediaProgress({
-  value,
-  max,
-  onChange,
-}: {
-  value: number;
-  max: number;
-  onChange: (v: number) => void;
-}) {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [dragging, setDragging] = useState(false);
-  const [hovered, setHovered] = useState(false);
-
-  const percentage = max > 0 ? Math.min(100, Math.max(0, (value / max) * 100)) : 0;
-
-  const updateFromClientX = useCallback(
-    (clientX: number) => {
-      const rect = trackRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      const pct = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-      const next = Math.round(pct * max / 1000) * 1000;
-      onChange(Math.min(max, Math.max(0, next)));
-    },
-    [max, onChange],
-  );
-
-  useEffect(() => {
-    if (!dragging) return;
-    const handleMove = (e: PointerEvent) => updateFromClientX(e.clientX);
-    const handleUp = () => setDragging(false);
-    window.addEventListener("pointermove", handleMove);
-    window.addEventListener("pointerup", handleUp);
-    return () => {
-      window.removeEventListener("pointermove", handleMove);
-      window.removeEventListener("pointerup", handleUp);
-    };
-  }, [dragging, updateFromClientX]);
-
-  return (
-    <div className="space-y-1.5">
-      <div
-        ref={trackRef}
-        onPointerDown={(e) => {
-          (e.target as HTMLDivElement).setPointerCapture?.(e.pointerId);
-          setDragging(true);
-          updateFromClientX(e.clientX);
-        }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        className="group relative h-1.5 w-full cursor-pointer overflow-hidden rounded-full bg-white/[0.10] transition-all duration-200 hover:h-2"
-      >
-        <div
-          className="pointer-events-none h-full rounded-full bg-emerald-400 transition-all"
-          style={{ width: `${percentage}%` }}
-        />
-        <div
-          className={cn(
-            "pointer-events-none absolute top-1/2 h-3.5 w-3.5 -translate-y-1/2 rounded-full border-2 border-emerald-400 bg-zinc-950 shadow-md transition-transform duration-150",
-            dragging || hovered ? "scale-125" : "scale-100",
-          )}
-          style={{ left: `calc(${percentage}% - 7px)` }}
-        />
-      </div>
-      <div className="flex justify-between font-mono text-[10px] text-zinc-500">
-        <span>{formatMs(value)}</span>
-        <span>-{formatMs(Math.max(0, max - value))}</span>
-      </div>
     </div>
   );
 }

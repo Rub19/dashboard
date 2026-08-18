@@ -27,8 +27,7 @@ const BrainBriefingPanel = dynamic(() => import("@/components/BrainBriefingPanel
 
 type SectionDef = { id: string; label: string; icon: string };
 
-const homeCardClass =
-  "h-auto min-h-0 overflow-visible bg-[var(--surface-raised)]/90 shadow-lg shadow-black/20";
+const homeCardClass = "h-auto min-h-0 overflow-visible";
 
 const gridVariants = {
   hidden: { opacity: 1 },

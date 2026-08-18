@@ -33,7 +33,8 @@
   --dock-radius: 1rem;
   --panel-radius: 1rem;
   --panel-border: color-mix(in srgb, white 8%, transparent);
-  --panel-bg: color-mix(in srgb, var(--surface-raised) 65%, transparent);
+  --panel-obsidian: color-mix(in srgb, var(--surface-raised) 80%, #000000 20%);
+  --panel-bg: color-mix(in srgb, var(--panel-obsidian) 82%, transparent);
   --panel-blur: 20px;
   --panel-padding: var(--density-pad, 1.25rem);
   --item-gap: var(--density-gap, 1rem);

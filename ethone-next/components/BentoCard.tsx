@@ -34,7 +34,7 @@ export default function BentoCard({
       )}
     >
       <div
-        className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-b from-white/[0.03] to-transparent"
+        className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-b from-white/[0.04] to-transparent"
         aria-hidden="true"
       />
 

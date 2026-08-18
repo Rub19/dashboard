@@ -4,6 +4,21 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Home et cartes : fond black obsidian et meilleure distinction des panneaux**
+
+### Corrige
+- `ethone-next/app/globals.css` : ajout du token `--panel-obsidian` (`color-mix` de `var(--surface-raised)` et `#000000` à 20 %). `--panel-bg` passe de `var(--surface-raised) 65 %` transparent à `var(--panel-obsidian) 82 %` transparent pour un rendu plus sombre, glassmorphique et « obsidian » qui tranche mieux avec `--background`.
+- `ethone-next/components/DashboardOverview.tsx` : `homeCardClass` se concentre sur le layout (`h-auto min-h-0 overflow-visible`) et laisse `BentoCard` appliquer le fond `--panel-bg`. Suppression de l'override `bg-[var(--surface-raised)]/90` qui cassait l'uniformité du fond des cartes Home.
+- `ethone-next/components/BentoCard.tsx` : la surbrillance du verre obsidien passe de `from-white/[0.03]` à `from-white/[0.04]` pour un reflet subtil cohérent.
+- Les thèmes sont préservés : `--panel-obsidian` dépend de `var(--surface-raised)`, donc `focus`, `studio`, `obsidian`, `aurora`, `minimal` et `day` conservent leur teinte propre tout en profitant du contraste renforcé.
+
+**Diagnostics et corrections erreur de sync / alerte live**
+
+### Corrige
+- `ethone-next/lib/focus-timer.ts` : ajout d'un `console.error` explicite dans `loadFromCloud` et `saveToCloud` pour identifier la cause exacte des erreurs de synchronisation Pomodoro (colonne `data` manquante dans `pomodoro_sessions` lorsque la migration `202608310001_pomodoro_sessions_payload.sql` n'est pas appliquée).
+- `ethone-next/lib/hooks/useTasks.ts` : utilisation d'un nom de canal Realtime unique par instance (`tasks_changes:${useId()}`) pour éviter l'erreur `cannot add 'postgres_changes' callbacks for realtime:tasks_changes after 'subscribe()'` quand `DashboardOverview` et `TasksWidget` montent `useCloudTasks` simultanément.
+- Configuration de dev : création de `worker/.dev.vars` (non committé) avec `ENVIRONMENT=development` et bascule de `ethone-next/.env.local` vers `NEXT_PUBLIC_WORKER_URL=http://127.0.0.1:8787` pour résoudre les erreurs CORS en local ; le worker local autorisera automatiquement `http://localhost:3001` quand `ENVIRONMENT` n'est pas `production`.
+
 **Dashboard Home : correction critique du layout Bento et chevauchements**
 
 ### Corrige

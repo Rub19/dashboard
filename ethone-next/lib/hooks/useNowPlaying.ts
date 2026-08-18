@@ -66,8 +66,9 @@ export function useNowPlaying(pollMs = 30000) {
       }
       if (!cancelled) setError(null);
       try {
-        const data = (await fetchWorker(path)) as ApiData | null;
+        const res = (await fetchWorker(path)) as ApiData | null;
         if (cancelled) return;
+        const data = (res?.data as ApiData | undefined) || res || null;
         const track = (data?.track as ApiData) || data || {};
         const mapped: NowPlaying | null = data
           ? {

@@ -155,6 +155,7 @@ export default function DashboardOverview() {
             records={live.records}
             updatedAt={live.updatedAt}
             loading={live.loading}
+            error={live.error}
             className="col-span-12 h-full"
           />
         );

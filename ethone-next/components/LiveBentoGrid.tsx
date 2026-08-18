@@ -14,6 +14,7 @@ export type LiveBentoGridProps = {
   records?: LiveRecord[];
   updatedAt?: Date | null;
   loading?: boolean;
+  error?: Error | null;
   className?: string;
 };
 
@@ -31,7 +32,10 @@ export default function LiveBentoGrid({
     <div className={`flex w-full flex-col gap-4 ${className}`}>
       <LiveStats records={records} updatedAt={updatedAt} loading={loading} />
       <div className="grid grid-cols-12 items-stretch gap-4">
-        <GamingCard minecraft={minecraft} className="col-span-12 lg:col-span-4 h-full" />
+        <GamingCard
+          minecraft={minecraft}
+          className="col-span-12 lg:col-span-4 h-full"
+        />
         <WeatherWidget
           data={(weather as unknown as WeatherData) || null}
           loading={loading}

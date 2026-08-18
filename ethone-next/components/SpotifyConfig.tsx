@@ -96,7 +96,7 @@ export default function SpotifyConfig() {
     setSubmitting(true);
     try {
       setField(PROVIDER, FIELD, trimmed);
-      update({ [SETTINGS_KEY]: trimmed } as Partial<typeof settings>);
+      update({ [SETTINGS_KEY]: trimmed, liveNowPlayingSource: "spotify" } as Partial<typeof settings>);
       try {
         localStorage.setItem(`ethone:clientId:${PROVIDER}`, trimmed);
       } catch {}
@@ -126,6 +126,7 @@ export default function SpotifyConfig() {
       );
       setHealth(result);
       if (result.ok) {
+        update({ [SETTINGS_KEY]: trimmed, liveNowPlayingSource: "spotify" } as Partial<typeof settings>);
         success(i18n("connected", "Connecté"));
       } else {
         showError(result.error || i18n("error", "Erreur"));
@@ -152,7 +153,7 @@ export default function SpotifyConfig() {
       setClientSecret("");
       setField(PROVIDER, FIELD, "");
       setField(PROVIDER, "clientSecret", "");
-      update({ [SETTINGS_KEY]: "" } as Partial<typeof settings>);
+      update({ [SETTINGS_KEY]: "", liveNowPlayingSource: "lanyard" } as Partial<typeof settings>);
       try {
         localStorage.removeItem(`ethone:clientId:${PROVIDER}`);
       } catch {}

@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Gamepad2, User } from "lucide-react";
+import { AlertCircle, Gamepad2, Loader2, User } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import type { MinecraftProfile } from "@/lib/hooks/useMinecraftLive";
@@ -26,13 +26,27 @@ function truncateId(id?: string) {
   return id.length > 12 ? `${id.slice(0, 6)}…${id.slice(-4)}` : id;
 }
 
-export default function GamingCard({ minecraft, className = "" }: { minecraft?: Record<string, unknown> | null; className?: string }) {
+type GamingCardProps = {
+  minecraft?: Record<string, unknown> | null;
+  loading?: boolean;
+  error?: Error | null;
+  className?: string;
+};
+
+export default function GamingCard({
+  minecraft,
+  loading,
+  error,
+  className = "",
+}: GamingCardProps) {
   const { settings } = useSettings();
   const i18n = useI18n();
   const profile = useMemo(() => (minecraft ?? {}) as unknown as GamingMinecraft, [minecraft]);
   const username = profile?.username || profile?.name || settings.liveMinecraftUsername;
   const uuid = profile?.uuid;
   const hasProfile = Boolean(username && uuid);
+  const hasUsername = Boolean(username);
+  const configured = Boolean(settings.liveMinecraftUsername);
 
   const [avatarErrored, setAvatarErrored] = useState(false);
 
@@ -47,6 +61,44 @@ export default function GamingCard({ minecraft, className = "" }: { minecraft?: 
   const server = profile?.server;
   const isOnline = server?.online ?? hasProfile;
 
+  const { statusText, statusClass, statusDot } = useMemo(() => {
+    if (loading && !hasProfile) {
+      return {
+        statusText: i18n("loading", "Chargement"),
+        statusClass: "border-cyan-500/30 bg-cyan-500/10 text-cyan-300",
+        statusDot: "bg-cyan-400",
+      };
+    }
+    if (error && configured && !hasProfile) {
+      return {
+        statusText: i18n("error", "Erreur"),
+        statusClass: "border-rose-500/30 bg-rose-500/10 text-rose-300",
+        statusDot: "bg-rose-400",
+      };
+    }
+    if (hasProfile) {
+      return {
+        statusText: isOnline ? i18n("online", "En ligne") : i18n("offline", "Hors ligne"),
+        statusClass: isOnline
+          ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+          : "border-zinc-500/30 bg-zinc-500/10 text-zinc-400",
+        statusDot: isOnline ? "bg-emerald-400" : "bg-zinc-500",
+      };
+    }
+    if (configured) {
+      return {
+        statusText: i18n("offline", "Hors ligne"),
+        statusClass: "border-zinc-500/30 bg-zinc-500/10 text-zinc-400",
+        statusDot: "bg-zinc-500",
+      };
+    }
+    return {
+      statusText: i18n("offline", "Hors ligne"),
+      statusClass: "border-zinc-500/30 bg-zinc-500/10 text-zinc-400",
+      statusDot: "bg-zinc-500",
+    };
+  }, [configured, error, hasProfile, isOnline, i18n, loading]);
+
   const playerCount =
     server?.players !== undefined && server?.maxPlayers !== undefined ? `${server.players}/${server.maxPlayers}` : null;
   const ping = server?.ping !== undefined ? `${server.ping} ms` : null;
@@ -59,18 +111,14 @@ export default function GamingCard({ minecraft, className = "" }: { minecraft?: 
       <div className="flex items-center justify-between">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Gaming</span>
         <span
-          className={`inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 text-[10px] font-medium ${
-            isOnline
-              ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
-              : "border-zinc-500/30 bg-zinc-500/10 text-zinc-400"
-          }`}
+          className={`inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 text-[10px] font-medium ${statusClass}`}
         >
-          <span className={`h-1.5 w-1.5 rounded-full ${isOnline ? "bg-emerald-400" : "bg-zinc-500"}`} />
-          {isOnline ? "En ligne" : "Hors ligne"}
+          <span className={`h-1.5 w-1.5 rounded-full ${statusDot}`} />
+          {statusText}
         </span>
       </div>
 
-      {hasProfile ? (
+      {hasUsername ? (
         <div className="flex items-center gap-3">
           <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-white/[0.04]">
             {avatarUrl ? (
@@ -85,13 +133,21 @@ export default function GamingCard({ minecraft, className = "" }: { minecraft?: 
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
-                <Gamepad2 className="h-5 w-5 text-zinc-400" />
+                {loading && !hasProfile ? (
+                  <Loader2 className="h-5 w-5 animate-spin text-zinc-400" />
+                ) : error && configured && !hasProfile ? (
+                  <AlertCircle className="h-5 w-5 text-rose-400" />
+                ) : (
+                  <Gamepad2 className="h-5 w-5 text-zinc-400" />
+                )}
               </div>
             )}
           </div>
           <div className="min-w-0">
             <h4 className="truncate text-sm font-bold text-white">{username}</h4>
-            <p className="text-[10px] font-mono text-zinc-500">ID: {truncateId(uuid)}</p>
+            <p className="text-[10px] font-mono text-zinc-500">
+              {hasProfile ? `ID: ${truncateId(uuid)}` : error && configured ? i18n("loadFailed", "Chargement échoué") : i18n("noLive", "Aucune donnée")}
+            </p>
           </div>
         </div>
       ) : (

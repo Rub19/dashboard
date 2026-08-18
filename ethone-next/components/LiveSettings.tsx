@@ -56,21 +56,24 @@ export default function LiveSettings() {
           <Select
             id={selectId}
             value={settings.liveNowPlayingSource}
-            onChange={(value) => update({ liveNowPlayingSource: value as "lanyard" | "lastfm" })}
+            onChange={(value) => update({ liveNowPlayingSource: value as "lanyard" | "lastfm" | "spotify" })}
             options={[
               { id: "lanyard", label: "Lanyard (Discord)" },
               { id: "lastfm", label: "Last.fm" },
+              { id: "spotify", label: "Spotify" },
             ]}
             className="w-full"
           />
         </div>
 
-        <SettingsTextInput
-          label={i18n("liveNowPlayingIdentity")}
-          value={settings.liveNowPlayingIdentity}
-          onChange={(v) => update({ liveNowPlayingIdentity: v })}
-          placeholder={settings.liveNowPlayingSource === "lanyard" ? "Discord user ID" : "Last.fm username"}
-        />
+        {settings.liveNowPlayingSource !== "spotify" && (
+          <SettingsTextInput
+            label={i18n("liveNowPlayingIdentity")}
+            value={settings.liveNowPlayingIdentity}
+            onChange={(v) => update({ liveNowPlayingIdentity: v })}
+            placeholder={settings.liveNowPlayingSource === "lanyard" ? "Discord user ID" : "Last.fm username"}
+          />
+        )}
       </div>
 
       <SettingsTextInput

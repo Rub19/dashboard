@@ -3,13 +3,17 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Music, Radio, RadioOff, ExternalLink } from "lucide-react";
+import { AlertCircle, Loader2, Music, Radio, RadioOff, ExternalLink } from "lucide-react";
+import { useSettings } from "@/components/SettingsProvider";
+import { useI18n } from "@/lib/hooks/useI18n";
 import type { LanyardPresence, NowPlaying } from "@/lib/hooks/useLiveData";
 import { TiltCard } from "@/components/ui/TiltCard";
 
 type SocialDiscordCardProps = {
   lanyard?: LanyardPresence | null;
   nowPlaying?: NowPlaying | null;
+  loading?: boolean;
+  error?: Error | null;
   className?: string;
 };
 
@@ -74,8 +78,16 @@ function formatMs(ms?: number): string {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-export default function SocialDiscordCard({ lanyard, nowPlaying, className = "" }: SocialDiscordCardProps) {
+export default function SocialDiscordCard({
+  lanyard,
+  nowPlaying,
+  loading,
+  error,
+  className = "",
+}: SocialDiscordCardProps) {
   const router = useRouter();
+  const i18n = useI18n();
+  const { settings } = useSettings();
 
   const userId = lanyard?.userId;
   const avatarHash = lanyard?.avatarHash;
@@ -111,10 +123,51 @@ export default function SocialDiscordCard({ lanyard, nowPlaying, className = "" 
   const status = lanyard?.discord_status || "offline";
   const color = statusColor(status);
   const label = statusLabel(status);
+
   const displayName = lanyard?.displayName || lanyard?.username || "Discord";
   const activity = lanyard?.activities?.[0];
   const hasMusic = !!nowPlaying?.isPlaying;
-  const isSocialActive = status !== "offline" || !!activity;
+
+  const isSpotifyConfigured =
+    settings.liveNowPlayingSource === "spotify" && Boolean(settings.liveSpotifyClientId);
+  const isLanyardConfigured = Boolean(settings.liveLanyardUserId);
+  const isNowPlayingSourceConfigured =
+    settings.liveNowPlayingSource === "lastfm"
+      ? Boolean(settings.liveLastfmUsername)
+      : settings.liveNowPlayingSource === "lanyard"
+        ? Boolean(settings.liveLanyardUserId)
+        : isSpotifyConfigured;
+
+  const hasAnyConnection = isLanyardConfigured || isNowPlayingSourceConfigured;
+
+  const { badgeColor, badgeLabel, badgeTone } = useMemo(() => {
+    if (lanyard?.discord_status && lanyard.discord_status !== "offline") {
+      return { badgeColor: color, badgeLabel: label, badgeTone: statusTone(status) };
+    }
+    if (loading && hasAnyConnection) {
+      return {
+        badgeColor: "bg-cyan-400",
+        badgeLabel: i18n("loading", "Chargement"),
+        badgeTone: "border-cyan-500/30 bg-cyan-500/10 text-cyan-300",
+      };
+    }
+    if (error && hasAnyConnection) {
+      return {
+        badgeColor: "bg-rose-400",
+        badgeLabel: i18n("error", "Erreur"),
+        badgeTone: "border-rose-500/30 bg-rose-500/10 text-rose-300",
+      };
+    }
+    if (hasAnyConnection) {
+      return {
+        badgeColor: "bg-emerald-400",
+        badgeLabel: i18n("connected", "Connecté"),
+        badgeTone: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300",
+      };
+    }
+    return { badgeColor: color, badgeLabel: label, badgeTone: statusTone(status) };
+  }, [color, error, hasAnyConnection, i18n, label, lanyard?.discord_status, loading, status]);
+  const isSocialActive = status !== "offline" || !!activity || hasMusic;
 
   const progressPct =
     nowPlaying?.durationMs && nowPlaying.durationMs > 0
@@ -128,28 +181,42 @@ export default function SocialDiscordCard({ lanyard, nowPlaying, className = "" 
       <div className="flex items-center justify-between">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Social & Media</span>
         <span
-          className={`inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 text-[10px] font-medium ${statusTone(
-            status
-          )}`}
+          className={`inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 text-[10px] font-medium ${badgeTone}`}
         >
-          <span className={`h-1.5 w-1.5 rounded-full ${color}`} />
-          {label}
+          <span className={`h-1.5 w-1.5 rounded-full ${badgeColor}`} />
+          {badgeLabel}
         </span>
       </div>
 
       {!isSocialActive && !hasMusic ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-xl border border-zinc-200/60 bg-zinc-100/80 p-4 text-center dark:border-white/[0.04] dark:bg-white/[0.02]">
-          <RadioOff className="h-5 w-5 text-zinc-500" />
-          <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Aucune session sociale active</p>
-          <p className="text-[11px] text-zinc-500">Connectez Discord ou Spotify pour voir l&apos;activité ici.</p>
-          <button
-            type="button"
-            onClick={() => router.push("/settings")}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200/60 bg-zinc-100/80 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-200/80 hover:text-zinc-950 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-zinc-300 dark:hover:bg-white/[0.08] dark:hover:text-white"
-          >
-            <ExternalLink className="h-3 w-3" />
-            Connecter Spotify / Discord
-          </button>
+          {loading && hasAnyConnection ? (
+            <Loader2 className="h-5 w-5 animate-spin text-zinc-500" />
+          ) : error && hasAnyConnection ? (
+            <AlertCircle className="h-5 w-5 text-rose-500" />
+          ) : (
+            <RadioOff className="h-5 w-5 text-zinc-500" />
+          )}
+          <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            {hasAnyConnection
+              ? i18n("socialStandby", "Connecté — en attente d'activité")
+              : i18n("socialNoSession", "Aucune session sociale active")}
+          </p>
+          <p className="text-[11px] text-zinc-500">
+            {hasAnyConnection
+              ? i18n("socialStandbyHint", "Lance une musique ou connecte-toi à Discord pour l'afficher ici.")
+              : i18n("socialNoSessionHint", "Connectez Discord ou Spotify pour voir l'activité ici.")}
+          </p>
+          {!hasAnyConnection && (
+            <button
+              type="button"
+              onClick={() => router.push("/settings")}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200/60 bg-zinc-100/80 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-200/80 hover:text-zinc-950 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-zinc-300 dark:hover:bg-white/[0.08] dark:hover:text-white"
+            >
+              <ExternalLink className="h-3 w-3" />
+              Connecter Spotify / Discord
+            </button>
+          )}
         </div>
       ) : (
         <>

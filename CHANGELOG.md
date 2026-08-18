@@ -4,6 +4,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**UI : amélioration des cartes Gaming et Social sur le home**
+
+### Corrige
+- `ethone-next/components/GamingCard.tsx` : affiche le pseudo Minecraft configuré avec le statut "Chargement / Erreur / Hors ligne" au lieu de "Aucun compte lié" lorsque le profil n'est pas encore chargé ou que l'appel échoue.
+- `ethone-next/components/SocialDiscordCard.tsx` : détecte Spotify/Discord configurés et affiche "Connecté — en attente" au lieu de "Aucune session active" lorsqu'aucune activité n'est en cours.
+- `ethone-next/components/LiveBentoGrid.tsx` et `ethone-next/components/DashboardOverview.tsx` : transmission de `loading` et `error` aux cartes.
+
 **Worker : correction de la sauvegarde des clés fournisseur (Twitch, etc.)**
 
 ### Corrige

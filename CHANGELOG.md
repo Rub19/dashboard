@@ -9,6 +9,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 ### Corrige
 - `ethone-next/components/Shell.tsx` : sidebar ouverte par défaut et variable `--sidebar-width-icon` ajustée.
 - `ethone-next/components/Sidebar.tsx` : ouverture/fermeture automatique au survol, suppression du `cn` inutilisé, libellés du toggle dynamiques.
+- `ethone-next/components/SystemControlCard.tsx` : ajustement du focus ring sur les pastilles de thème.
 - `ethone-next/app/globals.css` : suppression d'une déclaration `--color-muted` en double.
 
 **Spotify : lecture en cours affichée dans le Dock**

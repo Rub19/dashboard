@@ -101,7 +101,7 @@ export default function SystemControlCard({ className = "" }: { className?: stri
                   title={i18n(key)}
                   style={{ backgroundColor: theme.background }}
                   className={`flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.08] transition-all hover:scale-105 ${
-                    active ? "ring-2 ring-[var(--accent)] ring-offset-2 ring-offset-zinc-950" : "opacity-70 hover:opacity-100"
+                    active ? "ring-2 ring-inset ring-[var(--accent)]" : "opacity-70 hover:opacity-100"
                   }`}
                 >
                   <span

@@ -24,12 +24,6 @@ function wait(delay) {
 
 async function readJson(response, maximumBytes) {
   const contentType = String(response.headers.get("content-type") || "").toLowerCase();
-  if (!/^application\/(?:[a-z0-9.+-]+\+)?json(?:\s*;|$)/i.test(contentType)) {
-    throw httpError("UPSTREAM_INVALID_RESPONSE", 502, {
-      retryable: false,
-      detail: { contentType, status: response.status, statusText: response.statusText },
-    });
-  }
   const declared = Number(response.headers.get("content-length"));
   if (Number.isFinite(declared) && declared > maximumBytes) {
     throw httpError("UPSTREAM_INVALID_RESPONSE", 502, {
@@ -70,6 +64,13 @@ async function readJson(response, maximumBytes) {
       });
     }
     bytes = new Uint8Array(buffer);
+  }
+  if (bytes.byteLength === 0) return null;
+  if (!/^application\/(?:[a-z0-9.+-]+\+)?json(?:\s*;|$)/i.test(contentType)) {
+    throw httpError("UPSTREAM_INVALID_RESPONSE", 502, {
+      retryable: false,
+      detail: { contentType, status: response.status, statusText: response.statusText },
+    });
   }
   const text = new TextDecoder().decode(bytes);
   try {

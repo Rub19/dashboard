@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
-import { cn } from "@/lib/utils";
 import {
   AnimatedSidebar,
   AnimatedSidebarContent,
@@ -36,7 +35,6 @@ const APPS: AppItem[] = [
 ];
 
 function SidebarBrand() {
-  const { open } = useAnimatedSidebar();
   return (
     <Link
       href="/"
@@ -46,12 +44,7 @@ function SidebarBrand() {
       <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.05] text-[10px] font-bold">
         E
       </div>
-      <span
-        className={cn(
-          "text-sm font-bold tracking-tight",
-          open ? "inline" : "hidden",
-        )}
-      >
+      <span className="text-sm font-bold tracking-tight">
         ETHONE
       </span>
     </Link>
@@ -67,8 +60,8 @@ function SidebarToggle() {
       aria-label="Basculer la sidebar"
     >
       <Icon name={open ? "chevron-left" : "chevron-right"} className="h-4 w-4" />
-      <span className={cn("text-sm", open ? "inline" : "hidden")}>
-        Réduire
+      <span className="text-sm">
+        {open ? "Réduire" : "Ouvrir"}
       </span>
     </AnimatedSidebarTrigger>
   );
@@ -78,6 +71,7 @@ export default function Sidebar() {
   const i18n = useI18n();
   const router = useRouter();
   const pathname = usePathname() ?? "/";
+  const { setOpen } = useAnimatedSidebar();
 
   function isActive(app: AppItem) {
     if (app.href === "/") return pathname === "/";
@@ -90,33 +84,40 @@ export default function Sidebar() {
   }
 
   return (
-    <AnimatedSidebar
-      collapsible="icon"
-      variant="sidebar"
-      ariaLabel="Navigation principale"
+    <div
+      className="relative h-auto min-h-svh w-auto shrink-0"
+      onPointerEnter={() => setOpen(true)}
+      onPointerLeave={() => setOpen(false)}
     >
-      <AnimatedSidebarHeader>
-        <SidebarBrand />
-      </AnimatedSidebarHeader>
-      <AnimatedSidebarContent>
-        <AnimatedSidebarMenu>
-          {APPS.map((app) => (
-            <AnimatedSidebarMenuItem key={app.id}>
-              <AnimatedSidebarMenuButton
-                isActive={isActive(app)}
-                icon={<Icon name={app.icon} className="h-5 w-5" />}
-                onSelect={() => router.push(app.href)}
-              >
-                {i18n(app.id)}
-              </AnimatedSidebarMenuButton>
-            </AnimatedSidebarMenuItem>
-          ))}
-        </AnimatedSidebarMenu>
-      </AnimatedSidebarContent>
-      <AnimatedSidebarFooter>
-        <SidebarToggle />
-      </AnimatedSidebarFooter>
-      <AnimatedSidebarRail />
-    </AnimatedSidebar>
+      <AnimatedSidebar
+        collapsible="icon"
+        variant="sidebar"
+        ariaLabel="Navigation principale"
+      >
+        <AnimatedSidebarHeader>
+          <SidebarBrand />
+        </AnimatedSidebarHeader>
+        <AnimatedSidebarContent>
+          <AnimatedSidebarMenu>
+            {APPS.map((app) => (
+              <AnimatedSidebarMenuItem key={app.id}>
+                <AnimatedSidebarMenuButton
+                  isActive={isActive(app)}
+                  icon={<Icon name={app.icon} className="h-5 w-5" />}
+                  onSelect={() => router.push(app.href)}
+                  className="whitespace-nowrap"
+                >
+                  {i18n(app.id)}
+                </AnimatedSidebarMenuButton>
+              </AnimatedSidebarMenuItem>
+            ))}
+          </AnimatedSidebarMenu>
+        </AnimatedSidebarContent>
+        <AnimatedSidebarFooter>
+          <SidebarToggle />
+        </AnimatedSidebarFooter>
+        <AnimatedSidebarRail />
+      </AnimatedSidebar>
+    </div>
   );
 }

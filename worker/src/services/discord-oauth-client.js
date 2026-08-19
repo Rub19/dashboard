@@ -268,18 +268,17 @@ export async function exchangeDiscordCode(env, userId, { code, redirectUri }) {
 }
 
 export async function getDiscordProfile(env, userId) {
-  const token = await getOAuthToken(env, userId, "discord");
-  if (!token?.accessToken) {
-    const row = await getDiscordDataRow(env, userId);
-    return row?.data ? Object.freeze({ ...row.data, connected: Boolean(row.data.connected) }) : Object.freeze({ connected: false });
+  let token = null;
+  try {
+    token = await getOAuthToken(env, userId, "discord");
+  } catch (err) {
+    console.warn("Discord token lookup failed, falling back to stored profile:", err?.message || err);
   }
-
   const row = await getDiscordDataRow(env, userId);
   if (row?.data) {
     return Object.freeze({ ...row.data, connected: true, mode: "oauth2" });
   }
-
-  return Object.freeze({ connected: false });
+  return token?.accessToken ? Object.freeze({ connected: true, mode: "oauth2" }) : Object.freeze({ connected: false });
 }
 
 export async function refreshDiscordProfile(env, userId) {

@@ -23,6 +23,9 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `worker/src/routes/discord-oauth.js` : retour par défaut sur `/settings?discord=connected` après callback Discord si l'URL de retour est invalide.
 - `ethone-next/components/SocialDiscordCard.tsx` : affiche le profil Discord OAuth quand il est connecté.
 - `ethone-next/components/DiscordConfig.tsx` : bascule automatiquement en mode OAuth2 après connexion.
+- `ethone-next/lib/hooks/useDiscordAvatar.ts` : suppression de la condition `discordMode === oauth2` pour afficher l'avatar Discord partout.
+- `ethone-next/components/UserProfileDropdown.tsx` : ajout de `referrerPolicy="no-referrer"` sur les avatars Discord.
+- `worker/src/services/discord-oauth-client.js` : `getDiscordProfile` tolère une erreur du token OAuth et lit le profil depuis `ethone_user_data`.
 - `ethone-next/public/sw.js` : cache Service Worker v354.
 - `ethone-next/lib/stores/sync.ts` : suppression des mises à jour redondantes quand un statut source ne change pas.
 - `ethone-next/lib/supabase.ts` : renforcement de `isMissingSchemaError` pour couvrir PGRST204, PGRST116, 42P01 et les messages "schema cache" / "Could not find".

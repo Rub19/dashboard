@@ -1018,6 +1018,9 @@ const v178_fr: ChangelogEntry = {
     "Worker : augmentation de `maxBytes` (64 Ko) pour les appels Supabase liés au profil Discord.",
     "SocialDiscordCard : affiche le profil Discord OAuth quand le mode OAuth2 est actif.",
     "DiscordConfig : bascule automatiquement sur le mode OAuth2 après connexion et redirige vers /settings?discord=connected.",
+    "useDiscordAvatar : suppression de la condition `discordMode === oauth2` pour afficher l'avatar Discord partout.",
+    "UserProfileDropdown : ajout de `referrerPolicy='no-referrer'` sur les avatars Discord.",
+    "Worker : `getDiscordProfile` tolère une erreur du token OAuth et lit le profil depuis `ethone_user_data`.",
     "Version : v1.7.1.",
   ],
 };
@@ -1048,6 +1051,9 @@ const v178_en: ChangelogEntry = {
     "Worker: increased `maxBytes` (64 KB) for Supabase calls related to Discord profile storage.",
     "SocialDiscordCard: display the Discord OAuth profile when OAuth2 mode is active.",
     "DiscordConfig: automatically switch to OAuth2 mode after connecting and redirect to /settings?discord=connected.",
+    "useDiscordAvatar: removed `discordMode === oauth2` condition so the Discord avatar shows everywhere.",
+    "UserProfileDropdown: added `referrerPolicy='no-referrer'` to Discord avatars.",
+    "Worker: `getDiscordProfile` falls back to reading the profile from `ethone_user_data` if token lookup fails.",
     "Version: v1.7.1.",
   ],
 };
@@ -1078,6 +1084,9 @@ const v178_es: ChangelogEntry = {
     "Worker: aumento de `maxBytes` (64 KB) para las llamadas Supabase relacionadas con el perfil de Discord.",
     "SocialDiscordCard: muestra el perfil de Discord OAuth cuando el modo OAuth2 está activo.",
     "DiscordConfig: cambia automáticamente al modo OAuth2 tras conectar y redirige a /settings?discord=connected.",
+    "useDiscordAvatar: eliminada la condición `discordMode === oauth2` para mostrar el avatar de Discord en todas partes.",
+    "UserProfileDropdown: añadido `referrerPolicy='no-referrer'` a los avatares de Discord.",
+    "Worker: `getDiscordProfile` lee el perfil desde `ethone_user_data` si la búsqueda del token falla.",
     "Versión: v1.7.1.",
   ],
 };
@@ -1108,6 +1117,9 @@ const v178_de: ChangelogEntry = {
     "Worker: `maxBytes` (64 KB) für Supabase-Aufrufe im Zusammenhang mit der Discord-Profilspeicherung erhöht.",
     "SocialDiscordCard: zeigt das Discord-OAuth-Profil an, wenn der OAuth2-Modus aktiv ist.",
     "DiscordConfig: automatischer Wechsel in den OAuth2-Modus nach dem Verbinden und Weiterleitung an /settings?discord=connected.",
+    "useDiscordAvatar: Bedingung `discordMode === oauth2` entfernt, damit der Discord-Avatar überall angezeigt wird.",
+    "UserProfileDropdown: `referrerPolicy='no-referrer'` für Discord-Avatare hinzugefügt.",
+    "Worker: `getDiscordProfile` liest das Profil aus `ethone_user_data`, wenn die Token-Suche fehlschlägt.",
     "Version: v1.7.1.",
   ],
 };

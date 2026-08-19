@@ -209,6 +209,7 @@ export default function UserProfileDropdown() {
               width={36}
               height={36}
               unoptimized
+              referrerPolicy="no-referrer"
               className="pointer-events-none h-full w-full object-cover"
             />
           ) : (
@@ -252,6 +253,7 @@ export default function UserProfileDropdown() {
                     width={40}
                     height={40}
                     unoptimized
+                    referrerPolicy="no-referrer"
                     className="h-full w-full rounded-xl object-cover"
                   />
                 ) : (

@@ -156,7 +156,7 @@ type StatusPillProps = {
 
 function StatusPill({ icon, label, value, title, children, onClick, tone = "default" }: StatusPillProps) {
   const toneClass = {
-    default: "hover:bg-white/[0.06] hover:text-zinc-200 text-zinc-400",
+    default: "hover:bg-white/[0.06] hover:text-white text-zinc-200",
     success: "hover:bg-emerald-500/[0.1] hover:text-emerald-300 text-emerald-400",
     warning: "hover:bg-amber-500/[0.1] hover:text-amber-300 text-amber-400",
     error: "hover:bg-red-500/[0.1] hover:text-red-300 text-red-400",
@@ -233,7 +233,7 @@ export default function StatusBar() {
     <footer
       data-v8-status-bar
       data-status-bar
-      className="fixed bottom-0 left-0 z-30 h-8 w-full select-none border-t border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 text-xs text-zinc-400 backdrop-blur-[var(--panel-blur)]"
+      className="fixed bottom-0 left-0 z-30 h-8 w-full select-none bg-transparent px-4 text-xs text-zinc-300 pointer-events-none"
     >
       <div className="flex h-full w-full items-center justify-between">
         <div className="flex min-w-0 items-center gap-2">

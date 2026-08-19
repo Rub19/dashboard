@@ -4,6 +4,14 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Barre de statut transparente au-dessus du fond d'écran (v1.6.5)**
+
+### Corrige
+- `ethone-next/components/Shell.tsx` : `<StatusBar />` rétabli en bas de page.
+- `ethone-next/components/layout/StatusBar.tsx` : footer passé en `bg-transparent`, `pointer-events-none`, sans bordure ni flou, avec texte `zinc-200` ; le carré noir bloquant la vue est supprimé.
+- `ethone-next/components/Dock.tsx` : Dock repositionné à `bottom-8` (au-dessus de la barre) avec `p-0` ; bouton Live retiré du Dock (déjà présent dans la barre).
+- Version `1.6.5`.
+
 **Suppression de la bande noire inférieure et verrouillage zero-scroll**
 
 ### Corrige

@@ -5,6 +5,58 @@ export type ChangelogEntry = {
   items: string[];
 };
 
+const v165_fr: ChangelogEntry = {
+  version: "v1.6.5",
+  date: "2026-08-19",
+  title: "Barre de statut transparente au-dessus du fond d'écran",
+  items: [
+    "Rétablissement de la barre de statut en bas d'écran.",
+    "Footer transparent (`bg-transparent`, `pointer-events-none`, texte `zinc-200`) : plus de carré noir bloquant la vue.",
+    "Dock repositionné au-dessus de la barre (`bottom-8`) pour préserver les informations en bas.",
+    "Bouton Live conservé dans la barre de statut, retiré du Dock (pas de duplication).",
+    "Version affichée en bas à droite : v1.6.5.",
+  ],
+};
+
+const v165_en: ChangelogEntry = {
+  version: "v1.6.5",
+  date: "2026-08-19",
+  title: "Transparent status bar above the wallpaper",
+  items: [
+    "Restored the bottom status bar.",
+    "Transparent footer (`bg-transparent`, `pointer-events-none`, `zinc-200` text): no more black square blocking the view.",
+    "Dock repositioned above the status bar (`bottom-8`) to keep the bottom info visible.",
+    "Live button kept in the status bar, removed from the Dock (no duplication).",
+    "Version badge bottom-right: v1.6.5.",
+  ],
+};
+
+const v165_es: ChangelogEntry = {
+  version: "v1.6.5",
+  date: "2026-08-19",
+  title: "Barra de estado transparente sobre el fondo",
+  items: [
+    "Restauración de la barra de estado inferior.",
+    "Footer transparente (`bg-transparent`, `pointer-events-none`, texto `zinc-200`): no más cuadrado negro bloqueando la vista.",
+    "Dock reposicionado encima de la barra (`bottom-8`) para mantener la información inferior visible.",
+    "Botón Live conservado en la barra de estado, eliminado del Dock (sin duplicación).",
+    "Versión mostrada abajo a la derecha: v1.6.5.",
+  ],
+};
+
+const v165_de: ChangelogEntry = {
+  version: "v1.6.5",
+  date: "2026-08-19",
+  title: "Transparente Statusleiste über dem Hintergrund",
+  items: [
+    "Wiederherstellung der unteren Statusleiste.",
+    "Transparenter Footer (`bg-transparent`, `pointer-events-none`, `zinc-200` Text): kein schwarzes Quadrat mehr, das die Sicht blockiert.",
+    "Dock über der Statusleiste repositioniert (`bottom-8`), damit die unteren Infos sichtbar bleiben.",
+    "Live-Button in der Statusleiste behalten, aus dem Dock entfernt (keine Duplizierung).",
+    "Version unten rechts: v1.6.5.",
+  ],
+};
+
 const v164_fr: ChangelogEntry = {
   version: "v1.6.4",
   date: "2026-08-19",
@@ -297,8 +349,8 @@ const v322_fr: ChangelogEntry = {
 };
 
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
-  en: [v164_en, v328_en, v327_en, v326_en, v325_en,
+  fr: [v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -344,7 +396,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [v164_es, v328_es, v327_es, v326_es, v325_es,
+  es: [v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -390,7 +442,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [v164_de, v328_de, v327_de, v326_de, v325_de,
+  de: [v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

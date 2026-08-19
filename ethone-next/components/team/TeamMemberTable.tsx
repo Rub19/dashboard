@@ -124,7 +124,7 @@ export default function TeamMemberTable({ members, loading, onUpdateRole, onRemo
             onChange={(e) => setQuery(e.target.value)}
             placeholder={i18n("search")}
             aria-label={i18n("search")}
-            className="w-full sm:w-72 rounded-xl border border-white/10 bg-white/[0.03] py-2 pl-9 pr-3 text-xs text-zinc-200 placeholder-zinc-500 outline-none focus:border-emerald-500/50"
+            className="w-full sm:w-72 rounded-xl border border-white/10 bg-white/[0.03] py-2 pl-9 pr-3 text-xs text-zinc-200 placeholder-zinc-500 outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
           />
         </div>
 

@@ -89,7 +89,7 @@ export default function FlowAutomations({ activeFlow }: { activeFlow?: string })
               type="time"
               value={triggerValue}
               onChange={(e) => setTriggerValue(e.target.value)}
-              className="h-11 flex-1 rounded-xl border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white outline-none transition-colors focus:border-[var(--accent)]/50 md:h-10"
+              className="h-11 flex-1 rounded-xl border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] md:h-10"
             />
           ) : (
             <Select

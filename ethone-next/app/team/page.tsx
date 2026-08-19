@@ -147,7 +147,7 @@ export default function TeamPage() {
           placeholder={i18n("emailPlaceholder") || "E-mail du collaborateur..."}
           aria-label={i18n("emailPlaceholder")}
           disabled={inviting}
-          className="flex-1 rounded-xl border border-white/10 bg-white/[0.03] px-3.5 py-2 text-xs text-zinc-200 placeholder-zinc-500 outline-none focus:border-emerald-500/50 disabled:opacity-50"
+          className="flex-1 rounded-xl border border-white/10 bg-white/[0.03] px-3.5 py-2 text-xs text-zinc-200 placeholder-zinc-500 outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] disabled:opacity-50"
         />
 
         <Select

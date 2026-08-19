@@ -5,6 +5,70 @@ export type ChangelogEntry = {
   items: string[];
 };
 
+const v167_fr: ChangelogEntry = {
+  version: "v1.6.7",
+  date: "2026-08-19",
+  title: "Refonte focus Obsidian/Glassmorphic et hauteur pleine pour éditeurs",
+  items: [
+    "Fin du contour vert vif sur les champs de texte : focus state en blanc/verre (`border-white/20`, `ring-white/15`, glow subtil).",
+    "Généralisation à l'ensemble des inputs, textareas, rich editor, selects et modales (Notes, Tâches, Brain, Mail, Settings, Login, etc.).",
+    "RichTextEditor : conteneur `h-full` avec barre d'outils et éditeur `flex-1`, scroll interne, hauteur maximale.",
+    "Textarea composant : `h-full min-h-0` et focus glassmorphic.",
+    "Input composant : focus state Obsidian + halo blanc.",
+    "ComposeMailModal : flex column `h-[min(640px,90vh)]`, textarea `h-full flex-1`.",
+    "Nouveau test Playwright `editor-focus-and-layout.spec.ts` validant le focus et la hauteur sur Notes, Tâches et Brain.",
+    "Version affichée en bas à droite : v1.6.7.",
+  ],
+};
+
+const v167_en: ChangelogEntry = {
+  version: "v1.6.7",
+  date: "2026-08-19",
+  title: "Obsidian/Glassmorphic focus and full-height editor refactor",
+  items: [
+    "Removed the harsh green focus outline on text fields: new Obsidian/glass focus state (`border-white/20`, `ring-white/15`, subtle glow).",
+    "Generalized across all inputs, textareas, rich editors, selects and modals (Notes, Tasks, Brain, Mail, Settings, Login, etc.).",
+    "RichTextEditor: `h-full` container with toolbar and `flex-1` editor, internal scroll, max height.",
+    "Textarea component: `h-full min-h-0` and glassmorphic focus.",
+    "Input component: Obsidian focus + white halo.",
+    "ComposeMailModal: flex column `h-[min(640px,90vh)]`, textarea `h-full flex-1`.",
+    "New Playwright test `editor-focus-and-layout.spec.ts` validating focus and height on Notes, Tasks and Brain.",
+    "Version badge bottom-right: v1.6.7.",
+  ],
+};
+
+const v167_es: ChangelogEntry = {
+  version: "v1.6.7",
+  date: "2026-08-19",
+  title: "Refactor de foco Obsidian/Glassmorphic y altura completa para editores",
+  items: [
+    "Eliminación del contorno verde brillante en campos de texto: nuevo estado de foco blanco/vidrio (`border-white/20`, `ring-white/15`, glow sutil).",
+    "Generalizado a todos los inputs, textareas, rich editors, selects y modales (Notes, Tasks, Brain, Mail, Settings, Login, etc.).",
+    "RichTextEditor: contenedor `h-full` con barra de herramientas y editor `flex-1`, scroll interno, altura máxima.",
+    "Componente Textarea: `h-full min-h-0` y foco glassmorphic.",
+    "Componente Input: foco Obsidian + halo blanco.",
+    "ComposeMailModal: flex column `h-[min(640px,90vh)]`, textarea `h-full flex-1`.",
+    "Nuevo test Playwright `editor-focus-and-layout.spec.ts` validando el foco y la altura en Notes, Tasks y Brain.",
+    "Versión mostrada abajo a la derecha: v1.6.7.",
+  ],
+};
+
+const v167_de: ChangelogEntry = {
+  version: "v1.6.7",
+  date: "2026-08-19",
+  title: "Obsidian/Glassmorphic-Fokus und Vollhöhe für Editoren",
+  items: [
+    "Ende des harten grünen Fokusrahmens für Textfelder: neuer Obsidian/Glass-Fokus (`border-white/20`, `ring-white/15`, subtiler Glow).",
+    "Generalisierung auf alle Inputs, Textareas, Rich Editors, Selects und Modals (Notes, Tasks, Brain, Mail, Settings, Login, etc.).",
+    "RichTextEditor: `h-full`-Container mit Toolbar und `flex-1`-Editor, internes Scrollen, maximale Höhe.",
+    "Textarea-Komponente: `h-full min-h-0` und glassmorphic-Fokus.",
+    "Input-Komponente: Obsidian-Fokus + weißer Halo.",
+    "ComposeMailModal: Flex-Column `h-[min(640px,90vh)]`, Textarea `h-full flex-1`.",
+    "Neuer Playwright-Test `editor-focus-and-layout.spec.ts` validiert Fokus und Höhe auf Notes, Tasks und Brain.",
+    "Version unten rechts: v1.6.7.",
+  ],
+};
+
 const v166_fr: ChangelogEntry = {
   version: "v1.6.6",
   date: "2026-08-19",
@@ -401,8 +465,8 @@ const v322_fr: ChangelogEntry = {
 };
 
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
-  en: [v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
+  fr: [v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -448,7 +512,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
+  es: [v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -494,7 +558,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
+  de: [v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

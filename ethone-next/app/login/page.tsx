@@ -361,7 +361,7 @@ export default function LoginPage() {
                     required
                     value={code}
                     onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                    className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] py-2.5 pl-12 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10 backdrop-blur-[var(--panel-blur)]"
+                    className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] py-2.5 pl-12 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
                     aria-label={i18n("codePlaceholder")}
                     placeholder={i18n("codePlaceholder")}
                   />
@@ -398,7 +398,7 @@ export default function LoginPage() {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] py-2.5 pl-12 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10 backdrop-blur-[var(--panel-blur)]"
+                      className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] py-2.5 pl-12 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
                       aria-label={i18n("emailPlaceholderLogin")}
                       placeholder={i18n("emailPlaceholderLogin")}
                     />
@@ -421,7 +421,7 @@ export default function LoginPage() {
                         maxLength={64}
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] py-2.5 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10 backdrop-blur-[var(--panel-blur)]"
+                        className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] py-2.5 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
                         aria-label={i18n("username")}
                         placeholder={i18n("username")}
                       />

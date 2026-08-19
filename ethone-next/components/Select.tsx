@@ -193,7 +193,7 @@ export default function Select({ options, value, onChange, placeholder = "Sélec
         disabled={disabled}
         onClick={() => setOpen((v) => !v)}
         onKeyDown={handleKeyDown}
-        className="flex w-full items-center justify-between gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-colors hover:border-[var(--accent)]/40 focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] disabled:opacity-50 backdrop-blur-[var(--panel-blur)]"
+        className="flex w-full items-center justify-between gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-colors hover:border-white/20 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] disabled:opacity-50 backdrop-blur-[var(--panel-blur)]"
       >
         <span className="truncate">{activeLabel}</span>
         <Icon name="chevron-down" className="h-4 w-4 text-[var(--muted)]" />

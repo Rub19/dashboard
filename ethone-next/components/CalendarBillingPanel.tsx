@@ -200,7 +200,7 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder={i18n("billAmount")}
-              className="w-28 rounded-xl border border-white/[0.08] bg-zinc-950/50 px-3 py-2 text-sm text-white outline-none focus:border-white/20"
+              className="w-28 rounded-xl border border-white/[0.08] bg-zinc-950/50 px-3 py-2 text-sm text-white outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
             />
             <Select
               value={currency}

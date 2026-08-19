@@ -312,7 +312,7 @@ export default function RichTextEditor({
   const selectedBlock = BLOCK_TOOLS.find((t) => t.value === format.block) || BLOCK_TOOLS[0];
 
   return (
-    <div className={`v8-rich-text flex flex-col ${className}`}>
+    <div className={`v8-rich-text flex h-full min-h-0 flex-col ${className}`}>
       <div
         className="mb-4 flex flex-wrap items-center gap-1 v8-inset p-1.5"
         role="toolbar"
@@ -410,7 +410,7 @@ export default function RichTextEditor({
       </div>
 
       <div
-        className="relative flex-1 cursor-text v8-inset px-4 py-3 focus-within:border-white/20"
+        className="relative flex-1 min-h-0 cursor-text overflow-hidden v8-inset px-4 py-3 transition-all duration-200 focus-within:border-white/20 focus-within:ring-1 focus-within:ring-white/15 focus-within:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
         onClick={() => ref.current?.focus()}
       >
         {empty && placeholder && (
@@ -427,7 +427,8 @@ export default function RichTextEditor({
           onKeyDown={handleKeyDown}
           onKeyUp={updateFormat}
           onMouseUp={updateFormat}
-          className="min-h-[280px] w-full flex-1 resize-none whitespace-pre-wrap text-xs leading-relaxed text-zinc-300 outline-none sm:text-sm"
+          data-testid="rich-editor"
+          className="h-full min-h-0 w-full flex-1 overflow-y-auto resize-none whitespace-pre-wrap text-xs leading-relaxed text-zinc-300 outline-none sm:text-sm"
           suppressContentEditableWarning
         />
       </div>

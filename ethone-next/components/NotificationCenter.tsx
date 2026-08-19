@@ -167,7 +167,7 @@ export default function NotificationCenter() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder={i18n("search")}
-        className="h-11 w-full rounded-xl border border-white/[0.08] bg-zinc-950/50 py-2 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--accent)]/50 focus:ring-1 focus:ring-[var(--accent)]/30"
+        className="h-11 w-full rounded-xl border border-white/[0.08] bg-zinc-950/50 py-2 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted)] focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
       />
     </div>
   );

@@ -252,7 +252,7 @@ export default function FlowsPage() {
         onKeyDown={(e) => e.key === "Enter" && addFlow()}
         aria-label={i18n("create")}
         placeholder={i18n("create")}
-        className="w-full rounded-2xl border border-white/[0.08] bg-zinc-950/50 px-4 py-2.5 text-sm text-white outline-none placeholder:text-zinc-600 focus:border-white/15 backdrop-blur-md"
+        className="w-full rounded-2xl border border-white/[0.08] bg-zinc-950/50 px-4 py-2.5 text-sm text-white outline-none placeholder:text-zinc-600 transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-md"
       />
 
       {error && (

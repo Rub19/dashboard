@@ -194,7 +194,7 @@ export default function SpotifyConfig() {
                 onChange={(e) => setClientSecret(e.target.value)}
                 aria-label={config?.secretLabel || i18n("clientSecret")}
                 placeholder={config?.secretPlaceholder || i18n("clientSecret")}
-                className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-100 placeholder-zinc-600 outline-none transition focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30"
+                className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-100 placeholder-zinc-600 outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
               />
               <button
                 type="button"

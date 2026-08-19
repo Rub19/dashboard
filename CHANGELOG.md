@@ -4,6 +4,18 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Refonte focus Obsidian/Glassmorphic et hauteur pleine pour éditeurs (v1.6.7)**
+
+### Corrige
+- Suppression du contour vert vif sur tous les champs de texte de l'application (inputs, textareas, rich editor, selects, modales).
+- Focus state Obsidian/Glassmorphic : `border-white/20`, `ring-white/15`, glow `[0_0_15px_rgba(255,255,255,0.03)]`, `transition-all duration-200`.
+- `ethone-next/components/RichTextEditor.tsx` : conteneur `h-full`, éditeur `flex-1 h-full min-h-0 overflow-y-auto`, focus-within verre.
+- `ethone-next/components/Textarea.tsx` : `h-full min-h-0` et focus glassmorphic.
+- `ethone-next/components/Input.tsx` : focus glassmorphic + `h-full`.
+- `ethone-next/components/mail/ComposeMailModal.tsx` : modal flex column `h-[min(640px,90vh)]`, textarea pleine hauteur `h-full flex-1`.
+- `ethone-next/e2e/editor-focus-and-layout.spec.ts` : nouveau test Playwright validant le focus et la hauteur sur Notes, Tâches et Brain.
+- Version `1.6.7`.
+
 **Scroll rétabli sur le dashboard Accueil (v1.6.6)**
 
 ### Corrige

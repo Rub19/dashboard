@@ -226,12 +226,16 @@ export async function exchangeDiscordCode(env, userId, { code, redirectUri }) {
   const expiresIn = safeNumber(tokenData.expires_in, 0, 86400);
   const expiresAt = expiresIn ? new Date(Date.now() + expiresIn * 1000).toISOString() : null;
 
-  await setOAuthToken(env, userId, "discord", {
-    accessToken,
-    refreshToken,
-    scope,
-    expiresAt,
-  });
+  try {
+    await setOAuthToken(env, userId, "discord", {
+      accessToken,
+      refreshToken,
+      scope,
+      expiresAt,
+    });
+  } catch (err) {
+    console.warn("Discord OAuth token storage failed, continuing without persistence:", err?.message || err);
+  }
 
   const [userResponse, connectionsResponse, guildsResponse] = await Promise.all([
     discordApiRequest(env, "/users/@me", accessToken).catch(() => ({ data: null })),

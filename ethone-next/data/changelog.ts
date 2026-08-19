@@ -1011,6 +1011,8 @@ const v178_fr: ChangelogEntry = {
     "Sidebar : footer (profil + badges) remonté de `mb-3` pour éviter d'être collé au bas de l'écran.",
     "Sidebar : suppression des bordures et fonds du footer (profil, badge sync, boutons) pour fusionner avec la couleur du panneau.",
     "ClientImage : correction du rendu des images déjà en cache (avatars Discord, couvertures Spotify, etc.).",
+    "Supabase : migration ajoutant `discord` aux providers autorisés de `user_oauth_tokens`.",
+    "Worker : le connecteur Discord OAuth continue le stockage du profil même si le token ne peut pas être persisté.",
     "Version : v1.7.1.",
   ],
 };
@@ -1034,6 +1036,8 @@ const v178_en: ChangelogEntry = {
     "Sidebar: footer (profile + badges) raised with `mb-3` to avoid sticking to the bottom of the screen.",
     "Sidebar: removed borders and backgrounds from footer (profile, sync badge, buttons) to merge with sidebar panel color.",
     "ClientImage: fixed rendering of cached images (Discord avatars, Spotify covers, etc.).",
+    "Supabase: migration adding `discord` to the allowed providers in `user_oauth_tokens`.",
+    "Worker: Discord OAuth connector now continues storing the profile even if the token cannot be persisted.",
     "Version: v1.7.1.",
   ],
 };
@@ -1057,6 +1061,8 @@ const v178_es: ChangelogEntry = {
     "Sidebar: pie (perfil + insignias) elevado con `mb-3` para evitar quedar pegado a la parte inferior de la pantalla.",
     "Sidebar: eliminados los bordes y fondos del pie (perfil, insignia de sincronización, botones) para fusionar con el color del panel de la barra lateral.",
     "ClientImage: corrección del renderizado de imágenes en caché (avatares de Discord, portadas de Spotify, etc.).",
+    "Supabase: migración que añade `discord` a los proveedores permitidos en `user_oauth_tokens`.",
+    "Worker: el conector OAuth de Discord continúa almacenando el perfil aunque no se pueda persistir el token.",
     "Versión: v1.7.1.",
   ],
 };
@@ -1080,6 +1086,8 @@ const v178_de: ChangelogEntry = {
     "Sidebar: Footer (Profil + Badges) mit `mb-3` angehoben, damit er nicht am unteren Bildschirmrand klebt.",
     "Sidebar: Rahmen und Hintergründe im Footer (Profil, Sync-Badge, Buttons) entfernt, um mit der Farbe des Seitenleisten-Panels zu verschmelzen.",
     "ClientImage: korrigierte Darstellung von zwischengespeicherten Bildern (Discord-Avatare, Spotify-Cover usw.).",
+    "Supabase: Migration, die `discord` zu den erlaubten Providern in `user_oauth_tokens` hinzufügt.",
+    "Worker: Discord-OAuth-Connector speichert das Profil auch dann, wenn das Token nicht persistiert werden kann.",
     "Version: v1.7.1.",
   ],
 };

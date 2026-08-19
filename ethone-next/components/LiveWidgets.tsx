@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import SafeImage from "@/components/SafeImage";
+import ClientImage from "@/components/ClientImage";
+import { cn } from "@/lib/utils";
 import { useLiveData, LASTFM_PERIODS, type LastfmPeriod, type LiveRecord } from "@/lib/hooks/useLiveData";
 import { fetchWorker } from "@/lib/api";
 import { Icon } from "@/lib/icons";
@@ -147,16 +149,21 @@ function ImageFallback({
   fallback?: string;
   className?: string;
 }) {
-  const [error, setError] = useState(false);
   const initial = (fallback || alt?.slice(0, 2) || "?").toUpperCase();
-  if (!src || error) {
-    return (
-      <span className={`inline-flex shrink-0 items-center justify-center overflow-hidden bg-[var(--panel-bg)] text-[10px] font-medium text-[var(--foreground)] ${className}`}>
-        {initial}
-      </span>
-    );
-  }
-  return <Image src={src} alt={alt || ""} width={size} height={size} unoptimized className={`${className} object-cover`} onError={() => setError(true)} />;
+  return (
+    <ClientImage
+      src={src}
+      alt={alt || ""}
+      width={size}
+      height={size}
+      className={cn("inline-flex shrink-0 items-center justify-center overflow-hidden object-cover", className)}
+      fallback={
+        <span className={cn("inline-flex shrink-0 items-center justify-center overflow-hidden bg-[var(--panel-bg)] text-[10px] font-medium text-[var(--foreground)]", className)}>
+          {initial}
+        </span>
+      }
+    />
+  );
 }
 
 function discordStatusTone(status?: string) {

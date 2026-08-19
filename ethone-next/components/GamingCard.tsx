@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AlertCircle, Gamepad2, Loader2, User } from "lucide-react";
@@ -8,6 +8,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import type { MinecraftProfile } from "@/lib/hooks/useMinecraftLive";
 import { TiltCard } from "@/components/ui/TiltCard";
+import { useClientImage } from "@/components/ClientImage";
 import { cn } from "@/lib/utils";
 
 type MinecraftServer = {
@@ -50,9 +51,6 @@ export default function GamingCard({
   const hasUsername = Boolean(username);
   const configured = Boolean(settings.liveMinecraftUsername);
 
-  const [bodyIndex, setBodyIndex] = useState(0);
-  const [avatarIndex, setAvatarIndex] = useState(0);
-
   const playerName = profile?.username || profile?.name || username;
 
   const avatarCandidates = useMemo(() => {
@@ -63,7 +61,7 @@ export default function GamingCard({
       list.push(`https://crafatar.com/avatars/${profile.uuidWithDashes}?overlay&size=128`);
     }
     if (playerName) list.push(`https://mc-heads.net/avatar/${encodeURIComponent(playerName)}/128`);
-    return list;
+    return [...new Set(list)];
   }, [profile, playerName]);
 
   const bodyCandidates = useMemo(() => {
@@ -74,21 +72,18 @@ export default function GamingCard({
       list.push(`https://crafatar.com/renders/body/${profile.uuidWithDashes}?overlay&scale=10&size=256`);
     }
     if (playerName) list.push(`https://mc-heads.net/body/${encodeURIComponent(playerName)}/200`);
-    return list;
+    return [...new Set(list)];
   }, [profile, playerName]);
 
-  const bodyUrl = bodyCandidates[bodyIndex] || null;
-  const avatarUrl = avatarCandidates[avatarIndex] || null;
-  const renderUrl = bodyUrl || avatarUrl;
-  const isBody = Boolean(bodyUrl);
+  const renderCandidates = useMemo(
+    () => [...new Set([...bodyCandidates, ...avatarCandidates])],
+    [bodyCandidates, avatarCandidates]
+  );
 
-  const handleRenderError = () => {
-    if (bodyUrl) {
-      setBodyIndex((i) => Math.min(i + 1, bodyCandidates.length));
-    } else {
-      setAvatarIndex((i) => Math.min(i + 1, avatarCandidates.length));
-    }
-  };
+  const bodySet = useMemo(() => new Set(bodyCandidates), [bodyCandidates]);
+
+  const { src: renderSrc, loading: imageLoading } = useClientImage(renderCandidates);
+  const isBody = renderSrc ? bodySet.has(renderSrc) : true;
 
   const server = profile?.server;
   const isOnline = server?.online ?? hasProfile;
@@ -159,22 +154,22 @@ export default function GamingCard({
       {hasUsername ? (
         <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 py-2">
           <div className="relative w-full flex-1 min-h-[5rem]">
-            {renderUrl ? (
+            {renderSrc ? (
               <Image
-                src={renderUrl}
-                alt={username}
+                key={renderSrc}
+                src={renderSrc}
+                alt={username || playerName || ""}
                 fill
                 sizes="(max-width: 768px) 100vw, 33vw"
                 unoptimized
-                onError={handleRenderError}
                 className={cn(
                   "object-contain drop-shadow-2xl",
-                  !isBody ? "[image-rendering:pixelated]" : ""
+                  isBody ? "" : "[image-rendering:pixelated]"
                 )}
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
-                {loading && !hasProfile ? (
+                {imageLoading && !hasProfile ? (
                   <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
                 ) : error && configured && !hasProfile ? (
                   <AlertCircle className="h-8 w-8 text-rose-400" />

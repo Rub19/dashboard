@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
+import ClientImage from "@/components/ClientImage";
 import { Music } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -19,17 +18,6 @@ export type SafeImageProps = {
   loading?: "eager" | "lazy";
 };
 
-function isValidImageUrl(src?: string | null): src is string {
-  return (
-    typeof src === "string" &&
-    src.length > 0 &&
-    (src.startsWith("https://") ||
-      src.startsWith("http://") ||
-      src.startsWith("data:") ||
-      src.startsWith("/"))
-  );
-}
-
 export default function SafeImage({
   src,
   alt = "",
@@ -43,30 +31,25 @@ export default function SafeImage({
   sizes,
   loading,
 }: SafeImageProps) {
-  const [error, setError] = useState(false);
-  const validSrc = isValidImageUrl(src) ? src : "";
+  let fallbackNode: React.ReactNode = null;
 
-  if (!validSrc || error) {
-    if (fallback === "initials" && initial) {
-      return (
-        <span
-          className={cn(
-            "inline-flex shrink-0 items-center justify-center overflow-hidden bg-[var(--panel-bg)] text-[10px] font-medium text-[var(--foreground)]",
-            fill && "absolute inset-0",
-            className
-          )}
-          aria-hidden="true"
-        >
-          {initial.slice(0, 2).toUpperCase()}
-        </span>
-      );
-    }
-
-    if (fallback === "none") {
-      return null;
-    }
-
-    return (
+  if (fallback === "initials" && initial) {
+    fallbackNode = (
+      <span
+        className={cn(
+          "inline-flex shrink-0 items-center justify-center overflow-hidden bg-[var(--panel-bg)] text-[10px] font-medium text-[var(--foreground)]",
+          fill && "absolute inset-0",
+          className
+        )}
+        aria-hidden="true"
+      >
+        {initial.slice(0, 2).toUpperCase()}
+      </span>
+    );
+  } else if (fallback === "none") {
+    fallbackNode = null;
+  } else {
+    fallbackNode = (
       <span
         className={cn(
           "inline-flex shrink-0 items-center justify-center overflow-hidden bg-white/[0.05]",
@@ -81,16 +64,15 @@ export default function SafeImage({
   }
 
   return (
-    <Image
-      src={validSrc}
+    <ClientImage
+      src={src || undefined}
       alt={alt}
+      fill={fill}
       width={fill ? undefined : size}
       height={fill ? undefined : size}
-      fill={fill}
       sizes={sizes}
-      unoptimized
       className={cn("object-cover", className)}
-      onError={() => setError(true)}
+      fallback={fallbackNode}
       priority={priority}
       loading={loading}
     />

@@ -4,6 +4,15 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Corrections images : Gaming, Discord Lanyard et Spotify (v1.6.15)**
+
+### Corrige
+- Ajout du composant `ClientImage` : pré-chargement des images en mémoire avant affichage pour éviter les icônes brisées.
+- `GamingCard` déduplique les URLs NMSR et tente les sources NMSR, Crafatar et mc-heads en parallèle.
+- `SocialDiscordCard` tente l'avatar Discord personnalisé, puis l'avatar par défaut, puis retombe sur les initiales.
+- `SafeImage` et `ImageFallback` utilisent `ClientImage` pour les covers Spotify et les avatars des Live widgets.
+- Version `1.6.15`.
+
 **Discord : double mode OAuth2 / Lanyard et persistance Worker (v1.6.14)**
 
 ### Ajoute

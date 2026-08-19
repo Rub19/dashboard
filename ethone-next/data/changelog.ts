@@ -1007,6 +1007,7 @@ const v178_fr: ChangelogEntry = {
     "Next.js : configuration conditionnelle `output: 'export'` pour la production, mode normal pour `next dev`.",
     "Brain chat : route API marquée `runtime: 'nodejs'` pour éviter l'avertissement Edge Runtime.",
     "Dock : fond légèrement plus sombre (80%) et remonté (bottom-6).",
+    "TopBar : reflow responsive pour éviter les chevauchements en mode réduit, pillules centrales masquées sous `xl`, troncature du nom d'utilisateur.",
     "Version : v1.7.1.",
   ],
 };
@@ -1026,6 +1027,7 @@ const v178_en: ChangelogEntry = {
     "Next.js: conditional `output: 'export'` config for production, normal mode for `next dev`.",
     "Brain chat: API route set to `runtime: 'nodejs'` to avoid the Edge Runtime warning.",
     "Dock: slightly darker background (80%) and raised higher (bottom-6).",
+    "TopBar: responsive reflow to avoid overlaps in reduced width, center pills hidden below `xl`, username truncated.",
     "Version: v1.7.1.",
   ],
 };
@@ -1045,6 +1047,7 @@ const v178_es: ChangelogEntry = {
     "Next.js: configuración condicional `output: 'export'` para producción, modo normal para `next dev`.",
     "Brain chat: ruta de API con `runtime: 'nodejs'` para evitar la advertencia de Edge Runtime.",
     "Dock: fondo ligeramente más oscuro (80%) y elevado (bottom-6).",
+    "TopBar: redistribución responsive para evitar superposiciones en modo reducido, píldoras centrales ocultas por debajo de `xl`, nombre de usuario truncado.",
     "Versión: v1.7.1.",
   ],
 };
@@ -1064,6 +1067,7 @@ const v178_de: ChangelogEntry = {
     "Next.js: bedingte `output: 'export'`-Konfiguration für Produktion, normaler Modus für `next dev`.",
     "Brain Chat: API-Route auf `runtime: 'nodejs'` gesetzt, um die Edge-Runtime-Warnung zu vermeiden.",
     "Dock: leicht dunklerer Hintergrund (80%) und höher positioniert (bottom-6).",
+    "TopBar: responsive Reflow zur Vermeidung von Überlappungen im reduzierten Modus, zentrale Pills unter `xl` ausgeblendet, Benutzername gekürzt.",
     "Version: v1.7.1.",
   ],
 };

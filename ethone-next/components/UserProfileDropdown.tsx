@@ -218,8 +218,8 @@ export default function UserProfileDropdown() {
             className={`pointer-events-none absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-zinc-950 ${USER_STATUS_CONFIG[currentStatus as keyof typeof USER_STATUS_CONFIG].dot}`}
           />
         </div>
-        <div className="pointer-events-none hidden flex-col text-left sm:flex">
-          <span className="pointer-events-none text-sm font-bold leading-tight text-white">
+        <div className="pointer-events-none hidden min-w-0 flex-col text-left sm:flex">
+          <span className="pointer-events-none max-w-[14ch] truncate text-sm font-bold leading-tight text-white sm:max-w-[18ch] lg:max-w-[24ch]">
             {displayName}
           </span>
         </div>

@@ -62,11 +62,11 @@ function WeatherQuickButton() {
     <button
       type="button"
       onClick={() => router.push("/weather")}
-      className="flex h-9 items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 text-sm transition-colors hover:bg-white/[0.06]"
+      className="flex h-9 items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-2 text-sm transition-colors hover:bg-white/[0.06] sm:px-3"
       title="Météo"
     >
       <CloudSun className="h-4 w-4 pointer-events-none text-amber-400" />
-      <span className="font-mono text-zinc-200">{temp}</span>
+      <span className="hidden font-mono text-zinc-200 lg:inline">{temp}</span>
     </button>
   );
 }
@@ -137,27 +137,29 @@ export default function TopBar() {
       className="relative z-50 flex h-12 shrink-0 select-none items-center justify-between rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 backdrop-blur-[var(--panel-blur)]"
     >
       {/* Left — Identity & Breadcrumb */}
-      <div className="relative z-10 flex min-w-0 flex-1 items-center gap-3">
+      <div className="relative z-10 flex min-w-0 items-center gap-2 sm:gap-3">
         <SidebarTopToggle />
-        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm font-medium text-zinc-400">
-          <Link href="/" className="transition-colors hover:text-white">
+        <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-1.5 sm:gap-2 text-sm font-medium text-zinc-400">
+          <Link href="/" className="shrink-0 transition-colors hover:text-white">
             {home}
           </Link>
-          <ChevronRight className="h-4 w-4 text-zinc-600" />
-          <span className="font-semibold text-white capitalize">{page}</span>
+          <ChevronRight className="h-4 w-4 shrink-0 text-zinc-600" />
+          <span className="max-w-[12ch] truncate font-semibold text-white capitalize sm:max-w-[18ch] lg:max-w-[24ch]">
+            {page}
+          </span>
         </nav>
       </div>
 
       {/* Center — System status */}
-      <div className="absolute inset-y-0 left-0 right-0 z-0 hidden items-center justify-center lg:flex pointer-events-none">
+      <div className="hidden items-center justify-center xl:flex pointer-events-none">
         <div className="pointer-events-auto">
           <SystemStatusPills />
         </div>
       </div>
 
       {/* Right — Quick tools, palette, profile */}
-      <div className="relative z-30 flex min-w-0 flex-1 items-center justify-end gap-3 pointer-events-auto">
-        <div className="hidden items-center gap-2 sm:flex pointer-events-auto">
+      <div className="relative z-30 flex min-w-0 items-center justify-end gap-2 sm:gap-3 pointer-events-auto">
+        <div className="hidden items-center gap-1.5 sm:gap-2 md:flex pointer-events-auto">
           <WeatherQuickButton />
           <ThemeToggle />
           <FocusToggle />

@@ -10,6 +10,9 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `ethone-next/components/Sidebar.tsx` : fond transparent du wrapper, panneau allongé jusqu'en bas de l'écran, et correction de la hauteur du panneau flottant.
 - `ethone-next/components/Dock.tsx` : Dock remonté (`bottom-6`) et fond légèrement plus sombre (`80%`).
 - `ethone-next/app/globals.css` : ajustement de la couleur de fond du Dock.
+- `ethone-next/components/TopBar.tsx` : reflow responsive pour éviter les chevauchements en mode réduit (pillules centrales cachées sous `xl`, troncature du fil d'Ariane et du nom utilisateur).
+- `ethone-next/components/UserProfileDropdown.tsx` : troncature du nom d'affichage pour éviter le débordement.
+- `ethone-next/public/sw.js` : cache Service Worker v353.
 - `ethone-next/lib/stores/sync.ts` : suppression des mises à jour redondantes quand un statut source ne change pas.
 - `ethone-next/lib/supabase.ts` : renforcement de `isMissingSchemaError` pour couvrir PGRST204, PGRST116, 42P01 et les messages "schema cache" / "Could not find".
 - `ethone-next/lib/focus-timer.ts` : appels `pomodoro_sessions` alignés sur le schéma sans colonne `data` et reconstruction du `FocusSession` depuis les colonnes cloud.

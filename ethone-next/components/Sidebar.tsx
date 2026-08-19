@@ -115,7 +115,7 @@ function SyncBadge({ collapsed }: { collapsed: boolean }) {
   return (
     <div
       className={cn(
-        "flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-transparent text-[10px] font-medium text-zinc-400",
+        "flex items-center gap-2 rounded-xl border-transparent bg-transparent text-[10px] font-medium text-zinc-400",
         collapsed
           ? "h-9 w-9 shrink-0 items-center justify-center p-0"
           : "px-2.5 py-2"
@@ -141,12 +141,12 @@ function SidebarProfile({ collapsed }: { collapsed: boolean }) {
   return (
     <div
       className={cn(
-        "flex items-center gap-2.5 rounded-xl border border-[var(--panel-border)] bg-transparent",
+        "flex items-center gap-2.5 rounded-xl border-transparent bg-transparent",
         collapsed ? "justify-center p-1.5" : "p-2"
       )}
     >
       <div className={cn(
-        "relative flex shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-transparent",
+        "relative flex shrink-0 items-center justify-center overflow-hidden rounded-lg border-transparent bg-transparent",
         collapsed ? "h-7 w-7" : "h-8 w-8"
       )}>
         {avatarUrl ? (
@@ -193,7 +193,7 @@ function SidebarFooter() {
         <button
           type="button"
           onClick={() => router.push("/settings")}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-transparent text-zinc-400 transition-colors hover:border-white/10 hover:bg-white/[0.06] hover:text-white"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border-transparent bg-transparent text-zinc-400 transition-colors hover:border-white/10 hover:bg-white/[0.06] hover:text-white"
           aria-label={i18n("settings")}
           title={i18n("settings")}
         >
@@ -203,7 +203,7 @@ function SidebarFooter() {
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-transparent text-zinc-400 transition-colors hover:border-white/10 hover:bg-white/[0.06] hover:text-white"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border-transparent bg-transparent text-zinc-400 transition-colors hover:border-white/10 hover:bg-white/[0.06] hover:text-white"
           aria-label={i18n("collapseSidebar", "Réduire")}
           title={i18n("collapseSidebar", "Réduire")}
         >
@@ -262,7 +262,7 @@ export default function Sidebar() {
             ))}
           </AnimatedSidebarMenu>
         </AnimatedSidebarContent>
-        <AnimatedSidebarFooter className="mb-3">
+        <AnimatedSidebarFooter className="mb-3 border-t-0">
           <SidebarFooter />
         </AnimatedSidebarFooter>
         <AnimatedSidebarRail />

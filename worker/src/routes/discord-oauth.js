@@ -31,10 +31,10 @@ function requireField(body, key, pattern) {
 function safeReturnUrl(input) {
   try {
     const url = new URL(input);
-    if (!/^https?:$/.test(url.protocol)) return "/";
+    if (!/^https?:$/.test(url.protocol)) return "/settings?discord=connected";
     return url.href;
   } catch {
-    return "/";
+    return "/settings?discord=connected";
   }
 }
 

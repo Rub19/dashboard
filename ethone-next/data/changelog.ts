@@ -1016,6 +1016,8 @@ const v178_fr: ChangelogEntry = {
     "Sidebar : suppression de la bordure du panneau flottant pour unifier la couleur avec le reste de la barre.",
     "Supabase : migration ajoutant `discord` aux `kind` autorisés de `ethone_user_data`.",
     "Worker : augmentation de `maxBytes` (64 Ko) pour les appels Supabase liés au profil Discord.",
+    "SocialDiscordCard : affiche le profil Discord OAuth quand le mode OAuth2 est actif.",
+    "DiscordConfig : bascule automatiquement sur le mode OAuth2 après connexion et redirige vers /settings?discord=connected.",
     "Version : v1.7.1.",
   ],
 };
@@ -1044,6 +1046,8 @@ const v178_en: ChangelogEntry = {
     "Sidebar: removed the floating panel border to unify the color with the rest of the bar.",
     "Supabase: migration adding `discord` to the allowed `kind` values in `ethone_user_data`.",
     "Worker: increased `maxBytes` (64 KB) for Supabase calls related to Discord profile storage.",
+    "SocialDiscordCard: display the Discord OAuth profile when OAuth2 mode is active.",
+    "DiscordConfig: automatically switch to OAuth2 mode after connecting and redirect to /settings?discord=connected.",
     "Version: v1.7.1.",
   ],
 };
@@ -1072,6 +1076,8 @@ const v178_es: ChangelogEntry = {
     "Sidebar: eliminado el borde del panel flotante para unificar el color con el resto de la barra.",
     "Supabase: migración que añade `discord` a los valores `kind` permitidos en `ethone_user_data`.",
     "Worker: aumento de `maxBytes` (64 KB) para las llamadas Supabase relacionadas con el perfil de Discord.",
+    "SocialDiscordCard: muestra el perfil de Discord OAuth cuando el modo OAuth2 está activo.",
+    "DiscordConfig: cambia automáticamente al modo OAuth2 tras conectar y redirige a /settings?discord=connected.",
     "Versión: v1.7.1.",
   ],
 };
@@ -1100,6 +1106,8 @@ const v178_de: ChangelogEntry = {
     "Sidebar: Rahmen des schwebenden Panels entfernt, um die Farbe mit dem Rest der Leiste zu vereinen.",
     "Supabase: Migration, die `discord` zu den erlaubten `kind`-Werten in `ethone_user_data` hinzufügt.",
     "Worker: `maxBytes` (64 KB) für Supabase-Aufrufe im Zusammenhang mit der Discord-Profilspeicherung erhöht.",
+    "SocialDiscordCard: zeigt das Discord-OAuth-Profil an, wenn der OAuth2-Modus aktiv ist.",
+    "DiscordConfig: automatischer Wechsel in den OAuth2-Modus nach dem Verbinden und Weiterleitung an /settings?discord=connected.",
     "Version: v1.7.1.",
   ],
 };

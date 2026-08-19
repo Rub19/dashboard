@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { AlertCircle, ExternalLink, Loader2, Music, Radio, RadioOff } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import type { LanyardPresence, NowPlaying } from "@/lib/hooks/useLiveData";
 import ClientImage from "@/components/ClientImage";
 import { TiltCard } from "@/components/ui/TiltCard";
@@ -91,13 +92,15 @@ export default function SocialDiscordCard({
   const router = useRouter();
   const i18n = useI18n();
   const { settings } = useSettings();
+  const { profile: oauthProfile } = useDiscordOAuth();
 
-  const userId = lanyard?.userId;
+  const isOAuth = Boolean(oauthProfile?.connected);
+  const userId = lanyard?.userId || oauthProfile?.user?.id;
   const avatarHash = lanyard?.avatarHash;
   const discriminator = lanyard?.discriminator;
-  const avatarUrl = lanyard?.avatarUrl;
-  const username = lanyard?.username;
-  const displayName = lanyard?.displayName || username || "Discord";
+  const avatarUrl = lanyard?.avatarUrl || oauthProfile?.user?.avatarUrl;
+  const username = lanyard?.username || oauthProfile?.user?.username;
+  const displayName = lanyard?.displayName || lanyard?.username || oauthProfile?.user?.displayName || oauthProfile?.user?.username || "Discord";
 
   const primaryAvatar = useMemo(() => {
     if (avatarUrl) return avatarUrl;
@@ -118,7 +121,8 @@ export default function SocialDiscordCard({
     [primaryAvatar, fallbackAvatar]
   );
 
-  const status = lanyard?.discord_status || "offline";
+  const rawStatus = lanyard?.discord_status || (isOAuth ? "online" : "offline");
+  const status = rawStatus;
   const color = statusColor(status);
   const label = statusLabel(status);
 
@@ -130,18 +134,19 @@ export default function SocialDiscordCard({
         ? Boolean(settings.liveLastfmUsername)
         : Boolean(settings.liveSpotifyClientId);
 
-  const hasAnyConnection = isLanyardConfigured || isNowPlayingSourceConfigured;
-  const hasLanyard = Boolean(userId);
+  const hasAnyConnection = isLanyardConfigured || isNowPlayingSourceConfigured || isOAuth;
+  const hasLanyard = Boolean(lanyard?.userId);
+  const hasOAuth = isOAuth;
 
   const { badgeColor, badgeLabel, badgeTone } = useMemo(() => {
-    if (loading && !hasLanyard && hasAnyConnection) {
+    if (loading && !hasLanyard && !hasOAuth && hasAnyConnection) {
       return {
         badgeColor: "bg-cyan-400",
         badgeLabel: i18n("loading", "Chargement"),
         badgeTone: "border-cyan-500/30 bg-cyan-500/10 text-cyan-300",
       };
     }
-    if (error && hasAnyConnection && !hasLanyard) {
+    if (error && hasAnyConnection && !hasLanyard && !hasOAuth) {
       return {
         badgeColor: "bg-rose-400",
         badgeLabel: i18n("error", "Erreur"),
@@ -159,7 +164,7 @@ export default function SocialDiscordCard({
       };
     }
     return { badgeColor: color, badgeLabel: label, badgeTone: statusTone(status) };
-  }, [color, error, hasAnyConnection, hasLanyard, i18n, label, loading, status]);
+  }, [color, error, hasAnyConnection, hasLanyard, hasOAuth, i18n, label, loading, status]);
 
   const activity = lanyard?.activities?.[0];
   const customStatus =
@@ -217,7 +222,7 @@ export default function SocialDiscordCard({
         </span>
       </div>
 
-      {!hasLanyard && !hasMusic ? (
+      {!hasLanyard && !hasOAuth && !hasMusic ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-xl border border-white/[0.05] bg-white/[0.02] p-4 text-center">
           {loading && hasAnyConnection ? (
             <Loader2 className="h-6 w-6 animate-spin text-zinc-500" />
@@ -244,7 +249,7 @@ export default function SocialDiscordCard({
         </div>
       ) : (
         <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-2 overflow-hidden">
-          {hasLanyard && (
+          {(hasLanyard || hasOAuth) && (
             <div className="flex flex-col items-center gap-2 text-center">
               <div className="relative h-16 w-16 shrink-0">
                 <ClientImage
@@ -330,7 +335,7 @@ export default function SocialDiscordCard({
         </div>
       )}
 
-      {hasLanyard && !customStatus && !gameActivity && !activeMusic && (
+      {(hasLanyard || hasOAuth) && !customStatus && !gameActivity && !activeMusic && (
         <div className="mt-auto flex flex-col items-center justify-center gap-1.5 rounded-xl border border-white/[0.05] bg-white/[0.02] p-3 text-center">
           <Radio className="h-4 w-4 text-zinc-500" />
           <p className="text-[10px] text-zinc-500">Aucune activité en cours.</p>

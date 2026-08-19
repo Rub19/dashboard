@@ -45,6 +45,12 @@ export default function DiscordConfig() {
   const isOAuth2 = discordMode === "oauth2";
   const isOAuthConnected = profile?.connected && isOAuth2;
 
+  useEffect(() => {
+    if (profile?.connected && discordMode !== "oauth2") {
+      update({ discordMode: "oauth2" });
+    }
+  }, [profile?.connected, discordMode, update]);
+
   const status: PingResult["status"] = useMemo(() => {
     if (health) return health.status;
     if (isOAuth2) return isOAuthConnected ? "connected" : "unconfigured";
@@ -298,7 +304,10 @@ export default function DiscordConfig() {
           ) : (
             <button
               type="button"
-              onClick={connect}
+              onClick={() => {
+                setMode("oauth2");
+                connect();
+              }}
               disabled={loading}
               className="flex items-center justify-center gap-1.5 rounded-xl bg-indigo-500 px-3 py-2 text-sm font-bold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400 disabled:opacity-50"
             >

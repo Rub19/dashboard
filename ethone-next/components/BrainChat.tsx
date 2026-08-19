@@ -452,7 +452,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
           </div>
         )}
 
-        <div className="relative mt-2 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 shadow-2xl backdrop-blur-[var(--panel-blur)] transition-colors focus-within:border-white/20">
+        <div className="relative mt-2 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 shadow-2xl backdrop-blur-[var(--panel-blur)] transition-all duration-200 focus-within:border-white/20 focus-within:ring-1 focus-within:ring-white/15 focus-within:shadow-[0_0_15px_rgba(255,255,255,0.03)]">
           <textarea
             ref={textareaRef}
             rows={1}

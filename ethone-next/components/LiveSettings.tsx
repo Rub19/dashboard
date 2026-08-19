@@ -35,7 +35,7 @@ function SettingsTextInput({
         onChange={(e) => setLocal(e.target.value)}
         onBlur={() => onChange(local)}
         placeholder={placeholder}
-        className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
+        className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
       />
     </div>
   );

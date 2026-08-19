@@ -123,7 +123,7 @@ export default function HeroBriefingCard({
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               placeholder={i18n("brainAvailableDesc") || "Demandez à Brain…"}
-              className="w-full rounded-xl border border-white/[0.08] bg-black/30 px-3 py-2 pl-9 text-sm text-white outline-none transition-colors placeholder:text-zinc-600 focus:border-white/20"
+              className="w-full rounded-xl border border-white/[0.08] bg-black/30 px-3 py-2 pl-9 text-sm text-white outline-none transition-all duration-200 placeholder:text-zinc-600 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
             />
             <Icon name="brain" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
           </div>

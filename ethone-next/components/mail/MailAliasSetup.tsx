@@ -96,7 +96,7 @@ export default function MailAliasSetup({ createAlias, onCreated }: MailAliasSetu
               onChange={(e) => setDisplayName(e.target.value.slice(0, 80))}
               placeholder="Ex: Rub"
               disabled={loading}
-              className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-2.5 text-sm text-zinc-200 placeholder-zinc-600 outline-none focus:border-purple-500/50 disabled:opacity-50"
+              className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-2.5 text-sm text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] disabled:opacity-50"
             />
           </div>
 
@@ -104,7 +104,7 @@ export default function MailAliasSetup({ createAlias, onCreated }: MailAliasSetu
             <label className="mb-1.5 block text-[10px] font-medium uppercase tracking-wider text-zinc-500">
               Adresse mail
             </label>
-            <div className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-2.5 focus-within:border-purple-500/50">
+            <div className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-2.5 focus-within:border-white/20 focus-within:ring-1 focus-within:ring-white/15 focus-within:shadow-[0_0_15px_rgba(255,255,255,0.03)]">
               <input
                 type="text"
                 value={local}

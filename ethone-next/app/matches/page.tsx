@@ -221,7 +221,7 @@ export default function MatchesPage() {
                 value={apexIdentifier}
                 onChange={(e) => setApexIdentifier(e.target.value)}
                 placeholder={i18n("liveTrackerApexIdentifier")}
-                className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
+                className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-colors transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
               />
             </div>
             <button
@@ -242,7 +242,7 @@ export default function MatchesPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={i18n("liveTrackerRiotName")}
-                className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
+                className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-colors transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
               />
             </div>
             <div className="min-w-0 flex-1">
@@ -253,7 +253,7 @@ export default function MatchesPage() {
                 value={tag}
                 onChange={(e) => setTag(e.target.value)}
                 placeholder="#1234"
-                className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
+                className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-colors transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
               />
             </div>
             <button

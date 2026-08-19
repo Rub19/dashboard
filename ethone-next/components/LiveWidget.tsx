@@ -356,7 +356,7 @@ export default function LiveWidget() {
                           value={streamUrl}
                           onChange={(e) => setLiveSource(e.target.value)}
                           placeholder={i18n("liveStreamUrlPlaceholder") || "URL du flux (HLS/WebRTC/iframe)..."}
-                          className="w-full rounded-lg border border-white/[0.06] bg-white/[0.03] pl-8 pr-2.5 py-1.5 text-[11px] text-zinc-200 placeholder-zinc-600 outline-none focus:border-emerald-500/50"
+                          className="w-full rounded-lg border border-white/[0.06] bg-white/[0.03] pl-8 pr-2.5 py-1.5 text-[11px] text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
                         />
                       </div>
                       <button

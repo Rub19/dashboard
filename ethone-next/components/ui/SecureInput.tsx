@@ -51,7 +51,7 @@ export default function SecureInput({
         disabled={disabled}
         aria-label={label}
         placeholder={placeholder || label}
-        className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-2.5 pr-20 text-sm text-white outline-none transition-colors placeholder:text-zinc-500 focus:border-purple-500/40 focus:ring-1 focus:ring-purple-500/20"
+        className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-2.5 pr-20 text-sm text-white outline-none transition-colors placeholder:text-zinc-500 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
       />
       <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1">
         {allowCopy && value && (

@@ -196,7 +196,7 @@ export default function SettingsLayout() {
               onChange={(e) => form.setQuery(e.target.value)}
               placeholder={i18n("journalSearchPlaceholder") || "Rechercher..."}
               aria-label={i18n("journalSearchPlaceholder") || "Rechercher"}
-              className="h-9 w-full rounded-xl border border-white/10 bg-white/[0.04] pl-9 pr-3 text-xs text-zinc-200 placeholder-zinc-500 outline-none transition-colors focus:border-emerald-500/40 sm:w-56"
+              className="h-9 w-full rounded-xl border border-white/10 bg-white/[0.04] pl-9 pr-3 text-xs text-zinc-200 placeholder-zinc-500 outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] sm:w-56"
             />
           </div>
           <div className="flex items-center gap-2">

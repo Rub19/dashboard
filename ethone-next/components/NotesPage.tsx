@@ -248,7 +248,8 @@ export default function NotesPage() {
             onChange={(e) => setTitle(e.target.value)}
             placeholder={i18n("notesPlaceholder")}
             aria-label={i18n("notesPlaceholder")}
-            className="w-full border-none bg-transparent text-lg font-bold text-white outline-none placeholder-zinc-500"
+            data-testid="note-title-input"
+            className="w-full rounded-lg border-none bg-transparent px-2 py-1 text-lg font-bold text-white outline-none transition-all duration-200 placeholder-zinc-500 focus:bg-white/[0.04] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
           />
         </div>
 

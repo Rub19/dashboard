@@ -219,7 +219,7 @@ export default function ComposeMailModal({
             initial={{ opacity: 0, y: 20, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.98 }}
-            className="fixed bottom-4 right-4 z-50 w-[min(560px,96vw)] overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/95 shadow-2xl backdrop-blur-2xl"
+            className="fixed bottom-4 right-4 z-50 flex h-[min(640px,90vh)] max-h-[90vh] w-[min(560px,96vw)] flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/95 shadow-2xl backdrop-blur-2xl"
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-3">
@@ -234,7 +234,7 @@ export default function ComposeMailModal({
             </div>
 
             {/* Fields */}
-            <div className="space-y-1 border-b border-white/[0.06] px-4 py-2">
+            <div className="shrink-0 space-y-1 border-b border-white/[0.06] px-4 py-2">
               {/* From / alias */}
               <div className="flex flex-col gap-1 py-1.5">
                 <div className="flex items-center gap-2">
@@ -253,7 +253,7 @@ export default function ComposeMailModal({
                           setShowAliasCreate(false);
                         }
                       }}
-                      className="min-w-0 flex-1 bg-transparent text-xs text-zinc-200 outline-none"
+                      className="min-w-0 flex-1 bg-transparent text-xs text-zinc-200 outline-none transition-all duration-200 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
                     >
                       {aliases.map((a) => (
                         <option key={a.id} value={a.id}>
@@ -282,7 +282,7 @@ export default function ComposeMailModal({
                       }}
                       placeholder={i18n("aliasPlaceholder") || "votre-nom"}
                       disabled={aliasLoading}
-                      className="min-w-[6rem] flex-1 bg-transparent text-xs text-zinc-200 placeholder-zinc-600 outline-none disabled:opacity-50"
+                      className="min-w-[6rem] flex-1 bg-transparent text-xs text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] disabled:opacity-50"
                     />
                     <span className="text-[11px] text-zinc-500">@ethone.dev</span>
                     <button
@@ -336,7 +336,7 @@ export default function ComposeMailModal({
                     onChange={(e) => setToInput(e.target.value)}
                     onKeyDown={(e) => handleKeyDown(e, to, setTo, toInput, setToInput)}
                     placeholder={to.length ? "" : i18n("emailPlaceholder")}
-                    className="min-w-[4rem] flex-1 bg-transparent text-xs text-zinc-200 placeholder-zinc-600 outline-none"
+                    className="min-w-[4rem] flex-1 bg-transparent text-xs text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
                   />
                 </div>
               </div>
@@ -360,7 +360,7 @@ export default function ComposeMailModal({
                     value={ccInput}
                     onChange={(e) => setCcInput(e.target.value)}
                     onKeyDown={(e) => handleKeyDown(e, cc, setCc, ccInput, setCcInput)}
-                    className="min-w-[4rem] flex-1 bg-transparent text-xs text-zinc-200 placeholder-zinc-600 outline-none"
+                    className="min-w-[4rem] flex-1 bg-transparent text-xs text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
                   />
                 </div>
               </div>
@@ -384,7 +384,7 @@ export default function ComposeMailModal({
                     value={bccInput}
                     onChange={(e) => setBccInput(e.target.value)}
                     onKeyDown={(e) => handleKeyDown(e, bcc, setBcc, bccInput, setBccInput)}
-                    className="min-w-[4rem] flex-1 bg-transparent text-xs text-zinc-200 placeholder-zinc-600 outline-none"
+                    className="min-w-[4rem] flex-1 bg-transparent text-xs text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
                   />
                 </div>
               </div>
@@ -395,18 +395,18 @@ export default function ComposeMailModal({
                   type="text"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  className="min-w-0 flex-1 bg-transparent text-xs text-zinc-200 placeholder-zinc-600 outline-none"
+                  className="min-w-0 flex-1 bg-transparent text-xs text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
                 />
               </div>
             </div>
 
             {/* Editor */}
-            <div className="p-4">
+            <div className="flex min-h-0 flex-1 p-4">
               <textarea
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
                 placeholder={i18n("composePlaceholder") || "Écrivez votre message..."}
-                className="h-40 w-full resize-none bg-transparent text-sm text-zinc-200 placeholder-zinc-600 outline-none"
+                className="h-full min-h-0 w-full flex-1 resize-none overflow-y-auto rounded-xl bg-transparent p-2 text-sm text-zinc-200 outline-none transition-all duration-200 placeholder-zinc-600 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
               />
             </div>
 

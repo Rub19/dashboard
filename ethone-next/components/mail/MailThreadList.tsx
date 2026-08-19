@@ -75,7 +75,7 @@ export default function MailThreadList({
             value={search}
             onChange={(e) => onSearch(e.target.value)}
             placeholder={i18n("search")}
-            className="w-full rounded-lg border border-white/10 bg-white/[0.03] py-1.5 pl-8 pr-2.5 text-xs text-zinc-200 placeholder-zinc-500 outline-none focus:border-emerald-500/50"
+            className="w-full rounded-lg border border-white/10 bg-white/[0.03] py-1.5 pl-8 pr-2.5 text-xs text-zinc-200 placeholder-zinc-500 outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
           />
         </div>
 

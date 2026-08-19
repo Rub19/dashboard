@@ -50,34 +50,45 @@ export default function GamingCard({
   const hasUsername = Boolean(username);
   const configured = Boolean(settings.liveMinecraftUsername);
 
-  const [bodyErrored, setBodyErrored] = useState(false);
-  const [avatarErrored, setAvatarErrored] = useState(false);
+  const [bodyIndex, setBodyIndex] = useState(0);
+  const [avatarIndex, setAvatarIndex] = useState(0);
 
-  const avatarUrl = useMemo(() => {
-    if (avatarErrored) return null;
-    if (profile?.avatarUrl) return profile.avatarUrl;
-    if (profile?.uuidWithDashes) return `https://crafatar.com/avatars/${profile.uuidWithDashes}?overlay&size=128`;
-    if (profile?.uuid) return `https://crafatar.com/avatars/${profile.uuid}?overlay&size=128`;
-    if (profile?.username) return `https://mc-heads.net/avatar/${encodeURIComponent(profile.username)}/128`;
-    return null;
-  }, [profile, avatarErrored]);
+  const playerName = profile?.username || profile?.name || username;
 
-  const bodyUrl = useMemo(() => {
-    if (bodyErrored) return null;
-    if (profile?.bodyUrl) return profile.bodyUrl;
+  const avatarCandidates = useMemo(() => {
+    const list: string[] = [];
+    if (profile?.avatarUrl) list.push(profile.avatarUrl);
     if (profile?.uuidWithDashes) {
-      return `https://crafatar.com/renders/body/${profile.uuidWithDashes}?overlay&scale=10&size=256`;
+      list.push(`https://nmsr.nickac.dev/face/${encodeURIComponent(profile.uuidWithDashes)}?width=128&height=128`);
+      list.push(`https://crafatar.com/avatars/${profile.uuidWithDashes}?overlay&size=128`);
     }
-    if (profile?.uuid) {
-      return `https://crafatar.com/renders/body/${profile.uuid}?overlay&scale=10&size=256`;
-    }
-    if (profile?.username) {
-      return `https://mc-heads.net/body/${encodeURIComponent(profile.username)}/200`;
-    }
-    return null;
-  }, [profile, bodyErrored]);
+    if (playerName) list.push(`https://mc-heads.net/avatar/${encodeURIComponent(playerName)}/128`);
+    return list;
+  }, [profile, playerName]);
 
+  const bodyCandidates = useMemo(() => {
+    const list: string[] = [];
+    if (profile?.bodyUrl) list.push(profile.bodyUrl);
+    if (profile?.uuidWithDashes) {
+      list.push(`https://nmsr.nickac.dev/fullbody/${encodeURIComponent(profile.uuidWithDashes)}?width=256&height=256`);
+      list.push(`https://crafatar.com/renders/body/${profile.uuidWithDashes}?overlay&scale=10&size=256`);
+    }
+    if (playerName) list.push(`https://mc-heads.net/body/${encodeURIComponent(playerName)}/200`);
+    return list;
+  }, [profile, playerName]);
+
+  const bodyUrl = bodyCandidates[bodyIndex] || null;
+  const avatarUrl = avatarCandidates[avatarIndex] || null;
   const renderUrl = bodyUrl || avatarUrl;
+  const isBody = Boolean(bodyUrl);
+
+  const handleRenderError = () => {
+    if (bodyUrl) {
+      setBodyIndex((i) => Math.min(i + 1, bodyCandidates.length));
+    } else {
+      setAvatarIndex((i) => Math.min(i + 1, avatarCandidates.length));
+    }
+  };
 
   const server = profile?.server;
   const isOnline = server?.online ?? hasProfile;
@@ -125,11 +136,6 @@ export default function GamingCard({
   const ping = server?.ping !== undefined ? `${server.ping} ms` : null;
   const serverVersion = server?.version || null;
 
-  const onRenderError = () => {
-    if (bodyUrl) setBodyErrored(true);
-    else setAvatarErrored(true);
-  };
-
   return (
     <TiltCard
       className={cn(
@@ -160,10 +166,10 @@ export default function GamingCard({
                 fill
                 sizes="(max-width: 768px) 100vw, 33vw"
                 unoptimized
-                onError={onRenderError}
+                onError={handleRenderError}
                 className={cn(
                   "object-contain drop-shadow-2xl",
-                  bodyErrored ? "[image-rendering:pixelated]" : ""
+                  !isBody ? "[image-rendering:pixelated]" : ""
                 )}
               />
             ) : (

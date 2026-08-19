@@ -4,6 +4,14 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Minecraft : affichage du skin via NMSR (v1.6.12)**
+
+### Corrige
+- Remplacement des rendus Crafatar (souvent en 521/522) par l'API publique NMSR (NickAc's Minecraft Skin Renderer).
+- Le worker retourne des URLs NMSR pour l'avatar (`/face`), le body (`/fullbody`) et le skin (`/skin`).
+- La carte `Gaming` embarque une chaîne de fallback : image du profil, NMSR par UUID, Crafatar, puis mc-heads.net.
+- Version `1.6.12`.
+
 **Corrections Discord : badge d'erreur et avatar par défaut (v1.6.11)**
 
 ### Corrige

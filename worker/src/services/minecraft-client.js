@@ -74,10 +74,10 @@ export async function getMinecraftProfile(env, username) {
     username: safeText(profile.data?.name || lookup.data?.name, 16),
     uuid,
     uuidWithDashes,
-    skinUrl: textures.skinUrl || `https://crafatar.com/skins/${uuidWithDashes}`,
-    avatarUrl: `https://crafatar.com/avatars/${uuidWithDashes}?overlay&size=128`,
-    bodyUrl: `https://crafatar.com/renders/body/${uuidWithDashes}?overlay&scale=6&width=256&height=256`,
-    capeUrl: textures.capeUrl || `https://crafatar.com/capes/${uuidWithDashes}`,
+    skinUrl: textures.skinUrl || `https://nmsr.nickac.dev/skin/${encodeURIComponent(uuidWithDashes)}`,
+    avatarUrl: `https://nmsr.nickac.dev/face/${encodeURIComponent(uuidWithDashes)}?width=128&height=128`,
+    bodyUrl: `https://nmsr.nickac.dev/fullbody/${encodeURIComponent(uuidWithDashes)}?width=256&height=256`,
+    capeUrl: textures.capeUrl,
     model: textures.model,
     nameHistory: Object.freeze(nameHistory)
   });

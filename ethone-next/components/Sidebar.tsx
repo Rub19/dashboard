@@ -73,7 +73,12 @@ function SidebarBrand() {
 function SyncBadge({ collapsed }: { collapsed: boolean }) {
   const i18n = useI18n();
   const status = useSyncStore((s) => s.status);
-  const sources = useSyncStore((s) => s.sources);
+  const activeSources = useSyncStore((s) =>
+    Object.entries(s.sources)
+      .filter(([, s]) => s !== "idle")
+      .map(([k]) => k)
+      .join(", ")
+  );
 
   const config: Record<string, { icon: React.ReactElement<{ className?: string }>; label: string; dot: string }> = {
     syncing: {
@@ -99,11 +104,8 @@ function SyncBadge({ collapsed }: { collapsed: boolean }) {
   };
   const statusConfig = config[status];
 
-  const activeSources = Object.entries(sources)
-    .filter(([, s]) => s !== "idle")
-    .map(([k]) => k);
-  const tooltip = activeSources.length
-    ? `${statusConfig.label} — ${activeSources.join(", ")}`
+  const tooltip = activeSources
+    ? `${statusConfig.label} — ${activeSources}`
     : statusConfig.label;
 
   const icon = cloneElement(statusConfig.icon, {

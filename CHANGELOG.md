@@ -4,7 +4,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
-**Bouton météo rapide et ambiances sonores dans le Dock et TopBar**
+**Bouton météo, ambiances sonores et onglets Settings v1.7.3**
 
 ### Ajoute
 - `ethone-next/components/DockWeatherFlyout.tsx` : bouton météo dans le Dock affichant la température et ouvrant un popover au-dessus.
@@ -14,6 +14,8 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 ### Corrige
 - `ethone-next/components/DockControlCenter.tsx` : les boutons d'ambiance sonore (Aucune, Pluie, Bruit rose, Drone, Blanc) activent maintenant le son via `useSound()`.
 - `ethone-next/lib/sound.tsx` : `playAmbient` s'assure que le `AudioContext` est créé/réveillé au clic et active `masterVolume` si besoin.
+- `ethone-next/components/settings/SettingsLayout.tsx` : l'indicateur d'onglet est maintenant un curseur animé mesuré manuellement, le conteneur d'onglets est compact (`w-fit`, `self-start`), plus d'espace entre les panneaux.
+- `ethone-next/components/settings/SettingsContent.tsx` : espacement des sections passé de `gap-3`/`space-y-4` à `gap-6`/`space-y-6`.
 
 ### Version
 - `ethone-next/package.json`, `ethone-next/components/UserProfileDropdown.tsx` : version `v1.7.3`.

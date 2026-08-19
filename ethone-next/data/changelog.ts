@@ -1199,12 +1199,13 @@ const v179_de: ChangelogEntry = {
 const v180_fr: ChangelogEntry = {
   version: "v1.7.3",
   date: "2026-08-19",
-  title: "Bouton météo rapide et ambiances sonores",
+  title: "Bouton météo, ambiances sonores et onglets Settings",
   items: [
     "TopBar : le bouton météo ouvre maintenant une popover rapide avec la localisation, la température, l'humidité, le vent et les prévisions.",
     "Dock : ajout d'un bouton météo `DockWeatherFlyout` qui affiche la température et ouvre le détail au clic.",
     "WeatherDetailPopover : support du placement `top-end` pour s'ouvrir au-dessus du Dock.",
     "Correction des ambiances sonores dans le Control Center : les boutons Aucune / Pluie / Bruit rose / Drone / Blanc activent maintenant le son et réveillent le AudioContext.",
+    "Onglets des paramètres : indicateur animé mesuré manuellement, panel d'onglets plus compact (w-fit), plus d'espace entre les panneaux.",
     "Mise à jour de la version en v1.7.3.",
   ],
 };
@@ -1212,12 +1213,13 @@ const v180_fr: ChangelogEntry = {
 const v180_en: ChangelogEntry = {
   version: "v1.7.3",
   date: "2026-08-19",
-  title: "Quick weather button and sound ambiences",
+  title: "Quick weather, sound ambiences and Settings tabs",
   items: [
     "TopBar: the weather button now opens a quick popover with location, temperature, humidity, wind and forecast.",
     "Dock: added `DockWeatherFlyout` weather button showing temperature and opening details on click.",
     "WeatherDetailPopover: added `top-end` placement support to open above the Dock.",
     "Fixed sound ambience buttons in the Control Center: None / Rain / Pink / Drone / White now activate audio and resume the AudioContext.",
+    "Settings tabs: manually measured animated indicator, more compact tab panel (w-fit), more spacing between panels.",
     "Updated version to v1.7.3.",
   ],
 };
@@ -1225,12 +1227,13 @@ const v180_en: ChangelogEntry = {
 const v180_es: ChangelogEntry = {
   version: "v1.7.3",
   date: "2026-08-19",
-  title: "Botón de clima rápido y ambientes sonoros",
+  title: "Botón de clima, ambientes sonoros y pestañas Settings",
   items: [
     "TopBar: el botón del clima ahora abre un popover rápido con ubicación, temperatura, humedad, viento y pronóstico.",
     "Dock: añadido `DockWeatherFlyout` que muestra la temperatura y abre los detalles al hacer clic.",
     "WeatherDetailPopover: soporte de posicionamiento `top-end` para abrirse encima del Dock.",
     "Corrección de los ambientes sonoros en el Centro de Control: Ninguno / Lluvia / Rosa / Drone / Blanco ahora activan el sonido y reanudan el AudioContext.",
+    "Pestañas de ajustes: indicador animado medido manualmente, panel de pestañas más compacto (w-fit), más espacio entre paneles.",
     "Versión actualizada a v1.7.3.",
   ],
 };
@@ -1238,12 +1241,13 @@ const v180_es: ChangelogEntry = {
 const v180_de: ChangelogEntry = {
   version: "v1.7.3",
   date: "2026-08-19",
-  title: "Schneller Wetter-Button und Sound-Ambiences",
+  title: "Schneller Wetter-Button, Sound-Ambiences und Settings-Tabs",
   items: [
     "TopBar: der Wetter-Button öffnet nun ein schnelles Popover mit Ort, Temperatur, Luftfeuchtigkeit, Wind und Vorhersage.",
     "Dock: `DockWeatherFlyout` hinzugefügt, der die Temperatur anzeigt und Details beim Klick öffnet.",
     "WeatherDetailPopover: Unterstützung für Platzierung `top-end`, um sich über dem Dock zu öffnen.",
     "Korrektur der Sound-Ambiences im Control Center: Keine / Regen / Rosa / Drone / Weiß aktivieren jetzt Audio und setzen den AudioContext fort.",
+    "Settings-Tabs: manuell gemessener animierter Indikator, kompakteres Tab-Panel (w-fit), mehr Abstand zwischen den Paneelen.",
     "Version auf v1.7.3 aktualisiert.",
   ],
 };

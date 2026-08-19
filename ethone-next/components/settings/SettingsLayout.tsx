@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -120,6 +120,34 @@ export default function SettingsLayout() {
   const queryString = searchParams?.toString() ?? "";
 
   const [activeTab, setActiveTab] = useState(() => resolveTab(searchParams?.get("tab") ?? null));
+  const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const [tabIndicator, setTabIndicator] = useState({ left: 0, top: 0, width: 0, height: 0 });
+  const hasMeasuredRef = useRef(false);
+
+  const updateTabIndicator = useCallback(() => {
+    const el = tabRefs.current[activeTab];
+    if (!el) return;
+    const next = {
+      left: el.offsetLeft,
+      top: el.offsetTop,
+      width: el.clientWidth,
+      height: el.clientHeight,
+    };
+    setTabIndicator(next);
+    hasMeasuredRef.current = true;
+  }, [activeTab]);
+
+  useLayoutEffect(() => {
+    updateTabIndicator();
+  }, [activeTab, updateTabIndicator]);
+
+  useEffect(() => {
+    function onResize() {
+      updateTabIndicator();
+    }
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [updateTabIndicator]);
 
   function navigateToSection(tab: string, section?: string) {
     form.setQuery("");
@@ -222,35 +250,37 @@ export default function SettingsLayout() {
       </div>
 
       {/* Onglets */}
-      <div className="shrink-0 relative inline-flex items-center gap-1 rounded-full v8-panel p-1.5 shadow-inner backdrop-blur-xl">
+      <div className="shrink-0 relative inline-flex w-fit items-center gap-1 self-start rounded-full v8-panel p-1 shadow-inner backdrop-blur-xl">
+        {tabIndicator.width > 0 && (
+          <motion.div
+            className="pointer-events-none absolute z-0 rounded-full bg-emerald-400 shadow-[0_0_20px_rgba(52,211,153,0.4)]"
+            initial={false}
+            animate={{
+              left: tabIndicator.left,
+              top: tabIndicator.top,
+              width: tabIndicator.width,
+              height: tabIndicator.height,
+            }}
+            transition={{ type: "spring", stiffness: 450, damping: 34 }}
+          />
+        )}
         {TABS.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
             <button
               key={tab.id}
+              ref={(el) => { tabRefs.current[tab.id] = el; }}
               type="button"
               onClick={() => {
                 setActiveTab(tab.id);
                 router.push(`/settings?tab=${tab.id}`, { scroll: false });
               }}
               className={cn(
-                "relative z-10 select-none rounded-full px-4 py-2 text-xs font-medium transition-colors duration-200 sm:text-sm",
+                "relative z-10 select-none rounded-full px-3 py-1.5 text-xs font-medium transition-colors duration-200 sm:text-sm",
                 isActive ? "text-zinc-950 font-semibold" : "text-zinc-400 hover:text-zinc-200"
               )}
             >
-              {isActive && (
-                <motion.div
-                  layoutId="activeSettingsTab"
-                  className="absolute inset-0 rounded-full bg-emerald-400 shadow-[0_0_20px_rgba(52,211,153,0.4)]"
-                  style={{ zIndex: -1 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 380,
-                    damping: 30,
-                  }}
-                />
-              )}
-              <span className="relative z-10">{tab.label}</span>
+              {tab.label}
             </button>
           );
         })}
@@ -265,7 +295,7 @@ export default function SettingsLayout() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.15 }}
-            className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
+            className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3"
           >
             <div id="profile-card" className="md:col-span-2 xl:col-span-1">
               <UserProfileCard
@@ -343,7 +373,7 @@ export default function SettingsLayout() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.15 }}
-            className="space-y-4"
+            className="space-y-6"
           >
             <SettingsContent />
           </motion.div>
@@ -354,7 +384,7 @@ export default function SettingsLayout() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.15 }}
-            className="space-y-4"
+            className="space-y-6"
           >
             <IntegrationsSettings />
           </motion.div>
@@ -365,7 +395,7 @@ export default function SettingsLayout() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.15 }}
-            className="space-y-4"
+            className="space-y-6"
           >
             <BillingSettings />
           </motion.div>

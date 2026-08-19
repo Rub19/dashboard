@@ -5,6 +5,54 @@ export type ChangelogEntry = {
   items: string[];
 };
 
+const v168_fr: ChangelogEntry = {
+  version: "v1.6.8",
+  date: "2026-08-19",
+  title: "Bandeau inférieur glassmorphic pour la barre de statut",
+  items: [
+    "Ajout d'un bandeau subtil en bas d'écran pour la barre de statut (`bg-zinc-950/50`, `border-white/[0.04]`, `backdrop-blur-[var(--panel-blur)]`).",
+    "Le bandeau reste non bloquant (`pointer-events-none`) ; seuls les contrôles interactifs le sont.",
+    "Les informations du bas (Normal, Sync, En ligne, version, Opérationnel) restent lisibles sans flotter directement sur le fond d'écran.",
+    "Version affichée en bas à droite : v1.6.8.",
+  ],
+};
+
+const v168_en: ChangelogEntry = {
+  version: "v1.6.8",
+  date: "2026-08-19",
+  title: "Glassmorphic bottom strip for the status bar",
+  items: [
+    "Added a subtle bottom strip for the status bar (`bg-zinc-950/50`, `border-white/[0.04]`, `backdrop-blur-[var(--panel-blur)]`).",
+    "The strip remains non-blocking (`pointer-events-none`); only interactive controls are interactive.",
+    "Bottom info (Normal, Sync, Online, version, Operational) stays readable without floating directly on the wallpaper.",
+    "Version badge bottom-right: v1.6.8.",
+  ],
+};
+
+const v168_es: ChangelogEntry = {
+  version: "v1.6.8",
+  date: "2026-08-19",
+  title: "Banda inferior glassmorphic para la barra de estado",
+  items: [
+    "Añadida una banda sutil en la parte inferior para la barra de estado (`bg-zinc-950/50`, `border-white/[0.04]`, `backdrop-blur-[var(--panel-blur)]`).",
+    "La banda sigue sin bloquear (`pointer-events-none`); solo los controles interactivos son interactivos.",
+    "La información inferior (Normal, Sync, En línea, versión, Operacional) sigue legible sin flotar directamente sobre el fondo.",
+    "Versión mostrada abajo a la derecha: v1.6.8.",
+  ],
+};
+
+const v168_de: ChangelogEntry = {
+  version: "v1.6.8",
+  date: "2026-08-19",
+  title: "Glassmorphic unterer Streifen für die Statusleiste",
+  items: [
+    "Subtiler unterer Streifen für die Statusleiste hinzugefügt (`bg-zinc-950/50`, `border-white/[0.04]`, `backdrop-blur-[var(--panel-blur)]`).",
+    "Der Streifen bleibt nicht blockierend (`pointer-events-none`); nur interaktive Steuerelemente sind interaktiv.",
+    "Die unteren Informationen (Normal, Sync, Online, Version, Operational) bleiben lesbar, ohne direkt auf dem Hintergrund zu schweben.",
+    "Version unten rechts: v1.6.8.",
+  ],
+};
+
 const v167_fr: ChangelogEntry = {
   version: "v1.6.7",
   date: "2026-08-19",
@@ -465,8 +513,8 @@ const v322_fr: ChangelogEntry = {
 };
 
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
-  en: [v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
+  fr: [v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -512,7 +560,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
+  es: [v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -558,7 +606,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
+  de: [v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

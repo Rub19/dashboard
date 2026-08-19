@@ -4,6 +4,14 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Bandeau inférieur glassmorphic pour la barre de statut (v1.6.8)**
+
+### Corrige
+- Ajout d'un bandeau subtil en bas d'écran pour la barre de statut (`bg-zinc-950/50`, `border-white/[0.04]`, `backdrop-blur-[var(--panel-blur)]`).
+- Le bandeau reste non bloquant (`pointer-events-none`) ; seuls les contrôles interactifs le sont.
+- Les informations du bas (Normal, Sync, En ligne, version, Opérationnel) restent lisibles sans flotter directement sur le fond d'écran.
+- Version `1.6.8`.
+
 **Refonte focus Obsidian/Glassmorphic et hauteur pleine pour éditeurs (v1.6.7)**
 
 ### Corrige

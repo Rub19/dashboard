@@ -250,8 +250,7 @@ export default function SocialDiscordCard({
                 <ClientImage
                   candidates={avatarCandidates}
                   alt={displayName}
-                  width={80}
-                  height={80}
+                  fill
                   className="h-full w-full rounded-2xl border border-white/10"
                   priority
                   fallback={
@@ -303,8 +302,7 @@ export default function SocialDiscordCard({
             <ClientImage
               src={activeMusic.cover}
               alt={activeMusic.title || ""}
-              width={40}
-              height={40}
+              fill
               className="h-10 w-10 shrink-0 rounded-lg"
               fallback={
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-400">

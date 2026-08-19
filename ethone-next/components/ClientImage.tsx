@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 type ClientImageProps = {
@@ -104,22 +103,23 @@ export default function ClientImage({
     return fallback ?? null;
   }
 
-  const imageClass = cn(
-    "z-10 object-cover transition-opacity duration-300",
-    status === "ok" ? "opacity-100" : "opacity-0",
-    className
-  );
-
   const handleLoad = () => {
     setStatus("ok");
     ok();
-    if (onResolve) onResolve(resolved);
+    if (resolved) onResolve?.(resolved);
   };
 
   const handleError = () => {
     setStatus("loading");
     next();
   };
+
+  const imgClass = cn(
+    "z-10 object-cover transition-opacity duration-300",
+    status === "ok" ? "opacity-100" : "opacity-0",
+    fill ? "absolute inset-0 h-full w-full" : "",
+    className
+  );
 
   return (
     <span
@@ -130,35 +130,22 @@ export default function ClientImage({
       {status !== "ok" && fallback && (
         <span className={cn("absolute inset-0 z-0", fill && "h-full w-full")}>{fallback}</span>
       )}
-      {fill ? (
-        <Image
-          key={resolved}
-          src={resolved}
-          alt={alt}
-          fill
-          sizes={sizes}
-          unoptimized
-          className={imageClass}
-          onLoadingComplete={handleLoad}
-          onError={handleError}
-          priority={priority}
-          loading={loading}
-        />
-      ) : (
-        <Image
-          key={resolved}
-          src={resolved}
-          alt={alt}
-          width={width || 64}
-          height={height || 64}
-          unoptimized
-          className={imageClass}
-          onLoadingComplete={handleLoad}
-          onError={handleError}
-          priority={priority}
-          loading={loading}
-        />
-      )}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        key={resolved}
+        src={resolved}
+        alt={alt}
+        width={fill ? undefined : width}
+        height={fill ? undefined : height}
+        sizes={sizes}
+        className={imgClass}
+        style={style}
+        onLoad={handleLoad}
+        onError={handleError}
+        loading={priority ? "eager" : loading}
+        decoding={priority ? "sync" : "async"}
+        referrerPolicy="no-referrer"
+      />
     </span>
   );
 }

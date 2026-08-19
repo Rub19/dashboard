@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { cloneElement } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   PanelLeftClose,
@@ -51,16 +52,20 @@ const APPS: AppItem[] = [
 ];
 
 function SidebarBrand() {
+  const { collapsed } = useAnimatedSidebarPanel();
   return (
     <Link
       href="/"
-      className="flex h-9 items-center gap-2 text-white outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className={cn(
+        "flex h-9 items-center gap-2 text-white outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        collapsed && "justify-center"
+      )}
       aria-label="ETHONE"
     >
       <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.05] text-[10px] font-bold">
         E
       </div>
-      <span className="text-sm font-bold tracking-tight">ETHONE</span>
+      {!collapsed && <span className="text-sm font-bold tracking-tight">ETHONE</span>}
     </Link>
   );
 }
@@ -69,7 +74,7 @@ function SyncBadge({ collapsed }: { collapsed: boolean }) {
   const i18n = useI18n();
   const status = useSyncStore((s) => s.status);
 
-  const config = {
+  const config: Record<string, { icon: React.ReactElement<{ className?: string }>; label: string; dot: string }> = {
     syncing: {
       icon: <Loader2 className="h-3 w-3 animate-spin text-purple-400" />,
       label: i18n("syncing", "Sync"),
@@ -90,18 +95,25 @@ function SyncBadge({ collapsed }: { collapsed: boolean }) {
       label: i18n("synced", "Sync"),
       dot: "bg-emerald-400",
     },
-  }[status];
+  };
+  const statusConfig = config[status];
+
+  const icon = cloneElement(statusConfig.icon, {
+    className: cn(statusConfig.icon.props.className, collapsed ? "h-4 w-4" : "h-3 w-3"),
+  });
 
   return (
     <div
       className={cn(
-        "flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-white/[0.03] px-2.5 py-2 text-[10px] font-medium text-zinc-400",
-        collapsed && "justify-center px-2"
+        "flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-white/[0.03] text-[10px] font-medium text-zinc-400",
+        collapsed
+          ? "h-9 w-9 shrink-0 items-center justify-center p-0"
+          : "px-2.5 py-2"
       )}
-      title={config.label}
+      title={statusConfig.label}
     >
-      {config.icon}
-      {!collapsed && <span className="truncate">{config.label}</span>}
+      {icon}
+      {!collapsed && <span className="truncate">{statusConfig.label}</span>}
     </div>
   );
 }
@@ -119,11 +131,14 @@ function SidebarProfile({ collapsed }: { collapsed: boolean }) {
   return (
     <div
       className={cn(
-        "flex items-center gap-2.5 rounded-xl border border-[var(--panel-border)] bg-white/[0.03] p-2",
-        collapsed && "justify-center"
+        "flex items-center gap-2.5 rounded-xl border border-[var(--panel-border)] bg-white/[0.03]",
+        collapsed ? "justify-center p-1.5" : "p-2"
       )}
     >
-      <div className="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-white/[0.04]">
+      <div className={cn(
+        "relative flex shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-white/[0.04]",
+        collapsed ? "h-7 w-7" : "h-8 w-8"
+      )}>
         {avatarUrl ? (
           <Image
             src={avatarUrl}
@@ -134,7 +149,7 @@ function SidebarProfile({ collapsed }: { collapsed: boolean }) {
             className="h-full w-full object-cover"
           />
         ) : (
-          <User className="h-4 w-4 text-zinc-400" />
+          <User className={cn("text-zinc-400", collapsed ? "h-3.5 w-3.5" : "h-4 w-4")} />
         )}
         <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--background)] bg-emerald-400" aria-hidden="true" />
       </div>
@@ -157,7 +172,12 @@ function SidebarFooter() {
     <div className="flex flex-col gap-2">
       <SidebarProfile collapsed={collapsed} />
 
-      <div className="flex items-center gap-2">
+      <div
+        className={cn(
+          "flex gap-2",
+          collapsed ? "flex-col items-center" : "flex-row items-center"
+        )}
+      >
         <SyncBadge collapsed={collapsed} />
 
         <button

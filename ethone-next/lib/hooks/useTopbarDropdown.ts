@@ -27,6 +27,7 @@ export function useTopbarDropdown({
     open,
     placement,
     strategy: "fixed",
+    transform: false,
     whileElementsMounted: autoUpdate,
     middleware: [offset(8), flip({ padding: 8 }), shift({ padding: 8 })],
   });

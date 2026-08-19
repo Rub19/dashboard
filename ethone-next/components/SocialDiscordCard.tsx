@@ -253,6 +253,7 @@ export default function SocialDiscordCard({
                   width={80}
                   height={80}
                   className="h-full w-full rounded-2xl border border-white/10"
+                  priority
                   fallback={
                     <div className="flex h-full w-full items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-lg font-bold text-zinc-300">
                       {displayName.slice(0, 2).toUpperCase()}

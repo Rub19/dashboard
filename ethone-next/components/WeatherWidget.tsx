@@ -197,7 +197,7 @@ function ForecastPill({ day, icon, colorClass, compact }: { day: ForecastDay; ic
   const max = toNum(day.max);
 
   return (
-    <div className="flex min-h-[64px] flex-col items-center gap-1 rounded-xl border border-white/[0.06] bg-white/[0.03] p-2.5 transition-colors hover:bg-white/[0.06]">
+    <div className="v8-inset flex min-h-[64px] flex-col items-center gap-1 p-2.5 transition-colors hover:bg-black/50">
       <span className="text-[11px] font-medium uppercase text-zinc-400">{formatShortDay(day.date, locale)}</span>
       <Icon name={icon} className={`my-0.5 ${compact ? "h-4 w-4" : "h-5 w-5"} ${colorClass}`} />
       <span className={`font-mono font-semibold text-white ${compact ? "text-[10px]" : "text-xs"}`}>

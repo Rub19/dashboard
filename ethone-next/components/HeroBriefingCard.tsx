@@ -159,7 +159,7 @@ export default function HeroBriefingCard({
           {counters.map((c) => (
             <div
               key={c.label}
-              className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2"
+              className="v8-inset flex items-center gap-2 p-2"
             >
               <span
                 className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${c.color.bg} ${c.color.text}`}

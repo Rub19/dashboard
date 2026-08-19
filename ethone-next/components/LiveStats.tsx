@@ -44,7 +44,7 @@ export default function LiveStats({ records = [], updatedAt, loading, className 
         {statItems.map((item) => (
           <div
             key={item.label}
-            className="flex items-center justify-between rounded-xl border border-white/[0.05] bg-white/[0.02] p-3"
+            className="v8-inset flex items-center justify-between p-3"
           >
             <span className="text-[10px] uppercase text-zinc-400">{item.label}</span>
             <span className={`font-mono text-xl font-bold ${item.color}`}>

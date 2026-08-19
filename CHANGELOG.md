@@ -4,6 +4,17 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Harmonisation des cartes Bento et de la profondeur glassmorphic**
+
+### Corrige
+- `ethone-next/app/globals.css` : les panneaux passent d'un fond noir opaque à une teinte graphite translucide (`--panel-bg: #121217/50`), avec `backdrop-blur: 40px`, un contour `white/[0.08]`, un reflet zénithal interne et une ombre portée douce (`--panel-shadow`). Un utilitaire `.v8-inset` est ajouté pour les sous-conteneurs (`bg-[#09090b]/40`, bordure `white/[0.04]`, `rounded-xl`). Les thèmes clairs (`day`, `minimal`) adaptent ces tokens pour conserver le contraste.
+- `ethone-next/components/BentoCard.tsx` et `components/ui/BentoCard.tsx` : utilisent le nouveau `--panel-shadow` et conservent `--panel-bg` pour un rendu uniforme.
+- `ethone-next/components/Input.tsx` : style des champs de saisie basculé sur les tokens `v8-inset`.
+- `ethone-next/components/RichTextEditor.tsx` : la barre d'outils et la zone d'édition passent en `v8-inset`.
+- `ethone-next/components/LiveStats.tsx`, `HeroBriefingCard.tsx`, `WeatherWidget.tsx` : les tuiles internes utilisent `.v8-inset`.
+- Le Dock n'est pas impacté : il reste sur sa propre classe `.v8-dock`.
+- Version `1.6.3`.
+
 **Dock : restauration du style d’avant (verre givré)**
 
 ### Corrige

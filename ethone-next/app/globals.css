@@ -32,11 +32,14 @@
   --card-radius: 1rem;
   --dock-radius: 1rem;
   --panel-radius: 1rem;
-  --panel-border: color-mix(in srgb, white 12%, transparent);
-  --panel-obsidian: color-mix(in srgb, var(--surface-raised) 60%, #000000 40%);
-  --panel-bg: color-mix(in srgb, var(--panel-obsidian) 96%, transparent);
-  --panel-blur: 20px;
+  --panel-border: color-mix(in srgb, white 8%, transparent);
+  --panel-bg: color-mix(in srgb, #121217 50%, transparent);
+  --panel-blur: 40px;
+  --panel-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.07), 0 8px 32px rgba(0, 0, 0, 0.45);
   --panel-padding: var(--density-pad, 1.25rem);
+  --inset-radius: 0.75rem;
+  --inset-bg: color-mix(in srgb, #09090b 40%, transparent);
+  --inset-border: color-mix(in srgb, white 4%, transparent);
   --item-gap: var(--density-gap, 1rem);
   --density-gap: 1rem;
   --density-pad: 1.25rem;
@@ -83,6 +86,16 @@
   --v8-tilt-y: 0deg;
   --v8-spotlight-x: 50%;
   --v8-spotlight-y: 50%;
+}
+
+/* Thèmes clairs : adapter les panneaux graphite à la luminosité du thème */
+html[data-theme="day"],
+html[data-theme="minimal"] {
+  --panel-bg: color-mix(in srgb, #f4f4f5 50%, transparent);
+  --panel-border: color-mix(in srgb, black 8%, transparent);
+  --panel-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.45), 0 8px 32px rgba(0, 0, 0, 0.15);
+  --inset-bg: color-mix(in srgb, #ffffff 40%, transparent);
+  --inset-border: color-mix(in srgb, black 4%, transparent);
 }
 
 html[data-space="focus"]:not([data-theme="day"]) {
@@ -2027,13 +2040,15 @@ a:has(> svg) {
   border-radius: var(--panel-radius);
   border: 1px solid var(--panel-border);
   background-color: var(--panel-bg);
-  background-image: linear-gradient(
-    180deg,
-    color-mix(in srgb, white 5%, transparent) 0%,
-    transparent 40%
-  );
+  box-shadow: var(--panel-shadow);
   backdrop-filter: blur(var(--panel-blur));
   -webkit-backdrop-filter: blur(var(--panel-blur));
+}
+
+.v8-inset {
+  border-radius: var(--inset-radius);
+  border: 1px solid var(--inset-border);
+  background-color: var(--inset-bg);
 }
 
 .v8-dock {

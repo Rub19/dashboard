@@ -314,7 +314,7 @@ export default function RichTextEditor({
   return (
     <div className={`v8-rich-text flex flex-col ${className}`}>
       <div
-        className="mb-4 flex flex-wrap items-center gap-1 rounded-xl border border-white/[0.06] bg-white/[0.03] p-1.5 backdrop-blur-md"
+        className="mb-4 flex flex-wrap items-center gap-1 v8-inset p-1.5"
         role="toolbar"
         aria-label="Formatage du texte"
         onMouseDown={(e) => e.preventDefault()}
@@ -410,7 +410,7 @@ export default function RichTextEditor({
       </div>
 
       <div
-        className="relative flex-1 cursor-text rounded-2xl v8-panel px-4 py-3 backdrop-blur-2xl focus-within:border-white/20"
+        className="relative flex-1 cursor-text v8-inset px-4 py-3 focus-within:border-white/20"
         onClick={() => ref.current?.focus()}
       >
         {empty && placeholder && (

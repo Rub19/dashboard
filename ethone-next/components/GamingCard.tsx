@@ -1,14 +1,13 @@
 "use client";
 
-import { useMemo } from "react";
-import Image from "next/image";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { AlertCircle, Gamepad2, Loader2, User } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import type { MinecraftProfile } from "@/lib/hooks/useMinecraftLive";
 import { TiltCard } from "@/components/ui/TiltCard";
-import { useClientImage } from "@/components/ClientImage";
+import ClientImage from "@/components/ClientImage";
 import { cn } from "@/lib/utils";
 
 type MinecraftServer = {
@@ -82,7 +81,7 @@ export default function GamingCard({
 
   const bodySet = useMemo(() => new Set(bodyCandidates), [bodyCandidates]);
 
-  const { src: renderSrc, loading: imageLoading } = useClientImage(renderCandidates);
+  const [renderSrc, setRenderSrc] = useState<string | null>(null);
   const isBody = renderSrc ? bodySet.has(renderSrc) : true;
 
   const server = profile?.server;
@@ -154,30 +153,29 @@ export default function GamingCard({
       {hasUsername ? (
         <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 py-2">
           <div className="relative w-full flex-1 min-h-[5rem]">
-            {renderSrc ? (
-              <Image
-                key={renderSrc}
-                src={renderSrc}
-                alt={username || playerName || ""}
-                fill
-                sizes="(max-width: 768px) 100vw, 33vw"
-                unoptimized
-                className={cn(
-                  "object-contain drop-shadow-2xl",
-                  isBody ? "" : "[image-rendering:pixelated]"
-                )}
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center">
-                {imageLoading && !hasProfile ? (
-                  <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
-                ) : error && configured && !hasProfile ? (
-                  <AlertCircle className="h-8 w-8 text-rose-400" />
-                ) : (
-                  <Gamepad2 className="h-8 w-8 text-zinc-400" />
-                )}
-              </div>
-            )}
+            <ClientImage
+              candidates={renderCandidates}
+              alt={username || playerName || ""}
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
+              className={cn(
+                "object-contain drop-shadow-2xl",
+                isBody ? "" : "[image-rendering:pixelated]"
+              )}
+              fallback={(
+                <div className="flex h-full w-full items-center justify-center">
+                  {loading && !hasProfile ? (
+                    <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
+                  ) : error && configured && !hasProfile ? (
+                    <AlertCircle className="h-8 w-8 text-rose-400" />
+                  ) : (
+                    <Gamepad2 className="h-8 w-8 text-zinc-400" />
+                  )}
+                </div>
+              )}
+              onResolve={setRenderSrc}
+              priority
+            />
           </div>
 
           <div className="w-full text-center">

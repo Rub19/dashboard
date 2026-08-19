@@ -4,134 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-type ClientImageStatus = "idle" | "loading" | "ok" | "error";
-
-function isValidImageUrl(src?: string): src is string {
-  return (
-    typeof src === "string" &&
-    src.length > 0 &&
-    (src.startsWith("https://") || src.startsWith("http://"))
-  );
-}
-
-let probeContainer: HTMLDivElement | null = null;
-
-function getProbeContainer(): HTMLDivElement {
-  if (probeContainer) return probeContainer;
-  probeContainer = document.createElement("div");
-  probeContainer.setAttribute("aria-hidden", "true");
-  probeContainer.style.cssText =
-    "position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;";
-  document.body.appendChild(probeContainer);
-  return probeContainer;
-}
-
-function testImage(src: string, timeoutMs = 10000): Promise<boolean> {
-  return new Promise((resolve) => {
-    if (typeof window === "undefined" || !document.body) {
-      resolve(false);
-      return;
-    }
-
-    const img = document.createElement("img");
-    let done = false;
-
-    const timer = window.setTimeout(() => {
-      if (done) return;
-      done = true;
-      cleanup();
-      resolve(false);
-    }, timeoutMs);
-
-    function cleanup() {
-      window.clearTimeout(timer);
-      img.onload = null;
-      img.onerror = null;
-      img.onabort = null;
-      img.src = "";
-      img.remove();
-    }
-
-    img.onload = () => {
-      if (done) return;
-      done = true;
-      cleanup();
-      resolve(true);
-    };
-
-    img.onerror = () => {
-      if (done) return;
-      done = true;
-      cleanup();
-      resolve(false);
-    };
-
-    img.onabort = () => {
-      if (done) return;
-      done = true;
-      cleanup();
-      resolve(false);
-    };
-
-    img.style.cssText = "position:absolute;width:1px;height:1px;opacity:0;";
-    img.decoding = "async";
-    img.src = src;
-    getProbeContainer().appendChild(img);
-  });
-}
-
-export function useClientImage(candidates: (string | undefined)[], timeoutMs = 10000) {
-  const [status, setStatus] = useState<ClientImageStatus>("idle");
-  const [activeSrc, setActiveSrc] = useState<string | undefined>(undefined);
-
-  const validCandidates = useMemo(
-    () => candidates.filter(isValidImageUrl),
-    [candidates]
-  );
-
-  useEffect(() => {
-    let cancelled = false;
-
-    if (validCandidates.length === 0) {
-      setStatus("error");
-      setActiveSrc(undefined);
-      return;
-    }
-
-    setStatus("loading");
-    setActiveSrc(undefined);
-
-    async function find() {
-      const results = await Promise.all(
-        validCandidates.map((src) => testImage(src, timeoutMs))
-      );
-
-      if (cancelled) return;
-
-      const firstOkIndex = results.findIndex((ok) => ok);
-      if (firstOkIndex !== -1) {
-        setActiveSrc(validCandidates[firstOkIndex]);
-        setStatus("ok");
-      } else {
-        setActiveSrc(undefined);
-        setStatus("error");
-      }
-    }
-
-    find();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [validCandidates, timeoutMs]);
-
-  return {
-    src: activeSrc,
-    loading: status === "loading" || status === "idle",
-    error: status === "error",
-  };
-}
-
 type ClientImageProps = {
   candidates?: (string | undefined)[];
   src?: string;
@@ -146,7 +18,59 @@ type ClientImageProps = {
   timeoutMs?: number;
   priority?: boolean;
   loading?: "eager" | "lazy";
+  onResolve?: (src: string) => void;
 };
+
+function isValidImageUrl(src?: string): src is string {
+  return typeof src === "string" && src.length > 0 && /^https?:\/\//.test(src);
+}
+
+export function useClientImage(candidates: (string | undefined)[], timeoutMs = 10000) {
+  const sources = useMemo(() => candidates.filter(isValidImageUrl), [candidates]);
+  const [index, setIndex] = useState(0);
+  const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
+
+  useEffect(() => {
+    setIndex(0);
+    setStatus(sources.length > 0 ? "loading" : "error");
+  }, [sources]);
+
+  useEffect(() => {
+    if (sources.length === 0) return;
+    const currentSrc = sources[index];
+    if (!currentSrc) {
+      setStatus("error");
+      return;
+    }
+    let cancelled = false;
+    const timer = setTimeout(() => {
+      if (cancelled) return;
+      if (index < sources.length - 1) {
+        setIndex((i) => i + 1);
+      } else {
+        setStatus("error");
+      }
+    }, timeoutMs);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [sources, index, timeoutMs]);
+
+  return {
+    src: sources[index],
+    loading: status === "loading" || status === "idle",
+    error: status === "error",
+    next: () => {
+      if (index < sources.length - 1) {
+        setIndex((i) => i + 1);
+      } else {
+        setStatus("error");
+      }
+    },
+    ok: () => setStatus("ok"),
+  };
+}
 
 export default function ClientImage({
   candidates,
@@ -162,50 +86,79 @@ export default function ClientImage({
   timeoutMs = 10000,
   priority,
   loading,
+  onResolve,
 }: ClientImageProps) {
-  const resolvedCandidates = useMemo(
-    () => (candidates ? candidates : src ? [src] : []),
+  const sources = useMemo(
+    () => (candidates ? candidates : src ? [src] : []).filter(isValidImageUrl),
     [candidates, src]
   );
 
-  const { src: resolved } = useClientImage(resolvedCandidates, timeoutMs);
-  const [domError, setDomError] = useState(false);
+  const { src: resolved, next, ok } = useClientImage(sources, timeoutMs);
+  const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("loading");
 
-  if (!resolved || domError) {
+  useEffect(() => {
+    setStatus(resolved ? "loading" : "error");
+  }, [resolved]);
+
+  if (!resolved || status === "error") {
     return fallback ?? null;
   }
 
-  if (fill) {
-    return (
-      <Image
-        key={resolved}
-        src={resolved}
-        alt={alt}
-        fill
-        sizes={sizes}
-        unoptimized
-        className={cn("object-cover", className)}
-        style={style}
-        onError={() => setDomError(true)}
-        priority={priority}
-        loading={loading}
-      />
-    );
-  }
+  const imageClass = cn(
+    "z-10 object-cover transition-opacity duration-300",
+    status === "ok" ? "opacity-100" : "opacity-0",
+    className
+  );
+
+  const handleLoad = () => {
+    setStatus("ok");
+    ok();
+    if (onResolve) onResolve(resolved);
+  };
+
+  const handleError = () => {
+    setStatus("loading");
+    next();
+  };
 
   return (
-    <Image
-      key={resolved}
-      src={resolved}
-      alt={alt}
-      width={width || 64}
-      height={height || 64}
-      unoptimized
-      className={cn("object-cover", className)}
+    <span
+      className={cn("relative inline-flex", fill && "h-full w-full")}
       style={style}
-      onError={() => setDomError(true)}
-      priority={priority}
-      loading={loading}
-    />
+      aria-label={alt || undefined}
+    >
+      {status !== "ok" && fallback && (
+        <span className={cn("absolute inset-0 z-0", fill && "h-full w-full")}>{fallback}</span>
+      )}
+      {fill ? (
+        <Image
+          key={resolved}
+          src={resolved}
+          alt={alt}
+          fill
+          sizes={sizes}
+          unoptimized
+          className={imageClass}
+          onLoadingComplete={handleLoad}
+          onError={handleError}
+          priority={priority}
+          loading={loading}
+        />
+      ) : (
+        <Image
+          key={resolved}
+          src={resolved}
+          alt={alt}
+          width={width || 64}
+          height={height || 64}
+          unoptimized
+          className={imageClass}
+          onLoadingComplete={handleLoad}
+          onError={handleError}
+          priority={priority}
+          loading={loading}
+        />
+      )}
+    </span>
   );
 }

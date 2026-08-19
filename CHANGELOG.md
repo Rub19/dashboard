@@ -4,6 +4,35 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Corrections images : Gaming, Discord Lanyard et Spotify (v1.6.15)**
+
+### Corrige
+- Ajout du composant `ClientImage` : pré-chargement des images en mémoire avant affichage pour éviter les icônes brisées.
+- `GamingCard` déduplique les URLs NMSR et tente les sources NMSR, Crafatar et mc-heads en parallèle.
+- `SocialDiscordCard` tente l'avatar Discord personnalisé, puis l'avatar par défaut, puis retombe sur les initiales.
+- `SafeImage` et `ImageFallback` utilisent `ClientImage` pour les covers Spotify et les avatars des Live widgets.
+- Version `1.6.15`.
+
+**Discord : double mode OAuth2 / Lanyard et persistance Worker (v1.6.14)**
+
+### Ajoute
+- Sélecteur de mode Discord dans les réglages : OAuth2 (recommandé) ou Lanyard (présence seule).
+- Routes Worker Discord OAuth2 : génération du lien d'autorisation, callback signé, échange du code, récupération du profil `@me`, de l'email, des connexions tierces et des serveurs (`guilds`).
+- Persistance du profil Discord via le Worker dans `ethone_user_data` (`kind=discord`) et stockage sécurisé du token OAuth.
+- Intégration de l'avatar et du nom Discord dans la `TopBar` (`UserProfileDropdown`) et la `Sidebar`.
+- Vérification Snyk : `DISCORD_CLIENT_SECRET` reste strictement côté serveur (fichiers `.env.local` et `worker/.dev.vars` ignorés, aucune valeur dans le code source).
+- Version `1.6.14`.
+
+**Correction UI : z-index et portails pour les menus déroulants (v1.6.13)**
+
+### Corrige
+- Les menus Profil, Langue et Notifications sont désormais rendus via un portail React fixed pour flotter au-dessus de tout le contenu.
+- Positionnement géré par `FloatingPortal` + `useFloating` + `useLayer` : placement, fermeture en dehors, touche Échap, redimensionnement et scroll.
+- `TopBar` passe en `z-50` et `<main>` en `z-0` pour garantir l'ordre d'empilement.
+- Bouton de raccourci « Créer une note » ramené à `z-0`.
+- Audit Snyk : aucune clé API exposée (faux positifs détectés sur des clés localStorage/i18n).
+- Version `1.6.13`.
+
 **Minecraft : affichage du skin via NMSR (v1.6.12)**
 
 ### Corrige

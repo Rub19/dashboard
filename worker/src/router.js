@@ -42,6 +42,14 @@ import {
 } from "./routes/google-drive-oauth.js";
 import { healthRoute } from "./routes/health.js";
 import { lanyardRoute } from "./routes/lanyard.js";
+import {
+  discordOAuthCallbackRoute,
+  discordOAuthDisconnectRoute,
+  discordOAuthExchangeRoute,
+  discordOAuthProfileRoute,
+  discordOAuthRefreshRoute,
+  discordOAuthUrlRoute,
+} from "./routes/discord-oauth.js";
 import { blueskyProfileRoute } from "./routes/bluesky.js";
 import { catalogProfileRoute } from "./routes/catalog-connector.js";
 import { lastFmRoute } from "./routes/lastfm.js";
@@ -160,6 +168,13 @@ export const ROUTES = Object.freeze([
   route("github.oauth.exchange", "/api/github/oauth/exchange", githubOAuthExchangeRoute, { method: "POST", service: "github", rateLimit: "strict" }),
   route("github.profile", "/api/github/profile", githubProfileRoute, { service: "github" }),
   route("github.oauth.disconnect", "/api/github/oauth/disconnect", githubOAuthDisconnectRoute, { method: "POST", service: "github", rateLimit: "strict" }),
+
+  route("discord.oauth.url", "/api/discord/oauth/url", discordOAuthUrlRoute, { service: "discord", rateLimit: "standard" }),
+  route("discord.oauth.callback", "/api/discord/oauth/callback", discordOAuthCallbackRoute, { public: true, service: "discord", rateLimit: "edge" }),
+  route("discord.oauth.exchange", "/api/discord/oauth/exchange", discordOAuthExchangeRoute, { method: "POST", service: "discord", rateLimit: "strict" }),
+  route("discord.oauth.profile", "/api/discord/oauth/profile", discordOAuthProfileRoute, { service: "discord", rateLimit: "standard" }),
+  route("discord.oauth.refresh", "/api/discord/oauth/refresh", discordOAuthRefreshRoute, { service: "discord", rateLimit: "standard" }),
+  route("discord.oauth.disconnect", "/api/discord/oauth/disconnect", discordOAuthDisconnectRoute, { method: "POST", service: "discord", rateLimit: "strict" }),
   route("google-calendar.oauth.exchange", "/api/google-calendar/oauth/exchange", googleCalendarOAuthExchangeRoute, { method: "POST", service: "google-calendar", rateLimit: "strict" }),
   route("google-calendar.events", "/api/google-calendar/events", googleCalendarEventsRoute, { service: "google-calendar" }),
   route("google-calendar.oauth.disconnect", "/api/google-calendar/oauth/disconnect", googleCalendarOAuthDisconnectRoute, { method: "POST", service: "google-calendar", rateLimit: "strict" }),

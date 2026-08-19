@@ -1,12 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { AlertCircle, ExternalLink, Loader2, Music, Radio, RadioOff } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import type { LanyardPresence, NowPlaying } from "@/lib/hooks/useLiveData";
+import ClientImage from "@/components/ClientImage";
 import { TiltCard } from "@/components/ui/TiltCard";
 import { cn } from "@/lib/utils";
 
@@ -112,18 +112,6 @@ export default function SocialDiscordCard({
     () => `https://cdn.discordapp.com/embed/avatars/${defaultAvatarIndex(userId, discriminator)}.png`,
     [userId, discriminator]
   );
-
-  const [src, setSrc] = useState(primaryAvatar || fallbackAvatar);
-  const [errored, setErrored] = useState(false);
-
-  function handleError() {
-    if (!errored) {
-      setErrored(true);
-      setSrc(fallbackAvatar);
-    } else {
-      setSrc("");
-    }
-  }
 
   const status = lanyard?.discord_status || "offline";
   const color = statusColor(status);
@@ -254,21 +242,18 @@ export default function SocialDiscordCard({
           {hasLanyard && (
             <div className="flex flex-col items-center gap-3 text-center">
               <div className="relative h-16 w-16 shrink-0">
-                {errored && !src ? (
-                  <div className="flex h-full w-full items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-lg font-bold text-zinc-300">
-                    {displayName.slice(0, 2).toUpperCase()}
-                  </div>
-                ) : (
-                  <Image
-                    src={src}
-                    alt={displayName}
-                    width={80}
-                    height={80}
-                    unoptimized
-                    onError={handleError}
-                    className="h-full w-full rounded-2xl border border-white/10 object-cover"
-                  />
-                )}
+                <ClientImage
+                  candidates={[primaryAvatar, fallbackAvatar]}
+                  alt={displayName}
+                  width={80}
+                  height={80}
+                  className="h-full w-full rounded-2xl border border-white/10"
+                  fallback={
+                    <div className="flex h-full w-full items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-lg font-bold text-zinc-300">
+                      {displayName.slice(0, 2).toUpperCase()}
+                    </div>
+                  }
+                />
                 <span
                   className={cn(
                     "absolute -bottom-1 -right-1 h-5 w-5 rounded-full border-[3px] border-zinc-950",
@@ -309,20 +294,18 @@ export default function SocialDiscordCard({
       {activeMusic && (
         <div className="mt-auto flex flex-col gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] p-3">
           <div className="flex items-center gap-3">
-            {activeMusic.cover ? (
-              <Image
-                src={activeMusic.cover}
-                alt={activeMusic.title || ""}
-                width={40}
-                height={40}
-                unoptimized
-                className="h-10 w-10 shrink-0 rounded-lg object-cover"
-              />
-            ) : (
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-400">
-                <Music className="h-4 w-4" />
-              </div>
-            )}
+            <ClientImage
+              src={activeMusic.cover}
+              alt={activeMusic.title || ""}
+              width={40}
+              height={40}
+              className="h-10 w-10 shrink-0 rounded-lg"
+              fallback={
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-400">
+                  <Music className="h-4 w-4" />
+                </div>
+              }
+            />
             <div className="min-w-0">
               <p className="truncate text-xs font-semibold text-white">{activeMusic.title || "—"}</p>
               <p className="truncate text-[10px] text-zinc-400">{activeMusic.artist || "—"}</p>

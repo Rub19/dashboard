@@ -134,7 +134,7 @@ export default function TopBar() {
   return (
     <header
       data-v8-topbar
-      className="relative flex h-12 shrink-0 select-none items-center justify-between rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 backdrop-blur-[var(--panel-blur)]"
+      className="relative z-50 flex h-12 shrink-0 select-none items-center justify-between rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 backdrop-blur-[var(--panel-blur)]"
     >
       {/* Left — Identity & Breadcrumb */}
       <div className="relative z-10 flex min-w-0 flex-1 items-center gap-3">

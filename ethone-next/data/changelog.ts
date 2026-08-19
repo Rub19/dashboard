@@ -5,6 +5,174 @@ export type ChangelogEntry = {
   items: string[];
 };
 
+const v173_fr: ChangelogEntry = {
+  version: "v1.6.13",
+  date: "2026-08-19",
+  title: "Correction UI : z-index et portails pour les menus déroulants",
+  items: [
+    "Les menus Profil, Langue et Notifications sont désormais rendus via un portail React fixed pour flotter au-dessus de tout le contenu.",
+    "Utilisation de FloatingPortal + useFloating + useLayer pour le positionnement, l'extérieur du menu et la touche Échap.",
+    "TopBar passe en z-50 et main en z-0 pour garantir l'ordre d'empilement.",
+    "Bouton raccourci \"Créer une note\" ramené à z-0.",
+    "Audit Snyk : aucune clé API exposée (faux positifs sur clés localStorage/i18n).",
+    "Version affichée en bas à droite : v1.6.13.",
+  ],
+};
+
+const v173_en: ChangelogEntry = {
+  version: "v1.6.13",
+  date: "2026-08-19",
+  title: "UI fix: z-index and portals for dropdowns",
+  items: [
+    "Profile, Language and Notification menus now render through a fixed React portal so they float above all content.",
+    "Using FloatingPortal + useFloating + useLayer for positioning, outside click and Escape.",
+    "TopBar set to z-50 and main to z-0 to guarantee stacking order.",
+    "\"Create a note\" shortcut button lowered to z-0.",
+    "Snyk audit: no exposed API keys (false positives on localStorage/i18n keys).",
+    "Version badge bottom-right: v1.6.13.",
+  ],
+};
+
+const v173_es: ChangelogEntry = {
+  version: "v1.6.13",
+  date: "2026-08-19",
+  title: "Corrección UI: z-index y portales para desplegables",
+  items: [
+    "Los menús de Perfil, Idioma y Notificaciones ahora se renderizan a través de un portal React fixed para flotar por encima de todo el contenido.",
+    "Uso de FloatingPortal + useFloating + useLayer para posicionamiento, clic fuera y Escape.",
+    "TopBar en z-50 y main en z-0 para garantizar el orden de apilamiento.",
+    "Botón de acceso directo \"Crear nota\" reducido a z-0.",
+    "Auditoría Snyk: ninguna clave API expuesta (falsos positivos en claves localStorage/i18n).",
+    "Versión mostrada abajo a la derecha: v1.6.13.",
+  ],
+};
+
+const v173_de: ChangelogEntry = {
+  version: "v1.6.13",
+  date: "2026-08-19",
+  title: "UI-Fix: z-Index und Portale für Dropdowns",
+  items: [
+    "Die Menüs Profil, Sprache und Benachrichtigungen werden jetzt über ein fixed React-Portal gerendert, um über dem gesamten Inhalt zu schweben.",
+    "Verwendung von FloatingPortal + useFloating + useLayer für Positionierung, Klick außerhalb und Escape.",
+    "TopBar auf z-50 und main auf z-0 gesetzt, um die Stapelreihenfolge zu garantieren.",
+    "\"Notiz erstellen\"-Verknüpfungsbutton auf z-0 reduziert.",
+    "Snyk-Audit: Keine API-Schlüssel offengelegt (Falschmeldungen bei localStorage/i18n-Schlüsseln).",
+    "Version unten rechts: v1.6.13.",
+  ],
+};
+
+const v174_fr: ChangelogEntry = {
+  version: "v1.6.14",
+  date: "2026-08-19",
+  title: "Discord : double mode OAuth2 / Lanyard et persistance Worker",
+  items: [
+    "Nouveau sélecteur Discord dans les réglages : OAuth2 (recommandé) ou Lanyard (présence seule).",
+    "Le Worker gère le flux OAuth2 Discord : échange du code, récupération du profil @me, email, connexions tierces et serveurs.",
+    "Persistance du profil Discord dans la base via le Worker (ethone_user_data kind=discord) et du token OAuth.",
+    "Callback OAuth signé côté Worker avec redirection automatique vers l'application.",
+    "Intégration de l'avatar et du nom Discord dans la TopBar (UserProfileDropdown) et la Sidebar.",
+    "Snyk : DISCORD_CLIENT_SECRET reste exclusivement dans les variables d'environnement côté serveur.",
+    "Version affichée en bas à droite : v1.6.14.",
+  ],
+};
+
+const v174_en: ChangelogEntry = {
+  version: "v1.6.14",
+  date: "2026-08-19",
+  title: "Discord: dual OAuth2 / Lanyard mode and Worker persistence",
+  items: [
+    "New Discord selector in settings: OAuth2 (recommended) or Lanyard (presence only).",
+    "Worker now handles the Discord OAuth2 flow: code exchange, @me profile, email, third-party connections and guilds.",
+    "Discord profile persisted through the Worker (ethone_user_data kind=discord) and OAuth token stored securely.",
+    "Signed OAuth callback handled by the Worker with automatic redirect back to the app.",
+    "Discord avatar and display name integrated in TopBar (UserProfileDropdown) and Sidebar.",
+    "Snyk: DISCORD_CLIENT_SECRET remains strictly in server-side environment variables.",
+    "Version badge bottom-right: v1.6.14.",
+  ],
+};
+
+const v174_es: ChangelogEntry = {
+  version: "v1.6.14",
+  date: "2026-08-19",
+  title: "Discord: modo dual OAuth2 / Lanyard y persistencia en Worker",
+  items: [
+    "Nuevo selector de Discord en ajustes: OAuth2 (recomendado) o Lanyard (solo presencia).",
+    "El Worker gestiona el flujo OAuth2 de Discord: intercambio de código, perfil @me, email, conexiones de terceros y servidores.",
+    "Perfil de Discord persistido a través del Worker (ethone_user_data kind=discord) y token OAuth almacenado de forma segura.",
+    "Callback OAuth firmado gestionado por el Worker con redirección automática a la aplicación.",
+    "Avatar y nombre de Discord integrados en la TopBar (UserProfileDropdown) y la barra lateral.",
+    "Snyk: DISCORD_CLIENT_SECRET permanece estrictamente en variables de entorno del lado del servidor.",
+    "Versión mostrada abajo a la derecha: v1.6.14.",
+  ],
+};
+
+const v174_de: ChangelogEntry = {
+  version: "v1.6.14",
+  date: "2026-08-19",
+  title: "Discord: Dual-Modus OAuth2 / Lanyard und Worker-Persistenz",
+  items: [
+    "Neuer Discord-Wahlschalter in den Einstellungen: OAuth2 (empfohlen) oder Lanyard (nur Präsenz).",
+    "Der Worker übernimmt den Discord-OAuth2-Flow: Code-Austausch, @me-Profil, E-Mail, Drittverbindungen und Server.",
+    "Discord-Profil wird über den Worker persistiert (ethone_user_data kind=discord) und OAuth-Token sicher gespeichert.",
+    "Signierter OAuth-Callback im Worker mit automatischer Weiterleitung zurück zur App.",
+    "Discord-Avatar und -Name in der TopBar (UserProfileDropdown) und der Sidebar integriert.",
+    "Snyk: DISCORD_CLIENT_SECRET bleibt ausschließlich in serverseitigen Umgebungsvariablen.",
+    "Version unten rechts: v1.6.14.",
+  ],
+};
+
+const v175_fr: ChangelogEntry = {
+  version: "v1.6.15",
+  date: "2026-08-19",
+  title: "Corrections images : Gaming, Discord Lanyard et Spotify",
+  items: [
+    "Nouveau composant ClientImage qui pré-charge les images en mémoire avant de les afficher pour éviter les icônes brisées.",
+    "Déduplication des URLs NMSR dans GamingCard et essai des sources NMSR, Crafatar, mc-heads en parallèle.",
+    "SocialDiscordCard tente l'avatar Discord personnalisé puis l'avatar par défaut avant de revenir aux initiales.",
+    "SafeImage et ImageFallback utilisent ClientImage pour les covers Spotify et les avatars des Live widgets.",
+    "Version affichée en bas à droite : v1.6.15.",
+  ],
+};
+
+const v175_en: ChangelogEntry = {
+  version: "v1.6.15",
+  date: "2026-08-19",
+  title: "Image fixes: Gaming, Discord Lanyard and Spotify",
+  items: [
+    "New ClientImage component that pre-loads images in memory before rendering to avoid broken icons.",
+    "Deduplicated NMSR URLs in GamingCard and tries NMSR, Crafatar, mc-heads sources in parallel.",
+    "SocialDiscordCard tries the custom Discord avatar, then the default avatar, then initials.",
+    "SafeImage and ImageFallback now use ClientImage for Spotify covers and Live widget avatars.",
+    "Version badge bottom-right: v1.6.15.",
+  ],
+};
+
+const v175_es: ChangelogEntry = {
+  version: "v1.6.15",
+  date: "2026-08-19",
+  title: "Correcciones de imágenes: Gaming, Discord Lanyard y Spotify",
+  items: [
+    "Nuevo componente ClientImage que precarga las imágenes en memoria antes de mostrarlas para evitar iconos rotos.",
+    "Desduplicación de URLs NMSR en GamingCard y prueba de fuentes NMSR, Crafatar, mc-heads en paralelo.",
+    "SocialDiscordCard intenta el avatar personalizado de Discord, luego el avatar por defecto y luego las iniciales.",
+    "SafeImage e ImageFallback usan ClientImage para las portadas de Spotify y los avatares de los Live widgets.",
+    "Versión mostrada abajo a la derecha: v1.6.15.",
+  ],
+};
+
+const v175_de: ChangelogEntry = {
+  version: "v1.6.15",
+  date: "2026-08-19",
+  title: "Bildkorrekturen: Gaming, Discord Lanyard und Spotify",
+  items: [
+    "Neue ClientImage-Komponente, die Bilder im Speicher vorlädt, bevor sie angezeigt werden, um kaputte Symbole zu vermeiden.",
+    "Deduplizierung der NMSR-URLs in GamingCard und parallele Prüfung der Quellen NMSR, Crafatar, mc-heads.",
+    "SocialDiscordCard probiert den benutzerdefinierten Discord-Avatar, dann den Standard-Avatar und dann Initialen.",
+    "SafeImage und ImageFallback verwenden ClientImage für Spotify-Cover und Avatare in Live-Widgets.",
+    "Version unten rechts: v1.6.15.",
+  ],
+};
+
 const v172_fr: ChangelogEntry = {
   version: "v1.6.12",
   date: "2026-08-19",
@@ -709,8 +877,8 @@ const v322_fr: ChangelogEntry = {
 };
 
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
-  en: [v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
+  fr: [v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -756,7 +924,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
+  es: [v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -802,7 +970,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
+  de: [v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

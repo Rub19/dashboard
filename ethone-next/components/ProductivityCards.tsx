@@ -257,7 +257,7 @@ export function RecentNotesCard({ notes, className = "", scrollable = true }: Re
   const action = (
     <Link
       href="/notes"
-      className="inline-flex items-center gap-1 rounded-lg border border-white/[0.08] bg-white/[0.04] px-2 py-1 text-[10px] font-medium text-zinc-300 transition-colors hover:bg-white/[0.08] hover:text-white"
+      className="relative z-0 inline-flex items-center gap-1 rounded-lg border border-white/[0.08] bg-white/[0.04] px-2 py-1 text-[10px] font-medium text-zinc-300 transition-colors hover:bg-white/[0.08] hover:text-white"
     >
       <Icon name="plus" className="h-3 w-3" />
       {i18n("createNote")}

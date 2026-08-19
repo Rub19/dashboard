@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { FloatingPortal } from "@floating-ui/react";
 import {
   User,
   ShieldCheck,
@@ -23,6 +24,7 @@ import {
 import { useAuth } from "@/components/AuthProvider";
 import { useActiveProfile, useSettings } from "@/components/SettingsProvider";
 import { useProfile } from "@/lib/hooks/useProfile";
+import { useDiscordAvatar } from "@/lib/hooks/useDiscordAvatar";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import {
@@ -30,6 +32,7 @@ import {
   CHANGELOG_BY_LANG,
   type ChangelogEntry,
 } from "@/data/changelog";
+import { useTopbarDropdown } from "@/lib/hooks/useTopbarDropdown";
 
 function initials(name?: string) {
   if (!name) return "E";
@@ -65,19 +68,25 @@ export default function UserProfileDropdown() {
   const [open, setOpen] = useState(false);
   const [isChangelogOpen, setIsChangelogOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const { setTrigger, setPanel, floatingStyles } = useTopbarDropdown({
+    open,
+    onClose: () => setOpen(false),
+  });
 
   const { user, signOut } = useAuth();
   const { activeProfile } = useActiveProfile();
   const { profile: publicProfile } = useProfile();
   const { settings, update } = useSettings();
+  const { avatarUrl: discordAvatar, displayName: discordName } = useDiscordAvatar();
 
   const displayName =
+    discordName ||
     publicProfile?.display_name ||
     activeProfile?.name ||
     user?.email ||
     i18n("guest");
-  const avatarUrl = publicProfile?.avatar_url;
+  const avatarUrl = discordAvatar || publicProfile?.avatar_url;
   const email = user?.email || "";
 
   const currentStatus = useMemo<StatusKey>(() => {
@@ -98,19 +107,7 @@ export default function UserProfileDropdown() {
     }
   }, []);
 
-  useEffect(() => {
-    if (!open) return;
-    function onClick(e: MouseEvent) {
-      if (
-        wrapperRef.current &&
-        !wrapperRef.current.contains(e.target as Node)
-      ) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener("click", onClick);
-    return () => document.removeEventListener("click", onClick);
-  }, [open]);
+
 
   async function handleSignOut() {
     setOpen(false);
@@ -138,7 +135,7 @@ export default function UserProfileDropdown() {
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = "v1.6.12";
+  const VERSION_LABEL = "v1.6.15";
 
   const menuItems = [
     {
@@ -203,10 +200,11 @@ export default function UserProfileDropdown() {
   const storagePercent = Math.round((storage.used / storage.total) * 100);
 
   return (
-    <div className="relative" ref={wrapperRef}>
+    <div className="relative">
       {/* Trigger */}
       <button
         type="button"
+        ref={setTrigger as unknown as React.Ref<HTMLButtonElement>}
         onClick={(e) => {
           e.stopPropagation();
           setOpen(!open);
@@ -244,16 +242,19 @@ export default function UserProfileDropdown() {
       </button>
 
       {/* Dropdown */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.95 }}
-            transition={{ duration: 0.18, ease: "easeOut" }}
-            onClick={(e) => e.stopPropagation()}
-            className="absolute right-0 top-full z-50 mt-2 w-[340px] select-none flex flex-col gap-2.5 rounded-xl border border-white/[0.08] bg-zinc-950/90 p-3 shadow-[0_16px_50px_rgba(0,0,0,0.7)] backdrop-blur-3xl"
-          >
+      <FloatingPortal>
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              ref={setPanel as unknown as React.Ref<HTMLDivElement>}
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 8, scale: 0.95 }}
+              transition={{ duration: 0.18, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+              style={floatingStyles}
+              className="z-[100] w-[340px] select-none flex flex-col gap-2.5 rounded-xl border border-white/[0.08] bg-zinc-950/90 p-3 shadow-[0_16px_50px_rgba(0,0,0,0.7)] backdrop-blur-3xl"
+            >
             {/* Header */}
             <div className="flex items-center gap-3 rounded-xl border border-white/[0.04] bg-white/[0.02] p-2.5">
               <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-gradient-to-tr from-emerald-500/30 to-cyan-500/30 text-emerald-300">
@@ -413,6 +414,7 @@ export default function UserProfileDropdown() {
           </motion.div>
         )}
       </AnimatePresence>
+      </FloatingPortal>
 
       {/* Changelog modal */}
       <AnimatePresence>

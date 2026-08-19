@@ -8,6 +8,7 @@ import { icons as phosphor } from "@iconify-json/ph";
 import { icons as tabler } from "@iconify-json/tabler";
 import { icons as heroicons } from "@iconify-json/heroicons";
 import { icons as radix } from "@iconify-json/radix-icons";
+import { icons as simpleIcons } from "@iconify-json/simple-icons";
 import { useSettings } from "@/components/SettingsProvider";
 
 addCollection(lucide as unknown as IconifyJSON);
@@ -15,8 +16,9 @@ addCollection(phosphor as unknown as IconifyJSON);
 addCollection(tabler as unknown as IconifyJSON);
 addCollection(heroicons as unknown as IconifyJSON);
 addCollection(radix as unknown as IconifyJSON);
+addCollection(simpleIcons as unknown as IconifyJSON);
 
-export type IconPack = "lucide" | "phosphor" | "tabler" | "heroicons" | "radix";
+export type IconPack = "lucide" | "phosphor" | "tabler" | "heroicons" | "radix" | "brand";
 
 const PREFIXES: Record<IconPack, string> = {
   lucide: "lucide",
@@ -24,6 +26,7 @@ const PREFIXES: Record<IconPack, string> = {
   tabler: "tabler",
   heroicons: "heroicons",
   radix: "radix-icons",
+  brand: "simple-icons",
 };
 
 const LIBRARIES: Record<IconPack, IconifyJSON> = {
@@ -32,6 +35,7 @@ const LIBRARIES: Record<IconPack, IconifyJSON> = {
   tabler,
   heroicons,
   radix,
+  brand: simpleIcons,
 };
 
 const EXISTS = Object.fromEntries(

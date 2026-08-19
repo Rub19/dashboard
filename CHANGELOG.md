@@ -4,6 +4,16 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Icônes Discord et version 1.7.2**
+
+### Ajoute
+- `ethone-next/package.json` : ajout de `@iconify-json/simple-icons@1.2.93` pour les icônes de marque.
+- `ethone-next/lib/icons.tsx` : support du pack `brand` via `simple-icons`.
+- `ethone-next/components/DiscordConfig.tsx` : icônes de marque devant chaque compte lié, avatar du profil et icônes des serveurs via `ClientImage`.
+- `ethone-next/public/version.json`, `ethone-next/package.json`, `ethone-next/components/UserProfileDropdown.tsx` : version `v1.7.2`.
+
+## v1.7.1 — 2026-08-19
+
 **Corrections issues console et sidebar flottante (v1.7.1)**
 
 ### Corrige

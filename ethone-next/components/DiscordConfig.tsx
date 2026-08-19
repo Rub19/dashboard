@@ -9,11 +9,42 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { pingIntegration, type PingResult } from "@/lib/connection-config";
 import { integrationById } from "@/lib/integrations";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { Icon } from "@/lib/icons";
+import ClientImage from "@/components/ClientImage";
 import SecureInput from "@/components/ui/SecureInput";
 
 const PROVIDER = "discord";
 const FIELD = "discordUserId";
 const SETTINGS_KEY = "liveLanyardUserId";
+
+const CONNECTION_ICONS: Record<string, string> = {
+  "amazon-music": "amazon",
+  "battlenet": "battledotnet",
+  "bluesky": "bluesky",
+  "domain": "globe",
+  "epicgames": "epicgames",
+  "github": "github",
+  "playstation": "playstation",
+  "reddit": "reddit",
+  "spotify": "spotify",
+  "steam": "steam",
+  "tiktok": "tiktok",
+  "twitch": "twitch",
+  "twitter": "twitter",
+  "xbox": "xbox",
+  "youtube": "youtube",
+};
+
+function iconForConnection(type: string): { name: string; brand: boolean } {
+  const name = CONNECTION_ICONS[type];
+  if (!name) return { name: "link", brand: false };
+  if (["globe"].includes(name)) return { name, brand: false };
+  return { name, brand: true };
+}
+
+function initials(name?: string) {
+  return (name || "?").slice(0, 1).toUpperCase();
+}
 
 export default function DiscordConfig() {
   const i18n = useI18n();
@@ -219,16 +250,18 @@ export default function DiscordConfig() {
           {isOAuthConnected ? (
             <>
               <div className="flex items-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] p-3">
-                {profile?.user?.avatarUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={profile.user.avatarUrl}
-                    alt={profile.user.globalName || profile.user.username}
-                    className="h-12 w-12 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-800 text-zinc-400">?</div>
-                )}
+                <ClientImage
+                  src={profile?.user?.avatarUrl}
+                  alt={profile?.user?.globalName || profile?.user?.username || "Discord"}
+                  width={48}
+                  height={48}
+                  className="h-12 w-12 rounded-full object-cover"
+                  fallback={
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-800 text-sm font-bold text-zinc-400">
+                      {initials(profile?.user?.globalName || profile?.user?.username)}
+                    </div>
+                  }
+                />
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold text-white">
                     {profile?.user?.globalName || profile?.user?.username || "Discord"}
@@ -244,14 +277,18 @@ export default function DiscordConfig() {
                 <div>
                   <p className="mb-2 text-xs font-medium text-zinc-400">Comptes liés</p>
                   <div className="flex flex-wrap gap-2">
-                    {profile.connections.map((c) => (
-                      <span
-                        key={`${c.type}:${c.id}`}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 text-[10px] text-zinc-300"
-                      >
-                        {c.type}: {c.name}
-                      </span>
-                    ))}
+                    {profile.connections.map((c) => {
+                      const icon = iconForConnection(c.type);
+                      return (
+                        <span
+                          key={`${c.type}:${c.id}`}
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 text-[10px] text-zinc-300"
+                        >
+                          <Icon pack={icon.brand ? "brand" : "lucide"} name={icon.name} className="h-3.5 w-3.5" />
+                          {c.name}
+                        </span>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -265,14 +302,18 @@ export default function DiscordConfig() {
                         key={g.id}
                         className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 text-[10px] text-zinc-300"
                       >
-                        {g.iconUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={g.iconUrl} alt="" className="h-4 w-4 rounded" />
-                        ) : (
-                          <span className="flex h-4 w-4 items-center justify-center rounded bg-zinc-700 text-[8px]">
-                            {g.name.slice(0, 1).toUpperCase()}
-                          </span>
-                        )}
+                        <ClientImage
+                          src={g.iconUrl}
+                          alt=""
+                          width={16}
+                          height={16}
+                          className="h-4 w-4 rounded"
+                          fallback={
+                            <span className="flex h-4 w-4 items-center justify-center rounded bg-zinc-700 text-[8px]">
+                              {initials(g.name)}
+                            </span>
+                          }
+                        />
                         {g.name}
                       </span>
                     ))}

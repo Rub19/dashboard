@@ -14,6 +14,7 @@ import Card3D from "@/components/Card3D";
 import DockControlCenter from "@/components/DockControlCenter";
 import FocusPopover from "@/components/FocusPopover";
 import DockMediaFlyout from "@/components/DockMediaFlyout";
+import DockWeatherFlyout from "@/components/DockWeatherFlyout";
 import type { NowPlaying } from "@/lib/hooks/useLiveData";
 
 const ICONS: Record<string, string> = {
@@ -169,6 +170,8 @@ export default function Dock() {
         aria-label={i18n("dock")}
       >
         <DockMediaFlyout nowPlaying={spotifyNow} clientId={settings.liveSpotifyClientId} />
+
+        {settings.dockItems.includes("weather") && <DockWeatherFlyout />}
 
         <button
           type="button"

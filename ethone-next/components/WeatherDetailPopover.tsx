@@ -19,6 +19,7 @@ type WeatherDetailPopoverProps = {
   onClose: () => void;
   referenceRef: HTMLElement | null;
   weather?: WeatherData | null;
+  placement?: "bottom-end" | "top-end";
 };
 
 type ContentProps = {
@@ -129,17 +130,23 @@ function ForecastRow({ day, lang }: { day: WeatherData; lang: string }) {
   );
 }
 
-function WeatherDetailContent({ open, onClose, referenceRef, weather }: ContentProps) {
+function WeatherDetailContent({
+  open,
+  onClose,
+  referenceRef,
+  weather,
+  placement = "bottom-end",
+}: ContentProps & { placement?: "bottom-end" | "top-end" }) {
   const i18n = useI18n();
   const { settings } = useSettings();
   const panelRef = useRef<HTMLDivElement | null>(null);
 
-  const { refs, floatingStyles, placement } = useFloating({
+  const { refs, floatingStyles, placement: actualPlacement } = useFloating({
     open,
     onOpenChange: (next) => {
       if (!next) onClose();
     },
-    placement: "bottom-end",
+    placement,
     strategy: "fixed",
     whileElementsMounted: autoUpdate,
     middleware: [offset(8), flip({ padding: 8 }), shift({ padding: 8 })],
@@ -191,7 +198,7 @@ function WeatherDetailContent({ open, onClose, referenceRef, weather }: ContentP
             role="dialog"
             aria-modal="true"
             aria-label={i18n("weather")}
-            data-weather-placement={placement}
+            data-weather-placement={actualPlacement}
           >
             <Card3D>
               <div className="space-y-4">
@@ -274,3 +281,4 @@ export default function WeatherDetailPopover(props: WeatherDetailPopoverProps) {
   }
   return <WeatherDetailContent {...props} weather={props.weather} />;
 }
+

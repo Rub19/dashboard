@@ -1,19 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { ChevronRight, CloudSun, Sun, Moon, Timer, Eye, EyeOff, PanelLeftOpen, PanelLeftClose } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { ChevronRight, ChevronDown, CloudSun, Sun, Moon, Timer, Eye, EyeOff, PanelLeftOpen, PanelLeftClose } from "lucide-react";
 import { AnimatedSidebarTrigger, useAnimatedSidebar } from "@/components/motion/animated-sidebar";
 import SystemStatusPills from "@/components/SystemStatusPills";
 import CommandBarTrigger from "@/components/CommandBarTrigger";
 import NotificationCenter from "@/components/NotificationCenter";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import UserProfileDropdown from "@/components/UserProfileDropdown";
+import { useState } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useSettings } from "@/components/SettingsProvider";
 import { useFocus } from "@/components/FocusProvider";
 import { useDynamicIslandStore } from "@/lib/stores/dynamic-island";
+import WeatherDetailPopover from "@/components/WeatherDetailPopover";
+import { cn } from "@/lib/utils";
 
 const ROUTE_LABELS: Record<string, string> = {
   "/": "home",
@@ -54,20 +57,32 @@ function SidebarTopToggle() {
 }
 
 function WeatherQuickButton() {
-  const router = useRouter();
   const { weather } = useLiveData(300000);
   const temp = typeof weather?.temperature === "number" ? `${weather.temperature}°C` : "--";
+  const [open, setOpen] = useState(false);
+  const [buttonEl, setButtonEl] = useState<HTMLButtonElement | null>(null);
 
   return (
-    <button
-      type="button"
-      onClick={() => router.push("/weather")}
-      className="flex h-9 items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-2 text-sm transition-colors hover:bg-white/[0.06] sm:px-3"
-      title="Météo"
-    >
-      <CloudSun className="h-4 w-4 pointer-events-none text-amber-400" />
-      <span className="hidden font-mono text-zinc-200 lg:inline">{temp}</span>
-    </button>
+    <>
+      <button
+        ref={setButtonEl}
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="flex h-9 items-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.03] px-2 text-sm transition-colors hover:bg-white/[0.06] sm:px-3"
+        title="Météo"
+      >
+        <CloudSun className="h-4 w-4 pointer-events-none text-amber-400" />
+        <span className="hidden font-mono text-zinc-200 lg:inline">{temp}</span>
+        <ChevronDown
+          className={cn(
+            "h-3 w-3 text-zinc-400 transition-transform duration-200",
+            open && "rotate-180"
+          )}
+        />
+      </button>
+      <WeatherDetailPopover open={open} onClose={() => setOpen(false)} referenceRef={buttonEl} />
+    </>
   );
 }
 

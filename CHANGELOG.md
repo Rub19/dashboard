@@ -4,6 +4,18 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Bouton météo rapide dans le Dock et TopBar**
+
+### Ajoute
+- `ethone-next/components/DockWeatherFlyout.tsx` : bouton météo dans le Dock affichant la température et ouvrant un popover au-dessus.
+- `ethone-next/components/TopBar.tsx` : le bouton météo de la TopBar ouvre désormais un popover rapide (localisation, condition, humidité, vent, prévisions).
+- `ethone-next/components/WeatherDetailPopover.tsx` : support du placement `top-end` pour s'ouvrir au-dessus du Dock.
+
+### Version
+- `ethone-next/package.json`, `ethone-next/components/UserProfileDropdown.tsx` : version `v1.7.3`.
+
+## v1.7.2 — 2026-08-19
+
 **Icônes Discord et version 1.7.2**
 
 ### Ajoute

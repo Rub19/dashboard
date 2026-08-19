@@ -5,6 +5,58 @@ export type ChangelogEntry = {
   items: string[];
 };
 
+const v171_fr: ChangelogEntry = {
+  version: "v1.6.11",
+  date: "2026-08-19",
+  title: "Corrections Discord : badge d'erreur et avatar par défaut",
+  items: [
+    "Suppression du badge 'Erreur' sur la carte Discord quand les données Lanyard sont présentes et valides.",
+    "Le badge reflète désormais le vrai statut Discord (En ligne, Absent, Occupé, Hors ligne).",
+    "Correction de l'avatar par défaut Discord : la fonction utilisait un bit-shift sur un ID de 18 chiffres, ce qui pouvait donner un index négatif/invalide ; elle utilise maintenant les 6 derniers chiffres modulo 6.",
+    "Cela devrait afficher l'avatar Discord personnalisé si Lanyard le fournit, ou un avatar par défaut Discord valide sinon.",
+    "Version affichée en bas à droite : v1.6.11.",
+  ],
+};
+
+const v171_en: ChangelogEntry = {
+  version: "v1.6.11",
+  date: "2026-08-19",
+  title: "Discord fixes: error badge and default avatar",
+  items: [
+    "Removed the 'Error' badge on the Discord card when Lanyard data is present and valid.",
+    "Badge now reflects the real Discord status (Online, Idle, Busy, Offline).",
+    "Fixed the default Discord avatar function: it used a bit-shift on an 18-digit ID, which could produce a negative/invalid index; it now uses the last 6 digits modulo 6.",
+    "This should display the custom Discord avatar if Lanyard provides it, or a valid default Discord avatar otherwise.",
+    "Version badge bottom-right: v1.6.11.",
+  ],
+};
+
+const v171_es: ChangelogEntry = {
+  version: "v1.6.11",
+  date: "2026-08-19",
+  title: "Correcciones de Discord: insignia de error y avatar por defecto",
+  items: [
+    "Eliminada la insignia 'Error' en la tarjeta de Discord cuando los datos de Lanyard están presentes y son válidos.",
+    "La insignia ahora refleja el estado real de Discord (En línea, Ausente, Ocupado, Desconectado).",
+    "Corregida la función de avatar por defecto de Discord: usaba un desplazamiento de bits en un ID de 18 dígitos, lo que podía dar un índice negativo/inválido; ahora usa los últimos 6 dígitos módulo 6.",
+    "Esto debería mostrar el avatar personalizado de Discord si Lanyard lo proporciona, o un avatar por defecto válido en caso contrario.",
+    "Versión mostrada abajo a la derecha: v1.6.11.",
+  ],
+};
+
+const v171_de: ChangelogEntry = {
+  version: "v1.6.11",
+  date: "2026-08-19",
+  title: "Discord-Fixes: Fehler-Badge und Standard-Avatar",
+  items: [
+    "'Fehler'-Badge auf der Discord-Karte entfernt, wenn Lanyard-Daten vorhanden und gültig sind.",
+    "Badge zeigt jetzt den echten Discord-Status an (Online, Abwesend, Beschäftigt, Offline).",
+    "Standard-Discord-Avatar korrigiert: Die Funktion verwendete einen Bit-Shift auf eine 18-stellige ID, was einen negativen/ungültigen Index ergeben konnte; sie verwendet nun die letzten 6 Ziffern modulo 6.",
+    "Dadurch sollte der benutzerdefinierte Discord-Avatar angezeigt werden, wenn Lanyard ihn liefert, andernfalls ein gültiger Standard-Avatar.",
+    "Version unten rechts: v1.6.11.",
+  ],
+};
+
 const v170_fr: ChangelogEntry = {
   version: "v1.6.10",
   date: "2026-08-19",
@@ -609,8 +661,8 @@ const v322_fr: ChangelogEntry = {
 };
 
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
-  en: [v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
+  fr: [v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -656,7 +708,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
+  es: [v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -702,7 +754,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
+  de: [v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

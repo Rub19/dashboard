@@ -4,6 +4,14 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Corrections Discord : badge d'erreur et avatar par défaut (v1.6.11)**
+
+### Corrige
+- Suppression du badge "Erreur" sur la carte Discord quand les données Lanyard sont présentes et valides ; le badge reflète désormais le vrai statut Discord.
+- Correction de l'avatar par défaut Discord : la fonction de bit-shift sur un ID de 18 chiffres pouvait donner un index négatif/invalide ; remplacée par les 6 derniers chiffres modulo 6.
+- La carte affiche l'avatar Discord personnalisé si Lanyard le fournit, sinon un avatar par défaut valide.
+- Version `1.6.11`.
+
 **Suppression de la bordure gauche du panneau de sidebar (v1.6.10)**
 
 ### Corrige

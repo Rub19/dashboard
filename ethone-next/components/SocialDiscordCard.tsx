@@ -24,7 +24,9 @@ function defaultAvatarIndex(userId?: string, discriminator?: string): number {
   }
   if (userId && /^\d+$/.test(userId)) {
     try {
-      return (Number(userId) >> 22) % 6;
+      const tail = userId.slice(-6);
+      const index = Number(tail) % 6;
+      return Number.isFinite(index) && index >= 0 ? index : 0;
     } catch {
       return 0;
     }
@@ -139,14 +141,14 @@ export default function SocialDiscordCard({
   const hasLanyard = Boolean(userId);
 
   const { badgeColor, badgeLabel, badgeTone } = useMemo(() => {
-    if (loading && hasAnyConnection) {
+    if (loading && !hasLanyard && hasAnyConnection) {
       return {
         badgeColor: "bg-cyan-400",
         badgeLabel: i18n("loading", "Chargement"),
         badgeTone: "border-cyan-500/30 bg-cyan-500/10 text-cyan-300",
       };
     }
-    if (error && hasAnyConnection) {
+    if (error && hasAnyConnection && !hasLanyard) {
       return {
         badgeColor: "bg-rose-400",
         badgeLabel: i18n("error", "Erreur"),

@@ -1009,6 +1009,7 @@ const v178_fr: ChangelogEntry = {
     "Dock : fond légèrement plus sombre (80%) et remonté (bottom-12).",
     "TopBar : reflow responsive pour éviter les chevauchements en mode réduit, pillules centrales masquées sous `xl`, troncature du nom d'utilisateur.",
     "Sidebar : footer (profil + badges) remonté de `mb-3` pour éviter d'être collé au bas de l'écran.",
+    "Sidebar : fond transparent pour le profil, le badge sync et les boutons du footer afin d'homogénéiser la couleur avec le panneau de la sidebar.",
     "Version : v1.7.1.",
   ],
 };
@@ -1030,6 +1031,7 @@ const v178_en: ChangelogEntry = {
     "Dock: slightly darker background (80%) and raised higher (bottom-12).",
     "TopBar: responsive reflow to avoid overlaps in reduced width, center pills hidden below `xl`, username truncated.",
     "Sidebar: footer (profile + badges) raised with `mb-3` to avoid sticking to the bottom of the screen.",
+    "Sidebar: transparent background for profile, sync badge, and footer buttons to match the sidebar panel color.",
     "Version: v1.7.1.",
   ],
 };
@@ -1051,6 +1053,7 @@ const v178_es: ChangelogEntry = {
     "Dock: fondo ligeramente más oscuro (80%) y elevado (bottom-12).",
     "TopBar: redistribución responsive para evitar superposiciones en modo reducido, píldoras centrales ocultas por debajo de `xl`, nombre de usuario truncado.",
     "Sidebar: pie (perfil + insignias) elevado con `mb-3` para evitar quedar pegado a la parte inferior de la pantalla.",
+    "Sidebar: fondo transparente para el perfil, la insignia de sincronización y los botones del pie para unificar el color con el panel de la barra lateral.",
     "Versión: v1.7.1.",
   ],
 };
@@ -1072,6 +1075,7 @@ const v178_de: ChangelogEntry = {
     "Dock: leicht dunklerer Hintergrund (80%) und höher positioniert (bottom-12).",
     "TopBar: responsive Reflow zur Vermeidung von Überlappungen im reduzierten Modus, zentrale Pills unter `xl` ausgeblendet, Benutzername gekürzt.",
     "Sidebar: Footer (Profil + Badges) mit `mb-3` angehoben, damit er nicht am unteren Bildschirmrand klebt.",
+    "Sidebar: transparenter Hintergrund für Profil, Sync-Badge und Footer-Buttons, um die Farbe an das Seitenleisten-Panel anzugleichen.",
     "Version: v1.7.1.",
   ],
 };

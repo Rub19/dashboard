@@ -5,6 +5,58 @@ export type ChangelogEntry = {
   items: string[];
 };
 
+const v169_fr: ChangelogEntry = {
+  version: "v1.6.9",
+  date: "2026-08-19",
+  title: "Uniformisation des arrière-plans de pages sur #0A0A0A",
+  items: [
+    "Arrière-plan du conteneur de pages (`Shell.tsx`) passé à `#0A0A0A`, identique à la sidebar.",
+    "Fond du wrapper principal (`AnimatedSidebarProvider`) et de la zone `<main>` en `#0A0A0A`.",
+    "Page de login (`app/login/page.tsx`) : fond root passé à `#0A0A0A` pour correspondre au reste de l'OS.",
+    "Seuls les arrière-plans de pages sont modifiés ; les fonds de cartes, panneaux et éditeurs restent inchangés.",
+    "Version affichée en bas à droite : v1.6.9.",
+  ],
+};
+
+const v169_en: ChangelogEntry = {
+  version: "v1.6.9",
+  date: "2026-08-19",
+  title: "Page backgrounds unified to #0A0A0A",
+  items: [
+    "Page container background (`Shell.tsx`) set to `#0A0A0A`, matching the sidebar.",
+    "Main wrapper (`AnimatedSidebarProvider`) and `<main>` area backgrounds set to `#0A0A0A`.",
+    "Login page (`app/login/page.tsx`) root background set to `#0A0A0A` to match the rest of the OS.",
+    "Only page backgrounds were changed; card, panel, and editor backgrounds remain unchanged.",
+    "Version badge bottom-right: v1.6.9.",
+  ],
+};
+
+const v169_es: ChangelogEntry = {
+  version: "v1.6.9",
+  date: "2026-08-19",
+  title: "Fondos de páginas unificados a #0A0A0A",
+  items: [
+    "Fondo del contenedor de página (`Shell.tsx`) a `#0A0A0A`, igual que la barra lateral.",
+    "Fondos del wrapper principal (`AnimatedSidebarProvider`) y del área `<main>` a `#0A0A0A`.",
+    "Fondo raíz de la página de inicio de sesión (`app/login/page.tsx`) a `#0A0A0A` para coincidir con el resto del SO.",
+    "Solo se modificaron los fondos de página; los fondos de tarjetas, paneles y editores permanecen iguales.",
+    "Versión mostrada abajo a la derecha: v1.6.9.",
+  ],
+};
+
+const v169_de: ChangelogEntry = {
+  version: "v1.6.9",
+  date: "2026-08-19",
+  title: "Seitenhintergründe auf #0A0A0A vereinheitlicht",
+  items: [
+    "Seitencontainer-Hintergrund (`Shell.tsx`) auf `#0A0A0A` gesetzt, passend zur Seitenleiste.",
+    "Hintergründe des Hauptwrappers (`AnimatedSidebarProvider`) und des `<main>`-Bereichs auf `#0A0A0A` gesetzt.",
+    "Login-Seite (`app/login/page.tsx`) Wurzelhintergrund auf `#0A0A0A` gesetzt, um zum Rest des OS zu passen.",
+    "Nur Seitenhintergründe wurden geändert; Karten-, Panel- und Editorhintergründe bleiben unverändert.",
+    "Version unten rechts: v1.6.9.",
+  ],
+};
+
 const v168_fr: ChangelogEntry = {
   version: "v1.6.8",
   date: "2026-08-19",
@@ -513,8 +565,8 @@ const v322_fr: ChangelogEntry = {
 };
 
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
-  en: [v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
+  fr: [v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -560,7 +612,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
+  es: [v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -606,7 +658,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
+  de: [v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

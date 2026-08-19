@@ -231,7 +231,7 @@ export default function LoginPage() {
       : handlePassword;
 
   return (
-    <div className="relative flex h-full min-h-0 w-full select-none items-stretch overflow-hidden bg-zinc-950">
+    <div className="relative flex h-full min-h-0 w-full select-none items-stretch overflow-hidden bg-[#0A0A0A]">
       <LoginCosmicBackground />
       <div className="relative z-10 hidden h-full min-h-0 w-1/2 flex-col justify-between p-10 lg:flex lg:bg-gradient-to-r lg:from-[#030712]/70 lg:via-[#030712]/25 lg:to-transparent">
         <div className="z-10 flex items-center gap-2">

@@ -4,6 +4,15 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Uniformisation des arrière-plans de pages sur #0A0A0A (v1.6.9)**
+
+### Corrige
+- Arrière-plan du conteneur de pages (`Shell.tsx`) passé à `#0A0A0A`, identique à la sidebar.
+- Fond du wrapper principal (`AnimatedSidebarProvider`) et de la zone `<main>` en `#0A0A0A`.
+- Page de login (`app/login/page.tsx`) : fond root passé à `#0A0A0A` pour correspondre au reste de l'OS.
+- Seuls les arrière-plans de pages sont modifiés ; les fonds de cartes, panneaux et éditeurs restent inchangés.
+- Version `1.6.9`.
+
 **Bandeau inférieur glassmorphic pour la barre de statut (v1.6.8)**
 
 ### Corrige

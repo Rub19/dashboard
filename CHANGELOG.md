@@ -8,7 +8,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ### Corrige
 - `ethone-next/components/Sidebar.tsx` : fond transparent du wrapper, panneau allongé jusqu'en bas de l'écran, et correction de la hauteur du panneau flottant.
-- `ethone-next/components/Dock.tsx` : Dock remonté (`bottom-10`) et fond légèrement plus sombre (`80%`).
+- `ethone-next/components/Dock.tsx` : Dock remonté (`bottom-12`) et fond légèrement plus sombre (`80%`).
 - `ethone-next/app/globals.css` : ajustement de la couleur de fond du Dock.
 - `ethone-next/components/TopBar.tsx` : reflow responsive pour éviter les chevauchements en mode réduit (pillules centrales cachées sous `xl`, troncature du fil d'Ariane et du nom utilisateur).
 - `ethone-next/components/UserProfileDropdown.tsx` : troncature du nom d'affichage pour éviter le débordement.

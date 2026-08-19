@@ -1006,6 +1006,7 @@ const v178_fr: ChangelogEntry = {
     `isMissingSchemaError renforcé (PGRST204, PGRST116, 42P01, messages "schema cache" / "Could not find").`,
     "Next.js : configuration conditionnelle `output: 'export'` pour la production, mode normal pour `next dev`.",
     "Brain chat : route API marquée `runtime: 'nodejs'` pour éviter l'avertissement Edge Runtime.",
+    "Dock : fond légèrement plus sombre (80%) et remonté (bottom-6).",
     "Version : v1.7.1.",
   ],
 };
@@ -1024,6 +1025,7 @@ const v178_en: ChangelogEntry = {
     "Strengthened `isMissingSchemaError` (PGRST204, PGRST116, 42P01, 'schema cache' / 'Could not find' messages).",
     "Next.js: conditional `output: 'export'` config for production, normal mode for `next dev`.",
     "Brain chat: API route set to `runtime: 'nodejs'` to avoid the Edge Runtime warning.",
+    "Dock: slightly darker background (80%) and raised higher (bottom-6).",
     "Version: v1.7.1.",
   ],
 };
@@ -1042,6 +1044,7 @@ const v178_es: ChangelogEntry = {
     "`isMissingSchemaError` reforzado (PGRST204, PGRST116, 42P01, mensajes \"schema cache\" / \"Could not find\").",
     "Next.js: configuración condicional `output: 'export'` para producción, modo normal para `next dev`.",
     "Brain chat: ruta de API con `runtime: 'nodejs'` para evitar la advertencia de Edge Runtime.",
+    "Dock: fondo ligeramente más oscuro (80%) y elevado (bottom-6).",
     "Versión: v1.7.1.",
   ],
 };
@@ -1060,6 +1063,7 @@ const v178_de: ChangelogEntry = {
     "`isMissingSchemaError` verstärkt (PGRST204, PGRST116, 42P01, \"schema cache\" / \"Could not find\"-Meldungen).",
     "Next.js: bedingte `output: 'export'`-Konfiguration für Produktion, normaler Modus für `next dev`.",
     "Brain Chat: API-Route auf `runtime: 'nodejs'` gesetzt, um die Edge-Runtime-Warnung zu vermeiden.",
+    "Dock: leicht dunklerer Hintergrund (80%) und höher positioniert (bottom-6).",
     "Version: v1.7.1.",
   ],
 };

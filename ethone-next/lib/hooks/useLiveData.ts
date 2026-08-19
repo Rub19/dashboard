@@ -541,7 +541,7 @@ export function useLiveData(pollMs = 60000) {
       subtitle: activity?.name,
       meta: activity?.details,
       image: lanyard.avatarUrl,
-      status: error ? "error" : lanyard.discord_status === "offline" ? "empty" : "connected",
+      status: error ? "error" : "connected",
     });
   } else {
     records.push({

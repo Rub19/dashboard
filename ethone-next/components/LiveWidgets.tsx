@@ -1046,13 +1046,13 @@ export default function LiveWidgets({
     return (
       <div className="flex h-full flex-col">
         <div className="mb-3 flex items-center gap-3">
-          {avatar ? (
-            <Image src={avatar} alt="" width={56} height={56} unoptimized className="h-14 w-14 rounded-[var(--panel-radius)] border-2 border-[var(--panel-border)] object-cover shadow-md" />
-          ) : (
-            <span className="flex h-14 w-14 items-center justify-center rounded-[var(--panel-radius)] bg-emerald-500/10 text-2xl shadow-md">
-              ⛏️
-            </span>
-          )}
+          <ImageFallback
+            src={avatar}
+            alt={username || ""}
+            size={56}
+            fallback={username?.slice(0, 2).toUpperCase()}
+            className="h-14 w-14 rounded-[var(--panel-radius)] border-2 border-[var(--panel-border)] object-cover shadow-md"
+          />
           <div className="min-w-0 flex-1">
             <p className="truncate font-semibold text-[var(--foreground)]">{username}</p>
             <p className="truncate text-[10px] text-[var(--muted)]">{uuid ? `ID: ${uuid.slice(0, 8)}…` : "Minecraft"}</p>

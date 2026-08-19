@@ -103,7 +103,11 @@ export default function ClientImage({
     return fallback ?? null;
   }
 
-  const handleLoad = () => {
+  const handleLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    if (e.currentTarget.naturalWidth === 0) {
+      handleError();
+      return;
+    }
     setStatus("ok");
     ok();
     if (resolved) onResolve?.(resolved);

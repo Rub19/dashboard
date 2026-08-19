@@ -2,8 +2,22 @@
 
 import { createContext, useContext, useCallback, useMemo } from "react";
 import { toast as sonnerToast, Toaster } from "sonner";
+import {
+  Check,
+  CheckSquare,
+  ClipboardCheck,
+  Cloud,
+  FileText,
+  Trash2,
+  Unlink,
+  X,
+} from "lucide-react";
 import { useSound } from "@/lib/sound";
-import { X } from "lucide-react";
+import { useI18n } from "@/lib/hooks/useI18n";
+import RichToast, { type RichToastVariant } from "@/components/RichToast";
+import FlagIcon, { LANGUAGE_LABELS, type Language } from "@/components/FlagIcon";
+import DiscordIcon from "@/components/DiscordIcon";
+import ClientImage from "@/components/ClientImage";
 
 type ToastType = "success" | "error" | "info" | "warning" | "loading";
 
@@ -13,9 +27,29 @@ export type ToastInput = {
   type?: ToastType;
   title?: string;
   description?: string;
-  message?: string; // legacy alias for title
+  message?: string;
   duration?: number;
   action?: { label: string; onClick: () => void };
+  icon?: React.ReactNode;
+};
+
+export type DiscordNotifyUser = {
+  username?: string;
+  displayName?: string;
+  avatarUrl?: string;
+};
+
+export type NotifyApi = {
+  language: (lang: Language) => string;
+  discord: (user?: DiscordNotifyUser) => string;
+  discordDisconnect: () => string;
+  sync: (title?: string, description?: string) => string;
+  reset: () => string;
+  noteCreated: (title?: string) => string;
+  noteDeleted: (count?: number) => string;
+  taskAdded: (title?: string) => string;
+  taskDeleted: () => string;
+  clipboard: () => string;
 };
 
 interface ToastApi {
@@ -27,6 +61,7 @@ interface ToastApi {
   loading: (title: string, description?: string) => string;
   remove: (id: string) => void;
   dismiss: (id: string) => void;
+  notify: NotifyApi;
   toast: ToastApi;
 }
 
@@ -48,8 +83,34 @@ const SOUND_MAP: Record<ToastType, string | null> = {
   loading: null,
 };
 
+const VARIANT_BORDER: Record<Exclude<ToastType, "loading">, string> = {
+  success: "border-emerald-500/20",
+  error: "border-rose-500/20",
+  warning: "border-amber-500/20",
+  info: "border-cyan-500/20",
+};
+
+function DiscordAvatar({ avatarUrl }: { avatarUrl?: string }) {
+  if (!avatarUrl) return <DiscordIcon className="h-5 w-5" />;
+  return (
+    <ClientImage
+      src={avatarUrl}
+      alt=""
+      width={36}
+      height={36}
+      className="h-9 w-9 rounded-lg"
+      fallback={
+        <span className="flex h-full w-full items-center justify-center text-zinc-200">
+          <DiscordIcon className="h-5 w-5" />
+        </span>
+      }
+    />
+  );
+}
+
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const { play } = useSound();
+  const i18n = useI18n();
 
   const show = useCallback(
     (input: ToastInput) => {
@@ -64,17 +125,35 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       const sound = SOUND_MAP[type];
       if (sound) play(sound as Parameters<typeof play>[0]);
 
+      const action = input.action
+        ? {
+            label: input.action.label,
+            onClick: input.action.onClick,
+          }
+        : undefined;
+
+      if (input.icon && type !== "loading") {
+        const border =
+          VARIANT_BORDER[type as keyof typeof VARIANT_BORDER] || "border-white/10";
+
+        const id = sonnerToast.custom(
+          () => (
+            <RichToast
+              icon={input.icon}
+              title={title}
+              description={description}
+              variant={type as RichToastVariant}
+            />
+          ),
+          { duration, action, className: border }
+        );
+        return String(id);
+      }
+
       const common = {
         description,
         duration,
-        ...(input.action
-          ? {
-              action: {
-                label: input.action.label,
-                onClick: input.action.onClick,
-              },
-            }
-          : {}),
+        ...(action ? { action } : {}),
       };
 
       let id: string | number;
@@ -137,6 +216,104 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
   const dismiss = remove;
 
+  const notify = useMemo<NotifyApi>(
+    () => ({
+      language: (lang: Language) =>
+        show({
+          type: "info",
+          title: `${i18n("language", "Langue")} : ${LANGUAGE_LABELS[lang] || lang}`,
+          icon: <FlagIcon code={lang} className="h-full w-full" />,
+          duration: 3000,
+        }),
+
+      discord: (user?: DiscordNotifyUser) => {
+        const name = user?.displayName || user?.username;
+        const title = name
+          ? `${i18n("connected", "Connecté")} — ${name}`
+          : i18n("connected", "Connecté");
+        const description = name
+          ? `@${user?.username || user?.displayName}`
+          : i18n("discordConnected", "Compte Discord connecté");
+        return show({
+          type: "success",
+          title,
+          description,
+          icon: <DiscordAvatar avatarUrl={user?.avatarUrl} />,
+          duration: 4000,
+        });
+      },
+
+      discordDisconnect: () =>
+        show({
+          type: "info",
+          title: i18n("disconnectSuccess", "Déconnecté de Discord"),
+          icon: <Unlink className="h-5 w-5" />,
+          duration: 3000,
+        }),
+
+      sync: (title?: string, description?: string) =>
+        show({
+          type: "success",
+          title: title || i18n("settingsSaved", "Préférences sauvegardées"),
+          description: description || i18n("syncedViaWorker", "Synchronisées via le Worker"),
+          icon: <Cloud className="h-5 w-5" />,
+          duration: 3000,
+        }),
+
+      reset: () =>
+        show({
+          type: "info",
+          title: i18n("settingsReset", "Paramètres rétablis"),
+          description: i18n("defaultPreferencesRestored", "Valeurs par défaut restaurées"),
+          icon: <Check className="h-5 w-5" />,
+          duration: 3000,
+        }),
+
+      noteCreated: (noteTitle?: string) =>
+        show({
+          type: "success",
+          title: i18n("noteCreated", "Note créée"),
+          description: noteTitle,
+          icon: <FileText className="h-5 w-5" />,
+          duration: 3000,
+        }),
+
+      noteDeleted: (count = 1) =>
+        show({
+          type: "info",
+          title: `${i18n("deleted", "Supprimée")}${count > 1 ? ` (${count})` : ""}`,
+          icon: <Trash2 className="h-5 w-5" />,
+          duration: 3000,
+        }),
+
+      taskAdded: (taskTitle?: string) =>
+        show({
+          type: "success",
+          title: i18n("added", "Tâche ajoutée"),
+          description: taskTitle,
+          icon: <CheckSquare className="h-5 w-5" />,
+          duration: 3000,
+        }),
+
+      taskDeleted: () =>
+        show({
+          type: "info",
+          title: i18n("deleted", "Tâche supprimée"),
+          icon: <Trash2 className="h-5 w-5" />,
+          duration: 3000,
+        }),
+
+      clipboard: () =>
+        show({
+          type: "success",
+          title: i18n("copied", "Copié dans le presse-papiers"),
+          icon: <ClipboardCheck className="h-5 w-5" />,
+          duration: 2000,
+        }),
+    }),
+    [i18n, show]
+  );
+
   const api = useMemo<ToastApi>(() => {
     const self: ToastApi = {
       show,
@@ -147,12 +324,13 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       loading,
       remove,
       dismiss,
+      notify,
       get toast(): ToastApi {
         return self;
       },
     };
     return self;
-  }, [show, success, error, info, warning, loading, remove, dismiss]);
+  }, [show, success, error, info, warning, loading, remove, dismiss, notify]);
 
   return (
     <ToastContext.Provider value={api}>
@@ -164,7 +342,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           unstyled: true,
           classNames: {
             toast:
-              "group relative flex w-[22rem] max-w-[calc(100vw-1.5rem)] items-start gap-3 rounded-2xl border border-white/[0.08] bg-black/90 p-4 text-sm text-white shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-2xl",
+              "group relative flex w-[22rem] max-w-[calc(100vw-1.5rem)] items-start gap-3 rounded-xl border border-white/10 bg-[#0C0C0E]/95 p-3.5 text-sm text-white shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-md",
             title: "font-medium text-white",
             description: "mt-0.5 text-xs text-zinc-300",
             actionButton:
@@ -172,10 +350,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             cancelButton: "hidden",
             closeButton:
               "absolute right-2 top-2 rounded-md p-1 text-zinc-400 opacity-0 transition-all hover:bg-white/[0.1] hover:text-white group-hover:opacity-100",
-            error: "border-white/10 bg-black/90 text-white",
-            success: "border-white/10 bg-black/90 text-white",
-            warning: "border-white/10 bg-black/90 text-white",
-            info: "border-white/10 bg-black/90 text-white",
+            error: "border-rose-500/20",
+            success: "border-emerald-500/20",
+            warning: "border-amber-500/20",
+            info: "border-cyan-500/20",
           },
         }}
         icons={{

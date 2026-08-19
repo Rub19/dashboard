@@ -17,7 +17,7 @@ const SETTINGS_KEY = "liveLanyardUserId";
 
 export default function DiscordConfig() {
   const i18n = useI18n();
-  const { success, error: showError } = useToast();
+  const { error: showError, notify } = useToast();
   const { settings, update } = useSettings();
   const { setField, getField } = useIntegrationStore();
   const { profile, loading, connect, disconnect, refresh } = useDiscordOAuth();
@@ -75,7 +75,7 @@ export default function DiscordConfig() {
     try {
       setField(PROVIDER, FIELD, trimmed);
       update({ [SETTINGS_KEY]: trimmed } as Partial<typeof settings>);
-      success(i18n("saved"));
+      notify.sync(i18n("saved"));
     } catch {
       showError(i18n("error"));
     } finally {
@@ -93,7 +93,7 @@ export default function DiscordConfig() {
       const result = await pingIntegration(integration!, testSettings, {}, {}, {});
       setHealth(result);
       if (result.ok) {
-        success(i18n("connected"));
+        notify.discord();
       } else {
         showError(result.error || i18n("error"));
       }
@@ -110,13 +110,13 @@ export default function DiscordConfig() {
     setField(PROVIDER, FIELD, "");
     update({ [SETTINGS_KEY]: "" } as Partial<typeof settings>);
     setHealth(undefined);
-    success(i18n("disconnectSuccess"));
+    notify.discordDisconnect();
   }
 
   async function handleOAuthDisconnect() {
     if (!window.confirm(`${i18n("disconnect")} Discord ?`)) return;
     await disconnect();
-    success(i18n("disconnectSuccess"));
+    notify.discordDisconnect();
   }
 
   async function handleOAuthRefresh() {

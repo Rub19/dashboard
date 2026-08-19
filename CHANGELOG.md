@@ -4,6 +4,16 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Refonte des toasts riches et contextuels (v1.6.16)**
+
+### Ajoute
+- Style glassmorphic des toasts : fond `#0C0C0E`, `backdrop-blur-md`, bordure `border-white/10`, coins `rounded-xl`.
+- Toasts contextuels : drapeau du changement de langue, logo/avatar Discord, icône Cloud pour la synchronisation, icônes Notes/Tâches, Clipboard.
+- API `notify` sur `useToast()` : `notify.language()`, `notify.discord()`, `notify.sync()`, `notify.noteCreated()`, `notify.taskAdded()`, `notify.clipboard()`...
+- Animation d'entrée subtile des icônes via Framer Motion.
+- Snyk : aucune vulnérabilité sur `sonner` ; `react-hot-toast` n'est pas utilisé.
+- Version `1.6.16`.
+
 **Corrections images : Gaming, Discord Lanyard et Spotify (v1.6.15)**
 
 ### Corrige

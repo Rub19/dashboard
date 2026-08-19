@@ -997,7 +997,7 @@ const v178_fr: ChangelogEntry = {
   date: "2026-08-19",
   title: "Corrections : sidebar flottante, synchronisation et erreurs console",
   items: [
-    "Sidebar : suppression de l'arrière-plan gris derrière le panneau flottant.",
+    "Sidebar : suppression de l'arrière-plan gris derrière le panneau flottant et extension du panneau jusqu'en bas de l'écran.",
     "Synchronisation : appels Supabase Realtime sécurisés avec try/catch et .catch() pour éviter les rejets non gérés.",
     "Supabase : correction des requêtes `pomodoro_sessions` et `desktop_layout` selon le schéma existant (pas de colonne `data`, `.maybeSingle()` pour éviter les 406).",
     "Focus-timer : reconstruction du `FocusSession` depuis les colonnes cloud.",
@@ -1015,7 +1015,7 @@ const v178_en: ChangelogEntry = {
   date: "2026-08-19",
   title: "Fixes: floating sidebar, sync, and console errors",
   items: [
-    "Sidebar: removed the dark gray background strip behind the floating panel.",
+    "Sidebar: removed the dark gray background strip behind the floating panel and extended the panel to the bottom of the screen.",
     "Sync: secured Supabase Realtime calls with try/catch and .catch() to avoid unhandled rejections.",
     "Supabase: fixed `pomodoro_sessions` and `desktop_layout` queries to match the existing schema (no `data` column, `.maybeSingle()` to prevent 406s).",
     "Focus timer: rebuild `FocusSession` from cloud columns.",
@@ -1033,7 +1033,7 @@ const v178_es: ChangelogEntry = {
   date: "2026-08-19",
   title: "Correcciones: barra lateral flotante, sincronización y errores de consola",
   items: [
-    "Barra lateral: eliminación del fondo gris oscuro detrás del panel flotante.",
+    "Barra lateral: eliminación del fondo gris oscuro detrás del panel flotante y extensión del panel hasta la parte inferior de la pantalla.",
     "Sincronización: llamadas a Supabase Realtime protegidas con try/catch y .catch() para evitar rechazos no controlados.",
     "Supabase: corrección de las consultas `pomodoro_sessions` y `desktop_layout` según el esquema existente (sin columna `data`, `.maybeSingle()` para evitar 406).",
     "Temporizador: reconstrucción del `FocusSession` desde las columnas en la nube.",
@@ -1051,7 +1051,7 @@ const v178_de: ChangelogEntry = {
   date: "2026-08-19",
   title: "Korrekturen: schwebende Seitenleiste, Synchronisation und Konsolenfehler",
   items: [
-    "Seitenleiste: dunkler grauer Hintergundstreifen hinter dem schwebenden Panel entfernt.",
+    "Seitenleiste: dunkler grauer Hintergundstreifen hinter dem schwebenden Panel entfernt und Panel bis zum unteren Bildschirmrand erweitert.",
     "Synchronisation: Supabase-Realtime-Aufrufe mit try/catch und .catch() abgesichert, um unbehandelte Zurückweisungen zu vermeiden.",
     "Supabase: Korrektur der `pomodoro_sessions`- und `desktop_layout`-Abfragen an das bestehende Schema (keine `data`-Spalte, `.maybeSingle()` zur Vermeidung von 406).",
     "Fokus-Timer: `FocusSession` aus Cloud-Spalten rekonstruiert.",

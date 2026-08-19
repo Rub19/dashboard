@@ -7,7 +7,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 **Corrections issues console et sidebar flottante (v1.7.1)**
 
 ### Corrige
-- `ethone-next/components/Sidebar.tsx` : fond transparent du wrapper pour supprimer la bande grise derrière la barre latérale flottante.
+- `ethone-next/components/Sidebar.tsx` : fond transparent du wrapper, panneau allongé jusqu'en bas de l'écran, et correction de la hauteur du panneau flottant.
 - `ethone-next/lib/stores/sync.ts` : suppression des mises à jour redondantes quand un statut source ne change pas.
 - `ethone-next/lib/supabase.ts` : renforcement de `isMissingSchemaError` pour couvrir PGRST204, PGRST116, 42P01 et les messages "schema cache" / "Could not find".
 - `ethone-next/lib/focus-timer.ts` : appels `pomodoro_sessions` alignés sur le schéma sans colonne `data` et reconstruction du `FocusSession` depuis les colonnes cloud.

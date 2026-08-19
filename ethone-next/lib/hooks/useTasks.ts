@@ -79,43 +79,47 @@ export function useTasks() {
     let channel: ReturnType<typeof supabase.channel> | null = null;
 
     async function subscribe() {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const userId = sessionData?.session?.user?.id;
-      if (!userId) return;
+      try {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const userId = sessionData?.session?.user?.id;
+        if (!userId) return;
 
-      channel = supabase
-        .channel(`tasks_changes:${realtimeId}`)
-        .on(
-          "postgres_changes",
-          {
-            event: "*",
-            schema: "public",
-            table: "tasks",
-            filter: `user_id=eq.${userId}`,
-          },
-          (payload) => {
-            setItems((prev) => {
-              if (payload.eventType === "INSERT") {
-                const next = payload.new as Task;
-                if (prev.some((t) => t.id === next.id)) return prev;
-                return [next, ...prev];
-              }
-              if (payload.eventType === "UPDATE") {
-                const next = payload.new as Task;
-                return prev.map((t) => (t.id === next.id ? next : t));
-              }
-              if (payload.eventType === "DELETE") {
-                const removed = payload.old as { id: string };
-                return prev.filter((t) => t.id !== removed.id);
-              }
-              return prev;
-            });
-          },
-        )
-        .subscribe();
+        channel = supabase
+          .channel(`tasks_changes:${realtimeId}`)
+          .on(
+            "postgres_changes",
+            {
+              event: "*",
+              schema: "public",
+              table: "tasks",
+              filter: `user_id=eq.${userId}`,
+            },
+            (payload) => {
+              setItems((prev) => {
+                if (payload.eventType === "INSERT") {
+                  const next = payload.new as Task;
+                  if (prev.some((t) => t.id === next.id)) return prev;
+                  return [next, ...prev];
+                }
+                if (payload.eventType === "UPDATE") {
+                  const next = payload.new as Task;
+                  return prev.map((t) => (t.id === next.id ? next : t));
+                }
+                if (payload.eventType === "DELETE") {
+                  const removed = payload.old as { id: string };
+                  return prev.filter((t) => t.id !== removed.id);
+                }
+                return prev;
+              });
+            },
+          );
+        await channel.subscribe();
+      } catch {
+        // Realtime optional; schema/channel errors fall back to manual sync.
+      }
     }
 
-    subscribe();
+    subscribe().catch(() => {});
     return () => {
       channel?.unsubscribe();
     };

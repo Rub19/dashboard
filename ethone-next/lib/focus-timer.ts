@@ -105,16 +105,26 @@ export class FocusTimer {
 
       const { data, error } = await supabase
         .from("pomodoro_sessions")
-        .select("data")
+        .select("*")
         .eq("user_id", userId)
         .single();
 
-      if (error || !data?.data) {
-        useSyncStore.getState().setStatus("pomodoro", "idle");
+      if (error || !data) {
+        if (isMissingSchemaError(error)) {
+          useSyncStore.getState().setStatus("pomodoro", "idle");
+        } else {
+          useSyncStore.getState().setStatus("pomodoro", "error");
+        }
         return null;
       }
+
+      const session = this.mapFromCloud(data);
+      if (session) {
+        useSyncStore.getState().setStatus("pomodoro", "idle");
+        return session;
+      }
       useSyncStore.getState().setStatus("pomodoro", "idle");
-      return data.data as FocusSession;
+      return null;
     } catch (err) {
       if (!isMissingSchemaError(err)) {
         console.error("Focus timer cloud load failed:", err);
@@ -124,6 +134,40 @@ export class FocusTimer {
       }
       return null;
     }
+  }
+
+  private static mapFromCloud(data: Record<string, unknown>): FocusSession | null {
+    const mode = String(data.mode || "work");
+    const remaining = Number(data.time_remaining_seconds) || 0;
+    const isRunning = Boolean(data.is_running);
+
+    let phase: FocusPhase = "idle";
+    if (isRunning || remaining > 0) {
+      if (mode === "short_break") phase = "shortBreak";
+      else if (mode === "long_break") phase = "longBreak";
+      else phase = "focus";
+    }
+
+    const config = PRESETS.pomodoro;
+    const total =
+      phase === "shortBreak"
+        ? config.shortBreak * 60
+        : phase === "longBreak"
+        ? config.longBreak * 60
+        : config.work * 60;
+
+    return {
+      phase,
+      remaining,
+      total,
+      paused: !isRunning,
+      activePreset: "pomodoro",
+      cycle: 1,
+      completedPomodoros: 0,
+      completedBreaks: 0,
+      totalFocusSeconds: 0,
+      lastTick: data.started_at ? new Date(String(data.started_at)).getTime() : Date.now(),
+    };
   }
 
   restore(session?: FocusSession, fromCloud = false): void {
@@ -490,7 +534,6 @@ export class FocusTimer {
           is_running: isRunning,
           started_at: startedAt,
           updated_at: new Date().toISOString(),
-          data: session,
         },
         { onConflict: "user_id" }
       );

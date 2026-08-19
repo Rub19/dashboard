@@ -992,9 +992,81 @@ const v322_fr: ChangelogEntry = {
   ],
 };
 
+const v178_fr: ChangelogEntry = {
+  version: "v1.7.1",
+  date: "2026-08-19",
+  title: "Corrections : sidebar flottante, synchronisation et erreurs console",
+  items: [
+    "Sidebar : suppression de l'arrière-plan gris derrière le panneau flottant.",
+    "Synchronisation : appels Supabase Realtime sécurisés avec try/catch et .catch() pour éviter les rejets non gérés.",
+    "Supabase : correction des requêtes `pomodoro_sessions` et `desktop_layout` selon le schéma existant (pas de colonne `data`, `.maybeSingle()` pour éviter les 406).",
+    "Focus-timer : reconstruction du `FocusSession` depuis les colonnes cloud.",
+    `Desktop layout : passage à .maybeSingle() et gestion silencieuse des erreurs Realtime.`,
+    "Sync store : évite les mises à jour inutiles si un statut source est inchangé.",
+    `isMissingSchemaError renforcé (PGRST204, PGRST116, 42P01, messages "schema cache" / "Could not find").`,
+    "Next.js : configuration conditionnelle `output: 'export'` pour la production, mode normal pour `next dev`.",
+    "Brain chat : route API marquée `runtime: 'nodejs'` pour éviter l'avertissement Edge Runtime.",
+    "Version : v1.7.1.",
+  ],
+};
+
+const v178_en: ChangelogEntry = {
+  version: "v1.7.1",
+  date: "2026-08-19",
+  title: "Fixes: floating sidebar, sync, and console errors",
+  items: [
+    "Sidebar: removed the dark gray background strip behind the floating panel.",
+    "Sync: secured Supabase Realtime calls with try/catch and .catch() to avoid unhandled rejections.",
+    "Supabase: fixed `pomodoro_sessions` and `desktop_layout` queries to match the existing schema (no `data` column, `.maybeSingle()` to prevent 406s).",
+    "Focus timer: rebuild `FocusSession` from cloud columns.",
+    "Desktop layout: switched to `.maybeSingle()` and silently handled Realtime errors.",
+    "Sync store: skip redundant updates when a source status is unchanged.",
+    "Strengthened `isMissingSchemaError` (PGRST204, PGRST116, 42P01, 'schema cache' / 'Could not find' messages).",
+    "Next.js: conditional `output: 'export'` config for production, normal mode for `next dev`.",
+    "Brain chat: API route set to `runtime: 'nodejs'` to avoid the Edge Runtime warning.",
+    "Version: v1.7.1.",
+  ],
+};
+
+const v178_es: ChangelogEntry = {
+  version: "v1.7.1",
+  date: "2026-08-19",
+  title: "Correcciones: barra lateral flotante, sincronización y errores de consola",
+  items: [
+    "Barra lateral: eliminación del fondo gris oscuro detrás del panel flotante.",
+    "Sincronización: llamadas a Supabase Realtime protegidas con try/catch y .catch() para evitar rechazos no controlados.",
+    "Supabase: corrección de las consultas `pomodoro_sessions` y `desktop_layout` según el esquema existente (sin columna `data`, `.maybeSingle()` para evitar 406).",
+    "Temporizador: reconstrucción del `FocusSession` desde las columnas en la nube.",
+    "Layout del escritorio: uso de `.maybeSingle()` y manejo silencioso de errores de Realtime.",
+    "Sync store: omite actualizaciones redundantes cuando el estado de una fuente no cambia.",
+    "`isMissingSchemaError` reforzado (PGRST204, PGRST116, 42P01, mensajes \"schema cache\" / \"Could not find\").",
+    "Next.js: configuración condicional `output: 'export'` para producción, modo normal para `next dev`.",
+    "Brain chat: ruta de API con `runtime: 'nodejs'` para evitar la advertencia de Edge Runtime.",
+    "Versión: v1.7.1.",
+  ],
+};
+
+const v178_de: ChangelogEntry = {
+  version: "v1.7.1",
+  date: "2026-08-19",
+  title: "Korrekturen: schwebende Seitenleiste, Synchronisation und Konsolenfehler",
+  items: [
+    "Seitenleiste: dunkler grauer Hintergundstreifen hinter dem schwebenden Panel entfernt.",
+    "Synchronisation: Supabase-Realtime-Aufrufe mit try/catch und .catch() abgesichert, um unbehandelte Zurückweisungen zu vermeiden.",
+    "Supabase: Korrektur der `pomodoro_sessions`- und `desktop_layout`-Abfragen an das bestehende Schema (keine `data`-Spalte, `.maybeSingle()` zur Vermeidung von 406).",
+    "Fokus-Timer: `FocusSession` aus Cloud-Spalten rekonstruiert.",
+    "Desktop-Layout: Umstellung auf `.maybeSingle()` und stilles Abfangen von Realtime-Fehlern.",
+    "Sync-Store: überspringt redundante Aktualisierungen, wenn ein Quellstatus unverändert ist.",
+    "`isMissingSchemaError` verstärkt (PGRST204, PGRST116, 42P01, \"schema cache\" / \"Could not find\"-Meldungen).",
+    "Next.js: bedingte `output: 'export'`-Konfiguration für Produktion, normaler Modus für `next dev`.",
+    "Brain Chat: API-Route auf `runtime: 'nodejs'` gesetzt, um die Edge-Runtime-Warnung zu vermeiden.",
+    "Version: v1.7.1.",
+  ],
+};
+
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
-  en: [v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
+  fr: [v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -1040,7 +1112,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
+  es: [v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -1086,7 +1158,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
+  de: [v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

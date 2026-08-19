@@ -131,37 +131,46 @@ export default function SettingsProvider({
     let channel: ReturnType<typeof supabase.channel> | null = null;
 
     async function subscribe() {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const userId = sessionData?.session?.user?.id;
-      if (!userId) return;
+      try {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const userId = sessionData?.session?.user?.id;
+        if (!userId) return;
 
-      channel = supabase
-        .channel(`user_settings_changes_${userId.slice(0, 8)}_${Date.now()}`)
-        .on(
-          "postgres_changes",
-          {
-            event: "*",
-            schema: "public",
-            table: "user_settings",
-            filter: `user_id=eq.${userId}`,
-          },
-          (payload) => {
-            if (payload.new && typeof payload.new === "object") {
-              const next = (payload.new as Record<string, unknown>).settings as Partial<Settings>;
-              if (next) setSettings((prev) => ({ ...DEFAULTS, ...prev, ...migrateSettings(next) }));
+        channel = supabase
+          .channel(`user_settings_changes_${userId.slice(0, 8)}_${Date.now()}`)
+          .on(
+            "postgres_changes",
+            {
+              event: "*",
+              schema: "public",
+              table: "user_settings",
+              filter: `user_id=eq.${userId}`,
+            },
+            (payload) => {
+              if (payload.new && typeof payload.new === "object") {
+                const next = (payload.new as Record<string, unknown>).settings as Partial<Settings>;
+                if (next) setSettings((prev) => ({ ...DEFAULTS, ...prev, ...migrateSettings(next) }));
+              }
             }
-          }
-        )
-        .subscribe((status) => {
+          );
+        await channel.subscribe((status) => {
           if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
             useSyncStore.getState().setStatus("user_settings", "offline");
           }
         });
+      } catch {
+        // Table or realtime unavailable; local storage is the fallback.
+        useSyncStore.getState().setStatus("user_settings", "offline");
+      }
     }
 
-    subscribe();
+    subscribe().catch(() => {});
     return () => {
-      channel?.unsubscribe();
+      try {
+        channel?.unsubscribe();
+      } catch {
+        // Ignore cleanup errors for optional realtime channel.
+      }
     };
   }, [loaded]);
 

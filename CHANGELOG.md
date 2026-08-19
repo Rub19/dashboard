@@ -4,6 +4,20 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Corrections issues console et sidebar flottante (v1.7.1)**
+
+### Corrige
+- `ethone-next/components/Sidebar.tsx` : fond transparent du wrapper pour supprimer la bande grise derrière la barre latérale flottante.
+- `ethone-next/lib/stores/sync.ts` : suppression des mises à jour redondantes quand un statut source ne change pas.
+- `ethone-next/lib/supabase.ts` : renforcement de `isMissingSchemaError` pour couvrir PGRST204, PGRST116, 42P01 et les messages "schema cache" / "Could not find".
+- `ethone-next/lib/focus-timer.ts` : appels `pomodoro_sessions` alignés sur le schéma sans colonne `data` et reconstruction du `FocusSession` depuis les colonnes cloud.
+- `ethone-next/lib/hooks/useDesktopLayout.ts` : passage à `.maybeSingle()` et gestion silencieuse des erreurs Realtime.
+- `ethone-next/lib/hooks/useTasks.ts` : gestion silencieuse des erreurs Realtime.
+- `ethone-next/components/SettingsProvider.tsx` : try/catch sur le canal Realtime et `.catch()` sur l'abonnement.
+- `ethone-next/app/api/brain/chat/route.ts` : `runtime: 'nodejs'` pour éviter l'avertissement Edge Runtime.
+- `ethone-next/next.config.ts` : `output: 'export'` conditionnel à `process.env.NODE_ENV === 'production'`, mode normal en dev.
+- `package.json`, `public/version.json`, `components/UserProfileDropdown.tsx` : montée de version `1.7.0` → `1.7.1`.
+
 **Sécurité : durcissement multi-tenant et audit global**
 
 ### Ajoute

@@ -43,6 +43,9 @@ export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey, {
 
 export function isMissingSchemaError(err: unknown): boolean {
   if (err == null) return false;
+  const asString = String(err);
+  if (asString.includes("PGRST204") || asString.includes("PGRST116") || asString.includes("42P01")) return true;
+  if (asString.includes("schema cache") || asString.includes("Could not find")) return true;
   if (typeof err === "object" && "code" in err) {
     const code = String((err as { code?: unknown }).code);
     if (code === "PGRST204" || code === "42P01" || code === "PGRST116") return true;

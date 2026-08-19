@@ -21,6 +21,7 @@ export const useSyncStore = create<SyncStore>((set) => ({
   sources: {},
   setStatus: (source, status) =>
     set((state) => {
+      if (state.sources[source] === status) return state;
       const next = { ...state.sources, [source]: status };
       return { sources: next, status: deriveStatus(next) };
     }),

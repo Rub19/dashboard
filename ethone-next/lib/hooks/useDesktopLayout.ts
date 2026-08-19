@@ -44,7 +44,7 @@ export function useDesktopLayout() {
         .from("desktop_layout")
         .select("*")
         .eq("user_id", userId)
-        .single();
+        .maybeSingle();
 
       if (fetchError && fetchError.code !== "PGRST116" && !isMissingSchemaError(fetchError)) {
         throw fetchError;
@@ -74,35 +74,39 @@ export function useDesktopLayout() {
     let channel: ReturnType<typeof supabase.channel> | null = null;
 
     async function subscribe() {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const userId = sessionData?.session?.user?.id;
-      if (!userId) return;
+      try {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const userId = sessionData?.session?.user?.id;
+        if (!userId) return;
 
-      channel = supabase
-        .channel(`desktop_layout_changes_${userId.slice(0, 8)}_${Date.now()}`)
-        .on(
-          "postgres_changes",
-          {
-            event: "*",
-            schema: "public",
-            table: "desktop_layout",
-            filter: `user_id=eq.${userId}`,
-          },
-          (payload) => {
-            if (payload.new && typeof payload.new === "object") {
-              const next = payload.new as Record<string, unknown>;
-              setLayout({
-                id: next.id ? String(next.id) : undefined,
-                widgets: Array.isArray(next.widgets) ? (next.widgets as WidgetLayout[]) : [],
-                updated_at: next.updated_at ? String(next.updated_at) : undefined,
-              });
-            }
-          },
-        )
-        .subscribe();
+        channel = supabase
+          .channel(`desktop_layout_changes_${userId.slice(0, 8)}_${Date.now()}`)
+          .on(
+            "postgres_changes",
+            {
+              event: "*",
+              schema: "public",
+              table: "desktop_layout",
+              filter: `user_id=eq.${userId}`,
+            },
+            (payload) => {
+              if (payload.new && typeof payload.new === "object") {
+                const next = payload.new as Record<string, unknown>;
+                setLayout({
+                  id: next.id ? String(next.id) : undefined,
+                  widgets: Array.isArray(next.widgets) ? (next.widgets as WidgetLayout[]) : [],
+                  updated_at: next.updated_at ? String(next.updated_at) : undefined,
+                });
+              }
+            },
+          );
+        await channel.subscribe();
+      } catch {
+        // Realtime optional; schema or channel errors fall back to manual sync.
+      }
     }
 
-    subscribe();
+    subscribe().catch(() => {});
     return () => {
       channel?.unsubscribe();
     };

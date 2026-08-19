@@ -412,7 +412,9 @@ function normalizedPath(pathname) {
 export function findRoute(method, pathname) {
   const normalizedMethod = String(method || "GET").toUpperCase();
   const path = normalizedPath(pathname);
-  return ROUTES.find((candidate) => candidate.method === normalizedMethod && candidate.path === path) || null;
+  const match = ROUTES.find((candidate) => candidate.method === normalizedMethod && candidate.path === path) || null;
+  if (match || normalizedMethod !== "HEAD") return match;
+  return ROUTES.find((candidate) => candidate.method === "GET" && candidate.path === path) || null;
 }
 
 export function routesForPath(pathname) {

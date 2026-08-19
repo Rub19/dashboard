@@ -74,6 +74,9 @@ async function handleRequest(request, env, executionCtx) {
   } catch (error) {
     response = errorResponse(normalizeError(error), { requestId });
   }
+  if (request.method === "HEAD") {
+    response = new Response(null, { status: response.status, statusText: response.statusText, headers: response.headers });
+  }
   response = securityHeaders(applyCors(response, cors));
   writeRequestLog(context, response, startedAt);
   return response;

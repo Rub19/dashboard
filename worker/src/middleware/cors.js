@@ -1,7 +1,7 @@
 import { httpError } from "./errors.js";
 import { emptyResponse } from "../utils/response.js";
 
-const METHODS = Object.freeze(["GET", "POST", "OPTIONS"]);
+const METHODS = Object.freeze(["GET", "POST", "PATCH", "DELETE", "HEAD", "OPTIONS"]);
 const HEADERS = Object.freeze([
   "authorization",
   "content-range",
@@ -15,6 +15,17 @@ const HEADERS = Object.freeze([
   "x-ethone-upload-token",
   "x-request-id"
 ]);
+
+function isLoopbackOrigin(origin) {
+  try {
+    const url = new URL(origin);
+    if (url.protocol !== "http:" && url.protocol !== "https:") return false;
+    const hostname = url.hostname.toLowerCase();
+    return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "[::1]";
+  } catch {
+    return false;
+  }
+}
 
 function configuredOrigins(env) {
   const origins = String(env.ALLOWED_ORIGINS || "https://ethone.dev")
@@ -41,7 +52,8 @@ function configuredOrigins(env) {
 export function evaluateCors(request, env) {
   const origin = request.headers.get("origin");
   if (!origin) return Object.freeze({ origin: "", allowed: true });
-  return Object.freeze({ origin, allowed: configuredOrigins(env).has(origin) });
+  const allowed = configuredOrigins(env).has(origin) || isLoopbackOrigin(origin);
+  return Object.freeze({ origin, allowed });
 }
 
 export function assertCors(cors) {

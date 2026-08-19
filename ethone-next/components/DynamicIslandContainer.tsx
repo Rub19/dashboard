@@ -28,6 +28,7 @@ import { useDynamicIslandStore } from "@/lib/stores/dynamic-island";
 import { useBrainActivityStore } from "@/lib/stores/brain-activity";
 import { cn } from "@/lib/utils";
 import VolumeSlider from "@/components/VolumeSlider";
+import MediaProgress from "@/components/MediaProgress";
 import type { NowPlaying } from "@/lib/hooks/useLiveData";
 
 type View = "spotify" | "pomodoro" | "brain";
@@ -87,77 +88,6 @@ function AudioWave({ playing, className = "" }: { playing: boolean; className?: 
   );
 }
 
-function MediaProgress({
-  value,
-  max,
-  onChange,
-}: {
-  value: number;
-  max: number;
-  onChange: (v: number) => void;
-}) {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [dragging, setDragging] = useState(false);
-  const [hovered, setHovered] = useState(false);
-
-  const percentage = max > 0 ? Math.min(100, Math.max(0, (value / max) * 100)) : 0;
-
-  const updateFromClientX = useCallback(
-    (clientX: number) => {
-      const rect = trackRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      const pct = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-      const next = Math.round(pct * max / 1000) * 1000;
-      onChange(Math.min(max, Math.max(0, next)));
-    },
-    [max, onChange],
-  );
-
-  useEffect(() => {
-    if (!dragging) return;
-    const handleMove = (e: PointerEvent) => updateFromClientX(e.clientX);
-    const handleUp = () => setDragging(false);
-    window.addEventListener("pointermove", handleMove);
-    window.addEventListener("pointerup", handleUp);
-    return () => {
-      window.removeEventListener("pointermove", handleMove);
-      window.removeEventListener("pointerup", handleUp);
-    };
-  }, [dragging, updateFromClientX]);
-
-  return (
-    <div className="space-y-1.5">
-      <div
-        ref={trackRef}
-        onPointerDown={(e) => {
-          (e.target as HTMLDivElement).setPointerCapture?.(e.pointerId);
-          setDragging(true);
-          updateFromClientX(e.clientX);
-        }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        className="group relative h-1.5 w-full cursor-pointer overflow-hidden rounded-full bg-white/[0.10] transition-all duration-200 hover:h-2"
-      >
-        <div
-          className="pointer-events-none h-full rounded-full bg-emerald-400 transition-all"
-          style={{ width: `${percentage}%` }}
-        />
-        <div
-          className={cn(
-            "pointer-events-none absolute top-1/2 h-3.5 w-3.5 -translate-y-1/2 rounded-full border-2 border-emerald-400 bg-zinc-950 shadow-md transition-transform duration-150",
-            dragging || hovered ? "scale-125" : "scale-100",
-          )}
-          style={{ left: `calc(${percentage}% - 7px)` }}
-        />
-      </div>
-      <div className="flex justify-between font-mono text-[10px] text-zinc-500">
-        <span>{formatMs(value)}</span>
-        <span>-{formatMs(Math.max(0, max - value))}</span>
-      </div>
-    </div>
-  );
-}
-
 function SpotifyCompact({
   track,
   remainingMs,
@@ -187,6 +117,7 @@ function SpotifyCompact({
         className="h-5 w-5 shrink-0 rounded-md object-cover"
         iconClassName={cn("h-3 w-3", playing ? "text-emerald-400" : "text-zinc-400")}
         loading="eager"
+        priority
       />
 
       <AudioWave playing={playing} className="shrink-0" />
@@ -265,13 +196,14 @@ export default function DynamicIslandContainer() {
 
   useEffect(() => {
     if (!nowPlaying?.isPlaying) return;
+    const step = 250;
     const id = setInterval(() => {
       setLocalProgress((p) => {
         const duration = nowPlaying?.durationMs ?? 0;
-        const next = Math.min(duration, p + 1000);
+        const next = Math.min(duration, p + step);
         return next;
       });
-    }, 1000);
+    }, step);
     return () => clearInterval(id);
   }, [nowPlaying?.isPlaying, nowPlaying?.durationMs]);
 
@@ -474,7 +406,7 @@ export default function DynamicIslandContainer() {
             onMouseLeave={handleLeave}
             aria-label={i18n("dynamicIsland")}
           >
-            <DynamicIslandView id="spotify" className="w-[340px] sm:w-[400px]">
+            <DynamicIslandView id="spotify" data-testid="dynamic-island-spotify" className="w-[340px] sm:w-[400px]">
               <div onClick={stopPropagation} className="flex w-full flex-col gap-4">
                 <div className="flex items-start justify-between gap-2">
                   <span className="text-[10px] font-medium tabular-nums text-zinc-500">
@@ -493,6 +425,7 @@ export default function DynamicIslandContainer() {
                     className="h-14 w-14 shrink-0 rounded-xl object-cover shadow-lg ring-1 ring-white/10"
                     iconClassName="h-6 w-6 text-emerald-400"
                     loading="eager"
+                    priority
                   />
                   <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5">
                     <p className="truncate text-sm font-semibold text-white">
@@ -507,7 +440,7 @@ export default function DynamicIslandContainer() {
                     onClick={toggleLike}
                     disabled={likeLoading || !nowPlaying?.id}
                     className={cn(
-                      "flex h-8 w-8 items-center justify-center rounded-full transition-all duration-200",
+                      "flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200",
                       isSaved
                         ? "bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25"
                         : "text-zinc-400 hover:bg-white/10 hover:text-white",
@@ -530,12 +463,13 @@ export default function DynamicIslandContainer() {
                       value={localProgress}
                       max={nowPlaying.durationMs}
                       onChange={onSpotifySeek}
+                      data-testid="dynamic-island-progress"
                     />
                   </div>
                 )}
 
                 <div className="flex items-center justify-center" onPointerDown={stopPropagation}>
-                  <VolumeSlider value={localVolume} onChange={onSpotifyVolume} />
+                  <VolumeSlider value={localVolume} onChange={onSpotifyVolume} data-testid="dynamic-island-volume" />
                 </div>
 
                 <div className="flex items-center justify-center gap-3">
@@ -543,16 +477,16 @@ export default function DynamicIslandContainer() {
                     type="button"
                     onClick={() => spotifyControl("previous")}
                     disabled={pendingSpotify || npLoading}
-                    className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-40"
                     aria-label={i18n("previous")}
                   >
-                    <SkipBack className="h-4 w-4" />
+                    <SkipBack className="h-5 w-5" />
                   </button>
                   <button
                     type="button"
                     onClick={togglePlay}
                     disabled={pendingSpotify || npLoading}
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-zinc-950 shadow-lg transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-zinc-950 shadow-lg transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
                     aria-label={nowPlaying?.isPlaying ? i18n("pause") : i18n("play")}
                   >
                     {nowPlaying?.isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 fill-current" />}
@@ -561,10 +495,10 @@ export default function DynamicIslandContainer() {
                     type="button"
                     onClick={() => spotifyControl("next")}
                     disabled={pendingSpotify || npLoading}
-                    className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-40"
                     aria-label={i18n("next")}
                   >
-                    <SkipForward className="h-4 w-4" />
+                    <SkipForward className="h-5 w-5" />
                   </button>
                 </div>
               </div>

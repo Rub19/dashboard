@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Heart,
@@ -17,19 +17,13 @@ import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import type { NowPlaying } from "@/lib/hooks/useLiveData";
 import VolumeSlider from "@/components/VolumeSlider";
+import MediaProgress from "@/components/MediaProgress";
 import SafeImage from "@/components/SafeImage";
 
 export type DockMediaFlyoutProps = {
   nowPlaying: NowPlaying | null;
   clientId?: string;
 };
-
-function formatMs(ms: number): string {
-  const total = Math.max(0, Math.floor(ms / 1000));
-  const m = Math.floor(total / 60);
-  const s = total % 60;
-  return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
-}
 
 export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyoutProps) {
   const i18n = useI18n();
@@ -41,6 +35,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
   const [isPlaying, setIsPlaying] = useState(!!nowPlaying?.isPlaying);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const progressRef = useRef(nowPlaying?.progressMs || 0);
+  const volumeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const hasClientId = !!clientId;
   const hasTrack = !!nowPlaying;
@@ -60,21 +55,17 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
     setIsPlaying(!!nowPlaying?.isPlaying);
     setIsLiked(!!nowPlaying?.isSaved);
     setLocalVolume(nowPlaying?.volumePercent ?? 50);
-  }, [nowPlaying?.progressMs, nowPlaying?.isPlaying, nowPlaying?.isSaved, nowPlaying?.volumePercent]);
+  }, [nowPlaying?.progressMs, nowPlaying?.isPlaying, nowPlaying?.isSaved, nowPlaying?.volumePercent, nowPlaying?.id]);
 
   useEffect(() => {
     if (!isPlaying) return;
+    const step = 250;
     const interval = setInterval(() => {
-      progressRef.current = Math.min(duration, progressRef.current + 1000);
+      progressRef.current = Math.min(duration, progressRef.current + step);
       setLocalProgress(progressRef.current);
-    }, 1000);
+    }, step);
     return () => clearInterval(interval);
   }, [isPlaying, duration]);
-
-  const progressPct = useMemo(() => {
-    if (!duration) return 0;
-    return Math.min(100, Math.max(0, (localProgress / duration) * 100));
-  }, [localProgress, duration]);
 
   function handleEnter() {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -85,25 +76,28 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
     timeoutRef.current = setTimeout(() => setOpen(false), 250);
   }
 
-  async function control(action: string, extras?: Record<string, unknown>) {
-    if (!clientId) {
-      showError(i18n("configureToEnable"));
-      return;
-    }
-    setPending(true);
-    try {
-      const body: Record<string, string | number> = { action, clientId };
-      if (extras) {
-        Object.entries(extras).forEach(([k, v]) => (body[k] = v as string | number));
+  const control = useCallback(
+    async (action: string, extras?: Record<string, unknown>) => {
+      if (!clientId) {
+        showError(i18n("configureToEnable"));
+        return;
       }
-      await fetchWorker("/api/spotify/control", { method: "POST", body: JSON.stringify(body) });
-      success(i18n("ok"));
-    } catch (err) {
-      showError(err instanceof Error ? err.message : i18n("playbackControlFailed"));
-    } finally {
-      setPending(false);
-    }
-  }
+      setPending(true);
+      try {
+        const body: Record<string, string | number> = { action, clientId };
+        if (extras) {
+          Object.entries(extras).forEach(([k, v]) => (body[k] = v as string | number));
+        }
+        await fetchWorker("/api/spotify/control", { method: "POST", body: JSON.stringify(body) });
+        success(i18n("ok"));
+      } catch (err) {
+        showError(err instanceof Error ? err.message : i18n("playbackControlFailed"));
+      } finally {
+        setPending(false);
+      }
+    },
+    [clientId, i18n, showError, success],
+  );
 
   async function toggleLike() {
     if (!clientId || !trackId) return;
@@ -126,13 +120,19 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
     await control("previous");
   }
 
-  async function setVolume(value: number) {
-    setLocalVolume(value);
-    await control("volume", {
-      volumePercent: Math.round(value),
-      deviceId: nowPlaying?.deviceId || "",
-    });
-  }
+  const setVolume = useCallback(
+    (value: number) => {
+      setLocalVolume(value);
+      if (volumeTimeoutRef.current) clearTimeout(volumeTimeoutRef.current);
+      volumeTimeoutRef.current = setTimeout(() => {
+        void control("volume", {
+          volumePercent: Math.round(value),
+          deviceId: nowPlaying?.deviceId || "",
+        });
+      }, 120);
+    },
+    [nowPlaying?.deviceId, control],
+  );
 
   async function seek(deltaMs: number) {
     if (!duration) return;
@@ -141,6 +141,15 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
     progressRef.current = next;
     setLocalProgress(next);
   }
+
+  const handleSeek = useCallback(
+    (next: number) => {
+      progressRef.current = next;
+      setLocalProgress(next);
+      void control("seek", { positionMs: next });
+    },
+    [control],
+  );
 
   const buttonLabel = hasTrack ? `${title} - ${artist}` : i18n("media");
 
@@ -219,6 +228,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                     className="h-12 w-12 shrink-0 rounded-xl border border-white/10 object-cover shadow-md"
                     iconClassName="h-6 w-6"
                     loading="eager"
+                    priority
                   />
                   <div className="min-w-0 flex-1">
                     <h4 className="truncate text-xs font-bold text-white">{title || "—"}</h4>
@@ -229,7 +239,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                     type="button"
                     onClick={toggleLike}
                     disabled={pending || !hasClientId || !trackId}
-                    className="rounded p-1 text-zinc-400 transition-colors hover:text-white disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-40"
                     aria-label={isLiked ? i18n("unlike") : i18n("like")}
                   >
                     <Heart
@@ -240,47 +250,29 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                   </button>
                 </div>
 
-                <div className="flex flex-col gap-1">
-                  <div
-                    className="relative h-1 w-full cursor-pointer overflow-hidden rounded-xl bg-white/[0.08]"
-                    onClick={(e) => {
-                      if (!duration || !clientId) return;
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      const pct = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
-                      const next = Math.round(duration * pct);
-                      control("seek", { positionMs: next });
-                      progressRef.current = next;
-                      setLocalProgress(next);
-                    }}
-                  >
-                    <div
-                      className="h-full rounded-xl bg-emerald-500"
-                      style={{ width: `${progressPct}%` }}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between text-[10px] font-mono text-zinc-400">
-                    <span>{formatMs(localProgress)}</span>
-                    <span className="text-zinc-500">
-                      -{formatMs(Math.max(0, duration - localProgress))}
-                    </span>
-                  </div>
-                </div>
+                <MediaProgress
+                  value={localProgress}
+                  max={duration}
+                  onChange={handleSeek}
+                  disabled={!hasClientId}
+                  data-testid="dock-progress"
+                />
 
                 <div className="flex items-center justify-between border-t border-white/[0.04] px-2 pt-2">
                   <button
                     type="button"
                     onClick={skipPrevious}
                     disabled={pending || !hasClientId}
-                    className="text-zinc-400 transition-colors hover:text-white disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-40"
                     aria-label={i18n("previous")}
                   >
-                    <SkipBack className="h-4 w-4" />
+                    <SkipBack className="h-5 w-5" />
                   </button>
                   <button
                     type="button"
                     onClick={() => seek(-10000)}
                     disabled={pending || !hasClientId}
-                    className="text-zinc-400 transition-colors hover:text-white disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-40"
                     aria-label="-10s"
                   >
                     <RotateCcw className="h-3.5 w-3.5" />
@@ -289,20 +281,20 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                     type="button"
                     onClick={togglePlay}
                     disabled={pending || !hasClientId}
-                    className="flex h-7 w-7 items-center justify-center rounded-full bg-white text-zinc-950 shadow-md transition-transform hover:scale-105 active:scale-95 disabled:opacity-50"
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-zinc-950 shadow-md transition-transform hover:scale-105 active:scale-95 disabled:opacity-50"
                     aria-label={isPlaying ? i18n("pause") : i18n("play")}
                   >
                     {isPlaying ? (
-                      <Pause className="h-3.5 w-3.5 fill-current" />
+                      <Pause className="h-4 w-4 fill-current" />
                     ) : (
-                      <Play className="h-3.5 w-3.5 fill-current ml-0.5" />
+                      <Play className="h-4 w-4 fill-current ml-0.5" />
                     )}
                   </button>
                   <button
                     type="button"
                     onClick={() => seek(10000)}
                     disabled={pending || !hasClientId}
-                    className="text-zinc-400 transition-colors hover:text-white disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-40"
                     aria-label="+10s"
                   >
                     <RotateCw className="h-3.5 w-3.5" />
@@ -311,15 +303,15 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                     type="button"
                     onClick={skipNext}
                     disabled={pending || !hasClientId}
-                    className="text-zinc-400 transition-colors hover:text-white disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-40"
                     aria-label={i18n("next")}
                   >
-                    <SkipForward className="h-4 w-4" />
+                    <SkipForward className="h-5 w-5" />
                   </button>
                 </div>
 
                 <div className="flex items-center justify-center">
-                  <VolumeSlider value={localVolume} onChange={setVolume} />
+                  <VolumeSlider value={localVolume} onChange={setVolume} data-testid="dock-volume" />
                 </div>
               </div>
             )}

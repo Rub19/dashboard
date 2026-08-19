@@ -89,15 +89,18 @@ function Slot({
   keyId,
   children,
   className,
+  "data-testid": testId,
 }: {
   keyId: string;
   children: ReactNode;
   className?: string;
+  "data-testid"?: string;
 }) {
   const reduce = useReducedMotion();
   return (
     <motion.div
       key={keyId}
+      data-testid={testId}
       initial={
         reduce
           ? { opacity: 0, filter: "blur(0px)" }
@@ -213,12 +216,14 @@ export interface DynamicIslandViewProps {
   id: string;
   children: ReactNode;
   className?: string;
+  "data-testid"?: string;
 }
 
 export function DynamicIslandView({
   id,
   children,
   className,
+  "data-testid": testId,
 }: DynamicIslandViewProps) {
   const ctx = useContext(IslandContext);
   if (!ctx)
@@ -228,7 +233,7 @@ export function DynamicIslandView({
   return (
     <AnimatePresence mode="popLayout" initial={false}>
       {active ? (
-        <Slot keyId={id} className={cn("px-6 py-4", className)}>
+        <Slot keyId={id} data-testid={testId} className={cn("px-6 py-4", className)}>
           {children}
         </Slot>
       ) : null}

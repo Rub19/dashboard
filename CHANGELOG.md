@@ -265,6 +265,19 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 ### Ajoute
 - `ethone-next/e2e/command-palette.spec.ts` : tests Playwright dédiés couvrant l'ouverture, la navigation flèches/Tab, l'auto-scroll, le maintien de l'élément actif visible, la fermeture par Escape, l'activation par Enter et la persistance de l'épinglette après rechargement.
 - Migrations `supabase/migrations/202608290001_cloud_sync_foundation.sql` et `202608300001_user_settings_payload.sql` appliquées sur le projet Supabase, activant la table `user_settings` et la persistence de `pinnedCommands`/`commandHistory`.
+**Spotify / Dynamic Island / Dock : lecteur fiable et fluide**
+
+### Corrige
+- `ethone-next/components/MediaProgress.tsx` : nouveau slider de progression partagé avec pointer capture, drag local et un seul `onChange` au relâchement, pas de requêtes pendant le drag.
+- `ethone-next/components/VolumeSlider.tsx` : nouveau slider de volume personnalisé, thumb aligné, drag visuel, mute mémorisé, label `aria-label="Volume"` et `data-testid`.
+- `ethone-next/components/DynamicIslandContainer.tsx` et `ethone-next/components/DockMediaFlyout.tsx` : utilisent `MediaProgress` partagé, progression avancée à 250 ms, hitboxes des contrôles élargies (≈ 36 px), pochettes en `priority`/`eager`.
+- `worker/src/services/spotify-oauth-client.js` : sélectionne l'image intermédiaire (`images[1]`) pour les pochetes Spotify.
+- `ethone-next/e2e/spotify-player.spec.ts` : test Playwright mocké pour la pochette, l'expansion du Dynamic Island, le scrub progress, le drag volume et les contrôles transport.
+
+**Spotify / Media : sliders glassmorphism moins noirs**
+
+### Corrige
+- `ethone-next/components/MediaProgress.tsx` et `ethone-next/components/VolumeSlider.tsx` : le track est passé à `bg-white/[0.04] backdrop-blur-sm`, le remplissage utilise la couleur d'accent (`var(--accent-color, var(--accent))`) avec un léger glow, et la pastille (thumb) est devenue transparente (`bg-white/[0.08]`) avec une bordure blanche subtile au lieu de `bg-zinc-950`.
 
 **Weather : bandeau de recherche transparent**
 

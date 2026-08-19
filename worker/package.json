@@ -19,5 +19,13 @@
   },
   "dependencies": {
     "@simplewebauthn/server": "^13.3.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "undici": "7.29.0"
+    }
+  },
+  "overrides": {
+    "undici": "7.29.0"
   }
 }

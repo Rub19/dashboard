@@ -4,6 +4,18 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Sécurité : durcissement multi-tenant et audit global**
+
+### Ajoute
+- `supabase/migrations/202608190001_force_rls_missing_tables.sql` : force le Row Level Security sur les tables `ai_usage_logs` et `ethone_items` et active `pgcrypto` pour le chiffrement au repos.
+- `ethone-next/lib/sanitizeHtml.ts` : utilitaire de nettoyage HTML côté client (whitelist de tags/attributs, `http`/`https` uniquement sur `href`/`src`) utilisé pour le filtrage du contenu externe.
+- `ethone-next/e2e/security-pentest.spec.ts` : tests Playwright IDOR, XSS (Command Palette, RSS) et isolation multi-session.
+
+### Modifie
+- `ethone-next/app/rss/page.tsx` : validation du protocole de l'URL du flux (http/https) et filtrage des liens d'items avant rendu.
+- `ethone-next/components/MinecraftWidget.tsx` : remplacement de `dangerouslySetInnerHTML` par l'affichage du MOTD en texte brut provenant du champ `clean`.
+- `ethone-next/package.json` et `ethone-next/components/UserProfileDropdown.tsx` : montée de version `1.6.16` → `1.7.0`.
+- `worker/package.json` : `pnpm.overrides` / `overrides` pour forcer `undici` à `7.29.0` (correction CVE Snyk).
 **Refonte des toasts riches et contextuels (v1.6.16)**
 
 ### Ajoute

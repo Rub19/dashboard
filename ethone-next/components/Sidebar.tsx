@@ -240,6 +240,7 @@ export default function Sidebar() {
         collapsible="icon"
         variant="floating"
         ariaLabel="Navigation principale"
+        className="bg-background"
         panelClassName="m-2 h-[calc(100%-1rem)] shrink-0 rounded-2xl border border-[var(--panel-border)] border-l-0 bg-[var(--background)] p-3 shadow-2xl"
       >
         <AnimatedSidebarHeader>

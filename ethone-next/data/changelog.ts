@@ -5,6 +5,50 @@ export type ChangelogEntry = {
   items: string[];
 };
 
+const v170_fr: ChangelogEntry = {
+  version: "v1.6.10",
+  date: "2026-08-19",
+  title: "Suppression de la bordure gauche du panneau de sidebar",
+  items: [
+    "Retrait du trait vertical à gauche de la sidebar flottante (`border-l-0` sur le panel de `Sidebar.tsx`).",
+    "Le panneau de navigation garde ses bordures haut, droite et bas, mais n'affiche plus de trait à l'extrême gauche.",
+    "Version affichée en bas à droite : v1.6.10.",
+  ],
+};
+
+const v170_en: ChangelogEntry = {
+  version: "v1.6.10",
+  date: "2026-08-19",
+  title: "Removed the left border of the sidebar panel",
+  items: [
+    "Removed the vertical line on the left side of the floating sidebar panel (`border-l-0` on the `Sidebar.tsx` panel).",
+    "The navigation panel keeps its top, right and bottom borders, but no longer shows a line on the far left.",
+    "Version badge bottom-right: v1.6.10.",
+  ],
+};
+
+const v170_es: ChangelogEntry = {
+  version: "v1.6.10",
+  date: "2026-08-19",
+  title: "Eliminación del borde izquierdo del panel de la barra lateral",
+  items: [
+    "Se eliminó la línea vertical en el lado izquierdo del panel flotante de la barra lateral (`border-l-0` en el panel de `Sidebar.tsx`).",
+    "El panel de navegación conserva sus bordes superior, derecho e inferior, pero ya no muestra una línea en el extremo izquierdo.",
+    "Versión mostrada abajo a la derecha: v1.6.10.",
+  ],
+};
+
+const v170_de: ChangelogEntry = {
+  version: "v1.6.10",
+  date: "2026-08-19",
+  title: "Entfernung der linken Rahmenlinie des Sidebar-Panels",
+  items: [
+    "Vertikale Linie auf der linken Seite des schwebenden Sidebar-Panels entfernt (`border-l-0` auf dem Panel in `Sidebar.tsx`).",
+    "Das Navigationspanel behält seine oberen, rechten und unteren Rahmen, zeigt aber links keine Linie mehr.",
+    "Version unten rechts: v1.6.10.",
+  ],
+};
+
 const v169_fr: ChangelogEntry = {
   version: "v1.6.9",
   date: "2026-08-19",
@@ -565,8 +609,8 @@ const v322_fr: ChangelogEntry = {
 };
 
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
-  en: [v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
+  fr: [v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -612,7 +656,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
+  es: [v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -658,7 +702,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
+  de: [v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

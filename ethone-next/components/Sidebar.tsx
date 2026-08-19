@@ -208,7 +208,7 @@ export default function Sidebar() {
         collapsible="icon"
         variant="floating"
         ariaLabel="Navigation principale"
-        panelClassName="m-2 h-[calc(100%-1rem)] shrink-0 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 shadow-2xl backdrop-blur-[var(--panel-blur)]"
+        panelClassName="m-2 h-[calc(100%-1rem)] shrink-0 rounded-2xl border border-[var(--panel-border)] border-l-0 bg-[var(--panel-bg)] p-3 shadow-2xl backdrop-blur-[var(--panel-blur)]"
       >
         <AnimatedSidebarHeader>
           <SidebarBrand />

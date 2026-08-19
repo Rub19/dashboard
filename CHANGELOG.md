@@ -4,6 +4,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Suppression de la bordure gauche du panneau de sidebar (v1.6.10)**
+
+### Corrige
+- Retrait du trait vertical à gauche de la sidebar flottante (`border-l-0` sur le panel de `Sidebar.tsx`).
+- Le panneau de navigation garde ses bordures haut, droite et bas, mais n'affiche plus de trait à l'extrême gauche.
+- Version `1.6.10`.
+
 **Uniformisation des arrière-plans de pages sur #0A0A0A (v1.6.9)**
 
 ### Corrige

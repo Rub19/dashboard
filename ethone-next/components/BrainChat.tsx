@@ -406,7 +406,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
   }
 
   return (
-    <div className={`flex h-[70vh] flex-col ${className}`}>
+    <div className={`flex h-full min-h-0 flex-col ${className}`}>
       <div className="flex-1 space-y-4 overflow-y-auto os-scroll pr-1 pb-4">
         {brain.messages.length === 0 ? renderWelcome() : brain.messages.map((m, i) => renderMessage(m, i))}
         {pending && (

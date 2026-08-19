@@ -136,7 +136,7 @@ export default function BrainPage() {
   }
 
   function renderChat() {
-    return <BrainChat brain={brain} className="h-[64vh]" />;
+    return <BrainChat brain={brain} />;
   }
 
   function renderMemory() {
@@ -613,20 +613,22 @@ export default function BrainPage() {
           onSelect={(id) => setActiveTab(id as Tab)}
         />
       </div>
-      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-4">
-        <Card3D>
-          {activeTab === "chat" && renderChat()}
-          {activeTab === "briefing" && <BrainBriefingPanel />}
-          {activeTab === "context" && renderContext()}
-          {activeTab === "memory" && renderMemory()}
-          {activeTab === "actions" && renderActions()}
-          {activeTab === "automations" && renderAutomations()}
-          {activeTab === "providers" && renderProviders()}
-          {activeTab === "preferences" && renderPreferences()}
-          {activeTab === "privacy" && renderPrivacy()}
-          {activeTab === "history" && renderHistory()}
-          {activeTab === "diagnostics" && renderDiagnostics()}
-          {activeTab === "wrapup" && renderWrapup()}
+      <div className="min-h-0 w-full flex-1 overflow-hidden">
+        <Card3D className="h-full min-h-0 overflow-hidden">
+          <div className="h-full min-h-0 overflow-y-auto os-scroll">
+            {activeTab === "chat" && renderChat()}
+            {activeTab === "briefing" && <BrainBriefingPanel />}
+            {activeTab === "context" && renderContext()}
+            {activeTab === "memory" && renderMemory()}
+            {activeTab === "actions" && renderActions()}
+            {activeTab === "automations" && renderAutomations()}
+            {activeTab === "providers" && renderProviders()}
+            {activeTab === "preferences" && renderPreferences()}
+            {activeTab === "privacy" && renderPrivacy()}
+            {activeTab === "history" && renderHistory()}
+            {activeTab === "diagnostics" && renderDiagnostics()}
+            {activeTab === "wrapup" && renderWrapup()}
+          </div>
         </Card3D>
       </div>
       {renderWrapupSheet()}

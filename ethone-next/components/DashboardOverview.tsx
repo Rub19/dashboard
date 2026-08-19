@@ -260,7 +260,7 @@ export default function DashboardOverview() {
         animate="visible"
         variants={gridVariants}
         data-home-grid
-        className="grid w-full h-auto grid-cols-12 gap-3 pb-6"
+        className="grid w-full h-auto grid-cols-12 gap-2 pb-2"
       >
         {widgets.map((w) =>
           w.visible ? (

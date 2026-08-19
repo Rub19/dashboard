@@ -2128,3 +2128,11 @@ a:has(> svg) {
   will-change: auto;
 }
 
+/* SVG icons must rotate around their visual center, not the SVG origin (0 0),
+   otherwise loaders appear to wobble or fail to spin in a circle. */
+svg.animate-spin,
+.animate-spin svg {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+

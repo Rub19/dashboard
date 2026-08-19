@@ -3,14 +3,13 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { FloatingPortal } from "@floating-ui/react";
 import { useNotifications, type Notification } from "@/lib/hooks/useNotifications";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useIsMobile } from "@/lib/hooks/useMediaQuery";
 import { usePresence } from "@/components/PresenceProvider";
-import { useTopbarDropdown } from "@/lib/hooks/useTopbarDropdown";
 import { Icon } from "@/lib/icons";
 import NotificationItem from "@/components/NotificationItem";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/motion/Popover";
 import Modal from "@/components/ui/Modal";
 import AnimatedFilterTabs from "@/components/ui/AnimatedFilterTabs";
 
@@ -43,11 +42,6 @@ export default function NotificationCenter() {
   const [filter, setFilter] = useState<string>("all");
   const [query, setQuery] = useState("");
   const searchRef = useRef<HTMLInputElement>(null);
-
-  const { setTrigger, setPanel, floatingStyles } = useTopbarDropdown({
-    open,
-    onClose: () => setOpen(false),
-  });
 
   useEffect(() => {
     if (open && searchRef.current) {
@@ -218,30 +212,45 @@ export default function NotificationCenter() {
   );
 
   return (
-    <div className="relative">
-      <button
-        type="button"
-        ref={setTrigger as unknown as React.Ref<HTMLButtonElement>}
-        onClick={() => setOpen(!open)}
-        data-tooltip={i18n("notifications")}
-        className="relative flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 transition-all hover:bg-white/[0.08] hover:text-white active:scale-95 cursor-pointer select-none"
-        aria-label={i18n("notifications")}
-      >
-        <Icon name="bell" className="pointer-events-none h-5 w-5" />
-        {unreadCount > 0 && (
-          <span
-            data-notification-badge
-            className="pointer-events-none absolute right-1.5 top-1.5 flex h-4 min-w-[1rem] items-center justify-center rounded-lg bg-[var(--accent)] px-1 text-[10px] font-bold text-white"
-          >
-            {unreadCount > 99 ? "99+" : unreadCount}
-          </span>
-        )}
-        {unreadCount === 0 && importantCount > 0 && (
-          <span className="pointer-events-none absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-amber-400" />
-        )}
-      </button>
+    <Popover
+      open={open}
+      onOpenChange={setOpen}
+      trigger="click"
+      side="bottom"
+      align="end"
+      sideOffset={8}
+      panelRadius={18}
+      gooStrength={6}
+    >
+      <PopoverTrigger>
+        <button
+          type="button"
+          data-tooltip={i18n("notifications")}
+          className="relative flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 transition-all hover:bg-white/[0.08] hover:text-white active:scale-95 cursor-pointer select-none"
+          aria-label={i18n("notifications")}
+        >
+          <Icon name="bell" className="pointer-events-none h-5 w-5" />
+          {unreadCount > 0 && (
+            <span
+              data-notification-badge
+              className="pointer-events-none absolute right-1.5 top-1.5 flex h-4 min-w-[1rem] items-center justify-center rounded-lg bg-[var(--accent)] px-1 text-[10px] font-bold text-white"
+            >
+              {unreadCount > 99 ? "99+" : unreadCount}
+            </span>
+          )}
+          {unreadCount === 0 && importantCount > 0 && (
+            <span className="pointer-events-none absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-amber-400" />
+          )}
+        </button>
+      </PopoverTrigger>
 
-      {open && isMobile && (
+      {!isMobile && (
+        <PopoverContent className="w-[28rem] max-w-[calc(100vw-1rem)] max-h-[min(80vh,44rem)] overflow-hidden rounded-2xl border border-white/[0.08] p-4 shadow-2xl backdrop-blur-2xl">
+          {content}
+        </PopoverContent>
+      )}
+
+      {isMobile && open && (
         <Modal
           isOpen={open}
           onClose={() => setOpen(false)}
@@ -253,18 +262,6 @@ export default function NotificationCenter() {
           {content}
         </Modal>
       )}
-
-      {open && !isMobile && (
-        <FloatingPortal>
-          <div
-            ref={setPanel as unknown as React.Ref<HTMLDivElement>}
-            style={floatingStyles}
-            className="z-[100] flex w-[28rem] max-w-[calc(100vw-1rem)] max-h-[min(80vh,44rem)] flex-col rounded-2xl border border-white/[0.08] bg-zinc-950/95 p-4 shadow-2xl backdrop-blur-2xl"
-          >
-            {content}
-          </div>
-        </FloatingPortal>
-      )}
-    </div>
+    </Popover>
   );
 }

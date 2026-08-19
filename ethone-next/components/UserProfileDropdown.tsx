@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { FloatingPortal } from "@floating-ui/react";
 import {
   User,
   ShieldCheck,
@@ -31,8 +30,8 @@ import {
   CHANGELOG_BY_LANG,
   type ChangelogEntry,
 } from "@/data/changelog";
-import { useTopbarDropdown } from "@/lib/hooks/useTopbarDropdown";
 import { USER_STATUS_CONFIG } from "@/lib/settings";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/motion/Popover";
 
 function initials(name?: string) {
   if (!name) return "E";
@@ -59,11 +58,6 @@ export default function UserProfileDropdown() {
   const [open, setOpen] = useState(false);
   const [isChangelogOpen, setIsChangelogOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-
-  const { setTrigger, setPanel, floatingStyles } = useTopbarDropdown({
-    open,
-    onClose: () => setOpen(false),
-  });
 
   const { user, signOut } = useAuth();
   const { activeProfile } = useActiveProfile();
@@ -184,20 +178,26 @@ export default function UserProfileDropdown() {
   const storagePercent = Math.round((storage.used / storage.total) * 100);
 
   return (
-    <div className="relative">
+    <>
+    <Popover
+      open={open}
+      onOpenChange={setOpen}
+      trigger="hover"
+      side="bottom"
+      align="end"
+      sideOffset={10}
+      panelRadius={16}
+      gooStrength={6}
+    >
       {/* Trigger */}
-      <button
-        type="button"
-        ref={setTrigger as unknown as React.Ref<HTMLButtonElement>}
-        onClick={(e) => {
-          e.stopPropagation();
-          setOpen(!open);
-        }}
-        className="group relative flex h-9 items-center gap-2.5 rounded-full border border-white/[0.08] bg-zinc-900/80 pl-1.5 pr-3 text-white transition-all hover:border-white/20 active:scale-95 cursor-pointer select-none"
-        aria-label={i18n("profile")}
-        aria-expanded={open}
-        aria-haspopup="true"
-      >
+      <PopoverTrigger>
+        <button
+          type="button"
+          className="group relative flex h-9 items-center gap-2.5 rounded-full border border-white/[0.08] bg-zinc-900/80 pl-1.5 pr-3 text-white transition-all hover:border-white/20 active:scale-95 cursor-pointer select-none"
+          aria-label={i18n("profile")}
+          aria-expanded={open}
+          aria-haspopup="true"
+        >
         <div className="pointer-events-none relative flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 text-emerald-400">
           {avatarUrl ? (
             <Image
@@ -225,21 +225,11 @@ export default function UserProfileDropdown() {
           className={`pointer-events-none h-4 w-4 text-zinc-500 transition-transform ${open ? "rotate-180" : ""}`}
         />
       </button>
+      </PopoverTrigger>
 
       {/* Dropdown */}
-      <FloatingPortal>
-        <AnimatePresence>
-          {open && (
-            <motion.div
-              ref={setPanel as unknown as React.Ref<HTMLDivElement>}
-              initial={{ opacity: 0, y: 10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 8, scale: 0.95 }}
-              transition={{ duration: 0.18, ease: "easeOut" }}
-              onClick={(e) => e.stopPropagation()}
-              style={floatingStyles}
-              className="z-[100] w-[340px] select-none flex flex-col gap-2.5 rounded-xl border border-white/[0.08] bg-zinc-950/90 p-3 shadow-[0_16px_50px_rgba(0,0,0,0.7)] backdrop-blur-3xl"
-            >
+      <PopoverContent className="w-[340px] max-w-[calc(100vw-1rem)] overflow-hidden rounded-xl border border-white/[0.08] p-3 bg-[var(--panel-bg)] shadow-[0_16px_50px_rgba(0,0,0,0.7)] backdrop-blur-3xl">
+        <div className="w-full select-none flex flex-col gap-2.5">
             {/* Header */}
             <div className="flex items-center gap-3 rounded-xl border border-white/[0.04] bg-white/[0.02] p-2.5">
               <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-gradient-to-tr from-emerald-500/30 to-cyan-500/30 text-emerald-300">
@@ -397,10 +387,9 @@ export default function UserProfileDropdown() {
                 </span>
               </button>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      </FloatingPortal>
+          </div>
+        </PopoverContent>
+      </Popover>
 
       {/* Changelog modal */}
       <AnimatePresence>
@@ -490,6 +479,6 @@ export default function UserProfileDropdown() {
           </div>
         )}
       </AnimatePresence>
-    </div>
+    </>
   );
 }

@@ -27,3 +27,4 @@
 - `package.json` est la source de vérité ; `public/version.json` doit être synchronisé.
 - Lors d'une session de modifications notables, monter la version dans `package.json` et `public/version.json` (ou laisser le build régénérer `version.json`).
 - Aligner aussi `package-lock.json` (via `npm install --package-lock-only`) et le label `VERSION_LABEL` dans `components/UserProfileDropdown.tsx`.
+- Ajouter une entrée dans `ethone-next/data/changelog.ts` (in-app changelog, pour toutes les langues fr/en/es/de) et dans `CHANGELOG.md` à la racine.

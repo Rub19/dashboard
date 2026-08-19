@@ -1008,6 +1008,7 @@ const v178_fr: ChangelogEntry = {
     "Brain chat : route API marquée `runtime: 'nodejs'` pour éviter l'avertissement Edge Runtime.",
     "Dock : fond légèrement plus sombre (80%) et remonté (bottom-6).",
     "TopBar : reflow responsive pour éviter les chevauchements en mode réduit, pillules centrales masquées sous `xl`, troncature du nom d'utilisateur.",
+    "Sidebar : footer (profil + badges) remonté de `mb-3` pour éviter d'être collé au bas de l'écran.",
     "Version : v1.7.1.",
   ],
 };
@@ -1028,6 +1029,7 @@ const v178_en: ChangelogEntry = {
     "Brain chat: API route set to `runtime: 'nodejs'` to avoid the Edge Runtime warning.",
     "Dock: slightly darker background (80%) and raised higher (bottom-6).",
     "TopBar: responsive reflow to avoid overlaps in reduced width, center pills hidden below `xl`, username truncated.",
+    "Sidebar: footer (profile + badges) raised with `mb-3` to avoid sticking to the bottom of the screen.",
     "Version: v1.7.1.",
   ],
 };
@@ -1048,6 +1050,7 @@ const v178_es: ChangelogEntry = {
     "Brain chat: ruta de API con `runtime: 'nodejs'` para evitar la advertencia de Edge Runtime.",
     "Dock: fondo ligeramente más oscuro (80%) y elevado (bottom-6).",
     "TopBar: redistribución responsive para evitar superposiciones en modo reducido, píldoras centrales ocultas por debajo de `xl`, nombre de usuario truncado.",
+    "Sidebar: pie (perfil + insignias) elevado con `mb-3` para evitar quedar pegado a la parte inferior de la pantalla.",
     "Versión: v1.7.1.",
   ],
 };
@@ -1068,6 +1071,7 @@ const v178_de: ChangelogEntry = {
     "Brain Chat: API-Route auf `runtime: 'nodejs'` gesetzt, um die Edge-Runtime-Warnung zu vermeiden.",
     "Dock: leicht dunklerer Hintergrund (80%) und höher positioniert (bottom-6).",
     "TopBar: responsive Reflow zur Vermeidung von Überlappungen im reduzierten Modus, zentrale Pills unter `xl` ausgeblendet, Benutzername gekürzt.",
+    "Sidebar: Footer (Profil + Badges) mit `mb-3` angehoben, damit er nicht am unteren Bildschirmrand klebt.",
     "Version: v1.7.1.",
   ],
 };

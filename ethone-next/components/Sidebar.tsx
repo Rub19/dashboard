@@ -262,7 +262,7 @@ export default function Sidebar() {
             ))}
           </AnimatedSidebarMenu>
         </AnimatedSidebarContent>
-        <AnimatedSidebarFooter>
+        <AnimatedSidebarFooter className="mb-3">
           <SidebarFooter />
         </AnimatedSidebarFooter>
         <AnimatedSidebarRail />

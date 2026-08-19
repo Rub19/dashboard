@@ -72,7 +72,8 @@ function SidebarBrand() {
 
 function SyncBadge({ collapsed }: { collapsed: boolean }) {
   const i18n = useI18n();
-  const { status, sources } = useSyncStore((s) => ({ status: s.status, sources: s.sources }));
+  const status = useSyncStore((s) => s.status);
+  const sources = useSyncStore((s) => s.sources);
 
   const config: Record<string, { icon: React.ReactElement<{ className?: string }>; label: string; dot: string }> = {
     syncing: {

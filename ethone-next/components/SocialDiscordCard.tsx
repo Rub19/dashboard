@@ -203,7 +203,7 @@ export default function SocialDiscordCard({
   return (
     <TiltCard
       className={cn(
-        "flex h-full min-h-0 flex-col v8-panel p-5 shadow-xl shadow-black/50 backdrop-blur-2xl transition-all hover:border-white/15",
+        "flex h-full min-h-0 flex-col v8-panel p-4 shadow-xl shadow-black/50 backdrop-blur-2xl transition-all hover:border-white/15",
         className
       )}
     >
@@ -251,7 +251,7 @@ export default function SocialDiscordCard({
         <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4 py-2">
           {hasLanyard && (
             <div className="flex flex-col items-center gap-3 text-center">
-              <div className="relative h-20 w-20 shrink-0">
+              <div className="relative h-16 w-16 shrink-0">
                 {errored && !src ? (
                   <div className="flex h-full w-full items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-lg font-bold text-zinc-300">
                     {displayName.slice(0, 2).toUpperCase()}

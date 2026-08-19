@@ -5,6 +5,70 @@ export type ChangelogEntry = {
   items: string[];
 };
 
+const v164_fr: ChangelogEntry = {
+  version: "v1.6.4",
+  date: "2026-08-19",
+  title: "Zero-scroll, suppression de la barre noire et Dock premium",
+  items: [
+    "Suppression du footer / bande noire pleine largeur en bas d'écran.",
+    "Verrouillage strict du canevas à 100dvh : plus de scroll parasite sur la page d'accueil.",
+    "Dock flottant repositionné en bottom-0, avec pb-[calc(1rem+env(safe-area-inset-bottom))].",
+    "Bouton Live intégré dans le Dock, sans conteneur de fond bloquant.",
+    "Densification des cartes Bento (p-4, gaps réduits, min-heights ajustés).",
+    "Widget Live masqué par défaut sur le dashboard pour préserver le zéro-scroll.",
+    "Thème Dark Obsidian du Dock (fond #0d0e12/85, blur 2xl, reflet interne, ombre profonde).",
+    "Version affichée en bas à droite : v1.6.4.",
+  ],
+};
+
+const v164_en: ChangelogEntry = {
+  version: "v1.6.4",
+  date: "2026-08-19",
+  title: "Zero-scroll, bottom black bar removal and premium Dock",
+  items: [
+    "Removed the full-width footer / bottom black bar.",
+    "Strict 100dvh canvas lock: no parasitic scroll on the home page.",
+    "Floating Dock repositioned at bottom-0 with pb-[calc(1rem+env(safe-area-inset-bottom))].",
+    "Live button integrated in the Dock, with no blocking background container.",
+    "Denser Bento cards (p-4, reduced gaps, adjusted min-heights).",
+    "Live widget hidden by default on the dashboard to preserve zero-scroll.",
+    "Dock Dark Obsidian theme (#0d0e12/85, blur 2xl, inner highlight, deep shadow).",
+    "Version badge bottom-right: v1.6.4.",
+  ],
+};
+
+const v164_es: ChangelogEntry = {
+  version: "v1.6.4",
+  date: "2026-08-19",
+  title: "Zero-scroll, eliminación de la barra negra inferior y Dock premium",
+  items: [
+    "Eliminación del footer / barra negra de ancho completo en la parte inferior.",
+    "Bloqueo estricto del lienzo a 100dvh: sin scroll parásito en la página de inicio.",
+    "Dock flotante reposicionado en bottom-0 con pb-[calc(1rem+env(safe-area-inset-bottom))].",
+    "Botón Live integrado en el Dock, sin contenedor de fondo bloqueante.",
+    "Cartas Bento más densas (p-4, gaps reducidos, min-heights ajustados).",
+    "Widget Live oculto por defecto en el dashboard para preservar el zero-scroll.",
+    "Tema Dark Obsidian del Dock (#0d0e12/85, blur 2xl, reflejo interno, sombra profunda).",
+    "Versión mostrada abajo a la derecha: v1.6.4.",
+  ],
+};
+
+const v164_de: ChangelogEntry = {
+  version: "v1.6.4",
+  date: "2026-08-19",
+  title: "Zero-scroll, Entfernung der schwarzen unteren Leiste und Premium-Dock",
+  items: [
+    "Entfernung der durchgehenden Footer-/schwarzen unteren Leiste.",
+    "Strikte 100dvh-Ansichtsfixierung: kein parasitisches Scrollen auf der Startseite.",
+    "Schwimmendes Dock bei bottom-0 mit pb-[calc(1rem+env(safe-area-inset-bottom))].",
+    "Live-Button im Dock integriert, ohne blockierenden Hintergrund-Container.",
+    "Dichtere Bento-Karten (p-4, reduzierte Gaps, angepasste Min-Heights).",
+    "Live-Widget standardmäßig im Dashboard ausgeblendet, um Zero-Scroll zu bewahren.",
+    "Dock Dark Obsidian Theme (#0d0e12/85, blur 2xl, innerer Glanz, tiefer Schatten).",
+    "Version unten rechts: v1.6.4.",
+  ],
+};
+
 const v328_fr: ChangelogEntry = {
   version: "v328",
   date: "2026-08-20",
@@ -233,8 +297,8 @@ const v322_fr: ChangelogEntry = {
 };
 
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
-  en: [v328_en, v327_en, v326_en, v325_en,
+  fr: [v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -280,7 +344,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [v328_es, v327_es, v326_es, v325_es,
+  es: [v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -326,7 +390,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [v328_de, v327_de, v326_de, v325_de,
+  de: [v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

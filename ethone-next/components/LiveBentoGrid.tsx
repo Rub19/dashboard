@@ -32,19 +32,19 @@ export default function LiveBentoGrid({
   className = "",
   scrollable = true,
 }: LiveBentoGridProps) {
-  const childHeight = scrollable ? "h-full" : "h-auto";
+  const childHeight = scrollable ? "h-full" : "h-auto min-h-0";
   return (
     <div className={cn(
-      "flex min-h-0 w-full flex-col gap-4",
+      "flex min-h-0 w-full flex-col gap-2",
       scrollable ? "h-full overflow-hidden" : "h-auto overflow-visible",
       className
     )}>
       <LiveStats records={records} updatedAt={updatedAt} loading={loading} />
       <div className={cn(
-        "grid w-full items-stretch gap-4",
+        "grid w-full items-stretch gap-2",
         scrollable
           ? "min-h-0 flex-1 auto-rows-fr grid-cols-12 overflow-y-auto overflow-x-hidden os-scroll"
-          : "h-auto auto-rows-auto grid-cols-12 overflow-visible"
+          : "h-auto min-h-0 auto-rows-min grid-cols-12 overflow-visible"
       )}>
         <GamingCard
           minecraft={minecraft}

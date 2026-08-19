@@ -153,7 +153,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
       <button
         type="button"
         aria-label={buttonLabel}
-        className="relative flex h-11 w-11 flex-col items-center justify-center rounded-xl text-emerald-400 transition-all hover:bg-white/[0.08] active:scale-95"
+        className="relative flex h-11 w-11 flex-col items-center justify-center rounded-xl text-emerald-500 transition-all hover:bg-white/[0.08] active:scale-95"
       >
         <SafeImage
           src={hasTrack ? artwork : undefined}
@@ -167,13 +167,13 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
 
         {isPlaying && hasTrack && (
           <span className="absolute bottom-1.5 flex h-1.5 items-end gap-0.5" aria-hidden="true">
-            <span className="h-1 w-0.5 animate-pulse rounded-lg bg-emerald-400" />
+            <span className="h-1 w-0.5 animate-pulse rounded-lg bg-emerald-500" />
             <span
-              className="h-2.5 w-0.5 animate-pulse rounded-lg bg-emerald-400"
+              className="h-2.5 w-0.5 animate-pulse rounded-lg bg-emerald-500"
               style={{ animationDelay: "75ms" }}
             />
             <span
-              className="h-1 w-0.5 animate-pulse rounded-lg bg-emerald-400"
+              className="h-1 w-0.5 animate-pulse rounded-lg bg-emerald-500"
               style={{ animationDelay: "150ms" }}
             />
           </span>
@@ -204,7 +204,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                 <button
                   type="button"
                   onClick={() => router.push("/settings?tab=integrations&service=spotify")}
-                  className="shrink-0 rounded-lg bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-400 transition hover:bg-emerald-500/20"
+                  className="shrink-0 rounded-lg bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-500 transition hover:bg-emerald-500/20"
                 >
                   {hasClientId ? i18n("reconnect") : i18n("configure")}
                 </button>
@@ -234,7 +234,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                   >
                     <Heart
                       className={`h-4 w-4 transition-colors ${
-                        isLiked ? "fill-emerald-400 text-emerald-400" : ""
+                        isLiked ? "fill-emerald-500 text-emerald-500" : ""
                       }`}
                     />
                   </button>
@@ -254,7 +254,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                     }}
                   >
                     <div
-                      className="h-full rounded-xl bg-emerald-400"
+                      className="h-full rounded-xl bg-emerald-500"
                       style={{ width: `${progressPct}%` }}
                     />
                   </div>

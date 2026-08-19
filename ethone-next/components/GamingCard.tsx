@@ -133,7 +133,7 @@ export default function GamingCard({
   return (
     <TiltCard
       className={cn(
-        "flex h-full min-h-0 flex-col v8-panel p-5 shadow-xl shadow-black/50 backdrop-blur-2xl transition-all hover:border-white/15",
+        "flex h-full min-h-0 flex-col v8-panel p-4 shadow-xl shadow-black/50 backdrop-blur-2xl transition-all hover:border-white/15",
         className
       )}
     >
@@ -152,7 +152,7 @@ export default function GamingCard({
 
       {hasUsername ? (
         <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 py-2">
-          <div className="relative w-full flex-1 min-h-[7rem]">
+          <div className="relative w-full flex-1 min-h-[5rem]">
             {renderUrl ? (
               <Image
                 src={renderUrl}
@@ -187,7 +187,7 @@ export default function GamingCard({
           </div>
 
           {hasProfile && server && (
-            <div className="w-full rounded-xl border border-white/[0.05] bg-white/[0.02] p-3">
+            <div className="w-full rounded-xl border border-white/[0.05] bg-white/[0.02] p-2">
               <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
                 {i18n("minecraftServer", "Serveur Minecraft")}
               </p>

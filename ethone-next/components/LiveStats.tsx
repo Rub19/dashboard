@@ -30,9 +30,9 @@ export default function LiveStats({ records = [], updatedAt, loading, className 
 
   return (
     <div
-      className={`w-full rounded-2xl v8-panel p-4 shadow-xl backdrop-blur-2xl ${className}`}
+      className={`w-full rounded-2xl v8-panel p-3 shadow-xl backdrop-blur-2xl ${className}`}
     >
-      <div className="flex items-center justify-between gap-3 border-b border-white/[0.04] pb-3">
+      <div className="flex items-center justify-between gap-3 border-b border-white/[0.04] pb-2">
         <div className="flex items-center gap-2">
           <Activity className="h-4 w-4 text-emerald-400" />
           <span className="text-xs font-bold uppercase tracking-wider text-white">{i18n("liveStats")}</span>
@@ -40,11 +40,11 @@ export default function LiveStats({ records = [], updatedAt, loading, className 
         <LiveFreshness updatedAt={updatedAt} />
       </div>
 
-      <div className="mt-3 grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+      <div className="mt-2 grid grid-cols-2 gap-2 lg:grid-cols-4">
         {statItems.map((item) => (
           <div
             key={item.label}
-            className="v8-inset flex items-center justify-between p-3"
+            className="v8-inset flex items-center justify-between p-2.5"
           >
             <span className="text-[10px] uppercase text-zinc-400">{item.label}</span>
             <span className={`font-mono text-xl font-bold ${item.color}`}>

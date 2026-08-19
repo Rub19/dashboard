@@ -645,6 +645,11 @@ export function SoundProvider({ children }: { children: ReactNode }) {
   const ambientRef = useRef<AmbientState | null>(null);
   const lastPanRef = useRef<number | null>(null);
   const lastPlayedAtRef = useRef<Map<SoundType, number>>(new Map());
+  const settingsRef = useRef(settings);
+
+  useEffect(() => {
+    settingsRef.current = settings;
+  }, [settings]);
 
   const ensureContext = useCallback((): AudioContext | null => {
     if (audioRef.current) return audioRef.current;
@@ -695,16 +700,27 @@ export function SoundProvider({ children }: { children: ReactNode }) {
       const ctx = audioRef.current;
       const output = outputGainRef.current;
       if (!ctx || !output || type === "none") return;
-      if (ambientRef.current?.type === type) return;
+
+      const master = settingsRef.current.masterVolume ? (settingsRef.current.soundVolume ?? 50) / 100 : 0;
+      if (master <= 0) {
+        stopAmbience();
+        return;
+      }
+
+      const target = (type === "drone" ? 0.08 : 0.06) * master;
+
+      if (ambientRef.current?.type === type) {
+        const now = ctx.currentTime;
+        ambientRef.current.gain.gain.cancelScheduledValues(now);
+        ambientRef.current.gain.gain.setValueAtTime(ambientRef.current.gain.gain.value, now);
+        ambientRef.current.gain.gain.linearRampToValueAtTime(target, now + 0.1);
+        return;
+      }
 
       stopAmbience();
 
-      const master = settings.masterVolume ? (settings.soundVolume ?? 50) / 100 : 0;
-      if (master <= 0) return;
-
       const now = ctx.currentTime;
       const ambientGain = ctx.createGain();
-      const target = (type === "drone" ? 0.08 : 0.06) * master;
       ambientGain.gain.setValueAtTime(0.0001, now);
       ambientGain.gain.linearRampToValueAtTime(target, now + 1.2);
       ambientGain.connect(output);
@@ -762,7 +778,7 @@ export function SoundProvider({ children }: { children: ReactNode }) {
       filter.connect(ambientGain);
       ambientRef.current = state;
     },
-    [settings.masterVolume, settings.soundVolume, stopAmbience]
+    [stopAmbience]
   );
 
   useEffect(() => {
@@ -844,14 +860,31 @@ export function SoundProvider({ children }: { children: ReactNode }) {
 
   const playAmbient = useCallback(
     (type: SoundAmbient) => {
-      update({ ambientSound: type });
+      if (type === "none") {
+        stopAmbience();
+        update({ ambientSound: "none" });
+        return;
+      }
+      const ctx = ensureContext();
+      if (!ctx) return;
+      if (ctx.state === "suspended") {
+        void ctx.resume();
+      }
+      if (!settingsRef.current.masterVolume) {
+        settingsRef.current = { ...settingsRef.current, masterVolume: true };
+        update({ masterVolume: true, ambientSound: type });
+      } else {
+        update({ ambientSound: type });
+      }
+      startAmbience(type);
     },
-    [update]
+    [ensureContext, startAmbience, stopAmbience, update]
   );
 
   const stopAmbient = useCallback(() => {
+    stopAmbience();
     update({ ambientSound: "none" });
-  }, [update]);
+  }, [stopAmbience, update]);
 
   useEffect(() => {
     const soundsOn =

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FloatingPortal } from "@floating-ui/react";
 import Link from "next/link";
@@ -11,6 +11,8 @@ import { useSettings } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
 import { useLayer } from "@/components/LayerProvider";
 import Slider from "@/components/ui/Slider";
+import { useSound } from "@/lib/sound";
+import type { SoundAmbient } from "@/lib/settings";
 
 const UI_ANIMATIONS = ["smooth", "snappy", "reduced"] as const;
 
@@ -121,9 +123,9 @@ export default function DockControlCenter({
 }) {
   const i18n = useI18n();
   const { settings, update } = useSettings();
+  const { playAmbient, stopAmbient, ambientSound } = useSound();
   const router = useRouter();
   const panelRef = useRef<HTMLDivElement | null>(null);
-  const [ambience, setAmbience] = useState("none");
 
   useLayer(open, onClose, {
     boundary: panelRef,
@@ -279,9 +281,9 @@ export default function DockControlCenter({
                     <button
                       key={id}
                       type="button"
-                      onClick={() => setAmbience(id)}
+                      onClick={() => (id === "none" || ambientSound === id ? stopAmbient() : playAmbient(id as SoundAmbient))}
                       className={`flex flex-col items-center gap-1 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent)] ${
-                        ambience === id ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                        ambientSound === id ? "border-[var(--accent)] text-[var(--accent)]" : ""
                       } backdrop-blur-[var(--panel-blur)]`}
                     >
                       <Icon name={AMBIENCE_ICONS[id] || "disc"} className="h-4 w-4" />

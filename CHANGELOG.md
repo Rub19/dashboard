@@ -4,12 +4,16 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
-**Bouton météo rapide dans le Dock et TopBar**
+**Bouton météo rapide et ambiances sonores dans le Dock et TopBar**
 
 ### Ajoute
 - `ethone-next/components/DockWeatherFlyout.tsx` : bouton météo dans le Dock affichant la température et ouvrant un popover au-dessus.
 - `ethone-next/components/TopBar.tsx` : le bouton météo de la TopBar ouvre désormais un popover rapide (localisation, condition, humidité, vent, prévisions).
 - `ethone-next/components/WeatherDetailPopover.tsx` : support du placement `top-end` pour s'ouvrir au-dessus du Dock.
+
+### Corrige
+- `ethone-next/components/DockControlCenter.tsx` : les boutons d'ambiance sonore (Aucune, Pluie, Bruit rose, Drone, Blanc) activent maintenant le son via `useSound()`.
+- `ethone-next/lib/sound.tsx` : `playAmbient` s'assure que le `AudioContext` est créé/réveillé au clic et active `masterVolume` si besoin.
 
 ### Version
 - `ethone-next/package.json`, `ethone-next/components/UserProfileDropdown.tsx` : version `v1.7.3`.

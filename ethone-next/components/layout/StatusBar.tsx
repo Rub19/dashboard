@@ -92,19 +92,19 @@ function useSessionRole() {
 function CloudSyncPill({
   status,
   online,
-  sources,
+  errorSources,
   i18n,
 }: {
   status: SyncState;
   online: boolean;
-  sources: Record<string, SyncState>;
+  errorSources: string;
   i18n: (key: string, fallback?: string) => string;
 }) {
-  const errorSources = Object.entries(sources)
-    .filter(([, v]) => v === "error")
-    .map(([k]) => i18n(`syncSource.${k}`, k));
-  const errorTitle = errorSources.length
-    ? `${i18n("syncErrorSources", "Sources en erreur")} : ${errorSources.join(", ")}`
+  const errorTitle = errorSources
+    ? `${i18n("syncErrorSources", "Sources en erreur")} : ${errorSources
+        .split(", ")
+        .map((k) => i18n(`syncSource.${k}`, k))
+        .join(", ")}`
     : i18n("syncError", "La synchronisation a échoué");
 
   switch (status) {
@@ -200,7 +200,12 @@ export default function StatusBar() {
   const sessionRole = useSessionRole();
 
   const syncStatus = useSyncStore((s) => s.status);
-  const syncSources = useSyncStore((s) => s.sources);
+  const syncErrorSources = useSyncStore((s) =>
+    Object.entries(s.sources)
+      .filter(([, v]) => v === "error")
+      .map(([k]) => k)
+      .join(", ")
+  );
 
   const systemOk = online && !liveError && unreadCount === 0;
   const alertCount = liveError ? 1 : unreadCount;
@@ -249,7 +254,7 @@ export default function StatusBar() {
             }
           />
 
-          <CloudSyncPill status={syncStatus} online={online} sources={syncSources} i18n={i18n} />
+          <CloudSyncPill status={syncStatus} online={online} errorSources={syncErrorSources} i18n={i18n} />
         </div>
 
         <div className="flex min-w-0 items-center gap-2">

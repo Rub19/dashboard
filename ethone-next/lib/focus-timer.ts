@@ -1,4 +1,4 @@
-import { supabase } from "./supabase";
+import { supabase, isMissingSchemaError } from "./supabase";
 import { useSyncStore } from "./stores/sync";
 
 const SESSION_KEY = "ethone-focus-session-v1";
@@ -116,8 +116,12 @@ export class FocusTimer {
       useSyncStore.getState().setStatus("pomodoro", "idle");
       return data.data as FocusSession;
     } catch (err) {
-      console.error("Focus timer cloud load failed:", err);
-      useSyncStore.getState().setStatus("pomodoro", "error");
+      if (!isMissingSchemaError(err)) {
+        console.error("Focus timer cloud load failed:", err);
+        useSyncStore.getState().setStatus("pomodoro", "error");
+      } else {
+        useSyncStore.getState().setStatus("pomodoro", "idle");
+      }
       return null;
     }
   }
@@ -494,8 +498,12 @@ export class FocusTimer {
       if (error) throw error;
       useSyncStore.getState().setStatus("pomodoro", "idle");
     } catch (err) {
-      console.error("Focus timer cloud save failed:", err);
-      useSyncStore.getState().setStatus("pomodoro", "error");
+      if (!isMissingSchemaError(err)) {
+        console.error("Focus timer cloud save failed:", err);
+        useSyncStore.getState().setStatus("pomodoro", "error");
+      } else {
+        useSyncStore.getState().setStatus("pomodoro", "idle");
+      }
     }
   }
 

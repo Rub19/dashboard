@@ -136,7 +136,7 @@ export default function SettingsProvider({
       if (!userId) return;
 
       channel = supabase
-        .channel("user_settings_changes")
+        .channel(`user_settings_changes_${userId.slice(0, 8)}_${Date.now()}`)
         .on(
           "postgres_changes",
           {

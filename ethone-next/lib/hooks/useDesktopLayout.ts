@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase, isMissingSchemaError } from "@/lib/supabase";
 import { useSyncStore } from "@/lib/stores/sync";
 
 export type WidgetLayout = {
@@ -46,7 +46,7 @@ export function useDesktopLayout() {
         .eq("user_id", userId)
         .single();
 
-      if (fetchError && fetchError.code !== "PGRST116") {
+      if (fetchError && fetchError.code !== "PGRST116" && !isMissingSchemaError(fetchError)) {
         throw fetchError;
       }
 
@@ -56,7 +56,9 @@ export function useDesktopLayout() {
           : { widgets: [], updated_at: new Date().toISOString() },
       );
     } catch (err) {
-      setError(err instanceof Error ? err : new Error(String(err)));
+      if (!isMissingSchemaError(err)) {
+        setError(err instanceof Error ? err : new Error(String(err)));
+      }
     } finally {
       setLoading(false);
     }
@@ -77,7 +79,7 @@ export function useDesktopLayout() {
       if (!userId) return;
 
       channel = supabase
-        .channel("desktop_layout_changes")
+        .channel(`desktop_layout_changes_${userId.slice(0, 8)}_${Date.now()}`)
         .on(
           "postgres_changes",
           {
@@ -127,12 +129,15 @@ export function useDesktopLayout() {
         if (upsertError) throw upsertError;
         setStatus("idle");
       } catch (err) {
-        setStatus("error");
-        setError(err instanceof Error ? err : new Error(String(err)));
-        await load();
+        if (!isMissingSchemaError(err)) {
+          setStatus("error");
+          setError(err instanceof Error ? err : new Error(String(err)));
+        } else {
+          setStatus("idle");
+        }
       }
     },
-    [layout, load],
+    [layout],
   );
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 import { writeFileSync, mkdirSync, readFileSync } from "fs";
-import { join } from "path";
+import { join, resolve } from "path";
 
 const packageVersion = JSON.parse(readFileSync(join(process.cwd(), "package.json"), "utf8")).version;
 const commit =
@@ -25,6 +25,7 @@ const nextConfig: NextConfig = {
   },
   trailingSlash: true,
   allowedDevOrigins: ["127.0.0.1"],
+  adapterPath: resolve("./scripts/build-adapter.js"),
 };
 
 export default nextConfig;

@@ -14,9 +14,21 @@ function isValidImageUrl(src?: string): src is string {
   );
 }
 
+let probeContainer: HTMLDivElement | null = null;
+
+function getProbeContainer(): HTMLDivElement {
+  if (probeContainer) return probeContainer;
+  probeContainer = document.createElement("div");
+  probeContainer.setAttribute("aria-hidden", "true");
+  probeContainer.style.cssText =
+    "position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;";
+  document.body.appendChild(probeContainer);
+  return probeContainer;
+}
+
 function testImage(src: string, timeoutMs = 10000): Promise<boolean> {
   return new Promise((resolve) => {
-    if (typeof window === "undefined") {
+    if (typeof window === "undefined" || !document.body) {
       resolve(false);
       return;
     }
@@ -27,27 +39,44 @@ function testImage(src: string, timeoutMs = 10000): Promise<boolean> {
     const timer = window.setTimeout(() => {
       if (done) return;
       done = true;
-      img.onload = null;
-      img.onerror = null;
-      img.src = "";
+      cleanup();
       resolve(false);
     }, timeoutMs);
+
+    function cleanup() {
+      window.clearTimeout(timer);
+      img.onload = null;
+      img.onerror = null;
+      img.onabort = null;
+      img.src = "";
+      img.remove();
+    }
 
     img.onload = () => {
       if (done) return;
       done = true;
-      window.clearTimeout(timer);
+      cleanup();
       resolve(true);
     };
 
     img.onerror = () => {
       if (done) return;
       done = true;
-      window.clearTimeout(timer);
+      cleanup();
       resolve(false);
     };
 
+    img.onabort = () => {
+      if (done) return;
+      done = true;
+      cleanup();
+      resolve(false);
+    };
+
+    img.style.cssText = "position:absolute;width:1px;height:1px;opacity:0;";
+    img.decoding = "async";
     img.src = src;
+    getProbeContainer().appendChild(img);
   });
 }
 

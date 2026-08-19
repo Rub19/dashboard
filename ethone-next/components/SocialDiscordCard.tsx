@@ -113,6 +113,11 @@ export default function SocialDiscordCard({
     [userId, discriminator]
   );
 
+  const avatarCandidates = useMemo(
+    () => [primaryAvatar, fallbackAvatar],
+    [primaryAvatar, fallbackAvatar]
+  );
+
   const status = lanyard?.discord_status || "offline";
   const color = statusColor(status);
   const label = statusLabel(status);
@@ -243,7 +248,7 @@ export default function SocialDiscordCard({
             <div className="flex flex-col items-center gap-3 text-center">
               <div className="relative h-16 w-16 shrink-0">
                 <ClientImage
-                  candidates={[primaryAvatar, fallbackAvatar]}
+                  candidates={avatarCandidates}
                   alt={displayName}
                   width={80}
                   height={80}

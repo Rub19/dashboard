@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 type ClientImageProps = {
@@ -94,13 +94,34 @@ export default function ClientImage({
 
   const { src: resolved, next, ok } = useClientImage(sources, timeoutMs);
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("loading");
+  const imgRef = useRef<HTMLImageElement | null>(null);
 
   useEffect(() => {
     setStatus(resolved ? "loading" : "error");
   }, [resolved]);
 
+  useEffect(() => {
+    if (status !== "loading") return;
+    const img = imgRef.current;
+    if (!img) return;
+    if (img.complete) {
+      if (img.naturalWidth === 0) {
+        handleError();
+      } else {
+        markOk();
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resolved, status]);
+
   if (!resolved || status === "error") {
     return fallback ?? null;
+  }
+
+  function markOk() {
+    setStatus("ok");
+    ok();
+    if (resolved) onResolve?.(resolved);
   }
 
   const handleLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
@@ -108,9 +129,7 @@ export default function ClientImage({
       handleError();
       return;
     }
-    setStatus("ok");
-    ok();
-    if (resolved) onResolve?.(resolved);
+    markOk();
   };
 
   const handleError = () => {
@@ -136,6 +155,7 @@ export default function ClientImage({
       )}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
+        ref={imgRef}
         key={resolved}
         src={resolved}
         alt={alt}

@@ -14,6 +14,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `ethone-next/components/UserProfileDropdown.tsx` : troncature du nom d'affichage pour éviter le débordement.
 - `ethone-next/components/Sidebar.tsx` : footer de la sidebar remonté avec `mb-3` pour ne plus être collé au bas de l'écran.
 - `ethone-next/components/Sidebar.tsx` : suppression des bordures et fonds du footer (profil, badge sync, boutons) pour fusionner avec la couleur du panneau de la sidebar.
+- `ethone-next/components/ClientImage.tsx` : correction du rendu des images déjà en cache (avatars Discord, couvertures Spotify, etc.).
 - `ethone-next/public/sw.js` : cache Service Worker v354.
 - `ethone-next/lib/stores/sync.ts` : suppression des mises à jour redondantes quand un statut source ne change pas.
 - `ethone-next/lib/supabase.ts` : renforcement de `isMissingSchemaError` pour couvrir PGRST204, PGRST116, 42P01 et les messages "schema cache" / "Could not find".

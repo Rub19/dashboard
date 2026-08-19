@@ -27,7 +27,7 @@ export default function SecureInput({
 }: SecureInputProps) {
   const [visible, setVisible] = useState(false);
   const [copied, setCopied] = useState(false);
-  const { success } = useToast();
+  const { notify } = useToast();
   const i18n = useI18n();
 
   const handleCopy = useCallback(async () => {
@@ -35,12 +35,12 @@ export default function SecureInput({
     try {
       await navigator.clipboard.writeText(value);
       setCopied(true);
-      success(i18n("copied"));
+      notify.clipboard();
       window.setTimeout(() => setCopied(false), 1500);
     } catch {
       // ignore
     }
-  }, [value, success, i18n]);
+  }, [value, notify]);
 
   return (
     <div className={`relative ${className}`}>

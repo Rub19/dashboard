@@ -37,7 +37,7 @@ export type TasksWidgetProps = {
 
 export default function TasksWidget({ className = "", data, scrollable = true }: TasksWidgetProps) {
   const i18n = useI18n();
-  const { success, error: showError } = useToast();
+  const { error: showError, notify } = useToast();
   const own = useCloudTasks();
 
   const { items, loading, create, update, remove } = data ?? own;
@@ -62,7 +62,7 @@ export default function TasksWidget({ className = "", data, scrollable = true }:
         data: { category: "Général", priority: "medium" as TaskPriority },
       });
       setNewTaskTitle("");
-      success(i18n("added", "Ajouté"));
+      notify.taskAdded(title);
     } catch {
       showError(i18n("error", "Erreur"));
     }
@@ -79,7 +79,7 @@ export default function TasksWidget({ className = "", data, scrollable = true }:
   async function deleteTask(id: string) {
     try {
       await remove(id);
-      success(i18n("deleted", "Supprimé"));
+      notify.taskDeleted();
     } catch {
       showError(i18n("error", "Erreur"));
     }

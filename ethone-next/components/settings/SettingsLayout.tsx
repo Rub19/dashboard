@@ -113,7 +113,7 @@ function resolveTab(tab: string | null): string {
 export default function SettingsLayout() {
   const i18n = useI18n();
   const { settings, update } = useSettings();
-  const { success, error: showError } = useToast();
+  const { error: showError, notify } = useToast();
   const form = useSettingsForm();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -158,7 +158,7 @@ export default function SettingsLayout() {
     if (!window.confirm(i18n("resetSettingsConfirm") || "Rétablir tous les paramètres par défaut ?")) return;
     try {
       update({ ...DEFAULTS });
-      success(i18n("settingsReset") || "Paramètres rétablis");
+      notify.reset();
     } catch (err) {
       showError(String(err));
     }
@@ -167,7 +167,7 @@ export default function SettingsLayout() {
   function handleSave() {
     try {
       update({ ...settings });
-      success(i18n("settingsSaved") || "Modifications enregistrées");
+      notify.sync();
     } catch (err) {
       showError(String(err));
     }

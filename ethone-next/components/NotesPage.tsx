@@ -25,7 +25,7 @@ function formatDate(iso?: string) {
 
 export default function NotesPage() {
   const i18n = useI18n();
-  const { success, error: showError } = useToast();
+  const { error: showError, notify } = useToast();
   const { items, loading, error, create, remove } = useItems("notes");
 
   const [title, setTitle] = useState("");
@@ -64,7 +64,7 @@ export default function NotesPage() {
       await create({ title, body });
       setTitle("");
       setBody("");
-      success(i18n("created"));
+      notify.noteCreated(title);
     } catch {
       showError(i18n("error"));
     }
@@ -73,7 +73,7 @@ export default function NotesPage() {
   async function deleteNote(id: string) {
     try {
       await remove(id);
-      success(i18n("deleted"));
+      notify.noteDeleted(1);
     } catch {
       showError(i18n("error"));
     }
@@ -82,7 +82,7 @@ export default function NotesPage() {
   async function duplicateNote(note: Note) {
     try {
       await create({ title: `${note.title} (${i18n("copy")})`, body: note.body });
-      success(i18n("created"));
+      notify.noteCreated(`${note.title} (${i18n("copy")})`);
     } catch {
       showError(i18n("error"));
     }
@@ -92,7 +92,7 @@ export default function NotesPage() {
     try {
       await Promise.all(selectedItems.map((n) => remove(n.id)));
       clear();
-      success(i18n("deleted"));
+      notify.noteDeleted(selectedItems.length);
     } catch {
       showError(i18n("error"));
     }
@@ -102,7 +102,7 @@ export default function NotesPage() {
     try {
       await Promise.all(selectedItems.map((n) => create({ title: `${n.title} (${i18n("copy")})`, body: n.body })));
       clear();
-      success(i18n("created"));
+      notify.noteCreated(`${i18n("copies", "Copies")} (${selectedItems.length})`);
     } catch {
       showError(i18n("error"));
     }
@@ -114,13 +114,13 @@ export default function NotesPage() {
         id: "copy-title",
         label: i18n("copyTitle"),
         icon: "copy",
-        onClick: () => navigator.clipboard.writeText(note.title).then(() => success(i18n("copied"))).catch(() => showError(i18n("error"))),
+        onClick: () => navigator.clipboard.writeText(note.title).then(() => notify.clipboard()).catch(() => showError(i18n("error"))),
       },
       {
         id: "copy-body",
         label: i18n("copyBody"),
         icon: "copy",
-        onClick: () => navigator.clipboard.writeText(note.body).then(() => success(i18n("copied"))).catch(() => showError(i18n("error"))),
+        onClick: () => navigator.clipboard.writeText(note.body).then(() => notify.clipboard()).catch(() => showError(i18n("error"))),
       },
       {
         id: "duplicate",

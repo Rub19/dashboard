@@ -4,6 +4,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Dock : teinte Dark Obsidian et finitions glassmorphic**
+
+### Corrige
+- `ethone-next/app/globals.css` : `.v8-dock` passe à un fond obsidian semi-translucide (`#0d0e12/85`), `backdrop-blur: 40px` + `backdrop-saturate: 1.5`, bordure `white/[0.08]`, reflet zénithal interne et ombre portée profonde (`0 12px 40px rgba(0,0,0,0.6)`).
+- `ethone-next/components/Dock.tsx` : suppression du `backdrop-blur-xl` en double et mise du séparateur à `bg-white/[0.08]`.
+- `ethone-next/components/DockMediaFlyout.tsx` : indicateur Spotify uniformisé en vert émeraude `#10b981` (`emerald-500`).
+
 **Harmonisation des cartes Bento et de la profondeur glassmorphic**
 
 ### Corrige

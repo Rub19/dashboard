@@ -18,7 +18,6 @@ import { useProfile } from "@/lib/hooks/useProfile";
 import { useAuth } from "@/components/AuthProvider";
 import { useActiveProfile } from "@/components/SettingsProvider";
 import { useSyncStore } from "@/lib/stores/sync";
-import { useDiscordAvatar } from "@/lib/hooks/useDiscordAvatar";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/lib/icons";
 import {
@@ -132,11 +131,10 @@ function SidebarProfile({ collapsed }: { collapsed: boolean }) {
   const { user } = useAuth();
   const { activeProfile } = useActiveProfile();
   const { profile: publicProfile } = useProfile();
-  const { avatarUrl: discordAvatar, displayName: discordName } = useDiscordAvatar();
 
   const displayName =
-    discordName || publicProfile?.display_name || activeProfile?.name || user?.email || "Invité";
-  const avatarUrl = discordAvatar || publicProfile?.avatar_url;
+    publicProfile?.display_name || activeProfile?.name || user?.email || "Invité";
+  const avatarUrl = publicProfile?.avatar_url;
 
   return (
     <div

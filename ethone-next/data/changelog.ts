@@ -1132,6 +1132,8 @@ const v179_fr: ChangelogEntry = {
     "Ajout de la collection d'icônes `@iconify-json/simple-icons`.",
     "DiscordConfig : icônes de marque devant chaque compte lié.",
     "DiscordConfig : avatar du profil et icônes des serveurs via ClientImage.",
+    "UserProfileDropdown et Sidebar : utilisation de `publicProfile.avatar_url` au lieu de l'avatar Discord pour le profil utilisateur.",
+    "Suppression du hook `useDiscordAvatar`.",
     "Mise à jour de la version en v1.7.2.",
   ],
 };
@@ -1144,6 +1146,8 @@ const v179_en: ChangelogEntry = {
     "Added the `@iconify-json/simple-icons` icon collection.",
     "DiscordConfig: brand icons in front of each linked account.",
     "DiscordConfig: profile avatar and server icons use ClientImage.",
+    "UserProfileDropdown and Sidebar: use `publicProfile.avatar_url` instead of the Discord avatar for the user profile.",
+    "Removed the `useDiscordAvatar` hook.",
     "Updated version to v1.7.2.",
   ],
 };
@@ -1156,6 +1160,8 @@ const v179_es: ChangelogEntry = {
     "Añadida la colección de iconos `@iconify-json/simple-icons`.",
     "DiscordConfig: iconos de marca delante de cada cuenta vinculada.",
     "DiscordConfig: avatar del perfil e iconos de servidores con ClientImage.",
+    "UserProfileDropdown y Sidebar: uso de `publicProfile.avatar_url` en lugar del avatar de Discord para el perfil de usuario.",
+    "Eliminado el hook `useDiscordAvatar`.",
     "Versión actualizada a v1.7.2.",
   ],
 };
@@ -1168,6 +1174,8 @@ const v179_de: ChangelogEntry = {
     "Sammlung `@iconify-json/simple-icons` hinzugefügt.",
     "DiscordConfig: Markensymbole vor jedem verknüpften Konto.",
     "DiscordConfig: Profilavatar und Serversymbole über ClientImage.",
+    "UserProfileDropdown und Sidebar: `publicProfile.avatar_url` statt Discord-Avatar für das Benutzerprofil verwenden.",
+    "Hook `useDiscordAvatar` entfernt.",
     "Version auf v1.7.2 aktualisiert.",
   ],
 };

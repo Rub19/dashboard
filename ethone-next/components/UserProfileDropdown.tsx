@@ -24,7 +24,6 @@ import {
 import { useAuth } from "@/components/AuthProvider";
 import { useActiveProfile, useSettings } from "@/components/SettingsProvider";
 import { useProfile } from "@/lib/hooks/useProfile";
-import { useDiscordAvatar } from "@/lib/hooks/useDiscordAvatar";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import {
@@ -70,15 +69,13 @@ export default function UserProfileDropdown() {
   const { activeProfile } = useActiveProfile();
   const { profile: publicProfile } = useProfile();
   const { settings, update } = useSettings();
-  const { avatarUrl: discordAvatar, displayName: discordName } = useDiscordAvatar();
 
   const displayName =
-    discordName ||
     publicProfile?.display_name ||
     activeProfile?.name ||
     user?.email ||
     i18n("guest");
-  const avatarUrl = discordAvatar || publicProfile?.avatar_url;
+  const avatarUrl = publicProfile?.avatar_url;
   const email = user?.email || "";
 
   const currentStatus = settings.status in USER_STATUS_CONFIG ? settings.status : "online";

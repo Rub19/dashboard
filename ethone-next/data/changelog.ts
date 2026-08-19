@@ -121,6 +121,66 @@ const v174_de: ChangelogEntry = {
   ],
 };
 
+const v177_fr: ChangelogEntry = {
+  version: "v1.7.0",
+  date: "2026-08-19",
+  title: "Sécurité : durcissement multi-tenant et audit global",
+  items: [
+    "Migration RLS sur `ai_usage_logs` et `ethone_items`, activation de `pgcrypto`.",
+    "Nouvel utilitaire `lib/sanitizeHtml.ts` : nettoyage HTML côté client (whitelist http/https).",
+    "Tests E2E `security-pentest.spec.ts` : IDOR, XSS (Command Palette, RSS), isolation session.",
+    "Validation du protocole RSS et filtrage des liens avant affichage.",
+    "Remplacement des rendus `dangerouslySetInnerHTML` par du texte brut ou du nettoyage.",
+    "Forçage d'`undici` 7.29.0 côté Worker (correction CVE Snyk).",
+    "Version : v1.7.0.",
+  ],
+};
+
+const v177_en: ChangelogEntry = {
+  version: "v1.7.0",
+  date: "2026-08-19",
+  title: "Security: multi-tenant hardening and global audit",
+  items: [
+    "RLS migration on `ai_usage_logs` and `ethone_items`, `pgcrypto` enabled.",
+    "New `lib/sanitizeHtml.ts` client-side HTML sanitizer (http/https whitelist).",
+    "E2E tests `security-pentest.spec.ts`: IDOR, XSS (Command Palette, RSS), session isolation.",
+    "RSS protocol validation and link filtering before rendering.",
+    "Replacement of `dangerouslySetInnerHTML` with plain text or sanitized output.",
+    "Pinned `undici` 7.29.0 in Worker (Snyk CVE fix).",
+    "Version: v1.7.0.",
+  ],
+};
+
+const v177_es: ChangelogEntry = {
+  version: "v1.7.0",
+  date: "2026-08-19",
+  title: "Seguridad: endurecimiento multi-tenant y auditoría global",
+  items: [
+    "Migración RLS en `ai_usage_logs` y `ethone_items`, activación de `pgcrypto`.",
+    "Nuevo utilitario `lib/sanitizeHtml.ts`: limpieza HTML en cliente (lista blanca http/https).",
+    "Tests E2E `security-pentest.spec.ts`: IDOR, XSS (Command Palette, RSS), aislamiento de sesión.",
+    "Validación del protocolo RSS y filtrado de enlaces antes de renderizar.",
+    "Sustitución de `dangerouslySetInnerHTML` por texto plano o contenido sanitizado.",
+    "Forzado de `undici` 7.29.0 en el Worker (corrección CVE Snyk).",
+    "Versión: v1.7.0.",
+  ],
+};
+
+const v177_de: ChangelogEntry = {
+  version: "v1.7.0",
+  date: "2026-08-19",
+  title: "Sicherheit: Multi-Tenant-Härtung und globale Prüfung",
+  items: [
+    "RLS-Migration für `ai_usage_logs` und `ethone_items`, `pgcrypto` aktiviert.",
+    "Neues `lib/sanitizeHtml.ts`: clientseitiger HTML-Sanitizer (http/https-Whitelist).",
+    "E2E-Tests `security-pentest.spec.ts`: IDOR, XSS (Command Palette, RSS), Sitzungsisolation.",
+    "RSS-Protokollvalidierung und Linkfilterung vor dem Rendern.",
+    "Ersetzung von `dangerouslySetInnerHTML` durch reinen Text oder bereinigte Ausgabe.",
+    "`undici` 7.29.0 im Worker fixiert (Snyk CVE-Fix).",
+    "Version: v1.7.0.",
+  ],
+};
+
 const v176_fr: ChangelogEntry = {
   version: "v1.6.16",
   date: "2026-08-19",
@@ -933,8 +993,8 @@ const v322_fr: ChangelogEntry = {
 };
 
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
-  en: [v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
+  fr: [v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -980,7 +1040,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
+  es: [v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -1026,7 +1086,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
+  de: [v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

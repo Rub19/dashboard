@@ -242,7 +242,7 @@ export default function Sidebar() {
         ariaLabel="Navigation principale"
         className="h-full bg-background"
         style={{ height: "calc(100% + 0.25rem)" }}
-        panelClassName="m-2 h-full shrink-0 rounded-2xl border border-[var(--panel-border)] border-l-0 bg-[var(--background)] p-3 shadow-2xl"
+        panelClassName="m-2 h-full shrink-0 rounded-2xl border-0 bg-[var(--background)] p-3"
       >
         <AnimatedSidebarHeader>
           <SidebarBrand />

@@ -17,6 +17,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `ethone-next/components/ClientImage.tsx` : correction du rendu des images déjà en cache (avatars Discord, couvertures Spotify, etc.).
 - `supabase/migrations/202608190001_user_oauth_tokens_discord.sql` : ajout de `discord` dans la contrainte `user_oauth_tokens_provider_check`.
 - `worker/src/services/discord-oauth-client.js` : le connecteur Discord OAuth continue de stocker le profil même si le token ne peut pas être persisté (temporaire, en attendant la migration).
+- `ethone-next/components/Sidebar.tsx` : suppression de la bordure du panneau flottant de la sidebar pour unifier la couleur.
 - `ethone-next/public/sw.js` : cache Service Worker v354.
 - `ethone-next/lib/stores/sync.ts` : suppression des mises à jour redondantes quand un statut source ne change pas.
 - `ethone-next/lib/supabase.ts` : renforcement de `isMissingSchemaError` pour couvrir PGRST204, PGRST116, 42P01 et les messages "schema cache" / "Could not find".

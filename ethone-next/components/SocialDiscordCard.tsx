@@ -198,7 +198,7 @@ export default function SocialDiscordCard({
   return (
     <TiltCard
       className={cn(
-        "flex h-full min-h-0 flex-col v8-panel p-4 shadow-xl shadow-black/50 backdrop-blur-2xl transition-all hover:border-white/15",
+        "flex h-full min-h-0 flex-col v8-panel overflow-hidden p-4 shadow-xl shadow-black/50 backdrop-blur-2xl transition-all hover:border-white/15",
         className
       )}
     >
@@ -243,9 +243,9 @@ export default function SocialDiscordCard({
           )}
         </div>
       ) : (
-        <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4 py-2">
+        <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-2 overflow-hidden">
           {hasLanyard && (
-            <div className="flex flex-col items-center gap-3 text-center">
+            <div className="flex flex-col items-center gap-2 text-center">
               <div className="relative h-16 w-16 shrink-0">
                 <ClientImage
                   candidates={avatarCandidates}
@@ -267,29 +267,29 @@ export default function SocialDiscordCard({
                 />
               </div>
               <div className="min-w-0">
-                <p className="truncate text-lg font-bold text-white">{displayName}</p>
+                <p className="truncate text-base font-bold text-white">{displayName}</p>
                 {handle && (
-                  <p className="truncate text-xs text-zinc-400">{handle}</p>
+                  <p className="truncate text-[11px] text-zinc-400">{handle}</p>
                 )}
-                <p className="truncate text-[11px] text-zinc-500">{label}</p>
+                <p className="truncate text-[10px] text-zinc-500">{label}</p>
               </div>
             </div>
           )}
 
           {customStatus && (
-            <p className="max-w-full truncate rounded-lg bg-white/[0.04] px-3 py-1.5 text-xs text-zinc-300">
+            <p className="max-w-full truncate rounded-lg bg-white/[0.04] px-3 py-1 text-[11px] text-zinc-300">
               {customStatus}
             </p>
           )}
 
           {gameActivity && (
-            <div className="w-full space-y-0.5 rounded-xl border border-white/[0.05] bg-white/[0.02] p-3 text-center">
-              <p className="text-xs font-semibold text-zinc-200">{gameActivity.name}</p>
+            <div className="w-full shrink-0 space-y-0 rounded-xl border border-white/[0.05] bg-white/[0.02] p-2 text-center">
+              <p className="text-[11px] font-semibold text-zinc-200">{gameActivity.name}</p>
               {gameActivity.details && (
-                <p className="line-clamp-2 text-[11px] text-zinc-400">{gameActivity.details}</p>
+                <p className="line-clamp-2 text-[10px] text-zinc-400">{gameActivity.details}</p>
               )}
               {gameActivity.state && (
-                <p className="line-clamp-2 text-[10px] text-zinc-500">{gameActivity.state}</p>
+                <p className="line-clamp-2 text-[9px] text-zinc-500">{gameActivity.state}</p>
               )}
             </div>
           )}
@@ -331,9 +331,9 @@ export default function SocialDiscordCard({
       )}
 
       {hasLanyard && !customStatus && !gameActivity && !activeMusic && (
-        <div className="mt-auto flex flex-1 flex-col items-center justify-center gap-2 rounded-xl border border-white/[0.05] bg-white/[0.02] p-4 text-center">
-          <Radio className="h-5 w-5 text-zinc-500" />
-          <p className="text-[11px] text-zinc-500">Aucune activité en cours.</p>
+        <div className="mt-auto flex flex-col items-center justify-center gap-1.5 rounded-xl border border-white/[0.05] bg-white/[0.02] p-3 text-center">
+          <Radio className="h-4 w-4 text-zinc-500" />
+          <p className="text-[10px] text-zinc-500">Aucune activité en cours.</p>
         </div>
       )}
     </TiltCard>

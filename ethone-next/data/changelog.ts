@@ -5,6 +5,62 @@ export type ChangelogEntry = {
   items: string[];
 };
 
+const v173_fr: ChangelogEntry = {
+  version: "v1.6.13",
+  date: "2026-08-19",
+  title: "Correction UI : z-index et portails pour les menus déroulants",
+  items: [
+    "Les menus Profil, Langue et Notifications sont désormais rendus via un portail React fixed pour flotter au-dessus de tout le contenu.",
+    "Utilisation de FloatingPortal + useFloating + useLayer pour le positionnement, l'extérieur du menu et la touche Échap.",
+    "TopBar passe en z-50 et main en z-0 pour garantir l'ordre d'empilement.",
+    "Bouton raccourci \"Créer une note\" ramené à z-0.",
+    "Audit Snyk : aucune clé API exposée (faux positifs sur clés localStorage/i18n).",
+    "Version affichée en bas à droite : v1.6.13.",
+  ],
+};
+
+const v173_en: ChangelogEntry = {
+  version: "v1.6.13",
+  date: "2026-08-19",
+  title: "UI fix: z-index and portals for dropdowns",
+  items: [
+    "Profile, Language and Notification menus now render through a fixed React portal so they float above all content.",
+    "Using FloatingPortal + useFloating + useLayer for positioning, outside click and Escape.",
+    "TopBar set to z-50 and main to z-0 to guarantee stacking order.",
+    "\"Create a note\" shortcut button lowered to z-0.",
+    "Snyk audit: no exposed API keys (false positives on localStorage/i18n keys).",
+    "Version badge bottom-right: v1.6.13.",
+  ],
+};
+
+const v173_es: ChangelogEntry = {
+  version: "v1.6.13",
+  date: "2026-08-19",
+  title: "Corrección UI: z-index y portales para desplegables",
+  items: [
+    "Los menús de Perfil, Idioma y Notificaciones ahora se renderizan a través de un portal React fixed para flotar por encima de todo el contenido.",
+    "Uso de FloatingPortal + useFloating + useLayer para posicionamiento, clic fuera y Escape.",
+    "TopBar en z-50 y main en z-0 para garantizar el orden de apilamiento.",
+    "Botón de acceso directo \"Crear nota\" reducido a z-0.",
+    "Auditoría Snyk: ninguna clave API expuesta (falsos positivos en claves localStorage/i18n).",
+    "Versión mostrada abajo a la derecha: v1.6.13.",
+  ],
+};
+
+const v173_de: ChangelogEntry = {
+  version: "v1.6.13",
+  date: "2026-08-19",
+  title: "UI-Fix: z-Index und Portale für Dropdowns",
+  items: [
+    "Die Menüs Profil, Sprache und Benachrichtigungen werden jetzt über ein fixed React-Portal gerendert, um über dem gesamten Inhalt zu schweben.",
+    "Verwendung von FloatingPortal + useFloating + useLayer für Positionierung, Klick außerhalb und Escape.",
+    "TopBar auf z-50 und main auf z-0 gesetzt, um die Stapelreihenfolge zu garantieren.",
+    "\"Notiz erstellen\"-Verknüpfungsbutton auf z-0 reduziert.",
+    "Snyk-Audit: Keine API-Schlüssel offengelegt (Falschmeldungen bei localStorage/i18n-Schlüsseln).",
+    "Version unten rechts: v1.6.13.",
+  ],
+};
+
 const v172_fr: ChangelogEntry = {
   version: "v1.6.12",
   date: "2026-08-19",
@@ -709,8 +765,8 @@ const v322_fr: ChangelogEntry = {
 };
 
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
-  en: [v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
+  fr: [v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -756,7 +812,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
+  es: [v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -802,7 +858,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
+  de: [v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

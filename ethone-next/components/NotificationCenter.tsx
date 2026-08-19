@@ -3,10 +3,12 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
+import { FloatingPortal } from "@floating-ui/react";
 import { useNotifications, type Notification } from "@/lib/hooks/useNotifications";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useIsMobile } from "@/lib/hooks/useMediaQuery";
 import { usePresence } from "@/components/PresenceProvider";
+import { useTopbarDropdown } from "@/lib/hooks/useTopbarDropdown";
 import { Icon } from "@/lib/icons";
 import NotificationItem from "@/components/NotificationItem";
 import Modal from "@/components/ui/Modal";
@@ -41,6 +43,11 @@ export default function NotificationCenter() {
   const [filter, setFilter] = useState<string>("all");
   const [query, setQuery] = useState("");
   const searchRef = useRef<HTMLInputElement>(null);
+
+  const { setTrigger, setPanel, floatingStyles } = useTopbarDropdown({
+    open,
+    onClose: () => setOpen(false),
+  });
 
   useEffect(() => {
     if (open && searchRef.current) {
@@ -214,6 +221,7 @@ export default function NotificationCenter() {
     <div className="relative">
       <button
         type="button"
+        ref={setTrigger as unknown as React.Ref<HTMLButtonElement>}
         onClick={() => setOpen(!open)}
         data-tooltip={i18n("notifications")}
         className="relative flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 transition-all hover:bg-white/[0.08] hover:text-white active:scale-95 cursor-pointer select-none"
@@ -233,26 +241,29 @@ export default function NotificationCenter() {
         )}
       </button>
 
-      {open && (
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          {isMobile ? (
-            <Modal
-              isOpen={open}
-              onClose={() => setOpen(false)}
-              title={i18n("notifications")}
-              size="sm"
-              position="bottom"
-              hideFooter
-            >
-              {content}
-            </Modal>
-          ) : (
-            <div className="absolute right-0 top-12 z-50 w-[28rem] max-w-[calc(100vw-1rem)] max-h-[min(80vh,44rem)] rounded-2xl border border-white/[0.08] bg-zinc-950/95 p-4 shadow-2xl backdrop-blur-2xl">
-              {content}
-            </div>
-          )}
-        </>
+      {open && isMobile && (
+        <Modal
+          isOpen={open}
+          onClose={() => setOpen(false)}
+          title={i18n("notifications")}
+          size="sm"
+          position="bottom"
+          hideFooter
+        >
+          {content}
+        </Modal>
+      )}
+
+      {open && !isMobile && (
+        <FloatingPortal>
+          <div
+            ref={setPanel as unknown as React.Ref<HTMLDivElement>}
+            style={floatingStyles}
+            className="z-[100] flex w-[28rem] max-w-[calc(100vw-1rem)] max-h-[min(80vh,44rem)] flex-col rounded-2xl border border-white/[0.08] bg-zinc-950/95 p-4 shadow-2xl backdrop-blur-2xl"
+          >
+            {content}
+          </div>
+        </FloatingPortal>
       )}
     </div>
   );

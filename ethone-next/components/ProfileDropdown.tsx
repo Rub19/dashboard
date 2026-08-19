@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import { FloatingPortal } from "@floating-ui/react";
 import {
   ChevronDown,
   User,
@@ -26,6 +27,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { useTeam } from "@/lib/hooks/useTeam";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { useTopbarDropdown } from "@/lib/hooks/useTopbarDropdown";
 
 const WORKSPACES = [
   { id: "personal", icon: User, color: "text-emerald-400" },
@@ -87,7 +89,10 @@ function Avatar({
 export default function ProfileDropdown() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  const wrapperRef = useRef<HTMLDivElement>(null);
+  const { setTrigger, setPanel, floatingStyles } = useTopbarDropdown({
+    open,
+    onClose: () => setOpen(false),
+  });
 
   const { user, signOut } = useAuth();
   const { profile: publicProfile, save: savePublicProfile } = useProfile();
@@ -109,23 +114,7 @@ export default function ProfileDropdown() {
     }
   }, [loaded, activeProfile?.workspace, setActiveSpace]);
 
-  useEffect(() => {
-    if (!open) return;
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
-    }
-    function onClick(e: MouseEvent) {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener("keydown", onKey);
-    document.addEventListener("mousedown", onClick);
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.removeEventListener("mousedown", onClick);
-    };
-  }, [open]);
+
 
   const visibleMembers = useMemo(() => members.slice(0, 4), [members]);
   const extraMembers = Math.max(0, members.length - visibleMembers.length);
@@ -235,9 +224,10 @@ export default function ProfileDropdown() {
   }
 
   return (
-    <div className="relative" ref={wrapperRef}>
+    <div className="relative">
       <button
         type="button"
+        ref={setTrigger as unknown as React.Ref<HTMLButtonElement>}
         onClick={() => setOpen(!open)}
         disabled={pending}
         className="flex h-10 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-2 text-zinc-200 transition-colors hover:bg-white/[0.05]"
@@ -250,16 +240,18 @@ export default function ProfileDropdown() {
         <ChevronDown className={`h-4 w-4 text-zinc-500 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: 8, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.98 }}
-            transition={{ duration: 0.15, ease: "easeOut" as const }}
-            style={{ originX: 1, originY: 0 }}
-            className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-xl border border-white/10 bg-zinc-950/90 p-3 shadow-[0_16px_40px_rgba(0,0,0,0.85)] backdrop-blur-2xl"
-          >
+      <FloatingPortal>
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              ref={setPanel as unknown as React.Ref<HTMLDivElement>}
+              initial={{ opacity: 0, y: 8, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 8, scale: 0.98 }}
+              transition={{ duration: 0.15, ease: "easeOut" as const }}
+              style={{ ...floatingStyles, originX: 1, originY: 0 }}
+              className="z-[100] w-80 overflow-hidden rounded-xl border border-white/10 bg-zinc-950/90 p-3 shadow-[0_16px_40px_rgba(0,0,0,0.85)] backdrop-blur-2xl"
+            >
             {/* User Card Header */}
             <div className="flex items-center justify-between gap-3 rounded-lg border border-white/[0.06] bg-white/[0.03] p-3">
               <div className="flex min-w-0 items-center gap-3">
@@ -486,6 +478,7 @@ export default function ProfileDropdown() {
           </motion.div>
         )}
       </AnimatePresence>
+      </FloatingPortal>
     </div>
   );
 }

@@ -4,6 +4,16 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Correction UI : z-index et portails pour les menus déroulants (v1.6.13)**
+
+### Corrige
+- Les menus Profil, Langue et Notifications sont désormais rendus via un portail React fixed pour flotter au-dessus de tout le contenu.
+- Positionnement géré par `FloatingPortal` + `useFloating` + `useLayer` : placement, fermeture en dehors, touche Échap, redimensionnement et scroll.
+- `TopBar` passe en `z-50` et `<main>` en `z-0` pour garantir l'ordre d'empilement.
+- Bouton de raccourci « Créer une note » ramené à `z-0`.
+- Audit Snyk : aucune clé API exposée (faux positifs détectés sur des clés localStorage/i18n).
+- Version `1.6.13`.
+
 **Minecraft : affichage du skin via NMSR (v1.6.12)**
 
 ### Corrige

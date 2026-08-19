@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { FloatingPortal } from "@floating-ui/react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useTopbarDropdown } from "@/lib/hooks/useTopbarDropdown";
 
 const LANGUAGES = ["fr", "en", "es", "de"] as const;
 
@@ -63,30 +65,12 @@ export default function LanguageSwitcher() {
   const { settings, update } = useSettings();
   const { success } = useToast();
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const { setTrigger, setPanel, floatingStyles } = useTopbarDropdown({
+    open,
+    onClose: () => setOpen(false),
+  });
 
   const current = (settings.language as Language) || "fr";
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (ref.current && !ref.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    }
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setOpen(false);
-      }
-    }
-    if (open) {
-      document.addEventListener("mousedown", handleClickOutside);
-      document.addEventListener("keydown", handleKeyDown);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [open]);
 
   function select(lang: Language) {
     if (lang !== current) {
@@ -97,9 +81,10 @@ export default function LanguageSwitcher() {
   }
 
   return (
-    <div ref={ref} className="relative">
+    <div className="relative">
       <button
         type="button"
+        ref={setTrigger as unknown as React.Ref<HTMLButtonElement>}
         onClick={() => setOpen(!open)}
         title={i18n("language")}
         aria-label={i18n("language")}
@@ -111,11 +96,14 @@ export default function LanguageSwitcher() {
         <span className="pointer-events-none hidden uppercase 2xl:inline">{current}</span>
       </button>
 
-      {open && (
-        <div
-          role="listbox"
-          className="absolute right-0 top-full z-50 mt-2 min-w-[11rem] overflow-hidden rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1.5 shadow-2xl backdrop-blur-xl"
-        >
+      <FloatingPortal>
+        {open && (
+          <div
+            ref={setPanel as unknown as React.Ref<HTMLDivElement>}
+            role="listbox"
+            style={floatingStyles}
+            className="z-[100] min-w-[11rem] overflow-hidden rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1.5 shadow-2xl backdrop-blur-xl"
+          >
           {LANGUAGES.map((lang) => {
             const active = lang === current;
             return (
@@ -141,6 +129,7 @@ export default function LanguageSwitcher() {
           })}
         </div>
       )}
+      </FloatingPortal>
     </div>
   );
 }

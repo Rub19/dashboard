@@ -28,14 +28,14 @@ export default function BentoCard({
   return (
     <div
       className={cn(
-        "group relative flex w-full flex-col rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-5 shadow-[var(--panel-shadow)] backdrop-blur-[var(--panel-blur)] transition-all duration-200 hover:border-[var(--accent)]/20",
+        "group relative flex w-full flex-col rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-[var(--panel-shadow)] backdrop-blur-[var(--panel-blur)] transition-all duration-200 hover:border-[var(--accent)]/20",
         "h-full min-h-0 w-full overflow-hidden",
         className
       )}
     >
       <div className="relative z-10 flex flex-1 flex-col min-h-0">
         {!noHeader && (title || icon) && (
-          <div className="mb-4 flex flex-none items-center justify-between border-b border-white/[0.05] pb-3">
+          <div className="mb-2 flex flex-none items-center justify-between border-b border-white/[0.05] pb-2">
             <div className="flex items-center gap-2.5">
               {icon && (
                 <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/[0.06] bg-white/[0.04] text-zinc-300">

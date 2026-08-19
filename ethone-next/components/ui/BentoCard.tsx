@@ -22,11 +22,11 @@ export default function BentoCard({
 }: BentoCardProps) {
   return (
     <div
-      className={`group relative min-w-0 overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-5 shadow-[var(--panel-shadow)] backdrop-blur-[var(--panel-blur)] transition-all duration-200 hover:border-[var(--accent)]/20 ${className}`}
+      className={`group relative min-w-0 overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-[var(--panel-shadow)] backdrop-blur-[var(--panel-blur)] transition-all duration-200 hover:border-[var(--accent)]/20 ${className}`}
       style={style}
     >
       {title && (
-        <div className="relative z-10 mb-4 flex items-center justify-between border-b border-white/[0.05] pb-3">
+        <div className="relative z-10 mb-2 flex items-center justify-between border-b border-white/[0.05] pb-2">
           <div className="flex items-center gap-2.5">
             {icon && (
               <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/[0.06] bg-white/[0.04] text-zinc-300">

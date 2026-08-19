@@ -69,7 +69,7 @@ const DEFAULT_WIDGETS: WidgetLayout[] = [
   { id: "recent", x: 0, y: 2, w: 4, h: 1, visible: true },
   { id: "brain", x: 0, y: 3, w: 6, h: 1, visible: true },
   { id: "bills", x: 6, y: 3, w: 6, h: 1, visible: true },
-  { id: "live", x: 0, y: 4, w: 12, h: 2, visible: true },
+  { id: "live", x: 0, y: 4, w: 12, h: 2, visible: false },
 ];
 
 export default function DashboardOverview() {
@@ -201,7 +201,7 @@ export default function DashboardOverview() {
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-y-auto os-scroll">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
       <header className="shrink-0 mb-2 flex w-full items-center justify-end">
         <button
           type="button"
@@ -260,7 +260,7 @@ export default function DashboardOverview() {
         animate="visible"
         variants={gridVariants}
         data-home-grid
-        className="grid w-full h-auto grid-cols-12 gap-4 pb-6"
+        className="grid w-full h-auto grid-cols-12 gap-3"
       >
         {widgets.map((w) =>
           w.visible ? (

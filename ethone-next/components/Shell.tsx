@@ -17,7 +17,6 @@ import { ActivityJournalProvider } from "@/components/ActivityJournalProvider";
 import PageTransition from "@/components/PageTransition";
 import AutomationRuntime from "@/components/AutomationRuntime";
 import Dock from "@/components/Dock";
-import StatusBar from "@/components/layout/StatusBar";
 import SkipLink from "@/components/SkipLink";
 import ContextMenuProvider from "@/components/ContextMenuProvider";
 
@@ -41,7 +40,7 @@ export default function Shell({ children }: { children: ReactNode }) {
             <AnimatedSidebarProvider
               defaultOpen={true}
               style={{ "--sidebar-width": "18rem", "--sidebar-width-icon": "5rem" }}
-              className="h-dvh max-h-dvh w-screen max-w-full overflow-clip gap-3 p-3 sm:gap-4 sm:p-4"
+              className="h-dvh max-h-dvh w-screen max-w-full overflow-clip gap-2 p-2 sm:gap-3 sm:p-3"
             >
               <Sidebar />
               <div
@@ -59,7 +58,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                 <main
                   data-v8-main
                   id="main-content"
-                  className="min-h-0 min-w-0 flex-1 flex flex-col overflow-clip rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)] pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-[calc(5rem+env(safe-area-inset-bottom))]"
+                  className="min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)] pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-[calc(5rem+env(safe-area-inset-bottom))]"
                   tabIndex={-1}
                 >
                   <ActivityJournalProvider>
@@ -71,7 +70,6 @@ export default function Shell({ children }: { children: ReactNode }) {
             </AnimatedSidebarProvider>
             <MobileNav />
             <Dock />
-            <StatusBar />
             <ShortcutsOverlay />
             <KeyboardShortcuts />
           </ShortcutsProvider>

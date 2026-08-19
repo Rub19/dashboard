@@ -212,7 +212,7 @@ function WeatherSkeleton({ compact }: { compact?: boolean }) {
   return (
     <div
       className={`animate-pulse space-y-4 rounded-2xl bg-white/[0.04] p-5 backdrop-blur-2xl ${
-        compact ? "min-h-[160px]" : "min-h-[260px]"
+        compact ? "min-h-[130px]" : "min-h-[260px]"
       }`}
     >
       <div className="flex items-start justify-between">
@@ -271,7 +271,7 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
     return (
       <div
         className={`flex flex-col items-center justify-center gap-3 rounded-2xl border border-white/[0.06] bg-zinc-950/60 p-5 text-center backdrop-blur-2xl ${
-          compact ? "min-h-[160px]" : "min-h-[260px]"
+          compact ? "min-h-[130px]" : "min-h-[260px]"
         } ${className || ""}`}
       >
         <Icon name="cloud" className="h-10 w-10 text-zinc-600" />
@@ -292,7 +292,7 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
 
   return (
     <TiltCard
-      className={`group h-full min-h-0 border bg-zinc-950/70 p-5 shadow-xl shadow-black/50 backdrop-blur-2xl transition-colors ${gradient} ${border} ${
+      className={`group h-full min-h-0 border bg-zinc-950/70 p-4 shadow-xl shadow-black/50 backdrop-blur-2xl transition-colors ${gradient} ${border} ${
         className || ""
       }`}
     >

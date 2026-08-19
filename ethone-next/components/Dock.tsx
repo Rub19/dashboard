@@ -2,13 +2,14 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { LayoutGrid, Search, Clock, AppWindow, Bell, Sliders, ChevronUp, Mail } from "lucide-react";
+import { LayoutGrid, Search, Clock, AppWindow, Bell, Sliders, ChevronUp, Mail, Radio } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useWindowManager } from "@/components/WindowManagerProvider";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useNotifications } from "@/lib/hooks/useNotifications";
 import { useNowPlaying } from "@/lib/hooks/useNowPlaying";
+import { useLiveWidgetStore } from "@/lib/hooks/useLiveWidgetStore";
 import { Icon } from "@/lib/icons";
 import Card3D from "@/components/Card3D";
 import DockControlCenter from "@/components/DockControlCenter";
@@ -45,6 +46,7 @@ export default function Dock() {
   const i18n = useI18n();
   const { nowPlaying } = useNowPlaying(15000);
   const { unreadCount } = useNotifications();
+  const { isOpen: liveOpen, openLive, closeLive } = useLiveWidgetStore();
 
   const [launcherOpen, setLauncherOpen] = useState(false);
   const [controlCenterOpen, setControlCenterOpen] = useState(false);
@@ -126,7 +128,7 @@ export default function Dock() {
 
   return (
     <div
-      className="v8-floating-dock fixed bottom-8 inset-x-0 z-50 hidden md:flex pointer-events-none justify-center bg-transparent p-0 m-0 border-none shadow-none outline-none"
+      className="v8-floating-dock fixed bottom-0 inset-x-0 z-50 hidden md:flex pointer-events-none justify-center bg-transparent pb-[calc(1rem+env(safe-area-inset-bottom))] m-0 border-none shadow-none outline-none"
     >
       {launcherOpen && (
         <div className="pointer-events-auto absolute bottom-full left-1/2 z-50 mb-4 w-[min(90vw,420px)] -translate-x-1/2">
@@ -269,6 +271,24 @@ export default function Dock() {
           className={dockButton}
         >
           <ChevronUp className="w-5 h-5" />
+        </button>
+
+        <div className="mx-1 h-6 w-[1px] shrink-0 bg-white/[0.08]" aria-hidden="true" />
+
+        <button
+          type="button"
+          onClick={() => (liveOpen ? closeLive() : openLive())}
+          aria-label={i18n("openLive") || "Live"}
+          aria-pressed={liveOpen}
+          className={`relative ${dockButton}`}
+        >
+          <Radio className="w-5 h-5" />
+          {liveOpen && (
+            <span
+              className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-[#0d0e12]"
+              aria-hidden="true"
+            />
+          )}
         </button>
       </nav>
 

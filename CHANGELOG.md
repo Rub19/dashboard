@@ -4,6 +4,18 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Suppression de la bande noire inférieure et verrouillage zero-scroll**
+
+### Corrige
+- `ethone-next/components/Shell.tsx` : suppression de `<StatusBar />` et de la barre opaque pleine largeur en bas d'écran. Le conteneur inférieur est désormais transparent et non bloquant (`pointer-events-none`) ; seule la pilule `Dock` est interactive (`pointer-events-auto`).
+- `ethone-next/components/Dock.tsx` : positionnement `fixed bottom-0` avec `pb-[calc(1rem+env(safe-area-inset-bottom))]`, ajout du bouton `Live` (badge temps réel flottant dans le Dock).
+- `ethone-next/components/DashboardOverview.tsx` : `overflow-y-auto` remplacé par `overflow-hidden`, suppression du `pb-6` de la grille, espacement réduit à `gap-3`, widget `live` masqué par défaut pour garantir un dashboard sans ascenseur.
+- `ethone-next/app/globals.css` : règle `html, body, body > #__next` verrouillées en `100dvh`/`overflow: hidden`.
+- `ethone-next/components/BentoCard.tsx` et `components/ui/BentoCard.tsx` : padding réduit de `p-5` à `p-4` et header réduit (`mb-2 pb-2`).
+- `ethone-next/components/LiveBentoGrid.tsx`, `LiveStats.tsx`, `WeatherWidget.tsx`, `GamingCard.tsx`, `SocialDiscordCard.tsx` : réduction des espacements, min-heights et tailles d'avatar pour une densité maximale.
+- `ethone-next/e2e/zero-scroll.spec.ts` : nouveau test Playwright simulant molette et touches de défilement, certifiant que le canevas reste immobile et sans scroll horizontal.
+- Version `1.6.4`.
+
 **Dock : teinte Dark Obsidian et finitions glassmorphic**
 
 ### Corrige

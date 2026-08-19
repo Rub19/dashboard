@@ -126,6 +126,15 @@ html[data-space="studio"][data-theme="day"] {
   }
 }
 
+/* Zero-scroll : verrouiller le canevas OS en pleine hauteur viewport */
+html,
+body,
+body > #__next {
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+
 /* stylelint-disable-next-line at-rule-no-unknown */
 @theme inline {
   --color-background: var(--background);

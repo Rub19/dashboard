@@ -1137,6 +1137,7 @@ const v179_fr: ChangelogEntry = {
     "Ajout du composant `Popover` beui avec animation morphing et goo.",
     "NotificationCenter, LanguageSwitcher : ouverture au clic via `Popover`.",
     "UserProfileDropdown : ouverture au hover via `Popover`.",
+    "Correction du chargement des covers Spotify dans `ClientImage` via `img.decode()`.",
     "Mise à jour de la version en v1.7.2.",
   ],
 };
@@ -1154,6 +1155,7 @@ const v179_en: ChangelogEntry = {
     "Added beui `Popover` component with morphing and goo animation.",
     "NotificationCenter, LanguageSwitcher: click-to-open via `Popover`.",
     "UserProfileDropdown: hover-to-open via `Popover`.",
+    "Fixed Spotify cover loading in `ClientImage` using `img.decode()`.",
     "Updated version to v1.7.2.",
   ],
 };
@@ -1171,6 +1173,7 @@ const v179_es: ChangelogEntry = {
     "Añadido componente `Popover` beui con animación de morphing y goo.",
     "NotificationCenter, LanguageSwitcher: apertura con clic mediante `Popover`.",
     "UserProfileDropdown: apertura con hover mediante `Popover`.",
+    "Corrección de carga de carátulas Spotify en `ClientImage` con `img.decode()`.",
     "Versión actualizada a v1.7.2.",
   ],
 };
@@ -1188,6 +1191,7 @@ const v179_de: ChangelogEntry = {
     "beui `Popover`-Komponente mit Morphing- und Goo-Animation hinzugefügt.",
     "NotificationCenter, LanguageSwitcher: Klick-Öffnung über `Popover`.",
     "UserProfileDropdown: Hover-Öffnung über `Popover`.",
+    "Spotify-Cover-Laden in `ClientImage` mit `img.decode()` korrigiert.",
     "Version auf v1.7.2 aktualisiert.",
   ],
 };

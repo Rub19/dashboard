@@ -12,7 +12,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `ethone-next/components/DiscordConfig.tsx` : icônes de marque devant chaque compte lié, avatar du profil et icônes des serveurs via `ClientImage`.
 - `ethone-next/components/UserProfileDropdown.tsx` et `ethone-next/components/Sidebar.tsx` : utilisation de `publicProfile.avatar_url` au lieu de l'avatar Discord pour le profil utilisateur.
 - `ethone-next/lib/hooks/useDiscordAvatar.ts` : suppression.
-- `ethone-next/components/motion/Popover.tsx` : ajout du composant Popover beui avec animation morphing/goo.
+- `ethone-next/components/ClientImage.tsx` : utilisation de `img.decode()` pour les covers et suppression du timeout de secours quand une seule source est disponible.
 - `ethone-next/lib/hooks/use-hover-gesture.ts`, `use-tap-gesture.ts`, `use-dismiss.ts` et `ethone-next/components/motion/popover-position.ts` : hooks support pour `Popover`.
 - `ethone-next/components/NotificationCenter.tsx`, `ethone-next/components/LanguageSwitcher.tsx` : ouverture au clic via `Popover`.
 - `ethone-next/components/UserProfileDropdown.tsx` : ouverture au hover via `Popover`.

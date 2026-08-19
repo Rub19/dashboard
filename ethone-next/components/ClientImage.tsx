@@ -41,6 +41,10 @@ export function useClientImage(candidates: (string | undefined)[], timeoutMs = 1
       setStatus("error");
       return;
     }
+    // No fallback timeout when there is only one source: the <img> onLoad/onError
+    // handlers are sufficient. Timeouts caused false negatives on slow networks or
+    // deferred image decoding inside motion containers.
+    if (sources.length === 1) return;
     let cancelled = false;
     const timer = setTimeout(() => {
       if (cancelled) return;
@@ -104,13 +108,25 @@ export default function ClientImage({
     if (status !== "loading") return;
     const img = imgRef.current;
     if (!img) return;
-    if (img.complete) {
-      if (img.naturalWidth === 0) {
-        handleError();
-      } else {
-        markOk();
-      }
+    let cancelled = false;
+
+    if (typeof img.decode === "function") {
+      img
+        .decode()
+        .then(() => {
+          if (!cancelled) markOk();
+        })
+        .catch(() => {
+          if (!cancelled) handleError();
+        });
+    } else if (img.complete) {
+      if (img.naturalWidth === 0) handleError();
+      else markOk();
     }
+
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resolved, status]);
 
@@ -124,13 +140,7 @@ export default function ClientImage({
     if (resolved) onResolve?.(resolved);
   }
 
-  const handleLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    if (e.currentTarget.naturalWidth === 0) {
-      handleError();
-      return;
-    }
-    markOk();
-  };
+  const handleLoad = () => markOk();
 
   const handleError = () => {
     setStatus("loading");

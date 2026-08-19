@@ -1014,6 +1014,7 @@ const v178_fr: ChangelogEntry = {
     "Supabase : migration ajoutant `discord` aux providers autorisés de `user_oauth_tokens`.",
     "Worker : le connecteur Discord OAuth continue le stockage du profil même si le token ne peut pas être persisté.",
     "Sidebar : suppression de la bordure du panneau flottant pour unifier la couleur avec le reste de la barre.",
+    "Supabase : migration ajoutant `discord` aux `kind` autorisés de `ethone_user_data`.",
     "Version : v1.7.1.",
   ],
 };
@@ -1040,6 +1041,7 @@ const v178_en: ChangelogEntry = {
     "Supabase: migration adding `discord` to the allowed providers in `user_oauth_tokens`.",
     "Worker: Discord OAuth connector now continues storing the profile even if the token cannot be persisted.",
     "Sidebar: removed the floating panel border to unify the color with the rest of the bar.",
+    "Supabase: migration adding `discord` to the allowed `kind` values in `ethone_user_data`.",
     "Version: v1.7.1.",
   ],
 };
@@ -1066,6 +1068,7 @@ const v178_es: ChangelogEntry = {
     "Supabase: migración que añade `discord` a los proveedores permitidos en `user_oauth_tokens`.",
     "Worker: el conector OAuth de Discord continúa almacenando el perfil aunque no se pueda persistir el token.",
     "Sidebar: eliminado el borde del panel flotante para unificar el color con el resto de la barra.",
+    "Supabase: migración que añade `discord` a los valores `kind` permitidos en `ethone_user_data`.",
     "Versión: v1.7.1.",
   ],
 };
@@ -1092,6 +1095,7 @@ const v178_de: ChangelogEntry = {
     "Supabase: Migration, die `discord` zu den erlaubten Providern in `user_oauth_tokens` hinzufügt.",
     "Worker: Discord-OAuth-Connector speichert das Profil auch dann, wenn das Token nicht persistiert werden kann.",
     "Sidebar: Rahmen des schwebenden Panels entfernt, um die Farbe mit dem Rest der Leiste zu vereinen.",
+    "Supabase: Migration, die `discord` zu den erlaubten `kind`-Werten in `ethone_user_data` hinzufügt.",
     "Version: v1.7.1.",
   ],
 };

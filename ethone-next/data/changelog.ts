@@ -61,6 +61,66 @@ const v173_de: ChangelogEntry = {
   ],
 };
 
+const v174_fr: ChangelogEntry = {
+  version: "v1.6.14",
+  date: "2026-08-19",
+  title: "Discord : double mode OAuth2 / Lanyard et persistance Worker",
+  items: [
+    "Nouveau sélecteur Discord dans les réglages : OAuth2 (recommandé) ou Lanyard (présence seule).",
+    "Le Worker gère le flux OAuth2 Discord : échange du code, récupération du profil @me, email, connexions tierces et serveurs.",
+    "Persistance du profil Discord dans la base via le Worker (ethone_user_data kind=discord) et du token OAuth.",
+    "Callback OAuth signé côté Worker avec redirection automatique vers l'application.",
+    "Intégration de l'avatar et du nom Discord dans la TopBar (UserProfileDropdown) et la Sidebar.",
+    "Snyk : DISCORD_CLIENT_SECRET reste exclusivement dans les variables d'environnement côté serveur.",
+    "Version affichée en bas à droite : v1.6.14.",
+  ],
+};
+
+const v174_en: ChangelogEntry = {
+  version: "v1.6.14",
+  date: "2026-08-19",
+  title: "Discord: dual OAuth2 / Lanyard mode and Worker persistence",
+  items: [
+    "New Discord selector in settings: OAuth2 (recommended) or Lanyard (presence only).",
+    "Worker now handles the Discord OAuth2 flow: code exchange, @me profile, email, third-party connections and guilds.",
+    "Discord profile persisted through the Worker (ethone_user_data kind=discord) and OAuth token stored securely.",
+    "Signed OAuth callback handled by the Worker with automatic redirect back to the app.",
+    "Discord avatar and display name integrated in TopBar (UserProfileDropdown) and Sidebar.",
+    "Snyk: DISCORD_CLIENT_SECRET remains strictly in server-side environment variables.",
+    "Version badge bottom-right: v1.6.14.",
+  ],
+};
+
+const v174_es: ChangelogEntry = {
+  version: "v1.6.14",
+  date: "2026-08-19",
+  title: "Discord: modo dual OAuth2 / Lanyard y persistencia en Worker",
+  items: [
+    "Nuevo selector de Discord en ajustes: OAuth2 (recomendado) o Lanyard (solo presencia).",
+    "El Worker gestiona el flujo OAuth2 de Discord: intercambio de código, perfil @me, email, conexiones de terceros y servidores.",
+    "Perfil de Discord persistido a través del Worker (ethone_user_data kind=discord) y token OAuth almacenado de forma segura.",
+    "Callback OAuth firmado gestionado por el Worker con redirección automática a la aplicación.",
+    "Avatar y nombre de Discord integrados en la TopBar (UserProfileDropdown) y la barra lateral.",
+    "Snyk: DISCORD_CLIENT_SECRET permanece estrictamente en variables de entorno del lado del servidor.",
+    "Versión mostrada abajo a la derecha: v1.6.14.",
+  ],
+};
+
+const v174_de: ChangelogEntry = {
+  version: "v1.6.14",
+  date: "2026-08-19",
+  title: "Discord: Dual-Modus OAuth2 / Lanyard und Worker-Persistenz",
+  items: [
+    "Neuer Discord-Wahlschalter in den Einstellungen: OAuth2 (empfohlen) oder Lanyard (nur Präsenz).",
+    "Der Worker übernimmt den Discord-OAuth2-Flow: Code-Austausch, @me-Profil, E-Mail, Drittverbindungen und Server.",
+    "Discord-Profil wird über den Worker persistiert (ethone_user_data kind=discord) und OAuth-Token sicher gespeichert.",
+    "Signierter OAuth-Callback im Worker mit automatischer Weiterleitung zurück zur App.",
+    "Discord-Avatar und -Name in der TopBar (UserProfileDropdown) und der Sidebar integriert.",
+    "Snyk: DISCORD_CLIENT_SECRET bleibt ausschließlich in serverseitigen Umgebungsvariablen.",
+    "Version unten rechts: v1.6.14.",
+  ],
+};
+
 const v172_fr: ChangelogEntry = {
   version: "v1.6.12",
   date: "2026-08-19",
@@ -765,8 +825,8 @@ const v322_fr: ChangelogEntry = {
 };
 
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
-  en: [v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
+  fr: [v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -812,7 +872,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
+  es: [v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -858,7 +918,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
+  de: [v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

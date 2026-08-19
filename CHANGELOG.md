@@ -4,6 +4,16 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Discord : double mode OAuth2 / Lanyard et persistance Worker (v1.6.14)**
+
+### Ajoute
+- Sélecteur de mode Discord dans les réglages : OAuth2 (recommandé) ou Lanyard (présence seule).
+- Routes Worker Discord OAuth2 : génération du lien d'autorisation, callback signé, échange du code, récupération du profil `@me`, de l'email, des connexions tierces et des serveurs (`guilds`).
+- Persistance du profil Discord via le Worker dans `ethone_user_data` (`kind=discord`) et stockage sécurisé du token OAuth.
+- Intégration de l'avatar et du nom Discord dans la `TopBar` (`UserProfileDropdown`) et la `Sidebar`.
+- Vérification Snyk : `DISCORD_CLIENT_SECRET` reste strictement côté serveur (fichiers `.env.local` et `worker/.dev.vars` ignorés, aucune valeur dans le code source).
+- Version `1.6.14`.
+
 **Correction UI : z-index et portails pour les menus déroulants (v1.6.13)**
 
 ### Corrige

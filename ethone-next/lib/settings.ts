@@ -160,6 +160,7 @@ export type Settings = {
   liveNowPlayingSource: "lanyard" | "lastfm" | "spotify";
   liveNowPlayingIdentity: string;
   liveLanyardUserId: string;
+  discordMode: "lanyard" | "oauth2";
   liveSpotifyClientId: string;
   liveYoutubeClientId: string;
   liveRedditClientId: string;
@@ -299,6 +300,7 @@ export const DEFAULTS: Settings = {
   liveNowPlayingSource: "lanyard",
   liveNowPlayingIdentity: "",
   liveLanyardUserId: "",
+  discordMode: "lanyard",
   liveSpotifyClientId: "",
   liveYoutubeClientId: "",
   liveRedditClientId: "",

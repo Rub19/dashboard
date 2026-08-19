@@ -8,6 +8,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { pingIntegration, type PingResult } from "@/lib/connection-config";
 import { integrationById } from "@/lib/integrations";
+import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 import SecureInput from "@/components/ui/SecureInput";
 
 const PROVIDER = "discord";
@@ -19,6 +20,7 @@ export default function DiscordConfig() {
   const { success, error: showError } = useToast();
   const { settings, update } = useSettings();
   const { setField, getField } = useIntegrationStore();
+  const { profile, loading, connect, disconnect, refresh } = useDiscordOAuth();
 
   const [submitting, setSubmitting] = useState(false);
   const [testing, setTesting] = useState(false);
@@ -38,13 +40,16 @@ export default function DiscordConfig() {
     }
   }, [storedValue, settings, setField]);
 
-  const isConnected = rawValue.trim().length > 0;
+  const discordMode = (settings.discordMode as "lanyard" | "oauth2") || "lanyard";
+  const isLanyard = discordMode === "lanyard";
+  const isOAuth2 = discordMode === "oauth2";
+  const isOAuthConnected = profile?.connected && isOAuth2;
 
   const status: PingResult["status"] = useMemo(() => {
     if (health) return health.status;
-    if (isConnected) return "connected";
-    return "unconfigured";
-  }, [health, isConnected]);
+    if (isOAuth2) return isOAuthConnected ? "connected" : "unconfigured";
+    return rawValue.trim().length > 0 ? "connected" : "unconfigured";
+  }, [health, isOAuth2, isOAuthConnected, rawValue]);
 
   const statusText = useMemo(() => {
     if (status === "connected") return i18n("connected", "Connecté");
@@ -58,6 +63,10 @@ export default function DiscordConfig() {
       : status === "error"
         ? "bg-rose-500/15 text-rose-300 border border-rose-500/30"
         : "bg-white/[0.04] text-zinc-400 border border-white/[0.08]";
+
+  function setMode(mode: "lanyard" | "oauth2") {
+    update({ discordMode: mode });
+  }
 
   async function handleSave() {
     const trimmed = rawValue.trim();
@@ -95,13 +104,23 @@ export default function DiscordConfig() {
     }
   }
 
-  function handleDisconnect() {
+  function handleLanyardDisconnect() {
     if (!window.confirm(`${i18n("disconnect")} Discord ?`)) return;
     setRawValue("");
     setField(PROVIDER, FIELD, "");
     update({ [SETTINGS_KEY]: "" } as Partial<typeof settings>);
     setHealth(undefined);
     success(i18n("disconnectSuccess"));
+  }
+
+  async function handleOAuthDisconnect() {
+    if (!window.confirm(`${i18n("disconnect")} Discord ?`)) return;
+    await disconnect();
+    success(i18n("disconnectSuccess"));
+  }
+
+  async function handleOAuthRefresh() {
+    await refresh();
   }
 
   if (!integration) return null;
@@ -116,57 +135,181 @@ export default function DiscordConfig() {
         <span className={`rounded-lg px-2.5 py-1 text-[10px] font-semibold ${statusClass}`}>{statusText}</span>
       </div>
 
-      <SecureInput
-        value={rawValue}
-        onChange={setRawValue}
-        label={i18n("liveLanyardUserId")}
-        placeholder="123456789012345678"
-        disabled={submitting || testing}
-      />
-
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] p-1">
         <button
           type="button"
-          onClick={handleSave}
-          disabled={!rawValue.trim() || submitting || testing}
-          className={`col-span-1 flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-sm font-bold transition-all active:scale-95 disabled:opacity-50 ${
-            isConnected
-              ? "bg-purple-600 text-white shadow-lg shadow-purple-600/20 hover:bg-purple-500"
-              : "bg-emerald-500 text-zinc-950 shadow-md shadow-emerald-500/20 hover:bg-emerald-400"
+          onClick={() => setMode("lanyard")}
+          className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
+            isLanyard ? "bg-white/10 text-white" : "text-zinc-400 hover:text-zinc-200"
           }`}
         >
-          {submitting ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : isConnected ? (
-            <Save className="h-4 w-4" />
-          ) : (
-            <Plug className="h-4 w-4" />
-          )}
-          {submitting ? i18n("saving") : isConnected ? i18n("save", "Sauvegarder") : i18n("connect", "Connecter")}
+          Lanyard
         </button>
         <button
           type="button"
-          onClick={handleTest}
-          disabled={!rawValue.trim() || testing}
-          className="col-span-1 flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-medium text-zinc-300 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-50"
+          onClick={() => setMode("oauth2")}
+          className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
+            isOAuth2 ? "bg-white/10 text-white" : "text-zinc-400 hover:text-zinc-200"
+          }`}
         >
-          {testing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-          {testing ? i18n("testingInProgress") : i18n("testConnection")}
+          OAuth2
         </button>
-        {isConnected && (
-          <button
-            type="button"
-            onClick={handleDisconnect}
-            disabled={submitting}
-            className="col-span-1 flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/20 px-3 py-2 text-sm font-medium text-rose-400 transition hover:border-rose-500/40 hover:bg-rose-500/10 disabled:opacity-50"
-          >
-            <Unlink className="h-4 w-4" />
-            {i18n("disconnect", "Déconnecter")}
-          </button>
-        )}
       </div>
 
-      {!!health?.data && (
+      {isLanyard ? (
+        <>
+          <SecureInput
+            value={rawValue}
+            onChange={setRawValue}
+            label={i18n("liveLanyardUserId")}
+            placeholder="123456789012345678"
+            disabled={submitting || testing}
+          />
+
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={!rawValue.trim() || submitting || testing}
+              className={`col-span-1 flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-sm font-bold transition-all active:scale-95 disabled:opacity-50 ${
+                rawValue.trim()
+                  ? "bg-purple-600 text-white shadow-lg shadow-purple-600/20 hover:bg-purple-500"
+                  : "bg-emerald-500 text-zinc-950 shadow-md shadow-emerald-500/20 hover:bg-emerald-400"
+              }`}
+            >
+              {submitting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : rawValue.trim() ? (
+                <Save className="h-4 w-4" />
+              ) : (
+                <Plug className="h-4 w-4" />
+              )}
+              {submitting ? i18n("saving") : rawValue.trim() ? i18n("save", "Sauvegarder") : i18n("connect", "Connecter")}
+            </button>
+            <button
+              type="button"
+              onClick={handleTest}
+              disabled={!rawValue.trim() || testing}
+              className="col-span-1 flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-medium text-zinc-300 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-50"
+            >
+              {testing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+              {testing ? i18n("testingInProgress") : i18n("testConnection")}
+            </button>
+            {rawValue.trim() && (
+              <button
+                type="button"
+                onClick={handleLanyardDisconnect}
+                disabled={submitting}
+                className="col-span-1 flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/20 px-3 py-2 text-sm font-medium text-rose-400 transition hover:border-rose-500/40 hover:bg-rose-500/10 disabled:opacity-50"
+              >
+                <Unlink className="h-4 w-4" />
+                {i18n("disconnect", "Déconnecter")}
+              </button>
+            )}
+          </div>
+        </>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {isOAuthConnected ? (
+            <>
+              <div className="flex items-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] p-3">
+                {profile?.user?.avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={profile.user.avatarUrl}
+                    alt={profile.user.globalName || profile.user.username}
+                    className="h-12 w-12 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-800 text-zinc-400">?</div>
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-semibold text-white">
+                    {profile?.user?.globalName || profile?.user?.username || "Discord"}
+                  </p>
+                  <p className="truncate text-xs text-zinc-400">@{profile?.user?.username}</p>
+                  {profile?.user?.email && (
+                    <p className="truncate text-xs text-zinc-500">{profile.user.email}</p>
+                  )}
+                </div>
+              </div>
+
+              {!!profile?.connections && profile.connections.length > 0 && (
+                <div>
+                  <p className="mb-2 text-xs font-medium text-zinc-400">Comptes liés</p>
+                  <div className="flex flex-wrap gap-2">
+                    {profile.connections.map((c) => (
+                      <span
+                        key={`${c.type}:${c.id}`}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 text-[10px] text-zinc-300"
+                      >
+                        {c.type}: {c.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {!!profile?.guilds && profile.guilds.length > 0 && (
+                <div>
+                  <p className="mb-2 text-xs font-medium text-zinc-400">Serveurs</p>
+                  <div className="flex max-h-32 flex-wrap gap-2 overflow-y-auto">
+                    {profile.guilds.slice(0, 24).map((g) => (
+                      <span
+                        key={g.id}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 text-[10px] text-zinc-300"
+                      >
+                        {g.iconUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={g.iconUrl} alt="" className="h-4 w-4 rounded" />
+                        ) : (
+                          <span className="flex h-4 w-4 items-center justify-center rounded bg-zinc-700 text-[8px]">
+                            {g.name.slice(0, 1).toUpperCase()}
+                          </span>
+                        )}
+                        {g.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={handleOAuthRefresh}
+                  disabled={loading}
+                  className="flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-medium text-zinc-300 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-50"
+                >
+                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                  Actualiser
+                </button>
+                <button
+                  type="button"
+                  onClick={handleOAuthDisconnect}
+                  disabled={loading}
+                  className="flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/20 px-3 py-2 text-sm font-medium text-rose-400 transition hover:border-rose-500/40 hover:bg-rose-500/10 disabled:opacity-50"
+                >
+                  <Unlink className="h-4 w-4" />
+                  {i18n("disconnect", "Déconnecter")}
+                </button>
+              </div>
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={connect}
+              disabled={loading}
+              className="flex items-center justify-center gap-1.5 rounded-xl bg-indigo-500 px-3 py-2 text-sm font-bold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400 disabled:opacity-50"
+            >
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plug className="h-4 w-4" />}
+              Se connecter avec Discord
+            </button>
+          )}
+        </div>
+      )}
+
+      {!!health?.data && isLanyard && (
         <pre className="max-h-40 overflow-auto rounded-xl bg-black/30 p-3 font-mono text-[10px] text-zinc-300">
           {JSON.stringify(health.data as Record<string, unknown>, null, 2)}
         </pre>

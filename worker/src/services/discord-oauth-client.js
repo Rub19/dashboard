@@ -173,7 +173,8 @@ async function supabaseRequest(env, path, options = {}) {
 async function getDiscordDataRow(env, userId) {
   const data = await supabaseRequest(
     env,
-    `/rest/v1/ethone_user_data?user_id=eq.${encodeURIComponent(userId)}&kind=eq.discord&limit=1`
+    `/rest/v1/ethone_user_data?user_id=eq.${encodeURIComponent(userId)}&kind=eq.discord&limit=1`,
+    { maxBytes: 65536 }
   );
   return Array.isArray(data) && data[0] ? data[0] : null;
 }
@@ -191,11 +192,13 @@ async function setDiscordDataRow(env, userId, payload) {
     await supabaseRequest(env, `/rest/v1/ethone_user_data?id=eq.${encodeURIComponent(existing.id)}`, {
       method: "PATCH",
       body: JSON.stringify({ data: payload, updated_at: new Date().toISOString() }),
+      maxBytes: 65536,
     });
   } else {
     await supabaseRequest(env, "/rest/v1/ethone_user_data", {
       method: "POST",
       body: JSON.stringify(row),
+      maxBytes: 65536,
     });
   }
 }

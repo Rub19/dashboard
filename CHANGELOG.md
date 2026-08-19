@@ -19,6 +19,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `worker/src/services/discord-oauth-client.js` : le connecteur Discord OAuth continue de stocker le profil même si le token ne peut pas être persisté (temporaire, en attendant la migration).
 - `ethone-next/components/Sidebar.tsx` : suppression de la bordure du panneau flottant de la sidebar pour unifier la couleur.
 - `supabase/migrations/202608190002_ethone_user_data_discord.sql` : ajout de `discord` dans la contrainte `ethone_user_data_kind_check`.
+- `worker/src/services/discord-oauth-client.js` : augmentation de `maxBytes` (64 Ko) pour les appels Supabase liés au stockage du profil Discord.
 - `ethone-next/public/sw.js` : cache Service Worker v354.
 - `ethone-next/lib/stores/sync.ts` : suppression des mises à jour redondantes quand un statut source ne change pas.
 - `ethone-next/lib/supabase.ts` : renforcement de `isMissingSchemaError` pour couvrir PGRST204, PGRST116, 42P01 et les messages "schema cache" / "Could not find".

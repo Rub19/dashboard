@@ -1015,6 +1015,7 @@ const v178_fr: ChangelogEntry = {
     "Worker : le connecteur Discord OAuth continue le stockage du profil même si le token ne peut pas être persisté.",
     "Sidebar : suppression de la bordure du panneau flottant pour unifier la couleur avec le reste de la barre.",
     "Supabase : migration ajoutant `discord` aux `kind` autorisés de `ethone_user_data`.",
+    "Worker : augmentation de `maxBytes` (64 Ko) pour les appels Supabase liés au profil Discord.",
     "Version : v1.7.1.",
   ],
 };
@@ -1042,6 +1043,7 @@ const v178_en: ChangelogEntry = {
     "Worker: Discord OAuth connector now continues storing the profile even if the token cannot be persisted.",
     "Sidebar: removed the floating panel border to unify the color with the rest of the bar.",
     "Supabase: migration adding `discord` to the allowed `kind` values in `ethone_user_data`.",
+    "Worker: increased `maxBytes` (64 KB) for Supabase calls related to Discord profile storage.",
     "Version: v1.7.1.",
   ],
 };
@@ -1069,6 +1071,7 @@ const v178_es: ChangelogEntry = {
     "Worker: el conector OAuth de Discord continúa almacenando el perfil aunque no se pueda persistir el token.",
     "Sidebar: eliminado el borde del panel flotante para unificar el color con el resto de la barra.",
     "Supabase: migración que añade `discord` a los valores `kind` permitidos en `ethone_user_data`.",
+    "Worker: aumento de `maxBytes` (64 KB) para las llamadas Supabase relacionadas con el perfil de Discord.",
     "Versión: v1.7.1.",
   ],
 };
@@ -1096,6 +1099,7 @@ const v178_de: ChangelogEntry = {
     "Worker: Discord-OAuth-Connector speichert das Profil auch dann, wenn das Token nicht persistiert werden kann.",
     "Sidebar: Rahmen des schwebenden Panels entfernt, um die Farbe mit dem Rest der Leiste zu vereinen.",
     "Supabase: Migration, die `discord` zu den erlaubten `kind`-Werten in `ethone_user_data` hinzufügt.",
+    "Worker: `maxBytes` (64 KB) für Supabase-Aufrufe im Zusammenhang mit der Discord-Profilspeicherung erhöht.",
     "Version: v1.7.1.",
   ],
 };

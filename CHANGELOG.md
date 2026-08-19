@@ -4,6 +4,14 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Scroll rétabli sur le dashboard Accueil (v1.6.6)**
+
+### Corrige
+- `ethone-next/components/DashboardOverview.tsx` : `overflow-y-auto` rétabli pour que le dashboard Accueil soit de nouveau scrollable.
+- Le widget `live` est de nouveau visible par défaut.
+- `e2e/zero-scroll.spec.ts` retiré car la page Accueil est scrollable.
+- Version `1.6.6`.
+
 **Barre de statut transparente au-dessus du fond d'écran (v1.6.5)**
 
 ### Corrige

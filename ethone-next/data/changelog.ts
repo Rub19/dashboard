@@ -5,6 +5,58 @@ export type ChangelogEntry = {
   items: string[];
 };
 
+const v166_fr: ChangelogEntry = {
+  version: "v1.6.6",
+  date: "2026-08-19",
+  title: "Scroll rétabli sur le dashboard Accueil",
+  items: [
+    "Le dashboard Accueil retrouve son défilement vertical (`overflow-y-auto`).",
+    "Le widget Live est de nouveau visible par défaut.",
+    "Le contenu du dashboard s'arrête au-dessus du Dock / de la barre de statut (`pb-6` interne).",
+    "Test Playwright `zero-scroll.spec.ts` retiré car la page Accueil est scrollable.",
+    "Version affichée en bas à droite : v1.6.6.",
+  ],
+};
+
+const v166_en: ChangelogEntry = {
+  version: "v1.6.6",
+  date: "2026-08-19",
+  title: "Home dashboard scrolling restored",
+  items: [
+    "The Home dashboard regains vertical scrolling (`overflow-y-auto`).",
+    "The Live widget is visible by default again.",
+    "Dashboard content stops above the Dock / status bar (`pb-6` internal padding).",
+    "Removed the `zero-scroll.spec.ts` Playwright test as the Home page is scrollable.",
+    "Version badge bottom-right: v1.6.6.",
+  ],
+};
+
+const v166_es: ChangelogEntry = {
+  version: "v1.6.6",
+  date: "2026-08-19",
+  title: "Scroll restaurado en el dashboard de inicio",
+  items: [
+    "El dashboard de inicio recupera el desplazamiento vertical (`overflow-y-auto`).",
+    "El widget Live vuelve a estar visible por defecto.",
+    "El contenido del dashboard se detiene encima del Dock / barra de estado (`pb-6` interno).",
+    "Test Playwright `zero-scroll.spec.ts` eliminado porque la página de inicio es scrollable.",
+    "Versión mostrada abajo a la derecha: v1.6.6.",
+  ],
+};
+
+const v166_de: ChangelogEntry = {
+  version: "v1.6.6",
+  date: "2026-08-19",
+  title: "Scrollen auf dem Home-Dashboard wiederhergestellt",
+  items: [
+    "Das Home-Dashboard erhält das vertikale Scrollen zurück (`overflow-y-auto`).",
+    "Das Live-Widget ist wieder standardmäßig sichtbar.",
+    "Dashboard-Inhalt stoppt oberhalb des Docks / der Statusleiste (internes `pb-6`).",
+    "Playwright-Test `zero-scroll.spec.ts` entfernt, da die Startseite scrollable ist.",
+    "Version unten rechts: v1.6.6.",
+  ],
+};
+
 const v165_fr: ChangelogEntry = {
   version: "v1.6.5",
   date: "2026-08-19",
@@ -349,8 +401,8 @@ const v322_fr: ChangelogEntry = {
 };
 
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
-  en: [v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
+  fr: [v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -396,7 +448,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
+  es: [v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -442,7 +494,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
+  de: [v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

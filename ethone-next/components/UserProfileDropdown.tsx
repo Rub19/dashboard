@@ -33,6 +33,7 @@ import {
   type ChangelogEntry,
 } from "@/data/changelog";
 import { useTopbarDropdown } from "@/lib/hooks/useTopbarDropdown";
+import { USER_STATUS_CONFIG } from "@/lib/settings";
 
 function initials(name?: string) {
   if (!name) return "E";
@@ -51,15 +52,6 @@ function formatDate(dateStr: string, locale = "fr") {
     day: "numeric",
   });
 }
-
-type StatusKey = "online" | "focus" | "away" | "dnd";
-
-const statusConfig: Record<StatusKey, { label: string; color: string }> = {
-  online: { label: "En ligne", color: "bg-emerald-400" },
-  focus: { label: "En Focus", color: "bg-purple-400" },
-  away: { label: "Absent", color: "bg-amber-400" },
-  dnd: { label: "NPD", color: "bg-rose-400" },
-};
 
 export default function UserProfileDropdown() {
   const i18n = useI18n();
@@ -89,12 +81,7 @@ export default function UserProfileDropdown() {
   const avatarUrl = discordAvatar || publicProfile?.avatar_url;
   const email = user?.email || "";
 
-  const currentStatus = useMemo<StatusKey>(() => {
-    if (settings.status === "busy") return "dnd";
-    if (settings.status === "invisible") return "online";
-    if (settings.status in statusConfig) return settings.status as StatusKey;
-    return "online";
-  }, [settings.status]);
+  const currentStatus = settings.status in USER_STATUS_CONFIG ? settings.status : "online";
 
   const [storage, setStorage] = useState({ used: 1.2, total: 10 });
 
@@ -127,8 +114,8 @@ export default function UserProfileDropdown() {
     setTimeout(() => setCopied(false), 1500);
   }
 
-  function setStatus(st: StatusKey) {
-    update({ status: st === "dnd" ? "busy" : st });
+  function setStatus(st: keyof typeof USER_STATUS_CONFIG) {
+    update({ status: st });
   }
 
   const changelog = useMemo<ChangelogEntry[]>(() => {
@@ -228,7 +215,7 @@ export default function UserProfileDropdown() {
             <User className="pointer-events-none h-4 w-4" />
           )}
           <span
-            className={`pointer-events-none absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-zinc-950 ${statusConfig[currentStatus].color}`}
+            className={`pointer-events-none absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-zinc-950 ${USER_STATUS_CONFIG[currentStatus as keyof typeof USER_STATUS_CONFIG].dot}`}
           />
         </div>
         <div className="pointer-events-none hidden flex-col text-left sm:flex">
@@ -273,7 +260,7 @@ export default function UserProfileDropdown() {
                   </span>
                 )}
                 <span
-                  className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-zinc-950 ${statusConfig[currentStatus].color}`}
+                  className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-zinc-950 ${USER_STATUS_CONFIG[currentStatus as keyof typeof USER_STATUS_CONFIG].dot}`}
                 />
               </div>
 
@@ -302,8 +289,8 @@ export default function UserProfileDropdown() {
             </div>
 
             {/* Status selector */}
-            <div className="flex items-center justify-between rounded-lg border border-white/[0.04] bg-white/[0.02] p-1 text-[10px]">
-              {(Object.keys(statusConfig) as StatusKey[]).map((st) => (
+            <div className="flex flex-wrap items-center gap-1 rounded-lg border border-white/[0.04] bg-white/[0.02] p-1 text-[10px]">
+              {(Object.keys(USER_STATUS_CONFIG) as (keyof typeof USER_STATUS_CONFIG)[]).map((st) => (
                 <button
                   key={st}
                   type="button"
@@ -311,16 +298,16 @@ export default function UserProfileDropdown() {
                     e.stopPropagation();
                     setStatus(st);
                   }}
-                  className={`flex items-center gap-1.5 rounded-lg px-2 py-1.5 transition-all ${
+                  className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 transition-all ${
                     currentStatus === st
                       ? "bg-white/[0.08] font-bold text-white shadow-sm"
                       : "text-zinc-400 hover:bg-white/[0.03] hover:text-white"
                   }`}
                 >
                   <span
-                    className={`h-1.5 w-1.5 rounded-lg ${statusConfig[st].color}`}
+                    className={`h-1.5 w-1.5 rounded-lg ${USER_STATUS_CONFIG[st].dot}`}
                   />
-                  <span>{statusConfig[st].label}</span>
+                  <span>{i18n(USER_STATUS_CONFIG[st].labelKey)}</span>
                 </button>
               ))}
             </div>

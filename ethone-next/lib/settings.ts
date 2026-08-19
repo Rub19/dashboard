@@ -195,6 +195,65 @@ export type Settings = {
   billsCategories: string[];
 };
 
+export const USER_STATUS_CONFIG: Record<
+  Settings["status"],
+  {
+    labelKey: string;
+    icon: string;
+    dot: string;
+    text: string;
+    bg: string;
+    ring: string;
+    presence: "online" | "away" | "dnd" | "offline";
+  }
+> = {
+  online: {
+    labelKey: "statusOnline",
+    icon: "circle",
+    dot: "bg-emerald-400",
+    text: "text-emerald-400",
+    bg: "bg-emerald-500/10",
+    ring: "ring-emerald-400/40",
+    presence: "online",
+  },
+  focus: {
+    labelKey: "statusFocus",
+    icon: "target",
+    dot: "bg-purple-400",
+    text: "text-purple-400",
+    bg: "bg-purple-500/10",
+    ring: "ring-purple-400/40",
+    presence: "online",
+  },
+  busy: {
+    labelKey: "statusBusy",
+    icon: "minus-circle",
+    dot: "bg-rose-400",
+    text: "text-rose-400",
+    bg: "bg-rose-500/10",
+    ring: "ring-rose-400/40",
+    presence: "dnd",
+  },
+  away: {
+    labelKey: "statusAway",
+    icon: "clock",
+    dot: "bg-amber-400",
+    text: "text-amber-400",
+    bg: "bg-amber-500/10",
+    ring: "ring-amber-400/40",
+    presence: "away",
+  },
+  invisible: {
+    labelKey: "statusInvisible",
+    icon: "eye-off",
+    dot: "bg-zinc-500",
+    text: "text-zinc-400",
+    bg: "bg-zinc-500/10",
+    ring: "ring-zinc-400/40",
+    presence: "offline",
+  },
+};
+
 export const DEFAULTS: Settings = {
   darkMode: true,
   theme: "default",

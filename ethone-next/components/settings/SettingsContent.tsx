@@ -6,7 +6,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSound } from "@/lib/sound";
 import { Icon } from "@/lib/icons";
-import { DEFAULTS } from "@/lib/settings";
+import { DEFAULTS, USER_STATUS_CONFIG } from "@/lib/settings";
 import { subscribePush, unsubscribePush } from "@/lib/push";
 import {
   BUILT_IN_PRESETS,
@@ -179,13 +179,10 @@ const BACKGROUND_QUALITY = [
   { id: "static", label: "Statique" },
 ] as const;
 
-const STATUSES = [
-  { id: "online", label: "statusOnline" },
-  { id: "busy", label: "statusBusy" },
-  { id: "focus", label: "statusFocus" },
-  { id: "away", label: "statusAway" },
-  { id: "invisible", label: "statusInvisible" },
-] as const;
+const STATUSES = Object.entries(USER_STATUS_CONFIG).map(([id, config]) => ({
+  id: id as keyof typeof USER_STATUS_CONFIG,
+  label: config.labelKey,
+}));
 
 const NAV_ITEMS = [
   { id: "home", label: "home" },

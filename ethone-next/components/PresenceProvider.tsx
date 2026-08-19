@@ -27,6 +27,7 @@ import {
   mergePresenceSignals,
   getDominantSignal,
 } from "@/lib/presence-engine";
+import { USER_STATUS_CONFIG } from "@/lib/settings";
 
 export type PresenceStatus = "online" | "away" | "dnd" | "offline";
 
@@ -63,11 +64,8 @@ type PresenceContextValue = {
 const PresenceContext = createContext<PresenceContextValue | null>(null);
 
 function normalizeStatus(status: string): PresenceStatus {
-  if (status === "busy") return "dnd";
-  if (status === "focus") return "online";
-  if (status === "invisible") return "offline";
-  if (status === "online" || status === "away" || status === "dnd" || status === "offline") {
-    return status;
+  if (status in USER_STATUS_CONFIG) {
+    return USER_STATUS_CONFIG[status as keyof typeof USER_STATUS_CONFIG].presence;
   }
   return "online";
 }

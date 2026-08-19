@@ -5,39 +5,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
 import BentoCard from "@/components/BentoCard";
 import { cn } from "@/lib/utils";
-import { type SessionMode } from "@/lib/settings";
-
-const STATUSES: {
-  id: "online" | "focus" | "busy" | "invisible";
-  icon: string;
-  label: string;
-  classes: { text: string; bg: string; ring: string };
-}[] = [
-  {
-    id: "online",
-    icon: "circle",
-    label: "statusOnline",
-    classes: { text: "text-emerald-400", bg: "bg-emerald-500/10", ring: "ring-emerald-400/40" },
-  },
-  {
-    id: "focus",
-    icon: "target",
-    label: "statusFocus",
-    classes: { text: "text-sky-400", bg: "bg-sky-500/10", ring: "ring-sky-400/40" },
-  },
-  {
-    id: "busy",
-    icon: "minus-circle",
-    label: "statusBusy",
-    classes: { text: "text-amber-400", bg: "bg-amber-500/10", ring: "ring-amber-400/40" },
-  },
-  {
-    id: "invisible",
-    icon: "eye-off",
-    label: "statusInvisible",
-    classes: { text: "text-violet-400", bg: "bg-violet-500/10", ring: "ring-violet-400/40" },
-  },
-];
+import { type SessionMode, USER_STATUS_CONFIG } from "@/lib/settings";
 
 const AURAS = ["classic", "boreal", "cyberpunk", "eclipse", "emerald", "mineral"] as const;
 
@@ -67,20 +35,20 @@ export default function SystemControlCard({ className = "", scrollable = true }:
       <div className="flex flex-1 flex-col justify-between gap-3">
         <div className="space-y-2">
           <p className="text-xs font-medium text-[var(--muted)]">{i18n("presence")}</p>
-          <div className="grid grid-cols-2 gap-2">
-            {STATUSES.map((s) => {
-              const active = settings.status === s.id;
+          <div className="grid grid-cols-3 gap-2">
+            {Object.entries(USER_STATUS_CONFIG).map(([id, config]) => {
+              const active = settings.status === id;
               return (
                 <button
-                  key={s.id}
+                  key={id}
                   type="button"
-                  onClick={() => update({ status: s.id })}
-                  className={`flex items-center justify-center gap-1.5 rounded-lg border border-white/[0.08] px-2 py-2 text-xs font-medium transition-all ${
-                    active ? `${s.classes.bg} ${s.classes.text} ring-1 ${s.classes.ring}` : "bg-white/[0.02] text-zinc-400 hover:bg-white/[0.04]"
+                  onClick={() => update({ status: id as keyof typeof USER_STATUS_CONFIG })}
+                  className={`flex items-center justify-center gap-1.5 rounded-lg border border-white/[0.08] px-2 py-2 text-[10px] font-medium transition-all ${
+                    active ? `${config.bg} ${config.text} ring-1 ${config.ring}` : "bg-white/[0.02] text-zinc-400 hover:bg-white/[0.04]"
                   }`}
                 >
-                  <Icon name={s.icon} className="h-3.5 w-3.5" />
-                  {i18n(s.label)}
+                  <Icon name={config.icon} className="h-3.5 w-3.5" />
+                  {i18n(config.labelKey)}
                 </button>
               );
             })}

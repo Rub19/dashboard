@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.25 — 2026-08-20
+
+**Pochette Spotify plus fiable et rafraîchissement à chaque changement de titre**
+
+- `lib/hooks/useNowPlaying.ts` : polling adaptatif — toutes les 5 secondes pendant la lecture, intervalle normal à l'arrêt.
+- Rafraîchissement forcé de `useNowPlaying` au retour sur l'onglet (`visibilitychange`) et au focus de la fenêtre.
+- `worker/src/services/spotify-oauth-client.js` et `lanyard-client.js` : retour d'un tableau `covers` avec toutes les tailles d'album pour essayer plusieurs URLs.
+- `components/SafeImage.tsx` : supporte un tableau `candidates` pour tenter plusieurs sources d'image.
+- `components/DynamicIslandContainer.tsx` : utilise les candidats `cover`, `artworkUrl` et `covers` pour la pochette compacte et étendue.
+- Version `v1.7.25`, cache PWA `v393`.
+
 ## v1.7.24 — 2026-08-20
 
 **Réorganisation des onglets Settings et contenus filtrés par onglet**

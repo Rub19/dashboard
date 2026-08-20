@@ -15,6 +15,7 @@ export type NowPlaying = {
   album?: string;
   cover?: string;
   artworkUrl?: string;
+  covers?: string[];
   progressMs?: number;
   durationMs?: number;
   volumePercent?: number;

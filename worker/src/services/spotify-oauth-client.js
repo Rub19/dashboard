@@ -74,6 +74,10 @@ function normalizeTrack(payload) {
   const item = payload?.item;
   if (!item) return Object.freeze({ playing: false, track: null });
   const artists = Array.isArray(item.artists) ? item.artists.map((artist) => safeText(artist?.name, 80)).filter(Boolean).join(", ") : "";
+  const images = Array.isArray(item.album?.images) ? item.album.images : [];
+  const covers = images
+    .map((img) => safePublicUrl(img?.url, ["scdn.co", "spotifycdn.com", "spotify.com"]))
+    .filter(Boolean);
   return Object.freeze({
     playing: payload.is_playing === true,
     track: Object.freeze({
@@ -81,7 +85,8 @@ function normalizeTrack(payload) {
       title: safeText(item.name, 180),
       artist: artists.slice(0, 180),
       album: safeText(item.album?.name, 180),
-      artworkUrl: safePublicUrl(item.album?.images?.[1]?.url ?? item.album?.images?.[0]?.url, ["scdn.co", "spotifycdn.com", "spotify.com"]),
+      artworkUrl: covers[1] || covers[0] || undefined,
+      covers,
       progressMs: safeNumber(payload.progress_ms, 0, 86400000),
       durationMs: safeNumber(item.duration_ms, 0, 86400000),
       volumePercent: typeof payload?.device?.volume_percent === "number" ? Math.max(0, Math.min(100, payload.device.volume_percent)) : undefined,

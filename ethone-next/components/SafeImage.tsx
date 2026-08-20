@@ -1,11 +1,13 @@
 "use client";
 
+import { useMemo } from "react";
 import ClientImage from "@/components/ClientImage";
 import { Music } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type SafeImageProps = {
   src?: string | null;
+  candidates?: (string | null | undefined)[];
   alt?: string;
   size?: number;
   fill?: boolean;
@@ -20,6 +22,7 @@ export type SafeImageProps = {
 
 export default function SafeImage({
   src,
+  candidates,
   alt = "",
   size = 48,
   fill = false,
@@ -63,9 +66,19 @@ export default function SafeImage({
     );
   }
 
+  const imageCandidates = useMemo(
+    () =>
+      candidates
+        ? (candidates.filter((c) => typeof c === "string" && c.length > 0) as string[])
+        : src
+          ? [src]
+          : undefined,
+    [candidates, src]
+  );
+
   return (
     <ClientImage
-      src={src || undefined}
+      candidates={imageCandidates}
       alt={alt}
       fill={fill}
       width={fill ? undefined : size}

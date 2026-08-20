@@ -26,12 +26,18 @@ function getArtworkUrl(np: ApiData | null): string | undefined {
 export function useNowPlaying(pollMs = 30000) {
   const { settings } = useSettings();
   const { performanceMode = "normal" } = settings;
-  const effectivePollMs = performanceMode === "low" ? 120000 : pollMs;
+  const basePollMs = performanceMode === "low" ? 120000 : pollMs;
 
   const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [refreshMs, setRefreshMs] = useState(basePollMs);
   const lastAtRef = useRef(0);
+
+  useEffect(() => {
+    const active = nowPlaying?.isPlaying === true;
+    setRefreshMs(active ? Math.min(5000, basePollMs) : basePollMs);
+  }, [nowPlaying?.isPlaying, basePollMs]);
 
   const path = useMemo(() => {
     const source = settings.liveNowPlayingSource;
@@ -79,6 +85,13 @@ export function useNowPlaying(pollMs = 30000) {
               album: asStr(track.album ?? data.album),
               cover: asStr(track.cover ?? track.artworkUrl ?? track.artwork ?? data.cover ?? data.artworkUrl ?? data.artwork),
               artworkUrl: getArtworkUrl(data) || asStr(track.artworkUrl ?? track.artwork ?? track.cover),
+              covers: (() => {
+                const list = track.covers ?? data.covers;
+                if (!Array.isArray(list)) return undefined;
+                return list
+                  .map((c) => asStr(c))
+                  .filter((c) => typeof c === "string" && c.length > 0) as string[];
+              })(),
               progressMs: asNum(track.progressMs ?? data.progressMs),
               durationMs: asNum(track.durationMs ?? data.durationMs),
               volumePercent: typeof track.volumePercent === "number" ? Math.max(0, Math.min(100, track.volumePercent)) : undefined,
@@ -96,12 +109,25 @@ export function useNowPlaying(pollMs = 30000) {
     }
 
     load();
-    const interval = setInterval(load, effectivePollMs);
+    const interval = setInterval(load, refreshMs);
+
+    function onVisible() {
+      if (document.visibilityState === "visible") load();
+    }
+    function onFocus() {
+      load();
+    }
+
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", onFocus);
+
     return () => {
       cancelled = true;
       clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", onFocus);
     };
-  }, [path, effectivePollMs]);
+  }, [path, refreshMs]);
 
   const refetch = () => {
     lastAtRef.current = 0;

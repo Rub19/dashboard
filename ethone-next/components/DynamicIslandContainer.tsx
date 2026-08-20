@@ -133,7 +133,7 @@ function SpotifyCompact({
       </div>
 
       <SafeImage
-        src={track.cover || track.artworkUrl}
+        candidates={[track.cover, track.artworkUrl, ...(track.covers || [])]}
         alt={track.title || "Spotify"}
         size={20}
         className="h-5 w-5 shrink-0 rounded-md object-cover"
@@ -725,7 +725,7 @@ export default function DynamicIslandContainer() {
 
                 <div className="flex items-center gap-4">
                   <SafeImage
-                    src={nowPlaying?.cover || nowPlaying?.artworkUrl}
+                    candidates={[nowPlaying?.cover, nowPlaying?.artworkUrl, ...(nowPlaying?.covers || [])]}
                     alt={nowPlaying?.title || "Spotify"}
                     size={56}
                     className="h-14 w-14 shrink-0 rounded-xl object-cover shadow-lg ring-1 ring-white/10"

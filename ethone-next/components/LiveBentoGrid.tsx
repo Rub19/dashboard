@@ -3,6 +3,7 @@
 import LiveStats from "@/components/LiveStats";
 import GamingCard from "@/components/GamingCard";
 import SocialDiscordCard from "@/components/SocialDiscordCard";
+import RiotGamingCard from "@/components/RiotGamingCard";
 import WeatherWidget, { type WeatherData } from "@/components/WeatherWidget";
 import { cn } from "@/lib/utils";
 import type { NowPlaying, LanyardPresence, LiveRecord } from "@/lib/hooks/useLiveData";
@@ -12,6 +13,10 @@ export type LiveBentoGridProps = {
   lanyard?: LanyardPresence | null;
   weather?: Record<string, unknown> | null;
   minecraft?: Record<string, unknown> | null;
+  valorant?: Record<string, unknown>[] | null;
+  lol?: Record<string, unknown>[] | null;
+  liveTrackerRiotName?: string | null;
+  liveTrackerRiotTag?: string | null;
   records?: LiveRecord[];
   updatedAt?: Date | null;
   loading?: boolean;
@@ -25,6 +30,10 @@ export default function LiveBentoGrid({
   lanyard,
   weather,
   minecraft,
+  valorant,
+  lol,
+  liveTrackerRiotName,
+  liveTrackerRiotTag,
   records,
   updatedAt,
   loading,
@@ -61,6 +70,24 @@ export default function LiveBentoGrid({
         <SocialDiscordCard
           lanyard={lanyard}
           nowPlaying={nowPlaying}
+          loading={loading}
+          error={error}
+          className={cn("col-span-12 lg:col-span-4", childHeight)}
+        />
+        <RiotGamingCard
+          game="valorant"
+          matches={valorant}
+          playerName={liveTrackerRiotName}
+          playerTag={liveTrackerRiotTag}
+          loading={loading}
+          error={error}
+          className={cn("col-span-12 lg:col-span-4", childHeight)}
+        />
+        <RiotGamingCard
+          game="lol"
+          matches={lol}
+          playerName={liveTrackerRiotName}
+          playerTag={liveTrackerRiotTag}
           loading={loading}
           error={error}
           className={cn("col-span-12 lg:col-span-4", childHeight)}

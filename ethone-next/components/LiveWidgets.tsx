@@ -16,6 +16,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import ContextMenu from "@/components/ContextMenu";
 import Select from "@/components/ui/Select";
 import Slider from "@/components/ui/Slider";
+import { RiotGamingCardContent } from "@/components/RiotGamingCard";
 
 const STATUS = {
   connected: "text-emerald-400",
@@ -212,6 +213,7 @@ export default function LiveWidgets({
     weather,
     bills,
     loading,
+    error,
     lastfmPeriod,
     setLastfmPeriod,
     lastfmTopArtists,
@@ -222,6 +224,10 @@ export default function LiveWidgets({
     steamAchievements,
     minecraft,
     minecraftNameHistory,
+    valorant,
+    lol,
+    liveTrackerRiotName,
+    liveTrackerRiotTag,
   } = useLiveData();
   const { settings, update } = useSettings();
   const { error: showError } = useToast();
@@ -1107,6 +1113,7 @@ export default function LiveWidgets({
     const isApex = record.source === "apex";
     const isWeather = record.source === "weather";
     const isMinecraft = record.source === "minecraft";
+    const isRiot = record.source === "valorant" || record.source === "lol";
     const hasImageHeader = (isYoutube || isTracker || isApex) && record.image;
 
     return (
@@ -1146,7 +1153,7 @@ export default function LiveWidgets({
           <div className="absolute inset-0 h-full" style={{ backfaceVisibility: "hidden" }}>
             <div
               className={`h-full min-w-0 overflow-hidden rounded-[var(--panel-radius)] shadow-sm transition-colors duration-150 ${
-                isWeather ? "relative" : `border bg-gradient-to-br p-4 ${gradient}`
+                isWeather || isRiot ? "relative" : `border bg-gradient-to-br p-4 ${gradient}`
               }`}
             >
               <div className={`absolute right-3 top-3 z-10 h-2.5 w-2.5 rounded-full ${STATUS_DOT[record.status]}`} />
@@ -1234,17 +1241,30 @@ export default function LiveWidgets({
 
               {isMinecraft && renderMinecraftFront(record)}
 
-              {!isSpotify && !isDiscord && !isWeather && !isMinecraft && !hasImageHeader && (
+              {isRiot && (
+                <RiotGamingCardContent
+                  game={record.source as "valorant" | "lol"}
+                  matches={record.source === "valorant" ? valorant : lol}
+                  playerName={liveTrackerRiotName}
+                  playerTag={liveTrackerRiotTag}
+                  loading={loading}
+                  error={error}
+                  compact
+                  className="h-full"
+                />
+              )}
+
+              {!isSpotify && !isDiscord && !isWeather && !isMinecraft && !isRiot && !hasImageHeader && (
                 <div className="mb-2 flex items-center gap-2">
                   <span className={`text-sm font-semibold uppercase tracking-wider ${STATUS[record.status]}`}>{record.label}</span>
                 </div>
               )}
 
               <div className="space-y-0.5">
-                {!isSpotify && !isDiscord && !isWeather && !isMinecraft && !hasImageHeader && <p className="truncate font-medium">{record.title}</p>}
+                {!isSpotify && !isDiscord && !isWeather && !isMinecraft && !isRiot && !hasImageHeader && <p className="truncate font-medium">{record.title}</p>}
                 {isSpotify && <p className="truncate text-lg font-bold leading-tight">{record.title}</p>}
-                {!isDiscord && !isWeather && !isMinecraft && record.subtitle && <p className="truncate text-sm leading-tight text-[var(--muted)]">{record.subtitle}</p>}
-                {!isDiscord && !isWeather && !isMinecraft && record.meta && <p className="truncate text-xs leading-tight text-[var(--muted)]">{record.meta}</p>}
+                {!isDiscord && !isWeather && !isMinecraft && !isRiot && record.subtitle && <p className="truncate text-sm leading-tight text-[var(--muted)]">{record.subtitle}</p>}
+                {!isDiscord && !isWeather && !isMinecraft && !isRiot && record.meta && <p className="truncate text-xs leading-tight text-[var(--muted)]">{record.meta}</p>}
               </div>
 
               {isSpotify && nowPlaying?.isPlaying && (

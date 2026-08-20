@@ -70,6 +70,7 @@ export default function SpotifyCompact({
         iconClassName={cn("h-3 w-3", playing ? "text-emerald-400" : "text-zinc-400")}
         loading="eager"
         priority
+        timeoutMs={3000}
       />
 
       <AudioWave playing={playing} className="shrink-0" />

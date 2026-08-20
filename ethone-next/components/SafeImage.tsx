@@ -18,6 +18,7 @@ export type SafeImageProps = {
   priority?: boolean;
   sizes?: string;
   loading?: "eager" | "lazy";
+  timeoutMs?: number;
 };
 
 export default function SafeImage({
@@ -33,6 +34,7 @@ export default function SafeImage({
   priority = false,
   sizes,
   loading,
+  timeoutMs,
 }: SafeImageProps) {
   let fallbackNode: React.ReactNode = null;
 
@@ -88,6 +90,7 @@ export default function SafeImage({
       fallback={fallbackNode}
       priority={priority}
       loading={loading}
+      timeoutMs={timeoutMs}
     />
   );
 }

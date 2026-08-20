@@ -70,11 +70,27 @@ async function validAccessToken(env, userId, clientId) {
   return refreshed.accessToken;
 }
 
+function imageSources(item) {
+  const raw = [];
+  if (Array.isArray(item.album?.images)) raw.push(...item.album.images);
+  if (Array.isArray(item.images)) raw.push(...item.images);
+  if (Array.isArray(item.show?.images)) raw.push(...item.show.images);
+  return raw;
+}
+
+function sortBySize(images) {
+  return [...images].sort((a, b) => {
+    const areaA = (a.width || 0) * (a.height || 0);
+    const areaB = (b.width || 0) * (b.height || 0);
+    return areaB - areaA;
+  });
+}
+
 function normalizeTrack(payload) {
   const item = payload?.item;
   if (!item) return Object.freeze({ playing: false, track: null });
   const artists = Array.isArray(item.artists) ? item.artists.map((artist) => safeText(artist?.name, 80)).filter(Boolean).join(", ") : "";
-  const images = Array.isArray(item.album?.images) ? item.album.images : [];
+  const images = sortBySize(imageSources(item));
   const covers = images
     .map((img) => safePublicUrl(img?.url, ["scdn.co", "spotifycdn.com", "spotify.com"]))
     .filter(Boolean);
@@ -84,7 +100,7 @@ function normalizeTrack(payload) {
       id: safeText(item.id, 64),
       title: safeText(item.name, 180),
       artist: artists.slice(0, 180),
-      album: safeText(item.album?.name, 180),
+      album: safeText(item.album?.name ?? item.show?.name, 180),
       artworkUrl: covers[1] || covers[0] || undefined,
       covers,
       progressMs: safeNumber(payload.progress_ms, 0, 86400000),
@@ -93,6 +109,26 @@ function normalizeTrack(payload) {
       deviceId: safeText(payload?.device?.id, 64) || undefined
     })
   });
+}
+
+async function fetchAlbumImages(env, accessToken, albumId) {
+  if (!albumId) return [];
+  try {
+    const response = await requestExternal(new URL(`/v1/albums/${encodeURIComponent(albumId)}`, API_ORIGIN), {
+      env,
+      expectedOrigin: API_ORIGIN,
+      service: "spotify",
+      headers: { authorization: `Bearer ${accessToken}` },
+      retries: 0,
+      maxBytes: 64 * 1024
+    });
+    const images = Array.isArray(response.data?.images) ? response.data.images : [];
+    return sortBySize(images)
+      .map((img) => safePublicUrl(img?.url, ["scdn.co", "spotifycdn.com", "spotify.com"]))
+      .filter(Boolean);
+  } catch {
+    return [];
+  }
 }
 
 export async function getSpotifyNowPlaying(env, userId, clientId) {
@@ -106,7 +142,22 @@ export async function getSpotifyNowPlaying(env, userId, clientId) {
     retries: 1,
     maxBytes: 256 * 1024
   });
-  return normalizeTrack(response.data);
+  const normalized = normalizeTrack(response.data);
+  const track = normalized.track;
+  if (track && track.covers.length === 0 && response.data?.item?.album?.id) {
+    const albumCovers = await fetchAlbumImages(env, accessToken, response.data.item.album.id);
+    if (albumCovers.length > 0) {
+      return Object.freeze({
+        playing: normalized.playing,
+        track: Object.freeze({
+          ...track,
+          artworkUrl: albumCovers[1] || albumCovers[0],
+          covers: albumCovers
+        })
+      });
+    }
+  }
+  return normalized;
 }
 
 const CONTROL_METHODS = Object.freeze({ play: "PUT", pause: "PUT", next: "POST", previous: "POST" });

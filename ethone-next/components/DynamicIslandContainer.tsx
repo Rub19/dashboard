@@ -448,6 +448,7 @@ export default function DynamicIslandContainer() {
   const [selectedView, setSelectedView] = useState<View | null>(null);
   const [activeViews, setActiveViews] = useState<View[]>([]);
   const prevActiveRef = useRef<Set<View>>(new Set());
+  const isInitialMount = useRef(true);
   const collapseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const clock = useNowClock();
@@ -490,6 +491,19 @@ export default function DynamicIslandContainer() {
 
     const nextActiveViews = VIEW_ORDER.filter((v) => nextActive.has(v));
     setActiveViews(nextActiveViews);
+
+    // On initial mount/refresh, select the first active view but do not
+    // auto-expand the island. Only expand when an activity starts while
+    // the component is already mounted.
+    if (isInitialMount.current) {
+      if (!selectedView && nextActive.size > 0) {
+        setSelectedView(nextActiveViews[0] ?? null);
+      }
+      if (nextActive.size === 0) setExpanded(false);
+      prevActiveRef.current = nextActive;
+      isInitialMount.current = false;
+      return;
+    }
 
     const newViews = VIEW_ORDER.filter(
       (v) => nextActive.has(v) && !prevActiveRef.current.has(v),

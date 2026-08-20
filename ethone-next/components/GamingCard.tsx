@@ -56,7 +56,7 @@ export default function GamingCard({
     const list: string[] = [];
     if (profile?.avatarUrl) list.push(profile.avatarUrl);
     if (profile?.uuidWithDashes) {
-      list.push(`https://nmsr.nickac.dev/face/${encodeURIComponent(profile.uuidWithDashes)}?width=128&height=128`);
+      list.push(`https://nmsr.nickac.dev/face/${encodeURIComponent(profile.uuidWithDashes)}`);
       list.push(`https://crafatar.com/avatars/${profile.uuidWithDashes}?overlay&size=128`);
     }
     if (playerName) list.push(`https://mc-heads.net/avatar/${encodeURIComponent(playerName)}/128`);
@@ -67,7 +67,7 @@ export default function GamingCard({
     const list: string[] = [];
     if (profile?.bodyUrl) list.push(profile.bodyUrl);
     if (profile?.uuidWithDashes) {
-      list.push(`https://nmsr.nickac.dev/fullbody/${encodeURIComponent(profile.uuidWithDashes)}?width=256&height=256`);
+      list.push(`https://nmsr.nickac.dev/fullbody/${encodeURIComponent(profile.uuidWithDashes)}`);
       list.push(`https://crafatar.com/renders/body/${profile.uuidWithDashes}?overlay&scale=10&size=256`);
     }
     if (playerName) list.push(`https://mc-heads.net/body/${encodeURIComponent(playerName)}/200`);
@@ -143,7 +143,7 @@ export default function GamingCard({
   return (
     <TiltCard
       className={cn(
-        "flex h-full min-h-0 flex-col v8-panel p-4 shadow-xl shadow-black/50 backdrop-blur-2xl transition-all hover:border-white/15",
+        "flex h-full min-h-0 flex-col v8-panel bg-gradient-to-br from-emerald-950/40 via-green-900/10 to-black/20 p-4 shadow-xl shadow-black/50 backdrop-blur-2xl transition-all hover:border-emerald-500/25",
         className
       )}
     >

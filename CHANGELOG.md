@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.17 — 2026-08-20
+
+**Carte Gaming Minecraft : skin visible et dégradé vert**
+
+### Corrige
+- `components/GamingCard.tsx` : suppression des paramètres de taille NMSR (`?width=...&height=...`) dans les URLs de fallback, qui provoquaient des erreurs 400.
+- Ajout d'un dégradé vert/émeraude sur la carte Gaming pour matcher le thème Minecraft.
+
+### Version
+- `ethone-next/package.json`, `package-lock.json`, `components/UserProfileDropdown.tsx`, `public/sw.js` : version `v1.7.17` et cache PWA `v385`.
+
 ## v1.7.16 — 2026-08-20
 
 **Skin, cape et historique Minecraft**

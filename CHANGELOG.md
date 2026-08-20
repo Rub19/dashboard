@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.19 — 2026-08-20
+
+**Espacement onglets / contenu dans Settings**
+
+- `components/settings/SettingsLayout.tsx` : ajout d'un `pt-4` au contenu pour aérer l'espace entre la barre d'onglets et le panneau en dessous.
+- `package.json`, `package-lock.json`, `UserProfileDropdown.tsx`, `public/sw.js` : version `v1.7.19`, cache `v387`.
+
 ## v1.7.18 — 2026-08-20
 
 **Carte Discord du home : couleurs Discord, pp et cover**

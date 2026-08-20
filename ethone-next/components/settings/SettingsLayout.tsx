@@ -286,7 +286,7 @@ export default function SettingsLayout() {
         })}
       </div>
 
-      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll pr-1">
+      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll pt-4 pr-1">
       <AnimatePresence mode="wait">
         {activeTab === "overview" ? (
           <motion.div

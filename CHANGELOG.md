@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.44 — 2026-08-20
+
+**Alignement de la couleur d'accent sur le bouton de connexion**
+
+- `app/globals.css` : les tokens par défaut `--accent-primary`, `--glow-color`, `--border-active`, `--accent-secondary` et `--accent-soft` sont maintenant alignés sur la couleur d'accent violette par défaut, au lieu du vert émeraude du thème Obsidian.
+- Le bouton "Envoyer le code" et les boutons de connexion utilisent désormais la même couleur d'accent que les onglets OTP.
+- Version `v1.7.44`, cache PWA `v412`.
+
 ## v1.7.43 — 2026-08-20
 
 **Correction de la persistance du thème et de la couleur d'accent**

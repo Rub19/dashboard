@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.14 — 2026-08-20
+
+**Refonte du changelog : centrage, animation et couleurs**
+
+### Corrige / Améliore
+- `ethone-next/components/ChangelogList.tsx` : nouveau composant de cartes de changelog unifiées, animées, centrées et colorées.
+- `ethone-next/components/UserProfileDropdown.tsx` : le modal changelog est recentré, avec une transition spring/bounce et un overlay fade plus marqué.
+- Couleurs par catégorie de note : bleu pour les corrections, vert pour les nouveautés, ambre pour les changements, violet pour les versions.
+- `ethone-next/app/changelog/page.tsx` : page recentrée (`max-w-3xl`) avec apparition animée des entrées.
+
+### Version
+- `ethone-next/package.json`, `package-lock.json`, `components/UserProfileDropdown.tsx`, `public/sw.js` : version `v1.7.14` et cache PWA `v382`.
+
 ## v1.7.13 — 2026-08-20
 
 **Correction de la cover Spotify dans la Dynamic Island**

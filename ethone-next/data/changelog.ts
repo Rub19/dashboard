@@ -1604,6 +1604,58 @@ const v187_de: ChangelogEntry = {
   ],
 };
 
+const v191_fr: ChangelogEntry = {
+  version: "v1.7.14",
+  date: "2026-08-20",
+  title: "Refonte du changelog : centrage, animation et couleurs",
+  items: [
+    "Nouveau composant `components/ChangelogList.tsx` : cartes unifiées, animées, centrées et colorées.",
+    "Le modal changelog est recentré, passe en spring/bounce et utilise un overlay fade plus marqué.",
+    "Les notes prennent des icônes colorées : `wrench` bleu pour les corrections, `sparkles` vert pour les nouveautés, `refresh-cw` ambre pour les changements, `tag` violet pour les versions.",
+    "La page `/changelog` est recentrée (`max-w-3xl`) et chaque entrée défile en douceur.",
+    "Version mise à jour en v1.7.14.",
+  ],
+};
+
+const v191_en: ChangelogEntry = {
+  version: "v1.7.14",
+  date: "2026-08-20",
+  title: "Changelog redesign: centered, animated, and colored",
+  items: [
+    "New `components/ChangelogList.tsx` component: unified, animated, centered, and color-coded cards.",
+    "The changelog modal is re-centered, uses a spring/bounce transition, and a stronger fade overlay.",
+    "Items get colored icons: `wrench` blue for fixes, `sparkles` green for new features, `refresh-cw` amber for changes, `tag` purple for version notes.",
+    "The `/changelog` page is re-centered (`max-w-3xl`) and each entry fades in smoothly.",
+    "Updated version to v1.7.14.",
+  ],
+};
+
+const v191_es: ChangelogEntry = {
+  version: "v1.7.14",
+  date: "2026-08-20",
+  title: "Rediseño del changelog: centrado, animado y con colores",
+  items: [
+    "Nuevo componente `components/ChangelogList.tsx`: tarjetas unificadas, animadas, centradas y con códigos de color.",
+    "El modal de changelog está recentrado, usa una transición spring/bounce y un overlay fade más marcado.",
+    "Las notas usan iconos de colores: `wrench` azul para correcciones, `sparkles` verde para novedades, `refresh-cw` ámbar para cambios, `tag` morado para notas de versión.",
+    "La página `/changelog` está recentrada (`max-w-3xl`) y cada entrada aparece suavemente.",
+    "Versión actualizada a v1.7.14.",
+  ],
+};
+
+const v191_de: ChangelogEntry = {
+  version: "v1.7.14",
+  date: "2026-08-20",
+  title: "Changelog-Redesign: zentriert, animiert und farbig",
+  items: [
+    "Neue `components/ChangelogList.tsx`-Komponente: vereinheitlichte, animierte, zentrierte und farbige Karten.",
+    "Der Changelog-Modal ist neu zentriert, nutzt eine Spring/Bounce-Transition und einen stärkeren Fade-Overlay.",
+    "Einträge erhalten farbige Icons: `wrench` blau für Korrekturen, `sparkles` grün für Neuheiten, `refresh-cw` bernsteinfarben für Änderungen, `tag` lila für Versionshinweise.",
+    "Die `/changelog`-Seite ist neu zentriert (`max-w-3xl`) und jeder Eintrag blendet sanft ein.",
+    "Version auf v1.7.14 aktualisiert.",
+  ],
+};
+
 const v190_fr: ChangelogEntry = {
   version: "v1.7.13",
   date: "2026-08-20",
@@ -1753,8 +1805,8 @@ const v188_de: ChangelogEntry = {
 };
 
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v190_fr, v189_fr, v188_fr, v187_fr, v186_fr, v185_fr, v184_fr, v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
-  en: [v190_en, v189_en, v188_en, v187_en, v186_en, v185_en, v184_en, v183_en, v182_en, v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
+  fr: [v191_fr, v190_fr, v189_fr, v188_fr, v187_fr, v186_fr, v185_fr, v184_fr, v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v191_en, v190_en, v189_en, v188_en, v187_en, v186_en, v185_en, v184_en, v183_en, v182_en, v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -1800,7 +1852,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [v190_es, v189_es, v188_es, v187_es, v186_es, v185_es, v184_es, v183_es, v182_es, v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
+  es: [v191_es, v190_es, v189_es, v188_es, v187_es, v186_es, v185_es, v184_es, v183_es, v182_es, v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -1846,7 +1898,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [v190_de, v189_de, v188_de, v187_de, v186_de, v185_de, v184_de, v183_de, v182_de, v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
+  de: [v191_de, v190_de, v189_de, v188_de, v187_de, v186_de, v185_de, v184_de, v183_de, v182_de, v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

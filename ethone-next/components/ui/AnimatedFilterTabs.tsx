@@ -39,7 +39,7 @@ export default function AnimatedFilterTabs({
             key={tab.id}
             type="button"
             onClick={() => onChange(tab.id)}
-            className={`relative px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors duration-150 flex items-center gap-1.5 select-none z-10 ${
+            className={`relative shrink-0 px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors duration-150 flex items-center gap-1 select-none z-10 ${
               isActive ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             }`}
           >

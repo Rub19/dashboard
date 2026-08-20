@@ -164,6 +164,31 @@ export function resolveTheme(theme: string): { theme: PremiumTheme; dark: boolea
   return { theme: resolved, dark: true };
 }
 
+/** Compute a black-or-white contrast color for an arbitrary accent hex. */
+export function getContrastColor(hex: string): "#000000" | "#FFFFFF" {
+  const normalized = hex.replace("#", "");
+  const r = parseInt(normalized.substring(0, 2), 16) || 0;
+  const g = parseInt(normalized.substring(2, 4), 16) || 0;
+  const b = parseInt(normalized.substring(4, 6), 16) || 0;
+  const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+  return yiq >= 128 ? "#000000" : "#FFFFFF";
+}
+
+/** Apply a user-selected accent on top of a theme. */
+export function applyAccent(root: HTMLElement, accent: string): void {
+  const soft = accent + "33";
+  const glow = `color-mix(in srgb, ${accent} 25%, transparent)`;
+  const secondary = `color-mix(in srgb, ${accent} 70%, white)`;
+  const borderActive = `color-mix(in srgb, ${accent} 35%, transparent)`;
+  root.style.setProperty("--accent", accent);
+  root.style.setProperty("--accent-primary", accent);
+  root.style.setProperty("--accent-soft", soft);
+  root.style.setProperty("--glow-color", glow);
+  root.style.setProperty("--accent-contrast", getContrastColor(accent));
+  root.style.setProperty("--accent-secondary", secondary);
+  root.style.setProperty("--border-active", borderActive);
+}
+
 /**
  * Apply a premium theme directly to `document.documentElement`.
  * Unknown IDs fall back to `obsidian`. No React re-render required.

@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.43 — 2026-08-20
+
+**Correction de la persistance du thème et de la couleur d'accent**
+
+- `ProfileSync` persisté via `localStorage` : un profil ne synchronise sa couleur/widget par défaut qu'une seule fois par session/browser, au lieu d'écraser l'accent utilisateur à chaque refresh.
+- `SettingsProvider` et `HtmlLang` appliquent désormais l'accent utilisateur sur les tokens `--accent-primary`, `--glow-color`, `--accent-contrast`, `--accent-secondary` et `--border-active` (en plus du legacy `--accent`).
+- `lib/settings.ts` : ajout d'un marqueur `ethone-settings-write-at` et comparaison de `updated_at` serveur pour empêcher une synchronisation ancienne/stale de remplacer les choix locaux frais.
+- Thèmes et couleurs d'accent conservés après refresh/rechargement.
+- Version `v1.7.43`, cache PWA `v411`.
+
 ## v1.7.42 — 2026-08-20
 
 **Refonte UI/UX de la sidebar et suite de l'harmonisation des contrôles**

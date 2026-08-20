@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSettings } from "@/components/SettingsProvider";
+import { useSettings, ACCENTS } from "@/components/SettingsProvider";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { resolveDensity, applyDensityVariables, getViewportSnapshot } from "@/lib/density-engine";
 import { useAmbientEngine } from "@/lib/hooks/useAmbientEngine";
-import { resolvePremiumTheme } from "@/lib/theme-engine";
+import { resolvePremiumTheme, THEME_DEFINITIONS, applyAccent } from "@/lib/theme-engine";
 
 export default function HtmlLang() {
   useAmbientEngine();
@@ -60,13 +60,9 @@ export default function HtmlLang() {
     html.style.setProperty("--v8-breathe-duration", settings.ambientEffectsEnabled ? "26s" : "0s");
     html.style.setProperty("--v8-ambient-transition", settings.uiAnimations === "snappy" ? "800ms" : settings.uiAnimations === "reduced" ? "1ms" : "3200ms");
     html.setAttribute("data-accent", settings.accentColor);
-    if (settings.accentColor === "custom") {
-      html.style.setProperty("--accent", settings.customAccent);
-      html.style.setProperty("--accent-soft", settings.customAccent + "33");
-    } else {
-      html.style.removeProperty("--accent");
-      html.style.removeProperty("--accent-soft");
-    }
+    const def = THEME_DEFINITIONS[resolvePremiumTheme(settings.theme)];
+    const accent = settings.accentColor === "custom" ? settings.customAccent : (ACCENTS[settings.accentColor] || def?.accentPrimary || "#8b5cf6");
+    applyAccent(html, accent);
     if (settings.reducedMotion) {
       html.setAttribute("data-reduced-motion", "true");
     } else {

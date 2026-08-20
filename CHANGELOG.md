@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.7 — 2026-08-20
+
+**Correction de la zone de clic de la Dynamic Island**
+
+### Corrige
+- `ethone-next/components/DynamicIslandContainer.tsx` : suppression du double gestionnaire d'événements entre le conteneur et le shell de la Dynamic Island.
+- Le conteneur de la Dynamic Island est passé en `pointer-events-none` pour ne plus bloquer les boutons situés en dessous (Dock, TopBar, contrôles).
+- L'îlot reste `pointer-events-auto` : les contrôles Spotify (lecture/pause/skip/volume), les boutons Pomodoro et le bouton Brain répondent normalement.
+
+### Version
+- `ethone-next/package.json`, `package-lock.json`, `components/UserProfileDropdown.tsx`, `public/sw.js` : version `v1.7.7` et cache PWA `v375`.
+
 ## v1.7.6 — 2026-08-20
 
 **Dynamic Island multi-activités**

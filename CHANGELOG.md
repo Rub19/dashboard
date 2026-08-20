@@ -14,6 +14,8 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - `ethone-next/components/CalendarBillingPanel.tsx` : ajout de 7 devises (€, $, £, ¥, CHF, CA$, A$) avec conversion correcte via `Intl.NumberFormat`.
 - `ethone-next/lib/i18n.ts` : traductions des catégories de facturation (Logement, Services publics, Transport, Assurance, Abonnements, Alimentation, Éducation, Impôts, Autre) et de `addBill`.
 - `ethone-next/components/ui/Select.tsx` : ajout de `aria-label` sur le `listbox` pour améliorer l'accessibilité et les tests.
+- `ethone-next/app/files/page.tsx` : l'onglet "dossiers" active maintenant le filtre correspondant ; le tri offre 4 options (nom, taille, date, type).
+- `ethone-next/lib/files.ts` : support du tri par type pour les fichiers.
 
 ### Version
 - `ethone-next/package.json`, `ethone-next/package-lock.json`, `ethone-next/public/version.json`, `ethone-next/public/sw.js`, `ethone-next/components/UserProfileDropdown.tsx` : version `v1.7.4` et cache PWA `v371`.

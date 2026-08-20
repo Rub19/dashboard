@@ -93,11 +93,15 @@ export default function FilesPage() {
   const [adminOpen, setAdminOpen] = useState(false);
   const [form, setForm] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
-  const [sort, setSort] = useState<"name" | "size" | "date">("name");
+  const [sort, setSort] = useState<"name" | "size" | "date" | "type">("name");
+  const [showFolders, setShowFolders] = useState(false);
 
   const filteredFiles = useMemo(() => {
     if (favorites) return sortFiles(files, sort);
-    let list = files.filter((f) => f.isFolder || (trashed ? f.trashed : !f.trashed));
+    let list = files.filter((f) => {
+      if (showFolders) return f.isFolder && (trashed ? f.trashed : !f.trashed);
+      return f.isFolder || (trashed ? f.trashed : !f.trashed);
+    });
     if (parentId) {
       list = list.filter((f) => (f.driveParentId || null) === parentId || (f.driveFileId === parentId && f.isFolder));
     } else {
@@ -108,7 +112,7 @@ export default function FilesPage() {
       list = list.filter((f) => f.name.toLowerCase().includes(q));
     }
     return sortFiles(list, sort);
-  }, [files, favorites, parentId, trashed, query, sort]);
+  }, [files, favorites, showFolders, parentId, trashed, query, sort]);
 
   const { selected, selectedItems, hasSelection, isAllSelected, toggle, selectAll, clear, isSelected } = useSelection<CloudFile>(filteredFiles);
 
@@ -387,8 +391,9 @@ export default function FilesPage() {
             { id: "favorites", label: i18n("favorites"), content: null },
             { id: "trash", label: i18n("trash"), content: null },
           ]}
-          activeId={favorites ? "favorites" : trashed ? "trash" : "all"}
+          activeId={showFolders ? "folders" : favorites ? "favorites" : trashed ? "trash" : "all"}
           onSelect={(id) => {
+            setShowFolders(id === "folders");
             setFavorites(id === "favorites");
             setTrashed(id === "trash");
           }}
@@ -408,6 +413,7 @@ export default function FilesPage() {
             { id: "name", label: i18n("sortByName") },
             { id: "size", label: i18n("sortBySize") },
             { id: "date", label: i18n("sortByDate") },
+            { id: "type", label: i18n("sortByType") },
           ]}
           aria-label={i18n("sortBy")}
           className="min-w-0"

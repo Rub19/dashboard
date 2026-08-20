@@ -1,10 +1,15 @@
 import type { CloudFile } from "@/lib/hooks/useCloudFiles";
 
-export function sortFiles(files: CloudFile[], sort: "name" | "size" | "date"): CloudFile[] {
+export function sortFiles(files: CloudFile[], sort: "name" | "size" | "date" | "type"): CloudFile[] {
   const list = [...files];
   list.sort((a, b) => {
     if (sort === "size") return (b.size || 0) - (a.size || 0);
     if (sort === "date") return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+    if (sort === "type") {
+      const typeA = a.isFolder ? "_folder" : a.mimeType || "";
+      const typeB = b.isFolder ? "_folder" : b.mimeType || "";
+      return typeA.localeCompare(typeB, undefined, { sensitivity: "base" });
+    }
     return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
   });
   return list;

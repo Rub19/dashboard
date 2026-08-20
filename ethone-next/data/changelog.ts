@@ -1261,6 +1261,7 @@ const v181_fr: ChangelogEntry = {
     "Calendrier : le menu des mois expose les 12 mois, le menu des années va de 1900 à 2100.",
     "Formulaire de facture : ajout de 7 devises (€, $, £, ¥, CHF, CA$, A$).",
     "Catégories de facturation traduites (Logement, Services publics, Transport, Assurance, Abonnements, Alimentation, Éducation, Impôts, Autre).",
+    "Page Fichiers : l'onglet 'dossiers' active maintenant le filtre, le tri propose 4 options (nom, taille, date, type).",
     "Mise à jour de la version en v1.7.4.",
   ],
 };
@@ -1274,6 +1275,7 @@ const v181_en: ChangelogEntry = {
     "Calendar: month dropdown lists all 12 months; year dropdown spans 1900-2100.",
     "Bill form: added 7 currencies (€, $, £, ¥, CHF, CA$, A$).",
     "Translated bill categories (Housing, Utilities, Transport, Insurance, Subscriptions, Food, Education, Taxes, Other).",
+    "Files page: the 'folders' tab now activates the filter, and the sort dropdown offers 4 options (name, size, date, type).",
     "Updated version to v1.7.4.",
   ],
 };
@@ -1287,6 +1289,7 @@ const v181_es: ChangelogEntry = {
     "Calendario: el menú de meses muestra los 12 meses; el de años abarca 1900-2100.",
     "Formulario de factura: añadidas 7 divisas (€, $, £, ¥, CHF, CA$, A$).",
     "Categorías de facturación traducidas (Vivienda, Servicios, Transporte, Seguro, Suscripciones, Alimentación, Educación, Impuestos, Otro).",
+    "Página de archivos: la pestaña 'carpetas' activa el filtro y el menú de ordenación ofrece 4 opciones (nombre, tamaño, fecha, tipo).",
     "Versión actualizada a v1.7.4.",
   ],
 };
@@ -1300,6 +1303,7 @@ const v181_de: ChangelogEntry = {
     "Kalender: Monatmenü zeigt alle 12 Monate; Jahresmenü reicht von 1900 bis 2100.",
     "Rechnungsformular: 7 Währungen hinzugefügt (€, $, £, ¥, CHF, CA$, A$).",
     "Rechnungskategorien übersetzt (Wohnen, Nebenkosten, Transport, Versicherung, Abonnements, Lebensmittel, Bildung, Steuern, Sonstiges).",
+    "Dateienseite: der Reiter 'Ordner' aktiviert jetzt den Filter, und die Sortierung bietet 4 Optionen (Name, Größe, Datum, Typ).",
     "Version auf v1.7.4 aktualisiert.",
   ],
 };

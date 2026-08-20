@@ -264,7 +264,7 @@ export default function GamingCard({
             <p className="text-xs text-zinc-500">{i18n("minecraftConfigureHint", "Ajoute ton pseudo pour voir ton skin")}</p>
           </div>
           <Link
-            href="/settings?tab=integrations"
+            href="/settings?category=integrations"
             className="rounded-lg bg-emerald-500/10 px-4 py-2 text-xs font-medium text-emerald-400 transition-colors hover:bg-emerald-500/20"
           >
             {i18n("configureMinecraft", "Configurer Minecraft")}

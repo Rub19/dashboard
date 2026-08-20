@@ -28,21 +28,22 @@ export default function SettingsLayout() {
   const router = useRouter();
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const [activeCategory, setActiveCategory] = useState(() =>
-    resolveCategory(searchParams?.get("category"))
-  );
+  const [activeCategory, setActiveCategory] = useState(() => resolveCategory(searchParams?.get("category") ?? searchParams?.get("tab")));
 
   const scrollToCategory = useCallback((id: string) => {
-    const el = contentRef.current?.querySelector(`[data-category="${id}"]`) as HTMLElement | null;
+    const el =
+      (contentRef.current?.querySelector(`[data-section="${id}"]`) as HTMLElement | null) ||
+      (contentRef.current?.querySelector(`[data-category="${id}"]`) as HTMLElement | null);
     if (!el) return;
     el.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
   useEffect(() => {
-    const category = resolveCategory(searchParams?.get("category"));
+    const raw = searchParams?.get("category") ?? searchParams?.get("tab");
+    const category = resolveCategory(raw);
     setActiveCategory(category);
     const t = window.setTimeout(() => {
-      scrollToCategory(category);
+      scrollToCategory(raw || category);
     }, 120);
     return () => window.clearTimeout(t);
   }, [searchParams, scrollToCategory]);

@@ -218,7 +218,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                 </div>
                 <button
                   type="button"
-                  onClick={() => router.push("/settings?tab=integrations&service=spotify")}
+                  onClick={() => router.push("/settings?category=integrations&service=spotify")}
                   className="shrink-0 rounded-lg bg-[var(--accent-primary)]/10 px-2.5 py-1 text-[11px] font-medium text-[var(--accent-primary)] transition hover:bg-[var(--accent-primary)]/20"
                 >
                   {hasClientId ? i18n("reconnect") : i18n("configure")}

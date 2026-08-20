@@ -119,7 +119,7 @@ export default function UserProfileDropdown() {
       badge: "Modifier",
       badgeClass: "text-[var(--text-muted)] bg-[var(--text-primary)]/[0.04] border-[var(--text-primary)]/[0.08]",
       icon: User,
-      action: () => router.push("/settings?tab=profile"),
+      action: () => router.push("/settings?category=profile"),
     },
     {
       id: "settings",
@@ -134,7 +134,7 @@ export default function UserProfileDropdown() {
       badge: "actif",
       badgeClass: "text-cyan-300 bg-cyan-500/10 border-cyan-500/25",
       icon: ShieldCheck,
-      action: () => router.push("/settings?tab=security"),
+      action: () => router.push("/settings?category=security"),
     },
     {
       id: "billing",

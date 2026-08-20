@@ -203,7 +203,7 @@ export function RiotGamingCardContent({
             <p className="text-xs text-zinc-500">{i18n("riotConfigureHint", "Ajoute ton Riot ID pour voir tes stats")}</p>
           </div>
           <Link
-            href="/settings?tab=integrations"
+            href="/settings?category=integrations"
             className={cn(
               "rounded-lg px-4 py-2 text-xs font-medium transition-colors hover:bg-white/5",
               game === "valorant" ? "bg-rose-500/10 text-rose-400 hover:bg-rose-500/20" : "bg-amber-500/10 text-amber-400 hover:bg-amber-500/20"

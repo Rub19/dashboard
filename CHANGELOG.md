@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.38 — 2026-08-20
+
+**Dynamic Island : plus d'ouverture auto au démarrage/refresh**
+
+- Forçage de l'îlot fermé (`setExpanded(false)`) à chaque montage/refresh.
+- Verrou de montage (`mountLockUntil`) pendant 500 ms pour ignorer les `mouseenter` parasites qui peuvent se déclencher si la souris est déjà sur l'îlot.
+- Conservation de la garde `relatedTarget === null`.
+- Version `v1.7.38`, cache PWA `v406`.
+
 ## v1.7.37 — 2026-08-20
 
 **Animation de chargement ETHONE OS restaurée**

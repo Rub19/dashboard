@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useContext, useMemo, useSyncExternalStore } from "react";
 import { FocusTimer, type FocusPhase, type FocusTimerState } from "@/lib/focus-timer";
 
 export type { FocusPhase };
@@ -17,28 +17,18 @@ type FocusContextValue = {
 };
 
 const focusTimer = new FocusTimer();
+if (typeof window !== "undefined") {
+  focusTimer.restore();
+}
 
 const FocusCtx = createContext<FocusContextValue | null>(null);
 
 export function FocusProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<FocusTimerState>(() => focusTimer.getState());
-  const isRestored = useRef(false);
-
-  useEffect(() => {
-    if (!isRestored.current) {
-      isRestored.current = true;
-      FocusTimer.loadFromCloud()
-        .then((session) => {
-          if (session) {
-            focusTimer.restore(session, true);
-          } else {
-            focusTimer.restore();
-          }
-        })
-        .catch(() => focusTimer.restore());
-    }
-    return focusTimer.subscribe(setState);
-  }, []);
+  const state = useSyncExternalStore<FocusTimerState>(
+    (callback) => focusTimer.subscribe(callback),
+    () => focusTimer.getState(),
+    () => focusTimer.getState()
+  );
 
   const value = useMemo<FocusContextValue>(
     () => ({

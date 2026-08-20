@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.22 — 2026-08-20
+
+**Le Pomodoro persiste après un refresh**
+
+- `components/FocusProvider.tsx` : restauration du timer depuis `localStorage` au chargement du module, suppression du chargement cloud au montage qui pouvait écraser la session locale.
+- Utilisation de `useSyncExternalStore` pour synchroniser le composant avec `FocusTimer` sans flash à l'initialisation.
+- `lib/focus-timer.ts` : `persist()` continue de sauvegarder dans `localStorage` et en cloud en arrière-plan.
+- `package.json`, `package-lock.json`, `UserProfileDropdown.tsx`, `public/sw.js` : version `v1.7.22`, cache `v390`.
+
 ## v1.7.21 — 2026-08-20
 
 **Panneaux profil et notifications plus opaques et épurés**

@@ -7,7 +7,7 @@ import { ChevronDown, Check } from "lucide-react";
 
 export type SelectOption = {
   id: string;
-  label: string;
+  label: React.ReactNode;
   disabled?: boolean;
 };
 

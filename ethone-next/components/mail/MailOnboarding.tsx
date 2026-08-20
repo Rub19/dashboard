@@ -241,7 +241,7 @@ export default function MailOnboarding({ aliases, createAlias, updateAlias, onCo
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/80 p-4 backdrop-blur-xl [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden">
+    <div className="absolute inset-0 z-10 flex items-center justify-center overflow-y-auto bg-black/80 p-4 backdrop-blur-xl [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden">
       <motion.div
         initial={{ opacity: 0, y: 12, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}

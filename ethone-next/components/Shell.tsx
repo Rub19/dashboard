@@ -48,7 +48,7 @@ export default function Shell({ children }: { children: ReactNode }) {
             <SkipLink />
             <ProfileSync />
             <AnimatedSidebarProvider
-              defaultOpen={true}
+              defaultOpen={false}
               style={{ "--sidebar-width": "18rem", "--sidebar-width-icon": "5rem" }}
               className="h-dvh max-h-dvh w-screen max-w-full overflow-clip gap-2 bg-[var(--background)] p-2 sm:gap-3 sm:p-3"
             >

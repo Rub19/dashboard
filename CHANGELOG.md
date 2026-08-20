@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.32 — 2026-08-20
+
+**Refonte UI/UX : alignement strict du layout et optimisations performances**
+
+- Suppression de la bande latérale sombre à gauche : le `Shell` n'applique plus de padding à gauche et le panneau de la sidebar est affleurant.
+- Icônes de navigation centrées verticalement en mode réduit et alignement strict de l'avatar, de la pastille de sync et des boutons en bas de sidebar.
+- Topbar repassée en `h-14` avec une grille 3 colonnes : breadcrumb à gauche, statuts + capsule média au centre, météo/commandes/profil à droite.
+- Nouveau `TopBarMediaPill` affichant le morceau en cours directement dans le flux de la topbar.
+- `DynamicIsland` repositionnée juste sous la topbar (`top-16`) pour éviter tout chevauchement.
+- Memoisation des sous-composants de `TopBar` et `Sidebar` pour réduire les re-rendus.
+- Version `v1.7.32`, cache PWA `v400`.
+
 ## v1.7.31 — 2026-08-20
 
 **Gaming Riot : cartes 3D Valorant et League of Legends**

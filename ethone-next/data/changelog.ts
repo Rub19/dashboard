@@ -2536,6 +2536,66 @@ const v206_de: ChangelogEntry = {
   ],
 };
 
+const v132_fr: ChangelogEntry = {
+  version: "v1.7.32",
+  date: "2026-08-20",
+  title: "Refonte UI/UX : alignement strict du layout et optimisations performances",
+  items: [
+    "Suppression de la bande latérale sombre à gauche : padding gauche retiré du Shell et panneau sidebar affleurant.",
+    "Centrage vertical des icônes en mode réduit et alignement strict de l'avatar, de la sync et des boutons du bas.",
+    "Topbar en h-14 avec grille 3 colonnes : breadcrumb, statuts + média, météo/commandes/profil.",
+    "Nouveau TopBarMediaPill intégrant le morceau en cours dans le flux horizontal.",
+    "Dynamic Island repositionnée sous la topbar pour éviter les chevauchements.",
+    "Memoisation des sous-composants de TopBar et Sidebar pour limiter les re-rendus.",
+    "Version : v1.7.32, cache PWA v400.",
+  ],
+};
+
+const v132_en: ChangelogEntry = {
+  version: "v1.7.32",
+  date: "2026-08-20",
+  title: "UI/UX overhaul: strict layout alignment and performance optimizations",
+  items: [
+    "Removed the dark left strip: no left padding in Shell and flush sidebar panel.",
+    "Vertically centered icons in collapsed mode and strict alignment of avatar, sync and bottom buttons.",
+    "Topbar h-14 with a 3-column grid: breadcrumb, status + media, weather/commands/profile.",
+    "New TopBarMediaPill showing the current track in the topbar flow.",
+    "Dynamic Island repositioned below the topbar to avoid overlap.",
+    "Memoized TopBar and Sidebar subcomponents to reduce re-renders.",
+    "Version: v1.7.32, PWA cache v400.",
+  ],
+};
+
+const v132_es: ChangelogEntry = {
+  version: "v1.7.32",
+  date: "2026-08-20",
+  title: "Rediseño UI/UX: alineación estricta y optimización del rendimiento",
+  items: [
+    "Eliminación de la banda lateral oscura: sin padding izquierdo en Shell y panel de sidebar al ras.",
+    "Iconos centrados verticalmente en modo reducido y alineación estricta del avatar, sync y botones inferiores.",
+    "Topbar en h-14 con rejilla de 3 columnas: breadcrumb, estados + multimedia, clima/comandos/perfil.",
+    "Nuevo TopBarMediaPill que muestra la pista actual en el flujo de la topbar.",
+    "Dynamic Island reposicionada bajo la topbar para evitar solapamientos.",
+    "Memoización de subcomponentes de TopBar y Sidebar para reducir re-renderizados.",
+    "Versión: v1.7.32, caché PWA v400.",
+  ],
+};
+
+const v132_de: ChangelogEntry = {
+  version: "v1.7.32",
+  date: "2026-08-20",
+  title: "UI/UX-Overhaul: Strukturausrichtung und Performance-Optimierungen",
+  items: [
+    "Dunkler Streifen links entfernt: kein linkes Padding im Shell und bündiges Sidebar-Panel.",
+    "Symbole im reduzierten Modus vertikal zentriert und strenge Ausrichtung von Avatar, Sync und unteren Buttons.",
+    "Topbar in h-14 mit 3-Spalten-Raster: Breadcrumb, Status + Medien, Wetter/Befehle/Profil.",
+    "Neues TopBarMediaPill zeigt den aktuellen Titel im Topbar-Fluss.",
+    "Dynamic Island unter die Topbar verschoben, um Überlappungen zu vermeiden.",
+    "TopBar- und Sidebar-Subkomponenten memoisiert, um Re-Renders zu reduzieren.",
+    "Version: v1.7.32, PWA-Cache v400.",
+  ],
+};
+
 const v131_fr: ChangelogEntry = {
   version: "v1.7.31",
   date: "2026-08-20",
@@ -2657,8 +2717,8 @@ const v130_de: ChangelogEntry = {
 };
 
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v131_fr, v130_fr, v206_fr, v205_fr, v204_fr, v203_fr, v202_fr, v201_fr, v200_fr, v199_fr, v198_fr, v197_fr, v196_fr, v195_fr, v194_fr, v193_fr, v192_fr, v191_fr, v190_fr, v189_fr, v188_fr, v187_fr, v186_fr, v185_fr, v184_fr, v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
-  en: [v131_en, v130_en, v206_en, v205_en, v204_en, v203_en, v202_en, v201_en, v200_en, v199_en, v198_en, v197_en, v196_en, v195_en, v194_en, v193_en, v192_en, v191_en, v190_en, v189_en, v188_en, v187_en, v186_en, v185_en, v184_en, v183_en, v182_en, v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
+  fr: [v132_fr, v131_fr, v130_fr, v206_fr, v205_fr, v204_fr, v203_fr, v202_fr, v201_fr, v200_fr, v199_fr, v198_fr, v197_fr, v196_fr, v195_fr, v194_fr, v193_fr, v192_fr, v191_fr, v190_fr, v189_fr, v188_fr, v187_fr, v186_fr, v185_fr, v184_fr, v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v132_en, v131_en, v130_en, v206_en, v205_en, v204_en, v203_en, v202_en, v201_en, v200_en, v199_en, v198_en, v197_en, v196_en, v195_en, v194_en, v193_en, v192_en, v191_en, v190_en, v189_en, v188_en, v187_en, v186_en, v185_en, v184_en, v183_en, v182_en, v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -2704,7 +2764,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [v131_es, v130_es, v206_es, v205_es, v204_es, v203_es, v202_es, v201_es, v200_es, v199_es, v198_es, v197_es, v196_es, v195_es, v194_es, v193_es, v192_es, v191_es, v190_es, v189_es, v188_es, v187_es, v186_es, v185_es, v184_es, v183_es, v182_es, v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
+  es: [v132_es, v131_es, v130_es, v206_es, v205_es, v204_es, v203_es, v202_es, v201_es, v200_es, v199_es, v198_es, v197_es, v196_es, v195_es, v194_es, v193_es, v192_es, v191_es, v190_es, v189_es, v188_es, v187_es, v186_es, v185_es, v184_es, v183_es, v182_es, v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -2750,7 +2810,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [v131_de, v130_de, v206_de, v205_de, v204_de, v203_de, v202_de, v201_de, v200_de, v199_de, v198_de, v197_de, v196_de, v195_de, v194_de, v193_de, v192_de, v191_de, v190_de, v189_de, v188_de, v187_de, v186_de, v185_de, v184_de, v183_de, v182_de, v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
+  de: [v132_de, v131_de, v130_de, v206_de, v205_de, v204_de, v203_de, v202_de, v201_de, v200_de, v199_de, v198_de, v197_de, v196_de, v195_de, v194_de, v193_de, v192_de, v191_de, v190_de, v189_de, v188_de, v187_de, v186_de, v185_de, v184_de, v183_de, v182_de, v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

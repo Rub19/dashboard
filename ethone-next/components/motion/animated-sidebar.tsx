@@ -869,7 +869,7 @@ export function AnimatedSidebarMenuButton({
         transition={context.reduce ? REDUCED_TRANSITION : SPRING_SWAP}
         className={cn(
           "relative z-10 min-w-0 flex-1 truncate",
-          panel.collapsed && "pointer-events-none"
+          panel.collapsed && "pointer-events-none hidden"
         )}
       >
         {children}
@@ -898,7 +898,10 @@ export function AnimatedSidebarMenuButton({
   );
 
   const interactiveClassName = cn(
-    "group relative flex w-full min-w-0 items-center gap-3 overflow-hidden rounded-2xl px-3 py-2.5 text-left text-xs font-medium outline-none transition-all duration-200",
+    "group relative flex w-full min-w-0 overflow-hidden rounded-2xl py-2.5 text-xs font-medium outline-none transition-all duration-200",
+    panel.collapsed
+      ? "items-center justify-center gap-0 px-0"
+      : "items-center gap-3 px-3 text-left",
     "text-zinc-500 hover:text-zinc-100",
     "focus-visible:bg-white/[0.08] focus-visible:ring-2 focus-visible:ring-ring",
     isActive && "font-semibold text-emerald-300",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { useSettings } from "@/components/SettingsProvider";
 import { useActiveProfile } from "@/components/SettingsProvider";
@@ -12,9 +12,16 @@ export default function ProfileSync() {
   const { settings, update } = useSettings();
   const { activeProfile, loaded } = useActiveProfile();
   const { setSync, setStatus } = usePresence();
+  const syncedForRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!user || !loaded || !activeProfile) return;
+
+    // Only sync once per active profile. Without this guard, every settings
+    // change (e.g. user picking a new accent color) would be overwritten by
+    // the active profile's stored accent.
+    if (syncedForRef.current === activeProfile.id) return;
+    syncedForRef.current = activeProfile.id;
 
     setStatus(user ? "online" : "offline");
     setSync("syncing");

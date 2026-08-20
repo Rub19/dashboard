@@ -248,7 +248,7 @@ export default function SettingsLayout() {
       </div>
 
       {/* Onglets */}
-      <div className="shrink-0 relative inline-flex w-fit items-center gap-1 self-start rounded-full v8-panel p-1 shadow-inner backdrop-blur-xl">
+      <div className="shrink-0 relative mb-4 inline-flex w-fit items-center gap-1 self-start rounded-full v8-panel p-1 shadow-inner backdrop-blur-xl">
         {tabIndicator.width > 0 && (
           <motion.div
             className="pointer-events-none absolute z-0 rounded-full bg-emerald-400 shadow-[0_0_20px_rgba(52,211,153,0.4)]"

@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.27 — 2026-08-20
+
+**Espace accru entre la barre d'onglets Settings et le contenu**
+
+- `components/settings/SettingsLayout.tsx` : ajout de `mb-4` sur la barre d'onglets pour créer plus d'espace avant le panneau de contenu.
+- Version `v1.7.27`, cache PWA `v395`.
+
 ## v1.7.26 — 2026-08-20
 
 **Sidebar floating sans bordure grise et glassmorphique**

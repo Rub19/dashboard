@@ -93,6 +93,7 @@ export type Settings = {
   cardTilt: boolean;
   dockVisible: boolean;
   dockItems: string[];
+  dockItemsDefaultsVersion?: number;
   dockRadius: number;
   dockScale: DockScale;
   dockAlign: DockAlign;
@@ -268,6 +269,7 @@ export const DEFAULTS: Settings = {
   cardTilt: true,
   dockVisible: true,
   dockItems: ["home", "brain", "notes", "tasks", "calendar", "weather", "activity", "connections", "settings"],
+  dockItemsDefaultsVersion: 1,
   dockRadius: 16,
   dockScale: "normal",
   dockAlign: "center",
@@ -444,6 +446,12 @@ export function migrateSettings(raw: Partial<Settings>): Partial<Settings> {
   }
   if (typeof raw.dockScale === "string" && !DOCK_SCALE_VALUES.includes(raw.dockScale as DockScale)) {
     next.dockScale = "normal";
+  }
+  if (raw.dockItemsDefaultsVersion !== 1 || !Array.isArray(raw.dockItems)) {
+    const current = Array.isArray(raw.dockItems) ? (raw.dockItems as string[]) : [];
+    const missing = DEFAULTS.dockItems.filter((id) => !current.includes(id));
+    next.dockItems = missing.length ? [...current, ...missing] : current;
+    next.dockItemsDefaultsVersion = 1;
   }
   if (typeof raw.soundPack === "string" && !SOUND_PACKS.includes(raw.soundPack as SoundPack)) {
     next.soundPack = SOUND_PACK_LEGACY[raw.soundPack] ?? "ethone";

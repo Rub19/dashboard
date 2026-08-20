@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.10 — 2026-08-20
+
+**Loader boot avec animation percent**
+
+### Change
+- `ethone-next/components/motion/Loader.tsx` : ajout du variant `percent` (pourcentage + barre de progrès).
+- `ethone-next/components/Loading.tsx` : l'écran de boot et de redirection utilise `variant="percent"` au lieu de `comet`.
+
+### Version
+- `ethone-next/package.json`, `package-lock.json`, `components/UserProfileDropdown.tsx`, `public/sw.js` : version `v1.7.10` et cache PWA `v378`.
+
 ## v1.7.9 — 2026-08-20
 
 **Images cross-origin fiables et cape Minecraft**

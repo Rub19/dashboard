@@ -21,7 +21,7 @@ export default function Loading({ message = "Initialisation" }: { message?: stri
         <span className="text-2xl font-semibold tracking-tight text-[var(--foreground)]">ETHONE</span>
       </motion.div>
 
-      <Loader variant="comet" size={48} speed={1.2} label={message} />
+      <Loader variant="percent" size={48} speed={1.2} label={message} />
 
       <motion.p
         className="text-sm text-[var(--muted)]"

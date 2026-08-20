@@ -46,6 +46,12 @@ function initials(name?: string) {
   return (name || "?").slice(0, 1).toUpperCase();
 }
 
+function guildIconUrl(id?: string, icon?: string) {
+  if (!id || !icon) return "";
+  const ext = icon.startsWith("a_") ? "gif" : "png";
+  return `https://cdn.discordapp.com/icons/${encodeURIComponent(id)}/${encodeURIComponent(icon)}.${ext}?size=128`;
+}
+
 export default function DiscordConfig() {
   const i18n = useI18n();
   const { error: showError, notify } = useToast();
@@ -303,7 +309,7 @@ export default function DiscordConfig() {
                         className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 text-[10px] text-zinc-300"
                       >
                         <ClientImage
-                          src={g.iconUrl}
+                          src={g.iconUrl || guildIconUrl(g.id, g.icon)}
                           alt=""
                           width={16}
                           height={16}

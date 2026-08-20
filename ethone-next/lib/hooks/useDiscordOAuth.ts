@@ -15,6 +15,7 @@ export type DiscordGuild = {
   id: string;
   name: string;
   owner: boolean;
+  icon?: string;
   iconUrl: string;
 };
 

@@ -104,14 +104,23 @@ function safeConnection(connection) {
   });
 }
 
+function guildIconUrl(guildId, iconHash) {
+  if (!guildId || !iconHash) return "";
+  const isAnimated = String(iconHash).startsWith("a_");
+  const ext = isAnimated ? "gif" : "png";
+  return discordCdnUrl(`/icons/${encodeURIComponent(guildId)}/${encodeURIComponent(iconHash)}.${ext}?size=128`);
+}
+
 function safeGuild(guild) {
+  const id = safeText(guild?.id, 32);
+  const icon = safeText(guild?.icon, 64);
   return Object.freeze({
-    id: safeText(guild?.id, 32),
+    id,
     name: safeText(guild?.name, 120),
     owner: Boolean(guild?.owner),
     permissions: safeText(guild?.permissions, 64),
-    icon: safeText(guild?.icon, 64),
-    iconUrl: guild?.icon ? discordCdnUrl(`/icons/${encodeURIComponent(guild.id)}/${encodeURIComponent(guild.icon)}.png?size=128`) : "",
+    icon,
+    iconUrl: guildIconUrl(id, icon),
   });
 }
 

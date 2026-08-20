@@ -117,7 +117,11 @@ export default function ClientImage({
           if (!cancelled) markOk();
         })
         .catch(() => {
-          if (!cancelled) handleError();
+          // decode() can fail for cross-origin or deferred images;
+          // rely on onLoad/onError instead of immediately giving up.
+          if (!cancelled && img.complete && img.naturalWidth > 0) {
+            markOk();
+          }
         });
     } else if (img.complete) {
       if (img.naturalWidth === 0) handleError();

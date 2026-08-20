@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.8 — 2026-08-20
+
+**Retour des icônes de serveurs Discord**
+
+### Corrige
+- `ethone-next/components/ClientImage.tsx` : `img.decode()` ne bascule plus immédiatement sur le fallback en cas d'échec (surtout sur les images cross-origin/CDN). L'affichage s'appuie désormais sur `onLoad`/`onError`.
+- `ethone-next/components/DiscordConfig.tsx` : reconstruction locale de l'URL d'icône serveur depuis `g.id` + `g.icon` si `iconUrl` est manquant.
+- `worker/src/services/discord-oauth-client.js` : `safeGuild` génère l'URL avec `.gif` pour les icônes animées (`a_`) et `.png` pour les statiques.
+
+### Version
+- `ethone-next/package.json`, `package-lock.json`, `components/UserProfileDropdown.tsx`, `public/sw.js` : version `v1.7.8` et cache PWA `v376`.
+
 ## v1.7.7 — 2026-08-20
 
 **Correction de la zone de clic de la Dynamic Island**

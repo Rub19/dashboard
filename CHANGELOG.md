@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.13 — 2026-08-20
+
+**Correction de la cover Spotify dans la Dynamic Island**
+
+### Corrige
+- `worker/src/services/spotify-oauth-client.js` : autorise les noms d'hôte des CDNs Spotify (`spotifycdn.com`, `spotify.com`) en plus de `scdn.co` pour les images d'album.
+- `worker/src/services/lanyard-client.js` : autorise les mêmes hôtes pour les covers Spotify via Lanyard.
+- Ajout d'un test worker pour vérifier qu'une URL `image-cdn-ak.spotifycdn.com` est conservée.
+
+### Version
+- `ethone-next/package.json`, `package-lock.json`, `components/UserProfileDropdown.tsx`, `public/sw.js` : version `v1.7.13` et cache PWA `v381`.
+
 ## v1.7.12 — 2026-08-20
 
 **Pomodoro en bulle dans la Dynamic Island**

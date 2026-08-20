@@ -81,7 +81,7 @@ function normalizeTrack(payload) {
       title: safeText(item.name, 180),
       artist: artists.slice(0, 180),
       album: safeText(item.album?.name, 180),
-      artworkUrl: safePublicUrl(item.album?.images?.[1]?.url ?? item.album?.images?.[0]?.url, ["scdn.co"]),
+      artworkUrl: safePublicUrl(item.album?.images?.[1]?.url ?? item.album?.images?.[0]?.url, ["scdn.co", "spotifycdn.com", "spotify.com"]),
       progressMs: safeNumber(payload.progress_ms, 0, 86400000),
       durationMs: safeNumber(item.duration_ms, 0, 86400000),
       volumePercent: typeof payload?.device?.volume_percent === "number" ? Math.max(0, Math.min(100, payload.device.volume_percent)) : undefined,

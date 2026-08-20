@@ -105,6 +105,27 @@ test("Spotify now-playing refreshes an expired token before calling the API", as
   assert.equal(setCalls[0].next_refresh_token, "stored-refresh-token");
 });
 
+test("Spotify now-playing preserves image URLs from Spotify CDNs", async () => {
+  const futureExpiry = new Date(Date.now() + 3600000).toISOString();
+  const env = testEnv({
+    __TEST_FETCH__: async (input, init = {}) => {
+      const url = new URL(String(input));
+      if (url.hostname === "api.spotify.com") {
+        return json({
+          is_playing: true,
+          progress_ms: 30000,
+          item: { id: "track2", name: "Down Under", duration_ms: 210000, artists: [{ name: "Men At Work" }], album: { name: "Business as Usual", images: [{ url: "https://image-cdn-ak.spotifycdn.com/image/test-cover" }] } }
+        });
+      }
+      return supabaseRpcFetch({ getResponse: [{ access_token: "stored-access-token", refresh_token: "stored-refresh-token", scope: "user-read-currently-playing", expires_at: futureExpiry }] })(input, init);
+    }
+  });
+  const response = await invoke(`/api/spotify/now-playing?clientId=${"c".repeat(32)}`, { env });
+  const body = await payload(response);
+  assert.equal(response.status, 200);
+  assert.equal(body.data.track.artworkUrl, "https://image-cdn-ak.spotifycdn.com/image/test-cover");
+});
+
 test("Spotify now-playing rejects a connection with no stored token", async () => {
   const env = testEnv({ __TEST_FETCH__: supabaseRpcFetch({ getResponse: [] }) });
   const response = await invoke(`/api/spotify/now-playing?clientId=${"c".repeat(32)}`, { env });

@@ -585,7 +585,13 @@ function fieldKeys(fields: FieldDef[]): { key: string; path?: string }[] {
   return fields.map((f) => ({ key: f.key, path: f.path }));
 }
 
-export default function SettingsContent() {
+const TAB_SECTIONS: Record<string, string[]> = {
+  general: ["appearance", "typography", "language", "density", "sound", "notifications", "workspace", "account"],
+  security: ["security"],
+  account: ["account"],
+};
+
+export default function SettingsContent({ activeTab }: { activeTab: string }) {
   const { settings } = useSettings();
   const i18n = useI18n();
   const form = useSettingsForm();
@@ -1050,6 +1056,15 @@ export default function SettingsContent() {
     [i18n, settings.densityMode, densityCustomFields]
   );
 
+  const filteredMainSections = useMemo(
+    () => {
+      const allowed = TAB_SECTIONS[activeTab];
+      if (!allowed || allowed.length === 0) return mainSections;
+      return mainSections.filter((s) => allowed.includes(s.id));
+    },
+    [activeTab, mainSections]
+  );
+
   const modifiedCounts = {
     appearance: useModifiedCount(fieldKeys(appearanceFields)),
     typography: useModifiedCount(fieldKeys(typographyFields)),
@@ -1079,13 +1094,16 @@ export default function SettingsContent() {
   );
 
   const visibleAdvancedSections = useMemo(
-    () => advancedSections.filter(sectionVisible),
-    [advancedSections, sectionVisible]
+    () =>
+      !form.query.trim()
+        ? advancedSections
+        : advancedSections.filter(sectionVisible),
+    [advancedSections, sectionVisible, form.query]
   );
 
   const advancedOpen =
     visibleAdvancedSections.length > 0 &&
-    (form.showAdvanced || form.query.trim().length > 0);
+    (activeTab === "general" || form.showAdvanced || form.query.trim().length > 0);
 
   const advancedModifiedCount = useMemo(
     () =>
@@ -1098,7 +1116,7 @@ export default function SettingsContent() {
   return (
     <div className="w-full space-y-6">
       <div className="grid grid-cols-1 gap-6">
-        {mainSections.map((section) => (
+        {filteredMainSections.map((section) => (
           <SettingsSection
             key={section.id}
             id={section.id}
@@ -1109,7 +1127,7 @@ export default function SettingsContent() {
                 ? accountModifiedCount
                 : (modifiedCounts as Record<string, number>)[section.id]
             }
-            visible={sectionVisible(section)}
+            visible={!form.query.trim() ? true : sectionVisible(section)}
           >
             {section.fields.map((field) => (
               <SettingField key={field.key} field={field} />

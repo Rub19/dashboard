@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.24 — 2026-08-20
+
+**Réorganisation des onglets Settings et contenus filtrés par onglet**
+
+- `components/settings/SettingsContent.tsx` : filtrage des sections par onglet actif (`general`, `sécurité`, `compte`) pour corriger les onglets vides.
+- Les sections sont maintenant affichées par défaut ; le masquage par recherche s'applique uniquement si une requête est saisie.
+- `components/settings/SettingsLayout.tsx` : suppression de l'onglet `Facturation` et de ses composants, car ETHONE est gratuit.
+- `package.json`, `package-lock.json`, `UserProfileDropdown.tsx`, `public/sw.js` : version `v1.7.24`, cache `v392`.
+
 ## v1.7.23 — 2026-08-20
 
 **Correction du découpage du point de statut sur l'avatar**

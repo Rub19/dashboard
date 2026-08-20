@@ -27,14 +27,12 @@ import { forceAppReload } from "@/lib/force-reload";
 import UserProfileCard from "./UserProfileCard";
 import SettingsContent from "./SettingsContent";
 import SettingsBottomBar from "./SettingsBottomBar";
-import BillingSettings from "./BillingSettings";
 import IntegrationsSettings from "@/components/IntegrationsSettings";
 
 const TABS = [
   { id: "overview", label: "Vue d'ensemble" },
   { id: "general", label: "Général" },
   { id: "security", label: "Sécurité" },
-  { id: "billing", label: "Facturation" },
   { id: "integrations", label: "Intégrations" },
 ];
 
@@ -375,7 +373,7 @@ export default function SettingsLayout() {
             transition={{ duration: 0.15 }}
             className="space-y-6"
           >
-            <SettingsContent />
+            <SettingsContent activeTab={activeTab} />
           </motion.div>
         ) : activeTab === "integrations" ? (
           <motion.div
@@ -388,18 +386,7 @@ export default function SettingsLayout() {
           >
             <IntegrationsSettings />
           </motion.div>
-        ) : (
-          <motion.div
-            key="billing"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.15 }}
-            className="space-y-6"
-          >
-            <BillingSettings />
-          </motion.div>
-        )}
+        ) : null}
       </AnimatePresence>
       </div>
 

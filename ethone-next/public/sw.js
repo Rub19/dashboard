@@ -1,4 +1,4 @@
-const CACHE_NAME = "ethone-next-v388";
+const CACHE_NAME = "ethone-next-v389";
 const PRECACHE = ["/", "/login/", "/offline.html"];
 const STATIC_EXTENSIONS = [".js", ".css", ".png", ".jpg", ".jpeg", ".webp", ".svg", ".woff", ".woff2", ".ico"];
 

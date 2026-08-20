@@ -245,7 +245,7 @@ export default function NotificationCenter() {
       </PopoverTrigger>
 
       {!isMobile && (
-        <PopoverContent className="w-96 max-w-[calc(100vw-1rem)] max-h-[min(80vh,44rem)] overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 shadow-2xl backdrop-blur-2xl">
+        <PopoverContent className="w-96 max-w-[calc(100vw-1rem)] max-h-[min(80vh,44rem)] overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-zinc-950/95 p-4 shadow-2xl backdrop-blur-2xl">
           {content}
         </PopoverContent>
       )}

@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.21 — 2026-08-20
+
+**Panneaux profil et notifications plus opaques et épurés**
+
+- `components/UserProfileDropdown.tsx` : fond des popovers passe à `bg-zinc-950/95` (plus opaque), nettoyage du menu profil (icônes unifiées sans glow, typographies épurées, padding harmonisé).
+- `components/NotificationCenter.tsx` : fond plus opaque et padding ajusté.
+- `package.json`, `package-lock.json`, `UserProfileDropdown.tsx`, `public/sw.js` : version `v1.7.21`, cache `v389`.
+
 ## v1.7.20 — 2026-08-20
 
 **Changelog plus aéré et textes plus lisibles**

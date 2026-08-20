@@ -105,27 +105,23 @@ export default function UserProfileDropdown() {
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = "v1.7.20";
+  const VERSION_LABEL = "v1.7.21";
 
   const menuItems = [
     {
       id: "changelog",
       label: "Notes de version",
       badge: `${VERSION_LABEL} • NOUVEAU`,
-      badgeClass: "text-purple-300 bg-purple-500/15 border-purple-500/30",
+      badgeClass: "text-purple-300 bg-purple-500/10 border-purple-500/25",
       icon: Sparkles,
-      iconBoxClass:
-        "bg-purple-500/15 border-purple-500/30 text-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.2)]",
       action: () => setIsChangelogOpen(true),
     },
     {
       id: "profile",
       label: "Mon profil",
       badge: "Modifier",
-      badgeClass: "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
+      badgeClass: "text-zinc-300 bg-white/[0.04] border-white/[0.08]",
       icon: User,
-      iconBoxClass:
-        "bg-emerald-500/15 border-emerald-500/30 text-emerald-300 shadow-[0_0_10px_rgba(52,211,153,0.2)]",
       action: () => router.push("/settings?tab=profile"),
     },
     {
@@ -133,18 +129,14 @@ export default function UserProfileDropdown() {
       label: "Réglages",
       kbd: "⌘,",
       icon: SettingsIcon,
-      iconBoxClass:
-        "bg-zinc-500/15 border-zinc-500/30 text-zinc-300 shadow-[0_0_10px_rgba(255,255,255,0.05)]",
       action: () => router.push("/settings"),
     },
     {
       id: "security",
       label: "Sécurité",
       badge: "actif",
-      badgeClass: "text-cyan-300 bg-cyan-500/15 border-cyan-500/30",
+      badgeClass: "text-cyan-300 bg-cyan-500/10 border-cyan-500/25",
       icon: ShieldCheck,
-      iconBoxClass:
-        "bg-cyan-500/15 border-cyan-500/30 text-cyan-300 shadow-[0_0_10px_rgba(6,182,212,0.2)]",
       action: () => router.push("/settings?tab=security"),
     },
     {
@@ -152,8 +144,6 @@ export default function UserProfileDropdown() {
       label: "Facturation",
       badge: null,
       icon: CreditCard,
-      iconBoxClass:
-        "bg-amber-500/15 border-amber-500/30 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]",
       action: () => router.push("/settings?tab=billing"),
     },
     {
@@ -161,8 +151,6 @@ export default function UserProfileDropdown() {
       label: "Raccourcis",
       kbd: "⌘K",
       icon: Command,
-      iconBoxClass:
-        "bg-blue-500/15 border-blue-500/30 text-blue-300 shadow-[0_0_10px_rgba(59,130,246,0.2)]",
       action: () => setCommandOpen(true),
     },
   ];
@@ -220,7 +208,7 @@ export default function UserProfileDropdown() {
       </PopoverTrigger>
 
       {/* Dropdown */}
-      <PopoverContent className="w-[340px] max-w-[calc(100vw-1rem)] overflow-hidden rounded-xl border border-white/[0.08] p-3 bg-[var(--panel-bg)] shadow-[0_16px_50px_rgba(0,0,0,0.7)] backdrop-blur-3xl">
+      <PopoverContent className="w-[340px] max-w-[calc(100vw-1rem)] overflow-hidden rounded-xl border border-white/[0.08] p-4 bg-zinc-950/95 shadow-[0_16px_50px_rgba(0,0,0,0.7)] backdrop-blur-2xl">
         <div className="w-full select-none flex flex-col gap-2.5">
             {/* Header */}
             <div className="flex items-center gap-3 rounded-xl border border-white/[0.04] bg-white/[0.02] p-2.5">
@@ -330,12 +318,10 @@ export default function UserProfileDropdown() {
                     className="group flex w-full items-center justify-between rounded-lg border border-transparent p-2 text-xs text-zinc-200 transition-all hover:border-white/[0.06] hover:bg-white/[0.04] hover:text-white"
                   >
                     <div className="flex items-center gap-2.5">
-                      <div
-                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border transition-transform group-hover:scale-105 ${item.iconBoxClass}`}
-                      >
-                        <IconComponent className="h-3.5 w-3.5" />
-                      </div>
-                      <span className="font-medium">{item.label}</span>
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.04] text-zinc-300 transition-colors group-hover:bg-white/[0.08] group-hover:text-white">
+                      <IconComponent className="h-4 w-4" />
+                    </div>
+                    <span className="font-medium text-zinc-200">{item.label}</span>
                     </div>
 
                     {item.badge && (
@@ -367,10 +353,10 @@ export default function UserProfileDropdown() {
                 className="group flex w-full items-center justify-between rounded-lg border border-transparent p-2 text-xs text-rose-400 transition-all hover:border-rose-500/20 hover:bg-rose-500/10 hover:text-rose-300"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-rose-500/30 bg-rose-500/15 text-rose-400 transition-transform group-hover:scale-105">
-                    <LogOut className="h-3.5 w-3.5" />
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-400 transition-colors group-hover:bg-rose-500/20 group-hover:text-rose-300">
+                    <LogOut className="h-4 w-4" />
                   </div>
-                  <span className="font-semibold">
+                  <span className="font-medium">
                     {i18n("signOut") || "Se déconnecter"}
                   </span>
                 </div>
@@ -404,7 +390,7 @@ export default function UserProfileDropdown() {
                   : { type: "spring", duration: 0.55, bounce: 0.12 }
               }
               onClick={(e) => e.stopPropagation()}
-              className="flex w-full max-w-2xl select-none flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/90 shadow-[0_24px_70px_rgba(0,0,0,0.75),0_0_32px_rgba(168,85,247,0.12)] backdrop-blur-3xl"
+              className="flex w-full max-w-2xl select-none flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/95 shadow-[0_24px_70px_rgba(0,0,0,0.75),0_0_32px_rgba(168,85,247,0.12)] backdrop-blur-2xl"
             >
               <div className="flex items-center justify-between border-b border-white/[0.06] px-6 py-4">
                 <div className="flex items-center gap-3">

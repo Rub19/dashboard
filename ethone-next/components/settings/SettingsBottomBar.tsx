@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettingsForm } from "./SettingsFormContext";
+import Button from "@/components/ui/Button";
 
 export default function SettingsBottomBar() {
   const i18n = useI18n();
@@ -20,24 +21,23 @@ export default function SettingsBottomBar() {
           <div className="flex items-center justify-between gap-4 rounded-2xl border border-white/[0.08] bg-zinc-950/90 px-4 py-3 shadow-2xl backdrop-blur-xl">
             <span className="text-sm text-zinc-200">{i18n("unsavedChanges")}</span>
             <div className="flex items-center gap-2">
-              <button
+              <Button
                 type="button"
+                variant="secondary"
+                size="md"
                 onClick={cancelExplicit}
-                className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/[0.08] hover:text-white"
               >
                 {i18n("cancel")}
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
+                variant="primary"
+                size="md"
                 onClick={saveExplicit}
-                className="flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold text-white transition-all hover:brightness-110 active:scale-[0.98]"
-                style={{
-                  background: "var(--accent-color, var(--accent, #a855f7))",
-                  boxShadow: "0 0 16px var(--accent-glow, rgba(168, 85, 247, 0.35))",
-                }}
+                className="active:scale-95"
               >
                 {i18n("save")}
-              </button>
+              </Button>
             </div>
           </div>
         </motion.div>

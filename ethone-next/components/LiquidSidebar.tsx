@@ -44,7 +44,7 @@ export default function LiquidSidebar({
             onClick={() => handleClick(item.id)}
             className={`relative flex w-full items-center gap-3 rounded-[var(--panel-radius)] px-3 py-2 text-sm font-medium transition-colors ${
               isActive
-                ? "bg-[var(--accent)] text-white"
+                ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
                 : "text-[var(--muted)] hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)]"
             }`}
           >

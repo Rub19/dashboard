@@ -610,7 +610,7 @@ export default function LiveWidgets({
           <button
             type="button"
             onClick={() => controlSpotify("previous")}
-            className="rounded-lg p-1.5 text-[var(--foreground)] hover:bg-white/10"
+            className="rounded-lg p-1.5 text-[var(--foreground)] hover:bg-[var(--text-primary)]/10"
             aria-label={i18n("previous")}
           >
             <Icon name="skipBack" className="h-4 w-4" />
@@ -618,7 +618,7 @@ export default function LiveWidgets({
           <button
             type="button"
             onClick={() => controlSpotify(track.isPlaying ? "pause" : "play")}
-            className="rounded-lg bg-emerald-500 p-2 text-white hover:bg-emerald-400"
+            className="rounded-lg bg-[var(--accent-primary)] p-2 text-[var(--accent-contrast)] hover:bg-[var(--accent-primary)]"
             aria-label={track.isPlaying ? i18n("pause") : i18n("play")}
           >
             {track.isPlaying ? <Icon name="pause" className="h-4 w-4" /> : <Icon name="play" className="h-4 w-4" />}
@@ -626,7 +626,7 @@ export default function LiveWidgets({
           <button
             type="button"
             onClick={() => controlSpotify("next")}
-            className="rounded-lg p-1.5 text-[var(--foreground)] hover:bg-white/10"
+            className="rounded-lg p-1.5 text-[var(--foreground)] hover:bg-[var(--text-primary)]/10"
             aria-label={i18n("next")}
           >
             <Icon name="skipForward" className="h-4 w-4" />
@@ -638,7 +638,7 @@ export default function LiveWidgets({
               setSaved(next);
               if (track.id) await controlSpotify(next ? "save" : "unsave", track.id);
             }}
-            className={`ml-auto rounded-lg p-1.5 ${saved ? "text-emerald-400" : "text-rose-400"} hover:bg-rose-500/10`}
+            className={`ml-auto rounded-lg p-1.5 ${saved ? "text-[var(--accent-primary)]" : "text-[var(--danger)]"} hover:bg-[var(--danger)]/10`}
             aria-label={saved ? i18n("unlike") : i18n("like")}
           >
             <Icon name={saved ? "heart-off" : "heart"} className="h-4 w-4" />
@@ -1288,16 +1288,16 @@ export default function LiveWidgets({
                     </div>
                   )}
                   <div className="flex items-center gap-1.5">
-                    <button onClick={() => controlSpotify("previous")} className="rounded-lg p-1 text-[var(--foreground)] hover:bg-white/10">
+                    <button onClick={() => controlSpotify("previous")} className="rounded-lg p-1 text-[var(--foreground)] hover:bg-[var(--text-primary)]/10">
                       <Icon name="skipBack" className="h-3.5 w-3.5" />
                     </button>
                     <button
                       onClick={() => controlSpotify(nowPlaying.isPlaying ? "pause" : "play")}
-                      className="rounded-lg bg-emerald-500 p-1.5 text-white hover:bg-emerald-400"
+                      className="rounded-lg bg-[var(--accent-primary)] p-1.5 text-[var(--accent-contrast)] hover:bg-[var(--accent-primary)]"
                     >
                       {nowPlaying.isPlaying ? <Icon name="pause" className="h-4 w-4" /> : <Icon name="play" className="h-4 w-4" />}
                     </button>
-                    <button onClick={() => controlSpotify("next")} className="rounded-lg p-1 text-[var(--foreground)] hover:bg-white/10">
+                    <button onClick={() => controlSpotify("next")} className="rounded-lg p-1 text-[var(--foreground)] hover:bg-[var(--text-primary)]/10">
                       <Icon name="skipForward" className="h-3.5 w-3.5" />
                     </button>
                     <button
@@ -1306,7 +1306,7 @@ export default function LiveWidgets({
                         setSaved(next);
                         await controlSpotify(next ? "save" : "unsave", nowPlaying?.id);
                       }}
-                      className={`ml-auto rounded-lg p-1 ${saved ? "text-emerald-400" : "text-rose-400"} hover:bg-rose-500/10`}
+                      className={`ml-auto rounded-lg p-1 ${saved ? "text-[var(--accent-primary)]" : "text-[var(--danger)]"} hover:bg-[var(--danger)]/10`}
                       aria-label={saved ? i18n("unlike") : i18n("like")}
                     >
                       <Icon name={saved ? "heart-off" : "heart"} className="h-3.5 w-3.5" />
@@ -1356,7 +1356,7 @@ export default function LiveWidgets({
               type="button"
               onClick={() => setActiveCategory("all")}
               className={`rounded-xl px-3 py-1 text-xs font-medium transition-colors ${
-                activeCategory === "all" ? "bg-[var(--accent)] text-white" : "bg-[var(--panel-bg)] text-[var(--muted)] hover:text-[var(--foreground)]"
+                activeCategory === "all" ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "bg-[var(--panel-bg)] text-[var(--muted)] hover:text-[var(--foreground)]"
               }`}
             >
               {i18n("all")}
@@ -1370,7 +1370,7 @@ export default function LiveWidgets({
                   type="button"
                   onClick={() => setActiveCategory(cat)}
                   className={`rounded-xl px-3 py-1 text-xs font-medium transition-colors ${
-                    activeCategory === cat ? "bg-[var(--accent)] text-white" : "bg-[var(--panel-bg)] text-[var(--muted)] hover:text-[var(--foreground)]"
+                    activeCategory === cat ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "bg-[var(--panel-bg)] text-[var(--muted)] hover:text-[var(--foreground)]"
                   }`}
                 >
                   {i18n(categoryLabels[cat])} ({count})

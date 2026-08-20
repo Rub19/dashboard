@@ -248,7 +248,7 @@ export default function WeatherPage() {
           <button
             type="button"
             onClick={handleGeolocate}
-            className="flex h-8 w-8 items-center justify-center rounded-xl text-zinc-400 transition-colors hover:text-white"
+            className="flex h-8 w-8 items-center justify-center rounded-xl text-[var(--muted)] transition-colors hover:text-[var(--text-primary)]"
             aria-label={i18n("geolocate")}
           >
             <Icon name="navigation" className="h-3.5 w-3.5" />
@@ -256,7 +256,7 @@ export default function WeatherPage() {
 
           <button
             type="submit"
-            className="rounded-lg border border-white/[0.08] bg-white/[0.04] px-3.5 py-1.5 text-xs font-semibold text-white transition-all hover:bg-white/[0.08] active:scale-95"
+            className="rounded-lg border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-3.5 py-1.5 text-xs font-semibold text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] active:scale-95"
           >
             {i18n("search")}
           </button>
@@ -295,7 +295,7 @@ export default function WeatherPage() {
                   type="button"
                   onClick={load}
                   disabled={loading}
-                  className="rounded-lg p-1.5 text-zinc-500 transition-colors hover:text-white disabled:opacity-50"
+                  className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:text-[var(--text-primary)] disabled:opacity-50"
                   aria-label={i18n("refresh")}
                 >
                   <Icon name="refresh-cw" className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />

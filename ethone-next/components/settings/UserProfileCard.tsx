@@ -12,6 +12,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { USER_STATUS_CONFIG } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/lib/icons";
+import Button from "@/components/ui/Button";
 
 function maskId(id: string) {
   if (!id) return "";
@@ -94,7 +95,7 @@ export default function UserProfileCard({
             <button
               type="button"
               onClick={() => setMasked((v) => !v)}
-              className="rounded p-1 text-[var(--muted)] transition-colors hover:bg-white/[0.05] hover:text-[var(--foreground)]"
+              className="rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/5 hover:text-[var(--text-primary)]"
               aria-label={masked ? "Afficher l'identifiant" : "Masquer l'identifiant"}
               title={masked ? "Afficher" : "Masquer"}
             >
@@ -151,14 +152,15 @@ export default function UserProfileCard({
             <Icon name="discord" className="h-3.5 w-3.5" />
             {i18n("linkDiscord") || "Lier Discord"}
           </Link>
-          <button
+          <Button
             type="button"
+            variant="secondary"
+            size="md"
+            leftIcon={<Key className="h-3.5 w-3.5" />}
             onClick={handleChangePassword}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-xs font-medium text-[var(--foreground)] transition-colors hover:bg-white/[0.06]"
           >
-            <Key className="h-3.5 w-3.5" />
             {i18n("changePassword") || "Changer le mot de passe"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

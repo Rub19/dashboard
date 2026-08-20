@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
+import Button from "@/components/ui/Button";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { getPluginById, getPluginRecord } from "@/lib/plugins";
@@ -65,13 +66,15 @@ export default function PluginClient() {
             {live?.subtitle && <p className="break-words text-sm text-[var(--muted)]">{live.subtitle}</p>}
             {live?.meta && <p className="break-words text-xs text-[var(--muted)]">{live.meta}</p>}
           </div>
-          <button
+          <Button
             type="button"
+            variant="primary"
+            size="md"
             onClick={() => router.push("/connections/")}
-            className="w-full rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
+            className="w-full"
           >
             {i18n("configure")}
-          </button>
+          </Button>
         </div>
       </Card3D>
       </div>

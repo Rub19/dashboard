@@ -191,7 +191,7 @@ const SidebarFooter = memo(function SidebarFooter() {
         <button
           type="button"
           onClick={() => router.push("/settings")}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border-transparent bg-transparent text-zinc-400 transition-colors hover:border-white/10 hover:bg-white/[0.06] hover:text-white"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border-transparent bg-transparent text-[var(--muted)] transition-colors hover:border-[var(--panel-border)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
           aria-label={i18n("settings")}
           title={i18n("settings")}
         >
@@ -201,7 +201,7 @@ const SidebarFooter = memo(function SidebarFooter() {
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border-transparent bg-transparent text-zinc-400 transition-colors hover:border-white/10 hover:bg-white/[0.06] hover:text-white"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border-transparent bg-transparent text-[var(--muted)] transition-colors hover:border-[var(--panel-border)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
           aria-label={i18n("collapseSidebar", "Réduire")}
           title={i18n("collapseSidebar", "Réduire")}
         >

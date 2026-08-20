@@ -10,6 +10,7 @@ import { useToast } from "@/components/ToastProvider";
 import { DEFAULTS } from "@/lib/settings";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
+import Button from "@/components/ui/Button";
 import SettingsNavigation, { CATEGORY_ORDER, sectionCategory } from "./SettingsNavigation";
 import SettingsContent from "./SettingsContent";
 import SettingsBottomBar from "./SettingsBottomBar";
@@ -128,23 +129,24 @@ export default function SettingsLayout() {
           </div>
 
           <div className="flex items-center gap-2">
-            <button
+            <Button
               type="button"
+              variant="secondary"
+              size="md"
+              leftIcon={<RotateCcw className="h-3.5 w-3.5" />}
               onClick={handleReset}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-xs text-[var(--foreground)] transition-all hover:bg-white/[0.08]"
             >
-              <RotateCcw className="h-3.5 w-3.5" />
               {i18n("reset") || "Rétablir"}
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant="primary"
+              size="md"
+              leftIcon={<Save className="h-3.5 w-3.5" />}
               onClick={handleSave}
-              className="inline-flex items-center gap-1.5 rounded-xl px-4 py-1.5 text-xs font-semibold text-zinc-950 shadow-lg transition-all hover:brightness-110 active:scale-95"
-              style={{ background: "var(--accent-color, var(--accent, #10b981))" }}
             >
-              <Save className="h-3.5 w-3.5" />
               {i18n("save") || "Enregistrer"}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

@@ -370,13 +370,13 @@ function PresetsPanel() {
               key={preset.id}
               type="button"
               onClick={() => handleApply(preset)}
-              className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 text-left transition-colors hover:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
+              className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 text-left transition-colors hover:border-[var(--accent-primary)] backdrop-blur-[var(--panel-blur)]"
             >
               <div className="flex items-center gap-2 text-sm font-medium">
-                <Icon name={preset.icon} className="h-4 w-4 text-[var(--accent)]" />
+                <Icon name={preset.icon} className="h-4 w-4 text-[var(--accent-primary)]" />
                 {preset.name}
               </div>
-              <div className="mt-1 text-xs text-[var(--muted)]">{preset.description}</div>
+              <div className="mt-1 text-xs text-[var(--text-muted)]">{preset.description}</div>
             </button>
           ))}
         </div>
@@ -403,7 +403,7 @@ function PresetsPanel() {
         <button
           type="button"
           onClick={handleExtract}
-          className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
+          className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent-primary)] backdrop-blur-[var(--panel-blur)]"
         >
           {i18n("saveCurrentPreset")}
         </button>
@@ -424,7 +424,7 @@ function PresetsPanel() {
                   className="flex-1 text-left"
                 >
                   <div className="flex items-center gap-2 text-sm font-medium">
-                    <Icon name={preset.icon} className="h-4 w-4 text-[var(--accent)]" />
+                    <Icon name={preset.icon} className="h-4 w-4 text-[var(--accent-primary)]" />
                     {preset.name}
                   </div>
                   {preset.description && (
@@ -434,7 +434,7 @@ function PresetsPanel() {
                 <button
                   type="button"
                   onClick={() => setCustomPresets((prev) => removeCustomPreset(prev, preset.id))}
-                  className="rounded p-1 text-[var(--muted)] transition-colors hover:text-[var(--accent)]"
+                  className="rounded p-1 text-[var(--text-muted)] transition-colors hover:text-[var(--accent-primary)]"
                   aria-label={i18n("delete")}
                 >
                   <Icon name="trash-2" className="h-4 w-4" />
@@ -449,14 +449,14 @@ function PresetsPanel() {
         <button
           type="button"
           onClick={handleExport}
-          className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
+          className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent-primary)] backdrop-blur-[var(--panel-blur)]"
         >
           {i18n("exportPresets")}
         </button>
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
+          className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent-primary)] backdrop-blur-[var(--panel-blur)]"
         >
           {i18n("importPresets")}
         </button>
@@ -484,7 +484,7 @@ function SoundPackPreview() {
           key={pack}
           type="button"
           onClick={() => play("click", pack)}
-          className="flex items-center justify-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
+          className="flex items-center justify-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent-primary)] backdrop-blur-[var(--panel-blur)]"
         >
           <Icon name="play" className="h-3 w-3" />
           {i18n("preview")}
@@ -567,14 +567,14 @@ function RawSettingsPanel() {
         <button
           type="button"
           onClick={handleExport}
-          className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
+          className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent-primary)] backdrop-blur-[var(--panel-blur)]"
         >
           {i18n("exportPresets")}
         </button>
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
+          className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent-primary)] backdrop-blur-[var(--panel-blur)]"
         >
           {i18n("importPresets")}
         </button>

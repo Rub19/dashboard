@@ -69,11 +69,11 @@ export function Checkbox({
         }
         className={cn(
           "inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 outline-none transition-colors duration-200",
-          "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+          "focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-main)]",
           "disabled:cursor-not-allowed disabled:opacity-60",
           showMark
-            ? "border-accent bg-accent text-zinc-950"
-            : "border-muted-foreground/50 bg-background hover:border-muted-foreground",
+            ? "border-[var(--accent-primary)] bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
+            : "border-[var(--text-muted)]/50 bg-[var(--bg-main)] hover:border-[var(--text-muted)]",
         )}
       >
         <AnimatePresence initial={false}>

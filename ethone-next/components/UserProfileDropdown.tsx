@@ -102,7 +102,7 @@ export default function UserProfileDropdown() {
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = "v1.7.40";
+  const VERSION_LABEL = "v1.7.41";
 
   const menuItems = [
     {
@@ -170,7 +170,7 @@ export default function UserProfileDropdown() {
       <PopoverTrigger>
         <button
           type="button"
-          className="group relative flex h-9 items-center gap-2.5 rounded-full border border-white/[0.08] bg-zinc-900/80 pl-1.5 pr-3 text-white transition-all hover:border-white/20 active:scale-95 cursor-pointer select-none"
+          className="group relative flex h-9 items-center gap-2.5 rounded-full border border-[var(--text-primary)]/[0.08] bg-[var(--surface)]/80 pl-1.5 pr-3 text-[var(--text-primary)] transition-all hover:border-[var(--text-primary)]/20 active:scale-95 cursor-pointer select-none"
           aria-label={i18n("profile")}
           aria-expanded={open}
           aria-haspopup="true"
@@ -244,7 +244,7 @@ export default function UserProfileDropdown() {
                   <button
                     type="button"
                     onClick={copyEmail}
-                    className="mt-0.5 flex items-center gap-1 text-left text-[11px] text-zinc-400 transition-colors hover:text-white"
+                    className="mt-0.5 flex items-center gap-1 text-left text-[11px] text-[var(--muted)] transition-colors hover:text-[var(--text-primary)]"
                     title="Cliquer pour copier l'email"
                   >
                     <span className="truncate font-mono">{email}</span>
@@ -270,8 +270,8 @@ export default function UserProfileDropdown() {
                   }}
                   className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 transition-all ${
                     currentStatus === st
-                      ? "bg-white/[0.08] font-bold text-white shadow-sm"
-                      : "text-zinc-400 hover:bg-white/[0.03] hover:text-white"
+                      ? "bg-[var(--text-primary)]/[0.08] font-bold text-[var(--text-primary)] shadow-sm"
+                      : "text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.03] hover:text-[var(--text-primary)]"
                   }`}
                 >
                   <span
@@ -316,7 +316,7 @@ export default function UserProfileDropdown() {
                       setOpen(false);
                       item.action();
                     }}
-                    className="group flex w-full items-center justify-between rounded-lg border border-transparent p-2 text-xs text-zinc-200 transition-all hover:border-white/[0.06] hover:bg-white/[0.04] hover:text-white"
+                    className="group flex w-full items-center justify-between rounded-lg border border-transparent p-2 text-xs text-[var(--text-primary)] transition-all hover:border-[var(--text-primary)]/[0.06] hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
                   >
                     <div className="flex items-center gap-2.5">
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.04] text-zinc-300 transition-colors group-hover:bg-white/[0.08] group-hover:text-white">
@@ -351,7 +351,7 @@ export default function UserProfileDropdown() {
                   e.stopPropagation();
                   handleSignOut();
                 }}
-                className="group flex w-full items-center justify-between rounded-lg border border-transparent p-2 text-xs text-rose-400 transition-all hover:border-rose-500/20 hover:bg-rose-500/10 hover:text-rose-300"
+                className="group flex w-full items-center justify-between rounded-lg border border-transparent p-2 text-xs text-[var(--danger)] transition-all hover:border-[var(--danger)]/20 hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
               >
                 <div className="flex items-center gap-2.5">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-400 transition-colors group-hover:bg-rose-500/20 group-hover:text-rose-300">

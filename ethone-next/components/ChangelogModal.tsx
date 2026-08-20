@@ -92,7 +92,7 @@ export default function ChangelogModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:bg-white/[0.06] hover:text-[var(--foreground)]"
+                className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--foreground)]"
                 aria-label={i18n("close")}
               >
                 <X className="h-4 w-4" />
@@ -109,7 +109,7 @@ export default function ChangelogModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="w-full rounded-xl bg-[var(--accent)] py-2.5 text-xs font-bold text-zinc-950 shadow-lg shadow-[var(--accent)]/20 transition-all hover:opacity-90 hover:shadow-[var(--accent)]/30 active:scale-[0.98]"
+                className="w-full rounded-xl bg-[var(--accent-primary)] py-2.5 text-xs font-bold text-[var(--accent-contrast)] shadow-lg shadow-[var(--accent-primary)]/20 transition-all hover:opacity-90 hover:shadow-[var(--accent-primary)]/30 active:scale-[0.98]"
               >
                 {i18n("gotIt") || "Compris !"}
               </button>

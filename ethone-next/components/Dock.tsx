@@ -139,7 +139,7 @@ function Dock() {
                   type="button"
                   onClick={() => setLauncherOpen(false)}
                   aria-label={i18n("close")}
-                  className="rounded p-1 text-zinc-500 transition-colors hover:bg-zinc-200/80 hover:text-zinc-950 dark:hover:bg-white/[0.08] dark:hover:text-white"
+                  className="rounded p-1 text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)]/80 hover:text-[var(--background)] dark:hover:bg-[var(--text-primary)]/[0.08] dark:hover:text-[var(--text-primary)]"
                 >
                   <Icon name="close" className="h-4 w-4" />
                 </button>
@@ -153,7 +153,7 @@ function Dock() {
                       router.push(app.href);
                       setLauncherOpen(false);
                     }}
-                    className="flex flex-col items-center gap-1 rounded-xl border border-zinc-200/60 bg-zinc-100/80 p-2 text-zinc-700 transition-colors hover:border-zinc-300/80 hover:bg-zinc-200/80 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-zinc-300 dark:hover:border-white/15 dark:hover:bg-white/[0.06]"
+                    className="flex flex-col items-center gap-1 rounded-xl border border-[var(--border)]/60 bg-[var(--surface-raised)]/80 p-2 text-[var(--background)] transition-colors hover:border-[var(--border)]/80 hover:bg-[var(--surface-raised)]/80 dark:border-[var(--text-primary)]/[0.08] dark:bg-[var(--text-primary)]/[0.03] dark:text-[var(--text-primary)] dark:hover:border-[var(--text-primary)]/15 dark:hover:bg-[var(--text-primary)]/[0.06]"
                   >
                     <Icon name={app.icon} className="h-5 w-5" />
                     <span className="w-full truncate text-center text-[10px] leading-tight">{app.label}</span>

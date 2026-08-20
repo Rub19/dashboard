@@ -9,6 +9,7 @@ import { useProfiles, type Profile } from "@/lib/hooks/useProfiles";
 import { useToast } from "@/components/ToastProvider";
 import { useActiveProfile } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
+import Button from "@/components/ui/Button";
 import { buildDefaultProfileView, PROFILE_ACCENTS, PROFILE_COPY } from "@/lib/profile-repository";
 
 const TYPES = ["personal", "work", "development", "study", "gaming", "streaming", "creative"] as const;
@@ -133,7 +134,7 @@ export default function ProfileSelectionPage() {
                     setType(t);
                     setAccent(PROFILE_ACCENTS[t as Profile["type"]]);
                   }}
-                  className={`rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs ${type === t ? "bg-[var(--accent)] text-white" : "hover:bg-[var(--panel-bg)]"} backdrop-blur-[var(--panel-blur)]`}
+                  className={`rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs ${type === t ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "hover:bg-[var(--panel-bg)]"} backdrop-blur-[var(--panel-blur)]`}
                 >
                   {i18n(t)}
                 </button>
@@ -149,7 +150,7 @@ export default function ProfileSelectionPage() {
                   key={w}
                   type="button"
                   onClick={() => setWorkspace(w)}
-                  className={`flex items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs ${workspace === w ? "bg-[var(--accent)] text-white" : "hover:bg-[var(--panel-bg)]"} backdrop-blur-[var(--panel-blur)]`}
+                  className={`flex items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs ${workspace === w ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "hover:bg-[var(--panel-bg)]"} backdrop-blur-[var(--panel-blur)]`}
                 >
                   <Icon name={WORKSPACE_ICONS[w]} className="h-3.5 w-3.5" />
                   {i18n(w)}
@@ -167,7 +168,7 @@ export default function ProfileSelectionPage() {
                   type="button"
                   onClick={() => setAccent(a)}
                   aria-label={i18n(`accent${a.charAt(0).toUpperCase() + a.slice(1)}` as `${string}`)}
-                  className={`flex h-8 w-8 items-center justify-center rounded-full border border-[var(--panel-border)] ${accent === a ? "ring-2 ring-white" : "hover:opacity-80"}`}
+                  className={`flex h-8 w-8 items-center justify-center rounded-full border border-[var(--panel-border)] ${accent === a ? "ring-2 ring-[var(--text-primary)]" : "hover:opacity-80"}`}
                 >
                   <span className={`h-5 w-5 rounded-full ${ACCENT_CLASSES[a]}`} />
                 </button>
@@ -175,14 +176,16 @@ export default function ProfileSelectionPage() {
             </div>
           </div>
 
-          <button
+          <Button
             type="button"
+            variant="primary"
+            size="md"
             onClick={handleCreate}
-            disabled={creating || !name.trim()}
-            className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
+            disabled={!name.trim()}
+            isLoading={creating}
           >
             {i18n("create")}
-          </button>
+          </Button>
         </div>
       </Card3D>
 
@@ -233,7 +236,7 @@ export default function ProfileSelectionPage() {
               </div>
               <div className="flex items-center gap-1">
                 <button type="button" onClick={() => duplicate(p.id)} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--panel-bg)]"><Icon name="copy" className="h-4 w-4" /></button>
-                <button type="button" onClick={() => remove(p.id)} className="rounded p-1 text-red-400 hover:bg-[var(--panel-bg)]"><Icon name="trash-2" className="h-4 w-4" /></button>
+                <button type="button" onClick={() => remove(p.id)} className="rounded p-1 text-[var(--danger)] hover:bg-[var(--panel-bg)]"><Icon name="trash-2" className="h-4 w-4" /></button>
               </div>
             </div>
 
@@ -242,13 +245,15 @@ export default function ProfileSelectionPage() {
               <span className="text-xs text-[var(--muted)]">{i18n(`accent${p.accent.charAt(0).toUpperCase() + p.accent.slice(1)}` as `${string}`)}</span>
             </div>
 
-            <button
+            <Button
               type="button"
+              variant="primary"
+              size="md"
               onClick={() => handleSelect(p.id)}
-              className={`mt-3 w-full rounded-[var(--panel-radius)] px-3 py-2 text-sm font-semibold text-white ${active === p.id ? "bg-emerald-500" : "bg-[var(--accent)]"}`}
+              className="mt-3 w-full"
             >
               {active === p.id ? i18n("active") : i18n("select")}
-            </button>
+            </Button>
           </Card3D>
         ))}
       </div>

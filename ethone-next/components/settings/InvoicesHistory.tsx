@@ -43,14 +43,14 @@ export default function InvoicesHistory() {
           <button
             type="button"
             aria-label={i18n("filter") || "Filtrer"}
-            className="rounded-lg p-1.5 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+            className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/6 hover:text-[var(--text-primary)]"
           >
             <Filter className="h-4 w-4" />
           </button>
           <button
             type="button"
             aria-label={i18n("download") || "Télécharger"}
-            className="rounded-lg p-1.5 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+            className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/6 hover:text-[var(--text-primary)]"
           >
             <Download className="h-4 w-4" />
           </button>
@@ -104,14 +104,14 @@ export default function InvoicesHistory() {
                       <button
                         type="button"
                         aria-label={i18n("downloadPdf") || "Télécharger le PDF"}
-                        className="rounded-lg p-1.5 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+                        className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/6 hover:text-[var(--text-primary)]"
                       >
                         <FileText className="h-3.5 w-3.5" />
                       </button>
                       <button
                         type="button"
                         aria-label={i18n("downloadReceipt") || "Télécharger le reçu"}
-                        className="rounded-lg p-1.5 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+                        className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/6 hover:text-[var(--text-primary)]"
                       >
                         <Download className="h-3.5 w-3.5" />
                       </button>

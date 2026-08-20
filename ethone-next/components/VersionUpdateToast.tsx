@@ -49,7 +49,7 @@ export default function VersionUpdateToast() {
               <button
                 type="button"
                 onClick={() => forceAppReload(newVersion, newData)}
-                className="flex shrink-0 items-center gap-1.5 rounded-xl bg-emerald-500 px-3.5 py-2 text-xs font-bold text-zinc-950 shadow-md shadow-emerald-500/20 transition-all hover:bg-emerald-400 hover:shadow-lg active:scale-95"
+                className="flex shrink-0 items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3.5 py-2 text-xs font-bold text-[var(--accent-contrast)] shadow-md shadow-[var(--accent-primary)]/20 transition-all hover:bg-[var(--accent-primary)] hover:shadow-lg active:scale-95"
               >
                 <RefreshCw className="h-3.5 w-3.5" />
                 {i18n("updateNow", "Mettre à jour")}
@@ -59,7 +59,7 @@ export default function VersionUpdateToast() {
                 type="button"
                 onClick={dismiss}
                 aria-label={i18n("later", "Plus tard")}
-                className="rounded-lg p-2 text-zinc-500 transition-colors hover:bg-white/[0.05] hover:text-white"
+                className="rounded-lg p-2 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.05] hover:text-[var(--text-primary)]"
               >
                 <X className="h-4 w-4" />
               </button>

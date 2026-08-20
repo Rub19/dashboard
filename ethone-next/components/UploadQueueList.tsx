@@ -101,7 +101,7 @@ function QueueItem({
                 <button
                   type="button"
                   onClick={onRetry}
-                  className="flex items-center gap-1 rounded-lg border border-rose-500/30 bg-rose-500/10 px-2 py-1 text-[10px] font-semibold text-rose-400 transition hover:bg-rose-500/20"
+                  className="flex items-center gap-1 rounded-lg border border-[var(--danger)]/30 bg-[var(--danger)]/10 px-2 py-1 text-[10px] font-semibold text-[var(--danger)] transition hover:bg-[var(--danger)]/20"
                   aria-label={i18n("retry")}
                 >
                   <RefreshCcw className="h-3 w-3" />
@@ -113,7 +113,7 @@ function QueueItem({
                 <button
                   type="button"
                   onClick={onReplace}
-                  className="rounded-lg p-1.5 text-zinc-400 transition hover:bg-white/[0.06] hover:text-white"
+                  className="rounded-lg p-1.5 text-[var(--muted)] transition hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                   aria-label={i18n("replace")}
                 >
                   <Replace className="h-4 w-4" />
@@ -123,7 +123,7 @@ function QueueItem({
               <button
                 type="button"
                 onClick={onRemove}
-                className="rounded-lg p-1.5 text-zinc-400 transition hover:bg-rose-500/10 hover:text-rose-400"
+                className="rounded-lg p-1.5 text-[var(--muted)] transition hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
                 aria-label={i18n("remove")}
               >
                 <Trash2 className="h-4 w-4" />

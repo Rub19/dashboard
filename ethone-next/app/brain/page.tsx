@@ -19,6 +19,7 @@ import { AUTOMATION_ACTIONS } from "@/lib/brain/automation";
 import { sanitizeMemory, type BrainMemoryItem } from "@/lib/brain-context";
 import Select from "@/components/ui/Select";
 import { Checkbox } from "@/components/ui/Checkbox";
+import Button from "@/components/ui/Button";
 
 type Tab = "chat" | "briefing" | "context" | "memory" | "actions" | "automations" | "providers" | "preferences" | "privacy" | "history" | "diagnostics" | "wrapup";
 
@@ -158,7 +159,7 @@ export default function BrainPage() {
           />
           <input type="text" value={memoryKey} onChange={(e) => setMemoryKey(e.target.value)} placeholder={i18n("key")} className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
           <input type="text" value={memoryValue} onChange={(e) => setMemoryValue(e.target.value)} placeholder={i18n("value")} className="min-w-0 flex-[2] rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-          <button type="button" onClick={handleSaveMemory} className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white hover:opacity-90">{i18n("save")}</button>
+          <Button type="button" variant="primary" size="md" onClick={handleSaveMemory}>{i18n("save")}</Button>
         </div>
         <button type="button" onClick={brain.loadMemories} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-2 text-sm hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]">{i18n("loadMemories")}</button>
         <div className="space-y-2">
@@ -174,7 +175,7 @@ export default function BrainPage() {
                   const value = window.prompt(i18n("editValue"), m.value);
                   if (value !== null) brain.editMemory(m.id, value).then(() => success(i18n("saved"))).catch((err) => showError(String(err)));
                 }} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--panel-bg)]"><Icon name="pencil" className="h-4 w-4" /></button>
-                <button type="button" onClick={() => handleDeleteMemory(m.id)} className="rounded p-1 text-red-400 hover:bg-[var(--panel-bg)]"><Icon name="trash-2" className="h-4 w-4" /></button>
+                <button type="button" onClick={() => handleDeleteMemory(m.id)} className="rounded p-1 text-[var(--danger)] hover:bg-[var(--panel-bg)]"><Icon name="trash-2" className="h-4 w-4" /></button>
               </div>
             </Card3D>
           ))}
@@ -187,7 +188,7 @@ export default function BrainPage() {
               <button
                 type="button"
                 onClick={handleClearSensitiveMemory}
-                className="rounded-[var(--panel-radius)] border border-red-400/30 px-3 py-1.5 text-xs font-medium text-red-400 hover:bg-red-400/10"
+                className="rounded-[var(--panel-radius)] border border-[var(--danger)]/30 px-3 py-1.5 text-xs font-medium text-[var(--danger)] hover:bg-[var(--danger)]/10"
               >
                 {i18n("brainClearSensitive")}
               </button>
@@ -236,7 +237,7 @@ export default function BrainPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <p className="font-medium">{def.title}</p>
-                <button type="button" onClick={() => handleExecute(def.id)} className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90">{i18n("execute")}</button>
+                <Button type="button" variant="primary" size="sm" onClick={() => handleExecute(def.id)}>{i18n("execute")}</Button>
               </div>
               <p className="text-xs text-[var(--muted)]">{def.description}</p>
               {Object.entries(def.parameters).map(([key, type]) => (
@@ -279,7 +280,7 @@ export default function BrainPage() {
             aria-label={i18n("action")}
             className="min-w-0"
           />
-          <button type="button" onClick={handleAddAutomation} className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white hover:opacity-90">{i18n("add")}</button>
+          <Button type="button" variant="primary" size="md" onClick={handleAddAutomation}>{i18n("add")}</Button>
         </div>
         <div className="space-y-2">
           {brain.automations.map((rule) => (
@@ -291,7 +292,7 @@ export default function BrainPage() {
                 </div>
                 <div className="flex items-center gap-1">
                   <button type="button" onClick={() => brain.toggleAutomationRule(rule.id)} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--panel-bg)]"><Icon name={rule.enabled ? "toggle-right" : "toggle-left"} className="h-4 w-4" /></button>
-                  <button type="button" onClick={() => brain.removeAutomationRule(rule.id)} className="rounded p-1 text-red-400 hover:bg-[var(--panel-bg)]"><Icon name="trash-2" className="h-4 w-4" /></button>
+                  <button type="button" onClick={() => brain.removeAutomationRule(rule.id)} className="rounded p-1 text-[var(--danger)] hover:bg-[var(--panel-bg)]"><Icon name="trash-2" className="h-4 w-4" /></button>
                 </div>
               </div>
             </Card3D>
@@ -388,17 +389,18 @@ export default function BrainPage() {
             <Card3D key={p.id}>
               <div className="flex items-center justify-between">
                 <span className="font-medium">{p.label}</span>
-                <button
+                <Button
                   type="button"
+                  variant="primary"
+                  size="sm"
                   onClick={() => brain.testProvider(p.id).then((res) => {
                     if (res?.data?.latencyMs) success(`${p.label} — ${res.data.latencyMs}ms`);
                     else showError(i18n("error"));
                   })}
                   disabled={p.status !== "backend-ready" && p.status !== "ready"}
-                  className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
                 >
                   {i18n("brainRunDiagnostics")}
-                </button>
+                </Button>
               </div>
               {brain.providerStatus?.provider === p.id && (
                 <p className="text-xs text-[var(--muted)]">{i18n("brainLatency")}: {brain.providerStatus.latencyMs}ms</p>
@@ -423,14 +425,15 @@ export default function BrainPage() {
             <p className="text-xs text-[var(--muted)]">{i18n("brainNoWrapup")}</p>
           </Card3D>
         )}
-        <button
+        <Button
           type="button"
+          variant="primary"
+          size="md"
           onClick={() => brain.send(i18n("wrapupPrompt"))}
           data-haptic
-          className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white"
         >
           {i18n("brainWrapup")}
-        </button>
+        </Button>
         <button
           type="button"
           onClick={() => setWrapupOpen(true)}
@@ -511,14 +514,16 @@ export default function BrainPage() {
             )}
           </div>
 
-          <button
+          <Button
             type="button"
+            variant="primary"
+            size="md"
             onClick={() => { brain.send(i18n("wrapupPrompt")); setWrapupOpen(false); }}
             data-haptic
-            className="w-full rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white"
+            className="w-full"
           >
             {i18n("brainWrapup")}
-          </button>
+          </Button>
         </div>
       </Modal>
     );
@@ -535,7 +540,7 @@ export default function BrainPage() {
                 key={p}
                 type="button"
                 onClick={() => brain.patch("persona", p)}
-                className={`rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs ${brain.preferences.persona === p ? "bg-[var(--accent)] text-white" : "hover:bg-[var(--panel-bg)]"} backdrop-blur-[var(--panel-blur)]`}
+                className={`rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs ${brain.preferences.persona === p ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "hover:bg-[var(--panel-bg)]"} backdrop-blur-[var(--panel-blur)]`}
               >
                 {p}
               </button>
@@ -546,7 +551,7 @@ export default function BrainPage() {
           <p className="mb-2 text-sm font-medium">{i18n("tone")}</p>
           <div className="flex flex-wrap gap-2">
             {BRAIN_TONES.map((t) => (
-              <button key={t} type="button" onClick={() => brain.patch("tone", t)} className={`rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs ${brain.preferences.tone === t ? "bg-[var(--accent)] text-white" : "hover:bg-[var(--panel-bg)]"} backdrop-blur-[var(--panel-blur)]`}>{t}</button>
+              <button key={t} type="button" onClick={() => brain.patch("tone", t)} className={`rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs ${brain.preferences.tone === t ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "hover:bg-[var(--panel-bg)]"} backdrop-blur-[var(--panel-blur)]`}>{t}</button>
             ))}
           </div>
         </Card3D>
@@ -554,7 +559,7 @@ export default function BrainPage() {
           <p className="mb-2 text-sm font-medium">{i18n("detail")}</p>
           <div className="flex flex-wrap gap-2">
             {BRAIN_DETAIL.map((d) => (
-              <button key={d} type="button" onClick={() => brain.patch("detail", d)} className={`rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs ${brain.preferences.detail === d ? "bg-[var(--accent)] text-white" : "hover:bg-[var(--panel-bg)]"} backdrop-blur-[var(--panel-blur)]`}>{d}</button>
+              <button key={d} type="button" onClick={() => brain.patch("detail", d)} className={`rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs ${brain.preferences.detail === d ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "hover:bg-[var(--panel-bg)]"} backdrop-blur-[var(--panel-blur)]`}>{d}</button>
             ))}
           </div>
         </Card3D>

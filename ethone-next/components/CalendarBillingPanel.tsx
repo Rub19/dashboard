@@ -182,8 +182,8 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
                 className={cn(
                   "rounded-lg px-2 py-1 text-[10px] font-medium transition-colors",
                   b.paid
-                    ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
-                    : "bg-rose-500/10 text-rose-400 hover:bg-rose-500/20",
+                    ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/20"
+                    : "bg-[var(--danger)]/10 text-[var(--danger)] hover:bg-[var(--danger)]/20",
                 )}
               >
                 {b.paid ? i18n("paid") : i18n("unpaid")}
@@ -191,7 +191,7 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
               <button
                 type="button"
                 onClick={() => handleDelete(b)}
-                className="rounded p-1.5 text-zinc-500 hover:text-rose-400"
+                className="rounded p-1.5 text-[var(--muted)] hover:text-[var(--danger)]"
                 aria-label={i18n("delete")}
               >
                 <Icon name="trash-2" className="h-4 w-4" />
@@ -241,14 +241,14 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
             <button
               type="button"
               onClick={handleAdd}
-              className="flex-1 rounded-xl bg-emerald-500 px-3 py-2 text-xs font-semibold text-zinc-950 hover:bg-emerald-400"
+              className="flex-1 rounded-xl bg-[var(--accent-primary)] px-3 py-2 text-xs font-semibold text-[var(--accent-contrast)] hover:bg-[var(--accent-primary)]"
             >
               {i18n("save")}
             </button>
             <button
               type="button"
               onClick={resetForm}
-              className="rounded-xl border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-xs text-zinc-300 hover:text-white"
+              className="rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-3 py-2 text-xs text-[var(--text-primary)] hover:text-[var(--text-primary)]"
             >
               {i18n("cancel")}
             </button>
@@ -258,7 +258,7 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
         <button
           type="button"
           onClick={() => setAdding(true)}
-          className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl bg-emerald-500/10 px-3 py-2 text-xs font-medium text-emerald-400 transition-colors hover:bg-emerald-500/20"
+          className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)]/10 px-3 py-2 text-xs font-medium text-[var(--accent-primary)] transition-colors hover:bg-[var(--accent-primary)]/20"
         >
           <Icon name="plus" className="h-3.5 w-3.5" />
           {i18n("addBill")}

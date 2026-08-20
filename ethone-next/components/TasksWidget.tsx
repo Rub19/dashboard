@@ -135,10 +135,10 @@ export default function TasksWidget({ className = "", data, scrollable = true }:
           <button
             type="submit"
             disabled={!newTaskTitle.trim() || loading}
-            className={`flex shrink-0 items-center justify-center rounded-lg p-2 text-zinc-950 font-bold transition-all active:scale-95 ${
+            className={`flex shrink-0 items-center justify-center rounded-lg p-2 text-[var(--background)] font-bold transition-all active:scale-95 ${
               newTaskTitle.trim()
-                ? "bg-emerald-500 hover:bg-emerald-400 shadow-md"
-                : "cursor-not-allowed bg-zinc-700 text-zinc-500"
+                ? "bg-[var(--accent-primary)] hover:bg-[var(--accent-primary)] shadow-md"
+                : "cursor-not-allowed bg-[var(--surface-raised)] text-[var(--muted)]"
             }`}
           >
             <Plus className="h-4 w-4" />

@@ -130,7 +130,7 @@ export default function FlowCard({
           <button
             type="button"
             onClick={() => setMenuOpen((v) => !v)}
-            className="rounded-lg p-1.5 text-zinc-500 transition-colors hover:bg-white/[0.04] hover:text-white"
+            className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
             aria-label="Options"
           >
             <MoreVertical className="h-4 w-4" />
@@ -147,8 +147,8 @@ export default function FlowCard({
                   }}
                   className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs transition-colors ${
                     a.danger
-                      ? "text-red-400 hover:bg-red-500/[0.08]"
-                      : "text-zinc-300 hover:bg-white/[0.04] hover:text-white"
+                      ? "text-[var(--danger)] hover:bg-[var(--danger)]/[0.08]"
+                      : "text-[var(--text-primary)] hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
                   }`}
                 >
                   {a.icon && <Icon name={a.icon} className="h-3.5 w-3.5" />}
@@ -197,7 +197,7 @@ export default function FlowCard({
               <button
                 type="button"
                 onClick={onEdit}
-                className="rounded-lg p-1.5 text-zinc-500 transition-colors hover:bg-white/[0.04] hover:text-white"
+                className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
                 aria-label="Éditer"
               >
                 <Edit3 className="h-3.5 w-3.5" />
@@ -207,7 +207,7 @@ export default function FlowCard({
               <button
                 type="button"
                 onClick={onDuplicate}
-                className="rounded-lg p-1.5 text-zinc-500 transition-colors hover:bg-white/[0.04] hover:text-white"
+                className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
                 aria-label="Dupliquer"
               >
                 <Copy className="h-3.5 w-3.5" />
@@ -217,7 +217,7 @@ export default function FlowCard({
               <button
                 type="button"
                 onClick={onLogs}
-                className="rounded-lg p-1.5 text-zinc-500 transition-colors hover:bg-white/[0.04] hover:text-white"
+                className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
                 aria-label="Logs"
               >
                 <History className="h-3.5 w-3.5" />
@@ -227,7 +227,7 @@ export default function FlowCard({
               <button
                 type="button"
                 onClick={onDelete}
-                className="rounded-lg p-1.5 text-zinc-500 transition-colors hover:bg-red-500/[0.08] hover:text-red-400"
+                className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--danger)]/[0.08] hover:text-[var(--danger)]"
                 aria-label="Supprimer"
               >
                 <Trash2 className="h-3.5 w-3.5" />
@@ -243,8 +243,8 @@ export default function FlowCard({
                 disabled={running}
                 className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold transition-all active:scale-95 ${
                   active || running
-                    ? "bg-zinc-800 text-zinc-200 hover:bg-zinc-700"
-                    : "bg-white/[0.06] text-zinc-200 hover:bg-white/10"
+                    ? "bg-[var(--surface-raised)] text-[var(--text-primary)] hover:bg-[var(--surface-raised)]"
+                    : "bg-[var(--text-primary)]/[0.06] text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10"
                 }`}
               >
                 {running ? (

@@ -9,6 +9,7 @@ import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { useToast } from "@/components/ToastProvider";
 import Link from "next/link";
 import FlowAutomations from "@/components/FlowAutomations";
+import Button from "@/components/ui/Button";
 
 const WIDGET_ICONS: Record<string, string> = {
   notes: "notebook-pen",
@@ -142,18 +143,16 @@ function WorkspaceCard({
           </div>
 
           <div className="flex items-center gap-2">
-            <button
+            <Button
               type="button"
+              variant={isActive ? "primary" : "secondary"}
+              size="md"
               onClick={onStart}
-              className={`inline-flex h-9 items-center gap-1.5 rounded-xl px-3 text-xs font-semibold transition-all active:scale-95 ${
-                isActive
-                  ? "bg-[var(--accent)] text-white hover:opacity-90"
-                  : "bg-white/[0.06] text-white hover:bg-white/[0.10]"
-              }`}
+              className="active:scale-95"
+              leftIcon={<Icon name={isActive ? "check" : "play"} className="h-3.5 w-3.5" />}
             >
-              <Icon name={isActive ? "check" : "play"} className="h-3.5 w-3.5" />
               {isActive ? i18n("active") : i18n("start")}
-            </button>
+            </Button>
             <Link
               href={w.id === "gaming" ? "/flows" : "/spaces"}
               className="text-xs text-zinc-400 hover:text-[var(--accent)]"

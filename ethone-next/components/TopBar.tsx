@@ -53,7 +53,7 @@ const SidebarTopToggle = memo(function SidebarTopToggle() {
   return (
     <AnimatedSidebarTrigger
       type="button"
-      className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.04] text-zinc-400 shadow-lg backdrop-blur-md transition-[color,background-color,border-color,opacity,transform] hover:border-white/20 hover:bg-white/[0.08] hover:text-white active:scale-95 cursor-pointer select-none"
+      className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] text-[var(--muted)] shadow-lg backdrop-blur-md transition-[color,background-color,border-color,opacity,transform] hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95 cursor-pointer select-none"
       aria-label="Basculer la barre latérale"
       title={open ? "Réduire" : "Ouvrir"}
     >
@@ -75,7 +75,7 @@ const WeatherQuickButton = memo(function WeatherQuickButton() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="flex h-9 items-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.03] px-2 text-sm transition-colors hover:bg-white/[0.06] sm:px-3"
+        className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] px-2 text-sm transition-colors hover:bg-[var(--text-primary)]/[0.06] sm:px-3"
         title="Météo"
       >
         <CloudSun className="h-4 w-4 pointer-events-none text-amber-400" />
@@ -101,7 +101,7 @@ const ThemeToggle = memo(function ThemeToggle() {
     <button
       type="button"
       onClick={() => update({ darkMode: !isDark })}
-      className="relative flex h-10 w-10 items-center justify-center rounded-xl text-zinc-400 transition-[color,background-color,border-color,opacity,transform] duration-150 hover:bg-white/[0.08] hover:text-white active:scale-95 cursor-pointer select-none"
+      className="relative flex h-10 w-10 items-center justify-center rounded-xl text-[var(--muted)] transition-[color,background-color,border-color,opacity,transform] duration-150 hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95 cursor-pointer select-none"
       aria-label="Thème"
     >
       <Icon className="h-5 w-5 pointer-events-none" />
@@ -119,8 +119,8 @@ const FocusToggle = memo(function FocusToggle() {
       onClick={() => (isActive ? focus.stop() : focus.start("pomodoro"))}
       className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-[color,background-color,border-color,opacity,transform] duration-150 cursor-pointer select-none ${
         isActive
-          ? "bg-emerald-500/15 text-emerald-400"
-          : "text-zinc-400 hover:bg-white/[0.08] hover:text-white active:scale-95"
+          ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]"
+          : "text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95"
       }`}
       aria-label={isActive ? "Arrêter le minuteur" : "Démarrer le minuteur"}
     >
@@ -138,8 +138,8 @@ const DynamicIslandToggle = memo(function DynamicIslandToggle() {
       onClick={toggle}
       className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-[color,background-color,border-color,opacity,transform] duration-150 cursor-pointer select-none ${
         visible
-          ? "text-zinc-400 hover:bg-white/[0.08] hover:text-white active:scale-95"
-          : "text-zinc-600 hover:bg-white/[0.08] hover:text-zinc-400 active:scale-95"
+          ? "text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95"
+          : "text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--muted)] active:scale-95"
       }`}
       aria-label={visible ? "Masquer la Dynamic Island" : "Afficher la Dynamic Island"}
       title={visible ? "Masquer la Dynamic Island" : "Afficher la Dynamic Island"}

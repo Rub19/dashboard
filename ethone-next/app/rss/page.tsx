@@ -6,6 +6,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { fetchWorker } from "@/lib/api";
 import { Icon } from "@/lib/icons";
 import { useToast } from "@/components/ToastProvider";
+import Button from "@/components/ui/Button";
 
 function isAllowedHttpUrl(input: string): boolean {
   try {
@@ -65,15 +66,17 @@ export default function RssPage() {
               className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
             />
           </label>
-          <button
+          <Button
             type="button"
+            variant="primary"
+            size="md"
             onClick={handleLoad}
-            disabled={loading || !url.trim()}
-            className="flex items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
+            disabled={!url.trim()}
+            isLoading={loading}
+            leftIcon={<Icon name="rss" className="h-4 w-4" />}
           >
-            {loading ? <Icon name="loader-2" className="h-4 w-4 animate-spin" /> : <Icon name="rss" className="h-4 w-4" />}
             {i18n("load")}
-          </button>
+          </Button>
         </div>
       </Card3D>
 

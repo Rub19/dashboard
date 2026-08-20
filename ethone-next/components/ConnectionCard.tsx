@@ -405,7 +405,7 @@ export default function ConnectionCard({
                 <button
                   type="button"
                   onClick={() => handleCopy(clientSecret, "clientSecret")}
-                  className="text-zinc-500 transition hover:text-zinc-200"
+                  className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
                   aria-label={i18n("copy")}
                   tabIndex={-1}
                 >
@@ -414,7 +414,7 @@ export default function ConnectionCard({
                 <button
                   type="button"
                   onClick={() => setShowClientSecret((v) => !v)}
-                  className="text-zinc-500 transition hover:text-zinc-200"
+                  className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
                   aria-label={showClientSecret ? i18n("hide") : i18n("show")}
                   tabIndex={-1}
                 >
@@ -434,7 +434,7 @@ export default function ConnectionCard({
                   <button
                     type="button"
                     onClick={() => handleCopy(`${origin}${config.callbackPath}`, "redirectUri")}
-                    className="text-zinc-500 transition hover:text-zinc-200"
+                    className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
                     aria-label={i18n("copy")}
                   >
                     {copied === "redirectUri" ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
@@ -466,7 +466,7 @@ export default function ConnectionCard({
                 type="button"
                 onClick={handleConnect}
                 disabled={!clientId.trim() || !OAUTH_PROVIDERS[integration.id] || submitting}
-                className="col-span-2 flex items-center justify-center gap-1.5 rounded-xl bg-emerald-500 py-2 px-3 text-xs font-bold text-zinc-950 shadow-md shadow-emerald-500/20 transition-all hover:bg-emerald-400 active:scale-95 disabled:opacity-50"
+                className="col-span-2 flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] py-2 px-3 text-xs font-bold text-[var(--accent-contrast)] shadow-md shadow-[var(--accent-primary)]/20 transition-all hover:bg-[var(--accent-primary)] active:scale-95 disabled:opacity-50"
               >
                 {submitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <PlugZap className="h-3.5 w-3.5" />}
                 <span>{i18n("connect", "Connecter")}</span>
@@ -475,7 +475,7 @@ export default function ConnectionCard({
                 type="button"
                 onClick={handleTest}
                 disabled={submitting || !onTest}
-                className="col-span-1 flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] py-2 px-2 text-xs font-medium text-zinc-300 transition-all hover:bg-white/[0.08] hover:text-white disabled:opacity-50"
+                className="col-span-1 flex items-center justify-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] py-2 px-2 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] disabled:opacity-50"
               >
                 <RefreshCw className="h-3.5 w-3.5" />
                 <span className="truncate">{i18n("testConnection")}</span>
@@ -491,7 +491,7 @@ export default function ConnectionCard({
               type="button"
               onClick={handleTest}
               disabled={submitting || !onTest}
-              className="flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] py-2 px-2 text-xs font-medium text-zinc-300 transition-all hover:bg-white/[0.08] hover:text-white disabled:opacity-50"
+              className="flex items-center justify-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] py-2 px-2 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] disabled:opacity-50"
             >
               <RefreshCw className="h-3.5 w-3.5" />
               <span className="truncate">{i18n("testConnection")}</span>
@@ -500,7 +500,7 @@ export default function ConnectionCard({
               type="button"
               onClick={handleDisconnect}
               disabled={submitting}
-              className="flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/20 px-3 py-2 text-xs font-medium text-rose-400 transition-all hover:border-rose-500/40 hover:bg-rose-500/10 disabled:opacity-50"
+              className="flex items-center justify-center gap-1.5 rounded-xl border border-[var(--danger)]/20 px-3 py-2 text-xs font-medium text-[var(--danger)] transition-all hover:border-[var(--danger)]/40 hover:bg-[var(--danger)]/10 disabled:opacity-50"
             >
               <LogOut className="h-3.5 w-3.5" />
               <span className="truncate">{i18n("disconnect", "Déconnecter")}</span>
@@ -577,8 +577,8 @@ export default function ConnectionCard({
                 disabled={submitting}
                 className={`flex items-center justify-center gap-1.5 rounded-xl py-2 px-2 text-xs font-bold transition-all active:scale-95 disabled:opacity-50 ${
                   isConnected
-                    ? "col-span-1 bg-purple-600 text-white shadow-lg shadow-purple-600/20 hover:bg-purple-500"
-                    : "col-span-2 bg-emerald-500 text-zinc-950 shadow-md shadow-emerald-500/20 hover:bg-emerald-400"
+                    ? "col-span-1 bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-lg shadow-[var(--accent-primary)]/20 hover:bg-[var(--accent-primary)]"
+                    : "col-span-2 bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-md shadow-[var(--accent-primary)]/20 hover:bg-[var(--accent-primary)]"
                 }`}
               >
                 {submitting ? (
@@ -594,7 +594,7 @@ export default function ConnectionCard({
                 type="button"
                 onClick={handleTest}
                 disabled={submitting || !onTest}
-                className="col-span-1 flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] py-2 px-2 text-xs font-medium text-zinc-300 transition-all hover:bg-white/[0.08] hover:text-white disabled:opacity-50"
+                className="col-span-1 flex items-center justify-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] py-2 px-2 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] disabled:opacity-50"
               >
                 <RefreshCw className="h-3.5 w-3.5" />
                 <span className="truncate">{i18n("testConnection")}</span>
@@ -604,7 +604,7 @@ export default function ConnectionCard({
                   type="button"
                   onClick={handleDisconnect}
                   disabled={submitting}
-                  className="col-span-1 flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/20 px-2 py-2 text-xs font-medium text-rose-400 transition-all hover:border-rose-500/40 hover:bg-rose-500/10 disabled:opacity-50"
+                  className="col-span-1 flex items-center justify-center gap-1.5 rounded-xl border border-[var(--danger)]/20 px-2 py-2 text-xs font-medium text-[var(--danger)] transition-all hover:border-[var(--danger)]/40 hover:bg-[var(--danger)]/10 disabled:opacity-50"
                 >
                   <Unlink className="h-3.5 w-3.5" />
                   <span className="truncate">{i18n("disconnect", "Déconnecter")}</span>
@@ -620,7 +620,7 @@ export default function ConnectionCard({
         <button
           type="button"
           onClick={() => setRawOpen((v) => !v)}
-          className="flex w-full items-center justify-between text-[10px] text-zinc-500 hover:text-zinc-300 transition-colors"
+          className="flex w-full items-center justify-between text-[10px] text-[var(--muted)] hover:text-[var(--text-primary)] transition-colors"
         >
           <span className="flex items-center gap-1.5">
             {rawOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
@@ -730,7 +730,7 @@ function FieldInput({
           <button
             type="button"
             onClick={() => onCopy(value, field.key)}
-            className="text-zinc-500 transition hover:text-zinc-200"
+            className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
             aria-label={i18n("copy")}
             tabIndex={-1}
           >
@@ -740,7 +740,7 @@ function FieldInput({
             <button
               type="button"
               onClick={onTogglePassword}
-              className="text-zinc-500 transition hover:text-zinc-200"
+              className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
               aria-label={visible ? i18n("hide") : i18n("show")}
               tabIndex={-1}
             >
@@ -779,7 +779,7 @@ function FieldGuide({
         type="button"
         onClick={onToggle}
         aria-expanded={isOpen}
-        className="mt-1.5 flex w-fit items-center gap-1.5 text-[11px] text-purple-400 transition-colors hover:text-purple-300"
+        className="mt-1.5 flex w-fit items-center gap-1.5 text-[11px] text-[var(--accent-primary)] transition-colors hover:text-[var(--accent-primary)]"
       >
         <HelpCircle className="h-3.5 w-3.5" />
         {isOpen ? "Masquer le guide" : `Comment obtenir ${label} ?`}
@@ -844,7 +844,7 @@ function ConfigGuidePanel({
         type="button"
         onClick={onToggle}
         aria-expanded={isOpen}
-        className="flex w-fit items-center gap-1.5 text-[11px] text-purple-400 transition-colors hover:text-purple-300"
+        className="flex w-fit items-center gap-1.5 text-[11px] text-[var(--accent-primary)] transition-colors hover:text-[var(--accent-primary)]"
       >
         <HelpCircle className="h-3.5 w-3.5" />
         {isOpen ? "Masquer le guide" : "Guide pas-à-pas"}
@@ -878,7 +878,7 @@ function ConfigGuidePanel({
                           <button
                             type="button"
                             onClick={() => onCopy(copyValue, copyKey)}
-                            className="text-zinc-500 transition hover:text-zinc-200"
+                            className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
                             aria-label="Copier"
                           >
                             {copied === copyKey ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}

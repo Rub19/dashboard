@@ -91,7 +91,7 @@ export default function BrainBriefingPanel() {
               className={`rounded border px-2 py-1 text-xs font-medium transition-colors ${
                 hidden.has(s.id)
                   ? "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--muted)]"
-                  : "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
+                  : "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
               } backdrop-blur-[var(--panel-blur)]`}
             >
               {s.label}

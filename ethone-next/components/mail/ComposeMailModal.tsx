@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Paperclip, Sparkles, Send, Loader2, Shuffle } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
+import Button from "@/components/ui/Button";
 import { type MailAlias } from "@/lib/hooks/useMail";
 
 export type ComposeState = {
@@ -224,13 +225,15 @@ export default function ComposeMailModal({
             {/* Header */}
             <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-3">
               <h2 className="text-sm font-semibold text-white">{i18n("newMessage") || "Nouveau message"}</h2>
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="sm"
                 onClick={handleClose}
-                className="rounded p-1 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+                className="h-8 w-8 p-0 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               >
                 <X className="h-4 w-4" />
-              </button>
+              </Button>
             </div>
 
             {/* Fields */}
@@ -285,31 +288,38 @@ export default function ComposeMailModal({
                       className="min-w-[6rem] flex-1 bg-transparent text-xs text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] disabled:opacity-50"
                     />
                     <span className="text-[11px] text-zinc-500">@ethone.dev</span>
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="sm"
                       onClick={handleGenerateRandom}
                       disabled={aliasLoading}
-                      className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-zinc-300 transition-colors hover:bg-white/[0.06] disabled:opacity-50"
+                      leftIcon={<Shuffle className="h-3 w-3" />}
+                      className="rounded-md px-2 py-1 text-[var(--text-primary)]"
                     >
-                      <Shuffle className="h-3 w-3" />
                       {i18n("random") || "Aléatoire"}
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="sm"
                       onClick={handleCreateRandomAlias}
                       disabled={aliasLoading}
-                      className="rounded-md px-2 py-1 text-[11px] text-zinc-300 transition-colors hover:bg-white/[0.06] disabled:opacity-50"
+                      className="rounded-md px-2 py-1 text-[var(--text-primary)]"
                     >
                       {i18n("randomFull") || "Tout aléatoire"}
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="button"
+                      variant="primary"
+                      size="sm"
                       onClick={handleCreateAlias}
                       disabled={aliasLoading || !newAliasInput.trim()}
-                      className="flex items-center gap-1 rounded-md bg-[var(--accent-color,#a855f7)] px-2 py-1 text-[11px] text-white transition-colors hover:brightness-110 disabled:opacity-50"
+                      isLoading={aliasLoading}
+                      className="rounded-md px-2 py-1"
                     >
-                      {aliasLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : i18n("create") || "Créer"}
-                    </button>
+                      {i18n("create") || "Créer"}
+                    </Button>
                   </div>
                 )}
 
@@ -325,7 +335,7 @@ export default function ComposeMailModal({
                       className="flex items-center gap-1 rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[11px] text-emerald-300"
                     >
                       {t}
-                      <button type="button" onClick={() => removeTag(to, setTo, i)} className="text-emerald-400 hover:text-emerald-200">
+                      <button type="button" onClick={() => removeTag(to, setTo, i)} className="text-[var(--accent-primary)] hover:text-[var(--text-primary)]">
                         &times;
                       </button>
                     </span>
@@ -350,7 +360,7 @@ export default function ComposeMailModal({
                       className="flex items-center gap-1 rounded-md bg-white/[0.06] px-1.5 py-0.5 text-[11px] text-zinc-300"
                     >
                       {c}
-                      <button type="button" onClick={() => removeTag(cc, setCc, i)} className="text-zinc-400 hover:text-white">
+                      <button type="button" onClick={() => removeTag(cc, setCc, i)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
                         &times;
                       </button>
                     </span>
@@ -374,7 +384,7 @@ export default function ComposeMailModal({
                       className="flex items-center gap-1 rounded-md bg-white/[0.06] px-1.5 py-0.5 text-[11px] text-zinc-300"
                     >
                       {b}
-                      <button type="button" onClick={() => removeTag(bcc, setBcc, i)} className="text-zinc-400 hover:text-white">
+                      <button type="button" onClick={() => removeTag(bcc, setBcc, i)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
                         &times;
                       </button>
                     </span>
@@ -421,7 +431,7 @@ export default function ComposeMailModal({
                     <button
                       type="button"
                       onClick={() => setAttachments(attachments.filter((_, idx) => idx !== i))}
-                      className="text-zinc-500 hover:text-white"
+                      className="text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     >
                       &times;
                     </button>
@@ -433,49 +443,55 @@ export default function ComposeMailModal({
             {/* Footer */}
             <div className="flex items-center justify-between border-t border-white/[0.06] px-4 py-3">
               <div className="flex items-center gap-1">
-                <button
+                <Button
                     type="button"
+                    variant="ghost"
+                    size="sm"
                     onClick={() => fileInputRef.current?.click()}
-                    className="rounded p-2 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+                    className="h-9 w-9 p-0 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                   >
                     <Paperclip className="h-4 w-4" />
-                  </button>
+                  </Button>
                 <input ref={fileInputRef} type="file" multiple className="hidden" onChange={(e) => handleFileChange(e.target.files)} />
 
                 {onAiAssist && (
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="sm"
                     onClick={handleAi}
                     disabled={aiLoading}
-                    className="rounded p-2 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-purple-400"
+                    className="h-9 w-9 p-0 text-[var(--text-muted)] hover:text-[var(--accent-primary)]"
                   >
                     {aiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                  </button>
+                  </Button>
                 )}
 
                 {onSave && (
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="sm"
                     onClick={() => onSave({ to, cc, bcc, subject, body, attachments, aliasId: fromAliasId })}
                     disabled={loading || !fromAliasId}
-                    className="rounded px-2 py-1 text-[11px] text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+                    className="rounded px-2 py-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                   >
                     {i18n("saveDraft") || "Brouillon"}
-                  </button>
+                  </Button>
                 )}
               </div>
 
-              <motion.button
+              <Button
                 type="button"
+                variant="primary"
+                size="md"
                 onClick={handleSend}
                 disabled={loading || !canSend}
-                whileTap={{ scale: 0.97 }}
-                style={{ background: "var(--accent-color, #a855f7)", color: "#ffffff" }}
-                className="flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition-all hover:brightness-110 active:scale-95 disabled:opacity-50"
+                isLoading={loading}
+                leftIcon={<Send className="h-3.5 w-3.5" />}
               >
-                {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
                 {i18n("send") || "Envoyer"}
-              </motion.button>
+              </Button>
             </div>
           </motion.div>
         </>

@@ -6,6 +6,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import type { MailAlias } from "@/lib/hooks/useMail";
 import Modal from "@/components/ui/Modal";
+import Button from "@/components/ui/Button";
 
 function sanitizeLocal(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9._-]/g, "").slice(0, 64);
@@ -106,18 +107,18 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
         onClick={() => setOpen(true)}
         className="group flex w-full items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5 text-left transition-colors hover:bg-white/[0.04] hover:border-white/[0.10]"
       >
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-purple-500/15 text-purple-400">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--accent-primary)_15%,transparent)] text-[var(--accent-primary)]">
           <User className="h-4 w-4" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-medium text-white truncate">
+          <p className="text-xs font-medium text-[var(--text-primary)] truncate">
             {primary?.display_name || i18n("mailProfile") || "Profil mail"}
           </p>
-          <p className="text-[10px] text-zinc-500 truncate">
+          <p className="text-[10px] text-[var(--text-muted)] truncate">
             {primary?.alias || i18n("noAlias") || "Aucune adresse"}
           </p>
         </div>
-        <Mail className="h-4 w-4 shrink-0 text-zinc-600 group-hover:text-zinc-400" />
+        <Mail className="h-4 w-4 shrink-0 text-[var(--text-muted)] group-hover:text-[var(--text-primary)]" />
       </button>
 
       <Modal
@@ -148,10 +149,10 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
                 <button
                   type="button"
                   onClick={() => copyEmail(primary.alias)}
-                  className="shrink-0 rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+                  className="shrink-0 rounded-md p-1.5 text-[var(--text-muted)] transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)]"
                   aria-label={i18n("copy") || "Copier"}
                 >
-                  {copied === primary.alias ? <CheckCircle2 className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
+                  {copied === primary.alias ? <CheckCircle2 className="h-4 w-4 text-[var(--success)]" /> : <Copy className="h-4 w-4" />}
                 </button>
               </div>
 
@@ -167,14 +168,17 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
                     placeholder={i18n("displayName") || "Nom affiché"}
                     className="min-w-0 flex-1 rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-2 text-sm text-zinc-200 placeholder-zinc-600 outline-none transition-all focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
                   />
-                  <button
+                  <Button
                     type="button"
+                    variant="primary"
+                    size="sm"
                     onClick={handleSaveDisplayName}
                     disabled={saving || displayName.trim() === (primary.display_name || "")}
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-purple-600 text-white transition-colors hover:bg-purple-500 disabled:opacity-40"
+                    className="h-9 w-9 p-0"
+                    aria-label={i18n("save") || "Enregistrer"}
                   >
                     {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-                  </button>
+                  </Button>
                 </div>
                 <p className="mt-1.5 text-[10px] text-zinc-500">
                   {i18n("displayNameHint") || "Ce nom apparaîtra dans l'expéditeur de vos messages."}
@@ -213,7 +217,7 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
                         type="button"
                         onClick={() => handleSetPrimary(a.id)}
                         disabled={primaryLoading === a.id}
-                        className="rounded-md px-2 py-1 text-[11px] text-zinc-300 transition-colors hover:bg-white/[0.06] hover:text-white disabled:opacity-50"
+                        className="rounded-md px-2 py-1 text-[11px] text-[var(--text-primary)] transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)] disabled:opacity-50"
                       >
                         {primaryLoading === a.id ? <Loader2 className="h-3 w-3 animate-spin" /> : i18n("setAsPrimary") || "Définir principale"}
                       </button>
@@ -248,24 +252,29 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
                     />
                     <span className="shrink-0 text-[11px] text-zinc-500">@ethone.dev</span>
                   </div>
-                  <button
+                  <Button
                     type="button"
+                    variant="secondary"
+                    size="sm"
                     onClick={() => setLocal(randomLocal())}
-                    className="shrink-0 rounded-lg border border-white/[0.06] bg-white/[0.03] p-2 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+                    className="h-9 w-9 p-0"
                     aria-label={i18n("random") || "Aléatoire"}
                   >
                     <Plus className="h-4 w-4" />
-                  </button>
+                  </Button>
                 </div>
-                <button
+                <Button
                   type="button"
+                  variant="primary"
+                  size="md"
                   onClick={handleCreate}
                   disabled={creating || !local.trim()}
-                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-purple-600 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-purple-500 disabled:opacity-50"
+                  isLoading={creating}
+                  leftIcon={<Plus className="h-4 w-4" />}
+                  className="w-full"
                 >
-                  {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
                   {i18n("createAlias") || "Créer l'adresse"}
-                </button>
+                </Button>
               </div>
             </div>
           )}

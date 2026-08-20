@@ -37,6 +37,7 @@ export type ThemeDefinition = {
   borderActive: string;
   accentPrimary: string;
   accentSecondary: string;
+  accentContrast: string;
   glowColor: string;
   textPrimary: string;
   textMuted: string;
@@ -53,6 +54,7 @@ export const THEME_DEFINITIONS: Record<PremiumTheme, ThemeDefinition> = {
     borderActive: "rgba(16,185,129,0.35)",
     accentPrimary: "#10B981",
     accentSecondary: "#06B6D4",
+    accentContrast: "#0C0C10",
     glowColor: "rgba(16,185,129,0.25)",
     textPrimary: "#EDEDED",
     textMuted: "#9CA3AF",
@@ -67,6 +69,7 @@ export const THEME_DEFINITIONS: Record<PremiumTheme, ThemeDefinition> = {
     borderActive: "rgba(0,240,255,0.4)",
     accentPrimary: "#F43F5E",
     accentSecondary: "#00F0FF",
+    accentContrast: "#FFFFFF",
     glowColor: "rgba(244,63,94,0.3)",
     textPrimary: "#F0E9FF",
     textMuted: "#A78BFA",
@@ -81,6 +84,7 @@ export const THEME_DEFINITIONS: Record<PremiumTheme, ThemeDefinition> = {
     borderActive: "rgba(217,119,6,0.4)",
     accentPrimary: "#F59E0B",
     accentSecondary: "#D97706",
+    accentContrast: "#0C0B0A",
     glowColor: "rgba(245,158,11,0.25)",
     textPrimary: "#F5F0E8",
     textMuted: "#A89F91",
@@ -95,6 +99,7 @@ export const THEME_DEFINITIONS: Record<PremiumTheme, ThemeDefinition> = {
     borderActive: "rgba(56,189,248,0.35)",
     accentPrimary: "#2DD4BF",
     accentSecondary: "#38BDF8",
+    accentContrast: "#060B11",
     glowColor: "rgba(45,212,191,0.25)",
     textPrimary: "#E0F2FE",
     textMuted: "#94A3B8",
@@ -109,6 +114,7 @@ export const THEME_DEFINITIONS: Record<PremiumTheme, ThemeDefinition> = {
     borderActive: "rgba(255,255,255,0.25)",
     accentPrimary: "#FFFFFF",
     accentSecondary: "#71717A",
+    accentContrast: "#000000",
     glowColor: "rgba(255,255,255,0.15)",
     textPrimary: "#FFFFFF",
     textMuted: "#A1A1AA",
@@ -179,6 +185,7 @@ export function applyTheme(themeId: PremiumTheme | string): void {
   root.style.setProperty("--border-active", def.borderActive);
   root.style.setProperty("--accent-primary", def.accentPrimary);
   root.style.setProperty("--accent-secondary", def.accentSecondary);
+  root.style.setProperty("--accent-contrast", def.accentContrast);
   root.style.setProperty("--glow-color", def.glowColor);
   root.style.setProperty("--text-primary", def.textPrimary);
   root.style.setProperty("--text-muted", def.textMuted);

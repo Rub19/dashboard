@@ -35,7 +35,7 @@ export default function SoundPackControl({ value, onChange, options }: SoundPack
         onClick={handlePreview}
         title="Play preview"
         aria-label="Play preview"
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--foreground)] transition-colors hover:border-[var(--accent)]/50 hover:text-[var(--accent)]"
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--text-primary)] transition-colors hover:border-[var(--accent-primary)]/50 hover:text-[var(--accent-primary)]"
       >
         <Icon name="play" className="h-4 w-4" />
       </button>

@@ -7,6 +7,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
+import Button from "@/components/ui/Button";
 
 export default function SecurityPage() {
   const i18n = useI18n();
@@ -109,13 +110,14 @@ export default function SecurityPage() {
             aria-label={i18n("passkeyName")}
             className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]"
           />
-          <button
+          <Button
             type="button"
+            variant="primary"
+            size="md"
             onClick={handleRegisterPasskey}
-            className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white hover:opacity-90"
           >
             {i18n("addPasskey")}
-          </button>
+          </Button>
         </div>
       </Card3D>
 
@@ -143,11 +145,11 @@ export default function SecurityPage() {
                 </div>
                 <div className="flex items-center gap-1">
                   {renaming === p.id ? (
-                    <button type="button" onClick={() => handleRename(p.id)} className="rounded p-1 text-emerald-400 hover:bg-[var(--panel-bg)]"><Icon name="check" className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => handleRename(p.id)} className="rounded p-1 text-[var(--success)] hover:bg-[var(--panel-bg)]"><Icon name="check" className="h-4 w-4" /></button>
                   ) : (
                     <button type="button" onClick={() => { setRenaming(p.id); setNewName(p.name); }} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--panel-bg)]"><Icon name="pencil" className="h-4 w-4" /></button>
                   )}
-                  <button type="button" onClick={() => revokePasskey(p.id).then(() => success(i18n("removed"))).catch((err) => showError(String(err)))} className="rounded p-1 text-red-400 hover:bg-[var(--panel-bg)]"><Icon name="trash-2" className="h-4 w-4" /></button>
+                  <button type="button" onClick={() => revokePasskey(p.id).then(() => success(i18n("removed"))).catch((err) => showError(String(err)))} className="rounded p-1 text-[var(--danger)] hover:bg-[var(--panel-bg)]"><Icon name="trash-2" className="h-4 w-4" /></button>
                 </div>
               </div>
             </Card3D>
@@ -171,7 +173,7 @@ export default function SecurityPage() {
                   <button type="button" onClick={() => trustDevice(d.id, !d.trusted).then(() => success(i18n("saved"))).catch((err) => showError(String(err)))} className="rounded border border-[var(--panel-border)] px-2 py-1 text-xs hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]">
                     {i18n(d.trusted ? "revoke" : "trust")}
                   </button>
-                  <button type="button" onClick={() => removeDevice(d.id).then(() => success(i18n("removed"))).catch((err) => showError(String(err)))} className="rounded p-1 text-red-400 hover:bg-[var(--panel-bg)]"><Icon name="trash-2" className="h-4 w-4" /></button>
+                  <button type="button" onClick={() => removeDevice(d.id).then(() => success(i18n("removed"))).catch((err) => showError(String(err)))} className="rounded p-1 text-[var(--danger)] hover:bg-[var(--panel-bg)]"><Icon name="trash-2" className="h-4 w-4" /></button>
                 </div>
               </div>
             </Card3D>

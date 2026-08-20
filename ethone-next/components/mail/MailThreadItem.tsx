@@ -54,30 +54,30 @@ export default function MailThreadItem({ messages, active, onClick, onToggleStar
         <motion.div
           layoutId="activeThreadBar"
           className="pointer-events-none absolute left-0 top-2 bottom-2 w-1 rounded-r"
-          style={{ background: "var(--accent-color, #a855f7)" }}
+          style={{ background: "var(--accent-primary)" }}
           transition={{ type: "spring", stiffness: 400, damping: 30 }}
         />
       )}
 
       <div className="mb-1.5 flex items-center justify-between gap-2">
-        <span className={`text-xs font-semibold truncate ${hasUnread ? "text-white" : "text-zinc-300"}`}>{sender}</span>
-        <span className="shrink-0 text-[10px] text-zinc-500">{formatThreadDate(last.received_at)}</span>
+        <span className={`text-xs font-semibold truncate ${hasUnread ? "text-[var(--text-primary)]" : "text-[var(--text-primary)]"}`}>{sender}</span>
+        <span className="shrink-0 text-[10px] text-[var(--text-muted)]">{formatThreadDate(last.received_at)}</span>
       </div>
 
-      <p className={`truncate text-xs font-medium ${hasUnread ? "text-zinc-200" : "text-zinc-400"}`}>{subject}</p>
-      <p className="mt-0.5 line-clamp-2 text-[11px] text-zinc-500">{snippet}</p>
+      <p className={`truncate text-xs font-medium ${hasUnread ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]"}`}>{subject}</p>
+      <p className="mt-0.5 line-clamp-2 text-[11px] text-[var(--text-muted)]">{snippet}</p>
 
       <div className="mt-2 flex items-center justify-between gap-2">
-        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.04] text-[10px] font-bold text-zinc-400">
+        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.04] text-[10px] font-bold text-[var(--text-muted)]">
           {initialsFrom(first.from_name || "", first.from_address)}
         </span>
         {onToggleStar && (
           <button
             type="button"
             onClick={onToggleStar}
-            className={`rounded p-1 transition-colors ${isStarred ? "text-amber-400" : "text-zinc-600 hover:text-amber-400"}`}
+            className={`rounded p-1 transition-colors ${isStarred ? "text-[var(--warning)]" : "text-[var(--text-muted)] hover:text-[var(--warning)]"}`}
           >
-            <Star className={`h-3.5 w-3.5 ${isStarred ? "fill-amber-400" : ""}`} />
+            <Star className={`h-3.5 w-3.5 ${isStarred ? "fill-[var(--warning)]" : ""}`} />
           </button>
         )}
       </div>

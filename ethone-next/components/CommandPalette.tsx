@@ -157,7 +157,7 @@ const CommandItemRow = memo(function CommandItemRow({
         className={cn(
           "relative z-10 shrink-0 rounded p-1 transition-colors outline-0 focus:outline-0 focus-visible:outline-0",
           isActive
-            ? "text-[var(--accent)] hover:bg-[var(--accent)]/10"
+            ? "text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/10"
             : "text-[var(--muted)] hover:bg-[var(--surface)]"
         )}
         aria-label={isPinned ? unpinTitle : pinTitle}

@@ -116,7 +116,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
                   <button
                     type="button"
                     onClick={() => (state.paused ? resume() : pause())}
-                    className="rounded-lg bg-[var(--panel-bg)] p-2 transition-colors hover:bg-[var(--accent)]/10"
+                    className="rounded-lg bg-[var(--panel-bg)] p-2 transition-colors hover:bg-[var(--accent-primary)]/10"
                     aria-label={state.paused ? i18n("resume") : i18n("pause")}
                   >
                     <Icon name={state.paused ? "play" : "pause"} className="h-4 w-4" />
@@ -126,7 +126,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
                   <button
                     type="button"
                     onClick={stop}
-                    className="rounded-lg bg-[var(--panel-bg)] p-2 transition-colors hover:bg-red-500/10"
+                    className="rounded-lg bg-[var(--panel-bg)] p-2 transition-colors hover:bg-[var(--danger)]/10"
                     aria-label={i18n("stop")}
                   >
                     <Icon name="square" className="h-4 w-4" />
@@ -136,7 +136,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
                   <button
                     type="button"
                     onClick={skip}
-                    className="rounded-lg bg-[var(--panel-bg)] p-2 transition-colors hover:bg-[var(--accent)]/10"
+                    className="rounded-lg bg-[var(--panel-bg)] p-2 transition-colors hover:bg-[var(--accent-primary)]/10"
                     aria-label={i18n("skip")}
                   >
                     <Icon name="skipForward" className="h-4 w-4" />
@@ -161,7 +161,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
                     start(p.id);
                     onClose();
                   }}
-                  className="flex flex-col items-center gap-1 rounded-lg bg-[var(--panel-bg)] p-2 text-center text-xs transition-colors hover:bg-[var(--accent)]/10"
+                  className="flex flex-col items-center gap-1 rounded-lg bg-[var(--panel-bg)] p-2 text-center text-xs transition-colors hover:bg-[var(--accent-primary)]/10"
                 >
                   <Icon name={p.icon} className={`h-4 w-4 ${p.color}`} />
                   <span className="font-medium">{i18n(p.id)}</span>

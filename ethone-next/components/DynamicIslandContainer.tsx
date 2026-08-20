@@ -447,8 +447,8 @@ export default function DynamicIslandContainer() {
                     className={cn(
                       "flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200",
                       isSaved
-                        ? "bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25"
-                        : "text-zinc-400 hover:bg-white/10 hover:text-white",
+                        ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/25"
+                        : "text-[var(--muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--accent-contrast)]",
                     )}
                     aria-label={isSaved ? i18n("unlike") : i18n("like")}
                     title={isSaved ? i18n("unlike") : i18n("like")}
@@ -483,7 +483,7 @@ export default function DynamicIslandContainer() {
                     type="button"
                     onClick={() => spotifyControl("previous")}
                     disabled={pendingSpotify || npLoading}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
                     aria-label={i18n("previous")}
                   >
                     <SkipBack className="h-5 w-5" />
@@ -492,7 +492,7 @@ export default function DynamicIslandContainer() {
                     type="button"
                     onClick={togglePlay}
                     disabled={pendingSpotify || npLoading}
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-zinc-950 shadow-lg transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--text-primary)] text-[var(--background)] shadow-lg transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
                     aria-label={nowPlaying?.isPlaying ? i18n("pause") : i18n("play")}
                   >
                     {nowPlaying?.isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 fill-current" />}
@@ -501,7 +501,7 @@ export default function DynamicIslandContainer() {
                     type="button"
                     onClick={() => spotifyControl("next")}
                     disabled={pendingSpotify || npLoading}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
                     aria-label={i18n("next")}
                   >
                     <SkipForward className="h-5 w-5" />
@@ -538,7 +538,7 @@ export default function DynamicIslandContainer() {
                     <button
                       type="button"
                       onClick={() => focus.resume()}
-                      className="flex items-center gap-1.5 rounded-xl bg-[var(--accent)] px-3 py-1.5 text-xs font-semibold text-zinc-950 transition-colors hover:opacity-90"
+                      className="flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3 py-1.5 text-xs font-semibold text-[var(--accent-contrast)] transition-colors hover:opacity-90"
                     >
                       <Play className="h-3.5 w-3.5" />
                       {i18n("resume")}
@@ -547,7 +547,7 @@ export default function DynamicIslandContainer() {
                     <button
                       type="button"
                       onClick={() => focus.pause()}
-                      className="flex items-center gap-1.5 rounded-xl bg-white/[0.08] px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/[0.12]"
+                      className="flex items-center gap-1.5 rounded-xl bg-[var(--text-primary)]/[0.08] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.12]"
                     >
                       <Pause className="h-3.5 w-3.5" />
                       {i18n("pause")}
@@ -557,7 +557,7 @@ export default function DynamicIslandContainer() {
                     <button
                       type="button"
                       onClick={() => focus.skipBreak()}
-                      className="flex items-center gap-1.5 rounded-xl border border-white/[0.08] px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:border-white/20 hover:text-white"
+                      className="flex items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.08] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--text-primary)]/20 hover:text-[var(--text-primary)]"
                     >
                       <ChevronRight className="h-3.5 w-3.5" />
                       {i18n("skip")}
@@ -584,7 +584,7 @@ export default function DynamicIslandContainer() {
                 <button
                   type="button"
                   onClick={() => router.push("/brain")}
-                  className="flex items-center gap-1.5 rounded-xl bg-purple-500/15 px-3 py-1.5 text-xs font-medium text-purple-300 transition-colors hover:bg-purple-500/25"
+                  className="flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)]/15 px-3 py-1.5 text-xs font-medium text-[var(--accent-primary)] transition-colors hover:bg-[var(--accent-primary)]/25"
                 >
                   <Sparkles className="h-3.5 w-3.5" />
                   {i18n("openBrain", "Ouvrir le Brain")}

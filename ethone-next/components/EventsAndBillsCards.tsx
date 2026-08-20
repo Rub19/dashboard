@@ -50,7 +50,7 @@ export function EventsCard({ date, items, onAdd }: EventsCardProps) {
           <button
             type="button"
             onClick={() => setMenuOpen((v) => !v)}
-            className="inline-flex items-center gap-1 rounded-lg border border-white/[0.08] bg-white/[0.03] px-2.5 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/[0.06]"
+            className="inline-flex items-center gap-1 rounded-lg border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] px-2.5 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.06]"
           >
             {source}
             <ChevronDown className="h-3 w-3" />
@@ -68,8 +68,8 @@ export function EventsCard({ date, items, onAdd }: EventsCardProps) {
                   }}
                   className={`w-full rounded-lg px-2.5 py-1.5 text-left text-xs transition-colors ${
                     source === s
-                      ? "bg-white/[0.08] text-white"
-                      : "text-zinc-300 hover:bg-white/[0.04]"
+                      ? "bg-[var(--text-primary)]/[0.08] text-[var(--text-primary)]"
+                      : "text-[var(--text-primary)] hover:bg-[var(--text-primary)]/[0.04]"
                   }`}
                 >
                   {s}
@@ -127,7 +127,7 @@ export function EventsCard({ date, items, onAdd }: EventsCardProps) {
       <button
         type="button"
         onClick={onAdd}
-        className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] py-2 text-xs font-medium text-zinc-300 transition-all hover:bg-white/[0.08] hover:text-white"
+        className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] py-2 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
       >
         <Plus className="h-3.5 w-3.5" />
         Ajouter un événement
@@ -250,8 +250,8 @@ export function InvoicesCard({
               onClick={() => onSelectDate?.(day)}
               className={`flex flex-col items-center justify-center gap-0.5 rounded-lg p-2 text-center text-xs transition-colors ${
                 active
-                  ? "bg-emerald-500 font-bold text-zinc-950 shadow-sm"
-                  : "text-zinc-400 hover:bg-white/[0.04] hover:text-white"
+                  ? "bg-[var(--accent-primary)] font-bold text-[var(--accent-contrast)] shadow-sm"
+                  : "text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
               }`}
             >
               <span className="text-[9px] opacity-70">{WEEK_DAYS[idx]}</span>
@@ -269,14 +269,14 @@ export function InvoicesCard({
         <button
           type="button"
           onClick={onAdd}
-          className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 py-2 text-xs font-semibold text-emerald-400 transition-all hover:bg-emerald-500/20 active:scale-[0.99]"
+          className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 py-2 text-xs font-semibold text-[var(--accent-primary)] transition-all hover:bg-[var(--accent-primary)]/20 active:scale-[0.99]"
         >
           <Plus className="h-3.5 w-3.5" />
           Ajouter
         </button>
         <button
           type="button"
-          className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] py-2 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/[0.08] hover:text-white"
+          className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] py-2 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
         >
           <Scan className="h-3.5 w-3.5" />
           Scanner

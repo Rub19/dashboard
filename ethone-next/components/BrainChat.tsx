@@ -159,7 +159,7 @@ function CopyButton({ text }: { text: string }) {
     } catch {}
   }
   return (
-    <button type="button" onClick={handleCopy} className="text-[10px] text-zinc-500 hover:text-white transition-colors">
+    <button type="button" onClick={handleCopy} className="text-[10px] text-[var(--muted)] hover:text-[var(--text-primary)] transition-colors">
       {copied ? "Copié" : "Copier"}
     </button>
   );
@@ -434,7 +434,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
                     brain.retry().finally(() => setPending(false));
                   }}
                   disabled={pending || brain.loading}
-                  className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/15 px-2.5 py-1.5 text-[10px] font-medium text-amber-100 transition-colors hover:bg-amber-500/25 disabled:opacity-50"
+                  className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-[var(--warning)]/30 bg-[var(--warning)]/15 px-2.5 py-1.5 text-[10px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--warning)]/25 disabled:opacity-50"
                 >
                   <RotateCcw className="h-3 w-3" />
                   Réessayer
@@ -444,7 +444,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
             <button
               type="button"
               onClick={() => brain.clearChat()}
-              className="shrink-0 text-amber-400 transition-colors hover:text-amber-100"
+              className="shrink-0 text-[var(--warning)] transition-colors hover:text-[var(--text-primary)]"
               aria-label={i18n("close")}
             >
               <X className="h-3.5 w-3.5" />
@@ -472,7 +472,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
                   key={s.id}
                   type="button"
                   onClick={() => handleExecute(s.action, s.parameters)}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.06] bg-white/[0.03] px-2 py-1 text-[10px] text-zinc-400 transition-colors hover:bg-white/[0.08] hover:text-zinc-200"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] px-2 py-1 text-[10px] text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
                 >
                   <Sparkles className="h-3 w-3" />
                   {s.title}
@@ -484,8 +484,8 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
               onClick={() => handleSend()}
               disabled={pending || !prompt.trim()}
               data-testid="brain-send-btn"
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-zinc-950 font-bold transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
-              style={{ background: "var(--accent-color, #10b981)" }}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[var(--accent-contrast)] font-bold transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
+              style={{ background: "var(--accent-color, var(--accent-primary))" }}
               aria-label="Envoyer"
             >
               {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUp className="h-4 w-4" />}
@@ -502,7 +502,7 @@ function ActionChip({ chip }: { chip: ActionChip }) {
     <button
       type="button"
       onClick={chip.onClick}
-      className="group inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] px-3 py-1.5 text-xs font-medium text-zinc-100 shadow-sm transition-all hover:border-white/20 hover:bg-white/[0.12] hover:text-white hover:shadow-md"
+      className="group inline-flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.06] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] shadow-sm transition-all hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.12] hover:text-[var(--text-primary)] hover:shadow-md"
     >
       <span className="transition-transform group-hover:scale-110">{chip.icon}</span>
       {chip.label}

@@ -278,9 +278,9 @@ function MissionControlDialog() {
                   aria-current={w.id === activeWorkspace.id ? "true" : undefined}
                   aria-label={`${i18n(w.id)} · ${i18n(w.flow)}`}
                   onClick={() => navigateAndClose("/spaces")}
-                  className={`group relative flex w-full items-center gap-3 rounded-[var(--panel-radius)] border p-3 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--panel-bg)] ${
+                  className={`group relative flex w-full items-center gap-3 rounded-[var(--panel-radius)] border p-3 text-left transition-colors hover:border-[var(--accent-primary)] hover:bg-[var(--panel-bg)] ${
                     w.id === activeWorkspace.id
-                      ? "border-[var(--accent)] bg-[var(--accent)]/5"
+                      ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/5"
                       : "border-[var(--panel-border)] bg-[var(--panel-bg)]"
                   } backdrop-blur-[var(--panel-blur)]`}
                 >
@@ -320,9 +320,9 @@ function MissionControlDialog() {
                   aria-current={w.id === activeWorkspace.id ? "true" : undefined}
                   aria-label={`${i18n("flows")} · ${i18n(w.flow)}`}
                   onClick={() => navigateAndClose("/flows")}
-                  className={`group flex w-full flex-col gap-2 rounded-[var(--panel-radius)] border p-3 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--panel-bg)] ${
+                  className={`group flex w-full flex-col gap-2 rounded-[var(--panel-radius)] border p-3 text-left transition-colors hover:border-[var(--accent-primary)] hover:bg-[var(--panel-bg)] ${
                     w.id === activeWorkspace.id
-                      ? "border-[var(--accent)] bg-[var(--accent)]/5"
+                      ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/5"
                       : "border-[var(--panel-border)] bg-[var(--panel-bg)]"
                   } backdrop-blur-[var(--panel-blur)]`}
                 >
@@ -407,7 +407,7 @@ function MissionControlDialog() {
                         e.stopPropagation();
                         closeWindow(win.id);
                       }}
-                      className="absolute right-2 top-2 z-10 rounded-lg bg-[var(--panel-bg)]/40 p-1.5 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                      className="absolute right-2 top-2 z-10 rounded-lg bg-[var(--panel-bg)]/40 p-1.5 text-[var(--text-primary)] opacity-0 transition-opacity group-hover:opacity-100"
                       aria-label={i18n("closeWindow")}
                     >
                       <Icon name="close" className="h-3.5 w-3.5" />
@@ -439,9 +439,9 @@ function MissionControlDialog() {
                     setMissionControl(false);
                     openWindow(i18n(r.id), r.route);
                   }}
-                  className={`group flex w-full items-center gap-3 rounded-[var(--panel-radius)] border p-2.5 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--panel-bg)] ${
+                  className={`group flex w-full items-center gap-3 rounded-[var(--panel-radius)] border p-2.5 text-left transition-colors hover:border-[var(--accent-primary)] hover:bg-[var(--panel-bg)] ${
                     pathname === r.route
-                      ? "border-[var(--accent)] bg-[var(--accent)]/5"
+                      ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/5"
                       : "border-[var(--panel-border)] bg-[var(--panel-bg)]"
                   } backdrop-blur-[var(--panel-blur)]`}
                 >
@@ -476,7 +476,7 @@ function MissionControlDialog() {
                     setMissionControl(false);
                     openWindow(i18n("connections"), "/connections");
                   }}
-                  className="group flex w-full items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2.5 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
+                  className="group flex w-full items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2.5 text-left transition-colors hover:border-[var(--accent-primary)] hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
                 >
                   <span className={`h-2 w-2 shrink-0 rounded-full ${STATUS_DOT[record.status] || "bg-zinc-500"}`} />
                   <span className="min-w-0 flex-1">
@@ -508,7 +508,7 @@ function MissionControlDialog() {
                       setMissionControl(false);
                       openWindow(i18n("brain"), "/brain");
                     }}
-                    className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white"
+                    className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent-primary)] px-3 py-2 text-sm font-semibold text-[var(--accent-contrast)]"
                   >
                     <Icon name="brain" className="h-4 w-4" />
                     {i18n("missionOpenBrain")}
@@ -527,7 +527,7 @@ function MissionControlDialog() {
                         setMissionControl(false);
                         openWindow(i18n("brain"), "/brain");
                       }}
-                      className="group flex w-full items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2.5 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
+                      className="group flex w-full items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2.5 text-left transition-colors hover:border-[var(--accent-primary)] hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
                     >
                       <Icon name={b.icon} className="h-5 w-5 shrink-0 text-[var(--accent)]" />
                       <span className="min-w-0 flex-1">

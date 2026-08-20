@@ -12,7 +12,7 @@ export default function CommandBarTrigger() {
     <button
       type="button"
       onClick={() => setOpen(true)}
-      className="flex h-9 items-center gap-2 rounded-full border border-white/[0.08] bg-zinc-900/80 px-3.5 text-sm text-zinc-400 transition-all hover:border-white/20 hover:text-white active:scale-95 cursor-pointer select-none"
+      className="flex h-9 items-center gap-2 rounded-full border border-[var(--text-primary)]/[0.08] bg-[var(--surface)]/80 px-3.5 text-sm text-[var(--muted)] transition-all hover:border-[var(--text-primary)]/20 hover:text-[var(--text-primary)] active:scale-95 cursor-pointer select-none"
       aria-label={i18n("commands")}
     >
       <Search className="pointer-events-none h-5 w-5" />

@@ -138,7 +138,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
               <button
                 type="button"
                 onClick={() => router.push("/plugins/spotify/")}
-                className="flex items-center gap-1.5 rounded-xl bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-400 transition-colors hover:bg-emerald-500/20"
+                className="flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)]/10 px-3 py-1.5 text-xs font-medium text-[var(--accent-primary)] transition-colors hover:bg-[var(--accent-primary)]/20"
               >
                 <Music className="h-3 w-3" />
                 Spotify
@@ -148,7 +148,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
               <button
                 type="button"
                 onClick={() => router.push("/plugins/jellyfin/")}
-                className="flex items-center gap-1.5 rounded-xl bg-violet-500/10 px-3 py-1.5 text-xs font-medium text-violet-400 transition-colors hover:bg-violet-500/20"
+                className="flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)]/10 px-3 py-1.5 text-xs font-medium text-[var(--accent-primary)] transition-colors hover:bg-[var(--accent-primary)]/20"
               >
                 <Server className="h-3 w-3" />
                 Jellyfin
@@ -158,7 +158,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
               <button
                 type="button"
                 onClick={() => router.push("/connections/")}
-                className="rounded-xl border border-white/10 px-3 py-1.5 text-xs text-zinc-300 transition-colors hover:bg-white/[0.05]"
+                className="rounded-xl border border-[var(--panel-border)] px-3 py-1.5 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.05]"
               >
                 {i18n("configureConnections")}
               </button>
@@ -233,7 +233,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
             type="button"
             onClick={() => control("previous")}
             disabled={!isSpotify || pending}
-            className="rounded-lg p-1.5 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white disabled:opacity-40"
+            className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] disabled:opacity-40"
             aria-label={i18n("previous")}
           >
             <SkipBack className="h-4 w-4" />
@@ -243,7 +243,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
             type="button"
             onClick={handlePlayPause}
             disabled={!isSpotify || pending}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-zinc-950 shadow-lg shadow-white/10 transition-transform hover:scale-105 active:scale-95 disabled:opacity-60"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--text-primary)] text-[var(--background)] shadow-lg shadow-[var(--text-primary)]/10 transition-transform hover:scale-105 active:scale-95 disabled:opacity-60"
             aria-label={nowPlaying?.isPlaying ? i18n("pause") : i18n("play")}
           >
             {nowPlaying?.isPlaying ? <Pause className="h-4 w-4 fill-current" /> : <Play className="h-4 w-4 fill-current" />}
@@ -253,7 +253,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
             type="button"
             onClick={() => control("next")}
             disabled={!isSpotify || pending}
-            className="rounded-lg p-1.5 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white disabled:opacity-40"
+            className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] disabled:opacity-40"
             aria-label={i18n("next")}
           >
             <SkipForward className="h-4 w-4" />
@@ -267,7 +267,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
             <button
               type="button"
               onClick={() => setVolume((v) => (v > 0 ? 0 : 80))}
-              className="rounded-lg p-1.5 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+              className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
               aria-label={i18n("volume")}
             >
               {volume > 0 ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}

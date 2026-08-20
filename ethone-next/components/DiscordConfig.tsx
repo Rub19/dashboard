@@ -183,7 +183,7 @@ export default function DiscordConfig() {
           type="button"
           onClick={() => setMode("lanyard")}
           className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
-            isLanyard ? "bg-white/10 text-white" : "text-zinc-400 hover:text-zinc-200"
+            isLanyard ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)]" : "text-[var(--muted)] hover:text-[var(--text-primary)]"
           }`}
         >
           Lanyard
@@ -192,7 +192,7 @@ export default function DiscordConfig() {
           type="button"
           onClick={() => setMode("oauth2")}
           className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
-            isOAuth2 ? "bg-white/10 text-white" : "text-zinc-400 hover:text-zinc-200"
+            isOAuth2 ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)]" : "text-[var(--muted)] hover:text-[var(--text-primary)]"
           }`}
         >
           OAuth2
@@ -216,8 +216,8 @@ export default function DiscordConfig() {
               disabled={!rawValue.trim() || submitting || testing}
               className={`col-span-1 flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-sm font-bold transition-all active:scale-95 disabled:opacity-50 ${
                 rawValue.trim()
-                  ? "bg-purple-600 text-white shadow-lg shadow-purple-600/20 hover:bg-purple-500"
-                  : "bg-emerald-500 text-zinc-950 shadow-md shadow-emerald-500/20 hover:bg-emerald-400"
+                  ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-lg shadow-[var(--accent-primary)]/20 hover:bg-[var(--accent-primary)]"
+                  : "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-md shadow-[var(--accent-primary)]/20 hover:bg-[var(--accent-primary)]"
               }`}
             >
               {submitting ? (
@@ -233,7 +233,7 @@ export default function DiscordConfig() {
               type="button"
               onClick={handleTest}
               disabled={!rawValue.trim() || testing}
-              className="col-span-1 flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-medium text-zinc-300 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-50"
+              className="col-span-1 flex items-center justify-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] px-3 py-2 text-sm font-medium text-[var(--text-primary)] transition hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] disabled:opacity-50"
             >
               {testing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
               {testing ? i18n("testingInProgress") : i18n("testConnection")}
@@ -243,7 +243,7 @@ export default function DiscordConfig() {
                 type="button"
                 onClick={handleLanyardDisconnect}
                 disabled={submitting}
-                className="col-span-1 flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/20 px-3 py-2 text-sm font-medium text-rose-400 transition hover:border-rose-500/40 hover:bg-rose-500/10 disabled:opacity-50"
+                className="col-span-1 flex items-center justify-center gap-1.5 rounded-xl border border-[var(--danger)]/20 px-3 py-2 text-sm font-medium text-[var(--danger)] transition hover:border-[var(--danger)]/40 hover:bg-[var(--danger)]/10 disabled:opacity-50"
               >
                 <Unlink className="h-4 w-4" />
                 {i18n("disconnect", "Déconnecter")}
@@ -332,7 +332,7 @@ export default function DiscordConfig() {
                   type="button"
                   onClick={handleOAuthRefresh}
                   disabled={loading}
-                  className="flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-medium text-zinc-300 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-50"
+                  className="flex items-center justify-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] px-3 py-2 text-sm font-medium text-[var(--text-primary)] transition hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] disabled:opacity-50"
                 >
                   {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
                   Actualiser
@@ -341,7 +341,7 @@ export default function DiscordConfig() {
                   type="button"
                   onClick={handleOAuthDisconnect}
                   disabled={loading}
-                  className="flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/20 px-3 py-2 text-sm font-medium text-rose-400 transition hover:border-rose-500/40 hover:bg-rose-500/10 disabled:opacity-50"
+                  className="flex items-center justify-center gap-1.5 rounded-xl border border-[var(--danger)]/20 px-3 py-2 text-sm font-medium text-[var(--danger)] transition hover:border-[var(--danger)]/40 hover:bg-[var(--danger)]/10 disabled:opacity-50"
                 >
                   <Unlink className="h-4 w-4" />
                   {i18n("disconnect", "Déconnecter")}
@@ -356,7 +356,7 @@ export default function DiscordConfig() {
                 connect();
               }}
               disabled={loading}
-              className="flex items-center justify-center gap-1.5 rounded-xl bg-indigo-500 px-3 py-2 text-sm font-bold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400 disabled:opacity-50"
+              className="flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3 py-2 text-sm font-bold text-[var(--accent-contrast)] shadow-lg shadow-[var(--accent-primary)]/20 transition hover:bg-[var(--accent-primary)] disabled:opacity-50"
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plug className="h-4 w-4" />}
               Se connecter avec Discord

@@ -554,9 +554,14 @@ export default function LiveWidgets({
               {track.title || "—"}
             </p>
           </div>
-          {record.image && (
-            <Image src={record.image} alt="" width={48} height={48} unoptimized className="h-12 w-12 rounded-[var(--panel-radius)] object-cover shadow-md" />
-          )}
+          <SafeImage
+            src={record.image}
+            alt=""
+            size={48}
+            className="h-12 w-12 shrink-0 overflow-hidden rounded-[var(--panel-radius)] object-cover shadow-md"
+            iconClassName="h-5 w-5 text-emerald-400"
+            fallback="music"
+          />
         </div>
 
         <div className="flex-1 space-y-2 overflow-hidden">
@@ -956,14 +961,15 @@ export default function LiveWidgets({
         {isConnected && (
           <>
             {record.image && (
-              <div className="relative h-24 w-full shrink-0">
-                <Image
+              <div className="relative h-24 w-full shrink-0 overflow-hidden rounded-[var(--panel-radius)]">
+                <SafeImage
                   src={record.image}
-                  alt=""
-                  fill
-                  unoptimized
-                  className="rounded-[var(--panel-radius)] object-cover"
-                />
+                    alt=""
+                    fill
+                    className="object-cover"
+                    fallback="initials"
+                    initial={record.title?.slice(0, 2).toUpperCase()}
+                  />
               </div>
             )}
             <div className="min-w-0 flex-1 overflow-hidden">
@@ -1121,7 +1127,7 @@ export default function LiveWidgets({
             setDraggingId(null);
           }}
           onDragEnd={() => setDraggingId(null)}
-          className={`group relative ${customizing ? "cursor-grab" : "cursor-pointer"}`}
+          className={`group relative min-w-0 ${customizing ? "cursor-grab" : "cursor-pointer"}`}
           style={{ perspective: 1000 }}
         >
         <div
@@ -1169,10 +1175,19 @@ export default function LiveWidgets({
                 </>
               )}
 
-              {isSpotify && record.image && (
-                <div className="mb-3 flex items-end gap-4">
-                  <Image src={record.image} alt="" width={96} height={96} unoptimized className="h-24 w-24 rounded-[var(--panel-radius)] object-cover shadow-lg" />
-                  <div className="flex flex-col gap-1 pb-1">
+              {isSpotify && (
+                <div className="mb-3 flex items-end gap-4 min-w-0">
+                  <SafeImage
+                    src={record.image}
+                    alt=""
+                    size={96}
+                    className="h-24 w-24 shrink-0 overflow-hidden rounded-[var(--panel-radius)] object-cover shadow-lg"
+                    iconClassName="h-10 w-10 text-emerald-400"
+                    fallback="music"
+                    loading="eager"
+                    priority
+                  />
+                  <div className="flex min-w-0 flex-col gap-1 pb-1">
                     <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">LIVE</span>
                     <Equalizer bars={6} className="h-5" />
                   </div>
@@ -1272,8 +1287,15 @@ export default function LiveWidgets({
               )}
 
               {isYoutube && record.image && (
-                <div className="relative mt-3 h-32 w-full">
-                  <Image src={record.image} alt="" fill unoptimized className="rounded-[var(--panel-radius)] object-cover" />
+                <div className="relative mt-3 h-32 w-full overflow-hidden rounded-[var(--panel-radius)]">
+                  <SafeImage
+                    src={record.image}
+                    alt=""
+                    fill
+                    className="object-cover"
+                    fallback="initials"
+                    initial={record.title?.slice(0, 2).toUpperCase()}
+                  />
                 </div>
               )}
             </div>

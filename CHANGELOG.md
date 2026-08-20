@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.15 — 2026-08-20
+
+**Carte Spotify robuste et pas de débordement**
+
+### Corrige
+- `components/LiveWidgets.tsx` : remplace `next/image` par `SafeImage` pour la cover Spotify (front et back) afin d'éviter l'icône d'image cassée quand le Worker renvoie une URL invalide ou vide.
+- Les images pleine largeur (générique, YouTube) utilisent `SafeImage` avec fallback initiales.
+- Le conteneur des cartes live reçoit `min-w-0` et les images `shrink-0 overflow-hidden` pour éviter les débordements.
+
+### Version
+- `ethone-next/package.json`, `package-lock.json`, `components/UserProfileDropdown.tsx`, `public/sw.js` : version `v1.7.15` et cache PWA `v383`.
+
 ## v1.7.14 — 2026-08-20
 
 **Refonte du changelog : centrage, animation et couleurs**

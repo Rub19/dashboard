@@ -1,9 +1,9 @@
 "use client";
 
-import { type ReactNode, type CSSProperties } from "react";
+import { memo, type ReactNode, type CSSProperties } from "react";
 import { useSettings } from "./SettingsProvider";
 
-export default function Card3D({
+function Card3D({
   children,
   className = "",
   style,
@@ -32,3 +32,5 @@ export default function Card3D({
     </div>
   );
 }
+
+export default memo(Card3D);

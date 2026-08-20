@@ -32,9 +32,16 @@ export function successResponse(result, context = {}) {
       requestId: context.requestId
     }
   };
+
+  const method = (context.method || "GET").toUpperCase();
+  const isPublicGet = method === "GET" && context.public === true;
+  const cacheHeaders = isPublicGet
+    ? { "cache-control": "public, max-age=0, s-maxage=60, stale-while-revalidate=300" }
+    : { "cache-control": "private, no-store, max-age=0" };
+
   return new Response(JSON.stringify(body), {
     status: result?.status || 200,
-    headers: { ...JSON_HEADERS, ...(result?.headers || {}), "x-request-id": context.requestId }
+    headers: { ...JSON_HEADERS, ...(result?.headers || {}), ...cacheHeaders, "x-request-id": context.requestId }
   });
 }
 

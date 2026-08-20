@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { cloneElement } from "react";
+import { cloneElement, memo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   PanelLeftClose,
@@ -212,7 +212,7 @@ function SidebarFooter() {
   );
 }
 
-export default function Sidebar() {
+function Sidebar() {
   const i18n = useI18n();
   const router = useRouter();
   const pathname = usePathname() ?? "/";
@@ -268,3 +268,5 @@ export default function Sidebar() {
     </div>
   );
 }
+
+export default memo(Sidebar);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { fetchWorker } from "@/lib/api";
+import { fetchWorkerCached } from "@/lib/hooks/useCachedFetch";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useConnections } from "./useConnections";
@@ -76,8 +76,8 @@ function asNum(value: unknown): number | undefined {
 }
 
 async function fetchOptional(path: string): Promise<ApiData | null> {
-  const res = await fetchWorker(path);
-  return (res?.data as ApiData | undefined) ?? null;
+  const res = (await fetchWorkerCached(path)) as { data?: ApiData } | null;
+  return res?.data ?? null;
 }
 
 function getArtworkUrl(np: ApiData | null): string | undefined {

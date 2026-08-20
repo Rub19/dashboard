@@ -18,6 +18,8 @@ import {
   Music,
 } from "lucide-react";
 
+import SpotifyCompact from "@/components/SpotifyCompact";
+import LiveMediaProgress from "@/components/LiveMediaProgress";
 import { DynamicIsland, DynamicIslandView } from "@/components/ui/DynamicIsland";
 import { useNowPlaying } from "@/lib/hooks/useNowPlaying";
 import { useFocus } from "@/components/FocusProvider";
@@ -29,7 +31,6 @@ import { useDynamicIslandStore } from "@/lib/stores/dynamic-island";
 import { useBrainActivityStore } from "@/lib/stores/brain-activity";
 import { cn } from "@/lib/utils";
 import VolumeSlider from "@/components/VolumeSlider";
-import MediaProgress from "@/components/MediaProgress";
 import type { NowPlaying } from "@/lib/hooks/useLiveData";
 
 type View = "spotify" | "pomodoro" | "brain";
@@ -56,13 +57,6 @@ function viewLabel(view: View, i18n: (key: string, fallback?: string) => string)
   }
 }
 
-function formatMs(ms: number) {
-  const seconds = Math.max(0, Math.floor(ms / 1000));
-  const m = Math.floor(seconds / 60);
-  const s = String(seconds % 60).padStart(2, "0");
-  return `${m}:${s}`;
-}
-
 function formatClock(date: Date) {
   return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
 }
@@ -79,84 +73,9 @@ function useNowClock() {
   return date;
 }
 
-function AudioWave({ playing, className = "" }: { playing: boolean; className?: string }) {
-  return (
-    <div className={cn("flex items-end gap-[3px]", className)}>
-      {[0, 1, 2, 3].map((i) => (
-        <motion.div
-          key={i}
-          className="w-1 rounded-full bg-emerald-400"
-          initial={{ height: "30%" }}
-          animate={
-            playing
-              ? { height: ["30%", "80%", "40%", "70%", "30%"] }
-              : { height: "30%" }
-          }
-          transition={
-            playing
-              ? {
-                  duration: 0.8 + i * 0.15,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: i * 0.08,
-                }
-              : { duration: 0.2 }
-          }
-        />
-      ))}
-    </div>
-  );
-}
-
-function SpotifyCompact({
-  track,
-  remainingMs,
-  playing,
-  date,
-  className,
-}: {
-  track: NowPlaying;
-  remainingMs: number;
-  playing: boolean;
-  date: Date | null;
-  className?: string;
-}) {
-  const time = date ? formatClock(date) : "--:--";
-  const title = track.title || "Spotify";
-  const remaining = `-${formatMs(remainingMs)}`;
-
-  return (
-    <div className={cn("flex h-[38px] w-full min-w-[180px] items-center gap-2.5 px-3 py-1.5", className)}>
-      <div className="flex items-center gap-1.5 text-zinc-300">
-        <Clock className="h-3 w-3 text-zinc-500" />
-        <span className="text-[10px] font-medium tabular-nums">{time}</span>
-      </div>
-
-      <SafeImage
-        candidates={[track.cover, track.artworkUrl, ...(track.covers || [])]}
-        alt={track.title || "Spotify"}
-        size={20}
-        className="h-5 w-5 shrink-0 rounded-md object-cover"
-        iconClassName={cn("h-3 w-3", playing ? "text-emerald-400" : "text-zinc-400")}
-        loading="eager"
-        priority
-      />
-
-      <AudioWave playing={playing} className="shrink-0" />
-
-      <span className="min-w-0 flex-1 truncate text-xs font-medium text-white" title={title}>
-        {title}
-      </span>
-
-      <span className={cn("shrink-0 text-[10px] font-medium tabular-nums", playing ? "text-emerald-300" : "text-zinc-400")}>
-        {remaining}
-      </span>
-    </div>
-  );
-}
-
-function PomodoroCompact({ remaining, phase, date, className }: { remaining: string; phase: string; date?: Date | null; className?: string }) {
-  const time = date ? formatClock(date) : "--:--";
+function PomodoroCompact({ remaining, phase, className }: { remaining: string; phase: string; className?: string }) {
+  const clock = useNowClock();
+  const time = clock ? formatClock(clock) : "--:--";
   return (
     <div className={cn("flex h-[38px] w-full items-center justify-between gap-3 px-2", className)}>
       <div className="flex items-center gap-2">
@@ -164,7 +83,7 @@ function PomodoroCompact({ remaining, phase, date, className }: { remaining: str
         <span className="text-[10px] capitalize text-zinc-400">{phase}</span>
       </div>
       <div className="flex items-center gap-2.5">
-        {date !== undefined && (
+        {clock && (
           <div className="flex items-center gap-1 text-zinc-500">
             <Clock className="h-3 w-3" />
             <span className="text-[10px] font-medium tabular-nums">{time}</span>
@@ -185,8 +104,9 @@ function BrainCompact({ className }: { className?: string }) {
   );
 }
 
-function IdleCompact({ date, className }: { date: Date | null; className?: string }) {
-  const time = date ? formatClock(date) : "--:--";
+function IdleCompact({ className }: { className?: string }) {
+  const clock = useNowClock();
+  const time = clock ? formatClock(clock) : "--:--";
   return (
     <div className={cn("flex h-[38px] w-full items-center justify-center gap-2 px-1 text-zinc-300", className)}>
       <Clock className="h-3.5 w-3.5 text-zinc-500" />
@@ -311,16 +231,15 @@ function IslandExpandedHeader({
   activeViews,
   selected,
   onSelect,
-  clock,
   className,
 }: {
   activeViews: View[];
   selected: View;
   onSelect: (view: View) => void;
-  clock: Date | null;
   className?: string;
 }) {
   const i18n = useI18n();
+  const clock = useNowClock();
   const time = clock ? formatClock(clock) : "--:--";
   return (
     <div className={cn("-mx-6 -mt-4 mb-4 flex w-full items-center justify-between gap-3 border-b border-white/[0.06] px-6 pt-4 pb-3", className)}>
@@ -353,9 +272,7 @@ function CompactMulti({
   selected,
   onSelect,
   nowPlaying,
-  remainingMs,
   playing,
-  clock,
   focus,
   pomodoroPct,
 }: {
@@ -363,9 +280,7 @@ function CompactMulti({
   selected: View;
   onSelect: (view: View) => void;
   nowPlaying: NowPlaying | null;
-  remainingMs: number;
   playing: boolean;
-  clock: Date | null;
   focus: ReturnType<typeof useFocus>;
   pomodoroPct: number;
 }) {
@@ -378,24 +293,17 @@ function CompactMulti({
     <div className="flex h-[38px] w-full items-center gap-1.5 px-2">
       <div className="min-w-0 flex-1">
         {main === "spotify" && nowPlaying ? (
-          <SpotifyCompact
-            track={nowPlaying}
-            remainingMs={remainingMs}
-            playing={playing}
-            date={clock}
-            className="min-w-0"
-          />
+          <SpotifyCompact track={nowPlaying} playing={playing} className="min-w-0" />
         ) : main === "pomodoro" ? (
           <PomodoroCompact
             remaining={focus.state.format(focus.state.remaining)}
             phase={focus.state.phase}
-            date={clock}
             className="min-w-0"
           />
         ) : main === "brain" ? (
           <BrainCompact className="min-w-0" />
         ) : (
-          <IdleCompact date={clock} className="min-w-0" />
+          <IdleCompact className="min-w-0" />
         )}
       </div>
       {trailing.length > 0 && (
@@ -451,33 +359,15 @@ export default function DynamicIslandContainer() {
   const isInitialMount = useRef(true);
   const collapseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const clock = useNowClock();
-
-  // Local progress for Spotify
-  const [localProgress, setLocalProgress] = useState(nowPlaying?.progressMs ?? 0);
   const [localVolume, setLocalVolume] = useState(nowPlaying?.volumePercent ?? 50);
   const [pendingSpotify, setPendingSpotify] = useState(false);
   const [isSaved, setIsSaved] = useState(nowPlaying?.isSaved ?? false);
   const [likeLoading, setLikeLoading] = useState(false);
 
   useEffect(() => {
-    setLocalProgress(nowPlaying?.progressMs ?? 0);
     setLocalVolume(nowPlaying?.volumePercent ?? 50);
     setIsSaved(nowPlaying?.isSaved ?? false);
-  }, [nowPlaying?.progressMs, nowPlaying?.volumePercent, nowPlaying?.isSaved, nowPlaying?.id]);
-
-  useEffect(() => {
-    if (!nowPlaying?.isPlaying) return;
-    const step = 250;
-    const id = setInterval(() => {
-      setLocalProgress((p) => {
-        const duration = nowPlaying?.durationMs ?? 0;
-        const next = Math.min(duration, p + step);
-        return next;
-      });
-    }, step);
-    return () => clearInterval(id);
-  }, [nowPlaying?.isPlaying, nowPlaying?.durationMs]);
+  }, [nowPlaying?.volumePercent, nowPlaying?.isSaved, nowPlaying?.id]);
 
   const spotifyActive = !!nowPlaying?.title || !!nowPlaying?.isPlaying;
   const pomodoroActive = focus.state.phase !== "idle";
@@ -565,9 +455,6 @@ export default function DynamicIslandContainer() {
   }, [focus.state.total, focus.state.remaining]);
 
   const compact = useMemo(() => {
-    const duration = nowPlaying?.durationMs ?? 0;
-    const remaining = Math.max(0, duration - localProgress);
-
     if (activeViews.length > 1) {
       return (
         <CompactMulti
@@ -575,9 +462,7 @@ export default function DynamicIslandContainer() {
           selected={selectedView ?? activeViews[0]}
           onSelect={selectView}
           nowPlaying={nowPlaying}
-          remainingMs={remaining}
           playing={!!nowPlaying?.isPlaying}
-          clock={clock}
           focus={focus}
           pomodoroPct={pomodoroPct}
         />
@@ -587,21 +472,13 @@ export default function DynamicIslandContainer() {
     if (activeViews.length === 1) {
       const view = activeViews[0];
       if (view === "spotify" && nowPlaying) {
-        return (
-          <SpotifyCompact
-            track={nowPlaying}
-            remainingMs={remaining}
-            playing={!!nowPlaying.isPlaying}
-            date={clock}
-          />
-        );
+        return <SpotifyCompact track={nowPlaying} playing={!!nowPlaying.isPlaying} />;
       }
       if (view === "pomodoro") {
         return (
           <PomodoroCompact
             remaining={focus.state.format(focus.state.remaining)}
             phase={focus.state.phase}
-            date={clock}
           />
         );
       }
@@ -610,8 +487,8 @@ export default function DynamicIslandContainer() {
       }
     }
 
-    return <IdleCompact date={clock} />;
-  }, [activeViews, selectedView, nowPlaying, localProgress, focus, clock, selectView, pomodoroPct]);
+    return <IdleCompact />;
+  }, [activeViews, selectedView, nowPlaying, focus, selectView, pomodoroPct]);
 
   // Spotify controls
   const spotifyControl = useCallback(
@@ -644,9 +521,7 @@ export default function DynamicIslandContainer() {
 
   const togglePlay = useCallback(() => {
     const action = nowPlaying?.isPlaying ? "pause" : "play";
-    spotifyControl(action).then(() => {
-      setLocalProgress((p) => p);
-    });
+    spotifyControl(action);
   }, [nowPlaying?.isPlaying, spotifyControl]);
 
   const onSpotifyVolume = useCallback(
@@ -684,7 +559,6 @@ export default function DynamicIslandContainer() {
 
   const onSpotifySeek = useCallback(
     (value: number) => {
-      setLocalProgress(value);
       void spotifyControl("seek", { positionMs: Math.round(value) });
     },
     [spotifyControl],
@@ -726,12 +600,8 @@ export default function DynamicIslandContainer() {
                   activeViews={activeViews}
                   selected={selectedView ?? "spotify"}
                   onSelect={selectView}
-                  clock={clock}
                 />
-                <div className="flex items-start justify-between gap-2">
-                  <span className="text-[10px] font-medium tabular-nums text-zinc-500">
-                    {clock ? formatClock(clock) : "--:--"}
-                  </span>
+                <div className="flex items-start justify-end">
                   <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 text-[10px] font-medium text-emerald-300">
                     {nowPlaying?.source || "Spotify"}
                   </span>
@@ -779,10 +649,11 @@ export default function DynamicIslandContainer() {
 
                 {nowPlaying?.durationMs !== undefined && (
                   <div className="space-y-2" onPointerDown={stopPropagation}>
-                    <MediaProgress
-                      value={localProgress}
-                      max={nowPlaying.durationMs}
-                      onChange={onSpotifySeek}
+                    <LiveMediaProgress
+                      progressMs={nowPlaying.progressMs ?? 0}
+                      durationMs={nowPlaying.durationMs}
+                      isPlaying={!!nowPlaying.isPlaying}
+                      onSeek={onSpotifySeek}
                       data-testid="dynamic-island-progress"
                     />
                   </div>
@@ -830,7 +701,6 @@ export default function DynamicIslandContainer() {
                   activeViews={activeViews}
                   selected={selectedView ?? "pomodoro"}
                   onSelect={selectView}
-                  clock={clock}
                 />
                 <div className="flex flex-col items-center gap-1">
                   <span className="text-4xl font-semibold tabular-nums text-white">
@@ -888,7 +758,6 @@ export default function DynamicIslandContainer() {
                   activeViews={activeViews}
                   selected={selectedView ?? "brain"}
                   onSelect={selectView}
-                  clock={clock}
                 />
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-500/15">
                   <Brain className="h-6 w-6 text-purple-400" />

@@ -1,9 +1,10 @@
 "use client";
 
+import { memo } from "react";
 import { motion } from "framer-motion";
 import { Icon } from "@/lib/icons";
 
-export default function SettingsSection({
+function SettingsSection({
   id,
   label,
   icon,
@@ -45,3 +46,5 @@ export default function SettingsSection({
     </motion.div>
   );
 }
+
+export default memo(SettingsSection);

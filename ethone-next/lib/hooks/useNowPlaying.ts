@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useSettings } from "@/components/SettingsProvider";
-import { fetchWorker } from "@/lib/api";
+import { useCachedFetch } from "@/lib/hooks/useCachedFetch";
 import type { NowPlaying } from "@/lib/hooks/useLiveData";
 
 type ApiData = Record<string, unknown>;
@@ -23,21 +23,44 @@ function getArtworkUrl(np: ApiData | null): string | undefined {
   return asStr(np?.artworkUrl || np?.cover || np?.artwork);
 }
 
+function mapNowPlaying(raw: unknown): NowPlaying | null {
+  const res = (raw || {}) as ApiData;
+  const data = (res?.data as ApiData | undefined) || res || null;
+  if (!data) return null;
+  const track = (data?.track as ApiData) || data || {};
+
+  return {
+    id: asStr(track.id ?? data.id),
+    source: asStr(data.source) || "spotify",
+    title: asStr(track.title ?? data.title),
+    artist: asStr(track.artist ?? data.artist),
+    album: asStr(track.album ?? data.album),
+    cover:
+      asStr(track.cover ?? track.artworkUrl ?? track.artwork ?? data.cover ?? data.artworkUrl ?? data.artwork),
+    artworkUrl: getArtworkUrl(data) || asStr(track.artworkUrl ?? track.artwork ?? track.cover),
+    covers: (() => {
+      const list = track.covers ?? data.covers;
+      if (!Array.isArray(list)) return undefined;
+      return list
+        .map((c) => asStr(c))
+        .filter((c): c is string => typeof c === "string" && c.length > 0);
+    })(),
+    progressMs: asNum(track.progressMs ?? data.progressMs),
+    durationMs: asNum(track.durationMs ?? data.durationMs),
+    volumePercent:
+      typeof track.volumePercent === "number"
+        ? Math.max(0, Math.min(100, track.volumePercent))
+        : undefined,
+    deviceId: asStr(track.deviceId),
+    isPlaying: Boolean(data.isPlaying ?? data.playing ?? track.isPlaying ?? track.playing),
+    isSaved: track.isSaved === true,
+  };
+}
+
 export function useNowPlaying(pollMs = 30000) {
   const { settings } = useSettings();
   const { performanceMode = "normal" } = settings;
   const basePollMs = performanceMode === "low" ? 120000 : pollMs;
-
-  const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-  const [refreshMs, setRefreshMs] = useState(basePollMs);
-  const lastAtRef = useRef(0);
-
-  useEffect(() => {
-    const active = nowPlaying?.isPlaying === true;
-    setRefreshMs(active ? Math.min(5000, basePollMs) : basePollMs);
-  }, [nowPlaying?.isPlaying, basePollMs]);
 
   const path = useMemo(() => {
     const source = settings.liveNowPlayingSource;
@@ -54,85 +77,39 @@ export function useNowPlaying(pollMs = 30000) {
     return null;
   }, [settings.liveNowPlayingSource, settings.liveNowPlayingIdentity, settings.liveSpotifyClientId]);
 
+  const { data, loading, error, refresh } = useCachedFetch<NowPlaying | null>({
+    path,
+    ttl: 5000,
+    map: mapNowPlaying,
+  });
+
   useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
+    if (!data?.isPlaying) return;
+    // Refresh more often while music is playing to stay in sync.
+    const intervalMs = Math.min(5000, basePollMs);
+    const interval = setInterval(() => refresh(), intervalMs);
+    return () => clearInterval(interval);
+  }, [data?.isPlaying, basePollMs, refresh]);
 
-    async function load() {
-      const now = Date.now();
-      if (now - lastAtRef.current < 1000) return;
-      lastAtRef.current = now;
-      if (!path) {
-        if (!cancelled) {
-          setNowPlaying(null);
-          setLoading(false);
-          setError(null);
-        }
-        return;
-      }
-      if (!cancelled) setError(null);
-      try {
-        const res = (await fetchWorker(path)) as ApiData | null;
-        if (cancelled) return;
-        const data = (res?.data as ApiData | undefined) || res || null;
-        const track = (data?.track as ApiData) || data || {};
-        const mapped: NowPlaying | null = data
-          ? {
-              id: asStr(track.id ?? data.id),
-              source: asStr(data.source) || "spotify",
-              title: asStr(track.title ?? data.title),
-              artist: asStr(track.artist ?? data.artist),
-              album: asStr(track.album ?? data.album),
-              cover: asStr(track.cover ?? track.artworkUrl ?? track.artwork ?? data.cover ?? data.artworkUrl ?? data.artwork),
-              artworkUrl: getArtworkUrl(data) || asStr(track.artworkUrl ?? track.artwork ?? track.cover),
-              covers: (() => {
-                const list = track.covers ?? data.covers;
-                if (!Array.isArray(list)) return undefined;
-                return list
-                  .map((c) => asStr(c))
-                  .filter((c) => typeof c === "string" && c.length > 0) as string[];
-              })(),
-              progressMs: asNum(track.progressMs ?? data.progressMs),
-              durationMs: asNum(track.durationMs ?? data.durationMs),
-              volumePercent: typeof track.volumePercent === "number" ? Math.max(0, Math.min(100, track.volumePercent)) : undefined,
-              deviceId: asStr(track.deviceId),
-              isPlaying: Boolean(data.isPlaying ?? data.playing ?? track.isPlaying ?? track.playing),
-              isSaved: track.isSaved === true,
-            }
-          : null;
-        setNowPlaying(mapped);
-      } catch (err) {
-        if (!cancelled) setError(err instanceof Error ? err : new Error(String(err)));
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    load();
-    const interval = setInterval(load, refreshMs);
-
+  useEffect(() => {
     function onVisible() {
-      if (document.visibilityState === "visible") load();
+      if (document.visibilityState === "visible") refresh();
     }
     function onFocus() {
-      load();
+      refresh();
     }
-
     document.addEventListener("visibilitychange", onVisible);
     window.addEventListener("focus", onFocus);
-
     return () => {
-      cancelled = true;
-      clearInterval(interval);
       document.removeEventListener("visibilitychange", onVisible);
       window.removeEventListener("focus", onFocus);
     };
-  }, [path, refreshMs]);
+  }, [refresh]);
 
-  const refetch = () => {
-    lastAtRef.current = 0;
-    setLoading(true);
+  return {
+    nowPlaying: data,
+    loading,
+    error,
+    refetch: refresh,
   };
-
-  return { nowPlaying, loading, error, refetch };
 }

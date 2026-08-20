@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { memo, useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LayoutGrid, Search, Clock, AppWindow, Bell, Sliders, ChevronUp, Mail } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
@@ -38,7 +38,7 @@ const ICONS: Record<string, string> = {
   settings: "settings",
 };
 
-export default function Dock() {
+function Dock() {
   const { settings } = useSettings();
   const router = useRouter();
   const { missionControl, toggleMissionControl } = useWindowManager();
@@ -132,7 +132,7 @@ export default function Dock() {
       {launcherOpen && (
         <div className="pointer-events-auto absolute bottom-full left-1/2 z-50 mb-4 w-[min(90vw,420px)] -translate-x-1/2">
           <Card3D>
-            <div className="space-y-3 rounded-2xl border border-zinc-200/80 bg-white/80 p-4 shadow-[0_10px_35px_rgba(0,0,0,0.1)] backdrop-blur-2xl dark:border-white/10 dark:bg-zinc-950/80 dark:shadow-[0_10px_35px_rgba(0,0,0,0.8)]">
+            <div className="space-y-3 rounded-2xl border border-zinc-200/80 bg-white/80 p-4 shadow-[0_10px_35px_rgba(0,0,0,0.1)] backdrop-blur-md dark:border-white/10 dark:bg-zinc-950/80 dark:shadow-[0_10px_35px_rgba(0,0,0,0.8)]">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-medium text-zinc-900 dark:text-white">{i18n("dockLauncher")}</h3>
                 <button
@@ -288,3 +288,5 @@ export default function Dock() {
     </div>
   );
 }
+
+export default memo(Dock);

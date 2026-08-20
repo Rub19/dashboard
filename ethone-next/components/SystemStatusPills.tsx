@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Briefcase, Cloud, CloudOff, RefreshCw, Clock } from "lucide-react";
+import { memo, useEffect, useState } from "react";
+import { Briefcase, Cloud, CloudOff, RefreshCw } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useActiveProfile } from "@/components/SettingsProvider";
 import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
-import { useClock } from "@/lib/hooks/useClock";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import Clock from "@/components/Clock";
 
 function useOnlineStatus() {
   const [online, setOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
@@ -37,7 +37,7 @@ function StatusPill({ icon, children, onClick, title }: StatusPillProps) {
       type={onClick ? "button" : undefined}
       onClick={onClick}
       title={title}
-      className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-medium text-zinc-400 transition-colors ${
+      className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-medium text-zinc-400 transition-[color,background-color,opacity] ${
         onClick ? "hover:bg-white/[0.06] hover:text-zinc-200 cursor-pointer" : ""
       }`}
     >
@@ -51,11 +51,10 @@ function Separator() {
   return <span className="h-3 w-[1px] bg-white/10" />;
 }
 
-export default function SystemStatusPills() {
+function SystemStatusPills() {
   const i18n = useI18n();
   const { activeProfile } = useActiveProfile();
   const { syncing, sync } = useActivityJournal();
-  const clock = useClock();
   const [activeSpace] = useLocalStorage<string>("ethone-active-workspace", activeProfile?.workspace || "personal");
   const online = useOnlineStatus();
 
@@ -92,9 +91,11 @@ export default function SystemStatusPills() {
 
       <Separator />
 
-      <StatusPill icon={<Clock className="h-3 w-3 text-zinc-500" />}>
-        <span className="font-mono text-zinc-200">{clock?.time ?? "--:--"}</span>
-      </StatusPill>
+      <div className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-medium text-zinc-400">
+        <Clock />
+      </div>
     </div>
   );
 }
+
+export default memo(SystemStatusPills);

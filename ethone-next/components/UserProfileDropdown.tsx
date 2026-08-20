@@ -105,7 +105,7 @@ export default function UserProfileDropdown() {
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = "v1.7.22";
+  const VERSION_LABEL = "v1.7.23";
 
   const menuItems = [
     {
@@ -178,20 +178,22 @@ export default function UserProfileDropdown() {
           aria-expanded={open}
           aria-haspopup="true"
         >
-        <div className="pointer-events-none relative flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 text-emerald-400">
-          {avatarUrl ? (
-            <Image
-              src={avatarUrl}
-              alt=""
-              width={36}
-              height={36}
-              unoptimized
-              referrerPolicy="no-referrer"
-              className="pointer-events-none h-full w-full object-cover"
-            />
-          ) : (
-            <User className="pointer-events-none h-4 w-4" />
-          )}
+        <div className="pointer-events-none relative flex h-7 w-7 shrink-0 items-center justify-center">
+          <div className="pointer-events-none flex h-full w-full items-center justify-center overflow-hidden rounded-full border border-white/10 bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 text-emerald-400">
+            {avatarUrl ? (
+              <Image
+                src={avatarUrl}
+                alt=""
+                width={36}
+                height={36}
+                unoptimized
+                referrerPolicy="no-referrer"
+                className="pointer-events-none h-full w-full object-cover"
+              />
+            ) : (
+              <User className="pointer-events-none h-4 w-4" />
+            )}
+          </div>
           <span
             className={`pointer-events-none absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-zinc-950 ${USER_STATUS_CONFIG[currentStatus as keyof typeof USER_STATUS_CONFIG].dot}`}
           />
@@ -212,22 +214,24 @@ export default function UserProfileDropdown() {
         <div className="w-full select-none flex flex-col gap-2.5">
             {/* Header */}
             <div className="flex items-center gap-3 rounded-xl border border-white/[0.04] bg-white/[0.02] p-2.5">
-              <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-gradient-to-tr from-emerald-500/30 to-cyan-500/30 text-emerald-300">
-                {avatarUrl ? (
-                  <Image
-                    src={avatarUrl}
-                    alt=""
-                    width={40}
-                    height={40}
-                    unoptimized
-                    referrerPolicy="no-referrer"
-                    className="h-full w-full rounded-xl object-cover"
-                  />
-                ) : (
-                  <span className="text-sm font-bold">
-                    {initials(displayName)}
-                  </span>
-                )}
+              <div className="relative flex h-11 w-11 shrink-0 items-center justify-center">
+                <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-gradient-to-tr from-emerald-500/30 to-cyan-500/30 text-emerald-300">
+                  {avatarUrl ? (
+                    <Image
+                      src={avatarUrl}
+                      alt=""
+                      width={40}
+                      height={40}
+                      unoptimized
+                      referrerPolicy="no-referrer"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-sm font-bold">
+                      {initials(displayName)}
+                    </span>
+                  )}
+                </div>
                 <span
                   className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-zinc-950 ${USER_STATUS_CONFIG[currentStatus as keyof typeof USER_STATUS_CONFIG].dot}`}
                 />

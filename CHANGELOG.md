@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.23 — 2026-08-20
+
+**Correction du découpage du point de statut sur l'avatar**
+
+- `components/UserProfileDropdown.tsx` : réorganisation du wrapper avatar pour isoler `overflow-hidden` sur l'image et laisser le point de statut en `absolute` sur le parent, évitant ainsi qu'il soit coupé.
+- `package.json`, `package-lock.json`, `UserProfileDropdown.tsx`, `public/sw.js` : version `v1.7.23`, cache `v391`.
+
 ## v1.7.22 — 2026-08-20
 
 **Le Pomodoro persiste après un refresh**

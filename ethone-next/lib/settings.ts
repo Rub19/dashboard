@@ -380,6 +380,26 @@ export const DEFAULTS: Settings = {
 };
 
 const KEY = "ethone-settings-v1";
+const WRITE_AT_KEY = "ethone-settings-write-at";
+
+export function getWriteAt(): number {
+  if (typeof window === "undefined") return 0;
+  try {
+    const raw = localStorage.getItem(WRITE_AT_KEY);
+    if (!raw) return 0;
+    const n = parseInt(raw, 10);
+    return Number.isNaN(n) ? 0 : n;
+  } catch {
+    return 0;
+  }
+}
+
+export function setWriteAt(ts: number) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(WRITE_AT_KEY, String(ts));
+  } catch {}
+}
 
 const DOCK_GLASS_VALUES: DockGlass[] = ["vitrified", "ultra-blur", "sober"];
 const DOCK_SCALE_VALUES: DockScale[] = ["compact", "normal", "large"];
@@ -464,25 +484,28 @@ export function loadSettings(profileId?: string): Settings {
 export function saveSettings(settings: Settings, profileId?: string) {
   if (typeof window === "undefined") return;
   localStorage.setItem(localSettingsKey(profileId), JSON.stringify(settings));
+  setWriteAt(Date.now());
 }
 
-export async function loadSettingsAsync(): Promise<Partial<Settings>> {
+export type RemoteSettings = { settings: Partial<Settings>; updatedAt?: string };
+
+export async function loadSettingsAsync(): Promise<RemoteSettings> {
   try {
     const { data: sessionData } = await supabase.auth.getSession();
     const userId = sessionData?.session?.user?.id;
-    if (!userId) return migrateSettings({});
+    if (!userId) return { settings: migrateSettings({}) };
 
     const { data, error } = await supabase
       .from("user_settings")
-      .select("settings")
+      .select("settings, updated_at")
       .eq("user_id", userId)
       .single();
 
-    if (error || !data) return migrateSettings({});
+    if (error || !data) return { settings: migrateSettings({}) };
     const remote = (data.settings || {}) as Partial<Settings>;
-    return migrateSettings(remote);
+    return { settings: migrateSettings(remote), updatedAt: data.updated_at };
   } catch {
-    return migrateSettings({});
+    return { settings: migrateSettings({}) };
   }
 }
 
@@ -505,11 +528,14 @@ export async function saveSettingsAsync(settings: Settings): Promise<void> {
       updated_at: new Date().toISOString(),
     };
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("user_settings")
-      .upsert(payload, { onConflict: "user_id" });
+      .upsert(payload, { onConflict: "user_id" })
+      .select("updated_at")
+      .single();
 
     if (error) throw error;
+    if (data?.updated_at) setWriteAt(new Date(data.updated_at).getTime());
   } catch (err) {
     // localStorage already holds the fallback for offline scenarios.
     throw err;

@@ -4,7 +4,7 @@ import { activityJournal } from "@/lib/activity-journal";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { deepEqual } from "@/lib/equal";
 import { useProfiles, type Profile } from "@/lib/hooks/useProfiles";
-import { loadSettings, saveSettings, saveSettingsAsync, loadSettingsAsync, migrateSettings, Settings, DEFAULTS, type ThemeMode } from "@/lib/settings";
+import { loadSettings, saveSettings, saveSettingsAsync, loadSettingsAsync, migrateSettings, getWriteAt, Settings, DEFAULTS, type ThemeMode } from "@/lib/settings";
 import { applyPreset, type Preset } from "@/lib/preset-engine";
 import { supabase } from "@/lib/supabase";
 import { useSyncStore } from "@/lib/stores/sync";
@@ -12,6 +12,7 @@ import {
   PREMIUM_THEMES,
   THEME_DEFINITIONS,
   applyTheme,
+  applyAccent,
   resolveLegacyTheme,
   resolveTheme,
 } from "@/lib/theme-engine";
@@ -111,9 +112,15 @@ export default function SettingsProvider({
     setSettings(local);
     useSyncStore.getState().setStatus("user_settings", "syncing");
     loadSettingsAsync()
-      .then((remote) => {
+      .then(({ settings: remote, updatedAt }) => {
         setSettings((prev) => {
-          const next = { ...DEFAULTS, ...local, ...remote };
+          const localWriteAt = getWriteAt();
+          const remoteTs = updatedAt ? new Date(updatedAt).getTime() : 0;
+          // Local is the source of truth unless the server has a newer write.
+          const next =
+            remoteTs > localWriteAt
+              ? { ...DEFAULTS, ...local, ...remote }
+              : { ...DEFAULTS, ...local };
           return deepEqual(next, prev) ? prev : next;
         });
         useSyncStore.getState().setStatus("user_settings", "idle");
@@ -196,8 +203,7 @@ export default function SettingsProvider({
     root.style.setProperty("--muted", def.textMuted);
 
     const accent = settings.accentColor === "custom" ? settings.customAccent : (ACCENTS[settings.accentColor] || def.accentPrimary);
-    root.style.setProperty("--accent", accent);
-    root.style.setProperty("--accent-soft", accent + "33");
+    applyAccent(root, accent);
 
     const densityValues = DENSITY_PRESETS[settings.densityMode as keyof typeof DENSITY_PRESETS] || DENSITY_PRESETS.comfortable;
 

@@ -2,6 +2,20 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.40 — 2026-08-20
+
+**Refonte de la modal des logs/changelog**
+
+- Nouveau composant `components/ChangelogModal.tsx` isolé.
+- Centrage absolu, overlay sombre flouté (`bg-black/60 backdrop-blur-sm`) et fermeture au clic extérieur.
+- Dimensions bornées (`max-w-3xl w-full`, `max-h-[85vh]`).
+- Header et footer fixes ; contenu scrollable avec `os-scroll`.
+- Scrollbar personnalisée : piste transparente, curseur fin arrondi (`bg-white/15 hover:bg-white/30 rounded-full`).
+- Fond `bg-[#0C0C0E]/95`, bordure et ombre cohérents avec le thème.
+- Utilisation des tokens du thème pour les bordures, badges et accents.
+- Intégration dans `UserProfileDropdown` à la place du modal inline.
+- Version `v1.7.40`, cache PWA `v408`.
+
 ## v1.7.39 — 2026-08-20
 
 **Weather widget : icône au-dessus des informations**

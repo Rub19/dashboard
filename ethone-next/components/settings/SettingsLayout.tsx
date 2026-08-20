@@ -13,7 +13,6 @@ import { cn } from "@/lib/utils";
 import Button from "@/components/ui/Button";
 import SettingsNavigation, { CATEGORY_ORDER, sectionCategory } from "./SettingsNavigation";
 import SettingsContent from "./SettingsContent";
-import SettingsBottomBar from "./SettingsBottomBar";
 
 function resolveCategory(value: string | null | undefined): string {
   if (!value) return CATEGORY_ORDER[0].id;
@@ -182,8 +181,6 @@ export default function SettingsLayout() {
           />
         </main>
       </div>
-
-      <SettingsBottomBar />
     </div>
   );
 }

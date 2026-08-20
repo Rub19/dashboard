@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.45 — 2026-08-20
+
+**Correction du layout de la page Paramètres : troncature, vide inférieur et overlays**
+
+- `components/ui/BentoCard` : le contenu passe en `flex min-h-0 flex-1` pour empêcher la troncature des rangs de réglages dans les cartes densément peuplées.
+- `components/settings/SettingsContent` : padding inférieur réduit de `pb-20` à `pb-12` pour limiter le vide noir en fin de défilement.
+- `components/settings/SettingsLayout` : suppression de la barre d'actions flottante `SettingsBottomBar` (overlay parasite en bas de la vue).
+- Les cartes **Typographie**, **Échelle du texte** et **Verre & Effets** s'affichent désormais en entier.
+- Version `v1.7.45`, cache PWA `v413`.
+
 ## v1.7.44 — 2026-08-20
 
 **Alignement de la couleur d'accent sur le bouton de connexion**

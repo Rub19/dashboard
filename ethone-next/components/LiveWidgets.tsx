@@ -555,7 +555,7 @@ export default function LiveWidgets({
             </p>
           </div>
           <SafeImage
-            src={record.image}
+            candidates={[track?.cover, track?.artworkUrl, ...(track?.covers || []), record.image]}
             alt=""
             size={48}
             className="h-12 w-12 shrink-0 overflow-hidden rounded-[var(--panel-radius)] object-cover shadow-md"
@@ -1185,20 +1185,20 @@ export default function LiveWidgets({
               )}
 
               {isSpotify && (
-                <div className="mb-3 flex items-end gap-4 min-w-0">
+                <div className="mb-2 flex items-end gap-3 min-w-0">
                   <SafeImage
-                    src={record.image}
+                    candidates={[nowPlaying?.cover, nowPlaying?.artworkUrl, ...(nowPlaying?.covers || []), record.image]}
                     alt=""
-                    size={96}
-                    className="h-24 w-24 shrink-0 overflow-hidden rounded-[var(--panel-radius)] object-cover shadow-lg"
-                    iconClassName="h-10 w-10 text-emerald-400"
+                    size={80}
+                    className="h-20 w-20 shrink-0 overflow-hidden rounded-[var(--panel-radius)] object-cover shadow-lg"
+                    iconClassName="h-8 w-8 text-emerald-400"
                     fallback="music"
                     loading="eager"
                     priority
                   />
                   <div className="flex min-w-0 flex-col gap-1 pb-1">
                     <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">LIVE</span>
-                    <Equalizer bars={6} className="h-5" />
+                    <Equalizer bars={6} className="h-4" />
                   </div>
                 </div>
               )}
@@ -1240,17 +1240,17 @@ export default function LiveWidgets({
                 </div>
               )}
 
-              <div className="space-y-1">
+              <div className="space-y-0.5">
                 {!isSpotify && !isDiscord && !isWeather && !isMinecraft && !hasImageHeader && <p className="truncate font-medium">{record.title}</p>}
-                {isSpotify && <p className="truncate text-lg font-bold">{record.title}</p>}
-                {!isDiscord && !isWeather && !isMinecraft && record.subtitle && <p className="truncate text-sm text-[var(--muted)]">{record.subtitle}</p>}
-                {!isDiscord && !isWeather && !isMinecraft && record.meta && <p className="truncate text-xs text-[var(--muted)]">{record.meta}</p>}
+                {isSpotify && <p className="truncate text-lg font-bold leading-tight">{record.title}</p>}
+                {!isDiscord && !isWeather && !isMinecraft && record.subtitle && <p className="truncate text-sm leading-tight text-[var(--muted)]">{record.subtitle}</p>}
+                {!isDiscord && !isWeather && !isMinecraft && record.meta && <p className="truncate text-xs leading-tight text-[var(--muted)]">{record.meta}</p>}
               </div>
 
               {isSpotify && nowPlaying?.isPlaying && (
-                <div className="mt-3 space-y-2" onClick={(e) => e.stopPropagation()}>
+                <div className="mt-2 space-y-1.5" onClick={(e) => e.stopPropagation()}>
                   {nowPlaying.progressMs !== undefined && nowPlaying.durationMs && (
-                    <div className="space-y-1">
+                    <div className="space-y-0.5">
                       <Slider
                         value={nowPlaying.progressMs}
                         onChange={(v) => controlSpotify("seek", undefined, v)}
@@ -1267,18 +1267,18 @@ export default function LiveWidgets({
                       </div>
                     </div>
                   )}
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => controlSpotify("previous")} className="rounded-lg p-1.5 text-[var(--foreground)] hover:bg-white/10">
-                      <Icon name="skipBack" className="h-4 w-4" />
+                  <div className="flex items-center gap-1.5">
+                    <button onClick={() => controlSpotify("previous")} className="rounded-lg p-1 text-[var(--foreground)] hover:bg-white/10">
+                      <Icon name="skipBack" className="h-3.5 w-3.5" />
                     </button>
                     <button
                       onClick={() => controlSpotify(nowPlaying.isPlaying ? "pause" : "play")}
-                      className="rounded-lg bg-emerald-500 p-2 text-white hover:bg-emerald-400"
+                      className="rounded-lg bg-emerald-500 p-1.5 text-white hover:bg-emerald-400"
                     >
                       {nowPlaying.isPlaying ? <Icon name="pause" className="h-4 w-4" /> : <Icon name="play" className="h-4 w-4" />}
                     </button>
-                    <button onClick={() => controlSpotify("next")} className="rounded-lg p-1.5 text-[var(--foreground)] hover:bg-white/10">
-                      <Icon name="skipForward" className="h-4 w-4" />
+                    <button onClick={() => controlSpotify("next")} className="rounded-lg p-1 text-[var(--foreground)] hover:bg-white/10">
+                      <Icon name="skipForward" className="h-3.5 w-3.5" />
                     </button>
                     <button
                       onClick={async () => {
@@ -1286,10 +1286,10 @@ export default function LiveWidgets({
                         setSaved(next);
                         await controlSpotify(next ? "save" : "unsave", nowPlaying?.id);
                       }}
-                      className={`ml-auto rounded-lg p-1.5 ${saved ? "text-emerald-400" : "text-rose-400"} hover:bg-rose-500/10`}
+                      className={`ml-auto rounded-lg p-1 ${saved ? "text-emerald-400" : "text-rose-400"} hover:bg-rose-500/10`}
                       aria-label={saved ? i18n("unlike") : i18n("like")}
                     >
-                      <Icon name={saved ? "heart-off" : "heart"} className="h-4 w-4" />
+                      <Icon name={saved ? "heart-off" : "heart"} className="h-3.5 w-3.5" />
                     </button>
                   </div>
                 </div>

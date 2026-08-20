@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { cloneElement, memo } from "react";
+import { cloneElement, memo, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   PanelLeftClose,
@@ -16,6 +16,7 @@ import {
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useProfile } from "@/lib/hooks/useProfile";
 import { useAuth } from "@/components/AuthProvider";
+import { ADMIN_EMAIL } from "@/lib/admin";
 import { useActiveProfile } from "@/components/SettingsProvider";
 import { useSyncStore } from "@/lib/stores/sync";
 import { cn } from "@/lib/utils";
@@ -47,6 +48,7 @@ const APPS: AppItem[] = [
   { id: "activity", href: "/activity/", icon: "activity" },
   { id: "connections", href: "/connections/", icon: "connections" },
   { id: "plugins", href: "/plugins/", icon: "plugins" },
+  { id: "admin", href: "/admin/", icon: "bar-chart" },
   { id: "settings", href: "/settings/", icon: "settings" },
 ];
 
@@ -217,6 +219,9 @@ function Sidebar() {
   const router = useRouter();
   const pathname = usePathname() ?? "/";
   const { setOpen } = useAnimatedSidebar();
+  const { user } = useAuth();
+  const isAdmin = useMemo(() => user?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase(), [user?.email]);
+  const visibleApps = useMemo(() => APPS.filter((app) => app.id !== "admin" || isAdmin), [isAdmin]);
 
   function isActive(app: AppItem) {
     if (app.href === "/") return pathname === "/";
@@ -247,14 +252,14 @@ function Sidebar() {
         </AnimatedSidebarHeader>
         <AnimatedSidebarContent>
           <AnimatedSidebarMenu>
-            {APPS.map((app) => (
+            {visibleApps.map((app) => (
               <AnimatedSidebarMenuItem key={app.id}>
                 <AnimatedSidebarMenuButton
                   isActive={isActive(app)}
                   icon={<Icon name={app.icon} className="h-5 w-5" />}
                   onSelect={() => router.push(app.href)}
                 >
-                  {i18n(app.id)}
+                  {i18n(app.id, app.id === "admin" ? "Admin" : app.id)}
                 </AnimatedSidebarMenuButton>
               </AnimatedSidebarMenuItem>
             ))}

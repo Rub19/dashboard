@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { ChevronDown, Check } from "lucide-react";
 
 export type SelectOption = {
@@ -42,6 +42,8 @@ export default function Select({
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
+  const [ready, setReady] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const listboxRef = useRef<HTMLDivElement>(null);
   const optionRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -54,23 +56,38 @@ export default function Select({
   const selected = options[selectedIndex];
 
   const updatePosition = useCallback(() => {
-    if (triggerRef.current) {
-      const rect = triggerRef.current.getBoundingClientRect();
-      setPosition({ top: rect.bottom + 6, left: rect.left, width: rect.width });
-    }
+    const el = triggerRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    setPosition({
+      top: rect.bottom + 6,
+      left: rect.left,
+      width: Math.max(rect.width, 160),
+    });
   }, []);
 
-  useEffect(() => {
-    if (open) {
-      setActiveIndex(selectedIndex >= 0 ? selectedIndex : 0);
-      updatePosition();
-      window.addEventListener("resize", updatePosition);
-      window.addEventListener("scroll", updatePosition, true);
-      return () => {
-        window.removeEventListener("resize", updatePosition);
-        window.removeEventListener("scroll", updatePosition, true);
-      };
+  useLayoutEffect(() => {
+    if (!open) {
+      setReady(false);
+      setMounted(false);
+      return;
     }
+    updatePosition();
+    setReady(true);
+    setMounted(false);
+  }, [open, updatePosition]);
+
+  useEffect(() => {
+    if (!open) return;
+    setActiveIndex(selectedIndex >= 0 ? selectedIndex : 0);
+    const raf = requestAnimationFrame(() => setMounted(true));
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
+    };
   }, [open, selectedIndex, updatePosition]);
 
   useEffect(() => {
@@ -156,23 +173,24 @@ export default function Select({
     triggerRef.current?.focus();
   };
 
+  const listboxLabel = ariaLabel || (typeof label === "string" ? label : undefined);
+
   const listbox = (
-    <motion.div
+    <div
       ref={listboxRef}
       id={listboxId}
       role="listbox"
-      initial={{ opacity: 0, y: -6, scale: 0.98 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -4, scale: 0.98 }}
-      transition={{ duration: 0.15, ease: "easeOut" as const }}
+      aria-label={listboxLabel}
       onKeyDown={handleListboxKeyDown}
       style={{
         position: "fixed",
         top: position.top,
         left: position.left,
         width: position.width,
+        opacity: mounted ? 1 : 0,
+        transform: mounted ? "translateY(0)" : "translateY(-6px)",
       }}
-      className="z-[100] mt-1.5 min-w-[12rem] overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-2xl shadow-black/60 backdrop-blur-xl"
+      className="z-[100] mt-1.5 min-w-[12rem] overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-2xl shadow-black/60 backdrop-blur-xl transition-[opacity,transform] duration-150 ease-out"
     >
       <div className="max-h-64 overflow-y-auto p-1.5">
         {options.map((option, index) => {
@@ -205,7 +223,7 @@ export default function Select({
           );
         })}
       </div>
-    </motion.div>
+    </div>
   );
 
   return (
@@ -245,9 +263,7 @@ export default function Select({
         </motion.span>
       </button>
 
-      <AnimatePresence>
-        {open && typeof document !== "undefined" && createPortal(listbox, document.body)}
-      </AnimatePresence>
+      {open && ready && typeof document !== "undefined" && createPortal(listbox, document.body)}
     </div>
   );
 }

@@ -114,11 +114,10 @@ export function Calendar({
   }
 
   const years = React.useMemo(() => {
-    const current = focused.year;
     const list: number[] = [];
-    for (let y = current - 10; y <= current + 20; y++) list.push(y);
+    for (let y = 1900; y <= 2100; y++) list.push(y);
     return list;
-  }, [focused.year]);
+  }, []);
 
   const months = React.useMemo(() => Array.from({ length: 12 }, (_, i) => i + 1), []);
 

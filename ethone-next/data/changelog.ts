@@ -1252,9 +1252,61 @@ const v180_de: ChangelogEntry = {
   ],
 };
 
+const v181_fr: ChangelogEntry = {
+  version: "v1.7.4",
+  date: "2026-08-20",
+  title: "Menus déroulants du calendrier",
+  items: [
+    "Sélecteur partagé `Select` corrigé : le listbox se positionne correctement sous le bouton et s'affiche sans décalage.",
+    "Calendrier : le menu des mois expose les 12 mois, le menu des années va de 1900 à 2100.",
+    "Formulaire de facture : ajout de 7 devises (€, $, £, ¥, CHF, CA$, A$).",
+    "Catégories de facturation traduites (Logement, Services publics, Transport, Assurance, Abonnements, Alimentation, Éducation, Impôts, Autre).",
+    "Mise à jour de la version en v1.7.4.",
+  ],
+};
+
+const v181_en: ChangelogEntry = {
+  version: "v1.7.4",
+  date: "2026-08-20",
+  title: "Calendar dropdowns",
+  items: [
+    "Fixed shared `Select` component: listbox now positions correctly below the trigger and renders without offset.",
+    "Calendar: month dropdown lists all 12 months; year dropdown spans 1900-2100.",
+    "Bill form: added 7 currencies (€, $, £, ¥, CHF, CA$, A$).",
+    "Translated bill categories (Housing, Utilities, Transport, Insurance, Subscriptions, Food, Education, Taxes, Other).",
+    "Updated version to v1.7.4.",
+  ],
+};
+
+const v181_es: ChangelogEntry = {
+  version: "v1.7.4",
+  date: "2026-08-20",
+  title: "Desplegables del calendario",
+  items: [
+    "Corregido el componente `Select` compartido: el listbox se posiciona correctamente bajo el botón y se muestra sin desfase.",
+    "Calendario: el menú de meses muestra los 12 meses; el de años abarca 1900-2100.",
+    "Formulario de factura: añadidas 7 divisas (€, $, £, ¥, CHF, CA$, A$).",
+    "Categorías de facturación traducidas (Vivienda, Servicios, Transporte, Seguro, Suscripciones, Alimentación, Educación, Impuestos, Otro).",
+    "Versión actualizada a v1.7.4.",
+  ],
+};
+
+const v181_de: ChangelogEntry = {
+  version: "v1.7.4",
+  date: "2026-08-20",
+  title: "Kalender-Dropdowns",
+  items: [
+    "Gemeinsame `Select`-Komponente korrigiert: Listbox positioniert sich korrekt unter dem Trigger und wird ohne Versatz gerendert.",
+    "Kalender: Monatmenü zeigt alle 12 Monate; Jahresmenü reicht von 1900 bis 2100.",
+    "Rechnungsformular: 7 Währungen hinzugefügt (€, $, £, ¥, CHF, CA$, A$).",
+    "Rechnungskategorien übersetzt (Wohnen, Nebenkosten, Transport, Versicherung, Abonnements, Lebensmittel, Bildung, Steuern, Sonstiges).",
+    "Version auf v1.7.4 aktualisiert.",
+  ],
+};
+
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
-  en: [v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
+  fr: [v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -1300,7 +1352,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
+  es: [v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -1346,7 +1398,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
+  de: [v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

@@ -35,8 +35,22 @@ function startOfDay(date: Date) {
   return d;
 }
 
+const CURRENCIES = [
+  { id: "€", label: "€", code: "EUR" },
+  { id: "$", label: "$", code: "USD" },
+  { id: "£", label: "£", code: "GBP" },
+  { id: "¥", label: "¥", code: "JPY" },
+  { id: "CHF", label: "CHF", code: "CHF" },
+  { id: "CA$", label: "CA$", code: "CAD" },
+  { id: "A$", label: "A$", code: "AUD" },
+];
+
+function currencyCode(symbol: string) {
+  return CURRENCIES.find((c) => c.id === symbol)?.code ?? (symbol.length === 3 ? symbol : "EUR");
+}
+
 function formatCurrency(amount: number, currency: string, locale: string) {
-  const code = currency === "$" || currency === "USD" ? "USD" : currency === "£" || currency === "GBP" ? "GBP" : "EUR";
+  const code = currencyCode(currency);
   try {
     return new Intl.NumberFormat(locale, { style: "currency", currency: code }).format(amount);
   } catch {
@@ -205,11 +219,7 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
             <Select
               value={currency}
               onChange={(v) => setCurrency(v)}
-              options={[
-                { id: "€", label: "€" },
-                { id: "$", label: "$" },
-                { id: "£", label: "£" },
-              ]}
+              options={CURRENCIES.map((c) => ({ id: c.id, label: c.label }))}
             />
             <Select
               value={category}

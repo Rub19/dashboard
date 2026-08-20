@@ -4,6 +4,22 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [Unreleased]
 
+**Menus déroulants du calendrier v1.7.4**
+
+### Corrige
+- `ethone-next/components/ui/Select.tsx` : le listbox du sélecteur partagé est maintenant positionné via `useLayoutEffect`, affiché seulement après mesure (`ready`), et ancré correctement sous le bouton (résout le décalage observé dans le panneau de facturation).
+
+### Ajoute
+- `ethone-next/components/ui/calendar.tsx` : la liste des années du calendrier s'étend de 1900 à 2100.
+- `ethone-next/components/CalendarBillingPanel.tsx` : ajout de 7 devises (€, $, £, ¥, CHF, CA$, A$) avec conversion correcte via `Intl.NumberFormat`.
+- `ethone-next/lib/i18n.ts` : traductions des catégories de facturation (Logement, Services publics, Transport, Assurance, Abonnements, Alimentation, Éducation, Impôts, Autre) et de `addBill`.
+- `ethone-next/components/ui/Select.tsx` : ajout de `aria-label` sur le `listbox` pour améliorer l'accessibilité et les tests.
+
+### Version
+- `ethone-next/package.json`, `ethone-next/package-lock.json`, `ethone-next/public/version.json`, `ethone-next/public/sw.js`, `ethone-next/components/UserProfileDropdown.tsx` : version `v1.7.4` et cache PWA `v371`.
+
+## v1.7.3 — 2026-08-19
+
 **Bouton météo, ambiances sonores et onglets Settings v1.7.3**
 
 ### Ajoute

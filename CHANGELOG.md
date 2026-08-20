@@ -2,6 +2,20 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.42 — 2026-08-20
+
+**Refonte UI/UX de la sidebar et suite de l'harmonisation des contrôles**
+
+- Réorganisation de la navigation de la sidebar : `Accueil, Notes, Tâches, Calendrier, Fichiers, Mail, Brain, Focus, Activité, Connexions, Plugins, Réglages`.
+- Pastille active glissante et hover synchronisés avec `var(--accent-primary)` et `var(--glow-color)`.
+- Espacements et typographie affinés (`gap-1.5`, `px-3.5`, `text-[13px]`) pour une sidebar aérée.
+- Séparateur subtil et alignement du bloc profil/actions en bas.
+- Harmonisation des contrôles interactifs : `Modal`, `Select`, `Tabs`, `AnimatedFilterTabs`, `Switch`, `Checkbox`, `Toast`, `Dock`, `TopBar`, `UserProfileDropdown` raccordés aux tokens sémantiques.
+- `components/motion/shared-layout-bg.tsx` et `components/motion/animated-sidebar.tsx` raccordés à `var(--accent-primary)`.
+- Couleurs d'alerte (danger, warning, info, succès) et widgets 3D isolés préservés.
+- Vérification Snyk : aucune injection CSS ni régression d'accessibilité détectée.
+- Version `v1.7.42`, cache PWA `v410`.
+
 ## v1.7.41 — 2026-08-20
 
 **Audit global et harmonisation dynamique des boutons / thèmes**

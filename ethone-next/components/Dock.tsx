@@ -123,7 +123,7 @@ function Dock() {
   }
 
   const dockButton =
-    "flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl text-zinc-300 transition-all hover:bg-white/[0.08] hover:text-white active:scale-95";
+    "flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl text-[var(--text-muted)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95";
 
   return (
     <div
@@ -132,14 +132,14 @@ function Dock() {
       {launcherOpen && (
         <div className="pointer-events-auto absolute bottom-full left-1/2 z-50 mb-4 w-[min(90vw,420px)] -translate-x-1/2">
           <Card3D>
-            <div className="space-y-3 rounded-2xl border border-zinc-200/80 bg-white/80 p-4 shadow-[0_10px_35px_rgba(0,0,0,0.1)] backdrop-blur-md dark:border-white/10 dark:bg-zinc-950/80 dark:shadow-[0_10px_35px_rgba(0,0,0,0.8)]">
+            <div className="space-y-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-[0_10px_35px_var(--glow-color)] backdrop-blur-md">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium text-zinc-900 dark:text-white">{i18n("dockLauncher")}</h3>
+                <h3 className="text-sm font-medium text-[var(--text-primary)]">{i18n("dockLauncher")}</h3>
                 <button
                   type="button"
                   onClick={() => setLauncherOpen(false)}
                   aria-label={i18n("close")}
-                  className="rounded p-1 text-[var(--muted)] transition-colors hover:bg-[var(--surface-raised)]/80 hover:text-[var(--background)] dark:hover:bg-[var(--text-primary)]/[0.08] dark:hover:text-[var(--text-primary)]"
+                  className="rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
                 >
                   <Icon name="close" className="h-4 w-4" />
                 </button>
@@ -153,7 +153,7 @@ function Dock() {
                       router.push(app.href);
                       setLauncherOpen(false);
                     }}
-                    className="flex flex-col items-center gap-1 rounded-xl border border-[var(--border)]/60 bg-[var(--surface-raised)]/80 p-2 text-[var(--background)] transition-colors hover:border-[var(--border)]/80 hover:bg-[var(--surface-raised)]/80 dark:border-[var(--text-primary)]/[0.08] dark:bg-[var(--text-primary)]/[0.03] dark:text-[var(--text-primary)] dark:hover:border-[var(--text-primary)]/15 dark:hover:bg-[var(--text-primary)]/[0.06]"
+                    className="flex flex-col items-center gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--bg-surface)]/80 p-2 text-[var(--text-primary)] transition-colors hover:border-[var(--accent-primary)]/30 hover:bg-[var(--text-primary)]/[0.06]"
                   >
                     <Icon name={app.icon} className="h-5 w-5" />
                     <span className="w-full truncate text-center text-[10px] leading-tight">{app.label}</span>

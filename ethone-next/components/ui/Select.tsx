@@ -209,15 +209,15 @@ export default function Select({
                 option.disabled
                   ? "cursor-not-allowed opacity-40"
                   : isSelected
-                    ? "bg-purple-500/10 text-purple-300"
+                    ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
                     : isActive
-                      ? "bg-purple-500/15 text-white"
-                      : "text-zinc-300 hover:bg-purple-500/15 hover:text-white"
+                      ? "bg-[var(--accent-primary)]/15 text-[var(--text-primary)]"
+                      : "text-[var(--text-muted)] hover:bg-[var(--accent-primary)]/15 hover:text-[var(--text-primary)]"
               }`}
             >
               <span className="truncate">{option.label}</span>
               {isSelected && (
-                <Check className="h-4 w-4 shrink-0 text-purple-400" aria-hidden="true" />
+                <Check className="h-4 w-4 shrink-0 text-[var(--accent-primary)]" aria-hidden="true" />
               )}
             </div>
           );

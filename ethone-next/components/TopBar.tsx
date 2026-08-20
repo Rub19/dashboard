@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { ChevronRight, ChevronDown, CloudSun, Sun, Moon, Timer, Eye, EyeOff, PanelLeftOpen, PanelLeftClose } from "lucide-react";
 import { AnimatedSidebarTrigger, useAnimatedSidebar } from "@/components/motion/animated-sidebar";
 import SystemStatusPills from "@/components/SystemStatusPills";
-import TopBarMediaPill from "@/components/TopBarMediaPill";
 import CommandBarTrigger from "@/components/CommandBarTrigger";
 import NotificationCenter from "@/components/NotificationCenter";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -172,9 +171,8 @@ function TopBar() {
         </nav>
       </div>
 
-      {/* Center — System status & media */}
-      <div className="col-start-2 hidden min-w-0 items-center justify-center gap-2 justify-self-center xl:flex pointer-events-auto">
-        <TopBarMediaPill />
+      {/* Center — System status */}
+      <div className="col-start-2 hidden min-w-0 items-center justify-center justify-self-center xl:flex pointer-events-auto">
         <SystemStatusPills />
       </div>
 

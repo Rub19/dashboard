@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.33 — 2026-08-20
+
+**Nettoyage topbar : retrait du pill média dupliqué**
+
+- Suppression du `TopBarMediaPill` dans la topbar.
+- La capsule média et le contrôle Spotify restent uniquement dans la Dynamic Island.
+- La topbar garde son alignement 3 colonnes avec breadcrumb / statuts / météo+profil.
+
 ## v1.7.32 — 2026-08-20
 
 **Refonte UI/UX : alignement strict du layout et optimisations performances**

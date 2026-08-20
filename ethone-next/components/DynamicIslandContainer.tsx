@@ -35,10 +35,13 @@ import type { NowPlaying } from "@/lib/hooks/useLiveData";
 type View = "spotify" | "pomodoro" | "brain";
 
 const EASE_OUT = [0.16, 1, 0.3, 1] as const;
-const VIEW_ORDER: View[] = ["brain", "pomodoro", "spotify"];
+const VIEW_ORDER: View[] = ["spotify", "brain", "pomodoro"];
 
-// Leading priority: prefer views that carry the most ambient info (clock + media).
-const LEADING_PRIORITY: View[] = ["spotify", "pomodoro", "brain"];
+// Leading priority: Spotify/Brain stay as the main pill; Pomodoro becomes a separate bubble.
+const LEADING_PRIORITY: View[] = ["spotify", "brain", "pomodoro"];
+
+// Trailing priority: Pomodoro sits right next to the leading activity when active.
+const TRAILING_PRIORITY: View[] = ["pomodoro", "brain", "spotify"];
 
 function viewLabel(view: View, i18n: (key: string, fallback?: string) => string) {
   switch (view) {
@@ -238,6 +241,72 @@ function IslandBubble({
   );
 }
 
+function PomodoroBubble({
+  remaining,
+  pct,
+  active,
+  onClick,
+  paused,
+}: {
+  remaining: string;
+  pct: number;
+  active?: boolean;
+  onClick?: (e: React.MouseEvent) => void;
+  paused?: boolean;
+}) {
+  const size = 34;
+  const stroke = 2.5;
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const dash = `${(pct / 100) * c} ${c}`;
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={`Pomodoro ${remaining}`}
+      className={cn(
+        "relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-all",
+        active
+          ? "bg-[var(--accent)]/10 text-[var(--accent)] border-[var(--accent)]/40"
+          : "bg-white/[0.08] text-white border-white/[0.1] hover:bg-white/[0.12]",
+        paused && "opacity-60",
+      )}
+    >
+      <svg
+        width={size}
+        height={size}
+        viewBox={`0 0 ${size} ${size}`}
+        className="absolute -rotate-90"
+        aria-hidden="true"
+      >
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke="rgba(255,255,255,0.12)"
+          strokeWidth={stroke}
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke="var(--accent)"
+          strokeWidth={stroke}
+          strokeDasharray={dash}
+          strokeLinecap="round"
+          className="transition-all duration-500"
+        />
+      </svg>
+      <span className="relative z-10 text-[9px] font-semibold tabular-nums leading-none">
+        {remaining}
+      </span>
+    </button>
+  );
+}
+
 function IslandExpandedHeader({
   activeViews,
   selected,
@@ -288,6 +357,7 @@ function CompactMulti({
   playing,
   clock,
   focus,
+  pomodoroPct,
 }: {
   activeViews: View[];
   selected: View;
@@ -297,9 +367,12 @@ function CompactMulti({
   playing: boolean;
   clock: Date | null;
   focus: ReturnType<typeof useFocus>;
+  pomodoroPct: number;
 }) {
   const main = LEADING_PRIORITY.find((v) => activeViews.includes(v)) || activeViews[0];
-  const trailing = activeViews.filter((v) => v !== main);
+  const trailing = activeViews
+    .filter((v) => v !== main)
+    .sort((a, b) => TRAILING_PRIORITY.indexOf(a) - TRAILING_PRIORITY.indexOf(b));
 
   return (
     <div className="flex h-[38px] w-full items-center gap-1.5 px-2">
@@ -327,18 +400,34 @@ function CompactMulti({
       </div>
       {trailing.length > 0 && (
         <div className="flex items-center gap-1 pl-1">
-          {trailing.map((v) => (
-            <IslandBubble
-              key={v}
-              view={v}
-              active={selected === v}
-              onClick={(e) => {
-                e.stopPropagation();
-                onSelect(v);
-              }}
-              pulse={v === "pomodoro"}
-            />
-          ))}
+          {trailing.map((v) => {
+            if (v === "pomodoro") {
+              return (
+                <PomodoroBubble
+                  key={v}
+                  remaining={focus.state.format(focus.state.remaining)}
+                  pct={pomodoroPct}
+                  active={selected === v}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSelect(v);
+                  }}
+                  paused={focus.state.paused}
+                />
+              );
+            }
+            return (
+              <IslandBubble
+                key={v}
+                view={v}
+                active={selected === v}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSelect(v);
+                }}
+              />
+            );
+          })}
         </div>
       )}
     </div>
@@ -456,6 +545,11 @@ export default function DynamicIslandContainer() {
     setExpanded((v) => !v);
   }, [selectedView]);
 
+  const pomodoroPct = useMemo(() => {
+    if (!focus.state.total) return 0;
+    return Math.min(100, Math.max(0, (1 - focus.state.remaining / focus.state.total) * 100));
+  }, [focus.state.total, focus.state.remaining]);
+
   const compact = useMemo(() => {
     const duration = nowPlaying?.durationMs ?? 0;
     const remaining = Math.max(0, duration - localProgress);
@@ -471,6 +565,7 @@ export default function DynamicIslandContainer() {
           playing={!!nowPlaying?.isPlaying}
           clock={clock}
           focus={focus}
+          pomodoroPct={pomodoroPct}
         />
       );
     }
@@ -502,7 +597,7 @@ export default function DynamicIslandContainer() {
     }
 
     return <IdleCompact date={clock} />;
-  }, [activeViews, selectedView, nowPlaying, localProgress, focus, clock, selectView]);
+  }, [activeViews, selectedView, nowPlaying, localProgress, focus, clock, selectView, pomodoroPct]);
 
   // Spotify controls
   const spotifyControl = useCallback(
@@ -587,11 +682,6 @@ export default function DynamicIslandContainer() {
     longBreak: i18n("longBreak"),
     idle: i18n("ready"),
   };
-
-  const pomodoroPct = useMemo(() => {
-    if (!focus.state.total) return 0;
-    return Math.min(100, Math.max(0, (1 - focus.state.remaining / focus.state.total) * 100));
-  }, [focus.state.total, focus.state.remaining]);
 
   const stopPropagation = useCallback((e: React.MouseEvent | React.PointerEvent) => {
     e.stopPropagation();

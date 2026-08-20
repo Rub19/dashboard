@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.12 — 2026-08-20
+
+**Pomodoro en bulle dans la Dynamic Island**
+
+### Corrige
+- `ethone-next/components/DynamicIslandContainer.tsx` : le Pomodoro devient une bulle circulaire séparée quand d'autres activités (Spotify, Brain) sont actives, comme le multi-activités de la Dynamic Island d'Apple.
+- Bulle Pomodoro : temps restant au centre + anneau de progrès, fond et bordure propres, état actif en couleur d'accent.
+- Priorité d'activités ajustée : Spotify/Brain restent en pill principal, Pomodoro passe en bulle secondaire.
+
+### Version
+- `ethone-next/package.json`, `package-lock.json`, `components/UserProfileDropdown.tsx`, `public/sw.js` : version `v1.7.12` et cache PWA `v380`.
+
 ## v1.7.11 — 2026-08-20
 
 **Polish des menus Notifications, Langue et Profil**

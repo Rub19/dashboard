@@ -13,6 +13,7 @@ export interface LoaderProps {
   speed?: number;
   label?: string;
   className?: string;
+  progress?: number;
 }
 
 const REDUCED = {
@@ -26,6 +27,7 @@ export function Loader({
   speed = 1,
   label = "Loading",
   className,
+  progress,
 }: LoaderProps) {
   const reduce = useReducedMotion() ?? false;
 
@@ -39,7 +41,7 @@ export function Loader({
       )}
     >
       {variant === "comet" && <Comet size={size} speed={speed} reduce={reduce} />}
-      {variant === "percent" && <Percent size={size} speed={speed} reduce={reduce} />}
+      {variant === "percent" && <Percent size={size} speed={speed} reduce={reduce} progress={progress} />}
       <span className="sr-only">{label}</span>
     </span>
   );
@@ -90,9 +92,15 @@ function Comet({ size, speed, reduce }: PartProps) {
   );
 }
 
-function Percent({ size, speed, reduce }: PartProps) {
+function Percent({
+  size,
+  speed,
+  reduce,
+  progress,
+}: PartProps & { progress?: number }) {
   const [p, setP] = useState(0);
   useEffect(() => {
+    if (typeof progress === "number") return;
     const dur = (reduce ? speed * 2 : speed) * 1000;
     const start = { t: 0 };
     const tickMs = 40;
@@ -103,7 +111,9 @@ function Percent({ size, speed, reduce }: PartProps) {
       if (next >= 100) start.t = 0;
     }, tickMs);
     return () => clearInterval(id);
-  }, [speed, reduce]);
+  }, [speed, reduce, progress]);
+
+  const value = typeof progress === "number" ? Math.min(100, Math.max(0, Math.round(progress))) : p;
 
   return (
     <span
@@ -114,15 +124,15 @@ function Percent({ size, speed, reduce }: PartProps) {
         className="font-mono font-medium tabular-nums"
         style={{ fontSize: size * 0.42, lineHeight: 1 }}
       >
-        {p}%
+        {value}%
       </span>
       <span
         className="w-full overflow-hidden rounded-full bg-current/15"
         style={{ height: Math.max(3, size * 0.1) }}
       >
         <span
-          className="block h-full rounded-full bg-current"
-          style={{ width: `${p}%` }}
+          className="block h-full rounded-full bg-current transition-all duration-100 ease-linear"
+          style={{ width: `${value}%` }}
         />
       </span>
     </span>

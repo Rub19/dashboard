@@ -6,10 +6,12 @@ import {
   useEffect,
   useState,
   useCallback,
+  useRef,
   type ReactNode,
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
+import { useActiveProfile } from "@/components/SettingsProvider";
 import Loading from "@/components/Loading";
 import BrandMark from "@/components/BrandMark";
 import Shell from "@/components/Shell";
@@ -43,6 +45,7 @@ export function useBoot() {
 const PUBLIC_ROUTES = ["/login", "/password-recovery", "/reset-password"];
 
 const BOOT_TIMEOUT_MS = 10_000;
+const BOOT_MIN_DURATION_MS = 1_800;
 
 function isPublicRoute(pathname: string | null): boolean {
   if (!pathname) return false;
@@ -57,6 +60,7 @@ function resolvePublicRoute(pathname: string | null): boolean {
 
 export default function BootProvider({ children }: { children: ReactNode }) {
   const { session, loading: authLoading, error: authError, refreshSession } = useAuth();
+  const { loaded: profileLoaded } = useActiveProfile();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -64,21 +68,21 @@ export default function BootProvider({ children }: { children: ReactNode }) {
     if (typeof window !== "undefined" && !navigator.onLine) {
       return "offline";
     }
-    // usePathname peut être null au premier rendu client ou pendant le SSG.
-    // On se base sur l'URL réelle pour ne jamais rendre une page protégée
-    // avant d'avoir vérifié l'authentification.
     return resolvePublicRoute(pathname) ? "unauthenticated" : "booting";
   });
 
   const [error, setError] = useState<string | null>(null);
+  const [bootProgress, setBootProgress] = useState(0);
+  const [bootReady, setBootReady] = useState(false);
+  const bootStartRef = useRef<number | null>(null);
+
+  const publicRoute = resolvePublicRoute(pathname);
 
   const check = useCallback(() => {
     if (typeof window !== "undefined" && !navigator.onLine) {
       setState("offline");
       return;
     }
-
-    const publicRoute = resolvePublicRoute(pathname);
 
     if (authLoading) {
       setState(publicRoute ? "unauthenticated" : "booting");
@@ -92,6 +96,10 @@ export default function BootProvider({ children }: { children: ReactNode }) {
     }
 
     if (session) {
+      if (!profileLoaded) {
+        setState("booting");
+        return;
+      }
       setState("authenticated");
       if (publicRoute) {
         setState("recovering");
@@ -104,11 +112,14 @@ export default function BootProvider({ children }: { children: ReactNode }) {
         router.replace("/login");
       }
     }
-  }, [authLoading, authError, session, pathname, router]);
+  }, [authLoading, authError, session, profileLoaded, publicRoute, router]);
 
   const retry = useCallback(() => {
     setError(null);
     setState("booting");
+    setBootReady(false);
+    setBootProgress(0);
+    bootStartRef.current = null;
     refreshSession();
   }, [refreshSession]);
 
@@ -145,15 +156,60 @@ export default function BootProvider({ children }: { children: ReactNode }) {
     check();
   }, [check]);
 
-  const publicRoute = resolvePublicRoute(pathname);
+  useEffect(() => {
+    if (publicRoute) {
+      setBootProgress(100);
+      setBootReady(true);
+      return;
+    }
+    if (state === "error" || state === "offline") {
+      setBootProgress(100);
+      setBootReady(true);
+      return;
+    }
 
-  if (state === "booting" || state === "recovering") {
-    return (
-      <BootContext.Provider value={{ state, retry, continueOffline }}>
-        <Loading message={state === "recovering" ? "Redirection..." : "Initialisation d'ETHONE"} />
-      </BootContext.Provider>
-    );
-  }
+    bootStartRef.current = bootStartRef.current ?? Date.now();
+    let raf = 0;
+
+    const tick = () => {
+      const start = bootStartRef.current ?? Date.now();
+      const elapsed = Date.now() - start;
+      const authResolved = !authLoading && !authError;
+
+      let target = 0;
+      if (elapsed < 400) {
+        target = (elapsed / 400) * 25;
+      } else if (elapsed < 900) {
+        target = 25 + ((elapsed - 400) / 500) * 35;
+      } else if (elapsed < 1_400) {
+        target = 60 + ((elapsed - 900) / 500) * 30;
+      } else if (elapsed < BOOT_MIN_DURATION_MS) {
+        target = 90 + ((elapsed - 1_400) / (BOOT_MIN_DURATION_MS - 1_400)) * 10;
+      } else {
+        target = 100;
+      }
+
+      if (!authResolved) {
+        target = Math.min(target, 55);
+      } else if (!profileLoaded) {
+        target = Math.min(target, 80);
+      }
+
+      const next = Math.min(100, Math.max(0, Math.round(target)));
+      setBootProgress(next);
+
+      const canShowApp = authResolved && profileLoaded;
+      if (next >= 100 && canShowApp) {
+        setBootReady(true);
+        return;
+      }
+
+      raf = requestAnimationFrame(tick);
+    };
+
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [publicRoute, state, authLoading, authError, profileLoaded]);
 
   if (state === "error") {
     return (
@@ -227,12 +283,21 @@ export default function BootProvider({ children }: { children: ReactNode }) {
     );
   }
 
+  if (!bootReady) {
+    const message = state === "recovering" ? "Redirection..." : "Initialisation d'ETHONE";
+    return (
+      <BootContext.Provider value={{ state, retry, continueOffline }}>
+        <Loading message={message} progress={bootProgress} />
+      </BootContext.Provider>
+    );
+  }
+
   const isAuthenticated = state === "authenticated" || session !== null;
 
   if (!isAuthenticated && !publicRoute) {
     return (
       <BootContext.Provider value={{ state, retry, continueOffline }}>
-        <Loading message="Redirection..." />
+        <Loading message="Redirection..." progress={100} />
       </BootContext.Provider>
     );
   }

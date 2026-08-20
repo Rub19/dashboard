@@ -4,7 +4,13 @@ import { motion } from "framer-motion";
 import BrandMark from "./BrandMark";
 import { Loader } from "@/components/motion/Loader";
 
-export default function Loading({ message = "Initialisation" }: { message?: string }) {
+export default function Loading({
+  message = "Initialisation",
+  progress,
+}: {
+  message?: string;
+  progress?: number;
+}) {
   return (
     <div
       className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-5 bg-[var(--background)]"
@@ -21,7 +27,7 @@ export default function Loading({ message = "Initialisation" }: { message?: stri
         <span className="text-2xl font-semibold tracking-tight text-[var(--foreground)]">ETHONE</span>
       </motion.div>
 
-      <Loader variant="percent" size={48} speed={1.2} label={message} />
+      <Loader variant="percent" size={48} speed={1.2} label={message} progress={progress} />
 
       <motion.p
         className="text-sm text-[var(--muted)]"

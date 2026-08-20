@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.36 — 2026-08-20
+
+**Écran de chargement forcé jusqu'à 100 %**
+
+- `BootProvider` gère désormais une barre de progression déterminée (0 % → 100 %).
+- Le dashboard ne s'affiche qu'après `auth` + `profil` résolus **et** une progression minimale de 1,8 s atteinte.
+- `Loader` accepte une prop `progress` pour un affichage déterminé.
+- `Loading` affiche le pourcentage réel au lieu d'une animation en boucle.
+- Barrière de progression sur l'authentification (55 %) et le profil (80 %) pour attendre les données critiques.
+- Version `v1.7.36`, cache PWA `v404`.
+
 ## v1.7.35 — 2026-08-20
 
 **Dynamic Island : l'heure toujours visible en compact**

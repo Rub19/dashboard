@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.31 — 2026-08-20
+
+**Gaming Riot : cartes 3D Valorant et League of Legends**
+
+- Nouvelles cartes `RiotGamingCard` pour Valorant et League of Legends dans le Bento Live.
+- Pochette agent/champion, résultat de la dernière partie, K/D/A, KDA, winrate sur les 5 dernières parties et ADR/CS/min.
+- Intégration dans `LiveBentoGrid` (home) et `LiveWidgets` (activité).
+- Fallback multi-URL pour l'image du champion et de l'agent via `ClientImage`.
+- Version `v1.7.31`, cache PWA `v399`.
+
 ## v1.7.30 — 2026-08-20
 
 **Optimisation des performances : fluidité, rendu et cache**

@@ -187,6 +187,10 @@ export default function DashboardOverview() {
             lanyard={live.lanyard}
             weather={live.weather}
             minecraft={live.minecraft}
+            valorant={live.valorant}
+            lol={live.lol}
+            liveTrackerRiotName={live.liveTrackerRiotName}
+            liveTrackerRiotTag={live.liveTrackerRiotTag}
             records={live.records}
             updatedAt={live.updatedAt}
             loading={live.loading}

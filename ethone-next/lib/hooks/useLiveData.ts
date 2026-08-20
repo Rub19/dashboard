@@ -850,5 +850,9 @@ export function useLiveData(pollMs = 60000) {
     minecraft,
     minecraftNameHistory,
     bluesky,
+    valorant,
+    lol,
+    liveTrackerRiotName,
+    liveTrackerRiotTag,
   };
 }

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { ChevronRight, ChevronDown, CloudSun, Sun, Moon, Timer, Eye, EyeOff, PanelLeftOpen, PanelLeftClose } from "lucide-react";
 import { AnimatedSidebarTrigger, useAnimatedSidebar } from "@/components/motion/animated-sidebar";
 import SystemStatusPills from "@/components/SystemStatusPills";
+import TopBarMediaPill from "@/components/TopBarMediaPill";
 import CommandBarTrigger from "@/components/CommandBarTrigger";
 import NotificationCenter from "@/components/NotificationCenter";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -48,7 +49,7 @@ function useBreadcrumb() {
   return { home: "ETHONE", page: i18n(pageKey) || pageKey };
 }
 
-function SidebarTopToggle() {
+const SidebarTopToggle = memo(function SidebarTopToggle() {
   const { open } = useAnimatedSidebar();
   return (
     <AnimatedSidebarTrigger
@@ -60,9 +61,9 @@ function SidebarTopToggle() {
       {open ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
     </AnimatedSidebarTrigger>
   );
-}
+});
 
-function WeatherQuickButton() {
+const WeatherQuickButton = memo(function WeatherQuickButton() {
   const { weather } = useLiveData(300000);
   const temp = typeof weather?.temperature === "number" ? `${weather.temperature}°C` : "--";
   const [open, setOpen] = useState(false);
@@ -90,9 +91,9 @@ function WeatherQuickButton() {
       <WeatherDetailPopover open={open} onClose={() => setOpen(false)} referenceRef={buttonEl} />
     </>
   );
-}
+});
 
-function ThemeToggle() {
+const ThemeToggle = memo(function ThemeToggle() {
   const { settings, update } = useSettings();
   const isDark = settings.darkMode ?? true;
   const Icon = isDark ? Moon : Sun;
@@ -107,9 +108,9 @@ function ThemeToggle() {
       <Icon className="h-5 w-5 pointer-events-none" />
     </button>
   );
-}
+});
 
-function FocusToggle() {
+const FocusToggle = memo(function FocusToggle() {
   const focus = useFocus();
   const isActive = focus.state.phase !== "idle";
 
@@ -127,9 +128,9 @@ function FocusToggle() {
       <Timer className="h-5 w-5 pointer-events-none" />
     </button>
   );
-}
+});
 
-function DynamicIslandToggle() {
+const DynamicIslandToggle = memo(function DynamicIslandToggle() {
   const { visible, toggle } = useDynamicIslandStore();
 
   return (
@@ -147,7 +148,7 @@ function DynamicIslandToggle() {
       {visible ? <Eye className="h-5 w-5 pointer-events-none" /> : <EyeOff className="h-5 w-5 pointer-events-none" />}
     </button>
   );
-}
+});
 
 function TopBar() {
   const { home, page } = useBreadcrumb();
@@ -155,10 +156,10 @@ function TopBar() {
   return (
     <header
       data-v8-topbar
-      className="relative z-50 flex h-12 shrink-0 select-none items-center justify-between rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 backdrop-blur-[var(--panel-blur)]"
+      className="relative z-50 grid h-14 shrink-0 select-none grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 backdrop-blur-[var(--panel-blur)]"
     >
       {/* Left — Identity & Breadcrumb */}
-      <div className="relative z-10 flex min-w-0 items-center gap-2 sm:gap-3">
+      <div className="col-start-1 flex min-w-0 items-center gap-2 justify-self-start sm:gap-3">
         <SidebarTopToggle />
         <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-1.5 sm:gap-2 text-sm font-medium text-zinc-400">
           <Link href="/" className="shrink-0 transition-colors hover:text-white">
@@ -171,15 +172,14 @@ function TopBar() {
         </nav>
       </div>
 
-      {/* Center — System status */}
-      <div className="hidden items-center justify-center xl:flex pointer-events-none">
-        <div className="pointer-events-auto">
-          <SystemStatusPills />
-        </div>
+      {/* Center — System status & media */}
+      <div className="col-start-2 hidden min-w-0 items-center justify-center gap-2 justify-self-center xl:flex pointer-events-auto">
+        <TopBarMediaPill />
+        <SystemStatusPills />
       </div>
 
       {/* Right — Quick tools, palette, profile */}
-      <div className="relative z-30 flex min-w-0 items-center justify-end gap-2 sm:gap-3 pointer-events-auto">
+      <div className="col-start-3 flex min-w-0 items-center justify-end gap-2 sm:gap-3 justify-self-end pointer-events-auto">
         <div className="hidden items-center gap-1.5 sm:gap-2 md:flex pointer-events-auto">
           <WeatherQuickButton />
           <ThemeToggle />

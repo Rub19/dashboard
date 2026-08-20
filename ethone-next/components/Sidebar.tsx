@@ -50,7 +50,7 @@ const APPS: AppItem[] = [
   { id: "plugins", href: "/plugins/", icon: "plugins" },
 ];
 
-function SidebarBrand() {
+const SidebarBrand = memo(function SidebarBrand() {
   const { collapsed } = useAnimatedSidebarPanel();
   return (
     <Link
@@ -67,9 +67,9 @@ function SidebarBrand() {
       {!collapsed && <span className="text-sm font-bold tracking-tight">ETHONE</span>}
     </Link>
   );
-}
+});
 
-function SyncBadge({ collapsed }: { collapsed: boolean }) {
+const SyncBadge = memo(function SyncBadge({ collapsed }: { collapsed: boolean }) {
   const i18n = useI18n();
   const status = useSyncStore((s) => s.status);
   const activeSources = useSyncStore((s) =>
@@ -125,9 +125,9 @@ function SyncBadge({ collapsed }: { collapsed: boolean }) {
       {!collapsed && <span className="truncate">{statusConfig.label}</span>}
     </div>
   );
-}
+});
 
-function SidebarProfile({ collapsed }: { collapsed: boolean }) {
+const SidebarProfile = memo(function SidebarProfile({ collapsed }: { collapsed: boolean }) {
   const { user } = useAuth();
   const { activeProfile } = useActiveProfile();
   const { profile: publicProfile } = useProfile();
@@ -140,12 +140,12 @@ function SidebarProfile({ collapsed }: { collapsed: boolean }) {
     <div
       className={cn(
         "flex items-center gap-2.5 rounded-xl border-transparent bg-transparent",
-        collapsed ? "justify-center p-1.5" : "p-2"
+        collapsed ? "justify-center p-0" : "p-2"
       )}
     >
       <div className={cn(
         "relative flex shrink-0 items-center justify-center overflow-hidden rounded-lg border-transparent bg-transparent",
-        collapsed ? "h-7 w-7" : "h-8 w-8"
+        collapsed ? "h-9 w-9" : "h-8 w-8"
       )}>
         {avatarUrl ? (
           <Image
@@ -168,9 +168,9 @@ function SidebarProfile({ collapsed }: { collapsed: boolean }) {
       )}
     </div>
   );
-}
+});
 
-function SidebarFooter() {
+const SidebarFooter = memo(function SidebarFooter() {
   const i18n = useI18n();
   const router = useRouter();
   const { setOpen } = useAnimatedSidebar();
@@ -183,7 +183,7 @@ function SidebarFooter() {
       <div
         className={cn(
           "flex gap-2",
-          collapsed ? "flex-col items-center" : "flex-row items-center"
+          collapsed ? "flex-col items-center justify-center" : "flex-row items-center"
         )}
       >
         <SyncBadge collapsed={collapsed} />
@@ -210,7 +210,7 @@ function SidebarFooter() {
       </div>
     </div>
   );
-}
+});
 
 function Sidebar() {
   const i18n = useI18n();
@@ -240,7 +240,7 @@ function Sidebar() {
         ariaLabel="Navigation principale"
         className="h-full bg-transparent"
         style={{ height: "calc(100% + 0.25rem)" }}
-        panelClassName="m-2 h-full shrink-0 rounded-2xl p-3 backdrop-blur-[var(--panel-blur)]"
+        panelClassName="!ml-0 m-2 h-full shrink-0 rounded-2xl p-3 backdrop-blur-[var(--panel-blur)]"
       >
         <AnimatedSidebarHeader>
           <SidebarBrand />

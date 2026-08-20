@@ -741,8 +741,15 @@ export default function LiveWidgets({
         <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
 
         {body ? (
-          <div className="flex items-center justify-center rounded-[var(--panel-radius)] bg-[var(--panel-bg)]/60 p-2">
-            <Image src={body} alt="" width={200} height={200} unoptimized className="h-28 w-28 object-contain drop-shadow-lg" />
+          <div className="flex h-28 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--panel-bg)]/60 p-2">
+            <ClientImage
+              src={body}
+              alt=""
+              width={112}
+              height={112}
+              className="h-28 w-28 !object-contain drop-shadow-lg"
+              fallback={<span className="text-3xl">⛏️</span>}
+            />
           </div>
         ) : (
           <div className="flex h-28 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--panel-bg)]/60">

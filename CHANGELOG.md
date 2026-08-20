@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.16 — 2026-08-20
+
+**Skin, cape et historique Minecraft**
+
+### Corrige
+- `worker/src/services/minecraft-client.js` : suppression des paramètres `width`/`height` qui cassaient les rendus NMSR (`face`, `fullbody`, `skin`).
+- Ajout d'un fallback `uuid.legacyminecraft.com` pour récupérer l'historique des pseudos quand `mowojang` ne le fournit pas.
+- `components/LiveWidgets.tsx` : le rendu du corps Minecraft utilise `ClientImage` avec un fallback pioche.
+
+### Version
+- `ethone-next/package.json`, `package-lock.json`, `components/UserProfileDropdown.tsx`, `public/sw.js` : version `v1.7.16` et cache PWA `v384`.
+
 ## v1.7.15 — 2026-08-20
 
 **Carte Spotify robuste et pas de débordement**

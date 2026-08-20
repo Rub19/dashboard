@@ -7,6 +7,7 @@ import { safePublicUrl, safeText } from "../utils/normalize.js";
 // exact same request/response shape, so the rest of this module is unchanged.
 const PROFILE_ORIGIN = "https://mowojang.matdoes.dev";
 const SESSION_ORIGIN = "https://mowojang.matdoes.dev";
+const NAME_HISTORY_ORIGIN = "https://uuid.legacyminecraft.com";
 
 function decodeTextures(properties) {
   const empty = Object.freeze({ skinUrl: "", capeUrl: "", model: "classic" });
@@ -49,23 +50,27 @@ export async function getMinecraftProfile(env, username) {
   const textures = decodeTextures(profile.data?.properties);
 
   let nameHistory = [];
-  try {
-    const historyResponse = await requestExternal(new URL(`/user/profiles/${encodeURIComponent(uuid)}/names`, SESSION_ORIGIN), {
-      env,
-      expectedOrigin: SESSION_ORIGIN,
-      service: "minecraft",
-      dedupeKey: `history:${uuid}`,
-      retries: 1,
-      maxBytes: 16 * 1024
-    });
-    nameHistory = Array.isArray(historyResponse.data)
-      ? historyResponse.data.map((entry) => Object.freeze({
+  const historySources = [SESSION_ORIGIN, NAME_HISTORY_ORIGIN];
+  for (const origin of historySources) {
+    try {
+      const historyResponse = await requestExternal(new URL(`/user/profiles/${encodeURIComponent(uuid)}/names`, origin), {
+        env,
+        expectedOrigin: origin,
+        service: "minecraft",
+        dedupeKey: `history:${origin}:${uuid}`,
+        retries: 1,
+        maxBytes: 16 * 1024
+      });
+      if (Array.isArray(historyResponse.data) && historyResponse.data.length > 0) {
+        nameHistory = historyResponse.data.map((entry) => Object.freeze({
           name: safeText(entry?.name, 16),
           changedAt: entry?.changedToAt ? new Date(entry.changedToAt).toISOString() : null
-        })).filter((entry) => entry.name)
-      : [];
-  } catch {
-    nameHistory = [];
+        })).filter((entry) => entry.name);
+        break;
+      }
+    } catch {
+      // try next fallback
+    }
   }
 
   const uuidWithDashes = `${uuid.slice(0, 8)}-${uuid.slice(8, 12)}-${uuid.slice(12, 16)}-${uuid.slice(16, 20)}-${uuid.slice(20)}`;
@@ -75,8 +80,8 @@ export async function getMinecraftProfile(env, username) {
     uuid,
     uuidWithDashes,
     skinUrl: textures.skinUrl || `https://nmsr.nickac.dev/skin/${encodeURIComponent(uuidWithDashes)}`,
-    avatarUrl: `https://nmsr.nickac.dev/face/${encodeURIComponent(uuidWithDashes)}?width=128&height=128`,
-    bodyUrl: `https://nmsr.nickac.dev/fullbody/${encodeURIComponent(uuidWithDashes)}?width=256&height=256`,
+    avatarUrl: `https://nmsr.nickac.dev/face/${encodeURIComponent(uuidWithDashes)}`,
+    bodyUrl: `https://nmsr.nickac.dev/fullbody/${encodeURIComponent(uuidWithDashes)}`,
     capeUrl: textures.capeUrl,
     model: textures.model,
     nameHistory: Object.freeze(nameHistory)

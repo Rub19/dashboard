@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.18 — 2026-08-20
+
+**Carte Discord du home : couleurs Discord, pp et cover**
+
+### Corrige
+- `components/SocialDiscordCard.tsx` : ajout d'un dégradé indigo/violet (couleurs Discord) sur la carte.
+- Ajout de `avatarUrlSmall` comme candidat de fallback pour afficher la pp Discord.
+- La cover du morceau en cours utilise maintenant `cover` et `artworkUrl` avec un `ClientImage` multi-sources.
+
+### Version
+- `ethone-next/package.json`, `package-lock.json`, `components/UserProfileDropdown.tsx`, `public/sw.js` : version `v1.7.18` et cache PWA `v386`.
+
 ## v1.7.17 — 2026-08-20
 
 **Carte Gaming Minecraft : skin visible et dégradé vert**

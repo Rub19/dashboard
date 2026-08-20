@@ -99,6 +99,7 @@ export default function SocialDiscordCard({
   const avatarHash = lanyard?.avatarHash;
   const discriminator = lanyard?.discriminator;
   const avatarUrl = lanyard?.avatarUrl || oauthProfile?.user?.avatarUrl;
+  const avatarUrlSmall = oauthProfile?.user?.avatarUrlSmall;
   const username = lanyard?.username || oauthProfile?.user?.username;
   const displayName = lanyard?.displayName || lanyard?.username || oauthProfile?.user?.displayName || oauthProfile?.user?.username || "Discord";
 
@@ -117,8 +118,8 @@ export default function SocialDiscordCard({
   );
 
   const avatarCandidates = useMemo(
-    () => [primaryAvatar, fallbackAvatar],
-    [primaryAvatar, fallbackAvatar]
+    () => [primaryAvatar, avatarUrlSmall, fallbackAvatar].filter(Boolean),
+    [primaryAvatar, avatarUrlSmall, fallbackAvatar]
   );
 
   const rawStatus = lanyard?.discord_status || (isOAuth ? "online" : "offline");
@@ -187,6 +188,11 @@ export default function SocialDiscordCard({
       : null;
   const activeMusic = hasMusic ? nowPlaying : lanyardMusic;
 
+  const coverCandidates = useMemo(
+    () => (activeMusic ? [activeMusic.cover, (activeMusic as { artworkUrl?: string }).artworkUrl].filter(Boolean) : []),
+    [activeMusic]
+  );
+
   const progressPct =
     activeMusic?.durationMs && activeMusic.durationMs > 0
       ? Math.min(100, Math.max(0, ((activeMusic.progressMs || 0) / activeMusic.durationMs) * 100))
@@ -203,7 +209,7 @@ export default function SocialDiscordCard({
   return (
     <TiltCard
       className={cn(
-        "flex h-full min-h-0 flex-col v8-panel overflow-hidden p-4 shadow-xl shadow-black/50 backdrop-blur-2xl transition-all hover:border-white/15",
+        "flex h-full min-h-0 flex-col v8-panel overflow-hidden bg-gradient-to-br from-indigo-950/40 via-purple-900/10 to-black/20 p-4 shadow-xl shadow-black/50 backdrop-blur-2xl transition-all hover:border-indigo-500/25",
         className
       )}
     >
@@ -305,7 +311,7 @@ export default function SocialDiscordCard({
         <div className="mt-auto flex flex-col gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] p-3">
           <div className="flex items-center gap-3">
             <ClientImage
-              src={activeMusic.cover}
+              candidates={coverCandidates}
               alt={activeMusic.title || ""}
               fill
               className="h-10 w-10 shrink-0 rounded-lg"

@@ -384,8 +384,11 @@ export default function DynamicIslandContainer() {
 
     // On initial mount/refresh, select the first active view but do not
     // auto-expand the island. Only expand when an activity starts while
-    // the component is already mounted.
+    // the component is already mounted. Wait for the now-playing data to
+    // settle so that an already-active Spotify session doesn't trigger an
+    // expansion once it loads.
     if (isInitialMount.current) {
+      if (npLoading) return;
       if (!selectedView && nextActive.size > 0) {
         setSelectedView(nextActiveViews[0] ?? null);
       }
@@ -415,7 +418,7 @@ export default function DynamicIslandContainer() {
     if (nextActive.size === 0) setExpanded(false);
 
     prevActiveRef.current = nextActive;
-  }, [brainActive, pomodoroActive, spotifyActive, selectedView]);
+  }, [brainActive, pomodoroActive, spotifyActive, selectedView, npLoading]);
 
   // Escape collapses
   useEffect(() => {

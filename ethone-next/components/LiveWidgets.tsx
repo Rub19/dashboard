@@ -1037,7 +1037,7 @@ export default function LiveWidgets({
             <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-emerald-400">Spotify</p>
             <div className="flex items-center gap-2">
               <SafeImage
-                src={spotify.artworkUrl || spotify.artwork}
+                candidates={[spotify.artworkUrl, spotify.artwork].filter((c): c is string => typeof c === "string" && c.length > 0)}
                 alt=""
                 size={40}
                 className="h-10 w-10 rounded-[var(--panel-radius)] object-cover"

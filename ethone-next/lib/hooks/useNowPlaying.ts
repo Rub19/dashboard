@@ -23,11 +23,45 @@ function getArtworkUrl(np: ApiData | null): string | undefined {
   return asStr(np?.artworkUrl || np?.cover || np?.artwork);
 }
 
+function firstItem(list: unknown): string | undefined {
+  if (Array.isArray(list)) {
+    for (const value of list) {
+      const s = asStr(value);
+      if (s) return s;
+    }
+  }
+  return undefined;
+}
+
 function mapNowPlaying(raw: unknown): NowPlaying | null {
   const res = (raw || {}) as ApiData;
   const data = (res?.data as ApiData | undefined) || res || null;
   if (!data) return null;
   const track = (data?.track as ApiData) || data || {};
+
+  const trackCovers = Array.isArray(track.covers) ? track.covers : [];
+  const dataCovers = Array.isArray(data.covers) ? data.covers : [];
+  const firstCover = asStr(track.cover ?? track.artworkUrl ?? track.artwork ?? data.cover ?? data.artworkUrl ?? data.artwork) || firstItem(trackCovers) || firstItem(dataCovers);
+
+  const covers: string[] = [];
+  {
+    const seen = new Set<string>();
+    const add = (value: unknown) => {
+      const s = asStr(value);
+      if (s && !seen.has(s)) {
+        seen.add(s);
+        covers.push(s);
+      }
+    };
+    add(track.cover);
+    add(track.artworkUrl);
+    add(track.artwork);
+    add(data.cover);
+    add(data.artworkUrl);
+    add(data.artwork);
+    for (const c of trackCovers) add(c);
+    for (const c of dataCovers) add(c);
+  }
 
   return {
     id: asStr(track.id ?? data.id),
@@ -35,31 +69,9 @@ function mapNowPlaying(raw: unknown): NowPlaying | null {
     title: asStr(track.title ?? data.title),
     artist: asStr(track.artist ?? data.artist),
     album: asStr(track.album ?? data.album),
-    cover:
-      asStr(track.cover ?? track.artworkUrl ?? track.artwork ?? data.cover ?? data.artworkUrl ?? data.artwork),
-    artworkUrl: getArtworkUrl(data) || asStr(track.artworkUrl ?? track.artwork ?? track.cover),
-    covers: (() => {
-      const seen = new Set<string>();
-      const all: string[] = [];
-      const add = (value: unknown) => {
-        const s = asStr(value);
-        if (s && !seen.has(s)) {
-          seen.add(s);
-          all.push(s);
-        }
-      };
-      add(track.cover);
-      add(track.artworkUrl);
-      add(track.artwork);
-      add(data.cover);
-      add(data.artworkUrl);
-      add(data.artwork);
-      const list = track.covers ?? data.covers;
-      if (Array.isArray(list)) {
-        list.forEach((c) => add(c));
-      }
-      return all.length > 0 ? all : undefined;
-    })(),
+    cover: firstCover,
+    artworkUrl: getArtworkUrl(data) || asStr(track.artworkUrl ?? track.artwork ?? track.cover) || firstItem(trackCovers) || firstItem(dataCovers),
+    covers: covers.length > 0 ? covers : undefined,
     progressMs: asNum(track.progressMs ?? data.progressMs),
     durationMs: asNum(track.durationMs ?? data.durationMs),
     volumePercent:

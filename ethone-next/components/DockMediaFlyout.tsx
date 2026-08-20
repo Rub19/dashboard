@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Heart,
@@ -42,7 +42,13 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
   const title = nowPlaying?.title || "";
   const artist = nowPlaying?.artist || "";
   const album = nowPlaying?.album || "";
-  const artwork = nowPlaying?.cover || nowPlaying?.artworkUrl || "";
+  const coverCandidates = useMemo(
+    () =>
+      [nowPlaying?.cover, nowPlaying?.artworkUrl, ...(nowPlaying?.covers || [])].filter(
+        (c): c is string => typeof c === "string" && c.length > 0
+      ),
+    [nowPlaying?.cover, nowPlaying?.artworkUrl, nowPlaying?.covers]
+  );
   const duration = nowPlaying?.durationMs || 0;
   const trackId = nowPlaying?.id || "";
 
@@ -165,7 +171,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
         className="relative flex h-11 w-11 flex-col items-center justify-center rounded-xl text-[var(--accent-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] active:scale-95"
       >
         <SafeImage
-          src={hasTrack ? artwork : undefined}
+          candidates={hasTrack ? coverCandidates : undefined}
           alt={title}
           size={48}
           className="h-5 w-5 rounded object-cover transition-transform group-hover:scale-110"
@@ -222,7 +228,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-3">
                   <SafeImage
-                    src={artwork}
+                    candidates={coverCandidates}
                     alt={title}
                     size={96}
                     className="h-12 w-12 shrink-0 rounded-xl border border-white/10 object-cover shadow-md"

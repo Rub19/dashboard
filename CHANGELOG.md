@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.46 — 2026-08-21
+
+**Pochette Spotify : fallback multi-sources et affichage robuste**
+
+- `lib/hooks/useNowPlaying` : la cover et l'artworkUrl retombent sur `covers[0]` si la taille privilégiée n'est pas disponible.
+- `components/MediaWidget`, `DockMediaFlyout`, `LiveWidgets` : `SafeImage` reçoit le tableau `candidates` pour essayer toutes les tailles d'image.
+- `worker/src/services/spotify-oauth-client.js` : fallback sur `/v1/albums/{id}`, `/v1/shows/{id}` et `/v1/tracks/{id}` quand `currently-playing` ne fournit pas de pochette.
+- `components/ConnectionCard` : la connexion Spotify positionne `liveNowPlayingSource` sur `"spotify"`.
+- Version `v1.7.46`, cache PWA `v414`.
+
 ## v1.7.45 — 2026-08-20
 
 **Correction du layout de la page Paramètres : troncature, vide inférieur et overlays**

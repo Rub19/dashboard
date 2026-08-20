@@ -115,7 +115,13 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
     [duration, isSpotify, control]
   );
 
-  const cover = nowPlaying?.artworkUrl || nowPlaying?.cover;
+  const coverCandidates = useMemo(
+    () =>
+      [nowPlaying?.cover, nowPlaying?.artworkUrl, ...(nowPlaying?.covers || [])].filter(
+        (c): c is string => typeof c === "string" && c.length > 0
+      ),
+    [nowPlaying?.cover, nowPlaying?.artworkUrl, nowPlaying?.covers]
+  );
 
   const progressPct = useMemo(() => {
     if (!duration) return 0;
@@ -175,7 +181,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
         <div className="relative shrink-0">
           <div className="relative h-16 w-16 overflow-hidden rounded-xl border border-white/10 shadow-lg">
             <SafeImage
-              src={cover}
+              candidates={coverCandidates}
               alt={nowPlaying?.title || ""}
               fill
               sizes="96px"

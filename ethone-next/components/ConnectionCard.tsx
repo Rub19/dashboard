@@ -195,7 +195,7 @@ export default function ConnectionCard({
     }
     setSubmitting(true);
     try {
-      if (integration.id === "spotify") update({ liveSpotifyClientId: trimmed });
+      if (integration.id === "spotify") update({ liveSpotifyClientId: trimmed, liveNowPlayingSource: "spotify" });
       if (integration.id === "youtube") update({ liveYoutubeClientId: trimmed });
       if (integration.id === "reddit") update({ liveRedditClientId: trimmed });
       if (integration.id === "google-calendar") update({ calendarClientId: trimmed });

@@ -131,6 +131,50 @@ async function fetchAlbumImages(env, accessToken, albumId) {
   }
 }
 
+async function fetchShowImages(env, accessToken, showId) {
+  if (!showId) return [];
+  try {
+    const response = await requestExternal(new URL(`/v1/shows/${encodeURIComponent(showId)}`, API_ORIGIN), {
+      env,
+      expectedOrigin: API_ORIGIN,
+      service: "spotify",
+      headers: { authorization: `Bearer ${accessToken}` },
+      retries: 0,
+      maxBytes: 64 * 1024
+    });
+    const images = Array.isArray(response.data?.images) ? response.data.images : [];
+    return sortBySize(images)
+      .map((img) => safePublicUrl(img?.url, ["scdn.co", "spotifycdn.com", "spotify.com"]))
+      .filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
+async function fetchTrackImages(env, accessToken, trackId) {
+  if (!trackId) return [];
+  try {
+    const response = await requestExternal(new URL(`/v1/tracks/${encodeURIComponent(trackId)}`, API_ORIGIN), {
+      env,
+      expectedOrigin: API_ORIGIN,
+      service: "spotify",
+      headers: { authorization: `Bearer ${accessToken}` },
+      retries: 0,
+      maxBytes: 96 * 1024
+    });
+    const item = response.data;
+    const images = imageSources(item);
+    const covers = sortBySize(images)
+      .map((img) => safePublicUrl(img?.url, ["scdn.co", "spotifycdn.com", "spotify.com"]))
+      .filter(Boolean);
+    if (covers.length > 0) return covers;
+    if (item?.album?.id) return await fetchAlbumImages(env, accessToken, item.album.id);
+    return [];
+  } catch {
+    return [];
+  }
+}
+
 export async function getSpotifyNowPlaying(env, userId, clientId) {
   const accessToken = await validAccessToken(env, userId, clientId);
   const response = await requestExternal(new URL("/v1/me/player/currently-playing", API_ORIGIN), {
@@ -144,15 +188,19 @@ export async function getSpotifyNowPlaying(env, userId, clientId) {
   });
   const normalized = normalizeTrack(response.data);
   const track = normalized.track;
-  if (track && track.covers.length === 0 && response.data?.item?.album?.id) {
-    const albumCovers = await fetchAlbumImages(env, accessToken, response.data.item.album.id);
-    if (albumCovers.length > 0) {
+  if (track && track.covers.length === 0) {
+    const item = response.data?.item;
+    let covers = [];
+    if (item?.album?.id) covers = await fetchAlbumImages(env, accessToken, item.album.id);
+    if (covers.length === 0 && item?.show?.id) covers = await fetchShowImages(env, accessToken, item.show.id);
+    if (covers.length === 0 && item?.id && !item?.is_local) covers = await fetchTrackImages(env, accessToken, item.id);
+    if (covers.length > 0) {
       return Object.freeze({
         playing: normalized.playing,
         track: Object.freeze({
           ...track,
-          artworkUrl: albumCovers[1] || albumCovers[0],
-          covers: albumCovers
+          artworkUrl: covers[1] || covers[0],
+          covers
         })
       });
     }

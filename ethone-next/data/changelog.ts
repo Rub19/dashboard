@@ -1360,9 +1360,65 @@ const v182_de: ChangelogEntry = {
   ],
 };
 
+const v183_fr: ChangelogEntry = {
+  version: "v1.7.6",
+  date: "2026-08-20",
+  title: "Dynamic Island multi-activités",
+  items: [
+    "La Dynamic Island affiche désormais plusieurs activités simultanées (Spotify, Pomodoro, Brain) au lieu d'en écraser une seule.",
+    "Vue compacte type Apple : partie principale à gauche (heure + Spotify par défaut) et bulles rondes à droite pour les autres activités.",
+    "Cliquer sur une petite bulle pomodoro ouvre directement la vue Focus dans l'îlot élargi.",
+    "Vue élargie avec bandeau d'onglets : heure courante, bulles de navigation et label de l'activité sélectionnée.",
+    "Passage d'une activité à l'autre sans perdre le lecteur ni l'horloge.",
+    "Version mise à jour en v1.7.6.",
+  ],
+};
+
+const v183_en: ChangelogEntry = {
+  version: "v1.7.6",
+  date: "2026-08-20",
+  title: "Multi-activity Dynamic Island",
+  items: [
+    "The Dynamic Island now shows multiple live activities at once (Spotify, Pomodoro, Brain) instead of replacing one with another.",
+    "Apple-style compact view: leading area on the left (clock + Spotify by default) and round bubbles on the right for the other activities.",
+    "Clicking the small Pomodoro bubble expands the island straight into the Focus view.",
+    "Expanded view has a tab bar: current time, navigation bubbles and the selected activity label.",
+    "Switch between activities without losing the music player or the clock.",
+    "Updated version to v1.7.6.",
+  ],
+};
+
+const v183_es: ChangelogEntry = {
+  version: "v1.7.6",
+  date: "2026-08-20",
+  title: "Dynamic Island multiactividad",
+  items: [
+    "La Dynamic Island muestra ahora varias actividades a la vez (Spotify, Pomodoro, Brain) en lugar de sustituir una por otra.",
+    "Vista compacta tipo Apple: zona principal a la izquierda (reloj + Spotify por defecto) y burbujas redondas a la derecha para las demás actividades.",
+    "Al hacer clic en la burbuja de Pomodoro se abre directamente la vista Focus en la isla expandida.",
+    "Vista expandida con barra de pestañas: hora actual, burbujas de navegación y etiqueta de la actividad seleccionada.",
+    "Cambiar de actividad sin perder el reproductor ni el reloj.",
+    "Versión actualizada a v1.7.6.",
+  ],
+};
+
+const v183_de: ChangelogEntry = {
+  version: "v1.7.6",
+  date: "2026-08-20",
+  title: "Dynamic Island mit mehreren Aktivitäten",
+  items: [
+    "Die Dynamic Island zeigt jetzt mehrere Live-Aktivitäten gleichzeitig (Spotify, Pomodoro, Brain) anstatt eine durch die andere zu ersetzen.",
+    "Kompakte Ansicht im Apple-Stil: linker Bereich (Uhr + Spotify standardmäßig) und runde Blasen rechts für die anderen Aktivitäten.",
+    "Klick auf die kleine Pomodoro-Blase öffnet direkt die Focus-Ansicht in der erweiterten Insel.",
+    "Erweiterte Ansicht mit Tab-Leiste: aktuelle Uhrzeit, Navigationsblasen und Beschriftung der ausgewählten Aktivität.",
+    "Zwischen Aktivitäten wechseln, ohne den Musikplayer oder die Uhr zu verlieren.",
+    "Version auf v1.7.6 aktualisiert.",
+  ],
+};
+
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
-  en: [v182_en, v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
+  fr: [v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v183_en, v182_en, v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -1408,7 +1464,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [v182_es, v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
+  es: [v183_es, v182_es, v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -1454,7 +1510,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [v182_de, v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
+  de: [v183_de, v182_de, v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

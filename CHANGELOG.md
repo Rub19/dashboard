@@ -2,6 +2,21 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.6 — 2026-08-20
+
+**Dynamic Island multi-activités**
+
+### Ajoute
+- `ethone-next/components/DynamicIslandContainer.tsx` : la Dynamic Island affiche désormais plusieurs activités en même temps au lieu d'en écraser une seule.
+- Layout compact inspiré de l'îlot Apple : partie principale à gauche (heure + Spotify par défaut) et petites bulles rondes à droite pour Pomodoro et Brain.
+- `IslandBubble` : petit bouton rond pour passer d'une activité à l'autre.
+- `IslandExpandedHeader` : bandeau d'onglets dans la vue élargie avec l'heure, les bulles de navigation et le label de l'activité sélectionnée.
+- `CompactMulti` : assemblage du contenu principal et des bulles secondaires en mode compact.
+- `PomodoroCompact` inclut désormais l'heure courante en plus du timer.
+
+### Version
+- `ethone-next/package.json`, `package-lock.json`, `components/UserProfileDropdown.tsx`, `public/sw.js` : version `v1.7.6` et cache PWA `v374`.
+
 ## v1.7.5 — 2026-08-20
 
 **Profil mail, onboarding forcé et alias éditable**

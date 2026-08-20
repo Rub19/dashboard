@@ -15,6 +15,7 @@ import {
   Clock,
   ChevronRight,
   Heart,
+  Music,
 } from "lucide-react";
 
 import { DynamicIsland, DynamicIslandView } from "@/components/ui/DynamicIsland";
@@ -35,6 +36,22 @@ type View = "spotify" | "pomodoro" | "brain";
 
 const EASE_OUT = [0.16, 1, 0.3, 1] as const;
 const VIEW_ORDER: View[] = ["brain", "pomodoro", "spotify"];
+
+// Leading priority: prefer views that carry the most ambient info (clock + media).
+const LEADING_PRIORITY: View[] = ["spotify", "pomodoro", "brain"];
+
+function viewLabel(view: View, i18n: (key: string, fallback?: string) => string) {
+  switch (view) {
+    case "spotify":
+      return i18n("spotify", "Spotify");
+    case "pomodoro":
+      return i18n("pomodoro", "Pomodoro");
+    case "brain":
+      return i18n("brain", "Brain");
+    default:
+      return "";
+  }
+}
 
 function formatMs(ms: number) {
   const seconds = Math.max(0, Math.floor(ms / 1000));
@@ -93,18 +110,20 @@ function SpotifyCompact({
   remainingMs,
   playing,
   date,
+  className,
 }: {
   track: NowPlaying;
   remainingMs: number;
   playing: boolean;
   date: Date | null;
+  className?: string;
 }) {
   const time = date ? formatClock(date) : "--:--";
   const title = track.title || "Spotify";
   const remaining = `-${formatMs(remainingMs)}`;
 
   return (
-    <div className="flex h-[38px] w-full min-w-[200px] items-center gap-2.5 px-3 py-1.5">
+    <div className={cn("flex h-[38px] w-full min-w-[180px] items-center gap-2.5 px-3 py-1.5", className)}>
       <div className="flex items-center gap-1.5 text-zinc-300">
         <Clock className="h-3 w-3 text-zinc-500" />
         <span className="text-[10px] font-medium tabular-nums">{time}</span>
@@ -133,33 +152,195 @@ function SpotifyCompact({
   );
 }
 
-function PomodoroCompact({ remaining, phase }: { remaining: string; phase: string }) {
+function PomodoroCompact({ remaining, phase, date, className }: { remaining: string; phase: string; date?: Date | null; className?: string }) {
+  const time = date ? formatClock(date) : "--:--";
   return (
-    <div className="flex w-full items-center justify-between gap-3 px-1">
+    <div className={cn("flex h-[38px] w-full items-center justify-between gap-3 px-2", className)}>
       <div className="flex items-center gap-2">
         <Timer className="h-4 w-4 text-[var(--accent)]" />
         <span className="text-[10px] capitalize text-zinc-400">{phase}</span>
       </div>
-      <span className="text-xs font-semibold tabular-nums text-white">{remaining}</span>
+      <div className="flex items-center gap-2.5">
+        {date !== undefined && (
+          <div className="flex items-center gap-1 text-zinc-500">
+            <Clock className="h-3 w-3" />
+            <span className="text-[10px] font-medium tabular-nums">{time}</span>
+          </div>
+        )}
+        <span className="text-xs font-semibold tabular-nums text-white">{remaining}</span>
+      </div>
     </div>
   );
 }
 
-function BrainCompact() {
+function BrainCompact({ className }: { className?: string }) {
   return (
-    <div className="flex w-full items-center justify-center gap-2 px-1">
+    <div className={cn("flex h-[38px] w-full items-center justify-center gap-2 px-1", className)}>
       <Sparkles className="h-3.5 w-3.5 animate-pulse text-purple-400" />
       <span className="text-xs font-medium text-purple-200">Brain</span>
     </div>
   );
 }
 
-function IdleCompact({ date }: { date: Date | null }) {
+function IdleCompact({ date, className }: { date: Date | null; className?: string }) {
   const time = date ? formatClock(date) : "--:--";
   return (
-    <div className="flex w-full items-center justify-center gap-2 px-1 text-zinc-300">
+    <div className={cn("flex h-[38px] w-full items-center justify-center gap-2 px-1 text-zinc-300", className)}>
       <Clock className="h-3.5 w-3.5 text-zinc-500" />
       <span className="text-xs font-medium tabular-nums">{time}</span>
+    </div>
+  );
+}
+
+function IslandBubble({
+  view,
+  active,
+  onClick,
+  size = "sm",
+  pulse,
+}: {
+  view: View;
+  active?: boolean;
+  onClick?: (e: React.MouseEvent) => void;
+  size?: "sm" | "md";
+  pulse?: boolean;
+}) {
+  const iconClass = cn(size === "md" ? "h-4 w-4" : "h-3.5 w-3.5");
+  const buttonClass = cn(
+    "relative flex shrink-0 items-center justify-center rounded-full transition-all",
+    size === "md" ? "h-8 w-8" : "h-7 w-7",
+    active
+      ? "bg-white/[0.12] text-white ring-1 ring-white/20 shadow-[0_0_12px_rgba(255,255,255,0.08)]"
+      : "bg-white/[0.05] text-zinc-400 hover:bg-white/[0.1] hover:text-white",
+    view === "spotify" && !active && "text-emerald-400 hover:text-emerald-300",
+    view === "pomodoro" && !active && "text-[var(--accent)]",
+    view === "brain" && !active && "text-purple-400 hover:text-purple-300",
+  );
+
+  const icon =
+    view === "spotify" ? (
+      <Music className={iconClass} />
+    ) : view === "pomodoro" ? (
+      <Timer className={iconClass} />
+    ) : view === "brain" ? (
+      <Brain className={iconClass} />
+    ) : (
+      <Clock className={iconClass} />
+    );
+
+  return (
+    <button type="button" onClick={onClick} className={buttonClass} aria-label={view}>
+      {pulse && view === "pomodoro" && (
+        <span className="absolute inset-0 rounded-full bg-[var(--accent)]/20 animate-ping" />
+      )}
+      {icon}
+    </button>
+  );
+}
+
+function IslandExpandedHeader({
+  activeViews,
+  selected,
+  onSelect,
+  clock,
+  className,
+}: {
+  activeViews: View[];
+  selected: View;
+  onSelect: (view: View) => void;
+  clock: Date | null;
+  className?: string;
+}) {
+  const i18n = useI18n();
+  const time = clock ? formatClock(clock) : "--:--";
+  return (
+    <div className={cn("-mx-6 -mt-4 mb-4 flex w-full items-center justify-between gap-3 border-b border-white/[0.06] px-6 pt-4 pb-3", className)}>
+      <div className="flex items-center gap-1.5 text-zinc-300">
+        <Clock className="h-3.5 w-3.5 text-zinc-500" />
+        <span className="text-[10px] font-medium tabular-nums">{time}</span>
+      </div>
+      <div className="flex items-center gap-1.5">
+        {activeViews.map((v) => (
+          <IslandBubble
+            key={v}
+            view={v}
+            active={selected === v}
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect(v);
+            }}
+            size="md"
+            pulse={v === "pomodoro"}
+          />
+        ))}
+      </div>
+      <span className="text-[10px] font-medium text-zinc-500">{viewLabel(selected, i18n)}</span>
+    </div>
+  );
+}
+
+function CompactMulti({
+  activeViews,
+  selected,
+  onSelect,
+  nowPlaying,
+  remainingMs,
+  playing,
+  clock,
+  focus,
+}: {
+  activeViews: View[];
+  selected: View;
+  onSelect: (view: View) => void;
+  nowPlaying: NowPlaying | null;
+  remainingMs: number;
+  playing: boolean;
+  clock: Date | null;
+  focus: ReturnType<typeof useFocus>;
+}) {
+  const main = LEADING_PRIORITY.find((v) => activeViews.includes(v)) || activeViews[0];
+  const trailing = activeViews.filter((v) => v !== main);
+
+  return (
+    <div className="flex h-[38px] w-full items-center gap-1.5 px-2">
+      <div className="min-w-0 flex-1">
+        {main === "spotify" && nowPlaying ? (
+          <SpotifyCompact
+            track={nowPlaying}
+            remainingMs={remainingMs}
+            playing={playing}
+            date={clock}
+            className="min-w-0"
+          />
+        ) : main === "pomodoro" ? (
+          <PomodoroCompact
+            remaining={focus.state.format(focus.state.remaining)}
+            phase={focus.state.phase}
+            date={clock}
+            className="min-w-0"
+          />
+        ) : main === "brain" ? (
+          <BrainCompact className="min-w-0" />
+        ) : (
+          <IdleCompact date={clock} className="min-w-0" />
+        )}
+      </div>
+      {trailing.length > 0 && (
+        <div className="flex items-center gap-1 pl-1">
+          {trailing.map((v) => (
+            <IslandBubble
+              key={v}
+              view={v}
+              active={selected === v}
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelect(v);
+              }}
+              pulse={v === "pomodoro"}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -175,7 +356,8 @@ export default function DynamicIslandContainer() {
   const { visible } = useDynamicIslandStore();
 
   const [expanded, setExpanded] = useState(false);
-  const [activeView, setActiveView] = useState<View | null>(null);
+  const [selectedView, setSelectedView] = useState<View | null>(null);
+  const [activeViews, setActiveViews] = useState<View[]>([]);
   const prevActiveRef = useRef<Set<View>>(new Set());
   const collapseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -217,28 +399,30 @@ export default function DynamicIslandContainer() {
     if (pomodoroActive) nextActive.add("pomodoro");
     if (spotifyActive) nextActive.add("spotify");
 
+    const nextActiveViews = VIEW_ORDER.filter((v) => nextActive.has(v));
+    setActiveViews(nextActiveViews);
+
     const newViews = VIEW_ORDER.filter(
       (v) => nextActive.has(v) && !prevActiveRef.current.has(v),
     );
 
     if (newViews.length > 0) {
-      setActiveView(newViews[0]);
-    } else if (activeView && !nextActive.has(activeView)) {
-      const fallback = VIEW_ORDER.find((v) => nextActive.has(v)) ?? null;
-      setActiveView(fallback);
+      // A new activity just started: surface it in the expanded view.
+      setSelectedView(newViews[0]);
+      setExpanded(true);
+    } else if (selectedView && !nextActive.has(selectedView)) {
+      const fallback = nextActiveViews[0] ?? null;
+      setSelectedView(fallback);
       if (!fallback) setExpanded(false);
-    } else if (!activeView && nextActive.size > 0) {
-      const fallback = VIEW_ORDER.find((v) => nextActive.has(v)) ?? null;
-      setActiveView(fallback);
+    } else if (!selectedView && nextActive.size > 0) {
+      const fallback = nextActiveViews[0] ?? null;
+      setSelectedView(fallback);
     }
 
-    prevActiveRef.current = nextActive;
-  }, [brainActive, pomodoroActive, spotifyActive, activeView]);
+    if (nextActive.size === 0) setExpanded(false);
 
-  // Collapse when no view is active
-  useEffect(() => {
-    if (!activeView) setExpanded(false);
-  }, [activeView]);
+    prevActiveRef.current = nextActive;
+  }, [brainActive, pomodoroActive, spotifyActive, selectedView]);
 
   // Escape collapses
   useEffect(() => {
@@ -249,50 +433,76 @@ export default function DynamicIslandContainer() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  const selectView = useCallback((view: View) => {
+    setSelectedView(view);
+    setExpanded(true);
+  }, []);
+
   const handleEnter = useCallback(() => {
     if (collapseTimer.current) {
       clearTimeout(collapseTimer.current);
       collapseTimer.current = null;
     }
-    if (activeView) setExpanded(true);
-  }, [activeView]);
+    if (selectedView) setExpanded(true);
+  }, [selectedView]);
 
   const handleLeave = useCallback(() => {
-    if (!activeView) return;
+    if (!selectedView) return;
     collapseTimer.current = setTimeout(() => setExpanded(false), 200);
-  }, [activeView]);
+  }, [selectedView]);
 
   const toggleExpanded = useCallback(() => {
-    if (!activeView) return;
+    if (!selectedView) return;
     setExpanded((v) => !v);
-  }, [activeView]);
+  }, [selectedView]);
 
   const compact = useMemo(() => {
-    if (activeView === "spotify" && nowPlaying) {
-      const duration = nowPlaying.durationMs ?? 0;
-      const remaining = Math.max(0, duration - localProgress);
+    const duration = nowPlaying?.durationMs ?? 0;
+    const remaining = Math.max(0, duration - localProgress);
+
+    if (activeViews.length > 1) {
       return (
-        <SpotifyCompact
-          track={nowPlaying}
+        <CompactMulti
+          activeViews={activeViews}
+          selected={selectedView ?? activeViews[0]}
+          onSelect={selectView}
+          nowPlaying={nowPlaying}
           remainingMs={remaining}
-          playing={!!nowPlaying.isPlaying}
-          date={clock}
+          playing={!!nowPlaying?.isPlaying}
+          clock={clock}
+          focus={focus}
         />
       );
     }
-    if (activeView === "pomodoro") {
-      return (
-        <PomodoroCompact
-          remaining={focus.state.format(focus.state.remaining)}
-          phase={focus.state.phase}
-        />
-      );
+
+    if (activeViews.length === 1) {
+      const view = activeViews[0];
+      if (view === "spotify" && nowPlaying) {
+        return (
+          <SpotifyCompact
+            track={nowPlaying}
+            remainingMs={remaining}
+            playing={!!nowPlaying.isPlaying}
+            date={clock}
+          />
+        );
+      }
+      if (view === "pomodoro") {
+        return (
+          <PomodoroCompact
+            remaining={focus.state.format(focus.state.remaining)}
+            phase={focus.state.phase}
+            date={clock}
+          />
+        );
+      }
+      if (view === "brain") {
+        return <BrainCompact />;
+      }
     }
-    if (activeView === "brain") {
-      return <BrainCompact />;
-    }
+
     return <IdleCompact date={clock} />;
-  }, [activeView, nowPlaying, localProgress, focus.state, clock]);
+  }, [activeViews, selectedView, nowPlaying, localProgress, focus, clock, selectView]);
 
   // Spotify controls
   const spotifyControl = useCallback(
@@ -399,7 +609,7 @@ export default function DynamicIslandContainer() {
           className="fixed left-1/2 top-14 z-40 -translate-x-1/2 pointer-events-auto select-none"
         >
           <DynamicIsland
-            view={expanded ? activeView : null}
+            view={expanded ? selectedView : null}
             compact={compact}
             onClick={toggleExpanded}
             onMouseEnter={handleEnter}
@@ -408,6 +618,12 @@ export default function DynamicIslandContainer() {
           >
             <DynamicIslandView id="spotify" data-testid="dynamic-island-spotify" className="w-[340px] sm:w-[400px]">
               <div onClick={stopPropagation} className="flex w-full flex-col gap-4">
+                <IslandExpandedHeader
+                  activeViews={activeViews}
+                  selected={selectedView ?? "spotify"}
+                  onSelect={selectView}
+                  clock={clock}
+                />
                 <div className="flex items-start justify-between gap-2">
                   <span className="text-[10px] font-medium tabular-nums text-zinc-500">
                     {clock ? formatClock(clock) : "--:--"}
@@ -506,6 +722,12 @@ export default function DynamicIslandContainer() {
 
             <DynamicIslandView id="pomodoro" className="w-[260px]">
               <div onClick={stopPropagation} className="flex w-full flex-col items-center gap-4">
+                <IslandExpandedHeader
+                  activeViews={activeViews}
+                  selected={selectedView ?? "pomodoro"}
+                  onSelect={selectView}
+                  clock={clock}
+                />
                 <div className="flex flex-col items-center gap-1">
                   <span className="text-4xl font-semibold tabular-nums text-white">
                     {focus.state.format(focus.state.remaining)}
@@ -558,6 +780,12 @@ export default function DynamicIslandContainer() {
 
             <DynamicIslandView id="brain" className="w-[260px]">
               <div onClick={stopPropagation} className="flex w-full flex-col items-center gap-3 text-center">
+                <IslandExpandedHeader
+                  activeViews={activeViews}
+                  selected={selectedView ?? "brain"}
+                  onSelect={selectView}
+                  clock={clock}
+                />
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-500/15">
                   <Brain className="h-6 w-6 text-purple-400" />
                 </div>

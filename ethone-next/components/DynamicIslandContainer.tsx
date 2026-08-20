@@ -19,7 +19,6 @@ import {
   Music,
 } from "lucide-react";
 
-import SpotifyCompact from "@/components/SpotifyCompact";
 import LiveMediaProgress from "@/components/LiveMediaProgress";
 import { DynamicIsland, DynamicIslandView } from "@/components/ui/DynamicIsland";
 import { useNowPlaying } from "@/lib/hooks/useNowPlaying";
@@ -32,18 +31,11 @@ import { useDynamicIslandStore } from "@/lib/stores/dynamic-island";
 import { useBrainActivityStore } from "@/lib/stores/brain-activity";
 import { cn } from "@/lib/utils";
 import VolumeSlider from "@/components/VolumeSlider";
-import type { NowPlaying } from "@/lib/hooks/useLiveData";
 
 type View = "spotify" | "pomodoro" | "brain";
 
 const EASE_OUT = [0.16, 1, 0.3, 1] as const;
 const VIEW_ORDER: View[] = ["spotify", "brain", "pomodoro"];
-
-// Leading priority: Spotify/Brain stay as the main pill; Pomodoro becomes a separate bubble.
-const LEADING_PRIORITY: View[] = ["spotify", "brain", "pomodoro"];
-
-// Trailing priority: Pomodoro sits right next to the leading activity when active.
-const TRAILING_PRIORITY: View[] = ["pomodoro", "brain", "spotify"];
 
 function viewLabel(view: View, i18n: (key: string, fallback?: string) => string) {
   switch (view) {
@@ -72,37 +64,6 @@ function useNowClock() {
   }, []);
 
   return date;
-}
-
-function PomodoroCompact({ remaining, phase, className }: { remaining: string; phase: string; className?: string }) {
-  const clock = useNowClock();
-  const time = clock ? formatClock(clock) : "--:--";
-  return (
-    <div className={cn("flex h-[38px] w-full items-center justify-between gap-3 px-2", className)}>
-      <div className="flex items-center gap-2">
-        <Timer className="h-4 w-4 text-[var(--accent)]" />
-        <span className="text-[10px] capitalize text-zinc-400">{phase}</span>
-      </div>
-      <div className="flex items-center gap-2.5">
-        {clock && (
-          <div className="flex items-center gap-1 text-zinc-500">
-            <Clock className="h-3 w-3" />
-            <span className="text-[10px] font-medium tabular-nums">{time}</span>
-          </div>
-        )}
-        <span className="text-xs font-semibold tabular-nums text-white">{remaining}</span>
-      </div>
-    </div>
-  );
-}
-
-function BrainCompact({ className }: { className?: string }) {
-  return (
-    <div className={cn("flex h-[38px] w-full items-center justify-center gap-2 px-1", className)}>
-      <Sparkles className="h-3.5 w-3.5 animate-pulse text-purple-400" />
-      <span className="text-xs font-medium text-purple-200">Brain</span>
-    </div>
-  );
 }
 
 function IdleCompact({ className }: { className?: string }) {
@@ -162,72 +123,6 @@ function IslandBubble({
   );
 }
 
-function PomodoroBubble({
-  remaining,
-  pct,
-  active,
-  onClick,
-  paused,
-}: {
-  remaining: string;
-  pct: number;
-  active?: boolean;
-  onClick?: (e: React.MouseEvent) => void;
-  paused?: boolean;
-}) {
-  const size = 34;
-  const stroke = 2.5;
-  const r = (size - stroke) / 2;
-  const c = 2 * Math.PI * r;
-  const dash = `${(pct / 100) * c} ${c}`;
-
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={`Pomodoro ${remaining}`}
-      className={cn(
-        "relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-all",
-        active
-          ? "bg-[var(--accent)]/10 text-[var(--accent)] border-[var(--accent)]/40"
-          : "bg-white/[0.08] text-white border-white/[0.1] hover:bg-white/[0.12]",
-        paused && "opacity-60",
-      )}
-    >
-      <svg
-        width={size}
-        height={size}
-        viewBox={`0 0 ${size} ${size}`}
-        className="absolute -rotate-90"
-        aria-hidden="true"
-      >
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={r}
-          fill="none"
-          stroke="rgba(255,255,255,0.12)"
-          strokeWidth={stroke}
-        />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={r}
-          fill="none"
-          stroke="var(--accent)"
-          strokeWidth={stroke}
-          strokeDasharray={dash}
-          strokeLinecap="round"
-          className="transition-all duration-500"
-        />
-      </svg>
-      <span className="relative z-10 text-[9px] font-semibold tabular-nums leading-none">
-        {remaining}
-      </span>
-    </button>
-  );
-}
-
 function IslandExpandedHeader({
   activeViews,
   selected,
@@ -264,81 +159,6 @@ function IslandExpandedHeader({
         ))}
       </div>
       <span className="text-[10px] font-medium text-zinc-500">{viewLabel(selected, i18n)}</span>
-    </div>
-  );
-}
-
-function CompactMulti({
-  activeViews,
-  selected,
-  onSelect,
-  nowPlaying,
-  playing,
-  focus,
-  pomodoroPct,
-}: {
-  activeViews: View[];
-  selected: View;
-  onSelect: (view: View) => void;
-  nowPlaying: NowPlaying | null;
-  playing: boolean;
-  focus: ReturnType<typeof useFocus>;
-  pomodoroPct: number;
-}) {
-  const main = LEADING_PRIORITY.find((v) => activeViews.includes(v)) || activeViews[0];
-  const trailing = activeViews
-    .filter((v) => v !== main)
-    .sort((a, b) => TRAILING_PRIORITY.indexOf(a) - TRAILING_PRIORITY.indexOf(b));
-
-  return (
-    <div className="flex h-[38px] w-full items-center gap-1.5 px-2">
-      <div className="min-w-0 flex-1">
-        {main === "spotify" && nowPlaying ? (
-          <SpotifyCompact track={nowPlaying} playing={playing} className="min-w-0" />
-        ) : main === "pomodoro" ? (
-          <PomodoroCompact
-            remaining={focus.state.format(focus.state.remaining)}
-            phase={focus.state.phase}
-            className="min-w-0"
-          />
-        ) : main === "brain" ? (
-          <BrainCompact className="min-w-0" />
-        ) : (
-          <IdleCompact className="min-w-0" />
-        )}
-      </div>
-      {trailing.length > 0 && (
-        <div className="flex items-center gap-1 pl-1">
-          {trailing.map((v) => {
-            if (v === "pomodoro") {
-              return (
-                <PomodoroBubble
-                  key={v}
-                  remaining={focus.state.format(focus.state.remaining)}
-                  pct={pomodoroPct}
-                  active={selected === v}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSelect(v);
-                  }}
-                  paused={focus.state.paused}
-                />
-              );
-            }
-            return (
-              <IslandBubble
-                key={v}
-                view={v}
-                active={selected === v}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSelect(v);
-                }}
-              />
-            );
-          })}
-        </div>
-      )}
     </div>
   );
 }
@@ -471,41 +291,9 @@ export default function DynamicIslandContainer() {
     return Math.min(100, Math.max(0, (1 - focus.state.remaining / focus.state.total) * 100));
   }, [focus.state.total, focus.state.remaining]);
 
-  const compact = useMemo(() => {
-    if (activeViews.length > 1) {
-      return (
-        <CompactMulti
-          activeViews={activeViews}
-          selected={selectedView ?? activeViews[0]}
-          onSelect={selectView}
-          nowPlaying={nowPlaying}
-          playing={!!nowPlaying?.isPlaying}
-          focus={focus}
-          pomodoroPct={pomodoroPct}
-        />
-      );
-    }
-
-    if (activeViews.length === 1) {
-      const view = activeViews[0];
-      if (view === "spotify" && nowPlaying) {
-        return <SpotifyCompact track={nowPlaying} playing={!!nowPlaying.isPlaying} />;
-      }
-      if (view === "pomodoro") {
-        return (
-          <PomodoroCompact
-            remaining={focus.state.format(focus.state.remaining)}
-            phase={focus.state.phase}
-          />
-        );
-      }
-      if (view === "brain") {
-        return <BrainCompact />;
-      }
-    }
-
-    return <IdleCompact />;
-  }, [activeViews, selectedView, nowPlaying, focus, selectView, pomodoroPct]);
+  // The compact pill always shows the current time. The activity details
+  // (Spotify, Pomodoro, Brain) are available in the expanded view on hover/click.
+  const compact = useMemo(() => <IdleCompact />, []);
 
   // Spotify controls
   const spotifyControl = useCallback(

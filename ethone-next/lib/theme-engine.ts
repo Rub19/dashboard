@@ -143,6 +143,7 @@ const LEGACY_THEME_MAP: Record<string, PremiumTheme> = {
 /** Returns the matching premium ID for an old or new theme string. */
 export function resolveLegacyTheme(theme: string): PremiumTheme {
   const id = String(theme || "").toLowerCase();
+  if (PREMIUM_THEMES.includes(id as PremiumTheme)) return id as PremiumTheme;
   return LEGACY_THEME_MAP[id] ?? "obsidian";
 }
 

@@ -142,6 +142,7 @@ export type Settings = {
   spotlightEnabled: boolean;
   ambientEffectsEnabled: boolean;
   interfaceBlurEnabled: boolean;
+  dockFloatingSave: boolean;
   liveNowPlayingSource: "lanyard" | "lastfm" | "spotify";
   liveNowPlayingIdentity: string;
   liveLanyardUserId: string;
@@ -341,6 +342,7 @@ export const DEFAULTS: Settings = {
   spotlightEnabled: true,
   ambientEffectsEnabled: true,
   interfaceBlurEnabled: true,
+  dockFloatingSave: true,
   liveNowPlayingSource: "lanyard",
   liveNowPlayingIdentity: "",
   liveLanyardUserId: "",

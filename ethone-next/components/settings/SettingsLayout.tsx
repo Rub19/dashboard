@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Search, RotateCcw, Save } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
+import { X } from "lucide-react";
 import { useSettingsForm } from "./SettingsFormContext";
 import { useToast } from "@/components/ToastProvider";
 import { DEFAULTS } from "@/lib/settings";
@@ -21,7 +22,7 @@ function resolveCategory(value: string | null | undefined): string {
 
 export default function SettingsLayout() {
   const i18n = useI18n();
-  const { update } = useSettings();
+  const { settings, update } = useSettings();
   const { error: showError, notify } = useToast();
   const form = useSettingsForm();
   const searchParams = useSearchParams();
@@ -182,6 +183,42 @@ export default function SettingsLayout() {
           />
         </main>
       </div>
+
+      {settings.dockFloatingSave && form.hasExplicitChanges && (
+        <div className="fixed inset-x-0 bottom-20 z-50 mx-auto w-max max-w-[min(90%,32rem)] animate-in slide-in-from-bottom-4">
+          <div className="flex items-center gap-3 rounded-[var(--panel-radius)] border border-amber-500/20 bg-amber-500/10 px-4 py-2.5 text-xs font-medium text-amber-300 shadow-lg backdrop-blur-[var(--panel-blur)]">
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+            <span className="whitespace-nowrap">{i18n("unsavedChanges") || "Modifications non enregistrées"}</span>
+            <div className="ml-auto flex items-center gap-2 pl-2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                leftIcon={<X className="h-3.5 w-3.5" />}
+                onClick={form.cancelExplicit}
+              >
+                {i18n("cancel") || "Annuler"}
+              </Button>
+              <Button
+                type="button"
+                variant="primary"
+                size="sm"
+                leftIcon={<Save className="h-3.5 w-3.5" />}
+                onClick={() => {
+                  try {
+                    form.saveExplicit();
+                    notify.sync();
+                  } catch (err) {
+                    showError(String(err));
+                  }
+                }}
+              >
+                {i18n("save") || "Enregistrer"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

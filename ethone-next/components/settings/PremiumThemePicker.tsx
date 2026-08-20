@@ -20,7 +20,7 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
   const resolvedValue = useMemo(() => resolvePremiumTheme(value), [value]);
 
   return (
-    <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5">
+    <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4 lg:grid-cols-5">
       {PREMIUM_THEMES.map((id) => {
         const def = THEME_DEFINITIONS[id];
         const selected = resolvedValue === id;
@@ -33,12 +33,12 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
               applyTheme(id);
               onChange(id);
             }}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className={`group relative overflow-hidden rounded-2xl border text-left transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--border-active)] focus:ring-offset-2 focus:ring-offset-[var(--bg-main)] ${
+            whileHover={{ scale: 1.015 }}
+            whileTap={{ scale: 0.985 }}
+            className={`group relative overflow-hidden rounded-xl border text-left transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--border-active)] focus:ring-offset-2 focus:ring-offset-[var(--bg-main)] ${
               selected
-                ? "ring-1 ring-[var(--accent-primary)] shadow-[0_0_18px_var(--glow-color)]"
-                : "hover:shadow-[0_0_14px_var(--glow-color)]"
+                ? "ring-1 ring-[var(--accent-primary)] shadow-[0_0_12px_var(--glow-color)]"
+                : "hover:shadow-[0_0_8px_var(--glow-color)]"
             }`}
             style={{
               backgroundColor: def.bgMain,
@@ -48,45 +48,45 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
             aria-pressed={selected}
           >
             {selected && (
-              <span className="absolute right-1.5 top-1.5 z-10 flex h-4 w-4 items-center justify-center rounded-full"
+              <span className="absolute right-1 top-1 z-10 flex h-3 w-3 items-center justify-center rounded-full"
                 style={{ backgroundColor: def.accentPrimary, color: def.bgMain }}>
-                <Check className="h-2.5 w-2.5" strokeWidth={3} />
+                <Check className="h-2 w-2" strokeWidth={3} />
               </span>
             )}
 
-            <div className="p-2">
+            <div className="p-1.5">
               {/* Miniature dashboard */}
               <div
-                className="mb-2 aspect-[16/9] w-full overflow-hidden rounded-lg border"
+                className="mb-1.5 aspect-[2/1] w-full overflow-hidden rounded-md border"
                 style={{ borderColor: def.borderSubtle, backgroundColor: def.bgMain }}
               >
                 <div className="flex h-full w-full">
                   {/* Sidebar */}
                   <div
-                    className="h-full w-1/4 border-r"
+                    className="h-full w-1/5 border-r"
                     style={{ borderColor: def.borderSubtle, backgroundColor: def.bgSidebar }}
                   >
-                    <div className="mt-2 ml-2 h-1.5 w-4 rounded-full" style={{ backgroundColor: def.accentPrimary }} />
-                    <div className="mt-1.5 ml-2 h-1 w-6 rounded-full" style={{ backgroundColor: def.borderActive }} />
+                    <div className="mt-1.5 ml-1.5 h-1 w-3 rounded-full" style={{ backgroundColor: def.accentPrimary }} />
+                    <div className="mt-1 ml-1.5 h-0.5 w-4 rounded-full" style={{ backgroundColor: def.borderActive }} />
                   </div>
                   {/* Content */}
                   <div className="flex h-full flex-1 flex-col" style={{ backgroundColor: def.bgSurface }}>
                     {/* Top bar */}
                     <div
-                      className="flex h-1/5 w-full items-center gap-2 border-b px-2"
+                      className="flex h-1/5 w-full items-center gap-1 border-b px-1.5"
                       style={{ borderColor: def.borderSubtle, backgroundColor: def.bgSidebar }}
                     >
-                      <div className="h-2 w-2 rounded-full" style={{ backgroundColor: def.accentPrimary }} />
-                      <div className="h-1.5 w-12 rounded-full" style={{ backgroundColor: def.borderActive }} />
+                      <div className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: def.accentPrimary }} />
+                      <div className="h-1 w-8 rounded-full" style={{ backgroundColor: def.borderActive }} />
                     </div>
                     {/* Pane */}
-                    <div className="flex-1 p-2">
+                    <div className="flex-1 p-1.5">
                       <div
-                        className="mb-2 h-1/3 w-3/4 rounded-md"
+                        className="mb-1 h-1/3 w-3/4 rounded-sm"
                         style={{ backgroundColor: def.borderSubtle }}
                       />
                       <div
-                        className="h-1/4 w-1/2 rounded-md"
+                        className="h-1/4 w-1/2 rounded-sm"
                         style={{ backgroundColor: def.borderActive }}
                       />
                     </div>
@@ -95,25 +95,25 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
               </div>
 
               {/* Color pastilles */}
-              <div className="mb-1.5 flex items-center gap-1">
+              <div className="mb-1 flex items-center gap-1">
                 <span
-                  className="h-2 w-2 rounded-full ring-1 ring-white/20"
+                  className="h-1.5 w-1.5 rounded-full ring-1 ring-white/20"
                   style={{ backgroundColor: def.accentPrimary }}
                 />
                 <span
-                  className="h-2 w-2 rounded-full ring-1 ring-white/20"
+                  className="h-1.5 w-1.5 rounded-full ring-1 ring-white/20"
                   style={{ backgroundColor: def.accentSecondary }}
                 />
                 <span
-                  className="h-2 w-2 rounded-full ring-1 ring-white/20"
+                  className="h-1.5 w-1.5 rounded-full ring-1 ring-white/20"
                   style={{ backgroundColor: def.textMuted }}
                 />
               </div>
 
-              <h4 className="text-xs font-semibold" style={{ color: def.textPrimary }}>
+              <h4 className="text-[10px] font-semibold leading-tight" style={{ color: def.textPrimary }}>
                 {def.label}
               </h4>
-              <p className="mt-0.5 text-[10px] leading-tight" style={{ color: def.textMuted }}>
+              <p className="mt-0.5 line-clamp-2 text-[9px] leading-tight" style={{ color: def.textMuted }}>
                 {def.description}
               </p>
             </div>

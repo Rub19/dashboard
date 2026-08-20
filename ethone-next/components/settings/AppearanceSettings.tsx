@@ -153,6 +153,7 @@ export default function AppearanceSettings() {
       "reducedMotion",
       "uiGlow",
       "interfaceBlurEnabled",
+      "dockFloatingSave",
       "dockAutoHide",
       "dockMagnify",
       "dockVisible",
@@ -421,6 +422,15 @@ export default function AppearanceSettings() {
             <Switch
               checked={settings.dockMagnify}
               onChange={(v) => handleChange("dockMagnify", v)}
+              labels={false}
+              size="sm"
+            />
+          </SettingsRow>
+
+          <SettingsRow label="Sauvegarde flottante" description="Afficher la barre flottante d'enregistrement au-dessus du dock.">
+            <Switch
+              checked={settings.dockFloatingSave}
+              onChange={(v) => handleChange("dockFloatingSave", v)}
               labels={false}
               size="sm"
             />

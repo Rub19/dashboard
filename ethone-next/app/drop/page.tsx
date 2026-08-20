@@ -7,6 +7,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
 import Card3D from "@/components/Card3D";
 import Input from "@/components/Input";
+import Button from "@/components/ui/Button";
 
 function formatBytes(bytes = 0) {
   if (bytes === 0) return "0 B";
@@ -112,13 +113,14 @@ function DropContent() {
                   aria-label={i18n("enterPassword")}
                   className="min-w-0 flex-1"
                 />
-                <button
+                <Button
                   type="button"
+                  variant="primary"
+                  size="md"
                   onClick={() => { setDrop(null); setError(null); }}
-                  className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white"
                 >
                   {i18n("unlock")}
-                </button>
+                </Button>
               </div>
             </div>
           )}

@@ -72,7 +72,7 @@ export default function BillsWidget({ standalone = false }: { standalone?: boole
               key={b.id}
               type="button"
               onClick={() => setSelected(b)}
-              className="flex w-full items-center justify-between rounded-xl border border-white/[0.04] bg-white/[0.02] px-2.5 py-1.5 text-xs transition-colors hover:bg-white/[0.06]"
+              className="flex w-full items-center justify-between rounded-xl border border-[var(--text-primary)]/[0.04] bg-[var(--text-primary)]/[0.02] px-2.5 py-1.5 text-xs transition-colors hover:bg-[var(--text-primary)]/[0.06]"
             >
               <span className="min-w-0 flex-1 truncate text-left">{b.label}</span>
               <span className="shrink-0 font-medium text-zinc-300">{formatCurrency(b.amount, b.currency)}</span>

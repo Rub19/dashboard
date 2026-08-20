@@ -10,6 +10,7 @@ import { Icon } from "@/lib/icons";
 import { useToast } from "@/components/ToastProvider";
 import Select from "@/components/ui/Select";
 import { useBrain } from "@/lib/hooks/useBrain";
+import Button from "@/components/ui/Button";
 import { AUTOMATION_ACTIONS, actionLabel } from "@/lib/brain/automation";
 
 const WIDGET_ICONS: Record<string, string> = {
@@ -229,19 +230,16 @@ export default function FlowsPage() {
             aria-label={i18n("workspace")}
             className="min-w-0 sm:min-w-[9rem]"
           />
-          <button
+          <Button
             type="button"
+            variant="primary"
+            size="sm"
             onClick={addFlow}
             disabled={loading}
-            className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold text-white transition-all hover:brightness-110 active:scale-95 disabled:opacity-50"
-            style={{
-              background: "var(--accent-color, #a855f7)",
-              boxShadow: "0 0 16px var(--accent-glow, rgba(168, 85, 247, 0.3))",
-            }}
+            leftIcon={<Plus className="h-3.5 w-3.5" />}
           >
-            <Plus className="h-3.5 w-3.5" />
             Nouveau Flow
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -341,7 +339,7 @@ export default function FlowsPage() {
                               <button
                                 type="button"
                                 onClick={() => toggleAutomationRule(rule.id)}
-                                className="rounded p-1 hover:bg-white/5"
+                                className="rounded p-1 hover:bg-[var(--text-primary)]/[0.05]"
                                 aria-label={rule.enabled ? i18n("disabled") : i18n("enabled")}
                               >
                                 <Icon name={rule.enabled ? "toggle-right" : "toggle-left"} className="h-3.5 w-3.5" />
@@ -349,7 +347,7 @@ export default function FlowsPage() {
                               <button
                                 type="button"
                                 onClick={() => removeAutomationRule(rule.id)}
-                                className="rounded p-1 hover:text-red-400"
+                                className="rounded p-1 hover:text-[var(--danger)]"
                                 aria-label={i18n("delete")}
                               >
                                 <Icon name="trash-2" className="h-3.5 w-3.5" />
@@ -368,15 +366,16 @@ export default function FlowsPage() {
                           aria-label={i18n("action")}
                           className="min-w-0 flex-1"
                         />
-                        <button
+                        <Button
                           type="button"
+                          variant="secondary"
+                          size="sm"
                           onClick={() => attachAutomation(flow.id, workspaceId)}
                           disabled={attachableActions.length === 0}
-                          className="inline-flex items-center gap-1.5 rounded-xl bg-white/[0.06] px-3 py-1.5 text-xs font-semibold text-zinc-200 transition-colors hover:bg-white/10 disabled:opacity-50"
+                          leftIcon={<Icon name="workflow" className="h-3.5 w-3.5" />}
                         >
-                          <Icon name="workflow" className="h-3.5 w-3.5" />
                           {i18n("add")}
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   )}

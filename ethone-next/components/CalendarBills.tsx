@@ -114,7 +114,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
             <button
               type="button"
               onClick={() => setCurrentDate((d) => addMonths(d, -1))}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-[var(--muted)] transition-colors hover:bg-white/10 hover:text-[var(--foreground)]"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--text-primary)]/5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--foreground)]"
               aria-label="Previous month"
             >
               <Icon name="chevron-left" className="h-4 w-4" />
@@ -123,7 +123,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
             <button
               type="button"
               onClick={() => setCurrentDate(new Date())}
-              className="rounded-xl bg-white/10 px-4 py-1.5 text-xs font-medium text-[var(--foreground)] transition-colors hover:bg-white/15"
+              className="rounded-xl bg-[var(--text-primary)]/10 px-4 py-1.5 text-xs font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--text-primary)]/15"
             >
               Today
             </button>
@@ -131,7 +131,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
             <button
               type="button"
               onClick={() => setCurrentDate((d) => addMonths(d, 1))}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-[var(--muted)] transition-colors hover:bg-white/10 hover:text-[var(--foreground)]"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--text-primary)]/5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--foreground)]"
               aria-label="Next month"
             >
               <Icon name="chevron-right" className="h-4 w-4" />
@@ -141,7 +141,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
           <button
             type="button"
             onClick={openAdd}
-            className="flex h-11 w-11 items-center justify-center rounded-[var(--panel-radius)] bg-orange-500 text-white shadow-lg shadow-orange-500/30 transition-transform active:scale-[0.98]"
+            className="flex h-11 w-11 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--warning)] text-[var(--text-primary)] shadow-lg shadow-[var(--warning)]/30 transition-transform active:scale-[0.98]"
             aria-label="Add item"
           >
             <Icon name="plus" className="h-5 w-5" />
@@ -256,7 +256,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
                 key={action.label}
                 type="button"
                 aria-label={action.label}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-[var(--muted)] transition-colors hover:bg-white/10 hover:text-[var(--foreground)]"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--text-primary)]/5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--foreground)]"
               >
                 <Icon name={action.icon} className="h-4 w-4" />
               </button>
@@ -295,7 +295,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
         <button
           type="button"
           onClick={() => setModalOpen(false)}
-          className="mt-6 w-full rounded-[var(--panel-radius)] bg-[var(--accent)] py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          className="mt-6 w-full rounded-[var(--panel-radius)] bg-[var(--accent-primary)] py-2.5 text-sm font-semibold text-[var(--accent-contrast)] transition-opacity hover:opacity-90"
         >
           Close
         </button>

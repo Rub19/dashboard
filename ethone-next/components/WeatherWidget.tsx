@@ -280,7 +280,7 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
           <button
             type="button"
             onClick={onRefresh}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/[0.08] hover:text-white"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--text-primary)]/[0.04] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
           >
             <Icon name="refresh-cw" className="h-3 w-3" />
             {i18n("refresh")}
@@ -326,7 +326,7 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
                 onClick={onRefresh}
                 disabled={loading}
                 aria-label={i18n("refresh")}
-                className="rounded-lg p-1.5 text-zinc-500 transition-colors hover:text-white disabled:opacity-50"
+                className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:text-[var(--text-primary)] disabled:opacity-50"
               >
                 <motion.span
                   className="inline-block"

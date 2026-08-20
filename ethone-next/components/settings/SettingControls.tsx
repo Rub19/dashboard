@@ -52,8 +52,8 @@ export function ButtonGridControl<T extends string>({
               className={cn(
                 "relative flex-1 min-w-0 select-none rounded-[calc(var(--panel-radius)-2px)] px-2.5 py-1.5 text-[11px] font-medium transition-all",
                 active
-                  ? "bg-[var(--accent)] text-zinc-950 shadow-sm"
-                  : "text-[var(--muted)] hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)]"
+                  ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm"
+                  : "text-[var(--text-muted)] hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]"
               )}
             >
               <span className="block truncate text-center">{opt.label}</span>
@@ -85,8 +85,8 @@ export function ButtonGridControl<T extends string>({
             className={cn(
               "group relative flex items-center justify-center gap-1 rounded-full border px-2 py-1 text-[11px] font-medium transition-colors duration-150",
               active
-                ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
-                : "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--foreground)] hover:border-[var(--accent)]/50"
+                ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
+                : "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--text-primary)] hover:border-[var(--accent-primary)]/50"
             )}
           >
             {active && <Icon name="check" className="h-3 w-3" />}

@@ -59,18 +59,18 @@ export default function SecureInput({
             type="button"
             onClick={handleCopy}
             disabled={disabled}
-            className="rounded p-1 text-zinc-500 transition-colors hover:bg-white/[0.05] hover:text-zinc-200 disabled:opacity-40"
+            className="rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/5 hover:text-[var(--text-primary)] disabled:opacity-40"
             aria-label={i18n("copy")}
             title={i18n("copy")}
           >
-            {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+            {copied ? <Check className="h-3.5 w-3.5 text-[var(--success)]" /> : <Copy className="h-3.5 w-3.5" />}
           </button>
         )}
         <button
           type="button"
           onClick={() => setVisible((v) => !v)}
           disabled={disabled}
-          className="rounded p-1 text-zinc-500 transition-colors hover:bg-white/[0.05] hover:text-zinc-200 disabled:opacity-40"
+          className="rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/5 hover:text-[var(--text-primary)] disabled:opacity-40"
           aria-label={visible ? i18n("hide") : i18n("show")}
           title={visible ? i18n("hide") : i18n("show")}
         >

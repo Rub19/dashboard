@@ -180,7 +180,7 @@ export default function NotesPage() {
             <button
               type="button"
               onClick={bulkDuplicate}
-              className="flex items-center gap-1.5 rounded-lg bg-white/[0.04] px-3 py-1.5 text-xs text-zinc-200 transition-colors hover:bg-white/[0.08]"
+              className="flex items-center gap-1.5 rounded-lg bg-[var(--text-primary)]/[0.04] px-3 py-1.5 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08]"
             >
               <Icon name="copy-plus" className="h-3.5 w-3.5" /> {i18n("duplicate")}
             </button>
@@ -221,7 +221,7 @@ export default function NotesPage() {
                     disabled={loading}
                     data-tooltip={i18n("delete")}
                     data-haptic
-                    className="shrink-0 text-zinc-500 transition-colors hover:text-red-400 disabled:opacity-50"
+                    className="shrink-0 text-[var(--muted)] transition-colors hover:text-[var(--danger)] disabled:opacity-50"
                   >
                     <Icon name="trash-2" className="h-4 w-4" />
                   </button>
@@ -264,7 +264,7 @@ export default function NotesPage() {
             onClick={addNote}
             disabled={loading || !title.trim()}
             className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold transition-all active:scale-95 disabled:opacity-50"
-            style={{ background: "var(--accent-color, #10b981)", color: "#09090b" }}
+            style={{ background: "var(--accent-color, var(--accent-primary))", color: "var(--accent-contrast)" }}
           >
             <Icon name="save" className="h-3.5 w-3.5" />
             {i18n("save")}

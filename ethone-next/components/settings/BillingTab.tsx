@@ -91,7 +91,7 @@ export default function BillingTab() {
           <button
             type="button"
             disabled
-            className="flex w-full cursor-not-allowed items-center justify-center gap-1.5 rounded-xl border border-white/[0.08] bg-white/[0.04] py-2 text-xs font-medium text-zinc-500"
+            className="flex w-full cursor-not-allowed items-center justify-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/4 py-2 text-xs font-medium text-[var(--text-muted)]"
           >
             <CreditCard className="h-3.5 w-3.5" />
             {i18n("managePlan") || "Gérer le plan"}

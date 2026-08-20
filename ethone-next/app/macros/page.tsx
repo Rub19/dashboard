@@ -7,6 +7,7 @@ import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import Select from "@/components/ui/Select";
+import Button from "@/components/ui/Button";
 
 const ACTIONS = [
   { id: "navigate", i18nKey: "openPage", label: "Ouvrir page", defaults: { href: "/" } },
@@ -76,14 +77,14 @@ export default function MacrosPage() {
                 className="min-w-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
               />
             )}
-            <button
+            <Button
               type="button"
+              variant="primary"
+              size="md"
               aria-label={i18n("add")}
               onClick={add}
-              className="inline-flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white"
-            >
-              <Icon name="plus" className="h-4 w-4" />
-            </button>
+              leftIcon={<Icon name="plus" className="h-4 w-4" />}
+            />
           </div>
         </div>
       </Card3D>
@@ -103,7 +104,7 @@ export default function MacrosPage() {
                     <p className="text-xs text-[var(--muted)]">{i18n(data.action === "navigate" ? "openPage" : "toggle")} {data.href || data.setting}</p>
                   </div>
                 </div>
-                <button type="button" aria-label={i18n("delete")} onClick={() => deleteMacro(m.id)} className="text-[var(--muted)] hover:text-red-400">
+                <button type="button" aria-label={i18n("delete")} onClick={() => deleteMacro(m.id)} className="text-[var(--muted)] hover:text-[var(--danger)]">
                   <Icon name="trash-2" className="h-4 w-4" />
                 </button>
               </div>

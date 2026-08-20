@@ -42,14 +42,14 @@ function AttachmentCard({ attachment }: { attachment: MailAttachment }) {
       onClick={handleDownload}
       className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] p-2 text-left transition-colors hover:bg-white/[0.06]"
     >
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.05] text-zinc-400">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.05] text-[var(--text-muted)]">
         <Paperclip className="h-4 w-4" />
       </span>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-[11px] font-medium text-zinc-200">{attachment.filename}</p>
-        <p className="text-[10px] text-zinc-500">{attachment.mime_type}</p>
+        <p className="truncate text-[11px] font-medium text-[var(--text-primary)]">{attachment.filename}</p>
+        <p className="text-[10px] text-[var(--text-muted)]">{attachment.mime_type}</p>
       </div>
-      <Download className="h-3.5 w-3.5 text-zinc-500" />
+      <Download className="h-3.5 w-3.5 text-[var(--text-muted)]" />
     </button>
   );
 }
@@ -104,7 +104,7 @@ export default function MailDetailView({
           <button
             type="button"
             onClick={onReply}
-            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/[0.06] hover:text-white"
+            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)]"
           >
             <Reply className="h-3.5 w-3.5" />
             {i18n("reply") || "Répondre"}
@@ -112,7 +112,7 @@ export default function MailDetailView({
           <button
             type="button"
             onClick={onForward}
-            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/[0.06] hover:text-white"
+            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)]"
           >
             <Forward className="h-3.5 w-3.5" />
             {i18n("forward") || "Transférer"}
@@ -120,7 +120,7 @@ export default function MailDetailView({
           <button
             type="button"
             onClick={onToggleRead}
-            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/[0.06] hover:text-white"
+            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)]"
           >
             <MailOpen className="h-3.5 w-3.5" />
             {i18n(isRead ? "markAsUnread" : "markAsRead")}
@@ -131,21 +131,21 @@ export default function MailDetailView({
           <button
             type="button"
             onClick={onToggleStar}
-            className={`rounded p-1.5 transition-colors ${isStarred ? "text-amber-400" : "text-zinc-400 hover:text-amber-400"}`}
+            className={`rounded p-1.5 transition-colors ${isStarred ? "text-[var(--warning)]" : "text-[var(--text-muted)] hover:text-[var(--warning)]"}`}
           >
-            <Star className={`h-4 w-4 ${isStarred ? "fill-amber-400" : ""}`} />
+            <Star className={`h-4 w-4 ${isStarred ? "fill-[var(--warning)]" : ""}`} />
           </button>
           <button
             type="button"
             onClick={onArchive}
-            className="rounded p-1.5 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+            className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)]"
           >
             <Archive className="h-4 w-4" />
           </button>
           <button
             type="button"
             onClick={onTrash}
-            className="rounded p-1.5 text-zinc-400 transition-colors hover:bg-red-500/10 hover:text-red-400"
+            className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--danger-bg)] hover:text-[var(--danger)]"
           >
             <Trash2 className="h-4 w-4" />
           </button>

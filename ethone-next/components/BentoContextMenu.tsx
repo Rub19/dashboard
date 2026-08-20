@@ -49,7 +49,7 @@ function BentoContextMenuItem({
         onClose();
         item.action();
       }}
-      className="group flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs text-zinc-300 transition-colors hover:bg-white/[0.08] hover:text-white active:bg-white/[0.12]"
+      className="group flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:bg-[var(--text-primary)]/[0.12]"
     >
       <div className="flex items-center">
         <Icon className="mr-2.5 h-4 w-4 shrink-0 text-zinc-400 transition-colors group-hover:text-emerald-400" />

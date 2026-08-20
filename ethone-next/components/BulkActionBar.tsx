@@ -32,22 +32,22 @@ export default function BulkActionBar({
       </div>
       <div className="flex items-center gap-2">
         {onDone && (
-          <button type="button" onClick={onDone} className="flex items-center gap-1.5 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-1.5 text-xs hover:bg-[var(--accent)]/10">
+          <button type="button" onClick={onDone} className="flex items-center gap-1.5 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-1.5 text-xs hover:bg-[var(--accent-primary)]/10">
             <Icon name="circle-check" className="h-3.5 w-3.5" /> {i18n("markDone")}
           </button>
         )}
         {onUndone && (
-          <button type="button" onClick={onUndone} className="flex items-center gap-1.5 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-1.5 text-xs hover:bg-[var(--accent)]/10">
+          <button type="button" onClick={onUndone} className="flex items-center gap-1.5 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-1.5 text-xs hover:bg-[var(--accent-primary)]/10">
             <Icon name="circle" className="h-3.5 w-3.5" /> {i18n("markUndone")}
           </button>
         )}
         {onFavorite && (
-          <button type="button" onClick={onFavorite} className="flex items-center gap-1.5 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-1.5 text-xs hover:bg-[var(--accent)]/10">
+          <button type="button" onClick={onFavorite} className="flex items-center gap-1.5 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-1.5 text-xs hover:bg-[var(--accent-primary)]/10">
             <Icon name="heart" className="h-3.5 w-3.5" /> {i18n("favorite")}
           </button>
         )}
         {onDelete && (
-          <button type="button" onClick={onDelete} className="flex items-center gap-1.5 rounded-[var(--panel-radius)] bg-red-500/10 px-3 py-1.5 text-xs text-red-400 hover:bg-red-500/20">
+          <button type="button" onClick={onDelete} className="flex items-center gap-1.5 rounded-[var(--panel-radius)] bg-[var(--danger)]/10 px-3 py-1.5 text-xs text-[var(--danger)] hover:bg-[var(--danger)]/20">
             <Icon name="trash-2" className="h-3.5 w-3.5" /> {i18n("delete")}
           </button>
         )}

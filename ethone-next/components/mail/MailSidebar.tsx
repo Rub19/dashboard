@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Inbox, Star, Send, FileEdit, Archive, Trash2, AlertTriangle, SquarePen } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
+import Button from "@/components/ui/Button";
 import MailProfileButton from "./MailProfileButton";
 import type { MailAlias } from "@/lib/hooks/useMail";
 
@@ -38,20 +39,17 @@ export default function MailSidebar({ active, onChange, counts, unread, onCompos
   return (
     <div className="flex h-full w-56 shrink-0 flex-col justify-between rounded-2xl v8-panel p-3 backdrop-blur-xl">
       <div className="space-y-3">
-        <button
+        <Button
           type="button"
+          variant="primary"
+          size="md"
           onClick={onCompose}
           disabled={!canCompose}
-          style={{
-            background: canCompose ? "var(--accent-color, #a855f7)" : "rgba(255,255,255,0.06)",
-            color: "#ffffff",
-            boxShadow: canCompose ? "0 0 16px var(--accent-glow, rgba(168,85,247,0.25))" : "none",
-          }}
-          className="flex w-full items-center justify-center gap-2 rounded-xl py-2.5 px-3 text-xs font-semibold transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+          leftIcon={<SquarePen className="h-4 w-4" />}
+          className="w-full"
         >
-          <SquarePen className="h-4 w-4" />
           {i18n("newMessage") || "Nouveau message"}
-        </button>
+        </Button>
 
         <div className="space-y-0.5">
           {FOLDERS.map((id) => {
@@ -63,7 +61,7 @@ export default function MailSidebar({ active, onChange, counts, unread, onCompos
                 type="button"
                 onClick={() => onChange(id)}
                 className={`group relative flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs font-medium transition-colors ${
-                  isActive ? "text-white" : "text-zinc-400 hover:bg-white/[0.03] hover:text-zinc-200"
+                  isActive ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:bg-white/[0.03] hover:text-[var(--text-primary)]"
                 }`}
               >
                 {isActive && (
@@ -74,13 +72,13 @@ export default function MailSidebar({ active, onChange, counts, unread, onCompos
                   />
                 )}
                 <span className="relative z-10 flex items-center gap-2.5">
-                  <span className={isActive ? "text-[var(--accent-color,#a855f7)]" : "text-zinc-500 group-hover:text-zinc-300"}>
+                  <span className={isActive ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)] group-hover:text-[var(--text-primary)]"}>
                     {FOLDER_ICONS[id]}
                   </span>
                   {i18n(id) || id}
                 </span>
                 {count > 0 && (
-                  <span className="relative z-10 rounded-md bg-white/[0.06] px-1.5 py-0.5 text-[10px] font-mono text-zinc-400">
+                  <span className="relative z-10 rounded-md bg-white/[0.06] px-1.5 py-0.5 text-[10px] font-mono text-[var(--text-muted)]">
                     {id === "inbox" ? unread || count : count}
                   </span>
                 )}
@@ -101,7 +99,7 @@ export default function MailSidebar({ active, onChange, counts, unread, onCompos
         <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
           <p className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider">{i18n("storage") || "Stockage"}</p>
           <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-xl bg-white/[0.05]">
-            <div className="h-full w-[12%] rounded-xl bg-[var(--accent-color,#a855f7)]" />
+            <div className="h-full w-[12%] rounded-xl bg-[var(--accent-primary)]" />
           </div>
           <p className="mt-1.5 text-[10px] text-zinc-500">{i18n("usedOf") || "12% utilisé"}</p>
         </div>

@@ -180,7 +180,7 @@ export default function FilesAdminPanel() {
             type="button"
             onClick={() => setTab(t.id)}
             className={`flex flex-1 items-center justify-center gap-1.5 rounded-[var(--panel-radius)] py-2 text-xs font-medium transition-colors sm:text-sm ${
-              tab === t.id ? "bg-[var(--accent)] text-white" : "text-[var(--muted)] hover:text-[var(--foreground)]"
+              tab === t.id ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "text-[var(--muted)] hover:text-[var(--foreground)]"
             }`}
           >
             <Icon name={t.icon} className="h-4 w-4" />
@@ -249,7 +249,7 @@ export default function FilesAdminPanel() {
               type="button"
               onClick={cleanup}
               disabled={cleaning}
-              className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-400 transition-colors hover:bg-red-500/20 disabled:opacity-50"
+              className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--danger)]/10 px-3 py-2 text-sm font-semibold text-[var(--danger)] transition-colors hover:bg-[var(--danger)]/20 disabled:opacity-50"
             >
               <Icon name="trash-2" className="h-4 w-4" />
               {cleaning ? i18n("cleaning") : i18n("cleanupExpired")}
@@ -320,7 +320,7 @@ export default function FilesAdminPanel() {
                     <button
                       type="button"
                       onClick={() => (isShare ? revokeShare(item.id) : revokeDrop(item.id))}
-                      className="rounded p-1.5 text-[var(--muted)] hover:text-red-400"
+                      className="rounded p-1.5 text-[var(--muted)] hover:text-[var(--danger)]"
                       aria-label={i18n("revoke")}
                     >
                       <Icon name="trash-2" className="h-4 w-4" />

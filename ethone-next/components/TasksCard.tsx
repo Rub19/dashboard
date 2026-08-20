@@ -61,8 +61,8 @@ export default function TasksCard({ task, onToggle, onDelete }: TasksCardProps) 
           }}
           className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all ${
             task.done
-              ? "border-emerald-400 bg-emerald-500 text-zinc-950 shadow-[0_0_10px_rgba(52,211,153,0.3)]"
-              : "border-white/20 hover:border-emerald-400"
+              ? "border-[var(--accent-primary)] bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-[0_0_10px_rgba(52,211,153,0.3)]"
+              : "border-[var(--text-primary)]/20 hover:border-[var(--accent-primary)]"
           }`}
           aria-label={task.done ? "Marquer non terminée" : "Marquer terminée"}
         >
@@ -103,7 +103,7 @@ export default function TasksCard({ task, onToggle, onDelete }: TasksCardProps) 
             e.stopPropagation();
             onDelete(task.id);
           }}
-          className="rounded-lg p-1.5 text-zinc-400 opacity-0 transition-all hover:bg-rose-500/10 hover:text-rose-400 group-hover:opacity-100"
+          className="rounded-lg p-1.5 text-[var(--muted)] opacity-0 transition-all hover:bg-[var(--danger)]/10 hover:text-[var(--danger)] group-hover:opacity-100"
           aria-label="Supprimer"
         >
           <Trash2 className="h-3.5 w-3.5" />

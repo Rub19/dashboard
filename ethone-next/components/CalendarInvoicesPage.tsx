@@ -136,8 +136,8 @@ export default function CalendarInvoicesPage() {
         <button
           type="button"
           onClick={() => setModalOpen(false)}
-          className="mt-6 inline-flex w-full items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold text-zinc-900 transition-opacity hover:opacity-90"
-          style={{ background: "var(--accent-color, #10b981)" }}
+          className="mt-6 inline-flex w-full items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold text-[var(--accent-contrast)] transition-opacity hover:opacity-90"
+          style={{ background: "var(--accent-color, var(--accent-primary))" }}
         >
           <X className="h-4 w-4" />
           Fermer

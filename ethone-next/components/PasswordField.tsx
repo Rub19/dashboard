@@ -237,7 +237,7 @@ export default function PasswordField({
                 <button
                   type="button"
                   onClick={handleGenerate}
-                  className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-xs font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]"
+                  className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-xs font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent-primary)] backdrop-blur-[var(--panel-blur)]"
                 >
                   <Icon name="sparkles" className="h-3.5 w-3.5 text-[var(--accent)]" />
                   Utiliser un mot de passe fort suggéré

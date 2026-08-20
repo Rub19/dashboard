@@ -186,13 +186,13 @@ export default function AppearanceSettings() {
                     type="button"
                     onClick={() => handleChange("iconPack", pack.id)}
                     className={`relative flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] font-medium transition-colors ${
-                      active ? "text-white" : "text-zinc-400 hover:text-zinc-200"
+                      active ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     }`}
                   >
                     {active && (
                       <motion.div
                         layoutId="activeIconPack"
-                        className="absolute inset-0 rounded-lg bg-white/[0.08]"
+                        className="absolute inset-0 rounded-lg bg-[var(--text-primary)]/8"
                         transition={{ duration: 0.15, ease: "easeOut" as const }}
                       />
                     )}
@@ -244,13 +244,13 @@ export default function AppearanceSettings() {
                     onClick={() => handleChange("accentColor", color.id)}
                     className={`relative h-7 w-7 rounded-full transition-all active:scale-95 ${
                       selected
-                        ? "ring-2 ring-white shadow-[0_0_14px_currentColor]"
-                        : "ring-1 ring-white/10 hover:ring-white/40"
+                        ? "ring-2 ring-[var(--text-primary)] shadow-[0_0_14px_currentColor]"
+                        : "ring-1 ring-[var(--text-primary)]/10 hover:ring-[var(--text-primary)]/40"
                     }`}
                     style={{ backgroundColor: hex, color: hex }}
                     aria-label={color.label}
                   >
-                    {selected && <Check className="mx-auto h-3.5 w-3.5 text-white" />}
+                    {selected && <Check className="mx-auto h-3.5 w-3.5 text-[var(--text-primary)]" />}
                   </button>
                 );
               })}

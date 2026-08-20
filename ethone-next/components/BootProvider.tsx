@@ -230,7 +230,7 @@ export default function BootProvider({ children }: { children: ReactNode }) {
             <button
               type="button"
               onClick={retry}
-              className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              className="rounded-[var(--panel-radius)] bg-[var(--accent-primary)] px-5 py-2.5 text-sm font-semibold text-[var(--accent-contrast)] transition-opacity hover:opacity-90"
             >
               Réessayer
             </button>
@@ -266,7 +266,7 @@ export default function BootProvider({ children }: { children: ReactNode }) {
             <button
               type="button"
               onClick={retry}
-              className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              className="rounded-[var(--panel-radius)] bg-[var(--accent-primary)] px-5 py-2.5 text-sm font-semibold text-[var(--accent-contrast)] transition-opacity hover:opacity-90"
             >
               Réessayer
             </button>

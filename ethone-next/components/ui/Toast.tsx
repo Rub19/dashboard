@@ -101,7 +101,7 @@ export default function Toast({
       <button
         type="button"
         onClick={onRemove}
-        className="shrink-0 rounded p-1 text-zinc-500 transition-colors hover:bg-white/[0.06] hover:text-zinc-100"
+        className="shrink-0 rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/6 hover:text-[var(--text-primary)]"
         aria-label="Fermer"
       >
         <X className="h-4 w-4" />

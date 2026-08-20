@@ -52,8 +52,8 @@ export default function SystemControlCard({ className = "", scrollable = true }:
                   key={id}
                   type="button"
                   onClick={() => update({ status: id as keyof typeof USER_STATUS_CONFIG })}
-                  className={`flex items-center justify-center gap-1.5 rounded-lg border border-white/[0.08] px-2 py-2 text-[10px] font-medium transition-all ${
-                    active ? `${config.bg} ${config.text} ring-1 ${config.ring}` : "bg-white/[0.02] text-zinc-400 hover:bg-white/[0.04]"
+                  className={`flex items-center justify-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.08] px-2 py-2 text-[10px] font-medium transition-all ${
+                    active ? `${config.bg} ${config.text} ring-1 ${config.ring}` : "bg-[var(--text-primary)]/[0.02] text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.04]"
                   }`}
                 >
                   <Icon name={config.icon} className="h-3.5 w-3.5" />
@@ -78,8 +78,8 @@ export default function SystemControlCard({ className = "", scrollable = true }:
                   onClick={() => update({ aura })}
                   title={i18n(key)}
                   style={{ backgroundColor: palette.background }}
-                  className={`flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.08] transition-all hover:scale-105 ${
-                    active ? "ring-2 ring-inset ring-[var(--accent)]" : "opacity-70 hover:opacity-100"
+                  className={`flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--text-primary)]/[0.08] transition-all hover:scale-105 ${
+                    active ? "ring-2 ring-inset ring-[var(--accent-primary)]" : "opacity-70 hover:opacity-100"
                   }`}
                 >
                   <span
@@ -100,7 +100,7 @@ export default function SystemControlCard({ className = "", scrollable = true }:
               type="button"
               onClick={() => cycle(-1)}
               title={i18n("previous")}
-              className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 transition-colors hover:bg-white/[0.04] hover:text-white"
+              className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
             >
               <Icon name="chevron-left" className="h-3.5 w-3.5" />
             </button>
@@ -112,7 +112,7 @@ export default function SystemControlCard({ className = "", scrollable = true }:
               type="button"
               onClick={() => cycle(1)}
               title={i18n("next")}
-              className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 transition-colors hover:bg-white/[0.04] hover:text-white"
+              className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
             >
               <Icon name="chevron-right" className="h-3.5 w-3.5" />
             </button>

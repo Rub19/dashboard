@@ -87,8 +87,8 @@ export default function MailThreadList({
               onClick={() => setFilter(id)}
               className={`rounded-md px-2.5 py-1 text-[10px] font-medium transition-colors ${
                 filter === id
-                  ? "bg-[var(--accent-color,#a855f7)] text-white"
-                  : "bg-white/[0.04] text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-200"
+                  ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
+                  : "bg-white/[0.04] text-[var(--text-muted)] hover:bg-white/[0.06] hover:text-[var(--text-primary)]"
               }`}
             >
               {i18n(id) || id}

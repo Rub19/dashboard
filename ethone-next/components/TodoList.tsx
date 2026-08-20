@@ -65,8 +65,8 @@ export default function TodoList({ tasks, loading, onToggle, onDelete, className
             onClick={() => setFilter(tab.id)}
             className={`rounded-lg px-3 py-1 transition-all ${
               filter === tab.id
-                ? "border border-white/10 bg-white/[0.08] font-bold text-white shadow-sm"
-                : "text-zinc-400 hover:text-zinc-200"
+                ? "border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.08] font-bold text-[var(--text-primary)] shadow-sm"
+                : "text-[var(--muted)] hover:text-[var(--text-primary)]"
             }`}
           >
             {tab.label}{" "}

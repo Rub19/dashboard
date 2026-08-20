@@ -201,7 +201,7 @@ export default function NotificationItem({
             type="button"
             onClick={handleMarkRead}
             data-tooltip={isUnread ? i18n("markAsRead") : i18n("markAsUnread")}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-white/[0.06] hover:text-[var(--foreground)]"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--foreground)]"
             aria-label={isUnread ? i18n("markAsRead") : i18n("markAsUnread")}
           >
             <Icon name={isUnread ? "check" : "mail"} className="h-4 w-4" />
@@ -210,7 +210,7 @@ export default function NotificationItem({
             type="button"
             onClick={handleArchive}
             data-tooltip={i18n("archive")}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-white/[0.06] hover:text-[var(--foreground)]"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--foreground)]"
             aria-label={i18n("archive")}
           >
             <Icon name="archive" className="h-4 w-4" />
@@ -225,7 +225,7 @@ export default function NotificationItem({
                 setSnoozeOpen(false);
               }}
               data-tooltip={i18n("moreActions")}
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-white/[0.06] hover:text-[var(--foreground)]"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--foreground)]"
               aria-label={i18n("moreActions")}
               aria-expanded={menuOpen}
             >
@@ -242,7 +242,7 @@ export default function NotificationItem({
                         e.stopPropagation();
                         setSnoozeOpen(false);
                       }}
-                      className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--muted)] hover:bg-white/[0.06]"
+                      className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.06]"
                     >
                       <Icon name="chevron-left" className="h-3.5 w-3.5" />
                       {i18n("back")}
@@ -252,7 +252,7 @@ export default function NotificationItem({
                         key={dur}
                         type="button"
                         onClick={(e) => handleSnooze(e, dur)}
-                        className="h-9 w-full rounded-lg px-2 text-left text-xs text-[var(--foreground)] hover:bg-white/[0.06]"
+                        className="h-9 w-full rounded-lg px-2 text-left text-xs text-[var(--foreground)] hover:bg-[var(--text-primary)]/[0.06]"
                       >
                         {i18n(SNOOZE_KEYS[dur])}
                       </button>
@@ -266,7 +266,7 @@ export default function NotificationItem({
                         e.stopPropagation();
                         setSnoozeOpen(true);
                       }}
-                      className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--foreground)] hover:bg-white/[0.06]"
+                      className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--foreground)] hover:bg-[var(--text-primary)]/[0.06]"
                     >
                       <Icon name="clock-3" className="h-3.5 w-3.5" />
                       {i18n("snooze")}
@@ -274,7 +274,7 @@ export default function NotificationItem({
                     <button
                       type="button"
                       onClick={handleImportant}
-                      className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--foreground)] hover:bg-white/[0.06]"
+                      className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--foreground)] hover:bg-[var(--text-primary)]/[0.06]"
                     >
                       <Icon name="alert-circle" className="h-3.5 w-3.5" />
                       {i18n("markImportant")}
@@ -282,7 +282,7 @@ export default function NotificationItem({
                     <button
                       type="button"
                       onClick={handleMute}
-                      className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--foreground)] hover:bg-white/[0.06]"
+                      className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--foreground)] hover:bg-[var(--text-primary)]/[0.06]"
                     >
                       <Icon name={isMuted(n.category) ? "bell" : "bell-off"} className="h-3.5 w-3.5" />
                       {i18n(isMuted(n.category) ? "unmute" : "mute")}
@@ -290,7 +290,7 @@ export default function NotificationItem({
                     <button
                       type="button"
                       onClick={handleDelete}
-                      className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-rose-400 hover:bg-rose-500/10"
+                      className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--danger)] hover:bg-[var(--danger)]/10"
                     >
                       <Icon name="trash-2" className="h-3.5 w-3.5" />
                       {i18n("delete")}

@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
+import Button from "@/components/ui/Button";
 
 export type ModalProps = {
   isOpen: boolean;
@@ -121,7 +122,7 @@ export default function Modal({
               <button
                 type="button"
                 onClick={onClose}
-                className="absolute right-4 top-4 rounded p-1 text-zinc-400 transition-colors hover:bg-white/5 hover:text-zinc-100"
+                className="absolute right-4 top-4 rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/5 hover:text-[var(--text-primary)]"
                 aria-label={cancelLabel}
               >
                 <X className="h-4 w-4" />
@@ -143,27 +144,27 @@ export default function Modal({
 
             {!hideFooter && (
               <div className="mt-6 flex items-center justify-end gap-3">
-                <button
+                <Button
                   type="button"
+                  variant="secondary"
+                  size="md"
                   onClick={onClose}
-                  className="rounded-xl bg-white/[0.05] px-4 py-2 text-sm font-medium text-zinc-300 transition-colors hover:bg-white/10"
+                  className="text-sm"
                 >
                   {cancelLabel}
-                </button>
+                </Button>
 
                 {onConfirm && (
-                  <button
+                  <Button
                     type="button"
+                    variant={variant === "danger" ? "danger" : "primary"}
+                    size="md"
                     disabled={confirmDisabled}
                     onClick={onConfirm}
-                    className={
-                      variant === "danger"
-                        ? "rounded-xl border border-red-500/30 bg-red-500/20 px-4 py-2 text-sm font-medium text-red-300 transition-all hover:bg-red-500/30 disabled:cursor-not-allowed disabled:opacity-40"
-                        : "rounded-xl bg-purple-600 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-purple-600/25 transition-all hover:bg-purple-500 disabled:cursor-not-allowed disabled:opacity-40"
-                    }
+                    className="text-sm"
                   >
                     {confirmLabel}
-                  </button>
+                  </Button>
                 )}
               </div>
             )}

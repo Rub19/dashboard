@@ -199,7 +199,7 @@ export default function SpotifyConfig() {
               <button
                 type="button"
                 onClick={() => setShowClientSecret((v) => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-zinc-500 hover:text-zinc-300"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[var(--muted)] hover:text-[var(--text-primary)]"
               >
                 {showClientSecret ? i18n("hide") : i18n("show")}
               </button>
@@ -224,7 +224,7 @@ export default function SpotifyConfig() {
               type="button"
               onClick={handleConnect}
               disabled={!rawValue.trim() || submitting || testing || checking}
-              className="flex items-center justify-center gap-1.5 rounded-xl bg-emerald-500 px-3 py-2 text-sm font-bold text-zinc-950 shadow-md shadow-emerald-500/20 transition hover:bg-emerald-400 active:scale-95 disabled:opacity-50"
+              className="flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3 py-2 text-sm font-bold text-[var(--accent-contrast)] shadow-md shadow-[var(--accent-primary)]/20 transition hover:bg-[var(--accent-primary)] active:scale-95 disabled:opacity-50"
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plug className="h-4 w-4" />}
               {submitting ? i18n("connecting") : i18n("connect", "Connecter")}
@@ -233,7 +233,7 @@ export default function SpotifyConfig() {
               type="button"
               onClick={handleTest}
               disabled={!rawValue.trim() || testing}
-              className="flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-medium text-zinc-300 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-50"
+              className="flex items-center justify-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] px-3 py-2 text-sm font-medium text-[var(--text-primary)] transition hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] disabled:opacity-50"
             >
               {testing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
               {testing ? i18n("testingInProgress") : i18n("testConnection")}
@@ -245,7 +245,7 @@ export default function SpotifyConfig() {
               type="button"
               onClick={handleTest}
               disabled={testing}
-              className="flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-medium text-zinc-300 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-50"
+              className="flex items-center justify-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] px-3 py-2 text-sm font-medium text-[var(--text-primary)] transition hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] disabled:opacity-50"
             >
               {testing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
               {testing ? i18n("testingInProgress") : i18n("testConnection")}
@@ -254,7 +254,7 @@ export default function SpotifyConfig() {
               type="button"
               onClick={handleDisconnect}
               disabled={submitting}
-              className="flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/20 px-3 py-2 text-sm font-medium text-rose-400 transition hover:border-rose-500/40 hover:bg-rose-500/10 disabled:opacity-50"
+              className="flex items-center justify-center gap-1.5 rounded-xl border border-[var(--danger)]/20 px-3 py-2 text-sm font-medium text-[var(--danger)] transition hover:border-[var(--danger)]/40 hover:bg-[var(--danger)]/10 disabled:opacity-50"
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Unlink className="h-4 w-4" />}
               {submitting ? i18n("disconnecting") : i18n("disconnect", "Déconnecter")}

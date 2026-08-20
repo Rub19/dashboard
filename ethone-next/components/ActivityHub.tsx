@@ -463,7 +463,7 @@ export default function ActivityHub() {
                   type="button"
                   onClick={() => sync()}
                   disabled={syncing}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-xs px-3 py-1.5 transition-colors hover:bg-red-500/20 disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--danger)]/10 border border-[var(--danger)]/20 text-[var(--danger)] text-xs px-3 py-1.5 transition-colors hover:bg-[var(--danger)]/20 disabled:opacity-50"
                 >
                   <AlertCircle className="h-3.5 w-3.5" />
                   {i18n("journalSyncError")}
@@ -479,7 +479,7 @@ export default function ActivityHub() {
                 type="button"
                 onClick={() => sync()}
                 disabled={syncing}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-medium px-3.5 py-1.5 transition-all disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)]/15 hover:bg-[var(--accent-primary)]/25 border border-[var(--accent-primary)]/30 text-[var(--accent-primary)] text-xs font-medium px-3.5 py-1.5 transition-all disabled:opacity-50"
               >
                 {syncing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
                 {syncing ? i18n("journalSyncing") : i18n("journalSyncNow")}

@@ -40,14 +40,14 @@ export default function AnimatedFilterTabs({
             type="button"
             onClick={() => onChange(tab.id)}
             className={`relative px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors duration-150 flex items-center gap-1.5 select-none z-10 ${
-              isActive ? "text-emerald-300" : "text-zinc-400 hover:text-zinc-200"
+              isActive ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             }`}
           >
             {isActive && (
               <motion.div
                 layoutId={pillLayoutId}
                 initial={false}
-                className="absolute inset-0 rounded-lg bg-emerald-500/15 border border-emerald-500/30 shadow-[0_0_12px_rgba(52,211,153,0.15)] -z-10"
+                className="absolute inset-0 rounded-lg bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 shadow-[0_0_12px_var(--glow-color)] -z-10"
                 transition={{ type: "spring", stiffness: 450, damping: 35 }}
               />
             )}

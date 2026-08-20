@@ -303,7 +303,7 @@ export default function LoginPage() {
                           setError(null);
                         }}
                         className={`relative z-10 min-w-0 flex-1 select-none whitespace-nowrap rounded-[var(--panel-radius)] px-0.5 py-2 text-[10px] font-semibold tracking-wide transition-colors active:scale-[0.98] sm:px-2 sm:text-[11px] ${
-                          active ? "text-white" : "text-[var(--muted)] hover:text-[var(--foreground)]"
+                          active ? "text-[var(--accent-contrast)]" : "text-[var(--muted)] hover:text-[var(--foreground)]"
                         }`}
                       >
                         {active && (
@@ -369,7 +369,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[var(--accent)]/20 transition-colors duration-150 hover:opacity-90 hover:shadow-[var(--accent)]/30 active:scale-[0.98] disabled:opacity-50"
+                  className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent-primary)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-contrast)] shadow-[0_0_15px_var(--glow-color)] transition-colors duration-150 hover:opacity-90 hover:shadow-[0_0_20px_var(--glow-color)] active:scale-[0.98] disabled:opacity-50"
                 >
                   {loading ? <Icon name="loader-2" className="h-4 w-4 animate-spin" /> : i18n("verify")}
                 </button>
@@ -488,7 +488,7 @@ export default function LoginPage() {
                   type="submit"
                   data-testid="sign-in-button"
                   disabled={loading}
-                  className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[var(--accent)]/20 transition-colors duration-150 hover:opacity-90 hover:shadow-[var(--accent)]/30 active:scale-[0.98] disabled:opacity-50"
+                  className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent-primary)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-contrast)] shadow-[0_0_15px_var(--glow-color)] transition-colors duration-150 hover:opacity-90 hover:shadow-[0_0_20px_var(--glow-color)] active:scale-[0.98] disabled:opacity-50"
                 >
                   {loading ? (
                     <>

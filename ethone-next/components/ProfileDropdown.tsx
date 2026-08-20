@@ -230,7 +230,7 @@ export default function ProfileDropdown() {
         ref={setTrigger as unknown as React.Ref<HTMLButtonElement>}
         onClick={() => setOpen(!open)}
         disabled={pending}
-        className="flex h-10 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-2 text-zinc-200 transition-colors hover:bg-white/[0.05]"
+        className="flex h-10 items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-2 text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.05]"
         aria-label={i18n("profile")}
         aria-expanded={open}
         aria-haspopup="true"
@@ -281,8 +281,8 @@ export default function ProfileDropdown() {
                       onClick={() => handleWorkspace(w.id)}
                       className={`flex items-center gap-2 rounded-lg border p-2 text-xs font-medium transition-all ${
                         isActive
-                          ? "border-white/20 bg-white/[0.08] text-white shadow-sm"
-                          : "border-white/[0.04] bg-white/[0.02] text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200"
+                          ? "border-[var(--text-primary)]/20 bg-[var(--text-primary)]/[0.08] text-[var(--text-primary)] shadow-sm"
+                          : "border-[var(--text-primary)]/[0.04] bg-[var(--text-primary)]/[0.02] text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
                       }`}
                     >
                       <Icon
@@ -303,7 +303,7 @@ export default function ProfileDropdown() {
                   type="button"
                 onClick={handleRename}
                 disabled={pending}
-                  className="group flex flex-col items-center justify-center rounded-lg py-2 px-1 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+                  className="group flex flex-col items-center justify-center rounded-lg py-2 px-1 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                 >
                   <Pencil className="h-4 w-4" />
                   <span className="mt-1 text-[10px] font-medium text-zinc-400 group-hover:text-zinc-200">{i18n("rename")}</span>
@@ -312,7 +312,7 @@ export default function ProfileDropdown() {
                   type="button"
                   onClick={handleEditAvatar}
                   disabled={pending}
-                  className="group flex flex-col items-center justify-center rounded-lg py-2 px-1 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+                  className="group flex flex-col items-center justify-center rounded-lg py-2 px-1 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                 >
                   <Smile className="h-4 w-4" />
                   <span className="mt-1 text-[10px] font-medium text-zinc-400 group-hover:text-zinc-200">{i18n("editAvatar")}</span>
@@ -321,7 +321,7 @@ export default function ProfileDropdown() {
                   type="button"
                   onClick={handleExport}
                   disabled={pending}
-                  className="group flex flex-col items-center justify-center rounded-lg py-2 px-1 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+                  className="group flex flex-col items-center justify-center rounded-lg py-2 px-1 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                 >
                   <Download className="h-4 w-4" />
                   <span className="mt-1 text-[10px] font-medium text-zinc-400 group-hover:text-zinc-200">{i18n("exportProfile")}</span>
@@ -330,7 +330,7 @@ export default function ProfileDropdown() {
                   type="button"
                   onClick={handleDuplicate}
                   disabled={pending}
-                  className="group flex flex-col items-center justify-center rounded-lg py-2 px-1 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+                  className="group flex flex-col items-center justify-center rounded-lg py-2 px-1 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                 >
                   <Copy className="h-4 w-4" />
                   <span className="mt-1 text-[10px] font-medium text-zinc-400 group-hover:text-zinc-200">{i18n("duplicate")}</span>
@@ -359,7 +359,7 @@ export default function ProfileDropdown() {
                         disabled={pending}
                         onClick={() => handleSelectProfile(p)}
                         className={`flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-xs transition-colors ${
-                          isActive ? "bg-white/[0.08] text-white" : "hover:bg-white/[0.04] text-zinc-300"
+                          isActive ? "bg-[var(--text-primary)]/[0.08] text-[var(--text-primary)]" : "hover:bg-[var(--text-primary)]/[0.04] text-[var(--text-primary)]"
                         }`}
                       >
                         <Avatar url={isActive ? avatarUrl : undefined} name={p.name} size="sm" />
@@ -426,7 +426,7 @@ export default function ProfileDropdown() {
                   setOpen(false);
                   router.push("/profile");
                 }}
-                className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/[0.04]"
+                className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.04]"
               >
                 <User className="h-4 w-4 text-zinc-400" />
                 {i18n("myProfile")}
@@ -437,7 +437,7 @@ export default function ProfileDropdown() {
                   setOpen(false);
                   router.push("/settings");
                 }}
-                className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/[0.04]"
+                className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.04]"
               >
                 <Sliders className="h-4 w-4 text-zinc-400" />
                 {i18n("settings")}
@@ -449,7 +449,7 @@ export default function ProfileDropdown() {
                   setOpen(false);
                   router.push("/changelog");
                 }}
-                className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/[0.04]"
+                className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.04]"
               >
                 <Sparkles className="h-4 w-4 text-purple-400" />
                 {i18n("changelog")}
@@ -460,7 +460,7 @@ export default function ProfileDropdown() {
                   type="button"
                   onClick={handleDelete}
                   disabled={pending}
-                  className="flex items-center gap-2.5 rounded-lg border border-transparent px-3 py-2 text-xs font-medium text-red-400 transition-all hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-300"
+                  className="flex items-center gap-2.5 rounded-lg border border-transparent px-3 py-2 text-xs font-medium text-[var(--danger)] transition-all hover:border-[var(--danger)]/20 hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
                 >
                   <Trash2 className="h-4 w-4" />
                   {i18n("deleteProfile")}
@@ -469,7 +469,7 @@ export default function ProfileDropdown() {
               <button
                 type="button"
                 onClick={handleSignOut}
-                className="mt-1 flex items-center gap-2.5 rounded-lg border border-transparent px-3 py-2 text-xs font-medium text-red-400 transition-all hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-300"
+                className="mt-1 flex items-center gap-2.5 rounded-lg border border-transparent px-3 py-2 text-xs font-medium text-[var(--danger)] transition-all hover:border-[var(--danger)]/20 hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
               >
                 <LogOut className="h-4 w-4" />
                 {i18n("signOut")}

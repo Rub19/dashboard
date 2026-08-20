@@ -139,7 +139,7 @@ export default function NotificationCenter() {
           type="button"
           onClick={markAllRead}
           disabled={unreadCount === 0}
-          className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/[0.08] bg-zinc-950/50 text-[var(--foreground)] transition-colors hover:bg-white/[0.06] disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--background)]/50 text-[var(--foreground)] transition-colors hover:bg-[var(--text-primary)]/[0.06] disabled:cursor-not-allowed disabled:opacity-40"
           aria-label={i18n("markAllRead")}
           title={i18n("markAllRead")}
         >
@@ -149,7 +149,7 @@ export default function NotificationCenter() {
           type="button"
           onClick={clear}
           disabled={activeItems.length === 0}
-          className="flex h-9 w-9 items-center justify-center rounded-xl border border-rose-500/20 bg-rose-500/10 text-rose-400 transition-colors hover:bg-rose-500/20 disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--danger)]/20 bg-[var(--danger)]/10 text-[var(--danger)] transition-colors hover:bg-[var(--danger)]/20 disabled:cursor-not-allowed disabled:opacity-40"
           aria-label={i18n("clearAll")}
           title={i18n("clearAll")}
         >
@@ -226,7 +226,7 @@ export default function NotificationCenter() {
         <button
           type="button"
           data-tooltip={i18n("notifications")}
-          className="relative flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 transition-all hover:bg-white/[0.08] hover:text-white active:scale-95 cursor-pointer select-none"
+          className="relative flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95 cursor-pointer select-none"
           aria-label={i18n("notifications")}
         >
           <Icon name="bell" className="pointer-events-none h-5 w-5" />

@@ -73,8 +73,8 @@ export default function SettingsNavigation({
               className={cn(
                 "flex shrink-0 items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-all",
                 isActive
-                  ? "border-[var(--accent)]/30 bg-[var(--accent)]/10 text-[var(--accent)]"
-                  : "border-transparent text-[var(--muted)] hover:bg-white/[0.03] hover:text-[var(--foreground)]"
+                  ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
+                  : "border-transparent text-[var(--text-muted)] hover:bg-[var(--text-primary)]/3 hover:text-[var(--text-primary)]"
               )}
             >
               <Icon name={cat.icon} className="h-3.5 w-3.5" />
@@ -102,23 +102,23 @@ export default function SettingsNavigation({
               className={cn(
                 "group flex w-full items-center gap-3 rounded-[var(--panel-radius)] px-3 py-2 text-left text-sm font-medium transition-all",
                 isActive
-                  ? "bg-[var(--accent)]/10 text-[var(--accent)]"
-                  : "text-[var(--muted)] hover:bg-white/[0.03] hover:text-[var(--foreground)]"
+                  ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
+                  : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/3 hover:text-[var(--text-primary)]"
               )}
             >
               <span
                 className={cn(
                   "flex h-7 w-7 shrink-0 items-center justify-center rounded-[var(--panel-radius)] transition-colors",
                   isActive
-                    ? "bg-[var(--accent)]/20 text-[var(--accent)]"
-                    : "bg-white/[0.03] text-[var(--muted)] group-hover:text-[var(--foreground)]"
+                    ? "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]"
+                    : "bg-[var(--text-primary)]/3 text-[var(--text-muted)] group-hover:text-[var(--text-primary)]"
                 )}
               >
                 <Icon name={cat.icon} className="h-4 w-4" />
               </span>
               <span className="truncate">{cat.label}</span>
               {isActive && (
-                <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
+                <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]" />
               )}
             </button>
           );

@@ -7,6 +7,7 @@ import { useUserData, type UserDataRecord } from "@/lib/hooks/useUserData";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { Icon } from "@/lib/icons";
 import { useToast } from "@/components/ToastProvider";
+import Button from "@/components/ui/Button";
 
 const WIDGET_ICONS: Record<string, string> = {
   notes: "notebook-pen",
@@ -218,15 +219,15 @@ export default function SpacesPage() {
               placeholder={i18n("create")}
               className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
             />
-            <button
+            <Button
               type="button"
+              variant="primary"
+              size="md"
               aria-label={i18n("add")}
               onClick={add}
               disabled={loading}
-              className="flex shrink-0 items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
-            >
-              <Icon name="plus" className="h-4 w-4" />
-            </button>
+              leftIcon={<Icon name="plus" className="h-4 w-4" />}
+            />
           </div>
           <p className="text-xs text-[var(--muted)]">
             {i18n("create")}: <span className="font-medium text-[var(--accent)]">{i18n(activeSpace)}</span>
@@ -257,7 +258,7 @@ export default function SpacesPage() {
                     type="button"
                     aria-label={i18n("delete")}
                     onClick={() => deleteSpace(space.id)}
-                    className="text-[var(--muted)] hover:text-red-400"
+                    className="text-[var(--muted)] hover:text-[var(--danger)]"
                   >
                     <Icon name="trash-2" className="h-4 w-4" />
                   </button>

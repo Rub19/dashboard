@@ -427,8 +427,8 @@ export default function InteractionsPage() {
                   onClick={() => setSelectedYear(y)}
                   className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
                     selectedYear === y
-                      ? "bg-emerald-500 text-zinc-950 shadow-sm"
-                      : "text-zinc-400 hover:text-white"
+                      ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm"
+                      : "text-[var(--muted)] hover:text-[var(--text-primary)]"
                   }`}
                 >
                   {y}
@@ -590,10 +590,10 @@ export default function InteractionsPage() {
           <button
             type="button"
             onClick={() => document.getElementById("interactions-scroll")?.scrollTo({ top: 0, behavior: "smooth" })}
-            className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-white/[0.08] bg-white/[0.03] py-2 text-xs font-medium text-zinc-300 transition-all hover:bg-white/[0.06] hover:text-white"
+            className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] py-2 text-xs font-medium text-[var(--text-primary)]/[0.8] transition-all hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
           >
             <span>Voir tout l&apos;historique</span>
-            <ChevronRight className="h-3.5 w-3.5 text-zinc-500" />
+            <ChevronRight className="h-3.5 w-3.5 text-[var(--muted)]" />
           </button>
         </TiltCard>
       </div>

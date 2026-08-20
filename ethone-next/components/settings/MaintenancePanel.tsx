@@ -61,9 +61,9 @@ export default function MaintenancePanel() {
         <button
           type="button"
           onClick={handleReload}
-          className="flex items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-white/10 bg-white/[0.03] px-4 py-2.5 text-xs font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)]/50 hover:bg-white/[0.05]"
+          className="flex items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/3 px-4 py-2.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--accent-primary)]/50 hover:bg-[var(--text-primary)]/5"
         >
-          <RotateCcw className="h-3.5 w-3.5 text-[var(--accent)]" />
+          <RotateCcw className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
           {i18n("refreshAll") || "Vider le cache et recharger"}
         </button>
 
@@ -71,12 +71,12 @@ export default function MaintenancePanel() {
           type="button"
           onClick={handleResync}
           disabled={loading}
-          className="flex items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-white/10 bg-white/[0.03] px-4 py-2.5 text-xs font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent)]/50 hover:bg-white/[0.05] disabled:opacity-50"
+          className="flex items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/3 px-4 py-2.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--accent-primary)]/50 hover:bg-[var(--text-primary)]/5 disabled:opacity-50"
         >
           {loading ? (
-            <Icon name="loader-2" className="h-3.5 w-3.5 animate-spin text-[var(--accent)]" />
+            <Icon name="loader-2" className="h-3.5 w-3.5 animate-spin text-[var(--accent-primary)]" />
           ) : (
-            <RefreshCw className="h-3.5 w-3.5 text-[var(--accent)]" />
+            <RefreshCw className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
           )}
           {i18n("resyncWorker") || "Resynchroniser avec le Worker"}
         </button>

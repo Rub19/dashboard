@@ -130,8 +130,8 @@ export default function HeroBriefingCard({
           <button
             type="submit"
             disabled={!prompt.trim() || brain.loading}
-            style={{ backgroundColor: "var(--accent-color, var(--accent))" }}
-            className="flex h-9 items-center gap-1.5 rounded-xl px-3 text-xs font-semibold text-zinc-950 transition-opacity hover:opacity-90 disabled:opacity-40"
+            style={{ backgroundColor: "var(--accent-color, var(--accent-primary))" }}
+            className="flex h-9 items-center gap-1.5 rounded-xl px-3 text-xs font-semibold text-[var(--accent-contrast)] transition-opacity hover:opacity-90 disabled:opacity-40"
           >
             <Icon name="sparkles" className="h-3.5 w-3.5" />
             Brain

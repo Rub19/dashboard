@@ -212,7 +212,7 @@ export default function DashboardOverview() {
           onClick={() => setCustomizing((v) => !v)}
           title={customizing ? i18n("done") : i18n("customize")}
           aria-label={customizing ? i18n("done") : i18n("customize")}
-          className="flex h-8 w-8 items-center justify-center rounded-lg v8-panel text-zinc-400 transition-colors hover:border-white/20 hover:text-white active:scale-95"
+          className="flex h-8 w-8 items-center justify-center rounded-lg v8-panel text-[var(--muted)] transition-colors hover:border-[var(--text-primary)]/20 hover:text-[var(--text-primary)] active:scale-95"
         >
           <LayoutGrid className="h-4 w-4" />
         </button>
@@ -227,7 +227,7 @@ export default function DashboardOverview() {
             <button
               type="button"
               onClick={() => setCustomizing(false)}
-              className="rounded-lg border border-white/[0.08] bg-white/[0.04] px-2 py-1 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/[0.08] hover:text-white"
+              className="rounded-lg border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-2 py-1 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
             >
               {i18n("done")}
             </button>
@@ -241,8 +241,8 @@ export default function DashboardOverview() {
                 onClick={() => toggleSection(s.id)}
                 className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition-colors ${
                   visibleSet.has(s.id)
-                    ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
-                    : "border-white/[0.06] bg-white/[0.02] text-zinc-500"
+                    ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
+                    : "border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] text-[var(--muted)]"
                 }`}
               >
                 <Icon name={visibleSet.has(s.id) ? "eye" : "eye-off"} className="h-4 w-4" />

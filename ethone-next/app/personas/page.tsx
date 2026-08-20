@@ -9,6 +9,7 @@ import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import Select from "@/components/ui/Select";
+import Button from "@/components/ui/Button";
 import { PREMIUM_THEMES, THEME_DEFINITIONS, resolveLegacyTheme } from "@/lib/theme-engine";
 
 const THEMES = PREMIUM_THEMES;
@@ -105,9 +106,14 @@ export default function PersonasPage() {
               aria-label={i18n("theme")}
               className="min-w-0"
             />
-            <button type="button" aria-label={i18n("add")} onClick={add} className="inline-flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white">
-              <Icon name="plus" className="h-4 w-4" />
-            </button>
+            <Button
+              type="button"
+              variant="primary"
+              size="md"
+              aria-label={i18n("add")}
+              onClick={add}
+              leftIcon={<Icon name="plus" className="h-4 w-4" />}
+            />
           </div>
         </div>
       </Card3D>
@@ -134,7 +140,7 @@ export default function PersonasPage() {
                     className="w-full"
                   />
                   <div className="flex gap-2">
-                    <button type="button" onClick={() => saveEdit(p.id)} className="flex-1 rounded-[var(--panel-radius)] bg-[var(--accent)] py-2 text-sm font-semibold text-white">{i18n("save")}</button>
+                    <Button type="button" variant="primary" size="md" onClick={() => saveEdit(p.id)} className="flex-1">{i18n("save")}</Button>
                     <button type="button" onClick={cancelEdit} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-2 text-sm text-[var(--muted)] hover:text-[var(--foreground)]">{i18n("cancel")}</button>
                   </div>
                 </div>
@@ -153,10 +159,10 @@ export default function PersonasPage() {
                     <button type="button" aria-label={i18n("edit")} onClick={() => startEdit(p)} className="rounded p-1.5 text-[var(--muted)] hover:text-[var(--accent)]">
                       <Icon name="pencil" className="h-4 w-4" />
                     </button>
-                    <button type="button" aria-label={i18n("apply")} onClick={() => apply(p)} className="rounded p-1.5 text-emerald-400 hover:bg-emerald-500/10">
+                    <button type="button" aria-label={i18n("apply")} onClick={() => apply(p)} className="rounded p-1.5 text-[var(--success)] hover:bg-[var(--success)]/10">
                       <Icon name="check" className="h-4 w-4" />
                     </button>
-                    <button type="button" aria-label={i18n("delete")} onClick={() => deletePersona(p.id)} className="rounded p-1.5 text-[var(--muted)] hover:text-red-400">
+                    <button type="button" aria-label={i18n("delete")} onClick={() => deletePersona(p.id)} className="rounded p-1.5 text-[var(--muted)] hover:text-[var(--danger)]">
                       <Icon name="trash-2" className="h-4 w-4" />
                     </button>
                   </div>

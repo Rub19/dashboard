@@ -27,8 +27,8 @@ export default function DockWeatherFlyout() {
         aria-expanded={open}
         aria-label="Météo"
         className={
-          "flex h-11 items-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.03] " +
-          "px-2 text-sm text-zinc-300 transition-all hover:bg-white/[0.08] hover:text-white " +
+          "flex h-11 items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] " +
+          "px-2 text-sm text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] " +
           "active:scale-95"
         }
       >

@@ -135,7 +135,7 @@ export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus,
               <button
                 type="button"
                 onClick={() => start("pomodoro")}
-                className="text-[10px] font-medium text-[var(--accent)] hover:underline"
+                className="text-[10px] font-medium text-[var(--accent-primary)] hover:underline"
               >
                 {i18n("start")}
               </button>

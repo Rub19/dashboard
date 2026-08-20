@@ -363,7 +363,7 @@ export default function RichTextEditor({
             ref={blockButtonRef}
             type="button"
             onClick={() => setBlockOpen((v) => !v)}
-            className="flex min-w-fit items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/[0.08]"
+            className="flex min-w-fit items-center gap-2 rounded-lg border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08]"
           >
             <span>{selectedBlock.label}</span>
             <Icon name="chevronDown" className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
@@ -388,8 +388,8 @@ export default function RichTextEditor({
                     }}
                     className={`flex w-full items-center justify-between gap-4 whitespace-nowrap rounded-lg px-3 py-1.5 text-left text-xs transition-colors ${
                       format.block === tool.value
-                        ? "bg-white/[0.10] text-white"
-                        : "text-zinc-300 hover:bg-white/[0.06] hover:text-white"
+                        ? "bg-[var(--text-primary)]/[0.10] text-[var(--text-primary)]"
+                        : "text-[var(--text-primary)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                     }`}
                   >
                     <span>{tool.label}</span>
@@ -457,8 +457,8 @@ function ToolbarButton({
       aria-pressed={active}
       data-rich-active={active}
       data-rich-command={command}
-      className={`flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 transition-colors ${
-        active ? "bg-white/[0.12] text-white" : "hover:bg-white/[0.08] hover:text-white"
+      className={`flex h-7 w-7 items-center justify-center rounded-lg text-[var(--muted)] transition-colors ${
+        active ? "bg-[var(--text-primary)]/[0.12] text-[var(--text-primary)]" : "hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
       }`}
       aria-label={label}
     >

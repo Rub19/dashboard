@@ -59,7 +59,7 @@ function Toggle({ label, checked, onChange }: ToggleProps) {
         onClick={() => onChange(!checked)}
         aria-pressed={checked}
         className={`relative h-5 w-9 rounded-xl transition-colors ${
-          checked ? "bg-[var(--accent)]" : "bg-[var(--border)]"
+          checked ? "bg-[var(--accent-primary)]" : "bg-[var(--border)]"
         }`}
       >
         <span
@@ -102,8 +102,8 @@ function ActionButton({ icon, label, active, onClick }: ActionButtonProps) {
     <button
       type="button"
       onClick={onClick}
-      className={`flex flex-col items-center gap-1 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent)] ${
-        active ? "border-[var(--accent)] text-[var(--accent)]" : ""
+      className={`flex flex-col items-center gap-1 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent-primary)] ${
+        active ? "border-[var(--accent-primary)] text-[var(--accent-primary)]" : ""
       } backdrop-blur-[var(--panel-blur)]`}
     >
       <Icon name={icon} className="h-4 w-4" />
@@ -201,8 +201,8 @@ export default function DockControlCenter({
                       key={id}
                       type="button"
                       onClick={() => update({ uiAnimations: id })}
-                      className={`rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-1.5 text-[10px] font-medium transition-colors hover:border-[var(--accent)] ${
-                        settings.uiAnimations === id ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                      className={`rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-1.5 text-[10px] font-medium transition-colors hover:border-[var(--accent-primary)] ${
+                        settings.uiAnimations === id ? "border-[var(--accent-primary)] text-[var(--accent-primary)]" : ""
                       } backdrop-blur-[var(--panel-blur)]`}
                     >
                       {i18n(`uiAnimations${id.charAt(0).toUpperCase() + id.slice(1)}`)}
@@ -254,8 +254,8 @@ export default function DockControlCenter({
                       key={pack}
                       type="button"
                       onClick={() => update({ soundPack: pack })}
-                      className={`flex flex-col items-center gap-1 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent)] ${
-                        settings.soundPack === pack ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                      className={`flex flex-col items-center gap-1 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent-primary)] ${
+                        settings.soundPack === pack ? "border-[var(--accent-primary)] text-[var(--accent-primary)]" : ""
                       } backdrop-blur-[var(--panel-blur)]`}
                     >
                       <Icon name={PACK_ICONS[pack] || "music"} className="h-4 w-4" />
@@ -282,8 +282,8 @@ export default function DockControlCenter({
                       key={id}
                       type="button"
                       onClick={() => (id === "none" || ambientSound === id ? stopAmbient() : playAmbient(id as SoundAmbient))}
-                      className={`flex flex-col items-center gap-1 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent)] ${
-                        ambientSound === id ? "border-[var(--accent)] text-[var(--accent)]" : ""
+                      className={`flex flex-col items-center gap-1 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent-primary)] ${
+                        ambientSound === id ? "border-[var(--accent-primary)] text-[var(--accent-primary)]" : ""
                       } backdrop-blur-[var(--panel-blur)]`}
                     >
                       <Icon name={AMBIENCE_ICONS[id] || "disc"} className="h-4 w-4" />

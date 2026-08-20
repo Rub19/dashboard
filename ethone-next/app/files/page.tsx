@@ -517,7 +517,7 @@ export default function FilesPage() {
                     data-tooltip={file.isFavorite ? i18n("removeFromFavorites") : i18n("addToFavorites")}
                     data-haptic
                     onClick={() => favoriteFile(file.driveFileId, !file.isFavorite)}
-                    className={`rounded p-1.5 ${file.isFavorite ? "text-red-400" : "text-[var(--muted)]"} hover:bg-[var(--panel-bg)]`}
+                    className={`rounded p-1.5 ${file.isFavorite ? "text-[var(--danger)]" : "text-[var(--muted)]"} hover:bg-[var(--panel-bg)]`}
                   >
                     <Icon name={file.isFavorite ? "heart" : "heart-off"} className="h-4 w-4" />
                   </button>
@@ -575,7 +575,7 @@ export default function FilesPage() {
                       data-tooltip={i18n("restore")}
                       data-haptic
                       onClick={() => restoreFile(file.driveFileId)}
-                      className="rounded p-1.5 text-emerald-400 hover:bg-emerald-500/10"
+                      className="rounded p-1.5 text-[var(--success)] hover:bg-[var(--success)]/10"
                     >
                       <Icon name="rotate-ccw" className="h-4 w-4" />
                     </button>
@@ -586,7 +586,7 @@ export default function FilesPage() {
                       data-tooltip={i18n("trash")}
                       data-haptic
                       onClick={() => trashFile(file.driveFileId)}
-                      className="rounded p-1.5 text-[var(--muted)] hover:text-red-400"
+                      className="rounded p-1.5 text-[var(--muted)] hover:text-[var(--danger)]"
                     >
                       <Icon name="trash-2" className="h-4 w-4" />
                     </button>
@@ -599,7 +599,7 @@ export default function FilesPage() {
                       data-tooltip={i18n("delete")}
                       data-haptic
                       onClick={() => deleteFile(file.driveFileId)}
-                      className="rounded p-1.5 text-red-400 hover:bg-red-500/10"
+                      className="rounded p-1.5 text-[var(--danger)] hover:bg-[var(--danger)]/10"
                     >
                       <Icon name="trash" className="h-4 w-4" />
                     </button>
@@ -638,7 +638,7 @@ export default function FilesPage() {
                 />
                 <div className="flex justify-end gap-2">
                   <button type="button" onClick={() => setModal(null)} className="rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--panel-bg)]">{i18n("cancel")}</button>
-                  <button type="submit" disabled={submitting} className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{i18n("create")}</button>
+                  <button type="submit" disabled={submitting} className="rounded-[var(--panel-radius)] bg-[var(--accent-primary)] px-3 py-2 text-sm font-semibold text-[var(--accent-contrast)] disabled:opacity-50">{i18n("create")}</button>
                 </div>
               </form>
             )}
@@ -654,7 +654,7 @@ export default function FilesPage() {
                 />
                 <div className="flex justify-end gap-2">
                   <button type="button" onClick={() => setModal(null)} className="rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--panel-bg)]">{i18n("cancel")}</button>
-                  <button type="submit" disabled={submitting} className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{i18n("save")}</button>
+                  <button type="submit" disabled={submitting} className="rounded-[var(--panel-radius)] bg-[var(--accent-primary)] px-3 py-2 text-sm font-semibold text-[var(--accent-contrast)] disabled:opacity-50">{i18n("save")}</button>
                 </div>
               </form>
             )}
@@ -721,7 +721,7 @@ export default function FilesPage() {
                 />
                 <div className="flex justify-end gap-2">
                   <button type="button" onClick={() => setModal(null)} className="rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--panel-bg)]">{i18n("cancel")}</button>
-                  <button type="submit" disabled={submitting} className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{i18n("shareThis")}</button>
+                  <button type="submit" disabled={submitting} className="rounded-[var(--panel-radius)] bg-[var(--accent-primary)] px-3 py-2 text-sm font-semibold text-[var(--accent-contrast)] disabled:opacity-50">{i18n("shareThis")}</button>
                 </div>
               </form>
             )}
@@ -784,7 +784,7 @@ export default function FilesPage() {
                 />
                 <div className="flex justify-end gap-2">
                   <button type="button" onClick={() => setModal(null)} className="rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--panel-bg)]">{i18n("cancel")}</button>
-                  <button type="submit" disabled={submitting} className="rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{i18n("create")}</button>
+                  <button type="submit" disabled={submitting} className="rounded-[var(--panel-radius)] bg-[var(--accent-primary)] px-3 py-2 text-sm font-semibold text-[var(--accent-contrast)] disabled:opacity-50">{i18n("create")}</button>
                 </div>
               </form>
             )}

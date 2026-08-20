@@ -151,7 +151,7 @@ export default function LiveWidget() {
                   type="button"
                   aria-label={expanded ? i18n("shrink") || "Réduire" : i18n("expand") || "Agrandir"}
                   onClick={() => toggleExpand()}
-                  className="rounded p-1.5 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+                  className="rounded p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                 >
                   <Maximize2 className="h-3.5 w-3.5" />
                 </button>
@@ -159,7 +159,7 @@ export default function LiveWidget() {
                   type="button"
                   aria-label={i18n("minimize") || "Minimiser"}
                   onClick={() => toggleMinimize()}
-                  className="rounded p-1.5 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+                  className="rounded p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                 >
                   <ChevronDown className="h-3.5 w-3.5" />
                 </button>
@@ -167,7 +167,7 @@ export default function LiveWidget() {
                   type="button"
                   aria-label={i18n("close") || "Fermer"}
                   onClick={() => closeLive()}
-                  className="rounded p-1.5 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-red-400"
+                  className="rounded p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--danger)]"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -251,7 +251,7 @@ export default function LiveWidget() {
                         type="button"
                         aria-label={i18n("previous")}
                         onClick={() => controlSpotify("previous")}
-                        className="rounded p-1.5 text-zinc-300 transition-colors hover:bg-white/[0.06] hover:text-white"
+                        className="rounded p-1.5 text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                       >
                         <Icon name="skipBack" className="h-4 w-4" />
                       </button>
@@ -259,7 +259,7 @@ export default function LiveWidget() {
                         type="button"
                         aria-label={nowPlaying.isPlaying ? i18n("pause") : i18n("play")}
                         onClick={() => controlSpotify(nowPlaying.isPlaying ? "pause" : "play")}
-                        className="rounded p-1.5 text-zinc-300 transition-colors hover:bg-white/[0.06] hover:text-white"
+                        className="rounded p-1.5 text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                       >
                         <Icon name={nowPlaying.isPlaying ? "pause" : "play"} className="h-4 w-4" />
                       </button>
@@ -267,7 +267,7 @@ export default function LiveWidget() {
                         type="button"
                         aria-label={i18n("next")}
                         onClick={() => controlSpotify("next")}
-                        className="rounded p-1.5 text-zinc-300 transition-colors hover:bg-white/[0.06] hover:text-white"
+                        className="rounded p-1.5 text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                       >
                         <Icon name="skipForward" className="h-4 w-4" />
                       </button>
@@ -370,7 +370,7 @@ export default function LiveWidget() {
                           }
                         }}
                         title={i18n("paste", "Coller")}
-                        className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/[0.06] bg-white/[0.03] text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+                        className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                       >
                         <ClipboardPaste className="h-3.5 w-3.5" />
                       </button>
@@ -379,7 +379,7 @@ export default function LiveWidget() {
                           type="button"
                           onClick={() => setLiveSource("")}
                           title={i18n("clear", "Effacer")}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/[0.06] bg-white/[0.03] text-zinc-400 transition-colors hover:bg-rose-500/10 hover:text-rose-400"
+                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] text-[var(--muted)] transition-colors hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
                         >
                           <XIcon className="h-3.5 w-3.5" />
                         </button>
@@ -404,7 +404,7 @@ export default function LiveWidget() {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
           onClick={() => toggleMinimize()}
-          className="flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/15 px-3 py-1.5 text-xs font-medium text-emerald-300 shadow-lg transition-all hover:bg-emerald-500/25"
+          className="flex items-center gap-1.5 rounded-xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 px-3 py-1.5 text-xs font-medium text-[var(--accent-primary)] shadow-lg transition-all hover:bg-[var(--accent-primary)]/25"
         >
           <Radio className="h-3.5 w-3.5 animate-pulse text-emerald-400" />
           <span>Live</span>

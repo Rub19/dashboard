@@ -2,12 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { Users, UserCheck, Clock, Send } from "lucide-react";
-import { motion } from "framer-motion";
+
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useTeam } from "@/lib/hooks/useTeam";
 import { useToast } from "@/components/ToastProvider";
 import Select from "@/components/ui/Select";
 import TeamMemberTable from "@/components/team/TeamMemberTable";
+import Button from "@/components/ui/Button";
 import type { TeamRole } from "@/lib/team-manager";
 
 const ROLES: TeamRole[] = ["viewer", "assistant", "admin"];
@@ -159,21 +160,17 @@ export default function TeamPage() {
           className="h-9 w-full md:w-36 text-xs"
         />
 
-        <motion.button
+        <Button
           type="button"
+          variant="primary"
+          size="sm"
           onClick={submit}
           disabled={inviting || !email.trim()}
-          whileTap={{ scale: 0.97 }}
-          style={{ background: "var(--accent-color, #10b981)" }}
-          className="px-4 py-2 rounded-xl text-xs font-semibold text-zinc-950 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          isLoading={inviting}
+          leftIcon={<Send className="h-3.5 w-3.5" />}
         >
-          {inviting ? (
-            <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-950/30 border-t-zinc-950" />
-          ) : (
-            <Send className="h-3.5 w-3.5" />
-          )}
           {i18n("sendInvitation") || "Envoyer l'invitation"}
-        </motion.button>
+        </Button>
       </div>
 
       {inviteError && (

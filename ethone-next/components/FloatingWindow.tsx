@@ -100,7 +100,7 @@ export function FloatingWindow({ win }: { win: WindowState }) {
           </button>
           <button
             onClick={() => closeWindow(win.id)}
-            className="rounded p-1 text-[var(--muted)] hover:bg-red-500/10 hover:text-red-400"
+            className="rounded p-1 text-[var(--muted)] hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
             aria-label={i18n("close")}
           >
             <Icon name="close" className="h-3.5 w-3.5" />

@@ -2,8 +2,9 @@
 
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Loader2, Shuffle, Crown, ArrowRight } from "lucide-react";
+import { Mail, Shuffle, Crown, ArrowRight } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
+import Button from "@/components/ui/Button";
 import { useToast } from "@/components/ToastProvider";
 import type { MailAlias } from "@/lib/hooks/useMail";
 
@@ -150,26 +151,29 @@ export default function MailOnboarding({ aliases, createAlias, updateAlias, onCo
               {fullAlias && <p className="mt-1 text-[10px] text-zinc-500">{fullAlias}</p>}
             </div>
 
-            <button
+            <Button
               type="button"
+              variant="secondary"
+              size="md"
               onClick={() => setLocal(randomLocal())}
               disabled={loading}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/[0.08] disabled:opacity-50"
+              leftIcon={<Shuffle className="h-3.5 w-3.5" />}
+              className="w-full"
             >
-              <Shuffle className="h-3.5 w-3.5" />
               {i18n("random") || "Générer un alias"}
-            </button>
+            </Button>
 
-            <motion.button
+            <Button
               type="button"
+              variant="primary"
+              size="md"
               onClick={handleCreate}
               disabled={loading || !local.trim()}
-              whileTap={{ scale: 0.98 }}
-              className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-purple-600 px-4 text-sm font-semibold text-white shadow-[0_0_20px_rgba(147,51,234,0.3)] transition-all hover:bg-purple-500 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+              isLoading={loading}
+              className="h-11 w-full"
             >
-              {loading && <Loader2 className="h-4 w-4 animate-spin" />}
               {i18n("createAlias") || "Créer l'adresse"}
-            </motion.button>
+            </Button>
 
             {error && <p className="text-[11px] text-rose-400">{error}</p>}
           </div>
@@ -203,15 +207,18 @@ export default function MailOnboarding({ aliases, createAlias, updateAlias, onCo
               </p>
             </div>
 
-            <button
+            <Button
               type="button"
+              variant="primary"
+              size="md"
               onClick={handleConfirm}
               disabled={loading}
-              className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-purple-600 px-4 text-sm font-semibold text-white shadow-[0_0_20px_rgba(147,51,234,0.3)] transition-all hover:bg-purple-500 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+              isLoading={loading}
+              leftIcon={<ArrowRight className="h-4 w-4" />}
+              className="h-11 w-full"
             >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
               {i18n("continue") || "Continuer"}
-            </button>
+            </Button>
           </div>
         )}
       </motion.div>

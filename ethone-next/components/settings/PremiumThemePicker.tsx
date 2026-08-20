@@ -20,7 +20,7 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
   const resolvedValue = useMemo(() => resolvePremiumTheme(value), [value]);
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+    <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5">
       {PREMIUM_THEMES.map((id) => {
         const def = THEME_DEFINITIONS[id];
         const selected = resolvedValue === id;
@@ -37,8 +37,8 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
             whileTap={{ scale: 0.98 }}
             className={`group relative overflow-hidden rounded-2xl border text-left transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--border-active)] focus:ring-offset-2 focus:ring-offset-[var(--bg-main)] ${
               selected
-                ? "ring-1 shadow-[0_0_18px_var(--glow-color)]"
-                : "hover:shadow-[0_0_14px_rgba(255,255,255,0.06)]"
+                ? "ring-1 ring-[var(--accent-primary)] shadow-[0_0_18px_var(--glow-color)]"
+                : "hover:shadow-[0_0_14px_var(--glow-color)]"
             }`}
             style={{
               backgroundColor: def.bgMain,
@@ -48,16 +48,16 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
             aria-pressed={selected}
           >
             {selected && (
-              <span className="absolute right-2 top-2 z-10 flex h-5 w-5 items-center justify-center rounded-full"
+              <span className="absolute right-1.5 top-1.5 z-10 flex h-4 w-4 items-center justify-center rounded-full"
                 style={{ backgroundColor: def.accentPrimary, color: def.bgMain }}>
-                <Check className="h-3 w-3" strokeWidth={3} />
+                <Check className="h-2.5 w-2.5" strokeWidth={3} />
               </span>
             )}
 
-            <div className="p-3">
+            <div className="p-2">
               {/* Miniature dashboard */}
               <div
-                className="mb-3 aspect-[16/10] w-full overflow-hidden rounded-xl border"
+                className="mb-2 aspect-[16/9] w-full overflow-hidden rounded-lg border"
                 style={{ borderColor: def.borderSubtle, backgroundColor: def.bgMain }}
               >
                 <div className="flex h-full w-full">
@@ -95,17 +95,17 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
               </div>
 
               {/* Color pastilles */}
-              <div className="mb-2 flex items-center gap-1.5">
+              <div className="mb-1.5 flex items-center gap-1">
                 <span
-                  className="h-3 w-3 rounded-full ring-1 ring-white/20"
+                  className="h-2 w-2 rounded-full ring-1 ring-white/20"
                   style={{ backgroundColor: def.accentPrimary }}
                 />
                 <span
-                  className="h-3 w-3 rounded-full ring-1 ring-white/20"
+                  className="h-2 w-2 rounded-full ring-1 ring-white/20"
                   style={{ backgroundColor: def.accentSecondary }}
                 />
                 <span
-                  className="h-3 w-3 rounded-full ring-1 ring-white/20"
+                  className="h-2 w-2 rounded-full ring-1 ring-white/20"
                   style={{ backgroundColor: def.textMuted }}
                 />
               </div>

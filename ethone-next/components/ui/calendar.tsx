@@ -148,7 +148,7 @@ export function Calendar({
         <button
           type="button"
           onClick={() => nav(-1)}
-          className="rounded-xl border border-white/[0.08] bg-white/[0.04] p-2 text-zinc-400 transition-colors hover:text-white"
+          className="rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/4 p-2 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
           aria-label="Mois précédent"
         >
           <ChevronLeft className="h-4 w-4" />
@@ -178,7 +178,7 @@ export function Calendar({
         <button
           type="button"
           onClick={() => nav(1)}
-          className="rounded-xl border border-white/[0.08] bg-white/[0.04] p-2 text-zinc-400 transition-colors hover:text-white"
+          className="rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/4 p-2 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
           aria-label="Mois suivant"
         >
           <ChevronRight className="h-4 w-4" />
@@ -209,16 +209,16 @@ export function Calendar({
                 "relative flex min-h-0 flex-col items-center justify-center rounded-xl text-sm transition-colors",
                 !inMonth && "pointer-events-none text-transparent",
                 selected
-                  ? "bg-emerald-500 text-zinc-950 hover:bg-emerald-500"
+                  ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] hover:bg-[var(--accent-primary)]"
                   : isTodayCell
-                    ? "bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/50 hover:bg-emerald-500/20"
-                    : "bg-white/[0.02] text-white hover:bg-white/[0.06]",
+                    ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] ring-1 ring-[var(--accent-primary)]/50 hover:bg-[var(--accent-primary)]/20"
+                    : "bg-[var(--text-primary)]/2 text-[var(--text-primary)] hover:bg-[var(--text-primary)]/6",
               )}
             >
               <span
                 className={cn(
                   "text-sm font-medium",
-                  selected ? "text-zinc-950" : isTodayCell ? "text-emerald-400" : "",
+                  selected ? "text-[var(--accent-contrast)]" : isTodayCell ? "text-[var(--accent-primary)]" : "",
                 )}
               >
                 {day.day}

@@ -249,8 +249,8 @@ export default function Select({
           disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
         } ${
           open
-            ? "border-purple-500/50 bg-[var(--panel-bg)]/[0.04] text-zinc-200 ring-1 ring-purple-500/30"
-            : "border-[var(--panel-border)] bg-[var(--panel-bg)]/70 text-zinc-200 hover:border-white/20"
+            ? "border-[var(--accent-primary)]/50 bg-[var(--panel-bg)]/[0.04] text-[var(--text-primary)] ring-1 ring-[var(--accent-primary)]/30"
+            : "border-[var(--panel-border)] bg-[var(--panel-bg)]/70 text-[var(--text-primary)] hover:border-[var(--text-primary)]/20"
         } backdrop-blur-[var(--panel-blur)]`}
       >
         <span className="truncate">{selected ? selected.label : placeholder}</span>
@@ -259,7 +259,7 @@ export default function Select({
           transition={{ duration: 0.2 }}
           className="shrink-0"
         >
-          <ChevronDown className="h-4 w-4 text-zinc-400" aria-hidden="true" />
+          <ChevronDown className="h-4 w-4 text-[var(--text-muted)]" aria-hidden="true" />
         </motion.span>
       </button>
 

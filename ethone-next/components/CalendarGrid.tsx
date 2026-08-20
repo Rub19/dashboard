@@ -94,14 +94,14 @@ export default function CalendarGrid({
             type="button"
             onClick={prev}
             aria-label="Mois précédent"
-            className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-zinc-400 transition-colors hover:bg-white/[0.08] hover:text-white"
+            className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
           >
             <ChevronLeft className="h-3.5 w-3.5" />
           </button>
           <button
             type="button"
             onClick={selectToday}
-            className="rounded-lg border border-white/10 bg-white/[0.06] px-2.5 py-1 text-[11px] font-medium text-zinc-200 transition-colors hover:bg-white/10"
+            className="rounded-lg border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.06] px-2.5 py-1 text-[11px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/10"
           >
             Aujourd&apos;hui
           </button>
@@ -109,7 +109,7 @@ export default function CalendarGrid({
             type="button"
             onClick={next}
             aria-label="Mois suivant"
-            className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-zinc-400 transition-colors hover:bg-white/[0.08] hover:text-white"
+            className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
           >
             <ChevronRight className="h-3.5 w-3.5" />
           </button>
@@ -137,9 +137,9 @@ export default function CalendarGrid({
               key={i}
               type="button"
               onClick={() => onSelect(date)}
-              className={`group relative flex min-h-[50px] flex-col justify-between border border-white/[0.04] p-1.5 text-left transition-all hover:bg-white/[0.03] sm:min-h-[58px] ${
+              className={`group relative flex min-h-[50px] flex-col justify-between border border-[var(--text-primary)]/[0.04] p-1.5 text-left transition-all hover:bg-[var(--text-primary)]/[0.03] sm:min-h-[58px] ${
                 isSelected
-                  ? "z-10 rounded-xl bg-zinc-900/50"
+                  ? "z-10 rounded-xl bg-[var(--surface)]/50"
                   : "rounded-none"
               }`}
               style={

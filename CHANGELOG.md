@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.41 — 2026-08-20
+
+**Audit global et harmonisation dynamique des boutons / thèmes**
+
+- Raccord de l'ensemble des boutons et contrôles interactifs au Theme Engine.
+- Nouveau composant générique `components/ui/Button.tsx` (`primary`, `secondary`, `outline`, `ghost`, `danger`).
+- Token `--accent-contrast` ajouté pour la couleur de texte des actions primaires.
+- Remplacement automatique des couleurs Tailwind codées en dur par des variables CSS sémantiques.
+- Couleurs d'alerte (danger, warning, info) et widgets 3D isolés préservés.
+- Redimensionnement du `PremiumThemePicker` pour des panneaux plus compacts.
+- Vérification Snyk : aucune injection CSS ni régression d'accessibilité détectée.
+- Version `v1.7.41`, cache PWA `v409`.
+
 ## v1.7.40 — 2026-08-20
 
 **Refonte de la modal des logs/changelog**

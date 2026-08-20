@@ -116,8 +116,8 @@ export function TabsTrigger({
         aria-selected={active}
         onClick={() => setValue(value)}
         className={cn(
-          "relative isolate -mb-px inline-flex min-h-[44px] items-center px-3 pb-2.5 pt-1 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-          active ? "text-foreground" : "text-muted hover:text-foreground",
+          "relative isolate -mb-px inline-flex min-h-[44px] items-center px-3 pb-2.5 pt-1 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-main)]",
+          active ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
           className,
         )}
       >
@@ -127,7 +127,7 @@ export function TabsTrigger({
             layoutId={layoutId}
             layout="position"
             className={cn(
-              "absolute -bottom-px left-0 right-0 h-0.5 rounded-full bg-accent",
+              "absolute -bottom-px left-0 right-0 h-0.5 rounded-full bg-[var(--accent-primary)]",
               indicatorClassName,
             )}
           />
@@ -146,7 +146,7 @@ export function TabsTrigger({
           layout="position"
           style={{ borderRadius: variant === "pill" ? 9999 : 8 }}
           className={cn(
-            "absolute inset-0 bg-accent shadow-sm",
+            "absolute inset-0 bg-[var(--accent-primary)] shadow-sm",
             radius,
             indicatorClassName,
           )}
@@ -159,10 +159,10 @@ export function TabsTrigger({
         onClick={() => setValue(value)}
         className={cn(
           "relative z-10 inline-flex items-center justify-center whitespace-nowrap bg-transparent px-3.5 py-1.5 text-sm font-medium outline-none",
-          "transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+          "transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-main)]",
           active
-            ? "text-zinc-950"
-            : "text-muted hover:text-foreground",
+            ? "text-[var(--accent-contrast)]"
+            : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
           radius,
           className,
         )}

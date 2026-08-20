@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.35 — 2026-08-20
+
+**Dynamic Island : l'heure toujours visible en compact**
+
+- Le compact de la Dynamic Island affiche désormais toujours l'heure (`IdleCompact`).
+- Les activités (Spotify, Pomodoro, Brain) restent accessibles dans la vue étendue au survol/click.
+- Suppression des anciens composants `SpotifyCompact`, `AudioWave`, `CompactMulti`, `PomodoroCompact`, `BrainCompact` et `PomodoroBubble` devenus inutiles.
+- Version `v1.7.35`, cache PWA `v403`.
+
 ## v1.7.34 — 2026-08-20
 
 **Résilience et complétude des pochettes Spotify**

@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   User,
   ShieldCheck,
@@ -15,7 +14,6 @@ import {
   LogOut,
   Check,
   Copy,
-  X,
   ChevronDown,
 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
@@ -23,7 +21,7 @@ import { useActiveProfile, useSettings } from "@/components/SettingsProvider";
 import { useProfile } from "@/lib/hooks/useProfile";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
-import ChangelogList from "@/components/ChangelogList";
+import ChangelogModal from "@/components/ChangelogModal";
 import {
   CHANGELOG,
   CHANGELOG_BY_LANG,
@@ -54,7 +52,6 @@ export default function UserProfileDropdown() {
   const { activeProfile } = useActiveProfile();
   const { profile: publicProfile } = useProfile();
   const { settings, update } = useSettings();
-  const reduce = useReducedMotion();
 
   const displayName =
     publicProfile?.display_name ||
@@ -105,7 +102,7 @@ export default function UserProfileDropdown() {
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = "v1.7.39";
+  const VERSION_LABEL = "v1.7.40";
 
   const menuItems = [
     {
@@ -373,73 +370,12 @@ export default function UserProfileDropdown() {
         </PopoverContent>
       </Popover>
 
-      {/* Changelog modal */}
-      <AnimatePresence>
-        {isChangelogOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: reduce ? 0 : 0.2 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-lg"
-            onClick={() => setIsChangelogOpen(false)}
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.92, y: 24 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 16 }}
-              transition={
-                reduce
-                  ? { duration: 0.15 }
-                  : { type: "spring", duration: 0.55, bounce: 0.12 }
-              }
-              onClick={(e) => e.stopPropagation()}
-              className="flex w-full max-w-2xl select-none flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/95 shadow-[0_24px_70px_rgba(0,0,0,0.75),0_0_32px_rgba(168,85,247,0.12)] backdrop-blur-2xl"
-            >
-              <div className="flex items-center justify-between border-b border-white/[0.06] px-6 py-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-purple-500/30 bg-purple-500/15 text-purple-400 shadow-[0_0_14px_rgba(168,85,247,0.25)]">
-                    <Sparkles className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="flex items-center gap-2 text-sm font-bold text-white">
-                      <span>{i18n("changelogTitle") || "Changelog ETHONE OS"}</span>
-                      <span className="rounded-lg border border-purple-500/25 bg-purple-500/15 px-2 py-0.5 font-mono text-[10px] text-purple-300">
-                        {VERSION_LABEL}
-                      </span>
-                    </h3>
-                    <p className="text-[11px] text-zinc-400">
-                      {i18n("changelogDescription") || "Historique des mises à jour"}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setIsChangelogOpen(false)}
-                  className="rounded-lg p-1.5 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
-                  aria-label={i18n("close")}
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-
-              <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-6 py-4">
-                <ChangelogList entries={changelog.slice(0, 5)} compact />
-              </div>
-
-              <div className="border-t border-white/[0.06] px-6 py-4">
-                <button
-                  type="button"
-                  onClick={() => setIsChangelogOpen(false)}
-                  className="w-full rounded-xl bg-purple-500 py-2.5 text-xs font-bold text-zinc-950 shadow-lg shadow-purple-500/20 transition-all hover:bg-purple-400 hover:shadow-purple-500/30 active:scale-[0.98]"
-                >
-                  {i18n("gotIt") || "Compris !"}
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ChangelogModal
+        isOpen={isChangelogOpen}
+        onClose={() => setIsChangelogOpen(false)}
+        entries={changelog}
+        versionLabel={VERSION_LABEL}
+      />
     </>
   );
 }

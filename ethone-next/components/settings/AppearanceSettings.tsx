@@ -8,31 +8,12 @@ import { Icon as IconifyIcon } from "@iconify/react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useSettingsForm } from "./SettingsFormContext";
 import { ACCENTS } from "@/components/SettingsProvider";
-import { type Settings, type ThemeMode, DEFAULTS } from "@/lib/settings";
+import { type Settings, DEFAULTS } from "@/lib/settings";
 import BentoCard from "@/components/ui/BentoCard";
-import ThemePicker from "./ThemePicker";
+import PremiumThemePicker from "./PremiumThemePicker";
 import Switch from "@/components/Switch";
 import Select from "@/components/ui/Select";
 import Slider from "@/components/ui/Slider";
-
-const THEME_ORDER: ThemeMode[] = [
-  "default",
-  "cyberpunk",
-  "obsidian",
-  "minimal",
-  "aurora",
-  "boreal",
-  "eclipse",
-  "emerald",
-  "night",
-  "graphite",
-  "day",
-  "auto",
-  "midnight",
-  "focus",
-  "glass",
-  "oled",
-];
 
 const ACCENT_COLORS = [
   { id: "violet", label: "Violet" },
@@ -191,7 +172,7 @@ export default function AppearanceSettings() {
         <div className="space-y-5">
           <div>
             <h3 className="mb-2 text-xs font-semibold text-zinc-300">{i18n("theme")}</h3>
-            <ThemePicker themes={THEME_ORDER} value={currentTheme} onChange={(theme) => handleChange("theme", theme)} showMore />
+            <PremiumThemePicker value={currentTheme} onChange={(theme) => handleChange("theme", theme)} />
           </div>
 
           <SettingsRow label="Pack d'icônes" description="Set d'icônes utilisé dans l'interface.">

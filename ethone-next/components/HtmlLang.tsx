@@ -5,6 +5,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { resolveDensity, applyDensityVariables, getViewportSnapshot } from "@/lib/density-engine";
 import { useAmbientEngine } from "@/lib/hooks/useAmbientEngine";
+import { resolvePremiumTheme } from "@/lib/theme-engine";
 
 export default function HtmlLang() {
   useAmbientEngine();
@@ -53,7 +54,7 @@ export default function HtmlLang() {
     html.dataset.wallpaper = settings.wallpaper;
     html.dataset.font = settings.fontFamily;
     html.dataset.accent = settings.accentColor;
-    html.dataset.theme = settings.theme;
+    html.dataset.theme = resolvePremiumTheme(settings.theme);
     html.dataset.aura = settings.aura;
     html.dataset.sessionMode = settings.sessionMode;
     html.style.setProperty("--v8-breathe-duration", settings.ambientEffectsEnabled ? "26s" : "0s");

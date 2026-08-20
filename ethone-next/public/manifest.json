@@ -7,8 +7,8 @@
   "scope": "/",
   "display": "standalone",
   "display_override": ["standalone"],
-  "background_color": "#080a0d",
-  "theme_color": "#080a0d",
+  "background_color": "#08080a",
+  "theme_color": "#08080a",
   "orientation": "any",
   "icons": [
     { "src": "/icons/ethone-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },

@@ -7,30 +7,28 @@ import { loadSettings, saveSettings, saveSettingsAsync, loadSettingsAsync, migra
 import { applyPreset, type Preset } from "@/lib/preset-engine";
 import { supabase } from "@/lib/supabase";
 import { useSyncStore } from "@/lib/stores/sync";
+import {
+  PREMIUM_THEMES,
+  THEME_DEFINITIONS,
+  applyTheme,
+  resolveLegacyTheme,
+  resolveTheme,
+} from "@/lib/theme-engine";
 
-export const THEMES: Record<ThemeMode, { background: string; foreground: string; accent: string }> = {
-  default: { background: "#0a0a0a", foreground: "#ededed", accent: "#8b5cf6" },
-  boreal: { background: "#081016", foreground: "#e0f2fe", accent: "#06b6d4" },
-  cyberpunk: { background: "#0f0514", foreground: "#ffe4e6", accent: "#f43f5e" },
-  eclipse: { background: "#050505", foreground: "#f0e68c", accent: "#d4af37" },
-  emerald: { background: "#05140f", foreground: "#d1fae5", accent: "#10b981" },
-  night: { background: "#0c0c0e", foreground: "#f1f1f3", accent: "#7c7c9c" },
-  graphite: { background: "#17171a", foreground: "#e4e4e7", accent: "#a1a1aa" },
-  day: { background: "#f4f4f5", foreground: "#18181b", accent: "#8b5cf6" },
-  auto: { background: "#0a0a0a", foreground: "#ededed", accent: "#8b5cf6" },
-  midnight: { background: "#05050a", foreground: "#e2e2e6", accent: "#6d6d8a" },
-  obsidian: { background: "#020203", foreground: "#e8e8ec", accent: "#4a4a5e" },
-  aurora: { background: "#0b1220", foreground: "#e0f2fe", accent: "#38bdf8" },
-  minimal: { background: "#fafafa", foreground: "#18181b", accent: "#27272a" },
-  focus: { background: "#111113", foreground: "#d4d4d8", accent: "#71717a" },
-  glass: { background: "#000000", foreground: "#f0f0f3", accent: "#c4c4cc" },
-  oled: { background: "#000000", foreground: "#ffffff", accent: "#5b5b5b" },
-};
-
-function resolveAutoDark() {
-  if (typeof window === "undefined") return false;
-  return window.matchMedia?.("(prefers-color-scheme: light)")?.matches === true;
-}
+/** Backwards-compatible theme color reference used by a few consumers. */
+export const THEMES: Record<ThemeMode, { background: string; foreground: string; accent: string }> = Object.fromEntries(
+  [
+    ...PREMIUM_THEMES.map((id) => [
+      id,
+      {
+        background: THEME_DEFINITIONS[id].bgMain,
+        foreground: THEME_DEFINITIONS[id].textPrimary,
+        accent: THEME_DEFINITIONS[id].accentPrimary,
+      },
+    ]),
+    ["auto" as ThemeMode, { background: "#08080a", foreground: "#ededed", accent: "#10b981" }],
+  ]
+) as Record<ThemeMode, { background: string; foreground: string; accent: string }>;
 
 const DENSITY_PRESETS = {
   spacious: { fontScale: 1.05, lineHeight: 1.65, cardPadding: 28, sectionGap: 30, controlHeight: 44, panelWidth: 400, iconSize: 21, rowHeight: 58, tableRowHeight: 52, widgetScale: 1.06, toolbarHeight: 58 },
@@ -58,12 +56,6 @@ const UNIT: Record<string, string> = {
   widgetScale: "",
   toolbarHeight: "px",
 };
-
-function resolveTheme(theme: ThemeMode): { dark: boolean; theme: ThemeMode } {
-  if (theme === "day" || theme === "minimal") return { dark: false, theme };
-  if (theme === "auto") return { dark: !resolveAutoDark(), theme: resolveAutoDark() ? "day" : "midnight" };
-  return { dark: true, theme };
-}
 
 export const ACCENTS: Record<string, string> = {
   violet: "#8b5cf6",
@@ -176,17 +168,25 @@ export default function SettingsProvider({
 
   useEffect(() => {
     const root = document.documentElement;
-    const resolved = resolveTheme(settings.theme);
-    const theme = THEMES[resolved.theme] || THEMES.default;
-    const isDark = settings.theme === "auto" ? resolved.dark : settings.theme === "day" || settings.theme === "minimal" ? false : settings.darkMode;
-    root.style.setProperty("--background", isDark ? theme.background : (resolved.dark ? "#f4f4f5" : theme.background));
-    root.style.setProperty("--foreground", isDark ? theme.foreground : (resolved.dark ? "#18181b" : theme.foreground));
-    root.style.setProperty("--surface", isDark ? "#121214" : "#ffffff");
-    root.style.setProperty("--surface-raised", isDark ? "#1a1a1e" : "#f4f4f5");
-    root.style.setProperty("--border", isDark ? "#27272a" : "#e4e4e7");
-    root.style.setProperty("--muted", isDark ? "#a1a1aa" : "#71717a");
 
-    const accent = settings.accentColor === "custom" ? settings.customAccent : (ACCENTS[settings.accentColor] || theme.accent);
+    // Apply the premium theme engine directly to the root for zero-lag switching.
+    applyTheme(settings.theme);
+
+    const resolved = resolveTheme(settings.theme);
+    const def = THEME_DEFINITIONS[resolved.theme];
+
+    // All premium themes are dark; the resolved theme is the source of truth.
+    const isDark = true;
+
+    // Derive the legacy app tokens from the resolved premium theme.
+    root.style.setProperty("--background", def.bgMain);
+    root.style.setProperty("--foreground", def.textPrimary);
+    root.style.setProperty("--surface", def.bgSurface);
+    root.style.setProperty("--surface-raised", def.bgSurface);
+    root.style.setProperty("--border", def.borderSubtle);
+    root.style.setProperty("--muted", def.textMuted);
+
+    const accent = settings.accentColor === "custom" ? settings.customAccent : (ACCENTS[settings.accentColor] || def.accentPrimary);
     root.style.setProperty("--accent", accent);
     root.style.setProperty("--accent-soft", accent + "33");
 
@@ -223,9 +223,11 @@ export default function SettingsProvider({
       pill: "9999px",
     }[settings.iconRadius] || "0.5rem");
     root.style.setProperty("--glass", settings.glassEnabled ? "0.85" : "1");
+    root.style.colorScheme = isDark ? "dark" : "light";
     root.dataset.glassEnabled = settings.glassEnabled ? "true" : "false";
     root.dataset.cardTilt = settings.cardTilt ? "on" : "off";
-    root.dataset.theme = settings.theme;
+    root.dataset.theme = resolved.theme;
+    root.dataset.darkMode = settings.darkMode ? "true" : "false";
     root.dataset.density = settings.densityMode;
     root.dataset.densityMode = settings.densityMode;
     root.dataset.dataSpace = active || "personal";
@@ -272,7 +274,11 @@ export default function SettingsProvider({
 
   const update = useCallback(
     (partial: Partial<Settings>) => {
-      const next = { ...settings, ...partial };
+      const patch: Partial<Settings> = { ...partial };
+      if (typeof partial.theme === "string" && partial.theme !== "auto") {
+        patch.theme = resolveLegacyTheme(partial.theme) as ThemeMode;
+      }
+      const next = { ...settings, ...patch };
       setSettings(next);
       saveSettings(next, active || undefined);
       useSyncStore.getState().setStatus("user_settings", "syncing");

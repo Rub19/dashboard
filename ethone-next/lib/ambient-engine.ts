@@ -1,3 +1,5 @@
+import { resolvePremiumTheme, type PremiumTheme } from "./theme-engine";
+
 export const AMBIENT_REFRESH_MS = 5 * 60 * 1000;
 export const AMBIENT_TRANSITION_MS = 3200;
 
@@ -148,9 +150,15 @@ function focusIsActive(state: AmbientState, context: string) {
 }
 
 function resolveThemeTuning(theme: string) {
-  if (theme === "aurora" || theme === "minimal" || theme === "glass") return THEME_TUNING.graphite;
-  if (theme === "day" || theme === "light") return THEME_TUNING.day;
-  return THEME_TUNING.night;
+  const resolved = resolvePremiumTheme(theme);
+  const map: Record<PremiumTheme, keyof typeof THEME_TUNING> = {
+    obsidian: "night",
+    "cyber-neon": "night",
+    "solar-eclipse": "graphite",
+    "northern-aurora": "graphite",
+    "monochrome-studio": "day",
+  };
+  return THEME_TUNING[map[resolved] ?? "night"];
 }
 
 function rgba(color: [number, number, number], alpha: number) {

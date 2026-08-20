@@ -34,22 +34,11 @@ import SoundPackControl from "./SoundPackControl";
 import { CATEGORY_ORDER, sectionCategory } from "./SettingsNavigation";
 
 const THEMES = [
-  { id: "default", label: "Aura ETHONE" },
-  { id: "boreal", label: "Boréale" },
-  { id: "cyberpunk", label: "Cyberpunk" },
-  { id: "eclipse", label: "Éclipse" },
-  { id: "emerald", label: "Émeraude" },
-  { id: "night", label: "Nuit" },
-  { id: "graphite", label: "Graphite" },
-  { id: "day", label: "Jour" },
-  { id: "auto", label: "Auto" },
-  { id: "midnight", label: "Minuit" },
   { id: "obsidian", label: "Obsidienne" },
-  { id: "aurora", label: "Aurore" },
-  { id: "minimal", label: "Minimal" },
-  { id: "focus", label: "Focus" },
-  { id: "glass", label: "Verre" },
-  { id: "oled", label: "OLED" },
+  { id: "cyber-neon", label: "Cyber Néon" },
+  { id: "solar-eclipse", label: "Éclipse Solaire" },
+  { id: "northern-aurora", label: "Aurore Boréale" },
+  { id: "monochrome-studio", label: "Monochrome Studio" },
 ] as const;
 
 const LANGUAGES = [

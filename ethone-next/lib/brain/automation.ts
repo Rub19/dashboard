@@ -12,9 +12,11 @@ export const AUTOMATION_ACTIONS = Object.freeze([
   Object.freeze({ id: "v8.density.compact", label: "Densité Compacte", group: "density" }),
   Object.freeze({ id: "v8.density.ultra-compact", label: "Densité Ultra compacte", group: "density" }),
   Object.freeze({ id: "v8.density.automatic", label: "Densité Automatique", group: "density" }),
-  Object.freeze({ id: "v8.theme.night", label: "Thème Nuit", group: "theme" }),
-  Object.freeze({ id: "v8.theme.graphite", label: "Thème Graphite", group: "theme" }),
-  Object.freeze({ id: "v8.theme.day", label: "Thème Jour", group: "theme" }),
+  Object.freeze({ id: "v8.theme.obsidian", label: "Thème Obsidienne", group: "theme" }),
+  Object.freeze({ id: "v8.theme.cyber-neon", label: "Thème Cyber Néon", group: "theme" }),
+  Object.freeze({ id: "v8.theme.solar-eclipse", label: "Thème Éclipse Solaire", group: "theme" }),
+  Object.freeze({ id: "v8.theme.northern-aurora", label: "Thème Aurore Boréale", group: "theme" }),
+  Object.freeze({ id: "v8.theme.monochrome-studio", label: "Thème Monochrome Studio", group: "theme" }),
   Object.freeze({ id: "v8.theme.auto", label: "Thème Auto", group: "theme" }),
 ]);
 

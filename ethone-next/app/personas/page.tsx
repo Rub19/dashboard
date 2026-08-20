@@ -9,10 +9,14 @@ import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import Select from "@/components/ui/Select";
+import { PREMIUM_THEMES, THEME_DEFINITIONS, resolveLegacyTheme } from "@/lib/theme-engine";
 
-const THEMES = ["default", "boreal", "cyberpunk", "eclipse", "emerald"] as const;
+const THEMES = PREMIUM_THEMES;
 
 function themeLabel(theme: string, i18n: (k: string) => string) {
+  const resolved = resolveLegacyTheme(theme);
+  const def = THEME_DEFINITIONS[resolved];
+  if (def) return def.label;
   const key = `theme${theme.charAt(0).toUpperCase() + theme.slice(1)}`;
   return i18n(key);
 }
@@ -23,10 +27,10 @@ export default function PersonasPage() {
   const { items: personas, create, update, remove } = useUserData("persona");
   const { update: updateSettings } = useSettings();
   const [label, setLabel] = useState("");
-  const [theme, setTheme] = useState<(typeof THEMES)[number]>("default");
+  const [theme, setTheme] = useState<(typeof THEMES)[number]>("obsidian");
   const [editing, setEditing] = useState<string | null>(null);
   const [editLabel, setEditLabel] = useState("");
-  const [editTheme, setEditTheme] = useState<(typeof THEMES)[number]>("default");
+  const [editTheme, setEditTheme] = useState<(typeof THEMES)[number]>("obsidian");
 
   async function add() {
     if (!label.trim()) return;
@@ -42,7 +46,8 @@ export default function PersonasPage() {
   function startEdit(p: (typeof personas)[0]) {
     setEditing(p.id);
     setEditLabel(p.label);
-    setEditTheme((p.data as { theme?: (typeof THEMES)[number] }).theme || "default");
+    const saved = (p.data as { theme?: string }).theme || "obsidian";
+    setEditTheme(resolveLegacyTheme(saved) as (typeof THEMES)[number]);
   }
 
   function cancelEdit() {
@@ -61,11 +66,10 @@ export default function PersonasPage() {
   }
 
   function apply(persona: (typeof personas)[0]) {
-    const data = persona.data as { theme?: (typeof THEMES)[number] };
-    if (data.theme) {
-      updateSettings({ theme: data.theme });
-      success(i18n("applied"));
-    }
+    const data = persona.data as { theme?: string };
+    const resolved = data.theme ? resolveLegacyTheme(data.theme) : "obsidian";
+    updateSettings({ theme: resolved });
+    success(i18n("applied"));
   }
 
   async function deletePersona(id: string) {

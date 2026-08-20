@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.29 — 2026-08-20
+
+**Moteur de thèmes premium et isolation 3D**
+
+- Nouveau moteur de thèmes premium dans `lib/theme-engine.ts` : 5 thèmes exacts (Obsidienne, Cyber Néon, Éclipse Solaire, Aurore Boréale, Monochrome Studio) pilotés par variables CSS et `data-theme` sur `document.documentElement`.
+- `applyTheme` applique un thème de façon synchrone et sans latence ; les identifiants inconnus ou hérités sont normalisés vers le catalogue premium.
+- `PremiumThemePicker` (`components/settings/PremiumThemePicker.tsx`) : grille de 5 cartes avec aperçus miniatures du dashboard, pastilles de couleurs, labels et descriptions.
+- Règles CSS `data-theme` dans `app/globals.css` pour les 5 thèmes, transitions `background-color/border-color/color/box-shadow` respectant `prefers-reduced-motion`.
+- Suppression des anciens blocs `:root[data-theme=...]` de `app/legacy-v8-tokens.css` pour éviter les conflits de cascade.
+- Isolation visuelle des cartes 3D / Bento / widgets via `data-card-isolated` (`TiltCard`, `LiveWidgets`) afin de préserver leurs transformations locales sans hériter des reflets du thème.
+- Mise à jour des types `ThemeMode` (`lib/settings.ts`), des préréglages (`lib/preset-engine.ts`), des personas (`app/personas/page.tsx`), des automatisations (`lib/brain/automation.ts`) et des métadonnées de document (`lib/document-metadata.ts`).
+- Version `v1.7.29`, cache PWA `v397`.
+
 ## v1.7.28 — 2026-08-20
 
 **Refonte UI/UX complète de la page Paramètres (Linear / Raycast / macOS Settings)**

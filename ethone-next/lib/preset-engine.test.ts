@@ -46,7 +46,7 @@ describe('preset-engine', () => {
       name: 'My Preset',
       description: 'A nice preset',
       icon: 'sparkles',
-      theme: 'graphite',
+      theme: 'cyber-neon',
       accent: 'rose',
       customAccentColor: '#fb7185',
       aura: 'cyberpunk',
@@ -70,7 +70,7 @@ describe('preset-engine', () => {
     const preset = sanitizePreset(raw);
     expect(preset).not.toBeNull();
     expect(preset?.id).toBe('my-preset');
-    expect(preset?.theme).toBe('graphite');
+    expect(preset?.theme).toBe('cyber-neon');
     expect(preset?.dockGlass).toBe('default');
   });
 
@@ -78,7 +78,7 @@ describe('preset-engine', () => {
     const raw = { id: 'test', theme: 'not-a-theme', dockGlass: 'not-a-glass', homeGrid: '99' };
     const preset = sanitizePreset(raw);
     expect(preset).not.toBeNull();
-    expect(preset?.theme).toBe('night');
+    expect(preset?.theme).toBe('obsidian');
     expect(preset?.dockGlass).toBe('default');
     expect(preset?.homeGrid).toBe('4');
   });
@@ -103,15 +103,15 @@ describe('preset-engine', () => {
     const update = jest.fn() as jest.Mock<void, [Partial<Settings>]>;
     const result = applyPreset(BUILT_IN_PRESETS[3], DEFAULTS, update);
     expect(result.ok).toBe(true);
-    expect(update).toHaveBeenCalledWith(expect.objectContaining({ theme: 'night', accentColor: 'violet' }));
+    expect(update).toHaveBeenCalledWith(expect.objectContaining({ theme: 'solar-eclipse', accentColor: 'violet' }));
   });
 
   it('extracts a custom preset from current state', () => {
-    const state: Settings = { ...DEFAULTS, theme: 'graphite', accentColor: 'rose' };
-    const preset = extractPresetFromState(state, 'Graphite rose', 'Mon look', 'sparkles');
+    const state: Settings = { ...DEFAULTS, theme: 'cyber-neon', accentColor: 'rose' };
+    const preset = extractPresetFromState(state, 'Cyber néon', 'Mon look', 'sparkles');
     expect(preset.id.startsWith('custom-')).toBe(true);
-    expect(preset.name).toBe('Graphite rose');
-    expect(preset.theme).toBe('graphite');
+    expect(preset.name).toBe('Cyber néon');
+    expect(preset.theme).toBe('cyber-neon');
     expect(preset.accent).toBe('rose');
   });
 

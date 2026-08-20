@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import SafeImage from "@/components/SafeImage";
@@ -374,6 +375,12 @@ export default function DynamicIslandContainer() {
   const brainActive = isThinking;
 
   useEffect(() => {
+    // Don't react to activity changes while now-playing data is still
+    // loading. Otherwise a refetch that temporarily clears the track would
+    // be treated as "new activity" when the data comes back and the island
+    // would auto-expand.
+    if (npLoading) return;
+
     const nextActive = new Set<View>();
     if (brainActive) nextActive.add("brain");
     if (pomodoroActive) nextActive.add("pomodoro");
@@ -388,7 +395,6 @@ export default function DynamicIslandContainer() {
     // settle so that an already-active Spotify session doesn't trigger an
     // expansion once it loads.
     if (isInitialMount.current) {
-      if (npLoading) return;
       if (!selectedView && nextActive.size > 0) {
         setSelectedView(nextActiveViews[0] ?? null);
       }
@@ -434,13 +440,21 @@ export default function DynamicIslandContainer() {
     setExpanded(true);
   }, []);
 
-  const handleEnter = useCallback(() => {
-    if (collapseTimer.current) {
-      clearTimeout(collapseTimer.current);
-      collapseTimer.current = null;
-    }
-    if (selectedView) setExpanded(true);
-  }, [selectedView]);
+  const handleEnter = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (collapseTimer.current) {
+        clearTimeout(collapseTimer.current);
+        collapseTimer.current = null;
+      }
+      if (!selectedView) return;
+      // Ignore the synthetic mouseenter that can fire on mount when the
+      // cursor is already over the island. Only expand on a real hover
+      // that comes from another element.
+      if (e.relatedTarget === null) return;
+      setExpanded(true);
+    },
+    [selectedView],
+  );
 
   const handleLeave = useCallback(() => {
     if (!selectedView) return;

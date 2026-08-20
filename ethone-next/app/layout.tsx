@@ -39,9 +39,9 @@ export const metadata: Metadata = {
     apple: "/icons/ethone-apple-touch-180.png",
   },
   other: {
-    "msapplication-TileColor": "#080a0d",
+    "msapplication-TileColor": "#08080a",
     "msapplication-TileImage": "/icons/ethone-icon-192.png",
-    "theme-color": "#080a0d",
+    "theme-color": "#08080a",
     "color-scheme": "dark",
     "apple-mobile-web-app-title": "ETHONE",
     "apple-mobile-web-app-status-bar-style": "black-translucent",

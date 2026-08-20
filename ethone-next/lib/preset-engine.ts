@@ -1,4 +1,5 @@
 import type { Settings } from "./settings";
+import { PREMIUM_THEMES } from "./theme-engine";
 
 export type Preset = {
   id: string;
@@ -35,24 +36,7 @@ const ALLOWED_HOME_HERO = new Set<string>(["full", "compact", "hidden"]);
 const ALLOWED_UI_ANIMATIONS = new Set<string>(["smooth", "snappy", "reduced"]);
 const ALLOWED_FONT_FAMILY = new Set<string>(["inter", "outfit", "mono", "serif"]);
 const ALLOWED_RADIUS_STYLE = new Set<string>(["rounded", "soft", "sharp"]);
-const ALLOWED_THEME: Settings["theme"][] = [
-  "default",
-  "boreal",
-  "cyberpunk",
-  "eclipse",
-  "emerald",
-  "night",
-  "graphite",
-  "day",
-  "auto",
-  "midnight",
-  "obsidian",
-  "aurora",
-  "minimal",
-  "focus",
-  "glass",
-  "oled",
-];
+const ALLOWED_THEME: Settings["theme"][] = [...PREMIUM_THEMES, "auto"];
 const ALLOWED_ACCENT: Preset["accent"][] = ["violet", "mint", "sky", "amber", "rose", "teal", "coral", "custom"];
 const ALLOWED_DENSITY: Settings["densityMode"][] = [
   "spacious",
@@ -100,7 +84,7 @@ export const BUILT_IN_PRESETS: Preset[] = [
     name: "Productivité",
     description: "Clair, structuré, calme.",
     icon: "circle-check",
-    theme: "night",
+    theme: "obsidian",
     accent: "mint",
     customAccentColor: "#7be5c3",
     aura: "classic",
@@ -126,7 +110,7 @@ export const BUILT_IN_PRESETS: Preset[] = [
     name: "Focus",
     description: "Minimum, calme, sans distraction.",
     icon: "focus",
-    theme: "night",
+    theme: "obsidian",
     accent: "sky",
     customAccentColor: "#7dd3fc",
     aura: "eclipse",
@@ -152,7 +136,7 @@ export const BUILT_IN_PRESETS: Preset[] = [
     name: "Gaming",
     description: "Néon, énergie, contraste.",
     icon: "gamepad-2",
-    theme: "graphite",
+    theme: "cyber-neon",
     accent: "rose",
     customAccentColor: "#fb7185",
     aura: "cyberpunk",
@@ -178,10 +162,10 @@ export const BUILT_IN_PRESETS: Preset[] = [
     name: "Créatif",
     description: "Chaleur, espace, inspiration.",
     icon: "sparkles",
-    theme: "night",
+    theme: "solar-eclipse",
     accent: "violet",
     customAccentColor: "#a78bfa",
-    aura: "emeraude",
+    aura: "emerald",
     density: "spacious",
     fontFamily: "serif",
     radiusStyle: "soft",
@@ -204,10 +188,10 @@ export const BUILT_IN_PRESETS: Preset[] = [
     name: "Minimal",
     description: "Léger, épuré, silencieux.",
     icon: "minimize-2",
-    theme: "graphite",
+    theme: "monochrome-studio",
     accent: "mint",
     customAccentColor: "#7be5c3",
-    aura: "minerale",
+    aura: "mineral",
     density: "spacious",
     fontFamily: "inter",
     radiusStyle: "rounded",
@@ -230,10 +214,10 @@ export const BUILT_IN_PRESETS: Preset[] = [
     name: "Développement",
     description: "Compact, lisible, technique.",
     icon: "code",
-    theme: "night",
+    theme: "obsidian",
     accent: "amber",
     customAccentColor: "#fbbf24",
-    aura: "boreale",
+    aura: "boreal",
     density: "compact",
     fontFamily: "mono",
     radiusStyle: "sharp",

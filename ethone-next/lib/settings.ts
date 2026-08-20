@@ -1,4 +1,5 @@
 import { supabase } from "./supabase";
+import { resolveLegacyTheme, PREMIUM_THEMES, type PremiumTheme } from "./theme-engine";
 
 export type BrainPermissions = {
   notes: boolean;
@@ -24,23 +25,7 @@ export type BrainMemoryCategories = {
   goals: boolean;
 };
 
-export type ThemeMode =
-  | "default"
-  | "boreal"
-  | "cyberpunk"
-  | "eclipse"
-  | "emerald"
-  | "night"
-  | "graphite"
-  | "day"
-  | "auto"
-  | "midnight"
-  | "obsidian"
-  | "aurora"
-  | "minimal"
-  | "focus"
-  | "glass"
-  | "oled";
+export type ThemeMode = PremiumTheme | "auto";
 
 export type DensityMode =
   | "spacious"
@@ -256,7 +241,7 @@ export const USER_STATUS_CONFIG: Record<
 
 export const DEFAULTS: Settings = {
   darkMode: true,
-  theme: "default",
+  theme: "obsidian",
   iconPack: "lucide",
   densityMode: "comfortable",
   fontSize: 100,
@@ -443,6 +428,9 @@ export function migrateSettings(raw: Partial<Settings>): Partial<Settings> {
   }
   if (raw.soundPack === "none") {
     next.soundPack = "silent";
+  }
+  if (typeof raw.theme === "string" && raw.theme !== "auto" && !PREMIUM_THEMES.includes(raw.theme as PremiumTheme)) {
+    next.theme = resolveLegacyTheme(raw.theme);
   }
   if (raw.soundVolumes && typeof raw.soundVolumes === "object") {
     const old = raw.soundVolumes as Record<string, number>;

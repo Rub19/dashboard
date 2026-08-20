@@ -16,7 +16,7 @@ describe('settings', () => {
     expect(DEFAULTS.language).toBe('fr');
     expect(DEFAULTS.darkMode).toBe(true);
     expect(DEFAULTS.fontSize).toBe(100);
-    expect(DEFAULTS.theme).toBe('default');
+    expect(DEFAULTS.theme).toBe('obsidian');
   });
 
   it('returns defaults when localStorage is empty', () => {

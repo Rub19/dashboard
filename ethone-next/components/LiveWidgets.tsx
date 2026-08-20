@@ -1135,9 +1135,11 @@ export default function LiveWidgets({
           }}
           onDragEnd={() => setDraggingId(null)}
           className={`group relative min-w-0 ${customizing ? "cursor-grab" : "cursor-pointer"}`}
+          data-card-isolated="true"
           style={{ perspective: 1000 }}
         >
         <div
+          data-card-isolated="true"
           className="relative h-64 transition-transform duration-500"
           style={{ transformStyle: "preserve-3d", transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)" }}
         >

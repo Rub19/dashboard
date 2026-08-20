@@ -1,6 +1,6 @@
 "use client";
 
-import { useSettings, THEMES } from "@/components/SettingsProvider";
+import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
 import BentoCard from "@/components/BentoCard";
@@ -8,6 +8,15 @@ import { cn } from "@/lib/utils";
 import { type SessionMode, USER_STATUS_CONFIG } from "@/lib/settings";
 
 const AURAS = ["classic", "boreal", "cyberpunk", "eclipse", "emerald", "mineral"] as const;
+
+const AURA_COLORS: Record<string, { background: string; accent: string }> = {
+  classic: { background: "#0a0a0a", accent: "#8b5cf6" },
+  boreal: { background: "#081016", accent: "#06b6d4" },
+  cyberpunk: { background: "#0f0514", accent: "#f43f5e" },
+  eclipse: { background: "#050505", accent: "#d4af37" },
+  emerald: { background: "#05140f", accent: "#10b981" },
+  mineral: { background: "#0a0a0a", accent: "#38bdf8" },
+};
 
 const SESSION_MODES: { id: SessionMode; icon: string; label: string; copy: string }[] = [
   { id: "default", icon: "circle", label: "sessionModeDefault", copy: "sessionModeDefaultCopy" },
@@ -61,21 +70,21 @@ export default function SystemControlCard({ className = "", scrollable = true }:
             {AURAS.map((aura) => {
               const active = settings.aura === aura;
               const key = `aura${aura.charAt(0).toUpperCase()}${aura.slice(1)}`;
-              const theme = THEMES[aura as keyof typeof THEMES] || THEMES.default;
+              const palette = AURA_COLORS[aura] || AURA_COLORS.classic;
               return (
                 <button
                   key={aura}
                   type="button"
                   onClick={() => update({ aura })}
                   title={i18n(key)}
-                  style={{ backgroundColor: theme.background }}
+                  style={{ backgroundColor: palette.background }}
                   className={`flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.08] transition-all hover:scale-105 ${
                     active ? "ring-2 ring-inset ring-[var(--accent)]" : "opacity-70 hover:opacity-100"
                   }`}
                 >
                   <span
                     className="h-2.5 w-2.5 rounded-full"
-                    style={{ backgroundColor: theme.accent }}
+                    style={{ backgroundColor: palette.accent }}
                     aria-hidden="true"
                   />
                 </button>

@@ -57,12 +57,14 @@ export function descriptionForContext(key: string): string {
   return label ? `${label} dans ETHONE, votre système d'exploitation personnel.` : DEFAULT_DESCRIPTION;
 }
 
+import { resolveLegacyTheme, THEME_DEFINITIONS } from "./theme-engine";
+
 export function themeColorForState(state: { theme?: string; space?: string } = {}): string {
   const theme = state.theme || "";
-  if (theme === "day") return "#f4f5f7";
   if (state.space === "focus") return "#070b10";
   if (state.space === "studio") return "#0d090d";
-  return theme === "graphite" ? "#111317" : "#080a0d";
+  const resolved = resolveLegacyTheme(theme);
+  return THEME_DEFINITIONS[resolved]?.bgMain || "#08080a";
 }
 
 export function createDocumentMetadataManager(document: Document) {

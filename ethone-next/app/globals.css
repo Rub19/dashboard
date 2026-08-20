@@ -7,28 +7,28 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a0a;
+  /* Premium theme engine semantic defaults (Obsidian fallback) */
+  --bg-main: #08080a;
+  --bg-surface: #0f0f13;
+  --bg-sidebar: #0c0c10;
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-active: rgba(16, 185, 129, 0.35);
+  --accent-primary: #10b981;
+  --accent-secondary: #06b6d4;
+  --glow-color: rgba(16, 185, 129, 0.25);
+  --text-primary: #ededed;
+  --text-muted: #9ca3af;
+
+  /* Legacy app aliases */
+  --background: #08080a;
   --foreground: #ededed;
-  --surface: #121214;
+  --surface: #0f0f13;
   --surface-raised: #1a1a1e;
   --border: #27272a;
-
-  html[data-space="focus"]:not([data-theme="day"]) & {
-    --background: #070b10;
-    --surface: #0b1118;
-    --surface-raised: #111820;
-    --accent: #5d9ddb;
-  }
-
-  html[data-space="studio"]:not([data-theme="day"]) & {
-    --background: #0d090d;
-    --surface: #130e13;
-    --surface-raised: #1a131a;
-    --accent: #cd70be;
-  }
-  --muted: #a1a1aa;
+  --muted: #9ca3af;
   --accent: #8b5cf6;
   --accent-soft: #ede9fe;
+
   --card-radius: 1rem;
   --dock-radius: 1rem;
   --panel-radius: 1rem;
@@ -86,38 +86,166 @@
   --v8-tilt-y: 0deg;
   --v8-spotlight-x: 50%;
   --v8-spotlight-y: 50%;
+
+  --theme-transition: 0.22s;
+
+  color-scheme: dark;
+  transition:
+    background-color var(--theme-transition) ease,
+    border-color var(--theme-transition) ease,
+    color var(--theme-transition) ease,
+    box-shadow var(--theme-transition) ease;
 }
 
-/* Thèmes clairs : adapter les panneaux graphite à la luminosité du thème */
-html[data-theme="day"],
-html[data-theme="minimal"] {
-  --panel-bg: color-mix(in srgb, #f4f4f5 50%, transparent);
-  --panel-border: color-mix(in srgb, black 8%, transparent);
-  --panel-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.45), 0 8px 32px rgba(0, 0, 0, 0.15);
-  --inset-bg: color-mix(in srgb, #ffffff 40%, transparent);
-  --inset-border: color-mix(in srgb, black 4%, transparent);
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --theme-transition: 0.01ms;
+  }
 }
 
-html[data-space="focus"]:not([data-theme="day"]) {
+[data-reduced-motion="true"] {
+  --theme-transition: 0.01ms;
+}
+
+html {
+  /* Smooth, cheap theme transitions for color/border only. */
+  transition: background-color 200ms ease, border-color 200ms ease, color 120ms ease, box-shadow 120ms ease;
+}
+
+/* Space overrides for focus / studio */
+html[data-space="focus"] {
   --background: #070b10;
   --surface: #0b1118;
   --surface-raised: #111820;
   --accent: #5d9ddb;
 }
 
-html[data-space="studio"]:not([data-theme="day"]) {
+html[data-space="studio"] {
   --background: #0d090d;
   --surface: #130e13;
   --surface-raised: #1a131a;
   --accent: #cd70be;
 }
 
-html[data-space="focus"][data-theme="day"] {
-  --accent: #1b6fc2;
+/* Premium theme engine: CSS fallbacks when applyTheme has not yet run (SSR/initial paint) */
+html[data-theme="obsidian"] {
+  color-scheme: dark;
+  --bg-main: #08080a;
+  --bg-surface: #0f0f13;
+  --bg-sidebar: #0c0c10;
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-active: rgba(16, 185, 129, 0.35);
+  --accent-primary: #10b981;
+  --accent-secondary: #06b6d4;
+  --glow-color: rgba(16, 185, 129, 0.25);
+  --text-primary: #ededed;
+  --text-muted: #9ca3af;
+  --background: #08080a;
+  --foreground: #ededed;
+  --surface: #0f0f13;
+  --surface-raised: #0f0f13;
+  --border: rgba(255, 255, 255, 0.06);
+  --muted: #9ca3af;
+  --v8-canvas: #08080a;
+  --v8-canvas-raised: #0c0c10;
+  --v8-text: #ededed;
+  --v8-muted: #9ca3af;
 }
 
-html[data-space="studio"][data-theme="day"] {
-  --accent: #c23b9a;
+html[data-theme="cyber-neon"] {
+  color-scheme: dark;
+  --bg-main: #0a0814;
+  --bg-surface: rgba(255, 255, 255, 0.04);
+  --bg-sidebar: #080612;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-active: rgba(0, 240, 255, 0.4);
+  --accent-primary: #f43f5e;
+  --accent-secondary: #00f0ff;
+  --glow-color: rgba(244, 63, 94, 0.3);
+  --text-primary: #f0e9ff;
+  --text-muted: #a78bfa;
+  --background: #0a0814;
+  --foreground: #f0e9ff;
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-raised: rgba(255, 255, 255, 0.04);
+  --border: rgba(255, 255, 255, 0.08);
+  --muted: #a78bfa;
+  --v8-canvas: #0a0814;
+  --v8-canvas-raised: #080612;
+  --v8-text: #f0e9ff;
+  --v8-muted: #a78bfa;
+}
+
+html[data-theme="solar-eclipse"] {
+  color-scheme: dark;
+  --bg-main: #0c0b0a;
+  --bg-surface: #141311;
+  --bg-sidebar: #100f0e;
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --border-active: rgba(217, 119, 6, 0.4);
+  --accent-primary: #f59e0b;
+  --accent-secondary: #d97706;
+  --glow-color: rgba(245, 158, 11, 0.25);
+  --text-primary: #f5f0e8;
+  --text-muted: #a89f91;
+  --background: #0c0b0a;
+  --foreground: #f5f0e8;
+  --surface: #141311;
+  --surface-raised: #141311;
+  --border: rgba(255, 255, 255, 0.05);
+  --muted: #a89f91;
+  --v8-canvas: #0c0b0a;
+  --v8-canvas-raised: #100f0e;
+  --v8-text: #f5f0e8;
+  --v8-muted: #a89f91;
+}
+
+html[data-theme="northern-aurora"] {
+  color-scheme: dark;
+  --bg-main: #060b11;
+  --bg-surface: #0d151b;
+  --bg-sidebar: #090f14;
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-active: rgba(56, 189, 248, 0.35);
+  --accent-primary: #2dd4bf;
+  --accent-secondary: #38bdf8;
+  --glow-color: rgba(45, 212, 191, 0.25);
+  --text-primary: #e0f2fe;
+  --text-muted: #94a3b8;
+  --background: #060b11;
+  --foreground: #e0f2fe;
+  --surface: #0d151b;
+  --surface-raised: #0d151b;
+  --border: rgba(255, 255, 255, 0.06);
+  --muted: #94a3b8;
+  --v8-canvas: #060b11;
+  --v8-canvas-raised: #090f14;
+  --v8-text: #e0f2fe;
+  --v8-muted: #94a3b8;
+}
+
+html[data-theme="monochrome-studio"] {
+  color-scheme: dark;
+  --bg-main: #000000;
+  --bg-surface: #18181b;
+  --bg-sidebar: #101012;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-active: rgba(255, 255, 255, 0.25);
+  --accent-primary: #ffffff;
+  --accent-secondary: #71717a;
+  --glow-color: rgba(255, 255, 255, 0.15);
+  --text-primary: #ffffff;
+  --text-muted: #a1a1aa;
+  --background: #000000;
+  --foreground: #ffffff;
+  --surface: #18181b;
+  --surface-raised: #18181b;
+  --border: rgba(255, 255, 255, 0.08);
+  --muted: #a1a1aa;
+  --v8-canvas: #000000;
+  --v8-canvas-raised: #101012;
+  --v8-text: #ffffff;
+  --v8-muted: #a1a1aa;
 }
 
 @media (max-width: 768px) {
@@ -2134,5 +2262,29 @@ svg.animate-spin,
 .animate-spin svg {
   transform-box: fill-box;
   transform-origin: center;
+}
+
+/* ============================================================
+   3D card isolation
+   ============================================================ */
+
+.card-3d-isolated,
+[data-card-isolated="true"] {
+  /* Keep transform and stacking local so theme-level glow/filters don't
+     distort or alter 3D geometry on the surrounding page. */
+  isolation: isolate;
+  transform-style: preserve-3d;
+  contain: paint layout;
+  backface-visibility: hidden;
+  /* Keep flip/tilt transforms snappy by suppressing theme-related
+     background/border/color transitions, while still allowing opacity
+     and transform to interpolate. */
+  transition-property: background-color, border-color, color, box-shadow !important;
+  transition-duration: 0s !important;
+}
+
+.card-3d-isolated *,
+[data-card-isolated="true"] * {
+  transform-style: flat;
 }
 

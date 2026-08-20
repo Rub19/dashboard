@@ -81,6 +81,7 @@ export function TiltCard({
       transition={transition}
       onMouseMove={enabled ? onMove : undefined}
       onMouseLeave={enabled ? onLeave : undefined}
+      data-card-isolated="true"
       style={enabled ? { transform, transformStyle: "preserve-3d" } : undefined}
       className={cn(
         "relative overflow-hidden rounded-2xl",

@@ -238,9 +238,9 @@ export default function Sidebar() {
         collapsible="icon"
         variant="floating"
         ariaLabel="Navigation principale"
-        className="h-full bg-background"
+        className="h-full bg-transparent"
         style={{ height: "calc(100% + 0.25rem)" }}
-        panelClassName="m-2 h-full shrink-0 rounded-2xl border-0 bg-[var(--background)] p-3"
+        panelClassName="m-2 h-full shrink-0 rounded-2xl p-3 backdrop-blur-[var(--panel-blur)]"
       >
         <AnimatedSidebarHeader>
           <SidebarBrand />

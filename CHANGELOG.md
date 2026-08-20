@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.26 — 2026-08-20
+
+**Sidebar floating sans bordure grise et glassmorphique**
+
+- `components/motion/animated-sidebar.tsx` : le panneau `floating` utilise `bg-[var(--panel-bg)]`, `border-[var(--panel-border)]` et `backdrop-blur` au lieu du gris fixe `border-border`.
+- `components/Sidebar.tsx` : fond transparent sur le conteneur externe, `panelClassName` sans `border-0` ni `bg-background`, avec `backdrop-blur-[var(--panel-blur)]`.
+- Correction de la barre grise visible sur le côté de la sidebar quelle que soit le thème.
+- Version `v1.7.26`, cache PWA `v394`.
+
 ## v1.7.25 — 2026-08-20
 
 **Pochette Spotify plus fiable et rafraîchissement à chaque changement de titre**

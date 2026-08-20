@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import SafeImage from "@/components/SafeImage";
 import { useRouter } from "next/navigation";
@@ -179,6 +179,13 @@ export default function DynamicIslandContainer() {
   const prevActiveRef = useRef<Set<View>>(new Set());
   const isInitialMount = useRef(true);
   const collapseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Mount lock: ignore the first mouseenter events on mount/refresh so the
+  // island does not auto-expand if the cursor happens to be over it.
+  const mountLockUntil = useRef(0);
+
+  useLayoutEffect(() => {
+    mountLockUntil.current = Date.now() + 500;
+  }, []);
 
   const [localVolume, setLocalVolume] = useState(nowPlaying?.volumePercent ?? 50);
   const [pendingSpotify, setPendingSpotify] = useState(false);
@@ -218,7 +225,9 @@ export default function DynamicIslandContainer() {
       if (!selectedView && nextActive.size > 0) {
         setSelectedView(nextActiveViews[0] ?? null);
       }
-      if (nextActive.size === 0) setExpanded(false);
+      // Force the island closed on every mount/refresh. It should only open
+      // on a deliberate hover or click.
+      setExpanded(false);
       prevActiveRef.current = nextActive;
       isInitialMount.current = false;
       return;
@@ -267,10 +276,10 @@ export default function DynamicIslandContainer() {
         collapseTimer.current = null;
       }
       if (!selectedView) return;
-      // Ignore the synthetic mouseenter that can fire on mount when the
-      // cursor is already over the island. Only expand on a real hover
-      // that comes from another element.
+      // Ignore the synthetic mouseenter that can fire on mount/refresh when the
+      // cursor is already over the island. Also ignore the mount-lock window.
       if (e.relatedTarget === null) return;
+      if (Date.now() < mountLockUntil.current) return;
       setExpanded(true);
     },
     [selectedView],

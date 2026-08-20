@@ -74,6 +74,16 @@ export default function GamingCard({
     return [...new Set(list)];
   }, [profile, playerName]);
 
+  const capeCandidates = useMemo(() => {
+    const list: string[] = [];
+    if (profile?.capeUrl) list.push(profile.capeUrl);
+    if (profile?.uuidWithDashes) {
+      list.push(`https://crafatar.com/capes/${profile.uuidWithDashes}`);
+    }
+    if (playerName) list.push(`https://mc-heads.net/cape/${encodeURIComponent(playerName)}`);
+    return [...new Set(list)];
+  }, [profile, playerName]);
+
   const renderCandidates = useMemo(
     () => [...new Set([...bodyCandidates, ...avatarCandidates])],
     [bodyCandidates, avatarCandidates]
@@ -176,6 +186,17 @@ export default function GamingCard({
               onResolve={setRenderSrc}
               priority
             />
+            {capeCandidates.length > 0 && (
+              <ClientImage
+                candidates={capeCandidates}
+                alt={i18n("cape", "Cape")}
+                className="absolute -right-2 -top-2 z-20 h-14 w-24 rounded border border-white/10 bg-zinc-950/80 object-contain p-1 drop-shadow-lg"
+                width={96}
+                height={54}
+                priority
+                loading="eager"
+              />
+            )}
           </div>
 
           <div className="w-full text-center">

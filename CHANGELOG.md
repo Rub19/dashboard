@@ -2,6 +2,20 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.9 — 2026-08-20
+
+**Images cross-origin fiables et cape Minecraft**
+
+### Corrige
+- `ethone-next/components/ClientImage.tsx` : ré-écriture complète du composant image.
+  - Gestion correcte du cache (`img.complete` + `naturalWidth`).
+  - `img.decode()` ne provoque plus de faux négatifs sur les images cross-origin (CDN, Discord, Spotify, Minecraft).
+  - Fallback multi-sources avec timers annulés dès qu'une image charge.
+- `ethone-next/components/GamingCard.tsx` : affiche le render du skin Minecraft ainsi que la cape en overlay.
+
+### Version
+- `ethone-next/package.json`, `package-lock.json`, `components/UserProfileDropdown.tsx`, `public/sw.js` : version `v1.7.9` et cache PWA `v377`.
+
 ## v1.7.8 — 2026-08-20
 
 **Retour des icônes de serveurs Discord**

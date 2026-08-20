@@ -1512,9 +1512,57 @@ const v185_de: ChangelogEntry = {
   ],
 };
 
+const v186_fr: ChangelogEntry = {
+  version: "v1.7.9",
+  date: "2026-08-20",
+  title: "Images cross-origin fiables et cape Minecraft",
+  items: [
+    "Ré-écriture de `ClientImage` : gestion robuste du cache, `img.decode()` sans faux négatifs, fallback multi-sources avec annulation des timers.",
+    "La pp Discord, les pochettes Spotify/Last.fm et les images de services tiers se chargent correctement.",
+    "`components/GamingCard.tsx` : affichage du skin (render corporel) et de la cape en overlay.",
+    "Version mise à jour en v1.7.9.",
+  ],
+};
+
+const v186_en: ChangelogEntry = {
+  version: "v1.7.9",
+  date: "2026-08-20",
+  title: "Reliable cross-origin images and Minecraft cape",
+  items: [
+    "Rewrote `ClientImage`: robust cache handling, `img.decode()` without false negatives, multi-source fallback with timer cancellation.",
+    "Discord avatars, Spotify/Last.fm covers and third-party images now load correctly.",
+    "`components/GamingCard.tsx`: display skin (body render) and cape overlay.",
+    "Updated version to v1.7.9.",
+  ],
+};
+
+const v186_es: ChangelogEntry = {
+  version: "v1.7.9",
+  date: "2026-08-20",
+  title: "Imágenes cross-origin fiables y capa de Minecraft",
+  items: [
+    "Reescritura de `ClientImage`: manejo robusto de caché, `img.decode()` sin falsos negativos, fallback multi-fuente con cancelación de temporizadores.",
+    "Los avatares de Discord, las portadas de Spotify/Last.fm y las imágenes de terceros se cargan correctamente.",
+    "`components/GamingCard.tsx`: muestra la skin (render del cuerpo) y la capa superpuesta.",
+    "Versión actualizada a v1.7.9.",
+  ],
+};
+
+const v186_de: ChangelogEntry = {
+  version: "v1.7.9",
+  date: "2026-08-20",
+  title: "Zuverlässige Cross-Origin-Bilder und Minecraft-Cape",
+  items: [
+    "`ClientImage` neu geschrieben: robustes Caching, `img.decode()` ohne Falschnegative, Multi-Source-Fallback mit Timer-Abbruch.",
+    "Discord-Avatare, Spotify/Last.fm-Cover und Bilder von Drittanbietern laden jetzt korrekt.",
+    "`components/GamingCard.tsx`: Anzeige des Skins (Body-Render) und des Capes als Overlay.",
+    "Version auf v1.7.9 aktualisiert.",
+  ],
+};
+
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v185_fr, v184_fr, v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
-  en: [v185_en, v184_en, v183_en, v182_en, v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
+  fr: [v186_fr, v185_fr, v184_fr, v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v186_en, v185_en, v184_en, v183_en, v182_en, v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -1560,7 +1608,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [v185_es, v184_es, v183_es, v182_es, v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
+  es: [v186_es, v185_es, v184_es, v183_es, v182_es, v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -1606,7 +1654,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [v185_de, v184_de, v183_de, v182_de, v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
+  de: [v186_de, v185_de, v184_de, v183_de, v182_de, v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 type ClientImageProps = {
@@ -20,14 +20,33 @@ type ClientImageProps = {
   onResolve?: (src: string) => void;
 };
 
+type ImageStatus = "idle" | "loading" | "ok" | "error";
+
 function isValidImageUrl(src?: string): src is string {
-  return typeof src === "string" && src.length > 0 && /^https?:\/\//.test(src);
+  return typeof src === "string" && src.length > 0 && /^https?:\/\/\S+/.test(src);
 }
 
 export function useClientImage(candidates: (string | undefined)[], timeoutMs = 10000) {
   const sources = useMemo(() => candidates.filter(isValidImageUrl), [candidates]);
   const [index, setIndex] = useState(0);
-  const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
+  const [status, setStatus] = useState<ImageStatus>(sources.length > 0 ? "loading" : "error");
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const statusRef = useRef<ImageStatus>(status);
+  const indexRef = useRef(index);
+  const sourcesRef = useRef(sources);
+
+  useLayoutEffect(() => {
+    statusRef.current = status;
+    indexRef.current = index;
+    sourcesRef.current = sources;
+  }, [status, index, sources]);
+
+  const clearTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  }, []);
 
   useEffect(() => {
     setIndex(0);
@@ -35,43 +54,48 @@ export function useClientImage(candidates: (string | undefined)[], timeoutMs = 1
   }, [sources]);
 
   useEffect(() => {
-    if (sources.length === 0) return;
-    const currentSrc = sources[index];
-    if (!currentSrc) {
-      setStatus("error");
-      return;
-    }
-    // No fallback timeout when there is only one source: the <img> onLoad/onError
-    // handlers are sufficient. Timeouts caused false negatives on slow networks or
-    // deferred image decoding inside motion containers.
-    if (sources.length === 1) return;
-    let cancelled = false;
-    const timer = setTimeout(() => {
-      if (cancelled) return;
-      if (index < sources.length - 1) {
+    clearTimer();
+    if (statusRef.current !== "loading") return;
+    // Only rely on the fallback timer when we have backup sources.
+    // For a single source, img.onLoad / img.onError are the source of truth.
+    if (sourcesRef.current.length <= 1) return;
+
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null;
+      if (statusRef.current !== "loading") return;
+      if (indexRef.current < sourcesRef.current.length - 1) {
         setIndex((i) => i + 1);
       } else {
         setStatus("error");
       }
     }, timeoutMs);
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, [sources, index, timeoutMs]);
+
+    return () => clearTimer();
+  }, [index, sources.length, timeoutMs, clearTimer]);
+
+  const ok = useCallback(() => {
+    if (statusRef.current === "ok") return;
+    clearTimer();
+    setStatus("ok");
+  }, [clearTimer]);
+
+  const next = useCallback(() => {
+    if (statusRef.current !== "loading") return;
+    clearTimer();
+    if (indexRef.current < sourcesRef.current.length - 1) {
+      setIndex((i) => i + 1);
+    } else {
+      setStatus("error");
+    }
+  }, [clearTimer]);
 
   return {
     src: sources[index],
+    status,
+    ok,
+    next,
     loading: status === "loading" || status === "idle",
     error: status === "error",
-    next: () => {
-      if (index < sources.length - 1) {
-        setIndex((i) => i + 1);
-      } else {
-        setStatus("error");
-      }
-    },
-    ok: () => setStatus("ok"),
   };
 }
 
@@ -95,37 +119,41 @@ export default function ClientImage({
     () => (candidates ? candidates : src ? [src] : []).filter(isValidImageUrl),
     [candidates, src]
   );
-
-  const { src: resolved, next, ok } = useClientImage(sources, timeoutMs);
-  const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("loading");
+  const { src: resolved, status, ok, next } = useClientImage(sources, timeoutMs);
   const imgRef = useRef<HTMLImageElement | null>(null);
+  const onResolveRef = useRef(onResolve);
+
+  useLayoutEffect(() => {
+    onResolveRef.current = onResolve;
+  }, [onResolve]);
 
   useEffect(() => {
-    setStatus(resolved ? "loading" : "error");
-  }, [resolved]);
-
-  useEffect(() => {
-    if (status !== "loading") return;
     const img = imgRef.current;
-    if (!img) return;
+    if (!img || status !== "loading") return;
     let cancelled = false;
+
+    // The browser may have the image cached and complete already.
+    if (img.complete) {
+      if (img.naturalWidth > 0) {
+        ok();
+        onResolveRef.current?.(resolved);
+      } else {
+        next();
+      }
+      return;
+    }
 
     if (typeof img.decode === "function") {
       img
         .decode()
         .then(() => {
-          if (!cancelled) markOk();
+          if (!cancelled) ok();
         })
         .catch(() => {
-          // decode() can fail for cross-origin or deferred images;
-          // rely on onLoad/onError instead of immediately giving up.
-          if (!cancelled && img.complete && img.naturalWidth > 0) {
-            markOk();
-          }
+          // img.decode() can fail on cross-origin / tainted images.
+          // We ignore it and rely on the standard onLoad/onError events,
+          // which are authoritative for display.
         });
-    } else if (img.complete) {
-      if (img.naturalWidth === 0) handleError();
-      else markOk();
     }
 
     return () => {
@@ -138,18 +166,14 @@ export default function ClientImage({
     return fallback ?? null;
   }
 
-  function markOk() {
-    setStatus("ok");
+  function handleLoad() {
     ok();
-    if (resolved) onResolve?.(resolved);
+    onResolveRef.current?.(resolved);
   }
 
-  const handleLoad = () => markOk();
-
-  const handleError = () => {
-    setStatus("loading");
+  function handleError() {
     next();
-  };
+  }
 
   const imgClass = cn(
     "z-10 object-cover transition-opacity duration-300",

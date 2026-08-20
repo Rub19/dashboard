@@ -76,7 +76,7 @@ import itemsRoute from "./routes/items.js";
 import { connectionsListRoute } from "./routes/connections.js";
 import { providerCredentialsRoute } from "./routes/provider-credentials.js";
 import {
-  mailAliasRoute, mailBulkActionRoute, mailContactsRoute, mailDraftsRoute, mailInboxRoute,
+  mailAliasRoute, mailAliasUpdateRoute, mailBulkActionRoute, mailContactsRoute, mailDraftsRoute, mailInboxRoute,
   mailLabelsRoute, mailMoveRoute, mailReadRoute, mailScheduleRoute, mailSearchRoute,
   mailSendRoute, mailSignaturesRoute, mailSnoozeRoute, mailThreadRoute
 } from "./routes/mail.js";
@@ -303,6 +303,7 @@ export const ROUTES = Object.freeze([
   // Mail
   route("mail.alias", "/api/mail/alias", mailAliasRoute, { service: "mail", rateLimit: "standard" }),
   route("mail.alias.create", "/api/mail/alias", mailAliasRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
+  route("mail.alias.update", "/api/mail/alias", mailAliasUpdateRoute, { method: "PATCH", service: "mail", rateLimit: "standard" }),
   route("mail.inbox", "/api/mail/inbox", mailInboxRoute, { service: "mail", rateLimit: "standard" }),
   route("mail.thread", "/api/mail/thread", mailThreadRoute, { service: "mail", rateLimit: "standard" }),
   route("mail.read", "/api/mail/read", mailReadRoute, { method: "POST", service: "mail", rateLimit: "standard" }),

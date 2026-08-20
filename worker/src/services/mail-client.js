@@ -113,6 +113,39 @@ export async function createAlias(env, userId, alias, displayName) {
   }).then(firstRow);
 }
 
+export async function updateAlias(env, userId, aliasId, patch) {
+  const origin = projectOrigin(env);
+  if (!origin || !userId || !aliasId) return null;
+
+  const existing = await supabaseRequest(env, `/rest/v1/ethone_mail_aliases?id=eq.${aliasId}&user_id=eq.${userId}&limit=1`, {
+    method: "GET",
+    headers: { "Accept": "application/vnd.pgrst.object+json" },
+    maxBytes: 4096
+  }).then(firstRow);
+  if (!existing) return null;
+
+  const body = {};
+  if (patch && "display_name" in patch) body.display_name = safeText(patch.display_name, 80);
+  if (patch && patch.is_primary === true) {
+    await supabaseRequest(env, `/rest/v1/ethone_mail_aliases?user_id=eq.${userId}&is_primary=eq.true`, {
+      method: "PATCH",
+      headers: { "Prefer": "return=minimal" },
+      body: { is_primary: false },
+      maxBytes: 4096
+    }).catch(() => null);
+    body.is_primary = true;
+  }
+
+  if (Object.keys(body).length === 0) return existing;
+
+  return supabaseRequest(env, `/rest/v1/ethone_mail_aliases?id=eq.${aliasId}&user_id=eq.${userId}`, {
+    method: "PATCH",
+    headers: { "Prefer": "return=representation" },
+    body,
+    maxBytes: 4096
+  }).then(firstRow);
+}
+
 export async function createRandomAlias(env, userId, displayName) {
   const origin = projectOrigin(env);
   if (!origin || !userId) return null;

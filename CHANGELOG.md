@@ -2,6 +2,22 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.5 — 2026-08-20
+
+**Profil mail, onboarding forcé et alias éditable**
+
+### Ajoute
+- `ethone-next/components/mail/MailProfileButton.tsx` : bouton Profil dans la barre latérale Mail ; affiche l'adresse principale, permet de copier l'email, d'éditer le nom affiché, de changer l'adresse principale et d'ajouter un alias.
+- `ethone-next/components/mail/MailOnboarding.tsx` : onboarding forcé pour tous les utilisateurs (nouveaux et existants) afin de créer/confirmer l'adresse @ethone.dev et le nom affiché.
+- `ethone-next/app/mail/page.tsx` : intégration de l'onboarding via `useUserState("mailOnboardingCompleted")`.
+- `ethone-next/components/mail/MailSidebar.tsx` : intégration du bouton Profil mail.
+- `worker/src/services/mail-client.js` et `worker/src/routes/mail.js` : endpoint `PATCH /api/mail/alias` pour mettre à jour `display_name` et `is_primary` d'un alias.
+- `ethone-next/lib/hooks/useMail.ts` : ajout de `updateAlias`.
+- `ethone-next/lib/i18n.ts` : clés i18n pour le profil et l'onboarding mail.
+
+### Version
+- `ethone-next/package.json`, `package-lock.json`, `components/UserProfileDropdown.tsx`, `public/sw.js` : version `v1.7.5` et cache PWA `v373`.
+
 ## [Unreleased]
 
 **Menus déroulants du calendrier v1.7.4**

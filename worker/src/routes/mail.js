@@ -5,6 +5,7 @@ import {
   countUnreadInFolder,
   createAlias,
   createRandomAlias,
+  updateAlias,
   createOrUpdateThread,
   getContacts,
   getDefaultSignature,
@@ -650,6 +651,24 @@ export async function mailAliasRoute({ request, env, auth }) {
   }
 
   throw httpError("INVALID_PARAMETER", 400, { detail: "alias_required" });
+}
+
+export async function mailAliasUpdateRoute({ request, env, auth }) {
+  if (request.method !== "PATCH") throw httpError("METHOD_NOT_ALLOWED", 405);
+
+  if (!auth?.userId) throw httpError("UNAUTHORIZED", 401);
+
+  const body = await request.json().catch(() => ({}));
+  const id = safeText(body.id, 64);
+  if (!id) throw httpError("INVALID_PARAMETER", 400, { detail: "id" });
+
+  const updated = await updateAlias(env, auth.userId, id, {
+    display_name: body.display_name,
+    is_primary: body.is_primary,
+  });
+  if (!updated) throw httpError("INVALID_PARAMETER", 400, { detail: "alias_unavailable" });
+
+  return { data: updated };
 }
 
 export async function mailReceiveHandler(message, env, context) {

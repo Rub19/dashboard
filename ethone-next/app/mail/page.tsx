@@ -4,11 +4,12 @@ import { useCallback, useMemo, useState } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useMail, type MailMessage } from "@/lib/hooks/useMail";
 import { useToast } from "@/components/ToastProvider";
+import { useUserState } from "@/lib/hooks/useUserState";
 import MailSidebar, { FOLDERS, type MailFolder } from "@/components/mail/MailSidebar";
 import MailThreadList from "@/components/mail/MailThreadList";
 import MailDetailView from "@/components/mail/MailDetailView";
 import ComposeMailModal, { type ComposeState } from "@/components/mail/ComposeMailModal";
-import MailAliasSetup from "@/components/mail/MailAliasSetup";
+import MailOnboarding from "@/components/mail/MailOnboarding";
 
 function formatMailDate(iso: string) {
   try {
@@ -38,6 +39,7 @@ export default function MailPage() {
     aliases,
     aliasesLoading,
     createAlias,
+    updateAlias,
   } = useMail();
 
   const [activeThread, setActiveThread] = useState<MailMessage[] | null>(null);
@@ -45,6 +47,7 @@ export default function MailPage() {
   const [composeInitial, setComposeInitial] = useState<Partial<ComposeState>>({});
   const [submitting, setSubmitting] = useState(false);
   const [composeDraftId, setComposeDraftId] = useState<string | undefined>();
+  const [onboardingCompleted, setOnboardingCompleted] = useUserState("mailOnboardingCompleted", false);
   const [composeInReplyTo, setComposeInReplyTo] = useState<string | undefined>();
   const [composeReferences, setComposeReferences] = useState<string[] | undefined>();
 
@@ -263,14 +266,13 @@ export default function MailPage() {
     );
   }
 
-  if (aliases.length === 0) {
+  if (!onboardingCompleted) {
     return (
-      <MailAliasSetup
+      <MailOnboarding
+        aliases={aliases}
         createAlias={createAlias}
-        onCreated={() => {
-          setActiveThread(null);
-          setComposeOpen(false);
-        }}
+        updateAlias={updateAlias}
+        onComplete={() => setOnboardingCompleted(true)}
       />
     );
   }
@@ -284,6 +286,9 @@ export default function MailPage() {
         unread={unread}
         onCompose={() => openCompose("new")}
         canCompose={aliases.length > 0}
+        aliases={aliases}
+        createAlias={createAlias}
+        updateAlias={updateAlias}
       />
 
       <MailThreadList

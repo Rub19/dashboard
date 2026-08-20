@@ -1308,9 +1308,61 @@ const v181_de: ChangelogEntry = {
   ],
 };
 
+const v182_fr: ChangelogEntry = {
+  version: "v1.7.5",
+  date: "2026-08-20",
+  title: "Profil mail et onboarding",
+  items: [
+    "Bouton Profil mail dans la barre latérale : affiche l'adresse principale, permet de copier l'email, de modifier le nom affiché et de changer l'adresse principale.",
+    "Onboarding mail forcé : demande à chaque utilisateur (nouveau ou existant) de confirmer/créer son adresse @ethone.dev et son nom affiché.",
+    "API worker : PATCH /api/mail/alias pour mettre à jour le display_name et le statut is_primary d'un alias.",
+    "Le nom affiché de l'alias est conservé comme expéditeur par défaut lors de la rédaction d'un message.",
+    "Mise à jour de la version en v1.7.5.",
+  ],
+};
+
+const v182_en: ChangelogEntry = {
+  version: "v1.7.5",
+  date: "2026-08-20",
+  title: "Mail profile and onboarding",
+  items: [
+    "Mail Profile button in the sidebar: shows the primary address, lets you copy the email, edit the display name and set another alias as primary.",
+    "Forced mail onboarding: asks every user (new or existing) to confirm/create their @ethone.dev address and display name.",
+    "Worker API: PATCH /api/mail/alias to update an alias's display_name and is_primary status.",
+    "The alias display name is kept as the default sender when composing a message.",
+    "Updated version to v1.7.5.",
+  ],
+};
+
+const v182_es: ChangelogEntry = {
+  version: "v1.7.5",
+  date: "2026-08-20",
+  title: "Perfil de correo y onboarding",
+  items: [
+    "Botón de perfil de correo en la barra lateral: muestra la dirección principal, permite copiar el email, editar el nombre mostrado y definir otra dirección como principal.",
+    "Onboarding de correo forzado: pide a cada usuario (nuevo o existente) que confirme/creé su dirección @ethone.dev y su nombre mostrado.",
+    "API worker: PATCH /api/mail/alias para actualizar el display_name y el estado is_primary de un alias.",
+    "El nombre mostrado del alias se conserva como remitente por defecto al redactar un mensaje.",
+    "Versión actualizada a v1.7.5.",
+  ],
+};
+
+const v182_de: ChangelogEntry = {
+  version: "v1.7.5",
+  date: "2026-08-20",
+  title: "Mail-Profil und Onboarding",
+  items: [
+    "Mail-Profil-Schaltfläche in der Seitenleiste: zeigt die Hauptadresse, ermöglicht das Kopieren der E-Mail, Bearbeiten des Anzeigenamens und Festlegen einer anderen Adresse als Hauptadresse.",
+    "Erzwungenes Mail-Onboarding: fordert jeden Benutzer (neu oder bestehend) auf, seine @ethone.dev-Adresse und seinen Anzeigenamen zu bestätigen/erstellen.",
+    "Worker-API: PATCH /api/mail/alias zum Aktualisieren von display_name und is_primary-Status eines Alias.",
+    "Der Anzeigename des Alias wird beim Verfassen einer Nachricht als Standardabsender beibehalten.",
+    "Version auf v1.7.5 aktualisiert.",
+  ],
+};
+
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
-  en: [v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
+  fr: [v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v182_en, v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -1356,7 +1408,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
+  es: [v182_es, v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -1402,7 +1454,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
+  de: [v182_de, v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

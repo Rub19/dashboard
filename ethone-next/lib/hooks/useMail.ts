@@ -496,6 +496,12 @@ export function useMail() {
     return res?.data;
   }
 
+  async function updateAlias(id: string, patch: { display_name?: string; is_primary?: boolean }) {
+    const res = await fetchWorker("/api/mail/alias", { method: "PATCH", body: JSON.stringify({ id, ...patch }) });
+    await fetchAliases();
+    return res?.data;
+  }
+
   async function analyzeMessage(id: string) {
     return fetchWorker("/api/mail/analyze", { method: "POST", body: JSON.stringify({ id }) });
   }
@@ -693,6 +699,7 @@ export function useMail() {
     trustSender,
     untrustSender,
     createAlias,
+    updateAlias,
     analyzeMessage,
     suggestReplies,
     getAnalytics,

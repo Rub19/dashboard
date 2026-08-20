@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 import { Inbox, Star, Send, FileEdit, Archive, Trash2, AlertTriangle, SquarePen } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
+import MailProfileButton from "./MailProfileButton";
+import type { MailAlias } from "@/lib/hooks/useMail";
 
 export const FOLDERS = ["inbox", "starred", "sent", "drafts", "archive", "trash", "spam"] as const;
 
@@ -15,6 +17,9 @@ type MailSidebarProps = {
   unread: number;
   onCompose: () => void;
   canCompose?: boolean;
+  aliases?: MailAlias[];
+  createAlias?: (input: string | { alias?: string; display_name?: string; random?: boolean }) => Promise<MailAlias | null | undefined>;
+  updateAlias?: (id: string, patch: { display_name?: string; is_primary?: boolean }) => Promise<MailAlias | null | undefined>;
 };
 
 const FOLDER_ICONS: Record<MailFolder, React.ReactNode> = {
@@ -27,7 +32,7 @@ const FOLDER_ICONS: Record<MailFolder, React.ReactNode> = {
   spam: <AlertTriangle className="h-4 w-4" />,
 };
 
-export default function MailSidebar({ active, onChange, counts, unread, onCompose, canCompose = true }: MailSidebarProps) {
+export default function MailSidebar({ active, onChange, counts, unread, onCompose, canCompose = true, aliases = [], createAlias, updateAlias }: MailSidebarProps) {
   const i18n = useI18n();
 
   return (
@@ -85,12 +90,21 @@ export default function MailSidebar({ active, onChange, counts, unread, onCompos
         </div>
       </div>
 
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
-        <p className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider">{i18n("storage") || "Stockage"}</p>
-        <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-xl bg-white/[0.05]">
-          <div className="h-full w-[12%] rounded-xl bg-[var(--accent-color,#a855f7)]" />
+      <div className="space-y-2">
+        <MailProfileButton
+          aliases={aliases}
+          primaryAlias={aliases.find((a) => a.is_primary)}
+          createAlias={createAlias}
+          updateAlias={updateAlias}
+        />
+
+        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+          <p className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider">{i18n("storage") || "Stockage"}</p>
+          <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-xl bg-white/[0.05]">
+            <div className="h-full w-[12%] rounded-xl bg-[var(--accent-color,#a855f7)]" />
+          </div>
+          <p className="mt-1.5 text-[10px] text-zinc-500">{i18n("usedOf") || "12% utilisé"}</p>
         </div>
-        <p className="mt-1.5 text-[10px] text-zinc-500">{i18n("usedOf") || "12% utilisé"}</p>
       </div>
     </div>
   );

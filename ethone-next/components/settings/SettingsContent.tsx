@@ -1201,7 +1201,7 @@ export default function SettingsContent({
   };
 
   return (
-    <div className="w-full space-y-8 pb-20">
+    <div className="w-full space-y-8 pb-12">
       {CATEGORY_ORDER.map((category) => {
         const sections = sectionsByCategory.get(category.id) || [];
         if (sections.length === 0) return null;

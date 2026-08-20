@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.20 — 2026-08-20
+
+**Changelog plus aéré et textes plus lisibles**
+
+- `app/changelog/page.tsx` : ajout d'un espacement vertical autour de la liste de changelog.
+- `components/ChangelogList.tsx` : textes des items en `font-medium` et plus grand, titres en gras, anciennes entrées moins estompées (`opacity-90`).
+- `package.json`, `package-lock.json`, `UserProfileDropdown.tsx`, `public/sw.js` : version `v1.7.20`, cache `v388`.
+
 ## v1.7.19 — 2026-08-20
 
 **Espacement onglets / contenu dans Settings**

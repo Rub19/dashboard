@@ -14,7 +14,7 @@ export default function ChangelogPage() {
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
       <h1 className="shrink-0 mb-4 text-2xl font-bold">{i18n("changelog")}</h1>
 
-      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll pr-1">
+      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll py-4 pr-1">
         <div className="mx-auto w-full max-w-3xl">
           <ChangelogList entries={changelog} />
         </div>

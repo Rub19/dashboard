@@ -109,8 +109,8 @@ function ChangelogItem({ item, title, dim }: { item: string; title: string; dim?
   return (
     <li
       className={cn(
-        "flex items-start gap-2.5 text-xs leading-relaxed",
-        dim ? "text-zinc-400" : "text-zinc-200",
+        "flex items-start gap-2.5 text-sm font-medium leading-relaxed",
+        dim ? "text-zinc-300" : "text-zinc-100",
       )}
     >
       <span
@@ -164,13 +164,13 @@ function ChangelogCard({
       className={cn(
         "relative flex flex-col gap-2.5 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-[var(--panel-shadow)] backdrop-blur-[var(--panel-blur)] transition-all duration-200",
         compact ? "p-3.5" : "p-5",
-        dim ? "opacity-70" : "hover:border-[var(--accent)]/30",
+        dim ? "opacity-90" : "hover:border-[var(--accent)]/30",
       )}
       style={{ borderLeftColor: cfg.borderColor, borderLeftWidth: compact ? "2px" : "3px" }}
     >
       <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
-          <span className={cn("text-sm font-semibold", dim ? "text-zinc-300" : "text-white")}>
+          <span className={cn("text-base font-bold", dim ? "text-zinc-200" : "text-white")}>
             {entry.title}
           </span>
           <span

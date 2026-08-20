@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.37 — 2026-08-20
+
+**Animation de chargement ETHONE OS restaurée**
+
+- Retrouvée l'ancienne animation du loader dans l'historique Git (barre brillante en dégradé + badge OS).
+- `Loading.tsx` re-stylisé : logo `BrandMark`, titre **ETHONE OS**, barre de progression déterminée avec remplissage `var(--accent)` et shimmer blanc animé.
+- Affichage du pourcentage sous la barre quand `progress` est fourni.
+- Version `v1.7.37`, cache PWA `v405`.
+
 ## v1.7.36 — 2026-08-20
 
 **Écran de chargement forcé jusqu'à 100 %**

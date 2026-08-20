@@ -7,16 +7,16 @@
 @import "tailwindcss";
 
 :root {
-  /* Premium theme engine semantic defaults (Obsidian fallback) */
+  /* Premium theme engine semantic defaults (Violet default accent) */
   --bg-main: #08080a;
   --bg-surface: #0f0f13;
   --bg-sidebar: #0c0c10;
   --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-active: rgba(16, 185, 129, 0.35);
-  --accent-primary: #10b981;
-  --accent-secondary: #06b6d4;
-  --accent-contrast: #0c0c10;
-  --glow-color: rgba(16, 185, 129, 0.25);
+  --border-active: rgba(139, 92, 246, 0.35);
+  --accent-primary: #8b5cf6;
+  --accent-secondary: #a78bfa;
+  --accent-contrast: #ffffff;
+  --glow-color: rgba(139, 92, 246, 0.25);
   --text-primary: #ededed;
   --text-muted: #9ca3af;
 
@@ -28,7 +28,7 @@
   --border: #27272a;
   --muted: #9ca3af;
   --accent: #8b5cf6;
-  --accent-soft: #ede9fe;
+  --accent-soft: rgba(139, 92, 246, 0.2);
 
   --card-radius: 1rem;
   --dock-radius: 1rem;

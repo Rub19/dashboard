@@ -305,7 +305,7 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
       <div className="relative z-10 flex h-full min-h-0 flex-col">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3 md:gap-4">
+          <div className={`flex gap-2 ${compact ? "items-center" : "flex-col items-start"}`}>
             <AnimatedWeatherIcon name={iconName} colorClass={iconColor} compact={compact} />
             <div className="min-w-0">
               <p className={`font-bold tracking-tight text-white ${compact ? "text-2xl" : "text-3xl md:text-4xl"}`}>

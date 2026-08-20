@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.39 — 2026-08-20
+
+**Weather widget : icône au-dessus des informations**
+
+- Empile l'icône météo au-dessus de la température, de la condition et de la ville dans le header du widget.
+- Le mode compact conserve l'affichage horizontal.
+- Version `v1.7.39`, cache PWA `v407`.
+
 ## v1.7.38 — 2026-08-20
 
 **Dynamic Island : plus d'ouverture auto au démarrage/refresh**

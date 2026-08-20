@@ -26,10 +26,10 @@ export default function SettingsSection({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      className="overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-0.5 shadow-sm backdrop-blur-[var(--panel-blur)]"
+      className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] shadow-sm backdrop-blur-[var(--panel-blur)]"
     >
-      <div className="flex items-center justify-between px-4 py-2.5">
-        <div className="flex items-center gap-2.5">
+      <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-3">
+        <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent)]/10 text-[var(--accent)]">
             <Icon name={icon} className="h-4 w-4" />
           </div>
@@ -41,7 +41,7 @@ export default function SettingsSection({
           </span>
         ) : null}
       </div>
-      <div className="divide-y divide-[var(--border)]/40">{children}</div>
+      <div className="divide-y divide-[var(--border-5)]">{children}</div>
     </motion.div>
   );
 }

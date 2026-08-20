@@ -34,6 +34,8 @@ type BaseFieldDef = {
   saveMode?: "instant" | "explicit";
   defaultValue?: unknown;
   keywords?: string[];
+  description?: string;
+  options?: unknown;
   onAfterChange?: (value: unknown) => void | Promise<void>;
   autoComplete?: string;
 };
@@ -57,7 +59,7 @@ export type FieldDef =
   | (BaseFieldDef & { type: "color" | "text" | "email" | "password" })
   | (BaseFieldDef & {
       type: "custom";
-      render: (value: unknown, onChange: (v: unknown) => void) => React.ReactNode;
+      render: (value: unknown, onChange: (v: unknown) => void, options?: unknown) => React.ReactNode;
     });
 
 export default function SettingField({ field }: { field: FieldDef }) {
@@ -158,7 +160,7 @@ export default function SettingField({ field }: { field: FieldDef }) {
           />
         );
       case "custom":
-        return field.render(value, onChange);
+        return field.render(value, onChange, field.options);
       default:
         return null;
     }
@@ -173,17 +175,20 @@ export default function SettingField({ field }: { field: FieldDef }) {
       data-setting-label={field.label}
       className={`relative px-4 py-2 transition-opacity ${hidden ? "hidden" : ""}`}
     >
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex min-w-0 flex-1 items-center gap-2.5">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex min-w-0 flex-1 items-start gap-2.5">
           {isDirty && (
             <span
-              className="h-2 w-2 rounded-full bg-[var(--accent)]"
+              className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[var(--accent)]"
               title="Modifié"
               aria-label="Modifié"
             />
           )}
           <div className="flex min-w-0 flex-col">
             <span className="text-sm font-medium text-[var(--foreground)]">{field.label}</span>
+            {field.description && (
+              <span className="text-[11px] leading-tight text-[var(--muted)]">{field.description}</span>
+            )}
             {form.query && field.keywords && field.keywords.length > 0 && (
               <span className="text-[10px] text-[var(--muted)]">{field.keywords.join(" > ")}</span>
             )}

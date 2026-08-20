@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSound } from "@/lib/sound";
@@ -21,12 +20,18 @@ import {
 } from "@/lib/presets";
 import { AiProviderPanel } from "@/components/AiProviderPanel";
 import LiveSettings from "@/components/LiveSettings";
+import IntegrationsSettings from "@/components/IntegrationsSettings";
 import SettingsSection from "./SettingsSection";
 import SettingField, { type FieldDef } from "./SettingField";
 import { SwitchControl } from "./SettingControls";
 import { useSettingsForm } from "./SettingsFormContext";
 import { useModifiedCount } from "./useModifiedCount";
 import AppearanceSettings from "./AppearanceSettings";
+import UserProfileCard from "./UserProfileCard";
+import MaintenancePanel from "./MaintenancePanel";
+import LanguageControl from "./LanguageControl";
+import SoundPackControl from "./SoundPackControl";
+import { CATEGORY_ORDER, sectionCategory } from "./SettingsNavigation";
 
 const THEMES = [
   { id: "default", label: "Aura ETHONE" },
@@ -257,6 +262,7 @@ type SectionDef = {
   id: string;
   label: string;
   icon: string;
+  category: string;
   keywords: string[];
   fields: FieldDef[];
   children?: React.ReactNode;
@@ -585,13 +591,13 @@ function fieldKeys(fields: FieldDef[]): { key: string; path?: string }[] {
   return fields.map((f) => ({ key: f.key, path: f.path }));
 }
 
-const TAB_SECTIONS: Record<string, string[]> = {
-  general: ["appearance", "typography", "language", "density", "sound", "notifications", "workspace", "account"],
-  security: ["security"],
-  account: ["account"],
-};
-
-export default function SettingsContent({ activeTab }: { activeTab: string }) {
+export default function SettingsContent({
+  contentRef,
+  onCategoryChange,
+}: {
+  contentRef?: React.RefObject<HTMLDivElement | null>;
+  onCategoryChange?: (category: string) => void;
+}) {
   const { settings } = useSettings();
   const i18n = useI18n();
   const form = useSettingsForm();
@@ -779,12 +785,19 @@ export default function SettingsContent({ activeTab }: { activeTab: string }) {
       {
         key: "language",
         label: i18n("settingsLanguage", "Langue de l'interface"),
-        type: "button-grid",
+        type: "custom",
+        description: i18n("settingsLanguageDesc", "Langue d'affichage de l'interface"),
         options: LANGUAGES.map((lang) => ({
           id: lang.id,
           label: i18n(`lang${lang.id.charAt(0).toUpperCase() + lang.id.slice(1)}`),
         })),
-        cols: 2,
+        render: (value, onChange, options) => (
+          <LanguageControl
+            value={String(value)}
+            onChange={onChange}
+            options={Array.isArray(options) ? options : []}
+          />
+        ),
         keywords: ["langue", "language", "i18n"],
       },
     ],
@@ -986,9 +999,16 @@ export default function SettingsContent({ activeTab }: { activeTab: string }) {
       {
         key: "soundPack",
         label: i18n("soundPack"),
-        type: "button-grid",
+        type: "custom",
+        description: i18n("soundPackDesc", "Pack de sons de l'interface"),
         options: SOUND_PACKS.map((pack) => ({ id: pack, label: i18n(`soundPack${pack.charAt(0).toUpperCase() + pack.slice(1)}`) })),
-        cols: 3,
+        render: (value, onChange, options) => (
+          <SoundPackControl
+            value={String(value)}
+            onChange={onChange}
+            options={Array.isArray(options) ? (options as { id: string; label: string }[]) : []}
+          />
+        ),
         keywords: ["son", "pack", "thème sonore"],
       },
       {
@@ -1005,41 +1025,48 @@ export default function SettingsContent({ activeTab }: { activeTab: string }) {
 
   const mainSections: SectionDef[] = useMemo(
     () => [
-      { id: "appearance", label: i18n("appearance"), icon: "palette", keywords: ["préférences", "apparence"], fields: [], children: <AppearanceSettings /> },
-      { id: "typography", label: i18n("typography"), icon: "type", keywords: ["préférences", "typographie"], fields: typographyFields },
-      { id: "language", label: i18n("language"), icon: "globe", keywords: ["préférences", "langue"], fields: languageFields },
-      { id: "density", label: i18n("density"), icon: "gauge", keywords: ["préférences", "density", "densité"], fields: densityFields },
-      { id: "sound", label: i18n("sound"), icon: "volume", keywords: ["préférences", "son"], fields: soundFields },
-      { id: "account", label: i18n("account"), icon: "user", keywords: ["compte", "profil", "identité"], fields: accountFields },
-      { id: "security", label: i18n("security"), icon: "shield", keywords: ["sécurité", "2fa"], fields: securityFields },
-      { id: "notifications", label: i18n("notifications"), icon: "bell", keywords: ["notifications"], fields: notificationsFields },
-      { id: "workspace", label: i18n("workspace"), icon: "layout-grid", keywords: ["workspace", "intégrations", "dock", "brain"], fields: workspaceFields },
+      { id: "appearance", label: i18n("appearance"), icon: "palette", category: "appearance", keywords: ["préférences", "apparence"], fields: [], children: <AppearanceSettings /> },
+      { id: "typography", label: i18n("typography"), icon: "type", category: "appearance", keywords: ["préférences", "typographie"], fields: typographyFields },
+      { id: "language", label: i18n("language"), icon: "globe", category: "language", keywords: ["préférences", "langue"], fields: languageFields },
+      { id: "density", label: i18n("density"), icon: "gauge", category: "appearance", keywords: ["préférences", "density", "densité"], fields: densityFields },
+      { id: "sound", label: i18n("sound"), icon: "volume", category: "audio", keywords: ["préférences", "son"], fields: soundFields },
+      { id: "account", label: i18n("account"), icon: "user", category: "profile", keywords: ["compte", "profil", "identité"], fields: accountFields, children: <UserProfileCard /> },
+      { id: "security", label: i18n("security"), icon: "shield", category: "security", keywords: ["sécurité", "2fa"], fields: securityFields },
+      { id: "notifications", label: i18n("notifications"), icon: "bell", category: "notifications", keywords: ["notifications"], fields: notificationsFields },
+      { id: "workspace", label: i18n("workspace"), icon: "layout-grid", category: "workspace", keywords: ["workspace", "intégrations", "dock", "brain"], fields: workspaceFields },
+      { id: "integrations", label: i18n("connectionsTitle") || "Intégrations", icon: "plug", category: "workspace", keywords: ["intégrations", "connexions", "workspace", "discord", "spotify"], fields: [], children: (
+        <div className="h-[28rem] overflow-hidden rounded-[var(--panel-radius)]">
+          <IntegrationsSettings />
+        </div>
+      ) },
     ],
     [i18n, typographyFields, languageFields, densityFields, soundFields, accountFields, securityFields, notificationsFields, workspaceFields]
   );
 
   const advancedSections: SectionDef[] = useMemo(
     () => [
-      { id: "presets", label: i18n("presets"), icon: "layers", keywords: ["presets", "export", "import"], fields: [], children: <PresetsPanel /> },
-      { id: "ai", label: i18n("ai") || "IA", icon: "brain", keywords: ["ia", "providers", "intelligence"], fields: [], children: <AiProviderPanel /> },
-      { id: "live", label: i18n("live"), icon: "plug", keywords: ["live", "intégrations", "spotify", "discord"], fields: [], children: <LiveSettings /> },
+      { id: "presets", label: i18n("presets"), icon: "layers", category: "advanced", keywords: ["presets", "export", "import"], fields: [], children: <PresetsPanel /> },
+      { id: "ai", label: i18n("ai") || "IA", icon: "brain", category: "advanced", keywords: ["ia", "providers", "intelligence"], fields: [], children: <AiProviderPanel /> },
+      { id: "live", label: i18n("live"), icon: "plug", category: "advanced", keywords: ["live", "intégrations", "spotify", "discord"], fields: [], children: <LiveSettings /> },
       ...(settings.densityMode === "custom"
         ? [
             {
               id: "density-custom",
               label: i18n("density"),
               icon: "gauge",
+              category: "advanced",
               keywords: ["density", "personnalisé", "avancé"],
               fields: densityCustomFields,
               skipFields: true,
               children: <DensityCustomPanel fields={densityCustomFields} />,
-            },
+            } as SectionDef,
           ]
         : []),
       {
         id: "sound-preview",
         label: i18n("soundPack"),
         icon: "play",
+        category: "advanced",
         keywords: ["son", "pack", "aperçu", "preview", "ethone", "minimal", "classic", "apple", "cyber"],
         fields: [],
         children: <SoundPackPreview />,
@@ -1048,21 +1075,22 @@ export default function SettingsContent({ activeTab }: { activeTab: string }) {
         id: "raw-export",
         label: "Export brut",
         icon: "share-2",
+        category: "advanced",
         keywords: ["export", "import", "json", "brut"],
         fields: [],
         children: <RawSettingsPanel />,
       },
+      {
+        id: "maintenance",
+        label: i18n("maintenance") || "Maintenance",
+        icon: "sliders-horizontal",
+        category: "advanced",
+        keywords: ["maintenance", "cache", "worker", "performance", "mémoire"],
+        fields: [],
+        children: <MaintenancePanel />,
+      },
     ],
     [i18n, settings.densityMode, densityCustomFields]
-  );
-
-  const filteredMainSections = useMemo(
-    () => {
-      const allowed = TAB_SECTIONS[activeTab];
-      if (!allowed || allowed.length === 0) return mainSections;
-      return mainSections.filter((s) => allowed.includes(s.id));
-    },
-    [activeTab, mainSections]
   );
 
   const modifiedCounts = {
@@ -1075,6 +1103,7 @@ export default function SettingsContent({ activeTab }: { activeTab: string }) {
     notifications: useModifiedCount(fieldKeys(notificationsFields)),
     workspace: useModifiedCount(fieldKeys(workspaceFields)),
     densityCustom: useModifiedCount(fieldKeys(densityCustomFields)),
+    account: 0,
   };
 
   const accountModifiedCount = useMemo(
@@ -1093,89 +1122,109 @@ export default function SettingsContent({ activeTab }: { activeTab: string }) {
     [form]
   );
 
+  const visibleMainSections = useMemo(
+    () => (!form.query.trim() ? mainSections : mainSections.filter(sectionVisible)),
+    [mainSections, sectionVisible, form.query]
+  );
+
   const visibleAdvancedSections = useMemo(
-    () =>
-      !form.query.trim()
-        ? advancedSections
-        : advancedSections.filter(sectionVisible),
+    () => (!form.query.trim() ? advancedSections : advancedSections.filter(sectionVisible)),
     [advancedSections, sectionVisible, form.query]
   );
 
-  const advancedOpen =
-    visibleAdvancedSections.length > 0 &&
-    (activeTab === "general" || form.showAdvanced || form.query.trim().length > 0);
-
-  const advancedModifiedCount = useMemo(
-    () =>
-      visibleAdvancedSections.some((s) => s.id === "density-custom")
-        ? modifiedCounts.densityCustom
-        : 0,
-    [visibleAdvancedSections, modifiedCounts.densityCustom]
+  const allVisibleSections = useMemo(
+    () => [...visibleMainSections, ...visibleAdvancedSections],
+    [visibleMainSections, visibleAdvancedSections]
   );
 
-  return (
-    <div className="w-full space-y-6">
-      <div className="grid grid-cols-1 gap-6">
-        {filteredMainSections.map((section) => (
-          <SettingsSection
-            key={section.id}
-            id={section.id}
-            label={section.label}
-            icon={section.icon}
-            modifiedCount={
-              section.id === "account"
-                ? accountModifiedCount
-                : (modifiedCounts as Record<string, number>)[section.id]
-            }
-            visible={!form.query.trim() ? true : sectionVisible(section)}
-          >
-            {section.fields.map((field) => (
-              <SettingField key={field.key} field={field} />
-            ))}
-            {section.children}
-          </SettingsSection>
-        ))}
-      </div>
+  const sectionsByCategory = useMemo(() => {
+    const map = new Map<string, SectionDef[]>();
+    for (const cat of CATEGORY_ORDER) {
+      map.set(cat.id, []);
+    }
+    for (const section of allVisibleSections) {
+      const cat = section.category || sectionCategory(section.id);
+      const list = map.get(cat) || [];
+      list.push(section);
+      map.set(cat, list);
+    }
+    return map;
+  }, [allVisibleSections]);
 
-      <AnimatePresence initial={false}>
-        {advancedOpen && (
-          <motion.div
-            key="advanced"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15, ease: "easeOut" as const }}
-            className="overflow-hidden"
+  const categoryRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  useEffect(() => {
+    const root = contentRef?.current;
+    if (!root) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible[0]) {
+          const id = visible[0].target.getAttribute("data-category");
+          if (id && onCategoryChange) onCategoryChange(id);
+        }
+      },
+      { root, rootMargin: "-20% 0px -70% 0px", threshold: 0 }
+    );
+    Object.values(categoryRefs.current).forEach((el) => el && observer.observe(el));
+    return () => observer.disconnect();
+  }, [contentRef, onCategoryChange, allVisibleSections]);
+
+  const renderSection = (section: SectionDef) => {
+    const modifiedCount =
+      section.id === "account"
+        ? accountModifiedCount
+        : section.id === "density-custom"
+          ? modifiedCounts.densityCustom
+          : (modifiedCounts as Record<string, number>)[section.id];
+
+    return (
+      <SettingsSection
+        key={section.id}
+        id={section.id}
+        label={section.label}
+        icon={section.icon}
+        modifiedCount={modifiedCount}
+        visible={!form.query.trim() ? true : sectionVisible(section)}
+      >
+        {section.id === "account" && section.children}
+        {!section.skipFields &&
+          section.fields.map((field) => <SettingField key={field.key} field={field} />)}
+        {section.id !== "account" && section.children}
+      </SettingsSection>
+    );
+  };
+
+  return (
+    <div className="w-full space-y-8 pb-20">
+      {CATEGORY_ORDER.map((category) => {
+        const sections = sectionsByCategory.get(category.id) || [];
+        if (sections.length === 0) return null;
+
+        return (
+          <div
+            key={category.id}
+            data-category={category.id}
+            ref={(el) => { categoryRefs.current[category.id] = el; }}
+            className="space-y-4"
           >
-            <SettingsSection
-              id="advanced"
-              label="Paramètres avancés"
-              icon="sliders-horizontal"
-              modifiedCount={advancedModifiedCount}
-              visible
-            >
-              <div className="grid grid-cols-1 gap-6">
-                {visibleAdvancedSections.map((section) => (
-                  <SettingsSection
-                    key={section.id}
-                    id={section.id}
-                    label={section.label}
-                    icon={section.icon}
-                    modifiedCount={section.id === "density-custom" ? modifiedCounts.densityCustom : undefined}
-                    visible
-                  >
-                    {!section.skipFields &&
-                      section.fields.map((field) => (
-                        <SettingField key={field.key} field={field} />
-                      ))}
-                    {section.children}
-                  </SettingsSection>
-                ))}
-              </div>
-            </SettingsSection>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            {category.id === "advanced" && (
+              <h2 className="sticky top-0 z-10 -mx-1 mb-2 flex items-center gap-2 rounded-[var(--panel-radius)] border border-white/[0.06] bg-[var(--panel-bg)]/80 px-4 py-2 text-sm font-semibold text-[var(--foreground)] backdrop-blur-[var(--panel-blur)]">
+                <Icon name={category.icon} className="h-4 w-4 text-[var(--accent)]" />
+                {category.label}
+              </h2>
+            )}
+            {category.id !== "advanced" && (
+              <h2 className="sr-only">{category.label}</h2>
+            )}
+            <div className="grid grid-cols-1 gap-4">
+              {sections.map(renderSection)}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

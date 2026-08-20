@@ -5,6 +5,7 @@ import Switch from "@/components/Switch";
 import Select from "@/components/ui/Select";
 import { Checkbox } from "@/components/ui/Checkbox";
 import Slider from "@/components/ui/Slider";
+import { cn } from "@/lib/utils";
 
 export function SwitchControl({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
   return <Switch checked={checked} onChange={onChange} labels={false} size="md" />;
@@ -23,7 +24,7 @@ export function RangeControl({
   max?: number;
   unit?: string;
 }) {
-  return <Slider value={value} onChange={onChange} min={min} max={max} unit={unit} className="w-full" />;
+  return <Slider value={value} onChange={onChange} min={min} max={max} unit={unit} className="w-40 sm:w-48" />;
 }
 
 export function ButtonGridControl<T extends string>({
@@ -37,10 +38,43 @@ export function ButtonGridControl<T extends string>({
   options: { id: T; label: string }[];
   cols?: number;
 }) {
+  // Small option sets become a compact segmented control row.
+  if (options.length <= 4) {
+    return (
+      <div className="flex items-stretch rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/[0.5] p-0.5 backdrop-blur-[var(--panel-blur)]">
+        {options.map((opt) => {
+          const active = value === opt.id;
+          return (
+            <button
+              key={opt.id}
+              type="button"
+              onClick={() => onChange(opt.id)}
+              className={cn(
+                "relative flex-1 min-w-0 select-none rounded-[calc(var(--panel-radius)-2px)] px-2.5 py-1.5 text-[11px] font-medium transition-all",
+                active
+                  ? "bg-[var(--accent)] text-zinc-950 shadow-sm"
+                  : "text-[var(--muted)] hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)]"
+              )}
+            >
+              <span className="block truncate text-center">{opt.label}</span>
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
+
   const gridClass =
-    cols === 2 ? "grid-cols-2" : cols === 4 ? "grid-cols-2 sm:grid-cols-4" : cols === 5 ? "grid-cols-2 sm:grid-cols-5" : "grid-cols-3";
+    cols === 2
+      ? "grid-cols-2"
+      : cols === 4
+        ? "grid-cols-2 sm:grid-cols-4"
+        : cols === 5
+          ? "grid-cols-2 sm:grid-cols-5"
+          : "grid-cols-3";
+
   return (
-    <div className={`grid ${gridClass} gap-1.5`}>
+    <div className={`grid ${gridClass} gap-1`}>
       {options.map((opt) => {
         const active = value === opt.id;
         return (
@@ -48,14 +82,15 @@ export function ButtonGridControl<T extends string>({
             key={opt.id}
             type="button"
             onClick={() => onChange(opt.id)}
-            className={`group relative flex items-center justify-center gap-1.5 rounded-[var(--panel-radius)] border px-2 py-1.5 text-xs font-medium transition-colors duration-150 ${
+            className={cn(
+              "group relative flex items-center justify-center gap-1 rounded-full border px-2 py-1 text-[11px] font-medium transition-colors duration-150",
               active
-                ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)] shadow-sm"
-                : "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--foreground)] hover:border-[var(--accent)]/50 hover:bg-[var(--panel-bg)]"
-            } backdrop-blur-[var(--panel-blur)]`}
+                ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
+                : "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--foreground)] hover:border-[var(--accent)]/50"
+            )}
           >
             {active && <Icon name="check" className="h-3 w-3" />}
-            <span className="relative z-10">{opt.label}</span>
+            <span className="relative z-10 truncate">{opt.label}</span>
           </button>
         );
       })}

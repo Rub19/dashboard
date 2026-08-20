@@ -2,6 +2,22 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.28 — 2026-08-20
+
+**Refonte UI/UX complète de la page Paramètres (Linear / Raycast / macOS Settings)**
+
+- `components/settings/SettingsLayout.tsx` : suppression de l'ancienne grille de cartes et des onglets ; nouveau layout split-view avec sidebar de catégories (8 catégories) et barre supérieure (recherche, réinitialisation, enregistrement, pastille de sync).
+- `components/settings/SettingsNavigation.tsx` : navigation verticale et horizontale (desktop/mobile) entre les catégories Profil, Apparence, Audio, Workspace, Langue, Notifications, Sécurité et Avancé.
+- `components/settings/SettingsContent.tsx` : regroupement des sections par catégorie, `UserProfileCard` en tête du profil, section `integrations` dans Workspace, panneau `maintenance` dans Avancé.
+- `components/settings/SettingsSection.tsx` : conteneurs en verre sombre `bg-white/[0.03] border-white/10 rounded-2xl` avec dividers subtils.
+- `components/settings/SettingField.tsx` et `components/settings/SettingControls.tsx` : description optionnelle, sélecteurs segmentés compacts, largeur contrôlée pour les curseurs.
+- `components/settings/UserProfileCard.tsx` : bannière dégradée, avatar 64x64, badge de session, email, ID public masquable, actions rapides (`Éditer profil`, `Lier Discord`, `Changer de mot de passe`).
+- `components/settings/LanguageControl.tsx` : sélecteur de langue avec drapeaux vectoriels (fr/en/es/de).
+- `components/settings/SoundPackControl.tsx` : sélecteur de pack sonore avec bouton de pré-écoute.
+- `components/settings/MaintenancePanel.tsx` : vider le cache et recharger (`forceAppReload`), resynchroniser le Worker, afficher la mémoire et la latence.
+- `components/ui/Select.tsx` : `label` accepte `React.ReactNode` pour afficher les drapeaux.
+- Version `v1.7.28`, cache PWA `v396`.
+
 ## v1.7.27 — 2026-08-20
 
 **Espace accru entre la barre d'onglets Settings et le contenu**

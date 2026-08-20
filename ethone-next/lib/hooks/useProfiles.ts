@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { fetchWorker } from "@/lib/api";
+import { fetchWorkerCached } from "@/lib/hooks/useCachedFetch";
 
 export type Profile = {
   id: string;
@@ -37,9 +38,11 @@ export function useProfiles() {
     [profiles, active]
   );
 
-  const fetchAll = useCallback(async () => {
+  const fetchAll = useCallback(async (force = false) => {
     try {
-      const res = await fetchWorker("/api/profiles");
+      const res = force
+        ? await fetchWorker("/api/profiles")
+        : await fetchWorkerCached("/api/profiles");
       const list = Array.isArray(res?.data?.list) ? res.data.list.map(mapProfile) : [];
       const activeEntry = res?.data?.active ? mapProfile(res.data.active) : list[0] || null;
       setProfiles(list);
@@ -70,7 +73,7 @@ export function useProfiles() {
     });
     const created = res?.data ? mapProfile(res.data) : null;
     if (!created) throw new Error("Profile creation failed");
-    await fetchAll();
+    await fetchAll(true);
     return created;
   }
 
@@ -89,7 +92,7 @@ export function useProfiles() {
       method: "PATCH",
       body: JSON.stringify(body),
     });
-    await fetchAll();
+    await fetchAll(true);
   }
 
   async function remove(id: string) {
@@ -97,7 +100,7 @@ export function useProfiles() {
       method: "DELETE",
       body: JSON.stringify({ id }),
     });
-    await fetchAll();
+    await fetchAll(true);
   }
 
   async function select(id: string) {
@@ -109,7 +112,7 @@ export function useProfiles() {
         method: "POST",
         body: JSON.stringify({ id }),
       });
-      await fetchAll();
+      await fetchAll(true);
     } catch {
       setActive((prev) => (prev === id ? "" : prev));
       throw new Error("Failed to activate profile");
@@ -129,5 +132,5 @@ export function useProfiles() {
     });
   }
 
-  return { profiles, active, activeProfile, loaded, reload: fetchAll, create, update, remove, select, duplicate };
+  return { profiles, active, activeProfile, loaded, reload: () => fetchAll(true), create, update, remove, select, duplicate };
 }

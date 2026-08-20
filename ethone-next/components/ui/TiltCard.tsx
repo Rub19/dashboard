@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useRef } from "react";
+import { useRef, useCallback } from "react";
 import type { TargetAndTransition, Transition } from "framer-motion";
 import { motion, useMotionTemplate, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
 import { SPRING_MOUSE } from "@/lib/ease";
@@ -51,22 +51,49 @@ export function TiltCard({
   const srx = useSpring(rx, SPRING_MOUSE);
   const sry = useSpring(ry, SPRING_MOUSE);
 
-  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const rafRef = useRef<number | null>(null);
+  const pendingRef = useRef<{ clientX: number; clientY: number } | null>(null);
+
+  const apply = useCallback(() => {
+    rafRef.current = null;
     const el = ref.current;
-    if (!el || !enabled) return;
+    const pointer = pendingRef.current;
+    if (!el || !pointer) {
+      rx.set(0);
+      ry.set(0);
+      return;
+    }
     const rect = el.getBoundingClientRect();
-    const px = (e.clientX - rect.left) / rect.width;
-    const py = (e.clientY - rect.top) / rect.height;
+    const px = (pointer.clientX - rect.left) / rect.width;
+    const py = (pointer.clientY - rect.top) / rect.height;
     ry.set((px - 0.5) * max);
     rx.set((0.5 - py) * max);
     gx.set(px * 100);
     gy.set(py * 100);
-  };
+  }, [max, rx, ry, gx, gy]);
 
-  const onLeave = () => {
+  const onMove = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!enabled) return;
+      pendingRef.current = { clientX: e.clientX, clientY: e.clientY };
+      if (rafRef.current === null) {
+        rafRef.current = requestAnimationFrame(apply);
+      }
+    },
+    [enabled, apply]
+  );
+
+  const onLeave = useCallback(() => {
+    pendingRef.current = null;
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
     rx.set(0);
     ry.set(0);
-  };
+    gx.set(50);
+    gy.set(50);
+  }, [rx, ry, gx, gy]);
 
   const transform = useMotionTemplate`perspective(1000px) rotateX(${srx}deg) rotateY(${sry}deg)`;
   const glareBg = useMotionTemplate`radial-gradient(circle at ${gx}% ${gy}%, var(--foreground), transparent 50%)`;
@@ -84,7 +111,7 @@ export function TiltCard({
       data-card-isolated="true"
       style={enabled ? { transform, transformStyle: "preserve-3d" } : undefined}
       className={cn(
-        "relative overflow-hidden rounded-2xl",
+        "relative overflow-hidden rounded-2xl backface-hidden",
         enabled ? "will-change-transform" : "",
         className,
       )}

@@ -18,9 +18,23 @@ import {
   sanitizePreset,
   type Preset,
 } from "@/lib/presets";
-import { AiProviderPanel } from "@/components/AiProviderPanel";
-import LiveSettings from "@/components/LiveSettings";
-import IntegrationsSettings from "@/components/IntegrationsSettings";
+import dynamic from "next/dynamic";
+import AiProviderPanelSkeleton from "@/components/AiProviderPanelSkeleton";
+import LiveSettingsSkeleton from "@/components/LiveSettingsSkeleton";
+import IntegrationsSettingsSkeleton from "@/components/IntegrationsSettingsSkeleton";
+
+const AiProviderPanel = dynamic(() => import("@/components/AiProviderPanel").then((m) => m.AiProviderPanel), {
+  ssr: false,
+  loading: () => <AiProviderPanelSkeleton />,
+});
+const LiveSettings = dynamic(() => import("@/components/LiveSettings"), {
+  ssr: false,
+  loading: () => <LiveSettingsSkeleton />,
+});
+const IntegrationsSettings = dynamic(() => import("@/components/IntegrationsSettings"), {
+  ssr: false,
+  loading: () => <IntegrationsSettingsSkeleton />,
+});
 import SettingsSection from "./SettingsSection";
 import SettingField, { type FieldDef } from "./SettingField";
 import { SwitchControl } from "./SettingControls";

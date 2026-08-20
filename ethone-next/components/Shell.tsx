@@ -21,11 +21,20 @@ import StatusBar from "@/components/layout/StatusBar";
 import SkipLink from "@/components/SkipLink";
 import ContextMenuProvider from "@/components/ContextMenuProvider";
 
-const LiveWidget = dynamic(() => import("@/components/LiveWidget"), { ssr: false });
+import LiveWidgetSkeleton from "@/components/LiveWidgetSkeleton";
+import DynamicIslandSkeleton from "@/components/DynamicIslandSkeleton";
+
+const LiveWidget = dynamic(() => import("@/components/LiveWidget"), {
+  ssr: false,
+  loading: () => <LiveWidgetSkeleton />,
+});
 const CosmicBackground = dynamic(() => import("@/components/CosmicBackground"), { ssr: false });
 const Spotlight = dynamic(() => import("@/components/Spotlight"), { ssr: false });
 const VisualHaptics = dynamic(() => import("@/components/VisualHaptics"), { ssr: false });
-const DynamicIslandContainer = dynamic(() => import("@/components/DynamicIslandContainer"), { ssr: false });
+const DynamicIslandContainer = dynamic(() => import("@/components/DynamicIslandContainer"), {
+  ssr: false,
+  loading: () => <DynamicIslandSkeleton />,
+});
 const ShortcutsOverlay = dynamic(() => import("@/components/ShortcutsOverlay"), { ssr: false });
 const KeyboardShortcuts = dynamic(() => import("@/components/KeyboardShortcuts"), { ssr: false });
 

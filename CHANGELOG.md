@@ -2,6 +2,22 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.30 — 2026-08-20
+
+**Optimisation des performances : fluidité, rendu et cache**
+
+- Remplacement des polices `Geist` par `Inter` + `JetBrains Mono` via `next/font/google`, avec `display: swap` et sous-ensemble `latin`.
+- Lazy loading des panneaux lourds des réglages (`AiProviderPanel`, `LiveSettings`, `IntegrationsSettings`) et du `UserProfileDropdown`, avec des squelettes CSS fixes.
+- Nouveau cache mémoire `fetchWorkerCached` / `useCachedFetch` avec TTL 5s et déduplication SWR-like, intégré à `useNowPlaying`, `useLiveData`, `useProfiles` et `useTracker`.
+- Réduction des re-rendus grâce à `React.memo` sur `TopBar`, `Sidebar`, `Dock`, `DockItem`, `BentoCard`, `SettingsSection`, `SettingField` et `Card3D`.
+- `DynamicIslandContainer` : progression Spotify animée via `requestAnimationFrame` et écritures DOM directes (`LiveMediaProgress`, `SpotifyCompact`) pour limiter les re-rendus React.
+- `TiltCard` : calculs de rotation `rotateX`/`rotateY` planifiés sur `requestAnimationFrame`, un seul `requestAnimationFrame` en attente à la fois.
+- Modération du flou (`backdrop-blur-md` sur le Dock et les panneaux) et remplacement de `transition-all` par des transitions GPU (`transform`, `opacity`, `background-color`, `border-color`).
+- `SettingsProvider` : préservation de la référence `settings` quand aucune valeur ne change (via `deepEqual`) pour réduire les re-rendus des consommateurs de contexte.
+- Worker : headers `Cache-Control` publics `s-maxage=5, stale-while-revalidate=30` pour les requêtes GET, `private, no-store` pour les mutations.
+- PWA : header `Cache-Control` pour `version.json` avec `stale-while-revalidate`.
+- Version `v1.7.30`, cache PWA `v398`.
+
 ## v1.7.29 — 2026-08-20
 
 **Moteur de thèmes premium et isolation 3D**

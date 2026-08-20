@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, type CSSProperties } from "react";
+import { memo, type ReactNode, type CSSProperties } from "react";
 import { Icon } from "@/lib/icons";
 
 type BentoCardProps = {
@@ -12,7 +12,7 @@ type BentoCardProps = {
   style?: CSSProperties;
 };
 
-export default function BentoCard({
+function BentoCard({
   children,
   icon,
   title,
@@ -22,7 +22,7 @@ export default function BentoCard({
 }: BentoCardProps) {
   return (
     <div
-      className={`group relative min-w-0 overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-[var(--panel-shadow)] backdrop-blur-[var(--panel-blur)] transition-all duration-200 hover:border-[var(--accent)]/20 ${className}`}
+      className={`group relative min-w-0 overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-[var(--panel-shadow)] backdrop-blur-[var(--panel-blur)] transition-[transform,opacity,border-color,background-color] duration-200 hover:border-[var(--accent)]/20 ${className}`}
       style={style}
     >
       {title && (
@@ -42,3 +42,5 @@ export default function BentoCard({
     </div>
   );
 }
+
+export default memo(BentoCard);

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { fetchWorker } from "../api";
+import { fetchWorkerCached, setCachedData } from "./useCachedFetch";
 
 const CACHE_TTL_MS = 10 * 60 * 1000;
 
@@ -88,9 +89,13 @@ export function useTracker<T extends TrackerGame>(
       setError(null);
 
       try {
-        const res = await fetchWorker(path);
-        const data = (res?.matches || res?.data || res || []) as T[];
+        const res = force
+          ? (await fetchWorker(path))
+          : (await fetchWorkerCached(path));
+        const typed = (res as { matches?: unknown; data?: unknown }) ?? {};
+        const data = ((typed.matches as T[]) || (typed.data as T[]) || (res as T[]) || []) as T[];
         setItems(data);
+        if (force) setCachedData(path, res, {}, 5000);
         localStorage.setItem(
           `ethone-cache:${cacheKey}`,
           JSON.stringify({ data, ts: Date.now() })

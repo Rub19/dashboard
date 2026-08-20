@@ -5,6 +5,9 @@
   "compatibility_date": "2026-07-14",
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": true,
+  "cache": {
+    "enabled": true
+  },
   "observability": {
     "enabled": true,
     "head_sampling_rate": 1

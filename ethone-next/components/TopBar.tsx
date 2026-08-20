@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { ChevronRight, ChevronDown, CloudSun, Sun, Moon, Timer, Eye, EyeOff, PanelLeftOpen, PanelLeftClose } from "lucide-react";
 import { AnimatedSidebarTrigger, useAnimatedSidebar } from "@/components/motion/animated-sidebar";
@@ -8,8 +9,13 @@ import SystemStatusPills from "@/components/SystemStatusPills";
 import CommandBarTrigger from "@/components/CommandBarTrigger";
 import NotificationCenter from "@/components/NotificationCenter";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import UserProfileDropdown from "@/components/UserProfileDropdown";
-import { useState } from "react";
+import UserProfileDropdownSkeleton from "@/components/UserProfileDropdownSkeleton";
+
+const UserProfileDropdown = dynamic(() => import("@/components/UserProfileDropdown"), {
+  ssr: false,
+  loading: () => <UserProfileDropdownSkeleton />,
+});
+import { memo, useState } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useSettings } from "@/components/SettingsProvider";
@@ -47,7 +53,7 @@ function SidebarTopToggle() {
   return (
     <AnimatedSidebarTrigger
       type="button"
-      className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.04] text-zinc-400 shadow-lg backdrop-blur-xl transition-all hover:border-white/20 hover:bg-white/[0.08] hover:text-white active:scale-95 cursor-pointer select-none"
+      className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.04] text-zinc-400 shadow-lg backdrop-blur-md transition-[color,background-color,border-color,opacity,transform] hover:border-white/20 hover:bg-white/[0.08] hover:text-white active:scale-95 cursor-pointer select-none"
       aria-label="Basculer la barre latérale"
       title={open ? "Réduire" : "Ouvrir"}
     >
@@ -95,7 +101,7 @@ function ThemeToggle() {
     <button
       type="button"
       onClick={() => update({ darkMode: !isDark })}
-      className="relative flex h-10 w-10 items-center justify-center rounded-xl text-zinc-400 transition-all duration-150 hover:bg-white/[0.08] hover:text-white active:scale-95 cursor-pointer select-none"
+      className="relative flex h-10 w-10 items-center justify-center rounded-xl text-zinc-400 transition-[color,background-color,border-color,opacity,transform] duration-150 hover:bg-white/[0.08] hover:text-white active:scale-95 cursor-pointer select-none"
       aria-label="Thème"
     >
       <Icon className="h-5 w-5 pointer-events-none" />
@@ -111,7 +117,7 @@ function FocusToggle() {
     <button
       type="button"
       onClick={() => (isActive ? focus.stop() : focus.start("pomodoro"))}
-      className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150 cursor-pointer select-none ${
+      className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-[color,background-color,border-color,opacity,transform] duration-150 cursor-pointer select-none ${
         isActive
           ? "bg-emerald-500/15 text-emerald-400"
           : "text-zinc-400 hover:bg-white/[0.08] hover:text-white active:scale-95"
@@ -130,7 +136,7 @@ function DynamicIslandToggle() {
     <button
       type="button"
       onClick={toggle}
-      className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150 cursor-pointer select-none ${
+      className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-[color,background-color,border-color,opacity,transform] duration-150 cursor-pointer select-none ${
         visible
           ? "text-zinc-400 hover:bg-white/[0.08] hover:text-white active:scale-95"
           : "text-zinc-600 hover:bg-white/[0.08] hover:text-zinc-400 active:scale-95"
@@ -143,7 +149,7 @@ function DynamicIslandToggle() {
   );
 }
 
-export default function TopBar() {
+function TopBar() {
   const { home, page } = useBreadcrumb();
 
   return (
@@ -194,3 +200,5 @@ export default function TopBar() {
     </header>
   );
 }
+
+export default memo(TopBar);

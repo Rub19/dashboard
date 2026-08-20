@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { Icon } from "@/lib/icons";
 import { useSettings } from "@/components/SettingsProvider";
 import { DEFAULTS } from "@/lib/settings";
@@ -62,7 +63,7 @@ export type FieldDef =
       render: (value: unknown, onChange: (v: unknown) => void, options?: unknown) => React.ReactNode;
     });
 
-export default function SettingField({ field }: { field: FieldDef }) {
+function SettingField({ field }: { field: FieldDef }) {
   const { settings } = useSettings();
   const form = useSettingsForm();
 
@@ -212,3 +213,5 @@ export default function SettingField({ field }: { field: FieldDef }) {
     </div>
   );
 }
+
+export default memo(SettingField);

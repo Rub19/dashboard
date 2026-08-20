@@ -2,6 +2,7 @@
 
 import { activityJournal } from "@/lib/activity-journal";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { deepEqual } from "@/lib/equal";
 import { useProfiles, type Profile } from "@/lib/hooks/useProfiles";
 import { loadSettings, saveSettings, saveSettingsAsync, loadSettingsAsync, migrateSettings, Settings, DEFAULTS, type ThemeMode } from "@/lib/settings";
 import { applyPreset, type Preset } from "@/lib/preset-engine";
@@ -111,7 +112,10 @@ export default function SettingsProvider({
     useSyncStore.getState().setStatus("user_settings", "syncing");
     loadSettingsAsync()
       .then((remote) => {
-        setSettings({ ...DEFAULTS, ...local, ...remote });
+        setSettings((prev) => {
+          const next = { ...DEFAULTS, ...local, ...remote };
+          return deepEqual(next, prev) ? prev : next;
+        });
         useSyncStore.getState().setStatus("user_settings", "idle");
       })
       .catch(() => {
@@ -140,8 +144,13 @@ export default function SettingsProvider({
             },
             (payload) => {
               if (payload.new && typeof payload.new === "object") {
-                const next = (payload.new as Record<string, unknown>).settings as Partial<Settings>;
-                if (next) setSettings((prev) => ({ ...DEFAULTS, ...prev, ...migrateSettings(next) }));
+                const partial = (payload.new as Record<string, unknown>).settings as Partial<Settings>;
+                if (partial) {
+                  setSettings((prev) => {
+                    const next = { ...DEFAULTS, ...prev, ...migrateSettings(partial) };
+                    return deepEqual(next, prev) ? prev : next;
+                  });
+                }
               }
             }
           );
@@ -279,6 +288,9 @@ export default function SettingsProvider({
         patch.theme = resolveLegacyTheme(partial.theme) as ThemeMode;
       }
       const next = { ...settings, ...patch };
+      if (deepEqual(next, settings)) {
+        return;
+      }
       setSettings(next);
       saveSettings(next, active || undefined);
       useSyncStore.getState().setStatus("user_settings", "syncing");

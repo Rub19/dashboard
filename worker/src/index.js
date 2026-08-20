@@ -68,7 +68,7 @@ async function handleRequest(request, env, executionCtx) {
             remaining: userRate.remaining ?? edgeRate.remaining ?? null
           })
         }, { status: routeResponse?.status, headers: routeResponse?.headers });
-        response = successResponse(context.result, { requestId, source: context.route.service });
+        response = successResponse(context.result, { requestId, source: context.route.service, method: request.method, public: context.route?.public === true });
       }
     }
   } catch (error) {

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "@/components/AuthProvider";
 import ServiceWorker from "@/components/ServiceWorker";
@@ -15,14 +15,18 @@ import OAuthHandler from "@/components/OAuthHandler";
 import UIProvider from "@/components/UIProvider";
 import BootProvider from "@/components/BootProvider";
 
-const geistSans = Geist({
+const inter = Inter({
   variable: "--font-geist-sans",
+  display: "swap",
   subsets: ["latin"],
+  preload: true,
 });
 
-const geistMono = Geist_Mono({
+const jetbrainsMono = JetBrains_Mono({
   variable: "--font-geist-mono",
+  display: "swap",
   subsets: ["latin"],
+  preload: true,
 });
 
 export const metadata: Metadata = {
@@ -63,7 +67,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`${geistSans.variable} ${geistMono.variable} h-full max-h-dvh overflow-hidden antialiased`}
+      className={`${inter.variable} ${jetbrainsMono.variable} h-full max-h-dvh overflow-hidden antialiased`}
     >
       <body className="h-dvh max-h-dvh overflow-hidden bg-[var(--background)] text-[var(--foreground)]">
         <AuthProvider>

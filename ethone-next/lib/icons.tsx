@@ -2,6 +2,7 @@
 
 import { memo } from "react";
 import { Icon as IconifyIcon, type IconProps, type IconifyJSON } from "@iconify/react";
+import { getLucideIcon, type LucideIcon as LucideIconType } from "@/lib/lucide-icons";
 import { addCollection } from "@iconify/react";
 import { icons as lucide } from "@iconify-json/lucide";
 import { icons as phosphor } from "@iconify-json/ph";
@@ -216,6 +217,13 @@ export function useIconName(name: string, pack: IconPack = "lucide") {
   return `${PREFIXES.lucide}:${entry?.lucide || name}`;
 }
 
+function StaticLucideIcon({
+  icon: LucideIcon,
+  ...props
+}: { icon: LucideIconType } & Omit<IconProps, "icon">) {
+  return <LucideIcon aria-hidden="true" focusable="false" {...props} />;
+}
+
 function IconComponent({
   name,
   pack,
@@ -227,6 +235,14 @@ function IconComponent({
   const { settings } = useSettings();
   const iconPack = pack ?? settings.iconPack;
   const iconId = useIconName(name, iconPack);
+
+  if (iconPack === "lucide") {
+    const LucideIcon = getLucideIcon(name);
+    if (LucideIcon) {
+      return <StaticLucideIcon icon={LucideIcon} {...props} />;
+    }
+  }
+
   const [prefix, suffix] = iconId.split(":");
   const valid = prefix && suffix && (iconPack === "lucide" ? true : iconExists(iconPack, suffix));
   return <IconifyIcon icon={valid ? iconId : `${PREFIXES.lucide}:help-circle`} aria-hidden="true" focusable="false" {...props} />;

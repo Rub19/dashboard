@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useState } from "react";
+import { forwardRef, memo, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "@/lib/icons";
@@ -90,7 +90,7 @@ const DockItem = forwardRef<HTMLButtonElement | HTMLAnchorElement, DockItemProps
     );
 
     const baseClass = [
-      "group relative flex h-12 w-12 items-center justify-center rounded-xl text-zinc-400 transition-all",
+      "group relative flex h-12 w-12 items-center justify-center rounded-xl text-zinc-400 transition-[color,background-color,opacity,transform]",
       "hover:bg-white/[0.08] hover:text-white",
       "active:scale-95",
       active ? "text-white" : "",
@@ -144,4 +144,4 @@ const DockItem = forwardRef<HTMLButtonElement | HTMLAnchorElement, DockItemProps
   }
 );
 
-export default DockItem;
+export default memo(DockItem);

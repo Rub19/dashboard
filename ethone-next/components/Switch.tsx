@@ -128,10 +128,10 @@ export default function Switch({
       >
         <span
           aria-hidden="true"
-          className={`relative z-10 flex items-center justify-center rounded-full bg-white shadow-sm transition-transform duration-200 ease-out ${sizeConfig.knob}`}
+          className={`relative z-10 flex items-center justify-center rounded-full bg-[var(--text-primary)] shadow-sm transition-transform duration-200 ease-out ${sizeConfig.knob}`}
           style={{ transform: `translateX(${current ? sizeConfig.travel : 0}px)` }}
         >
-          {isLoading && <Loader2 className="h-3 w-3 animate-spin text-[var(--accent)]" />}
+          {isLoading && <Loader2 className="h-3 w-3 animate-spin text-[var(--accent-primary)]" />}
         </span>
       </button>
 

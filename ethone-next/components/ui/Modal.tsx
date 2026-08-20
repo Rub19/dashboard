@@ -99,7 +99,7 @@ export default function Modal({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15 }}
           onClick={onClose}
-          className={`fixed inset-0 z-50 flex justify-center bg-black/70 p-4 backdrop-blur-md ${positionOuter[position]}`}
+          className={`fixed inset-0 z-50 flex justify-center bg-[var(--background)]/70 p-4 backdrop-blur-md ${positionOuter[position]}`}
         >
           <motion.div
             ref={trapRef}
@@ -111,10 +111,10 @@ export default function Modal({
             exit={{ scale: 0.95, y: 12, opacity: 0 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
             onClick={(event) => event.stopPropagation()}
-            className={`relative w-full overflow-hidden border border-white/10 bg-zinc-950/90 p-6 shadow-[0_0_60px_rgba(0,0,0,0.9)] backdrop-blur-2xl ${positionInner[position]} ${fullScreen ? "h-[calc(100dvh-2rem)] sm:h-auto sm:max-h-[90vh]" : ""} ${fullScreen ? "w-full sm:max-w-6xl" : sizeMap[size]} ${className}`}
+            className={`relative w-full overflow-hidden border border-[var(--panel-border)] bg-[var(--panel-bg)] p-6 shadow-[0_0_60px_var(--glow-color)] backdrop-blur-2xl ${positionInner[position]} ${fullScreen ? "h-[calc(100dvh-2rem)] sm:h-auto sm:max-h-[90vh]" : ""} ${fullScreen ? "w-full sm:max-w-6xl" : sizeMap[size]} ${className}`}
           >
             <div
-              className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-purple-500/5 blur-3xl"
+              className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[var(--accent-primary)]/5 blur-3xl"
               aria-hidden="true"
             />
 
@@ -131,16 +131,16 @@ export default function Modal({
 
             <h2
               id={titleId}
-              className="pr-6 text-lg font-semibold text-zinc-100"
+              className="pr-6 text-lg font-semibold text-[var(--text-primary)]"
             >
               {title}
             </h2>
 
             {description && (
-              <p className="mt-1 text-xs text-zinc-400">{description}</p>
+              <p className="mt-1 text-xs text-[var(--text-muted)]">{description}</p>
             )}
 
-            <div className={`mt-4 text-sm text-zinc-300 ${contentClassName}`}>{children}</div>
+            <div className={`mt-4 text-sm text-[var(--text-primary)] ${contentClassName}`}>{children}</div>
 
             {!hideFooter && (
               <div className="mt-6 flex items-center justify-end gap-3">

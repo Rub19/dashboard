@@ -102,14 +102,14 @@ export default function UserProfileDropdown() {
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = "v1.7.41";
+  const VERSION_LABEL = "v1.7.42";
 
   const menuItems = [
     {
       id: "changelog",
       label: "Notes de version",
       badge: `${VERSION_LABEL} • NOUVEAU`,
-      badgeClass: "text-purple-300 bg-purple-500/10 border-purple-500/25",
+      badgeClass: "text-[var(--accent-primary)] bg-[var(--accent-primary)]/10 border-[var(--accent-primary)]/25",
       icon: Sparkles,
       action: () => setIsChangelogOpen(true),
     },
@@ -117,7 +117,7 @@ export default function UserProfileDropdown() {
       id: "profile",
       label: "Mon profil",
       badge: "Modifier",
-      badgeClass: "text-zinc-300 bg-white/[0.04] border-white/[0.08]",
+      badgeClass: "text-[var(--text-muted)] bg-[var(--text-primary)]/[0.04] border-[var(--text-primary)]/[0.08]",
       icon: User,
       action: () => router.push("/settings?tab=profile"),
     },
@@ -176,7 +176,7 @@ export default function UserProfileDropdown() {
           aria-haspopup="true"
         >
         <div className="pointer-events-none relative flex h-7 w-7 shrink-0 items-center justify-center">
-          <div className="pointer-events-none flex h-full w-full items-center justify-center overflow-hidden rounded-full border border-white/10 bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 text-emerald-400">
+          <div className="pointer-events-none flex h-full w-full items-center justify-center overflow-hidden rounded-full border border-[var(--text-primary)]/10 bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 text-emerald-400">
             {avatarUrl ? (
               <Image
                 src={avatarUrl}
@@ -192,27 +192,27 @@ export default function UserProfileDropdown() {
             )}
           </div>
           <span
-            className={`pointer-events-none absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-zinc-950 ${USER_STATUS_CONFIG[currentStatus as keyof typeof USER_STATUS_CONFIG].dot}`}
+            className={`pointer-events-none absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--background)] ${USER_STATUS_CONFIG[currentStatus as keyof typeof USER_STATUS_CONFIG].dot}`}
           />
         </div>
         <div className="pointer-events-none hidden min-w-0 flex-col text-left sm:flex">
-          <span className="pointer-events-none max-w-[14ch] truncate text-sm font-bold leading-tight text-white sm:max-w-[18ch] lg:max-w-[24ch]">
+          <span className="pointer-events-none max-w-[14ch] truncate text-sm font-bold leading-tight text-[var(--text-primary)] sm:max-w-[18ch] lg:max-w-[24ch]">
             {displayName}
           </span>
         </div>
         <ChevronDown
-          className={`pointer-events-none h-4 w-4 text-zinc-500 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`pointer-events-none h-4 w-4 text-[var(--text-muted)] transition-transform ${open ? "rotate-180" : ""}`}
         />
       </button>
       </PopoverTrigger>
 
       {/* Dropdown */}
-      <PopoverContent className="w-[340px] max-w-[calc(100vw-1rem)] overflow-hidden rounded-xl border border-white/[0.08] p-4 bg-zinc-950/95 shadow-[0_16px_50px_rgba(0,0,0,0.7)] backdrop-blur-2xl">
+      <PopoverContent className="w-[340px] max-w-[calc(100vw-1rem)] overflow-hidden rounded-xl border border-[var(--panel-border)] p-4 bg-[var(--panel-bg)]/95 shadow-[0_16px_50px_var(--glow-color)] backdrop-blur-2xl">
         <div className="w-full select-none flex flex-col gap-2.5">
             {/* Header */}
-            <div className="flex items-center gap-3 rounded-xl border border-white/[0.04] bg-white/[0.02] p-2.5">
+            <div className="flex items-center gap-3 rounded-xl border border-[var(--text-primary)]/[0.04] bg-[var(--text-primary)]/[0.02] p-2.5">
               <div className="relative flex h-11 w-11 shrink-0 items-center justify-center">
-                <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-gradient-to-tr from-emerald-500/30 to-cyan-500/30 text-emerald-300">
+                <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-xl border border-[var(--panel-border)] bg-gradient-to-tr from-[var(--accent-primary)]/30 to-[var(--accent-secondary)]/30 text-[var(--text-primary)]">
                   {avatarUrl ? (
                     <Image
                       src={avatarUrl}
@@ -230,13 +230,13 @@ export default function UserProfileDropdown() {
                   )}
                 </div>
                 <span
-                  className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-zinc-950 ${USER_STATUS_CONFIG[currentStatus as keyof typeof USER_STATUS_CONFIG].dot}`}
+                  className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-[var(--background)] ${USER_STATUS_CONFIG[currentStatus as keyof typeof USER_STATUS_CONFIG].dot}`}
                 />
               </div>
 
               <div className="flex min-w-0 flex-1 flex-col">
                 <div className="flex items-center justify-between">
-                  <span className="truncate text-xs font-bold text-white">
+                  <span className="truncate text-xs font-bold text-[var(--text-primary)]">
                     {displayName}
                   </span>
                 </div>
@@ -251,7 +251,7 @@ export default function UserProfileDropdown() {
                     {copied ? (
                       <Check className="h-3 w-3 shrink-0 text-emerald-400" />
                     ) : (
-                      <Copy className="h-3 w-3 shrink-0 text-zinc-500" />
+                      <Copy className="h-3 w-3 shrink-0 text-[var(--text-muted)]" />
                     )}
                   </button>
                 )}
@@ -259,7 +259,7 @@ export default function UserProfileDropdown() {
             </div>
 
             {/* Status selector */}
-            <div className="flex flex-wrap items-center gap-1 rounded-lg border border-white/[0.04] bg-white/[0.02] p-1 text-[10px]">
+            <div className="flex flex-wrap items-center gap-1 rounded-lg border border-[var(--text-primary)]/[0.04] bg-[var(--text-primary)]/[0.02] p-1 text-[10px]">
               {(Object.keys(USER_STATUS_CONFIG) as (keyof typeof USER_STATUS_CONFIG)[]).map((st) => (
                 <button
                   key={st}
@@ -283,19 +283,19 @@ export default function UserProfileDropdown() {
             </div>
 
             {/* Storage gauge */}
-            <div className="flex flex-col gap-1.5 rounded-lg border border-white/[0.04] bg-white/[0.02] p-2.5">
+            <div className="flex flex-col gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.04] bg-[var(--text-primary)]/[0.02] p-2.5">
               <div className="flex items-center justify-between text-[11px]">
-                <div className="flex items-center gap-2 text-zinc-300">
-                  <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-teal-500/30 bg-teal-500/15 text-teal-300">
+                <div className="flex items-center gap-2 text-[var(--text-primary)]">
+                  <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]">
                     <HardDrive className="h-3 w-3" />
                   </div>
                   <span className="font-medium">Stockage Système</span>
                 </div>
-                <span className="font-mono text-zinc-400">
+                <span className="font-mono text-[var(--text-muted)]">
                   {storage.used.toFixed(1)} / {storage.total} GB
                 </span>
               </div>
-              <div className="h-1.5 w-full overflow-hidden rounded-xl bg-white/[0.06]">
+              <div className="h-1.5 w-full overflow-hidden rounded-xl bg-[var(--text-primary)]/[0.06]">
                 <div
                   className="h-full rounded-xl bg-teal-400"
                   style={{ width: `${storagePercent}%` }}
@@ -319,10 +319,10 @@ export default function UserProfileDropdown() {
                     className="group flex w-full items-center justify-between rounded-lg border border-transparent p-2 text-xs text-[var(--text-primary)] transition-all hover:border-[var(--text-primary)]/[0.06] hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.04] text-zinc-300 transition-colors group-hover:bg-white/[0.08] group-hover:text-white">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] transition-colors group-hover:bg-[var(--text-primary)]/[0.08] group-hover:text-[var(--text-primary)]">
                       <IconComponent className="h-4 w-4" />
                     </div>
-                    <span className="font-medium text-zinc-200">{item.label}</span>
+                    <span className="font-medium text-[var(--text-primary)]">{item.label}</span>
                     </div>
 
                     {item.badge && (
@@ -334,7 +334,7 @@ export default function UserProfileDropdown() {
                     )}
 
                     {item.kbd && (
-                      <kbd className="rounded-md border border-white/10 bg-white/[0.06] px-1.5 py-0.5 font-mono text-[10px] text-zinc-400">
+                      <kbd className="rounded-md border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.06] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)]">
                         {item.kbd}
                       </kbd>
                     )}
@@ -344,7 +344,7 @@ export default function UserProfileDropdown() {
             </div>
 
             {/* Logout */}
-            <div className="border-t border-white/[0.04] pt-2">
+            <div className="border-t border-[var(--text-primary)]/[0.04] pt-2">
               <button
                 type="button"
                 onClick={(e) => {

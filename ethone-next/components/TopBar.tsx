@@ -53,7 +53,7 @@ const SidebarTopToggle = memo(function SidebarTopToggle() {
   return (
     <AnimatedSidebarTrigger
       type="button"
-      className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] text-[var(--muted)] shadow-lg backdrop-blur-md transition-[color,background-color,border-color,opacity,transform] hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95 cursor-pointer select-none"
+      className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] shadow-lg backdrop-blur-md transition-[color,background-color,border-color,opacity,transform] hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95 cursor-pointer select-none"
       aria-label="Basculer la barre latérale"
       title={open ? "Réduire" : "Ouvrir"}
     >
@@ -79,10 +79,10 @@ const WeatherQuickButton = memo(function WeatherQuickButton() {
         title="Météo"
       >
         <CloudSun className="h-4 w-4 pointer-events-none text-amber-400" />
-        <span className="hidden font-mono text-zinc-200 lg:inline">{temp}</span>
+        <span className="hidden font-mono text-[var(--text-primary)] lg:inline">{temp}</span>
         <ChevronDown
           className={cn(
-            "h-3 w-3 text-zinc-400 transition-transform duration-200",
+            "h-3 w-3 text-[var(--text-muted)] transition-transform duration-200",
             open && "rotate-180"
           )}
         />
@@ -101,7 +101,7 @@ const ThemeToggle = memo(function ThemeToggle() {
     <button
       type="button"
       onClick={() => update({ darkMode: !isDark })}
-      className="relative flex h-10 w-10 items-center justify-center rounded-xl text-[var(--muted)] transition-[color,background-color,border-color,opacity,transform] duration-150 hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95 cursor-pointer select-none"
+      className="relative flex h-10 w-10 items-center justify-center rounded-xl text-[var(--text-muted)] transition-[color,background-color,border-color,opacity,transform] duration-150 hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95 cursor-pointer select-none"
       aria-label="Thème"
     >
       <Icon className="h-5 w-5 pointer-events-none" />
@@ -120,7 +120,7 @@ const FocusToggle = memo(function FocusToggle() {
       className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-[color,background-color,border-color,opacity,transform] duration-150 cursor-pointer select-none ${
         isActive
           ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]"
-          : "text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95"
+          : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95"
       }`}
       aria-label={isActive ? "Arrêter le minuteur" : "Démarrer le minuteur"}
     >
@@ -138,8 +138,8 @@ const DynamicIslandToggle = memo(function DynamicIslandToggle() {
       onClick={toggle}
       className={`relative flex h-10 w-10 items-center justify-center rounded-xl transition-[color,background-color,border-color,opacity,transform] duration-150 cursor-pointer select-none ${
         visible
-          ? "text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95"
-          : "text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--muted)] active:scale-95"
+          ? "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95"
+          : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-muted)] active:scale-95"
       }`}
       aria-label={visible ? "Masquer la Dynamic Island" : "Afficher la Dynamic Island"}
       title={visible ? "Masquer la Dynamic Island" : "Afficher la Dynamic Island"}
@@ -160,12 +160,12 @@ function TopBar() {
       {/* Left — Identity & Breadcrumb */}
       <div className="col-start-1 flex min-w-0 items-center gap-2 justify-self-start sm:gap-3">
         <SidebarTopToggle />
-        <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-1.5 sm:gap-2 text-sm font-medium text-zinc-400">
-          <Link href="/" className="shrink-0 transition-colors hover:text-white">
+        <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-1.5 sm:gap-2 text-sm font-medium text-[var(--text-muted)]">
+          <Link href="/" className="shrink-0 transition-colors hover:text-[var(--text-primary)]">
             {home}
           </Link>
-          <ChevronRight className="h-4 w-4 shrink-0 text-zinc-600" />
-          <span className="max-w-[12ch] truncate font-semibold text-white capitalize sm:max-w-[18ch] lg:max-w-[24ch]">
+          <ChevronRight className="h-4 w-4 shrink-0 text-[var(--text-muted)]/60" />
+          <span className="max-w-[12ch] truncate font-semibold text-[var(--text-primary)] capitalize sm:max-w-[18ch] lg:max-w-[24ch]">
             {page}
           </span>
         </nav>

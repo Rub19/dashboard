@@ -45,9 +45,9 @@ const APPS: AppItem[] = [
   { id: "brain", href: "/brain/", icon: "brain" },
   { id: "focus", href: "/focus/", icon: "focus" },
   { id: "activity", href: "/activity/", icon: "activity" },
-  { id: "settings", href: "/settings/", icon: "settings" },
   { id: "connections", href: "/connections/", icon: "connections" },
   { id: "plugins", href: "/plugins/", icon: "plugins" },
+  { id: "settings", href: "/settings/", icon: "settings" },
 ];
 
 const SidebarBrand = memo(function SidebarBrand() {
@@ -56,12 +56,12 @@ const SidebarBrand = memo(function SidebarBrand() {
     <Link
       href="/"
       className={cn(
-        "flex h-9 items-center gap-2 text-white outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "flex h-9 items-center gap-2 text-[var(--text-primary)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]",
         collapsed && "justify-center"
       )}
       aria-label="ETHONE"
     >
-      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.05] text-[10px] font-bold">
+      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.05] text-[10px] font-bold">
         E
       </div>
       {!collapsed && <span className="text-sm font-bold tracking-tight">ETHONE</span>}
@@ -81,9 +81,9 @@ const SyncBadge = memo(function SyncBadge({ collapsed }: { collapsed: boolean })
 
   const config: Record<string, { icon: React.ReactElement<{ className?: string }>; label: string; dot: string }> = {
     syncing: {
-      icon: <Loader2 className="h-3 w-3 animate-spin text-purple-400" />,
+      icon: <Loader2 className="h-3 w-3 animate-spin text-[var(--accent-primary)]" />,
       label: i18n("syncing", "Sync"),
-      dot: "bg-purple-400",
+      dot: "bg-[var(--accent-primary)]",
     },
     error: {
       icon: <AlertCircle className="h-3 w-3 text-red-400" />,
@@ -114,7 +114,7 @@ const SyncBadge = memo(function SyncBadge({ collapsed }: { collapsed: boolean })
   return (
     <div
       className={cn(
-        "flex items-center gap-2 rounded-xl border-transparent bg-transparent text-[10px] font-medium text-zinc-400",
+        "flex items-center gap-2 rounded-xl border-transparent bg-transparent text-[10px] font-medium text-[var(--text-muted)]",
         collapsed
           ? "h-9 w-9 shrink-0 items-center justify-center p-0"
           : "px-2.5 py-2"
@@ -157,12 +157,12 @@ const SidebarProfile = memo(function SidebarProfile({ collapsed }: { collapsed: 
             className="h-full w-full object-cover"
           />
         ) : (
-          <User className={cn("text-zinc-400", collapsed ? "h-3.5 w-3.5" : "h-4 w-4")} />
+          <User className={cn("text-[var(--text-muted)]", collapsed ? "h-3.5 w-3.5" : "h-4 w-4")} />
         )}
         <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--background)] bg-emerald-400" aria-hidden="true" />
       </div>
       {!collapsed && (
-        <span className="min-w-0 flex-1 truncate text-[11px] font-medium text-zinc-200">
+        <span className="min-w-0 flex-1 truncate text-[11px] font-medium text-[var(--text-primary)]">
           {displayName}
         </span>
       )}
@@ -260,7 +260,7 @@ function Sidebar() {
             ))}
           </AnimatedSidebarMenu>
         </AnimatedSidebarContent>
-        <AnimatedSidebarFooter className="mb-3 border-t-0">
+        <AnimatedSidebarFooter className="mb-3 border-t border-[var(--panel-border)] pt-3">
           <SidebarFooter />
         </AnimatedSidebarFooter>
         <AnimatedSidebarRail />

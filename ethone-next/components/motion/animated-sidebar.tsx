@@ -571,7 +571,7 @@ export const AnimatedSidebarGroupLabel = forwardRef<
       aria-hidden={collapsed}
       data-slot="sidebar-group-label"
       className={cn(
-        "mb-1 h-7 overflow-hidden px-2 text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground transition-opacity",
+        "mb-1 h-7 overflow-hidden px-2 text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--text-muted)] transition-opacity",
         collapsed ? "opacity-0" : "opacity-100",
         className,
       )}
@@ -611,10 +611,10 @@ export const AnimatedSidebarMenu = forwardRef<
       ref={forwardedRef as React.Ref<HTMLElement>}
       as="ul"
       inset={0}
-      pillClassName="rounded-2xl bg-white/[0.04] border border-white/[0.06] shadow-[0_0_15px_rgba(255,255,255,0.03)]"
+      pillClassName="rounded-2xl bg-[var(--text-primary)]/[0.04] border border-[var(--accent-primary)]/[0.12] shadow-[0_0_15px_var(--glow-color)]"
       pillContainerClassName="inset-y-0.5"
       data-slot="sidebar-menu"
-      className={cn("flex w-full min-w-0 list-none flex-col gap-0.5", className)}
+      className={cn("flex w-full min-w-0 list-none flex-col gap-1.5", className)}
     >
       {children}
     </SharedLayoutBg>
@@ -748,9 +748,9 @@ export function AnimatedSidebarMenuSubButton({
 
   const interactiveClassName = cn(
     "flex min-h-8 w-full min-w-0 items-center gap-2 rounded-lg px-2 text-left text-xs outline-none",
-    "text-muted-foreground transition-colors hover:bg-white/[0.08] hover:text-foreground",
-    "focus-visible:bg-white/[0.08] focus-visible:ring-2 focus-visible:ring-ring",
-    isActive && "bg-[var(--accent)]/15 text-[var(--accent)]",
+    "text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]",
+    "focus-visible:bg-[var(--text-primary)]/[0.08] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]",
+    isActive && "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]",
     disabled && "cursor-not-allowed opacity-40",
     className,
   );
@@ -849,7 +849,7 @@ export function AnimatedSidebarMenuButton({
         <motion.span
           layoutId="activeSidebarTab"
           transition={context.reduce ? { duration: 0 } : SPRING_LAYOUT}
-          className="absolute inset-0 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.15)]"
+          className="absolute inset-0 rounded-2xl border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 shadow-[0_0_15px_var(--glow-color)]"
         />
       ) : null}
       {icon ? (
@@ -875,7 +875,7 @@ export function AnimatedSidebarMenuButton({
         {children}
       </motion.span>
       {badge && !panel.collapsed ? (
-        <span className="relative z-10 shrink-0 text-xs text-muted-foreground">
+        <span className="relative z-10 shrink-0 text-xs text-[var(--text-muted)]">
           {badge}
         </span>
       ) : null}
@@ -889,7 +889,7 @@ export function AnimatedSidebarMenuButton({
             x: panel.collapsed ? 4 : 0,
           }}
           transition={context.reduce ? { duration: 0 } : SPRING_LAYOUT}
-          className="relative z-10 grid size-4 shrink-0 place-items-center text-muted-foreground"
+          className="relative z-10 grid size-4 shrink-0 place-items-center text-[var(--text-muted)]"
         >
           <ChevronRight className="size-3.5" />
         </motion.span>
@@ -898,13 +898,13 @@ export function AnimatedSidebarMenuButton({
   );
 
   const interactiveClassName = cn(
-    "group relative flex w-full min-w-0 overflow-hidden rounded-2xl py-2.5 text-xs font-medium outline-none transition-all duration-200",
+    "group relative flex w-full min-w-0 overflow-hidden rounded-2xl py-2.5 text-[13px] font-medium outline-none transition-all duration-200",
     panel.collapsed
       ? "items-center justify-center gap-0 px-0"
-      : "items-center gap-3 px-3 text-left",
-    "text-zinc-500 hover:text-zinc-100",
-    "focus-visible:bg-white/[0.08] focus-visible:ring-2 focus-visible:ring-ring",
-    isActive && "font-semibold text-emerald-300",
+      : "items-center gap-3 px-3.5 text-left",
+    "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
+    "focus-visible:bg-[var(--text-primary)]/[0.08] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]",
+    isActive && "font-semibold text-[var(--accent-primary)]",
     disabled && "cursor-not-allowed opacity-40",
     className,
   );

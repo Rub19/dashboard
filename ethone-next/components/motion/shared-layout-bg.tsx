@@ -59,7 +59,7 @@ export const SharedLayoutBg = forwardRef<HTMLElement, SharedLayoutBgProps>(
         layoutId={`shared-bg-${uid}`}
         transition={reduce ? { duration: 0 } : { ...SPRING_LAYOUT, opacity: { duration: 0 } }}
         className={cn(
-          "pointer-events-none h-full w-full rounded-2xl bg-[var(--accent)]/[0.06]",
+          "pointer-events-none h-full w-full rounded-2xl bg-[var(--accent-primary)]/[0.06]",
           pillClassName,
         )}
       />

@@ -2660,6 +2660,70 @@ const v141_de: ChangelogEntry = {
   ],
 };
 
+const v142_fr: ChangelogEntry = {
+  version: "v1.7.42",
+  date: "2026-08-20",
+  title: "Refonte UI/UX de la sidebar et suite de l'harmonisation des contrôles",
+  items: [
+    "Reorganisation de la sidebar : Accueil, Notes, Taches, Calendrier, Fichiers, Mail, Brain, Focus, Activite, Connexions, Plugins, Reglages.",
+    "Pastille active glissante synchronisee avec les tokens d'accent et de glow.",
+    "Espacements et typographie affines (gap-1.5, px-3.5, text-[13px]) pour une sidebar aeree.",
+    "Bloc profil/actions en bas avec separateur subtil.",
+    "Harmonisation des controles : Modal, Select, Tabs, AnimatedFilterTabs, Switch, Checkbox, Toast, Dock, TopBar, UserProfileDropdown.",
+    "Couleurs d'alerte (danger, warning, info, succes) et widgets 3D isoles preserves.",
+    "Snyk : aucune injection CSS ni regression d'accessibilite.",
+    "Version : v1.7.42, cache PWA v410.",
+  ],
+};
+
+const v142_en: ChangelogEntry = {
+  version: "v1.7.42",
+  date: "2026-08-20",
+  title: "Sidebar UI/UX refactor and control harmonization follow-up",
+  items: [
+    "Sidebar reordered: Home, Notes, Tasks, Calendar, Files, Mail, Brain, Focus, Activity, Connections, Plugins, Settings.",
+    "Sliding active pill synchronized with accent and glow tokens.",
+    "Tighter spacing and typography (gap-1.5, px-3.5, text-[13px]) for an airy sidebar.",
+    "Profile/actions bottom block with subtle separator.",
+    "Controls harmonized: Modal, Select, Tabs, AnimatedFilterTabs, Switch, Checkbox, Toast, Dock, TopBar, UserProfileDropdown.",
+    "Alert colors (danger, warning, info, success) and isolated 3D widgets preserved.",
+    "Snyk: no CSS injection or accessibility regressions.",
+    "Version: v1.7.42, PWA cache v410.",
+  ],
+};
+
+const v142_es: ChangelogEntry = {
+  version: "v1.7.42",
+  date: "2026-08-20",
+  title: "Refactor UI/UX de la barra lateral y continuacion de armonizacion de controles",
+  items: [
+    "Reorden de la barra lateral: Inicio, Notas, Tareas, Calendario, Archivos, Correo, Brain, Focus, Actividad, Conexiones, Plugins, Ajustes.",
+    "Pildora activa deslizante sincronizada con tokens de acento y glow.",
+    "Espaciado y tipografia refinados (gap-1.5, px-3.5, text-[13px]) para una barra lateral mas ligera.",
+    "Bloque de perfil/acciones inferior con separador sutil.",
+    "Controles armonizados: Modal, Select, Tabs, AnimatedFilterTabs, Switch, Checkbox, Toast, Dock, TopBar, UserProfileDropdown.",
+    "Colores de alerta (danger, warning, info, success) y widgets 3D aislados preservados.",
+    "Snyk: sin inyeccion CSS ni regresiones de accesibilidad.",
+    "Version: v1.7.42, cache PWA v410.",
+  ],
+};
+
+const v142_de: ChangelogEntry = {
+  version: "v1.7.42",
+  date: "2026-08-20",
+  title: "Sidebar UI/UX-Refaktor und Fortsetzung der Steuerelement-Harmonisierung",
+  items: [
+    "Sidebar neu angeordnet: Home, Notizen, Aufgaben, Kalender, Dateien, Mail, Brain, Fokus, Aktivitaet, Verbindungen, Plugins, Einstellungen.",
+    "Gleitende aktive Pille synchronisiert mit Akzent- und Glow-Tokens.",
+    "Feinabgestimmter Abstand und Typografie (gap-1.5, px-3.5, text-[13px]) fuer eine luftige Sidebar.",
+    "Profil/Aktionen-Block unten mit dezimenter Trennlinie.",
+    "Steuerelemente harmonisiert: Modal, Select, Tabs, AnimatedFilterTabs, Switch, Checkbox, Toast, Dock, TopBar, UserProfileDropdown.",
+    "Alarmfarben (danger, warning, info, success) und isolierte 3D-Widgets beibehalten.",
+    "Snyk: keine CSS-Injection oder Accessibility-Regressionen.",
+    "Version: v1.7.42, PWA-Cache v410.",
+  ],
+};
+
 const v139_fr: ChangelogEntry = {
   version: "v1.7.39",
   date: "2026-08-20",
@@ -3185,8 +3249,8 @@ const v130_de: ChangelogEntry = {
 };
 
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v141_fr, v140_fr, v139_fr, v138_fr, v137_fr, v136_fr, v135_fr, v134_fr, v133_fr, v132_fr, v131_fr, v130_fr, v206_fr, v205_fr, v204_fr, v203_fr, v202_fr, v201_fr, v200_fr, v199_fr, v198_fr, v197_fr, v196_fr, v195_fr, v194_fr, v193_fr, v192_fr, v191_fr, v190_fr, v189_fr, v188_fr, v187_fr, v186_fr, v185_fr, v184_fr, v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
-  en: [v141_en, v140_en, v139_en, v138_en, v137_en, v136_en, v135_en, v134_en, v133_en, v132_en, v131_en, v130_en, v206_en, v205_en, v204_en, v203_en, v202_en, v201_en, v200_en, v199_en, v198_en, v197_en, v196_en, v195_en, v194_en, v193_en, v192_en, v191_en, v190_en, v189_en, v188_en, v187_en, v186_en, v185_en, v184_en, v183_en, v182_en, v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
+  fr: [v142_fr, v141_fr, v140_fr, v139_fr, v138_fr, v137_fr, v136_fr, v135_fr, v134_fr, v133_fr, v132_fr, v131_fr, v130_fr, v206_fr, v205_fr, v204_fr, v203_fr, v202_fr, v201_fr, v200_fr, v199_fr, v198_fr, v197_fr, v196_fr, v195_fr, v194_fr, v193_fr, v192_fr, v191_fr, v190_fr, v189_fr, v188_fr, v187_fr, v186_fr, v185_fr, v184_fr, v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v142_en, v141_en, v140_en, v139_en, v138_en, v137_en, v136_en, v135_en, v134_en, v133_en, v132_en, v131_en, v130_en, v206_en, v205_en, v204_en, v203_en, v202_en, v201_en, v200_en, v199_en, v198_en, v197_en, v196_en, v195_en, v194_en, v193_en, v192_en, v191_en, v190_en, v189_en, v188_en, v187_en, v186_en, v185_en, v184_en, v183_en, v182_en, v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -3232,7 +3296,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [v141_es, v140_es, v139_es, v138_es, v137_es, v136_es, v135_es, v134_es, v133_es, v132_es, v131_es, v130_es, v206_es, v205_es, v204_es, v203_es, v202_es, v201_es, v200_es, v199_es, v198_es, v197_es, v196_es, v195_es, v194_es, v193_es, v192_es, v191_es, v190_es, v189_es, v188_es, v187_es, v186_es, v185_es, v184_es, v183_es, v182_es, v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
+  es: [v142_es, v141_es, v140_es, v139_es, v138_es, v137_es, v136_es, v135_es, v134_es, v133_es, v132_es, v131_es, v130_es, v206_es, v205_es, v204_es, v203_es, v202_es, v201_es, v200_es, v199_es, v198_es, v197_es, v196_es, v195_es, v194_es, v193_es, v192_es, v191_es, v190_es, v189_es, v188_es, v187_es, v186_es, v185_es, v184_es, v183_es, v182_es, v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -3278,7 +3342,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [v141_de, v140_de, v139_de, v138_de, v137_de, v136_de, v135_de, v134_de, v133_de, v132_de, v131_de, v130_de, v206_de, v205_de, v204_de, v203_de, v202_de, v201_de, v200_de, v199_de, v198_de, v197_de, v196_de, v195_de, v194_de, v193_de, v192_de, v191_de, v190_de, v189_de, v188_de, v187_de, v186_de, v185_de, v184_de, v183_de, v182_de, v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
+  de: [v142_de, v141_de, v140_de, v139_de, v138_de, v137_de, v136_de, v135_de, v134_de, v133_de, v132_de, v131_de, v130_de, v206_de, v205_de, v204_de, v203_de, v202_de, v201_de, v200_de, v199_de, v198_de, v197_de, v196_de, v195_de, v194_de, v193_de, v192_de, v191_de, v190_de, v189_de, v188_de, v187_de, v186_de, v185_de, v184_de, v183_de, v182_de, v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

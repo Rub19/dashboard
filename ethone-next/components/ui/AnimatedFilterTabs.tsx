@@ -57,8 +57,8 @@ export default function AnimatedFilterTabs({
               <span
                 className={`relative z-10 text-[10px] px-1.5 py-0.5 rounded-lg font-mono ${
                   isActive
-                    ? "bg-emerald-500/30 text-emerald-200"
-                    : "bg-white/5 text-zinc-500"
+                    ? "bg-[var(--accent-primary)]/30 text-[var(--accent-primary)]"
+                    : "bg-[var(--text-primary)]/5 text-[var(--text-muted)]"
                 }`}
               >
                 {tab.count}

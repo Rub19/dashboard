@@ -29,24 +29,24 @@ const CONFIG: Record<
     progress: "bg-emerald-400/50",
   },
   error: {
-    icon: <AlertCircle className="h-4 w-4 text-red-400" />,
-    border: "border-red-500/30",
-    progress: "bg-red-400/50",
+    icon: <AlertCircle className="h-4 w-4 text-[var(--danger)]" />,
+    border: "border-[var(--danger)]/30",
+    progress: "bg-[var(--danger)]/50",
   },
   info: {
-    icon: <Info className="h-4 w-4 text-cyan-400" />,
-    border: "border-cyan-500/30",
-    progress: "bg-cyan-400/50",
+    icon: <Info className="h-4 w-4 text-[var(--info)]" />,
+    border: "border-[var(--info)]/30",
+    progress: "bg-[var(--info)]/50",
   },
   warning: {
-    icon: <AlertTriangle className="h-4 w-4 text-amber-400" />,
-    border: "border-amber-500/30",
-    progress: "bg-amber-400/50",
+    icon: <AlertTriangle className="h-4 w-4 text-[var(--warning)]" />,
+    border: "border-[var(--warning)]/30",
+    progress: "bg-[var(--warning)]/50",
   },
   loading: {
-    icon: <Loader2 className="h-4 w-4 animate-spin text-purple-400" />,
-    border: "border-purple-500/30",
-    progress: "bg-purple-400/50",
+    icon: <Loader2 className="h-4 w-4 animate-spin text-[var(--accent-primary)]" />,
+    border: "border-[var(--accent-primary)]/30",
+    progress: "bg-[var(--accent-primary)]/50",
   },
 };
 
@@ -94,7 +94,7 @@ export default function Toast({
       dragElastic={0.2}
       onDragEnd={handleDragEnd}
       style={{ x, opacity, zIndex: 50 - depth }}
-      className={`relative w-full min-w-0 overflow-hidden rounded-xl border bg-zinc-950/85 p-3.5 shadow-2xl shadow-black/80 backdrop-blur-xl md:min-w-[300px] md:max-w-md ${config.border} flex items-center gap-3 text-sm text-zinc-100`}
+      className={`relative w-full min-w-0 overflow-hidden rounded-xl border bg-[var(--panel-bg)]/85 p-3.5 shadow-2xl shadow-[var(--background)]/80 backdrop-blur-xl md:min-w-[300px] md:max-w-md ${config.border} flex items-center gap-3 text-sm text-[var(--text-primary)]`}
     >
       <span className="shrink-0">{config.icon}</span>
       <p className="min-w-0 flex-1 truncate">{toast.message}</p>
@@ -108,7 +108,7 @@ export default function Toast({
       </button>
 
       {toast.duration > 0 && (
-        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/10">
+        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--text-primary)]/10">
           <motion.div
             initial={{ width: "100%" }}
             animate={{ width: "0%" }}

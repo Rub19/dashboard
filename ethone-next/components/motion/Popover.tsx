@@ -487,6 +487,8 @@ export function PopoverContent({ children, className }: PopoverContentProps) {
     scheduleClose,
   } = ctx;
 
+  const useGoo = gooStrength > 0;
+
   const measureRef = contentRef;
   const panelHover = useHoverGesture();
   const blobRef = useRef<HTMLDivElement>(null);
@@ -551,56 +553,60 @@ export function PopoverContent({ children, className }: PopoverContentProps) {
         transform: `translate3d(${layout?.trigger.left ?? 0}px, ${layout?.trigger.top ?? 0}px, 0)`,
       }}
     >
-      <svg aria-hidden width="0" height="0" className="absolute">
-        <title>Popover visual effects</title>
-        <defs>
-          <filter id={gooId} x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur
-              in="SourceGraphic"
-              stdDeviation={gooStrength}
-              result="blur"
-            />
-            <feColorMatrix
-              in="blur"
-              mode="matrix"
-              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -10"
-              result="goo"
-            />
-            <feComposite in="SourceGraphic" in2="goo" operator="atop" />
-          </filter>
-        </defs>
-      </svg>
+      {useGoo && (
+        <svg aria-hidden width="0" height="0" className="absolute">
+          <title>Popover visual effects</title>
+          <defs>
+            <filter id={gooId} x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur
+                in="SourceGraphic"
+                stdDeviation={gooStrength}
+                result="blur"
+              />
+              <feColorMatrix
+                in="blur"
+                mode="matrix"
+                values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -10"
+                result="goo"
+              />
+              <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+            </filter>
+          </defs>
+        </svg>
+      )}
 
-      <div
-        aria-hidden
-        className="pointer-events-none absolute z-[-1]"
-        style={{
-          left: geo.left,
-          top: geo.top,
-          width: geo.layerW,
-          height: geo.layerH,
-          filter: reduce ? undefined : `url(#${gooId})`,
-          clipPath: triggerCutout(geo),
-        }}
-      >
+      {useGoo && (
         <div
-          className="absolute bg-[var(--panel-bg)]"
+          aria-hidden
+          className="pointer-events-none absolute z-[-1]"
           style={{
-            left: geo.trigger.x,
-            top: geo.trigger.y,
-            width: geo.trigger.w,
-            height: geo.trigger.h,
-            borderRadius: geo.trigger.r,
+            left: geo.left,
+            top: geo.top,
+            width: geo.layerW,
+            height: geo.layerH,
+            filter: reduce ? undefined : `url(#${gooId})`,
+            clipPath: triggerCutout(geo),
           }}
-        />
-        <div
-          ref={blobRef}
-          className="absolute inset-0 bg-[var(--panel-bg)]"
-          style={{
-            clipPath: clipForProgress(geo, progress.get(), false),
-          }}
-        />
-      </div>
+        >
+          <div
+            className="absolute bg-[var(--panel-bg)]"
+            style={{
+              left: geo.trigger.x,
+              top: geo.trigger.y,
+              width: geo.trigger.w,
+              height: geo.trigger.h,
+              borderRadius: geo.trigger.r,
+            }}
+          />
+          <div
+            ref={blobRef}
+            className="absolute inset-0 bg-[var(--panel-bg)]"
+            style={{
+              clipPath: clipForProgress(geo, progress.get(), false),
+            }}
+          />
+        </div>
+      )}
 
       <div
         className="pointer-events-none absolute z-10"

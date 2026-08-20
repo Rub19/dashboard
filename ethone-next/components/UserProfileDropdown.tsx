@@ -113,7 +113,7 @@ export default function UserProfileDropdown() {
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = "v1.7.10";
+  const VERSION_LABEL = "v1.7.11";
 
   const menuItems = [
     {
@@ -182,12 +182,12 @@ export default function UserProfileDropdown() {
     <Popover
       open={open}
       onOpenChange={setOpen}
-      trigger="hover"
+      trigger="click"
       side="bottom"
       align="end"
       sideOffset={10}
-      panelRadius={16}
-      gooStrength={6}
+      panelRadius={12}
+      gooStrength={0}
     >
       {/* Trigger */}
       <PopoverTrigger>

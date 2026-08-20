@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { Check } from "lucide-react";
 import FlagIcon, { LANGUAGES, LANGUAGE_LABELS, type Language } from "@/components/FlagIcon";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/motion/Popover";
 
@@ -31,8 +32,8 @@ export default function LanguageSwitcher() {
       side="bottom"
       align="end"
       sideOffset={8}
-      panelRadius={14}
-      gooStrength={6}
+      panelRadius={8}
+      gooStrength={0}
     >
       <PopoverTrigger>
         <button
@@ -48,7 +49,7 @@ export default function LanguageSwitcher() {
         </button>
       </PopoverTrigger>
 
-      <PopoverContent className="min-w-[11rem] max-w-none overflow-hidden rounded-lg border border-[var(--panel-border)] p-1.5 shadow-2xl backdrop-blur-xl">
+      <PopoverContent className="min-w-[11rem] max-w-none overflow-hidden rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1.5 shadow-2xl backdrop-blur-xl">
         {LANGUAGES.map((lang) => {
           const active = lang === current;
           return (
@@ -58,17 +59,20 @@ export default function LanguageSwitcher() {
               role="option"
               aria-selected={active}
               onClick={() => select(lang)}
-              className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+              className={`group flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                 active
-                  ? "bg-[var(--accent)] text-white"
+                  ? "bg-white/[0.08] text-white ring-1 ring-white/10"
                   : "text-[var(--foreground)] hover:bg-white/[0.06]"
               }`}
             >
               <FlagIcon code={lang} className="h-4 w-5" />
               <span className="pointer-events-none uppercase">{lang}</span>
-              <span className={active ? "pointer-events-none text-white/80" : "pointer-events-none text-[var(--muted)]"}>
+              <span className={active ? "pointer-events-none text-[var(--muted)]" : "pointer-events-none text-[var(--muted)]"}>
                 {LANGUAGE_LABELS[lang]}
               </span>
+              {active && (
+                <Check className="pointer-events-none ml-auto h-4 w-4 text-[var(--accent)]" />
+              )}
             </button>
           );
         })}

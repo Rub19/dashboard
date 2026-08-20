@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.11 — 2026-08-20
+
+**Polish des menus Notifications, Langue et Profil**
+
+### Corrige
+- `ethone-next/components/UserProfileDropdown.tsx` : ouverture du menu au clic (`trigger="click"`) pour corriger la fermeture automatique au hover.
+- `ethone-next/components/LanguageSwitcher.tsx` : désactivation de l'effet goo, alignement du `panelRadius` avec `rounded-lg`, style actif épuré avec coche.
+- `ethone-next/components/NotificationCenter.tsx` : largeur réduite à `w-96`, fond et bordures propres, recherche plus discrète, correction de positionnement via `panelRadius` aligné et `gooStrength={0}`.
+- `ethone-next/components/motion/Popover.tsx` : support de `gooStrength={0}` pour un rendu de popover standard sans halo/bord sale.
+
+### Version
+- `ethone-next/package.json`, `package-lock.json`, `components/UserProfileDropdown.tsx`, `public/sw.js` : version `v1.7.11` et cache PWA `v379`.
+
 ## v1.7.10 — 2026-08-20
 
 **Loader boot avec animation percent**

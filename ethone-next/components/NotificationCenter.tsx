@@ -168,7 +168,7 @@ export default function NotificationCenter() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder={i18n("search")}
-        className="h-11 w-full rounded-xl border border-white/[0.08] bg-zinc-950/50 py-2 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted)] focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
+        className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] py-2 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none transition-colors placeholder:text-[var(--muted)] focus:border-white/20 focus:bg-white/[0.04]"
       />
     </div>
   );
@@ -181,10 +181,10 @@ export default function NotificationCenter() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex h-40 flex-col items-center justify-center gap-3 text-center"
+            className="flex h-32 flex-col items-center justify-center gap-2.5 text-center"
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.08] bg-zinc-950/50 text-[var(--muted)]">
-              <Icon name="bell-off" className="h-5 w-5" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-[var(--muted)]">
+              <Icon name="bell-off" className="h-4 w-4" />
             </div>
             <p className="text-sm text-[var(--muted)]">{i18n("noNotifications")}</p>
           </motion.div>
@@ -199,7 +199,7 @@ export default function NotificationCenter() {
   );
 
   const content = (
-    <div className="flex h-full flex-col gap-3">
+    <div className="flex h-full flex-col gap-2.5">
       {header}
       {search}
       <AnimatedFilterTabs
@@ -219,8 +219,8 @@ export default function NotificationCenter() {
       side="bottom"
       align="end"
       sideOffset={8}
-      panelRadius={18}
-      gooStrength={6}
+      panelRadius={16}
+      gooStrength={0}
     >
       <PopoverTrigger>
         <button
@@ -245,7 +245,7 @@ export default function NotificationCenter() {
       </PopoverTrigger>
 
       {!isMobile && (
-        <PopoverContent className="w-[28rem] max-w-[calc(100vw-1rem)] max-h-[min(80vh,44rem)] overflow-hidden rounded-2xl border border-white/[0.08] p-4 shadow-2xl backdrop-blur-2xl">
+        <PopoverContent className="w-96 max-w-[calc(100vw-1rem)] max-h-[min(80vh,44rem)] overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 shadow-2xl backdrop-blur-2xl">
           {content}
         </PopoverContent>
       )}

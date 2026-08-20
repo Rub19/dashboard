@@ -1604,9 +1604,61 @@ const v187_de: ChangelogEntry = {
   ],
 };
 
+const v188_fr: ChangelogEntry = {
+  version: "v1.7.11",
+  date: "2026-08-20",
+  title: "Polish des menus Notifications, Langue et Profil",
+  items: [
+    "`components/motion/Popover.tsx` : option `gooStrength={0}` pour désactiver l'effet goo et obtenir des bordures propres.",
+    "`components/UserProfileDropdown.tsx` : ouverture au clic (`trigger=\"click\"`) pour éviter la fermeture automatique au hover.",
+    "`components/LanguageSwitcher.tsx` : `gooStrength={0}`, `panelRadius` aligné, style actif épuré avec coche.",
+    "`components/NotificationCenter.tsx` : largeur réduite (`w-96`), `gooStrength={0}`, fond et bordures propres, recherche plus discrète.",
+    "Version mise à jour en v1.7.11.",
+  ],
+};
+
+const v188_en: ChangelogEntry = {
+  version: "v1.7.11",
+  date: "2026-08-20",
+  title: "Polish for Notifications, Language and Profile menus",
+  items: [
+    "`components/motion/Popover.tsx`: `gooStrength={0}` option to disable the goo effect and get clean borders.",
+    "`components/UserProfileDropdown.tsx`: click-to-open (`trigger=\"click\"`) to stop auto-closing on hover.",
+    "`components/LanguageSwitcher.tsx`: `gooStrength={0}`, aligned `panelRadius`, cleaner active style with checkmark.",
+    "`components/NotificationCenter.tsx`: reduced width (`w-96`), `gooStrength={0}`, clean background and borders, subtler search input.",
+    "Updated version to v1.7.11.",
+  ],
+};
+
+const v188_es: ChangelogEntry = {
+  version: "v1.7.11",
+  date: "2026-08-20",
+  title: "Refinado de los menús Notificaciones, Idioma y Perfil",
+  items: [
+    "`components/motion/Popover.tsx`: opción `gooStrength={0}` para desactivar el efecto goo y obtener bordes limpios.",
+    "`components/UserProfileDropdown.tsx`: apertura con clic (`trigger=\"click\"`) para evitar el cierre automático al pasar el mouse.",
+    "`components/LanguageSwitcher.tsx`: `gooStrength={0}`, `panelRadius` alineado, estilo activo más limpio con check.",
+    "`components/NotificationCenter.tsx`: anchura reducida (`w-96`), `gooStrength={0}`, fondo y bordes limpios, búsqueda más discreta.",
+    "Versión actualizada a v1.7.11.",
+  ],
+};
+
+const v188_de: ChangelogEntry = {
+  version: "v1.7.11",
+  date: "2026-08-20",
+  title: "Polish für Benachrichtigungs-, Sprach- und Profilmenüs",
+  items: [
+    "`components/motion/Popover.tsx`: Option `gooStrength={0}` zum Deaktivieren des Goo-Effekts für saubere Ränder.",
+    "`components/UserProfileDropdown.tsx`: Öffnen per Klick (`trigger=\"click\"`), um automatisches Schließen bei Hover zu verhindern.",
+    "`components/LanguageSwitcher.tsx`: `gooStrength={0}`, abgestimmtes `panelRadius`, aufgeräumter aktiver Stil mit Haken.",
+    "`components/NotificationCenter.tsx`: reduzierte Breite (`w-96`), `gooStrength={0}`, sauberer Hintergrund und Ränder, dezenteres Suchfeld.",
+    "Version auf v1.7.11 aktualisiert.",
+  ],
+};
+
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v187_fr, v186_fr, v185_fr, v184_fr, v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
-  en: [v187_en, v186_en, v185_en, v184_en, v183_en, v182_en, v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
+  fr: [v188_fr, v187_fr, v186_fr, v185_fr, v184_fr, v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr],
+  en: [v188_en, v187_en, v186_en, v185_en, v184_en, v183_en, v182_en, v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -1652,7 +1704,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  es: [v187_es, v186_es, v185_es, v184_es, v183_es, v182_es, v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
+  es: [v188_es, v187_es, v186_es, v185_es, v184_es, v183_es, v182_es, v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -1698,7 +1750,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
   ],
-  de: [v187_de, v186_de, v185_de, v184_de, v183_de, v182_de, v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
+  de: [v188_de, v187_de, v186_de, v185_de, v184_de, v183_de, v182_de, v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

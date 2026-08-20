@@ -26,7 +26,7 @@ function isValidImageUrl(src?: string): src is string {
   return typeof src === "string" && src.length > 0 && /^https?:\/\/\S+/.test(src);
 }
 
-export function useClientImage(candidates: (string | undefined)[], timeoutMs = 10000) {
+export function useClientImage(candidates: (string | undefined)[], timeoutMs = 4000) {
   const sources = useMemo(() => candidates.filter(isValidImageUrl), [candidates]);
   const [index, setIndex] = useState(0);
   const [status, setStatus] = useState<ImageStatus>(sources.length > 0 ? "loading" : "error");
@@ -56,9 +56,6 @@ export function useClientImage(candidates: (string | undefined)[], timeoutMs = 1
   useEffect(() => {
     clearTimer();
     if (statusRef.current !== "loading") return;
-    // Only rely on the fallback timer when we have backup sources.
-    // For a single source, img.onLoad / img.onError are the source of truth.
-    if (sourcesRef.current.length <= 1) return;
 
     timerRef.current = setTimeout(() => {
       timerRef.current = null;
@@ -110,7 +107,7 @@ export default function ClientImage({
   className,
   style,
   fallback,
-  timeoutMs = 10000,
+  timeoutMs = 4000,
   priority,
   loading,
   onResolve,

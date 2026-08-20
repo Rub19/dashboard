@@ -633,6 +633,7 @@ export default function DynamicIslandContainer() {
                     iconClassName="h-6 w-6 text-emerald-400"
                     loading="eager"
                     priority
+                    timeoutMs={3000}
                   />
                   <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5">
                     <p className="truncate text-sm font-semibold text-white">

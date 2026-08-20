@@ -39,11 +39,26 @@ function mapNowPlaying(raw: unknown): NowPlaying | null {
       asStr(track.cover ?? track.artworkUrl ?? track.artwork ?? data.cover ?? data.artworkUrl ?? data.artwork),
     artworkUrl: getArtworkUrl(data) || asStr(track.artworkUrl ?? track.artwork ?? track.cover),
     covers: (() => {
+      const seen = new Set<string>();
+      const all: string[] = [];
+      const add = (value: unknown) => {
+        const s = asStr(value);
+        if (s && !seen.has(s)) {
+          seen.add(s);
+          all.push(s);
+        }
+      };
+      add(track.cover);
+      add(track.artworkUrl);
+      add(track.artwork);
+      add(data.cover);
+      add(data.artworkUrl);
+      add(data.artwork);
       const list = track.covers ?? data.covers;
-      if (!Array.isArray(list)) return undefined;
-      return list
-        .map((c) => asStr(c))
-        .filter((c): c is string => typeof c === "string" && c.length > 0);
+      if (Array.isArray(list)) {
+        list.forEach((c) => add(c));
+      }
+      return all.length > 0 ? all : undefined;
     })(),
     progressMs: asNum(track.progressMs ?? data.progressMs),
     durationMs: asNum(track.durationMs ?? data.durationMs),

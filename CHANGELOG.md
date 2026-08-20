@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.34 — 2026-08-20
+
+**Résilience et complétude des pochettes Spotify**
+
+- Worker Spotify : collecte des images depuis `album.images`, `item.images` (épisodes) et `show.images` (podcasts).
+- Tri par taille décroissante pour privilégier la meilleure qualité.
+- Fallback Worker vers l'API `/v1/albums/{id}` si aucune image n'est fournie par `/v1/me/player/currently-playing`.
+- Client `useNowPlaying` : liste `covers` dédupliquée et agrégée (`cover`, `artworkUrl`, `covers`).
+- `ClientImage` : timeout actif même pour une source unique (4 s par défaut), passage à la source suivante si l'image ne charge pas.
+- `SpotifyCompact` et Dynamic Island : `timeoutMs={3000}` pour un fallback rapide sur la pochette suivante.
+- Version `v1.7.34`, cache PWA `v402`.
+
 ## v1.7.33 — 2026-08-20
 
 **Nettoyage topbar : retrait du pill média dupliqué**

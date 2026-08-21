@@ -205,7 +205,7 @@ export default function Select({
               onMouseEnter={() => setActiveIndex(index)}
               onClick={() => selectOption(option)}
               tabIndex={-1}
-              className={`flex cursor-pointer items-center justify-between gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-sm transition-colors ${
+              className={`flex cursor-pointer items-center justify-between gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-base transition-colors ${
                 option.disabled
                   ? "cursor-not-allowed opacity-40"
                   : isSelected
@@ -245,7 +245,7 @@ export default function Select({
         aria-controls={listboxId}
         aria-label={ariaLabel}
         aria-labelledby={label ? labelId : undefined}
-        className={`flex h-11 w-full items-center justify-between gap-2 rounded-[var(--panel-radius)] border px-3.5 text-left text-base font-medium transition-colors duration-150 focus:outline-none md:h-10 md:text-sm ${
+        className={`flex h-11 w-full items-center justify-between gap-2 rounded-[var(--panel-radius)] border px-3.5 text-left text-base font-medium transition-colors duration-150 focus:outline-none md:h-10 ${
           disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
         } ${
           open

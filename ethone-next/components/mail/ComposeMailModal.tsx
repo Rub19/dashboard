@@ -254,9 +254,9 @@ export default function ComposeMailModal({
             {/* Fields */}
             <div className="shrink-0 space-y-1 border-b border-white/[0.06] px-4 py-2">
               {/* From / alias */}
-              <div className="flex flex-col gap-1 py-1.5">
+              <div className="flex flex-col gap-1 py-2.5">
                 <div className="flex items-center gap-2">
-                  <span className="shrink-0 text-[11px] font-medium text-zinc-500">{i18n("from") || "De"}</span>
+                  <span className="shrink-0 text-sm font-medium text-zinc-500">{i18n("from") || "De"}</span>
                   {hasAliases ? (
                     <Select
                       value={fromAliasId || (showAliasCreate ? "new" : "")}
@@ -281,7 +281,7 @@ export default function ComposeMailModal({
                 </div>
 
                 {showAliasCreate && (
-                  <div className="mt-1 flex flex-wrap items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.02] px-2 py-1.5">
+                  <div className="mt-1 flex flex-wrap items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.02] px-2 py-2.5">
                     <input
                       type="text"
                       value={newAliasInput}
@@ -294,9 +294,9 @@ export default function ComposeMailModal({
                       }}
                       placeholder={i18n("aliasPlaceholder") || "votre-nom"}
                       disabled={aliasLoading}
-                      className="min-w-[6rem] flex-1 bg-transparent text-xs text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] disabled:opacity-50"
+                      className="min-w-[6rem] flex-1 bg-transparent text-sm text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] disabled:opacity-50"
                     />
-                    <span className="text-[11px] text-zinc-500">@ethone.dev</span>
+                    <span className="text-sm text-zinc-500">@ethone.dev</span>
                     <Button
                       type="button"
                       variant="ghost"
@@ -332,16 +332,16 @@ export default function ComposeMailModal({
                   </div>
                 )}
 
-                {aliasError && <p className="text-[11px] text-rose-400">{aliasError}</p>}
+                {aliasError && <p className="text-sm text-rose-400">{aliasError}</p>}
               </div>
 
-              <div className="flex items-center gap-2 py-1.5">
-                <span className="shrink-0 text-[11px] font-medium text-zinc-500">{i18n("to") || "À"}</span>
+              <div className="flex items-center gap-2 py-2.5">
+                <span className="shrink-0 text-sm font-medium text-zinc-500">{i18n("to") || "À"}</span>
                 <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1">
                   {to.map((t, i) => (
                     <span
                       key={`${t}-${i}`}
-                      className="flex items-center gap-1 rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[11px] text-emerald-300"
+                      className="flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-1 text-sm text-emerald-300"
                     >
                       {t}
                       <button type="button" onClick={() => removeTag(to, setTo, i)} className="text-[var(--accent-primary)] hover:text-[var(--text-primary)]">
@@ -355,18 +355,18 @@ export default function ComposeMailModal({
                     onChange={(e) => setToInput(e.target.value)}
                     onKeyDown={(e) => handleKeyDown(e, to, setTo, toInput, setToInput)}
                     placeholder={to.length ? "" : i18n("emailPlaceholder")}
-                    className="min-w-[4rem] flex-1 bg-transparent text-xs text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
+                    className="min-w-[4rem] flex-1 bg-transparent text-sm text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 py-1.5">
-                <span className="shrink-0 text-[11px] font-medium text-zinc-500">{i18n("cc") || "Cc"}</span>
+              <div className="flex items-center gap-2 py-2.5">
+                <span className="shrink-0 text-sm font-medium text-zinc-500">{i18n("cc") || "Cc"}</span>
                 <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1">
                   {cc.map((c, i) => (
                     <span
                       key={`${c}-${i}`}
-                      className="flex items-center gap-1 rounded-md bg-white/[0.06] px-1.5 py-0.5 text-[11px] text-zinc-300"
+                      className="flex items-center gap-1 rounded-md bg-white/[0.06] px-2 py-1 text-sm text-zinc-300"
                     >
                       {c}
                       <button type="button" onClick={() => removeTag(cc, setCc, i)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
@@ -379,18 +379,18 @@ export default function ComposeMailModal({
                     value={ccInput}
                     onChange={(e) => setCcInput(e.target.value)}
                     onKeyDown={(e) => handleKeyDown(e, cc, setCc, ccInput, setCcInput)}
-                    className="min-w-[4rem] flex-1 bg-transparent text-xs text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
+                    className="min-w-[4rem] flex-1 bg-transparent text-sm text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 py-1.5">
-                <span className="shrink-0 text-[11px] font-medium text-zinc-500">{i18n("bcc") || "Cci"}</span>
+              <div className="flex items-center gap-2 py-2.5">
+                <span className="shrink-0 text-sm font-medium text-zinc-500">{i18n("bcc") || "Cci"}</span>
                 <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1">
                   {bcc.map((b, i) => (
                     <span
                       key={`${b}-${i}`}
-                      className="flex items-center gap-1 rounded-md bg-white/[0.06] px-1.5 py-0.5 text-[11px] text-zinc-300"
+                      className="flex items-center gap-1 rounded-md bg-white/[0.06] px-2 py-1 text-sm text-zinc-300"
                     >
                       {b}
                       <button type="button" onClick={() => removeTag(bcc, setBcc, i)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
@@ -403,18 +403,18 @@ export default function ComposeMailModal({
                     value={bccInput}
                     onChange={(e) => setBccInput(e.target.value)}
                     onKeyDown={(e) => handleKeyDown(e, bcc, setBcc, bccInput, setBccInput)}
-                    className="min-w-[4rem] flex-1 bg-transparent text-xs text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
+                    className="min-w-[4rem] flex-1 bg-transparent text-sm text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 py-1.5">
-                <span className="shrink-0 text-[11px] font-medium text-zinc-500">{i18n("subject") || "Objet"}</span>
+              <div className="flex items-center gap-2 py-2.5">
+                <span className="shrink-0 text-sm font-medium text-zinc-500">{i18n("subject") || "Objet"}</span>
                 <input
                   type="text"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  className="min-w-0 flex-1 bg-transparent text-xs text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
+                  className="min-w-0 flex-1 bg-transparent text-sm text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
                 />
               </div>
             </div>
@@ -425,7 +425,7 @@ export default function ComposeMailModal({
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
                 placeholder={i18n("composePlaceholder") || "Écrivez votre message..."}
-                className="h-full min-h-0 w-full flex-1 resize-none overflow-y-auto rounded-xl bg-transparent p-2 text-sm text-zinc-200 outline-none transition-all duration-200 placeholder-zinc-600 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
+                className="h-full min-h-0 w-full flex-1 resize-none overflow-y-auto rounded-xl bg-transparent p-2 text-base text-zinc-200 outline-none transition-all duration-200 placeholder-zinc-600 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
               />
             </div>
 
@@ -434,7 +434,7 @@ export default function ComposeMailModal({
                 {attachments.map((a, i) => (
                   <span
                     key={`${a.filename}-${i}`}
-                    className="flex items-center gap-1 rounded-md border border-white/[0.08] bg-white/[0.03] px-2 py-1 text-[10px] text-zinc-300"
+                    className="flex items-center gap-1 rounded-md border border-white/[0.08] bg-white/[0.03] px-2 py-1 text-xs text-zinc-300"
                   >
                     {a.filename}
                     <button

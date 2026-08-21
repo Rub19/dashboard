@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, startTransition } from "react";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { type ThemeMode } from "@/lib/settings";
@@ -31,7 +31,7 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
             type="button"
             onClick={() => {
               applyTheme(id);
-              onChange(id);
+              startTransition(() => onChange(id));
             }}
             whileHover={{ scale: 1.015 }}
             whileTap={{ scale: 0.985 }}

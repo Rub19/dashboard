@@ -125,13 +125,12 @@ function SettingsRow({ label, description, children }: RowProps) {
 
 export default function AppearanceSettings() {
   const i18n = useI18n();
-  const { settings, update } = useSettings();
+  const { settings } = useSettings();
   const form = useSettingsForm();
   const colorInputId = useId();
 
   const handleChange = <K extends keyof Settings>(key: K, value: Settings[K]) => {
     form.updateInstant(key, value);
-    update({ [key]: value } as Partial<Settings>);
   };
 
   const modifiedCount = useMemo(() => {

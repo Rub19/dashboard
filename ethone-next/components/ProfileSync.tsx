@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { useSettings } from "@/components/SettingsProvider";
 import { useActiveProfile } from "@/components/SettingsProvider";
@@ -35,6 +35,14 @@ export default function ProfileSync() {
   const { activeProfile, loaded } = useActiveProfile();
   const { setSync, setStatus } = usePresence();
 
+  const settingsRef = useRef(settings);
+  const updateRef = useRef(update);
+
+  useLayoutEffect(() => {
+    settingsRef.current = settings;
+    updateRef.current = update;
+  });
+
   useEffect(() => {
     if (!user || !loaded || !activeProfile) return;
 
@@ -49,17 +57,19 @@ export default function ProfileSync() {
     setSync("syncing");
     const t = setTimeout(() => setSync(), 1200);
 
+    const current = settingsRef.current;
+    const currentUpdate = updateRef.current;
     const next: Partial<Settings> = {};
-    if (JSON.stringify(settings.dockItems) !== JSON.stringify(activeProfile.widgets)) {
+    if (JSON.stringify(current.dockItems) !== JSON.stringify(activeProfile.widgets)) {
       next.dockItems = activeProfile.widgets;
     }
-    if (settings.accentColor !== activeProfile.accent) {
+    if (current.accentColor !== activeProfile.accent) {
       next.accentColor = activeProfile.accent as Settings["accentColor"];
     }
-    if (Object.keys(next).length) update(next);
+    if (Object.keys(next).length) currentUpdate(next);
 
     return () => clearTimeout(t);
-  }, [user, loaded, activeProfile, settings, update, setSync, setStatus]);
+  }, [user, loaded, activeProfile, setSync, setStatus]);
 
   return null;
 }

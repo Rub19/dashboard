@@ -62,7 +62,7 @@ export default function Select({
     setPosition({
       top: rect.bottom + 6,
       left: rect.left,
-      width: Math.max(rect.width, 160),
+      width: Math.max(rect.width, 240),
     });
   }, []);
 
@@ -190,7 +190,7 @@ export default function Select({
         opacity: mounted ? 1 : 0,
         transform: mounted ? "translateY(0)" : "translateY(-6px)",
       }}
-      className="z-[100] mt-1.5 min-w-[12rem] overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-2xl shadow-black/60 backdrop-blur-xl transition-[opacity,transform] duration-150 ease-out"
+      className="z-[100] mt-1.5 min-w-[min(18rem,90vw)] max-w-[90vw] overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-2xl shadow-black/60 backdrop-blur-xl transition-[opacity,transform] duration-150 ease-out"
     >
       <div className="max-h-64 overflow-y-auto p-1.5">
         {options.map((option, index) => {

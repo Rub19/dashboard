@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Paperclip, Sparkles, Send, Loader2, Shuffle } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Button from "@/components/ui/Button";
+import Select, { type SelectOption } from "@/components/ui/Select";
 import { type MailAlias } from "@/lib/hooks/useMail";
 
 export type ComposeState = {
@@ -60,6 +61,20 @@ export default function ComposeMailModal({
   const [aliasLoading, setAliasLoading] = useState(false);
   const [aliasError, setAliasError] = useState<string | null>(null);
   const aliasInitRef = useRef(false);
+
+  const aliasOptions = useMemo<SelectOption[]>(() => {
+    const list = aliases.map((a) => ({
+      id: a.id,
+      label: `${a.alias}${a.display_name ? ` · ${a.display_name}` : ""}`,
+    }));
+    if (createAlias) {
+      list.push({
+        id: "new",
+        label: `+ ${i18n("newAlias") || "Nouvelle adresse"}`,
+      });
+    }
+    return list;
+  }, [aliases, createAlias, i18n]);
 
   useEffect(() => {
     if (!open) {
@@ -243,10 +258,9 @@ export default function ComposeMailModal({
                 <div className="flex items-center gap-2">
                   <span className="shrink-0 text-[11px] font-medium text-zinc-500">{i18n("from") || "De"}</span>
                   {hasAliases ? (
-                    <select
-                      value={fromAliasId}
-                      onChange={(e) => {
-                        const value = e.target.value;
+                    <Select
+                      value={fromAliasId || (showAliasCreate ? "new" : "")}
+                      onChange={(value) => {
                         if (value === "new") {
                           setFromAliasId("");
                           setShowAliasCreate(true);
@@ -256,18 +270,13 @@ export default function ComposeMailModal({
                           setShowAliasCreate(false);
                         }
                       }}
-                      className="min-w-0 flex-1 bg-transparent text-xs text-zinc-200 outline-none transition-all duration-200 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
-                    >
-                      {aliases.map((a) => (
-                        <option key={a.id} value={a.id}>
-                          {a.alias}
-                          {a.display_name ? ` · ${a.display_name}` : ""}
-                        </option>
-                      ))}
-                      <option value="new">+ {i18n("newAlias") || "Nouvelle adresse"}</option>
-                    </select>
+                      options={aliasOptions}
+                      placeholder={i18n("selectAlias") || "Choisir une adresse"}
+                      aria-label={i18n("from") || "De"}
+                      className="min-w-0 flex-1"
+                    />
                   ) : (
-                    <span className="text-xs text-zinc-400">{i18n("noAlias") || "Aucune adresse"}</span>
+                    <span className="text-sm text-zinc-400">{i18n("noAlias") || "Aucune adresse"}</span>
                   )}
                 </div>
 

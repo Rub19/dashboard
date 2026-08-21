@@ -113,10 +113,10 @@ type RowProps = {
 
 function SettingsRow({ label, description, children }: RowProps) {
   return (
-    <div className="flex flex-col gap-2 border-b border-white/[0.04] py-3 last:border-none sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+    <div className="flex flex-col gap-2 border-b border-[var(--text-primary)]/[0.04] py-3 last:border-none sm:flex-row sm:items-center sm:justify-between sm:gap-4">
       <div className="flex-1">
-        <h4 className="text-xs font-semibold text-white">{label}</h4>
-        {description && <p className="text-[11px] text-zinc-400">{description}</p>}
+        <h4 className="text-xs font-semibold text-[var(--text-primary)]">{label}</h4>
+        {description && <p className="text-[11px] text-[var(--text-muted)]">{description}</p>}
       </div>
       <div className="flex items-center justify-end gap-2">{children}</div>
     </div>
@@ -176,7 +176,7 @@ export default function AppearanceSettings() {
           </div>
 
           <SettingsRow label="Pack d'icônes" description="Set d'icônes utilisé dans l'interface.">
-            <div className="flex items-center gap-1 rounded-xl border border-white/[0.08] bg-white/[0.03] p-1">
+            <div className="flex items-center gap-1 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] p-1">
               {PACKS.map((pack) => {
                 const active = settings.iconPack === pack.id;
                 const sample = getSampleIcon(pack.id);
@@ -215,12 +215,12 @@ export default function AppearanceSettings() {
                       key={color.id}
                       className={`relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 transition-all active:scale-95 ${
                         currentAccent === "custom"
-                          ? "border-white shadow-[0_0_16px_rgba(255,255,255,0.35)]"
-                          : "border-white/10 hover:border-white/40"
+                          ? "border-[var(--text-primary)] shadow-[0_0_16px_var(--glow-color)]"
+                          : "border-[var(--text-primary)]/10 hover:border-[var(--text-primary)]/40"
                       }`}
                       style={{ background: settings.customAccent }}
                     >
-                      <Sparkles className="h-3.5 w-3.5 text-white/80" />
+                      <Sparkles className="h-3.5 w-3.5 text-[var(--text-primary)]/80" />
                       <input
                         id={colorInputId}
                         type="color"
@@ -287,14 +287,14 @@ export default function AppearanceSettings() {
 
           <SettingsRow label="Mode sombre" description="Forcer le thème sombre.">
             <div className="flex items-center gap-3">
-              <Sun className="h-4 w-4 text-zinc-500" />
+              <Sun className="h-4 w-4 text-[var(--text-muted)]" />
               <Switch
                 checked={settings.darkMode}
                 onChange={(v) => handleChange("darkMode", v)}
                 labels={false}
                 size="sm"
               />
-              <Moon className="h-4 w-4 text-zinc-300" />
+              <Moon className="h-4 w-4 text-[var(--text-primary)]" />
             </div>
           </SettingsRow>
         </div>
@@ -474,7 +474,7 @@ export default function AppearanceSettings() {
       </BentoCard>
 
       {modifiedCount > 0 && (
-        <div className="md:col-span-2 flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] px-3 py-2 text-[11px] text-emerald-300">
+        <div className="md:col-span-2 flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] px-3 py-2 text-[11px] text-emerald-400">
           <Sparkles className="h-3.5 w-3.5" />
           {modifiedCount} option{modifiedCount > 1 ? "s" : ""} modifiée{modifiedCount > 1 ? "s" : ""}
         </div>

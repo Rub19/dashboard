@@ -100,6 +100,10 @@ export default function SettingsProvider({
 }) {
   const { active, activeProfile, loaded, reload } = useProfiles();
   const [settings, setSettings] = useState<Settings>(() => loadSettings());
+  const settingsRef = useRef(settings);
+  useEffect(() => {
+    settingsRef.current = settings;
+  }, [settings]);
 
   const activeContext = useMemo<ActiveProfileValue>(
     () => ({ active, activeProfile, loaded, reload }),
@@ -293,18 +297,29 @@ export default function SettingsProvider({
       if (typeof partial.theme === "string" && partial.theme !== "auto") {
         patch.theme = resolveLegacyTheme(partial.theme) as ThemeMode;
       }
-      const next = { ...settings, ...patch };
-      if (deepEqual(next, settings)) {
+      const prev = settingsRef.current;
+      const next = { ...prev, ...patch };
+      if (deepEqual(next, prev)) {
         return;
       }
+      settingsRef.current = next;
       setSettings(next);
       saveSettings(next, active || undefined);
       useSyncStore.getState().setStatus("user_settings", "syncing");
-      saveSettingsAsync(next)
-        .then(() => useSyncStore.getState().setStatus("user_settings", "idle"))
-        .catch(() => useSyncStore.getState().setStatus("user_settings", "error"));
+
+      // Debounce the Supabase round-trip so rapid changes (sliders, theme clicks)
+      // don't hammer the API and keep the UI responsive. Always save the latest
+      // ref in case multiple updates fire before the timeout.
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+      saveTimeoutRef.current = window.setTimeout(() => {
+        saveSettingsAsync(settingsRef.current)
+          .then(() => useSyncStore.getState().setStatus("user_settings", "idle"))
+          .catch(() => useSyncStore.getState().setStatus("user_settings", "error"));
+      }, 400);
     },
-    [settings, active]
+    [active]
   );
 
   const handleApplyPreset = useCallback(
@@ -317,6 +332,7 @@ export default function SettingsProvider({
     [settings, update, handleApplyPreset]
   );
 
+  const saveTimeoutRef = useRef<number | null>(null);
   const previousSettingsRef = useRef<Settings | null>(null);
   useEffect(() => {
     const prev = previousSettingsRef.current;
@@ -329,6 +345,12 @@ export default function SettingsProvider({
       activityJournal.capture("v8.appearance.cycle", { ok: true, accentColor: settings.accentColor });
     }
   }, [settings]);
+
+  useEffect(() => () => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+  }, []);
 
   return (
     <ActiveProfileContext.Provider value={activeContext}>

@@ -113,6 +113,16 @@ html {
   transition: background-color 200ms ease, border-color 200ms ease, color 120ms ease, box-shadow 120ms ease;
 }
 
+/* Temporarily disable all transitions during theme changes to prevent jank. */
+html[data-no-transitions],
+html[data-no-transitions] *,
+html[data-no-transitions] *::before,
+html[data-no-transitions] *::after {
+  transition: none !important;
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+}
+
 /* Space overrides for focus / studio */
 html[data-space="focus"] {
   --background: #070b10;

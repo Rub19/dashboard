@@ -21,6 +21,7 @@ import { useActiveProfile } from "@/components/SettingsProvider";
 import { useSyncStore } from "@/lib/stores/sync";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/lib/icons";
+import BrandMark from "@/components/BrandMark";
 import {
   AnimatedSidebar,
   AnimatedSidebarContent,
@@ -64,9 +65,7 @@ const SidebarBrand = memo(function SidebarBrand() {
       )}
       aria-label="ETHONE"
     >
-      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.05] text-[10px] font-bold">
-        E
-      </div>
+      <BrandMark size={28} className="shrink-0" />
       {!collapsed && <span className="text-sm font-bold tracking-tight">ETHONE</span>}
     </Link>
   );

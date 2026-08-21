@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Shuffle } from "lucide-react";
 import Button from "@/components/ui/Button";
+import Input from "@/components/Input";
+import FormField from "@/components/FormField";
 import { useToast } from "@/components/ToastProvider";
 import type { MailAlias } from "@/lib/hooks/useMail";
 
@@ -87,43 +89,34 @@ export default function MailAliasSetup({ createAlias, onCreated }: MailAliasSetu
         </div>
 
         <div className="space-y-4">
-          <div>
-            <label className="mb-1.5 block text-[10px] font-medium uppercase tracking-wider text-zinc-500">
-              Nom affiché
-            </label>
-            <input
+          <FormField label="Nom affiché">
+            <Input
               type="text"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value.slice(0, 80))}
               placeholder="Ex: Rub"
               disabled={loading}
-              className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-2.5 text-sm text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] disabled:opacity-50"
+              className="w-full"
             />
-          </div>
+          </FormField>
 
-          <div>
-            <label className="mb-1.5 block text-[10px] font-medium uppercase tracking-wider text-zinc-500">
-              Adresse mail
-            </label>
-            <div className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-2.5 focus-within:border-white/20 focus-within:ring-1 focus-within:ring-white/15 focus-within:shadow-[0_0_15px_rgba(255,255,255,0.03)]">
-              <input
-                type="text"
-                value={local}
-                onChange={(e) => setLocal(sanitizeLocal(e.target.value))}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleCreate();
-                  }
-                }}
-                placeholder="votre-alias"
-                disabled={loading}
-                className="min-w-0 flex-1 bg-transparent text-sm text-zinc-200 placeholder-zinc-600 outline-none disabled:opacity-50"
-              />
-              <span className="shrink-0 text-xs text-zinc-500">@ethone.dev</span>
-            </div>
-            {alias && <p className="mt-1 text-[10px] text-zinc-500">{alias}</p>}
-          </div>
+          <FormField label="Adresse mail" help={alias}>
+            <Input
+              type="text"
+              value={local}
+              onChange={(e) => setLocal(sanitizeLocal(e.target.value))}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleCreate();
+                }
+              }}
+              placeholder="votre-alias"
+              disabled={loading}
+              className="w-full"
+              right={<span className="shrink-0 text-xs text-zinc-500">@ethone.dev</span>}
+            />
+          </FormField>
 
           <Button
             type="button"

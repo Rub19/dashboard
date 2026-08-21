@@ -6,6 +6,7 @@ import Select from "@/components/ui/Select";
 import { Checkbox } from "@/components/ui/Checkbox";
 import Slider from "@/components/ui/Slider";
 import { cn } from "@/lib/utils";
+import Input from "@/components/Input";
 
 export function SwitchControl({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
   return <Switch checked={checked} onChange={onChange} labels={false} size="md" />;
@@ -169,13 +170,14 @@ export function TextControl({
   autoComplete?: string;
 }) {
   return (
-    <input
+    <Input
       type={type}
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       autoComplete={autoComplete}
-      className="w-56 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
+      inputSize="compact"
+      className="w-56"
     />
   );
 }

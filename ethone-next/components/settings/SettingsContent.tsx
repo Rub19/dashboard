@@ -22,6 +22,7 @@ import dynamic from "next/dynamic";
 import AiProviderPanelSkeleton from "@/components/AiProviderPanelSkeleton";
 import LiveSettingsSkeleton from "@/components/LiveSettingsSkeleton";
 import IntegrationsSettingsSkeleton from "@/components/IntegrationsSettingsSkeleton";
+import Input from "@/components/Input";
 
 const AiProviderPanel = dynamic(() => import("@/components/AiProviderPanel").then((m) => m.AiProviderPanel), {
   ssr: false,
@@ -384,21 +385,23 @@ function PresetsPanel() {
 
       <div className="space-y-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 backdrop-blur-[var(--panel-blur)]">
         <p className="text-xs font-medium text-[var(--foreground)]">{i18n("saveCurrentAsPreset")}</p>
-        <input
+        <Input
           type="text"
           value={newPresetName}
           onChange={(e) => setNewPresetName(e.target.value)}
           placeholder={i18n("presetNamePlaceholder")}
           aria-label={i18n("presetNamePlaceholder")}
-          className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
+          inputSize="compact"
+          className="w-full"
         />
-        <input
+        <Input
           type="text"
           value={newPresetDescription}
           onChange={(e) => setNewPresetDescription(e.target.value)}
           placeholder={i18n("presetDescriptionPlaceholder")}
           aria-label={i18n("presetDescriptionPlaceholder")}
-          className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
+          inputSize="compact"
+          className="w-full"
         />
         <button
           type="button"

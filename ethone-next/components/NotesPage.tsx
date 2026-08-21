@@ -242,14 +242,15 @@ export default function NotesPage() {
       {/* Right: Editor */}
       <div className="col-span-12 flex h-full min-h-0 flex-col justify-between overflow-hidden rounded-2xl v8-panel p-6 backdrop-blur-2xl lg:col-span-8">
         <div className="shrink-0 mb-3">
-          <input
+          <Input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder={i18n("notesPlaceholder")}
             aria-label={i18n("notesPlaceholder")}
             data-testid="note-title-input"
-            className="w-full rounded-lg border-none bg-transparent px-2 py-1 text-lg font-bold text-white outline-none transition-all duration-200 placeholder-zinc-500 focus:bg-white/[0.04] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
+            inputClassName="text-lg font-bold"
+            className="w-full"
           />
         </div>
 

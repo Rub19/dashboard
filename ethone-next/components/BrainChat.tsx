@@ -26,6 +26,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import TextArea from "@/components/Textarea";
 
 type ActionChip = {
   id: string;
@@ -453,7 +454,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
         )}
 
         <div className="relative mt-2 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 shadow-2xl backdrop-blur-[var(--panel-blur)] transition-all duration-200 focus-within:border-white/20 focus-within:ring-1 focus-within:ring-white/15 focus-within:shadow-[0_0_15px_rgba(255,255,255,0.03)]">
-          <textarea
+          <TextArea
             ref={textareaRef}
             rows={1}
             value={prompt}
@@ -462,7 +463,8 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
             placeholder="Parler à Brain..."
             disabled={pending}
             data-testid="brain-input"
-            className="w-full resize-none rounded-xl bg-transparent px-3 py-2 text-sm text-zinc-100 outline-none placeholder:text-zinc-500"
+            className="min-h-0 flex-1"
+            inputClassName="resize-none min-h-[2.75rem]"
             style={{ maxHeight: 144 }}
           />
           <div className="flex items-center justify-between px-1 pt-1">

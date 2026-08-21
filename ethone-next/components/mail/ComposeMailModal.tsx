@@ -6,6 +6,8 @@ import { X, Paperclip, Sparkles, Send, Loader2, Shuffle } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Button from "@/components/ui/Button";
 import Select, { type SelectOption } from "@/components/ui/Select";
+import Input from "@/components/Input";
+import TextArea from "@/components/Textarea";
 import { type MailAlias } from "@/lib/hooks/useMail";
 
 export type ComposeState = {
@@ -281,8 +283,8 @@ export default function ComposeMailModal({
                 </div>
 
                 {showAliasCreate && (
-                  <div className="mt-1 flex flex-wrap items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.02] px-2 py-2.5">
-                    <input
+                  <div className="mt-1 flex flex-wrap items-center gap-2">
+                    <Input
                       type="text"
                       value={newAliasInput}
                       onChange={(e) => setNewAliasInput(e.target.value.replace(/[^a-zA-Z0-9._-]/g, ""))}
@@ -294,7 +296,8 @@ export default function ComposeMailModal({
                       }}
                       placeholder={i18n("aliasPlaceholder") || "votre-nom"}
                       disabled={aliasLoading}
-                      className="min-w-[6rem] flex-1 bg-transparent text-sm text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] disabled:opacity-50"
+                      inputSize="compact"
+                      className="min-w-0 flex-1"
                     />
                     <span className="text-sm text-zinc-500">@ethone.dev</span>
                     <Button
@@ -349,13 +352,14 @@ export default function ComposeMailModal({
                       </button>
                     </span>
                   ))}
-                  <input
+                  <Input
                     type="text"
                     value={toInput}
                     onChange={(e) => setToInput(e.target.value)}
                     onKeyDown={(e) => handleKeyDown(e, to, setTo, toInput, setToInput)}
                     placeholder={to.length ? "" : i18n("emailPlaceholder")}
-                    className="min-w-[4rem] flex-1 bg-transparent text-sm text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
+                    inputSize="compact"
+                    className="min-w-0 flex-1"
                   />
                 </div>
               </div>
@@ -374,12 +378,13 @@ export default function ComposeMailModal({
                       </button>
                     </span>
                   ))}
-                  <input
+                  <Input
                     type="text"
                     value={ccInput}
                     onChange={(e) => setCcInput(e.target.value)}
                     onKeyDown={(e) => handleKeyDown(e, cc, setCc, ccInput, setCcInput)}
-                    className="min-w-[4rem] flex-1 bg-transparent text-sm text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
+                    inputSize="compact"
+                    className="min-w-0 flex-1"
                   />
                 </div>
               </div>
@@ -398,34 +403,36 @@ export default function ComposeMailModal({
                       </button>
                     </span>
                   ))}
-                  <input
+                  <Input
                     type="text"
                     value={bccInput}
                     onChange={(e) => setBccInput(e.target.value)}
                     onKeyDown={(e) => handleKeyDown(e, bcc, setBcc, bccInput, setBccInput)}
-                    className="min-w-[4rem] flex-1 bg-transparent text-sm text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
+                    inputSize="compact"
+                    className="min-w-0 flex-1"
                   />
                 </div>
               </div>
 
               <div className="flex items-center gap-2 py-2.5">
                 <span className="shrink-0 text-sm font-medium text-zinc-500">{i18n("subject") || "Objet"}</span>
-                <input
+                <Input
                   type="text"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  className="min-w-0 flex-1 bg-transparent text-sm text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
+                  className="min-w-0 flex-1"
                 />
               </div>
             </div>
 
             {/* Editor */}
             <div className="flex min-h-0 flex-1 p-4">
-              <textarea
+              <TextArea
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
                 placeholder={i18n("composePlaceholder") || "Écrivez votre message..."}
-                className="h-full min-h-0 w-full flex-1 resize-none overflow-y-auto rounded-xl bg-transparent p-2 text-base text-zinc-200 outline-none transition-all duration-200 placeholder-zinc-600 focus:bg-white/[0.02] focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
+                className="h-full w-full"
+                inputClassName="resize-none overflow-y-auto"
               />
             </div>
 

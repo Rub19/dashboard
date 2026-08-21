@@ -8,6 +8,7 @@ import { useToast } from "@/components/ToastProvider";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
 import Button from "@/components/ui/Button";
+import Input from "@/components/Input";
 
 export default function SecurityPage() {
   const i18n = useI18n();
@@ -102,13 +103,13 @@ export default function SecurityPage() {
       <h2 className="text-lg font-semibold">{i18n("passkeys")}</h2>
       <Card3D>
         <div className="flex flex-wrap items-center gap-2">
-          <input
+          <Input
             type="text"
             value={passkeyName}
             onChange={(e) => setPasskeyName(e.target.value)}
             placeholder={i18n("passkeyName")}
             aria-label={i18n("passkeyName")}
-            className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]"
+            className="min-w-0 flex-1"
           />
           <Button
             type="button"
@@ -130,13 +131,14 @@ export default function SecurityPage() {
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0">
                   {renaming === p.id ? (
-                    <input
+                    <Input
                       type="text"
                       value={newName}
                       onChange={(e) => setNewName(e.target.value)}
                       onKeyDown={(e) => { if (e.key === "Enter") handleRename(p.id); }}
                       aria-label={i18n("passkeyName")}
-                      className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-1 text-sm backdrop-blur-[var(--panel-blur)]"
+                      inputSize="compact"
+                      className="w-full"
                     />
                   ) : (
                     <p className="font-medium">{p.name}</p>

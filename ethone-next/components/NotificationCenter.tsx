@@ -10,6 +10,7 @@ import { usePresence } from "@/components/PresenceProvider";
 import { Icon } from "@/lib/icons";
 import NotificationItem from "@/components/NotificationItem";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/motion/Popover";
+import Input from "@/components/Input";
 import Modal from "@/components/ui/Modal";
 import AnimatedFilterTabs from "@/components/ui/AnimatedFilterTabs";
 
@@ -160,17 +161,16 @@ export default function NotificationCenter() {
   );
 
   const search = (
-    <div className="relative">
-      <Icon name="search" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
-      <input
-        ref={searchRef}
-        type="search"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder={i18n("search")}
-        className="h-10 w-full rounded-xl border border-white/[0.06] bg-white/[0.03] py-2 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none transition-colors placeholder:text-[var(--muted)] focus:border-white/20 focus:bg-white/[0.04]"
-      />
-    </div>
+    <Input
+      ref={searchRef}
+      type="search"
+      icon="search"
+      clearable
+      value={query}
+      onChange={(e) => setQuery(e.target.value)}
+      placeholder={i18n("search")}
+      className="w-full"
+    />
   );
 
   const list = (

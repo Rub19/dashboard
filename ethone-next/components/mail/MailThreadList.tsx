@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
+import Input from "@/components/Input";
 import type { MailMessage } from "@/lib/hooks/useMail";
 import MailThreadItem from "./MailThreadItem";
 
@@ -68,16 +68,15 @@ export default function MailThreadList({
           <span className="rounded-md bg-white/[0.05] px-1.5 py-0.5 text-[10px] font-mono text-zinc-400">{total}</span>
         </div>
 
-        <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-500" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => onSearch(e.target.value)}
-            placeholder={i18n("search")}
-            className="w-full rounded-lg border border-white/10 bg-white/[0.03] py-1.5 pl-8 pr-2.5 text-xs text-zinc-200 placeholder-zinc-500 outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
-          />
-        </div>
+        <Input
+          type="search"
+          icon="search"
+          value={search}
+          onChange={(e) => onSearch(e.target.value)}
+          placeholder={i18n("search")}
+          className="w-full"
+          inputSize="compact"
+        />
 
         <div className="flex items-center gap-1.5">
           {FILTERS.map((id) => (

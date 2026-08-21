@@ -4,6 +4,7 @@ import { useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, ty
 import { useRouter, usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { Icon } from "@/lib/icons";
+import Input from "@/components/Input";
 import Modal from "@/components/ui/Modal";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useWindowManager } from "./WindowManagerProvider";
@@ -251,18 +252,17 @@ function MissionControlDialog() {
       </div>
 
       <div className="mb-6 w-full">
-        <div className="relative">
-          <Icon name="search" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={i18n("searchWindows")}
-            className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] py-2.5 pl-10 pr-4 text-sm text-[var(--foreground)] placeholder:text-[var(--muted)] outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
-            autoFocus
-            aria-label={i18n("searchWindows")}
-          />
-        </div>
+        <Input
+          type="search"
+          icon="search"
+          clearable
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={i18n("searchWindows")}
+          autoFocus
+          aria-label={i18n("searchWindows")}
+          className="w-full"
+        />
       </div>
 
       <div className="grid w-full grid-cols-1 gap-4 pb-8 lg:grid-cols-[1fr_320px]">

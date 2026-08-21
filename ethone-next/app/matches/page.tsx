@@ -8,6 +8,8 @@ import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import Select from "@/components/ui/Select";
+import Input from "@/components/Input";
+import FormField from "@/components/FormField";
 import Button from "@/components/ui/Button";
 import { useSettings } from "@/components/SettingsProvider";
 
@@ -214,17 +216,16 @@ export default function MatchesPage() {
                 className="w-full"
               />
             </div>
-            <div className="min-w-0 flex-1">
-              <label htmlFor="apex-identifier" className="mb-1 block text-xs text-[var(--muted)]">{i18n("liveTrackerApexIdentifier")}</label>
-              <input
+            <FormField label={i18n("liveTrackerApexIdentifier")} className="min-w-0 flex-1">
+              <Input
                 id="apex-identifier"
                 type="text"
                 value={apexIdentifier}
                 onChange={(e) => setApexIdentifier(e.target.value)}
                 placeholder={i18n("liveTrackerApexIdentifier")}
-                className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-colors transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
+                className="w-full"
               />
-            </div>
+            </FormField>
             <Button
               type="button"
               variant="primary"
@@ -237,28 +238,26 @@ export default function MatchesPage() {
           </div>
         ) : (
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-            <div className="min-w-0 flex-1">
-              <label htmlFor="riot-name" className="mb-1 block text-xs text-[var(--muted)]">{i18n("liveTrackerRiotName")}</label>
-              <input
+            <FormField label={i18n("liveTrackerRiotName")} className="min-w-0 flex-1">
+              <Input
                 id="riot-name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={i18n("liveTrackerRiotName")}
-                className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-colors transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
+                className="w-full"
               />
-            </div>
-            <div className="min-w-0 flex-1">
-              <label htmlFor="riot-tag" className="mb-1 block text-xs text-[var(--muted)]">{i18n("liveTrackerRiotTag")}</label>
-              <input
+            </FormField>
+            <FormField label={i18n("liveTrackerRiotTag")} className="min-w-0 flex-1">
+              <Input
                 id="riot-tag"
                 type="text"
                 value={tag}
                 onChange={(e) => setTag(e.target.value)}
                 placeholder="#1234"
-                className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-colors transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
+                className="w-full"
               />
-            </div>
+            </FormField>
             <Button
               type="button"
               variant="primary"

@@ -3,6 +3,7 @@
 import { useMemo, useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "@/lib/icons";
+import Input from "@/components/Input";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { evaluatePasswordField, suggestStrongPassword, type PasswordFieldResult } from "@/lib/password-strength";
 
@@ -155,48 +156,47 @@ export default function PasswordField({
           {label}
         </label>
       )}
-      <div className="relative">
-        <div className="absolute left-2.5 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg bg-white/[0.06] text-[var(--accent)]">
-          <Icon name="lock" className="h-4 w-4" />
-        </div>
-        <input
-          ref={inputRef}
-          id={id}
-          type={show ? "text" : "password"}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          onPaste={handlePaste}
-          autoComplete={autoComplete}
-          placeholder={placeholder}
-          className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] py-2.5 pl-12 pr-20 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
-          aria-label={placeholder}
-        />
-        <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1">
-          <AnimatePresence>
-            {pasted && (
-              <motion.span
-                initial={{ opacity: 0, x: 8, scale: 0.8 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                exit={{ opacity: 0, x: 8, scale: 0.8 }}
-                className="rounded-lg bg-emerald-500/10 px-2 py-0.5 text-[10px] text-emerald-400"
-              >
-                ✓ Collé
-              </motion.span>
-            )}
-          </AnimatePresence>
-          <button
-            type="button"
-            onClick={() => setShow(!show)}
-            className="rounded p-1 text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
-            aria-label={show ? i18n("hidePassword") : i18n("showPassword")}
-            title={show ? i18n("hidePassword") : i18n("showPassword")}
-          >
-            <Icon name={show ? "eye-off" : "eye"} className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
+      <Input
+        ref={inputRef}
+        id={id}
+        type={show ? "text" : "password"}
+        icon="lock"
+        inputSize="large"
+        className="w-full"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        onPaste={handlePaste}
+        autoComplete={autoComplete}
+        placeholder={placeholder}
+        aria-label={placeholder}
+        right={
+          <div className="flex items-center gap-1">
+            <AnimatePresence>
+              {pasted && (
+                <motion.span
+                  initial={{ opacity: 0, x: 8, scale: 0.8 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  exit={{ opacity: 0, x: 8, scale: 0.8 }}
+                  className="rounded-lg bg-emerald-500/10 px-2 py-0.5 text-[10px] text-emerald-400"
+                >
+                  ✓ Collé
+                </motion.span>
+              )}
+            </AnimatePresence>
+            <button
+              type="button"
+              onClick={() => setShow(!show)}
+              className="rounded p-1 text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
+              aria-label={show ? i18n("hidePassword") : i18n("showPassword")}
+              title={show ? i18n("hidePassword") : i18n("showPassword")}
+            >
+              <Icon name={show ? "eye-off" : "eye"} className="h-4 w-4" />
+            </button>
+          </div>
+        }
+      />
 
       {showStrength && (
         <AnimatePresence>

@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { Mail, Shuffle, Crown, ArrowRight, ArrowLeft } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Button from "@/components/ui/Button";
+import Input from "@/components/Input";
+import FormField from "@/components/FormField";
 import { useToast } from "@/components/ToastProvider";
 import type { MailAlias } from "@/lib/hooks/useMail";
 
@@ -107,46 +109,40 @@ export default function MailOnboarding({ aliases, createAlias, updateAlias, onCo
         </div>
       )}
 
-      <div>
-        <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-zinc-500">
-          {i18n("displayName") || "Nom affiché"}
-        </label>
-        <input
+      <FormField
+        label={i18n("displayName") || "Nom affiché"}
+        help={i18n("displayNameHint") || "Ce nom apparaîtra dans l'expéditeur de vos messages."}
+      >
+        <Input
           type="text"
           value={displayName}
           onChange={(e) => setDisplayName(e.target.value.slice(0, 80))}
           placeholder={i18n("displayName") || "Ex: Rub"}
           disabled={loading}
-          className="w-full rounded-2xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-base text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:border-[var(--accent-primary)]/50 focus:ring-1 focus:ring-[var(--accent-primary)]/20 focus:shadow-[0_0_15px_var(--glow-color)] disabled:opacity-50"
+          className="w-full"
         />
-        <p className="mt-2 text-xs text-zinc-500">
-          {i18n("displayNameHint") || "Ce nom apparaîtra dans l'expéditeur de vos messages."}
-        </p>
-      </div>
+      </FormField>
 
-      <div>
-        <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-zinc-500">
-          {i18n("email") || "Adresse mail"}
-        </label>
-        <div className="flex items-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 focus-within:border-[var(--accent-primary)]/50 focus-within:ring-1 focus-within:ring-[var(--accent-primary)]/20 focus-within:shadow-[0_0_15px_var(--glow-color)]">
-          <input
-            type="text"
-            value={local}
-            onChange={(e) => setLocal(sanitizeLocal(e.target.value))}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                handleCreate();
-              }
-            }}
-            placeholder="votre-alias"
-            disabled={loading}
-            className="min-w-0 flex-1 bg-transparent text-base text-zinc-200 placeholder-zinc-600 outline-none disabled:opacity-50"
-          />
-          <span className="shrink-0 text-sm text-zinc-500">@ethone.dev</span>
-        </div>
-        {fullAlias && <p className="mt-2 text-xs text-zinc-500">{fullAlias}</p>}
-      </div>
+      <FormField
+        label={i18n("email") || "Adresse mail"}
+        help={fullAlias}
+      >
+        <Input
+          type="text"
+          value={local}
+          onChange={(e) => setLocal(sanitizeLocal(e.target.value))}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handleCreate();
+            }
+          }}
+          placeholder="votre-alias"
+          disabled={loading}
+          className="w-full"
+          right={<span className="shrink-0 text-sm text-zinc-500">@ethone.dev</span>}
+        />
+      </FormField>
 
       <Button
         type="button"
@@ -200,22 +196,19 @@ export default function MailOnboarding({ aliases, createAlias, updateAlias, onCo
         </p>
       </div>
 
-      <div>
-        <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-zinc-500">
-          {i18n("displayName") || "Nom affiché"}
-        </label>
-        <input
+      <FormField
+        label={i18n("displayName") || "Nom affiché"}
+        help={i18n("displayNameHint") || "Ce nom apparaîtra dans l'expéditeur de vos messages."}
+      >
+        <Input
           type="text"
           value={displayName}
           onChange={(e) => setDisplayName(e.target.value.slice(0, 80))}
           placeholder={i18n("displayName") || "Ex: Rub"}
           disabled={loading}
-          className="w-full rounded-2xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-base text-zinc-200 placeholder-zinc-600 outline-none transition-all duration-200 focus:border-[var(--accent-primary)]/50 focus:ring-1 focus:ring-[var(--accent-primary)]/20 focus:shadow-[0_0_15px_var(--glow-color)] disabled:opacity-50"
+          className="w-full"
         />
-        <p className="mt-2 text-xs text-zinc-500">
-          {i18n("displayNameHint") || "Ce nom apparaîtra dans l'expéditeur de vos messages."}
-        </p>
-      </div>
+      </FormField>
 
       <Button
         type="button"

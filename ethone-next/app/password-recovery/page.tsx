@@ -5,6 +5,8 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { resetPassword } from "@/lib/auth";
 import { useToast } from "@/components/ToastProvider";
 import Card3D from "@/components/Card3D";
+import Input from "@/components/Input";
+import FormField from "@/components/FormField";
 
 export default function PasswordRecoveryPage() {
   const i18n = useI18n();
@@ -38,20 +40,18 @@ export default function PasswordRecoveryPage() {
                 <p className="break-words text-sm text-emerald-400">{i18n("recoverySent")}</p>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-1">
-                    <label htmlFor="recovery-email" className="text-sm font-medium">
-                      {i18n("email")}
-                    </label>
-                    <input
+                  <FormField label={i18n("email")}>
+                    <Input
                       id="recovery-email"
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder={i18n("emailPlaceholder")}
                       required
-                      className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
+                      inputSize="large"
+                      className="w-full"
                     />
-                  </div>
+                  </FormField>
                   <button
                     type="submit"
                     disabled={loading || !email}

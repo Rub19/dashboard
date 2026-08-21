@@ -11,6 +11,8 @@ import Switch from "@/components/Switch";
 import GoogleIcon from "@/components/icons/GoogleIcon";
 import GithubIcon from "@/components/icons/GithubIcon";
 import { Icon } from "@/lib/icons";
+import Input from "@/components/Input";
+import FormField from "@/components/FormField";
 import {
   sendOtp,
   verifyOtp,
@@ -346,14 +348,8 @@ export default function LoginPage() {
                 >
                 {isOtp && step === "code" ? (
               <form onSubmit={handleVerify} className="space-y-4">
-                <label className="block text-sm font-medium" htmlFor="code">
-                  {i18n("codeReceived")}
-                </label>
-                <div className="relative">
-                  <div className="absolute left-2.5 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg bg-white/[0.06] text-[var(--accent)]">
-                    <Icon name="key-round" className="h-4 w-4" />
-                  </div>
-                  <input
+                <FormField label={i18n("codeReceived")}>
+                  <Input
                     id="code"
                     type="text"
                     inputMode="numeric"
@@ -361,11 +357,13 @@ export default function LoginPage() {
                     required
                     value={code}
                     onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                    className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] py-2.5 pl-12 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
+                    inputSize="large"
+                    icon="key-round"
+                    className="w-full"
                     aria-label={i18n("codePlaceholder")}
                     placeholder={i18n("codePlaceholder")}
                   />
-                </div>
+                </FormField>
                 <button
                   type="submit"
                   disabled={loading}
@@ -383,50 +381,40 @@ export default function LoginPage() {
               </form>
             ) : (
               <form onSubmit={onSubmit} className="relative mt-3 space-y-3">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-[var(--muted)]" htmlFor="email">
-                    {i18n("email")}
-                  </label>
-                  <div className="relative">
-                    <div className="absolute left-2.5 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg bg-white/[0.06] text-[var(--accent)]">
-                      <Icon name="mail" className="h-4 w-4" />
-                    </div>
-                    <input
-                      id="email"
-                      type="email"
-                      autoComplete="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] py-2.5 pl-12 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
-                      aria-label={i18n("emailPlaceholderLogin")}
-                      placeholder={i18n("emailPlaceholderLogin")}
-                    />
-                  </div>
-                </div>
+                <FormField label={i18n("email")}>
+                  <Input
+                    id="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    inputSize="large"
+                    icon="mail"
+                    className="w-full"
+                    aria-label={i18n("emailPlaceholderLogin")}
+                    placeholder={i18n("emailPlaceholderLogin")}
+                  />
+                </FormField>
 
                 {isRegister && (
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-[var(--muted)]" htmlFor="username">
-                      {i18n("username")}
-                    </label>
-                    <div className="relative">
-                      <Icon name="user" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
-                      <input
-                        id="username"
-                        type="text"
-                        autoComplete="username"
-                        required
-                        minLength={2}
-                        maxLength={64}
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] py-2.5 pl-10 pr-4 text-sm text-[var(--foreground)] outline-none ring-[var(--accent)]/0 transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
-                        aria-label={i18n("username")}
-                        placeholder={i18n("username")}
-                      />
-                    </div>
-                  </div>
+                  <FormField label={i18n("username")}>
+                    <Input
+                      id="username"
+                      type="text"
+                      autoComplete="username"
+                      required
+                      minLength={2}
+                      maxLength={64}
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      inputSize="large"
+                      icon="user"
+                      className="w-full"
+                      aria-label={i18n("username")}
+                      placeholder={i18n("username")}
+                    />
+                  </FormField>
                 )}
 
                 {!isOtp && (

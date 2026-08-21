@@ -10,6 +10,8 @@ import { useToast } from "@/components/ToastProvider";
 import { useActiveProfile } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
 import Button from "@/components/ui/Button";
+import Input from "@/components/Input";
+import FormField from "@/components/FormField";
 import { buildDefaultProfileView, PROFILE_ACCENTS, PROFILE_COPY } from "@/lib/profile-repository";
 
 const TYPES = ["personal", "work", "development", "study", "gaming", "streaming", "creative"] as const;
@@ -114,14 +116,15 @@ export default function ProfileSelectionPage() {
       <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
       <Card3D>
         <div className="space-y-4">
-          <label className="text-sm font-medium">{i18n("newProfile")}</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder={i18n("profileNamePlaceholder")}
-            className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
-          />
+          <FormField label={i18n("newProfile")}>
+            <Input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder={i18n("profileNamePlaceholder")}
+              className="w-full"
+            />
+          </FormField>
 
           <div className="space-y-1">
             <p className="text-xs font-medium text-[var(--muted)]">{i18n("kind")}</p>

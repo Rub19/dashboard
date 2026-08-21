@@ -7,6 +7,7 @@ import { fetchWorker } from "@/lib/api";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
 import { formatBytes } from "@/lib/files";
+import Input from "@/components/Input";
 import Select from "@/components/ui/Select";
 
 const STORAGE_CAP = 10 * 1024 * 1024 * 1024;
@@ -275,12 +276,12 @@ export default function FilesAdminPanel() {
       ) : (
         <div className="space-y-3">
           <div className="flex flex-col gap-2 sm:flex-row">
-            <input
+            <Input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={i18n("search")}
-              className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
+              className="min-w-0 flex-1"
             />
             <Select
               value={visibility}

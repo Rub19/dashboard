@@ -7,6 +7,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { fetchWorker } from "@/lib/api";
 import { Icon } from "@/lib/icons";
+import SearchInput from "@/components/ui/SearchInput";
 import WeatherMetricCard from "@/components/WeatherMetricCard";
 import WeatherForecastList from "@/components/WeatherForecastList";
 import { weatherIconFromCode, weatherIconColor, type WeatherData } from "@/components/WeatherWidget";
@@ -233,17 +234,20 @@ export default function WeatherPage() {
           <p className="text-sm text-zinc-500">{i18n("weatherDescription")}</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex items-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 backdrop-blur-md">
-          <div className="group flex items-center gap-2 transition-colors focus-within:text-white">
-            <Icon name="mapPin" className="h-3.5 w-3.5 text-zinc-500" />
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => handleQueryChange(e.target.value)}
-              placeholder={i18n("city")}
-              className="w-48 bg-transparent text-xs text-white outline-none placeholder-zinc-500 sm:w-64"
-            />
-          </div>
+        <form onSubmit={handleSubmit} className="flex items-center gap-2">
+          <SearchInput
+            value={query}
+            onChange={(e) => handleQueryChange(e.target.value)}
+            onSearch={(value) => {
+              const term = value.trim();
+              if (term.length < 2) return;
+              isUserEditingRef.current = true;
+              setSearchTerm(term);
+            }}
+            placeholder={i18n("city")}
+            inputSize="compact"
+            className="min-w-0 flex-1"
+          />
 
           <button
             type="button"

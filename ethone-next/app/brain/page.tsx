@@ -20,6 +20,7 @@ import { sanitizeMemory, type BrainMemoryItem } from "@/lib/brain-context";
 import Select from "@/components/ui/Select";
 import { Checkbox } from "@/components/ui/Checkbox";
 import Button from "@/components/ui/Button";
+import Input from "@/components/Input";
 
 type Tab = "chat" | "briefing" | "context" | "memory" | "actions" | "automations" | "providers" | "preferences" | "privacy" | "history" | "diagnostics" | "wrapup";
 
@@ -157,8 +158,8 @@ export default function BrainPage() {
             aria-label={i18n("category")}
             className="min-w-0"
           />
-          <input type="text" value={memoryKey} onChange={(e) => setMemoryKey(e.target.value)} placeholder={i18n("key")} className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
-          <input type="text" value={memoryValue} onChange={(e) => setMemoryValue(e.target.value)} placeholder={i18n("value")} className="min-w-0 flex-[2] rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
+          <Input type="text" value={memoryKey} onChange={(e) => setMemoryKey(e.target.value)} placeholder={i18n("key")} className="min-w-0 flex-1" />
+          <Input type="text" value={memoryValue} onChange={(e) => setMemoryValue(e.target.value)} placeholder={i18n("value")} className="min-w-0 flex-1" />
           <Button type="button" variant="primary" size="md" onClick={handleSaveMemory}>{i18n("save")}</Button>
         </div>
         <button type="button" onClick={brain.loadMemories} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-2 text-sm hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]">{i18n("loadMemories")}</button>
@@ -241,13 +242,13 @@ export default function BrainPage() {
               </div>
               <p className="text-xs text-[var(--muted)]">{def.description}</p>
               {Object.entries(def.parameters).map(([key, type]) => (
-                <input
+                <Input
                   key={key}
                   type="text"
                   value={String(actionParams[def.id]?.[key] ?? "")}
                   onChange={(e) => updateParam(def.id, key, type?.includes("[]") ? e.target.value.split(",") : e.target.value)}
                   placeholder={`${key} (${String(type)})`}
-                  className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]"
+                  className="w-full"
                 />
               ))}
             </div>
@@ -272,7 +273,7 @@ export default function BrainPage() {
             aria-label={i18n("trigger")}
             className="min-w-0"
           />
-          <input type="text" value={autoTrigger.value} onChange={(e) => setAutoTrigger({ ...autoTrigger, value: e.target.value })} placeholder={i18n("value")} className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]" />
+          <Input type="text" value={autoTrigger.value} onChange={(e) => setAutoTrigger({ ...autoTrigger, value: e.target.value })} placeholder={i18n("value")} className="min-w-0 flex-1" />
           <Select
             value={autoAction}
             onChange={setAutoAction}

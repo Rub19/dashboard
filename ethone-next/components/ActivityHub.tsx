@@ -2,13 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Activity, Flame, TrendingUp, CheckCircle2, Search, RefreshCw, Loader2, AlertCircle } from "lucide-react";
+import { Activity, Flame, TrendingUp, CheckCircle2, RefreshCw, Loader2, AlertCircle } from "lucide-react";
 import { useItems } from "@/lib/hooks/useItems";
 import { useCloudFiles } from "@/lib/hooks/useCloudFiles";
 import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
 import { useI18n } from "@/lib/hooks/useI18n";
 import type { ActivityCategory, ActivityEntry, ActivitySnapshot } from "@/lib/activity-journal";
 import { Icon } from "@/lib/icons";
+import Input from "@/components/Input";
 import Select from "@/components/ui/Select";
 import AnimatedFilterTabs from "@/components/ui/AnimatedFilterTabs";
 import ActivityHeatmap from "./ActivityHeatmap";
@@ -428,17 +429,17 @@ export default function ActivityHub() {
           <h2 className="text-sm font-semibold text-white">{i18n("activityJournalEntries")}</h2>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:flex-wrap">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-500" />
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder={i18n("journalSearchPlaceholder")}
-                aria-label={i18n("journalSearchPlaceholder")}
-                className="h-9 w-full sm:w-56 rounded-xl border border-white/10 bg-white/[0.03] pl-8 pr-3 text-xs text-zinc-200 placeholder-zinc-500 outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
-              />
-            </div>
+            <Input
+              type="text"
+              icon="search"
+              clearable
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={i18n("journalSearchPlaceholder")}
+              aria-label={i18n("journalSearchPlaceholder")}
+              inputSize="compact"
+              className="min-w-0 w-full sm:w-56"
+            />
 
             <div className="flex items-center gap-2">
               <Select

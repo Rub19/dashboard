@@ -7,6 +7,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useBrain } from "@/lib/hooks/useBrain";
 import { useBrainActivityStore } from "@/lib/stores/brain-activity";
 import { Icon } from "@/lib/icons";
+import Input from "@/components/Input";
 import BentoCard from "@/components/BentoCard";
 import { cn } from "@/lib/utils";
 import type { CloudDashboard, NowPlaying } from "@/lib/hooks/useDashboard";
@@ -117,16 +118,14 @@ export default function HeroBriefingCard({
         </div>
 
         <form onSubmit={handleSubmit} className="flex items-center gap-2">
-          <div className="relative flex-1">
-            <input
-              type="text"
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder={i18n("brainAvailableDesc") || "Demandez à Brain…"}
-              className="w-full rounded-xl border border-white/[0.08] bg-black/30 px-3 py-2 pl-9 text-sm text-white outline-none transition-all duration-200 placeholder:text-zinc-600 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
-            />
-            <Icon name="brain" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-          </div>
+          <Input
+            type="text"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder={i18n("brainAvailableDesc") || "Demandez à Brain…"}
+            icon="brain"
+            className="min-w-0 flex-1"
+          />
           <button
             type="submit"
             disabled={!prompt.trim() || brain.loading}

@@ -11,6 +11,7 @@ import { pingIntegration, type PingResult } from "@/lib/connection-config";
 import { integrationById } from "@/lib/integrations";
 import { getIntegrationConfig } from "@/lib/integrations.config";
 import { startOAuthConnect } from "@/lib/oauth";
+import Input from "@/components/Input";
 import SecureInput from "@/components/ui/SecureInput";
 
 const PROVIDER = "spotify";
@@ -187,23 +188,25 @@ export default function SpotifyConfig() {
           />
 
           {config?.requiresClientSecret && (
-            <div className="relative">
-              <input
-                type={showClientSecret ? "text" : "password"}
-                value={clientSecret}
-                onChange={(e) => setClientSecret(e.target.value)}
-                aria-label={config?.secretLabel || i18n("clientSecret")}
-                placeholder={config?.secretPlaceholder || i18n("clientSecret")}
-                className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-100 placeholder-zinc-600 outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
-              />
-              <button
-                type="button"
-                onClick={() => setShowClientSecret((v) => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[var(--muted)] hover:text-[var(--text-primary)]"
-              >
-                {showClientSecret ? i18n("hide") : i18n("show")}
-              </button>
-            </div>
+            <Input
+              type={showClientSecret ? "text" : "password"}
+              value={clientSecret}
+              onChange={(e) => setClientSecret(e.target.value)}
+              aria-label={config?.secretLabel || i18n("clientSecret")}
+              placeholder={config?.secretPlaceholder || i18n("clientSecret")}
+              inputSize="compact"
+              inputClassName="text-xs"
+              className="w-full"
+              right={
+                <button
+                  type="button"
+                  onClick={() => setShowClientSecret((v) => !v)}
+                  className="text-[10px] text-[var(--muted)] hover:text-[var(--text-primary)]"
+                >
+                  {showClientSecret ? i18n("hide") : i18n("show")}
+                </button>
+              }
+            />
           )}
 
           {config?.requiresRedirectUri && origin && (

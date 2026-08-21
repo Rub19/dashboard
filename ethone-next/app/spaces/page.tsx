@@ -7,6 +7,7 @@ import { useUserData, type UserDataRecord } from "@/lib/hooks/useUserData";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { Icon } from "@/lib/icons";
 import { useToast } from "@/components/ToastProvider";
+import Input from "@/components/Input";
 import Button from "@/components/ui/Button";
 
 const WIDGET_ICONS: Record<string, string> = {
@@ -209,7 +210,7 @@ export default function SpacesPage() {
             <p className="text-sm leading-relaxed text-[var(--muted)]">{i18n("spacesAbout")}</p>
           </div>
           <div className="flex gap-2">
-            <input
+            <Input
               id="space-input"
               type="text"
               value={name}
@@ -217,7 +218,8 @@ export default function SpacesPage() {
               onKeyDown={(e) => e.key === "Enter" && add()}
               aria-label={i18n("create")}
               placeholder={i18n("create")}
-              className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
+              inputSize="compact"
+              className="min-w-0 flex-1"
             />
             <Button
               type="button"

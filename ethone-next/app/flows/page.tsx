@@ -9,6 +9,7 @@ import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { Icon } from "@/lib/icons";
 import { useToast } from "@/components/ToastProvider";
 import Select from "@/components/ui/Select";
+import Input from "@/components/Input";
 import { useBrain } from "@/lib/hooks/useBrain";
 import Button from "@/components/ui/Button";
 import { AUTOMATION_ACTIONS, actionLabel } from "@/lib/brain/automation";
@@ -243,14 +244,14 @@ export default function FlowsPage() {
         </div>
       </div>
 
-      <input
+      <Input
         type="text"
         value={newLabel}
         onChange={(e) => setNewLabel(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && addFlow()}
         aria-label={i18n("create")}
         placeholder={i18n("create")}
-        className="w-full rounded-2xl border border-white/[0.08] bg-zinc-950/50 px-4 py-2.5 text-sm text-white outline-none placeholder:text-zinc-600 transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-md"
+        className="w-full"
       />
 
       {error && (

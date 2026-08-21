@@ -6,6 +6,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { type Item } from "@/lib/hooks/useItems";
 import { useCloudTasks } from "@/lib/hooks/useCloudTasks";
 import { useToast } from "@/components/ToastProvider";
+import Input from "@/components/Input";
 import BentoCard from "@/components/BentoCard";
 import TodoList from "./TodoList";
 import { cn } from "@/lib/utils";
@@ -122,15 +123,16 @@ export default function TasksWidget({ className = "", data, scrollable = true }:
             e.preventDefault();
             addTask(newTaskTitle);
           }}
-          className="relative flex shrink-0 items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] p-1.5 pl-3 transition-all duration-200 focus-within:border-white/20 focus-within:ring-1 focus-within:ring-white/15 focus-within:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
+          className="flex shrink-0 items-center gap-2"
         >
-          <input
+          <Input
             type="text"
             value={newTaskTitle}
             onChange={(e) => setNewTaskTitle(e.target.value)}
             placeholder={i18n("tasksPlaceholder", "Ajouter une tâche...")}
             data-testid="new-task-input"
-            className="w-full flex-1 bg-transparent text-xs font-medium text-white placeholder-zinc-500 outline-none"
+            inputSize="compact"
+            className="min-w-0 flex-1"
           />
           <button
             type="submit"

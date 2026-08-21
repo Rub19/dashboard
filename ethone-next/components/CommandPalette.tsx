@@ -2,10 +2,10 @@
 
 import { memo, useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Search } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { createPortal } from "react-dom";
 
+import SearchInput from "@/components/ui/SearchInput";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useSettings, useActiveProfile } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -398,8 +398,7 @@ export default function CommandPalette() {
           )}
         >
           <div className="flex items-center gap-3 border-b border-white/[0.06] px-4">
-            <Search className="h-4 w-4 text-[var(--muted)]" />
-            <input
+            <SearchInput
               ref={inputRef}
               value={query}
               onChange={(e) => updateQuery(e.target.value)}
@@ -413,14 +412,11 @@ export default function CommandPalette() {
                 filtered.length > 0 ? `${uid}-opt-${index}` : undefined
               }
               aria-autocomplete="list"
-              className={cn(
-                "h-12 flex-1 border-0 bg-transparent text-sm text-[var(--foreground)] placeholder:text-[var(--muted)] outline-0 focus:outline-0 focus-visible:outline-0 ring-0 focus:ring-0 focus-visible:ring-0",
-                canTouch && "text-base",
-              )}
+              shortcut="ESC"
+              inputSize="large"
+              inputClassName={canTouch ? "text-base" : ""}
+              className="min-w-0 flex-1"
             />
-            <kbd className="hidden rounded border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5 text-[10px] text-[var(--muted)] sm:inline-block">
-              ESC
-            </kbd>
           </div>
 
           <div

@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, RotateCcw, Save } from "lucide-react";
+import { RotateCcw, Save } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
+import Input from "@/components/Input";
 import { useSettings } from "@/components/SettingsProvider";
 import { X } from "lucide-react";
 import { useSettingsForm } from "./SettingsFormContext";
@@ -98,17 +99,16 @@ export default function SettingsLayout() {
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
-            <input
-              type="text"
-              value={form.query}
-              onChange={(e) => form.setQuery(e.target.value)}
-              placeholder={i18n("journalSearchPlaceholder") || "Rechercher..."}
-              aria-label={i18n("journalSearchPlaceholder") || "Rechercher"}
-              className="h-9 w-full rounded-xl border border-white/10 bg-white/[0.04] pl-9 pr-3 text-xs text-[var(--foreground)] placeholder-[var(--muted)] outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] sm:w-56"
-            />
-          </div>
+          <Input
+            type="text"
+            value={form.query}
+            onChange={(e) => form.setQuery(e.target.value)}
+            placeholder={i18n("journalSearchPlaceholder") || "Rechercher..."}
+            aria-label={i18n("journalSearchPlaceholder") || "Rechercher"}
+            icon="search"
+            inputSize="compact"
+            className="w-full sm:w-56"
+          />
 
           <div
             className={cn(

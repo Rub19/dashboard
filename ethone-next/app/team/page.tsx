@@ -6,6 +6,7 @@ import { Users, UserCheck, Clock, Send } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useTeam } from "@/lib/hooks/useTeam";
 import { useToast } from "@/components/ToastProvider";
+import Input from "@/components/Input";
 import Select from "@/components/ui/Select";
 import TeamMemberTable from "@/components/team/TeamMemberTable";
 import Button from "@/components/ui/Button";
@@ -140,7 +141,7 @@ export default function TeamPage() {
 
       {/* Invite banner */}
       <div className="bg-zinc-950/80 border border-white/[0.08] backdrop-blur-xl rounded-2xl p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-        <input
+        <Input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -148,7 +149,8 @@ export default function TeamPage() {
           placeholder={i18n("emailPlaceholder") || "E-mail du collaborateur..."}
           aria-label={i18n("emailPlaceholder")}
           disabled={inviting}
-          className="flex-1 rounded-xl border border-white/10 bg-white/[0.03] px-3.5 py-2 text-xs text-zinc-200 placeholder-zinc-500 outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] disabled:opacity-50"
+          inputSize="compact"
+          className="min-w-0 flex-1"
         />
 
         <Select

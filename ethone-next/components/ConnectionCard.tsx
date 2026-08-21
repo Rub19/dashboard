@@ -42,6 +42,8 @@ import {
 } from "@/lib/connection-config";
 import ServiceIcon from "@/components/ServiceIcon";
 import Select from "@/components/ui/Select";
+import Input from "@/components/Input";
+import FormField from "@/components/FormField";
 
 export type CredentialsApi = {
   save: (provider: string, credential: ProviderCredential) => Promise<unknown>;
@@ -339,9 +341,6 @@ export default function ConnectionCard({
     setOpenGuideField((prev) => (prev === fieldKey ? null : fieldKey));
   }
 
-  const inputClass =
-    "w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-100 placeholder-zinc-600 outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]";
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -382,46 +381,49 @@ export default function ConnectionCard({
         {/* OAuth connect */}
         {isOauth && !isConnected && (
           <div className="flex flex-col gap-2.5">
-            <input
+            <Input
               type="text"
               value={clientId}
               onChange={(e) => onClientIdChange(integration.id, e.target.value)}
               aria-label={config ? config.idLabel : i18n("clientId")}
               placeholder={config ? config.idPlaceholder : i18n("clientId")}
-              className={inputClass}
+              inputSize="compact"
+              className="w-full"
             />
 
             {config?.requiresClientSecret && (
-              <div className="relative">
-                <input
+              <Input
                 type={showClientSecret ? "text" : "password"}
                 value={clientSecret}
                 onChange={(e) => setClientSecret(e.target.value)}
                 aria-label={config.secretLabel || i18n("clientSecret")}
                 placeholder={config.secretPlaceholder || i18n("clientSecret")}
-                className={`${inputClass} pr-16`}
+                inputSize="compact"
+                inputClassName="text-xs"
+                className="w-full"
+                right={
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(clientSecret, "clientSecret")}
+                      className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
+                      aria-label={i18n("copy")}
+                      tabIndex={-1}
+                    >
+                      {copied === "clientSecret" ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowClientSecret((v) => !v)}
+                      className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
+                      aria-label={showClientSecret ? i18n("hide") : i18n("show")}
+                      tabIndex={-1}
+                    >
+                      {showClientSecret ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                    </button>
+                  </div>
+                }
               />
-              <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => handleCopy(clientSecret, "clientSecret")}
-                  className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
-                  aria-label={i18n("copy")}
-                  tabIndex={-1}
-                >
-                  {copied === "clientSecret" ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowClientSecret((v) => !v)}
-                  className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
-                  aria-label={showClientSecret ? i18n("hide") : i18n("show")}
-                  tabIndex={-1}
-                >
-                  {showClientSecret ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-                </button>
-              </div>
-            </div>
             )}
 
             {config?.requiresRedirectUri && origin && (
@@ -545,7 +547,6 @@ export default function ConnectionCard({
                   guide={guide}
                   isOpen={openGuideField === f.key}
                   onToggle={() => toggleGuide(f.key)}
-                  inputClass={inputClass}
                   i18n={i18n}
                 />
               )
@@ -564,7 +565,6 @@ export default function ConnectionCard({
                 guide={guide}
                 isOpen={openGuideField === f.key}
                 onToggle={() => toggleGuide(f.key)}
-                inputClass={inputClass}
                 i18n={i18n}
               />
             ))}
@@ -694,7 +694,6 @@ function FieldInput({
   guide,
   isOpen,
   onToggle,
-  inputClass,
   i18n,
 }: {
   field: { label: string; placeholder?: string; type?: string; key: string };
@@ -707,7 +706,6 @@ function FieldInput({
   guide: ConnectionGuide | undefined;
   isOpen: boolean;
   onToggle: () => void;
-  inputClass: string;
   i18n: (key: string) => string;
 }) {
   const isPassword = field.type === "password";
@@ -715,40 +713,44 @@ function FieldInput({
   const label = i18n(field.label);
 
   return (
-    <div key={field.label} className="flex flex-col">
-      <label className="mb-1 text-[11px] font-medium text-zinc-400">{label}</label>
-      <div className="relative flex items-center">
-        <input
+    <div className="flex flex-col">
+      <FormField label={label}>
+        <Input
+          id={field.key}
           type={isPassword && !visible ? "password" : "text"}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           aria-label={label}
           placeholder={i18n(field.placeholder || field.label)}
-          className={`${inputClass} pr-16`}
+          inputSize="compact"
+          inputClassName="text-xs"
+          className="w-full"
+          right={
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => onCopy(value, field.key)}
+                className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
+                aria-label={i18n("copy")}
+                tabIndex={-1}
+              >
+                {copied === field.key ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+              </button>
+              {isPassword && (
+                <button
+                  type="button"
+                  onClick={onTogglePassword}
+                  className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
+                  aria-label={visible ? i18n("hide") : i18n("show")}
+                  tabIndex={-1}
+                >
+                  {visible ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                </button>
+              )}
+            </div>
+          }
         />
-        <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1">
-          <button
-            type="button"
-            onClick={() => onCopy(value, field.key)}
-            className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
-            aria-label={i18n("copy")}
-            tabIndex={-1}
-          >
-            {copied === field.key ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
-          </button>
-          {isPassword && (
-            <button
-              type="button"
-              onClick={onTogglePassword}
-              className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
-              aria-label={visible ? i18n("hide") : i18n("show")}
-              tabIndex={-1}
-            >
-              {visible ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-            </button>
-          )}
-        </div>
-      </div>
+      </FormField>
 
       {guide && (
         <FieldGuide

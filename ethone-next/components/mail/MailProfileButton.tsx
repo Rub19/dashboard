@@ -7,6 +7,8 @@ import { useToast } from "@/components/ToastProvider";
 import type { MailAlias } from "@/lib/hooks/useMail";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
+import Input from "@/components/Input";
+import FormField from "@/components/FormField";
 
 function sanitizeLocal(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9._-]/g, "").slice(0, 64);
@@ -156,34 +158,33 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
                 </button>
               </div>
 
-              <div className="mt-4">
-                <label className="mb-1.5 block text-[10px] font-medium uppercase tracking-wider text-zinc-500">
-                  {i18n("displayName") || "Nom affiché"}
-                </label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value.slice(0, 80))}
-                    placeholder={i18n("displayName") || "Nom affiché"}
-                    className="min-w-0 flex-1 rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-2 text-sm text-zinc-200 placeholder-zinc-600 outline-none transition-all focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
-                  />
-                  <Button
-                    type="button"
-                    variant="primary"
-                    size="sm"
-                    onClick={handleSaveDisplayName}
-                    disabled={saving || displayName.trim() === (primary.display_name || "")}
-                    className="h-9 w-9 p-0"
-                    aria-label={i18n("save") || "Enregistrer"}
-                  >
-                    {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-                  </Button>
-                </div>
-                <p className="mt-1.5 text-[10px] text-zinc-500">
-                  {i18n("displayNameHint") || "Ce nom apparaîtra dans l'expéditeur de vos messages."}
-                </p>
-              </div>
+              <FormField
+                label={i18n("displayName") || "Nom affiché"}
+                help={i18n("displayNameHint") || "Ce nom apparaîtra dans l'expéditeur de vos messages."}
+                className="mt-4"
+              >
+                <Input
+                  type="text"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value.slice(0, 80))}
+                  placeholder={i18n("displayName") || "Nom affiché"}
+                  className="w-full"
+                  inputSize="compact"
+                  right={
+                    <Button
+                      type="button"
+                      variant="primary"
+                      size="sm"
+                      onClick={handleSaveDisplayName}
+                      disabled={saving || displayName.trim() === (primary.display_name || "")}
+                      className="h-9 w-9 p-0"
+                      aria-label={i18n("save") || "Enregistrer"}
+                    >
+                      {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                    </Button>
+                  }
+                />
+              </FormField>
             </div>
           )}
 
@@ -234,35 +235,37 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
                 {i18n("addAlias") || "Ajouter une adresse"}
               </h4>
               <div className="space-y-3">
-                <input
+                <Input
                   type="text"
                   value={newDisplayName}
                   onChange={(e) => setNewDisplayName(e.target.value.slice(0, 80))}
                   placeholder={i18n("displayName") || "Nom affiché"}
-                  className="w-full rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-2 text-sm text-zinc-200 placeholder-zinc-600 outline-none transition-all focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
+                  className="w-full"
+                  inputSize="compact"
                 />
-                <div className="flex items-center gap-2">
-                  <div className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-2 focus-within:border-white/20 focus-within:ring-1 focus-within:ring-white/15 focus-within:shadow-[0_0_15px_rgba(255,255,255,0.03)]">
-                    <input
-                      type="text"
-                      value={local}
-                      onChange={(e) => setLocal(sanitizeLocal(e.target.value))}
-                      placeholder="votre-alias"
-                      className="min-w-0 flex-1 bg-transparent text-sm text-zinc-200 placeholder-zinc-600 outline-none"
-                    />
-                    <span className="shrink-0 text-[11px] text-zinc-500">@ethone.dev</span>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => setLocal(randomLocal())}
-                    className="h-9 w-9 p-0"
-                    aria-label={i18n("random") || "Aléatoire"}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
+                <Input
+                  type="text"
+                  value={local}
+                  onChange={(e) => setLocal(sanitizeLocal(e.target.value))}
+                  placeholder="votre-alias"
+                  className="w-full"
+                  inputSize="compact"
+                  right={
+                    <div className="flex items-center gap-2">
+                      <span className="shrink-0 text-[11px] text-zinc-500">@ethone.dev</span>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => setLocal(randomLocal())}
+                        className="h-9 w-9 p-0"
+                        aria-label={i18n("random") || "Aléatoire"}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  }
+                />
                 <Button
                   type="button"
                   variant="primary"

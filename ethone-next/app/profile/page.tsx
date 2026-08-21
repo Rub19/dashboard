@@ -12,6 +12,8 @@ import { Icon } from "@/lib/icons";
 import { useToast } from "@/components/ToastProvider";
 import Image from "next/image";
 import Button from "@/components/ui/Button";
+import Input from "@/components/Input";
+import FormField from "@/components/FormField";
 
 export default function ProfilePage() {
   const i18n = useI18n();
@@ -121,38 +123,38 @@ export default function ProfilePage() {
 
       <Card3D>
         <div className="space-y-4">
-          <div className="space-y-1">
-            <label className="text-sm font-medium">{i18n("username")}</label>
-            <input
+          <FormField label={i18n("username")} help={i18n("displayNameHint")}>
+            <Input
               type="text"
               value={form.username}
               onChange={(e) => setForm({ ...form, username: e.target.value })}
-              aria-label={i18n("usernamePlaceholder")} placeholder={i18n("usernamePlaceholder")}
-              className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
+              aria-label={i18n("usernamePlaceholder")}
+              placeholder={i18n("usernamePlaceholder")}
+              className="w-full"
             />
-            <p className="break-words text-xs text-[var(--muted)]">{i18n("displayNameHint")}</p>
-          </div>
+          </FormField>
 
-          <div className="space-y-1">
-            <label className="text-sm font-medium">{i18n("displayName")}</label>
-            <input
+          <FormField label={i18n("displayName")}>
+            <Input
               type="text"
               value={form.display_name}
               onChange={(e) => setForm({ ...form, display_name: e.target.value })}
-              aria-label={i18n("yourNamePlaceholder")} placeholder={i18n("yourNamePlaceholder")}
-              className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
+              aria-label={i18n("yourNamePlaceholder")}
+              placeholder={i18n("yourNamePlaceholder")}
+              className="w-full"
             />
-          </div>
+          </FormField>
 
           <div className="space-y-1">
-            <label className="text-sm font-medium">{i18n("avatarUrl")}</label>
-            <input
-              type="url"
-              value={form.avatar_url}
-              onChange={(e) => setForm({ ...form, avatar_url: e.target.value })}
-              placeholder="https://..."
-              className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
-            />
+            <FormField label={i18n("avatarUrl")}>
+              <Input
+                type="url"
+                value={form.avatar_url}
+                onChange={(e) => setForm({ ...form, avatar_url: e.target.value })}
+                placeholder="https://..."
+                className="w-full"
+              />
+            </FormField>
             <label className="mt-2 flex cursor-pointer items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)] backdrop-blur-[var(--panel-blur)]">
               <Icon name="upload" className="h-4 w-4" />
               {uploadingMedia ? i18n("loading") : i18n("uploadAvatar")}

@@ -8,6 +8,8 @@ import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ToastProvider";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
+import Input from "@/components/Input";
+import FormField from "@/components/FormField";
 import { required, passwordStrength, match, validate } from "@/lib/form-validation";
 
 export default function ResetPasswordPage() {
@@ -72,30 +74,30 @@ export default function ResetPasswordPage() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <p className="break-words text-xs text-[var(--muted)]">{i18n("passwordRequirement")}</p>
-            <div className="space-y-1">
-              <label htmlFor="reset-password" className="text-sm font-medium">{i18n("newPassword")}</label>
-              <input
+            <FormField label={i18n("newPassword")}>
+              <Input
                 id="reset-password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={12}
-                className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
+                inputSize="large"
+                className="w-full"
               />
-            </div>
-            <div className="space-y-1">
-              <label htmlFor="reset-confirm" className="text-sm font-medium">{i18n("confirmPassword")}</label>
-              <input
+            </FormField>
+            <FormField label={i18n("confirmPassword")}>
+              <Input
                 id="reset-confirm"
                 type="password"
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
                 required
                 minLength={12}
-                className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
+                inputSize="large"
+                className="w-full"
               />
-            </div>
+            </FormField>
             <button
               type="submit"
               disabled={loading || !password || !confirm}

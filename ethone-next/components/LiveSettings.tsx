@@ -4,6 +4,8 @@ import { useEffect, useId, useState } from "react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Select from "@/components/ui/Select";
+import Input from "@/components/Input";
+import FormField from "@/components/FormField";
 
 function SettingsTextInput({
   label,
@@ -19,25 +21,23 @@ function SettingsTextInput({
   type?: string;
 }) {
   const [local, setLocal] = useState(value);
-  const inputId = useId();
 
   useEffect(() => {
     setLocal(value);
   }, [value]);
 
   return (
-    <div className="min-w-0">
-      <label htmlFor={inputId} className="mb-1 block text-xs text-[var(--muted)]">{label}</label>
-      <input
-        id={inputId}
+    <FormField className="min-w-0" label={label}>
+      <Input
         type={type}
         value={local}
         onChange={(e) => setLocal(e.target.value)}
         onBlur={() => onChange(local)}
         placeholder={placeholder}
-        className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
+        inputSize="compact"
+        className="w-full"
       />
-    </div>
+    </FormField>
   );
 }
 

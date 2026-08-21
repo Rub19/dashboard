@@ -2,8 +2,9 @@
 
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Shield, UserX, Users } from "lucide-react";
+import { Shield, UserX, Users } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
+import Input from "@/components/Input";
 import Select from "@/components/ui/Select";
 import type { TeamMember, TeamRole, TeamStatus } from "@/lib/team-manager";
 
@@ -116,17 +117,17 @@ export default function TeamMemberTable({ members, loading, onUpdateRole, onRemo
   return (
     <div className="space-y-3">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={i18n("search")}
-            aria-label={i18n("search")}
-            className="w-full sm:w-72 rounded-xl border border-white/10 bg-white/[0.03] py-2 pl-9 pr-3 text-xs text-zinc-200 placeholder-zinc-500 outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
-          />
-        </div>
+        <Input
+          type="text"
+          icon="search"
+          clearable
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={i18n("search")}
+          aria-label={i18n("search")}
+          inputSize="compact"
+          className="min-w-0 w-full sm:w-72"
+        />
 
         <div className="flex items-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.02] p-1">
           {FILTERS.map((id) => (

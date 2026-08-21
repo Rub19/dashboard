@@ -209,12 +209,13 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
             placeholder={i18n("billLabel")}
           />
           <div className="flex gap-2">
-            <input
+            <Input
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder={i18n("billAmount")}
-              className="w-28 rounded-xl border border-white/[0.08] bg-zinc-950/50 px-3 py-2 text-sm text-white outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
+              inputSize="compact"
+              className="min-w-0 w-28"
             />
             <Select
               value={currency}

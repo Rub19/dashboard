@@ -7,6 +7,7 @@ import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import Select from "@/components/ui/Select";
+import Input from "@/components/Input";
 import Button from "@/components/ui/Button";
 
 const ACTIONS = [
@@ -52,13 +53,15 @@ export default function MacrosPage() {
         <div className="space-y-4">
           <p className="text-sm text-[var(--muted)]">{i18n("macrosDescription")}</p>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <input
+            <Input
               type="text"
               value={label}
               onChange={(e) => setLabel(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && add()}
-              aria-label={i18n("create")} placeholder={i18n("create")}
-              className="min-w-0 flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
+              aria-label={i18n("create")}
+              placeholder={i18n("create")}
+              inputSize="compact"
+              className="min-w-0 flex-1"
             />
             <Select
               value={action}
@@ -68,13 +71,14 @@ export default function MacrosPage() {
               className="min-w-0"
             />
             {action === "navigate" && (
-              <input
+              <Input
                 type="text"
                 value={href}
                 onChange={(e) => setHref(e.target.value)}
                 aria-label={i18n("url")}
                 placeholder="/page"
-                className="min-w-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
+                inputSize="compact"
+                className="min-w-0 flex-1"
               />
             )}
             <Button

@@ -6,6 +6,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { fetchWorker } from "@/lib/api";
 import { Icon } from "@/lib/icons";
 import { useToast } from "@/components/ToastProvider";
+import Input from "@/components/Input";
 import Button from "@/components/ui/Button";
 
 function isAllowedHttpUrl(input: string): boolean {
@@ -55,17 +56,15 @@ export default function RssPage() {
       <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
       <Card3D>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <label className="min-w-0 flex-1">
-            <span className="sr-only">{i18n("rssUrlPlaceholder")}</span>
-            <input
-              type="url"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") handleLoad(); }}
-              placeholder={i18n("rssUrlPlaceholder")}
-              className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] backdrop-blur-[var(--panel-blur)]"
-            />
-          </label>
+          <Input
+            type="url"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") handleLoad(); }}
+            placeholder={i18n("rssUrlPlaceholder")}
+            aria-label={i18n("rssUrlPlaceholder")}
+            className="min-w-0 flex-1"
+          />
           <Button
             type="button"
             variant="primary"

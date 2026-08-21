@@ -77,8 +77,8 @@ export default function NotificationCenter() {
       FILTERS.map((f) => ({
         id: f.id,
         label: i18n(f.labelKey),
-        count: filterCounts.find((c) => c.id === f.id)?.count ?? 0,
-        icon: <Icon name={f.icon} className="h-3.5 w-3.5" />,
+        count: filterCounts.find((c) => c.id === f.id)?.count || undefined,
+        icon: <Icon name={f.icon} className="h-3 w-3" />,
       })),
     [filterCounts, i18n]
   );

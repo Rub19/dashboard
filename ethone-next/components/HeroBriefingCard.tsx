@@ -105,7 +105,7 @@ export default function HeroBriefingCard({
       <div className="flex flex-1 flex-col justify-between gap-4">
         <div className="flex flex-col gap-1">
           <p className="text-xs font-medium uppercase tracking-wider text-[var(--muted)]">{date}</p>
-          <h2 className="text-2xl font-bold tracking-tight text-white">{greeting.label}</h2>
+          <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">{greeting.label}</h2>
           <p className="text-sm text-[var(--muted)]">{greeting.tone}</p>
           {nowPlaying?.title && (
             <p className="mt-1 flex items-center gap-2 text-xs text-[var(--muted)]">
@@ -117,7 +117,7 @@ export default function HeroBriefingCard({
           )}
         </div>
 
-        <form onSubmit={handleSubmit} className="flex items-center gap-2">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <Input
             type="text"
             value={prompt}
@@ -130,7 +130,7 @@ export default function HeroBriefingCard({
             type="submit"
             disabled={!prompt.trim() || brain.loading}
             style={{ backgroundColor: "var(--accent-color, var(--accent-primary))" }}
-            className="flex h-9 items-center gap-1.5 rounded-xl px-3 text-xs font-semibold text-[var(--accent-contrast)] transition-opacity hover:opacity-90 disabled:opacity-40"
+            className="flex h-10 w-full shrink-0 items-center justify-center gap-1.5 rounded-xl px-3 text-xs font-semibold text-[var(--accent-contrast)] transition-opacity hover:opacity-90 disabled:opacity-40 sm:h-9 sm:w-auto"
           >
             <Icon name="sparkles" className="h-3.5 w-3.5" />
             Brain

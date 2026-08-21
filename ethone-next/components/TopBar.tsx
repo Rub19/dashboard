@@ -10,6 +10,7 @@ import CommandBarTrigger from "@/components/CommandBarTrigger";
 import NotificationCenter from "@/components/NotificationCenter";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import UserProfileDropdownSkeleton from "@/components/UserProfileDropdownSkeleton";
+import BrandMark from "@/components/BrandMark";
 
 const UserProfileDropdown = dynamic(() => import("@/components/UserProfileDropdown"), {
   ssr: false,
@@ -155,45 +156,63 @@ function TopBar() {
   return (
     <header
       data-v8-topbar
-      className="relative z-50 grid h-14 shrink-0 select-none grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 backdrop-blur-[var(--panel-blur)]"
+      className="relative z-50 shrink-0 select-none rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 pt-safe backdrop-blur-[var(--panel-blur)]"
     >
-      {/* Left — Identity & Breadcrumb */}
-      <div className="col-start-1 flex min-w-0 items-center gap-2 justify-self-start sm:gap-3">
-        <SidebarTopToggle />
-        <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-1.5 sm:gap-2 text-sm font-medium text-[var(--text-muted)]">
-          <Link href="/" className="shrink-0 transition-colors hover:text-[var(--text-primary)]">
-            {home}
-          </Link>
-          <ChevronRight className="h-4 w-4 shrink-0 text-[var(--text-muted)]/60" />
-          <span className="max-w-[12ch] truncate font-semibold text-[var(--text-primary)] capitalize sm:max-w-[18ch] lg:max-w-[24ch]">
+      {/* Mobile: compact header with logo, page title, search, notifications, profile */}
+      <div className="flex h-14 items-center justify-between md:hidden">
+        <div className="flex min-w-0 items-center gap-3">
+          <BrandMark size={26} className="shrink-0" />
+          <span className="max-w-[26ch] truncate text-sm font-semibold text-[var(--text-primary)] capitalize">
             {page}
           </span>
-        </nav>
+        </div>
+        <div className="flex items-center gap-1">
+          <CommandBarTrigger />
+          <NotificationCenter />
+          <UserProfileDropdown />
+        </div>
       </div>
 
-      {/* Center — System status */}
-      <div className="col-start-2 hidden min-w-0 items-center justify-center justify-self-center xl:flex pointer-events-auto">
-        <SystemStatusPills />
-      </div>
-
-      {/* Right — Quick tools, palette, profile */}
-      <div className="col-start-3 flex min-w-0 items-center justify-end gap-2 sm:gap-3 justify-self-end pointer-events-auto">
-        <div className="hidden items-center gap-1.5 sm:gap-2 md:flex pointer-events-auto">
-          <WeatherQuickButton />
-          <ThemeToggle />
-          <FocusToggle />
-          <DynamicIslandToggle />
+      {/* Desktop: full grid with breadcrumb, system status, quick tools */}
+      <div className="hidden h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center md:grid">
+        {/* Left — Identity & Breadcrumb */}
+        <div className="col-start-1 flex min-w-0 items-center gap-2 justify-self-start sm:gap-3">
+          <SidebarTopToggle />
+          <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-1.5 sm:gap-2 text-sm font-medium text-[var(--text-muted)]">
+            <Link href="/" className="shrink-0 transition-colors hover:text-[var(--text-primary)]">
+              {home}
+            </Link>
+            <ChevronRight className="h-4 w-4 shrink-0 text-[var(--text-muted)]/60" />
+            <span className="max-w-[12ch] truncate font-semibold text-[var(--text-primary)] capitalize sm:max-w-[18ch] lg:max-w-[24ch]">
+              {page}
+            </span>
+          </nav>
         </div>
 
-        <CommandBarTrigger />
-
-        <NotificationCenter />
-
-        <div className="hidden sm:block">
-          <LanguageSwitcher />
+        {/* Center — System status */}
+        <div className="col-start-2 hidden min-w-0 items-center justify-center justify-self-center xl:flex pointer-events-auto">
+          <SystemStatusPills />
         </div>
 
-        <UserProfileDropdown />
+        {/* Right — Quick tools, palette, profile */}
+        <div className="col-start-3 flex min-w-0 items-center justify-end gap-2 sm:gap-3 justify-self-end pointer-events-auto">
+          <div className="hidden items-center gap-1.5 sm:gap-2 md:flex pointer-events-auto">
+            <WeatherQuickButton />
+            <ThemeToggle />
+            <FocusToggle />
+            <DynamicIslandToggle />
+          </div>
+
+          <CommandBarTrigger />
+
+          <NotificationCenter />
+
+          <div className="hidden sm:block">
+            <LanguageSwitcher />
+          </div>
+
+          <UserProfileDropdown />
+        </div>
       </div>
     </header>
   );

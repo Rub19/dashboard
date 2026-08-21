@@ -44,7 +44,7 @@ export default function SystemControlCard({ className = "", scrollable = true }:
       <div className="flex flex-1 flex-col justify-between gap-3">
         <div className="space-y-2">
           <p className="text-xs font-medium text-[var(--muted)]">{i18n("presence")}</p>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {Object.entries(USER_STATUS_CONFIG).map(([id, config]) => {
               const active = settings.status === id;
               return (
@@ -52,7 +52,7 @@ export default function SystemControlCard({ className = "", scrollable = true }:
                   key={id}
                   type="button"
                   onClick={() => update({ status: id as keyof typeof USER_STATUS_CONFIG })}
-                  className={`flex items-center justify-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.08] px-2 py-2 text-[10px] font-medium transition-all ${
+                  className={`flex min-h-[40px] items-center justify-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.08] px-2 py-2 text-[10px] font-medium transition-all ${
                     active ? `${config.bg} ${config.text} ring-1 ${config.ring}` : "bg-[var(--text-primary)]/[0.02] text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.04]"
                   }`}
                 >
@@ -66,7 +66,7 @@ export default function SystemControlCard({ className = "", scrollable = true }:
 
         <div className="space-y-2">
           <p className="text-xs font-medium text-[var(--muted)]">{i18n("aura")}</p>
-          <div className="-m-1 flex flex-wrap gap-2 p-1">
+          <div className="-m-1 flex flex-wrap items-center justify-center gap-2 p-1 sm:justify-start">
             {AURAS.map((aura) => {
               const active = settings.aura === aura;
               const key = `aura${aura.charAt(0).toUpperCase()}${aura.slice(1)}`;
@@ -78,7 +78,7 @@ export default function SystemControlCard({ className = "", scrollable = true }:
                   onClick={() => update({ aura })}
                   title={i18n(key)}
                   style={{ backgroundColor: palette.background }}
-                  className={`flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--text-primary)]/[0.08] transition-all hover:scale-105 ${
+                  className={`flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--text-primary)]/[0.08] transition-all hover:scale-105 sm:h-8 sm:w-8 ${
                     active ? "ring-2 ring-inset ring-[var(--accent-primary)]" : "opacity-70 hover:opacity-100"
                   }`}
                 >
@@ -95,16 +95,16 @@ export default function SystemControlCard({ className = "", scrollable = true }:
 
         <div className="space-y-1.5">
           <p className="text-xs font-medium text-[var(--muted)]">{i18n("sessionMode")}</p>
-          <div className="flex items-center gap-1 rounded-lg border border-white/[0.08] bg-white/[0.02] p-1">
+          <div className="flex items-center gap-1 rounded-lg border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.02] p-1">
             <button
               type="button"
               onClick={() => cycle(-1)}
               title={i18n("previous")}
-              className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)] sm:h-7 sm:w-7"
             >
               <Icon name="chevron-left" className="h-3.5 w-3.5" />
             </button>
-            <div className="flex flex-1 items-center justify-center gap-1.5 text-xs font-medium text-white">
+            <div className="flex flex-1 items-center justify-center gap-1.5 text-xs font-medium text-[var(--text-primary)]">
               <span className="h-2.5 w-2.5 rounded-full bg-[var(--accent)]" aria-hidden="true" />
               {i18n(activeMode.label)}
             </div>
@@ -112,7 +112,7 @@ export default function SystemControlCard({ className = "", scrollable = true }:
               type="button"
               onClick={() => cycle(1)}
               title={i18n("next")}
-              className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)] sm:h-7 sm:w-7"
             >
               <Icon name="chevron-right" className="h-3.5 w-3.5" />
             </button>

@@ -72,6 +72,7 @@ import { teamMembersRoute } from "./routes/team.js";
 import { userDataRoute } from "./routes/user-data.js";
 import { profileRoute } from "./routes/profile.js";
 import { profilesRoute } from "./routes/profiles.js";
+import { adminStatsRoute } from "./routes/admin.js";
 import itemsRoute from "./routes/items.js";
 import { connectionsListRoute } from "./routes/connections.js";
 import { providerCredentialsRoute } from "./routes/provider-credentials.js";
@@ -299,6 +300,9 @@ export const ROUTES = Object.freeze([
   route("profiles.activate", "/api/profiles/activate", profilesRoute, { method: "POST", action: "activate", service: "profile", rateLimit: "strict" }),
   route("profiles.patch", "/api/profiles", profilesRoute, { method: "PATCH", service: "profile", rateLimit: "strict" }),
   route("profiles.delete", "/api/profiles", profilesRoute, { method: "DELETE", service: "profile", rateLimit: "strict" }),
+
+  // Admin
+  route("admin.stats", "/api/admin/stats", adminStatsRoute, { service: "admin", rateLimit: "standard" }),
 
   // Mail
   route("mail.alias", "/api/mail/alias", mailAliasRoute, { service: "mail", rateLimit: "standard" }),

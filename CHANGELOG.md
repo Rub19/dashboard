@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.47 — 2026-08-21
+
+**Onglet Admin : statistiques réservées à l'administrateur**
+
+- `components/Sidebar.tsx` : nouvelle entrée `Admin` avec icône `bar-chart`, affichée uniquement pour le compte `rub19.mailpro@gmail.com`, juste au-dessus des paramètres.
+- `app/admin/page.tsx` : tableau de bord admin avec une grille Bento de statistiques (utilisateurs, contenus, fichiers, messages, mail, activité IA).
+- `worker/src/routes/admin.js` : route protégée `/api/admin/stats` qui agrège les compteurs depuis Supabase et refuse tout compte non admin.
+- Version `v1.7.47`, cache PWA `v415`.
+
 ## v1.7.46 — 2026-08-21
 
 **Pochette Spotify : fallback multi-sources et affichage robuste**

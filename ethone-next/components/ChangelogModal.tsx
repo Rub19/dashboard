@@ -42,7 +42,7 @@ export default function ChangelogModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: reduce ? 0 : 0.2 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm md:p-6"
+          className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 p-4 pb-10 pt-20 backdrop-blur-sm md:p-6 md:pb-14 md:pt-24"
           onClick={onClose}
           role="presentation"
         >
@@ -56,7 +56,7 @@ export default function ChangelogModal({
                 : { type: "spring", duration: 0.55, bounce: 0.12 }
             }
             onClick={(e) => e.stopPropagation()}
-            className="relative flex w-full max-w-2xl sm:max-w-3xl max-h-[85vh] flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[#0C0C0E]/95 shadow-2xl shadow-black/80 backdrop-blur-2xl"
+            className="relative flex w-full max-w-2xl sm:max-w-3xl max-h-[80vh] flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[#0C0C0E]/95 shadow-2xl shadow-black/80 backdrop-blur-2xl"
             role="dialog"
             aria-modal="true"
             aria-labelledby="changelog-modal-title"

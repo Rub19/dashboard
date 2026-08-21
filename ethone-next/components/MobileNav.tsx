@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence, type PanInfo } from "framer-motion";
@@ -19,6 +19,14 @@ export default function MobileNav() {
   const pathname = usePathname();
   const i18n = useI18n();
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    function onCloseDrawer() {
+      setDrawerOpen(false);
+    }
+    window.addEventListener("v8:request-close-drawer", onCloseDrawer);
+    return () => window.removeEventListener("v8:request-close-drawer", onCloseDrawer);
+  }, []);
 
   const items = NAVIGATION_ITEMS.map((item) => ({ ...item, label: i18n(item.label) }));
   const visibleItems = items.filter((item) => VISIBLE_MOBILE_IDS.includes(item.id));

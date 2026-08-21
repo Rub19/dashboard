@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useListKeyboard } from "@/lib/hooks/useListKeyboard";
 import { cn } from "@/lib/utils";
 import TasksCard, { type Task } from "./TasksCard";
 
@@ -43,6 +44,14 @@ export default function TodoList({ tasks, loading, onToggle, onDelete, className
     return tasks;
   }, [tasks, filter]);
 
+  const { activeIndex, handleKeyDown } = useListKeyboard({
+    items: filtered,
+    onSelect: (task) => onToggle(task.id, !!task.done),
+    onDelete: (task) => onDelete(task.id),
+    selectMessage: null,
+    deleteMessage: null,
+  });
+
   if (loading && tasks.length === 0) {
     return (
       <div className="flex items-center justify-center py-10 text-xs text-zinc-400">
@@ -75,10 +84,14 @@ export default function TodoList({ tasks, loading, onToggle, onDelete, className
         ))}
       </div>
 
-      <div className={cn(
-        "flex flex-col",
-        scrollable ? "min-h-0 flex-1 overflow-y-auto pr-1 [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden" : "h-auto overflow-visible"
-      )}>
+      <div
+        tabIndex={0}
+        onKeyDown={handleKeyDown}
+        className={cn(
+          "flex flex-col outline-none",
+          scrollable ? "min-h-0 flex-1 overflow-y-auto pr-1 [scrollbar-width:thin] [&::-webkit-scrollbar]:hidden" : "h-auto overflow-visible"
+        )}
+      >
         <AnimatePresence mode="popLayout" initial={false}>
           {filtered.length === 0 ? (
             <motion.div
@@ -103,10 +116,17 @@ export default function TodoList({ tasks, loading, onToggle, onDelete, className
             filtered.map((task, index) => (
               <motion.div
                 key={task.id}
+                data-context-menu="task"
+                data-context-id={task.id}
+                data-active={index === activeIndex}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.15, delay: index * 0.02 }}
+                className={cn(
+                  "rounded-xl",
+                  index === activeIndex && "ring-1 ring-[var(--accent-primary)]/50"
+                )}
               >
                 <TasksCard task={task} onToggle={onToggle} onDelete={onDelete} />
               </motion.div>

@@ -5,6 +5,7 @@ import { Icon } from "@/lib/icons";
 import Modal from "@/components/ui/Modal";
 import { useSettings } from "@/components/SettingsProvider";
 import { useShortcuts } from "@/components/ShortcutsProvider";
+import { NAV_HOTKEYS } from "@/components/KeyboardShortcuts";
 
 const DOCK_LABELS: Record<string, string> = {
   home: "Accueil",
@@ -86,11 +87,17 @@ export default function ShortcutsOverlay() {
       .map((id, i) => (DOCK_LABELS[id] ? { keys: [String(i + 1)], label: `Aller à ${DOCK_LABELS[id]}` } : null))
       .filter(Boolean) as { keys: string[]; label: string }[];
 
+    const globalNavShortcuts = NAV_HOTKEYS.map((hotkey) => ({
+      keys: ["Ctrl", String(hotkey.digit)],
+      label: `Aller à ${hotkey.label}`,
+    }));
+
     const navigation = {
       label: "Navigation",
       icon: "navigation",
       shortcuts: [
         ...dockShortcuts,
+        ...globalNavShortcuts,
         { keys: ["Ctrl", "K"], label: "Ouvrir le Command Center" },
         { keys: ["/"], label: "Ouvrir le Command Center (alternative)" },
         { keys: ["F2"], label: "Ouvrir Mission Control" },
@@ -126,9 +133,9 @@ export default function ShortcutsOverlay() {
         event.preventDefault();
         setOpen((v) => !v);
       }
-      if (event.key === "?" && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      if (event.key === "?" && !event.altKey) {
         event.preventDefault();
-        setOpen(true);
+        setOpen((v) => !v);
       }
     }
 

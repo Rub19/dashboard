@@ -801,6 +801,7 @@ export interface AnimatedSidebarMenuButtonProps {
   rel?: string;
   onSelect?: () => void;
   className?: string;
+  shortcut?: string;
 }
 
 export function AnimatedSidebarMenuButton({
@@ -816,10 +817,15 @@ export function AnimatedSidebarMenuButton({
   rel,
   onSelect,
   className,
+  shortcut,
 }: AnimatedSidebarMenuButtonProps) {
   const context = useAnimatedSidebar();
   const panel = useAnimatedSidebarPanel();
   const textLabel = typeof children === "string" ? children : undefined;
+
+  const collapsedLabel = panel.collapsed
+    ? `${textLabel ?? ""}${shortcut ? ` — ${shortcut}` : ""}`.trim() || undefined
+    : undefined;
 
   const select = (
     event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>,
@@ -909,6 +915,13 @@ export function AnimatedSidebarMenuButton({
     className,
   );
 
+  const tooltipProps = panel.collapsed
+    ? {
+        "data-tooltip": collapsedLabel,
+        "data-tooltip-position": "right" as const,
+      }
+    : {};
+
   return href ? (
     <motion.a
       href={href}
@@ -921,12 +934,12 @@ export function AnimatedSidebarMenuButton({
       aria-expanded={ariaExpanded}
       aria-disabled={disabled || undefined}
       aria-label={panel.collapsed ? textLabel : undefined}
-      title={panel.collapsed ? textLabel : undefined}
       tabIndex={disabled ? -1 : undefined}
       onClick={select}
       whileTap={context.reduce || disabled ? undefined : { scale: 0.98 }}
       transition={SPRING_PRESS}
       className={interactiveClassName}
+      {...tooltipProps}
     >
       {content}
     </motion.a>
@@ -937,11 +950,11 @@ export function AnimatedSidebarMenuButton({
       aria-current={isActive ? "page" : undefined}
       aria-expanded={ariaExpanded}
       aria-label={panel.collapsed ? textLabel : undefined}
-      title={panel.collapsed ? textLabel : undefined}
       onClick={select}
       whileTap={context.reduce || disabled ? undefined : { scale: 0.98 }}
       transition={SPRING_PRESS}
       className={interactiveClassName}
+      {...tooltipProps}
     >
       {content}
     </motion.button>

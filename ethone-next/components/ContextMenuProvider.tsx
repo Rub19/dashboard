@@ -16,6 +16,8 @@ type ContextMenuContextValue = {
   open: boolean;
   x: number;
   y: number;
+  context: string | null;
+  contextId: string | null;
 };
 
 const ContextMenuContext = createContext<ContextMenuContextValue | null>(null);
@@ -35,6 +37,19 @@ function isContextMenuDisabled(target: EventTarget | null): boolean {
   );
 }
 
+function findContextMenuTrigger(
+  target: EventTarget | null
+): HTMLElement | null {
+  if (!target) return null;
+  if (target instanceof Element) {
+    return target.closest("[data-context-menu]") as HTMLElement | null;
+  }
+  if (target instanceof Node && target.parentElement) {
+    return target.parentElement.closest("[data-context-menu]") as HTMLElement | null;
+  }
+  return null;
+}
+
 export default function ContextMenuProvider({
   children,
 }: {
@@ -44,6 +59,8 @@ export default function ContextMenuProvider({
   const [point, setPoint] = useState({ x: 0, y: 0 });
   const [adjusted, setAdjusted] = useState({ x: 0, y: 0 });
   const [version, setVersion] = useState(0);
+  const [context, setContext] = useState<string | null>(null);
+  const [contextId, setContextId] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const close = useCallback(() => setOpen(false), []);
@@ -83,7 +100,13 @@ export default function ContextMenuProvider({
         return;
       }
 
+      const trigger = findContextMenuTrigger(e.target);
+      const nextContext = trigger?.dataset.contextMenu ?? null;
+      const nextContextId = trigger?.dataset.contextId ?? null;
+
       e.preventDefault();
+      setContext(nextContext);
+      setContextId(nextContextId);
       openAt(e.clientX, e.clientY);
     }
 
@@ -124,7 +147,9 @@ export default function ContextMenuProvider({
   }, [open, close, openAt]);
 
   return (
-    <ContextMenuContext.Provider value={{ open, x: adjusted.x, y: adjusted.y }}>
+    <ContextMenuContext.Provider
+      value={{ open, x: adjusted.x, y: adjusted.y, context, contextId }}
+    >
       {children}
       <AnimatePresence>
         {open && (
@@ -133,6 +158,8 @@ export default function ContextMenuProvider({
             onClose={close}
             x={adjusted.x}
             y={adjusted.y}
+            context={context}
+            contextId={contextId}
           />
         )}
       </AnimatePresence>

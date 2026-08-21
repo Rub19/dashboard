@@ -38,7 +38,8 @@ export default function LanguageSwitcher() {
       <PopoverTrigger>
         <button
           type="button"
-          title={i18n("language")}
+          data-tooltip={i18n("language")}
+          data-tooltip-position="bottom"
           aria-label={i18n("language")}
           aria-haspopup="listbox"
           aria-expanded={open}

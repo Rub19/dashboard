@@ -5,11 +5,12 @@ import { useItems } from "@/lib/hooks/useItems";
 import { useSelection } from "@/lib/hooks/useSelection";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
+import { useListKeyboard } from "@/lib/hooks/useListKeyboard";
 import { Icon } from "@/lib/icons";
+import { cn } from "@/lib/utils";
 import Input from "@/components/Input";
 import Select from "@/components/ui/Select";
 import BulkActionBar from "@/components/BulkActionBar";
-import ContextMenu from "@/components/ContextMenu";
 import CustomCheckbox from "@/components/CustomCheckbox";
 import RichTextEditor, { stripHtml } from "@/components/RichTextEditor";
 import { wordCountFromHtml } from "@/lib/notes";
@@ -55,6 +56,17 @@ export default function NotesPage() {
     return list;
   }, [items, query, sort]);
 
+  const { activeIndex, handleKeyDown } = useListKeyboard({
+    items: filtered,
+    onSelect: (note) => {
+      setTitle(note.title);
+      setBody(note.body);
+    },
+    onDelete: (note) => deleteNote(note.id),
+    selectMessage: null,
+    deleteMessage: null,
+  });
+
   const currentWords = wordCountFromHtml(body);
   const currentChars = stripHtml(body).length;
 
@@ -79,15 +91,6 @@ export default function NotesPage() {
     }
   }
 
-  async function duplicateNote(note: Note) {
-    try {
-      await create({ title: `${note.title} (${i18n("copy")})`, body: note.body });
-      notify.noteCreated(`${note.title} (${i18n("copy")})`);
-    } catch {
-      showError(i18n("error"));
-    }
-  }
-
   async function bulkDelete() {
     try {
       await Promise.all(selectedItems.map((n) => remove(n.id)));
@@ -106,37 +109,6 @@ export default function NotesPage() {
     } catch {
       showError(i18n("error"));
     }
-  }
-
-  function noteContextItems(note: Note) {
-    return [
-      {
-        id: "copy-title",
-        label: i18n("copyTitle"),
-        icon: "copy",
-        onClick: () => navigator.clipboard.writeText(note.title).then(() => notify.clipboard()).catch(() => showError(i18n("error"))),
-      },
-      {
-        id: "copy-body",
-        label: i18n("copyBody"),
-        icon: "copy",
-        onClick: () => navigator.clipboard.writeText(note.body).then(() => notify.clipboard()).catch(() => showError(i18n("error"))),
-      },
-      {
-        id: "duplicate",
-        label: i18n("duplicate"),
-        icon: "copy-plus",
-        onClick: () => duplicateNote(note),
-      },
-      { id: "sep", label: "", separator: true },
-      {
-        id: "delete",
-        label: i18n("delete"),
-        icon: "trash-2",
-        danger: true,
-        onClick: () => deleteNote(note.id),
-      },
-    ];
   }
 
   return (
@@ -187,7 +159,11 @@ export default function NotesPage() {
           </BulkActionBar>
         )}
 
-        <div className="min-h-0 flex-1 overflow-y-auto os-scroll space-y-3 pr-1">
+        <div
+          tabIndex={0}
+          onKeyDown={handleKeyDown}
+          className="min-h-0 flex-1 overflow-y-auto os-scroll space-y-3 pr-1 outline-none"
+        >
           {loading && items.length === 0 && (
             <div className="flex min-h-[160px] items-center justify-center rounded-2xl v8-panel p-4 backdrop-blur-2xl">
               <Icon name="loader-2" className="h-5 w-5 animate-spin text-zinc-500" />
@@ -198,36 +174,43 @@ export default function NotesPage() {
             <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">{error.message}</div>
           )}
 
-          {filtered.map((note) => (
-            <ContextMenu key={note.id} items={noteContextItems(note)}>
-              <div className="group rounded-2xl v8-panel p-3 backdrop-blur-2xl transition-colors hover:border-white/[0.12]">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex min-w-0 flex-1 items-start gap-2">
-                    <span className="mt-0.5" onClick={(e) => e.stopPropagation()}>
-                      <CustomCheckbox checked={isSelected(note.id)} onChange={() => toggle(note.id)} />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-white">{note.title}</p>
-                      <p className="line-clamp-2 text-[11px] text-zinc-500" dangerouslySetInnerHTML={{ __html: note.body }} />
-                      <div className="mt-1.5 flex gap-2 text-[10px] text-zinc-500">
-                        {note.createdAt && <span>{formatDate(note.createdAt)}</span>}
-                        <span>{wordCountFromHtml(note.body)} {i18n("words")}</span>
-                      </div>
+          {filtered.map((note, index) => (
+            <div
+              key={note.id}
+              data-context-menu="note"
+              data-context-id={note.id}
+              data-active={index === activeIndex}
+              className={cn(
+                "group rounded-2xl v8-panel p-3 backdrop-blur-2xl transition-colors hover:border-white/[0.12]",
+                index === activeIndex && "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10"
+              )}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex min-w-0 flex-1 items-start gap-2">
+                  <span className="mt-0.5" onClick={(e) => e.stopPropagation()}>
+                    <CustomCheckbox checked={isSelected(note.id)} onChange={() => toggle(note.id)} />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-white">{note.title}</p>
+                    <p className="line-clamp-2 text-[11px] text-zinc-500" dangerouslySetInnerHTML={{ __html: note.body }} />
+                    <div className="mt-1.5 flex gap-2 text-[10px] text-zinc-500">
+                      {note.createdAt && <span>{formatDate(note.createdAt)}</span>}
+                      <span>{wordCountFromHtml(note.body)} {i18n("words")}</span>
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => deleteNote(note.id)}
-                    disabled={loading}
-                    data-tooltip={i18n("delete")}
-                    data-haptic
-                    className="shrink-0 text-[var(--muted)] transition-colors hover:text-[var(--danger)] disabled:opacity-50"
-                  >
-                    <Icon name="trash-2" className="h-4 w-4" />
-                  </button>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => deleteNote(note.id)}
+                  disabled={loading}
+                  data-tooltip={i18n("delete")}
+                  data-haptic
+                  className="shrink-0 text-[var(--muted)] transition-colors hover:text-[var(--danger)] disabled:opacity-50"
+                >
+                  <Icon name="trash-2" className="h-4 w-4" />
+                </button>
               </div>
-            </ContextMenu>
+            </div>
           ))}
 
           {!loading && filtered.length === 0 && (

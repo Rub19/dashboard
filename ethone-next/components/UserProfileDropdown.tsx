@@ -170,6 +170,8 @@ export default function UserProfileDropdown() {
       <PopoverTrigger>
         <button
           type="button"
+          data-tooltip="Profil"
+          data-tooltip-position="bottom"
           className="group relative flex h-9 items-center gap-2.5 rounded-full border border-[var(--text-primary)]/[0.08] bg-[var(--surface)]/80 pl-1.5 pr-3 text-[var(--text-primary)] transition-all hover:border-[var(--text-primary)]/20 active:scale-95 cursor-pointer select-none"
           aria-label={i18n("profile")}
           aria-expanded={open}

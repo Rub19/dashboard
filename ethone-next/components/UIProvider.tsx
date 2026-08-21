@@ -158,7 +158,7 @@ export default function UIProvider({ children }: { children: React.ReactNode }) 
       clearShowTimer();
       pendingTarget.current = target;
       if (immediate) showTooltip(target);
-      else showTimer.current = setTimeout(() => showTooltip(target), 140);
+      else showTimer.current = setTimeout(() => showTooltip(target), 200);
     },
     [clearShowTimer, showTooltip]
   );

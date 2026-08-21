@@ -109,6 +109,8 @@
 }
 
 html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 4.5rem;
   /* Smooth, cheap theme transitions for color/border only. */
   transition: background-color 200ms ease, border-color 200ms ease, color 120ms ease, box-shadow 120ms ease;
 }
@@ -277,6 +279,7 @@ body > #__next {
   height: 100dvh;
   max-height: 100dvh;
   overflow: hidden;
+  overscroll-behavior-y: none;
 }
 
 /* stylelint-disable-next-line at-rule-no-unknown */
@@ -712,12 +715,24 @@ body {
 }
 
 *:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
+  transition: outline-offset 150ms ease, outline-color 150ms ease;
 }
 
 button:focus:not(:focus-visible),
-a:focus:not(:focus-visible) {
+a:focus:not(:focus-visible),
+[data-interactive]:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible),
+[contenteditable]:focus:not(:focus-visible),
+[role="button"]:focus:not(:focus-visible),
+[role="tab"]:focus:not(:focus-visible),
+[role="switch"]:focus:not(:focus-visible),
+[role="checkbox"]:focus:not(:focus-visible),
+[role="radio"]:focus:not(:focus-visible),
+[role="option"]:focus:not(:focus-visible) {
   outline: none;
 }
 
@@ -2224,6 +2239,8 @@ a:has(> svg) {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
   -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
 }
 
 html,

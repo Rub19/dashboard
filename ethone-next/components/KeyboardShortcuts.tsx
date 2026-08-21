@@ -27,6 +27,18 @@ const DOCK_ROUTES: Record<string, string> = {
   settings: "/settings",
 };
 
+export const NAV_HOTKEYS = [
+  { digit: 1, label: "Accueil", route: "/" },
+  { digit: 2, label: "Notes", route: "/notes/" },
+  { digit: 3, label: "Tâches", route: "/tasks/" },
+  { digit: 4, label: "Calendrier", route: "/calendar/" },
+  { digit: 5, label: "Fichiers", route: "/files/" },
+  { digit: 6, label: "Brain", route: "/brain/" },
+  { digit: 7, label: "Focus", route: "/focus/" },
+  { digit: 8, label: "Activité", route: "/activity/" },
+  { digit: 9, label: "Paramètres", route: "/settings/" },
+];
+
 function isEditable(target: EventTarget | null) {
   return (
     target instanceof HTMLInputElement ||
@@ -56,7 +68,7 @@ export default function KeyboardShortcuts() {
   const router = useRouter();
   const pathname = usePathname();
   const { settings, update } = useSettings();
-  const { toggleMissionControl } = useWindowManager();
+  const { missionControl, setMissionControl, toggleMissionControl } = useWindowManager();
   const haptics = useHaptics();
   const { shortcuts } = useShortcuts();
 
@@ -66,7 +78,34 @@ export default function KeyboardShortcuts() {
     }
 
     function onKeyDown(event: KeyboardEvent) {
+      // Escape is handled before the editable guard so that modals and panels
+      // (Mission Control, MobileNav drawer) can be closed while typing.
+      if (event.key === "Escape") {
+        let handled = false;
+        if (missionControl) {
+          setMissionControl(false);
+          haptics.trigger(12);
+          handled = true;
+        }
+        window.dispatchEvent(new CustomEvent("v8:request-close-drawer"));
+        if (handled) {
+          event.preventDefault();
+        }
+        return;
+      }
+
       if (isEditable(event.target)) return;
+
+      // Ctrl/Cmd + 1-9 global navigation hotkeys.
+      if ((event.ctrlKey || event.metaKey) && !event.altKey && /^[1-9]$/.test(event.key)) {
+        const hotkey = NAV_HOTKEYS.find((h) => h.digit === Number(event.key));
+        if (hotkey) {
+          event.preventDefault();
+          haptics.trigger(8);
+          router.push(hotkey.route);
+          return;
+        }
+      }
 
       // Ctrl/Cmd + Shift + letter creation shortcuts.
       if ((event.ctrlKey || event.metaKey) && event.shiftKey && !event.altKey) {
@@ -136,7 +175,7 @@ export default function KeyboardShortcuts() {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [router, pathname, settings.dockItems, settings.layoutPreset, update, toggleMissionControl, haptics, shortcuts]);
+  }, [router, pathname, settings.dockItems, settings.layoutPreset, update, toggleMissionControl, missionControl, setMissionControl, haptics, shortcuts]);
 
   return null;
 }

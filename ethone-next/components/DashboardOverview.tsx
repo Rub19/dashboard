@@ -206,7 +206,8 @@ export default function DashboardOverview() {
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-y-auto os-scroll">
-      <header className="shrink-0 mb-2 flex w-full items-center justify-end">
+      <div className="mx-auto w-full max-w-[1600px] px-2 sm:px-4">
+        <header className="shrink-0 mb-2 flex w-full items-center justify-end">
         <button
           type="button"
           onClick={() => setCustomizing((v) => !v)}
@@ -279,6 +280,7 @@ export default function DashboardOverview() {
           ) : null
         )}
       </motion.div>
+      </div>
     </div>
   );
 }

@@ -37,6 +37,18 @@ import {
 
 type AppItem = { id: string; href: string; icon: string };
 
+const SHORTCUTS: Record<string, string> = {
+  home: "⌘1",
+  notes: "⌘2",
+  tasks: "⌘3",
+  calendar: "⌘4",
+  files: "⌘5",
+  mail: "⌘6",
+  brain: "⌘7",
+  focus: "⌘8",
+  weather: "⌘9",
+};
+
 const APPS: AppItem[] = [
   { id: "home", href: "/", icon: "home" },
   { id: "notes", href: "/notes/", icon: "notes" },
@@ -257,6 +269,7 @@ function Sidebar() {
                 <AnimatedSidebarMenuButton
                   isActive={isActive(app)}
                   icon={<Icon name={app.icon} className="h-5 w-5" />}
+                  shortcut={SHORTCUTS[app.id]}
                   onSelect={() => router.push(app.href)}
                 >
                   {i18n(app.id, app.id === "admin" ? "Admin" : app.id)}

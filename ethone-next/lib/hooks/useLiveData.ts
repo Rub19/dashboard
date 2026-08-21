@@ -365,14 +365,26 @@ export function useLiveData(pollMs = 60000) {
         if (la.status === "fulfilled") {
           const d = (la.value || {}) as ApiData;
           const discordUser = (d.discord_user as ApiData) || {};
+          const lanyardUserId = asStr(discordUser.id) || asStr(d.userId);
+          const lanyardAvatarHash = asStr(discordUser.avatar) || asStr(d.avatarHash);
+          const lanyardDiscriminator = asStr(discordUser.discriminator) || asStr(d.discriminator);
+          const lanyardAvatarUrl =
+            asStr(d.avatarUrl) ||
+            (lanyardUserId && lanyardAvatarHash
+              ? `https://cdn.discordapp.com/avatars/${lanyardUserId}/${lanyardAvatarHash}.${String(lanyardAvatarHash).startsWith("a_") ? "gif" : "png"}?size=256`
+              : "");
           setLanyard({
-            userId: asStr(d.userId),
-            displayName: asStr(d.displayName),
+            userId: lanyardUserId,
+            displayName:
+              asStr(discordUser.global_name) || asStr(discordUser.display_name) || asStr(d.displayName),
             username: asStr(discordUser.username) || asStr(d.username),
-            avatarUrl: asStr(d.avatarUrl),
-            avatarHash: asStr(discordUser.avatar) || asStr(d.avatarHash),
-            discriminator: asStr(discordUser.discriminator) || asStr(d.discriminator),
-            discord_status: (d.status as LanyardPresence["discord_status"]) || "offline",
+            avatarUrl: lanyardAvatarUrl,
+            avatarHash: lanyardAvatarHash,
+            discriminator: lanyardDiscriminator,
+            discord_status:
+              (d.discord_status as LanyardPresence["discord_status"]) ||
+              (d.status as LanyardPresence["discord_status"]) ||
+              "offline",
             spotify: d.spotify
               ? {
                   playing: Boolean((d.spotify as ApiData).playing),

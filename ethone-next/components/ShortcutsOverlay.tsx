@@ -21,6 +21,7 @@ const DOCK_LABELS: Record<string, string> = {
   flows: "Flows",
   brain: "Brain",
   focus: "Focus",
+  weather: "Météo",
   team: "Équipe",
   mail: "Mail",
   settings: "Paramètres",

@@ -45,6 +45,7 @@ const APPS: AppItem[] = [
   { id: "mail", href: "/mail/", icon: "mail" },
   { id: "brain", href: "/brain/", icon: "brain" },
   { id: "focus", href: "/focus/", icon: "focus" },
+  { id: "weather", href: "/weather/", icon: "cloudSun" },
   { id: "activity", href: "/activity/", icon: "activity" },
   { id: "connections", href: "/connections/", icon: "connections" },
   { id: "plugins", href: "/plugins/", icon: "plugins" },

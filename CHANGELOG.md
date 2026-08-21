@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.48 — 2026-08-21
+
+**Météo, avatar Discord et skin Minecraft**
+
+- `components/Sidebar.tsx` : nouvel onglet `Météo` (icône `cloudSun`) dans la sidebar.
+- `components/ShortcutsOverlay.tsx` : raccourci "Météo" ajouté au dock.
+- `lib/hooks/useLiveData.ts` : correction du mapping Lanyard (`discord_user.id`, `global_name`, `avatar`) pour afficher la photo de profil Discord.
+- `lib/hooks/useLiveData.ts` : correction du `setMinecraft` qui était sauté lors d'une erreur Lanyard, ce qui empêchait le skin Minecraft de s'afficher.
+- Version `v1.7.48`, cache PWA `v416`.
+
 ## v1.7.47 — 2026-08-21
 
 **Onglet Admin : statistiques réservées à l'administrateur**

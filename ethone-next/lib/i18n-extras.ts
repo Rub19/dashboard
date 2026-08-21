@@ -399,6 +399,9 @@ export const EXTRAS: Record<string, Record<string, string>> = {
     Outfit: "Outfit",
     "JetBrains Mono": "JetBrains Mono",
     "Editorial Serif": "Editorial Serif",
+    sessionVerified: "Session vérifiée",
+    linkDiscord: "Lier Discord",
+    statusVerified: "Vérifiée",
 },
   en: {
     dayShortMon: "Mon",
@@ -800,6 +803,9 @@ export const EXTRAS: Record<string, Record<string, string>> = {
     Outfit: "Outfit",
     "JetBrains Mono": "JetBrains Mono",
     "Editorial Serif": "Editorial Serif",
+    sessionVerified: "Verified session",
+    linkDiscord: "Link Discord",
+    statusVerified: "Verified",
 },
   es: {
     dayShortMon: "Lun",
@@ -1201,6 +1207,9 @@ export const EXTRAS: Record<string, Record<string, string>> = {
     Outfit: "Outfit",
     "JetBrains Mono": "JetBrains Mono",
     "Editorial Serif": "Editorial Serif",
+    sessionVerified: "Sesión verificada",
+    linkDiscord: "Vincular Discord",
+    statusVerified: "Verificado",
 },
   de: {
     dayShortMon: "Mo",
@@ -1601,5 +1610,8 @@ export const EXTRAS: Record<string, Record<string, string>> = {
     Outfit: "Outfit",
     "JetBrains Mono": "JetBrains Mono",
     "Editorial Serif": "Editorial Serif",
+    sessionVerified: "Verifizierte Sitzung",
+    linkDiscord: "Discord verknüpfen",
+    statusVerified: "Verifiziert",
 },
 };

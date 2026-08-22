@@ -12,9 +12,14 @@
     "test:e2e": "npx playwright test",
     "test:all": "npm run test && npm run test:e2e && npm run audit:a11y && npm run audit:responsive",
     "audit:a11y": "node scripts/a11y-audit.mjs",
-    "audit:responsive": "node scripts/responsive-audit.mjs"
+    "audit:responsive": "node scripts/responsive-audit.mjs",
+    "cap:build": "next build && npx cap sync",
+    "cap:sync": "npx cap sync",
+    "cap:android": "next build && npx cap sync && npx cap open android",
+    "cap:ios": "next build && npx cap sync && npx cap open ios"
   },
   "dependencies": {
+    "@capacitor/core": "^7.6.8",
     "@floating-ui/react": "^0.27.20",
     "@iconify-json/heroicons": "^1.2.3",
     "@iconify-json/lucide": "^1.2.123",
@@ -36,6 +41,9 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.1",
+    "@capacitor/android": "^7.6.8",
+    "@capacitor/cli": "^7.6.8",
+    "@capacitor/ios": "^7.6.8",
     "@playwright/test": "^1.61.1",
     "@tailwindcss/postcss": "^4",
     "@testing-library/react": "^16.3.2",

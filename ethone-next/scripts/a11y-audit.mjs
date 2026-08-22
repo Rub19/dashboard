@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
 import axeCore from "axe-core";
 
-const DIST = fileURLToPath(new URL("../dist", import.meta.url));
+const DIST = fileURLToPath(new URL("../out", import.meta.url));
 const OUT_DIR = fileURLToPath(new URL("../audit", import.meta.url));
 
 async function* walk(dir) {
@@ -119,7 +119,7 @@ async function main() {
   try {
     await stat(DIST);
   } catch {
-    console.error("dist/ not found. Run 'npm run build' first.");
+    console.error("out/ not found. Run 'npm run build' first.");
     process.exit(1);
   }
 

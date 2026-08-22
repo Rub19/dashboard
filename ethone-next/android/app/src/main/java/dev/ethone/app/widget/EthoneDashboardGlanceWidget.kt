@@ -36,8 +36,8 @@ class EthoneDashboardGlanceWidget : GlanceAppWidget() {
 
     @Composable
     private fun DashboardContent() {
-        val primary = ColorProvider(Color(0xFF1A1A2E))
-        val onPrimary = ColorProvider(Color(0xFFFFFFFF))
+        val primary = ColorProvider(day = Color(0xFF1A1A2E), night = Color(0xFF1A1A2E))
+        val onPrimary = ColorProvider(day = Color(0xFFFFFFFF), night = Color(0xFFFFFFFF))
 
         Column(
             modifier = GlanceModifier
@@ -84,7 +84,7 @@ class EthoneDashboardGlanceWidget : GlanceAppWidget() {
             }
             Spacer(GlanceModifier.height(12.dp))
             Box(
-                modifier = GlanceModifier.fillMaxSize().background(ColorProvider(Color(0x33000000))).cornerRadius(8.dp).padding(8.dp),
+                modifier = GlanceModifier.fillMaxSize().background(ColorProvider(day = Color(0x33000000), night = Color(0x33000000))).cornerRadius(8.dp).padding(8.dp),
                 contentAlignment = Alignment.CenterStart
             ) {
                 Text(

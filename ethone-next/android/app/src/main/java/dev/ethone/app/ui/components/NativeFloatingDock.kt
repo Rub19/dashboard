@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CapsuleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
@@ -68,7 +67,7 @@ fun NativeFloatingDock(
                 .fillMaxWidth()
                 .height(56.dp)
                 .align(Alignment.BottomCenter)
-                .shadow(24.dp, shape = CapsuleShape),
+                .shadow(24.dp, shape = RoundedCornerShape(50)),
             cornerRadius = 28.dp
         ) {
             Row(

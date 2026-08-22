@@ -2,7 +2,6 @@ import ActivityKit
 import WidgetKit
 import SwiftUI
 import AppIntents
-import UIKit
 
 enum ActivityMode: String, Codable {
     case focus
@@ -237,6 +236,7 @@ struct LockScreenView: View {
 struct EthoneLiveActivityIntent: LiveActivityIntent {
     static var title: LocalizedStringResource = "Action ETHONE Live Activity"
     static var description: IntentDescription? = IntentDescription("Action declenchee depuis la Dynamic Island ETHONE.")
+    static var openAppWhenRun: Bool = true
 
     var action: String
 
@@ -249,11 +249,8 @@ struct EthoneLiveActivityIntent: LiveActivityIntent {
     }
 
     func perform() async throws -> some IntentResult {
-        await MainActor.run {
-            if let url = URL(string: "ethone://live-activity?action=\(action)") {
-                UIApplication.shared.open(url, options: [:])
-            }
-        }
+        let shared = UserDefaults(suiteName: "group.dev.ethone.app")
+        shared?.set(action, forKey: "ethone_live_activity_action")
         return .result()
     }
 }

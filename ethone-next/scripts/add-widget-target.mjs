@@ -27,6 +27,10 @@ const widget = project.addNativeTarget({
     MARKETING_VERSION: "1.7.63",
     CURRENT_PROJECT_VERSION: "1",
     GENERATE_INFOPLIST_FILE: "NO",
+    SKIP_INSTALL: "YES",
+    PRODUCT_NAME: "EthoneWidgets",
+    EXECUTABLE_NAME: "EthoneWidgets",
+    LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks",
   },
 });
 

@@ -9,7 +9,8 @@ export type ButtonVariant =
   | "secondary"
   | "outline"
   | "ghost"
-  | "danger";
+  | "danger"
+  | "liquid";
 
 export type ButtonSize = "sm" | "md" | "lg";
 
@@ -51,6 +52,7 @@ const variantClass: Record<ButtonVariant, string> = {
     "hover:bg-[var(--danger)]/90",
     "active:scale-[0.98]",
   ),
+  liquid: cn("liquid-glass-btn text-[var(--text-primary)]"),
 };
 
 const sizeClass: Record<ButtonSize, string> = {

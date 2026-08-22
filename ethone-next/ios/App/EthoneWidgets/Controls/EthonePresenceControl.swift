@@ -2,6 +2,7 @@ import WidgetKit
 import SwiftUI
 import AppIntents
 
+@available(iOS 18.0, *)
 enum PresenceValue: String, AppEnum {
     case online = "En ligne"
     case busy = "Occupé"
@@ -16,6 +17,7 @@ enum PresenceValue: String, AppEnum {
     ]
 }
 
+@available(iOS 18.0, *)
 struct SetPresenceIntent: SetValueIntent {
     static var title: LocalizedStringResource = "Changer présence"
     static var description = IntentDescription("Change le statut de présence ETHONE.")
@@ -32,6 +34,7 @@ struct SetPresenceIntent: SetValueIntent {
     }
 }
 
+@available(iOS 18.0, *)
 struct EthonePresenceControl: ControlWidget {
     var body: some ControlWidgetConfiguration {
         StaticControlConfiguration(
@@ -47,6 +50,7 @@ struct EthonePresenceControl: ControlWidget {
     }
 }
 
+@available(iOS 18.0, *)
 struct PresenceControlProvider: ControlValueProvider {
     func currentValue() async throws -> String {
         let shared = UserDefaults(suiteName: "group.dev.ethone.app")

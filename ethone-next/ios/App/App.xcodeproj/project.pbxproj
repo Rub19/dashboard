@@ -20,12 +20,17 @@
 		A084ECDBA7D38E1E42DFC39D /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */; };
 		F48DB15F11D54CB3B55913E6 /* EthoneAppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A574DAE3029C417A96A4426E /* EthoneAppIntents.swift */; };
 		XX02F5412EBC007C90F720XX /* EthoneLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = XX2CA0E079554EB3C0F9B1XX /* EthoneLiveActivity.swift */; };
+		XX1400AF825091948C74D9XX /* Controls/EthoneFocusControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = XXE28ACE708318BF7B5B89XX /* Controls/EthoneFocusControl.swift */; };
 		XX18F9AD120420C741D34EXX /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = XX11940AB5AEC0B905F872XX /* WidgetKit.framework */; };
 		XX1AF8697BEBA0E8F82551XX /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = XXE8EAF5BF080A03928E44XX /* SwiftUI.framework */; };
 		XX4B109375DE72D41FE9E4XX /* EthoneWidgetsBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = XX9D3587D95F175CEF3ED4XX /* EthoneWidgetsBundle.swift */; };
+		XX6D279A4962786252E535XX /* Controls/EthoneBrainIdeaControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = XX11BCFE3BA093B4BE314FXX /* Controls/EthoneBrainIdeaControl.swift */; };
+		XX7C33BE4BD7F00F4E838AXX /* Controls/EthoneNewNoteControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = XXDE81F519F3B54002884DXX /* Controls/EthoneNewNoteControl.swift */; };
 		XX83BF2AD7AF2D2FC349A0XX /* AppIntents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = XXA38541A933C1CED0731BXX /* AppIntents.framework */; };
 		XXC0E4C68D675A2407A799XX /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = XX6540AB487384FDDF0F35XX /* ActivityKit.framework */; };
 		XXC335413692E36CFD26B3XX /* StandBy/EthoneStandByWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = XX327C83A33DDEB5286036XX /* StandBy/EthoneStandByWidget.swift */; };
+		XXD006921CC11B66F94609XX /* Controls/EthonePresenceControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = XXC39E41E3969B47582CF1XX /* Controls/EthonePresenceControl.swift */; };
+		XXD027FE962E2FDDF6DEEDXX /* EthoneAppEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = XX4D37D25B10BF70FF4751XX /* EthoneAppEntities.swift */; };
 		XXE970D41D8CE561CB0584XX /* EthoneWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = XX379AA316E73DE813AA5EXX /* EthoneWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		XXEFD6C7A4207E9DA9AE38XX /* EthoneWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = XXD909CF9F4DC472DDEDDEXX /* EthoneWidget.swift */; };
 /* End PBXBuildFile section */
@@ -72,14 +77,19 @@
 		C6DD3EBAE6EF4F05ADBF325A /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		FC68EB0AF532CFC21C3344DD /* Pods-App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.debug.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.debug.xcconfig"; sourceTree = "<group>"; };
 		XX11940AB5AEC0B905F872XX /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		XX11BCFE3BA093B4BE314FXX /* Controls/EthoneBrainIdeaControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controls/EthoneBrainIdeaControl.swift; sourceTree = "<group>"; };
 		XX2CA0E079554EB3C0F9B1XX /* EthoneLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthoneLiveActivity.swift; sourceTree = "<group>"; };
 		XX327C83A33DDEB5286036XX /* StandBy/EthoneStandByWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandBy/EthoneStandByWidget.swift; sourceTree = "<group>"; };
 		XX379AA316E73DE813AA5EXX /* EthoneWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = EthoneWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		XX4D37D25B10BF70FF4751XX /* EthoneAppEntities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthoneAppEntities.swift; sourceTree = "<group>"; };
 		XX6540AB487384FDDF0F35XX /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActivityKit.framework; path = System/Library/Frameworks/ActivityKit.framework; sourceTree = SDKROOT; };
 		XX9D3587D95F175CEF3ED4XX /* EthoneWidgetsBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthoneWidgetsBundle.swift; sourceTree = "<group>"; };
 		XXA38541A933C1CED0731BXX /* AppIntents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppIntents.framework; path = System/Library/Frameworks/AppIntents.framework; sourceTree = SDKROOT; };
 		XXB1BCC0924A704C2F717DXX /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		XXC39E41E3969B47582CF1XX /* Controls/EthonePresenceControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controls/EthonePresenceControl.swift; sourceTree = "<group>"; };
 		XXD909CF9F4DC472DDEDDEXX /* EthoneWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthoneWidget.swift; sourceTree = "<group>"; };
+		XXDE81F519F3B54002884DXX /* Controls/EthoneNewNoteControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controls/EthoneNewNoteControl.swift; sourceTree = "<group>"; };
+		XXE28ACE708318BF7B5B89XX /* Controls/EthoneFocusControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controls/EthoneFocusControl.swift; sourceTree = "<group>"; };
 		XXE8EAF5BF080A03928E44XX /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -110,6 +120,7 @@
 			isa = PBXGroup;
 			children = (
 				A574DAE3029C417A96A4426E /* EthoneAppIntents.swift */,
+				XX4D37D25B10BF70FF4751XX /* EthoneAppEntities.swift */,
 			);
 			name = Intents;
 			path = Intents;
@@ -188,6 +199,10 @@
 				XX327C83A33DDEB5286036XX /* StandBy/EthoneStandByWidget.swift */,
 				XX9D3587D95F175CEF3ED4XX /* EthoneWidgetsBundle.swift */,
 				XXB1BCC0924A704C2F717DXX /* Info.plist */,
+				XXE28ACE708318BF7B5B89XX /* Controls/EthoneFocusControl.swift */,
+				XXDE81F519F3B54002884DXX /* Controls/EthoneNewNoteControl.swift */,
+				XX11BCFE3BA093B4BE314FXX /* Controls/EthoneBrainIdeaControl.swift */,
+				XXC39E41E3969B47582CF1XX /* Controls/EthonePresenceControl.swift */,
 			);
 			path = EthoneWidgets;
 			sourceTree = "<group>";
@@ -339,6 +354,7 @@
 				F48DB15F11D54CB3B55913E6 /* EthoneAppIntents.swift in Sources */,
 				935142EEFE0D4F57BC936ECB /* EthoneSpotlightPlugin.swift in Sources */,
 				7C7CFE35AA5E4B4B8A332BD0 /* EthoneFocusPlugin.swift in Sources */,
+				XXD027FE962E2FDDF6DEEDXX /* EthoneAppEntities.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -350,6 +366,10 @@
 				XXEFD6C7A4207E9DA9AE38XX /* EthoneWidget.swift in Sources */,
 				XXC335413692E36CFD26B3XX /* StandBy/EthoneStandByWidget.swift in Sources */,
 				XX4B109375DE72D41FE9E4XX /* EthoneWidgetsBundle.swift in Sources */,
+				XX1400AF825091948C74D9XX /* Controls/EthoneFocusControl.swift in Sources */,
+				XX7C33BE4BD7F00F4E838AXX /* Controls/EthoneNewNoteControl.swift in Sources */,
+				XX6D279A4962786252E535XX /* Controls/EthoneBrainIdeaControl.swift in Sources */,
+				XXD006921CC11B66F94609XX /* Controls/EthonePresenceControl.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -540,7 +560,7 @@
 				CODE_SIGN_IDENTITY = "";
 				DEVELOPMENT_TEAM = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				MARKETING_VERSION = 1.7.63;
 				CURRENT_PROJECT_VERSION = 1;
@@ -563,7 +583,7 @@
 				CODE_SIGN_IDENTITY = "";
 				DEVELOPMENT_TEAM = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				MARKETING_VERSION = 1.7.63;
 				CURRENT_PROJECT_VERSION = 1;

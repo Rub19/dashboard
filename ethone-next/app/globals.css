@@ -5,6 +5,7 @@
 @import "./legacy-v8-mail-tokens.css";
 @import "./legacy-v8-shell-tokens.css";
 @import "tailwindcss";
+@import "./liquid-glass.css";
 
 :root {
   /* Premium theme engine semantic defaults (Violet default accent) */

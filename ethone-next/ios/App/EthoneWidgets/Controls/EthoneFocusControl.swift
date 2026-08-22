@@ -2,6 +2,7 @@ import WidgetKit
 import SwiftUI
 import AppIntents
 
+@available(iOS 18.0, *)
 struct FocusControlProvider: ControlValueProvider {
     func currentValue() async throws -> Bool {
         let shared = UserDefaults(suiteName: "group.dev.ethone.app")
@@ -13,6 +14,7 @@ struct FocusControlProvider: ControlValueProvider {
     }
 }
 
+@available(iOS 18.0, *)
 struct ToggleFocusIntent: SetValueIntent {
     static var title: LocalizedStringResource = "Basculer ETHONE Focus"
     static var description = IntentDescription("Active ou désactive une session de concentration ETHONE.")
@@ -30,6 +32,7 @@ struct ToggleFocusIntent: SetValueIntent {
     }
 }
 
+@available(iOS 18.0, *)
 struct EthoneFocusControl: ControlWidget {
     var body: some ControlWidgetConfiguration {
         StaticControlConfiguration(

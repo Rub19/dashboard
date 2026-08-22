@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct NativeFloatingDock: View {
     @Binding var selectedTab: Tab

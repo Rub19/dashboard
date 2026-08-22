@@ -464,6 +464,14 @@
 				7C7CFE35AA5E4B4B8A332BD0 /* EthoneFocusPlugin.swift in Sources */,
 				XXD027FE962E2FDDF6DEEDXX /* EthoneAppEntities.swift in Sources */,
 				XX52AB3AC6DC7297F7B810XX /* EthoneIntelligence27.swift in Sources */,
+				D84ECF96377B4D3B9F954D88 /* RootView.swift in Sources */,
+				F906A45B0696438BB44BED4E /* DashboardView.swift in Sources */,
+				19489469B8D041E4916E60AA /* NativeFloatingDock.swift in Sources */,
+				F7F1C170FFC345CC815C4798 /* FocusCardView.swift in Sources */,
+				7DAB81B246904D4583F7EC69 /* TasksCardView.swift in Sources */,
+				B682C270D87C4D7092A964A8 /* BrainCardView.swift in Sources */,
+				86FE92012EFB42C082D7E893 /* StorageCardView.swift in Sources */,
+				BB97394A6D6C4805A99C728B /* SupabaseService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -812,11 +820,3 @@
 	};
 	rootObject = 504EC2FC1FED79650016851F /* Project object */;
 }
-			D84ECF96377B4D3B9F954D88 /* RootView.swift in Sources */,
-			F906A45B0696438BB44BED4E /* DashboardView.swift in Sources */,
-			19489469B8D041E4916E60AA /* NativeFloatingDock.swift in Sources */,
-			F7F1C170FFC345CC815C4798 /* FocusCardView.swift in Sources */,
-			7DAB81B246904D4583F7EC69 /* TasksCardView.swift in Sources */,
-			B682C270D87C4D7092A964A8 /* BrainCardView.swift in Sources */,
-			86FE92012EFB42C082D7E893 /* StorageCardView.swift in Sources */,
-			BB97394A6D6C4805A99C728B /* SupabaseService.swift in Sources */,

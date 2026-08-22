@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.4 — 2026-08-22
+
+**Architecture double cible : Next.js web/desktop + iOS Swift natif**
+
+- Conservation complète du projet Next.js pour Web et Desktop.
+- Interface iPhone 100 % SwiftUI dans `ios/App/App/Native/` (`RootView`, `DashboardView`, `NativeFloatingDock`, `BentoCards/`).
+- Suppression du chargement WebView Capacitor ; `AppDelegate` lance `UIHostingController(rootView: RootView())`.
+- `SupabaseService.swift` synchronise les tâches et notes en REST avec Supabase.
+- CI iOS injecte `SUPABASE_URL` et `SUPABASE_ANON_KEY` dans `Info.plist`.
+- Version `v1.8.4`, cache PWA `v431`.
+
 ## v1.8.3 — 2026-08-22
 
 **Notifications locales gratuites : Pomodoro et rappels de tâches**

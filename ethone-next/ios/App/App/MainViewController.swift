@@ -1,10 +1,8 @@
 import UIKit
-import Capacitor
 
-@objc(MainViewController)
-class MainViewController: CAPBridgeViewController {
-    override open func capacitorDidLoad() {
-        bridge?.registerPluginInstance(EthoneSpotlightPlugin())
-        bridge?.registerPluginInstance(EthoneFocusPlugin())
+class MainViewController: UIViewController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .systemBackground
     }
 }

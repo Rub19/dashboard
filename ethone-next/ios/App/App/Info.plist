@@ -35,6 +35,8 @@
 	<true/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>ETHONE utilise Face ID / Touch ID pour déverrouiller les zones sensibles de l'application.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>ETHONE utilise le gyroscope pour ajuster l'effet de profondeur du Liquid Glass.</string>
 	<key>SUPABASE_URL</key>
 	<string>https://placeholder.supabase.co</string>
 	<key>SUPABASE_ANON_KEY</key>

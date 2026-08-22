@@ -26,6 +26,8 @@ struct NativeFloatingDock: View {
                         Image(systemName: icon)
                             .font(.system(size: 22, weight: .semibold))
                             .symbolEffect(.bounce, value: selected)
+                            .symbolEffect(.pulse, value: selected)
+                            .symbolEffect(.variableColor, value: selected)
                         Text(label)
                             .font(.caption2)
                     }

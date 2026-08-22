@@ -1,9 +1,16 @@
-name: Build iOS IPA (Capacitor Cloud)
+name: Build iOS IPA (Capacitor Cloud Build)
 
 on:
   push:
     branches: [main, master]
   workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-build-${{ github.ref }}
+  cancel-in-progress: true
 
 defaults:
   run:
@@ -65,3 +72,4 @@ jobs:
           name: ETHONE-iOS-IPA
           path: ethone-next/ios/App/build/ETHONE.ipa
           retention-days: 7
+          if-no-files-found: error

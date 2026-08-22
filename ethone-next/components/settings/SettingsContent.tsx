@@ -695,6 +695,7 @@ export default function SettingsContent({
   const appearanceFields: FieldDef[] = useMemo(
     () => [
       { key: "darkMode", label: i18n("darkMode"), type: "toggle", keywords: ["apparence", "sombre", "thème"] },
+      { key: "useMaterialYou", label: i18n("materialYou", "Material You"), type: "toggle", keywords: ["android", "monet", "dynamique", "material"] },
       {
         key: "theme",
         label: i18n("settingsTheme", "Thème d'affichage"),

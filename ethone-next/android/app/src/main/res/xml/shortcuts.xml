@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="new-note"
+        android:enabled="true"
+        android:icon="@drawable/ic_launcher_background"
+        android:shortcutShortLabel="@string/shortcut_new_note"
+        android:shortcutLongLabel="@string/shortcut_new_note_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="ethone:///notes?new=1"
+            android:targetPackage="dev.ethone.app"
+            android:targetClass="dev.ethone.app.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="start-focus"
+        android:enabled="true"
+        android:icon="@drawable/ic_launcher_background"
+        android:shortcutShortLabel="@string/shortcut_start_focus"
+        android:shortcutLongLabel="@string/shortcut_start_focus_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="ethone:///focus"
+            android:targetPackage="dev.ethone.app"
+            android:targetClass="dev.ethone.app.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="add-task"
+        android:enabled="true"
+        android:icon="@drawable/ic_launcher_background"
+        android:shortcutShortLabel="@string/shortcut_add_task"
+        android:shortcutLongLabel="@string/shortcut_add_task_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="ethone:///tasks?new=1"
+            android:targetPackage="dev.ethone.app"
+            android:targetClass="dev.ethone.app.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="search"
+        android:enabled="true"
+        android:icon="@drawable/ic_launcher_background"
+        android:shortcutShortLabel="@string/shortcut_search"
+        android:shortcutLongLabel="@string/shortcut_search_long">
+        <intent
+            android:action="ethone.intent.action.OPEN_COMMAND"
+            android:data="ethone:///"
+            android:targetPackage="dev.ethone.app"
+            android:targetClass="dev.ethone.app.MainActivity" />
+    </shortcut>
+</shortcuts>

@@ -2,6 +2,26 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.56 — 2026-08-22
+
+**Intégration complète de l'écosystème Android Material You**
+
+- Migration du thème Android vers `Theme.Material3.DayNight.NoActionBar` avec Edge-to-Edge transparent.
+- Activation des couleurs dynamiques Material You via `DynamicColors.applyToActivitiesIfAvailable`.
+- Plugin natif `EthoneThemePlugin` (`lib/android.ts`) : récupération des couleurs système Android 12+.
+- Plugin natif `EthoneHapticsPlugin` (`lib/android.ts`) : effets prédéfinis (`EFFECT_TICK/CLICK/HEAVY_CLICK/DOUBLE_CLICK`) et waveforms personnalisées.
+- Edge-to-Edge dans `MainActivity.java` : `WindowCompat.setDecorFitsSystemWindows` + barres transparentes.
+- Predictive Back activé via `enableOnBackInvokedCallback`.
+- Quick Settings Tiles `FocusTileService` et `PresenceTileService`.
+- App Shortcuts natifs (statiques `shortcuts.xml` + dynamiques dans `MainActivity`).
+- 3 widgets Jetpack Glance : `EthoneCompactGlanceWidget`, `EthoneListGlanceWidget`, `EthoneDashboardGlanceWidget`.
+- Canaux de notifications `ethone_reminders`, `ethone_focus`, `ethone_sync`.
+- Paramètre `useMaterialYou` dans les réglages pour basculer la palette Material You.
+- Geste de retour arrière prédictif géré côté JS via `@capacitor/app`.
+- Icône d'application thématisée `ic_launcher_monochrome.xml`.
+- Support multi-fenêtres et pliables (`screenSize|smallestScreenSize|screenLayout|orientation`).
+- Version `v1.7.56`.
+
 ## v1.7.55 — 2026-08-22
 
 **Dynamic Island interactive, moteur haptique Taptic Engine et interactions Pro**

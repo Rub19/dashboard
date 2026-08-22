@@ -2,10 +2,15 @@
 
 import { Capacitor } from "@capacitor/core";
 import { Haptics, ImpactStyle, NotificationType } from "@capacitor/haptics";
+import { androidPredefinedHaptic, androidWaveform } from "@/lib/android";
 
 function isNative() {
   if (typeof window === "undefined") return false;
   return Capacitor.isNativePlatform();
+}
+
+function isAndroid() {
+  return Capacitor.getPlatform() === "android";
 }
 
 export async function hapticSelectionTick() {
@@ -92,6 +97,10 @@ export async function hapticError() {
 
 /** Double-pulse success pattern (success + light tick). */
 export async function hapticSuccessPattern() {
+  if (isAndroid()) {
+    await androidPredefinedHaptic("double");
+    return;
+  }
   await hapticSuccess();
   await new Promise((resolve) => setTimeout(resolve, 120));
   await hapticLightImpact();
@@ -99,6 +108,10 @@ export async function hapticSuccessPattern() {
 
 /** Triple-shake error pattern (error + two rigid ticks). */
 export async function hapticErrorPattern() {
+  if (isAndroid()) {
+    await androidWaveform([0, 80, 50, 80, 50, 120], [0, 255, 0, 255, 0, 80]);
+    return;
+  }
   await hapticError();
   await new Promise((resolve) => setTimeout(resolve, 80));
   await hapticRigidImpact();

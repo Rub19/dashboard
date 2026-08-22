@@ -67,6 +67,7 @@ export type SoundVolumeCategory = "interface" | "notifications" | "brain" | "sys
 
 export type Settings = {
   darkMode: boolean;
+  useMaterialYou: boolean;
   theme: ThemeMode;
   iconPack: "lucide" | "phosphor" | "tabler" | "heroicons" | "radix";
   densityMode: DensityMode;
@@ -243,6 +244,7 @@ export const USER_STATUS_CONFIG: Record<
 
 export const DEFAULTS: Settings = {
   darkMode: true,
+  useMaterialYou: false,
   theme: "obsidian",
   iconPack: "lucide",
   densityMode: "comfortable",

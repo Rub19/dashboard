@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.1 — 2026-08-22
+
+**iOS 26/27 : AppIntents, IndexedEntity, Live Activity Liquid Glass, Extension de notification**
+
+- Configuration build iOS : cible iOS 17+ (App) et 18+ (Widget), SDK iOS 26/27 (`xcode-27` + `Xcode_27.0.app`).
+- `EthoneAppEntities.swift` : entités `IndexedEntity` Notes, Tâches, Projets et Sessions Focus pour Spotlight/Siri.
+- Intents iOS 26 : créer une note, démarrer un Focus, changer de présence, ouvrir un projet/tâche.
+- Live Activity Liquid Glass natif : `glassEffect`, `GlassEffectContainer`, animations progressives, Always-On Display.
+- Extension `EthoneNotificationService` pour badge, contenu enrichi et actions silencieuses.
+- `EthoneIntelligence27.swift` préparé pour `FoundationModels` (iOS 27) avec `canImport(FoundationModels)`.
+- Version `v1.8.1`, cache PWA `v428`.
+
 ## v1.8.0 — 2026-08-22
 
 **iOS 26 : Liquid Glass natif, App Entities et Control Widgets**

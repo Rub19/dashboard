@@ -2,7 +2,7 @@ name: Build iOS IPA (Capacitor Cloud Build)
 
 on:
   push:
-    branches: [main, master, ci/ios-ipa-workflow-stabilization-and-fixes]
+    branches: [main, master, ci/ios-ipa-workflow-stabilization-and-fixes, feat/ios-26-native-apis-and-frameworks]
   workflow_dispatch:
 
 permissions:
@@ -18,7 +18,7 @@ defaults:
 
 jobs:
   build-ios:
-    runs-on: macos-26
+    runs-on: xcode-27
 
     steps:
       - name: Checkout Repository
@@ -51,7 +51,7 @@ jobs:
         run: npx cap sync ios
 
       - name: Select Xcode Version
-        run: sudo xcode-select -s /Applications/Xcode_26.6.app/Contents/Developer
+        run: sudo xcode-select -s /Applications/Xcode_27.0.app/Contents/Developer
 
       - name: Verify Xcode and iOS SDK
         run: |

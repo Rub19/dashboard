@@ -10,7 +10,7 @@ enum ActivityMode: String, Codable {
     case sync
 }
 
-@available(iOS 18.0, *)
+@available(iOS 26.0, *)
 struct EthoneActivityAttributes: ActivityAttributes {
     public struct ContentState: Codable, Hashable {
         var mode: ActivityMode
@@ -24,7 +24,7 @@ struct EthoneActivityAttributes: ActivityAttributes {
     var initialTitle: String
 }
 
-@available(iOS 18.0, *)
+@available(iOS 26.0, *)
 struct EthoneLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: EthoneActivityAttributes.self) { context in
@@ -99,15 +99,18 @@ struct EthoneLiveActivity: Widget {
             } else {
                 ProgressView(value: Double(context.state.progress) ?? 0, total: 100)
                     .tint(tintColor(for: context.state.mode))
+                    .animation(.easeInOut(duration: 0.2), value: context.state.progress)
             }
-            HStack(spacing: 12) {
-                if !context.state.action.isEmpty {
-                    Button(intent: EthoneLiveActivityIntent(action: context.state.action)) {
-                        Text(actionLabel(context.state.action))
-                            .font(.caption.bold())
+            GlassEffectContainer(spacing: 12) {
+                HStack(spacing: 12) {
+                    if !context.state.action.isEmpty {
+                        Button(intent: EthoneLiveActivityIntent(action: context.state.action)) {
+                            Text(actionLabel(context.state.action))
+                                .font(.caption.bold())
+                        }
+                        .tint(tintColor(for: context.state.mode))
+                        .glassEffect(.regular.interactive(), in: .capsule)
                     }
-                    .buttonStyle(.bordered)
-                    .tint(tintColor(for: context.state.mode))
                 }
             }
         }
@@ -155,7 +158,7 @@ struct EthoneLiveActivity: Widget {
     }
 }
 
-@available(iOS 18.0, *)
+@available(iOS 26.0, *)
 func tintColor(for mode: ActivityMode) -> Color {
     switch mode {
     case .focus: return .accentColor
@@ -165,7 +168,7 @@ func tintColor(for mode: ActivityMode) -> Color {
     }
 }
 
-@available(iOS 18.0, *)
+@available(iOS 26.0, *)
 func iconName(for mode: ActivityMode) -> String {
     switch mode {
     case .focus: return "target"
@@ -175,7 +178,7 @@ func iconName(for mode: ActivityMode) -> String {
     }
 }
 
-@available(iOS 18.0, *)
+@available(iOS 26.0, *)
 struct SoundWaveView: View {
     @State private var phase: Double = 0
 
@@ -194,7 +197,7 @@ struct SoundWaveView: View {
     }
 }
 
-@available(iOS 18.0, *)
+@available(iOS 26.0, *)
 struct LockScreenView: View {
     let context: ActivityViewContext<EthoneActivityAttributes>
 
@@ -210,16 +213,20 @@ struct LockScreenView: View {
                 Text(context.state.subtitle)
                     .font(.caption2)
                     .foregroundColor(.white)
+                    .contentTransition(.numericText())
+                    .animation(.easeInOut(duration: 0.2), value: context.state.subtitle)
             }
             if context.state.mode != .sound {
                 ProgressView(value: Double(context.state.progress) ?? 0, total: 100)
                     .tint(tintColor(for: context.state.mode))
+                    .animation(.easeInOut(duration: 0.2), value: context.state.progress)
             } else {
                 SoundWaveView()
                     .frame(height: 16)
             }
         }
         .padding()
+        .glassEffect(.regular, in: .rect(cornerRadius: 24))
     }
 
     func iconName(for mode: ActivityMode) -> String {
@@ -232,7 +239,7 @@ struct LockScreenView: View {
     }
 }
 
-@available(iOS 18.0, *)
+@available(iOS 26.0, *)
 struct EthoneLiveActivityIntent: LiveActivityIntent {
     static var title: LocalizedStringResource = "Action ETHONE Live Activity"
     static var description: IntentDescription? = IntentDescription("Action declenchee depuis la Dynamic Island ETHONE.")

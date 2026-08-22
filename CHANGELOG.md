@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.58 — 2026-08-22
+
+**Dock mobile flottant Liquid Glass**
+
+- Remplacement de la bottom bar noire par un dock flottant en capsule.
+- Positionnement `fixed bottom-4 left-1/2 -translate-x-1/2`, `w-[92%] max-w-[380px] h-[64px]`, `rounded-[28px]`.
+- Safe Area iOS : `mb-[env(safe-area-inset-bottom)]`.
+- Fond `rgba(18,18,24,0.70)`, `backdrop-blur-[24px] saturate-[190%]`, biseau `border-white/[0.12] border-t-white/[0.30]`.
+- Ombre et reflet interne `inset 0 1px 1px rgba(255,255,255,0.20), 0 16px 32px -8px rgba(0,0,0,0.6)`.
+- Pilule active `rounded-full bg-white/[0.10]` avec transition fluide.
+- Padding `pb-28` sur le conteneur principal pour éviter tout recouvrement.
+- Version `v1.7.58`, cache PWA `v421`.
+
 ## v1.7.52 — 2026-08-22
 
 **Correction topbar/sidebar overlap et double horloge**

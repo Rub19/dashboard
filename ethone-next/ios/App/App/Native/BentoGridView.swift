@@ -14,8 +14,8 @@ struct BentoGridView<Content: View>: View {
 struct BentoPressable<Content: View>: View {
     let id: String
     var namespace: Namespace.ID?
-    @ViewBuilder let content: Content
     var onTap: (() -> Void)?
+    @ViewBuilder let content: Content
 
     @State private var isPressed = false
 

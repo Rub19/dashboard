@@ -1,7 +1,7 @@
 import AppIntents
 import Foundation
 
-@available(iOS 26.0, *)
+@available(iOS 18.0, *)
 struct StartFocusTimerIntent: AppIntent {
     static var title: LocalizedStringResource = "Démarrer une session Focus"
     static var description: IntentDescription? = IntentDescription("Lance un minuteur Pomodoro ETHONE.")
@@ -16,7 +16,7 @@ struct StartFocusTimerIntent: AppIntent {
     }
 }
 
-@available(iOS 26.0, *)
+@available(iOS 18.0, *)
 struct AddQuickTaskIntent: AppIntent {
     static var title: LocalizedStringResource = "Ajouter une tâche rapide"
     static var description: IntentDescription? = IntentDescription("Ajoute une tâche à ETHONE.")
@@ -30,7 +30,7 @@ struct AddQuickTaskIntent: AppIntent {
     }
 }
 
-@available(iOS 26.0, *)
+@available(iOS 18.0, *)
 struct DashboardStatusIntent: AppIntent {
     static var title: LocalizedStringResource = "Consulter le statut du Dashboard"
     static var description: IntentDescription? = IntentDescription("Retourne le nombre de tâches et de notes.")
@@ -40,7 +40,7 @@ struct DashboardStatusIntent: AppIntent {
     }
 }
 
-@available(iOS 26.0, *)
+@available(iOS 18.0, *)
 struct CaptureBrainIdeaIntent: AppIntent {
     static var title: LocalizedStringResource = "Capturer une idée Brain"
     static var description: IntentDescription? = IntentDescription("Enregistre une idée rapide dans ETHONE.")

@@ -145,15 +145,6 @@ struct EthoneLiveActivity: Widget {
             .foregroundColor(tintColor(for: context.state.mode))
     }
 
-    func tintColor(for mode: ActivityMode) -> Color {
-        switch mode {
-        case .focus: return .accentColor
-        case .task: return .green
-        case .sound: return .cyan
-        case .sync: return .green
-        }
-    }
-
     func actionLabel(_ action: String) -> String {
         switch action {
         case "pause": return "Pause"
@@ -162,6 +153,26 @@ struct EthoneLiveActivity: Widget {
         case "complete": return "Valider"
         default: return action
         }
+    }
+}
+
+@available(iOS 17.0, *)
+func tintColor(for mode: ActivityMode) -> Color {
+    switch mode {
+    case .focus: return .accentColor
+    case .task: return .green
+    case .sound: return .cyan
+    case .sync: return .green
+    }
+}
+
+@available(iOS 17.0, *)
+func iconName(for mode: ActivityMode) -> String {
+    switch mode {
+    case .focus: return "target"
+    case .task: return "checkmark.circle"
+    case .sound: return "waveform"
+    case .sync: return "arrow.clockwise"
     }
 }
 

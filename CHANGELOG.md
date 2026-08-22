@@ -2,19 +2,38 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
-## v1.7.57 — 2026-08-22
+## v1.7.59 — 2026-08-22
 
-**Intégration complète des frameworks Apple iOS avancés**
+**Intégration des dernières APIs Android 14/15/16**
 
-- iOS 18 Controls API : `EthoneFocusControl`, `EthoneNewNoteControl`, `EthonePresenceControl`, `EthoneBrainIdeaControl`.
-- App Intents étendus : capture d'idée Brain, ouverture de note, recherche système (`EthoneSystemSearchIntent`).
-- StandBy Mode : widget `EthoneStandByWidget` avec heure, météo, présence et prochain objectif.
-- Focus Filter : `EthoneFocusFilter` avec modes Travail / Personnel / Zen.
-- Extensions de notification : `EthoneNotifications` (Service) et `EthoneNotificationsContent` (Content) avec actions.
-- CoreSpotlight : `EthoneSpotlightPlugin` pour indexer notes et tâches.
-- Deep links Spotlight iOS : `ethone://notes/[id]` et `ethone://tasks/[id]`.
-- Siri / Apple Intelligence ready via `AddBrainIdeaFromSiriIntent` et `OpenNoteFromSiriIntent`.
-- Version `v1.7.57`.
+- `EthoneFocusForegroundService` : service de premier plan pour notifications riches et persistantes de Focus (chronomètre, `ProgressStyle`, actions Pause/Arrêter/Terminer).
+- `EthoneSecurityPlugin` : `FLAG_SECURE` contextuel, nettoyage du presse-papiers.
+- `EthonePhotoPicker` : `PickVisualMedia` Android 14+ sans permission large.
+- `EthoneWindow` : `WindowInfoTracker` pour écrans pliables et tablettes.
+- Synchronisation Material 3 Expressive : mapping complet des couleurs système vers variables CSS ETHONE.
+- `android:enableOnBackInvokedCallback` pour retour prédictif.
+- Raccourci applicatif `brain-idea`.
+- Version `v1.7.59`.
+
+## v1.7.56 — 2026-08-22
+
+**Intégration complète de l'écosystème Android Material You**
+
+- Migration du thème Android vers `Theme.Material3.DayNight.NoActionBar` avec Edge-to-Edge transparent.
+- Activation des couleurs dynamiques Material You via `DynamicColors.applyToActivitiesIfAvailable`.
+- Plugin natif `EthoneThemePlugin` (`lib/android.ts`) : récupération des couleurs système Android 12+.
+- Plugin natif `EthoneHapticsPlugin` (`lib/android.ts`) : effets prédéfinis (`EFFECT_TICK/CLICK/HEAVY_CLICK/DOUBLE_CLICK`) et waveforms personnalisées.
+- Edge-to-Edge dans `MainActivity.java` : `WindowCompat.setDecorFitsSystemWindows` + barres transparentes.
+- Predictive Back activé via `enableOnBackInvokedCallback`.
+- Quick Settings Tiles `FocusTileService` et `PresenceTileService`.
+- App Shortcuts natifs (statiques `shortcuts.xml` + dynamiques dans `MainActivity`).
+- 3 widgets Jetpack Glance : `EthoneCompactGlanceWidget`, `EthoneListGlanceWidget`, `EthoneDashboardGlanceWidget`.
+- Canaux de notifications `ethone_reminders`, `ethone_focus`, `ethone_sync`.
+- Paramètre `useMaterialYou` dans les réglages pour basculer la palette Material You.
+- Geste de retour arrière prédictif géré côté JS via `@capacitor/app`.
+- Icône d'application thématisée `ic_launcher_monochrome.xml`.
+- Support multi-fenêtres et pliables (`screenSize|smallestScreenSize|screenLayout|orientation`).
+- Version `v1.7.56`.
 
 ## v1.7.55 — 2026-08-22
 

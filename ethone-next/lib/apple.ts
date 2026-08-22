@@ -12,7 +12,7 @@ interface EthoneSpotlight {
 }
 
 interface EthoneFocus {
-  setFocusState(options: { active: boolean }): Promise<{ active: boolean }>;
+  setFocusState(options: { active: boolean; durationMinutes?: number }): Promise<{ active: boolean }>;
   setPresence(options: { presence: string }): Promise<{ presence: string }>;
   getFocusState(): Promise<{ active: boolean; presence: string }>;
 }
@@ -79,6 +79,15 @@ export async function checkBiometric() {
   }
 }
 
+export async function setNativeFocusState(active: boolean, durationMinutes = 25) {
+  if (!isNative()) return { active };
+  try {
+    return await EthoneFocus.setFocusState({ active, durationMinutes });
+  } catch {
+    return { active };
+  }
+}
+
 export async function authenticateWithBiometric(reason = "Authentifiez-vous pour accéder à vos données ETHONE.") {
   if (!isNative()) return { ok: false, error: new Error("Authentification biométrique non disponible.") } as const;
   try {
@@ -123,15 +132,6 @@ export async function clearSpotlightIndex() {
     return await EthoneSpotlight.deleteAllItems();
   } catch {
     return { deletedAll: false };
-  }
-}
-
-export async function setNativeFocusState(active: boolean) {
-  if (!isNativeIOS()) return { active };
-  try {
-    return await EthoneFocus.setFocusState({ active });
-  } catch {
-    return { active };
   }
 }
 

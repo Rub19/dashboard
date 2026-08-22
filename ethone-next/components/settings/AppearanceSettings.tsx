@@ -4,6 +4,7 @@ import { useId, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Check, Moon, Sun, Sparkles } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { isNativeAndroid } from "@/lib/android";
 import { Icon as IconifyIcon } from "@iconify/react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useSettingsForm } from "./SettingsFormContext";
@@ -297,6 +298,17 @@ export default function AppearanceSettings() {
               <Moon className="h-4 w-4 text-[var(--text-primary)]" />
             </div>
           </SettingsRow>
+
+          {isNativeAndroid() && (
+            <SettingsRow label="Material You" description="Utiliser la palette dynamique Android à la place du thème ETHONE.">
+              <Switch
+                checked={settings.useMaterialYou}
+                onChange={(v) => handleChange("useMaterialYou", v)}
+                labels={false}
+                size="sm"
+              />
+            </SettingsRow>
+          )}
         </div>
       </BentoCard>
 

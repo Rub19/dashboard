@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.60 — 2026-08-22
+
+**Fusion complète : iOS, Android et Liquid Glass dans main**
+
+- Merge de toutes les branches fonctionnalités récentes dans `main`.
+- iOS : Liquid Glass Dock, Dynamic Island, Live Activities, haptiques, App Intents, WidgetKit, StandBy, Focus Filter, extensions de notification, CoreSpotlight.
+- Android : Material You / Material 3 Expressive, Dynamic Color, Edge-to-Edge, Predictive Back, Quick Settings Tiles, App Shortcuts, widgets Jetpack Glance, service de premier plan Focus, Photo Picker, pliables / tablettes.
+- Dock mobile web Liquid Glass : capsule flottante translucide.
+- Version `v1.7.60`, cache PWA `v423`.
+
 ## v1.7.58 — 2026-08-22
 
 **Dock mobile flottant Liquid Glass**

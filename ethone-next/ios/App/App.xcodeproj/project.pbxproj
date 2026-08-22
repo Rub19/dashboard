@@ -31,7 +31,7 @@
 		XX4B109375DE72D41FE9E4XX /* EthoneWidgetsBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = XX9D3587D95F175CEF3ED4XX /* EthoneWidgetsBundle.swift */; };
 		XX52AB3AC6DC7297F7B810XX /* EthoneIntelligence27.swift in Sources */ = {isa = PBXBuildFile; fileRef = XX72C1C7CE0550A6F8CA42XX /* EthoneIntelligence27.swift */; };
 		XX6D279A4962786252E535XX /* Controls/EthoneBrainIdeaControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = XX11BCFE3BA093B4BE314FXX /* Controls/EthoneBrainIdeaControl.swift */; };
-		XX6E8A81E4CC28B43871B7XX /* EthoneAppShortcuts26.swift in Sources */ = {isa = PBXBuildFile; fileRef = XXC6994DA153B015DB1CD9XX /* EthoneAppShortcuts26.swift */; };
+
 
 		XX7C33BE4BD7F00F4E838AXX /* Controls/EthoneNewNoteControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = XXDE81F519F3B54002884DXX /* Controls/EthoneNewNoteControl.swift */; };
 		XX83BF2AD7AF2D2FC349A0XX /* AppIntents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = XXA38541A933C1CED0731BXX /* AppIntents.framework */; };
@@ -111,7 +111,7 @@
 		XXA38541A933C1CED0731BXX /* AppIntents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppIntents.framework; path = System/Library/Frameworks/AppIntents.framework; sourceTree = SDKROOT; };
 		XXB1BCC0924A704C2F717DXX /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		XXC39E41E3969B47582CF1XX /* Controls/EthonePresenceControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controls/EthonePresenceControl.swift; sourceTree = "<group>"; };
-		XXC6994DA153B015DB1CD9XX /* EthoneAppShortcuts26.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthoneAppShortcuts26.swift; sourceTree = "<group>"; };
+
 		XXD233A3F6DD3CDB361735XX /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		XXD909CF9F4DC472DDEDDEXX /* EthoneWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthoneWidget.swift; sourceTree = "<group>"; };
 		XXDE81F519F3B54002884DXX /* Controls/EthoneNewNoteControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controls/EthoneNewNoteControl.swift; sourceTree = "<group>"; };
@@ -159,7 +159,6 @@
 			children = (
 				A574DAE3029C417A96A4426E /* EthoneAppIntents.swift */,
 				XX4D37D25B10BF70FF4751XX /* EthoneAppEntities.swift */,
-				XXC6994DA153B015DB1CD9XX /* EthoneAppShortcuts26.swift */,
 			);
 			name = Intents;
 			path = Intents;
@@ -440,7 +439,6 @@
 				935142EEFE0D4F57BC936ECB /* EthoneSpotlightPlugin.swift in Sources */,
 				7C7CFE35AA5E4B4B8A332BD0 /* EthoneFocusPlugin.swift in Sources */,
 				XXD027FE962E2FDDF6DEEDXX /* EthoneAppEntities.swift in Sources */,
-				XX6E8A81E4CC28B43871B7XX /* EthoneAppShortcuts26.swift in Sources */,
 				XX52AB3AC6DC7297F7B810XX /* EthoneIntelligence27.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

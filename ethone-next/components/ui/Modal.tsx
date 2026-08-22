@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 import Button from "@/components/ui/Button";
+import { hapticLightImpact } from "@/lib/haptics";
 
 export type ModalProps = {
   isOpen: boolean;
@@ -111,7 +112,7 @@ export default function Modal({
             exit={{ scale: 0.95, y: 12, opacity: 0 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
             onClick={(event) => event.stopPropagation()}
-            className={`relative w-full overflow-hidden border border-[var(--panel-border)] bg-[var(--panel-bg)] p-6 shadow-[0_0_60px_var(--glow-color)] backdrop-blur-2xl ${positionInner[position]} ${fullScreen ? "h-[calc(100dvh-2rem)] sm:h-auto sm:max-h-[90vh]" : ""} ${fullScreen ? "w-full sm:max-w-6xl" : sizeMap[size]} ${className}`}
+            className={`liquid-glass-modal relative w-full overflow-hidden p-6 ${positionInner[position]} ${fullScreen ? "h-[calc(100dvh-2rem)] sm:h-auto sm:max-h-[90vh]" : ""} ${fullScreen ? "w-full sm:max-w-6xl" : sizeMap[size]} ${className}`}
           >
             <div
               className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[var(--accent-primary)]/5 blur-3xl"
@@ -121,7 +122,10 @@ export default function Modal({
             {!hideCloseButton && (
               <button
                 type="button"
-                onClick={onClose}
+                onClick={() => {
+                  hapticLightImpact();
+                  onClose();
+                }}
                 className="absolute right-4 top-4 rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/5 hover:text-[var(--text-primary)]"
                 aria-label={cancelLabel}
               >

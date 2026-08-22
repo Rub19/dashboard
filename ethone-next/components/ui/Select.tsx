@@ -4,6 +4,7 @@ import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useSta
 import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 import { ChevronDown, Check } from "lucide-react";
+import { hapticLightImpact } from "@/lib/haptics";
 
 export type SelectOption = {
   id: string;
@@ -168,6 +169,7 @@ export default function Select({
 
   const selectOption = (option: SelectOption) => {
     if (option.disabled) return;
+    hapticLightImpact();
     onChange(option.id);
     setOpen(false);
     triggerRef.current?.focus();
@@ -190,7 +192,7 @@ export default function Select({
         opacity: mounted ? 1 : 0,
         transform: mounted ? "translateY(0)" : "translateY(-6px)",
       }}
-      className="z-[100] mt-1.5 min-w-[min(18rem,90vw)] max-w-[90vw] overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-2xl shadow-black/60 backdrop-blur-xl transition-[opacity,transform] duration-150 ease-out"
+      className="z-[100] liquid-glass-select mt-1.5 min-w-[min(18rem,90vw)] max-w-[90vw] rounded-[var(--panel-radius)] transition-[opacity,transform] duration-150 ease-out"
     >
       <div className="max-h-64 overflow-y-auto p-1.5">
         {options.map((option, index) => {
@@ -238,20 +240,23 @@ export default function Select({
         id={id}
         type="button"
         disabled={disabled}
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          hapticLightImpact();
+          setOpen((v) => !v);
+        }}
         onKeyDown={handleTriggerKeyDown}
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={listboxId}
         aria-label={ariaLabel}
         aria-labelledby={label ? labelId : undefined}
-        className={`flex h-11 w-full items-center justify-between gap-2 rounded-[var(--panel-radius)] border px-3.5 text-left text-base font-medium transition-colors duration-150 focus:outline-none md:h-10 ${
+        className={`flex h-11 w-full items-center justify-between gap-2 rounded-[var(--panel-radius)] px-3.5 text-left text-base font-medium focus:outline-none md:h-10 liquid-glass-select ${
           disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
         } ${
           open
-            ? "border-[var(--accent-primary)]/50 bg-[var(--panel-bg)]/[0.04] text-[var(--text-primary)] ring-1 ring-[var(--accent-primary)]/30"
-            : "border-[var(--panel-border)] bg-[var(--panel-bg)]/70 text-[var(--text-primary)] hover:border-[var(--text-primary)]/20"
-        } backdrop-blur-[var(--panel-blur)]`}
+            ? "border-[var(--accent-primary)]/50 text-[var(--text-primary)] ring-1 ring-[var(--accent-primary)]/30"
+            : "text-[var(--text-primary)]"
+        }`}
       >
         <span className="truncate">{selected ? selected.label : placeholder}</span>
         <motion.span

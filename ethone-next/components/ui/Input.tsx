@@ -59,10 +59,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const showClear = clearable && hasValue && !disabled;
 
     const baseWrapper =
-      "group relative flex w-full items-center gap-2 rounded-xl border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.03] px-3.5 text-sm text-[var(--text-primary)] outline-none backdrop-blur-sm transition-all duration-200 ease-out";
-    const hover = "hover:border-[var(--text-primary)]/20";
+      "group relative flex w-full items-center gap-2 rounded-xl border border-white/[0.08] bg-[var(--text-primary)]/[0.04] px-3.5 text-sm text-[var(--text-primary)] outline-none backdrop-blur-md transition-all duration-200 ease-out";
+    const hover = "hover:border-white/[0.18]";
     const focus =
-      "focus-within:border-[var(--accent-primary)] focus-within:ring-2 focus-within:ring-[var(--accent-primary)]/20 focus-within:shadow-[0_0_20px_var(--glow-color)]";
+      "focus-within:border-[var(--accent-primary)]/60 focus-within:ring-1 focus-within:ring-[var(--accent-primary)]/20 focus-within:shadow-[0_0_20px_var(--glow-color)]";
     const state = error
       ? "border-red-500/50 ring-1 ring-red-500/10 text-red-200"
       : `${hover} ${focus}`;

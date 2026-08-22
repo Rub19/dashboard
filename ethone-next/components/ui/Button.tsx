@@ -3,6 +3,7 @@
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { triggerHaptic, type HapticProfile } from "@/lib/haptics";
 
 export type ButtonVariant =
   | "primary"
@@ -20,39 +21,46 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean;
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
+  haptic?: HapticProfile | false;
 }
 
 const variantClass: Record<ButtonVariant, string> = {
   primary: cn(
-    "bg-[var(--accent-primary)] text-[var(--accent-contrast)]",
+    "liquid-glass-btn liquid-glass-accent text-[var(--accent-contrast)]",
     "shadow-[0_0_15px_var(--glow-color)]",
-    "hover:opacity-90",
+    "hover:brightness-110",
     "active:scale-[0.98]",
   ),
   secondary: cn(
-    "bg-[var(--text-primary)]/4 text-[var(--text-primary)]",
-    "border border-[var(--panel-border)]",
-    "hover:bg-[var(--text-primary)]/8 hover:border-[var(--accent-primary)]/40",
+    "liquid-glass-btn text-[var(--text-primary)]",
+    "hover:bg-white/[0.14]",
     "active:scale-[0.98]",
   ),
   outline: cn(
-    "bg-transparent text-[var(--accent-primary)]",
-    "border border-[var(--accent-primary)]",
+    "liquid-glass-btn text-[var(--accent-primary)]",
+    "border-[var(--accent-primary)]/50",
     "hover:bg-[var(--accent-primary)]/10",
     "active:scale-[0.98]",
   ),
   ghost: cn(
-    "bg-transparent text-[var(--text-primary)]",
-    "hover:bg-[var(--text-primary)]/6 hover:text-[var(--text-primary)]",
+    "liquid-glass-btn liquid-glass-btn-ghost",
     "active:scale-[0.98]",
   ),
   danger: cn(
-    "bg-[var(--danger)] text-[var(--text-primary)]",
+    "liquid-glass-btn liquid-glass-btn-danger",
     "shadow-lg shadow-[var(--danger)]/20",
-    "hover:bg-[var(--danger)]/90",
     "active:scale-[0.98]",
   ),
   liquid: cn("liquid-glass-btn text-[var(--text-primary)]"),
+};
+
+const defaultHaptic: Record<ButtonVariant, HapticProfile> = {
+  primary: "medium",
+  secondary: "light",
+  outline: "light",
+  ghost: "light",
+  danger: "heavy",
+  liquid: "medium",
 };
 
 const sizeClass: Record<ButtonSize, string> = {
@@ -72,17 +80,26 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       rightIcon,
       children,
       disabled,
+      haptic,
+      onClick,
       ...props
     },
     ref,
   ) => {
     const isDisabled = disabled || isLoading;
+    const hapticProfile = haptic === false ? undefined : haptic ?? defaultHaptic[variant];
+
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (hapticProfile) triggerHaptic(hapticProfile);
+      onClick?.(e);
+    };
 
     return (
       <button
         ref={ref}
         type="button"
         disabled={isDisabled}
+        onClick={handleClick}
         className={cn(
           "relative inline-flex items-center justify-center whitespace-nowrap font-semibold",
           "transition-all duration-150 ease-out",

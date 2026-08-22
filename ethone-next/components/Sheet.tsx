@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion, type PanInfo } from "framer-motion";
 import { X } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { hapticLightImpact } from "@/lib/haptics";
 
 function cn(...parts: (string | false | undefined)[]) {
   return parts.filter(Boolean).join(" ");
@@ -75,7 +76,7 @@ export default function Sheet({
             dragElastic={0.15}
             onDragEnd={onDragEnd}
             className={cn(
-              "fixed bottom-0 left-0 right-0 z-50 rounded-t-[2rem] border border-[var(--panel-border)] border-b-0 bg-[var(--panel-bg)]/95 shadow-[0_-16px_48px_-12px_rgba(0,0,0,0.6)] backdrop-blur-2xl md:hidden",
+              "fixed bottom-0 left-0 right-0 z-50 rounded-t-[2rem] liquid-glass-sheet md:hidden",
               className
             )}
             style={{ maxHeight: initialHeight }}
@@ -95,7 +96,10 @@ export default function Sheet({
               )}
               <button
                 type="button"
-                onClick={() => onOpenChange(false)}
+                onClick={() => {
+                  hapticLightImpact();
+                  onOpenChange(false);
+                }}
                 className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--foreground)]"
                 aria-label={i18n("close")}
               >

@@ -2,6 +2,20 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.2 — 2026-08-22
+
+**Audit et harmonisation globale UI/UX Liquid Glass & iOS 26**
+
+- Cartes Bento, boutons, sélecteurs, modales et bottom sheets repassés en verre Liquid Glass (`liquid-glass-card`, `liquid-glass-modal`, `liquid-glass-sheet`, `liquid-glass-select`).
+- Composant `Button` : toutes les variantes utilisent le style Liquid Glass avec haptique par défaut (`primary`, `secondary`, `outline`, `ghost`, `danger`, `liquid`).
+- Composants `Input`, `TextArea` et `SearchInput` : conteneurs en verre semi-transparent avec `backdrop-blur-md`.
+- Capsule Brain : fond `liquid-glass-brain`, bouton d'envoi Liquid Glass et haptique sur les actions.
+- Haptiques systématiques sur les cartes Bento, les boutons, les sélecteurs, les modales, les bottom sheets et Brain.
+- Live Activity iOS 26 : ajout des modes `presence` et `aura` à `EthoneLiveActivity.swift` pour le suivi haute fréquence.
+- Synchronisation immédiate des widgets du Centre de Contrôle via `EthoneFocusPlugin` (`WidgetCenter.reloadAllTimelines`).
+- CoreSpotlight prêt pour l'indexation des notes et tâches via `EthoneSpotlightPlugin`.
+- Version `v1.8.2`, cache PWA `v429`.
+
 ## v1.8.1 — 2026-08-22
 
 **iOS 26/27 : AppIntents, IndexedEntity, Live Activity Liquid Glass, Extension de notification**

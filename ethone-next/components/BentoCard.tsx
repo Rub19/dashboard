@@ -3,6 +3,7 @@
 import { ReactNode } from "react";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
+import { hapticLightImpact } from "@/lib/haptics";
 
 export type BentoCardProps = {
   title?: string;
@@ -28,9 +29,10 @@ export default function BentoCard({
   return (
     <div
       data-context-menu="bento"
+      onPointerDown={hapticLightImpact}
       className={cn(
-        "group relative flex w-full flex-col rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-[var(--panel-shadow)] backdrop-blur-[var(--panel-blur)] transition-all duration-200 hover:border-[var(--accent)]/20",
-        "h-full min-h-0 w-full overflow-hidden",
+        "group liquid-glass-card relative flex w-full flex-col rounded-2xl p-4 active:scale-[0.995]",
+        "h-full min-h-0 w-full",
         className
       )}
     >

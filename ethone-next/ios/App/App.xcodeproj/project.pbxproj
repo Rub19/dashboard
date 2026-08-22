@@ -28,7 +28,6 @@
 		XXC335413692E36CFD26B3XX /* StandBy/EthoneStandByWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = XX327C83A33DDEB5286036XX /* StandBy/EthoneStandByWidget.swift */; };
 		XXE970D41D8CE561CB0584XX /* EthoneWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = XX379AA316E73DE813AA5EXX /* EthoneWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		XXEFD6C7A4207E9DA9AE38XX /* EthoneWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = XXD909CF9F4DC472DDEDDEXX /* EthoneWidget.swift */; };
-		XXF41EE354B92E289C4594XX /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = XXB1BCC0924A704C2F717DXX /* Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -289,7 +288,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				XXF41EE354B92E289C4594XX /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -9,8 +9,8 @@
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
 
     <application
         android:allowBackup="true"
@@ -45,7 +45,7 @@
         </activity>
 
         <service
-            android:name=".FocusTileService"
+            android:name=".service.EthoneFocusTileService"
             android:label="@string/tile_focus_label"
             android:icon="@drawable/ic_launcher_background"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
@@ -56,8 +56,8 @@
         </service>
 
         <service
-            android:name=".PresenceTileService"
-            android:label="@string/tile_presence_label"
+            android:name=".service.EthoneBrainTileService"
+            android:label="@string/shortcut_brain"
             android:icon="@drawable/ic_launcher_background"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
             android:exported="true">
@@ -66,12 +66,9 @@
             </intent-filter>
         </service>
 
-        <service
-            android:name=".EthoneFocusForegroundService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="specialUse|dataSync"
-            android:label="ETHONE Focus Session" />
+        <receiver
+            android:name=".service.LocalNotificationManager$NotificationReceiver"
+            android:exported="false" />
 
         <receiver
             android:name=".widget.EthoneCompactGlanceWidgetReceiver"

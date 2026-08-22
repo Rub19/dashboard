@@ -4452,9 +4452,69 @@ const v350_de: ChangelogEntry = {
   ],
 };
 
+const v351_fr: ChangelogEntry = {
+  version: "v1.8.7",
+  date: "2026-08-22",
+  title: "Application Android 100 % Kotlin natif (Jetpack Compose, Glassmorphism AGSL, Material 3)",
+  items: [
+    "Design System Glass avec `LiquidGlassSurface` : blur, dégradés, reflets, coins arrondis.",
+    "Dashboard Bento natif `BentoGridScreen` avec `LazyVerticalGrid` et tuiles interactives.",
+    "Cartes natives : minuteur Focus Pomodoro, tâches avec `SwipeToDismissBox`, Brain capture vocal, graphiques de stockage.",
+    "Navigation flottante `NativeFloatingDock` avec haptiques et animations.",
+    "Intégrations matérielles : `BiometricPrompt`, `TileService` Quick Settings, notifications locales.",
+    "Client Supabase natif `SupabaseClient.kt` avec Ktor et coroutines.",
+    "Workflow GitHub Actions `build-android.yml` pour compilation APK.",
+  ],
+};
+
+const v351_en: ChangelogEntry = {
+  version: "v1.8.7",
+  date: "2026-08-22",
+  title: "100 % native Android Kotlin app (Jetpack Compose, Glassmorphism AGSL, Material 3)",
+  items: [
+    "Glass Design System with `LiquidGlassSurface`: blur, gradients, specular reflections, rounded corners.",
+    "Native Bento Dashboard `BentoGridScreen` with `LazyVerticalGrid` and interactive tiles.",
+    "Native cards: Pomodoro Focus timer, tasks with `SwipeToDismissBox`, Brain voice capture, storage charts.",
+    "Floating navigation `NativeFloatingDock` with haptics and animations.",
+    "Hardware integrations: `BiometricPrompt`, `TileService` Quick Settings, local notifications.",
+    "Native Supabase client `SupabaseClient.kt` with Ktor and coroutines.",
+    "GitHub Actions workflow `build-android.yml` for APK build.",
+  ],
+};
+
+const v351_es: ChangelogEntry = {
+  version: "v1.8.7",
+  date: "2026-08-22",
+  title: "Aplicación Android 100 % Kotlin nativo (Jetpack Compose, Glassmorphism AGSL, Material 3)",
+  items: [
+    "Sistema de diseño Glass con `LiquidGlassSurface`: desenfoque, degradados, reflejos, esquinas redondeadas.",
+    "Dashboard Bento nativo `BentoGridScreen` con `LazyVerticalGrid` y tarjetas interactivas.",
+    "Tarjetas nativas: temporizador Focus Pomodoro, tareas con `SwipeToDismissBox`, captura de voz Brain, gráficos de almacenamiento.",
+    "Navegación flotante `NativeFloatingDock` con hápticos y animaciones.",
+    "Integraciones de hardware: `BiometricPrompt`, `TileService` Quick Settings, notificaciones locales.",
+    "Cliente Supabase nativo `SupabaseClient.kt` con Ktor y corrutinas.",
+    "Workflow de GitHub Actions `build-android.yml` para compilar el APK.",
+  ],
+};
+
+const v351_de: ChangelogEntry = {
+  version: "v1.8.7",
+  date: "2026-08-22",
+  title: "100 % native Android Kotlin-App (Jetpack Compose, Glassmorphism AGSL, Material 3)",
+  items: [
+    "Glass Design-System mit `LiquidGlassSurface`: Unschärfe, Farbverläufe, Spiegelungen, abgerundete Ecken.",
+    "Native Bento-Dashboard `BentoGridScreen` mit `LazyVerticalGrid` und interaktiven Kacheln.",
+    "Native Karten: Pomodoro-Fokus-Timer, Aufgaben mit `SwipeToDismissBox`, Brain-Spracheingabe, Speicherdiagramme.",
+    "Schwebende Navigation `NativeFloatingDock` mit Haptik und Animationen.",
+    "Hardware-Integrationen: `BiometricPrompt`, `TileService` Quick Settings, lokale Benachrichtigungen.",
+    "Nativer Supabase-Client `SupabaseClient.kt` mit Ktor und Coroutines.",
+    "GitHub Actions Workflow `build-android.yml` für den APK-Build.",
+  ],
+};
+
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v350_fr, v349_fr, v348_fr, v347_fr, v346_fr, v345_fr, v344_fr, v343_fr, v147_fr, v146_fr, v145_fr, v144_fr, v143_fr, v142_fr, v141_fr, v140_fr, v139_fr, v138_fr, v137_fr, v136_fr, v135_fr, v134_fr, v133_fr, v132_fr, v131_fr, v130_fr, v206_fr, v205_fr, v204_fr, v203_fr, v202_fr, v201_fr, v200_fr, v199_fr, v198_fr, v197_fr, v196_fr, v195_fr, v194_fr, v193_fr, v192_fr, v191_fr, v190_fr, v189_fr, v188_fr, v187_fr, v186_fr, v185_fr, v184_fr, v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr, v329_fr, v330_fr, v331_fr, v332_fr, v338_fr, v340_fr, v341_fr, v342_fr],
-  en: [v350_en, v349_en, v348_en, v347_en, v346_en, v345_en, v344_en, v343_en, v147_en, v146_en, v145_en, v144_en, v143_en, v142_en, v141_en, v140_en, v139_en, v138_en, v137_en, v136_en, v135_en, v134_en, v133_en, v132_en, v131_en, v130_en, v206_en, v205_en, v204_en, v203_en, v202_en, v201_en, v200_en, v199_en, v198_en, v197_en, v196_en, v195_en, v194_en, v193_en, v192_en, v191_en, v190_en, v189_en, v188_en, v187_en, v186_en, v185_en, v184_en, v183_en, v182_en, v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
+  fr: [v351_fr, v350_fr, v349_fr, v348_fr, v347_fr, v346_fr, v345_fr, v344_fr, v343_fr, v147_fr, v146_fr, v145_fr, v144_fr, v143_fr, v142_fr, v141_fr, v140_fr, v139_fr, v138_fr, v137_fr, v136_fr, v135_fr, v134_fr, v133_fr, v132_fr, v131_fr, v130_fr, v206_fr, v205_fr, v204_fr, v203_fr, v202_fr, v201_fr, v200_fr, v199_fr, v198_fr, v197_fr, v196_fr, v195_fr, v194_fr, v193_fr, v192_fr, v191_fr, v190_fr, v189_fr, v188_fr, v187_fr, v186_fr, v185_fr, v184_fr, v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr, v329_fr, v330_fr, v331_fr, v332_fr, v338_fr, v340_fr, v341_fr, v342_fr],
+  en: [v351_en, v350_en, v349_en, v348_en, v347_en, v346_en, v345_en, v344_en, v343_en, v147_en, v146_en, v145_en, v144_en, v143_en, v142_en, v141_en, v140_en, v139_en, v138_en, v137_en, v136_en, v135_en, v134_en, v133_en, v132_en, v131_en, v130_en, v206_en, v205_en, v204_en, v203_en, v202_en, v201_en, v200_en, v199_en, v198_en, v197_en, v196_en, v195_en, v194_en, v193_en, v192_en, v191_en, v190_en, v189_en, v188_en, v187_en, v186_en, v185_en, v184_en, v183_en, v182_en, v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -4508,7 +4568,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
     v342_en,
     v340_en,
   ],
-  es: [v350_es, v349_es, v348_es, v347_es, v346_es, v345_es, v344_es, v343_es, v147_es, v146_es, v145_es, v144_es, v143_es, v142_es, v141_es, v140_es, v139_es, v138_es, v137_es, v136_es, v135_es, v134_es, v133_es, v132_es, v131_es, v130_es, v206_es, v205_es, v204_es, v203_es, v202_es, v201_es, v200_es, v199_es, v198_es, v197_es, v196_es, v195_es, v194_es, v193_es, v192_es, v191_es, v190_es, v189_es, v188_es, v187_es, v186_es, v185_es, v184_es, v183_es, v182_es, v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
+  es: [v351_es, v350_es, v349_es, v348_es, v347_es, v346_es, v345_es, v344_es, v343_es, v147_es, v146_es, v145_es, v144_es, v143_es, v142_es, v141_es, v140_es, v139_es, v138_es, v137_es, v136_es, v135_es, v134_es, v133_es, v132_es, v131_es, v130_es, v206_es, v205_es, v204_es, v203_es, v202_es, v201_es, v200_es, v199_es, v198_es, v197_es, v196_es, v195_es, v194_es, v193_es, v192_es, v191_es, v190_es, v189_es, v188_es, v187_es, v186_es, v185_es, v184_es, v183_es, v182_es, v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -4562,7 +4622,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
     v342_es,
     v340_es,
   ],
-  de: [v350_de, v349_de, v348_de, v347_de, v346_de, v345_de, v344_de, v343_de, v147_de, v146_de, v145_de, v144_de, v143_de, v142_de, v141_de, v140_de, v139_de, v138_de, v137_de, v136_de, v135_de, v134_de, v133_de, v132_de, v131_de, v130_de, v206_de, v205_de, v204_de, v203_de, v202_de, v201_de, v200_de, v199_de, v198_de, v197_de, v196_de, v195_de, v194_de, v193_de, v192_de, v191_de, v190_de, v189_de, v188_de, v187_de, v186_de, v185_de, v184_de, v183_de, v182_de, v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
+  de: [v351_de, v350_de, v349_de, v348_de, v347_de, v346_de, v345_de, v344_de, v343_de, v147_de, v146_de, v145_de, v144_de, v143_de, v142_de, v141_de, v140_de, v139_de, v138_de, v137_de, v136_de, v135_de, v134_de, v133_de, v132_de, v131_de, v130_de, v206_de, v205_de, v204_de, v203_de, v202_de, v201_de, v200_de, v199_de, v198_de, v197_de, v196_de, v195_de, v194_de, v193_de, v192_de, v191_de, v190_de, v189_de, v188_de, v187_de, v186_de, v185_de, v184_de, v183_de, v182_de, v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

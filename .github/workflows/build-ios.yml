@@ -2,7 +2,7 @@ name: Build iOS IPA (Native Swift + Capacitor Shell)
 
 on:
   push:
-    branches: [main, master, ci/ios-ipa-workflow-stabilization-and-fixes, feat/ios-26-native-apis-and-frameworks, feat/global-liquid-glass-and-ios26-audit, feat/local-notifications-pomodoro-tasks, feat/hybrid-repo-nextjs-web-plus-native-swift-ios]
+    branches: [main, master, ci/ios-ipa-workflow-stabilization-and-fixes, feat/ios-26-native-apis-and-frameworks, feat/global-liquid-glass-and-ios26-audit, feat/local-notifications-pomodoro-tasks, feat/hybrid-repo-nextjs-web-plus-native-swift-ios, feat/full-native-swift-liquid-glass-ios]
   workflow_dispatch:
 
 permissions:

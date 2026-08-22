@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.5 — 2026-08-22
+
+**Application iOS 100 % Swift natif (Liquid Glass, matériel et nouveautés iOS)**
+
+- Design System Liquid Glass natif : `LiquidGlassContainer`, `AmbientBackground`, `MeshGradient`, reflets spéculaires.
+- Bento Grid interactif avec animations de pression et réorganisation visuelle.
+- Cartes natives : minuteur Focus (Live Activity / Dynamic Island), tâches, Brain, métriques de stockage (`Charts`).
+- Intégrations matérielles : Face ID / Touch ID, haptiques `UIImpactFeedbackGenerator`, notifications locales.
+- Client Supabase natif `SupabaseManager.swift` en `async/await`.
+- Point d'entrée `SceneDelegate` avec `UIHostingController(rootView: RootView())`.
+- Projet Next.js préservé intact pour le web/desktop.
+- Version `v1.8.5`, cache PWA `v432`.
+
 ## v1.8.4 — 2026-08-22
 
 **Architecture double cible : Next.js web/desktop + iOS Swift natif**

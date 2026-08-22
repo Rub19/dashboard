@@ -1,52 +1,112 @@
 import SwiftUI
 
 struct DashboardView: View {
-    @StateObject private var service = SupabaseService()
+    @ObservedObject var manager: SupabaseManager
+    @State private var showAuth = false
 
     let columns = [
-        GridItem(.flexible(), spacing: 12),
-        GridItem(.flexible(), spacing: 12)
+        GridItem(.flexible(), spacing: 14),
+        GridItem(.flexible(), spacing: 14)
     ]
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                Text("ETHONE")
-                    .font(.largeTitle.weight(.bold))
-                    .foregroundStyle(.primary)
+            VStack(alignment: .leading, spacing: 20) {
+                HStack(alignment: .firstTextBaseline) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("ETHONE")
+                            .font(.largeTitle.weight(.black))
+                            .foregroundStyle(.primary)
 
-                Text("Tableau de bord natif")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                        Text("Tableau de bord natif")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
 
-                LazyVGrid(columns: columns, spacing: 12) {
-                    FocusCardView()
-                    TasksCardView(service: service)
-                    BrainCardView()
-                    StorageCardView()
+                    Spacer()
+
+                    Button {
+                        Haptic.light()
+                        showAuth.toggle()
+                    } label: {
+                        Image(systemName: "faceid")
+                            .font(.title3)
+                            .foregroundStyle(.primary)
+                            .padding(10)
+                            .background(Circle().fill(.ultraThinMaterial))
+                    }
                 }
+                .padding(.horizontal)
 
-                if let error = service.errorMessage {
+                if let error = manager.errorMessage {
                     Text(error)
                         .font(.caption)
                         .foregroundStyle(.red)
                         .padding()
+                        .background(RoundedRectangle(cornerRadius: 12).fill(.ultraThinMaterial))
+                        .padding(.horizontal)
                 }
+
+                BentoGridView(columns: columns) {
+                    BentoPressable {
+                        FocusTimerCard()
+                    }
+
+                    BentoPressable {
+                        TasksCard(manager: manager)
+                    }
+
+                    BentoPressable {
+                        BrainCaptureCard()
+                    }
+
+                    BentoPressable {
+                        StorageMetricsCard()
+                    }
+                }
+                .padding(.horizontal)
             }
-            .padding()
+            .padding(.top, 24)
+            .padding(.bottom, 120)
         }
-        .background(
-            LinearGradient(
-                gradient: Gradient(colors: [Color.black, Color(red: 0.06, green: 0.06, blue: 0.08)]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
-        )
-        .onAppear {
-            Task {
-                await service.fetchAll()
+        .sheet(isPresented: $showAuth) {
+            BiometricSheet()
+        }
+    }
+}
+
+struct BiometricSheet: View {
+    @StateObject private var auth = BiometricAuth()
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        VStack(spacing: 24) {
+            Image(systemName: "faceid")
+                .font(.system(size: 72))
+                .symbolEffect(.bounce, value: auth.isUnlocked)
+
+            Text("Déverrouiller ETHONE")
+                .font(.title2.weight(.bold))
+
+            Button {
+                Task { await auth.authenticate() }
+            } label: {
+                Text("Utiliser Face ID / Touch ID")
+                    .font(.headline)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Capsule().fill(.ultraThinMaterial))
             }
+
+            if let error = auth.error {
+                Text(error)
+                    .font(.caption)
+                    .foregroundStyle(.red)
+            }
+        }
+        .padding()
+        .onChange(of: auth.isUnlocked) { _, unlocked in
+            if unlocked { dismiss() }
         }
     }
 }

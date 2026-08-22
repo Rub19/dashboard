@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.7 — 2026-08-22
+
+**Application Android 100 % Kotlin natif (Jetpack Compose, Glassmorphism AGSL, Material 3)**
+
+- Design System Glass avec `LiquidGlassSurface` : blur, dégradés, reflets, coins arrondis.
+- Dashboard Bento natif `BentoGridScreen` avec `LazyVerticalGrid` et tuiles interactives.
+- Cartes natives : minuteur Focus Pomodoro, tâches avec `SwipeToDismissBox`, Brain capture vocal, graphiques de stockage.
+- Navigation flottante `NativeFloatingDock` avec haptiques et animations.
+- Intégrations matérielles : `BiometricPrompt`, `TileService` Quick Settings, notifications locales.
+- Client Supabase natif `SupabaseClient.kt` avec Ktor et coroutines.
+- Workflow GitHub Actions `build-android.yml` pour compilation APK.
+- Version `v1.8.7`.
+
 ## v1.8.6 — 2026-08-22
 
 **Intégration des fonctionnalités modernes iOS (Controls, App Intents, Shaders Metal, parallaxe, SF Symbols, Live Activity)**

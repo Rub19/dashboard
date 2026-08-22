@@ -33,8 +33,8 @@ class EthoneCompactGlanceWidget : GlanceAppWidget() {
 
     @Composable
     private fun CompactContent() {
-        val primary = ColorProvider(Color(0xFF1A1A2E))
-        val onPrimary = ColorProvider(Color(0xFFFFFFFF))
+        val primary = ColorProvider(day = Color(0xFF1A1A2E), night = Color(0xFF1A1A2E))
+        val onPrimary = ColorProvider(day = Color(0xFFFFFFFF), night = Color(0xFFFFFFFF))
 
         Box(
             modifier = GlanceModifier

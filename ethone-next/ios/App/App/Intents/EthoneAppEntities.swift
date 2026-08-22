@@ -11,11 +11,7 @@ struct EthoneNoteEntity: AppEntity, IndexedEntity {
     static var defaultQuery = EthoneNoteQuery()
 
     var id: UUID
-
-    @Property(indexingKey: \.displayName)
     var title: String
-
-    @Property(indexingKey: \.contentDescription)
     var content: String
 
     var displayRepresentation: DisplayRepresentation {
@@ -29,11 +25,7 @@ struct EthoneTaskEntity: AppEntity, IndexedEntity {
     static var defaultQuery = EthoneTaskQuery()
 
     var id: UUID
-
-    @Property(indexingKey: \.displayName)
     var title: String
-
-    @Property(indexingKey: \.contentDescription)
     var summary: String
 
     var displayRepresentation: DisplayRepresentation {
@@ -47,11 +39,7 @@ struct EthoneProjectEntity: AppEntity, IndexedEntity {
     static var defaultQuery = EthoneProjectQuery()
 
     var id: UUID
-
-    @Property(indexingKey: \.displayName)
     var name: String
-
-    @Property(indexingKey: \.contentDescription)
     var summary: String
 
     var displayRepresentation: DisplayRepresentation {
@@ -65,11 +53,7 @@ struct EthoneFocusSessionEntity: AppEntity, IndexedEntity {
     static var defaultQuery = EthoneFocusSessionQuery()
 
     var id: UUID
-
-    @Property(indexingKey: \.displayName)
     var name: String
-
-    @Property(indexingKey: \.contentDescription)
     var duration: String
 
     var displayRepresentation: DisplayRepresentation {

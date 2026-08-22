@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.51 — 2026-08-22
+
+**Correction build GitHub Actions (variables Supabase & export statique)**
+
+- `lib/supabase.ts`, `lib/supabase-server.ts` et `proxy.ts` : fallback vers `https://placeholder.supabase.co` et `placeholder-anon-key` si `NEXT_PUBLIC_SUPABASE_URL` ou `NEXT_PUBLIC_SUPABASE_ANON_KEY` sont absents.
+- Les clients Supabase ne lèvent plus d'erreur bloquante au build time quand les variables d'environnement sont manquantes.
+- `app/plugins/[id]/page.tsx` : ajout de `export const dynamic = 'force-static'` pour renforcer le pré-rendu statique.
+- `.github/workflows/build-ios.yml` : injection des variables `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` et `NEXT_PUBLIC_WORKER_URL` avec des valeurs par défaut.
+- Validation : `npm run build` réussit avec les variables d'environnement Supabase vides.
+- Version `v1.7.51`, cache PWA `v419`.
+
 ## v1.7.50 — 2026-08-22
 
 **Mise à jour automatique en direct (Capacitor Live Server)**

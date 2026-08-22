@@ -58,11 +58,13 @@ jobs:
           grep -E "(ERROR|FAIL|> Task .* FAILED|Exception|error:)" gradle.log | tail -80
           echo "::error::$(grep -E 'FAIL|Exception' gradle.log | tail -1 | sed "s/'//g")"
 
-      - name: List APK output
+      - name: List build outputs
         if: always()
         run: |
-          find ethone-next/android/app/build/outputs/apk -type f -ls | tee -a ethone-next/android/gradle.log
-          for f in $(find ethone-next/android/app/build/outputs/apk -type f); do echo "::notice::APK artifact: $f"; done
+          echo "--- build/outputs tree ---" | tee -a ethone-next/android/gradle.log
+          find ethone-next/android/app/build/outputs -type f 2>/dev/null | tee -a ethone-next/android/gradle.log
+          echo "--- gradle log tail ---" | tee -a ethone-next/android/gradle.log
+          tail -n 40 ethone-next/android/gradle.log | while IFS= read -r line; do echo "::notice::$line"; done
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

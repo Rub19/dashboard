@@ -2,6 +2,29 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.51 — 2026-08-22
+
+**Correction build GitHub Actions (variables Supabase & export statique)**
+
+- `lib/supabase.ts`, `lib/supabase-server.ts` et `proxy.ts` : fallback vers `https://placeholder.supabase.co` et `placeholder-anon-key` si `NEXT_PUBLIC_SUPABASE_URL` ou `NEXT_PUBLIC_SUPABASE_ANON_KEY` sont absents.
+- Les clients Supabase ne lèvent plus d'erreur bloquante au build time quand les variables d'environnement sont manquantes.
+- `app/plugins/[id]/page.tsx` : ajout de `export const dynamic = 'force-static'` pour renforcer le pré-rendu statique.
+- `.github/workflows/build-ios.yml` : injection des variables `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` et `NEXT_PUBLIC_WORKER_URL` avec des valeurs par défaut.
+- Validation : `npm run build` réussit avec les variables d'environnement Supabase vides.
+- Version `v1.7.51`, cache PWA `v419`.
+
+## v1.7.50 — 2026-08-22
+
+**Mise à jour automatique en direct (Capacitor Live Server)**
+
+- `ethone-next/capacitor.config.ts` : ajout de `server: { url: 'https://ethone.dev', cleartext: true, androidScheme: 'https' }`.
+- Capacitor charge l'application distante depuis `https://ethone.dev` : mises à jour web instantanées sur iOS / Android sans recompiler ni réinstaller.
+- `ethone-next/android/app/src/main/AndroidManifest.xml` : ajout de `android:usesCleartextTraffic="true"`.
+- iOS : App Transport Security (ATS) autorise déjà le chargement HTTPS distant.
+- `.github/workflows/build-ios.yml` : le workflow embarque le `capacitor.config.ts` mis à jour via `npx cap sync ios` avant l'archive Xcode.
+- Validation : `npm run build` (output `out/`) et `npx cap sync` réussis.
+- Version `v1.7.50`, cache PWA `v418`.
+
 ## v1.7.48 — 2026-08-21
 
 **Météo, avatar Discord et skin Minecraft**

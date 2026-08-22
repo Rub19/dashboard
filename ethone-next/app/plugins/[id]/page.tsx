@@ -1,6 +1,8 @@
 import { PLUGINS } from "@/lib/plugins";
 import PluginClient from "./PluginClient";
 
+export const dynamic = "force-static";
+
 export function generateStaticParams() {
   return PLUGINS.map((p) => ({ id: p.id }));
 }

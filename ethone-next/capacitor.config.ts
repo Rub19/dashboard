@@ -5,6 +5,8 @@ const config: CapacitorConfig = {
   appName: "ETHONE",
   webDir: "out",
   server: {
+    url: "https://ethone.dev",
+    cleartext: true,
     androidScheme: "https",
   },
 };

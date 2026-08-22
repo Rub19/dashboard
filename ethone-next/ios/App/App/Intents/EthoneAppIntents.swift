@@ -74,21 +74,6 @@ struct ChangePresenceIntent: AppIntent {
     }
 }
 
-@available(iOS 18.0, *)
-@AssistantIntent(schema: .system.search)
-struct EthoneSystemSearchIntent: AppIntent {
-    var criteria: StringSearchCriteria
-
-    func perform() async throws -> some IntentResult {
-        let encoded = criteria.term.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        let url = URL(string: "ethone:///search?q=\(encoded)")!
-        await MainActor.run {
-            UIApplication.shared.open(url, options: [:])
-        }
-        return .result()
-    }
-}
-
 @available(iOS 16.0, *)
 struct AddBrainIdeaFromSiriIntent: AppIntent {
     static var title: LocalizedStringResource = "Ajouter une idée Brain ETHONE"

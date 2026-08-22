@@ -86,11 +86,14 @@ struct EthoneNoteQuery: EntityQuery {
     func entities(for identifiers: [UUID]) async throws -> [EthoneNoteEntity] {
         let shared = UserDefaults(suiteName: "group.dev.ethone.app")
         let notes = shared?.array(forKey: "ethone_notes") as? [[String: String]] ?? []
-        return notes.compactMap { dict in
-            guard let idString = dict["id"], let id = UUID(uuidString: idString),
-                  let title = dict["title"] else { return nil }
-            return EthoneNoteEntity(id: id, title: title, content: dict["content"] ?? "")
+        var result: [EthoneNoteEntity] = []
+        for dict in notes {
+            guard let idString = dict["id"],
+                  let id = UUID(uuidString: idString),
+                  let title = dict["title"] else { continue }
+            result.append(EthoneNoteEntity(id: id, title: title, content: dict["content"] ?? ""))
         }
+        return result
     }
 
     func suggestedEntities() async throws -> [EthoneNoteEntity] {
@@ -105,12 +108,14 @@ struct EthoneTaskQuery: EntityQuery {
     func entities(for identifiers: [UUID]) async throws -> [EthoneTaskEntity] {
         let shared = UserDefaults(suiteName: "group.dev.ethone.app")
         let tasks = shared?.array(forKey: "ethone_tasks") as? [[String: Any]] ?? []
-        return tasks.compactMap { dict in
+        var result: [EthoneTaskEntity] = []
+        for dict in tasks {
             guard let idString = dict["id"] as? String,
                   let id = UUID(uuidString: idString),
-                  let title = dict["title"] as? String else { return nil }
-            return EthoneTaskEntity(id: id, title: title, summary: "")
+                  let title = dict["title"] as? String else { continue }
+            result.append(EthoneTaskEntity(id: id, title: title, summary: ""))
         }
+        return result
     }
 
     func suggestedEntities() async throws -> [EthoneTaskEntity] {
@@ -125,11 +130,14 @@ struct EthoneProjectQuery: EntityQuery {
     func entities(for identifiers: [UUID]) async throws -> [EthoneProjectEntity] {
         let shared = UserDefaults(suiteName: "group.dev.ethone.app")
         let projects = shared?.array(forKey: "ethone_projects") as? [[String: String]] ?? []
-        return projects.compactMap { dict in
-            guard let idString = dict["id"], let id = UUID(uuidString: idString),
-                  let name = dict["name"] else { return nil }
-            return EthoneProjectEntity(id: id, name: name, summary: dict["summary"] ?? "")
+        var result: [EthoneProjectEntity] = []
+        for dict in projects {
+            guard let idString = dict["id"],
+                  let id = UUID(uuidString: idString),
+                  let name = dict["name"] else { continue }
+            result.append(EthoneProjectEntity(id: id, name: name, summary: dict["summary"] ?? ""))
         }
+        return result
     }
 
     func suggestedEntities() async throws -> [EthoneProjectEntity] {
@@ -144,11 +152,14 @@ struct EthoneFocusSessionQuery: EntityQuery {
     func entities(for identifiers: [UUID]) async throws -> [EthoneFocusSessionEntity] {
         let shared = UserDefaults(suiteName: "group.dev.ethone.app")
         let sessions = shared?.array(forKey: "ethone_focus_sessions") as? [[String: String]] ?? []
-        return sessions.compactMap { dict in
-            guard let idString = dict["id"], let id = UUID(uuidString: idString),
-                  let name = dict["name"] else { return nil }
-            return EthoneFocusSessionEntity(id: id, name: name, duration: dict["duration"] ?? "25")
+        var result: [EthoneFocusSessionEntity] = []
+        for dict in sessions {
+            guard let idString = dict["id"],
+                  let id = UUID(uuidString: idString),
+                  let name = dict["name"] else { continue }
+            result.append(EthoneFocusSessionEntity(id: id, name: name, duration: dict["duration"] ?? "25"))
         }
+        return result
     }
 
     func suggestedEntities() async throws -> [EthoneFocusSessionEntity] {

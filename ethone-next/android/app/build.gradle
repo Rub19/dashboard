@@ -42,7 +42,7 @@ android {
 
 repositories {
     flatDir {
-        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+        dirs 'libs'
     }
 }
 
@@ -94,14 +94,11 @@ dependencies {
 
     // Capacitor (preserved for compatibility, not loaded in the native Compose root)
     implementation project(':capacitor-android')
-    implementation project(':capacitor-cordova-android-plugins')
 
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
 }
-
-apply from: 'capacitor.build.gradle'
 
 try {
     def servicesJSON = file('google-services.json')

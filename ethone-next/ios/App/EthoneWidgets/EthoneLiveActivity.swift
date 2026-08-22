@@ -212,6 +212,9 @@ struct LockScreenView: View {
 
 @available(iOS 17.0, *)
 struct EthoneLiveActivityIntent: LiveActivityIntent {
+    static var title: LocalizedStringResource = "Action ETHONE Live Activity"
+    static var description = IntentDescription("Action declenchee depuis la Dynamic Island ETHONE.")
+
     var action: String
 
     func perform() async throws -> some IntentResult {

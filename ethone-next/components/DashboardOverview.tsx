@@ -20,6 +20,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useFocus } from "@/components/FocusProvider";
 import { useDesktopLayout, type WidgetLayout } from "@/lib/hooks/useDesktopLayout";
 import { Icon } from "@/lib/icons";
+import PullToRefresh from "@/components/PullToRefresh";
 
 const LiveBentoGrid = dynamic(() => import("@/components/LiveBentoGrid"));
 const BillsWidget = dynamic(() => import("@/components/BillsWidget"));
@@ -205,8 +206,9 @@ export default function DashboardOverview() {
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-y-auto os-scroll">
-      <div className="mx-auto w-full max-w-[1600px] px-2 sm:px-4">
+    <div className="flex h-full min-h-0 flex-col">
+      <PullToRefresh onRefresh={() => window.location.reload()}>
+        <div className="mx-auto w-full max-w-[1600px] px-2 sm:px-4">
         <header className="shrink-0 mb-2 flex w-full items-center justify-end">
         <button
           type="button"
@@ -281,6 +283,7 @@ export default function DashboardOverview() {
         )}
       </motion.div>
       </div>
+      </PullToRefresh>
     </div>
   );
 }

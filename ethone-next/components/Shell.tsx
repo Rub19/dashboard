@@ -11,7 +11,7 @@ import { AnimatedSidebarProvider } from "@/components/motion/animated-sidebar";
 import Sidebar from "@/components/Sidebar";
 import TopBar from "@/components/TopBar";
 import CommandPalette from "@/components/CommandPalette";
-import MobileNav from "@/components/MobileNav";
+import FloatingLiquidDock from "@/components/FloatingLiquidDock";
 import DocumentMetadata from "@/components/DocumentMetadata";
 import { ActivityJournalProvider } from "@/components/ActivityJournalProvider";
 import PageTransition from "@/components/PageTransition";
@@ -68,7 +68,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                 <main
                   data-v8-main
                   id="main-content"
-                  className="relative z-0 min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--background)] pb-28 md:pb-4"
+                  className="relative z-0 min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--background)] pb-32 md:pb-4"
                   tabIndex={-1}
                 >
                   <ActivityJournalProvider>
@@ -78,7 +78,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                 </main>
               </div>
             </AnimatedSidebarProvider>
-            <MobileNav />
+            <FloatingLiquidDock />
             <Dock />
             <StatusBar />
             <ShortcutsOverlay />

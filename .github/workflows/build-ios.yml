@@ -2,7 +2,7 @@ name: Build iOS IPA (Capacitor Cloud Build)
 
 on:
   push:
-    branches: [main, master, ci/ios-ipa-workflow-stabilization-and-fixes, feat/ios-26-native-apis-and-frameworks]
+    branches: [main, master, ci/ios-ipa-workflow-stabilization-and-fixes, feat/ios-26-native-apis-and-frameworks, feat/global-liquid-glass-and-ios26-audit]
   workflow_dispatch:
 
 permissions:

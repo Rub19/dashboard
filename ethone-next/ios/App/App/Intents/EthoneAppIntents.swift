@@ -1,6 +1,7 @@
 import AppIntents
 import UIKit
 
+@available(iOS 16.0, *)
 struct CreateNoteIntent: AppIntent {
     static var title: LocalizedStringResource = "Créer une note ETHONE"
     static var description = IntentDescription("Crée rapidement une nouvelle note dans ETHONE.")
@@ -27,6 +28,7 @@ struct CreateNoteIntent: AppIntent {
     }
 }
 
+@available(iOS 16.0, *)
 struct ActivateFocusIntent: AppIntent {
     static var title: LocalizedStringResource = "Activer le mode Focus ETHONE"
     static var description = IntentDescription("Lance une session de concentration dans ETHONE.")
@@ -49,6 +51,7 @@ struct ActivateFocusIntent: AppIntent {
     }
 }
 
+@available(iOS 16.0, *)
 struct ChangePresenceIntent: AppIntent {
     static var title: LocalizedStringResource = "Changer ma présence ETHONE"
     static var description = IntentDescription("Change le statut de présence dans ETHONE.")
@@ -86,6 +89,7 @@ struct EthoneSystemSearchIntent: AppIntent {
     }
 }
 
+@available(iOS 16.0, *)
 struct AddBrainIdeaFromSiriIntent: AppIntent {
     static var title: LocalizedStringResource = "Ajouter une idée Brain ETHONE"
     static var description = IntentDescription("Ajoute une idée dans le Brain ETHONE via Siri.")
@@ -112,6 +116,7 @@ struct AddBrainIdeaFromSiriIntent: AppIntent {
     }
 }
 
+@available(iOS 16.0, *)
 struct OpenNoteFromSiriIntent: AppIntent {
     static var title: LocalizedStringResource = "Ouvrir une note ETHONE"
     static var description = IntentDescription("Ouvre une note spécifique dans ETHONE.")

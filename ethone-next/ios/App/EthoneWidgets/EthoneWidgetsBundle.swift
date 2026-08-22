@@ -5,5 +5,6 @@ import SwiftUI
 struct EthoneWidgetsBundle: WidgetBundle {
     var body: some Widget {
         EthoneWidget()
+        EthoneLiveActivity()
     }
 }

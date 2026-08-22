@@ -2,6 +2,20 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.55 — 2026-08-22
+
+**Dynamic Island interactive, moteur haptique Taptic Engine et interactions Pro**
+
+- Plugins Capacitor ajoutés : `@capacitor/haptics` et `@capawesome/capacitor-app-shortcuts`.
+- `lib/haptics.ts` : profils tactiles (`selection`, `light`, `medium`, `heavy`, `successPattern`, `errorPattern`) avec no-op sur le web.
+- Haptics intégrés à `MobileNav`, `SystemControlCard`, `UserProfileDropdown`, `BrainChat`, `NotesPage`, `TasksCard` et `app/login/page.tsx`.
+- Live Activity iOS enrichie avec 4 scénarios (Focus/Pomodoro, tâche active, ambiance sonore, synchronisation) dans `EthoneLiveActivity.swift`.
+- `lib/live-activity.ts` et `FocusProvider.tsx` orchestrent les 4 modes.
+- `components/PrivacyShield.tsx` : mode discret activé par un double tapotement à deux doigts sur le Dashboard.
+- `components/TasksCard.tsx` : geste de balayage (droite = terminé, gauche = supprimer) avec retour haptique.
+- Home Screen Quick Actions (`@capawesome/capacitor-app-shortcuts`) : nouvelle note, focus, scanner, recherche (⌘K).
+- Version `v1.7.55`.
+
 ## v1.7.54 — 2026-08-22
 
 **Intégration complète de l'écosystème Apple**

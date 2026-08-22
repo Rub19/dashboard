@@ -8,6 +8,7 @@ import type { BrainMessage, ReturnTypeOfUseBrain } from "@/lib/hooks/useBrain";
 import { useBrainActivityStore } from "@/lib/stores/brain-activity";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useNowPlaying } from "@/lib/hooks/useNowPlaying";
+import { hapticSuccessPattern, hapticErrorPattern, hapticMediumImpact } from "@/lib/haptics";
 import { useToast } from "@/components/ToastProvider";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useUserData } from "@/lib/hooks/useUserData";
@@ -212,13 +213,16 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
       if (!text || pending) return;
       setPrompt("");
       setPending(true);
+      hapticMediumImpact();
       brain
         .send(text)
         .then(() => {
           setPending(false);
+          hapticSuccessPattern();
         })
         .catch((err) => {
           setPending(false);
+          hapticErrorPattern();
           showError(String(err));
         });
     },
@@ -227,9 +231,15 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
 
   const handleExecute = useCallback(
     async (actionId: string, parameters: Record<string, unknown> = {}) => {
+      hapticMediumImpact();
       const res = await brain.executeAction(actionId, parameters, true);
-      if (res.ok) success(res.message || i18n("completed"));
-      else showError(res.message || i18n("error"));
+      if (res.ok) {
+        hapticSuccessPattern();
+        success(res.message || i18n("completed"));
+      } else {
+        hapticErrorPattern();
+        showError(res.message || i18n("error"));
+      }
     },
     [brain, i18n, showError, success]
   );

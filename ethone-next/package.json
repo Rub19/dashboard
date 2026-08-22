@@ -1,6 +1,6 @@
 {
   "name": "ethone-next",
-  "version": "1.7.54",
+  "version": "1.7.55",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -24,9 +24,11 @@
     "@capacitor/action-sheet": "^7.0.4",
     "@capacitor/app": "^7.1.2",
     "@capacitor/core": "^7.6.8",
+    "@capacitor/haptics": "^7.0.5",
     "@capacitor/push-notifications": "^7.0.7",
     "@capacitor/share": "^7.0.4",
     "@capacitor/status-bar": "^7.0.6",
+    "@capawesome/capacitor-app-shortcuts": "^7.5.0",
     "@capawesome/capacitor-badge": "^7.0.1",
     "@floating-ui/react": "^0.27.20",
     "@iconify-json/heroicons": "^1.2.3",

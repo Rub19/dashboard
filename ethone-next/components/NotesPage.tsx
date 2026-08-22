@@ -16,6 +16,7 @@ import CustomCheckbox from "@/components/CustomCheckbox";
 import RichTextEditor, { stripHtml } from "@/components/RichTextEditor";
 import { wordCountFromHtml } from "@/lib/notes";
 import { nativeShare } from "@/lib/native";
+import { hapticRigidImpact, hapticSuccess, hapticMediumImpact } from "@/lib/haptics";
 
 type Note = { id: string; title: string; body: string; createdAt?: string };
 
@@ -85,8 +86,10 @@ export default function NotesPage() {
   }
 
   async function deleteNote(id: string) {
+    hapticRigidImpact();
     try {
       await remove(id);
+      hapticSuccess();
       notify.noteDeleted(1);
     } catch {
       showError(i18n("error"));
@@ -94,6 +97,7 @@ export default function NotesPage() {
   }
 
   async function shareNote(note: Note) {
+    hapticMediumImpact();
     const text = `${note.title}\n\n${stripHtml(note.body)}`;
     const { ok, error } = await nativeShare({
       title: note.title,

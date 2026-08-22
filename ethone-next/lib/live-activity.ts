@@ -3,14 +3,15 @@
 import { LiveActivity } from "capacitor-live-activity";
 import { isNativeIOS } from "@/lib/apple";
 
+export type LiveActivityMode = "focus" | "task" | "sound" | "sync";
+
 export type LiveActivityData = {
-  focusTitle?: string;
-  focusMode?: string;
-  timeRemaining?: string;
+  mode: LiveActivityMode;
+  title: string;
+  subtitle: string;
   progress?: string;
-  aura?: string;
-  taskTitle?: string;
-  taskId?: string;
+  accent?: string;
+  action?: string;
 };
 
 export async function areActivitiesSupported() {
@@ -23,21 +24,24 @@ export async function areActivitiesSupported() {
   }
 }
 
-export async function startFocusActivity(id: string, title: string, durationSeconds: number, aura = "classic") {
+function toContentState(data: LiveActivityData): Record<string, string> {
+  return {
+    mode: data.mode,
+    title: data.title,
+    subtitle: data.subtitle,
+    progress: data.progress ?? "0",
+    accent: data.accent ?? "classic",
+    action: data.action ?? "",
+  };
+}
+
+export async function startActivity(id: string, data: LiveActivityData) {
   if (!isNativeIOS()) return { activityId: "" };
   try {
     const { activityId } = await LiveActivity.startActivityWithPush({
       id,
-      attributes: {
-        focusTitle: title,
-        aura,
-      },
-      contentState: {
-        focusTitle: title,
-        timeRemaining: formatTime(durationSeconds),
-        progress: "0",
-        aura,
-      },
+      attributes: { id },
+      contentState: toContentState(data),
     });
     return { activityId };
   } catch (err) {
@@ -46,30 +50,46 @@ export async function startFocusActivity(id: string, title: string, durationSeco
   }
 }
 
-export async function updateFocusActivity(id: string, updates: LiveActivityData) {
+export async function updateActivity(id: string, data: LiveActivityData) {
   if (!isNativeIOS()) return;
   try {
-    const contentState: Record<string, string> = {};
-    for (const [key, value] of Object.entries(updates)) {
-      if (value !== undefined) contentState[key] = value;
-    }
-    await LiveActivity.updateActivity({ id, contentState });
+    await LiveActivity.updateActivity({ id, contentState: toContentState(data) });
   } catch {
     // ignore
   }
 }
 
-export async function endFocusActivity(id: string) {
+export async function endActivity(id: string) {
   if (!isNativeIOS()) return;
   try {
-    await LiveActivity.endActivity({ id, contentState: {} });
+    await LiveActivity.endActivity({ id, contentState: { mode: "sync", title: "", subtitle: "" } });
   } catch {
     // ignore
   }
 }
 
-function formatTime(totalSeconds: number) {
-  const m = Math.floor(totalSeconds / 60);
-  const s = totalSeconds % 60;
-  return `${m}:${s.toString().padStart(2, "0")}`;
+/** Start or update a Focus/Pomodoro live activity. */
+export async function setFocusActivity(id: string, title: string, remainingSeconds: number, totalSeconds: number) {
+  const progress = totalSeconds ? String(Math.round((1 - remainingSeconds / totalSeconds) * 100)) : "0";
+  const m = Math.floor(remainingSeconds / 60);
+  const s = remainingSeconds % 60;
+  const subtitle = `${m}:${s.toString().padStart(2, "0")}`;
+  await updateActivity(id, { mode: "focus", title, subtitle, progress, action: "pause" });
+}
+
+/** Show an active task in the Dynamic Island. */
+export async function setTaskActivity(id: string, title: string, remainingSeconds: number) {
+  const subtitle = remainingSeconds > 0 ? `${Math.ceil(remainingSeconds / 60)} min` : "En cours";
+  await updateActivity(id, { mode: "task", title, subtitle, action: "complete" });
+}
+
+/** Show sound ambiance wave. */
+export async function setSoundActivity(id: string, title: string) {
+  await updateActivity(id, { mode: "sound", title, subtitle: "Lecture", action: "stop" });
+}
+
+/** Flash a sync success alert. */
+export async function flashSyncActivity(id: string, title = "Synchronisé") {
+  await startActivity(id, { mode: "sync", title, subtitle: "OK", action: "" });
+  setTimeout(() => endActivity(id), 1800);
 }

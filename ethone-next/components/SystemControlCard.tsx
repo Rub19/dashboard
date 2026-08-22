@@ -5,6 +5,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
 import BentoCard from "@/components/BentoCard";
 import { cn } from "@/lib/utils";
+import { hapticSelectionTick, hapticMediumImpact } from "@/lib/haptics";
 import { type SessionMode, USER_STATUS_CONFIG } from "@/lib/settings";
 
 const AURAS = ["classic", "boreal", "cyberpunk", "eclipse", "emerald", "mineral"] as const;
@@ -35,6 +36,7 @@ export default function SystemControlCard({ className = "", scrollable = true }:
   const activeMode = SESSION_MODES[currentIndex];
 
   function cycle(delta: number) {
+    hapticMediumImpact();
     const nextIndex = (currentIndex + delta + SESSION_MODES.length) % SESSION_MODES.length;
     update({ sessionMode: SESSION_MODES[nextIndex].id });
   }
@@ -51,7 +53,7 @@ export default function SystemControlCard({ className = "", scrollable = true }:
                 <button
                   key={id}
                   type="button"
-                  onClick={() => update({ status: id as keyof typeof USER_STATUS_CONFIG })}
+                  onClick={() => { hapticMediumImpact(); update({ status: id as keyof typeof USER_STATUS_CONFIG }); }}
                   className={`flex min-h-[40px] items-center justify-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.08] px-2 py-2 text-[10px] font-medium transition-all ${
                     active ? `${config.bg} ${config.text} ring-1 ${config.ring}` : "bg-[var(--text-primary)]/[0.02] text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.04]"
                   }`}
@@ -75,7 +77,7 @@ export default function SystemControlCard({ className = "", scrollable = true }:
                 <button
                   key={aura}
                   type="button"
-                  onClick={() => update({ aura })}
+                  onClick={() => { hapticSelectionTick(); update({ aura }); }}
                   title={i18n(key)}
                   style={{ backgroundColor: palette.background }}
                   className={`flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--text-primary)]/[0.08] transition-all hover:scale-105 sm:h-8 sm:w-8 ${

@@ -21,6 +21,7 @@ import StatusBar from "@/components/layout/StatusBar";
 import SkipLink from "@/components/SkipLink";
 import ContextMenuProvider from "@/components/ContextMenuProvider";
 import NativeIntegration from "@/components/NativeIntegration";
+import PrivacyShield from "@/components/PrivacyShield";
 
 import LiveWidgetSkeleton from "@/components/LiveWidgetSkeleton";
 import DynamicIslandSkeleton from "@/components/DynamicIslandSkeleton";
@@ -67,6 +68,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                 <Spotlight />
                 <VisualHaptics />
                 <DynamicIslandContainer />
+                <PrivacyShield>
                 <main
                   data-v8-main
                   id="main-content"
@@ -78,6 +80,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                     <AutomationRuntime />
                   </ActivityJournalProvider>
                 </main>
+                </PrivacyShield>
               </div>
             </AnimatedSidebarProvider>
             <MobileNav />

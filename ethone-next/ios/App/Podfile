@@ -15,9 +15,11 @@ def capacitor_pods
   pod 'CapacitorCommunityAppleSignIn', :path => '../../node_modules/@capacitor-community/apple-sign-in'
   pod 'CapacitorActionSheet', :path => '../../node_modules/@capacitor/action-sheet'
   pod 'CapacitorApp', :path => '../../node_modules/@capacitor/app'
+  pod 'CapacitorHaptics', :path => '../../node_modules/@capacitor/haptics'
   pod 'CapacitorPushNotifications', :path => '../../node_modules/@capacitor/push-notifications'
   pod 'CapacitorShare', :path => '../../node_modules/@capacitor/share'
   pod 'CapacitorStatusBar', :path => '../../node_modules/@capacitor/status-bar'
+  pod 'CapawesomeCapacitorAppShortcuts', :path => '../../node_modules/@capawesome/capacitor-app-shortcuts'
   pod 'CapawesomeCapacitorBadge', :path => '../../node_modules/@capawesome/capacitor-badge'
   pod 'CapacitorLiveActivity', :path => '../../node_modules/capacitor-live-activity'
 end

@@ -23,6 +23,7 @@ import {
 } from "@/lib/auth";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { hapticErrorPattern } from "@/lib/haptics";
 import AppleSignInButton from "@/components/AppleSignInButton";
 import PasswordField from "@/components/PasswordField";
 import { isPasswordPwned } from "@/lib/password-strength";
@@ -66,6 +67,7 @@ export default function LoginPage() {
     if (emailError) {
       setLoading(false);
       setError(emailError);
+      hapticErrorPattern();
       showError(i18n("error"));
       return;
     }
@@ -73,6 +75,7 @@ export default function LoginPage() {
     setLoading(false);
     if (!result.ok || result.error || !result.userId) {
       setError(result.error?.message || i18n("error"));
+      hapticErrorPattern();
       showError(i18n("error"));
       return;
     }
@@ -92,12 +95,14 @@ export default function LoginPage() {
     if (codeError) {
       setLoading(false);
       setError(codeError);
+      hapticErrorPattern();
       showError(i18n("error"));
       return;
     }
     if (!userId) {
       setLoading(false);
       setError(i18n("error"));
+      hapticErrorPattern();
       showError(i18n("error"));
       return;
     }
@@ -105,6 +110,7 @@ export default function LoginPage() {
     setLoading(false);
     if (!ok || err) {
       setError(err?.message || i18n("invalidCode"));
+      hapticErrorPattern();
       showError(i18n("error"));
       return;
     }
@@ -125,6 +131,7 @@ export default function LoginPage() {
     if (firstError) {
       setLoading(false);
       setError(firstError);
+      hapticErrorPattern();
       showError(i18n("error"));
       return;
     }
@@ -132,6 +139,7 @@ export default function LoginPage() {
     setLoading(false);
     if (!ok || err) {
       setError(err?.message || i18n("invalidCredentials"));
+      hapticErrorPattern();
       showError(i18n("error"));
       return;
     }
@@ -164,6 +172,7 @@ export default function LoginPage() {
     if (firstError) {
       setLoading(false);
       setError(firstError);
+      hapticErrorPattern();
       showError(i18n("error"));
       return;
     }
@@ -171,6 +180,7 @@ export default function LoginPage() {
     if (pwned) {
       setLoading(false);
       setError(i18n("passwordPwned") || "Ce mot de passe a été compromis dans une fuite de données. Choisissez-en un autre.");
+      hapticErrorPattern();
       showError(i18n("error"));
       return;
     }
@@ -178,6 +188,7 @@ export default function LoginPage() {
     setLoading(false);
     if (!ok || err) {
       setError(err?.message || i18n("error"));
+      hapticErrorPattern();
       showError(i18n("error"));
       return;
     }
@@ -196,6 +207,7 @@ export default function LoginPage() {
     setLoading(false);
     if (!ok || err || !url) {
       setError(err?.message || i18n("error"));
+      hapticErrorPattern();
       showError(i18n("error"));
       return;
     }
@@ -210,7 +222,8 @@ export default function LoginPage() {
       setLoading(false);
       if (!ok || err) {
         setError(err?.message || i18n("error"));
-        showError(i18n("error"));
+        hapticErrorPattern();
+      showError(i18n("error"));
         return;
       }
       success(i18n("saved"));

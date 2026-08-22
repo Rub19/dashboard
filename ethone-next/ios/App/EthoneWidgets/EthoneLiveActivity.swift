@@ -1,6 +1,7 @@
 import ActivityKit
 import WidgetKit
 import SwiftUI
+import AppIntents
 
 enum ActivityMode: String, Codable {
     case focus
@@ -9,6 +10,7 @@ enum ActivityMode: String, Codable {
     case sync
 }
 
+@available(iOS 16.1, *)
 struct EthoneActivityAttributes: ActivityAttributes {
     public struct ContentState: Codable, Hashable {
         var mode: ActivityMode
@@ -22,6 +24,7 @@ struct EthoneActivityAttributes: ActivityAttributes {
     var initialTitle: String
 }
 
+@available(iOS 17.0, *)
 struct EthoneLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: EthoneActivityAttributes.self) { context in
@@ -141,15 +144,6 @@ struct EthoneLiveActivity: Widget {
             .foregroundColor(tintColor(for: context.state.mode))
     }
 
-    func tintColor(for mode: ActivityMode) -> Color {
-        switch mode {
-        case .focus: return .accentColor
-        case .task: return .green
-        case .sound: return .cyan
-        case .sync: return .green
-        }
-    }
-
     func actionLabel(_ action: String) -> String {
         switch action {
         case "pause": return "Pause"
@@ -161,6 +155,27 @@ struct EthoneLiveActivity: Widget {
     }
 }
 
+@available(iOS 17.0, *)
+func tintColor(for mode: ActivityMode) -> Color {
+    switch mode {
+    case .focus: return .accentColor
+    case .task: return .green
+    case .sound: return .cyan
+    case .sync: return .green
+    }
+}
+
+@available(iOS 17.0, *)
+func iconName(for mode: ActivityMode) -> String {
+    switch mode {
+    case .focus: return "target"
+    case .task: return "checkmark.circle"
+    case .sound: return "waveform"
+    case .sync: return "arrow.clockwise"
+    }
+}
+
+@available(iOS 17.0, *)
 struct SoundWaveView: View {
     @State private var phase: Double = 0
 
@@ -179,22 +194,26 @@ struct SoundWaveView: View {
     }
 }
 
+@available(iOS 17.0, *)
 struct LockScreenView: View {
     let context: ActivityViewContext<EthoneActivityAttributes>
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                compactLeading(context: context)
+                Image(systemName: iconName(for: context.state.mode))
+                    .foregroundColor(tintColor(for: context.state.mode))
                     .scaleEffect(1.2)
                 Text(context.state.title)
                     .font(.headline)
                 Spacer()
-                compactTrailing(context: context)
+                Text(context.state.subtitle)
+                    .font(.caption2)
+                    .foregroundColor(.white)
             }
             if context.state.mode != .sound {
                 ProgressView(value: Double(context.state.progress) ?? 0, total: 100)
-                    .tint(EthoneLiveActivity().tintColor(for: context.state.mode))
+                    .tint(tintColor(for: context.state.mode))
             } else {
                 SoundWaveView()
                     .frame(height: 16)
@@ -202,18 +221,36 @@ struct LockScreenView: View {
         }
         .padding()
     }
+
+    func iconName(for mode: ActivityMode) -> String {
+        switch mode {
+        case .focus: return "target"
+        case .task: return "checkmark.circle"
+        case .sound: return "waveform"
+        case .sync: return "arrow.clockwise"
+        }
+    }
 }
 
+@available(iOS 17.0, *)
 struct EthoneLiveActivityIntent: LiveActivityIntent {
+    static var title: LocalizedStringResource = "Action ETHONE Live Activity"
+    static var description: IntentDescription? = IntentDescription("Action declenchee depuis la Dynamic Island ETHONE.")
+    static var openAppWhenRun: Bool = true
+
     var action: String
 
+    init() {
+        self.action = ""
+    }
+
+    init(action: String) {
+        self.action = action
+    }
+
     func perform() async throws -> some IntentResult {
-        // Forward to the app via App Group or URL scheme
-        await MainActor.run {
-            if let url = URL(string: "ethone://live-activity?action=\(action)") {
-                UIApplication.shared.open(url, options: [:])
-            }
-        }
+        let shared = UserDefaults(suiteName: "group.dev.ethone.app")
+        shared?.set(action, forKey: "ethone_live_activity_action")
         return .result()
     }
 }

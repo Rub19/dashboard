@@ -2,6 +2,7 @@ import WidgetKit
 import SwiftUI
 import AppIntents
 
+@available(iOS 17.0, *)
 struct EthoneWidgetEntry: TimelineEntry {
     let date: Date
     let tasksCount: Int
@@ -10,6 +11,7 @@ struct EthoneWidgetEntry: TimelineEntry {
     let noteTitle: String
 }
 
+@available(iOS 17.0, *)
 struct Provider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> EthoneWidgetEntry {
         EthoneWidgetEntry(date: Date(), tasksCount: 0, presence: "En ligne", aura: "classic", noteTitle: "Bienvenue dans ETHONE")
@@ -38,6 +40,7 @@ struct Provider: AppIntentTimelineProvider {
     }
 }
 
+@available(iOS 17.0, *)
 struct EthoneWidgetView: View {
     var entry: EthoneWidgetEntry
     @Environment(\.widgetFamily) var family
@@ -116,6 +119,7 @@ struct EthoneWidgetView: View {
     }
 }
 
+@available(iOS 17.0, *)
 struct EthoneWidget: Widget {
     let kind: String = "EthoneWidget"
 
@@ -134,6 +138,7 @@ struct EthoneWidget: Widget {
     }
 }
 
+@available(iOS 17.0, *)
 struct EthoneWidgetConfigIntent: WidgetConfigurationIntent {
     static var title: LocalizedStringResource = "ETHONE Widget"
     static var description = IntentDescription("Configure l'affichage du widget ETHONE.")

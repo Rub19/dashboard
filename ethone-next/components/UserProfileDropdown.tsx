@@ -20,7 +20,6 @@ import { useAuth } from "@/components/AuthProvider";
 import { useActiveProfile, useSettings } from "@/components/SettingsProvider";
 import { useProfile } from "@/lib/hooks/useProfile";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { hapticMediumImpact } from "@/lib/haptics";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import ChangelogModal from "@/components/ChangelogModal";
 import {
@@ -96,7 +95,6 @@ export default function UserProfileDropdown() {
   }
 
   function setStatus(st: keyof typeof USER_STATUS_CONFIG) {
-    hapticMediumImpact();
     update({ status: st });
   }
 
@@ -104,7 +102,7 @@ export default function UserProfileDropdown() {
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = "v1.7.59";
+  const VERSION_LABEL = "v1.7.58";
 
   const menuItems = [
     {

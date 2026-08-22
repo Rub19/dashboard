@@ -3716,308 +3716,72 @@ const v332_de: ChangelogEntry = {
   ],
 };
 
-const v334_fr: ChangelogEntry = {
-  version: "v1.7.54",
+const v338_fr: ChangelogEntry = {
+  version: "v1.7.58",
   date: "2026-08-22",
-  title: "Intégration complète de l'écosystème Apple",
+  title: "Dock mobile flottant Liquid Glass",
   items: [
-    "Nouveaux plugins Capacitor : `@capacitor/app`, `@capacitor/status-bar`, `@capacitor/share`, `@capacitor/push-notifications`, `@capacitor/action-sheet`, `@capacitor-community/apple-sign-in`, `@aparajita/capacitor-biometric-auth`, `@capawesome/capacitor-badge` et `capacitor-live-activity`.",
-    "Bouton officiel 'Se connecter avec Apple' ajouté sur la page de connexion.",
-    "Composant `BiometricLock` : verrouillage Face ID / Touch ID de la section Sécurité.",
-    "Intégration native Share Sheet sur les notes.",
-    "Deep linking `ethone://` et Universal Links supportés via `@capacitor/app`.",
-    "Synchronisation du style de la Status Bar (Dark/Light) avec le thème ETHONE.",
-    "Live Activities connectées aux sessions Focus/Pomodoro.",
-    "Notifications push interactives et badge dynamique préparés.",
-    "Fichiers natifs iOS créés pour WidgetKit, Live Activity et App Intents Siri Shortcuts.",
-    "Version affichée en bas à droite : v1.7.54.",
+    "Remplacement de la bottom bar noire par un dock flottant en capsule.",
+    "Positionnement `fixed bottom-4 left-1/2 -translate-x-1/2` avec `w-[92%] max-w-[380px] h-[64px]`.",
+    "Coins très arrondis `rounded-[28px]` et `mb-[env(safe-area-inset-bottom)]`.",
+    "Fond `rgba(18,18,24,0.70)`, `backdrop-blur-[24px] saturate-[190%]` et biseau lumineux.",
+    "Ombre et reflet interne `inset 0 1px 1px rgba(255,255,255,0.20), 0 16px 32px -8px rgba(0,0,0,0.6)`.",
+    "Pilule active arrondie `rounded-full bg-white/[0.10]` avec transition fluide.",
+    "Padding `pb-28` sur le conteneur principal pour éviter tout recouvrement.",
+    "Version affichée en bas à droite : v1.7.58.",
   ],
 };
 
-const v334_en: ChangelogEntry = {
-  version: "v1.7.54",
+const v338_en: ChangelogEntry = {
+  version: "v1.7.58",
   date: "2026-08-22",
-  title: "Full Apple ecosystem integration",
+  title: "Liquid Glass floating mobile dock",
   items: [
-    "New Capacitor plugins: `@capacitor/app`, `@capacitor/status-bar`, `@capacitor/share`, `@capacitor/push-notifications`, `@capacitor/action-sheet`, `@capacitor-community/apple-sign-in`, `@aparajita/capacitor-biometric-auth`, `@capawesome/capacitor-badge`, and `capacitor-live-activity`.",
-    "Official 'Sign in with Apple' button added to the login page.",
-    "`BiometricLock` component: Face ID / Touch ID lock for the Security section.",
-    "Native iOS Share Sheet integration on notes.",
-    "Deep linking via `ethone://` and Universal Links supported with `@capacitor/app`.",
-    "Status Bar style (Dark/Light) synced with the ETHONE theme.",
-    "Live Activities connected to Focus/Pomodoro sessions.",
-    "Interactive push notifications and dynamic badge prepared.",
-    "Native iOS files created for WidgetKit, Live Activity, and Siri Shortcuts App Intents.",
-    "Version badge bottom-right: v1.7.54.",
+    "Replaced the black bottom bar with a floating capsule dock.",
+    "Positioned `fixed bottom-4 left-1/2 -translate-x-1/2` with `w-[92%] max-w-[380px] h-[64px]`.",
+    "Super-rounded `rounded-[28px]` corners and `mb-[env(safe-area-inset-bottom)]`.",
+    "Background `rgba(18,18,24,0.70)`, `backdrop-blur-[24px] saturate-[190%]` and specular highlight.",
+    "Shadow and inner glow `inset 0 1px 1px rgba(255,255,255,0.20), 0 16px 32px -8px rgba(0,0,0,0.6)`.",
+    "Active pill `rounded-full bg-white/[0.10]` with smooth transition.",
+    "Main container `pb-28` padding to avoid overlap.",
+    "Version badge bottom-right: v1.7.58.",
   ],
 };
 
-const v334_es: ChangelogEntry = {
-  version: "v1.7.54",
+const v338_es: ChangelogEntry = {
+  version: "v1.7.58",
   date: "2026-08-22",
-  title: "Integración completa del ecosistema Apple",
+  title: "Dock móvil flotante Liquid Glass",
   items: [
-    "Nuevos plugins de Capacitor: `@capacitor/app`, `@capacitor/status-bar`, `@capacitor/share`, `@capacitor/push-notifications`, `@capacitor/action-sheet`, `@capacitor-community/apple-sign-in`, `@aparajita/capacitor-biometric-auth`, `@capawesome/capacitor-badge` y `capacitor-live-activity`.",
-    "Botón oficial 'Iniciar sesión con Apple' añadido en la página de inicio.",
-    "Componente `BiometricLock`: bloqueo Face ID / Touch ID para la sección Seguridad.",
-    "Integración de la hoja de compartir nativa de iOS en las notas.",
-    "Deep linking `ethone://` y Universal Links soportados con `@capacitor/app`.",
-    "Estilo de la barra de estado (Dark/Light) sincronizado con el tema ETHONE.",
-    "Live Activities conectadas a las sesiones Focus/Pomodoro.",
-    "Notificaciones push interactivas y badge dinámico preparados.",
-    "Archivos nativos iOS creados para WidgetKit, Live Activity y App Intents Siri Shortcuts.",
-    "Versión mostrada abajo a la derecha: v1.7.54.",
+    "Reemplazo de la barra inferior negra por un dock flotante en cápsula.",
+    "Posicionado `fixed bottom-4 left-1/2 -translate-x-1/2` con `w-[92%] max-w-[380px] h-[64px]`.",
+    "Esquinas muy redondeadas `rounded-[28px]` y `mb-[env(safe-area-inset-bottom)]`.",
+    "Fondo `rgba(18,18,24,0.70)`, `backdrop-blur-[24px] saturate-[190%]` y bisel luminoso.",
+    "Sombra y reflejo interno `inset 0 1px 1px rgba(255,255,255,0.20), 0 16px 32px -8px rgba(0,0,0,0.6)`.",
+    "Píldora activa redondeada `rounded-full bg-white/[0.10]` con transición suave.",
+    "Padding `pb-28` en el contenedor principal para evitar superposición.",
+    "Versión mostrada abajo a la derecha: v1.7.58.",
   ],
 };
 
-const v334_de: ChangelogEntry = {
-  version: "v1.7.54",
+const v338_de: ChangelogEntry = {
+  version: "v1.7.58",
   date: "2026-08-22",
-  title: "Vollständige Apple-Ökosystem-Integration",
+  title: "Schwimmendes Liquid Glass Mobile Dock",
   items: [
-    "Neue Capacitor-Plugins: `@capacitor/app`, `@capacitor/status-bar`, `@capacitor/share`, `@capacitor/push-notifications`, `@capacitor/action-sheet`, `@capacitor-community/apple-sign-in`, `@aparajita/capacitor-biometric-auth`, `@capawesome/capacitor-badge` und `capacitor-live-activity`.",
-    "Offizielle 'Mit Apple anmelden'-Schaltfläche zur Login-Seite hinzugefügt.",
-    "`BiometricLock`-Komponente: Face ID / Touch ID-Sperre für den Sicherheitsbereich.",
-    "Native iOS Share Sheet-Integration für Notizen.",
-    "Deep Linking über `ethone://` und Universal Links mit `@capacitor/app`.",
-    "Status Bar-Stil (Dark/Light) mit dem ETHONE-Theme synchronisiert.",
-    "Live Activities mit Focus/Pomodoro-Sitzungen verbunden.",
-    "Interaktive Push-Benachrichtigungen und dynamisches Badge vorbereitet.",
-    "Native iOS-Dateien für WidgetKit, Live Activity und Siri Shortcuts App Intents erstellt.",
-    "Version unten rechts: v1.7.54.",
-  ],
-};
-
-const v335_fr: ChangelogEntry = {
-  version: "v1.7.55",
-  date: "2026-08-22",
-  title: "Dynamic Island interactive, moteur haptique Taptic Engine et interactions Pro",
-  items: [
-    "Nouveau plugin Capacitor `@capacitor/haptics` avec profils tactiles calibrés (sélection, light/medium/heavy, success/error pattern).",
-    "Nouveau plugin `@capawesome/capacitor-app-shortcuts` pour les raccourcis d'icône d'accueil.",
-    "Moteur haptique intégré dans MobileNav, SystemControlCard, UserProfileDropdown, BrainChat, NotesPage, TasksCard et login.",
-    "Live Activity iOS avancée avec 4 modes (Focus/Pomodoro, tâche active, ambiance sonore, synchronisation).",
-    "Fichier natif `EthoneLiveActivity.swift` enrichi pour Dynamic Island et Lock Screen.",
-    "Composant `PrivacyShield` : double tapotement à deux doigts pour masquer temporairement le Dashboard.",
-    "Geste de balayage sur `TasksCard` : glissement droit = terminé, glissement gauche = suppression.",
-    "Home Screen Quick Actions : nouvelle note, focus, scanner, recherche (⌘K).",
-    "Version affichée en bas à droite : v1.7.55.",
-  ],
-};
-
-const v335_en: ChangelogEntry = {
-  version: "v1.7.55",
-  date: "2026-08-22",
-  title: "Interactive Dynamic Island, Taptic Engine haptics and pro dashboard interactions",
-  items: [
-    "New Capacitor plugin `@capacitor/haptics` with calibrated haptic profiles (selection, light/medium/heavy, success/error pattern).",
-    "New plugin `@capawesome/capacitor-app-shortcuts` for home screen icon shortcuts.",
-    "Haptic engine integrated in MobileNav, SystemControlCard, UserProfileDropdown, BrainChat, NotesPage, TasksCard, and login.",
-    "Advanced iOS Live Activity with 4 modes (Focus/Pomodoro, active task, sound ambiance, sync alert).",
-    "Native file `EthoneLiveActivity.swift` enhanced for Dynamic Island and Lock Screen.",
-    "`PrivacyShield` component: two-finger double-tap to temporarily blur the Dashboard.",
-    "`TasksCard` swipe gesture: swipe right = complete, swipe left = delete.",
-    "Home Screen Quick Actions: new note, focus, scan, search (⌘K).",
-    "Version badge bottom-right: v1.7.55.",
-  ],
-};
-
-const v335_es: ChangelogEntry = {
-  version: "v1.7.55",
-  date: "2026-08-22",
-  title: "Dynamic Island interactivo, motor háptico Taptic Engine e interacciones Pro",
-  items: [
-    "Nuevo plugin Capacitor `@capacitor/haptics` con perfiles hápticos calibrados (selección, light/medium/heavy, success/error pattern).",
-    "Nuevo plugin `@capawesome/capacitor-app-shortcuts` para accesos directos del icono de inicio.",
-    "Motor háptico integrado en MobileNav, SystemControlCard, UserProfileDropdown, BrainChat, NotesPage, TasksCard y login.",
-    "Live Activity iOS avanzada con 4 modos (Focus/Pomodoro, tarea activa, ambiente sonoro, sincronización).",
-    "Fichero nativo `EthoneLiveActivity.swift` mejorado para Dynamic Island y Lock Screen.",
-    "Componente `PrivacyShield` : doble toque con dos dedos para difuminar temporalmente el Dashboard.",
-    "Gesto de deslizamiento en `TasksCard` : derecha = completar, izquierda = eliminar.",
-    "Accesos directos de inicio: nota nueva, focus, escanear, buscar (⌘K).",
-    "Versión mostrada abajo a la derecha: v1.7.55.",
-  ],
-};
-
-const v335_de: ChangelogEntry = {
-  version: "v1.7.55",
-  date: "2026-08-22",
-  title: "Interaktive Dynamic Island, Taptic Engine Haptik und Pro-Dashboard-Interaktionen",
-  items: [
-    "Neues Capacitor-Plugin `@capacitor/haptics` mit kalibrierten Haptik-Profilen (Selection, Light/Medium/Heavy, Success/Error-Pattern).",
-    "Neues Plugin `@capawesome/capacitor-app-shortcuts` für App-Icon-Startverknüpfungen.",
-    "Haptik-Motor in MobileNav, SystemControlCard, UserProfileDropdown, BrainChat, NotesPage, TasksCard und Login integriert.",
-    "Erweiterte iOS Live Activity mit 4 Modi (Focus/Pomodoro, aktive Aufgabe, Klang-Ambiente, Synchronisierung).",
-    "Native Datei `EthoneLiveActivity.swift` für Dynamic Island und Lock Screen erweitert.",
-    "Komponente `PrivacyShield` : Doppeltippen mit zwei Fingern zum vorübergehenden Verwischen des Dashboards.",
-    "Wischgeste auf `TasksCard` : rechts = erledigt, links = löschen.",
-    "Home Screen Quick Actions: neue Notiz, Focus, scannen, suchen (⌘K).",
-    "Version unten rechts: v1.7.55.",
-  ],
-};
-
-const v336_fr: ChangelogEntry = {
-  version: "v1.7.56",
-  date: "2026-08-22",
-  title: "Intégration complète de l'écosystème Android Material You",
-  items: [
-    "Migration du thème Android vers `Theme.Material3.DayNight.NoActionBar` avec Edge-to-Edge transparent.",
-    "Activation de `DynamicColors.applyToActivitiesIfAvailable` pour le thème Material You.",
-    "Nouveau plugin natif `EthoneTheme` exposant les couleurs système au WebView.",
-    "Nouveau plugin natif `EthoneHaptics` avec `VibrationEffect` prédéfinis et waveforms personnalisées.",
-    "Edge-to-Edge : StatusBar et NavigationBar transparentes, `WindowCompat.setDecorFitsSystemWindows(window, false)`.",
-    "Predictive Back activé via `enableOnBackInvokedCallback`.",
-    "Tuiles de réglages rapides `FocusTileService` et `PresenceTileService`.",
-    "App Shortcuts dynamiques et `shortcuts.xml` : nouvelle note, focus, tâche, recherche.",
-    "3 widgets Jetpack Glance : `EthoneCompactGlanceWidget`, `EthoneListGlanceWidget`, `EthoneDashboardGlanceWidget`.",
-    "Canaux de notifications `ethone_reminders`, `ethone_focus`, `ethone_sync`.",
-    "Paramètre `useMaterialYou` dans les réglages pour activer/désactiver la palette Android.",
-    "Geste de retour arrière prédictif géré côté JS via `@capacitor/app`.",
-    "Icône d'application monochrome `ic_launcher_monochrome.xml`.",
-    "Support multi-fenêtre et écrans pliables via `screenSize|smallestScreenSize|screenLayout|orientation`.",
-    "Version affichée en bas à droite : v1.7.56.",
-  ],
-};
-
-const v336_en: ChangelogEntry = {
-  version: "v1.7.56",
-  date: "2026-08-22",
-  title: "Full Android Material You ecosystem integration",
-  items: [
-    "Migrated Android theme to `Theme.Material3.DayNight.NoActionBar` with transparent Edge-to-Edge.",
-    "Enabled `DynamicColors.applyToActivitiesIfAvailable` for Material You dynamic theming.",
-    "New native plugin `EthoneTheme` exposing system accent colors to the WebView.",
-    "New native plugin `EthoneHaptics` with `VibrationEffect` predefined effects and custom waveforms.",
-    "Edge-to-Edge: transparent StatusBar and NavigationBar, `WindowCompat.setDecorFitsSystemWindows(window, false)`.",
-    "Predictive Back enabled via `enableOnBackInvokedCallback`.",
-    "Quick Settings Tiles `FocusTileService` and `PresenceTileService`.",
-    "Dynamic App Shortcuts and `shortcuts.xml`: new note, focus, task, search.",
-    "3 Jetpack Glance widgets: `EthoneCompactGlanceWidget`, `EthoneListGlanceWidget`, `EthoneDashboardGlanceWidget`.",
-    "Notification channels `ethone_reminders`, `ethone_focus`, `ethone_sync`.",
-    "`useMaterialYou` setting to toggle Android dynamic palette.",
-    "Predictive back gesture handled in JS via `@capacitor/app`.",
-    "Themed app icon `ic_launcher_monochrome.xml`.",
-    "Multi-window and foldable support via `screenSize|smallestScreenSize|screenLayout|orientation`.",
-    "Version badge bottom-right: v1.7.56.",
-  ],
-};
-
-const v336_es: ChangelogEntry = {
-  version: "v1.7.56",
-  date: "2026-08-22",
-  title: "Integración completa del ecosistema Android Material You",
-  items: [
-    "Migración del tema Android a `Theme.Material3.DayNight.NoActionBar` con Edge-to-Edge transparente.",
-    "Activación de `DynamicColors.applyToActivitiesIfAvailable` para Material You.",
-    "Nuevo plugin nativo `EthoneTheme` que expone colores del sistema al WebView.",
-    "Nuevo plugin nativo `EthoneHaptics` con `VibrationEffect` y waveforms personalizadas.",
-    "Edge-to-Edge: barras de estado y navegación transparentes, `WindowCompat.setDecorFitsSystemWindows`.",
-    "Predictive Back activado mediante `enableOnBackInvokedCallback`.",
-    "Tiles de ajustes rápidos `FocusTileService` y `PresenceTileService`.",
-    "App Shortcuts dinámicos y `shortcuts.xml`: nota nueva, focus, tarea, búsqueda.",
-    "3 widgets Jetpack Glance: `EthoneCompactGlanceWidget`, `EthoneListGlanceWidget`, `EthoneDashboardGlanceWidget`.",
-    "Canales de notificación `ethone_reminders`, `ethone_focus`, `ethone_sync`.",
-    "Ajuste `useMaterialYou` para activar/desactivar la paleta dinámica de Android.",
-    "Gesto de retroceso predictivo gestionado en JS mediante `@capacitor/app`.",
-    "Icono de aplicación monocromo `ic_launcher_monochrome.xml`.",
-    "Soporte de multifinestra y plegables mediante `screenSize|smallestScreenSize|screenLayout|orientation`.",
-    "Versión mostrada abajo a la derecha: v1.7.56.",
-  ],
-};
-
-const v336_de: ChangelogEntry = {
-  version: "v1.7.56",
-  date: "2026-08-22",
-  title: "Vollständige Android Material You Ökosystem-Integration",
-  items: [
-    "Android-Theme auf `Theme.Material3.DayNight.NoActionBar` mit transparentem Edge-to-Edge migriert.",
-    "`DynamicColors.applyToActivitiesIfAvailable` für Material You aktiviert.",
-    "Neues natives Plugin `EthoneTheme` zur Freigabe von Systemfarben an den WebView.",
-    "Neues natives Plugin `EthoneHaptics` mit `VibrationEffect` und benutzerdefinierten Waveforms.",
-    "Edge-to-Edge: transparente Status- und Navigationsleiste, `WindowCompat.setDecorFitsSystemWindows`.",
-    "Predictive Back über `enableOnBackInvokedCallback` aktiviert.",
-    "Schnelleinstellungen-Kacheln `FocusTileService` und `PresenceTileService`.",
-    "Dynamische App-Shortcuts und `shortcuts.xml`: neue Notiz, Focus, Aufgabe, Suche.",
-    "3 Jetpack Glance-Widgets: `EthoneCompactGlanceWidget`, `EthoneListGlanceWidget`, `EthoneDashboardGlanceWidget`.",
-    "Benachrichtigungskanäle `ethone_reminders`, `ethone_focus`, `ethone_sync`.",
-    "Einstellung `useMaterialYou` zum Ein-/Ausschalten der Android-Dynamikpalette.",
-    "Predictive-Back-Geste in JS über `@capacitor/app` behandelt.",
-    "Monochromes App-Icon `ic_launcher_monochrome.xml`.",
-    "Multi-Window- und Faltbildschirm-Support über `screenSize|smallestScreenSize|screenLayout|orientation`.",
-    "Version unten rechts: v1.7.56.",
-  ],
-};
-
-const v339_fr: ChangelogEntry = {
-  version: "v1.7.59",
-  date: "2026-08-22",
-  title: "Intégration des dernières APIs Android 14/15/16 (Live Updates, Private Space, Foldables)",
-  items: [
-    "Service de premier plan `EthoneFocusForegroundService` pour les notifications riches et persistantes de Focus.",
-    "Notification avec `ProgressStyle`, chronomètre de décompte et actions Pause/Arrêter/Terminer.",
-    "Plugin `EthoneSecurity` : `FLAG_SECURE` contextuel, nettoyage du presse-papiers.",
-    "Plugin `EthonePhotoPicker` utilisant `PickVisualMedia` (Android 14+) sans permission large.",
-    "Plugin `EthoneWindow` avec `WindowInfoTracker` pour écrans pliables et tablettes.",
-    "Synchronisation Material 3 Expressive : mapping complet des couleurs système vers les variables CSS ETHONE.",
-    "Manifest `enableOnBackInvokedCallback` pour le retour prédictif.",
-    "Raccourci applicatif `brain-idea` ajouté.",
-    "Version affichée en bas à droite : v1.7.59.",
-  ],
-};
-
-const v339_en: ChangelogEntry = {
-  version: "v1.7.59",
-  date: "2026-08-22",
-  title: "Integration of latest Android 14/15/16 APIs (Live Updates, Private Space, Foldables)",
-  items: [
-    "Foreground service `EthoneFocusForegroundService` for rich, persistent Focus notifications.",
-    "Notification with `ProgressStyle`, countdown chronometer and Pause/Stop/Complete actions.",
-    "`EthoneSecurity` plugin: contextual `FLAG_SECURE`, clipboard clearing.",
-    "`EthonePhotoPicker` plugin using `PickVisualMedia` (Android 14+) without broad storage permission.",
-    "`EthoneWindow` plugin with `WindowInfoTracker` for foldables and tablets.",
-    "Material 3 Expressive sync: full system color mapping to ETHONE CSS variables.",
-    "Manifest `enableOnBackInvokedCallback` for predictive back gesture.",
-    "`brain-idea` app shortcut added.",
-    "Version badge bottom-right: v1.7.59.",
-  ],
-};
-
-const v339_es: ChangelogEntry = {
-  version: "v1.7.59",
-  date: "2026-08-22",
-  title: "Integración de las últimas APIs Android 14/15/16 (Live Updates, Private Space, plegables)",
-  items: [
-    "Servicio en primer plano `EthoneFocusForegroundService` para notificaciones ricas y persistentes de Focus.",
-    "Notificación con `ProgressStyle`, cronómetro de cuenta atrás y acciones Pausa/Detener/Completar.",
-    "Plugin `EthoneSecurity`: `FLAG_SECURE` contextual, limpieza del portapapeles.",
-    "Plugin `EthonePhotoPicker` usando `PickVisualMedia` (Android 14+) sin permiso amplio de almacenamiento.",
-    "Plugin `EthoneWindow` con `WindowInfoTracker` para plegables y tablets.",
-    "Sincronización Material 3 Expressive: mapeo completo de colores del sistema a variables CSS ETHONE.",
-    "Manifest `enableOnBackInvokedCallback` para el gesto de retroceso predictivo.",
-    "Atajo de app `brain-idea` añadido.",
-    "Versión mostrada abajo a la derecha: v1.7.59.",
-  ],
-};
-
-const v339_de: ChangelogEntry = {
-  version: "v1.7.59",
-  date: "2026-08-22",
-  title: "Integration der neuesten Android 14/15/16 APIs (Live Updates, Private Space, Foldables)",
-  items: [
-    "Vordergrund-Service `EthoneFocusForegroundService` für reiche, persistente Focus-Benachrichtigungen.",
-    "Benachrichtigung mit `ProgressStyle`, Countdown-Chronometer und Aktionen Pause/Stopp/Abschließen.",
-    "`EthoneSecurity`-Plugin: kontextuelles `FLAG_SECURE`, Zwischenablage leeren.",
-    "`EthonePhotoPicker`-Plugin mit `PickVisualMedia` (Android 14+) ohne breite Speicherberechtigung.",
-    "`EthoneWindow`-Plugin mit `WindowInfoTracker` für faltbare Geräte und Tablets.",
-    "Material 3 Expressive-Synchronisation: vollständige Systemfarbzuordnung zu ETHONE-CSS-Variablen.",
-    "Manifest `enableOnBackInvokedCallback` für prädiktive Zurück-Geste.",
-    "App-Shortcut `brain-idea` hinzugefügt.",
-    "Version unten rechts: v1.7.59.",
+    "Ersetzen der schwarzen unteren Leiste durch ein schwebendes Kapsel-Dock.",
+    "Positioniert `fixed bottom-4 left-1/2 -translate-x-1/2` mit `w-[92%] max-w-[380px] h-[64px]`.",
+    "Sehr abgerundete Ecken `rounded-[28px]` und `mb-[env(safe-area-inset-bottom)]`.",
+    "Hintergrund `rgba(18,18,24,0.70)`, `backdrop-blur-[24px] saturate-[190%]` und Lichtkante.",
+    "Schatten und innerer Schein `inset 0 1px 1px rgba(255,255,255,0.20), 0 16px 32px -8px rgba(0,0,0,0.6)`.",
+    "Aktive Pille `rounded-full bg-white/[0.10]` mit sanftem Übergang.",
+    "`pb-28` Padding im Hauptcontainer zur Vermeidung von Überlappung.",
+    "Version unten rechts: v1.7.58.",
   ],
 };
 
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v147_fr, v146_fr, v145_fr, v144_fr, v143_fr, v142_fr, v141_fr, v140_fr, v139_fr, v138_fr, v137_fr, v136_fr, v135_fr, v134_fr, v133_fr, v132_fr, v131_fr, v130_fr, v206_fr, v205_fr, v204_fr, v203_fr, v202_fr, v201_fr, v200_fr, v199_fr, v198_fr, v197_fr, v196_fr, v195_fr, v194_fr, v193_fr, v192_fr, v191_fr, v190_fr, v189_fr, v188_fr, v187_fr, v186_fr, v185_fr, v184_fr, v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr, v329_fr, v330_fr, v331_fr, v332_fr, v334_fr, v335_fr, v336_fr, v339_fr],
+  fr: [v147_fr, v146_fr, v145_fr, v144_fr, v143_fr, v142_fr, v141_fr, v140_fr, v139_fr, v138_fr, v137_fr, v136_fr, v135_fr, v134_fr, v133_fr, v132_fr, v131_fr, v130_fr, v206_fr, v205_fr, v204_fr, v203_fr, v202_fr, v201_fr, v200_fr, v199_fr, v198_fr, v197_fr, v196_fr, v195_fr, v194_fr, v193_fr, v192_fr, v191_fr, v190_fr, v189_fr, v188_fr, v187_fr, v186_fr, v185_fr, v184_fr, v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr, v329_fr, v330_fr, v331_fr, v332_fr, v338_fr],
   en: [v147_en, v146_en, v145_en, v144_en, v143_en, v142_en, v141_en, v140_en, v139_en, v138_en, v137_en, v136_en, v135_en, v134_en, v133_en, v132_en, v131_en, v130_en, v206_en, v205_en, v204_en, v203_en, v202_en, v201_en, v200_en, v199_en, v198_en, v197_en, v196_en, v195_en, v194_en, v193_en, v192_en, v191_en, v190_en, v189_en, v188_en, v187_en, v186_en, v185_en, v184_en, v183_en, v182_en, v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
@@ -4067,10 +3831,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
     v330_en,
     v331_en,
     v332_en,
-    v334_en,
-    v335_en,
-    v336_en,
-    v339_en,
+    v338_en,
   ],
   es: [v147_es, v146_es, v145_es, v144_es, v143_es, v142_es, v141_es, v140_es, v139_es, v138_es, v137_es, v136_es, v135_es, v134_es, v133_es, v132_es, v131_es, v130_es, v206_es, v205_es, v204_es, v203_es, v202_es, v201_es, v200_es, v199_es, v198_es, v197_es, v196_es, v195_es, v194_es, v193_es, v192_es, v191_es, v190_es, v189_es, v188_es, v187_es, v186_es, v185_es, v184_es, v183_es, v182_es, v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
@@ -4121,10 +3882,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
     v330_es,
     v331_es,
     v332_es,
-    v334_es,
-    v335_es,
-    v336_es,
-    v339_es,
+    v338_es,
   ],
   de: [v147_de, v146_de, v145_de, v144_de, v143_de, v142_de, v141_de, v140_de, v139_de, v138_de, v137_de, v136_de, v135_de, v134_de, v133_de, v132_de, v131_de, v130_de, v206_de, v205_de, v204_de, v203_de, v202_de, v201_de, v200_de, v199_de, v198_de, v197_de, v196_de, v195_de, v194_de, v193_de, v192_de, v191_de, v190_de, v189_de, v188_de, v187_de, v186_de, v185_de, v184_de, v183_de, v182_de, v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
@@ -4175,10 +3933,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
     v330_de,
     v331_de,
     v332_de,
-    v334_de,
-    v335_de,
-    v336_de,
-    v339_de,
+    v338_de,
   ],
 };
 

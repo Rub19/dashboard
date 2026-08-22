@@ -2,67 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
-## v1.7.59 — 2026-08-22
+## v1.7.58 — 2026-08-22
 
-**Intégration des dernières APIs Android 14/15/16**
+**Dock mobile flottant Liquid Glass**
 
-- `EthoneFocusForegroundService` : service de premier plan pour notifications riches et persistantes de Focus (chronomètre, `ProgressStyle`, actions Pause/Arrêter/Terminer).
-- `EthoneSecurityPlugin` : `FLAG_SECURE` contextuel, nettoyage du presse-papiers.
-- `EthonePhotoPicker` : `PickVisualMedia` Android 14+ sans permission large.
-- `EthoneWindow` : `WindowInfoTracker` pour écrans pliables et tablettes.
-- Synchronisation Material 3 Expressive : mapping complet des couleurs système vers variables CSS ETHONE.
-- `android:enableOnBackInvokedCallback` pour retour prédictif.
-- Raccourci applicatif `brain-idea`.
-- Version `v1.7.59`.
-
-## v1.7.56 — 2026-08-22
-
-**Intégration complète de l'écosystème Android Material You**
-
-- Migration du thème Android vers `Theme.Material3.DayNight.NoActionBar` avec Edge-to-Edge transparent.
-- Activation des couleurs dynamiques Material You via `DynamicColors.applyToActivitiesIfAvailable`.
-- Plugin natif `EthoneThemePlugin` (`lib/android.ts`) : récupération des couleurs système Android 12+.
-- Plugin natif `EthoneHapticsPlugin` (`lib/android.ts`) : effets prédéfinis (`EFFECT_TICK/CLICK/HEAVY_CLICK/DOUBLE_CLICK`) et waveforms personnalisées.
-- Edge-to-Edge dans `MainActivity.java` : `WindowCompat.setDecorFitsSystemWindows` + barres transparentes.
-- Predictive Back activé via `enableOnBackInvokedCallback`.
-- Quick Settings Tiles `FocusTileService` et `PresenceTileService`.
-- App Shortcuts natifs (statiques `shortcuts.xml` + dynamiques dans `MainActivity`).
-- 3 widgets Jetpack Glance : `EthoneCompactGlanceWidget`, `EthoneListGlanceWidget`, `EthoneDashboardGlanceWidget`.
-- Canaux de notifications `ethone_reminders`, `ethone_focus`, `ethone_sync`.
-- Paramètre `useMaterialYou` dans les réglages pour basculer la palette Material You.
-- Geste de retour arrière prédictif géré côté JS via `@capacitor/app`.
-- Icône d'application thématisée `ic_launcher_monochrome.xml`.
-- Support multi-fenêtres et pliables (`screenSize|smallestScreenSize|screenLayout|orientation`).
-- Version `v1.7.56`.
-
-## v1.7.55 — 2026-08-22
-
-**Dynamic Island interactive, moteur haptique Taptic Engine et interactions Pro**
-
-- Plugins Capacitor ajoutés : `@capacitor/haptics` et `@capawesome/capacitor-app-shortcuts`.
-- `lib/haptics.ts` : profils tactiles (`selection`, `light`, `medium`, `heavy`, `successPattern`, `errorPattern`) avec no-op sur le web.
-- Haptics intégrés à `MobileNav`, `SystemControlCard`, `UserProfileDropdown`, `BrainChat`, `NotesPage`, `TasksCard` et `app/login/page.tsx`.
-- Live Activity iOS enrichie avec 4 scénarios (Focus/Pomodoro, tâche active, ambiance sonore, synchronisation) dans `EthoneLiveActivity.swift`.
-- `lib/live-activity.ts` et `FocusProvider.tsx` orchestrent les 4 modes.
-- `components/PrivacyShield.tsx` : mode discret activé par un double tapotement à deux doigts sur le Dashboard.
-- `components/TasksCard.tsx` : geste de balayage (droite = terminé, gauche = supprimer) avec retour haptique.
-- Home Screen Quick Actions (`@capawesome/capacitor-app-shortcuts`) : nouvelle note, focus, scanner, recherche (⌘K).
-- Version `v1.7.55`.
-
-## v1.7.54 — 2026-08-22
-
-**Intégration complète de l'écosystème Apple**
-
-- Installation des plugins Capacitor : `@capacitor/app`, `@capacitor/status-bar`, `@capacitor/share`, `@capacitor/push-notifications`, `@capacitor/action-sheet`, `@capacitor-community/apple-sign-in`, `@aparajita/capacitor-biometric-auth`, `@capawesome/capacitor-badge` et `capacitor-live-activity`.
-- Bouton officiel "Se connecter avec Apple" sur la page de connexion (`app/login/page.tsx`) avec authentification par ID token Supabase.
-- Verrouillage Face ID / Touch ID de la section Sécurité via `components/BiometricLock.tsx`.
-- Partage natif iOS sur les notes (`lib/native.ts`, `components/NotesPage.tsx`).
-- Deep Linking `ethone://` + Universal Links via `@capacitor/app` et `components/NativeIntegration.tsx`.
-- Synchronisation du style de la Status Bar avec le thème ETHONE.
-- Live Activities connectées aux sessions Focus/Pomodoro (`lib/live-activity.ts`, `FocusProvider.tsx`).
-- Fichiers natifs iOS créés pour WidgetKit (`EthoneWidget.swift`), Live Activity (`EthoneLiveActivity.swift`) et Siri Shortcuts / App Intents (`EthoneAppIntents.swift`).
-- Mise à jour de `ios/App/App/Info.plist` (Face ID, URL scheme) et création de `ios/App/App/App.entitlements`.
-- Version `v1.7.54`.
+- Remplacement de la bottom bar noire par un dock flottant en capsule.
+- Positionnement `fixed bottom-4 left-1/2 -translate-x-1/2`, `w-[92%] max-w-[380px] h-[64px]`, `rounded-[28px]`.
+- Safe Area iOS : `mb-[env(safe-area-inset-bottom)]`.
+- Fond `rgba(18,18,24,0.70)`, `backdrop-blur-[24px] saturate-[190%]`, biseau `border-white/[0.12] border-t-white/[0.30]`.
+- Ombre et reflet interne `inset 0 1px 1px rgba(255,255,255,0.20), 0 16px 32px -8px rgba(0,0,0,0.6)`.
+- Pilule active `rounded-full bg-white/[0.10]` avec transition fluide.
+- Padding `pb-28` sur le conteneur principal pour éviter tout recouvrement.
+- Version `v1.7.58`, cache PWA `v421`.
 
 ## v1.7.52 — 2026-08-22
 

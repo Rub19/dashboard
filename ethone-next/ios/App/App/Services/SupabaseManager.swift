@@ -47,7 +47,7 @@ final class SupabaseManager: ObservableObject {
 
     private let baseURL: URL?
     private let anonKey: String?
-    private let userId: String
+    private var userId: String
 
     init(userId: String = "") {
         self.userId = userId

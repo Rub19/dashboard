@@ -7,37 +7,81 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0737E4ECE0A54477BB7A216C /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DD3EBAE6EF4F05ADBF325A /* MainViewController.swift */; };
 		2FAD9763203C412B000D30F8 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2FAD9762203C412B000D30F8 /* config.xml */; };
 		50379B232058CBB4000EE86E /* capacitor.config.json in Resources */ = {isa = PBXBuildFile; fileRef = 50379B222058CBB4000EE86E /* capacitor.config.json */; };
-		0737E4ECE0A54477BB7A216C /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DD3EBAE6EF4F05ADBF325A /* MainViewController.swift */; };
-		935142EEFE0D4F57BC936ECB /* EthoneSpotlightPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CE47E838EC74041A71400CD /* EthoneSpotlightPlugin.swift */; };
-		7C7CFE35AA5E4B4B8A332BD0 /* EthoneFocusPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4286D03F605440FB75AA6BD /* EthoneFocusPlugin.swift */; };
 		504EC3081FED79650016851F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504EC3071FED79650016851F /* AppDelegate.swift */; };
-		F48DB15F11D54CB3B55913E6 /* EthoneAppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A574DAE3029C417A96A4426E /* EthoneAppIntents.swift */; };
 		504EC30D1FED79650016851F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30B1FED79650016851F /* Main.storyboard */; };
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
+		7C7CFE35AA5E4B4B8A332BD0 /* EthoneFocusPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4286D03F605440FB75AA6BD /* EthoneFocusPlugin.swift */; };
+		935142EEFE0D4F57BC936ECB /* EthoneSpotlightPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CE47E838EC74041A71400CD /* EthoneSpotlightPlugin.swift */; };
 		A084ECDBA7D38E1E42DFC39D /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */; };
+		F48DB15F11D54CB3B55913E6 /* EthoneAppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A574DAE3029C417A96A4426E /* EthoneAppIntents.swift */; };
+		XX02F5412EBC007C90F720XX /* EthoneLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = XX2CA0E079554EB3C0F9B1XX /* EthoneLiveActivity.swift */; };
+		XX18F9AD120420C741D34EXX /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = XX11940AB5AEC0B905F872XX /* WidgetKit.framework */; };
+		XX1AF8697BEBA0E8F82551XX /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = XXE8EAF5BF080A03928E44XX /* SwiftUI.framework */; };
+		XX4B109375DE72D41FE9E4XX /* EthoneWidgetsBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = XX9D3587D95F175CEF3ED4XX /* EthoneWidgetsBundle.swift */; };
+		XX83BF2AD7AF2D2FC349A0XX /* AppIntents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = XXA38541A933C1CED0731BXX /* AppIntents.framework */; };
+		XXC0E4C68D675A2407A799XX /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = XX6540AB487384FDDF0F35XX /* ActivityKit.framework */; };
+		XXC335413692E36CFD26B3XX /* StandBy/EthoneStandByWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = XX327C83A33DDEB5286036XX /* StandBy/EthoneStandByWidget.swift */; };
+		XXE970D41D8CE561CB0584XX /* EthoneWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = XX379AA316E73DE813AA5EXX /* EthoneWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		XXEFD6C7A4207E9DA9AE38XX /* EthoneWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = XXD909CF9F4DC472DDEDDEXX /* EthoneWidget.swift */; };
+		XXF41EE354B92E289C4594XX /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = XXB1BCC0924A704C2F717DXX /* Info.plist */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		XX808428520E08A24523CBXX /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 504EC2FC1FED79650016851F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = XX9F8B083412FC69CD2009XX;
+			remoteInfo = EthoneWidgets;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		XXF5156454089F413B48BAXX /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				XXE970D41D8CE561CB0584XX /* EthoneWidgets.appex in Embed Foundation Extensions */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			name = "Embed Foundation Extensions";
+			dstPath = "";
+			dstSubfolderSpec = 13;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		2FAD9762203C412B000D30F8 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = config.xml; sourceTree = "<group>"; };
 		50379B222058CBB4000EE86E /* capacitor.config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = capacitor.config.json; sourceTree = "<group>"; };
 		504EC3041FED79650016851F /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		504EC3071FED79650016851F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		C6DD3EBAE6EF4F05ADBF325A /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
-		A574DAE3029C417A96A4426E /* EthoneAppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthoneAppIntents.swift; sourceTree = "<group>"; };
-		6CE47E838EC74041A71400CD /* EthoneSpotlightPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthoneSpotlightPlugin.swift; sourceTree = "<group>"; };
-		B4286D03F605440FB75AA6BD /* EthoneFocusPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthoneFocusPlugin.swift; sourceTree = "<group>"; };
 		504EC30C1FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		504EC30E1FED79650016851F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		504EC3111FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		504EC3131FED79650016851F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		50B271D01FEDC1A000F3C39B /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
+		6CE47E838EC74041A71400CD /* EthoneSpotlightPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthoneSpotlightPlugin.swift; sourceTree = "<group>"; };
+		A574DAE3029C417A96A4426E /* EthoneAppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthoneAppIntents.swift; sourceTree = "<group>"; };
 		AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF51FD2D460BCFE21FA515B2 /* Pods-App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.release.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.release.xcconfig"; sourceTree = "<group>"; };
+		B4286D03F605440FB75AA6BD /* EthoneFocusPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthoneFocusPlugin.swift; sourceTree = "<group>"; };
+		C6DD3EBAE6EF4F05ADBF325A /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		FC68EB0AF532CFC21C3344DD /* Pods-App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.debug.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.debug.xcconfig"; sourceTree = "<group>"; };
+		XX11940AB5AEC0B905F872XX /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		XX2CA0E079554EB3C0F9B1XX /* EthoneLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthoneLiveActivity.swift; sourceTree = "<group>"; };
+		XX327C83A33DDEB5286036XX /* StandBy/EthoneStandByWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandBy/EthoneStandByWidget.swift; sourceTree = "<group>"; };
+		XX379AA316E73DE813AA5EXX /* EthoneWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = EthoneWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		XX6540AB487384FDDF0F35XX /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActivityKit.framework; path = System/Library/Frameworks/ActivityKit.framework; sourceTree = SDKROOT; };
+		XX9D3587D95F175CEF3ED4XX /* EthoneWidgetsBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthoneWidgetsBundle.swift; sourceTree = "<group>"; };
+		XXA38541A933C1CED0731BXX /* AppIntents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppIntents.framework; path = System/Library/Frameworks/AppIntents.framework; sourceTree = SDKROOT; };
+		XXB1BCC0924A704C2F717DXX /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		XXD909CF9F4DC472DDEDDEXX /* EthoneWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthoneWidget.swift; sourceTree = "<group>"; };
+		XXE8EAF5BF080A03928E44XX /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,9 +93,29 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		XXC8D1168402717D6877A6XX /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				XX18F9AD120420C741D34EXX /* WidgetKit.framework in Frameworks */,
+				XXC0E4C68D675A2407A799XX /* ActivityKit.framework in Frameworks */,
+				XX1AF8697BEBA0E8F82551XX /* SwiftUI.framework in Frameworks */,
+				XX83BF2AD7AF2D2FC349A0XX /* AppIntents.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1EBEC1026DB04C3A87A1A58A /* Intents */ = {
+			isa = PBXGroup;
+			children = (
+				A574DAE3029C417A96A4426E /* EthoneAppIntents.swift */,
+			);
+			name = Intents;
+			path = Intents;
+			sourceTree = "<group>";
+		};
 		27E2DDA53C4D2A4D1A88CE4A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -67,6 +131,7 @@
 				504EC3051FED79650016851F /* Products */,
 				7F8756D8B27F46E3366F6CEA /* Pods */,
 				27E2DDA53C4D2A4D1A88CE4A /* Frameworks */,
+				XX08C754D164444896FD69XX /* EthoneWidgets */,
 			);
 			sourceTree = "<group>";
 		};
@@ -74,6 +139,7 @@
 			isa = PBXGroup;
 			children = (
 				504EC3041FED79650016851F /* App.app */,
+				XX379AA316E73DE813AA5EXX /* EthoneWidgets.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -96,6 +162,15 @@
 			path = App;
 			sourceTree = "<group>";
 		};
+		7F8756D8B27F46E3366F6CEA /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				FC68EB0AF532CFC21C3344DD /* Pods-App.debug.xcconfig */,
+				AF51FD2D460BCFE21FA515B2 /* Pods-App.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		8834E8A5383D4A4EA08190AC /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
@@ -106,22 +181,16 @@
 			path = Plugins;
 			sourceTree = "<group>";
 		};
-		1EBEC1026DB04C3A87A1A58A /* Intents */ = {
+		XX08C754D164444896FD69XX /* EthoneWidgets */ = {
 			isa = PBXGroup;
 			children = (
-				A574DAE3029C417A96A4426E /* EthoneAppIntents.swift */,
+				XX2CA0E079554EB3C0F9B1XX /* EthoneLiveActivity.swift */,
+				XXD909CF9F4DC472DDEDDEXX /* EthoneWidget.swift */,
+				XX327C83A33DDEB5286036XX /* StandBy/EthoneStandByWidget.swift */,
+				XX9D3587D95F175CEF3ED4XX /* EthoneWidgetsBundle.swift */,
+				XXB1BCC0924A704C2F717DXX /* Info.plist */,
 			);
-			name = Intents;
-			path = Intents;
-			sourceTree = "<group>";
-		};
-		7F8756D8B27F46E3366F6CEA /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				FC68EB0AF532CFC21C3344DD /* Pods-App.debug.xcconfig */,
-				AF51FD2D460BCFE21FA515B2 /* Pods-App.release.xcconfig */,
-			);
-			name = Pods;
+			path = EthoneWidgets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -136,15 +205,34 @@
 				504EC3011FED79650016851F /* Frameworks */,
 				504EC3021FED79650016851F /* Resources */,
 				9592DBEFFC6D2A0C8D5DEB22 /* [CP] Embed Pods Frameworks */,
+				XXF5156454089F413B48BAXX /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				XX009A9749825A9D773367XX /* PBXTargetDependency */,
 			);
 			name = App;
 			productName = App;
 			productReference = 504EC3041FED79650016851F /* App.app */;
 			productType = "com.apple.product-type.application";
+		};
+		XX9F8B083412FC69CD2009XX /* EthoneWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = XX4558CD48B1427AEC5367XX /* Build configuration list for PBXNativeTarget "EthoneWidgets" */;
+			buildPhases = (
+				XXEFC85297DB5D5D960813XX /* Sources */,
+				XXC8D1168402717D6877A6XX /* Frameworks */,
+				XX51371DA8AB430603EC85XX /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EthoneWidgets;
+			productName = EthoneWidgets;
+			productReference = XX379AA316E73DE813AA5EXX /* EthoneWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -178,6 +266,7 @@
 			projectRoot = "";
 			targets = (
 				504EC3031FED79650016851F /* App */,
+				XX9F8B083412FC69CD2009XX /* EthoneWidgets */,
 			);
 		};
 /* End PBXProject section */
@@ -193,6 +282,14 @@
 				50379B232058CBB4000EE86E /* capacitor.config.json in Resources */,
 				504EC30D1FED79650016851F /* Main.storyboard in Resources */,
 				2FAD9763203C412B000D30F8 /* config.xml in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		XX51371DA8AB430603EC85XX /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				XXF41EE354B92E289C4594XX /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -247,7 +344,26 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		XXEFC85297DB5D5D960813XX /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				XX02F5412EBC007C90F720XX /* EthoneLiveActivity.swift in Sources */,
+				XXEFD6C7A4207E9DA9AE38XX /* EthoneWidget.swift in Sources */,
+				XXC335413692E36CFD26B3XX /* StandBy/EthoneStandByWidget.swift in Sources */,
+				XX4B109375DE72D41FE9E4XX /* EthoneWidgetsBundle.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		XX009A9749825A9D773367XX /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = XX9F8B083412FC69CD2009XX /* EthoneWidgets */;
+			targetProxy = XX808428520E08A24523CBXX /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		504EC30B1FED79650016851F /* Main.storyboard */ = {
@@ -415,6 +531,44 @@
 			};
 			name = Release;
 		};
+		XX5621A4EEEAC9570CC51DXX /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_BUNDLE_IDENTIFIER = dev.ethone.app.EthoneWidgets;
+				INFOPLIST_FILE = EthoneWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Ethone Widgets";
+				SWIFT_VERSION = 5.0;
+				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "";
+				DEVELOPMENT_TEAM = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				MARKETING_VERSION = 1.7.63;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+			};
+			name = Debug;
+		};
+		XXFA1981F55FB23779617EXX /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_BUNDLE_IDENTIFIER = dev.ethone.app.EthoneWidgets;
+				INFOPLIST_FILE = EthoneWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Ethone Widgets";
+				SWIFT_VERSION = 5.0;
+				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "";
+				DEVELOPMENT_TEAM = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				MARKETING_VERSION = 1.7.63;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -432,6 +586,15 @@
 			buildConfigurations = (
 				504EC3171FED79650016851F /* Debug */,
 				504EC3181FED79650016851F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		XX4558CD48B1427AEC5367XX /* Build configuration list for PBXNativeTarget "EthoneWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				XX5621A4EEEAC9570CC51DXX /* Debug */,
+				XXFA1981F55FB23779617EXX /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

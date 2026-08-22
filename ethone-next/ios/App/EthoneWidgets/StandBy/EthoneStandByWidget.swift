@@ -1,6 +1,7 @@
 import WidgetKit
 import SwiftUI
 
+@available(iOS 17.0, *)
 struct EthoneStandByEntry: TimelineEntry {
     let date: Date
     let hour: String
@@ -10,6 +11,7 @@ struct EthoneStandByEntry: TimelineEntry {
     let nextGoal: String
 }
 
+@available(iOS 17.0, *)
 struct StandByProvider: TimelineProvider {
     func placeholder(in context: Context) -> EthoneStandByEntry {
         EthoneStandByEntry(date: Date(), hour: "12:00", dateText: "22 août", weather: "18°C Ensoleillé", presence: "En ligne", nextGoal: "Réunion 14h")
@@ -42,6 +44,7 @@ struct StandByProvider: TimelineProvider {
     }
 }
 
+@available(iOS 17.0, *)
 struct EthoneStandByView: View {
     var entry: EthoneStandByEntry
     @Environment(\.widgetRenderingMode) var renderingMode
@@ -80,6 +83,7 @@ struct EthoneStandByView: View {
     }
 }
 
+@available(iOS 17.0, *)
 struct EthoneStandByWidget: Widget {
     let kind: String = "EthoneStandByWidget"
 

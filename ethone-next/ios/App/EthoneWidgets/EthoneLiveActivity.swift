@@ -9,6 +9,7 @@ enum ActivityMode: String, Codable {
     case sync
 }
 
+@available(iOS 16.1, *)
 struct EthoneActivityAttributes: ActivityAttributes {
     public struct ContentState: Codable, Hashable {
         var mode: ActivityMode
@@ -22,6 +23,7 @@ struct EthoneActivityAttributes: ActivityAttributes {
     var initialTitle: String
 }
 
+@available(iOS 17.0, *)
 struct EthoneLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: EthoneActivityAttributes.self) { context in
@@ -161,6 +163,7 @@ struct EthoneLiveActivity: Widget {
     }
 }
 
+@available(iOS 17.0, *)
 struct SoundWaveView: View {
     @State private var phase: Double = 0
 
@@ -179,6 +182,7 @@ struct SoundWaveView: View {
     }
 }
 
+@available(iOS 17.0, *)
 struct LockScreenView: View {
     let context: ActivityViewContext<EthoneActivityAttributes>
 
@@ -204,11 +208,11 @@ struct LockScreenView: View {
     }
 }
 
+@available(iOS 17.0, *)
 struct EthoneLiveActivityIntent: LiveActivityIntent {
     var action: String
 
     func perform() async throws -> some IntentResult {
-        // Forward to the app via App Group or URL scheme
         await MainActor.run {
             if let url = URL(string: "ethone://live-activity?action=\(action)") {
                 UIApplication.shared.open(url, options: [:])

@@ -73,6 +73,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "jsdom": "^24.0.0",
     "patch-package": "^8.0.1",
+    "rork-xcode": "^0.12.0",
     "tailwindcss": "^4",
     "ts-jest": "^29.4.12",
     "typescript": "^5"

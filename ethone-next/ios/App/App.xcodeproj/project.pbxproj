@@ -52,6 +52,22 @@
 		B682C270D87C4D7092A964A8 /* BrainCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A07710DE62C486D92905BEE /* BrainCardView.swift */; };
 		86FE92012EFB42C082D7E893 /* StorageCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCCB95B513EF49F18AA6D75C /* StorageCardView.swift */; };
 		BB97394A6D6C4805A99C728B /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E5E2E668DC45F4AFE75146 /* SupabaseService.swift */; };
+		B64E31828115441C975F0D39 /* LiquidGlassContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D446449A474041A4B60ADDD5 /* LiquidGlassContainer.swift */; };
+		41E7A8EC0BF448D9AA4A981A /* AmbientBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E4567E46164E4082A251C9 /* AmbientBackground.swift */; };
+		E6AFFAE5669E467BBA7D1E46 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8318D5E98B374CF1B5E86CD7 /* HapticFeedback.swift */; };
+		D69FC4E4C95E47EEA7A62650 /* BentoGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DADA805107841C08293B574 /* BentoGridView.swift */; };
+		B1C24F01C5DE4F09A89D0269 /* FocusTimerCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF109FDD6EFB4741A8C06D9A /* FocusTimerCard.swift */; };
+		8389AAC794D9446CB96880F4 /* TasksCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B829BD627A24805A5EF6F67 /* TasksCard.swift */; };
+		A4867EF667984CB9A91A54FA /* BrainCaptureCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7235379CD8CC46E399B7D931 /* BrainCaptureCard.swift */; };
+		C1E808C5486E4CB9A16F70B8 /* StorageMetricsCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB337D43AD3D473383DF2B90 /* StorageMetricsCard.swift */; };
+		2D484C16B89347ACBC05E98B /* SupabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0CCAEE9DE8740CCBB3802FB /* SupabaseManager.swift */; };
+		AED36FF7B91A4E1CAC188F17 /* LocalNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0B70F53C713467DA47412A4 /* LocalNotificationManager.swift */; };
+		62F967270489492C825952C6 /* FocusLiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56AD9AEF9094473889EBEB99 /* FocusLiveActivityManager.swift */; };
+		C7F4C641308A4E40951A7632 /* BiometricAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6024308033A4D02B4DF3561 /* BiometricAuth.swift */; };
+		3F12006FB70F431E8A8616D3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92066A8DF9484FBB8D8BE9EA /* SceneDelegate.swift */; };
+		9E0CB5C730A94D5DB28ACEE3 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 31361908BFE24391B8AF22C3 /* Charts.framework */; };
+		B4F289023B4D4E0EB7E28DFA /* LocalAuthentication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 722B11F6F1D4476190DF7583 /* LocalAuthentication.framework */; };
+		F955C4404A5F4E9FAA614CED /* EthoneLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = XX2CA0E079554EB3C0F9B1XX /* EthoneLiveActivity.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -133,6 +149,21 @@
 		7A07710DE62C486D92905BEE /* BrainCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Native/BentoCards/BrainCardView.swift"; sourceTree = "<group>"; };
 		DCCB95B513EF49F18AA6D75C /* StorageCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Native/BentoCards/StorageCardView.swift"; sourceTree = "<group>"; };
 		36E5E2E668DC45F4AFE75146 /* SupabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services/SupabaseService.swift"; sourceTree = "<group>"; };
+		D446449A474041A4B60ADDD5 /* LiquidGlassContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DesignSystem/LiquidGlassContainer.swift"; sourceTree = "<group>"; };
+		19E4567E46164E4082A251C9 /* AmbientBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DesignSystem/AmbientBackground.swift"; sourceTree = "<group>"; };
+		8318D5E98B374CF1B5E86CD7 /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DesignSystem/HapticFeedback.swift"; sourceTree = "<group>"; };
+		4DADA805107841C08293B574 /* BentoGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Native/BentoGridView.swift"; sourceTree = "<group>"; };
+		FF109FDD6EFB4741A8C06D9A /* FocusTimerCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Native/BentoCards/FocusTimerCard.swift"; sourceTree = "<group>"; };
+		0B829BD627A24805A5EF6F67 /* TasksCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Native/BentoCards/TasksCard.swift"; sourceTree = "<group>"; };
+		7235379CD8CC46E399B7D931 /* BrainCaptureCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Native/BentoCards/BrainCaptureCard.swift"; sourceTree = "<group>"; };
+		AB337D43AD3D473383DF2B90 /* StorageMetricsCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Native/BentoCards/StorageMetricsCard.swift"; sourceTree = "<group>"; };
+		C0CCAEE9DE8740CCBB3802FB /* SupabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services/SupabaseManager.swift"; sourceTree = "<group>"; };
+		A0B70F53C713467DA47412A4 /* LocalNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services/LocalNotificationManager.swift"; sourceTree = "<group>"; };
+		56AD9AEF9094473889EBEB99 /* FocusLiveActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services/FocusLiveActivityManager.swift"; sourceTree = "<group>"; };
+		B6024308033A4D02B4DF3561 /* BiometricAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services/BiometricAuth.swift"; sourceTree = "<group>"; };
+		92066A8DF9484FBB8D8BE9EA /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SceneDelegate.swift"; sourceTree = "<group>"; };
+		31361908BFE24391B8AF22C3 /* Charts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Charts.framework; path = System/Library/Frameworks/Charts.framework; sourceTree = SDKROOT; };
+		722B11F6F1D4476190DF7583 /* LocalAuthentication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LocalAuthentication.framework; path = System/Library/Frameworks/LocalAuthentication.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,6 +176,8 @@
 				XX1045A1692FA62B56C994XX /* WidgetKit.framework in Frameworks */,
 				XX1B03629861B8FB81C3C3XX /* ActivityKit.framework in Frameworks */,
 				XX14AEA040873B67D7C79FXX /* UserNotifications.framework in Frameworks */,
+				9E0CB5C730A94D5DB28ACEE3 /* Charts.framework in Frameworks */,
+				B4F289023B4D4E0EB7E28DFA /* LocalAuthentication.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -184,6 +217,8 @@
 			isa = PBXGroup;
 			children = (
 				AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */,
+			31361908BFE24391B8AF22C3 /* Charts.framework */,
+			722B11F6F1D4476190DF7583 /* LocalAuthentication.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -233,6 +268,19 @@
 				7A07710DE62C486D92905BEE /* BrainCardView.swift */,
 				DCCB95B513EF49F18AA6D75C /* StorageCardView.swift */,
 				36E5E2E668DC45F4AFE75146 /* SupabaseService.swift */,
+				D446449A474041A4B60ADDD5 /* LiquidGlassContainer.swift */,
+				19E4567E46164E4082A251C9 /* AmbientBackground.swift */,
+				8318D5E98B374CF1B5E86CD7 /* HapticFeedback.swift */,
+				4DADA805107841C08293B574 /* BentoGridView.swift */,
+				FF109FDD6EFB4741A8C06D9A /* FocusTimerCard.swift */,
+				0B829BD627A24805A5EF6F67 /* TasksCard.swift */,
+				7235379CD8CC46E399B7D931 /* BrainCaptureCard.swift */,
+				AB337D43AD3D473383DF2B90 /* StorageMetricsCard.swift */,
+				C0CCAEE9DE8740CCBB3802FB /* SupabaseManager.swift */,
+				A0B70F53C713467DA47412A4 /* LocalNotificationManager.swift */,
+				56AD9AEF9094473889EBEB99 /* FocusLiveActivityManager.swift */,
+				B6024308033A4D02B4DF3561 /* BiometricAuth.swift */,
+				92066A8DF9484FBB8D8BE9EA /* SceneDelegate.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -472,6 +520,20 @@
 				B682C270D87C4D7092A964A8 /* BrainCardView.swift in Sources */,
 				86FE92012EFB42C082D7E893 /* StorageCardView.swift in Sources */,
 				BB97394A6D6C4805A99C728B /* SupabaseService.swift in Sources */,
+				B64E31828115441C975F0D39 /* LiquidGlassContainer.swift in Sources */,
+				41E7A8EC0BF448D9AA4A981A /* AmbientBackground.swift in Sources */,
+				E6AFFAE5669E467BBA7D1E46 /* HapticFeedback.swift in Sources */,
+				D69FC4E4C95E47EEA7A62650 /* BentoGridView.swift in Sources */,
+				B1C24F01C5DE4F09A89D0269 /* FocusTimerCard.swift in Sources */,
+				8389AAC794D9446CB96880F4 /* TasksCard.swift in Sources */,
+				A4867EF667984CB9A91A54FA /* BrainCaptureCard.swift in Sources */,
+				C1E808C5486E4CB9A16F70B8 /* StorageMetricsCard.swift in Sources */,
+				2D484C16B89347ACBC05E98B /* SupabaseManager.swift in Sources */,
+				AED36FF7B91A4E1CAC188F17 /* LocalNotificationManager.swift in Sources */,
+				62F967270489492C825952C6 /* FocusLiveActivityManager.swift in Sources */,
+				C7F4C641308A4E40951A7632 /* BiometricAuth.swift in Sources */,
+				3F12006FB70F431E8A8616D3 /* SceneDelegate.swift in Sources */,
+				F955C4404A5F4E9FAA614CED /* EthoneLiveActivity.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.6 — 2026-08-22
+
+**Intégration des fonctionnalités modernes iOS (Controls, App Intents, Shaders Metal, parallaxe, SF Symbols, Live Activity)**
+
+- Contrôles Centre de Contrôle / Écran Verrouillé (`ControlWidgetButton`, `ControlWidgetToggle`).
+- App Intents natifs ETHONE : Focus, tâche rapide, statut Dashboard, Brain.
+- Shaders Metal `liquidGlassColor` et `liquidGlassDistortion` pour effets Liquid Glass.
+- Parallaxe gyroscopique `CMMotionManager` sur les tuiles Bento.
+- Micro-animations SF Symbols (`.bounce`, `.pulse`, `.variableColor`) et `matchedGeometryEffect` plein écran.
+- Live Activity Pomodoro dédié `FocusActivity.swift` pour Dynamic Island.
+- Frameworks liés : `CoreMotion` et `Metal`.
+- Version `v1.8.6`.
+
 ## v1.8.5 — 2026-08-22
 
 **Application iOS 100 % Swift natif (Liquid Glass, matériel et nouveautés iOS)**

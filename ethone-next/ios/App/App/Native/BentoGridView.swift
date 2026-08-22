@@ -12,13 +12,20 @@ struct BentoGridView<Content: View>: View {
 }
 
 struct BentoPressable<Content: View>: View {
+    let id: String
+    var namespace: Namespace.ID?
     @ViewBuilder let content: Content
+    var onTap: (() -> Void)?
+
     @State private var isPressed = false
 
     var body: some View {
-        content
+        let view = content
             .scaleEffect(isPressed ? 0.96 : 1.0)
             .animation(.spring(response: 0.35, dampingFraction: 0.75), value: isPressed)
+            .onTapGesture {
+                onTap?()
+            }
             .simultaneousGesture(
                 DragGesture(minimumDistance: 0)
                     .onChanged { _ in
@@ -30,5 +37,11 @@ struct BentoPressable<Content: View>: View {
                         isPressed = false
                     }
             )
+
+        if let namespace = namespace {
+            view.matchedGeometryEffect(id: id, in: namespace, properties: .position, anchor: .center, isSource: true)
+        } else {
+            view
+        }
     }
 }

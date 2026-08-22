@@ -3,6 +3,8 @@ import SwiftUI
 struct DashboardView: View {
     @ObservedObject var manager: SupabaseManager
     @State private var showAuth = false
+    @State private var selectedCard: String? = nil
+    @Namespace private var animation
 
     let columns = [
         GridItem(.flexible(), spacing: 14),
@@ -10,71 +12,138 @@ struct DashboardView: View {
     ]
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                HStack(alignment: .firstTextBaseline) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("ETHONE")
-                            .font(.largeTitle.weight(.black))
-                            .foregroundStyle(.primary)
+        ZStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    HStack(alignment: .firstTextBaseline) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("ETHONE")
+                                .font(.largeTitle.weight(.black))
+                                .foregroundStyle(.primary)
 
-                        Text("Tableau de bord natif")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
+                            Text("Tableau de bord natif")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
 
-                    Spacer()
+                        Spacer()
 
-                    Button {
-                        Haptic.light()
-                        showAuth.toggle()
-                    } label: {
-                        Image(systemName: "faceid")
-                            .font(.title3)
-                            .foregroundStyle(.primary)
-                            .padding(10)
-                            .background(Circle().fill(.ultraThinMaterial))
-                    }
-                }
-                .padding(.horizontal)
-
-                if let error = manager.errorMessage {
-                    Text(error)
-                        .font(.caption)
-                        .foregroundStyle(.red)
-                        .padding()
-                        .background(RoundedRectangle(cornerRadius: 12).fill(.ultraThinMaterial))
-                        .padding(.horizontal)
-                }
-
-                BentoGridView(columns: columns) {
-                    BentoPressable {
-                        if #available(iOS 26.0, *) {
-                            FocusTimerCard()
-                        } else {
-                            FocusFallbackCard()
+                        Button {
+                            Haptic.light()
+                            showAuth.toggle()
+                        } label: {
+                            Image(systemName: "faceid")
+                                .font(.title3)
+                                .foregroundStyle(.primary)
+                                .padding(10)
+                                .background(Circle().fill(.ultraThinMaterial))
                         }
                     }
+                    .padding(.horizontal)
 
-                    BentoPressable {
-                        TasksCard(manager: manager)
+                    if let error = manager.errorMessage {
+                        Text(error)
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                            .padding()
+                            .background(RoundedRectangle(cornerRadius: 12).fill(.ultraThinMaterial))
+                            .padding(.horizontal)
                     }
 
-                    BentoPressable {
-                        BrainCaptureCard()
-                    }
+                    BentoGridView(columns: columns) {
+                        BentoPressable(id: "focus", namespace: animation, onTap: { selectedCard = "focus" }) {
+                            if #available(iOS 26.0, *) {
+                                FocusTimerCard()
+                            } else {
+                                FocusFallbackCard()
+                            }
+                        }
+                        .opacity(selectedCard == "focus" ? 0 : 1)
 
-                    BentoPressable {
-                        StorageMetricsCard()
+                        BentoPressable(id: "tasks", namespace: animation, onTap: { selectedCard = "tasks" }) {
+                            TasksCard(manager: manager)
+                        }
+                        .opacity(selectedCard == "tasks" ? 0 : 1)
+
+                        BentoPressable(id: "brain", namespace: animation, onTap: { selectedCard = "brain" }) {
+                            BrainCaptureCard()
+                        }
+                        .opacity(selectedCard == "brain" ? 0 : 1)
+
+                        BentoPressable(id: "storage", namespace: animation, onTap: { selectedCard = "storage" }) {
+                            StorageMetricsCard()
+                        }
+                        .opacity(selectedCard == "storage" ? 0 : 1)
+                    }
+                    .padding(.horizontal)
+                }
+                .padding(.top, 24)
+                .padding(.bottom, 120)
+            }
+
+            if let selected = selectedCard {
+                FullScreenBentoCard(id: selected, namespace: animation) {
+                    withAnimation(.spring(response: 0.45, dampingFraction: 0.8)) {
+                        selectedCard = nil
                     }
                 }
-                .padding(.horizontal)
+                .zIndex(1)
             }
-            .padding(.top, 24)
-            .padding(.bottom, 120)
         }
         .sheet(isPresented: $showAuth) {
             BiometricSheet()
+        }
+    }
+}
+
+struct FullScreenBentoCard: View {
+    let id: String
+    var namespace: Namespace.ID
+    let onClose: () -> Void
+
+    var body: some View {
+        ZStack(alignment: .topTrailing) {
+            Color.black.opacity(0.6)
+                .ignoresSafeArea()
+                .onTapGesture { onClose() }
+
+            LiquidGlassContainer {
+                VStack(alignment: .leading, spacing: 20) {
+                    HStack {
+                        Text(title(for: id))
+                            .font(.largeTitle.weight(.bold))
+                        Spacer()
+                        Button {
+                            onClose()
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.title2)
+                                .symbolEffect(.bounce, value: true)
+                        }
+                    }
+
+                    Text("Vue plein écran avec matchedGeometryEffect.")
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+
+                    Spacer()
+                }
+                .padding()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            .matchedGeometryEffect(id: id, in: namespace, properties: .position, anchor: .center, isSource: false)
+            .padding(20)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+
+    private func title(for id: String) -> String {
+        switch id {
+        case "focus": return "Focus"
+        case "tasks": return "Tâches"
+        case "brain": return "Brain"
+        case "storage": return "Stockage"
+        default: return "ETHONE"
         }
     }
 }

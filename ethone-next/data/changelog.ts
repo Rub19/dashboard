@@ -4392,9 +4392,69 @@ const v349_de: ChangelogEntry = {
   ],
 };
 
+const v350_fr: ChangelogEntry = {
+  version: "v1.8.6",
+  date: "2026-08-22",
+  title: "Intégration iOS avancée (Controls, App Intents, Shaders Metal, parallaxe, SF Symbols, Live Activity)",
+  items: [
+    "Contrôles Centre de Contrôle / Écran Verrouillé (`ControlWidgetButton`, `ControlWidgetToggle`).",
+    "App Intents natifs ETHONE : Focus, tâche rapide, statut Dashboard, Brain.",
+    "Shaders Metal `liquidGlassColor` et `liquidGlassDistortion` pour effets Liquid Glass.",
+    "Parallaxe gyroscopique `CMMotionManager` sur les tuiles Bento.",
+    "Micro-animations SF Symbols (`.bounce`, `.pulse`, `.variableColor`) et `matchedGeometryEffect` plein écran.",
+    "Live Activity Pomodoro dédié `FocusActivity.swift` pour Dynamic Island.",
+    "Frameworks liés : `CoreMotion` et `Metal`.",
+  ],
+};
+
+const v350_en: ChangelogEntry = {
+  version: "v1.8.6",
+  date: "2026-08-22",
+  title: "Advanced iOS integration (Controls, App Intents, Metal shaders, parallax, SF Symbols, Live Activity)",
+  items: [
+    "Control Center / Lock Screen controls (`ControlWidgetButton`, `ControlWidgetToggle`).",
+    "ETHONE App Intents: Focus, quick task, Dashboard status, Brain.",
+    "Metal shaders `liquidGlassColor` and `liquidGlassDistortion` for Liquid Glass effects.",
+    "Gyroscopic parallax with `CMMotionManager` on Bento tiles.",
+    "SF Symbol micro-animations (`.bounce`, `.pulse`, `.variableColor`) and full-screen `matchedGeometryEffect`.",
+    "Dedicated Pomodoro Live Activity `FocusActivity.swift` for the Dynamic Island.",
+    "Linked frameworks: `CoreMotion` and `Metal`.",
+  ],
+};
+
+const v350_es: ChangelogEntry = {
+  version: "v1.8.6",
+  date: "2026-08-22",
+  title: "Integración iOS avanzada (Controles, App Intents, Shaders Metal, paralaje, SF Symbols, Live Activity)",
+  items: [
+    "Controles para Centro de Control / Pantalla bloqueada (`ControlWidgetButton`, `ControlWidgetToggle`).",
+    "App Intents nativos ETHONE: Focus, tarea rápida, estado del Dashboard, Brain.",
+    "Shaders Metal `liquidGlassColor` y `liquidGlassDistortion` para efectos Liquid Glass.",
+    "Paralaje giroscópico con `CMMotionManager` en las tarjetas Bento.",
+    "Micro-animaciones SF Symbol (`.bounce`, `.pulse`, `.variableColor`) y `matchedGeometryEffect` a pantalla completa.",
+    "Live Activity Pomodoro dedicado `FocusActivity.swift` para la Dynamic Island.",
+    "Frameworks vinculados: `CoreMotion` y `Metal`.",
+  ],
+};
+
+const v350_de: ChangelogEntry = {
+  version: "v1.8.6",
+  date: "2026-08-22",
+  title: "Erweiterte iOS-Integration (Steuerelemente, App Intents, Metal-Shader, Parallaxe, SF Symbols, Live Activity)",
+  items: [
+    "Kontrollzentrum-/Sperrbildschirm-Steuerelemente (`ControlWidgetButton`, `ControlWidgetToggle`).",
+    "ETHONE-App-Intents: Fokus, schnelle Aufgabe, Dashboard-Status, Brain.",
+    "Metal-Shader `liquidGlassColor` und `liquidGlassDistortion` für Liquid-Glass-Effekte.",
+    "Gyroskopische Parallaxe mit `CMMotionManager` auf Bento-Kacheln.",
+    "SF-Symbol-Mikroanimationen (`.bounce`, `.pulse`, `.variableColor`) und Vollbild-`matchedGeometryEffect`.",
+    "Dedizierte Pomodoro-Live-Activity `FocusActivity.swift` für die Dynamic Island.",
+    "Verknüpfte Frameworks: `CoreMotion` und `Metal`.",
+  ],
+};
+
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v349_fr, v348_fr, v347_fr, v346_fr, v345_fr, v344_fr, v343_fr, v147_fr, v146_fr, v145_fr, v144_fr, v143_fr, v142_fr, v141_fr, v140_fr, v139_fr, v138_fr, v137_fr, v136_fr, v135_fr, v134_fr, v133_fr, v132_fr, v131_fr, v130_fr, v206_fr, v205_fr, v204_fr, v203_fr, v202_fr, v201_fr, v200_fr, v199_fr, v198_fr, v197_fr, v196_fr, v195_fr, v194_fr, v193_fr, v192_fr, v191_fr, v190_fr, v189_fr, v188_fr, v187_fr, v186_fr, v185_fr, v184_fr, v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr, v329_fr, v330_fr, v331_fr, v332_fr, v338_fr, v340_fr, v341_fr, v342_fr],
-  en: [v349_en, v348_en, v347_en, v346_en, v345_en, v344_en, v343_en, v147_en, v146_en, v145_en, v144_en, v143_en, v142_en, v141_en, v140_en, v139_en, v138_en, v137_en, v136_en, v135_en, v134_en, v133_en, v132_en, v131_en, v130_en, v206_en, v205_en, v204_en, v203_en, v202_en, v201_en, v200_en, v199_en, v198_en, v197_en, v196_en, v195_en, v194_en, v193_en, v192_en, v191_en, v190_en, v189_en, v188_en, v187_en, v186_en, v185_en, v184_en, v183_en, v182_en, v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
+  fr: [v350_fr, v349_fr, v348_fr, v347_fr, v346_fr, v345_fr, v344_fr, v343_fr, v147_fr, v146_fr, v145_fr, v144_fr, v143_fr, v142_fr, v141_fr, v140_fr, v139_fr, v138_fr, v137_fr, v136_fr, v135_fr, v134_fr, v133_fr, v132_fr, v131_fr, v130_fr, v206_fr, v205_fr, v204_fr, v203_fr, v202_fr, v201_fr, v200_fr, v199_fr, v198_fr, v197_fr, v196_fr, v195_fr, v194_fr, v193_fr, v192_fr, v191_fr, v190_fr, v189_fr, v188_fr, v187_fr, v186_fr, v185_fr, v184_fr, v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr, v329_fr, v330_fr, v331_fr, v332_fr, v338_fr, v340_fr, v341_fr, v342_fr],
+  en: [v350_en, v349_en, v348_en, v347_en, v346_en, v345_en, v344_en, v343_en, v147_en, v146_en, v145_en, v144_en, v143_en, v142_en, v141_en, v140_en, v139_en, v138_en, v137_en, v136_en, v135_en, v134_en, v133_en, v132_en, v131_en, v130_en, v206_en, v205_en, v204_en, v203_en, v202_en, v201_en, v200_en, v199_en, v198_en, v197_en, v196_en, v195_en, v194_en, v193_en, v192_en, v191_en, v190_en, v189_en, v188_en, v187_en, v186_en, v185_en, v184_en, v183_en, v182_en, v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -4448,7 +4508,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
     v342_en,
     v340_en,
   ],
-  es: [v349_es, v348_es, v347_es, v346_es, v345_es, v344_es, v343_es, v147_es, v146_es, v145_es, v144_es, v143_es, v142_es, v141_es, v140_es, v139_es, v138_es, v137_es, v136_es, v135_es, v134_es, v133_es, v132_es, v131_es, v130_es, v206_es, v205_es, v204_es, v203_es, v202_es, v201_es, v200_es, v199_es, v198_es, v197_es, v196_es, v195_es, v194_es, v193_es, v192_es, v191_es, v190_es, v189_es, v188_es, v187_es, v186_es, v185_es, v184_es, v183_es, v182_es, v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
+  es: [v350_es, v349_es, v348_es, v347_es, v346_es, v345_es, v344_es, v343_es, v147_es, v146_es, v145_es, v144_es, v143_es, v142_es, v141_es, v140_es, v139_es, v138_es, v137_es, v136_es, v135_es, v134_es, v133_es, v132_es, v131_es, v130_es, v206_es, v205_es, v204_es, v203_es, v202_es, v201_es, v200_es, v199_es, v198_es, v197_es, v196_es, v195_es, v194_es, v193_es, v192_es, v191_es, v190_es, v189_es, v188_es, v187_es, v186_es, v185_es, v184_es, v183_es, v182_es, v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -4502,7 +4562,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
     v342_es,
     v340_es,
   ],
-  de: [v349_de, v348_de, v347_de, v346_de, v345_de, v344_de, v343_de, v147_de, v146_de, v145_de, v144_de, v143_de, v142_de, v141_de, v140_de, v139_de, v138_de, v137_de, v136_de, v135_de, v134_de, v133_de, v132_de, v131_de, v130_de, v206_de, v205_de, v204_de, v203_de, v202_de, v201_de, v200_de, v199_de, v198_de, v197_de, v196_de, v195_de, v194_de, v193_de, v192_de, v191_de, v190_de, v189_de, v188_de, v187_de, v186_de, v185_de, v184_de, v183_de, v182_de, v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
+  de: [v350_de, v349_de, v348_de, v347_de, v346_de, v345_de, v344_de, v343_de, v147_de, v146_de, v145_de, v144_de, v143_de, v142_de, v141_de, v140_de, v139_de, v138_de, v137_de, v136_de, v135_de, v134_de, v133_de, v132_de, v131_de, v130_de, v206_de, v205_de, v204_de, v203_de, v202_de, v201_de, v200_de, v199_de, v198_de, v197_de, v196_de, v195_de, v194_de, v193_de, v192_de, v191_de, v190_de, v189_de, v188_de, v187_de, v186_de, v185_de, v184_de, v183_de, v182_de, v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

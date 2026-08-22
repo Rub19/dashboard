@@ -68,6 +68,13 @@
 		9E0CB5C730A94D5DB28ACEE3 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 31361908BFE24391B8AF22C3 /* Charts.framework */; };
 		B4F289023B4D4E0EB7E28DFA /* LocalAuthentication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 722B11F6F1D4476190DF7583 /* LocalAuthentication.framework */; };
 		F955C4404A5F4E9FAA614CED /* EthoneLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = XX2CA0E079554EB3C0F9B1XX /* EthoneLiveActivity.swift */; };
+		E573570A974F465A850149D4 /* LiquidShaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F45F3D9635A4638878F59D4 /* LiquidShaders.swift */; };
+		638A9F01248247A39B8A678F /* LiquidShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 6EE9910CA91B41E480E6A609 /* LiquidShaders.metal */; };
+		BDDA2CEBCA664541B142EB74 /* FocusActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3430B72DCC9640E7AA7E0E88 /* FocusActivity.swift */; };
+		2F57C2C8C0814F44B02E968E /* EthoneControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA989D740F70452696B424CD /* EthoneControls.swift */; };
+		3FF28C3FBD1B4ADFAFB8983F /* EthoneIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53973A402A2740199C6E4FB5 /* EthoneIntents.swift */; };
+		31DB3F0CE88642A9A345D69B /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 194C9B6B1D8C4F53B6320428 /* CoreMotion.framework */; };
+		4C5A2FB106D74C4E8AAEC194 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84DFF5B8130342BB8E8E77DD /* Metal.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -164,6 +171,13 @@
 		92066A8DF9484FBB8D8BE9EA /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SceneDelegate.swift"; sourceTree = "<group>"; };
 		31361908BFE24391B8AF22C3 /* Charts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Charts.framework; path = System/Library/Frameworks/Charts.framework; sourceTree = SDKROOT; };
 		722B11F6F1D4476190DF7583 /* LocalAuthentication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LocalAuthentication.framework; path = System/Library/Frameworks/LocalAuthentication.framework; sourceTree = SDKROOT; };
+		8F45F3D9635A4638878F59D4 /* LiquidShaders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DesignSystem/LiquidShaders.swift"; sourceTree = "<group>"; };
+		6EE9910CA91B41E480E6A609 /* LiquidShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = "DesignSystem/LiquidShaders.metal"; sourceTree = "<group>"; };
+		3430B72DCC9640E7AA7E0E88 /* FocusActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LiveActivities/FocusActivity.swift"; sourceTree = "<group>"; };
+		CA989D740F70452696B424CD /* EthoneControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Widgets/EthoneControls.swift"; sourceTree = "<group>"; };
+		53973A402A2740199C6E4FB5 /* EthoneIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Intents/EthoneIntents.swift"; sourceTree = "<group>"; };
+		194C9B6B1D8C4F53B6320428 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		84DFF5B8130342BB8E8E77DD /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -178,6 +192,8 @@
 				XX14AEA040873B67D7C79FXX /* UserNotifications.framework in Frameworks */,
 				9E0CB5C730A94D5DB28ACEE3 /* Charts.framework in Frameworks */,
 				B4F289023B4D4E0EB7E28DFA /* LocalAuthentication.framework in Frameworks */,
+				31DB3F0CE88642A9A345D69B /* CoreMotion.framework in Frameworks */,
+				4C5A2FB106D74C4E8AAEC194 /* Metal.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -218,6 +234,8 @@
 			children = (
 				AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */,
 			31361908BFE24391B8AF22C3 /* Charts.framework */,
+			194C9B6B1D8C4F53B6320428 /* CoreMotion.framework */,
+			84DFF5B8130342BB8E8E77DD /* Metal.framework */,
 			722B11F6F1D4476190DF7583 /* LocalAuthentication.framework */,
 			);
 			name = Frameworks;
@@ -281,6 +299,11 @@
 				56AD9AEF9094473889EBEB99 /* FocusLiveActivityManager.swift */,
 				B6024308033A4D02B4DF3561 /* BiometricAuth.swift */,
 				92066A8DF9484FBB8D8BE9EA /* SceneDelegate.swift */,
+				8F45F3D9635A4638878F59D4 /* LiquidShaders.swift */,
+				6EE9910CA91B41E480E6A609 /* LiquidShaders.metal */,
+				3430B72DCC9640E7AA7E0E88 /* FocusActivity.swift */,
+				CA989D740F70452696B424CD /* EthoneControls.swift */,
+				53973A402A2740199C6E4FB5 /* EthoneIntents.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -534,6 +557,11 @@
 				C7F4C641308A4E40951A7632 /* BiometricAuth.swift in Sources */,
 				3F12006FB70F431E8A8616D3 /* SceneDelegate.swift in Sources */,
 				F955C4404A5F4E9FAA614CED /* EthoneLiveActivity.swift in Sources */,
+				E573570A974F465A850149D4 /* LiquidShaders.swift in Sources */,
+				638A9F01248247A39B8A678F /* LiquidShaders.metal in Sources */,
+				BDDA2CEBCA664541B142EB74 /* FocusActivity.swift in Sources */,
+				2F57C2C8C0814F44B02E968E /* EthoneControls.swift in Sources */,
+				3FF28C3FBD1B4ADFAFB8983F /* EthoneIntents.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

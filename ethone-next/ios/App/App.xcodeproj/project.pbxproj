@@ -32,7 +32,7 @@
 		XX52AB3AC6DC7297F7B810XX /* EthoneIntelligence27.swift in Sources */ = {isa = PBXBuildFile; fileRef = XX72C1C7CE0550A6F8CA42XX /* EthoneIntelligence27.swift */; };
 		XX6D279A4962786252E535XX /* Controls/EthoneBrainIdeaControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = XX11BCFE3BA093B4BE314FXX /* Controls/EthoneBrainIdeaControl.swift */; };
 		XX6E8A81E4CC28B43871B7XX /* EthoneAppShortcuts26.swift in Sources */ = {isa = PBXBuildFile; fileRef = XXC6994DA153B015DB1CD9XX /* EthoneAppShortcuts26.swift */; };
-		XX7347149DE31BFC6B9E95XX /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = XXD233A3F6DD3CDB361735XX /* Info.plist */; };
+
 		XX7C33BE4BD7F00F4E838AXX /* Controls/EthoneNewNoteControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = XXDE81F519F3B54002884DXX /* Controls/EthoneNewNoteControl.swift */; };
 		XX83BF2AD7AF2D2FC349A0XX /* AppIntents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = XXA38541A933C1CED0731BXX /* AppIntents.framework */; };
 		XXAA0717B8EFF75FE66FEEXX /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = XX4497F5673E40E62BAC28XX /* NotificationService.swift */; };
@@ -389,7 +389,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				XX7347149DE31BFC6B9E95XX /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

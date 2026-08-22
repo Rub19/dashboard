@@ -1,7 +1,10 @@
 "use client";
 
+import { useEffect } from "react";
 import type { Item } from "./useItems";
 import { useTasks, type Task as CloudTask, type TaskInput } from "./useTasks";
+import { scheduleTaskReminder, cancelReminder } from "@/lib/local-notifications";
+import { notificationIdFromString } from "@/lib/local-notifications";
 
 export type TaskPriority = "low" | "medium" | "high" | "urgent";
 
@@ -43,18 +46,52 @@ export function useCloudTasks() {
 
   const mappedItems = items.map(toItem);
 
+  useEffect(() => {
+    if (loading) return;
+    for (const task of items) {
+      if (task.is_completed || !task.due_date) continue;
+      const dueDate = new Date(task.due_date);
+      if (Number.isNaN(dueDate.getTime()) || dueDate.getTime() <= Date.now()) continue;
+      void scheduleTaskReminder({ id: task.id, title: task.title, dueDate });
+    }
+  }, [items, loading]);
+
   const createItem = async (input: Omit<Item, "id">) => {
-    await create({
+    const next = await create({
       title: input.title,
       description: input.body || null,
       is_completed: input.done || false,
       priority: (input.data?.priority === "urgent" ? "high" : String(input.data?.priority || "medium")) as CloudTask["priority"],
       due_date: input.data?.dueDate ? String(input.data.dueDate) : null,
     });
+    if (next?.due_date && !next.is_completed) {
+      await scheduleTaskReminder({
+        id: next.id,
+        title: next.title,
+        dueDate: new Date(next.due_date),
+      });
+    }
   };
 
   const updateItem = async (id: string, input: Partial<Omit<Item, "id">>) => {
-    await update(id, toInput(input));
+    const next = await update(id, toInput(input));
+    if (!next) return;
+
+    const reminderId = notificationIdFromString("task", next.id);
+    if (next.is_completed || !next.due_date) {
+      await cancelReminder(reminderId);
+    } else {
+      await scheduleTaskReminder({
+        id: next.id,
+        title: next.title,
+        dueDate: new Date(next.due_date),
+      });
+    }
+  };
+
+  const removeItem = async (id: string) => {
+    await remove(id);
+    await cancelReminder(notificationIdFromString("task", id));
   };
 
   return {
@@ -64,7 +101,7 @@ export function useCloudTasks() {
     status,
     create: createItem,
     update: updateItem,
-    remove,
+    remove: removeItem,
     reload,
   };
 }

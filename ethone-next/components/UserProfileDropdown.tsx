@@ -102,7 +102,7 @@ export default function UserProfileDropdown() {
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = "v1.8.2";
+  const VERSION_LABEL = "v1.8.3";
 
   const menuItems = [
     {

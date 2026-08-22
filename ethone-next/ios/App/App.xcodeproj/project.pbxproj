@@ -67,6 +67,7 @@
 		3F12006FB70F431E8A8616D3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92066A8DF9484FBB8D8BE9EA /* SceneDelegate.swift */; };
 		9E0CB5C730A94D5DB28ACEE3 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 31361908BFE24391B8AF22C3 /* Charts.framework */; };
 		B4F289023B4D4E0EB7E28DFA /* LocalAuthentication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 722B11F6F1D4476190DF7583 /* LocalAuthentication.framework */; };
+		F955C4404A5F4E9FAA614CED /* EthoneLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = XX2CA0E079554EB3C0F9B1XX /* EthoneLiveActivity.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -532,6 +533,7 @@
 				62F967270489492C825952C6 /* FocusLiveActivityManager.swift in Sources */,
 				C7F4C641308A4E40951A7632 /* BiometricAuth.swift in Sources */,
 				3F12006FB70F431E8A8616D3 /* SceneDelegate.swift in Sources */,
+				F955C4404A5F4E9FAA614CED /* EthoneLiveActivity.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

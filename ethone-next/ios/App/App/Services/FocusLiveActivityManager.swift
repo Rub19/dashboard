@@ -1,22 +1,11 @@
 import Foundation
 import ActivityKit
 
-@available(iOS 16.2, *)
-struct FocusLiveActivityAttributes: ActivityAttributes {
-    struct ContentState: ActivityState {
-        var progress: Double
-        var remainingText: String
-    }
-
-    var presetName: String
-    var totalDuration: TimeInterval
-}
-
-@available(iOS 16.2, *)
+@available(iOS 26.0, *)
 final class FocusLiveActivityManager: ObservableObject {
     static let shared = FocusLiveActivityManager()
 
-    private var activity: Activity<FocusLiveActivityAttributes>?
+    private var activity: Activity<EthoneActivityAttributes>?
 
     private init() {}
 
@@ -24,29 +13,48 @@ final class FocusLiveActivityManager: ObservableObject {
         ActivityAuthorizationInfo().areActivitiesEnabled
     }
 
-    func start(preset: String, totalDuration: TimeInterval) {
+    func start(preset: String, totalDuration: TimeInterval, endDate: Date) {
         guard isAuthorized() else { return }
 
-        let attributes = FocusLiveActivityAttributes(presetName: preset, totalDuration: totalDuration)
-        let state = FocusLiveActivityAttributes.ContentState(progress: 0, remainingText: format(totalDuration))
+        let attributes = EthoneActivityAttributes(initialTitle: preset)
+        let state = EthoneActivityAttributes.ContentState(
+            mode: .focus,
+            title: preset,
+            subtitle: format(totalDuration),
+            progress: "0.0",
+            accent: "cyan",
+            action: "pause"
+        )
 
         do {
-            activity = try Activity.request(attributes: attributes, contentState: state, pushType: nil)
+            activity = try Activity.request(
+                attributes: attributes,
+                content: ActivityContent(state: state, staleDate: endDate),
+                pushType: nil,
+                style: .standard
+            )
         } catch {
             print("Live activity start error: \(error)")
         }
     }
 
-    func update(progress: Double, remaining: TimeInterval) {
-        guard let activity else { return }
-        let state = FocusLiveActivityAttributes.ContentState(progress: progress, remainingText: format(remaining))
+    func update(progress: Double, remaining: TimeInterval, isRunning: Bool) {
+        guard let activity = activity else { return }
+        let state = EthoneActivityAttributes.ContentState(
+            mode: .focus,
+            title: "Focus",
+            subtitle: format(remaining),
+            progress: String(format: "%.2f", progress * 100),
+            accent: "cyan",
+            action: isRunning ? "pause" : "resume"
+        )
         Task {
-            await activity.update(using: state)
+            await activity.update(ActivityContent(state: state, staleDate: nil))
         }
     }
 
     func end() {
-        guard let activity else { return }
+        guard let activity = activity else { return }
         Task {
             await activity.end(nil, dismissalPolicy: .default)
             self.activity = nil

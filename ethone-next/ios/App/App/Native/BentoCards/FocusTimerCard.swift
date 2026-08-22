@@ -3,17 +3,7 @@ import UIKit
 import UserNotifications
 import ActivityKit
 
-@available(iOS 16.2, *)
-struct FocusTimerAttributes: ActivityAttributes {
-    struct ContentState: ActivityState {
-        var progress: Double
-        var remaining: String
-    }
-
-    var preset: String
-    var duration: TimeInterval
-}
-
+@available(iOS 26.0, *)
 final class FocusTimerModel: ObservableObject {
     @Published var remaining: TimeInterval = 25 * 60
     @Published var total: TimeInterval = 25 * 60
@@ -23,6 +13,7 @@ final class FocusTimerModel: ObservableObject {
     private var timer: Timer?
     private var startDate: Date?
     private var endDate: Date?
+    private var activity: Activity<EthoneActivityAttributes>?
 
     func start(minutes: Double) {
         total = minutes * 60
@@ -58,10 +49,9 @@ final class FocusTimerModel: ObservableObject {
         progress = 1.0 - (remaining / total)
         if remaining <= 0 {
             complete()
+            return
         }
-        if #available(iOS 16.2, *) {
-            updateLiveActivity()
-        }
+        updateLiveActivity()
     }
 
     private func complete() {
@@ -69,9 +59,6 @@ final class FocusTimerModel: ObservableObject {
         remaining = 0
         progress = 1
         Haptic.success()
-        if #available(iOS 16.2, *) {
-            endLiveActivity()
-        }
     }
 
     private func scheduleNotification() {
@@ -90,34 +77,52 @@ final class FocusTimerModel: ObservableObject {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["ethone-focus-end"])
     }
 
-    @available(iOS 16.2, *)
+    @available(iOS 26.0, *)
     private func startLiveActivity() {
         guard ActivityAuthorizationInfo().areActivitiesEnabled else { return }
-        let attributes = FocusTimerAttributes(preset: "Focus", duration: total)
-        let state = FocusTimerAttributes.ContentState(progress: 0, remaining: format(remaining))
+        let attributes = EthoneActivityAttributes(initialTitle: "Focus")
+        let contentState = EthoneActivityAttributes.ContentState(
+            mode: .focus,
+            title: "Focus",
+            subtitle: format(remaining),
+            progress: String(format: "%.2f", 0.0),
+            accent: "cyan",
+            action: "pause"
+        )
         do {
-            _ = try Activity.request(attributes: attributes, contentState: state, pushType: nil)
+            activity = try Activity.request(
+                attributes: attributes,
+                content: ActivityContent(state: contentState, staleDate: endDate),
+                pushType: nil,
+                style: .standard
+            )
         } catch {
             print("Live activity error: \(error)")
         }
     }
 
-    @available(iOS 16.2, *)
+    @available(iOS 26.0, *)
     private func updateLiveActivity() {
-        let state = FocusTimerAttributes.ContentState(progress: progress, remaining: format(remaining))
+        guard let activity = activity else { return }
+        let contentState = EthoneActivityAttributes.ContentState(
+            mode: .focus,
+            title: "Focus",
+            subtitle: format(remaining),
+            progress: String(format: "%.2f", progress * 100),
+            accent: "cyan",
+            action: isRunning ? "pause" : "resume"
+        )
         Task {
-            for activity in Activity<FocusTimerAttributes>.activities {
-                await activity.update(using: state)
-            }
+            await activity.update(ActivityContent(state: contentState, staleDate: endDate))
         }
     }
 
-    @available(iOS 16.2, *)
+    @available(iOS 26.0, *)
     private func endLiveActivity() {
+        guard let activity = activity else { return }
         Task {
-            for activity in Activity<FocusTimerAttributes>.activities {
-                await activity.end(nil, dismissalPolicy: .default)
-            }
+            await activity.end(nil, dismissalPolicy: .default)
+            self.activity = nil
         }
     }
 
@@ -128,6 +133,7 @@ final class FocusTimerModel: ObservableObject {
     }
 }
 
+@available(iOS 26.0, *)
 struct FocusTimerCard: View {
     @StateObject private var model = FocusTimerModel()
 

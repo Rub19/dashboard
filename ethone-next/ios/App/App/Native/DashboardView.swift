@@ -49,7 +49,11 @@ struct DashboardView: View {
 
                 BentoGridView(columns: columns) {
                     BentoPressable {
-                        FocusTimerCard()
+                        if #available(iOS 26.0, *) {
+                            FocusTimerCard()
+                        } else {
+                            FocusFallbackCard()
+                        }
                     }
 
                     BentoPressable {
@@ -71,6 +75,32 @@ struct DashboardView: View {
         }
         .sheet(isPresented: $showAuth) {
             BiometricSheet()
+        }
+    }
+}
+
+struct FocusFallbackCard: View {
+    var body: some View {
+        LiquidGlassContainer {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Image(systemName: "target")
+                        .font(.title2)
+                    Spacer()
+                    Text("25:00")
+                        .font(.system(.title3, design: .rounded).monospacedDigit())
+                        .fontWeight(.bold)
+                }
+
+                Text("Focus")
+                    .font(.headline)
+
+                Text("Mise à niveau vers iOS 26 pour le minuteur Live Activity.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Spacer()
+            }
         }
     }
 }

@@ -60,17 +60,18 @@ jobs:
           test -f App.xcworkspace/contents.xcworkspacedata && cat App.xcworkspace/contents.xcworkspacedata
           xcodebuild -workspace App.xcworkspace -list
 
-      - name: Archive iOS Project (No Signing)
+      - name: Build iOS Project (No Signing)
         run: |
           cd ios/App
           mkdir -p build
           set -o pipefail
-          xcodebuild clean archive \
+          xcodebuild clean build \
             -workspace App.xcworkspace \
             -scheme App \
             -configuration Release \
             -sdk iphonesimulator \
-            -archivePath build/App.xcarchive \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            -derivedDataPath build \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
@@ -82,15 +83,17 @@ jobs:
 
       - name: Package Payload to IPA
         run: |
-          cd ios/App/build
-          mkdir -p Payload
-          cp -r App.xcarchive/Products/Applications/App.app Payload/
+          cd ios/App
+          APP_PATH=$(find build -name 'App.app' -type d | head -n 1)
+          echo "Found app: $APP_PATH"
+          mkdir -p build/Payload
+          cp -r "$APP_PATH" build/Payload/
+          cd build
           zip -r ETHONE.ipa Payload/
 
       - name: Write Build Summary on Failure
         if: failure()
         run: |
-          cd ethone-next
           {
             echo "### iOS build log"
             echo "```"

@@ -5,6 +5,11 @@ import SwiftUI
 struct EthoneWidgetsBundle: WidgetBundle {
     var body: some Widget {
         EthoneWidget()
+        EthoneStandByWidget()
         EthoneLiveActivity()
+        EthoneFocusControl()
+        EthoneNewNoteControl()
+        EthonePresenceControl()
+        EthoneBrainIdeaControl()
     }
 }

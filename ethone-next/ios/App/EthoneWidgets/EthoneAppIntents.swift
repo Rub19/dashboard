@@ -70,3 +70,67 @@ struct ChangePresenceIntent: AppIntent {
         return .result()
     }
 }
+
+@available(iOS 18.0, *)
+@AssistantIntent(schema: .system.search)
+struct EthoneSystemSearchIntent: AppIntent {
+    var criteria: StringSearchCriteria
+
+    func perform() async throws -> some IntentResult {
+        let encoded = criteria.term.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let url = URL(string: "ethone:///search?q=\(encoded)")!
+        await MainActor.run {
+            UIApplication.shared.open(url, options: [:])
+        }
+        return .result()
+    }
+}
+
+struct AddBrainIdeaFromSiriIntent: AppIntent {
+    static var title: LocalizedStringResource = "Ajouter une idée Brain ETHONE"
+    static var description = IntentDescription("Ajoute une idée dans le Brain ETHONE via Siri.")
+
+    @Parameter(title: "Idée")
+    var idea: String
+
+    init() {}
+
+    init(idea: String) {
+        self.idea = idea
+    }
+
+    func perform() async throws -> some IntentResult {
+        let shared = UserDefaults(suiteName: "group.dev.ethone.app")
+        shared?.set(idea, forKey: "ethone_brain_idea")
+
+        let encoded = idea.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let url = URL(string: "ethone://brain?idea=\(encoded)")!
+        await MainActor.run {
+            UIApplication.shared.open(url, options: [:])
+        }
+        return .result()
+    }
+}
+
+struct OpenNoteFromSiriIntent: AppIntent {
+    static var title: LocalizedStringResource = "Ouvrir une note ETHONE"
+    static var description = IntentDescription("Ouvre une note spécifique dans ETHONE.")
+
+    @Parameter(title: "Titre")
+    var title: String
+
+    init() {}
+
+    init(title: String) {
+        self.title = title
+    }
+
+    func perform() async throws -> some IntentResult {
+        let encoded = title.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let url = URL(string: "ethone://notes?q=\(encoded)")!
+        await MainActor.run {
+            UIApplication.shared.open(url, options: [:])
+        }
+        return .result()
+    }
+}

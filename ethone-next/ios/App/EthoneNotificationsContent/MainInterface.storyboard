@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="M4Y-Lb-cyx">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+    </dependencies>
+    <scenes>
+        <scene sceneID="ceB-am-kn3">
+            <objects>
+                <viewController id="M4Y-Lb-cyx" customClass="NotificationViewController" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" simulatedAppContext="notificationCenter" id="w49-px-Xg1">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="160"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ETHONE" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="dEG-37-ryd">
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="dEG-37-ryd" firstAttribute="top" secondItem="w49-px-Xg1" secondAttribute="top" constant="16" id="Ef4-ox-GqB"/>
+                            <constraint firstItem="dEG-37-ryd" firstAttribute="leading" secondItem="w49-px-Xg1" secondAttribute="leading" constant="16" id="WQA-6C-KlS"/>
+                            <constraint firstAttribute="trailing" secondItem="dEG-37-ryd" secondAttribute="trailing" constant="16" id="l7h-Nb-azS"/>
+                            <constraint firstAttribute="bottom" secondItem="dEG-37-ryd" secondAttribute="bottom" constant="16" id="tLF-s4-iyL"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="label" destination="dEG-37-ryd" id="4D6-kd-A17"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="vJt-Oh-s5Y" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="139" y="80"/>
+        </scene>
+    </scenes>
+</document>

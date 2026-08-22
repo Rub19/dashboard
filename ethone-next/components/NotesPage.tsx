@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Share2 } from "lucide-react";
 import { useItems } from "@/lib/hooks/useItems";
 import { useSelection } from "@/lib/hooks/useSelection";
@@ -17,6 +17,7 @@ import RichTextEditor, { stripHtml } from "@/components/RichTextEditor";
 import { wordCountFromHtml } from "@/lib/notes";
 import { nativeShare } from "@/lib/native";
 import { hapticRigidImpact, hapticSuccess, hapticMediumImpact } from "@/lib/haptics";
+import { indexSpotlightItems } from "@/lib/apple";
 
 type Note = { id: string; title: string; body: string; createdAt?: string };
 
@@ -38,6 +39,18 @@ export default function NotesPage() {
   const [sort, setSort] = useState<"title" | "words" | "created">("created");
 
   const { selected, selectedItems, hasSelection, isAllSelected, toggle, selectAll, clear, isSelected } = useSelection<Note>(items);
+
+  useEffect(() => {
+    indexSpotlightItems(
+      items.map((note) => ({
+        id: `note-${note.id}`,
+        title: note.title,
+        description: stripHtml(note.body).slice(0, 200),
+        contentType: "public.text",
+        url: `ethone://notes/${note.id}`,
+      }))
+    );
+  }, [items]);
 
   const stats = useMemo(() => {
     const total = items.length;

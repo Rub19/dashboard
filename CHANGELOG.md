@@ -2,6 +2,20 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.57 — 2026-08-22
+
+**Intégration complète des frameworks Apple iOS avancés**
+
+- iOS 18 Controls API : `EthoneFocusControl`, `EthoneNewNoteControl`, `EthonePresenceControl`, `EthoneBrainIdeaControl`.
+- App Intents étendus : capture d'idée Brain, ouverture de note, recherche système (`EthoneSystemSearchIntent`).
+- StandBy Mode : widget `EthoneStandByWidget` avec heure, météo, présence et prochain objectif.
+- Focus Filter : `EthoneFocusFilter` avec modes Travail / Personnel / Zen.
+- Extensions de notification : `EthoneNotifications` (Service) et `EthoneNotificationsContent` (Content) avec actions.
+- CoreSpotlight : `EthoneSpotlightPlugin` pour indexer notes et tâches.
+- Deep links Spotlight iOS : `ethone://notes/[id]` et `ethone://tasks/[id]`.
+- Siri / Apple Intelligence ready via `AddBrainIdeaFromSiriIntent` et `OpenNoteFromSiriIntent`.
+- Version `v1.7.57`.
+
 ## v1.7.55 — 2026-08-22
 
 **Dynamic Island interactive, moteur haptique Taptic Engine et interactions Pro**

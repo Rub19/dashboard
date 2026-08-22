@@ -1,4 +1,5 @@
 import SwiftUI
+import simd
 
 struct AmbientBackground: View {
     @Environment(\.colorScheme) var colorScheme
@@ -12,15 +13,15 @@ struct AmbientBackground: View {
                     width: 3,
                     height: 3,
                     points: [
-                        MeshPoint(x: 0, y: 0),
-                        MeshPoint(x: 0.5, y: 0),
-                        MeshPoint(x: 1, y: 0),
-                        MeshPoint(x: 0, y: 0.5),
-                        MeshPoint(x: 0.5, y: 0.5),
-                        MeshPoint(x: 1, y: 0.5),
-                        MeshPoint(x: 0, y: 1),
-                        MeshPoint(x: 0.5, y: 1),
-                        MeshPoint(x: 1, y: 1),
+                        SIMD2<Float>(0, 0),
+                        SIMD2<Float>(0.5, 0),
+                        SIMD2<Float>(1, 0),
+                        SIMD2<Float>(0, 0.5),
+                        SIMD2<Float>(0.5, 0.5),
+                        SIMD2<Float>(1, 0.5),
+                        SIMD2<Float>(0, 1),
+                        SIMD2<Float>(0.5, 1),
+                        SIMD2<Float>(1, 1),
                     ],
                     colors: colorScheme == .dark ? [
                         Color(red: 0.05, green: 0.02, blue: 0.08),

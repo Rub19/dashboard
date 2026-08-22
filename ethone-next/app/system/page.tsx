@@ -25,9 +25,9 @@ const WORKSPACES = [
     flow: "Essentiel",
     icon: "user",
     accent: {
-      badge: "bg-emerald-500/20 text-emerald-400",
-      icon: "bg-emerald-500/10 text-emerald-400",
-      ring: "ring-emerald-500/30",
+      badge: "bg-[--accent-primary] text-[--accent-primary]",
+      icon: "bg-[--accent-primary] text-[--accent-primary]",
+      ring: "ring-[--accent-primary]",
     },
     steps: ["Capturer", "Organiser", "Exécuter"],
     widgets: ["notes", "tasks", "calendar", "brain"],
@@ -261,7 +261,7 @@ export default function SystemPage() {
             icon="activity"
             value={activeSpacesCount}
             label={i18n("active")}
-            tone="bg-emerald-500/10 text-emerald-400"
+            tone="bg-[--accent-primary] text-[--accent-primary]"
           />
           <StatCard
             icon="workflow"
@@ -324,7 +324,7 @@ export default function SystemPage() {
                         </div>
                       </div>
                       {isActive && (
-                        <span className={`rounded-md px-2 py-0.5 text-[10px] font-semibold ${workspace?.accent.badge ?? "bg-emerald-500/20 text-emerald-400"}`}>
+                        <span className={`rounded-md px-2 py-0.5 text-[10px] font-semibold ${workspace?.accent.badge ?? "bg-[--accent-primary] text-[--accent-primary]"}`}>
                           {i18n("active")}
                         </span>
                       )}
@@ -370,7 +370,7 @@ export default function SystemPage() {
                         </div>
                       </div>
                       {isActive && (
-                        <span className={`rounded-md px-2 py-0.5 text-[10px] font-semibold ${workspace?.accent.badge ?? "bg-emerald-500/20 text-emerald-400"}`}>
+                        <span className={`rounded-md px-2 py-0.5 text-[10px] font-semibold ${workspace?.accent.badge ?? "bg-[--accent-primary] text-[--accent-primary]"}`}>
                           {i18n("active")}
                         </span>
                       )}

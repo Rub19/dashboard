@@ -52,7 +52,7 @@ export default function WeatherForecastList({ days }: { days: ForecastDay[] }) {
             <Icon name={icon} className={`h-4 w-4 ${color}`} />
             <div className="mx-3 h-1 flex-1 rounded-xl bg-white/[0.04]">
               <div
-                className="relative h-full rounded-xl bg-gradient-to-r from-cyan-400 via-amber-300 to-rose-400"
+                className="relative h-full rounded-xl bg-gradient-to-r from-[--info] via-[--warning] to-[--danger]"
                 style={{ marginLeft: `${left}%`, width: `${Math.max(width, 4)}%` }}
               />
             </div>

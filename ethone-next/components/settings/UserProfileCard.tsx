@@ -136,9 +136,9 @@ export default function UserProfileCard({
 
       <div className="space-y-3 px-5 pb-5">
         {/* Session badge */}
-        <div className="inline-flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1.5">
-          <span className="h-2 w-2 rounded-full bg-emerald-400" />
-          <span className="text-[11px] font-medium text-emerald-300">{i18n("sessionVerified", "Session vérifiée")}</span>
+        <div className="inline-flex items-center gap-2 rounded-lg border border-[--accent-primary] bg-[--accent-primary] px-2.5 py-1.5">
+          <span className="h-2 w-2 rounded-full bg-[--accent-primary]" />
+          <span className="text-[11px] font-medium text-[--accent-primary]">{i18n("sessionVerified", "Session vérifiée")}</span>
         </div>
 
         {/* Quick actions */}

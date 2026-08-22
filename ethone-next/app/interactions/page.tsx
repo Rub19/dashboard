@@ -111,13 +111,13 @@ function timeAgo(iso: string, locale = "fr"): string {
 function getHeatmapColor(level: number) {
   switch (level) {
     case 1:
-      return "bg-emerald-950/70 border border-emerald-800/40";
+      return "bg-[--accent-primary] border border-[--accent-primary]";
     case 2:
-      return "bg-emerald-800/80 border border-emerald-600/50";
+      return "bg-[--accent-primary] border border-[--accent-primary]";
     case 3:
-      return "bg-emerald-500 border border-emerald-400/80";
+      return "bg-[--accent-primary] border border-[--accent-primary]";
     case 4:
-      return "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.7)] border border-white/40";
+      return "bg-[--accent-primary] shadow-[0_0_8px_var(--glow-color)] border border-white/40";
     default:
       return "bg-white/[0.03] border border-white/[0.05]";
   }
@@ -234,8 +234,8 @@ const CATEGORY_MAP: Record<string, string> = {
 };
 
 const CATEGORY_META: Record<string, { color: string; icon: React.ElementType }> = {
-  "Interface & Navigation": { color: "bg-emerald-400", icon: LayoutGrid },
-  "Actions IA / Brain": { color: "bg-cyan-400", icon: Sparkles },
+  "Interface & Navigation": { color: "bg-[--accent-primary]", icon: LayoutGrid },
+  "Actions IA / Brain": { color: "bg-[--info]", icon: Sparkles },
   "Raccourcis & Commandes": { color: "bg-purple-400", icon: Command },
   "Fichiers & Upload": { color: "bg-amber-400", icon: FileUp },
 };
@@ -245,17 +245,17 @@ function iconForKind(kind: string): { icon: React.ElementType; color: string; la
     case "like":
       return { icon: Heart, color: "text-rose-400", label: "J'aime" };
     case "comment":
-      return { icon: MessageCircle, color: "text-cyan-400", label: "Commentaire" };
+      return { icon: MessageCircle, color: "text-[--info]", label: "Commentaire" };
     case "share":
-      return { icon: Share2, color: "text-emerald-400", label: "Partage" };
+      return { icon: Share2, color: "text-[--accent-primary]", label: "Partage" };
     case "noteCreate":
-      return { icon: FileText, color: "text-emerald-400", label: "Note créée" };
+      return { icon: FileText, color: "text-[--accent-primary]", label: "Note créée" };
     case "noteSave":
-      return { icon: FileText, color: "text-emerald-400", label: "Note enregistrée" };
+      return { icon: FileText, color: "text-[--accent-primary]", label: "Note enregistrée" };
     case "taskCreate":
-      return { icon: CheckSquare, color: "text-cyan-400", label: "Tâche créée" };
+      return { icon: CheckSquare, color: "text-[--info]", label: "Tâche créée" };
     case "taskComplete":
-      return { icon: CheckCircle2, color: "text-cyan-400", label: "Tâche terminée" };
+      return { icon: CheckCircle2, color: "text-[--info]", label: "Tâche terminée" };
     case "taskDelete":
       return { icon: Trash2, color: "text-rose-400", label: "Tâche supprimée" };
     case "eventCreate":
@@ -265,7 +265,7 @@ function iconForKind(kind: string): { icon: React.ElementType; color: string; la
     case "spaceSwitch":
       return { icon: LayoutGrid, color: "text-zinc-300", label: "Espace changé" };
     case "sync":
-      return { icon: RefreshCw, color: "text-emerald-400", label: "Synchronisation" };
+      return { icon: RefreshCw, color: "text-[--accent-primary]", label: "Synchronisation" };
     case "uiCustomize":
       return { icon: SlidersHorizontal, color: "text-zinc-300", label: "Personnalisation UI" };
     default:
@@ -335,7 +335,7 @@ export default function InteractionsPage() {
       <div className="shrink-0 mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <div>
           <h1 className="flex items-center gap-2.5 text-2xl font-bold tracking-tight text-white">
-            <Activity className="h-6 w-6 text-emerald-400" />
+            <Activity className="h-6 w-6 text-[--accent-primary]" />
             <span>{i18n("interactionsTitle")}</span>
           </h1>
           <p className="mt-0.5 text-xs text-zinc-400">Télémétrie complète de votre utilisation du système</p>
@@ -343,7 +343,7 @@ export default function InteractionsPage() {
 
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 rounded-xl border border-white/[0.08] bg-zinc-950/80 px-3 py-1.5 text-xs font-medium text-zinc-300">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
+            <span className="h-2 w-2 animate-pulse rounded-full bg-[--accent-primary]" />
             <span>Télémétrie en direct</span>
           </div>
         </div>
@@ -358,15 +358,15 @@ export default function InteractionsPage() {
             value: loading ? "—" : stats.total.toLocaleString(language),
             sub: "↑ +14% vs semaine passée",
             icon: Activity,
-            color: "text-emerald-400",
-            subColor: "text-emerald-400",
+            color: "text-[--accent-primary]",
+            subColor: "text-[--accent-primary]",
           },
           {
             label: "Moyenne Quotidienne",
             value: loading ? "—" : `${stats.average} / j`,
             sub: `Régularité de ${stats.consistency}%`,
             icon: BarChart3,
-            color: "text-cyan-400",
+            color: "text-[--info]",
             subColor: "text-zinc-400",
           },
           {
@@ -406,7 +406,7 @@ export default function InteractionsPage() {
       <div className="flex w-full flex-col gap-4 rounded-2xl v8-panel p-5 shadow-xl backdrop-blur-2xl">
         <div className="flex flex-col justify-between gap-3 border-b border-white/[0.04] pb-3 sm:flex-row sm:items-center">
           <div className="flex items-center gap-2.5">
-            <Flame className="h-4 w-4 text-emerald-400" />
+            <Flame className="h-4 w-4 text-[--accent-primary]" />
             <h3 className="text-sm font-bold text-white">Heatmap des interactions ({selectedYear})</h3>
           </div>
 
@@ -510,7 +510,7 @@ export default function InteractionsPage() {
         <div className="col-span-12 flex flex-col justify-between gap-4 rounded-2xl v8-panel p-5 shadow-xl backdrop-blur-2xl lg:col-span-7">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Layers className="h-4 w-4 text-cyan-400" />
+              <Layers className="h-4 w-4 text-[--info]" />
               <h3 className="text-xs font-bold uppercase tracking-wider text-white">Répartition par source</h3>
             </div>
             <span className="text-[11px] font-mono text-zinc-400">Année {selectedYear}</span>
@@ -542,7 +542,7 @@ export default function InteractionsPage() {
             <span>
               Module le plus sollicité : <strong className="text-white">{topCategory?.label || "—"}</strong>
             </span>
-            <span className="font-medium text-emerald-400">Performances optimales</span>
+            <span className="font-medium text-[--accent-primary]">Performances optimales</span>
           </div>
         </div>
 
@@ -553,7 +553,7 @@ export default function InteractionsPage() {
               <Zap className="h-4 w-4 text-amber-400" />
               <h3 className="text-xs font-bold uppercase tracking-wider text-white">Journal en direct</h3>
             </div>
-            <span className="h-2 w-2 animate-ping rounded-full bg-emerald-400" />
+            <span className="h-2 w-2 animate-ping rounded-full bg-[--accent-primary]" />
           </div>
 
           <div className="flex flex-col gap-2">

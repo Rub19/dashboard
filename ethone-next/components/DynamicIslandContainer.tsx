@@ -69,7 +69,7 @@ function IslandBubble({
     active
       ? "bg-white/[0.12] text-white ring-1 ring-white/20 shadow-[0_0_12px_rgba(255,255,255,0.08)]"
       : "bg-white/[0.05] text-zinc-400 hover:bg-white/[0.1] hover:text-white",
-    view === "spotify" && !active && "text-emerald-400 hover:text-emerald-300",
+    view === "spotify" && !active && "text-[--accent-primary] hover:text-[--accent-primary]",
     view === "pomodoro" && !active && "text-[var(--accent)]",
     view === "brain" && !active && "text-purple-400 hover:text-purple-300",
   );
@@ -109,7 +109,7 @@ function IslandExpandedHeader({
   const i18n = useI18n();
   const icon =
     selected === "spotify" ? (
-      <Music className="h-3.5 w-3.5 text-emerald-400" />
+      <Music className="h-3.5 w-3.5 text-[--accent-primary]" />
     ) : selected === "pomodoro" ? (
       <Timer className="h-3.5 w-3.5 text-[var(--accent)]" />
     ) : selected === "brain" ? (
@@ -290,7 +290,7 @@ export default function DynamicIslandContainer() {
       case "spotify":
         return (
           <div className={cn(base)}>
-            <Music className="h-3.5 w-3.5 text-emerald-400" />
+            <Music className="h-3.5 w-3.5 text-[--accent-primary]" />
             <span className="max-w-[80px] truncate text-xs font-medium tabular-nums">
               {nowPlaying?.title || i18n("spotify", "Spotify")}
             </span>
@@ -429,7 +429,7 @@ export default function DynamicIslandContainer() {
                   onSelect={selectView}
                 />
                 <div className="flex items-start justify-end">
-                  <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 text-[10px] font-medium text-emerald-300">
+                  <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 text-[10px] font-medium text-[--accent-primary]">
                     {nowPlaying?.source || "Spotify"}
                   </span>
                 </div>
@@ -440,7 +440,7 @@ export default function DynamicIslandContainer() {
                     alt={nowPlaying?.title || "Spotify"}
                     size={56}
                     className="h-14 w-14 shrink-0 rounded-xl object-cover shadow-lg ring-1 ring-white/10"
-                    iconClassName="h-6 w-6 text-emerald-400"
+                    iconClassName="h-6 w-6 text-[--accent-primary]"
                     loading="eager"
                     priority
                     timeoutMs={3000}

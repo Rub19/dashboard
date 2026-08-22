@@ -107,19 +107,19 @@ export default function ConnectionCard({
     ? config.category === "oauth"
       ? "bg-purple-500/10 text-purple-300 border-purple-500/20"
       : config.category === "api_key"
-        ? "bg-cyan-500/10 text-cyan-300 border-cyan-500/20"
+        ? "bg-[--info] text-[--info] border-[--info]"
         : "bg-amber-500/10 text-amber-300 border-amber-500/20"
     : integration.status === "oauth"
       ? "bg-purple-500/10 text-purple-300 border-purple-500/20"
       : integration.status === "api"
-        ? "bg-cyan-500/10 text-cyan-300 border-cyan-500/20"
+        ? "bg-[--info] text-[--info] border-[--info]"
         : integration.status === "local" || integration.status === "feed"
           ? "bg-amber-500/10 text-amber-300 border-amber-500/20"
           : "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
 
   const statusClass =
     status === "connected"
-      ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+      ? "bg-[--accent-primary] text-[--accent-primary] border-[--accent-primary]"
       : status === "error"
         ? "bg-rose-500/10 text-rose-400 border-rose-500/20"
         : "bg-white/[0.04] text-zinc-400 border-white/[0.08]";
@@ -410,7 +410,7 @@ export default function ConnectionCard({
                       aria-label={i18n("copy")}
                       tabIndex={-1}
                     >
-                      {copied === "clientSecret" ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+                      {copied === "clientSecret" ? <Check className="h-3.5 w-3.5 text-[--accent-primary]" /> : <Copy className="h-3.5 w-3.5" />}
                     </button>
                     <button
                       type="button"
@@ -439,7 +439,7 @@ export default function ConnectionCard({
                     className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
                     aria-label={i18n("copy")}
                   >
-                    {copied === "redirectUri" ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+                    {copied === "redirectUri" ? <Check className="h-3.5 w-3.5 text-[--accent-primary]" /> : <Copy className="h-3.5 w-3.5" />}
                   </button>
                 </div>
               </div>
@@ -627,7 +627,7 @@ export default function ConnectionCard({
             {i18n(rawOpen ? "hideRaw" : "showRaw")}
           </span>
           {health?.ms ? (
-            <span className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono text-emerald-400">
+            <span className="rounded-lg border border-[--accent-primary] bg-[--accent-primary] px-2 py-0.5 text-[10px] font-mono text-[--accent-primary]">
               {health.ms} ms
             </span>
           ) : null}
@@ -647,11 +647,11 @@ export default function ConnectionCard({
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-xs">
                       {health.status === "connected" || health.ok ? (
-                        <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                        <CheckCircle2 className="h-4 w-4 text-[--accent-primary]" />
                       ) : (
                         <AlertCircle className="h-4 w-4 text-rose-400" />
                       )}
-                      <span className={health.ok ? "text-emerald-400" : "text-rose-400"}>
+                      <span className={health.ok ? "text-[--accent-primary]" : "text-rose-400"}>
                         {health.status === "unconfigured"
                           ? i18n("notConfigured") || "Non configuré"
                           : health.ok
@@ -734,7 +734,7 @@ function FieldInput({
                 aria-label={i18n("copy")}
                 tabIndex={-1}
               >
-                {copied === field.key ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+                {copied === field.key ? <Check className="h-3.5 w-3.5 text-[--accent-primary]" /> : <Copy className="h-3.5 w-3.5" />}
               </button>
               {isPassword && (
                 <button
@@ -883,7 +883,7 @@ function ConfigGuidePanel({
                             className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
                             aria-label="Copier"
                           >
-                            {copied === copyKey ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+                            {copied === copyKey ? <Check className="h-3.5 w-3.5 text-[--accent-primary]" /> : <Copy className="h-3.5 w-3.5" />}
                           </button>
                         </div>
                       )}

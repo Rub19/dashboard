@@ -13,7 +13,7 @@ const PRESETS: { id: string; phase: FocusPhase; minutes: number; icon: string; c
   { id: "deep", phase: "focus", minutes: 50, icon: "timer", color: "text-violet-400" },
   { id: "sprint", phase: "focus", minutes: 10, icon: "timer", color: "text-orange-400" },
   { id: "quick", phase: "focus", minutes: 15, icon: "timer", color: "text-sky-400" },
-  { id: "shortBreak", phase: "shortBreak", minutes: 5, icon: "coffee", color: "text-emerald-400" },
+  { id: "shortBreak", phase: "shortBreak", minutes: 5, icon: "coffee", color: "text-[--accent-primary]" },
   { id: "longBreak", phase: "longBreak", minutes: 15, icon: "armchair", color: "text-amber-400" },
 ];
 

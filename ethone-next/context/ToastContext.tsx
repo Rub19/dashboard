@@ -84,10 +84,10 @@ const SOUND_MAP: Record<ToastType, string | null> = {
 };
 
 const VARIANT_BORDER: Record<Exclude<ToastType, "loading">, string> = {
-  success: "border-emerald-500/20",
+  success: "border-[--accent-primary]",
   error: "border-rose-500/20",
   warning: "border-amber-500/20",
-  info: "border-cyan-500/20",
+  info: "border-[--info]",
 };
 
 function DiscordAvatar({ avatarUrl }: { avatarUrl?: string }) {
@@ -351,9 +351,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             closeButton:
               "absolute right-2 top-2 rounded-md p-1 text-zinc-400 opacity-0 transition-all hover:bg-white/[0.1] hover:text-white group-hover:opacity-100",
             error: "border-rose-500/20",
-            success: "border-emerald-500/20",
+            success: "border-[--accent-primary]",
             warning: "border-amber-500/20",
-            info: "border-cyan-500/20",
+            info: "border-[--info]",
           },
         }}
         icons={{

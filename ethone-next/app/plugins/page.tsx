@@ -38,7 +38,7 @@ export default function PluginsPage() {
                   </span>
                   <div>
                     <p className="font-medium">{p.label}</p>
-                    <p className={`text-xs ${connected ? "text-emerald-400" : "text-[var(--muted)]"}`}>
+                    <p className={`text-xs ${connected ? "text-[--accent-primary]" : "text-[var(--muted)]"}`}>
                       {connected ? live?.title || i18n("connected") : i18n("notConnected")}
                     </p>
                   </div>

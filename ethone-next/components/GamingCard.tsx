@@ -101,8 +101,8 @@ export default function GamingCard({
     if (loading && !hasProfile) {
       return {
         statusText: i18n("loading", "Chargement"),
-        statusClass: "border-cyan-500/30 bg-cyan-500/10 text-cyan-300",
-        statusDot: "bg-cyan-400",
+        statusClass: "border-[--info] bg-[--info] text-[--info]",
+        statusDot: "bg-[--info]",
       };
     }
     if (error && configured && !hasProfile) {
@@ -116,9 +116,9 @@ export default function GamingCard({
       return {
         statusText: isOnline ? i18n("online", "En ligne") : i18n("offline", "Hors ligne"),
         statusClass: isOnline
-          ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+          ? "border-[--accent-primary] bg-[--accent-primary] text-[--accent-primary]"
           : "border-zinc-500/30 bg-zinc-500/10 text-zinc-400",
-        statusDot: isOnline ? "bg-emerald-400" : "bg-zinc-500",
+        statusDot: isOnline ? "bg-[--accent-primary]" : "bg-zinc-500",
       };
     }
     if (configured) {
@@ -143,7 +143,7 @@ export default function GamingCard({
   return (
     <TiltCard
       className={cn(
-        "flex h-full min-h-0 flex-col v8-panel bg-gradient-to-br from-emerald-950/40 via-green-900/10 to-black/20 p-4 shadow-xl shadow-black/50 backdrop-blur-2xl transition-all hover:border-emerald-500/25",
+        "flex h-full min-h-0 flex-col v8-panel bg-gradient-to-br from-[--accent-primary] via-[--accent-primary] to-black/20 p-4 shadow-xl shadow-black/50 backdrop-blur-2xl transition-all hover:border-[--accent-primary]",
         className
       )}
     >
@@ -247,7 +247,7 @@ export default function GamingCard({
                 </span>
               )}
               {isOnline && (
-                <span className="rounded-md border border-emerald-500/[0.15] bg-emerald-500/10 px-2 py-0.5 text-[10px] text-emerald-300">
+                <span className="rounded-md border border-[--accent-primary] bg-[--accent-primary] px-2 py-0.5 text-[10px] text-[--accent-primary]">
                   {i18n("serverActive", "Serveur actif")}
                 </span>
               )}
@@ -265,7 +265,7 @@ export default function GamingCard({
           </div>
           <Link
             href="/settings?category=integrations"
-            className="rounded-lg bg-emerald-500/10 px-4 py-2 text-xs font-medium text-emerald-400 transition-colors hover:bg-emerald-500/20"
+            className="rounded-lg bg-[--accent-primary] px-4 py-2 text-xs font-medium text-[--accent-primary] transition-colors hover:bg-[--accent-primary]"
           >
             {i18n("configureMinecraft", "Configurer Minecraft")}
           </Link>

@@ -26,7 +26,7 @@ const CATEGORY_TONES: Record<string, string> = {
   system: "bg-zinc-500/10 text-zinc-400",
   important: "bg-amber-500/10 text-amber-400",
   messages: "bg-sky-500/10 text-sky-400",
-  activity: "bg-emerald-500/10 text-emerald-400",
+  activity: "bg-[--accent-primary] text-[--accent-primary]",
   tracker: "bg-pink-500/10 text-pink-400",
   mail: "bg-sky-500/10 text-sky-400",
 };
@@ -174,7 +174,7 @@ export default function NotificationItem({
             </p>
             {isUnread && (
               <span
-                className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[var(--accent)] shadow-[0_0_8px_rgba(52,211,153,0.5)]"
+                className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[var(--accent)] shadow-[0_0_8px_var(--glow-color)]"
                 aria-hidden="true"
               />
             )}

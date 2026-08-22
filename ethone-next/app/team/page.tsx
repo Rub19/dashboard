@@ -36,8 +36,8 @@ function StatCard({
   sub: string;
   tone?: "default" | "emerald" | "amber";
 }) {
-  const valueColor = tone === "emerald" ? "text-emerald-400" : tone === "amber" ? "text-amber-400" : "text-white";
-  const borderColor = tone === "emerald" ? "hover:border-emerald-500/30" : tone === "amber" ? "hover:border-amber-500/30" : "hover:border-white/15";
+  const valueColor = tone === "emerald" ? "text-[--accent-primary]" : tone === "amber" ? "text-amber-400" : "text-white";
+  const borderColor = tone === "emerald" ? "hover:border-[--accent-primary]" : tone === "amber" ? "hover:border-amber-500/30" : "hover:border-white/15";
 
   return (
     <div className={`v8-panel backdrop-blur-xl rounded-2xl p-4 flex items-center justify-between hover:border-white/15 transition-all ${borderColor}`}>
@@ -124,7 +124,7 @@ export default function TeamPage() {
           sub={i18n("teamSeatsAvailable") || `Places disponibles : ${Math.max(0, 10 - stats.total)}/10`}
         />
         <StatCard
-          icon={<UserCheck className="h-5 w-5 text-emerald-400" />}
+          icon={<UserCheck className="h-5 w-5 text-[--accent-primary]" />}
           value={loading ? "-" : stats.active}
           label={i18n("active") || "Actifs"}
           sub={i18n("activeThisWeek") || "Actifs cette semaine"}
@@ -183,8 +183,8 @@ export default function TeamPage() {
       )}
 
       {success && (
-        <p className="flex items-center gap-2 text-sm text-emerald-400">
-          <span className="h-4 w-4 rounded-full bg-emerald-400/20" />
+        <p className="flex items-center gap-2 text-sm text-[--accent-primary]">
+          <span className="h-4 w-4 rounded-full bg-[--accent-primary]" />
           {i18n("invitationSent") || "Invitation envoyée"}
         </p>
       )}

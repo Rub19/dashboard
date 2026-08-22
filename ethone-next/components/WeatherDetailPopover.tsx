@@ -232,7 +232,7 @@ function WeatherDetailContent({
                     )}
                     {wind !== undefined && (
                       <div className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm">
-                        <Icon name="wind" className="h-4 w-4 text-emerald-400" />
+                        <Icon name="wind" className="h-4 w-4 text-[--accent-primary]" />
                         <span className="font-medium">{wind} km/h</span>
                         <span className="text-[var(--muted)]">{i18n("wind")}</span>
                       </div>

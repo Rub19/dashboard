@@ -6,6 +6,7 @@ import { Icon } from "@/lib/icons";
 import BentoCard from "@/components/BentoCard";
 import { cn } from "@/lib/utils";
 import { hapticSelectionTick, hapticMediumImpact } from "@/lib/haptics";
+import { setNativePresence } from "@/lib/apple";
 import { type SessionMode, USER_STATUS_CONFIG } from "@/lib/settings";
 
 const AURAS = ["classic", "boreal", "cyberpunk", "eclipse", "emerald", "mineral"] as const;
@@ -53,7 +54,11 @@ export default function SystemControlCard({ className = "", scrollable = true }:
                 <button
                   key={id}
                   type="button"
-                  onClick={() => { hapticMediumImpact(); update({ status: id as keyof typeof USER_STATUS_CONFIG }); }}
+                  onClick={() => {
+                    hapticMediumImpact();
+                    update({ status: id as keyof typeof USER_STATUS_CONFIG });
+                    void setNativePresence(config.presence);
+                  }}
                   className={`flex min-h-[40px] items-center justify-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.08] px-2 py-2 text-[10px] font-medium transition-all ${
                     active ? `${config.bg} ${config.text} ring-1 ${config.ring}` : "bg-[var(--text-primary)]/[0.02] text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.04]"
                   }`}

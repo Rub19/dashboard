@@ -162,7 +162,7 @@ export default function AdminPage() {
                 label={i18n("items", "Contenus")}
                 value={stats.content.items}
                 icon={<Layers className="h-5 w-5" />}
-                tone="text-cyan-400"
+                tone="text-[--info]"
               />
               <StatCard
                 label={i18n("files", "Fichiers")}
@@ -174,7 +174,7 @@ export default function AdminPage() {
                 label={i18n("mailMessages", "Messages mail")}
                 value={stats.mail.messages}
                 icon={<Mail className="h-5 w-5" />}
-                tone="text-emerald-400"
+                tone="text-[--accent-primary]"
               />
             </div>
 

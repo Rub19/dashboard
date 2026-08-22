@@ -41,7 +41,7 @@ export default function PluginClient() {
         </span>
         <div className="min-w-0 flex-1">
           <h1 className="break-words text-2xl font-bold">{plugin.label}</h1>
-          <p className={`text-sm ${connected ? "text-emerald-400" : "text-[var(--muted)]"}`}>
+          <p className={`text-sm ${connected ? "text-[--accent-primary]" : "text-[var(--muted)]"}`}>
             {connected ? i18n("connected") : i18n("notConnected")}
           </p>
         </div>

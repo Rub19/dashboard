@@ -134,8 +134,8 @@ export function RiotGamingCardContent({
     if (loading && !hasProfile) {
       return {
         text: i18n("loading", "Chargement"),
-        dot: "bg-cyan-400",
-        badge: "border-cyan-500/30 bg-cyan-500/10 text-cyan-300",
+        dot: "bg-[--info]",
+        badge: "border-[--info] bg-[--info] text-[--info]",
       };
     }
     if (error && configured && !hasProfile) {
@@ -148,8 +148,8 @@ export function RiotGamingCardContent({
     if (hasProfile) {
       return {
         text: i18n("connected", "Connecté"),
-        dot: "bg-emerald-400",
-        badge: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300",
+        dot: "bg-[--accent-primary]",
+        badge: "border-[--accent-primary] bg-[--accent-primary] text-[--accent-primary]",
       };
     }
     return {
@@ -250,7 +250,7 @@ export function RiotGamingCardContent({
                 className={cn(
                   "mt-0.5 inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold",
                   (meta?.result as string).toLowerCase() === "victory"
-                    ? "bg-emerald-500/10 text-emerald-400"
+                    ? "bg-[--accent-primary] text-[--accent-primary]"
                     : "bg-rose-500/10 text-rose-400"
                 )}
               >
@@ -306,7 +306,7 @@ export function RiotGamingCardContent({
                     key={i}
                     className={cn(
                       "h-1.5 rounded-full",
-                      r?.toLowerCase() === "victory" ? "w-3 bg-emerald-500" : "w-1.5 bg-rose-500"
+                      r?.toLowerCase() === "victory" ? "w-3 bg-[--accent-primary]" : "w-1.5 bg-rose-500"
                     )}
                     title={asStr(getMeta(m)?.agentName)}
                   />

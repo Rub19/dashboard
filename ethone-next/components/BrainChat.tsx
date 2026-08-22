@@ -139,7 +139,7 @@ function MarkdownInline({ text }: { text: string }) {
       parts.push(<em key={parts.length} className="text-zinc-300">{raw.slice(1, -1)}</em>);
     } else if (raw.startsWith("`") && raw.endsWith("`")) {
       parts.push(
-        <code key={parts.length} className="rounded bg-white/[0.08] px-1 py-0.5 font-mono text-[11px] text-emerald-300">
+        <code key={parts.length} className="rounded bg-white/[0.08] px-1 py-0.5 font-mono text-[11px] text-[var(--accent-primary)]">
           {raw.slice(1, -1)}
         </code>
       );
@@ -470,7 +470,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Parler à Brain..."
+            placeholder="Poser une question ou un objectif..."
             disabled={pending}
             data-testid="brain-input"
             className="min-h-0 flex-1"

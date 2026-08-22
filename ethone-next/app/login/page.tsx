@@ -269,7 +269,7 @@ export default function LoginPage() {
 
         <div className="z-10 text-xs text-[var(--muted)]">
           <span className="inline-flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/50 px-3 py-1.5 backdrop-blur-[var(--panel-blur)]">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)]" />
+            <span className="h-2 w-2 rounded-full bg-[--accent-primary] shadow-[0_0_6px_var(--glow-color)]" />
             {i18n("systemOperational")}
           </span>
         </div>

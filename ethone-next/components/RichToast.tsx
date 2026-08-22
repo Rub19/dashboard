@@ -13,10 +13,10 @@ type RichToastProps = {
 };
 
 const variantIcon: Record<RichToastVariant, string> = {
-  success: "text-emerald-400",
+  success: "text-[--accent-primary]",
   error: "text-rose-400",
   warning: "text-amber-400",
-  info: "text-cyan-400",
+  info: "text-[--info]",
   neutral: "text-zinc-200",
 };
 

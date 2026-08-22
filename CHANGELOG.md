@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.61 — 2026-08-22
+
+**Dashboard en données réelles, polissage Brain/présence et cohérence thématique**
+
+- Tuiles Bento du Dashboard connectées aux données Supabase : tâches ouvertes, événements du jour, notes, stockage utilisé avec affichage `Mo / Go`.
+- Ajout de skeletons shimmer pendant le chargement des tuiles.
+- Champ Brain : placeholder `Poser une question ou un objectif...` et capsule d'envoi avec glow.
+- Sélecteur de présence synchronisé avec le profil (paramètres + `setNativePresence`) avec retour haptique.
+- Remplacement des teintes vertes en dur (`emerald`, `green`, `teal`, `lime`, `cyan`) par `var(--accent-primary)`, `var(--glow-color)` et les variables du Theme Engine global.
+- Version `v1.7.61`, cache PWA `v424`.
+
 ## v1.7.60 — 2026-08-22
 
 **Fusion complète : iOS, Android et Liquid Glass dans main**

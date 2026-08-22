@@ -43,7 +43,7 @@ export type FlowCardProps = {
   children?: React.ReactNode;
 };
 
-function PulsingDot({ color = "bg-emerald-400" }: { color?: string }) {
+function PulsingDot({ color = "bg-[--accent-primary]" }: { color?: string }) {
   return (
     <span className="relative flex h-2 w-2">
       <span className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 ${color}`} />
@@ -107,8 +107,8 @@ export default function FlowCard({
             <h3 className="truncate text-sm font-bold text-white">{title}</h3>
             <div className="mt-1 flex items-center gap-2">
               {active || running ? (
-                <span className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
-                  <PulsingDot color="bg-emerald-400" />
+                <span className="inline-flex items-center gap-1.5 rounded-lg border border-[--accent-primary] bg-[--accent-primary] px-2 py-0.5 text-[10px] font-semibold text-[--accent-primary]">
+                  <PulsingDot color="bg-[--accent-primary]" />
                   {running ? "En cours" : "Actif"}
                 </span>
               ) : (

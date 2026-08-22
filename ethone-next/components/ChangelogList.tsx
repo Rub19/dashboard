@@ -53,12 +53,12 @@ const TYPE_CONFIG: Record<
   },
   feature: {
     icon: Sparkles,
-    dot: "bg-emerald-400",
-    iconColor: "text-emerald-400",
-    badgeBg: "bg-emerald-500/10",
-    badgeBorder: "border-emerald-500/30",
-    badgeText: "text-emerald-300",
-    borderColor: "rgba(52,211,153,0.35)",
+    dot: "bg-[--accent-primary]",
+    iconColor: "text-[--accent-primary]",
+    badgeBg: "bg-[--accent-primary]",
+    badgeBorder: "border-[--accent-primary]",
+    badgeText: "text-[--accent-primary]",
+    borderColor: "var(--glow-color)",
   },
   change: {
     icon: RefreshCw,

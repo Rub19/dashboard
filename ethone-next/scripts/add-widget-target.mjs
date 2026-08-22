@@ -63,7 +63,7 @@ const resourcesPhase = widget.ensureResourcesPhase();
 for (const fileName of sourceFiles) {
   const relativePath = fileName === "EthoneStandByWidget.swift" ? `StandBy/${fileName}` : fileName;
   const file = widgetGroup.createFile(relativePath);
-  const buildFile = sourcesPhase.ensureBuildFile(file);
+  sourcesPhase.ensureBuildFile(file);
 }
 
 // Add Info.plist as a resource

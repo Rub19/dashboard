@@ -43,10 +43,20 @@ jobs:
           restore-keys: gradle-${{ runner.os }}-
 
       - name: Build Android
-        run: cd ethone-next/android && ./gradlew :app:assembleDebug
+        run: |
+          cd ethone-next/android
+          ./gradlew :app:assembleDebug --stacktrace 2>&1 | tee gradle.log
         env:
           SUPABASE_URL: ${{ vars.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+
+      - name: Surface Gradle errors
+        if: failure()
+        run: |
+          cd ethone-next/android
+          echo "--- Gradle error summary ---"
+          grep -E "(ERROR|FAIL|> Task .* FAILED|Exception|error:)" gradle.log | tail -80
+          echo "::error::$(grep -E 'FAIL|Exception' gradle.log | tail -1 | sed "s/'//g")"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
@@ -59,5 +69,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Android-build-logs
-          path: ethone-next/android/app/build/outputs/logs/
+          path: |
+            ethone-next/android/gradle.log
+            ethone-next/android/app/build/outputs/logs/
           if-no-files-found: ignore

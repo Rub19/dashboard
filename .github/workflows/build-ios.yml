@@ -105,8 +105,13 @@ jobs:
             echo "```"
           } >> "$GITHUB_STEP_SUMMARY"
           if [ -f ios/App/build/build.log ]; then
-            LAST_LINES=$(tail -n 40 ios/App/build/build.log | sed 's/%/%25/g; s/\r//g; :a; N; $!ba; s/\n/%0A/g')
-            echo "::error file=.github/workflows/build-ios.yml,line=63::$LAST_LINES"
+            ERRORS=$(grep -i "error:" ios/App/build/build.log | tail -n 30 | sed 's/%/%25/g; s/\r//g; :a; N; $!ba; s/\n/%0A/g')
+            if [ -n "$ERRORS" ]; then
+              echo "::error file=ios/App/App.xcodeproj/project.pbxproj,line=1::$ERRORS"
+            else
+              LAST_LINES=$(tail -n 80 ios/App/build/build.log | sed 's/%/%25/g; s/\r//g; :a; N; $!ba; s/\n/%0A/g')
+              echo "::error file=.github/workflows/build-ios.yml,line=63::$LAST_LINES"
+            fi
           fi
 
       - name: Upload Build Logs

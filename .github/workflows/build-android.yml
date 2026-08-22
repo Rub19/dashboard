@@ -60,7 +60,9 @@ jobs:
 
       - name: List APK output
         if: always()
-        run: find ethone-next/android/app/build/outputs/apk -type f -ls || true
+        run: |
+          find ethone-next/android/app/build/outputs/apk -type f -ls | tee -a ethone-next/android/gradle.log
+          for f in $(find ethone-next/android/app/build/outputs/apk -type f); do echo "::notice::APK artifact: $f"; done
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
@@ -69,7 +71,7 @@ jobs:
           path: ethone-next/android/app/build/outputs/apk/debug/*.apk
 
       - name: Upload build logs
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: Android-build-logs

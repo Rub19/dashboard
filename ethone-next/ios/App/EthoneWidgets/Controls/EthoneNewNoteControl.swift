@@ -37,13 +37,12 @@ struct EthoneNewNoteControl: ControlWidget {
 
 @available(iOS 18.0, *)
 struct BoolControlValueProvider: ControlValueProvider {
+    typealias Value = Bool
+
     var value: Bool
+    var previewValue: Value { value }
 
-    func currentValue() async throws -> Bool {
-        value
-    }
-
-    func previewValue() -> Bool {
+    func currentValue() async throws -> Value {
         value
     }
 }

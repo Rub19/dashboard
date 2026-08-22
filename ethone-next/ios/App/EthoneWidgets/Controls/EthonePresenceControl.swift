@@ -18,18 +18,13 @@ enum PresenceValue: String, AppEnum {
 }
 
 @available(iOS 18.0, *)
-struct SetPresenceIntent: SetValueIntent {
-    static var title: LocalizedStringResource = "Changer présence"
-    static var description = IntentDescription("Change le statut de présence ETHONE.")
-
-    @Parameter(title: "Présence")
-    var value: PresenceValue
+struct OpenPresenceIntent: AppIntent {
+    static var title: LocalizedStringResource = "Ouvrir ETHONE Présence"
+    static var description = IntentDescription("Ouvre la page de présence ETHONE.")
+    static var openAppWhenRun: Bool = true
 
     @MainActor
     func perform() async throws -> some IntentResult {
-        let shared = UserDefaults(suiteName: "group.dev.ethone.app")
-        shared?.set(value.rawValue, forKey: "ethone_presence")
-        WidgetCenter.shared.reloadAllTimelines()
         return .result()
     }
 }
@@ -41,7 +36,7 @@ struct EthonePresenceControl: ControlWidget {
             kind: "dev.ethone.app.ios.control.presence",
             provider: PresenceControlProvider()
         ) { presence in
-            ControlWidgetButton(action: SetPresenceIntent()) {
+            ControlWidgetButton(action: OpenPresenceIntent()) {
                 Label(presence, systemImage: "person.fill")
             }
         }
@@ -52,12 +47,12 @@ struct EthonePresenceControl: ControlWidget {
 
 @available(iOS 18.0, *)
 struct PresenceControlProvider: ControlValueProvider {
-    func currentValue() async throws -> String {
+    typealias Value = String
+
+    var previewValue: Value { "En ligne" }
+
+    func currentValue() async throws -> Value {
         let shared = UserDefaults(suiteName: "group.dev.ethone.app")
         return shared?.string(forKey: "ethone_presence") ?? "En ligne"
-    }
-
-    func previewValue() -> String {
-        "En ligne"
     }
 }

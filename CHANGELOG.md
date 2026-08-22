@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.0 — 2026-08-22
+
+**iOS 26 : Liquid Glass natif, App Entities et Control Widgets**
+
+- Barre mobile inférieure recréée en Liquid Glass iOS 26 avec reflets, biseau et flou avancé (`components/MobileNav.tsx`, `app/liquid-glass.css`).
+- Nouveau variant `liquid` sur le composant `Button` pour les boutons Liquid Glass.
+- Workflow GitHub Actions iOS basculé sur `macos-26` + `Xcode 26.6` (SDK iOS 26).
+- Ajout de `EthoneAppEntities.swift` avec des `AppEntity` Notes et Tâches pour Siri / App Intents.
+- Re-activation des Control Widgets iOS 18/26 (Focus, Note rapide, Idée Brain, Présence) dans le bundle `EthoneWidgets`.
+- Target `EthoneWidgets` passé en `IPHONEOS_DEPLOYMENT_TARGET = 18.0` pour supporter les Controls.
+- Version `v1.8.0`, cache PWA `v427`.
+
 ## v1.7.63 — 2026-08-22
 
 **Intégration des frameworks Apple natifs iOS (APNs, StoreKit, Live Activities, App Intents)**

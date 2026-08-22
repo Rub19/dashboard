@@ -1,6 +1,7 @@
 import UIKit
-import Capacitor
+import SwiftUI
 import UserNotifications
+import Capacitor
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -10,6 +11,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         registerNotificationCategories()
         requestNotificationAuthorization()
+
+        let hostingController = UIHostingController(rootView: RootView())
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window?.rootViewController = hostingController
+        window?.makeKeyAndVisible()
+
         return true
     }
 

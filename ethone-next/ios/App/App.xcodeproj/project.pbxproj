@@ -44,6 +44,14 @@
 		XXE970D41D8CE561CB0584XX /* EthoneWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = XX379AA316E73DE813AA5EXX /* EthoneWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		XXEE8866018D88BBF5206CXX /* AppIntents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = XXA38541A933C1CED0731BXX /* AppIntents.framework */; };
 		XXEFD6C7A4207E9DA9AE38XX /* EthoneWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = XXD909CF9F4DC472DDEDDEXX /* EthoneWidget.swift */; };
+		D84ECF96377B4D3B9F954D88 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42CB32E9D264E518EF75352 /* RootView.swift */; };
+		F906A45B0696438BB44BED4E /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A145E21203F461983B32E80 /* DashboardView.swift */; };
+		19489469B8D041E4916E60AA /* NativeFloatingDock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59BEF2360D7A48D59296A95A /* NativeFloatingDock.swift */; };
+		F7F1C170FFC345CC815C4798 /* FocusCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8EDBB08DAD4BC3A3973383 /* FocusCardView.swift */; };
+		7DAB81B246904D4583F7EC69 /* TasksCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97FB153D6A0743B4BD6318F2 /* TasksCardView.swift */; };
+		B682C270D87C4D7092A964A8 /* BrainCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A07710DE62C486D92905BEE /* BrainCardView.swift */; };
+		86FE92012EFB42C082D7E893 /* StorageCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCCB95B513EF49F18AA6D75C /* StorageCardView.swift */; };
+		BB97394A6D6C4805A99C728B /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E5E2E668DC45F4AFE75146 /* SupabaseService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -117,6 +125,14 @@
 		XXDE81F519F3B54002884DXX /* Controls/EthoneNewNoteControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controls/EthoneNewNoteControl.swift; sourceTree = "<group>"; };
 		XXE28ACE708318BF7B5B89XX /* Controls/EthoneFocusControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controls/EthoneFocusControl.swift; sourceTree = "<group>"; };
 		XXE8EAF5BF080A03928E44XX /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		E42CB32E9D264E518EF75352 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Native/RootView.swift"; sourceTree = "<group>"; };
+		6A145E21203F461983B32E80 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Native/DashboardView.swift"; sourceTree = "<group>"; };
+		59BEF2360D7A48D59296A95A /* NativeFloatingDock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Native/NativeFloatingDock.swift"; sourceTree = "<group>"; };
+		FB8EDBB08DAD4BC3A3973383 /* FocusCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Native/BentoCards/FocusCardView.swift"; sourceTree = "<group>"; };
+		97FB153D6A0743B4BD6318F2 /* TasksCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Native/BentoCards/TasksCardView.swift"; sourceTree = "<group>"; };
+		7A07710DE62C486D92905BEE /* BrainCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Native/BentoCards/BrainCardView.swift"; sourceTree = "<group>"; };
+		DCCB95B513EF49F18AA6D75C /* StorageCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Native/BentoCards/StorageCardView.swift"; sourceTree = "<group>"; };
+		36E5E2E668DC45F4AFE75146 /* SupabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services/SupabaseService.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -209,6 +225,14 @@
 				2FAD9762203C412B000D30F8 /* config.xml */,
 				50B271D01FEDC1A000F3C39B /* public */,
 				XX35A49C2EC8AEA505220AXX /* Intelligence */,
+				E42CB32E9D264E518EF75352 /* RootView.swift */,
+				6A145E21203F461983B32E80 /* DashboardView.swift */,
+				59BEF2360D7A48D59296A95A /* NativeFloatingDock.swift */,
+				FB8EDBB08DAD4BC3A3973383 /* FocusCardView.swift */,
+				97FB153D6A0743B4BD6318F2 /* TasksCardView.swift */,
+				7A07710DE62C486D92905BEE /* BrainCardView.swift */,
+				DCCB95B513EF49F18AA6D75C /* StorageCardView.swift */,
+				36E5E2E668DC45F4AFE75146 /* SupabaseService.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -440,6 +464,14 @@
 				7C7CFE35AA5E4B4B8A332BD0 /* EthoneFocusPlugin.swift in Sources */,
 				XXD027FE962E2FDDF6DEEDXX /* EthoneAppEntities.swift in Sources */,
 				XX52AB3AC6DC7297F7B810XX /* EthoneIntelligence27.swift in Sources */,
+				D84ECF96377B4D3B9F954D88 /* RootView.swift in Sources */,
+				F906A45B0696438BB44BED4E /* DashboardView.swift in Sources */,
+				19489469B8D041E4916E60AA /* NativeFloatingDock.swift in Sources */,
+				F7F1C170FFC345CC815C4798 /* FocusCardView.swift in Sources */,
+				7DAB81B246904D4583F7EC69 /* TasksCardView.swift in Sources */,
+				B682C270D87C4D7092A964A8 /* BrainCardView.swift in Sources */,
+				86FE92012EFB42C082D7E893 /* StorageCardView.swift in Sources */,
+				BB97394A6D6C4805A99C728B /* SupabaseService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

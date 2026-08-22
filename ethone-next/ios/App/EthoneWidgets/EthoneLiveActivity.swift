@@ -209,6 +209,8 @@ func iconName(for mode: ActivityMode) -> String {
     case .task: return "checkmark.circle"
     case .sound: return "waveform"
     case .sync: return "arrow.clockwise"
+    case .presence: return "person.fill"
+    case .aura: return "sparkles"
     }
 }
 

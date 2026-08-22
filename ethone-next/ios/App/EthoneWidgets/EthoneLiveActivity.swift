@@ -1,6 +1,8 @@
 import ActivityKit
 import WidgetKit
 import SwiftUI
+import AppIntents
+import UIKit
 
 enum ActivityMode: String, Codable {
     case focus

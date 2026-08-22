@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Check, Calendar, Trash2 } from "lucide-react";
-import { hapticSuccess, hapticWarning } from "@/lib/haptics";
+import { hapticSuccessPattern, hapticRigidImpact } from "@/lib/haptics";
 import type { Item } from "@/lib/hooks/useItems";
 
 export type TaskPriority = "low" | "medium" | "high" | "urgent";
@@ -48,21 +48,39 @@ export default function TasksCard({ task, onToggle, onDelete }: TasksCardProps) 
   const priority = task.data?.priority || "medium";
   const due = formatDueDate(task.data?.dueDate);
 
+  function handleToggle() {
+    if (!task.done) hapticSuccessPattern();
+    onToggle(task.id, !task.done);
+  }
+
+  function handleDelete(e?: { stopPropagation?: () => void }) {
+    e?.stopPropagation?.();
+    hapticRigidImpact();
+    onDelete(task.id);
+  }
+
   return (
-    <div
-      className="group relative flex items-center justify-between gap-3 rounded-xl border border-white/[0.05] bg-white/[0.02] p-3 transition-all duration-200 hover:border-white/[0.12] hover:bg-white/[0.05]"
-      onClick={() => {
-        onToggle(task.id, !!task.done);
-        if (!task.done) hapticSuccess();
+    <motion.div
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.12}
+      onDragEnd={(_, info) => {
+        if (info.offset.x > 80) {
+          handleToggle();
+        } else if (info.offset.x < -80) {
+          // Swipe left reveals delete; second left swipe deletes
+          handleDelete(info as unknown as React.MouseEvent);
+        }
       }}
+      className="group relative flex items-center justify-between gap-3 rounded-xl border border-white/[0.05] bg-white/[0.02] p-3 transition-all duration-200 hover:border-white/[0.12] hover:bg-white/[0.05]"
+      onClick={handleToggle}
     >
       <div className="flex min-w-0 flex-1 items-start gap-3">
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            onToggle(task.id, !!task.done);
-            if (!task.done) hapticSuccess();
+            handleToggle();
           }}
           className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all ${
             task.done
@@ -104,17 +122,13 @@ export default function TasksCard({ task, onToggle, onDelete }: TasksCardProps) 
           type="button"
           initial={{ opacity: 0 }}
           whileHover={{ scale: 1.05 }}
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete(task.id);
-            hapticWarning();
-          }}
+          onClick={() => handleDelete()}
           className="rounded-lg p-1.5 text-[var(--muted)] opacity-0 transition-all hover:bg-[var(--danger)]/10 hover:text-[var(--danger)] group-hover:opacity-100"
           aria-label="Supprimer"
         >
           <Trash2 className="h-3.5 w-3.5" />
         </motion.button>
       </div>
-    </div>
+    </motion.div>
   );
 }

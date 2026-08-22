@@ -1,5 +1,6 @@
 import UIKit
 import Capacitor
+import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -7,8 +8,48 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        registerNotificationCategories()
         return true
+    }
+
+    private func registerNotificationCategories() {
+        let doneAction = UNNotificationAction(
+            identifier: "ETHONE_TASK_DONE",
+            title: "Terminé",
+            options: [.authenticationRequired]
+        )
+
+        let postponeAction = UNNotificationAction(
+            identifier: "ETHONE_TASK_POSTPONE",
+            title: "Reporter 15 min",
+            options: []
+        )
+
+        let replyAction = UNTextInputNotificationAction(
+            identifier: "ETHONE_BRAIN_REPLY",
+            title: "Répondre",
+            options: [],
+            textInputButtonTitle: "Envoyer",
+            textInputPlaceholder: "Votre idée..."
+        )
+
+        let taskCategory = UNNotificationCategory(
+            identifier: "ETHONE_TASK",
+            actions: [doneAction, postponeAction],
+            intentIdentifiers: [],
+            hiddenPreviewsBodyPlaceholder: "%u nouvelles tâches",
+            categorySummaryFormat: "%u tâches ETHONE"
+        )
+
+        let brainCategory = UNNotificationCategory(
+            identifier: "ETHONE_BRAIN",
+            actions: [replyAction],
+            intentIdentifiers: [],
+            hiddenPreviewsBodyPlaceholder: "%u messages Brain",
+            categorySummaryFormat: "%u messages Brain"
+        )
+
+        UNUserNotificationCenter.current().setNotificationCategories([taskCategory, brainCategory])
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

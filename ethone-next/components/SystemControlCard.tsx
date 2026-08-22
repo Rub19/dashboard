@@ -5,7 +5,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
 import BentoCard from "@/components/BentoCard";
 import { cn } from "@/lib/utils";
-import { hapticMedium, hapticSuccess } from "@/lib/haptics";
+import { hapticSelectionTick, hapticMediumImpact } from "@/lib/haptics";
 import { type SessionMode, USER_STATUS_CONFIG } from "@/lib/settings";
 
 const AURAS = ["classic", "boreal", "cyberpunk", "eclipse", "emerald", "mineral"] as const;
@@ -36,8 +36,8 @@ export default function SystemControlCard({ className = "", scrollable = true }:
   const activeMode = SESSION_MODES[currentIndex];
 
   function cycle(delta: number) {
+    hapticMediumImpact();
     const nextIndex = (currentIndex + delta + SESSION_MODES.length) % SESSION_MODES.length;
-    hapticMedium();
     update({ sessionMode: SESSION_MODES[nextIndex].id });
   }
 
@@ -53,11 +53,8 @@ export default function SystemControlCard({ className = "", scrollable = true }:
                 <button
                   key={id}
                   type="button"
-                  onClick={() => {
-                    hapticSuccess();
-                    update({ status: id as keyof typeof USER_STATUS_CONFIG });
-                  }}
-                  className={`flex min-h-[44px] items-center justify-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.08] px-2 py-2 text-[10px] font-medium transition-all ${
+                  onClick={() => { hapticMediumImpact(); update({ status: id as keyof typeof USER_STATUS_CONFIG }); }}
+                  className={`flex min-h-[40px] items-center justify-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.08] px-2 py-2 text-[10px] font-medium transition-all ${
                     active ? `${config.bg} ${config.text} ring-1 ${config.ring}` : "bg-[var(--text-primary)]/[0.02] text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.04]"
                   }`}
                 >
@@ -71,7 +68,7 @@ export default function SystemControlCard({ className = "", scrollable = true }:
 
         <div className="space-y-2">
           <p className="text-xs font-medium text-[var(--muted)]">{i18n("aura")}</p>
-          <div className="-m-1 flex flex-wrap items-center justify-center gap-[11px] p-1 sm:justify-start">
+          <div className="-m-1 flex flex-wrap items-center justify-center gap-2 p-1 sm:justify-start">
             {AURAS.map((aura) => {
               const active = settings.aura === aura;
               const key = `aura${aura.charAt(0).toUpperCase()}${aura.slice(1)}`;
@@ -80,13 +77,10 @@ export default function SystemControlCard({ className = "", scrollable = true }:
                 <button
                   key={aura}
                   type="button"
-                  onClick={() => {
-                    hapticMedium();
-                    update({ aura });
-                  }}
+                  onClick={() => { hapticSelectionTick(); update({ aura }); }}
                   title={i18n(key)}
                   style={{ backgroundColor: palette.background }}
-                  className={`flex h-11 w-11 items-center justify-center rounded-lg border border-[var(--text-primary)]/[0.08] transition-all hover:scale-105 sm:h-9 sm:w-9 ${
+                  className={`flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--text-primary)]/[0.08] transition-all hover:scale-105 sm:h-8 sm:w-8 ${
                     active ? "ring-2 ring-inset ring-[var(--accent-primary)]" : "opacity-70 hover:opacity-100"
                   }`}
                 >
@@ -108,7 +102,7 @@ export default function SystemControlCard({ className = "", scrollable = true }:
               type="button"
               onClick={() => cycle(-1)}
               title={i18n("previous")}
-              className="flex h-11 w-11 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)] sm:h-8 sm:w-8"
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)] sm:h-7 sm:w-7"
             >
               <Icon name="chevron-left" className="h-3.5 w-3.5" />
             </button>
@@ -120,7 +114,7 @@ export default function SystemControlCard({ className = "", scrollable = true }:
               type="button"
               onClick={() => cycle(1)}
               title={i18n("next")}
-              className="flex h-11 w-11 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)] sm:h-8 sm:w-8"
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)] sm:h-7 sm:w-7"
             >
               <Icon name="chevron-right" className="h-3.5 w-3.5" />
             </button>

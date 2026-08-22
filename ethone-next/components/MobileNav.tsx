@@ -8,6 +8,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
 import BrandMark from "@/components/BrandMark";
 import { NAVIGATION_ITEMS, isActiveRoute } from "@/lib/navigation";
+import { hapticLightImpact, hapticMediumImpact } from "@/lib/haptics";
 
 const VISIBLE_MOBILE_IDS = ["home", "notes", "tasks", "calendar"];
 
@@ -57,6 +58,7 @@ export default function MobileNav() {
                 href={item.href}
                 aria-current={isActive ? "page" : undefined}
                 data-haptic
+                onPointerDown={hapticLightImpact}
                 className="relative flex min-h-[44px] min-w-[56px] flex-col items-center justify-center gap-0.5 rounded-[var(--panel-radius)] px-2 py-1 text-[10px] font-medium transition-colors active:scale-[0.98] touch-manipulation"
               >
                 {isActive && (
@@ -80,7 +82,7 @@ export default function MobileNav() {
 
           <button
             type="button"
-            onClick={() => setDrawerOpen(true)}
+            onClick={() => { hapticMediumImpact(); setDrawerOpen(true); }}
             aria-haspopup="dialog"
             aria-expanded={drawerOpen}
             data-haptic

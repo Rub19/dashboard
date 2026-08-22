@@ -8,6 +8,7 @@ import { useToast } from "@/components/ToastProvider";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
 import Button from "@/components/ui/Button";
+import BiometricLock from "@/components/BiometricLock";
 import Input from "@/components/Input";
 
 export default function SecurityPage() {
@@ -60,6 +61,7 @@ export default function SecurityPage() {
         <button type="button" onClick={reload} aria-label={i18n("refresh")} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-2 text-[var(--muted)] hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"><Icon name="refresh-cw" className="h-4 w-4" /></button>
       </div>
 
+      <BiometricLock title={i18n("securityTitle")}>
       <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card3D>
@@ -206,6 +208,7 @@ export default function SecurityPage() {
         )}
       </div>
       </div>
+      </BiometricLock>
     </div>
   );
 }

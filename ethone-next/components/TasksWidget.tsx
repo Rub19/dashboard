@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Plus, CheckSquare } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { type Item } from "@/lib/hooks/useItems";
@@ -8,6 +8,7 @@ import { useCloudTasks } from "@/lib/hooks/useCloudTasks";
 import { useToast } from "@/components/ToastProvider";
 import Input from "@/components/Input";
 import BentoCard from "@/components/BentoCard";
+import { indexSpotlightItems } from "@/lib/apple";
 import TodoList from "./TodoList";
 import { cn } from "@/lib/utils";
 
@@ -44,6 +45,20 @@ export default function TasksWidget({ className = "", data, scrollable = true }:
   const { items, loading, create, update, remove } = data ?? own;
 
   const [newTaskTitle, setNewTaskTitle] = useState("");
+
+  useEffect(() => {
+    indexSpotlightItems(
+      items
+        .filter((t) => !t.done)
+        .map((task) => ({
+          id: `task-${task.id}`,
+          title: task.title,
+          description: `Tâche ETHONE`,
+          contentType: "public.text",
+          url: `ethone://tasks/${task.id}`,
+        }))
+    );
+  }, [items]);
 
   const stats = useMemo(() => {
     const total = items.length;

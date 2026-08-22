@@ -8,9 +8,9 @@ import type { BrainMessage, ReturnTypeOfUseBrain } from "@/lib/hooks/useBrain";
 import { useBrainActivityStore } from "@/lib/stores/brain-activity";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useNowPlaying } from "@/lib/hooks/useNowPlaying";
+import { hapticSuccessPattern, hapticErrorPattern, hapticMediumImpact } from "@/lib/haptics";
 import { useToast } from "@/components/ToastProvider";
 import { useLiveData } from "@/lib/hooks/useLiveData";
-import { hapticSuccess, hapticMedium } from "@/lib/haptics";
 import { useUserData } from "@/lib/hooks/useUserData";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { Icon } from "@/lib/icons";
@@ -213,15 +213,16 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
       if (!text || pending) return;
       setPrompt("");
       setPending(true);
-      hapticMedium();
+      hapticMediumImpact();
       brain
         .send(text)
         .then(() => {
-          hapticSuccess();
           setPending(false);
+          hapticSuccessPattern();
         })
         .catch((err) => {
           setPending(false);
+          hapticErrorPattern();
           showError(String(err));
         });
     },
@@ -230,12 +231,13 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
 
   const handleExecute = useCallback(
     async (actionId: string, parameters: Record<string, unknown> = {}) => {
-      hapticMedium();
+      hapticMediumImpact();
       const res = await brain.executeAction(actionId, parameters, true);
       if (res.ok) {
-        hapticSuccess();
+        hapticSuccessPattern();
         success(res.message || i18n("completed"));
       } else {
+        hapticErrorPattern();
         showError(res.message || i18n("error"));
       }
     },
@@ -468,7 +470,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Poser une question ou un objectif..."
+            placeholder="Parler à Brain..."
             disabled={pending}
             data-testid="brain-input"
             className="min-h-0 flex-1"

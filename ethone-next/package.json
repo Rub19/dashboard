@@ -1,6 +1,6 @@
 {
   "name": "ethone-next",
-  "version": "1.7.53",
+  "version": "1.7.57",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -19,8 +19,17 @@
     "cap:ios": "next build && npx cap sync && npx cap open ios"
   },
   "dependencies": {
+    "@aparajita/capacitor-biometric-auth": "^8.0.2",
+    "@capacitor-community/apple-sign-in": "^7.1.0",
+    "@capacitor/action-sheet": "^7.0.4",
+    "@capacitor/app": "^7.1.2",
     "@capacitor/core": "^7.6.8",
     "@capacitor/haptics": "^7.0.5",
+    "@capacitor/push-notifications": "^7.0.7",
+    "@capacitor/share": "^7.0.4",
+    "@capacitor/status-bar": "^7.0.6",
+    "@capawesome/capacitor-app-shortcuts": "^7.5.0",
+    "@capawesome/capacitor-badge": "^7.0.1",
     "@floating-ui/react": "^0.27.20",
     "@iconify-json/heroicons": "^1.2.3",
     "@iconify-json/lucide": "^1.2.123",
@@ -32,6 +41,7 @@
     "@internationalized/date": "^3.12.3",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.2",
+    "capacitor-live-activity": "^7.1.0",
     "framer-motion": "^13.1.0",
     "lucide-react": "^1.31.0",
     "next": "16.3.1",

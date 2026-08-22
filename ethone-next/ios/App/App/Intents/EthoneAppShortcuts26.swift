@@ -27,25 +27,14 @@ struct EthoneAppShortcuts26: AppShortcutsProvider {
         )
 
         AppShortcut(
-            intent: OpenProjectIntent(),
+            intent: ChangePresenceIntent26(),
             phrases: [
-                "Ouvrir le projet dans ETHONE",
-                "ETHONE ouvrir projet",
-                "Montrer le projet ETHONE"
+                "Changer ma présence ETHONE",
+                "ETHONE présence en ligne",
+                "Mettre à jour ma présence ETHONE"
             ],
-            shortTitle: "Ouvrir projet ETHONE",
-            systemImageName: "folder"
-        )
-
-        AppShortcut(
-            intent: CompleteTaskIntent26(),
-            phrases: [
-                "Marquer la tâche ETHONE terminée",
-                "ETHONE tâche faite",
-                "Terminer la tâche ETHONE"
-            ],
-            shortTitle: "Tâche ETHONE terminée",
-            systemImageName: "checkmark.circle"
+            shortTitle: "Présence ETHONE",
+            systemImageName: "person.fill"
         )
     }
 }

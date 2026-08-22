@@ -159,10 +159,10 @@ struct CreateNoteIntent26: AppIntent {
     static var description = IntentDescription("Crée une note indexée dans ETHONE.")
     static var openAppWhenRun: Bool = true
 
-    @Parameter(title: "Titre")
+    @Parameter(title: "Titre", default: "")
     var title: String
 
-    @Parameter(title: "Contenu")
+    @Parameter(title: "Contenu", default: "")
     var body: String
 
     @MainActor
@@ -216,7 +216,7 @@ struct ChangePresenceIntent26: AppIntent {
     static var description = IntentDescription("Change le statut de présence.")
     static var openAppWhenRun: Bool = true
 
-    @Parameter(title: "Statut")
+    @Parameter(title: "Statut", default: "")
     var status: String
 
     @MainActor

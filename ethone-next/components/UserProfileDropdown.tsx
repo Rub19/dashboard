@@ -20,6 +20,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { useActiveProfile, useSettings } from "@/components/SettingsProvider";
 import { useProfile } from "@/lib/hooks/useProfile";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { hapticMedium } from "@/lib/haptics";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import ChangelogModal from "@/components/ChangelogModal";
 import {
@@ -102,7 +103,7 @@ export default function UserProfileDropdown() {
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = "v1.7.52";
+  const VERSION_LABEL = "v1.7.53";
 
   const menuItems = [
     {
@@ -261,16 +262,17 @@ export default function UserProfileDropdown() {
             </div>
 
             {/* Status selector */}
-            <div className="flex flex-wrap items-center gap-1 rounded-lg border border-[var(--text-primary)]/[0.04] bg-[var(--text-primary)]/[0.02] p-1 text-[10px]">
+            <div className="grid grid-cols-2 gap-1 rounded-lg border border-[var(--text-primary)]/[0.04] bg-[var(--text-primary)]/[0.02] p-1 text-[10px] sm:grid-cols-4">
               {(Object.keys(USER_STATUS_CONFIG) as (keyof typeof USER_STATUS_CONFIG)[]).map((st) => (
                 <button
                   key={st}
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
+                    hapticMedium();
                     setStatus(st);
                   }}
-                  className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 transition-all ${
+                  className={`flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 transition-all ${
                     currentStatus === st
                       ? "bg-[var(--text-primary)]/[0.08] font-bold text-[var(--text-primary)] shadow-sm"
                       : "text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.03] hover:text-[var(--text-primary)]"

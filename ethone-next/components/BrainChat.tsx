@@ -10,6 +10,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useNowPlaying } from "@/lib/hooks/useNowPlaying";
 import { useToast } from "@/components/ToastProvider";
 import { useLiveData } from "@/lib/hooks/useLiveData";
+import { hapticSuccess, hapticMedium } from "@/lib/haptics";
 import { useUserData } from "@/lib/hooks/useUserData";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { Icon } from "@/lib/icons";
@@ -212,9 +213,11 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
       if (!text || pending) return;
       setPrompt("");
       setPending(true);
+      hapticMedium();
       brain
         .send(text)
         .then(() => {
+          hapticSuccess();
           setPending(false);
         })
         .catch((err) => {
@@ -227,9 +230,14 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
 
   const handleExecute = useCallback(
     async (actionId: string, parameters: Record<string, unknown> = {}) => {
+      hapticMedium();
       const res = await brain.executeAction(actionId, parameters, true);
-      if (res.ok) success(res.message || i18n("completed"));
-      else showError(res.message || i18n("error"));
+      if (res.ok) {
+        hapticSuccess();
+        success(res.message || i18n("completed"));
+      } else {
+        showError(res.message || i18n("error"));
+      }
     },
     [brain, i18n, showError, success]
   );
@@ -460,7 +468,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Parler à Brain..."
+            placeholder="Poser une question ou un objectif..."
             disabled={pending}
             data-testid="brain-input"
             className="min-h-0 flex-1"

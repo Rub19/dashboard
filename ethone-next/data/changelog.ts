@@ -3716,8 +3716,72 @@ const v332_de: ChangelogEntry = {
   ],
 };
 
+const v333_fr: ChangelogEntry = {
+  version: "v1.7.53",
+  date: "2026-08-22",
+  title: "Refonte native iOS : Dock Liquid Glass, haptiques et gestes",
+  items: [
+    "Nouveau `FloatingLiquidDock` : dock flottant translucide avec effet Liquid Glass, positionné en bas de l'écran avec une marge `safe-area`.",
+    "Pastille active animée avec `layoutId` Framer Motion et couleur synchronisée sur le theme engine.",
+    "Intégration de `@capacitor/haptics` : retours haptiques sur les changements d'onglets, la validation des tâches, l'envoi Brain et le changement de statut.",
+    "Nouveau `PullToRefresh` sur le tableau de bord : rechargement tactile avec indicateur iOS.",
+    "Nouveau composant `Sheet` pour les modales en tiroir iOS.",
+    "Placeholder du champ Brain corrigé : 'Poser une question ou un objectif...'.",
+    "Amélioration des cibles tactiles dans `SystemControlCard` (44 px minimum) et de la grille de statuts.",
+    "Version affichée en bas à droite : v1.7.53.",
+  ],
+};
+
+const v333_en: ChangelogEntry = {
+  version: "v1.7.53",
+  date: "2026-08-22",
+  title: "iOS native overhaul: Liquid Glass Dock, haptics and gestures",
+  items: [
+    "New `FloatingLiquidDock`: translucent floating dock with Liquid Glass effect, bottom-positioned with safe-area margin.",
+    "Animated active pill using Framer Motion `layoutId` and theme-synchronized color.",
+    "`@capacitor/haptics` integration: haptic feedback on tab changes, task completion, Brain send and status changes.",
+    "New `PullToRefresh` on the dashboard: tactile reload with iOS-style indicator.",
+    "New `Sheet` component for iOS bottom-sheet modals.",
+    "Brain input placeholder fixed: 'Ask a question or set a goal...'.",
+    "Improved touch targets in `SystemControlCard` (44 px minimum) and status grid.",
+    "Version badge bottom-right: v1.7.53.",
+  ],
+};
+
+const v333_es: ChangelogEntry = {
+  version: "v1.7.53",
+  date: "2026-08-22",
+  title: "Revisión nativa iOS: Dock Liquid Glass, hápticos y gestos",
+  items: [
+    "Nuevo `FloatingLiquidDock`: dock flotante translúcido con efecto Liquid Glass, posicionado abajo con margen de safe-area.",
+    "Píldora activa animada con Framer Motion `layoutId` y color sincronizado con el tema.",
+    "Integración de `@capacitor/haptics`: respuestas hápticas en cambios de pestañas, completar tareas, enviar Brain y cambiar estado.",
+    "Nuevo `PullToRefresh` en el tablero: recarga táctil con indicador de estilo iOS.",
+    "Nuevo componente `Sheet` para modales en hoja inferior iOS.",
+    "Placeholder del campo Brain corregido: 'Haz una pregunta o plantea un objetivo...'.",
+    "Mejora de las zonas táctiles en `SystemControlCard` (mínimo 44 px) y la cuadrícula de estados.",
+    "Versión mostrada abajo a la derecha: v1.7.53.",
+  ],
+};
+
+const v333_de: ChangelogEntry = {
+  version: "v1.7.53",
+  date: "2026-08-22",
+  title: "Native iOS-Überarbeitung: Liquid Glass Dock, Haptik und Gesten",
+  items: [
+    "Neues `FloatingLiquidDock`: durchscheinendes schwebendes Dock mit Liquid Glass-Effekt, unten positioniert mit Safe-Area-Abstand.",
+    "Animierte aktive Pille mit Framer Motion `layoutId` und tema-synchronisierter Farbe.",
+    "Integration von `@capacitor/haptics`: haptisches Feedback beim Tabwechsel, Aufgabenabschluss, Brain-Senden und Statuswechsel.",
+    "Neues `PullToRefresh` auf dem Dashboard: taktiles Neuladen mit iOS-ähnlichem Ladeindikator.",
+    "Neue `Sheet`-Komponente für iOS-Bottom-Sheet-Modals.",
+    "Brain-Eingabe-Placeholder korrigiert: 'Stell eine Frage oder gib ein Ziel an...'.",
+    "Verbesserte Touch-Targets in `SystemControlCard` (mindestens 44 px) und dem Statusraster.",
+    "Version unten rechts: v1.7.53.",
+  ],
+};
+
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v147_fr, v146_fr, v145_fr, v144_fr, v143_fr, v142_fr, v141_fr, v140_fr, v139_fr, v138_fr, v137_fr, v136_fr, v135_fr, v134_fr, v133_fr, v132_fr, v131_fr, v130_fr, v206_fr, v205_fr, v204_fr, v203_fr, v202_fr, v201_fr, v200_fr, v199_fr, v198_fr, v197_fr, v196_fr, v195_fr, v194_fr, v193_fr, v192_fr, v191_fr, v190_fr, v189_fr, v188_fr, v187_fr, v186_fr, v185_fr, v184_fr, v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr, v329_fr, v330_fr, v331_fr, v332_fr],
+  fr: [v147_fr, v146_fr, v145_fr, v144_fr, v143_fr, v142_fr, v141_fr, v140_fr, v139_fr, v138_fr, v137_fr, v136_fr, v135_fr, v134_fr, v133_fr, v132_fr, v131_fr, v130_fr, v206_fr, v205_fr, v204_fr, v203_fr, v202_fr, v201_fr, v200_fr, v199_fr, v198_fr, v197_fr, v196_fr, v195_fr, v194_fr, v193_fr, v192_fr, v191_fr, v190_fr, v189_fr, v188_fr, v187_fr, v186_fr, v185_fr, v184_fr, v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr, v329_fr, v330_fr, v331_fr, v332_fr, v333_fr],
   en: [v147_en, v146_en, v145_en, v144_en, v143_en, v142_en, v141_en, v140_en, v139_en, v138_en, v137_en, v136_en, v135_en, v134_en, v133_en, v132_en, v131_en, v130_en, v206_en, v205_en, v204_en, v203_en, v202_en, v201_en, v200_en, v199_en, v198_en, v197_en, v196_en, v195_en, v194_en, v193_en, v192_en, v191_en, v190_en, v189_en, v188_en, v187_en, v186_en, v185_en, v184_en, v183_en, v182_en, v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
@@ -3767,6 +3831,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
     v330_en,
     v331_en,
     v332_en,
+    v333_en,
   ],
   es: [v147_es, v146_es, v145_es, v144_es, v143_es, v142_es, v141_es, v140_es, v139_es, v138_es, v137_es, v136_es, v135_es, v134_es, v133_es, v132_es, v131_es, v130_es, v206_es, v205_es, v204_es, v203_es, v202_es, v201_es, v200_es, v199_es, v198_es, v197_es, v196_es, v195_es, v194_es, v193_es, v192_es, v191_es, v190_es, v189_es, v188_es, v187_es, v186_es, v185_es, v184_es, v183_es, v182_es, v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
@@ -3817,6 +3882,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
     v330_es,
     v331_es,
     v332_es,
+    v333_es,
   ],
   de: [v147_de, v146_de, v145_de, v144_de, v143_de, v142_de, v141_de, v140_de, v139_de, v138_de, v137_de, v136_de, v135_de, v134_de, v133_de, v132_de, v131_de, v130_de, v206_de, v205_de, v204_de, v203_de, v202_de, v201_de, v200_de, v199_de, v198_de, v197_de, v196_de, v195_de, v194_de, v193_de, v192_de, v191_de, v190_de, v189_de, v188_de, v187_de, v186_de, v185_de, v184_de, v183_de, v182_de, v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
@@ -3867,6 +3933,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
     v330_de,
     v331_de,
     v332_de,
+    v333_de,
   ],
 };
 

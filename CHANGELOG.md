@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.53 — 2026-08-22
+
+**Refonte native iOS : Dock Liquid Glass, haptiques et gestes**
+
+- Remplacement de la barre mobile par `FloatingLiquidDock` : capsule flottante Liquid Glass translucide avec `backdrop-filter: blur(24px) saturate(200%)`, reflets et pastille active animée.
+- Intégration de `@capacitor/haptics` (`lib/haptics.ts`) avec retours `ImpactStyle.Light`, `Medium` et `NotificationType.Success` sur les changements d'onglets, tâches, Brain et statuts.
+- Nouveau composant `PullToRefresh` intégré sur le tableau de bord pour un rechargement tactile iOS.
+- Nouveau composant `Sheet` pour les modales en tiroir (iOS bottom sheet).
+- Correction du placeholder du champ Brain (`Poser une question ou un objectif...`) et amélioration des cibles tactiles (min 44 px) dans `SystemControlCard` et `UserProfileDropdown`.
+- `Shell.tsx` : `pb-32` pour éviter que le dock ne recouvre le contenu.
+- Version `v1.7.53`, cache PWA `v421`.
+
 ## v1.7.52 — 2026-08-22
 
 **Correction topbar/sidebar overlap et double horloge**

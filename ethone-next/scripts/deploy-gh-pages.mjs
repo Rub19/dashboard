@@ -3,11 +3,11 @@ import path from "node:path";
 import { execSync } from "node:child_process";
 
 const root = path.resolve(import.meta.dirname, "..");
-const dist = path.join(root, "dist");
+const out = path.join(root, "out");
 const worktree = path.join(root, "..", "ethone-gh-pages");
 
-if (!fs.existsSync(dist)) {
-  console.error("Build dist/ not found. Run: npm run build");
+if (!fs.existsSync(out)) {
+  console.error("Build out/ not found. Run: npm run build");
   process.exit(1);
 }
 
@@ -25,8 +25,8 @@ try {
   // ignore
 }
 
-for (const entry of fs.readdirSync(dist, { withFileTypes: true })) {
-  const src = path.join(dist, entry.name);
+for (const entry of fs.readdirSync(out, { withFileTypes: true })) {
+  const src = path.join(out, entry.name);
   const dest = path.join(worktree, entry.name);
   if (entry.isDirectory()) {
     fs.cpSync(src, dest, { recursive: true, force: true });
@@ -35,12 +35,12 @@ for (const entry of fs.readdirSync(dist, { withFileTypes: true })) {
   }
 }
 
-const indexHtml = path.join(dist, "index.html");
-const notFoundHtml = path.join(dist, "_not-found.html");
-if (fs.existsSync(indexHtml) && !fs.existsSync(path.join(dist, "404.html"))) {
-  fs.copyFileSync(indexHtml, path.join(dist, "404.html"));
-} else if (fs.existsSync(notFoundHtml) && !fs.existsSync(path.join(dist, "404.html"))) {
-  fs.copyFileSync(notFoundHtml, path.join(dist, "404.html"));
+const indexHtml = path.join(out, "index.html");
+const notFoundHtml = path.join(out, "_not-found.html");
+if (fs.existsSync(indexHtml) && !fs.existsSync(path.join(out, "404.html"))) {
+  fs.copyFileSync(indexHtml, path.join(out, "404.html"));
+} else if (fs.existsSync(notFoundHtml) && !fs.existsSync(path.join(out, "404.html"))) {
+  fs.copyFileSync(notFoundHtml, path.join(out, "404.html"));
 }
 
 execSync("git add .", { cwd: worktree, stdio: "inherit" });

@@ -18,8 +18,8 @@ writeFileSync(
 );
 
 const nextConfig: NextConfig = {
-  output: process.env.NODE_ENV === "production" ? "export" : undefined,
-  distDir: "dist",
+  output: "export",
+  distDir: "out",
   images: {
     unoptimized: true,
   },

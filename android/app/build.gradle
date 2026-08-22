@@ -92,9 +92,6 @@ dependencies {
     // Biometry
     implementation 'androidx.biometric:biometric:1.1.0'
 
-    // Capacitor (preserved for compatibility, not loaded in the native Compose root)
-    implementation project(':capacitor-android')
-
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"

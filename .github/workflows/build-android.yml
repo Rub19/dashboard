@@ -2,7 +2,7 @@ name: Build Android
 
 on:
   push:
-    branches: [main, feat/full-native-android-compose]
+    branches: [main, feat/clean-monorepo-cross-platform-alignment, feat/full-native-android-compose]
   pull_request:
     branches: [main]
 
@@ -21,17 +21,8 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Node dependencies
-        run: npm ci
-        working-directory: ethone-next
-
       - name: Grant execute permission for gradlew
-        run: chmod +x ethone-next/android/gradlew
+        run: chmod +x android/gradlew
 
       - name: Cache Gradle
         uses: actions/cache@v4
@@ -39,13 +30,13 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('ethone-next/android/**/*.gradle*', 'ethone-next/android/**/gradle-wrapper.properties') }}
+          key: gradle-${{ runner.os }}-${{ hashFiles('android/**/*.gradle*', 'android/**/gradle-wrapper.properties') }}
           restore-keys: gradle-${{ runner.os }}-
 
       - name: Build Android
         run: |
           set -o pipefail
-          cd ethone-next/android
+          cd android
           ./gradlew :app:assembleDebug --stacktrace 2>&1 | tee gradle.log
         env:
           SUPABASE_URL: ${{ vars.SUPABASE_URL }}
@@ -54,7 +45,7 @@ jobs:
       - name: Surface Gradle errors
         if: failure()
         run: |
-          cd ethone-next/android
+          cd android
           echo "--- Gradle error summary ---"
           grep -E "(ERROR|FAIL|> Task .* FAILED|Exception|error:)" gradle.log | tail -80
           echo "::error::$(grep -E 'FAIL|Exception' gradle.log | tail -1 | sed "s/'//g")"
@@ -62,18 +53,18 @@ jobs:
       - name: List build outputs
         if: always()
         run: |
-          echo "--- build/outputs tree ---" | tee -a ethone-next/android/gradle.log
-          find ethone-next/android/app/build -type f 2>/dev/null | tee -a ethone-next/android/gradle.log
-          echo "--- gradle what went wrong ---" | tee -a ethone-next/android/gradle.log
-          sed -n '/What went wrong:/,/Try:/p' ethone-next/android/gradle.log | tail -40 | tee -a ethone-next/android/gradle.log | while IFS= read -r line; do echo "::error::$line"; done
-          echo "--- Kotlin compiler errors ---" | tee -a ethone-next/android/gradle.log
-          grep -E "^e:|^w:.*\.kt:" ethone-next/android/gradle.log | tail -30 | while IFS= read -r line; do echo "::error::$line"; done
+          echo "--- build/outputs tree ---" | tee -a android/gradle.log
+          find android/app/build -type f 2>/dev/null | tee -a android/gradle.log
+          echo "--- gradle what went wrong ---" | tee -a android/gradle.log
+          sed -n '/What went wrong:/,/Try:/p' android/gradle.log | tail -40 | tee -a android/gradle.log | while IFS= read -r line; do echo "::error::$line"; done
+          echo "--- Kotlin compiler errors ---" | tee -a android/gradle.log
+          grep -E "^e:|^w:.*\.kt:" android/gradle.log | tail -30 | while IFS= read -r line; do echo "::error::$line"; done
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: ETHONE-Android-APK
-          path: ethone-next/android/app/build/outputs/apk/debug/*.apk
+          path: android/app/build/outputs/apk/debug/*.apk
 
       - name: Upload build logs
         if: always()
@@ -81,6 +72,6 @@ jobs:
         with:
           name: Android-build-logs
           path: |
-            ethone-next/android/gradle.log
-            ethone-next/android/app/build/outputs/logs/
+            android/gradle.log
+            android/app/build/outputs/logs/
           if-no-files-found: ignore

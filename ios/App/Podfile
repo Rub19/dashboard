@@ -1,0 +1,15 @@
+platform :ios, '15.0'
+use_frameworks!
+install! 'cocoapods', :disable_input_output_paths => true
+
+target 'App' do
+  # ETHONE iOS app is 100 % native SwiftUI; no third-party pods required.
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
+    end
+  end
+end

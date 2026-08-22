@@ -1,8 +1,8 @@
-name: Build iOS IPA (Native Swift + Capacitor Shell)
+name: Build iOS IPA (Native SwiftUI)
 
 on:
   push:
-    branches: [main, master, ci/ios-ipa-workflow-stabilization-and-fixes, feat/ios-26-native-apis-and-frameworks, feat/global-liquid-glass-and-ios26-audit, feat/local-notifications-pomodoro-tasks, feat/hybrid-repo-nextjs-web-plus-native-swift-ios, feat/full-native-swift-liquid-glass-ios]
+    branches: [main, feat/clean-monorepo-cross-platform-alignment, feat/ios-26-native-apis-and-frameworks, feat/global-liquid-glass-and-ios26-audit, feat/local-notifications-pomodoro-tasks, feat/hybrid-repo-nextjs-web-plus-native-swift-ios, feat/full-native-swift-liquid-glass-ios]
   workflow_dispatch:
 
 permissions:
@@ -12,10 +12,6 @@ concurrency:
   group: ios-build-${{ github.ref }}
   cancel-in-progress: true
 
-defaults:
-  run:
-    working-directory: ethone-next
-
 jobs:
   build-ios:
     runs-on: macos-26
@@ -24,51 +20,22 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "npm"
-          cache-dependency-path: ethone-next/package-lock.json
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Build Next.js Static Export
-        run: npm run build
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key' }}
-          NEXT_PUBLIC_WORKER_URL: ${{ secrets.NEXT_PUBLIC_WORKER_URL || 'https://ethone.dev' }}
-
-      - name: Clean iOS Workspace State
-        run: |
-          rm -rf ios/App/App.xcworkspace
-          rm -rf ios/App/Podfile.lock
-          rm -rf ios/App/Pods
-
-      - name: Sync Capacitor iOS
-        run: npx cap sync ios
+      - name: Select Xcode Version
+        run: sudo xcode-select -s /Applications/Xcode_26.6.app/Contents/Developer
 
       - name: Inject Supabase config into Info.plist
         run: |
           plutil -replace SUPABASE_URL -string "${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}" ios/App/App/Info.plist
           plutil -replace SUPABASE_ANON_KEY -string "${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key' }}" ios/App/App/Info.plist
 
-      - name: Select Xcode Version
-        run: sudo xcode-select -s /Applications/Xcode_26.6.app/Contents/Developer
-
-      - name: Verify Xcode and iOS SDK
+      - name: Install CocoaPods Dependencies
         run: |
-          xcodebuild -version
           cd ios/App
-          xcodebuild -workspace App.xcworkspace -list
+          pod install
 
       - name: Verify Xcode Workspace
         run: |
           cd ios/App
-          ls -la
-          test -f App.xcworkspace/contents.xcworkspacedata && cat App.xcworkspace/contents.xcworkspacedata
           xcodebuild -workspace App.xcworkspace -list
 
       - name: Archive iOS Project (No Signing)
@@ -93,11 +60,12 @@ jobs:
       - name: Package Payload to IPA
         run: |
           cd ios/App/build
+          rm -rf Payload
           mkdir -p Payload
           cp -r App.xcarchive/Products/Applications/App.app Payload/
           zip -r ETHONE.ipa Payload/
 
-      - name: Verify Dynamic Island Extension in IPA
+      - name: Verify Widgets Extension in IPA
         run: |
           cd ios/App/build
           echo "--- PlugIns directory ---"
@@ -133,13 +101,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: iOS-build-logs
-          path: ethone-next/ios/App/build/build.log
+          path: ios/App/build/build.log
           if-no-files-found: ignore
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ETHONE-iOS-IPA
-          path: ethone-next/ios/App/build/ETHONE.ipa
+          path: ios/App/build/ETHONE.ipa
           retention-days: 7
           if-no-files-found: error

@@ -1,0 +1,34 @@
+# Xcode
+*.xcworkspace
+!default.xcworkspace
+*.xccheckout
+*.moved-aside
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+*.bcsymbolmap
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage
+Carthage/Build/
+Carthage/Checkouts/
+
+# Swift Package Manager
+.build/
+Package.resolved
+
+# User settings
+xcuserdata/
+*.xcuserstate
+
+# macOS
+.DS_Store
+
+# iOS build products
+build/
+*.app

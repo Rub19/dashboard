@@ -164,10 +164,10 @@ function TopBar() {
   return (
     <header
       data-v8-topbar
-      className="relative z-50 shrink-0 select-none rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 pt-safe backdrop-blur-[var(--panel-blur)]"
+      className="pointer-events-none relative z-40 shrink-0 select-none rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 pt-safe backdrop-blur-[var(--panel-blur)]"
     >
       {/* Mobile: compact header with logo, page title, search, notifications, profile */}
-      <div className="flex h-14 items-center justify-between md:hidden">
+      <div className="pointer-events-auto flex h-14 items-center justify-between md:hidden">
         <div className="flex min-w-0 items-center gap-3">
           <BrandMark size={26} className="shrink-0" />
           <span className="max-w-[26ch] truncate text-sm font-semibold text-[var(--text-primary)] capitalize">
@@ -184,9 +184,9 @@ function TopBar() {
       </div>
 
       {/* Desktop: full grid with breadcrumb, system status, quick tools */}
-      <div className="hidden h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center md:grid">
+      <div className="pointer-events-none hidden h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center md:grid">
         {/* Left — Identity & Breadcrumb */}
-        <div className="col-start-1 flex min-w-0 items-center gap-2 justify-self-start sm:gap-3">
+        <div className="pointer-events-auto col-start-1 flex min-w-0 items-center gap-2 justify-self-start sm:gap-3">
           <SidebarTopToggle />
           <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-1.5 sm:gap-2 text-sm font-medium text-[var(--text-muted)]">
             <Link href="/" className="shrink-0 transition-colors hover:text-[var(--text-primary)]">

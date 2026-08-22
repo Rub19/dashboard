@@ -2,6 +2,7 @@ import WidgetKit
 import SwiftUI
 import AppIntents
 
+@available(iOS 18.0, *)
 enum PresenceValue: String, AppEnum {
     case online = "En ligne"
     case busy = "Occupé"
@@ -16,29 +17,26 @@ enum PresenceValue: String, AppEnum {
     ]
 }
 
-struct SetPresenceIntent: SetValueIntent {
-    static var title: LocalizedStringResource = "Changer présence"
-    static var description = IntentDescription("Change le statut de présence ETHONE.")
-
-    @Parameter(title: "Présence")
-    var value: PresenceValue
+@available(iOS 18.0, *)
+struct OpenPresenceIntent: AppIntent {
+    static var title: LocalizedStringResource = "Ouvrir ETHONE Présence"
+    static var description = IntentDescription("Ouvre la page de présence ETHONE.")
+    static var openAppWhenRun: Bool = true
 
     @MainActor
     func perform() async throws -> some IntentResult {
-        let shared = UserDefaults(suiteName: "group.dev.ethone.app")
-        shared?.set(value.rawValue, forKey: "ethone_presence")
-        WidgetCenter.shared.reloadAllTimelines()
         return .result()
     }
 }
 
+@available(iOS 18.0, *)
 struct EthonePresenceControl: ControlWidget {
     var body: some ControlWidgetConfiguration {
         StaticControlConfiguration(
             kind: "dev.ethone.app.ios.control.presence",
             provider: PresenceControlProvider()
         ) { presence in
-            ControlWidgetButton(action: SetPresenceIntent()) {
+            ControlWidgetButton(action: OpenPresenceIntent()) {
                 Label(presence, systemImage: "person.fill")
             }
         }
@@ -47,13 +45,14 @@ struct EthonePresenceControl: ControlWidget {
     }
 }
 
+@available(iOS 18.0, *)
 struct PresenceControlProvider: ControlValueProvider {
-    func currentValue() async throws -> String {
+    typealias Value = String
+
+    var previewValue: Value { "En ligne" }
+
+    func currentValue() async throws -> Value {
         let shared = UserDefaults(suiteName: "group.dev.ethone.app")
         return shared?.string(forKey: "ethone_presence") ?? "En ligne"
-    }
-
-    func previewValue() -> String {
-        "En ligne"
     }
 }

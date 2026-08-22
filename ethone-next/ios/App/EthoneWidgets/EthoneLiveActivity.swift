@@ -10,7 +10,7 @@ enum ActivityMode: String, Codable {
     case sync
 }
 
-@available(iOS 16.1, *)
+@available(iOS 18.0, *)
 struct EthoneActivityAttributes: ActivityAttributes {
     public struct ContentState: Codable, Hashable {
         var mode: ActivityMode
@@ -24,7 +24,7 @@ struct EthoneActivityAttributes: ActivityAttributes {
     var initialTitle: String
 }
 
-@available(iOS 17.0, *)
+@available(iOS 18.0, *)
 struct EthoneLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: EthoneActivityAttributes.self) { context in
@@ -155,7 +155,7 @@ struct EthoneLiveActivity: Widget {
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 18.0, *)
 func tintColor(for mode: ActivityMode) -> Color {
     switch mode {
     case .focus: return .accentColor
@@ -165,7 +165,7 @@ func tintColor(for mode: ActivityMode) -> Color {
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 18.0, *)
 func iconName(for mode: ActivityMode) -> String {
     switch mode {
     case .focus: return "target"
@@ -175,7 +175,7 @@ func iconName(for mode: ActivityMode) -> String {
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 18.0, *)
 struct SoundWaveView: View {
     @State private var phase: Double = 0
 
@@ -194,7 +194,7 @@ struct SoundWaveView: View {
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 18.0, *)
 struct LockScreenView: View {
     let context: ActivityViewContext<EthoneActivityAttributes>
 
@@ -232,7 +232,7 @@ struct LockScreenView: View {
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 18.0, *)
 struct EthoneLiveActivityIntent: LiveActivityIntent {
     static var title: LocalizedStringResource = "Action ETHONE Live Activity"
     static var description: IntentDescription? = IntentDescription("Action declenchee depuis la Dynamic Island ETHONE.")

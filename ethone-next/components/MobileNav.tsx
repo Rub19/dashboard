@@ -45,10 +45,9 @@ export default function MobileNav() {
       <nav
         data-zen-hidden
         className={cn(
-          "fixed bottom-4 left-1/2 z-50 mb-[env(safe-area-inset-bottom)] h-[64px] w-[92%] max-w-[380px] -translate-x-1/2 rounded-[28px] border border-white/[0.12] border-t-white/[0.30] bg-[rgba(18,18,24,0.70)] px-2 py-2 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.20),0_16px_32px_-8px_rgba(0,0,0,0.6)] backdrop-blur-[24px] backdrop-saturate-[190%] transition-transform md:hidden",
+          "liquid-glass fixed bottom-4 left-1/2 z-50 mb-[env(safe-area-inset-bottom)] h-[64px] w-[92%] max-w-[380px] -translate-x-1/2 rounded-[28px] px-2 py-2 transition-transform md:hidden",
           drawerOpen ? "translate-y-[calc(100%+2rem)]" : "translate-y-0"
         )}
-        style={{ WebkitBackdropFilter: "blur(24px) saturate(190%)" }}
       >
         <div className="flex h-full w-full items-center justify-around gap-1 px-1">
           {visibleItems.map((item) => {
@@ -67,7 +66,7 @@ export default function MobileNav() {
                     layoutId="mobileNavPill"
                     initial={false}
                     transition={{ duration: 0.2, ease: "easeOut" as const }}
-                    className="absolute left-1/2 top-1/2 -z-10 h-9 w-12 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.10]"
+                    className="liquid-glass-btn absolute left-1/2 top-1/2 -z-10 h-9 w-12 -translate-x-1/2 -translate-y-1/2 rounded-full"
                   />
                 )}
                 <Icon

@@ -2,6 +2,7 @@ import WidgetKit
 import SwiftUI
 import AppIntents
 
+@available(iOS 18.0, *)
 struct CaptureBrainIdeaIntent: AppIntent {
     static var title: LocalizedStringResource = "Capturer une idée"
     static var description = IntentDescription("Enregistre une idée rapide dans Brain ETHONE.")
@@ -18,6 +19,7 @@ struct CaptureBrainIdeaIntent: AppIntent {
     }
 }
 
+@available(iOS 18.0, *)
 struct EthoneBrainIdeaControl: ControlWidget {
     var body: some ControlWidgetConfiguration {
         StaticControlConfiguration(

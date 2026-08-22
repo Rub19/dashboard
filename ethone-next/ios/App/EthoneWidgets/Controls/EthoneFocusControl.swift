@@ -2,18 +2,22 @@ import WidgetKit
 import SwiftUI
 import AppIntents
 
+@available(iOS 18.0, *)
 struct FocusControlProvider: ControlValueProvider {
-    func currentValue() async throws -> Bool {
+    typealias Value = Bool
+
+    var previewValue: Value { false }
+
+    func currentValue() async throws -> Value {
         let shared = UserDefaults(suiteName: "group.dev.ethone.app")
         return shared?.bool(forKey: "ethone_focus_active") ?? false
     }
-
-    func previewValue() -> Bool {
-        false
-    }
 }
 
+@available(iOS 18.0, *)
 struct ToggleFocusIntent: SetValueIntent {
+    typealias Value = Bool
+
     static var title: LocalizedStringResource = "Basculer ETHONE Focus"
     static var description = IntentDescription("Active ou désactive une session de concentration ETHONE.")
 
@@ -24,12 +28,12 @@ struct ToggleFocusIntent: SetValueIntent {
         let shared = UserDefaults(suiteName: "group.dev.ethone.app")
         shared?.set(value, forKey: "ethone_focus_active")
 
-        // Ask the main app to reload timelines/controls
         WidgetCenter.shared.reloadAllTimelines()
         return .result()
     }
 }
 
+@available(iOS 18.0, *)
 struct EthoneFocusControl: ControlWidget {
     var body: some ControlWidgetConfiguration {
         StaticControlConfiguration(

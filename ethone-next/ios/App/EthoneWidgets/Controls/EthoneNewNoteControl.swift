@@ -2,6 +2,7 @@ import WidgetKit
 import SwiftUI
 import AppIntents
 
+@available(iOS 18.0, *)
 struct QuickNoteIntent: AppIntent {
     static var title: LocalizedStringResource = "Nouvelle note rapide"
     static var description = IntentDescription("Crée une nouvelle note dans ETHONE.")
@@ -18,6 +19,7 @@ struct QuickNoteIntent: AppIntent {
     }
 }
 
+@available(iOS 18.0, *)
 struct EthoneNewNoteControl: ControlWidget {
     var body: some ControlWidgetConfiguration {
         StaticControlConfiguration(
@@ -33,14 +35,14 @@ struct EthoneNewNoteControl: ControlWidget {
     }
 }
 
+@available(iOS 18.0, *)
 struct BoolControlValueProvider: ControlValueProvider {
+    typealias Value = Bool
+
     var value: Bool
+    var previewValue: Value { value }
 
-    func currentValue() async throws -> Bool {
-        value
-    }
-
-    func previewValue() -> Bool {
+    func currentValue() async throws -> Value {
         value
     }
 }

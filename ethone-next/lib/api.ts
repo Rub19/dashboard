@@ -2,7 +2,7 @@
 
 import { supabase } from "./supabase";
 
-export const WORKER_URL = process.env.NEXT_PUBLIC_WORKER_URL || "";
+export const WORKER_URL = process.env.NEXT_PUBLIC_WORKER_URL || "https://ethone.dev";
 
 if (typeof window !== "undefined" && !WORKER_URL) {
   console.error(

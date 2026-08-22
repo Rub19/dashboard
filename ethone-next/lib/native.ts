@@ -4,57 +4,24 @@ import { Capacitor } from "@capacitor/core";
 import { App } from "@capacitor/app";
 import { Share } from "@capacitor/share";
 import { StatusBar, Style } from "@capacitor/status-bar";
-import { Badge } from "@capawesome/capacitor-badge";
-import { PushNotifications } from "@capacitor/push-notifications";
 import { ActionSheet, ActionSheetButtonStyle } from "@capacitor/action-sheet";
+import {
+  initializePushAndLocalNotifications,
+  setBadgeCount,
+  clearBadge,
+  getNotificationCategories,
+} from "@/lib/notifications";
+
+export { initializePushAndLocalNotifications, setBadgeCount, clearBadge, getNotificationCategories };
 
 export function isNative() {
   if (typeof window === "undefined") return false;
   return Capacitor.isNativePlatform();
 }
 
-export async function initializePushNotifications(onToken?: (token: string) => void, onMessage?: (data: unknown) => void) {
-  if (!isNative()) return;
-  try {
-    const perm = await PushNotifications.checkPermissions();
-    if (perm.receive !== "granted") {
-      await PushNotifications.requestPermissions();
-    }
-
-    PushNotifications.register();
-
-    PushNotifications.addListener("registration", (token) => {
-      onToken?.(token.value);
-    });
-
-    PushNotifications.addListener("pushNotificationReceived", (notification) => {
-      onMessage?.(notification);
-    });
-
-    PushNotifications.addListener("pushNotificationActionPerformed", (action) => {
-      onMessage?.(action.notification);
-    });
-  } catch {
-    // ignore on web
-  }
-}
-
-export async function setBadgeCount(count: number) {
-  if (!isNative()) return;
-  try {
-    await Badge.set({ count });
-  } catch {
-    // ignore
-  }
-}
-
-export async function clearBadge() {
-  if (!isNative()) return;
-  try {
-    await Badge.clear();
-  } catch {
-    // ignore
-  }
+export function getPlatform() {
+  if (typeof window === "undefined") return "web";
+  return Capacitor.getPlatform();
 }
 
 export async function updateStatusBar(style: "DARK" | "LIGHT") {

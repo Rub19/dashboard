@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.63 — 2026-08-22
+
+**Intégration des frameworks Apple natifs iOS (APNs, StoreKit, Live Activities, App Intents)**
+
+- Ajout de `@capacitor/local-notifications` et `@revenuecat/purchases-capacitor` pour les notifications locales et les achats intégrés.
+- Nouvelle couche TS : `lib/notifications.ts` (APNs + locales interactives), `lib/purchases.ts` (StoreKit/RevenueCat), `lib/share.ts`, `lib/intents.ts`.
+- Mise à jour de `capacitor.config.ts` : section `server` maintenue avec `url: 'https://ethone.dev'` et `cleartext: true`, configuration LocalNotifications.
+- Mise à jour de `AppDelegate.swift` : catégories de notifications interactives (tâches, Brain, calendrier) et enregistrement APNs.
+- App Intents iOS (`EthoneAppIntents.swift`) ajoutés au target `App` pour Siri Shortcuts.
+- Live Activity : `lib/live-activity.ts` en place ; l'UI Widget/Dynamic Island requiert une extension cible Xcode séparée.
+- Face ID / Touch ID et Sign in with Apple restent opérationnels via `@aparajita/capacitor-biometric-auth` et `@capacitor-community/apple-sign-in`.
+- Version `v1.7.63`, cache PWA `v426`.
+
 ## v1.7.62 — 2026-08-22
 
 **Résolution des dépendances Capacitor manquantes pour le build CI**

@@ -6,7 +6,8 @@ import { AppShortcuts } from "@capawesome/capacitor-app-shortcuts";
 import { useSettings } from "@/components/SettingsProvider";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { App } from "@capacitor/app";
-import { onAppUrlOpen, initializePushNotifications, updateStatusBar } from "@/lib/native";
+import { onAppUrlOpen, initializePushAndLocalNotifications, updateStatusBar } from "@/lib/native";
+import { configurePurchases } from "@/lib/purchases";
 import { isNativeIOS } from "@/lib/apple";
 import { isNativeAndroid, getMaterialColors, applyAndroidDynamicColors, onAndroidWindowLayoutChange } from "@/lib/android";
 
@@ -128,14 +129,21 @@ export default function NativeIntegration() {
   }, [router]);
 
   useEffect(() => {
-    initializePushNotifications(
+    initializePushAndLocalNotifications(
       (token) => {
         console.log("Push token:", token);
       },
       (notification) => {
-        const data = (notification as { data?: Record<string, string> })?.data;
+        const route = notification.data?.route;
+        if (route) router.push(route);
+      },
+      (action) => {
+        const data = action.notification?.data;
         const route = data?.route;
         if (route) router.push(route);
+        if (action.actionId === "ETHONE_TASK_DONE" && data?.taskId) {
+          // TODO: mark task done via API
+        }
       }
     );
   }, [router]);
@@ -143,6 +151,10 @@ export default function NativeIntegration() {
   useEffect(() => {
     updateStatusBar(settings.darkMode ? "DARK" : "LIGHT");
   }, [settings.darkMode]);
+
+  useEffect(() => {
+    configurePurchases();
+  }, []);
 
   useEffect(() => {
     if (typeof document === "undefined") return;

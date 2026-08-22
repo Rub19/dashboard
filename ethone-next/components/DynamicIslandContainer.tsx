@@ -13,7 +13,6 @@ import {
   SkipForward,
   Sparkles,
   Timer,
-  Clock,
   ChevronRight,
   Heart,
   Music,
@@ -50,33 +49,6 @@ function viewLabel(view: View, i18n: (key: string, fallback?: string) => string)
   }
 }
 
-function formatClock(date: Date) {
-  return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
-}
-
-function useNowClock() {
-  const [date, setDate] = useState<Date | null>(null);
-
-  useEffect(() => {
-    setDate(new Date());
-    const id = setInterval(() => setDate(new Date()), 1000);
-    return () => clearInterval(id);
-  }, []);
-
-  return date;
-}
-
-function IdleCompact({ className }: { className?: string }) {
-  const clock = useNowClock();
-  const time = clock ? formatClock(clock) : "--:--";
-  return (
-    <div className={cn("flex h-[38px] w-full items-center justify-center gap-2 px-1 text-zinc-300", className)}>
-      <Clock className="h-3.5 w-3.5 text-zinc-500" />
-      <span className="text-xs font-medium tabular-nums">{time}</span>
-    </div>
-  );
-}
-
 function IslandBubble({
   view,
   active,
@@ -110,7 +82,7 @@ function IslandBubble({
     ) : view === "brain" ? (
       <Brain className={iconClass} />
     ) : (
-      <Clock className={iconClass} />
+      <Sparkles className={iconClass} />
     );
 
   return (
@@ -135,13 +107,21 @@ function IslandExpandedHeader({
   className?: string;
 }) {
   const i18n = useI18n();
-  const clock = useNowClock();
-  const time = clock ? formatClock(clock) : "--:--";
+  const icon =
+    selected === "spotify" ? (
+      <Music className="h-3.5 w-3.5 text-emerald-400" />
+    ) : selected === "pomodoro" ? (
+      <Timer className="h-3.5 w-3.5 text-[var(--accent)]" />
+    ) : selected === "brain" ? (
+      <Brain className="h-3.5 w-3.5 text-purple-400" />
+    ) : (
+      <Sparkles className="h-3.5 w-3.5 text-zinc-500" />
+    );
   return (
     <div className={cn("-mx-6 -mt-4 mb-4 flex w-full items-center justify-between gap-3 border-b border-white/[0.06] px-6 pt-4 pb-3", className)}>
       <div className="flex items-center gap-1.5 text-zinc-300">
-        <Clock className="h-3.5 w-3.5 text-zinc-500" />
-        <span className="text-[10px] font-medium tabular-nums">{time}</span>
+        {icon}
+        <span className="text-[10px] font-medium tabular-nums">{viewLabel(selected, i18n)}</span>
       </div>
       <div className="flex items-center gap-1.5">
         {activeViews.map((v) => (
@@ -300,9 +280,42 @@ export default function DynamicIslandContainer() {
     return Math.min(100, Math.max(0, (1 - focus.state.remaining / focus.state.total) * 100));
   }, [focus.state.total, focus.state.remaining]);
 
-  // The compact pill always shows the current time. The activity details
-  // (Spotify, Pomodoro, Brain) are available in the expanded view on hover/click.
-  const compact = useMemo(() => <IdleCompact />, []);
+  // The compact pill shows the active activity (Spotify, Pomodoro, Brain).
+  // It is hidden when nothing is active, so the floating clock no longer
+  // duplicates the time already shown in the TopBar.
+  const compact = useMemo(() => {
+    if (!selectedView) return null;
+    const base = "flex h-[38px] w-full items-center justify-center gap-2 px-1 text-zinc-300";
+    switch (selectedView) {
+      case "spotify":
+        return (
+          <div className={cn(base)}>
+            <Music className="h-3.5 w-3.5 text-emerald-400" />
+            <span className="max-w-[80px] truncate text-xs font-medium tabular-nums">
+              {nowPlaying?.title || i18n("spotify", "Spotify")}
+            </span>
+          </div>
+        );
+      case "pomodoro":
+        return (
+          <div className={cn(base)}>
+            <Timer className="h-3.5 w-3.5 text-[var(--accent)]" />
+            <span className="text-xs font-medium tabular-nums">
+              {focus.format(focus.state.remaining)}
+            </span>
+          </div>
+        );
+      case "brain":
+        return (
+          <div className={cn(base)}>
+            <Brain className="h-3.5 w-3.5 text-purple-400" />
+            <span className="text-xs font-medium">{i18n("brain", "Brain")}</span>
+          </div>
+        );
+      default:
+        return null;
+    }
+  }, [selectedView, nowPlaying, focus, i18n]);
 
   // Spotify controls
   const spotifyControl = useCallback(
@@ -391,7 +404,7 @@ export default function DynamicIslandContainer() {
 
   return (
     <AnimatePresence>
-      {visible && (
+      {visible && selectedView && (
         <motion.div
           key="dynamic-island"
           initial={{ opacity: 0, y: -20, scale: 0.9 }}

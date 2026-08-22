@@ -247,7 +247,7 @@ function Sidebar() {
 
   return (
     <div
-      className="relative hidden h-full min-h-0 w-auto shrink-0 md:block"
+      className="relative z-30 hidden h-full min-h-0 w-auto shrink-0 pointer-events-auto md:block"
       onPointerEnter={() => setOpen(true)}
       onPointerLeave={() => setOpen(false)}
     >
@@ -255,9 +255,8 @@ function Sidebar() {
         collapsible="icon"
         variant="floating"
         ariaLabel="Navigation principale"
-        className="h-full bg-transparent"
-        style={{ height: "calc(100% + 0.25rem)" }}
-        panelClassName="!ml-0 m-2 h-full shrink-0 rounded-2xl p-3 backdrop-blur-[var(--panel-blur)]"
+        className="h-full bg-transparent pointer-events-auto"
+        panelClassName="!ml-0 m-2 h-[calc(100%-1rem)] shrink-0 rounded-2xl p-3 backdrop-blur-[var(--panel-blur)] pointer-events-auto"
       >
         <AnimatedSidebarHeader>
           <SidebarBrand />

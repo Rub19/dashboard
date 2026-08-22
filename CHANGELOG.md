@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.52 — 2026-08-22
+
+**Correction topbar/sidebar overlap et double horloge**
+
+- `components/DynamicIslandContainer.tsx` : suppression de la pilule d'horloge flottante orpheline. La Dynamic Island ne s'affiche que lorsqu'une activité est active (Spotify, Pomodoro, Brain) ; le compact affiche l'activité au lieu de l'heure.
+- `components/TopBar.tsx` : le `header` passe en `pointer-events-none` tandis que les zones interactives (mobile, colonnes desktop) restent `pointer-events-auto`, évitant qu'un conteneur invisible bloque les clics sur le haut de la sidebar.
+- `components/Sidebar.tsx` : ajout de `z-30 pointer-events-auto` et correction de la hauteur du panneau (`h-[calc(100%-1rem)]`).
+- Suppression du hack `style={{ height: 'calc(100% + 0.25rem)' }}` sur la sidebar.
+- Version `v1.7.52`, cache PWA `v420`.
+
 ## v1.7.51 — 2026-08-22
 
 **Correction build GitHub Actions (variables Supabase & export statique)**

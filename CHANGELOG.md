@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.62 — 2026-08-22
+
+**Résolution des dépendances Capacitor manquantes pour le build CI**
+
+- Ajout des plugins Capacitor utilisés par le code natif : `@capacitor/app`, `@capacitor/share`, `@capacitor/status-bar`, `@capacitor/haptics`, `@capacitor/push-notifications`, `@capacitor/action-sheet`, `@capacitor-community/apple-sign-in`, `@aparajita/capacitor-biometric-auth`, `@capawesome/capacitor-app-shortcuts`, `@capawesome/capacitor-badge`, `capacitor-live-activity`.
+- Alignement des plugins sur la version majeure 7 de `@capacitor/core`.
+- Suppression du fichier de merge résiduel `lib/apple.ts.theirs`.
+- Version `v1.7.62`, cache PWA `v425`.
+
 ## v1.7.61 — 2026-08-22
 
 **Dashboard en données réelles, polissage Brain/présence et cohérence thématique**

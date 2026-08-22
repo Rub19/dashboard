@@ -13,6 +13,7 @@
 		935142EEFE0D4F57BC936ECB /* EthoneSpotlightPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CE47E838EC74041A71400CD /* EthoneSpotlightPlugin.swift */; };
 		7C7CFE35AA5E4B4B8A332BD0 /* EthoneFocusPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4286D03F605440FB75AA6BD /* EthoneFocusPlugin.swift */; };
 		504EC3081FED79650016851F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504EC3071FED79650016851F /* AppDelegate.swift */; };
+		F48DB15F11D54CB3B55913E6 /* EthoneAppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A574DAE3029C417A96A4426E /* EthoneAppIntents.swift */; };
 		504EC30D1FED79650016851F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30B1FED79650016851F /* Main.storyboard */; };
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
@@ -26,6 +27,7 @@
 		504EC3041FED79650016851F /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		504EC3071FED79650016851F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C6DD3EBAE6EF4F05ADBF325A /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		A574DAE3029C417A96A4426E /* EthoneAppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthoneAppIntents.swift; sourceTree = "<group>"; };
 		6CE47E838EC74041A71400CD /* EthoneSpotlightPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthoneSpotlightPlugin.swift; sourceTree = "<group>"; };
 		B4286D03F605440FB75AA6BD /* EthoneFocusPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthoneFocusPlugin.swift; sourceTree = "<group>"; };
 		504EC30C1FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -82,6 +84,7 @@
 				50379B222058CBB4000EE86E /* capacitor.config.json */,
 				504EC3071FED79650016851F /* AppDelegate.swift */,
 				C6DD3EBAE6EF4F05ADBF325A /* MainViewController.swift */,
+				1EBEC1026DB04C3A87A1A58A /* Intents */,
 				8834E8A5383D4A4EA08190AC /* Plugins */,
 				504EC30B1FED79650016851F /* Main.storyboard */,
 				504EC30E1FED79650016851F /* Assets.xcassets */,
@@ -101,6 +104,15 @@
 			);
 			name = Plugins;
 			path = Plugins;
+			sourceTree = "<group>";
+		};
+		1EBEC1026DB04C3A87A1A58A /* Intents */ = {
+			isa = PBXGroup;
+			children = (
+				A574DAE3029C417A96A4426E /* EthoneAppIntents.swift */,
+			);
+			name = Intents;
+			path = Intents;
 			sourceTree = "<group>";
 		};
 		7F8756D8B27F46E3366F6CEA /* Pods */ = {
@@ -229,6 +241,7 @@
 			files = (
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
 				0737E4ECE0A54477BB7A216C /* MainViewController.swift in Sources */,
+				F48DB15F11D54CB3B55913E6 /* EthoneAppIntents.swift in Sources */,
 				935142EEFE0D4F57BC936ECB /* EthoneSpotlightPlugin.swift in Sources */,
 				7C7CFE35AA5E4B4B8A332BD0 /* EthoneFocusPlugin.swift in Sources */,
 			);

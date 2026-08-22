@@ -191,22 +191,34 @@ struct LockScreenView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                compactLeading(context: context)
+                Image(systemName: iconName(for: context.state.mode))
+                    .foregroundColor(tintColor(for: context.state.mode))
                     .scaleEffect(1.2)
                 Text(context.state.title)
                     .font(.headline)
                 Spacer()
-                compactTrailing(context: context)
+                Text(context.state.subtitle)
+                    .font(.caption2)
+                    .foregroundColor(.white)
             }
             if context.state.mode != .sound {
                 ProgressView(value: Double(context.state.progress) ?? 0, total: 100)
-                    .tint(EthoneLiveActivity().tintColor(for: context.state.mode))
+                    .tint(tintColor(for: context.state.mode))
             } else {
                 SoundWaveView()
                     .frame(height: 16)
             }
         }
         .padding()
+    }
+
+    func iconName(for mode: ActivityMode) -> String {
+        switch mode {
+        case .focus: return "target"
+        case .task: return "checkmark.circle"
+        case .sound: return "waveform"
+        case .sync: return "arrow.clockwise"
+        }
     }
 }
 

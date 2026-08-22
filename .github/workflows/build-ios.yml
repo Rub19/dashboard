@@ -60,35 +60,30 @@ jobs:
           test -f App.xcworkspace/contents.xcworkspacedata && cat App.xcworkspace/contents.xcworkspacedata
           xcodebuild -workspace App.xcworkspace -list
 
-      - name: Build iOS Project (No Signing)
+      - name: Archive iOS Project (No Signing)
         run: |
           cd ios/App
           mkdir -p build
           set -o pipefail
-          xcodebuild clean build \
+          xcodebuild clean archive \
             -workspace App.xcworkspace \
             -scheme App \
             -configuration Release \
-            -sdk iphonesimulator \
-            -destination 'generic/platform=iOS Simulator' \
-            -derivedDataPath build \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/App.xcarchive \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGN_STYLE=Manual \
             DEVELOPMENT_TEAM="" \
             PROVISIONING_PROFILE_SPECIFIER="" \
-            ARCHS=arm64 \
             ONLY_ACTIVE_ARCH=NO 2>&1 | tee build/build.log
 
       - name: Package Payload to IPA
         run: |
-          cd ios/App
-          APP_PATH=$(find build -name 'App.app' -type d | head -n 1)
-          echo "Found app: $APP_PATH"
-          mkdir -p build/Payload
-          cp -r "$APP_PATH" build/Payload/
-          cd build
+          cd ios/App/build
+          mkdir -p Payload
+          cp -r App.xcarchive/Products/Applications/App.app Payload/
           zip -r ETHONE.ipa Payload/
 
       - name: Write Build Summary on Failure

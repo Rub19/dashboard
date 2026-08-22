@@ -62,9 +62,9 @@ jobs:
         if: always()
         run: |
           echo "--- build/outputs tree ---" | tee -a ethone-next/android/gradle.log
-          find ethone-next/android/app/build/outputs -type f 2>/dev/null | tee -a ethone-next/android/gradle.log
-          echo "--- gradle log tail ---" | tee -a ethone-next/android/gradle.log
-          tail -n 40 ethone-next/android/gradle.log | while IFS= read -r line; do echo "::notice::$line"; done
+          find ethone-next/android/app/build -type f 2>/dev/null | tee -a ethone-next/android/gradle.log
+          echo "--- gradle log grep ---" | tee -a ethone-next/android/gradle.log
+          grep -E "BUILD|FAILURE|FAILED|SUCCESSFUL|Task|outputs/apk|app-debug" ethone-next/android/gradle.log | tail -30 | tee -a ethone-next/android/gradle.log | while IFS= read -r line; do echo "::notice::$line"; done
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

@@ -1,7 +1,8 @@
 "use client";
 
-import { createContext, useContext, useMemo, useSyncExternalStore } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useSyncExternalStore } from "react";
 import { FocusTimer, type FocusPhase, type FocusTimerState } from "@/lib/focus-timer";
+import { areActivitiesSupported, startFocusActivity, updateFocusActivity, endFocusActivity } from "@/lib/live-activity";
 
 export type { FocusPhase };
 
@@ -29,6 +30,38 @@ export function FocusProvider({ children }: { children: React.ReactNode }) {
     () => focusTimer.getState(),
     () => focusTimer.getState()
   );
+
+  const activityRef = useRef<string | null>(null);
+  const canLiveActivity = useRef(false);
+
+  useEffect(() => {
+    areActivitiesSupported().then((supported) => {
+      canLiveActivity.current = supported;
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!canLiveActivity.current) return;
+
+    if (state.phase !== "idle" && state.total > 0) {
+      const title = state.phase === "focus" ? "Focus" : state.phase === "shortBreak" ? "Pause" : "Long break";
+      if (!activityRef.current) {
+        startFocusActivity("ethone-focus", title, state.total, "classic").then((res) => {
+          if (res.activityId) activityRef.current = "ethone-focus";
+        });
+      } else {
+        const progress = state.total ? String(Math.round((1 - state.remaining / state.total) * 100)) : "0";
+        updateFocusActivity("ethone-focus", {
+          focusTitle: title,
+          timeRemaining: focusTimer.formatRemaining(state.remaining),
+          progress,
+        });
+      }
+    } else if (activityRef.current) {
+      endFocusActivity("ethone-focus");
+      activityRef.current = null;
+    }
+  }, [state]);
 
   const value = useMemo<FocusContextValue>(
     () => ({

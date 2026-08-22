@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { Share2 } from "lucide-react";
 import { useItems } from "@/lib/hooks/useItems";
 import { useSelection } from "@/lib/hooks/useSelection";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -14,6 +15,7 @@ import BulkActionBar from "@/components/BulkActionBar";
 import CustomCheckbox from "@/components/CustomCheckbox";
 import RichTextEditor, { stripHtml } from "@/components/RichTextEditor";
 import { wordCountFromHtml } from "@/lib/notes";
+import { nativeShare } from "@/lib/native";
 
 type Note = { id: string; title: string; body: string; createdAt?: string };
 
@@ -89,6 +91,16 @@ export default function NotesPage() {
     } catch {
       showError(i18n("error"));
     }
+  }
+
+  async function shareNote(note: Note) {
+    const text = `${note.title}\n\n${stripHtml(note.body)}`;
+    const { ok, error } = await nativeShare({
+      title: note.title,
+      text,
+      url: `https://ethone.dev/notes/?selected=${note.id}`,
+    });
+    if (!ok && error) showError(i18n("shareFailed"));
   }
 
   async function bulkDelete() {
@@ -199,6 +211,15 @@ export default function NotesPage() {
                     </div>
                   </div>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => shareNote(note)}
+                  disabled={loading}
+                  data-tooltip={i18n("share")}
+                  className="shrink-0 text-[var(--muted)] transition-colors hover:text-[var(--accent-primary)] disabled:opacity-50"
+                >
+                  <Share2 className="h-4 w-4" />
+                </button>
                 <button
                   type="button"
                   onClick={() => deleteNote(note.id)}

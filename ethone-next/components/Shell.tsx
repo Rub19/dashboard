@@ -20,6 +20,7 @@ import Dock from "@/components/Dock";
 import StatusBar from "@/components/layout/StatusBar";
 import SkipLink from "@/components/SkipLink";
 import ContextMenuProvider from "@/components/ContextMenuProvider";
+import NativeIntegration from "@/components/NativeIntegration";
 
 import LiveWidgetSkeleton from "@/components/LiveWidgetSkeleton";
 import DynamicIslandSkeleton from "@/components/DynamicIslandSkeleton";
@@ -41,6 +42,7 @@ const KeyboardShortcuts = dynamic(() => import("@/components/KeyboardShortcuts")
 export default function Shell({ children }: { children: ReactNode }) {
   return (
     <WindowManagerProvider>
+      <NativeIntegration />
       <ContextMenuProvider>
         <PublicProfileProvider>
         <PresenceProvider>

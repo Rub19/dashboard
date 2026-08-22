@@ -23,6 +23,7 @@ import {
 } from "@/lib/auth";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
+import AppleSignInButton from "@/components/AppleSignInButton";
 import PasswordField from "@/components/PasswordField";
 import { isPasswordPwned } from "@/lib/password-strength";
 import {
@@ -523,6 +524,7 @@ export default function LoginPage() {
                       >
                         <GithubIcon className="h-5 w-5" /> {i18n("signInWithGithub")}
                       </button>
+                      <AppleSignInButton disabled={loading} />
                     </div>
 
                     <button

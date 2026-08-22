@@ -2,6 +2,21 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.54 — 2026-08-22
+
+**Intégration complète de l'écosystème Apple**
+
+- Installation des plugins Capacitor : `@capacitor/app`, `@capacitor/status-bar`, `@capacitor/share`, `@capacitor/push-notifications`, `@capacitor/action-sheet`, `@capacitor-community/apple-sign-in`, `@aparajita/capacitor-biometric-auth`, `@capawesome/capacitor-badge` et `capacitor-live-activity`.
+- Bouton officiel "Se connecter avec Apple" sur la page de connexion (`app/login/page.tsx`) avec authentification par ID token Supabase.
+- Verrouillage Face ID / Touch ID de la section Sécurité via `components/BiometricLock.tsx`.
+- Partage natif iOS sur les notes (`lib/native.ts`, `components/NotesPage.tsx`).
+- Deep Linking `ethone://` + Universal Links via `@capacitor/app` et `components/NativeIntegration.tsx`.
+- Synchronisation du style de la Status Bar avec le thème ETHONE.
+- Live Activities connectées aux sessions Focus/Pomodoro (`lib/live-activity.ts`, `FocusProvider.tsx`).
+- Fichiers natifs iOS créés pour WidgetKit (`EthoneWidget.swift`), Live Activity (`EthoneLiveActivity.swift`) et Siri Shortcuts / App Intents (`EthoneAppIntents.swift`).
+- Mise à jour de `ios/App/App/Info.plist` (Face ID, URL scheme) et création de `ios/App/App/App.entitlements`.
+- Version `v1.7.54`.
+
 ## v1.7.52 — 2026-08-22
 
 **Correction topbar/sidebar overlap et double horloge**

@@ -8,6 +8,26 @@ const config: CapacitorConfig = {
     url: "https://ethone.dev",
     cleartext: true,
     androidScheme: "https",
+    iosScheme: "ethone",
+  },
+  plugins: {
+    StatusBar: {
+      style: "DARK",
+      backgroundColor: "#00000000",
+      overlaysWebView: true,
+    },
+    PushNotifications: {
+      presentationOptions: ["alert", "badge", "sound"],
+    },
+    Badge: {
+      persist: true,
+      autoClear: false,
+    },
+    BiometricAuth: {
+      reason: "Authentifiez-vous pour accéder à vos données ETHONE.",
+      cancelTitle: "Annuler",
+      allowDeviceCredential: true,
+    },
   },
 };
 

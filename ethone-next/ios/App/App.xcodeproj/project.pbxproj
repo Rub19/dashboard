@@ -20,7 +20,7 @@
 		A084ECDBA7D38E1E42DFC39D /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */; };
 		F48DB15F11D54CB3B55913E6 /* EthoneAppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A574DAE3029C417A96A4426E /* EthoneAppIntents.swift */; };
 		XX02F5412EBC007C90F720XX /* EthoneLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = XX2CA0E079554EB3C0F9B1XX /* EthoneLiveActivity.swift */; };
-		XX0C87A0464D334F03518AXX /* EthoneAppEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = XX10889BE3BC7E36FCD585XX /* EthoneAppEntities.swift */; };
+
 		XX1045A1692FA62B56C994XX /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = XX11940AB5AEC0B905F872XX /* WidgetKit.framework */; };
 		XX1400AF825091948C74D9XX /* Controls/EthoneFocusControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = XXE28ACE708318BF7B5B89XX /* Controls/EthoneFocusControl.swift */; };
 		XX14AEA040873B67D7C79FXX /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = XX12C05B3D5F818398C30FXX /* UserNotifications.framework */; };
@@ -95,7 +95,7 @@
 		B4286D03F605440FB75AA6BD /* EthoneFocusPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthoneFocusPlugin.swift; sourceTree = "<group>"; };
 		C6DD3EBAE6EF4F05ADBF325A /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		FC68EB0AF532CFC21C3344DD /* Pods-App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.debug.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.debug.xcconfig"; sourceTree = "<group>"; };
-		XX10889BE3BC7E36FCD585XX /* EthoneAppEntities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthoneAppEntities.swift; sourceTree = "<group>"; };
+
 		XX11940AB5AEC0B905F872XX /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		XX11BCFE3BA093B4BE314FXX /* Controls/EthoneBrainIdeaControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controls/EthoneBrainIdeaControl.swift; sourceTree = "<group>"; };
 		XX12C05B3D5F818398C30FXX /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
@@ -159,7 +159,6 @@
 			children = (
 				A574DAE3029C417A96A4426E /* EthoneAppIntents.swift */,
 				XX4D37D25B10BF70FF4751XX /* EthoneAppEntities.swift */,
-				XX10889BE3BC7E36FCD585XX /* EthoneAppEntities.swift */,
 				XXC6994DA153B015DB1CD9XX /* EthoneAppShortcuts26.swift */,
 			);
 			name = Intents;
@@ -441,7 +440,6 @@
 				935142EEFE0D4F57BC936ECB /* EthoneSpotlightPlugin.swift in Sources */,
 				7C7CFE35AA5E4B4B8A332BD0 /* EthoneFocusPlugin.swift in Sources */,
 				XXD027FE962E2FDDF6DEEDXX /* EthoneAppEntities.swift in Sources */,
-				XX0C87A0464D334F03518AXX /* EthoneAppEntities.swift in Sources */,
 				XX6E8A81E4CC28B43871B7XX /* EthoneAppShortcuts26.swift in Sources */,
 				XX52AB3AC6DC7297F7B810XX /* EthoneIntelligence27.swift in Sources */,
 			);

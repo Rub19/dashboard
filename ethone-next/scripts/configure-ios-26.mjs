@@ -14,7 +14,7 @@ if (!widget) throw new Error("EthoneWidgets target not found");
 
 app.setBuildSetting("IPHONEOS_DEPLOYMENT_TARGET", "17.0");
 app.setBuildSetting("CODE_SIGN_ENTITLEMENTS", "App/App.entitlements");
-app.setBuildSetting("SWIFT_VERSION", "6.0");
+app.setBuildSetting("SWIFT_VERSION", "5.0");
 
 widget.setBuildSetting("IPHONEOS_DEPLOYMENT_TARGET", "18.0");
 

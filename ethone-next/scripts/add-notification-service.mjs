@@ -16,7 +16,7 @@ const service = project.addNativeTarget({
     PRODUCT_BUNDLE_IDENTIFIER: "dev.ethone.app.EthoneNotificationService",
     INFOPLIST_FILE: "EthoneNotificationService/Info.plist",
     INFOPLIST_KEY_CFBundleDisplayName: "Ethone Notification Service",
-    SWIFT_VERSION: "6.0",
+    SWIFT_VERSION: "5.0",
     CODE_SIGN_STYLE: "Manual",
     CODE_SIGN_IDENTITY: "",
     DEVELOPMENT_TEAM: "",

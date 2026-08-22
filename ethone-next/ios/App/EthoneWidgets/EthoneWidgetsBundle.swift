@@ -1,7 +1,7 @@
 import WidgetKit
 import SwiftUI
 
-@available(iOS 18.0, *)
+@available(iOS 26.0, *)
 @main
 struct EthoneWidgetsBundle: WidgetBundle {
     var body: some Widget {

@@ -3544,8 +3544,64 @@ const v329_de: ChangelogEntry = {
   ],
 };
 
+const v330_fr: ChangelogEntry = {
+  version: "v1.7.50",
+  date: "2026-08-22",
+  title: "Mise à jour automatique en direct (Capacitor Live Server)",
+  items: [
+    "`capacitor.config.ts` : ajout de `server.url: 'https://ethone.dev'`, `cleartext: true` et `androidScheme: 'https'`.",
+    "Capacitor charge désormais l'application distante depuis `https://ethone.dev` : mises à jour web instantanées sans recompilation ni réinstallation.",
+    "Android : `android:usesCleartextTraffic=\"true\"` ajouté au `AndroidManifest.xml`.",
+    "iOS : chargement HTTPS pris en charge par App Transport Security (ATS).",
+    "Workflow GitHub Actions `build-ios.yml` synchronisé avec la nouvelle configuration Capacitor (`npx cap sync ios`).",
+    "Version affichée en bas à droite : v1.7.50.",
+  ],
+};
+
+const v330_en: ChangelogEntry = {
+  version: "v1.7.50",
+  date: "2026-08-22",
+  title: "Live auto-update (Capacitor Live Server)",
+  items: [
+    "`capacitor.config.ts` : added `server.url: 'https://ethone.dev'`, `cleartext: true` and `androidScheme: 'https'`.",
+    "Capacitor now loads the remote app from `https://ethone.dev`: instant web updates without recompiling or reinstalling.",
+    "Android: added `android:usesCleartextTraffic=\"true\"` to `AndroidManifest.xml`.",
+    "iOS: HTTPS loading supported by App Transport Security (ATS).",
+    "GitHub Actions `build-ios.yml` workflow synced with the new Capacitor config (`npx cap sync ios`).",
+    "Version badge bottom-right: v1.7.50.",
+  ],
+};
+
+const v330_es: ChangelogEntry = {
+  version: "v1.7.50",
+  date: "2026-08-22",
+  title: "Actualización automática en directo (Capacitor Live Server)",
+  items: [
+    "`capacitor.config.ts` : añadido `server.url: 'https://ethone.dev'`, `cleartext: true` y `androidScheme: 'https'`.",
+    "Capacitor carga ahora la aplicación remota desde `https://ethone.dev`: actualizaciones web instantáneas sin recompilar ni reinstalar.",
+    "Android: `android:usesCleartextTraffic=\"true\"` añadido al `AndroidManifest.xml`.",
+    "iOS: carga HTTPS soportada por App Transport Security (ATS).",
+    "Workflow de GitHub Actions `build-ios.yml` sincronizado con la nueva configuración Capacitor (`npx cap sync ios`).",
+    "Versión mostrada abajo a la derecha: v1.7.50.",
+  ],
+};
+
+const v330_de: ChangelogEntry = {
+  version: "v1.7.50",
+  date: "2026-08-22",
+  title: "Automatisches Live-Update (Capacitor Live Server)",
+  items: [
+    "`capacitor.config.ts` : `server.url: 'https://ethone.dev'`, `cleartext: true` und `androidScheme: 'https'` hinzugefügt.",
+    "Capacitor lädt die App jetzt remote von `https://ethone.dev`: sofortige Web-Updates ohne Neukompilierung oder Neuinstallation.",
+    "Android: `android:usesCleartextTraffic=\"true\"` in die `AndroidManifest.xml` eingefügt.",
+    "iOS: HTTPS-Laden wird von App Transport Security (ATS) unterstützt.",
+    "GitHub Actions Workflow `build-ios.yml` mit der neuen Capacitor-Konfiguration synchronisiert (`npx cap sync ios`).",
+    "Version unten rechts: v1.7.50.",
+  ],
+};
+
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v147_fr, v146_fr, v145_fr, v144_fr, v143_fr, v142_fr, v141_fr, v140_fr, v139_fr, v138_fr, v137_fr, v136_fr, v135_fr, v134_fr, v133_fr, v132_fr, v131_fr, v130_fr, v206_fr, v205_fr, v204_fr, v203_fr, v202_fr, v201_fr, v200_fr, v199_fr, v198_fr, v197_fr, v196_fr, v195_fr, v194_fr, v193_fr, v192_fr, v191_fr, v190_fr, v189_fr, v188_fr, v187_fr, v186_fr, v185_fr, v184_fr, v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr, v329_fr],
+  fr: [v147_fr, v146_fr, v145_fr, v144_fr, v143_fr, v142_fr, v141_fr, v140_fr, v139_fr, v138_fr, v137_fr, v136_fr, v135_fr, v134_fr, v133_fr, v132_fr, v131_fr, v130_fr, v206_fr, v205_fr, v204_fr, v203_fr, v202_fr, v201_fr, v200_fr, v199_fr, v198_fr, v197_fr, v196_fr, v195_fr, v194_fr, v193_fr, v192_fr, v191_fr, v190_fr, v189_fr, v188_fr, v187_fr, v186_fr, v185_fr, v184_fr, v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr, v329_fr, v330_fr],
   en: [v147_en, v146_en, v145_en, v144_en, v143_en, v142_en, v141_en, v140_en, v139_en, v138_en, v137_en, v136_en, v135_en, v134_en, v133_en, v132_en, v131_en, v130_en, v206_en, v205_en, v204_en, v203_en, v202_en, v201_en, v200_en, v199_en, v198_en, v197_en, v196_en, v195_en, v194_en, v193_en, v192_en, v191_en, v190_en, v189_en, v188_en, v187_en, v186_en, v185_en, v184_en, v183_en, v182_en, v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
@@ -3592,6 +3648,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
     v329_en,
+    v330_en,
   ],
   es: [v147_es, v146_es, v145_es, v144_es, v143_es, v142_es, v141_es, v140_es, v139_es, v138_es, v137_es, v136_es, v135_es, v134_es, v133_es, v132_es, v131_es, v130_es, v206_es, v205_es, v204_es, v203_es, v202_es, v201_es, v200_es, v199_es, v198_es, v197_es, v196_es, v195_es, v194_es, v193_es, v192_es, v191_es, v190_es, v189_es, v188_es, v187_es, v186_es, v185_es, v184_es, v183_es, v182_es, v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
@@ -3639,6 +3696,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
     v329_es,
+    v330_es,
   ],
   de: [v147_de, v146_de, v145_de, v144_de, v143_de, v142_de, v141_de, v140_de, v139_de, v138_de, v137_de, v136_de, v135_de, v134_de, v133_de, v132_de, v131_de, v130_de, v206_de, v205_de, v204_de, v203_de, v202_de, v201_de, v200_de, v199_de, v198_de, v197_de, v196_de, v195_de, v194_de, v193_de, v192_de, v191_de, v190_de, v189_de, v188_de, v187_de, v186_de, v185_de, v184_de, v183_de, v182_de, v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
@@ -3686,6 +3744,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
       ],
     },
     v329_de,
+    v330_de,
   ],
 };
 

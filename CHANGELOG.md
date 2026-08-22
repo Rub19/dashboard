@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.50 — 2026-08-22
+
+**Mise à jour automatique en direct (Capacitor Live Server)**
+
+- `ethone-next/capacitor.config.ts` : ajout de `server: { url: 'https://ethone.dev', cleartext: true, androidScheme: 'https' }`.
+- Capacitor charge l'application distante depuis `https://ethone.dev` : mises à jour web instantanées sur iOS / Android sans recompiler ni réinstaller.
+- `ethone-next/android/app/src/main/AndroidManifest.xml` : ajout de `android:usesCleartextTraffic="true"`.
+- iOS : App Transport Security (ATS) autorise déjà le chargement HTTPS distant.
+- `.github/workflows/build-ios.yml` : le workflow embarque le `capacitor.config.ts` mis à jour via `npx cap sync ios` avant l'archive Xcode.
+- Validation : `npm run build` (output `out/`) et `npx cap sync` réussis.
+- Version `v1.7.50`, cache PWA `v418`.
+
 ## v1.7.48 — 2026-08-21
 
 **Météo, avatar Discord et skin Minecraft**

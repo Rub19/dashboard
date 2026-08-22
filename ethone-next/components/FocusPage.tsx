@@ -6,6 +6,7 @@ import { Play, Pause, RotateCcw, SkipForward, Maximize2, Minimize2, Brain, Clock
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { useFocus } from "@/components/FocusProvider";
+import { triggerPomodoroCompletedNotification } from "@/lib/local-notifications";
 import { useSettings } from "@/components/SettingsProvider";
 import { useZenMode } from "@/lib/hooks/useZenMode";
 import FocusTimerRing from "@/components/FocusTimerRing";
@@ -37,9 +38,10 @@ export default function FocusPage() {
   useEffect(() => {
     if (prevPhase.current === "focus" && (state.phase === "shortBreak" || state.phase === "longBreak")) {
       success(i18n("focusDone"));
+      void triggerPomodoroCompletedNotification(state.activePreset || "Focus");
     }
     prevPhase.current = state.phase;
-  }, [state.phase, success, i18n]);
+  }, [state.phase, state.activePreset, success, i18n]);
 
   const activePreset = (state.activePreset || settings.focusPreset || "pomodoro") as PresetId;
 

@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.3 — 2026-08-22
+
+**Notifications locales gratuites : Pomodoro et rappels de tâches**
+
+- Nouveau service `lib/local-notifications.ts` pour `@capacitor/local-notifications` (permissions, planification, annulation).
+- Notification locale à la fin d'une session Focus/Pomodoro, sans APNs.
+- Planification automatique d'un rappel à l'échéance d'une tâche (création / modification).
+- Annulation automatique du rappel si la tâche est terminée ou supprimée.
+- `FocusProvider` synchronise la notification avec play/pause/reset.
+- Version `v1.8.3`, cache PWA `v430`.
+
 ## v1.8.2 — 2026-08-22
 
 **Audit et harmonisation globale UI/UX Liquid Glass & iOS 26**

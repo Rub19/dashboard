@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useMemo, useRef, useSyncExternalS
 import { FocusTimer, type FocusPhase, type FocusTimerState } from "@/lib/focus-timer";
 import { areActivitiesSupported, startActivity, setFocusActivity, endActivity } from "@/lib/live-activity";
 import { setNativeFocusState } from "@/lib/apple";
+import { schedulePomodoroEndNotification, cancelReminder } from "@/lib/local-notifications";
 
 export type { FocusPhase };
 
@@ -34,6 +35,7 @@ export function FocusProvider({ children }: { children: React.ReactNode }) {
 
   const activityRef = useRef<string | null>(null);
   const canLiveActivity = useRef(false);
+  const pomodoroNotificationId = useRef<number | null>(null);
 
   useEffect(() => {
     areActivitiesSupported().then((supported) => {
@@ -44,6 +46,24 @@ export function FocusProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setNativeFocusState(state.phase !== "idle", state.total / 60).catch(() => {});
   }, [state.phase, state.total]);
+
+  useEffect(() => {
+    async function syncNotification() {
+      if (state.phase === "focus" && !state.paused && state.remaining > 0) {
+        const endAt = new Date(Date.now() + state.remaining * 1000);
+        const sessionName = state.activePreset ? `Focus · ${state.activePreset}` : "Session Focus";
+        const res = await schedulePomodoroEndNotification(sessionName, endAt);
+        if (res.ok) {
+          pomodoroNotificationId.current = res.id;
+        }
+      } else if (pomodoroNotificationId.current !== null) {
+        await cancelReminder(pomodoroNotificationId.current);
+        pomodoroNotificationId.current = null;
+      }
+    }
+    void syncNotification();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.phase, state.paused]);
 
   useEffect(() => {
     if (!canLiveActivity.current) return;

@@ -50,7 +50,7 @@ fun TasksCard(client: SupabaseClient) {
 
     LaunchedEffect(Unit) {
         tasks = try {
-            client.fetchTasks().map { Task(it.id ?: "", it.title, it.done ?: false) }
+            client.fetchTasks().map { Task(it.id ?: "", it.title, it.isCompleted ?: false) }
         } catch (e: Exception) {
             emptyList()
         }

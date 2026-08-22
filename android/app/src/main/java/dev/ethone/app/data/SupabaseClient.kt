@@ -5,6 +5,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.headers
 import io.ktor.client.request.patch
@@ -16,6 +17,7 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -29,20 +31,18 @@ class SupabaseClient(
         }
     }
 
-    private val restUrl = "$baseUrl/rest/v1/ethone_items"
+    private val restUrl = baseUrl
 
-    suspend fun fetchTasks(): List<SupabaseItem> = withContext(Dispatchers.IO) {
+    suspend fun fetchTasks(): List<SupabaseTask> = withContext(Dispatchers.IO) {
         try {
-            client.get(restUrl) {
+            client.get("$restUrl/rest/v1/tasks") {
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $anonKey")
                     append("apikey", anonKey)
-                    append("Accept", "application/vnd.pgrst.object+json")
                 }
                 url {
-                    parameters.append("kind", "eq.task")
-                    parameters.append("select", "id,title,done,created_at")
-                    parameters.append("order", "created_at.desc")
+                    parameters.append("select", "id,title,description,is_completed,priority,due_date,created_at,updated_at")
+                    parameters.append("order", "updated_at.desc.nullslast")
                 }
             }.body()
         } catch (e: Exception) {
@@ -51,17 +51,16 @@ class SupabaseClient(
         }
     }
 
-    suspend fun fetchNotes(): List<SupabaseItem> = withContext(Dispatchers.IO) {
+    suspend fun fetchNotes(): List<SupabaseNote> = withContext(Dispatchers.IO) {
         try {
-            client.get(restUrl) {
+            client.get("$restUrl/rest/v1/notes") {
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $anonKey")
                     append("apikey", anonKey)
                 }
                 url {
-                    parameters.append("kind", "eq.note")
-                    parameters.append("select", "id,title,body,created_at")
-                    parameters.append("order", "created_at.desc")
+                    parameters.append("select", "id,title,body,created_at,updated_at")
+                    parameters.append("order", "updated_at.desc.nullslast")
                 }
             }.body()
         } catch (e: Exception) {
@@ -70,9 +69,9 @@ class SupabaseClient(
         }
     }
 
-    suspend fun addTask(title: String) = withContext(Dispatchers.IO) {
+    suspend fun addTask(title: String, description: String = "") = withContext(Dispatchers.IO) {
         try {
-            client.post(restUrl) {
+            client.post("$restUrl/rest/v1/tasks") {
                 contentType(ContentType.Application.Json)
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $anonKey")
@@ -80,10 +79,10 @@ class SupabaseClient(
                     append("Prefer", "return=minimal")
                 }
                 setBody(
-                    SupabaseItem(
-                        kind = "task",
+                    SupabaseTask(
                         title = title,
-                        done = false
+                        description = description,
+                        isCompleted = false
                     )
                 )
             }
@@ -92,18 +91,47 @@ class SupabaseClient(
         }
     }
 
+    suspend fun addNote(title: String, body: String) = withContext(Dispatchers.IO) {
+        try {
+            client.post("$restUrl/rest/v1/notes") {
+                contentType(ContentType.Application.Json)
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $anonKey")
+                    append("apikey", anonKey)
+                    append("Prefer", "return=minimal")
+                }
+                setBody(SupabaseNote(title = title, body = body))
+            }
+        } catch (e: Exception) {
+            Log.e("SupabaseClient", "addNote error", e)
+        }
+    }
+
     suspend fun toggleTask(id: String, done: Boolean) = withContext(Dispatchers.IO) {
         try {
-            client.patch("$restUrl?id=eq.$id") {
+            client.patch("$restUrl/rest/v1/tasks?id=eq.$id") {
                 contentType(ContentType.Application.Json)
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $anonKey")
                     append("apikey", anonKey)
                 }
-                setBody(mapOf("done" to done))
+                setBody(mapOf("is_completed" to done))
             }
         } catch (e: Exception) {
             Log.e("SupabaseClient", "toggleTask error", e)
+        }
+    }
+
+    suspend fun deleteTask(id: String) = withContext(Dispatchers.IO) {
+        try {
+            client.delete("$restUrl/rest/v1/tasks?id=eq.$id") {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $anonKey")
+                    append("apikey", anonKey)
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("SupabaseClient", "deleteTask error", e)
         }
     }
 
@@ -113,11 +141,22 @@ class SupabaseClient(
 }
 
 @Serializable
-data class SupabaseItem(
+data class SupabaseTask(
     val id: String? = null,
-    val kind: String,
+    val title: String,
+    val description: String? = null,
+    @SerialName("is_completed") val isCompleted: Boolean? = null,
+    val priority: String? = null,
+    @SerialName("due_date") val dueDate: String? = null,
+    @SerialName("created_at") val createdAt: String? = null,
+    @SerialName("updated_at") val updatedAt: String? = null
+)
+
+@Serializable
+data class SupabaseNote(
+    val id: String? = null,
     val title: String,
     val body: String? = null,
-    val done: Boolean? = null,
-    val created_at: String? = null
+    @SerialName("created_at") val createdAt: String? = null,
+    @SerialName("updated_at") val updatedAt: String? = null
 )

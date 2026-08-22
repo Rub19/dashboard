@@ -43,10 +43,8 @@
 		F906A45B0696438BB44BED4E /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A145E21203F461983B32E80 /* DashboardView.swift */; };
 		19489469B8D041E4916E60AA /* NativeFloatingDock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59BEF2360D7A48D59296A95A /* NativeFloatingDock.swift */; };
 		F7F1C170FFC345CC815C4798 /* FocusCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8EDBB08DAD4BC3A3973383 /* FocusCardView.swift */; };
-		7DAB81B246904D4583F7EC69 /* TasksCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97FB153D6A0743B4BD6318F2 /* TasksCardView.swift */; };
 		B682C270D87C4D7092A964A8 /* BrainCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A07710DE62C486D92905BEE /* BrainCardView.swift */; };
 		86FE92012EFB42C082D7E893 /* StorageCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCCB95B513EF49F18AA6D75C /* StorageCardView.swift */; };
-		BB97394A6D6C4805A99C728B /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E5E2E668DC45F4AFE75146 /* SupabaseService.swift */; };
 		B64E31828115441C975F0D39 /* LiquidGlassContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D446449A474041A4B60ADDD5 /* LiquidGlassContainer.swift */; };
 		41E7A8EC0BF448D9AA4A981A /* AmbientBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E4567E46164E4082A251C9 /* AmbientBackground.swift */; };
 		E6AFFAE5669E467BBA7D1E46 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8318D5E98B374CF1B5E86CD7 /* HapticFeedback.swift */; };
@@ -142,10 +140,8 @@
 		6A145E21203F461983B32E80 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Native/DashboardView.swift"; sourceTree = "<group>"; };
 		59BEF2360D7A48D59296A95A /* NativeFloatingDock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Native/NativeFloatingDock.swift"; sourceTree = "<group>"; };
 		FB8EDBB08DAD4BC3A3973383 /* FocusCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Native/BentoCards/FocusCardView.swift"; sourceTree = "<group>"; };
-		97FB153D6A0743B4BD6318F2 /* TasksCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Native/BentoCards/TasksCardView.swift"; sourceTree = "<group>"; };
 		7A07710DE62C486D92905BEE /* BrainCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Native/BentoCards/BrainCardView.swift"; sourceTree = "<group>"; };
 		DCCB95B513EF49F18AA6D75C /* StorageCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Native/BentoCards/StorageCardView.swift"; sourceTree = "<group>"; };
-		36E5E2E668DC45F4AFE75146 /* SupabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services/SupabaseService.swift"; sourceTree = "<group>"; };
 		D446449A474041A4B60ADDD5 /* LiquidGlassContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DesignSystem/LiquidGlassContainer.swift"; sourceTree = "<group>"; };
 		19E4567E46164E4082A251C9 /* AmbientBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DesignSystem/AmbientBackground.swift"; sourceTree = "<group>"; };
 		8318D5E98B374CF1B5E86CD7 /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DesignSystem/HapticFeedback.swift"; sourceTree = "<group>"; };
@@ -268,10 +264,8 @@
 				6A145E21203F461983B32E80 /* DashboardView.swift */,
 				59BEF2360D7A48D59296A95A /* NativeFloatingDock.swift */,
 				FB8EDBB08DAD4BC3A3973383 /* FocusCardView.swift */,
-				97FB153D6A0743B4BD6318F2 /* TasksCardView.swift */,
 				7A07710DE62C486D92905BEE /* BrainCardView.swift */,
 				DCCB95B513EF49F18AA6D75C /* StorageCardView.swift */,
-				36E5E2E668DC45F4AFE75146 /* SupabaseService.swift */,
 				D446449A474041A4B60ADDD5 /* LiquidGlassContainer.swift */,
 				19E4567E46164E4082A251C9 /* AmbientBackground.swift */,
 				8318D5E98B374CF1B5E86CD7 /* HapticFeedback.swift */,
@@ -510,10 +504,8 @@
 				F906A45B0696438BB44BED4E /* DashboardView.swift in Sources */,
 				19489469B8D041E4916E60AA /* NativeFloatingDock.swift in Sources */,
 				F7F1C170FFC345CC815C4798 /* FocusCardView.swift in Sources */,
-				7DAB81B246904D4583F7EC69 /* TasksCardView.swift in Sources */,
 				B682C270D87C4D7092A964A8 /* BrainCardView.swift in Sources */,
 				86FE92012EFB42C082D7E893 /* StorageCardView.swift in Sources */,
-				BB97394A6D6C4805A99C728B /* SupabaseService.swift in Sources */,
 				B64E31828115441C975F0D39 /* LiquidGlassContainer.swift in Sources */,
 				41E7A8EC0BF448D9AA4A981A /* AmbientBackground.swift in Sources */,
 				E6AFFAE5669E467BBA7D1E46 /* HapticFeedback.swift in Sources */,

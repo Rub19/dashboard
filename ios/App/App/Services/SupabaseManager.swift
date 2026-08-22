@@ -4,12 +4,17 @@ import Combine
 struct TaskItem: Identifiable, Codable, Sendable {
     let id: String
     var title: String
+    var description: String?
     var done: Bool
+    var priority: String?
+    var dueDate: String?
     var createdAt: String?
     var updatedAt: String?
 
     enum CodingKeys: String, CodingKey {
-        case id, title, done
+        case id, title, description, priority
+        case done = "is_completed"
+        case dueDate = "due_date"
         case createdAt = "created_at"
         case updatedAt = "updated_at"
     }
@@ -94,24 +99,22 @@ final class SupabaseManager: ObservableObject {
     }
 
     private func fetchTasks() async throws -> [TaskItem] {
-        try await fetchItems(kind: "task")
+        try await fetchList(table: "tasks")
     }
 
     private func fetchNotes() async throws -> [NoteItem] {
-        try await fetchItems(kind: "note")
+        try await fetchList(table: "notes")
     }
 
-    private func fetchItems<T: Decodable>(kind: String) async throws -> [T] {
+    private func fetchList<T: Decodable>(table: String) async throws -> [T] {
         guard let baseURL, !userId.isEmpty, let anonKey else {
             throw SupabaseClientError.missingConfiguration
         }
 
-        var components = URLComponents(url: baseURL.appendingPathComponent("/rest/v1/ethone_items"), resolvingAgainstBaseURL: false)!
+        var components = URLComponents(url: baseURL.appendingPathComponent("/rest/v1/\(table)"), resolvingAgainstBaseURL: false)!
         components.queryItems = [
-            URLQueryItem(name: "user_id", value: "eq.\(userId)"),
-            URLQueryItem(name: "kind", value: "eq.\(kind)"),
             URLQueryItem(name: "select", value: "*"),
-            URLQueryItem(name: "order", value: "updated_at.desc")
+            URLQueryItem(name: "order", value: "updated_at.desc.nullslast")
         ]
 
         guard let url = components.url else { throw SupabaseClientError.invalidURL }
@@ -137,12 +140,12 @@ final class SupabaseManager: ObservableObject {
         do {
             let body: [String: Any] = [
                 "user_id": userId,
-                "kind": "task",
                 "title": title,
-                "body": "",
-                "done": false,
+                "description": "",
+                "is_completed": false,
+                "priority": "medium"
             ]
-            try await insert(body)
+            try await insert(into: "tasks", body: body)
             await syncAll()
             Haptic.success()
         } catch {
@@ -150,11 +153,26 @@ final class SupabaseManager: ObservableObject {
         }
     }
 
+    func createNote(title: String, body: String) async {
+        do {
+            let payload: [String: Any] = [
+                "user_id": userId,
+                "title": title,
+                "body": body
+            ]
+            try await insert(into: "notes", body: payload)
+            await syncAll()
+            Haptic.success()
+        } catch {
+            errorMessage = "Impossible de créer la note."
+        }
+    }
+
     func toggleDone(_ task: TaskItem) async {
         guard let index = tasks.firstIndex(where: { $0.id == task.id }) else { return }
         tasks[index].done.toggle()
         do {
-            try await patch(id: task.id, fields: ["done": tasks[index].done])
+            try await patch(table: "tasks", id: task.id, fields: ["is_completed": tasks[index].done])
             await syncAll()
         } catch {
             tasks[index].done.toggle()
@@ -164,7 +182,7 @@ final class SupabaseManager: ObservableObject {
 
     func deleteTask(_ task: TaskItem) async {
         do {
-            try await delete(id: task.id)
+            try await delete(table: "tasks", id: task.id)
             await syncAll()
             Haptic.warning()
         } catch {
@@ -172,11 +190,21 @@ final class SupabaseManager: ObservableObject {
         }
     }
 
-    private func insert(_ body: [String: Any]) async throws {
+    func deleteNote(_ note: NoteItem) async {
+        do {
+            try await delete(table: "notes", id: note.id)
+            await syncAll()
+            Haptic.warning()
+        } catch {
+            errorMessage = "Erreur de suppression."
+        }
+    }
+
+    private func insert(into table: String, body: [String: Any]) async throws {
         guard let baseURL, let anonKey, !userId.isEmpty else { throw SupabaseClientError.missingConfiguration }
         guard let json = try? JSONSerialization.data(withJSONObject: body) else { throw SupabaseClientError.encoding }
 
-        let url = baseURL.appendingPathComponent("/rest/v1/ethone_items")
+        let url = baseURL.appendingPathComponent("/rest/v1/\(table)")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue(anonKey, forHTTPHeaderField: "apikey")
@@ -191,10 +219,10 @@ final class SupabaseManager: ObservableObject {
         }
     }
 
-    private func patch(id: String, fields: [String: Any]) async throws {
+    private func patch(table: String, id: String, fields: [String: Any]) async throws {
         guard let baseURL, let anonKey, !userId.isEmpty else { throw SupabaseClientError.missingConfiguration }
 
-        var components = URLComponents(url: baseURL.appendingPathComponent("/rest/v1/ethone_items"), resolvingAgainstBaseURL: false)!
+        var components = URLComponents(url: baseURL.appendingPathComponent("/rest/v1/\(table)"), resolvingAgainstBaseURL: false)!
         components.queryItems = [
             URLQueryItem(name: "id", value: "eq.\(id)"),
             URLQueryItem(name: "user_id", value: "eq.\(userId)")
@@ -218,10 +246,10 @@ final class SupabaseManager: ObservableObject {
         }
     }
 
-    private func delete(id: String) async throws {
+    private func delete(table: String, id: String) async throws {
         guard let baseURL, let anonKey, !userId.isEmpty else { throw SupabaseClientError.missingConfiguration }
 
-        var components = URLComponents(url: baseURL.appendingPathComponent("/rest/v1/ethone_items"), resolvingAgainstBaseURL: false)!
+        var components = URLComponents(url: baseURL.appendingPathComponent("/rest/v1/\(table)"), resolvingAgainstBaseURL: false)!
         components.queryItems = [
             URLQueryItem(name: "id", value: "eq.\(id)"),
             URLQueryItem(name: "user_id", value: "eq.\(userId)")

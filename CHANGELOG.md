@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.49 — 2026-08-22
+
+**Correction superposition topbar/sidebar et double horloge**
+
+- `components/DynamicIslandContainer.tsx` : suppression de la pilule d'horloge flottante orpheline. La Dynamic Island ne s'affiche que lorsqu'une activité est active (Spotify, Pomodoro, Brain) ; le compact affiche l'activité au lieu de l'heure.
+- `components/TopBar.tsx` : le `header` passe en `pointer-events-none` tandis que les zones interactives (mobile, colonnes desktop) restent `pointer-events-auto`, évitant qu'un conteneur invisible bloque les clics sur le haut de la sidebar.
+- `components/Sidebar.tsx` : ajout de `z-30 pointer-events-auto`, correction de la hauteur du panneau (`h-[calc(100%-1rem)]`) et suppression du hack `style={{ height: 'calc(100% + 0.25rem)' }}`.
+- `components/SystemStatusPills.tsx` : garde l'affichage unique de l'heure dans la capsule de la TopBar.
+- `ethone-next/eslint.config.mjs` et `ethone-next/.gitignore` : ignorent les répertoires `android/` et `ios/` générés localement.
+- Version `v1.7.49`, cache PWA `v417`.
+
 ## v1.7.48 — 2026-08-21
 
 **Météo, avatar Discord et skin Minecraft**

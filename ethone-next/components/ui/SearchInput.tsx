@@ -3,6 +3,7 @@
 import { forwardRef, useRef, type KeyboardEvent } from "react";
 import { Icon } from "@/lib/icons";
 import Input, { type InputProps } from "./Input";
+import Button from "./Button";
 
 type SearchInputProps = Omit<
   InputProps,
@@ -28,18 +29,21 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
 
     const actionNode =
       props.value && String(props.value).length > 0 && actionLabel ? (
-        <button
+        <Button
           type="button"
           tabIndex={-1}
+          size="sm"
+          variant="liquid"
+          haptic="light"
           onClick={() => {
             const input = localRef.current;
             if (input && onSearch) onSearch(input.value);
           }}
-          className="flex h-7 items-center gap-1 rounded-md bg-[var(--accent-primary)]/10 px-2 text-xs font-medium text-[var(--accent-primary)] transition-colors hover:bg-[var(--accent-primary)]/20"
+          className="h-7 px-2 text-xs"
         >
           <Icon name="corner-down-left" className="h-3 w-3" />
           <span className="hidden sm:inline">{actionLabel}</span>
-        </button>
+        </Button>
       ) : shortcut ? (
         <kbd className="hidden rounded-md border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.05] px-1.5 py-0.5 text-[10px] font-medium text-[var(--text-muted)] sm:inline">
           {shortcut}

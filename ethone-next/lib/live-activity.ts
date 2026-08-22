@@ -3,7 +3,7 @@
 import { LiveActivity } from "capacitor-live-activity";
 import { isNativeIOS } from "@/lib/apple";
 
-export type LiveActivityMode = "focus" | "task" | "sound" | "sync";
+export type LiveActivityMode = "focus" | "task" | "sound" | "sync" | "presence" | "aura";
 
 export type LiveActivityData = {
   mode: LiveActivityMode;
@@ -92,4 +92,30 @@ export async function setSoundActivity(id: string, title: string) {
 export async function flashSyncActivity(id: string, title = "Synchronisé") {
   await startActivity(id, { mode: "sync", title, subtitle: "OK", action: "" });
   setTimeout(() => endActivity(id), 1800);
+}
+
+/** Show presence status in the Dynamic Island. */
+export async function setPresenceActivity(id: string, title: string, presence = "En ligne") {
+  await updateActivity(id, { mode: "presence", title, subtitle: presence, action: "" });
+}
+
+/** Show the active Aura theme in the Dynamic Island. */
+export async function setAuraActivity(id: string, aura: string) {
+  const title = `Aura · ${aura}`;
+  await updateActivity(id, { mode: "aura", title, subtitle: "Actif", action: "" });
+}
+
+/** Update a focus activity every second for high-frequency tracking. */
+export async function startHighFrequencyFocus(id: string, title: string, totalSeconds: number) {
+  let remaining = totalSeconds;
+  const interval = setInterval(() => {
+    remaining -= 1;
+    if (remaining <= 0) {
+      clearInterval(interval);
+      endActivity(id).catch(() => {});
+      return;
+    }
+    void setFocusActivity(id, title, remaining, totalSeconds);
+  }, 1000);
+  return () => clearInterval(interval);
 }

@@ -1,4 +1,5 @@
 import Capacitor
+import WidgetKit
 
 @objc(EthoneFocusPlugin)
 public class EthoneFocusPlugin: CAPPlugin, CAPBridgedPlugin {
@@ -15,12 +16,18 @@ public class EthoneFocusPlugin: CAPPlugin, CAPBridgedPlugin {
     @objc func setFocusState(_ call: CAPPluginCall) {
         let active = call.getBool("active") ?? false
         suite?.set(active, forKey: "ethone_focus_active")
+        if #available(iOS 18.0, *) {
+            WidgetCenter.shared.reloadAllTimelines()
+        }
         call.resolve(["active": active])
     }
 
     @objc func setPresence(_ call: CAPPluginCall) {
         let presence = call.getString("presence") ?? "En ligne"
         suite?.set(presence, forKey: "ethone_presence")
+        if #available(iOS 18.0, *) {
+            WidgetCenter.shared.reloadAllTimelines()
+        }
         call.resolve(["presence": presence])
     }
 

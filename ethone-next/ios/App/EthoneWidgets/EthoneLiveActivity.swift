@@ -8,6 +8,8 @@ enum ActivityMode: String, Codable {
     case task
     case sound
     case sync
+    case presence
+    case aura
 }
 
 @available(iOS 26.0, *)
@@ -64,6 +66,12 @@ struct EthoneLiveActivity: Widget {
         case .sync:
             Image(systemName: "arrow.clockwise")
                 .foregroundColor(.green)
+        case .presence:
+            Image(systemName: "person.fill")
+                .foregroundColor(.blue)
+        case .aura:
+            Image(systemName: "sparkles")
+                .foregroundColor(.purple)
         }
     }
 
@@ -85,6 +93,14 @@ struct EthoneLiveActivity: Widget {
         case .sync:
             Image(systemName: "checkmark.circle.fill")
                 .foregroundColor(.green)
+        case .presence:
+            Text(context.state.subtitle)
+                .font(.callout.bold())
+                .foregroundColor(.blue)
+        case .aura:
+            Text(context.state.subtitle)
+                .font(.callout.bold())
+                .foregroundColor(.purple)
         }
     }
 
@@ -131,6 +147,12 @@ struct EthoneLiveActivity: Widget {
         case .sync:
             Image(systemName: "arrow.clockwise")
                 .foregroundColor(.green)
+        case .presence:
+            Image(systemName: "person.fill")
+                .foregroundColor(.blue)
+        case .aura:
+            Image(systemName: "sparkles")
+                .foregroundColor(.purple)
         }
     }
 
@@ -143,7 +165,17 @@ struct EthoneLiveActivity: Widget {
 
     @ViewBuilder
     func minimalView(context: ActivityViewContext<EthoneActivityAttributes>) -> some View {
-        Image(systemName: context.state.mode == .sound ? "waveform" : "target")
+        let icon: String = {
+            switch context.state.mode {
+            case .sound: return "waveform"
+            case .task: return "checkmark.circle"
+            case .sync: return "arrow.clockwise"
+            case .presence: return "person.fill"
+            case .aura: return "sparkles"
+            default: return "target"
+            }
+        }()
+        Image(systemName: icon)
             .foregroundColor(tintColor(for: context.state.mode))
     }
 
@@ -165,6 +197,8 @@ func tintColor(for mode: ActivityMode) -> Color {
     case .task: return .green
     case .sound: return .cyan
     case .sync: return .green
+    case .presence: return .blue
+    case .aura: return .purple
     }
 }
 
@@ -175,6 +209,8 @@ func iconName(for mode: ActivityMode) -> String {
     case .task: return "checkmark.circle"
     case .sound: return "waveform"
     case .sync: return "arrow.clockwise"
+    case .presence: return "person.fill"
+    case .aura: return "sparkles"
     }
 }
 
@@ -235,6 +271,8 @@ struct LockScreenView: View {
         case .task: return "checkmark.circle"
         case .sound: return "waveform"
         case .sync: return "arrow.clockwise"
+        case .presence: return "person.fill"
+        case .aura: return "sparkles"
         }
     }
 }

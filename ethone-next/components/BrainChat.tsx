@@ -8,7 +8,7 @@ import type { BrainMessage, ReturnTypeOfUseBrain } from "@/lib/hooks/useBrain";
 import { useBrainActivityStore } from "@/lib/stores/brain-activity";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useNowPlaying } from "@/lib/hooks/useNowPlaying";
-import { hapticSuccessPattern, hapticErrorPattern, hapticMediumImpact } from "@/lib/haptics";
+import { hapticSuccessPattern, hapticErrorPattern, hapticMediumImpact, hapticLightImpact } from "@/lib/haptics";
 import { useToast } from "@/components/ToastProvider";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useUserData } from "@/lib/hooks/useUserData";
@@ -463,7 +463,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
           </div>
         )}
 
-        <div className="relative mt-2 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 shadow-2xl backdrop-blur-[var(--panel-blur)] transition-all duration-200 focus-within:border-white/20 focus-within:ring-1 focus-within:ring-white/15 focus-within:shadow-[0_0_15px_rgba(255,255,255,0.03)]">
+        <div className="liquid-glass-brain relative mt-2 rounded-2xl p-2 transition-all duration-200 focus-within:border-white/20 focus-within:ring-1 focus-within:ring-white/15 focus-within:shadow-[0_0_15px_rgba(255,255,255,0.03)]">
           <TextArea
             ref={textareaRef}
             rows={1}
@@ -483,8 +483,11 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
                 <button
                   key={s.id}
                   type="button"
-                  onClick={() => handleExecute(s.action, s.parameters)}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] px-2 py-1 text-[10px] text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
+                  onClick={() => {
+                    hapticLightImpact();
+                    handleExecute(s.action, s.parameters);
+                  }}
+                  className="liquid-glass-btn inline-flex h-7 items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] text-[var(--text-primary)]"
                 >
                   <Sparkles className="h-3 w-3" />
                   {s.title}
@@ -493,11 +496,13 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
             </div>
             <button
               type="button"
-              onClick={() => handleSend()}
+              onClick={() => {
+                hapticMediumImpact();
+                handleSend();
+              }}
               disabled={pending || !prompt.trim()}
               data-testid="brain-send-btn"
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[var(--accent-contrast)] font-bold transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
-              style={{ background: "var(--accent-color, var(--accent-primary))" }}
+              className="liquid-glass-btn liquid-glass-accent flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[var(--accent-contrast)] font-bold transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
               aria-label="Envoyer"
             >
               {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUp className="h-4 w-4" />}
@@ -513,8 +518,11 @@ function ActionChip({ chip }: { chip: ActionChip }) {
   return (
     <button
       type="button"
-      onClick={chip.onClick}
-      className="group inline-flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.06] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] shadow-sm transition-all hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.12] hover:text-[var(--text-primary)] hover:shadow-md"
+      onClick={() => {
+        hapticLightImpact();
+        chip.onClick();
+      }}
+      className="group liquid-glass-btn inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-medium text-[var(--text-primary)]"
     >
       <span className="transition-transform group-hover:scale-110">{chip.icon}</span>
       {chip.label}

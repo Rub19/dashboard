@@ -2,6 +2,7 @@
 
 import { memo, type ReactNode, type CSSProperties } from "react";
 import { Icon } from "@/lib/icons";
+import { hapticLightImpact } from "@/lib/haptics";
 
 type BentoCardProps = {
   children: ReactNode;
@@ -22,7 +23,8 @@ function BentoCard({
 }: BentoCardProps) {
   return (
     <div
-      className={`group relative flex min-h-0 w-full flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-[var(--panel-shadow)] backdrop-blur-[var(--panel-blur)] transition-[transform,opacity,border-color,background-color] duration-200 hover:border-[var(--accent)]/20 ${className}`}
+      onPointerDown={hapticLightImpact}
+      className={`group liquid-glass-card relative flex min-h-0 w-full flex-col rounded-2xl p-4 active:scale-[0.995] ${className}`}
       style={style}
     >
       {title && (

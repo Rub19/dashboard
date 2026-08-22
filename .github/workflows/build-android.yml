@@ -58,11 +58,15 @@ jobs:
           grep -E "(ERROR|FAIL|> Task .* FAILED|Exception|error:)" gradle.log | tail -80
           echo "::error::$(grep -E 'FAIL|Exception' gradle.log | tail -1 | sed "s/'//g")"
 
+      - name: List APK output
+        if: always()
+        run: find ethone-next/android/app/build/outputs/apk -type f -ls || true
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: ETHONE-Android-APK
-          path: ethone-next/android/app/build/outputs/apk/debug/app-debug.apk
+          path: ethone-next/android/app/build/outputs/apk/debug/*.apk
 
       - name: Upload build logs
         if: failure()

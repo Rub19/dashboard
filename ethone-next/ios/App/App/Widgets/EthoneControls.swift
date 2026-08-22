@@ -19,7 +19,9 @@ struct EthoneFocusControl: ControlWidget {
 struct EthoneBrainControl: ControlWidget {
     var body: some ControlWidgetConfiguration {
         StaticControlConfiguration(kind: "dev.ethone.app.control.brain") {
-            ControlWidgetButton(action: CaptureBrainIdeaIntent(idea: "Nouvelle idée")) {
+            let intent = CaptureBrainIdeaIntent()
+            intent.idea = "Nouvelle idée"
+            return ControlWidgetButton(action: intent) {
                 Label("Brain", systemImage: "sparkles")
             }
         }

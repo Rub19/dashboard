@@ -84,7 +84,7 @@ export default function TasksCard({ task, onToggle, onDelete }: TasksCardProps) 
           }}
           className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-all ${
             task.done
-              ? "border-[var(--accent-primary)] bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-[0_0_10px_rgba(52,211,153,0.3)]"
+              ? "border-[var(--accent-primary)] bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-[0_0_10px_var(--glow-color)]"
               : "border-[var(--text-primary)]/20 hover:border-[var(--accent-primary)]"
           }`}
           aria-label={task.done ? "Marquer non terminée" : "Marquer terminée"}

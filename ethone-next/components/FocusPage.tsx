@@ -204,7 +204,7 @@ export default function FocusPage() {
         </div>
 
         <div className="v8-panel p-4 flex flex-col items-center text-center transition-all hover:border-white/[0.16]">
-          <Coffee className="h-5 w-5 text-cyan-400 mb-2" />
+          <Coffee className="h-5 w-5 text-[--info] mb-2" />
           <p className="text-2xl font-bold font-mono text-white">{state.completedBreaks}</p>
           <p className="text-xs text-zinc-400 mt-1">{i18n("breaks")}</p>
         </div>
@@ -214,7 +214,7 @@ export default function FocusPage() {
 
       {zenMode && (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90 backdrop-blur-2xl">
-          <div className="absolute inset-0 bg-gradient-radial from-emerald-500/10 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-radial from-[--accent-primary] via-transparent to-transparent" />
           <FocusTimerRing
             progress={progress}
             remaining={format(state.remaining)}

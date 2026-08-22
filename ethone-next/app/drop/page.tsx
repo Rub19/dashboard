@@ -96,7 +96,7 @@ function DropContent() {
       <div className="w-full max-w-sm sm:max-w-md lg:max-w-lg space-y-4">
         <Card3D>
           <h1 className="mb-4 flex flex-wrap items-center gap-2 break-words text-xl font-bold">
-            <Icon name="inbox" className="h-6 w-6 text-emerald-400" />
+            <Icon name="inbox" className="h-6 w-6 text-[--accent-primary]" />
             {drop?.title || i18n("drop")}
           </h1>
           {drop?.description && <p className="break-words text-sm text-[var(--muted)]">{drop.description}</p>}
@@ -127,7 +127,7 @@ function DropContent() {
 
           {loading && <p className="break-words text-sm text-[var(--muted)]">{i18n("loading")}</p>}
           {error && <p className="break-words text-sm text-red-400">{error}</p>}
-          {success && <p className="break-words text-sm text-emerald-400">{success}</p>}
+          {success && <p className="break-words text-sm text-[--accent-primary]">{success}</p>}
 
           {drop && (
             <div className="space-y-4">

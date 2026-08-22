@@ -23,7 +23,7 @@ function MediaEqualizer({ className = "" }: { className?: string }) {
       {[0, 1, 2, 3].map((i) => (
         <motion.div
           key={i}
-          className="w-1 rounded-lg bg-emerald-400"
+          className="w-1 rounded-lg bg-[--accent-primary]"
           initial={{ height: "30%" }}
           animate={{
             height: ["30%", "80%", "40%", "70%", "30%"],
@@ -41,7 +41,7 @@ function MediaEqualizer({ className = "" }: { className?: string }) {
 }
 
 const SOURCE_ICON: Record<string, { icon: React.ReactNode; color: string; label: string }> = {
-  spotify: { icon: <Music className="h-3 w-3" />, color: "bg-emerald-500 text-white", label: "Spotify" },
+  spotify: { icon: <Music className="h-3 w-3" />, color: "bg-[--accent-primary] text-white", label: "Spotify" },
   jellyfin: { icon: <Server className="h-3 w-3" />, color: "bg-violet-500 text-white", label: "Jellyfin" },
 };
 

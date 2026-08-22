@@ -24,9 +24,9 @@ const CONFIG: Record<
   }
 > = {
   success: {
-    icon: <CheckCircle2 className="h-4 w-4 text-emerald-400" />,
-    border: "border-emerald-500/30",
-    progress: "bg-emerald-400/50",
+    icon: <CheckCircle2 className="h-4 w-4 text-[--accent-primary]" />,
+    border: "border-[--accent-primary]",
+    progress: "bg-[--accent-primary]",
   },
   error: {
     icon: <AlertCircle className="h-4 w-4 text-[var(--danger)]" />,

@@ -49,7 +49,7 @@ export default function BillsWidget({ standalone = false }: { standalone?: boole
       {standalone && (
         <div className="mb-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Icon name="bills" className="h-4 w-4 text-lime-400" />
+            <Icon name="bills" className="h-4 w-4 text-[--accent-primary]" />
             <h2 className="text-sm font-semibold text-[var(--foreground)]">{i18n("billsTitle")}</h2>
           </div>
           <span className="text-xs text-[var(--muted)]">
@@ -59,7 +59,7 @@ export default function BillsWidget({ standalone = false }: { standalone?: boole
       )}
 
       <div>
-        <p className="text-2xl font-bold text-lime-400">{formatCurrency(totalDue)}</p>
+        <p className="text-2xl font-bold text-[--accent-primary]">{formatCurrency(totalDue)}</p>
         <p className="text-xs text-[var(--muted)]">{unpaidBills.length} {i18n("billsToPay")}</p>
       </div>
 
@@ -114,7 +114,7 @@ export default function BillsWidget({ standalone = false }: { standalone?: boole
             </div>
             <div className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 backdrop-blur-[var(--panel-blur)]">
               <span className="text-sm text-[var(--muted)]">{i18n("status")}</span>
-              <span className={`flex items-center gap-1.5 font-semibold ${selected.paid ? "text-emerald-400" : "text-amber-400"}`}>
+              <span className={`flex items-center gap-1.5 font-semibold ${selected.paid ? "text-[--accent-primary]" : "text-amber-400"}`}>
                 <Icon name={selected.paid ? "check" : "circle"} className="h-4 w-4" />
                 {selected.paid ? i18n("paid") : i18n("unpaid")}
               </span>

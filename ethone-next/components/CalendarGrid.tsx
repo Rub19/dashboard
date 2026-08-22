@@ -178,7 +178,7 @@ export default function CalendarGrid({
                       ? "bg-blue-500"
                       : category === "bill"
                       ? "bg-purple-500"
-                      : "bg-emerald-500";
+                      : "bg-[--accent-primary]";
                   return (
                     <span
                       key={idx}

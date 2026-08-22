@@ -9,7 +9,7 @@ import { evaluatePasswordField, suggestStrongPassword, type PasswordFieldResult 
 
 function StrengthMeter({ result, show }: { result: PasswordFieldResult; show: boolean }) {
   if (!show) return null;
-  const colors = ["bg-red-500", "bg-orange-500", "bg-amber-500", "bg-cyan-400", "bg-emerald-400"];
+  const colors = ["bg-red-500", "bg-orange-500", "bg-amber-500", "bg-[--info]", "bg-[--accent-primary]"];
 
   return (
     <div className="space-y-2">
@@ -50,7 +50,7 @@ function RuleChecklist({ result, show }: { result: PasswordFieldResult; show: bo
       {result.rules.map((rule) => (
         <li
           key={rule.id}
-          className={`flex items-center gap-1.5 transition-colors ${rule.passed ? "text-emerald-400" : "text-[var(--muted)]"}`}
+          className={`flex items-center gap-1.5 transition-colors ${rule.passed ? "text-[--accent-primary]" : "text-[var(--muted)]"}`}
         >
           <motion.span
             initial={false}
@@ -63,7 +63,7 @@ function RuleChecklist({ result, show }: { result: PasswordFieldResult; show: bo
               <span className="h-1.5 w-1.5 rounded-full bg-[var(--muted)]" />
             )}
           </motion.span>
-          <span className={rule.passed ? "text-emerald-400" : ""}>{rule.label}</span>
+          <span className={rule.passed ? "text-[--accent-primary]" : ""}>{rule.label}</span>
         </li>
       ))}
     </ul>
@@ -179,7 +179,7 @@ export default function PasswordField({
                   initial={{ opacity: 0, x: 8, scale: 0.8 }}
                   animate={{ opacity: 1, x: 0, scale: 1 }}
                   exit={{ opacity: 0, x: 8, scale: 0.8 }}
-                  className="rounded-lg bg-emerald-500/10 px-2 py-0.5 text-[10px] text-emerald-400"
+                  className="rounded-lg bg-[--accent-primary] px-2 py-0.5 text-[10px] text-[--accent-primary]"
                 >
                   ✓ Collé
                 </motion.span>
@@ -224,7 +224,7 @@ export default function PasswordField({
                     {["Généré", "Unique", "Sécurisé"].map((badge) => (
                       <span
                         key={badge}
-                        className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400"
+                        className="rounded-lg border border-[--accent-primary] bg-[--accent-primary] px-2 py-0.5 text-[10px] font-medium text-[--accent-primary]"
                       >
                         {badge}
                       </span>

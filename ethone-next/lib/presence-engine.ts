@@ -64,8 +64,8 @@ export const PRESENCE_META: Record<SignalKey, Record<string, SignalMeta>> = {
     },
     responding: {
       icon: "brain",
-      dot: "bg-emerald-400",
-      iconClass: "text-emerald-400",
+      dot: "bg-[--accent-primary]",
+      iconClass: "text-[--accent-primary]",
       priority: 95,
       animation: "pulse",
       label: "presenceBrainResponding",
@@ -98,8 +98,8 @@ export const PRESENCE_META: Record<SignalKey, Record<string, SignalMeta>> = {
     },
     playing: {
       icon: "play",
-      dot: "bg-emerald-400",
-      iconClass: "text-emerald-400",
+      dot: "bg-[--accent-primary]",
+      iconClass: "text-[--accent-primary]",
       priority: 70,
       animation: "pulse",
       label: "presencePlaying",

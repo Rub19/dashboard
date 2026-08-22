@@ -12,12 +12,13 @@ import BentoCard from "@/components/BentoCard";
 import { cn } from "@/lib/utils";
 import type { CloudDashboard, NowPlaying } from "@/lib/hooks/useDashboard";
 
-function formatBytes(bytes = 0) {
-  if (bytes === 0) return "0 B";
-  const k = 1024;
-  const sizes = ["B", "KB", "MB", "GB", "TB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
+function formatStorage(bytes = 0) {
+  const usedGB = bytes / (1024 * 1024 * 1024);
+  if (usedGB >= 1) {
+    return `${usedGB.toFixed(1)} Go / 1 To`;
+  }
+  const usedMB = bytes / (1024 * 1024);
+  return `${usedMB.toFixed(1)} Mo / 1 Go`;
 }
 
 function TypingDots() {
@@ -85,11 +86,13 @@ export default function HeroBriefingCard({
     return "";
   }, [brain.messages]);
 
+  const storageLabel = loading ? "-" : formatStorage(dashboard?.totalSize);
+
   const counters = [
-    { icon: "circle-check", label: i18n("openTasks"), value: openTasksCount, color: { text: "text-emerald-400", bg: "bg-emerald-500/10" } },
-    { icon: "calendar", label: i18n("todayEvents"), value: todayEventsCount, color: { text: "text-sky-400", bg: "bg-sky-500/10" } },
-    { icon: "notebook-pen", label: i18n("notes"), value: notesCount, color: { text: "text-violet-400", bg: "bg-violet-500/10" } },
-    { icon: "hard-drive", label: i18n("storageUsed"), value: loading ? "-" : formatBytes(dashboard?.totalSize), color: { text: "text-amber-400", bg: "bg-amber-500/10" } },
+    { icon: "circle-check", label: i18n("openTasks"), value: openTasksCount, text: "text-[var(--accent-primary)]", bg: "bg-[var(--accent-primary)]/10" },
+    { icon: "calendar", label: i18n("todayEvents"), value: todayEventsCount, text: "text-[var(--info)]", bg: "bg-[var(--info)]/10" },
+    { icon: "notebook-pen", label: i18n("notes"), value: notesCount, text: "text-[var(--accent-secondary)]", bg: "bg-[var(--accent-secondary)]/10" },
+    { icon: "hard-drive", label: i18n("storageUsed"), value: storageLabel, text: "text-[var(--warning)]", bg: "bg-[var(--warning)]/10" },
   ];
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -105,7 +108,7 @@ export default function HeroBriefingCard({
       <div className="flex flex-1 flex-col justify-between gap-4">
         <div className="flex flex-col gap-1">
           <p className="text-xs font-medium uppercase tracking-wider text-[var(--muted)]">{date}</p>
-          <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">{greeting.label}</h2>
+          <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)] sm:text-2xl">{greeting.label}</h2>
           <p className="text-sm text-[var(--muted)]">{greeting.tone}</p>
           {nowPlaying?.title && (
             <p className="mt-1 flex items-center gap-2 text-xs text-[var(--muted)]">
@@ -122,15 +125,16 @@ export default function HeroBriefingCard({
             type="text"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            placeholder={i18n("brainAvailableDesc") || "Demandez à Brain…"}
+            placeholder="Poser une question ou un objectif..."
             icon="brain"
-            className="min-w-0 flex-1"
+            className="min-w-0 flex-1 rounded-full"
+            inputClassName="placeholder:text-[var(--muted)]"
           />
           <button
             type="submit"
             disabled={!prompt.trim() || brain.loading}
             style={{ backgroundColor: "var(--accent-color, var(--accent-primary))" }}
-            className="flex h-10 w-full shrink-0 items-center justify-center gap-1.5 rounded-xl px-3 text-xs font-semibold text-[var(--accent-contrast)] transition-opacity hover:opacity-90 disabled:opacity-40 sm:h-9 sm:w-auto"
+            className="flex h-10 w-full shrink-0 items-center justify-center gap-1.5 rounded-full px-4 text-xs font-semibold text-[var(--accent-contrast)] shadow-[0_0_12px_var(--glow-color)] transition-all hover:opacity-90 hover:shadow-[0_0_20px_var(--glow-color)] disabled:opacity-40 sm:h-9 sm:w-auto"
           >
             <Icon name="sparkles" className="h-3.5 w-3.5" />
             Brain
@@ -138,7 +142,7 @@ export default function HeroBriefingCard({
         </form>
 
         {(brain.loading || latestAssistant || brain.error) && (
-          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5 text-xs text-zinc-200">
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5 text-xs text-[var(--text-primary)]">
             {brain.loading && (
               <div className="flex items-center gap-2 text-[var(--muted)]">
                 <TypingDots />
@@ -146,7 +150,7 @@ export default function HeroBriefingCard({
               </div>
             )}
             {!brain.loading && brain.error && (
-              <p className="text-red-400">{brain.error.message}</p>
+              <p className="text-[var(--danger)]">{brain.error.message}</p>
             )}
             {!brain.loading && latestAssistant && !brain.error && (
               <p className="line-clamp-3 whitespace-pre-wrap leading-relaxed">{latestAssistant}</p>
@@ -155,22 +159,35 @@ export default function HeroBriefingCard({
         )}
 
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {counters.map((c) => (
-            <div
-              key={c.label}
-              className="v8-inset flex items-center gap-2 p-2"
-            >
-              <span
-                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${c.color.bg} ${c.color.text}`}
-              >
-                <Icon name={c.icon} className="h-3.5 w-3.5" />
-              </span>
-              <div className="min-w-0">
-                <p className="text-base font-bold tabular-nums leading-none">{c.value}</p>
-                <p className="text-[9px] text-[var(--muted)]">{c.label}</p>
-              </div>
-            </div>
-          ))}
+          {loading
+            ? Array.from({ length: 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="v8-inset flex animate-pulse items-center gap-2 p-2"
+                >
+                  <div className="h-7 w-7 rounded-lg bg-[var(--text-primary)]/10" />
+                  <div className="min-w-0 flex-1 space-y-1.5">
+                    <div className="h-4 w-8 rounded bg-[var(--text-primary)]/10" />
+                    <div className="h-2 w-12 rounded bg-[var(--text-primary)]/10" />
+                  </div>
+                </div>
+              ))
+            : counters.map((c) => (
+                <div
+                  key={c.label}
+                  className="v8-inset flex items-center gap-2 p-2"
+                >
+                  <span
+                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${c.bg} ${c.text}`}
+                  >
+                    <Icon name={c.icon} className="h-3.5 w-3.5" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-base font-bold tabular-nums leading-none text-[var(--text-primary)]">{c.value}</p>
+                    <p className="text-[9px] text-[var(--muted)]">{c.label}</p>
+                  </div>
+                </div>
+              ))}
         </div>
       </div>
     </BentoCard>

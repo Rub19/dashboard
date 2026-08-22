@@ -92,7 +92,7 @@ export default function InvoicesHistory() {
                     <span
                       className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-mono text-[11px] ${
                         bill.paid
-                          ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
+                          ? "border-[--accent-primary] bg-[--accent-primary] text-[--accent-primary]"
                           : "border-amber-500/20 bg-amber-500/10 text-amber-400"
                       }`}
                     >

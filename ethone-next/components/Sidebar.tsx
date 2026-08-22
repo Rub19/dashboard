@@ -110,9 +110,9 @@ const SyncBadge = memo(function SyncBadge({ collapsed }: { collapsed: boolean })
       dot: "bg-amber-400",
     },
     idle: {
-      icon: <CheckCircle2 className="h-3 w-3 text-emerald-400" />,
+      icon: <CheckCircle2 className="h-3 w-3 text-[--accent-primary]" />,
       label: i18n("synced", "Sync"),
-      dot: "bg-emerald-400",
+      dot: "bg-[--accent-primary]",
     },
   };
   const statusConfig = config[status];
@@ -173,7 +173,7 @@ const SidebarProfile = memo(function SidebarProfile({ collapsed }: { collapsed: 
         ) : (
           <User className={cn("text-[var(--text-muted)]", collapsed ? "h-3.5 w-3.5" : "h-4 w-4")} />
         )}
-        <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--background)] bg-emerald-400" aria-hidden="true" />
+        <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--background)] bg-[--accent-primary]" aria-hidden="true" />
       </div>
       {!collapsed && (
         <span className="min-w-0 flex-1 truncate text-[11px] font-medium text-[var(--text-primary)]">

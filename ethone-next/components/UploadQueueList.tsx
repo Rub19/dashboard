@@ -81,7 +81,7 @@ function QueueItem({
               <Icon name={mimeIcon(task.file.type, false)} className="h-6 w-6" />
             </div>
           )}
-          <span className="absolute bottom-0 left-0 rounded-tr-md bg-emerald-500 px-1.5 py-0.5 text-[9px] font-bold text-white">
+          <span className="absolute bottom-0 left-0 rounded-tr-md bg-[--accent-primary] px-1.5 py-0.5 text-[9px] font-bold text-white">
             {fileExtension(task.file)}
           </span>
         </div>
@@ -134,7 +134,7 @@ function QueueItem({
           {isUploading && (
             <div className="mt-3 space-y-1.5">
               <div className="flex items-end justify-between">
-                <span className="text-lg font-mono font-bold text-emerald-400">{progress}%</span>
+                <span className="text-lg font-mono font-bold text-[--accent-primary]">{progress}%</span>
                 <span className="text-[10px] font-mono text-zinc-500">
                   {formatTimeLeft(task.secondsLeft)}s restantes • {formatSpeed(task.speed)}
                 </span>
@@ -144,7 +144,7 @@ function QueueItem({
                   initial={false}
                   animate={{ width: `${progress}%` }}
                   transition={{ duration: 0.2, ease: "easeOut" }}
-                  className="h-full rounded-full bg-emerald-400"
+                  className="h-full rounded-full bg-[--accent-primary]"
                 />
               </div>
               <div className="flex items-center justify-between text-[10px] text-zinc-500">
@@ -156,7 +156,7 @@ function QueueItem({
 
           {task.status === "success" && (
             <div className="mt-3 flex items-center gap-1.5">
-              <span className="flex items-center gap-1 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
+              <span className="flex items-center gap-1 rounded-lg border border-[--accent-primary] bg-[--accent-primary] px-2 py-0.5 text-[10px] font-semibold text-[--accent-primary]">
                 <CheckCircle2 className="h-3.5 w-3.5" />
                 {i18n("uploadedInstant") || "Téléversé à l’instant"}
               </span>
@@ -196,11 +196,11 @@ export default function UploadQueueList({
     <div className="space-y-3">
       <div className="flex items-center justify-between rounded-2xl v8-panel px-4 py-3 backdrop-blur-2xl">
         <div className="flex items-center gap-2 text-sm font-medium text-zinc-200">
-          <span className="text-emerald-400">File d&apos;attente</span>
+          <span className="text-[--accent-primary]">File d&apos;attente</span>
           <span className="text-zinc-500">— {completed} / {tasks.length} terminé{tasks.length > 1 ? "s" : ""}</span>
         </div>
         {tasks.some((t) => t.status === "uploading") && (
-          <span className="text-xs text-emerald-400">
+          <span className="text-xs text-[--accent-primary]">
             {tasks.filter((t) => t.status === "uploading").length} en cours
           </span>
         )}

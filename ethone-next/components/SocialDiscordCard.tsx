@@ -38,7 +38,7 @@ function defaultAvatarIndex(userId?: string, discriminator?: string): number {
 function statusColor(status?: string) {
   switch (status) {
     case "online":
-      return "bg-emerald-500";
+      return "bg-[--accent-primary]";
     case "idle":
       return "bg-amber-400";
     case "dnd":
@@ -66,7 +66,7 @@ function statusTone(status?: string) {
     case "dnd":
       return "border-rose-600/20 bg-rose-500/15 text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300";
     case "online":
-      return "border-emerald-600/20 bg-emerald-500/15 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300";
+      return "border-[--accent-primary] bg-[--accent-primary] text-[--accent-primary] dark:border-[--accent-primary] dark:bg-[--accent-primary] dark:text-[--accent-primary]";
     case "idle":
       return "border-amber-600/20 bg-amber-500/15 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300";
     default:
@@ -142,9 +142,9 @@ export default function SocialDiscordCard({
   const { badgeColor, badgeLabel, badgeTone } = useMemo(() => {
     if (loading && !hasLanyard && !hasOAuth && hasAnyConnection) {
       return {
-        badgeColor: "bg-cyan-400",
+        badgeColor: "bg-[--info]",
         badgeLabel: i18n("loading", "Chargement"),
-        badgeTone: "border-cyan-500/30 bg-cyan-500/10 text-cyan-300",
+        badgeTone: "border-[--info] bg-[--info] text-[--info]",
       };
     }
     if (error && hasAnyConnection && !hasLanyard && !hasOAuth) {
@@ -159,9 +159,9 @@ export default function SocialDiscordCard({
     }
     if (hasAnyConnection) {
       return {
-        badgeColor: "bg-emerald-400",
+        badgeColor: "bg-[--accent-primary]",
         badgeLabel: i18n("connected", "Connecté"),
-        badgeTone: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300",
+        badgeTone: "border-[--accent-primary] bg-[--accent-primary] text-[--accent-primary]",
       };
     }
     return { badgeColor: color, badgeLabel: label, badgeTone: statusTone(status) };
@@ -316,7 +316,7 @@ export default function SocialDiscordCard({
               fill
               className="h-10 w-10 shrink-0 rounded-lg"
               fallback={
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-400">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[--accent-primary] text-[--accent-primary]">
                   <Music className="h-4 w-4" />
                 </div>
               }
@@ -330,7 +330,7 @@ export default function SocialDiscordCard({
           {activeMusic.durationMs && activeMusic.durationMs > 0 && (
             <div className="flex flex-col gap-1">
               <div className="h-1 w-full overflow-hidden rounded-xl bg-white/[0.08]">
-                <div className="h-full rounded-xl bg-emerald-500" style={{ width: `${progressPct}%` }} />
+                <div className="h-full rounded-xl bg-[--accent-primary]" style={{ width: `${progressPct}%` }} />
               </div>
               <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500">
                 <span>{formatMs(activeMusic.progressMs)}</span>

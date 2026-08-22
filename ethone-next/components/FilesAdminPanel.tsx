@@ -238,7 +238,7 @@ export default function FilesAdminPanel() {
             </div>
             <div className="mt-2 h-2 w-full overflow-hidden rounded-xl bg-[var(--panel-bg)]">
               <div
-                className={`h-full rounded-xl ${usagePct > 90 ? "bg-red-400" : usagePct > 70 ? "bg-amber-400" : "bg-emerald-400"}`}
+                className={`h-full rounded-xl ${usagePct > 90 ? "bg-red-400" : usagePct > 70 ? "bg-amber-400" : "bg-[--accent-primary]"}`}
                 style={{ width: `${usagePct}%` }}
               />
             </div>

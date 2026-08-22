@@ -48,7 +48,7 @@ export default function LiveWidget() {
   const discordHandle = lanyard?.username ? (lanyard?.discriminator ? `${lanyard.username}#${lanyard.discriminator}` : `@${lanyard.username}`) : null;
 
   const statusTone = {
-    online: "bg-emerald-500/10 text-emerald-400 ring-emerald-500/30",
+    online: "bg-[--accent-primary] text-[--accent-primary] ring-[--accent-primary]",
     idle: "bg-amber-500/10 text-amber-400 ring-amber-500/30",
     dnd: "bg-rose-500/10 text-rose-400 ring-rose-500/30",
     offline: "bg-zinc-500/10 text-zinc-400 ring-zinc-500/30",
@@ -143,8 +143,8 @@ export default function LiveWidget() {
               <div className="flex items-center gap-2">
                 <GripVertical className="h-4 w-4 text-zinc-500 cursor-grab" />
                 <span className="relative flex h-4 w-4 items-center justify-center">
-                  <span className="absolute h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
-                  <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                  <span className="absolute h-2 w-2 rounded-full bg-[--accent-primary] animate-ping" />
+                  <span className="h-2 w-2 rounded-full bg-[--accent-primary]" />
                 </span>
                 <span className="text-xs font-bold text-white tracking-wider">LIVE</span>
               </div>
@@ -205,7 +205,7 @@ export default function LiveWidget() {
                         />
                       ) : (
                         <div className="flex h-full w-full flex-col items-center justify-center gap-2 px-4 text-zinc-500">
-                          <Radio className="h-8 w-8 animate-pulse text-emerald-400" />
+                          <Radio className="h-8 w-8 animate-pulse text-[--accent-primary]" />
                           <p className="text-center text-[11px]">
                             {i18n("liveStreamWaiting", "En attente du flux direct...")}
                           </p>
@@ -237,7 +237,7 @@ export default function LiveWidget() {
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-medium text-zinc-100">{nowPlaying.title}</p>
                         <p className="truncate text-xs text-zinc-500">
-                          <span className="text-emerald-400">{nowPlaying.source || "Spotify"}</span>
+                          <span className="text-[--accent-primary]">{nowPlaying.source || "Spotify"}</span>
                           {nowPlaying.artist ? ` — ${nowPlaying.artist}` : ""}
                         </p>
                       </div>
@@ -298,7 +298,7 @@ export default function LiveWidget() {
                           className={cn(
                             "absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-zinc-950",
                             lanyard.discord_status === "online"
-                              ? "bg-emerald-400"
+                              ? "bg-[--accent-primary]"
                               : lanyard.discord_status === "idle"
                                 ? "bg-amber-400"
                                 : lanyard.discord_status === "dnd"
@@ -331,14 +331,14 @@ export default function LiveWidget() {
                           className="h-9 w-9 shrink-0 rounded-lg object-cover"
                         />
                       ) : (
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[--accent-primary] text-[--accent-primary]">
                           <Music className="h-5 w-5" />
                         </span>
                       )}
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-medium text-zinc-100">{lanyardSpotify.title || "—"}</p>
                         <p className="truncate text-xs text-zinc-500">
-                          <span className="text-emerald-400">Spotify</span>
+                          <span className="text-[--accent-primary]">Spotify</span>
                           {lanyardSpotify.artist ? ` — ${lanyardSpotify.artist}` : ""}
                         </p>
                       </div>
@@ -406,7 +406,7 @@ export default function LiveWidget() {
           onClick={() => toggleMinimize()}
           className="flex items-center gap-1.5 rounded-xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 px-3 py-1.5 text-xs font-medium text-[var(--accent-primary)] shadow-lg transition-all hover:bg-[var(--accent-primary)]/25"
         >
-          <Radio className="h-3.5 w-3.5 animate-pulse text-emerald-400" />
+          <Radio className="h-3.5 w-3.5 animate-pulse text-[--accent-primary]" />
           <span>Live</span>
         </motion.button>
       )}

@@ -79,8 +79,9 @@ export default function DashboardOverview() {
   const { greeting, dashboard, nowPlaying, loading, error } = useHomeData();
   const live = useLiveData();
   const tasksApi = useCloudTasks();
-  const { items: notes } = useItems("notes");
-  const { items: events } = useItems("events");
+  const { items: notes, loading: notesLoading } = useItems("notes");
+  const { items: events, loading: eventsLoading } = useItems("events");
+  const bentoLoading = loading || notesLoading || eventsLoading || tasksApi.loading;
   const focus = useFocus();
   const [customizing, setCustomizing] = useState(false);
   const { layout, update: updateLayout } = useDesktopLayout();
@@ -145,7 +146,7 @@ export default function DashboardOverview() {
             greeting={greeting}
             dashboard={dashboard}
             nowPlaying={nowPlaying}
-            loading={loading}
+            loading={bentoLoading}
             openTasksCount={openTasksCount}
             todayEventsCount={todayEvents.length}
             notesCount={notes.length}
@@ -161,6 +162,7 @@ export default function DashboardOverview() {
             todayEvents={todayEvents}
             nextTasks={nextTasks}
             focus={focus}
+            loading={bentoLoading}
             scrollable={false}
             className={homeCardClass}
           />
@@ -168,7 +170,7 @@ export default function DashboardOverview() {
       case "productivity":
         return <TasksWidget data={tasksApi} scrollable={false} className={homeCardClass} />;
       case "recent":
-        return <RecentNotesCard notes={notes} scrollable={false} className={homeCardClass} />;
+        return <RecentNotesCard notes={notes} loading={bentoLoading} scrollable={false} className={homeCardClass} />;
       case "brain":
         return (
           <BentoCard title={i18n("brain")} icon="brain" scrollable={false} className={homeCardClass}>

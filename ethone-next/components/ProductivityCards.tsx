@@ -61,9 +61,10 @@ export type DayTimelineCardProps = {
   className?: string;
   focus?: FocusApi;
   scrollable?: boolean;
+  loading?: boolean;
 };
 
-export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus, scrollable = true }: DayTimelineCardProps) {
+export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus, scrollable = true, loading = false }: DayTimelineCardProps) {
   const i18n = useI18n();
   const focusCtx = useFocus();
   const { state, format, start } = focus ?? focusCtx;
@@ -79,8 +80,29 @@ export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus,
     [todayEvents]
   );
 
+  if (loading) {
+    return (
+      <BentoCard title={i18n("daystream")} icon="calendar" className={cn("h-full", className)} scrollable={scrollable}>
+        <div className="flex flex-1 flex-col justify-between gap-3">
+          <div className="space-y-2">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-2.5 py-2">
+                <div className="h-4 w-4 animate-pulse rounded-full bg-[var(--text-primary)]/10" />
+                <div className="h-3 w-2/3 animate-pulse rounded bg-[var(--text-primary)]/10" />
+              </div>
+            ))}
+          </div>
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+            <div className="mb-2 h-3 w-20 animate-pulse rounded bg-[var(--text-primary)]/10" />
+            <div className="h-1.5 w-full animate-pulse rounded-full bg-[var(--text-primary)]/10" />
+          </div>
+        </div>
+      </BentoCard>
+    );
+  }
+
   const badge = isLive ? (
-    <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400">
+    <span className="inline-flex items-center gap-1 rounded-lg bg-[var(--accent-primary)]/10 px-2 py-0.5 text-[10px] font-medium text-[var(--accent-primary)]">
       <Icon name="radio" className="h-3 w-3" />
       <span className="uppercase tracking-wider">{i18n("live")}</span>
     </span>
@@ -96,7 +118,7 @@ export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus,
                 key={e.id}
                 className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-2.5 py-2"
               >
-                <Icon name="calendar-days" className="h-4 w-4 text-sky-400" />
+                <Icon name="calendar-days" className="h-4 w-4 text-[var(--info)]" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{e.title}</p>
                   {formatEventTime(e.startAt) && <p className="text-[10px] text-[var(--muted)]">{formatEventTime(e.startAt)}</p>}
@@ -109,7 +131,7 @@ export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus,
                 key={t.id}
                 className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-2.5 py-2"
               >
-                <Icon name="circle" className="h-4 w-4 text-emerald-400" />
+                <Icon name="circle" className="h-4 w-4 text-[var(--accent-primary)]" />
                 <p className="min-w-0 flex-1 truncate text-sm font-medium">{t.title}</p>
               </div>
             ))}
@@ -130,7 +152,7 @@ export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus,
               {i18n("focus")}
             </span>
             {isLive ? (
-              <span className="text-xs font-semibold text-emerald-400">{format(state.remaining)}</span>
+              <span className="text-xs font-semibold text-[var(--accent-primary)]">{format(state.remaining)}</span>
             ) : (
               <button
                 type="button"
@@ -144,7 +166,7 @@ export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus,
           {isLive ? (
             <div className="h-1.5 w-full overflow-hidden rounded-xl bg-white/[0.06]">
               <div
-                className="h-full rounded-xl bg-emerald-400 transition-all duration-1000"
+                className="h-full rounded-xl bg-[var(--accent-primary)] transition-all duration-1000"
                 style={{ width: `${state.total ? ((state.total - state.remaining) / state.total) * 100 : 0}%` }}
               />
             </div>
@@ -207,26 +229,26 @@ export function ProjectsTasksCard({
         <div className="grid grid-cols-2 gap-2">
           <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2">
             <div className="mb-1 flex items-center gap-1.5 text-[10px] text-[var(--muted)]">
-              <Icon name="timer" className="h-3.5 w-3.5 text-rose-400" />
+              <Icon name="timer" className="h-3.5 w-3.5 text-[var(--danger)]" />
               {i18n("focusMinutes")}
             </div>
-            <p className="text-lg font-bold leading-none text-rose-400">{focusMinutes}</p>
+            <p className="text-lg font-bold leading-none text-[var(--danger)]">{focusMinutes}</p>
           </div>
           {typeof unreadMail === "number" && (
             <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2">
               <div className="mb-1 flex items-center gap-1.5 text-[10px] text-[var(--muted)]">
-                <Icon name="mail" className="h-3.5 w-3.5 text-sky-400" />
+                <Icon name="mail" className="h-3.5 w-3.5 text-[var(--info)]" />
                 {i18n("unread")}
               </div>
-              <p className="text-lg font-bold leading-none text-sky-400">{mailLoading ? "-" : unreadMail}</p>
+              <p className="text-lg font-bold leading-none text-[var(--info)]">{mailLoading ? "-" : unreadMail}</p>
             </div>
           )}
           <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2">
             <div className="mb-1 flex items-center gap-1.5 text-[10px] text-[var(--muted)]">
-              <Icon name="trophy" className="h-3.5 w-3.5 text-amber-400" />
+              <Icon name="trophy" className="h-3.5 w-3.5 text-[var(--warning)]" />
               {i18n("focusDone")}
             </div>
-            <p className="text-lg font-bold leading-none text-amber-400">{state.completedPomodoros}</p>
+            <p className="text-lg font-bold leading-none text-[var(--warning)]">{state.completedPomodoros}</p>
           </div>
         </div>
       </div>
@@ -238,9 +260,10 @@ export type RecentNotesCardProps = {
   notes: Item[];
   className?: string;
   scrollable?: boolean;
+  loading?: boolean;
 };
 
-export function RecentNotesCard({ notes, className = "", scrollable = true }: RecentNotesCardProps) {
+export function RecentNotesCard({ notes, className = "", scrollable = true, loading = false }: RecentNotesCardProps) {
   const i18n = useI18n();
   const recent = useMemo(
     () =>
@@ -267,7 +290,19 @@ export function RecentNotesCard({ notes, className = "", scrollable = true }: Re
   return (
     <BentoCard title={i18n("recent")} icon="history" className={cn("h-full", className)} action={action} scrollable={scrollable}>
       <div className="flex flex-1 flex-col justify-between gap-2">
-        {recent.length > 0 ? (
+        {loading ? (
+          <div className="space-y-2">
+            {[1, 2].map((i) => (
+              <div key={i} className="flex items-start gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+                <div className="mt-0.5 h-4 w-4 animate-pulse rounded bg-[var(--text-primary)]/10" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-3 w-3/4 animate-pulse rounded bg-[var(--text-primary)]/10" />
+                  <div className="h-2 w-1/3 animate-pulse rounded bg-[var(--text-primary)]/10" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : recent.length > 0 ? (
           <div className="space-y-2">
             {recent.map((n) => (
               <Link
@@ -275,12 +310,12 @@ export function RecentNotesCard({ notes, className = "", scrollable = true }: Re
                 href="/notes"
                 className="group flex items-start gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5 transition-colors hover:bg-white/[0.04]"
               >
-                <Icon name="file-text" className="mt-0.5 h-4 w-4 shrink-0 text-violet-400" />
+                <Icon name="file-text" className="mt-0.5 h-4 w-4 shrink-0 text-[var(--accent-secondary)]" />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-white group-hover:text-[var(--accent)]">{n.title}</p>
+                  <p className="truncate text-sm font-medium text-[var(--text-primary)] group-hover:text-[var(--accent)]">{n.title}</p>
                   <p className="text-[10px] text-[var(--muted)]">{formatNoteDate(n.updatedAt || n.createdAt)}</p>
                 </div>
-                <Icon name="chevron-right" className="h-3.5 w-3.5 text-[var(--muted)] group-hover:text-white" />
+                <Icon name="chevron-right" className="h-3.5 w-3.5 text-[var(--muted)] group-hover:text-[var(--text-primary)]" />
               </Link>
             ))}
           </div>

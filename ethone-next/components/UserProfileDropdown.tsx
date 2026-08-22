@@ -102,7 +102,7 @@ export default function UserProfileDropdown() {
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = "v1.7.60";
+  const VERSION_LABEL = "v1.7.61";
 
   const menuItems = [
     {
@@ -132,7 +132,7 @@ export default function UserProfileDropdown() {
       id: "security",
       label: "Sécurité",
       badge: "actif",
-      badgeClass: "text-cyan-300 bg-cyan-500/10 border-cyan-500/25",
+      badgeClass: "text-[--info] bg-[--info] border-[--info]",
       icon: ShieldCheck,
       action: () => router.push("/settings?category=security"),
     },
@@ -178,7 +178,7 @@ export default function UserProfileDropdown() {
           aria-haspopup="true"
         >
         <div className="pointer-events-none relative flex h-7 w-7 shrink-0 items-center justify-center">
-          <div className="pointer-events-none flex h-full w-full items-center justify-center overflow-hidden rounded-full border border-[var(--text-primary)]/10 bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 text-emerald-400">
+          <div className="pointer-events-none flex h-full w-full items-center justify-center overflow-hidden rounded-full border border-[var(--text-primary)]/10 bg-gradient-to-tr from-[--accent-primary] to-[--info] text-[--accent-primary]">
             {avatarUrl ? (
               <Image
                 src={avatarUrl}
@@ -251,7 +251,7 @@ export default function UserProfileDropdown() {
                   >
                     <span className="truncate font-mono">{email}</span>
                     {copied ? (
-                      <Check className="h-3 w-3 shrink-0 text-emerald-400" />
+                      <Check className="h-3 w-3 shrink-0 text-[--accent-primary]" />
                     ) : (
                       <Copy className="h-3 w-3 shrink-0 text-[var(--text-muted)]" />
                     )}
@@ -299,7 +299,7 @@ export default function UserProfileDropdown() {
               </div>
               <div className="h-1.5 w-full overflow-hidden rounded-xl bg-[var(--text-primary)]/[0.06]">
                 <div
-                  className="h-full rounded-xl bg-teal-400"
+                  className="h-full rounded-xl bg-[--accent-primary]"
                   style={{ width: `${storagePercent}%` }}
                 />
               </div>

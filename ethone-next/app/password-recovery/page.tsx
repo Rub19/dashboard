@@ -37,7 +37,7 @@ export default function PasswordRecoveryPage() {
             <h1 className="text-2xl font-bold">{i18n("passwordRecoveryTitle")}</h1>
             <Card3D>
               {sent ? (
-                <p className="break-words text-sm text-emerald-400">{i18n("recoverySent")}</p>
+                <p className="break-words text-sm text-[--accent-primary]">{i18n("recoverySent")}</p>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <FormField label={i18n("email")}>

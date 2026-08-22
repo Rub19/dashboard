@@ -39,7 +39,7 @@ const DEFAULT_LOCALE = "fr-FR";
 
 const TONE_CLASSES: Record<string, string> = {
   default: "bg-violet-400",
-  success: "bg-emerald-400",
+  success: "bg-[--accent-primary]",
   warning: "bg-amber-400",
   error: "bg-rose-400",
   info: "bg-sky-400",

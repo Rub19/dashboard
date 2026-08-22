@@ -64,7 +64,7 @@ function SystemStatusPills() {
   const syncIcon = syncing ? (
     <RefreshCw className="h-3 w-3 animate-spin text-sky-400" />
   ) : online ? (
-    <Cloud className="h-3 w-3 text-emerald-400" />
+    <Cloud className="h-3 w-3 text-[--accent-primary]" />
   ) : (
     <CloudOff className="h-3 w-3 text-rose-400" />
   );

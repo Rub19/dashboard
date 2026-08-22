@@ -75,7 +75,7 @@ export default function SecurityPage() {
         </Card3D>
         <Card3D>
           <div className="flex items-center gap-3">
-            <Icon name="lock" className="h-8 w-8 text-emerald-400" />
+            <Icon name="lock" className="h-8 w-8 text-[--accent-primary]" />
             <div>
               <p className="text-sm text-[var(--muted)]">{i18n("encryption")}</p>
               <p className="font-medium">{i18n("tlsJwt")}</p>

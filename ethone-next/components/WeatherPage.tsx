@@ -202,7 +202,7 @@ export default function WeatherPage() {
 
   const metrics: { icon: string; iconColor: string; label: string; value: string; sub?: string }[] = [];
   if (wind !== undefined) {
-    metrics.push({ icon: "wind", iconColor: "text-cyan-400", label: i18n("wind"), value: `${Math.round(wind)} km/h`, sub: i18n("weatherWindSub") || "Vitesse" });
+    metrics.push({ icon: "wind", iconColor: "text-[--info]", label: i18n("wind"), value: `${Math.round(wind)} km/h`, sub: i18n("weatherWindSub") || "Vitesse" });
   }
   if (humidity !== undefined) {
     metrics.push({ icon: "droplets", iconColor: "text-blue-400", label: i18n("humidity"), value: `${Math.round(humidity)}%`, sub: i18n("weatherHumiditySub") || "Humidité relative" });
@@ -211,7 +211,7 @@ export default function WeatherPage() {
     metrics.push({ icon: "sun", iconColor: "text-amber-400", label: i18n("weatherUV") || "UV", value: `${Math.round(uv)}`, sub: uvLabel(uv) });
   }
   if (aqi !== undefined) {
-    metrics.push({ icon: "leaf", iconColor: "text-emerald-400", label: i18n("weatherAirQuality") || "Qualité de l'air", value: `${Math.round(aqi)}`, sub: aqiLabelText || aqiLabel(aqi) });
+    metrics.push({ icon: "leaf", iconColor: "text-[--accent-primary]", label: i18n("weatherAirQuality") || "Qualité de l'air", value: `${Math.round(aqi)}`, sub: aqiLabelText || aqiLabel(aqi) });
   }
   if (pressure !== undefined) {
     metrics.push({ icon: "gauge", iconColor: "text-purple-400", label: i18n("weatherPressure") || "Pression", value: `${Math.round(pressure)} hPa`, sub: i18n("weatherPressureUnit") || "Tendance stable" });

@@ -22,8 +22,8 @@ export default function LiveStats({ records = [], updatedAt, loading, className 
   };
 
   const statItems = [
-    { label: i18n("connected"), value: byStatus.connected, color: "text-emerald-400" },
-    { label: i18n("pending"), value: byStatus.loading, color: "text-cyan-400" },
+    { label: i18n("connected"), value: byStatus.connected, color: "text-[--accent-primary]" },
+    { label: i18n("pending"), value: byStatus.loading, color: "text-[--info]" },
     { label: i18n("events"), value: records.length, color: "text-zinc-200" },
     { label: i18n("error"), value: byStatus.error, color: "text-rose-400" },
   ];
@@ -34,7 +34,7 @@ export default function LiveStats({ records = [], updatedAt, loading, className 
     >
       <div className="flex items-center justify-between gap-3 border-b border-white/[0.04] pb-2">
         <div className="flex items-center gap-2">
-          <Activity className="h-4 w-4 text-emerald-400" />
+          <Activity className="h-4 w-4 text-[--accent-primary]" />
           <span className="text-xs font-bold uppercase tracking-wider text-white">{i18n("liveStats")}</span>
         </div>
         <LiveFreshness updatedAt={updatedAt} />

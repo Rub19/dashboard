@@ -104,9 +104,9 @@ export function weatherAmbience(code?: number, isDay?: boolean): { gradient: str
 
   if (isRainyOrStormy) {
     return {
-      gradient: "bg-gradient-to-br from-cyan-500/10 via-zinc-950/80 to-zinc-950",
-      border: "border-cyan-500/20",
-      glow: "bg-cyan-500",
+      gradient: "bg-gradient-to-br from-[--info] via-zinc-950/80 to-zinc-950",
+      border: "border-[--info]",
+      glow: "bg-[--info]",
     };
   }
 
@@ -122,7 +122,7 @@ export function weatherIconColor(code?: number, isDay?: boolean): string {
   if (code !== undefined && code >= 1 && code <= 3) return isDay === false ? "text-indigo-300" : "text-amber-300";
   if (code === 45 || code === 48) return "text-slate-400";
   if ((code !== undefined && code >= 51 && code <= 67) || (code !== undefined && code >= 80 && code <= 82)) return "text-sky-400";
-  if ((code !== undefined && code >= 71 && code <= 77) || (code !== undefined && code >= 85 && code <= 86)) return "text-cyan-200";
+  if ((code !== undefined && code >= 71 && code <= 77) || (code !== undefined && code >= 85 && code <= 86)) return "text-[--info]";
   if (code !== undefined && code >= 95) return "text-violet-400";
   return isDay === false ? "text-indigo-300" : "text-amber-400";
 }
@@ -174,8 +174,8 @@ function WeatherBadge({
 }) {
   const toneClass = {
     zinc: "text-zinc-300",
-    cyan: "text-cyan-400",
-    emerald: "text-emerald-400",
+    cyan: "text-[--info]",
+    emerald: "text-[--accent-primary]",
     amber: "text-amber-400",
     rose: "text-rose-400",
     violet: "text-violet-400",
@@ -378,7 +378,7 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
             )}
             {pressure !== undefined && (
               <div className="flex items-center gap-1.5 text-xs text-zinc-400">
-                <Icon name="gauge" className="h-3.5 w-3.5 text-emerald-400" />
+                <Icon name="gauge" className="h-3.5 w-3.5 text-[--accent-primary]" />
                 <span>
                   {Math.round(pressure)} {i18n("weatherPressureUnit") || "hPa"}
                 </span>

@@ -66,7 +66,8 @@ jobs:
           find ethone-next/android/app/build -type f 2>/dev/null | tee -a ethone-next/android/gradle.log
           echo "--- gradle what went wrong ---" | tee -a ethone-next/android/gradle.log
           sed -n '/What went wrong:/,/Try:/p' ethone-next/android/gradle.log | tail -40 | tee -a ethone-next/android/gradle.log | while IFS= read -r line; do echo "::error::$line"; done
-          grep -E "BUILD|FAILURE|FAILED|SUCCESSFUL|app-debug\.apk" ethone-next/android/gradle.log | tail -20 | while IFS= read -r line; do echo "::notice::$line"; done
+          echo "--- Kotlin compiler errors ---" | tee -a ethone-next/android/gradle.log
+          grep -E "^e:|^w:.*\.kt:" ethone-next/android/gradle.log | tail -30 | while IFS= read -r line; do echo "::error::$line"; done
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

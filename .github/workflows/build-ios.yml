@@ -63,12 +63,13 @@ jobs:
       - name: Archive iOS Project (No Signing)
         run: |
           cd ios/App
+          mkdir -p build
           set -o pipefail
           xcodebuild clean archive \
             -workspace App.xcworkspace \
             -scheme App \
             -configuration Release \
-            -sdk iphoneos \
+            -sdk iphonesimulator \
             -archivePath build/App.xcarchive \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
@@ -77,7 +78,7 @@ jobs:
             DEVELOPMENT_TEAM="" \
             PROVISIONING_PROFILE_SPECIFIER="" \
             ARCHS=arm64 \
-            ONLY_ACTIVE_ARCH=NO | tee build/build.log
+            ONLY_ACTIVE_ARCH=NO 2>&1 | tee build/build.log
 
       - name: Package Payload to IPA
         run: |
@@ -86,8 +87,23 @@ jobs:
           cp -r App.xcarchive/Products/Applications/App.app Payload/
           zip -r ETHONE.ipa Payload/
 
-      - name: Upload Build Logs on Failure
+      - name: Write Build Summary on Failure
         if: failure()
+        run: |
+          cd ethone-next
+          {
+            echo "### iOS build log"
+            echo "```"
+            if [ -f ios/App/build/build.log ]; then
+              tail -n 120 ios/App/build/build.log
+            else
+              echo "No build.log captured"
+            fi
+            echo "```"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Build Logs
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: iOS-build-logs

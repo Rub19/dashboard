@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Loader2 } from "lucide-react";
-import { hapticMedium, hapticSuccess } from "@/lib/haptics";
+import { hapticMediumImpact, hapticSuccess } from "@/lib/haptics";
 
 function cn(...parts: (string | false | undefined)[]) {
   return parts.filter(Boolean).join(" ");
@@ -58,7 +58,7 @@ export default function PullToRefresh({
     }
     setRefreshing(true);
     setReady(false);
-    hapticMedium();
+    hapticMediumImpact();
     try {
       await onRefresh();
       hapticSuccess();

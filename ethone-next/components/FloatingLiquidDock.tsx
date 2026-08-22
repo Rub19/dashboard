@@ -8,7 +8,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
 import BrandMark from "@/components/BrandMark";
 import { NAVIGATION_ITEMS, isActiveRoute } from "@/lib/navigation";
-import { hapticLight, hapticMedium } from "@/lib/haptics";
+import { hapticLightImpact, hapticMediumImpact } from "@/lib/haptics";
 
 function cn(...parts: (string | false | undefined)[]) {
   return parts.filter(Boolean).join(" ");
@@ -42,7 +42,7 @@ export default function FloatingLiquidDock() {
   const onTabPress = useCallback(
     async (id: string) => {
       setPressedId(id);
-      await hapticLight();
+      await hapticLightImpact();
       setTimeout(() => setPressedId(null), 120);
     },
     []
@@ -50,7 +50,7 @@ export default function FloatingLiquidDock() {
 
   const onMenuPress = useCallback(async () => {
     setDrawerOpen(true);
-    await hapticMedium();
+    await hapticMediumImpact();
   }, []);
 
   function handleDrawerDragEnd(_event: unknown, info: PanInfo) {

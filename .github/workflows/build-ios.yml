@@ -1,0 +1,63 @@
+name: Build iOS IPA (Capacitor Cloud)
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: ethone-next
+
+jobs:
+  build-ios:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: ethone-next/package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Next.js Static Export
+        run: npm run build
+
+      - name: Sync Capacitor iOS
+        run: npx cap sync ios
+
+      - name: Select Xcode Version
+        run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+
+      - name: Archive iOS Project (No Signing)
+        run: |
+          cd ios/App
+          xcodebuild clean archive \
+            -workspace App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -archivePath build/App.xcarchive \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Package Payload to IPA
+        run: |
+          cd ios/App/build
+          mkdir -p Payload
+          cp -r App.xcarchive/Products/Applications/App.app Payload/
+          zip -r ETHONE.ipa Payload/
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ETHONE-iOS-IPA
+          path: ethone-next/ios/App/build/ETHONE.ipa
+          retention-days: 7

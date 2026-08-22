@@ -23,8 +23,6 @@
 # production
 /build
 /dist
-/android
-/ios
 
 # misc
 .DS_Store

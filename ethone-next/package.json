@@ -14,6 +14,7 @@
     "audit:a11y": "node scripts/a11y-audit.mjs",
     "audit:responsive": "node scripts/responsive-audit.mjs",
     "cap:build": "next build && npx cap sync",
+    "cap:sync": "npx cap sync",
     "cap:android": "next build && npx cap sync && npx cap open android",
     "cap:ios": "next build && npx cap sync && npx cap open ios"
   },

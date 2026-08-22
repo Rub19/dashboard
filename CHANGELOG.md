@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.7.59 — 2026-08-22
+
+**Intégration des dernières APIs Android 14/15/16**
+
+- `EthoneFocusForegroundService` : service de premier plan pour notifications riches et persistantes de Focus (chronomètre, `ProgressStyle`, actions Pause/Arrêter/Terminer).
+- `EthoneSecurityPlugin` : `FLAG_SECURE` contextuel, nettoyage du presse-papiers.
+- `EthonePhotoPicker` : `PickVisualMedia` Android 14+ sans permission large.
+- `EthoneWindow` : `WindowInfoTracker` pour écrans pliables et tablettes.
+- Synchronisation Material 3 Expressive : mapping complet des couleurs système vers variables CSS ETHONE.
+- `android:enableOnBackInvokedCallback` pour retour prédictif.
+- Raccourci applicatif `brain-idea`.
+- Version `v1.7.59`.
+
 ## v1.7.56 — 2026-08-22
 
 **Intégration complète de l'écosystème Android Material You**

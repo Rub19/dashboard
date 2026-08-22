@@ -8,7 +8,7 @@ import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { App } from "@capacitor/app";
 import { onAppUrlOpen, initializePushNotifications, updateStatusBar } from "@/lib/native";
 import { isNativeIOS } from "@/lib/apple";
-import { isNativeAndroid, getMaterialColors, applyAndroidDynamicColors } from "@/lib/android";
+import { isNativeAndroid, getMaterialColors, applyAndroidDynamicColors, onAndroidWindowLayoutChange } from "@/lib/android";
 
 const QUICK_ACTIONS = [
   { id: "new-note", title: "Nouvelle Note Rapide", iosIcon: "doc.badge.plus" },
@@ -57,29 +57,57 @@ export default function NativeIntegration() {
       getMaterialColors().then((colors) => {
         if (colors?.supported) {
           const root = document.documentElement;
-          root.style.setProperty("--monet-primary", colors.primary);
-          root.style.setProperty("--monet-primary-container", colors.primaryContainer);
-          root.style.setProperty("--monet-secondary", colors.secondary);
-          root.style.setProperty("--monet-tertiary", colors.tertiary);
-          root.style.setProperty("--monet-surface", colors.surface);
-          root.style.setProperty("--monet-surface-variant", colors.surfaceVariant);
-          root.style.setProperty("--monet-on-surface", colors.onSurface);
-          root.style.setProperty("--monet-background", colors.background);
+          const variableMap: Record<string, string> = {
+            "--accent-primary": colors.colorPrimary as string,
+            "--accent-secondary": colors.colorSecondary as string,
+            "--accent-tertiary": colors.colorTertiary as string,
+            "--surface-container": colors.colorPrimaryContainer as string,
+            "--surface-container-high": colors.colorSurface as string,
+            "--surface-variant": colors.colorSurfaceVariant as string,
+            "--text-primary": colors.colorOnSurface as string,
+            "--text-muted": colors.colorOnSurfaceVariant as string,
+            "--background": colors.colorBackground as string,
+            "--outline": colors.colorOutline as string,
+            "--danger": colors.colorError as string,
+            "--monet-primary": colors.colorPrimary as string,
+            "--monet-primary-container": colors.colorPrimaryContainer as string,
+            "--monet-secondary": colors.colorSecondary as string,
+            "--monet-tertiary": colors.colorTertiary as string,
+            "--monet-surface": colors.colorSurface as string,
+            "--monet-surface-variant": colors.colorSurfaceVariant as string,
+            "--monet-on-surface": colors.colorOnSurface as string,
+            "--monet-background": colors.colorBackground as string,
+          };
+          for (const [key, value] of Object.entries(variableMap)) {
+            if (typeof value === "string" && value) root.style.setProperty(key, value);
+          }
           applyAndroidDynamicColors();
         }
       });
     } else {
       const root = document.documentElement;
-      root.style.removeProperty("--monet-primary");
-      root.style.removeProperty("--monet-primary-container");
-      root.style.removeProperty("--monet-secondary");
-      root.style.removeProperty("--monet-tertiary");
-      root.style.removeProperty("--monet-surface");
-      root.style.removeProperty("--monet-surface-variant");
-      root.style.removeProperty("--monet-on-surface");
-      root.style.removeProperty("--monet-background");
+      const keys = [
+        "--accent-primary", "--accent-secondary", "--accent-tertiary",
+        "--surface-container", "--surface-container-high", "--surface-variant",
+        "--text-primary", "--text-muted", "--background", "--outline", "--danger",
+        "--monet-primary", "--monet-primary-container", "--monet-secondary",
+        "--monet-tertiary", "--monet-surface", "--monet-surface-variant",
+        "--monet-on-surface", "--monet-background",
+      ];
+      for (const key of keys) root.style.removeProperty(key);
     }
   }, [settings.useMaterialYou]);
+
+  useEffect(() => {
+    if (isNativeAndroid()) {
+      const cleanup = onAndroidWindowLayoutChange((info) => {
+        const root = document.documentElement;
+        root.setAttribute("data-fold-state", info.isTableTop ? "tabletop" : info.isHalfOpen ? "half-open" : "flat");
+      });
+      return () => cleanup.remove();
+    }
+    return;
+  }, []);
 
   useEffect(() => {
     const cleanup = onAppUrlOpen((url) => {

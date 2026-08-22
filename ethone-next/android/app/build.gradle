@@ -41,6 +41,8 @@ dependencies {
     implementation "androidx.glance:glance-appwidget:$androidxGlanceVersion"
     implementation "androidx.palette:palette:$androidxPaletteVersion"
     implementation "androidx.lifecycle:lifecycle-runtime:$androidxLifecycleVersion"
+    implementation "androidx.window:window:$androidxWindowVersion"
+    implementation "androidx.window:window-java:$androidxWindowVersion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     implementation project(':capacitor-android')
     testImplementation "junit:junit:$junitVersion"

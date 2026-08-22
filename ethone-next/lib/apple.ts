@@ -1,9 +1,11 @@
 "use client";
 
-import { Capacitor } from "@capacitor/core";
+import { Capacitor, registerPlugin } from "@capacitor/core";
 import { SignInWithApple } from "@capacitor-community/apple-sign-in";
 import { BiometricAuth } from "@aparajita/capacitor-biometric-auth";
 import { supabase } from "@/lib/supabase";
+
+const EthoneFocus = registerPlugin<{ setFocusState?: (opts: { active: boolean; durationMinutes?: number }) => Promise<{ active: boolean }> }>("EthoneFocus");
 
 export function isNativeIOS() {
   if (typeof window === "undefined") return false;
@@ -61,6 +63,15 @@ export async function checkBiometric() {
     };
   } catch {
     return { available: false, reason: "erreur" as const };
+  }
+}
+
+export async function setNativeFocusState(active: boolean, durationMinutes = 25) {
+  if (!isNative()) return { active };
+  try {
+    return await EthoneFocus.setFocusState?.({ active, durationMinutes }) ?? { active };
+  } catch {
+    return { active };
   }
 }
 

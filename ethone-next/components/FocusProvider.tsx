@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useSyncExternalStore } from "react";
 import { FocusTimer, type FocusPhase, type FocusTimerState } from "@/lib/focus-timer";
 import { areActivitiesSupported, startActivity, setFocusActivity, endActivity } from "@/lib/live-activity";
+import { setNativeFocusState } from "@/lib/apple";
 
 export type { FocusPhase };
 
@@ -39,6 +40,10 @@ export function FocusProvider({ children }: { children: React.ReactNode }) {
       canLiveActivity.current = supported;
     });
   }, []);
+
+  useEffect(() => {
+    setNativeFocusState(state.phase !== "idle", state.total / 60).catch(() => {});
+  }, [state.phase, state.total]);
 
   useEffect(() => {
     if (!canLiveActivity.current) return;

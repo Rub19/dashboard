@@ -6,7 +6,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import androidx.annotation.NonNull;
+import com.google.android.material.color.DynamicColors;
+import com.google.android.material.color.MaterialColors;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -16,20 +17,35 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 @CapacitorPlugin(name = "EthoneTheme")
 public class EthoneThemePlugin extends Plugin {
 
+    private static final String[] ATTRS = {
+        "colorPrimary",
+        "colorPrimaryContainer",
+        "colorOnPrimaryContainer",
+        "colorSecondary",
+        "colorSecondaryContainer",
+        "colorOnSecondaryContainer",
+        "colorTertiary",
+        "colorTertiaryContainer",
+        "colorSurface",
+        "colorSurfaceVariant",
+        "colorOnSurface",
+        "colorOnSurfaceVariant",
+        "colorBackground",
+        "colorOutline",
+        "colorError",
+        "colorOnError",
+    };
+
     @PluginMethod
     public void getMaterialColors(PluginCall call) {
         new Handler(Looper.getMainLooper()).post(() -> {
             JSObject ret = new JSObject();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 ret.put("supported", true);
-                ret.put("primary", intToHex(android.R.attr.colorPrimary));
-                ret.put("primaryContainer", intToHex(android.R.attr.colorPrimaryContainer));
-                ret.put("secondary", intToHex(android.R.attr.colorSecondary));
-                ret.put("tertiary", intToHex(android.R.attr.colorTertiary));
-                ret.put("surface", intToHex(android.R.attr.colorSurface));
-                ret.put("surfaceVariant", intToHex(android.R.attr.colorSurfaceVariant));
-                ret.put("onSurface", intToHex(android.R.attr.colorOnSurface));
-                ret.put("background", intToHex(android.R.attr.colorBackground));
+                for (String attr : ATTRS) {
+                    ret.put(camelToSnake(attr), resolveColor(attr));
+                }
+                ret.put("isDynamic", DynamicColors.isDynamicColorAvailable());
             } else {
                 ret.put("supported", false);
             }
@@ -40,22 +56,29 @@ public class EthoneThemePlugin extends Plugin {
     @PluginMethod
     public void applyDynamicColors(PluginCall call) {
         new Handler(Looper.getMainLooper()).post(() -> {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                getActivity().getWindow().getDecorView().post(() -> {
-                    android.util.Log.d("ETHONE", "Dynamic colors should be handled by the web layer");
-                });
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && DynamicColors.isDynamicColorAvailable()) {
+                DynamicColors.applyToActivitiesIfAvailable(getActivity().getApplication());
             }
             call.resolve();
         });
     }
 
-    private String intToHex(int attr) {
+    private String resolveColor(String attr) {
         try {
-            android.util.TypedValue typedValue = new android.util.TypedValue();
-            getContext().getTheme().resolveAttribute(attr, typedValue, true);
-            return String.format("#%06X", (0xFFFFFF & typedValue.data));
+            int resId = getContext().getResources().getIdentifier(attr, "attr", getContext().getPackageName());
+            int color = MaterialColors.getColor(getContext(), resId, 0);
+            return String.format("#%06X", (0xFFFFFF & color));
         } catch (Exception e) {
             return "#000000";
         }
+    }
+
+    private String camelToSnake(String input) {
+        StringBuilder sb = new StringBuilder();
+        for (char c : input.toCharArray()) {
+            if (Character.isUpperCase(c) && sb.length() > 0) sb.append("-");
+            sb.append(Character.toLowerCase(c));
+        }
+        return sb.toString();
     }
 }

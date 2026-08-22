@@ -23,6 +23,10 @@ public class MainActivity extends BridgeActivity {
     protected void load() {
         registerPlugin(EthoneThemePlugin.class);
         registerPlugin(EthoneHapticsPlugin.class);
+        registerPlugin(EthoneFocusServicePlugin.class);
+        registerPlugin(EthoneSecurityPlugin.class);
+        registerPlugin(EthoneWindowPlugin.class);
+        registerPlugin(EthonePhotoPickerPlugin.class);
         super.load();
     }
 
@@ -92,8 +96,17 @@ public class MainActivity extends BridgeActivity {
                 .setAction("ethone.intent.action.OPEN_COMMAND"))
             .build();
 
+        ShortcutInfo brain = new ShortcutInfo.Builder(this, "brain-idea")
+            .setShortLabel(getString(R.string.shortcut_brain))
+            .setLongLabel(getString(R.string.shortcut_brain_long))
+            .setIcon(Icon.createWithResource(this, android.R.drawable.ic_menu_add))
+            .setIntent(new android.content.Intent(android.content.Intent.ACTION_VIEW, null, this, MainActivity.class)
+                .setData(android.net.Uri.parse("ethone:///brain?new=1"))
+                .setAction(android.content.Intent.ACTION_VIEW))
+            .build();
+
         try {
-            shortcutManager.setDynamicShortcuts(Arrays.asList(newNote, focus, addTask, search));
+            shortcutManager.setDynamicShortcuts(Arrays.asList(newNote, focus, addTask, search, brain));
         } catch (Exception e) {
             Log.w("ETHONE", "Could not set app shortcuts", e);
         }

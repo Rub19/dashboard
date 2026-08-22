@@ -48,4 +48,16 @@
             android:targetPackage="dev.ethone.app"
             android:targetClass="dev.ethone.app.MainActivity" />
     </shortcut>
+    <shortcut
+        android:shortcutId="brain-idea"
+        android:enabled="true"
+        android:icon="@drawable/ic_launcher_background"
+        android:shortcutShortLabel="@string/shortcut_brain"
+        android:shortcutLongLabel="@string/shortcut_brain_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="ethone:///brain?new=1"
+            android:targetPackage="dev.ethone.app"
+            android:targetClass="dev.ethone.app.MainActivity" />
+    </shortcut>
 </shortcuts>

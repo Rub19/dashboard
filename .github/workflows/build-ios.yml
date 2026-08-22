@@ -86,6 +86,14 @@ jobs:
           cp -r App.xcarchive/Products/Applications/App.app Payload/
           zip -r ETHONE.ipa Payload/
 
+      - name: Verify Dynamic Island Extension in IPA
+        run: |
+          cd ios/App/build
+          echo "--- PlugIns directory ---"
+          ls -R Payload/App.app/PlugIns || true
+          echo "--- EthoneWidgets.appex in IPA ---"
+          unzip -l ETHONE.ipa | grep -i "EthoneWidgets.appex" || true
+
       - name: Write Build Summary on Failure
         if: failure()
         run: |

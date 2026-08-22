@@ -41,23 +41,43 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key' }}
           NEXT_PUBLIC_WORKER_URL: ${{ secrets.NEXT_PUBLIC_WORKER_URL || 'https://ethone.dev' }}
 
+      - name: Clean iOS Workspace State
+        run: |
+          rm -rf ios/App/App.xcworkspace
+          rm -rf ios/App/Podfile.lock
+          rm -rf ios/App/Pods
+
       - name: Sync Capacitor iOS
         run: npx cap sync ios
 
       - name: Select Xcode Version
         run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
 
+      - name: Verify Xcode Workspace
+        run: |
+          cd ios/App
+          ls -la
+          test -f App.xcworkspace/contents.xcworkspacedata && cat App.xcworkspace/contents.xcworkspacedata
+          xcodebuild -workspace App.xcworkspace -list
+
       - name: Archive iOS Project (No Signing)
         run: |
           cd ios/App
+          set -o pipefail
           xcodebuild clean archive \
             -workspace App.xcworkspace \
             -scheme App \
             -configuration Release \
+            -sdk iphoneos \
             -archivePath build/App.xcarchive \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM="" \
+            PROVISIONING_PROFILE_SPECIFIER="" \
+            ARCHS=arm64 \
+            ONLY_ACTIVE_ARCH=NO | tee build/build.log
 
       - name: Package Payload to IPA
         run: |
@@ -65,6 +85,14 @@ jobs:
           mkdir -p Payload
           cp -r App.xcarchive/Products/Applications/App.app Payload/
           zip -r ETHONE.ipa Payload/
+
+      - name: Upload Build Logs on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: iOS-build-logs
+          path: ethone-next/ios/App/build/build.log
+          if-no-files-found: ignore
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4

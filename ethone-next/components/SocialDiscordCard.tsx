@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, ExternalLink, Loader2, Music, Radio, RadioOff } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
@@ -91,10 +91,18 @@ export default function SocialDiscordCard({
 }: SocialDiscordCardProps) {
   const router = useRouter();
   const i18n = useI18n();
-  const { settings } = useSettings();
+  const { settings, update } = useSettings();
   const { profile: oauthProfile } = useDiscordOAuth();
 
   const isOAuth = Boolean(oauthProfile?.connected);
+  const oauthUserId = oauthProfile?.user?.id;
+
+  useEffect(() => {
+    if (isOAuth && oauthUserId && !settings.liveLanyardUserId) {
+      update({ liveLanyardUserId: oauthUserId });
+    }
+  }, [isOAuth, oauthUserId, settings.liveLanyardUserId, update]);
+
   const userId = lanyard?.userId || oauthProfile?.user?.id;
   const avatarHash = lanyard?.avatarHash;
   const discriminator = lanyard?.discriminator;
@@ -122,7 +130,7 @@ export default function SocialDiscordCard({
     [primaryAvatar, avatarUrlSmall, fallbackAvatar]
   );
 
-  const rawStatus = lanyard?.discord_status || (isOAuth ? "online" : "offline");
+  const rawStatus = lanyard?.discord_status || "offline";
   const status = rawStatus;
   const color = statusColor(status);
   const label = statusLabel(status);
@@ -140,14 +148,14 @@ export default function SocialDiscordCard({
   const hasOAuth = isOAuth;
 
   const { badgeColor, badgeLabel, badgeTone } = useMemo(() => {
-    if (loading && !hasLanyard && !hasOAuth && hasAnyConnection) {
+    if (loading && !hasLanyard && hasAnyConnection) {
       return {
         badgeColor: "bg-[--info]",
         badgeLabel: i18n("loading", "Chargement"),
         badgeTone: "border-[--info] bg-[--info] text-[--info]",
       };
     }
-    if (error && hasAnyConnection && !hasLanyard && !hasOAuth) {
+    if (error && hasAnyConnection && !hasLanyard) {
       return {
         badgeColor: "bg-rose-400",
         badgeLabel: i18n("error", "Erreur"),
@@ -165,13 +173,13 @@ export default function SocialDiscordCard({
       };
     }
     return { badgeColor: color, badgeLabel: label, badgeTone: statusTone(status) };
-  }, [color, error, hasAnyConnection, hasLanyard, hasOAuth, i18n, label, loading, status]);
+  }, [color, error, hasAnyConnection, hasLanyard, i18n, label, loading, status]);
 
-  const activity = lanyard?.activities?.[0];
-  const customStatus =
-    activity?.name === "Custom Status" ? activity.state : undefined;
-  const gameActivity =
-    activity && activity.name !== "Custom Status" ? activity : undefined;
+  const activities = lanyard?.activities ?? [];
+  const customStatus = activities.find((activity) => activity.name === "Custom Status")?.state;
+  const gameActivity = activities.find(
+    (activity) => activity.name !== "Custom Status" && activity.name !== "Spotify"
+  );
 
   const hasMusic = !!nowPlaying?.isPlaying;
   const lanyardSpotify = lanyard?.spotify;

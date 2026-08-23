@@ -86,7 +86,10 @@ export default function DiscordConfig() {
     if (profile?.connected && discordMode !== "oauth2") {
       update({ discordMode: "oauth2" });
     }
-  }, [profile?.connected, discordMode, update]);
+    if (profile?.connected && profile.user?.id && !settings.liveLanyardUserId) {
+      update({ liveLanyardUserId: profile.user.id });
+    }
+  }, [profile?.connected, profile?.user?.id, discordMode, settings.liveLanyardUserId, update]);
 
   const status: PingResult["status"] = useMemo(() => {
     if (health) return health.status;

@@ -184,7 +184,7 @@ function TopBar() {
       </div>
 
       {/* Desktop: full grid with breadcrumb, system status, quick tools */}
-      <div className="pointer-events-none hidden h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center md:grid">
+      <div className="pointer-events-none hidden h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-2 md:grid">
         {/* Left — Identity & Breadcrumb */}
         <div className="pointer-events-auto col-start-1 flex min-w-0 items-center gap-2 justify-self-start sm:gap-3">
           <SidebarTopToggle />

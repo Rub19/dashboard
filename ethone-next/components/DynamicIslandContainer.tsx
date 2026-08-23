@@ -281,11 +281,18 @@ export default function DynamicIslandContainer() {
   }, [focus.state.total, focus.state.remaining]);
 
   // The compact pill shows the active activity (Spotify, Pomodoro, Brain).
-  // It is hidden when nothing is active, so the floating clock no longer
-  // duplicates the time already shown in the TopBar.
+  // Keep an idle capsule visible while the feature is enabled so the island
+  // does not appear broken when there is no active activity yet.
   const compact = useMemo(() => {
-    if (!selectedView) return null;
     const base = "flex h-[38px] w-full items-center justify-center gap-2 px-1 text-zinc-300";
+    if (!selectedView) {
+      return (
+        <div className={cn(base)}>
+          <Sparkles className="h-3.5 w-3.5 text-zinc-500" />
+          <span className="text-xs font-medium">{i18n("dynamicIsland", "Dynamic Island")}</span>
+        </div>
+      );
+    }
     switch (selectedView) {
       case "spotify":
         return (
@@ -404,7 +411,7 @@ export default function DynamicIslandContainer() {
 
   return (
     <AnimatePresence>
-      {visible && selectedView && (
+      {visible && (
         <motion.div
           key="dynamic-island"
           initial={{ opacity: 0, y: -20, scale: 0.9 }}
@@ -414,7 +421,7 @@ export default function DynamicIslandContainer() {
           className="fixed left-1/2 top-16 z-40 -translate-x-1/2 pointer-events-none select-none"
         >
           <DynamicIsland
-            view={expanded ? selectedView : null}
+            view={expanded && selectedView ? selectedView : null}
             compact={compact}
             onClick={toggleExpanded}
             onMouseEnter={handleEnter}

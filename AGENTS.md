@@ -35,7 +35,7 @@
 **Statut CI/CD :** tout vert sur `main` (Cloudflare Pages, Workers, build web, iOS, Android).
 
 ### Ce qui est en place
-- Fusion des branches `claude/discord-bot-features-hrkaZ`, `rub19-symmetrical-giggle` (sécurisée) et `devin/recovered-stash-2026-08-14` dans `main`.
+- Fusion des branches `rub19-symmetrical-giggle` (sécurisée) et `devin/recovered-stash-2026-08-14` dans `main`.
 - Nettoyage des branches obsolètes locales et distantes.
 - Tests Web (`tsc`, `lint`, `build`, `test:unit`, `precommit-upload-check`, `audit-security`, `npx playwright test`) passent.
 - Lint warnings natifs nettoyés (0 warning / 0 erreur).

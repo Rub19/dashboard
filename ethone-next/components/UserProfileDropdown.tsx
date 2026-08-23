@@ -209,7 +209,7 @@ export default function UserProfileDropdown() {
       </PopoverTrigger>
 
       {/* Dropdown */}
-      <PopoverContent className="w-[340px] max-w-[calc(100vw-1rem)] overflow-hidden rounded-xl border border-[var(--panel-border)] p-4 bg-[var(--panel-bg)]/95 shadow-[0_16px_50px_var(--glow-color)] backdrop-blur-2xl">
+      <PopoverContent className="w-[340px] max-w-[calc(100vw-1rem)] overflow-hidden rounded-xl border border-[var(--panel-border)] bg-[var(--background)] p-4 shadow-[0_16px_50px_var(--glow-color)] backdrop-blur-2xl">
         <div className="w-full select-none flex flex-col gap-2.5">
             {/* Header */}
             <div className="flex items-center gap-3 rounded-xl border border-[var(--text-primary)]/[0.04] bg-[var(--text-primary)]/[0.02] p-2.5">

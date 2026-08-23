@@ -172,6 +172,7 @@ export default function GamingCard({
                 "object-contain drop-shadow-2xl",
                 isBody ? "" : "[image-rendering:pixelated]"
               )}
+              style={{ objectFit: "contain" }}
               fallback={(
                 <div className="flex h-full w-full items-center justify-center">
                   {loading && !hasProfile ? (

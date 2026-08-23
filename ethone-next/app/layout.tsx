@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import "./legacy-v8-tokens.css";
+import "./legacy-v8-components-tokens.css";
+import "./legacy-v8-depth-tokens.css";
+import "./legacy-v8-presence-tokens.css";
+import "./legacy-v8-mail-tokens.css";
+import "./legacy-v8-shell-tokens.css";
 import "./globals.css";
 import AuthProvider from "@/components/AuthProvider";
 import ServiceWorker from "@/components/ServiceWorker";

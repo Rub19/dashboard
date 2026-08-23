@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.10 — 2026-08-23
+
+**Nettoyage des imports CSS legacy et stabilisation du build**
+
+- Suppression des `@import` des fichiers legacy dans `app/globals.css` pour éviter les erreurs de résolution Tailwind/PostCSS.
+- Import des feuilles `legacy-v8-*.css` et `liquid-glass.css` directement depuis `app/layout.tsx`.
+- Aucune erreur CSS lors du build local.
+- Version `v1.8.10`.
+
 ## v1.8.9 — 2026-08-23
 
 **Migration Pure Apple 100 % Swift et intégration avancée du Taptic Engine (Core Haptics)**

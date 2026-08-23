@@ -110,16 +110,8 @@ function Dock() {
   }
 
   function handleScrollTop() {
-    if (typeof document === "undefined") return;
-    const root = document.documentElement;
-    const body = document.body;
-    const target = (root.scrollTop || 0) >= (body.scrollTop || 0) ? root : body;
-    if (target.scrollTop > 0) {
-      target.scrollTo({ top: 0, behavior: "smooth" });
-    } else {
-      root.scrollTo({ top: 0, behavior: "smooth" });
-      body.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    if (typeof window === "undefined") return;
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   const dockButton =

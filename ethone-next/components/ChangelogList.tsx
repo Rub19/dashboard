@@ -7,6 +7,22 @@ import { useSettings } from "@/components/SettingsProvider";
 import { cn } from "@/lib/utils";
 import type { ChangelogEntry } from "@/data/changelog";
 
+function parseVersion(v: string) {
+  const parts = v.replace(/^v/, "").split(".").map(Number);
+  return parts;
+}
+
+function compareVersion(a: string, b: string) {
+  const av = parseVersion(a);
+  const bv = parseVersion(b);
+  for (let i = 0; i < Math.max(av.length, bv.length); i++) {
+    const x = av[i] || 0;
+    const y = bv[i] || 0;
+    if (x !== y) return x - y;
+  }
+  return 0;
+}
+
 type ItemType = "fix" | "feature" | "change" | "version" | "default";
 
 const FIX_RE = /corrige|corrections?|corrig[ée]|fix|bug|r[ée]sout|r[ée]solu|probl[èe]me|fermeture|d[ée]faut|[ée]choue|r[ée]solution|fiable|retour|restaur|restor|revert|patch|cass[ée]|broken|failed/i;
@@ -219,7 +235,8 @@ interface ChangelogListProps {
 }
 
 export default function ChangelogList({ entries, limit, compact, className }: ChangelogListProps) {
-  const visible = limit ? entries.slice(0, limit) : entries;
+  const sorted = useMemo(() => [...entries].sort((a, b) => compareVersion(b.version, a.version)), [entries]);
+  const visible = limit ? sorted.slice(0, limit) : sorted;
 
   return (
     <div className={cn("flex flex-col", compact ? "gap-2.5" : "gap-4", className)}>

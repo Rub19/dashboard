@@ -242,6 +242,8 @@ export default function StatusBar() {
     >
       <div className="flex h-full w-full items-center justify-between">
         <div className="flex min-w-0 items-center gap-2">
+          <VersionPill />
+
           <StatusPill
             icon={<Shield className="h-3.5 w-3.5" />}
             value={sessionRole.label}
@@ -324,8 +326,6 @@ export default function StatusBar() {
               </div>
             )}
           </div>
-
-          <VersionPill />
 
           <StatusPill
             icon={systemOk ? <Circle className="h-3.5 w-3.5 fill-[--accent-primary] text-[--accent-primary]" /> : <AlertCircle className="h-3.5 w-3.5 text-red-400" />}

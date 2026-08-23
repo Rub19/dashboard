@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.12 — 2026-08-23
+
+**Batterie de tests cross-plateforme et nettoyage CI**
+
+- Validation Next.js : `npx tsc --noEmit`, `npm run lint`, `npm run build`, `npm run test:unit` passent.
+- Validation Worker : `npm test` passe (correction des chemins tracker dans `test/routes.test.mjs`).
+- Validation iOS : absence de fichiers tiers/scripts web, haptics Core Haptics OK, appels Supabase asynchrones.
+- Validation Android : structure Gradle/Kotlin/Compose OK, ressources et client Supabase en place.
+- Mise à jour des workflows `.github/workflows/build-web.yml`, `build-ios.yml`, `build-android.yml` pour déclencher la QA.
+- Version `v1.8.12`.
+
 ## v1.8.11 — 2026-08-23
 
 **Refactor de la page de connexion, Switch et i18n**

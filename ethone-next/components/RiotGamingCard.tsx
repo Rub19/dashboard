@@ -135,7 +135,7 @@ export function RiotGamingCardContent({
       return {
         text: i18n("loading", "Chargement"),
         dot: "bg-[--info]",
-        badge: "border-[--info] bg-[--info] text-[--info]",
+        badge: "border-[--info] bg-[--info]/10 text-[--info]",
       };
     }
     if (error && configured && !hasProfile) {
@@ -149,7 +149,7 @@ export function RiotGamingCardContent({
       return {
         text: i18n("connected", "Connecté"),
         dot: "bg-[--accent-primary]",
-        badge: "border-[--accent-primary] bg-[--accent-primary] text-[--accent-primary]",
+        badge: "border-[--accent-primary] bg-[--accent-primary]/10 text-[--accent-primary]",
       };
     }
     return {
@@ -256,7 +256,7 @@ export function RiotGamingCardContent({
                 className={cn(
                   "mt-0.5 inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold",
                   (meta?.result as string).toLowerCase() === "victory"
-                    ? "bg-[--accent-primary] text-[--accent-primary]"
+                    ? "bg-[--accent-primary]/10 text-[--accent-primary]"
                     : "bg-rose-500/10 text-rose-400"
                 )}
               >

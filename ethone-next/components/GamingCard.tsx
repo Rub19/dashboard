@@ -100,7 +100,7 @@ export default function GamingCard({
     if (loading && !hasProfile) {
       return {
         statusText: i18n("loading", "Chargement"),
-        statusClass: "border-[--info] bg-[--info] text-[--info]",
+        statusClass: "border-[--info] bg-[--info]/10 text-[--info]",
         statusDot: "bg-[--info]",
       };
     }

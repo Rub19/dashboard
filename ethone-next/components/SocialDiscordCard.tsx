@@ -66,7 +66,7 @@ function statusTone(status?: string) {
     case "dnd":
       return "border-rose-600/20 bg-rose-500/15 text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300";
     case "online":
-      return "border-[--accent-primary] bg-[--accent-primary] text-[--accent-primary] dark:border-[--accent-primary] dark:bg-[--accent-primary] dark:text-[--accent-primary]";
+      return "border-[--accent-primary] bg-[--accent-primary]/10 text-[--accent-primary] dark:border-[--accent-primary] dark:bg-[--accent-primary] dark:text-[--accent-primary]";
     case "idle":
       return "border-amber-600/20 bg-amber-500/15 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300";
     default:
@@ -152,7 +152,7 @@ export default function SocialDiscordCard({
       return {
         badgeColor: "bg-[--info]",
         badgeLabel: i18n("loading", "Chargement"),
-        badgeTone: "border-[--info] bg-[--info] text-[--info]",
+        badgeTone: "border-[--info] bg-[--info]/10 text-[--info]",
       };
     }
     if (error && hasAnyConnection && !hasLanyard) {
@@ -169,7 +169,7 @@ export default function SocialDiscordCard({
       return {
         badgeColor: "bg-[--accent-primary]",
         badgeLabel: i18n("connected", "Connecté"),
-        badgeTone: "border-[--accent-primary] bg-[--accent-primary] text-[--accent-primary]",
+        badgeTone: "border-[--accent-primary] bg-[--accent-primary]/10 text-[--accent-primary]",
       };
     }
     return { badgeColor: color, badgeLabel: label, badgeTone: statusTone(status) };

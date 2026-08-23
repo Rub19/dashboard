@@ -103,13 +103,13 @@ export default function FileUploadZone({
             <motion.div
               animate={{ y: [0, -4, 0] }}
               transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-              className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[--accent-primary] text-[--accent-primary] ring-1 ring-[--accent-primary]"
+              className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[--accent-primary]/10 text-[--accent-primary] ring-1 ring-[--accent-primary]"
             >
               <Upload className="h-7 w-7" />
             </motion.div>
             <h3 className="text-base font-bold text-white">Relâchez pour téléverser</h3>
             {dragMeta && (
-              <div className="flex items-center gap-2 rounded-full border border-[--accent-primary] bg-[--accent-primary] px-3 py-1 text-[--accent-primary]">
+              <div className="flex items-center gap-2 rounded-full border border-[--accent-primary] bg-[--accent-primary]/10 px-3 py-1 text-[--accent-primary]">
                 <File className="h-3.5 w-3.5" />
                 <span className="text-[11px] font-mono font-medium">
                   {dragMeta.name}

@@ -48,7 +48,7 @@ export default function LiveWidget() {
   const discordHandle = lanyard?.username ? (lanyard?.discriminator ? `${lanyard.username}#${lanyard.discriminator}` : `@${lanyard.username}`) : null;
 
   const statusTone = {
-    online: "bg-[--accent-primary] text-[--accent-primary] ring-[--accent-primary]",
+    online: "bg-[--accent-primary]/10 text-[--accent-primary] ring-[--accent-primary]",
     idle: "bg-amber-500/10 text-amber-400 ring-amber-500/30",
     dnd: "bg-rose-500/10 text-rose-400 ring-rose-500/30",
     offline: "bg-zinc-500/10 text-zinc-400 ring-zinc-500/30",
@@ -331,7 +331,7 @@ export default function LiveWidget() {
                           className="h-9 w-9 shrink-0 rounded-lg object-cover"
                         />
                       ) : (
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[--accent-primary] text-[--accent-primary]">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[--accent-primary]/10 text-[--accent-primary]">
                           <Music className="h-5 w-5" />
                         </span>
                       )}

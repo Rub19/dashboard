@@ -4518,6 +4518,10 @@ const v358_fr: ChangelogEntry = {
     "Lanceur d'apps du Dock sans glow vert.",
     "Bouton média du Dock cliquable pour ouvrir/fermer le flyout.",
     "Toasts refondus avec pastille et texte colorés selon le type.",
+    "Carte de profil refondue dans les paramètres : plus compacte, sans bannière.",
+    "Pastilles de statut passées en fond accent solide.",
+    "Connexion avec Discord ajoutée sur la page de login.",
+    "Bouton remonter en haut du Dock réparé.",
     "Version v1.8.14.",
   ],
 };
@@ -4536,6 +4540,10 @@ const v358_en: ChangelogEntry = {
     "Dock app launcher without green glow.",
     "Dock media button now clickable to toggle flyout.",
     "Toasts redesigned with colored dot and text per type.",
+    "Profile card in settings reworked: more compact, no banner.",
+    "Status pills switched to solid accent background.",
+    "Discord sign-in added to the login page.",
+    "Dock scroll-to-top button fixed.",
     "Version v1.8.14.",
   ],
 };
@@ -4554,6 +4562,10 @@ const v358_es: ChangelogEntry = {
     "Lanzador de apps del Dock sin glow verde.",
     "Botón multimedia del Dock cliquable para abrir/cerrar flyout.",
     "Toasts rediseñados con punto y texto de color según el tipo.",
+    "Tarjeta de perfil en ajustes rediseñada: más compacta, sin banner.",
+    "Pastillas de estado con fondo de acento sólido.",
+    "Conexión con Discord añadida a la página de login.",
+    "Botón de volver arriba del Dock reparado.",
     "Versión v1.8.14.",
   ],
 };
@@ -4572,6 +4584,10 @@ const v358_de: ChangelogEntry = {
     "Dock-App-Launcher ohne grünen Glow.",
     "Dock-Mediabutton nun klickbar, um Flyout zu öffnen/schließen.",
     "Toasts überarbeitet mit farbigem Punkt und Text je nach Typ.",
+    "Profilkarte in den Einstellungen überarbeitet: kompakter, ohne Banner.",
+    "Status-Pillen auf soliden Akzent-Hintergrund umgestellt.",
+    "Discord-Anmeldung zur Login-Seite hinzugefügt.",
+    "Dock-Scroll-nach-oben-Button repariert.",
     "Version v1.8.14.",
   ],
 };

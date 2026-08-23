@@ -9,6 +9,7 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 import Switch from "@/components/Switch";
 import GoogleIcon from "@/components/icons/GoogleIcon";
 import GithubIcon from "@/components/icons/GithubIcon";
+import DiscordIcon from "@/components/DiscordIcon";
 import { Icon } from "@/lib/icons";
 import {
   sendOtp,
@@ -287,7 +288,7 @@ export default function LoginPage() {
     }
   }
 
-  async function handleOAuth(provider: "google" | "github") {
+  async function handleOAuth(provider: "google" | "github" | "discord") {
     setLoading(true);
     setError(null);
     const { ok, url, error: err } = await signInWithOAuth(provider);
@@ -811,7 +812,7 @@ export default function LoginPage() {
                             <div className="flex-1 border-t border-[var(--border)]" />
                           </div>
 
-                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                             <button
                               type="button"
                               onClick={() => handleOAuth("google")}
@@ -819,7 +820,7 @@ export default function LoginPage() {
                               className="flex w-full items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2.5 text-sm font-medium text-[var(--foreground)] transition-all hover:bg-[var(--surface)] hover:border-[var(--border)]/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)] disabled:opacity-50"
                             >
                               <GoogleIcon className="h-5 w-5" />
-                              {i18n("signInWithGoogle")}
+                              <span className="truncate">{i18n("signInWithGoogle")}</span>
                             </button>
                             <button
                               type="button"
@@ -828,7 +829,16 @@ export default function LoginPage() {
                               className="flex w-full items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2.5 text-sm font-medium text-[var(--foreground)] transition-all hover:bg-[var(--surface)] hover:border-[var(--border)]/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)] disabled:opacity-50"
                             >
                               <GithubIcon className="h-5 w-5" />
-                              {i18n("signInWithGithub")}
+                              <span className="truncate">{i18n("signInWithGithub")}</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleOAuth("discord")}
+                              disabled={loading}
+                              className="flex w-full items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2.5 text-sm font-medium text-[var(--foreground)] transition-all hover:bg-[var(--surface)] hover:border-[var(--border)]/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)] disabled:opacity-50"
+                            >
+                              <DiscordIcon className="h-5 w-5" />
+                              <span className="truncate">{i18n("signInWithDiscord")}</span>
                             </button>
                           </div>
 

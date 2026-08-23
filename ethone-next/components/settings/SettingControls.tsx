@@ -1,6 +1,5 @@
 "use client";
 
-import { Icon } from "@/lib/icons";
 import Switch from "@/components/Switch";
 import Select from "@/components/ui/Select";
 import { Checkbox } from "@/components/ui/Checkbox";
@@ -86,11 +85,10 @@ export function ButtonGridControl<T extends string>({
             className={cn(
               "group relative flex items-center justify-center gap-1 rounded-full border px-2 py-1 text-[11px] font-medium transition-colors duration-150",
               active
-                ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
+                ? "border-[var(--accent-primary)] bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
                 : "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--text-primary)] hover:border-[var(--accent-primary)]/50"
             )}
           >
-            {active && <Icon name="check" className="h-3 w-3" />}
             <span className="relative z-10 truncate">{opt.label}</span>
           </button>
         );

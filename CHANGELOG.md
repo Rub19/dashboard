@@ -15,6 +15,10 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 - Lanceur d'apps du Dock sans glow vert.
 - Bouton média du Dock cliquable pour ouvrir/fermer le flyout.
 - Toasts refondus avec pastille et texte colorés selon le type.
+- Carte de profil refondue dans les paramètres : plus compacte, sans bannière.
+- Pastilles de statut passées en fond accent solide.
+- Connexion avec Discord ajoutée sur la page de login.
+- Bouton remonter en haut du Dock réparé.
 - Version `v1.8.14`.
 
 ## v1.8.13 — 2026-08-23

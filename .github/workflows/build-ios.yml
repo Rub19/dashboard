@@ -2,7 +2,7 @@ name: Build iOS IPA (Native SwiftUI)
 
 on:
   push:
-    branches: [main, feat/clean-monorepo-cross-platform-alignment, feat/ios-26-native-apis-and-frameworks, feat/global-liquid-glass-and-ios26-audit, feat/local-notifications-pomodoro-tasks, feat/hybrid-repo-nextjs-web-plus-native-swift-ios, feat/full-native-swift-liquid-glass-ios]
+    branches: [main, feat/clean-monorepo-cross-platform-alignment, feat/ios-26-native-apis-and-frameworks, feat/global-liquid-glass-and-ios26-audit, feat/local-notifications-pomodoro-tasks, feat/hybrid-repo-nextjs-web-plus-native-swift-ios, feat/full-native-swift-liquid-glass-ios, feat/pure-apple-frameworks-and-core-haptics]
   workflow_dispatch:
 
 permissions:

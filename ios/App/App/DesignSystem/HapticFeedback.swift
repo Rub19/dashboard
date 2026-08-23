@@ -1,33 +1,29 @@
 import UIKit
 
+/// Wrapper léger pour préserver les appels existants tout en passant par Core Haptics.
+@MainActor
 enum Haptic {
     static func light() {
-        let generator = UIImpactFeedbackGenerator(style: .light)
-        generator.impactOccurred()
+        HapticManager.shared.playGlassTap()
     }
 
     static func medium() {
-        let generator = UIImpactFeedbackGenerator(style: .medium)
-        generator.impactOccurred()
+        HapticManager.shared.playGlassTap()
     }
 
     static func rigid() {
-        let generator = UIImpactFeedbackGenerator(style: .rigid)
-        generator.impactOccurred()
+        HapticManager.shared.playGlassTap()
     }
 
     static func heavy() {
-        let generator = UIImpactFeedbackGenerator(style: .heavy)
-        generator.impactOccurred()
+        HapticManager.shared.playTimerEndAlert()
     }
 
     static func success() {
-        let generator = UINotificationFeedbackGenerator()
-        generator.notificationOccurred(.success)
+        HapticManager.shared.playSuccessWave()
     }
 
     static func warning() {
-        let generator = UINotificationFeedbackGenerator()
-        generator.notificationOccurred(.warning)
+        HapticManager.shared.playTimerEndAlert()
     }
 }

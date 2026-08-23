@@ -5,9 +5,18 @@ import UserNotifications
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        HapticManager.shared.start()
         registerNotificationCategories()
         requestNotificationAuthorization()
         return true
+    }
+
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        HapticManager.shared.stop()
+    }
+
+    func applicationWillEnterForeground(_ application: UIApplication) {
+        HapticManager.shared.start()
     }
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {

@@ -48,6 +48,7 @@
 		B64E31828115441C975F0D39 /* LiquidGlassContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D446449A474041A4B60ADDD5 /* LiquidGlassContainer.swift */; };
 		41E7A8EC0BF448D9AA4A981A /* AmbientBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E4567E46164E4082A251C9 /* AmbientBackground.swift */; };
 		E6AFFAE5669E467BBA7D1E46 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8318D5E98B374CF1B5E86CD7 /* HapticFeedback.swift */; };
+		598161A277734935944E5620 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284CB293476A4486B0515173 /* HapticManager.swift */; };
 		D69FC4E4C95E47EEA7A62650 /* BentoGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DADA805107841C08293B574 /* BentoGridView.swift */; };
 		B1C24F01C5DE4F09A89D0269 /* FocusTimerCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF109FDD6EFB4741A8C06D9A /* FocusTimerCard.swift */; };
 		8389AAC794D9446CB96880F4 /* TasksCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B829BD627A24805A5EF6F67 /* TasksCard.swift */; };
@@ -67,6 +68,7 @@
 		2F57C2C8C0814F44B02E968E /* EthoneControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA989D740F70452696B424CD /* EthoneControls.swift */; };
 		3FF28C3FBD1B4ADFAFB8983F /* EthoneIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53973A402A2740199C6E4FB5 /* EthoneIntents.swift */; };
 		31DB3F0CE88642A9A345D69B /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 194C9B6B1D8C4F53B6320428 /* CoreMotion.framework */; };
+		35AADDE5B34940D3A5D08AF0 /* CoreHaptics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E838D89CF0D4553B0E2FA85 /* CoreHaptics.framework */; };
 		4C5A2FB106D74C4E8AAEC194 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84DFF5B8130342BB8E8E77DD /* Metal.framework */; };
 /* End PBXBuildFile section */
 
@@ -145,6 +147,7 @@
 		D446449A474041A4B60ADDD5 /* LiquidGlassContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DesignSystem/LiquidGlassContainer.swift"; sourceTree = "<group>"; };
 		19E4567E46164E4082A251C9 /* AmbientBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DesignSystem/AmbientBackground.swift"; sourceTree = "<group>"; };
 		8318D5E98B374CF1B5E86CD7 /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DesignSystem/HapticFeedback.swift"; sourceTree = "<group>"; };
+		284CB293476A4486B0515173 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services/HapticManager.swift"; sourceTree = "<group>"; };
 		4DADA805107841C08293B574 /* BentoGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Native/BentoGridView.swift"; sourceTree = "<group>"; };
 		FF109FDD6EFB4741A8C06D9A /* FocusTimerCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Native/BentoCards/FocusTimerCard.swift"; sourceTree = "<group>"; };
 		0B829BD627A24805A5EF6F67 /* TasksCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Native/BentoCards/TasksCard.swift"; sourceTree = "<group>"; };
@@ -163,6 +166,7 @@
 		CA989D740F70452696B424CD /* EthoneControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Widgets/EthoneControls.swift"; sourceTree = "<group>"; };
 		53973A402A2740199C6E4FB5 /* EthoneIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Intents/EthoneIntents.swift"; sourceTree = "<group>"; };
 		194C9B6B1D8C4F53B6320428 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		1E838D89CF0D4553B0E2FA85 /* CoreHaptics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreHaptics.framework; path = System/Library/Frameworks/CoreHaptics.framework; sourceTree = SDKROOT; };
 		84DFF5B8130342BB8E8E77DD /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -179,6 +183,7 @@
 				9E0CB5C730A94D5DB28ACEE3 /* Charts.framework in Frameworks */,
 				B4F289023B4D4E0EB7E28DFA /* LocalAuthentication.framework in Frameworks */,
 				31DB3F0CE88642A9A345D69B /* CoreMotion.framework in Frameworks */,
+				35AADDE5B34940D3A5D08AF0 /* CoreHaptics.framework in Frameworks */,
 				4C5A2FB106D74C4E8AAEC194 /* Metal.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -221,6 +226,7 @@
 				AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */,
 			31361908BFE24391B8AF22C3 /* Charts.framework */,
 			194C9B6B1D8C4F53B6320428 /* CoreMotion.framework */,
+			1E838D89CF0D4553B0E2FA85 /* CoreHaptics.framework */,
 			84DFF5B8130342BB8E8E77DD /* Metal.framework */,
 			722B11F6F1D4476190DF7583 /* LocalAuthentication.framework */,
 			);
@@ -269,6 +275,7 @@
 				D446449A474041A4B60ADDD5 /* LiquidGlassContainer.swift */,
 				19E4567E46164E4082A251C9 /* AmbientBackground.swift */,
 				8318D5E98B374CF1B5E86CD7 /* HapticFeedback.swift */,
+				284CB293476A4486B0515173 /* HapticManager.swift */,
 				4DADA805107841C08293B574 /* BentoGridView.swift */,
 				FF109FDD6EFB4741A8C06D9A /* FocusTimerCard.swift */,
 				0B829BD627A24805A5EF6F67 /* TasksCard.swift */,
@@ -509,6 +516,7 @@
 				B64E31828115441C975F0D39 /* LiquidGlassContainer.swift in Sources */,
 				41E7A8EC0BF448D9AA4A981A /* AmbientBackground.swift in Sources */,
 				E6AFFAE5669E467BBA7D1E46 /* HapticFeedback.swift in Sources */,
+				598161A277734935944E5620 /* HapticManager.swift in Sources */,
 				D69FC4E4C95E47EEA7A62650 /* BentoGridView.swift in Sources */,
 				B1C24F01C5DE4F09A89D0269 /* FocusTimerCard.swift in Sources */,
 				8389AAC794D9446CB96880F4 /* TasksCard.swift in Sources */,
@@ -703,7 +711,7 @@
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.8.9;
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = dev.ethone.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -724,7 +732,7 @@
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.8.9;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.ethone.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
@@ -747,7 +755,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				MARKETING_VERSION = 1.8.0;
+				MARKETING_VERSION = 1.8.9;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
 				SKIP_INSTALL = YES;
@@ -771,7 +779,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				MARKETING_VERSION = 1.8.0;
+				MARKETING_VERSION = 1.8.9;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
 				SKIP_INSTALL = YES;
@@ -795,7 +803,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				MARKETING_VERSION = 1.7.63;
+				MARKETING_VERSION = 1.8.9;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
 				SKIP_INSTALL = YES;
@@ -819,7 +827,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				MARKETING_VERSION = 1.7.63;
+				MARKETING_VERSION = 1.8.9;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
 				SKIP_INSTALL = YES;

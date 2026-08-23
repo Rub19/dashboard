@@ -3,6 +3,8 @@ import SwiftUI
 struct TasksCard: View {
     @ObservedObject var manager: SupabaseManager
     @State private var newTitle = ""
+    @State private var deleteCount = 0
+    @State private var createdTaskCount = 0
 
     var body: some View {
         LiquidGlassContainer {
@@ -27,7 +29,6 @@ struct TasksCard: View {
                     List {
                         ForEach($manager.tasks) { $task in
                             Button {
-                                Haptic.medium()
                                 Task { await manager.toggleDone(task) }
                             } label: {
                                 HStack(spacing: 12) {
@@ -40,8 +41,10 @@ struct TasksCard: View {
                                     Spacer()
                                 }
                             }
+                            .ethoneSensoryFeedback(.success, trigger: task.done)
                             .swipeActions(edge: .trailing) {
                                 Button(role: .destructive) {
+                                    deleteCount += 1
                                     Task { await manager.deleteTask(task) }
                                 } label: {
                                     Label("Supprimer", systemImage: "trash")
@@ -49,6 +52,7 @@ struct TasksCard: View {
                             }
                         }
                     }
+                    .ethoneSensoryFeedback(.impact(weight: .heavy), trigger: deleteCount)
                     .listStyle(.plain)
                     .frame(minHeight: 120, maxHeight: 180)
                 }
@@ -59,7 +63,7 @@ struct TasksCard: View {
 
                     Button {
                         guard !newTitle.isEmpty else { return }
-                        Haptic.success()
+                        createdTaskCount += 1
                         Task {
                             await manager.createTask(title: newTitle)
                             newTitle = ""
@@ -70,6 +74,7 @@ struct TasksCard: View {
                     .buttonStyle(.borderedProminent)
                     .controlSize(.small)
                     .disabled(newTitle.isEmpty)
+                    .ethoneSensoryFeedback(.success, trigger: createdTaskCount)
                 }
             }
         }

@@ -58,7 +58,7 @@ final class FocusTimerModel: ObservableObject {
         pause()
         remaining = 0
         progress = 1
-        Haptic.success()
+        HapticManager.shared.playSuccessWave()
     }
 
     private func scheduleNotification() {
@@ -171,7 +171,6 @@ struct FocusTimerCard: View {
 
                 HStack(spacing: 12) {
                     Button {
-                        Haptic.rigid()
                         if model.isRunning {
                             model.pause()
                         } else if model.remaining == 0 || model.remaining == model.total {
@@ -187,7 +186,6 @@ struct FocusTimerCard: View {
                     }
 
                     Button {
-                        Haptic.warning()
                         model.reset()
                     } label: {
                         Image(systemName: "arrow.counterclockwise")
@@ -198,6 +196,7 @@ struct FocusTimerCard: View {
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.small)
+                .ethoneSensoryFeedback(.increase, trigger: model.total)
             }
         }
     }

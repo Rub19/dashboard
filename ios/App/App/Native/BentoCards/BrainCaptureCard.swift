@@ -4,6 +4,7 @@ import UIKit
 struct BrainCaptureCard: View {
     @State private var prompt = ""
     @State private var isDictating = false
+    @State private var noteSaved = 0
 
     var body: some View {
         LiquidGlassContainer {
@@ -15,11 +16,12 @@ struct BrainCaptureCard: View {
                     Spacer()
                     Button {
                         isDictating.toggle()
-                        Haptic.medium()
+                        HapticManager.shared.playGlassTap()
                     } label: {
                         Image(systemName: isDictating ? "mic.fill" : "mic")
                             .foregroundStyle(isDictating ? .red : .primary)
                     }
+                    .ethoneSensoryFeedback(.selection, trigger: isDictating)
                 }
 
                 Text("Brain")
@@ -32,7 +34,7 @@ struct BrainCaptureCard: View {
                 HStack {
                     Spacer()
                     Button {
-                        Haptic.success()
+                        noteSaved += 1
                         prompt = ""
                     } label: {
                         Text("Envoyer")
@@ -41,6 +43,7 @@ struct BrainCaptureCard: View {
                     .buttonStyle(.borderedProminent)
                     .controlSize(.small)
                     .disabled(prompt.isEmpty)
+                    .ethoneSensoryFeedback(.impact(weight: .medium), trigger: noteSaved)
                     .contextMenu {
                         Button("Copier") { UIPasteboard.general.string = prompt }
                         Button("Effacer") { prompt = "" }

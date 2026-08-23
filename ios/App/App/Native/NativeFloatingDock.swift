@@ -17,7 +17,7 @@ struct NativeFloatingDock: View {
             ForEach(items, id: \.0) { tab, label, icon in
                 let selected = selectedTab == tab
                 Button {
-                    Haptic.rigid()
+                    HapticManager.shared.playGlassTap()
                     withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
                         selectedTab = tab
                     }
@@ -63,6 +63,7 @@ struct NativeFloatingDock: View {
         .shadow(color: Color.black.opacity(0.45), radius: 28, x: 0, y: 14)
         .padding(.horizontal, 16)
         .padding(.bottom, 12)
+        .ethoneSensoryFeedback(.selection, trigger: selectedTab)
     }
 }
 

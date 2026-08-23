@@ -325,10 +325,11 @@ export default function SocialDiscordCard({
             <ClientImage
               candidates={coverCandidates}
               alt={activeMusic.title || ""}
-              fill
+              width={40}
+              height={40}
               className="h-10 w-10 shrink-0 rounded-lg"
               fallback={
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[--accent-primary] text-[--accent-primary]">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[--accent-primary]/10 text-[--accent-primary]">
                   <Music className="h-4 w-4" />
                 </div>
               }

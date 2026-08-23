@@ -277,7 +277,7 @@ export async function setSpotifyVolume(env, userId, clientId, volumePercent, dev
 
 export async function isSpotifyTrackSaved(env, userId, clientId, trackId) {
   const accessToken = await validAccessToken(env, userId, clientId);
-  const response = await requestExternal(new URL(`/v1/me/tracks/contains?ids=${encodeURIComponent(safeText(trackId, "", 64))}`, API_ORIGIN), {
+  const response = await requestExternal(new URL(`/v1/me/tracks/contains?ids=${encodeURIComponent(safeText(trackId, 64))}`, API_ORIGIN), {
     env,
     expectedOrigin: API_ORIGIN,
     service: "spotify",
@@ -290,7 +290,7 @@ export async function isSpotifyTrackSaved(env, userId, clientId, trackId) {
 
 export async function saveSpotifyTrack(env, userId, clientId, trackId, save = true) {
   const accessToken = await validAccessToken(env, userId, clientId);
-  const id = safeText(trackId, "", 64);
+  const id = safeText(trackId, 64);
   if (!id) throw httpError("INVALID_PARAMETER", 400);
   await requestExternal(new URL("/v1/me/tracks", API_ORIGIN), {
     env,

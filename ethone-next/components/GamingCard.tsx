@@ -95,7 +95,6 @@ export default function GamingCard({
   const isBody = renderSrc ? bodySet.has(renderSrc) : true;
 
   const server = profile?.server;
-  const isOnline = server?.online ?? hasProfile;
 
   const { statusText, statusClass, statusDot } = useMemo(() => {
     if (loading && !hasProfile) {
@@ -114,11 +113,9 @@ export default function GamingCard({
     }
     if (hasProfile) {
       return {
-        statusText: isOnline ? i18n("online", "En ligne") : i18n("offline", "Hors ligne"),
-        statusClass: isOnline
-          ? "border-[--accent-primary] bg-[--accent-primary] text-[--accent-primary]"
-          : "border-zinc-500/30 bg-zinc-500/10 text-zinc-400",
-        statusDot: isOnline ? "bg-[--accent-primary]" : "bg-zinc-500",
+        statusText: i18n("online", "En ligne"),
+        statusClass: "border-[--accent-primary]/30 bg-[--accent-primary]/10 text-[--accent-primary]",
+        statusDot: "bg-[--accent-primary]",
       };
     }
     if (configured) {
@@ -133,7 +130,7 @@ export default function GamingCard({
       statusClass: "border-zinc-500/30 bg-zinc-500/10 text-zinc-400",
       statusDot: "bg-zinc-500",
     };
-  }, [configured, error, hasProfile, isOnline, i18n, loading]);
+  }, [configured, error, hasProfile, i18n, loading]);
 
   const playerCount =
     server?.players !== undefined && server?.maxPlayers !== undefined ? `${server.players}/${server.maxPlayers}` : null;
@@ -148,7 +145,7 @@ export default function GamingCard({
       )}
     >
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Gaming</span>
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">Gaming</span>
         <span
           className={cn(
             "inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 text-[10px] font-medium",
@@ -201,34 +198,34 @@ export default function GamingCard({
           </div>
 
           <div className="w-full text-center">
-            <h4 className="truncate text-lg font-bold text-white">{username}</h4>
+            <h4 className="truncate text-lg font-bold text-[var(--text-primary)]">{username}</h4>
             {hasProfile && (
               <p className="text-[10px] font-mono text-zinc-500">ID: {truncateId(uuid || uuidWithDashes)}</p>
             )}
           </div>
 
-          {hasProfile && server && (
-            <div className="w-full rounded-xl border border-white/[0.05] bg-white/[0.02] p-2">
-              <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
+          {server && (
+            <div className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2">
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">
                 {i18n("minecraftServer", "Serveur Minecraft")}
               </p>
               <div className="grid grid-cols-3 gap-2">
                 {playerCount !== null && (
                   <div className="text-center">
-                    <p className="font-mono text-xs font-semibold text-zinc-200">{playerCount}</p>
-                    <p className="text-[9px] text-zinc-500">{i18n("players", "Joueurs")}</p>
+                    <p className="font-mono text-xs font-semibold text-[var(--text-primary)]">{playerCount}</p>
+                    <p className="text-[9px] text-[var(--muted)]">{i18n("players", "Joueurs")}</p>
                   </div>
                 )}
                 {ping !== null && (
                   <div className="text-center">
-                    <p className="font-mono text-xs font-semibold text-zinc-200">{ping}</p>
-                    <p className="text-[9px] text-zinc-500">{i18n("ping", "Ping")}</p>
+                    <p className="font-mono text-xs font-semibold text-[var(--text-primary)]">{ping}</p>
+                    <p className="text-[9px] text-[var(--muted)]">{i18n("ping", "Ping")}</p>
                   </div>
                 )}
                 {serverVersion !== null && (
                   <div className="text-center">
-                    <p className="truncate font-mono text-xs font-semibold text-zinc-200">{serverVersion}</p>
-                    <p className="text-[9px] text-zinc-500">{i18n("version", "Version")}</p>
+                    <p className="truncate font-mono text-xs font-semibold text-[var(--text-primary)]">{serverVersion}</p>
+                    <p className="text-[9px] text-[var(--muted)]">{i18n("version", "Version")}</p>
                   </div>
                 )}
               </div>
@@ -238,17 +235,17 @@ export default function GamingCard({
           {hasProfile && (
             <div className="flex flex-wrap justify-center gap-1.5">
               {profile?.model && (
-                <span className="rounded-md border border-white/[0.06] bg-white/[0.04] px-2 py-0.5 text-[10px] text-zinc-300">
+                <span className="rounded-md border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
                   {profile.model === "slim" ? "Slim" : "Classic"}
                 </span>
               )}
               {profile?.capeUrl && (
-                <span className="rounded-md border border-white/[0.06] bg-white/[0.04] px-2 py-0.5 text-[10px] text-zinc-300">
+                <span className="rounded-md border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
                   {i18n("cape", "Cape")}
                 </span>
               )}
-              {isOnline && (
-                <span className="rounded-md border border-[--accent-primary] bg-[--accent-primary] px-2 py-0.5 text-[10px] text-[--accent-primary]">
+              {server?.online && (
+                <span className="rounded-md border border-[--accent-primary] bg-[--accent-primary]/10 px-2 py-0.5 text-[10px] text-[--accent-primary]">
                   {i18n("serverActive", "Serveur actif")}
                 </span>
               )}
@@ -266,7 +263,7 @@ export default function GamingCard({
           </div>
           <Link
             href="/settings?category=integrations"
-            className="rounded-lg bg-[--accent-primary] px-4 py-2 text-xs font-medium text-[--accent-primary] transition-colors hover:bg-[--accent-primary]"
+            className="rounded-lg bg-[--accent-primary] px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-[--accent-primary]"
           >
             {i18n("configureMinecraft", "Configurer Minecraft")}
           </Link>

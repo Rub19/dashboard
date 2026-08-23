@@ -114,8 +114,8 @@ export default function GamingCard({
     if (hasProfile) {
       return {
         statusText: i18n("online", "En ligne"),
-        statusClass: "border-[--accent-primary]/30 bg-[--accent-primary]/10 text-[--accent-primary]",
-        statusDot: "bg-[--accent-primary]",
+        statusClass: "border-green-500/20 bg-green-500/10 text-green-400",
+        statusDot: "bg-green-500",
       };
     }
     if (configured) {
@@ -245,7 +245,7 @@ export default function GamingCard({
                 </span>
               )}
               {server?.online && (
-                <span className="rounded-md border border-[--accent-primary] bg-[--accent-primary]/10 px-2 py-0.5 text-[10px] text-[--accent-primary]">
+                <span className="rounded-md border border-green-500/20 bg-green-500/10 px-2 py-0.5 text-[10px] text-green-400">
                   {i18n("serverActive", "Serveur actif")}
                 </span>
               )}

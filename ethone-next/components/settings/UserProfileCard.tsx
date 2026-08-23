@@ -20,7 +20,7 @@ function maskId(id: string) {
 }
 
 const actionBtnClass =
-  "relative inline-flex items-center justify-center whitespace-nowrap h-9 px-3 text-xs gap-2 rounded-xl font-semibold transition-all duration-150 ease-out focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:outline-none bg-[var(--text-primary)]/4 text-[var(--text-primary)] border border-[var(--panel-border)] hover:bg-[var(--text-primary)]/8 hover:border-[var(--accent-primary)]/40 active:scale-[0.98]";
+  "relative inline-flex items-center justify-center whitespace-nowrap h-9 px-3 text-xs gap-2 rounded-xl font-semibold transition-all duration-150 ease-out focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:outline-none bg-[var(--text-primary)]/4 text-[var(--text-primary)] border border-[var(--panel-border)] hover:bg-[var(--text-primary)]/8 hover:border-[var(--accent-primary)]/40";
 
 export default function UserProfileCard({
   onEditProfile,
@@ -39,6 +39,8 @@ export default function UserProfileCard({
     discordProfile?.user?.displayName ||
     discordProfile?.user?.globalName ||
     discordProfile?.user?.username;
+
+  const isDiscordLinked = Boolean(discordProfile?.connected);
 
   const fromMeta =
     (typeof meta.full_name === "string" ? meta.full_name : undefined) ||
@@ -118,7 +120,7 @@ export default function UserProfileCard({
             <p className="truncate text-xs text-[var(--muted)]">{email}</p>
           )}
           <div className="mt-1 flex items-center gap-2">
-            <span className="font-mono text-[11px] text-[var(--muted)]">
+            <span className="min-w-0 truncate font-mono text-[11px] text-[var(--muted)]">
               {masked ? maskId(rawPublicId) : rawPublicId}
             </span>
             <button
@@ -136,7 +138,7 @@ export default function UserProfileCard({
 
       <div className="space-y-3 px-5 pb-5">
         {/* Session badge */}
-        <div className="inline-flex items-center gap-2 rounded-lg border border-[--accent-primary] bg-[--accent-primary] px-2.5 py-1.5">
+        <div className="inline-flex items-center gap-2 rounded-lg border border-[--accent-primary]/30 bg-[--accent-primary]/10 px-2.5 py-1.5">
           <span className="h-2 w-2 rounded-full bg-[--accent-primary]" />
           <span className="text-[11px] font-medium text-[--accent-primary]">{i18n("sessionVerified", "Session vérifiée")}</span>
         </div>
@@ -153,11 +155,13 @@ export default function UserProfileCard({
           </Link>
 
           <Link
-            href="/connections?link=discord"
+            href={isDiscordLinked ? "/connections" : "/connections?link=discord"}
             className={actionBtnClass}
           >
             <Icon name="discord" pack="brand" className="h-3.5 w-3.5" />
-            <span className="truncate">{i18n("linkDiscord", "Lier Discord")}</span>
+            <span className="truncate">
+              {i18n(isDiscordLinked ? "linkedDiscord" : "linkDiscord", isDiscordLinked ? "Discord lié" : "Lier Discord")}
+            </span>
           </Link>
 
           <Button

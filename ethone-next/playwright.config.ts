@@ -23,7 +23,7 @@ export default defineConfig({
     { name: "Tablet Chrome", use: { ...devices["iPad Mini"], browserName: "chromium" } },
   ],
   webServer: {
-    command: "npx serve out -l 3001",
+    command: "npx serve dist -l 3001",
     url: "http://localhost:3001",
     reuseExistingServer: !process.env.CI,
     timeout: 120000,

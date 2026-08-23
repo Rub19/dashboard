@@ -53,7 +53,7 @@ export default function Shell({ children }: { children: ReactNode }) {
             <AnimatedSidebarProvider
               defaultOpen={false}
               style={{ "--sidebar-width": "18rem", "--sidebar-width-icon": "5rem" }}
-              className="h-dvh max-h-dvh w-screen max-w-full overflow-clip gap-2 bg-[var(--background)] px-2 py-2 sm:gap-3 sm:px-3 sm:py-3 md:pl-0 md:pr-3"
+              className="h-dvh max-h-dvh w-screen max-w-full overflow-clip gap-2 bg-[var(--background)] px-2 py-2 sm:gap-3 sm:px-3 sm:py-3 md:pl-1.5 md:pr-3"
             >
               <Sidebar />
               <div

@@ -565,7 +565,6 @@ export default function LoginPage() {
                       type="button"
                       role="tab"
                       aria-selected={active}
-                      aria-controls={`panel-${m}`}
                       onClick={() => setAuthMode(m)}
                       disabled={loading}
                       className={`relative z-10 select-none rounded-xl px-1 py-2.5 text-[10px] font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-raised)] sm:px-2 sm:text-xs ${

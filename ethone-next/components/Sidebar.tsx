@@ -256,7 +256,7 @@ function Sidebar() {
         variant="floating"
         ariaLabel="Navigation principale"
         className="h-full bg-transparent pointer-events-auto"
-        panelClassName="!ml-0 m-2 h-[calc(100%-1rem)] shrink-0 rounded-2xl p-3 backdrop-blur-[var(--panel-blur)] pointer-events-auto"
+        panelClassName="m-2 h-[calc(100%-1rem)] shrink-0 rounded-2xl p-3 backdrop-blur-[var(--panel-blur)] pointer-events-auto"
       >
         <AnimatedSidebarHeader>
           <SidebarBrand />

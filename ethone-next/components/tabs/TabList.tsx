@@ -182,7 +182,6 @@ export default function TabList({
               role="tab"
               id={`${listId}-tab-${tab.id}`}
               aria-selected={active}
-              aria-controls={`${listId}-panel-${tab.id}`}
               tabIndex={active ? 0 : -1}
               disabled={tab.disabled}
               onClick={() => onSelect(tab.id)}

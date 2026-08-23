@@ -108,19 +108,19 @@ test.describe("Spotify player (Dynamic Island & Dock popover)", () => {
     await page.goto("/", { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(1500);
 
+    const island = page.locator('div[role="status"]').first();
+    await expect(island).toBeVisible({ timeout: 15000 });
+    await island.click();
+    await page.waitForTimeout(500);
+
+    const spotifyPanel = page.getByTestId("dynamic-island-spotify");
+    await expect(spotifyPanel.getByText("Test Track").first()).toBeVisible();
+
     const cover = page.locator('img[src*="i.scdn.co"]').first();
     await expect(cover).toBeVisible({ timeout: 15000 });
 
     const src = await cover.getAttribute("src");
     expect(src).toContain("i.scdn.co");
-
-    const island = page.locator('div[role="status"]');
-    await expect(island).toBeVisible();
-    await island.evaluate((el: HTMLElement) => el.click());
-    await page.waitForTimeout(500);
-
-    const spotifyPanel = page.getByTestId("dynamic-island-spotify");
-    await expect(spotifyPanel.getByText("Test Track").first()).toBeVisible();
 
     const controlRequests: { action: string; body: unknown }[] = [];
     await page.route(`${WORKER_URL}/api/spotify/control`, async (route, request) => {

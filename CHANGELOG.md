@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.8 — 2026-08-23
+
+**Audit global, isolation stricte et alignement cross-platform**
+
+- Isolation du monorepo : `ethone-next/` dédié à Next.js, `ios/` à l'app SwiftUI, `android/` à l'app Kotlin.
+- Suppression de Capacitor et Cordova dans les clients natifs et dans le web (dépendances, plugins, bridges).
+- Builds indépendants : `build-web.yml`, `build-ios.yml` (SwiftUI pur via CocoaPods vides), `build-android.yml` (Gradle pur).
+- Alignement des schémas Supabase : clients iOS/Android utilisent désormais `tasks` et `notes`.
+- Ajout des ressources de couleur manquantes Android et nettoyage du `project.pbxproj` iOS.
+- Version `v1.8.8`.
+
 ## v1.8.7 — 2026-08-22
 
 **Application Android 100 % Kotlin natif (Jetpack Compose, Glassmorphism AGSL, Material 3)**

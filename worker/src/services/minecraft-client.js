@@ -8,6 +8,7 @@ import { safePublicUrl, safeText } from "../utils/normalize.js";
 const PROFILE_ORIGIN = "https://mowojang.matdoes.dev";
 const SESSION_ORIGIN = "https://mowojang.matdoes.dev";
 const NAME_HISTORY_ORIGIN = "https://uuid.legacyminecraft.com";
+const ASHCON_ORIGIN = "https://api.ashcon.app";
 
 function decodeTextures(properties) {
   const empty = Object.freeze({ skinUrl: "", capeUrl: "", model: "classic" });
@@ -70,6 +71,28 @@ export async function getMinecraftProfile(env, username) {
       }
     } catch {
       // try next fallback
+    }
+  }
+
+  // Ashcon keeps a wider observed rename history when legacy caches are empty.
+  if (nameHistory.length === 0) {
+    try {
+      const ashconResponse = await requestExternal(new URL(`/mojang/v2/user/${encodeURIComponent(username)}`, ASHCON_ORIGIN), {
+        env,
+        expectedOrigin: ASHCON_ORIGIN,
+        service: "minecraft",
+        dedupeKey: `ashcon:${username.toLowerCase()}`,
+        retries: 1,
+        maxBytes: 32 * 1024
+      });
+      if (Array.isArray(ashconResponse.data?.username_history) && ashconResponse.data.username_history.length > 0) {
+        nameHistory = ashconResponse.data.username_history.map((entry) => Object.freeze({
+          name: safeText(entry?.username, 16),
+          changedAt: entry?.changed_at ? new Date(entry.changed_at).toISOString() : null
+        })).filter((entry) => entry.name);
+      }
+    } catch {
+      // no ashcon data either
     }
   }
 

@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.13 — 2026-08-23
+
+**Dashboard web : polish UI, icônes ETHONE et widget Spotify**
+
+- Palette sombre bleu-violette inspirée de Discord pour la carte Minecraft/Gaming.
+- Widget Spotify rendu plus fiable avec affichage du titre et des pochettes même lorsque le statut de lecture arrive avec retard.
+- Ajout de glyphes ETHONE personnalisés pour les états de présence et les notifications.
+- Harmonisation des états « En ligne », « Focus », « Occupé », « Absent » et « Invisible » entre le panneau système et le profil.
+- Version `v1.8.13`.
+
 ## v1.8.12 — 2026-08-23
 
 **Batterie de tests cross-plateforme et nettoyage CI**
@@ -3864,4 +3874,3 @@ iotApiKey).
 
 ### Supprimé
 - **Backend** : Révocation du support de l'API d'HenrikDev, suppression des blocs de configuration spécifiques associés.
-

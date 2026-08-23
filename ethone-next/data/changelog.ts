@@ -4452,6 +4452,58 @@ const v350_de: ChangelogEntry = {
   ],
 };
 
+const v357_fr: ChangelogEntry = {
+  version: "v1.8.13",
+  date: "2026-08-23",
+  title: "Dashboard web : polish UI, icônes ETHONE et widget Spotify",
+  items: [
+    "Palette sombre bleu-violette inspirée de Discord pour la carte Minecraft/Gaming.",
+    "Widget Spotify rendu plus fiable avec affichage du titre et des pochettes même lorsque le statut de lecture arrive avec retard.",
+    "Ajout de glyphes ETHONE personnalisés pour les états de présence et les notifications.",
+    "États En ligne, Focus, Occupé, Absent et Invisible harmonisés entre le panneau système et le profil.",
+    "Version v1.8.13.",
+  ],
+};
+
+const v357_en: ChangelogEntry = {
+  version: "v1.8.13",
+  date: "2026-08-23",
+  title: "Web dashboard: UI polish, ETHONE icons and Spotify widget",
+  items: [
+    "Dark blue-violet Discord-inspired palette for the Minecraft/Gaming card.",
+    "Spotify widget made more reliable by showing the title and artwork even when the playback flag arrives late.",
+    "Added custom ETHONE glyphs for presence states and notifications.",
+    "Online, Focus, Busy, Away and Invisible states are now consistent between System and Profile controls.",
+    "Version v1.8.13.",
+  ],
+};
+
+const v357_es: ChangelogEntry = {
+  version: "v1.8.13",
+  date: "2026-08-23",
+  title: "Dashboard web: pulido visual, iconos ETHONE y widget Spotify",
+  items: [
+    "Paleta azul-violeta oscura inspirada en Discord para la tarjeta Minecraft/Gaming.",
+    "Widget Spotify más fiable: muestra el título y la portada aunque el estado de reproducción llegue tarde.",
+    "Nuevos glifos personalizados de ETHONE para estados de presencia y notificaciones.",
+    "Estados En línea, Focus, Ocupado, Ausente e Invisible armonizados entre Sistema y Perfil.",
+    "Versión v1.8.13.",
+  ],
+};
+
+const v357_de: ChangelogEntry = {
+  version: "v1.8.13",
+  date: "2026-08-23",
+  title: "Web-Dashboard: UI-Polish, ETHONE-Symbole und Spotify-Widget",
+  items: [
+    "Dunkle blau-violette, von Discord inspirierte Palette für die Minecraft/Gaming-Karte.",
+    "Spotify-Widget zuverlässiger: Titel und Cover werden auch angezeigt, wenn der Wiedergabestatus verzögert eintrifft.",
+    "Benutzerdefinierte ETHONE-Glyphen für Präsenzstatus und Benachrichtigungen hinzugefügt.",
+    "Online-, Fokus-, Beschäftigt-, Abwesend- und Unsichtbar-Status zwischen System und Profil vereinheitlicht.",
+    "Version v1.8.13.",
+  ],
+};
+
 const v356_fr: ChangelogEntry = {
   version: "v1.8.12",
   date: "2026-08-23",
@@ -4933,5 +4985,10 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
     v340_de,
   ],
 };
+
+CHANGELOG_BY_LANG.fr.unshift(v357_fr);
+CHANGELOG_BY_LANG.en.unshift(v357_en);
+CHANGELOG_BY_LANG.es.unshift(v357_es);
+CHANGELOG_BY_LANG.de.unshift(v357_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

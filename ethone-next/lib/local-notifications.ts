@@ -2,7 +2,7 @@
 
 import { isNative } from "./apple";
 
-let permissionRequested = false;
+const permissionRequested = false;
 
 export async function requestNotificationPermissions(): Promise<"granted" | "denied" | "not-native"> {
   if (!isNative()) return "not-native";

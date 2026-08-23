@@ -81,7 +81,7 @@ export default function LiveBentoGrid({
           playerTag={liveTrackerRiotTag}
           loading={loading}
           error={error}
-          className={cn("col-span-12 lg:col-span-4", childHeight)}
+          className={cn("col-span-12 md:col-span-6", childHeight)}
         />
         <RiotGamingCard
           game="lol"
@@ -90,7 +90,7 @@ export default function LiveBentoGrid({
           playerTag={liveTrackerRiotTag}
           loading={loading}
           error={error}
-          className={cn("col-span-12 lg:col-span-4", childHeight)}
+          className={cn("col-span-12 md:col-span-6", childHeight)}
         />
       </div>
     </div>

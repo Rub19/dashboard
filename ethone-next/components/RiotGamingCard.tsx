@@ -191,7 +191,7 @@ export function RiotGamingCardContent({
         </span>
       </div>
 
-      {!configured || (!hasProfile && !loading) ? (
+      {!configured ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-3 py-2 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04]">
             <User className="h-7 w-7 text-zinc-400" />
@@ -221,6 +221,12 @@ export function RiotGamingCardContent({
         <div className="flex flex-1 flex-col items-center justify-center gap-2 py-2 text-center">
           <AlertCircle className="h-8 w-8 text-rose-400" />
           <p className="text-xs text-zinc-500">{i18n("liveError", "Impossible de charger les stats")}</p>
+        </div>
+      ) : !hasProfile ? (
+        <div className="flex flex-1 flex-col items-center justify-center gap-2 py-2 text-center">
+          <AlertCircle className="h-8 w-8 text-zinc-400" />
+          <p className="text-xs text-zinc-500">{i18n("riotNoStats", "Aucune statistique trouvée pour ce Riot ID")}</p>
+          <p className="max-w-[200px] text-[10px] text-zinc-600">{i18n("riotCheckId", "Vérifie le format Nom#TAG et la clé API")}</p>
         </div>
       ) : (
         <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-2 py-1">

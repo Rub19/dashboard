@@ -26,8 +26,9 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClass: Record<ButtonVariant, string> = {
   primary: cn(
-    "liquid-glass-btn liquid-glass-accent text-[var(--accent-contrast)]",
-    "shadow-[0_0_15px_var(--glow-color)]",
+    "bg-[var(--accent-primary)] text-[var(--accent-contrast)]",
+    "border border-[var(--accent-primary)]",
+    "shadow-[0_0_12px_var(--glow-color)]",
     "hover:brightness-110",
   ),
   secondary: cn(

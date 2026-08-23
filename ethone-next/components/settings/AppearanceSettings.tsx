@@ -486,7 +486,7 @@ export default function AppearanceSettings() {
       </BentoCard>
 
       {modifiedCount > 0 && (
-        <div className="md:col-span-2 flex items-center gap-2 rounded-xl border border-[--accent-primary] bg-[--accent-primary] px-3 py-2 text-[11px] text-[--accent-primary]">
+        <div className="md:col-span-2 flex items-center gap-2 rounded-xl border border-[--accent-primary]/30 bg-[--accent-primary]/10 px-3 py-2 text-[11px] text-[--accent-primary]">
           <Sparkles className="h-3.5 w-3.5" />
           {modifiedCount} option{modifiedCount > 1 ? "s" : ""} modifiée{modifiedCount > 1 ? "s" : ""}
         </div>

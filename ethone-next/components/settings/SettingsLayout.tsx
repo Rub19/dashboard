@@ -115,7 +115,7 @@ export default function SettingsLayout() {
               "flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium",
               form.hasExplicitChanges
                 ? "border-amber-500/20 bg-amber-500/10 text-amber-300"
-                : "border-[--accent-primary] bg-[--accent-primary] text-[--accent-primary]"
+                : "border-[--accent-primary]/30 bg-[--accent-primary]/10 text-[--accent-primary]"
             )}
           >
             <span

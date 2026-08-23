@@ -1,15 +1,12 @@
 "use client";
 
 import { useRef } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { useFloating, offset, flip, shift, autoUpdate, FloatingPortal } from "@floating-ui/react";
-import Image from "next/image";
 import Link from "next/link";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useSettings } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
-import Card3D from "@/components/Card3D";
 import { useLayer } from "@/components/LayerProvider";
 
 type WeatherData = Record<string, unknown>;
@@ -84,12 +81,12 @@ function WeatherIcon({
 
   if (iconUrl) {
     return (
-      <Image
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
         src={iconUrl}
         alt=""
         width={40}
         height={40}
-        unoptimized
         className={`${className || ""} object-contain`}
       />
     );
@@ -159,9 +156,9 @@ function WeatherDetailContent({
     kind: "popover",
     closeOnEscape: true,
     closeOnOutside: true,
-    closeOnResize: true,
-    closeOnScroll: true,
-    initialFocus: true,
+    closeOnResize: false,
+    closeOnScroll: false,
+    initialFocus: false,
     trapFocus: false,
   });
 
@@ -185,87 +182,79 @@ function WeatherDetailContent({
 
   return (
     <FloatingPortal>
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            ref={setRefs}
-            initial={{ opacity: 0, y: -8, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.96 }}
-            transition={{ duration: 0.15, ease: "easeOut" as const }}
-            style={floatingStyles}
-            className="z-[90] w-80 max-w-[calc(100vw-1rem)]"
-            role="dialog"
-            aria-modal="true"
-            aria-label={i18n("weather")}
-            data-weather-placement={actualPlacement}
-          >
-            <Card3D>
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <WeatherIcon weather={weather} className="h-10 w-10 shrink-0" />
-                  <div className="min-w-0 flex-1">
-                    <p className="font-semibold text-[var(--foreground)]" translate="no">
-                      {displayLocation}
-                    </p>
-                    {condition && (
-                      <p className="text-sm text-[var(--muted)] capitalize" translate="no">
-                        {condition}
-                      </p>
-                    )}
-                  </div>
-                  <div className="shrink-0 text-right">
-                    <p className="text-3xl font-bold tabular-nums text-[var(--foreground)]">
-                      {temp !== undefined ? `${temp}°C` : "—"}
-                    </p>
-                  </div>
-                </div>
-
-                {(humidity !== undefined || wind !== undefined) && (
-                  <div className="grid grid-cols-2 gap-2">
-                    {humidity !== undefined && (
-                      <div className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm">
-                        <Icon name="droplets" className="h-4 w-4 text-sky-400" />
-                        <span className="font-medium">{humidity}%</span>
-                        <span className="text-[var(--muted)]">{i18n("humidity")}</span>
-                      </div>
-                    )}
-                    {wind !== undefined && (
-                      <div className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm">
-                        <Icon name="wind" className="h-4 w-4 text-[--accent-primary]" />
-                        <span className="font-medium">{wind} km/h</span>
-                        <span className="text-[var(--muted)]">{i18n("wind")}</span>
-                      </div>
-                    )}
-                  </div>
+      {open && (
+        <div
+          ref={setRefs}
+          style={floatingStyles}
+          className="v8-panel z-[90] w-80 max-w-[calc(100vw-1rem)] overflow-hidden p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label={i18n("weather")}
+          data-weather-placement={actualPlacement}
+        >
+          <div className="space-y-4">
+            <div className="flex items-start gap-3">
+              <WeatherIcon weather={weather} className="h-10 w-10 shrink-0" />
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold text-[var(--foreground)]" translate="no">
+                  {displayLocation}
+                </p>
+                {condition && (
+                  <p className="text-sm text-[var(--muted)] capitalize" translate="no">
+                    {condition}
+                  </p>
                 )}
-
-                {forecast.length > 0 && (
-                  <div>
-                    <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
-                      {i18n("forecast")}
-                    </p>
-                    <div className="space-y-1.5">
-                      {forecast.map((day, i) => (
-                        <ForecastRow key={i} day={day} lang={lang} />
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <Link
-                  href="/weather"
-                  onClick={onClose}
-                  className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-                >
-                  {i18n("weatherSeePage")}
-                  <Icon name="arrowRight" className="h-4 w-4" />
-                </Link>
               </div>
-            </Card3D>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <div className="shrink-0 text-right">
+                <p className="text-3xl font-bold tabular-nums text-[var(--foreground)]">
+                  {temp !== undefined ? `${temp}°C` : "—"}
+                </p>
+              </div>
+            </div>
+
+            {(humidity !== undefined || wind !== undefined) && (
+              <div className="grid grid-cols-2 gap-2">
+                {humidity !== undefined && (
+                  <div className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm">
+                    <Icon name="droplets" className="h-4 w-4 text-sky-400" />
+                    <span className="font-medium">{humidity}%</span>
+                    <span className="text-[var(--muted)]">{i18n("humidity")}</span>
+                  </div>
+                )}
+                {wind !== undefined && (
+                  <div className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm">
+                    <Icon name="wind" className="h-4 w-4 text-[--accent-primary]" />
+                    <span className="font-medium">{wind} km/h</span>
+                    <span className="text-[var(--muted)]">{i18n("wind")}</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {forecast.length > 0 && (
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
+                  {i18n("forecast")}
+                </p>
+                <div className="space-y-1.5">
+                  {forecast.map((day, i) => (
+                    <ForecastRow key={i} day={day} lang={lang} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <Link
+              href="/weather"
+              onClick={onClose}
+              className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            >
+              {i18n("weatherSeePage")}
+              <Icon name="arrowRight" className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      )}
     </FloatingPortal>
   );
 }

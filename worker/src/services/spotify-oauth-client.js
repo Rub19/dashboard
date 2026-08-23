@@ -119,8 +119,8 @@ async function fetchAlbumImages(env, accessToken, albumId) {
       expectedOrigin: API_ORIGIN,
       service: "spotify",
       headers: { authorization: `Bearer ${accessToken}` },
-      retries: 0,
-      maxBytes: 64 * 1024
+      retries: 1,
+      maxBytes: 256 * 1024
     });
     const images = Array.isArray(response.data?.images) ? response.data.images : [];
     return sortBySize(images)
@@ -139,8 +139,8 @@ async function fetchShowImages(env, accessToken, showId) {
       expectedOrigin: API_ORIGIN,
       service: "spotify",
       headers: { authorization: `Bearer ${accessToken}` },
-      retries: 0,
-      maxBytes: 64 * 1024
+      retries: 1,
+      maxBytes: 256 * 1024
     });
     const images = Array.isArray(response.data?.images) ? response.data.images : [];
     return sortBySize(images)
@@ -159,8 +159,8 @@ async function fetchTrackImages(env, accessToken, trackId) {
       expectedOrigin: API_ORIGIN,
       service: "spotify",
       headers: { authorization: `Bearer ${accessToken}` },
-      retries: 0,
-      maxBytes: 96 * 1024
+      retries: 1,
+      maxBytes: 256 * 1024
     });
     const item = response.data;
     const images = imageSources(item);

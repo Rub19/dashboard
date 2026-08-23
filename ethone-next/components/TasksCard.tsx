@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Check, Calendar, Trash2 } from "lucide-react";
 import { hapticSuccessPattern, hapticRigidImpact } from "@/lib/haptics";
 import type { Item } from "@/lib/hooks/useItems";
@@ -60,19 +59,8 @@ export default function TasksCard({ task, onToggle, onDelete }: TasksCardProps) 
   }
 
   return (
-    <motion.div
-      drag="x"
-      dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.12}
-      onDragEnd={(_, info) => {
-        if (info.offset.x > 80) {
-          handleToggle();
-        } else if (info.offset.x < -80) {
-          // Swipe left reveals delete; second left swipe deletes
-          handleDelete(info as unknown as React.MouseEvent);
-        }
-      }}
-      className="group relative flex items-center justify-between gap-3 rounded-xl border border-white/[0.05] bg-white/[0.02] p-3 transition-all duration-200 hover:border-white/[0.12] hover:bg-white/[0.05]"
+    <div
+      className="group relative flex items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-all duration-200 hover:border-[var(--panel-border)] hover:bg-[var(--inset-bg)]"
       onClick={handleToggle}
     >
       <div className="flex min-w-0 flex-1 items-start gap-3">
@@ -118,17 +106,15 @@ export default function TasksCard({ task, onToggle, onDelete }: TasksCardProps) 
           {PRIORITY_LABELS[priority]}
         </span>
 
-        <motion.button
+        <button
           type="button"
-          initial={{ opacity: 0 }}
-          whileHover={{ scale: 1.05 }}
           onClick={() => handleDelete()}
           className="rounded-lg p-1.5 text-[var(--muted)] opacity-0 transition-all hover:bg-[var(--danger)]/10 hover:text-[var(--danger)] group-hover:opacity-100"
           aria-label="Supprimer"
         >
           <Trash2 className="h-3.5 w-3.5" />
-        </motion.button>
+        </button>
       </div>
-    </motion.div>
+    </div>
   );
 }

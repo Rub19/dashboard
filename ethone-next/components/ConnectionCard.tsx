@@ -119,7 +119,7 @@ export default function ConnectionCard({
 
   const statusClass =
     status === "connected"
-      ? "bg-[--accent-primary] text-[--accent-primary] border-[--accent-primary]"
+      ? "bg-[--accent-primary]/10 text-[--accent-primary] border-[--accent-primary]/30"
       : status === "error"
         ? "bg-rose-500/10 text-rose-400 border-rose-500/20"
         : "bg-white/[0.04] text-zinc-400 border-white/[0.08]";

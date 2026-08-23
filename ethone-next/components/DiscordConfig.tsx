@@ -105,7 +105,7 @@ export default function DiscordConfig() {
 
   const statusClass =
     status === "connected"
-      ? "bg-[--accent-primary] text-[--accent-primary] border border-[--accent-primary]"
+      ? "bg-[--accent-primary]/10 text-[--accent-primary] border border-[--accent-primary]/30"
       : status === "error"
         ? "bg-rose-500/15 text-rose-300 border border-rose-500/30"
         : "bg-white/[0.04] text-zinc-400 border border-white/[0.08]";

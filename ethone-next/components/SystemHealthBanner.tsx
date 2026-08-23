@@ -58,12 +58,12 @@ export default function SystemHealthBanner({
 
         <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-start">
           <span
-            className={`inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 text-[10px] font-semibold ${
+            className={`inline-flex items-center gap-1 rounded-lg px-2 py-0.5 text-[10px] font-semibold ${
               tone === "success"
-                ? "border-[--accent-primary]/30 bg-[--accent-primary]/10 text-[--accent-primary]"
+                ? "bg-[--accent-primary]/10 text-[--accent-primary]"
                 : tone === "warning"
-                  ? "border-amber-500/20 bg-amber-500/10 text-amber-400"
-                  : "border-rose-500/20 bg-rose-500/10 text-rose-400"
+                  ? "bg-amber-500/10 text-amber-400"
+                  : "bg-rose-500/10 text-rose-400"
             }`}
           >
             {tone === "success" ? (
@@ -76,7 +76,7 @@ export default function SystemHealthBanner({
             {errors > 0 ? `${errors} ${i18n("error")}` : unconfigured > 0 ? `${unconfigured} ${i18n("notConfigured")}` : i18n("all")}
           </span>
 
-          <span className="rounded-lg border border-[--accent-primary]/30 bg-[--accent-primary]/10 px-2.5 py-1 text-xs font-mono text-[--accent-primary]">
+          <span className="rounded-lg bg-[--accent-primary]/10 px-2.5 py-1 text-xs font-mono text-[--accent-primary]">
             <span className="mr-1 inline-block h-2 w-2 rounded-full bg-[--accent-primary]" />
             {i18n("latency")}: 30 ms
           </span>

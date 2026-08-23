@@ -18,7 +18,6 @@ import { useLiveWidgetStore } from "@/lib/hooks/useLiveWidgetStore";
 import { useAuth } from "@/components/AuthProvider";
 import { useActiveProfile } from "@/components/SettingsProvider";
 import { useProfile } from "@/lib/hooks/useProfile";
-import { useNotifications } from "@/lib/hooks/useNotifications";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSyncStore, type SyncState } from "@/lib/stores/sync";
@@ -187,7 +186,6 @@ export default function StatusBar() {
   const { user, signOut } = useAuth();
   const { activeProfile } = useActiveProfile();
   const { profile: publicProfile } = useProfile();
-  const { unreadCount } = useNotifications();
   const { error: liveError } = useLiveData(300000);
   const { isOpen, isMinimized, openLive, closeLive } = useLiveWidgetStore();
   const online = useOnlineStatus();
@@ -207,12 +205,12 @@ export default function StatusBar() {
       .join(", ")
   );
 
-  const systemOk = online && !liveError && unreadCount === 0;
-  const alertCount = liveError ? 1 : unreadCount;
+  const systemOk = online && !liveError;
+  const alertCount = liveError ? 1 : online ? 0 : 1;
   const alertTitle = liveError
     ? `${i18n("liveError", "Erreur live")} : ${liveError.message}`
-    : unreadCount > 0
-      ? `${unreadCount} ${i18n("unreadNotifications", "notifications non lues")}`
+    : !online
+      ? i18n("v8NetworkOffline")
       : undefined;
 
   useEffect(() => {

@@ -168,7 +168,8 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
       <button
         type="button"
         aria-label={buttonLabel}
-        className="relative flex h-11 w-11 flex-col items-center justify-center rounded-xl text-[var(--accent-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] active:scale-95"
+        onClick={() => setOpen((v) => !v)}
+        className="relative flex h-11 w-11 flex-col items-center justify-center rounded-xl text-[var(--accent-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08]"
       >
         <SafeImage
           candidates={hasTrack ? coverCandidates : undefined}

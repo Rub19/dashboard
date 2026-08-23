@@ -45,6 +45,6 @@
 ### Ce qu’il reste à traiter
 1. ~~Lint warnings~~ — nettoyés.
 2. ~~E2E Playwright~~ — 876/876 passent.
-3. **Branches restantes** : seule `feat/button-theme-dynamic-audit` existe encore sur le remote. Elle n’est pas fusionnable telle quelle (conflits avec `main`) ; extraire une feature précise si demandé.
+3. ~~Branches restantes~~ — `feat/button-theme-dynamic-audit` et les branches locales fusionnées ont été supprimées.
 4. ~~Déploiement Worker~~ — déployé.
 5. **Tests locaux iOS/Android** : impossibles depuis Windows (`xcodebuild` / Gradle non présents) ; seuls les CI `build-ios.yml` et `build-android.yml` ont validé les builds.

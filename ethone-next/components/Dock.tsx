@@ -131,8 +131,8 @@ function Dock() {
     >
       {launcherOpen && (
         <div className="pointer-events-auto absolute bottom-full left-1/2 z-50 mb-4 w-[min(90vw,420px)] -translate-x-1/2">
-          <Card3D>
-            <div className="space-y-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-[0_10px_35px_var(--glow-color)] backdrop-blur-md">
+          <Card3D style={{ boxShadow: "none" }}>
+            <div className="space-y-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 backdrop-blur-md">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-medium text-[var(--text-primary)]">{i18n("dockLauncher")}</h3>
                 <button

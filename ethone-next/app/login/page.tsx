@@ -1,18 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, type ReactNode, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion, type Variants } from "framer-motion";
 import BrandMark from "@/components/BrandMark";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import LoginCosmicBackground from "@/components/LoginCosmicBackground";
 import Switch from "@/components/Switch";
 import GoogleIcon from "@/components/icons/GoogleIcon";
 import GithubIcon from "@/components/icons/GithubIcon";
 import { Icon } from "@/lib/icons";
-import Input from "@/components/Input";
-import FormField from "@/components/FormField";
 import {
   sendOtp,
   verifyOtp,
@@ -23,10 +20,6 @@ import {
 } from "@/lib/auth";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { hapticErrorPattern } from "@/lib/haptics";
-import AppleSignInButton from "@/components/AppleSignInButton";
-import PasswordField from "@/components/PasswordField";
-import { isPasswordPwned } from "@/lib/password-strength";
 import {
   required,
   email as emailValidator,
@@ -39,10 +32,110 @@ import {
 
 type AuthMode = "otp" | "password" | "register";
 
+function useOnlineStatus() {
+  const [online, setOnline] = useState(
+    typeof navigator !== "undefined" ? navigator.onLine : true
+  );
+
+  useEffect(() => {
+    const on = () => setOnline(true);
+    const off = () => setOnline(false);
+    window.addEventListener("online", on);
+    window.addEventListener("offline", off);
+    return () => {
+      window.removeEventListener("online", on);
+      window.removeEventListener("offline", off);
+    };
+  }, []);
+
+  return online;
+}
+
+type InputFieldProps = {
+  id: string;
+  type?: string;
+  value: string;
+  onChange?: (value: string) => void;
+  onInputChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+  label: string;
+  icon: string;
+  placeholder: string;
+  autoComplete?: string;
+  required?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  inputMode?: "numeric" | "email" | "text";
+  disabled?: boolean;
+  right?: ReactNode;
+  ariaLabel?: string;
+};
+
+function InputField({
+  id,
+  type = "text",
+  value,
+  onChange,
+  onInputChange,
+  label,
+  icon,
+  placeholder,
+  autoComplete,
+  required,
+  minLength,
+  maxLength,
+  inputMode,
+  disabled,
+  right,
+  ariaLabel,
+}: InputFieldProps) {
+  const paddingRight = right ? "2.75rem" : undefined;
+
+  return (
+    <div className="space-y-1.5">
+      <label
+        htmlFor={id}
+        className="block text-xs font-medium text-[var(--muted)]"
+      >
+        {label}
+      </label>
+      <div
+        className="group relative flex items-center rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-all focus-within:border-[var(--accent)] focus-within:ring-2 focus-within:ring-[var(--accent)]/15 focus-within:shadow-[0_0_20px_-8px_var(--accent)]"
+      >
+        <span className="pointer-events-none absolute left-3 flex items-center text-[var(--muted)] transition-colors group-focus-within:text-[var(--accent)]">
+          <Icon name={icon} className="h-4 w-4" />
+        </span>
+        <input
+          id={id}
+          name={id}
+          type={type}
+          value={value}
+          onChange={onInputChange || ((e) => onChange?.(e.target.value))}
+          autoComplete={autoComplete}
+          required={required}
+          minLength={minLength}
+          maxLength={maxLength}
+          inputMode={inputMode}
+          placeholder={placeholder}
+          aria-label={ariaLabel}
+          disabled={disabled}
+          className="w-full rounded-2xl bg-transparent py-3 pl-10 pr-4 text-sm text-[var(--foreground)] placeholder:text-[var(--muted)] outline-none transition-colors disabled:opacity-50"
+          style={{ paddingRight }}
+        />
+        {right && (
+          <div className="absolute right-2.5 flex items-center">{right}</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function LoginPage() {
   const i18n = useI18n();
   const { success, error: showError } = useToast();
   const router = useRouter();
+  const prefersReduced = useReducedMotion();
+  const reduced = !!prefersReduced;
+  const online = useOnlineStatus();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -54,6 +147,7 @@ export default function LoginPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
   async function handleSend(e: React.FormEvent) {
@@ -67,7 +161,6 @@ export default function LoginPage() {
     if (emailError) {
       setLoading(false);
       setError(emailError);
-      hapticErrorPattern();
       showError(i18n("error"));
       return;
     }
@@ -75,7 +168,6 @@ export default function LoginPage() {
     setLoading(false);
     if (!result.ok || result.error || !result.userId) {
       setError(result.error?.message || i18n("error"));
-      hapticErrorPattern();
       showError(i18n("error"));
       return;
     }
@@ -95,22 +187,19 @@ export default function LoginPage() {
     if (codeError) {
       setLoading(false);
       setError(codeError);
-      hapticErrorPattern();
       showError(i18n("error"));
       return;
     }
     if (!userId) {
       setLoading(false);
       setError(i18n("error"));
-      hapticErrorPattern();
       showError(i18n("error"));
       return;
     }
-    const { ok, error: err } = await verifyOtp(userId, email, code, rememberMe);
+    const { ok, error: err } = await verifyOtp(userId, email, code);
     setLoading(false);
     if (!ok || err) {
       setError(err?.message || i18n("invalidCode"));
-      hapticErrorPattern();
       showError(i18n("error"));
       return;
     }
@@ -131,17 +220,20 @@ export default function LoginPage() {
     if (firstError) {
       setLoading(false);
       setError(firstError);
-      hapticErrorPattern();
       showError(i18n("error"));
       return;
     }
-    const { ok, error: err } = await signInWithPassword(email, password, rememberMe);
+    const { ok, error: err } = await signInWithPassword(email, password);
     setLoading(false);
     if (!ok || err) {
       setError(err?.message || i18n("invalidCredentials"));
-      hapticErrorPattern();
       showError(i18n("error"));
       return;
+    }
+    if (rememberMe) {
+      localStorage.setItem("ethone-remember-me", "true");
+    } else {
+      localStorage.removeItem("ethone-remember-me");
     }
     success(i18n("saved"));
     router.push("/");
@@ -168,27 +260,22 @@ export default function LoginPage() {
       required(i18n("fieldRequired")),
       match(() => password, i18n("passwordMismatch")),
     ]);
-    const firstError = usernameError || emailError || passwordError || confirmError;
+    const firstError =
+      usernameError || emailError || passwordError || confirmError;
     if (firstError) {
       setLoading(false);
       setError(firstError);
-      hapticErrorPattern();
       showError(i18n("error"));
       return;
     }
-    const pwned = await isPasswordPwned(password);
-    if (pwned) {
-      setLoading(false);
-      setError(i18n("passwordPwned") || "Ce mot de passe a été compromis dans une fuite de données. Choisissez-en un autre.");
-      hapticErrorPattern();
-      showError(i18n("error"));
-      return;
-    }
-    const { ok, session, error: err } = await signUpWithPassword(email, password, username.trim());
+    const { ok, session, error: err } = await signUpWithPassword(
+      email,
+      password,
+      username.trim()
+    );
     setLoading(false);
     if (!ok || err) {
       setError(err?.message || i18n("error"));
-      hapticErrorPattern();
       showError(i18n("error"));
       return;
     }
@@ -207,7 +294,6 @@ export default function LoginPage() {
     setLoading(false);
     if (!ok || err || !url) {
       setError(err?.message || i18n("error"));
-      hapticErrorPattern();
       showError(i18n("error"));
       return;
     }
@@ -222,8 +308,7 @@ export default function LoginPage() {
       setLoading(false);
       if (!ok || err) {
         setError(err?.message || i18n("error"));
-        hapticErrorPattern();
-      showError(i18n("error"));
+        showError(i18n("error"));
         return;
       }
       success(i18n("saved"));
@@ -246,336 +331,549 @@ export default function LoginPage() {
         : handleVerify
       : handlePassword;
 
+  function setAuthMode(next: AuthMode) {
+    setMode(next);
+    setStep("email");
+    setError(null);
+  }
+
+  const surfaceVariants = {
+    hidden: { opacity: reduced ? 1 : 0, y: reduced ? 0 : 20, scale: reduced ? 1 : 0.98 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { type: "spring" as const, stiffness: 300, damping: 30 },
+    },
+  } satisfies Variants;
+
+  const containerVariants = {
+    hidden: { opacity: reduced ? 1 : 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: reduced ? 0 : 0.05,
+        delayChildren: reduced ? 0 : 0.05,
+      },
+    },
+  } satisfies Variants;
+
+  const itemVariants = {
+    hidden: { opacity: reduced ? 1 : 0, y: reduced ? 0 : 12 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring" as const, stiffness: 320, damping: 32 },
+    },
+  } satisfies Variants;
+
+  const formTransition = { duration: reduced ? 0 : 0.2, ease: "easeInOut" as const };
+
+  const modes: AuthMode[] = ["otp", "password", "register"];
+  const activeIndex = modes.indexOf(mode);
+
+  const submitIcon =
+    !loading && isOtp && step === "email" ? (
+      <Icon name="arrow-right" className="h-4 w-4" />
+    ) : !loading && isRegister ? (
+      <Icon name="sparkles" className="h-4 w-4" />
+    ) : null;
+
+  let submitLabel = i18n("signIn");
+  if (isOtp) {
+    submitLabel = step === "email" ? i18n("sendCode") : i18n("verify");
+  } else if (isRegister) {
+    submitLabel = i18n("create");
+  }
+
+  const loadingLabel =
+    isOtp && step === "email" ? i18n("sending") : i18n("authLoading");
+
+  function handleLeftMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+    const el = e.currentTarget;
+    const rect = el.getBoundingClientRect();
+    el.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
+    el.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
+  }
+
+  const statusDotColor = online ? "bg-emerald-500" : "bg-amber-500";
+
   return (
-    <div className="relative flex h-full min-h-0 w-full select-none items-stretch overflow-hidden bg-[#0A0A0A]">
-      <LoginCosmicBackground />
-      <div className="relative z-10 hidden h-full min-h-0 w-1/2 flex-col justify-between p-10 lg:flex lg:bg-gradient-to-r lg:from-[#030712]/70 lg:via-[#030712]/25 lg:to-transparent">
-        <div className="z-10 flex items-center gap-2">
-          <BrandMark size={28} />
-          <span className="text-lg font-bold tracking-tight">ETHONE</span>
-          <span className="rounded border border-[var(--panel-border)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--muted)]">OS</span>
+    <div className="flex min-h-screen w-full bg-[var(--background)]">
+      <div
+        className="relative hidden w-1/2 flex-col justify-between overflow-hidden p-10 lg:flex"
+        onMouseMove={handleLeftMouseMove}
+      >
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[var(--surface)] via-[var(--background)] to-[var(--surface-raised)]" />
+
+        <motion.div
+          animate={
+            reduced
+              ? undefined
+              : { x: [0, 30, -20, 0], y: [0, -20, 20, 0] }
+          }
+          transition={{ duration: 28, repeat: Infinity, ease: "linear" as const }}
+          className="pointer-events-none absolute -bottom-32 -right-32 h-[28rem] w-[28rem] rounded-full bg-[var(--accent)]/20 blur-[140px]"
+        />
+        <motion.div
+          animate={
+            reduced
+              ? undefined
+              : { x: [0, -20, 30, 0], y: [0, 30, -10, 0] }
+          }
+          transition={{ duration: 34, repeat: Infinity, ease: "linear" as const }}
+          className="pointer-events-none absolute -left-32 -top-32 h-[24rem] w-[24rem] rounded-full bg-[var(--v8-ambient-accent,var(--accent))]/30 blur-[120px]"
+        />
+        <motion.div
+          animate={
+            reduced
+              ? undefined
+              : { x: [0, 20, -30, 0], y: [0, -30, 20, 0] }
+          }
+          transition={{ duration: 22, repeat: Infinity, ease: "linear" as const }}
+          className="pointer-events-none absolute left-1/3 top-1/3 h-[18rem] w-[18rem] rounded-full bg-[var(--accent)]/15 blur-[100px]"
+        />
+
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.08]"
+          style={{
+            backgroundImage:
+              "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTAgNjBWMGg2MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEiLz48L3N2Zz4=')",
+            backgroundSize: "60px 60px",
+          }}
+        />
+
+        <div
+          className="pointer-events-none absolute inset-0 opacity-60 transition-opacity duration-700"
+          style={{
+            background:
+              "radial-gradient(600px circle at var(--mouse-x,50%) var(--mouse-y,50%), color-mix(in srgb, var(--accent) 10%, transparent), transparent 40%)",
+          }}
+        />
+
+        <div className="z-10 flex items-center gap-3">
+          <div className="relative">
+            <motion.div
+              animate={
+                reduced
+                  ? undefined
+                  : { opacity: [0.45, 0.85, 0.45], scale: [1, 1.12, 1] }
+              }
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" as const }}
+              className="absolute -inset-3 rounded-2xl bg-[var(--accent)]/30 blur-xl"
+            />
+            <BrandMark size={34} className="relative z-10" />
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-lg font-bold tracking-tight">ETHONE</span>
+            <span className="rounded border border-[var(--border)] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--muted)]">
+              OS
+            </span>
+          </div>
         </div>
 
         <div className="z-10 max-w-md">
           <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[var(--accent)]">
             {i18n("environmentPersonal")}
           </p>
-          <h1 className="mt-4 text-5xl font-bold tracking-tighter">ETHONE</h1>
-          <p className="mt-2 text-xl font-light text-[var(--muted)]">
+          <h1 className="mt-5 text-5xl font-bold tracking-tighter text-[var(--foreground)] lg:text-6xl xl:text-7xl">
+            ETHONE
+          </h1>
+          <p className="mt-4 text-xl font-light leading-relaxed text-[var(--muted)]">
             {i18n("yourDigitalEnvironment")}{" "}
-            <span className="font-medium text-[var(--foreground)]">{i18n("reinventedAroundYou")}</span>
+            <span className="font-medium text-[var(--foreground)]">
+              {i18n("reinventedAroundYou")}
+            </span>
           </p>
         </div>
 
         <div className="z-10 text-xs text-[var(--muted)]">
-          <span className="inline-flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/50 px-3 py-1.5 backdrop-blur-[var(--panel-blur)]">
-            <span className="h-2 w-2 rounded-full bg-[--accent-primary] shadow-[0_0_6px_var(--glow-color)]" />
+          <span className="inline-flex items-center gap-2.5 rounded-full border border-[var(--border)] bg-[var(--surface)]/60 px-4 py-2 shadow-lg backdrop-blur-md">
+            <span className="relative inline-flex h-2 w-2">
+              <motion.span
+                animate={
+                  reduced
+                    ? undefined
+                    : { scale: [1, 1.6, 1], opacity: [0.7, 0, 0.7] }
+                }
+                transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut" as const }}
+                className={`absolute inset-0 rounded-full ${statusDotColor}`}
+              />
+              <span className={`relative h-2 w-2 rounded-full ${statusDotColor}`} />
+            </span>
             {i18n("systemOperational")}
           </span>
         </div>
       </div>
 
-      <div className="relative z-10 flex h-full min-h-0 w-full flex-col items-center justify-center overflow-hidden p-4 lg:w-1/2 lg:p-6">
-        <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
+      <div className="relative flex w-full flex-col items-center justify-center p-4 pt-20 sm:p-6 sm:pt-24 lg:w-1/2 lg:p-10">
+        <div className="absolute right-3 top-3 z-20 sm:right-5 sm:top-5">
           <LanguageSwitcher />
         </div>
+
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.15, ease: "easeOut" as const }}
-          className="h-full min-h-0 w-full min-w-[min(100%,20rem)] max-w-sm"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="relative w-full max-w-md xl:max-w-lg"
         >
+          <div className="pointer-events-none absolute -inset-1 rounded-[2.25rem] bg-gradient-to-br from-[var(--accent)]/20 via-transparent to-[var(--accent)]/10 blur-2xl" />
+
           <motion.div
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.15, ease: "easeOut" as const }}
-            className="relative flex h-full min-h-0 w-full flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/80 p-5 shadow-2xl backdrop-blur-xl sm:p-6"
+            variants={surfaceVariants}
+            className="relative overflow-hidden rounded-[2rem] border border-[var(--border)] bg-[var(--surface)]/85 p-6 backdrop-blur-2xl sm:p-8 lg:p-10"
+            style={{
+              boxShadow:
+                "inset 0 1px 1px rgba(255,255,255,0.06), 0 25px 50px -12px rgba(0,0,0,0.5)",
+            }}
           >
-            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/50 to-transparent" />
-            <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[var(--accent)]/10 blur-3xl" />
-
-            <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll px-0.5">
-            <div className="relative flex w-full flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent)]/10 ring-1 ring-[var(--accent)]/20">
-                <BrandMark size={40} />
-              </div>
-              <h2 className="mt-3 text-2xl font-bold tracking-tight">{i18n("welcomeBack")}</h2>
-              <p className="mt-1 text-xs text-[var(--muted)]">{i18n("loginDescription")}</p>
-            </div>
-
-            {(() => {
-              const modes: AuthMode[] = ["otp", "password", "register"];
-              return (
-                <div className="relative mt-4 flex rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)]/50 p-1 backdrop-blur-[var(--panel-blur)]">
-                  {modes.map((m) => {
-                    const active = mode === m;
-                    return (
-                      <button
-                        key={m}
-                        type="button"
-                        onClick={() => {
-                          setMode(m);
-                          setStep("email");
-                          setError(null);
-                        }}
-                        className={`relative z-10 min-w-0 flex-1 select-none whitespace-nowrap rounded-[var(--panel-radius)] px-0.5 py-2 text-[10px] font-semibold tracking-wide transition-colors active:scale-[0.98] sm:px-2 sm:text-[11px] ${
-                          active ? "text-[var(--accent-contrast)]" : "text-[var(--muted)] hover:text-[var(--foreground)]"
-                        }`}
-                      >
-                        {active && (
-                          <motion.div
-                            layoutId="activeAuthTab"
-                            initial={false}
-                            transition={{ duration: 0.15, ease: "easeOut" as const }}
-                            className="absolute inset-0 rounded-[var(--panel-radius)] bg-[var(--accent)]"
-                          />
-                        )}
-                        <span className="relative z-10 block truncate">
-                          {m === "otp" ? i18n("otp") : m === "password" ? i18n("password") : i18n("register")}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              );
-            })()}
-
-            {error && (
-              <div className="relative mt-3 rounded-[var(--panel-radius)] border border-red-500/20 bg-red-500/10 p-2.5 text-xs text-red-400">
-                {error}
-              </div>
-            )}
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/40 to-transparent" />
+            <div className="pointer-events-none absolute right-0 top-0 h-32 w-32 rounded-full bg-[var(--accent)]/10 blur-3xl" />
 
             <motion.div
-              layout
-              transition={{ duration: 0.15, ease: "easeOut" as const }}
-              className="relative mt-3 overflow-hidden"
+              variants={itemVariants}
+              className="relative flex flex-col items-center text-center"
             >
+              <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--accent)]/10 ring-1 ring-[var(--accent)]/20 shadow-[0_0_24px_-8px_var(--accent)]">
+                <BrandMark size={38} />
+              </div>
+              <h2 className="mt-4 text-2xl font-bold tracking-tight text-[var(--foreground)]">
+                {i18n("welcomeBack")}
+              </h2>
+              <p className="mt-1.5 max-w-[16rem] text-sm leading-relaxed text-[var(--muted)]">
+                {i18n("loginDescription")}
+              </p>
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="mt-6">
+              <div
+                role="tablist"
+                aria-label={i18n("auth")}
+                className="relative grid grid-cols-3 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]/60 p-1 shadow-[inset_0_1px_2px_rgba(0,0,0,0.2)]"
+              >
+                {modes.map((m) => {
+                  const active = mode === m;
+                  const label =
+                    m === "otp"
+                      ? i18n("otp")
+                      : m === "password"
+                        ? i18n("password")
+                        : i18n("register");
+                  return (
+                    <button
+                      key={m}
+                      type="button"
+                      role="tab"
+                      aria-selected={active}
+                      aria-controls={`panel-${m}`}
+                      onClick={() => setAuthMode(m)}
+                      disabled={loading}
+                      className={`relative z-10 select-none rounded-xl px-1 py-2.5 text-[10px] font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-raised)] sm:px-2 sm:text-xs ${
+                        active
+                          ? "text-white"
+                          : "text-[var(--muted)] hover:text-[var(--foreground)]"
+                      }`}
+                    >
+                      <span className="block truncate">{label}</span>
+                    </button>
+                  );
+                })}
+                <motion.div
+                  className="absolute inset-y-1 rounded-xl bg-[var(--accent)] shadow-[0_0_16px_-4px_var(--accent)]"
+                  initial={false}
+                  animate={{ left: `${(activeIndex * 100) / 3}%` }}
+                  style={{ width: `${100 / 3}%` }}
+                  transition={{ type: "spring" as const, stiffness: 400, damping: 35 }}
+                />
+              </div>
+            </motion.div>
+
+            <AnimatePresence mode="wait">
+              {error && (
+                <motion.div
+                  key="error"
+                  initial={{ opacity: 0, height: 0, y: -8 }}
+                  animate={{ opacity: 1, height: "auto", y: 0 }}
+                  exit={{ opacity: 0, height: 0, y: -8 }}
+                  transition={formTransition}
+                  className="mt-5 overflow-hidden"
+                  role="alert"
+                  aria-live="polite"
+                >
+                  <div className="flex items-center gap-2.5 rounded-2xl border border-red-500/20 bg-red-500/10 p-3 text-xs text-red-400">
+                    <Icon name="alert-circle" className="h-4 w-4 shrink-0" />
+                    <span className="min-w-0 break-words">{error}</span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <div className="relative mt-5">
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={isOtp && step === "code" ? `otp-${step}` : mode}
-                  initial={{ opacity: 0, y: 6 }}
+                  initial={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -6 }}
-                  transition={{ duration: 0.15, ease: "easeOut" as const }}
-                  className="relative"
+                  exit={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : -8 }}
+                  transition={formTransition}
                 >
-                {isOtp && step === "code" ? (
-              <form onSubmit={handleVerify} className="space-y-4">
-                <FormField label={i18n("codeReceived")}>
-                  <Input
-                    id="code"
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={6}
-                    required
-                    value={code}
-                    onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                    inputSize="large"
-                    icon="key-round"
-                    className="w-full"
-                    aria-label={i18n("codePlaceholder")}
-                    placeholder={i18n("codePlaceholder")}
-                  />
-                </FormField>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent-primary)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-contrast)] shadow-[0_0_15px_var(--glow-color)] transition-colors duration-150 hover:opacity-90 hover:shadow-[0_0_20px_var(--glow-color)] active:scale-[0.98] disabled:opacity-50"
-                >
-                  {loading ? <Icon name="loader-2" className="h-4 w-4 animate-spin" /> : i18n("verify")}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setStep("email")}
-                  className="w-full text-center text-xs text-[var(--muted)] hover:text-[var(--foreground)] active:scale-[0.98]"
-                >
-                  {i18n("modifyEmail")}
-                </button>
-              </form>
-            ) : (
-              <form onSubmit={onSubmit} className="relative mt-3 space-y-3">
-                <FormField label={i18n("email")}>
-                  <Input
-                    id="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    inputSize="large"
-                    icon="mail"
-                    className="w-full"
-                    aria-label={i18n("emailPlaceholderLogin")}
-                    placeholder={i18n("emailPlaceholderLogin")}
-                  />
-                </FormField>
+                  {isOtp && step === "code" ? (
+                    <form onSubmit={handleVerify} className="space-y-5">
+                      <InputField
+                        id="code"
+                        label={i18n("codeReceived")}
+                        icon="key-round"
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={6}
+                        required
+                        value={code}
+                        onInputChange={(e) =>
+                          setCode(e.target.value.replace(/\D/g, ""))
+                        }
+                        placeholder={i18n("codePlaceholder")}
+                        ariaLabel={i18n("codePlaceholder")}
+                        disabled={loading}
+                      />
 
-                {isRegister && (
-                  <FormField label={i18n("username")}>
-                    <Input
-                      id="username"
-                      type="text"
-                      autoComplete="username"
-                      required
-                      minLength={2}
-                      maxLength={64}
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      inputSize="large"
-                      icon="user"
-                      className="w-full"
-                      aria-label={i18n("username")}
-                      placeholder={i18n("username")}
-                    />
-                  </FormField>
-                )}
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-white shadow-[0_0_24px_-8px_var(--accent)] transition-all duration-200 hover:brightness-[1.1] hover:shadow-[0_0_32px_-6px_var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)] disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {loading && (
+                          <Icon
+                            name="loader-2"
+                            className="h-4 w-4 animate-spin"
+                          />
+                        )}
+                        <span>{loading ? loadingLabel : i18n("verify")}</span>
+                      </button>
 
-                {!isOtp && (
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <label className="text-xs font-medium text-[var(--muted)]" htmlFor="password">
-                        {i18n("password")}
-                      </label>
-                      {!isRegister && (
-                        <Link
-                          href="/password-recovery/"
-                          className="text-[11px] text-[var(--accent)] transition-opacity hover:opacity-80 active:scale-[0.98]"
-                        >
-                          {i18n("forgotPassword")}
-                        </Link>
-                      )}
-                    </div>
-                    <PasswordField
-                      id="password"
-                      value={password}
-                      onChange={setPassword}
-                      placeholder={i18n("password")}
-                      autoComplete={isRegister ? "new-password" : "current-password"}
-                      showStrength={isRegister}
-                      showGenerator={isRegister}
-                    />
-                  </div>
-                )}
-
-                {isRegister && (
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-[var(--muted)]" htmlFor="confirmPassword">
-                      {i18n("confirmPassword")}
-                    </label>
-                    <PasswordField
-                      id="confirmPassword"
-                      value={confirmPassword}
-                      onChange={setConfirmPassword}
-                      placeholder={i18n("confirmPassword")}
-                      autoComplete="new-password"
-                      showStrength={false}
-                      showGenerator={false}
-                    />
-                  </div>
-                )}
-
-                {!isRegister && (
-                  <div className="flex items-center justify-between gap-3">
-                    <Switch
-                      checked={rememberMe}
-                      onChange={setRememberMe}
-                      label={i18n("rememberMe")}
-                      labels={false}
-                    />
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  data-testid="sign-in-button"
-                  disabled={loading}
-                  className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent-primary)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-contrast)] shadow-[0_0_15px_var(--glow-color)] transition-colors duration-150 hover:opacity-90 hover:shadow-[0_0_20px_var(--glow-color)] active:scale-[0.98] disabled:opacity-50"
-                >
-                  {loading ? (
-                    <>
-                      <Icon name="loader-2" className="h-4 w-4 animate-spin" />
-                      {isOtp ? i18n("sending") : i18n("loading")}
-                    </>
-                  ) : isOtp ? (
-                    <>
-                      {i18n("sendCode")} <Icon name="arrow-right" className="h-4 w-4" />
-                    </>
-                  ) : isRegister ? (
-                    <>
-                      {i18n("create")} <Icon name="sparkles" className="h-4 w-4" />
-                    </>
+                      <button
+                        type="button"
+                        onClick={() => setStep("email")}
+                        className="w-full text-center text-xs text-[var(--muted)] transition-colors hover:text-[var(--foreground)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)]"
+                      >
+                        {i18n("modifyEmail")}
+                      </button>
+                    </form>
                   ) : (
-                    i18n("signIn")
+                    <form onSubmit={onSubmit} className="space-y-5">
+                      <InputField
+                        id="email"
+                        label={i18n("email")}
+                        icon="mail"
+                        type="email"
+                        autoComplete="email"
+                        required
+                        value={email}
+                        onChange={setEmail}
+                        placeholder={i18n("emailPlaceholderLogin")}
+                        ariaLabel={i18n("emailPlaceholderLogin")}
+                        disabled={loading}
+                      />
+
+                      {isRegister && (
+                        <InputField
+                          id="username"
+                          label={i18n("username")}
+                          icon="user"
+                          type="text"
+                          autoComplete="username"
+                          required
+                          minLength={2}
+                          maxLength={64}
+                          value={username}
+                          onChange={setUsername}
+                          placeholder={i18n("usernamePlaceholder")}
+                          ariaLabel={i18n("username")}
+                          disabled={loading}
+                        />
+                      )}
+
+                      {!isOtp && (
+                        <div className="space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <label
+                              htmlFor="password"
+                              className="block text-xs font-medium text-[var(--muted)]"
+                            >
+                              {i18n("password")}
+                            </label>
+                            {!isRegister && (
+                              <Link
+                                href="/password-recovery/"
+                                className="text-[11px] font-medium text-[var(--accent)] transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] rounded"
+                              >
+                                {i18n("forgotPassword")}
+                              </Link>
+                            )}
+                          </div>
+                          <div
+                            className="group relative flex items-center rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-all focus-within:border-[var(--accent)] focus-within:ring-2 focus-within:ring-[var(--accent)]/15 focus-within:shadow-[0_0_20px_-8px_var(--accent)]"
+                          >
+                            <span className="pointer-events-none absolute left-3 flex items-center text-[var(--muted)] transition-colors group-focus-within:text-[var(--accent)]">
+                              <Icon name="lock" className="h-4 w-4" />
+                            </span>
+                            <input
+                              id="password"
+                              name="password"
+                              type={showPassword ? "text" : "password"}
+                              autoComplete={
+                                isRegister ? "new-password" : "current-password"
+                              }
+                              required
+                              value={password}
+                              onChange={(e) => setPassword(e.target.value)}
+                              className="w-full rounded-2xl bg-transparent py-3 pl-10 pr-10 text-sm text-[var(--foreground)] placeholder:text-[var(--muted)] outline-none transition-colors disabled:opacity-50"
+                              style={{ paddingRight: "2.75rem" }}
+                              placeholder={i18n("password")}
+                              aria-label={i18n("password")}
+                              disabled={loading}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute right-2.5 rounded-lg p-1 text-[var(--muted)] transition-colors hover:text-[var(--foreground)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                              aria-label={
+                                showPassword
+                                  ? i18n("hidePassword")
+                                  : i18n("showPassword")
+                              }
+                              title={
+                                showPassword
+                                  ? i18n("hidePassword")
+                                  : i18n("showPassword")
+                              }
+                              disabled={loading}
+                            >
+                              <Icon
+                                name={showPassword ? "eye-off" : "eye"}
+                                className="h-4 w-4"
+                              />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {isRegister && (
+                        <InputField
+                          id="confirmPassword"
+                          label={i18n("confirmPassword")}
+                          icon="lock"
+                          type={showPassword ? "text" : "password"}
+                          autoComplete="new-password"
+                          required
+                          value={confirmPassword}
+                          onChange={setConfirmPassword}
+                          placeholder={i18n("confirmPassword")}
+                          ariaLabel={i18n("confirmPassword")}
+                          disabled={loading}
+                        />
+                      )}
+
+                      {!isRegister && (
+                        <div className="flex items-center justify-between gap-3">
+                          <Switch
+                            checked={rememberMe}
+                            onChange={setRememberMe}
+                            label={i18n("rememberMe")}
+                            disabled={loading}
+                          />
+                        </div>
+                      )}
+
+                      <button
+                        type="submit"
+                        data-testid="sign-in-button"
+                        disabled={loading}
+                        className="relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-white shadow-[0_0_24px_-8px_var(--accent)] transition-all duration-200 hover:brightness-[1.1] hover:shadow-[0_0_32px_-6px_var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)] disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {loading && (
+                          <Icon
+                            name="loader-2"
+                            className="h-4 w-4 animate-spin"
+                          />
+                        )}
+                        <span>
+                          {loading ? loadingLabel : submitLabel}
+                        </span>
+                        {!loading && submitIcon}
+                      </button>
+
+                      {!isRegister && (
+                        <div className="space-y-5">
+                          <div className="relative flex items-center py-1">
+                            <div className="flex-1 border-t border-[var(--border)]" />
+                            <span className="px-2 text-[11px] font-semibold uppercase tracking-wide text-[var(--muted)]">
+                              {i18n("orContinueWith")}
+                            </span>
+                            <div className="flex-1 border-t border-[var(--border)]" />
+                          </div>
+
+                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            <button
+                              type="button"
+                              onClick={() => handleOAuth("google")}
+                              disabled={loading}
+                              className="flex w-full items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2.5 text-sm font-medium text-[var(--foreground)] transition-all hover:bg-[var(--surface)] hover:border-[var(--border)]/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)] disabled:opacity-50"
+                            >
+                              <GoogleIcon className="h-5 w-5" />
+                              {i18n("signInWithGoogle")}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleOAuth("github")}
+                              disabled={loading}
+                              className="flex w-full items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 py-2.5 text-sm font-medium text-[var(--foreground)] transition-all hover:bg-[var(--surface)] hover:border-[var(--border)]/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)] disabled:opacity-50"
+                            >
+                              <GithubIcon className="h-5 w-5" />
+                              {i18n("signInWithGithub")}
+                            </button>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={handlePasskey}
+                            disabled={loading}
+                            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] px-4 py-2.5 text-sm font-medium text-[var(--foreground)] transition-all hover:bg-[var(--surface)] hover:border-[var(--border)]/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)] disabled:opacity-50"
+                          >
+                            <Icon name="key-round" className="h-4 w-4" />
+                            {i18n("signInWithPasskey")}
+                          </button>
+                        </div>
+                      )}
+
+                      <div className="flex justify-center">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setMode(isRegister ? "password" : "register")
+                          }
+                          className="text-center text-xs text-[var(--muted)] transition-colors hover:text-[var(--foreground)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)] rounded"
+                        >
+                          {isRegister ? i18n("hasAccount") : i18n("noAccount")}
+                          <span className="ml-1 font-semibold text-[var(--accent)]">
+                            {isRegister ? i18n("signIn") : i18n("register")}
+                          </span>
+                        </button>
+                      </div>
+                    </form>
                   )}
-                </button>
-
-                {!isRegister && (
-                  <>
-                    <div className="relative flex items-center py-1">
-                      <div className="flex-1 border-t border-[var(--panel-border)]" />
-                      <span className="px-2 text-[11px] font-medium uppercase tracking-wide text-[var(--muted)]">
-                        {i18n("orContinueWith")}
-                      </span>
-                      <div className="flex-1 border-t border-[var(--panel-border)]" />
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                      <button
-                        type="button"
-                        onClick={() => handleOAuth("google")}
-                        disabled={loading}
-                        className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--panel-bg)] active:scale-[0.98] disabled:opacity-50 backdrop-blur-[var(--panel-blur)]"
-                      >
-                        <GoogleIcon className="h-5 w-5" /> {i18n("signInWithGoogle")}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleOAuth("github")}
-                        disabled={loading}
-                        className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--panel-bg)] active:scale-[0.98] disabled:opacity-50 backdrop-blur-[var(--panel-blur)]"
-                      >
-                        <GithubIcon className="h-5 w-5" /> {i18n("signInWithGithub")}
-                      </button>
-                      <AppleSignInButton disabled={loading} />
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={handlePasskey}
-                      disabled={loading}
-                      className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--panel-bg)] active:scale-[0.98] disabled:opacity-50 backdrop-blur-[var(--panel-blur)]"
-                    >
-                      <Icon name="key-round" className="h-4 w-4" /> {i18n("signInWithPasskey")}
-                    </button>
-                  </>
-                )}
-
-                <div className="flex justify-center">
-                  <button
-                    type="button"
-                    onClick={() => setMode(isRegister ? "password" : "register")}
-                    className="text-center text-xs text-[var(--muted)] transition-colors hover:text-[var(--foreground)] active:scale-[0.98]"
-                  >
-                    {isRegister ? i18n("hasAccount") : i18n("noAccount")}
-                    <span className="ml-1 font-medium text-[var(--accent)]">
-                      {isRegister ? i18n("signIn") : i18n("register")}
-                    </span>
-                  </button>
-                </div>
-              </form>
-            )}
-              </motion.div>
-            </AnimatePresence>
-            </motion.div>
+                </motion.div>
+              </AnimatePresence>
             </div>
           </motion.div>
 
-          <div className="mt-6 flex items-center justify-center gap-2 text-[10px] text-[var(--muted)] lg:hidden">
+          <motion.div
+            variants={itemVariants}
+            className="mt-6 flex items-center justify-center gap-2 text-[10px] text-[var(--muted)] lg:hidden"
+          >
             <BrandMark size={18} />
             <span className="font-semibold">ETHONE</span>
             <span>OS</span>
-          </div>
+          </motion.div>
         </motion.div>
       </div>
     </div>

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.11 — 2026-08-23
+
+**Refactor de la page de connexion, Switch et i18n**
+
+- Merge de `devin/recovered-stash-2026-08-14` : refactor complet de `ethone-next/app/login/page.tsx`.
+- Refonte de `ethone-next/components/Switch.tsx` avec support des props `label`, `labels`, `size` et focus visible.
+- Ajout des clés i18n `rememberMe`, `forgotPassword`, `showPassword`, `hidePassword`, `fieldRequired`, `emailInvalid`, `usernameInvalid`, `register`, `checkEmail`.
+- Version `v1.8.11`.
+
 ## v1.8.10 — 2026-08-23
 
 **Nettoyage des imports CSS legacy et stabilisation du build**

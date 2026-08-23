@@ -8,6 +8,7 @@ import {
   ClipboardCheck,
   Cloud,
   FileText,
+  Loader2,
   Trash2,
   Unlink,
   X,
@@ -342,21 +343,26 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           unstyled: true,
           classNames: {
             toast:
-              "group relative flex w-[22rem] max-w-[calc(100vw-1.5rem)] items-start gap-3 rounded-xl border border-white/10 bg-[#0C0C0E]/95 p-3.5 text-sm text-white shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-md",
-            title: "font-medium text-white",
+              "group relative flex w-[22rem] max-w-[calc(100vw-1.5rem)] items-start gap-3 rounded-xl border border-white/10 bg-[#0C0C0E]/95 p-3.5 text-sm shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-md",
+            title: "font-medium",
             description: "mt-0.5 text-xs text-zinc-300",
             actionButton:
               "ml-auto rounded-lg border border-white/[0.08] bg-white/[0.1] px-2.5 py-1.5 text-[11px] font-semibold text-white transition-colors hover:bg-white/[0.2]",
             cancelButton: "hidden",
             closeButton:
               "absolute right-2 top-2 rounded-md p-1 text-zinc-400 opacity-0 transition-all hover:bg-white/[0.1] hover:text-white group-hover:opacity-100",
-            error: "border-rose-500/20",
-            success: "border-[--accent-primary]",
-            warning: "border-amber-500/20",
-            info: "border-[--info]",
+            error: "border-rose-500/20 text-rose-400",
+            success: "border-[--accent-primary] text-[--accent-primary]",
+            warning: "border-amber-500/20 text-amber-400",
+            info: "border-[--info] text-[--info]",
           },
         }}
         icons={{
+          success: <span className="h-2.5 w-2.5 rounded-full bg-[--accent-primary]" />,
+          error: <span className="h-2.5 w-2.5 rounded-full bg-rose-500" />,
+          warning: <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />,
+          info: <span className="h-2.5 w-2.5 rounded-full bg-[--info]" />,
+          loading: <Loader2 className="h-4 w-4 animate-spin text-[--accent-primary]" />,
           close: <X className="h-3.5 w-3.5" />,
         }}
       />

@@ -20,6 +20,22 @@ const variantIcon: Record<RichToastVariant, string> = {
   neutral: "text-zinc-200",
 };
 
+const variantTitle: Record<RichToastVariant, string> = {
+  success: "text-[--accent-primary]",
+  error: "text-rose-400",
+  warning: "text-amber-400",
+  info: "text-[--info]",
+  neutral: "text-white",
+};
+
+const variantDot: Record<RichToastVariant, string> = {
+  success: "bg-[--accent-primary]",
+  error: "bg-rose-500",
+  warning: "bg-amber-500",
+  info: "bg-[--info]",
+  neutral: "bg-zinc-300",
+};
+
 export default function RichToast({
   icon,
   title,
@@ -38,7 +54,10 @@ export default function RichToast({
         {icon}
       </motion.span>
       <div className="min-w-0 flex-1 pt-0.5">
-        <p className="text-sm font-semibold leading-tight text-white">{title}</p>
+        <div className="flex items-center gap-1.5">
+          <span className={`h-2 w-2 rounded-full ${variantDot[variant]}`} />
+          <p className={`text-sm font-semibold leading-tight ${variantTitle[variant]}`}>{title}</p>
+        </div>
         {description ? (
           <p className="mt-0.5 text-xs leading-relaxed text-zinc-400">{description}</p>
         ) : null}

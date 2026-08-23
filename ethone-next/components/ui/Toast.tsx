@@ -19,33 +19,45 @@ const CONFIG: Record<
   ToastType,
   {
     icon: React.ReactNode;
+    dot: string;
     border: string;
+    text: string;
     progress: string;
   }
 > = {
   success: {
     icon: <EthoneGlyph name="check" className="h-4 w-4 text-[--accent-primary]" />,
+    dot: "bg-[--accent-primary]",
     border: "border-[--accent-primary]",
+    text: "text-[--accent-primary]",
     progress: "bg-[--accent-primary]",
   },
   error: {
     icon: <EthoneGlyph name="alert" className="h-4 w-4 text-[var(--danger)]" />,
+    dot: "bg-[var(--danger)]",
     border: "border-[var(--danger)]/30",
+    text: "text-[var(--danger)]",
     progress: "bg-[var(--danger)]/50",
   },
   info: {
     icon: <EthoneGlyph name="update" className="h-4 w-4 text-[var(--info)]" />,
+    dot: "bg-[var(--info)]",
     border: "border-[var(--info)]/30",
+    text: "text-[var(--info)]",
     progress: "bg-[var(--info)]/50",
   },
   warning: {
     icon: <EthoneGlyph name="alert" className="h-4 w-4 text-[var(--warning)]" />,
+    dot: "bg-[var(--warning)]",
     border: "border-[var(--warning)]/30",
+    text: "text-[var(--warning)]",
     progress: "bg-[var(--warning)]/50",
   },
   loading: {
     icon: <EthoneGlyph name="refresh" className="h-4 w-4 animate-spin text-[var(--accent-primary)]" />,
+    dot: "bg-[var(--accent-primary)]",
     border: "border-[var(--accent-primary)]/30",
+    text: "text-[var(--accent-primary)]",
     progress: "bg-[var(--accent-primary)]/50",
   },
 };
@@ -94,10 +106,11 @@ export default function Toast({
       dragElastic={0.2}
       onDragEnd={handleDragEnd}
       style={{ x, opacity, zIndex: 50 - depth }}
-      className={`relative w-full min-w-0 overflow-hidden rounded-xl border bg-[var(--panel-bg)]/85 p-3.5 shadow-2xl shadow-[var(--background)]/80 backdrop-blur-xl md:min-w-[300px] md:max-w-md ${config.border} flex items-center gap-3 text-sm text-[var(--text-primary)]`}
+      className={`relative w-full min-w-0 overflow-hidden rounded-xl border bg-[var(--panel-bg)]/85 p-3.5 shadow-2xl shadow-[var(--background)]/80 backdrop-blur-xl md:min-w-[300px] md:max-w-md ${config.border} flex items-center gap-3 text-sm`}
     >
       <span className="shrink-0">{config.icon}</span>
-      <p className="min-w-0 flex-1 truncate">{toast.message}</p>
+      <span className={`h-2 w-2 shrink-0 rounded-full ${config.dot}`} />
+      <p className={`min-w-0 flex-1 truncate ${config.text}`}>{toast.message}</p>
       <button
         type="button"
         onClick={onRemove}

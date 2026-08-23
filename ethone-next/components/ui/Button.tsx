@@ -29,27 +29,20 @@ const variantClass: Record<ButtonVariant, string> = {
     "liquid-glass-btn liquid-glass-accent text-[var(--accent-contrast)]",
     "shadow-[0_0_15px_var(--glow-color)]",
     "hover:brightness-110",
-    "active:scale-[0.98]",
   ),
   secondary: cn(
     "liquid-glass-btn text-[var(--text-primary)]",
     "hover:border-[var(--accent-primary)]/30 hover:bg-[var(--accent-primary)]/10",
-    "active:scale-[0.98]",
   ),
   outline: cn(
     "liquid-glass-btn text-[var(--accent-primary)]",
     "border-[var(--accent-primary)]/50",
     "hover:bg-[var(--accent-primary)]/10",
-    "active:scale-[0.98]",
   ),
-  ghost: cn(
-    "liquid-glass-btn liquid-glass-btn-ghost",
-    "active:scale-[0.98]",
-  ),
+  ghost: cn("liquid-glass-btn liquid-glass-btn-ghost"),
   danger: cn(
     "liquid-glass-btn liquid-glass-btn-danger",
     "shadow-lg shadow-[var(--danger)]/20",
-    "active:scale-[0.98]",
   ),
   liquid: cn("liquid-glass-btn text-[var(--text-primary)]"),
 };

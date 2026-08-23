@@ -2,7 +2,7 @@ name: Build Web (Next.js)
 
 on:
   push:
-    branches: [main, feat/clean-monorepo-cross-platform-alignment, fix/cloudflare-pages-and-worker, fix/css-legacy-imports, feat/merge-discord-bot]
+    branches: [main, feat/clean-monorepo-cross-platform-alignment, fix/cloudflare-pages-and-worker, fix/css-legacy-imports, feat/merge-discord-bot, feat/merge-tracker-secure]
   pull_request:
     branches: [main]
 

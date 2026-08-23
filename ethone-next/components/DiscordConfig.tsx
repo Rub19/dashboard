@@ -305,20 +305,21 @@ export default function DiscordConfig() {
               {!!profile?.guilds && profile.guilds.length > 0 && (
                 <div>
                   <p className="mb-2 text-xs font-medium text-zinc-400">Serveurs</p>
-                  <div className="flex max-h-32 flex-wrap gap-2 overflow-y-auto">
+                  <div className="flex max-h-40 flex-wrap gap-2 overflow-y-auto no-scrollbar">
                     {profile.guilds.slice(0, 24).map((g) => (
                       <span
                         key={g.id}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 text-[10px] text-zinc-300"
+                        className="inline-flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.03] px-2.5 py-1.5 text-xs text-zinc-300"
                       >
                         <ClientImage
-                          src={g.iconUrl || guildIconUrl(g.id, g.icon)}
+                          candidates={[g.iconUrl, guildIconUrl(g.id, g.icon)]}
                           alt=""
-                          width={16}
-                          height={16}
-                          className="h-4 w-4 rounded"
+                          width={24}
+                          height={24}
+                          loading="eager"
+                          className="h-6 w-6 rounded-md"
                           fallback={
-                            <span className="flex h-4 w-4 items-center justify-center rounded bg-zinc-700 text-[8px]">
+                            <span className="flex h-6 w-6 items-center justify-center rounded-md bg-zinc-700 text-[10px] font-semibold uppercase text-zinc-300">
                               {initials(g.name)}
                             </span>
                           }

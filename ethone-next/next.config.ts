@@ -19,7 +19,7 @@ writeFileSync(
 
 const nextConfig: NextConfig = {
   output: "export",
-  distDir: "out",
+  distDir: "dist",
   images: {
     unoptimized: true,
   },

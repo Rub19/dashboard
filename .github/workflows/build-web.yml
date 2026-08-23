@@ -2,7 +2,7 @@ name: Build Web (Next.js)
 
 on:
   push:
-    branches: [main, feat/clean-monorepo-cross-platform-alignment]
+    branches: [main, feat/clean-monorepo-cross-platform-alignment, fix/cloudflare-pages-and-worker]
   pull_request:
     branches: [main]
 
@@ -54,5 +54,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ethone-web-build
-          path: ethone-next/out/
+          path: ethone-next/dist/
           if-no-files-found: ignore

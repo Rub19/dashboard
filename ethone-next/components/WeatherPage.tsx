@@ -228,6 +228,7 @@ export default function WeatherPage() {
 
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden p-4 sm:p-6">
+      <div className="mx-auto flex h-full w-full max-w-7xl flex-col">
       <header className="shrink-0 mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">{i18n("weather")}</h1>
@@ -348,6 +349,7 @@ export default function WeatherPage() {
           </div>
         </div>
       )}
+    </div>
     </div>
   </div>
   );

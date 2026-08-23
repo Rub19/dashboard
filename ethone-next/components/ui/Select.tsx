@@ -60,10 +60,12 @@ export default function Select({
     const el = triggerRef.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
+    const width = Math.max(rect.width, 240);
+    const maxLeft = Math.max(8, (typeof window !== "undefined" ? window.innerWidth : 0) - width - 8);
     setPosition({
       top: rect.bottom + 6,
-      left: rect.left,
-      width: Math.max(rect.width, 240),
+      left: Math.max(8, Math.min(rect.left, maxLeft)),
+      width,
     });
   }, []);
 

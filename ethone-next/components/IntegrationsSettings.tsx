@@ -15,6 +15,7 @@ import CategoryTabs from "@/components/CategoryTabs";
 import ConnectionCard from "@/components/ConnectionCard";
 import DiscordConfig from "@/components/DiscordConfig";
 import SpotifyConfig from "@/components/SpotifyConfig";
+import Input from "@/components/ui/Input";
 
 function clientIdFromStorage(provider: string): string {
   if (typeof window === "undefined") return "";
@@ -32,6 +33,7 @@ export default function IntegrationsSettings() {
   const [loading, setLoading] = useState(true);
   const [health, setHealth] = useState<Record<string, PingResult>>({});
   const [testingAll, setTestingAll] = useState(false);
+  const [search, setSearch] = useState("");
 
   const i18n = useI18n();
   const { settings } = useSettings();
@@ -92,10 +94,18 @@ export default function IntegrationsSettings() {
     return map;
   }, [settings, credentials.connected, connected]);
 
-  const filtered = useMemo(
-    () => (filter === "all" ? INTEGRATIONS : INTEGRATIONS.filter((i) => i.category === filter)),
-    [filter]
-  );
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    let list = filter === "all" ? INTEGRATIONS : INTEGRATIONS.filter((i) => i.category === filter);
+    if (q) {
+      list = list.filter(
+        (i) =>
+          i.name.toLowerCase().includes(q) ||
+          i.id.toLowerCase().includes(q)
+      );
+    }
+    return list;
+  }, [filter, search]);
 
   const testOne = useCallback(
     async (id: string) => {
@@ -185,6 +195,15 @@ export default function IntegrationsSettings() {
       />
 
         <CategoryTabs active={filter} onChange={setFilter} />
+        <Input
+          icon="search"
+          inputSize="compact"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder={i18n("search")}
+          clearable
+          className="max-w-md"
+        />
       </div>
 
       <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-4">

@@ -31,7 +31,7 @@ export default function BentoCard({
       data-context-menu="bento"
       onPointerDown={hapticLightImpact}
       className={cn(
-        "group liquid-glass-card relative flex w-full flex-col rounded-2xl p-4 active:scale-[0.995]",
+        "group v8-panel relative flex w-full flex-col p-4 active:scale-[0.995]",
         "h-full min-h-0 w-full",
         className
       )}

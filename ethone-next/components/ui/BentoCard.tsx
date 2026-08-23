@@ -24,7 +24,7 @@ function BentoCard({
   return (
     <div
       onPointerDown={hapticLightImpact}
-      className={`group liquid-glass-card relative flex min-h-0 w-full flex-col rounded-2xl p-4 active:scale-[0.995] ${className}`}
+      className={`group v8-panel relative flex min-h-0 w-full flex-col p-4 active:scale-[0.995] ${className}`}
       style={style}
     >
       {title && (

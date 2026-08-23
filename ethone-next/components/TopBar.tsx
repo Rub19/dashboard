@@ -91,7 +91,7 @@ const WeatherQuickButton = memo(function WeatherQuickButton() {
           )}
         />
       </button>
-      <WeatherDetailPopover open={open} onClose={() => setOpen(false)} referenceRef={buttonEl} />
+      <WeatherDetailPopover open={open} onClose={() => setOpen(false)} referenceRef={buttonEl} weather={weather} />
     </>
   );
 });

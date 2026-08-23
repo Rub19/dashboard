@@ -149,7 +149,7 @@ function WeatherDetailContent({
     placement,
     strategy: "fixed",
     whileElementsMounted: autoUpdate,
-    middleware: [offset(8), flip({ padding: 8, crossAxis: false }), shift({ padding: 8 })],
+    middleware: [offset(8), flip({ padding: 8, crossAxis: false }), shift({ padding: 8, crossAxis: false })],
     elements: { reference: referenceRef },
   });
 

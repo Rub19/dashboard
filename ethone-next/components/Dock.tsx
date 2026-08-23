@@ -123,7 +123,7 @@ function Dock() {
   }
 
   const dockButton =
-    "flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl text-[var(--text-muted)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95";
+    "flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl text-[var(--text-muted)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]";
 
   return (
     <div
@@ -144,7 +144,7 @@ function Dock() {
                   <Icon name="close" className="h-4 w-4" />
                 </button>
               </div>
-              <div className="grid max-h-[60vh] grid-cols-3 gap-2 overflow-y-auto sm:grid-cols-4">
+              <div className="grid max-h-[60vh] grid-cols-3 gap-2 overflow-y-auto no-scrollbar sm:grid-cols-4">
                 {allApps.map((app) => (
                   <button
                     key={app.id}
@@ -166,7 +166,7 @@ function Dock() {
       )}
 
       <nav
-        className="pointer-events-auto inline-flex items-center gap-2 v8-dock px-3 py-2 select-none"
+        className="pointer-events-auto inline-flex items-center gap-2 overflow-x-auto no-scrollbar v8-dock px-3 py-2 select-none"
         aria-label={i18n("dock")}
       >
         <DockMediaFlyout nowPlaying={spotifyNow} clientId={settings.liveSpotifyClientId} />

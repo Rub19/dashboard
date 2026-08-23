@@ -17,27 +17,16 @@ export async function areActivitiesSupported() {
   return false;
 }
 
-function toContentState(data: LiveActivityData): Record<string, string> {
-  return {
-    mode: data.mode,
-    title: data.title,
-    subtitle: data.subtitle,
-    progress: data.progress ?? "0",
-    accent: data.accent ?? "classic",
-    action: data.action ?? "",
-  };
-}
-
-export async function startActivity(id: string, data: LiveActivityData) {
+export async function startActivity(_id: string, _data: LiveActivityData) {
   if (!isNativeIOS()) return { activityId: "" };
   return { activityId: "" };
 }
 
-export async function updateActivity(id: string, data: LiveActivityData) {
+export async function updateActivity(_id: string, _data: LiveActivityData) {
   if (!isNativeIOS()) return;
 }
 
-export async function endActivity(id: string) {
+export async function endActivity(_id: string) {
   if (!isNativeIOS()) return;
 }
 

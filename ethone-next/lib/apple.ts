@@ -1,7 +1,5 @@
 "use client";
 
-import { supabase } from "@/lib/supabase";
-
 export function isNativeIOS() {
   return false;
 }
@@ -18,21 +16,21 @@ export async function checkBiometric() {
   return { available: false, reason: "plateforme" as const };
 }
 
-export async function setNativeFocusState(active: boolean, durationMinutes = 25) {
+export async function setNativeFocusState(active: boolean, _durationMinutes = 25) {
   return { active };
 }
 
-export async function authenticateWithBiometric(reason = "Authentifiez-vous pour accéder à vos données ETHONE.") {
+export async function authenticateWithBiometric(_reason = "Authentifiez-vous pour accéder à vos données ETHONE.") {
   return { ok: false, error: new Error("Authentification biométrique non disponible.") } as const;
 }
 
 export async function indexSpotlightItems(
-  items: Array<{ id: string; title: string; description?: string; contentType?: string; url: string; thumbnailData?: string }>
+  _items: Array<{ id: string; title: string; description?: string; contentType?: string; url: string; thumbnailData?: string }>
 ) {
   return { indexed: 0 };
 }
 
-export async function deleteSpotlightItems(ids: string[]) {
+export async function deleteSpotlightItems(_ids: string[]) {
   return { deleted: 0 };
 }
 

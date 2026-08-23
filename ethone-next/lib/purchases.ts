@@ -26,7 +26,7 @@ function isNative() {
   return false;
 }
 
-export async function configurePurchases(appUserID?: string) {
+export async function configurePurchases(_appUserID?: string) {
   if (!isNative()) return;
   if (!REVENUECAT_API_KEY) {
     console.warn("RevenueCat API key not configured");
@@ -45,7 +45,7 @@ export function findProPackage(offering: PurchasesOffering | null, plan: Subscri
   return offering.availablePackages.find((pkg) => pkg.product.identifier === productId) ?? null;
 }
 
-export async function purchasePackage(pkg: PurchasesPackage): Promise<{ ok: boolean; customerInfo?: CustomerInfo; error?: Error }> {
+export async function purchasePackage(_pkg: PurchasesPackage): Promise<{ ok: boolean; customerInfo?: CustomerInfo; error?: Error }> {
   if (!isNative()) return { ok: false, error: new Error("Achats in-app non disponibles.") };
   return { ok: false, error: new Error("Achats in-app non disponibles.") };
 }

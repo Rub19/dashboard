@@ -2,8 +2,6 @@
 
 import { isNative } from "./apple";
 
-const permissionRequested = false;
-
 export async function requestNotificationPermissions(): Promise<"granted" | "denied" | "not-native"> {
   if (!isNative()) return "not-native";
   return "denied";
@@ -12,16 +10,6 @@ export async function requestNotificationPermissions(): Promise<"granted" | "den
 export async function checkNotificationPermissions(): Promise<"granted" | "denied" | "not-native"> {
   if (!isNative()) return "not-native";
   return "denied";
-}
-
-async function ensurePermission(): Promise<boolean> {
-  if (!isNative()) return false;
-  if (permissionRequested) {
-    const status = await checkNotificationPermissions();
-    return status === "granted";
-  }
-  const status = await requestNotificationPermissions();
-  return status === "granted";
 }
 
 export function notificationIdFromString(prefix: string, id: string): number {
@@ -52,15 +40,15 @@ export async function scheduleTaskReminder(task: {
   return { ok: false, id };
 }
 
-export async function triggerPomodoroCompletedNotification(sessionName: string): Promise<{ ok: boolean }> {
+export async function triggerPomodoroCompletedNotification(_sessionName: string): Promise<{ ok: boolean }> {
   if (!isNative()) return { ok: false };
   console.warn("Local notifications are only available in the native app.");
   return { ok: false };
 }
 
 export async function schedulePomodoroEndNotification(
-  sessionName: string,
-  endAt: Date,
+  _sessionName: string,
+  _endAt: Date,
 ): Promise<{ ok: boolean; id: number }> {
   if (!isNative()) return { ok: false, id: 0 };
   const id = notificationIdFromString("pomodoro", "end");
@@ -68,7 +56,7 @@ export async function schedulePomodoroEndNotification(
   return { ok: false, id };
 }
 
-export async function cancelReminder(id: number): Promise<void> {
+export async function cancelReminder(_id: number): Promise<void> {
   if (!isNative()) return;
 }
 

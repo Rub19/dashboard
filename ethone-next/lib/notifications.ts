@@ -61,30 +61,30 @@ const CATEGORIES: NotificationCategoryConfig[] = [
 ];
 
 export async function initializePushAndLocalNotifications(
-  onToken?: (token: string) => void,
-  onMessage?: (notification: { data?: Record<string, string>; title?: string; body?: string }) => void,
-  onAction?: (action: { actionId: string; notification?: { data?: Record<string, string> }; inputValue?: string }) => void
+  _onToken?: (token: string) => void,
+  _onMessage?: (notification: { data?: Record<string, string>; title?: string; body?: string }) => void,
+  _onAction?: (action: { actionId: string; notification?: { data?: Record<string, string> }; inputValue?: string }) => void
 ) {
   if (!isNative()) return;
 }
 
 export async function scheduleLocalNotification(
-  id: number,
-  title: string,
-  body: string,
-  at: Date,
-  data?: Record<string, string>,
-  category?: NotificationCategory
+  _id: number,
+  _title: string,
+  _body: string,
+  _at: Date,
+  _data?: Record<string, string>,
+  _category?: NotificationCategory
 ) {
   if (!isNative()) return;
   console.warn("Local notifications are only available in the native app.");
 }
 
-export async function cancelLocalNotifications(ids?: number[]) {
+export async function cancelLocalNotifications(_ids?: number[]) {
   if (!isNative()) return;
 }
 
-export async function setBadgeCount(count: number) {
+export async function setBadgeCount(_count: number) {
   if (!isNative()) return;
 }
 

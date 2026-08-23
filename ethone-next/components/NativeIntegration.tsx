@@ -9,13 +9,6 @@ import { configurePurchases } from "@/lib/purchases";
 import { isNativeIOS } from "@/lib/apple";
 import { isNativeAndroid, getMaterialColors, applyAndroidDynamicColors, onAndroidWindowLayoutChange } from "@/lib/android";
 
-const QUICK_ACTIONS = [
-  { id: "new-note", title: "Nouvelle Note Rapide", iosIcon: "doc.badge.plus" },
-  { id: "start-focus", title: "Lancer un Focus", iosIcon: "target" },
-  { id: "scan-doc", title: "Scanner un Document", iosIcon: "doc.viewfinder" },
-  { id: "search", title: "Rechercher", iosIcon: "magnifyingglass" },
-];
-
 function useQuickActions(router: ReturnType<typeof useRouter>, openPalette: () => void) {
   useEffect(() => {
     if (!isNativeIOS()) return;

@@ -24,7 +24,7 @@ function BentoCard({
   return (
     <div
       onPointerDown={hapticLightImpact}
-      className={`group v8-panel relative flex min-h-0 w-full flex-col p-4 active:scale-[0.995] ${className}`}
+      className={`group v8-panel relative flex min-h-0 w-full flex-col p-4 transition-[border-color,box-shadow] duration-200 hover:border-[var(--accent-primary)]/20 ${className}`}
       style={style}
     >
       {title && (

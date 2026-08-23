@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { createPortal } from "react-dom";
@@ -118,8 +118,8 @@ const CommandItemRow = memo(function CommandItemRow({
       onClick={() => run(cmd)}
       tabIndex={-1}
       className={cn(
-        "relative isolate flex w-full items-center rounded-md text-left text-sm transition-all duration-150 ease-out outline-0 focus:outline-0 focus-visible:outline-0",
-        isActive ? "text-[var(--accent)]" : "text-[var(--muted)]"
+        "relative isolate flex w-full items-center rounded-md text-left text-sm transition-colors duration-100 ease-out outline-0 focus:outline-0 focus-visible:outline-0",
+        isActive ? "bg-white/[0.08] text-[var(--accent)]" : "text-[var(--muted)] hover:bg-white/[0.04]"
       )}
     >
       <div className="relative z-10 flex flex-1 items-center gap-3 px-2 py-2">
@@ -169,15 +169,6 @@ const CommandItemRow = memo(function CommandItemRow({
   );
 });
 
-// Opened via a keyboard shortcut many times a day — entrance must read as
-// instant. Tight spring, even faster exit.
-const PANEL_SPRING = {
-  type: "spring",
-  stiffness: 560,
-  damping: 40,
-  mass: 0.5,
-} as const;
-
 export default function CommandPalette() {
   const i18n = useI18n();
   const { settings, update } = useSettings();
@@ -190,7 +181,6 @@ export default function CommandPalette() {
   const [mounted, setMounted] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const listRef = useRef<HTMLDivElement>(null);
 
   const commandHistory = useMemo(() => createCommandHistory(), []);
   const [frequency, setFrequency] = useState(() => commandHistory.frequency());
@@ -323,30 +313,6 @@ export default function CommandPalette() {
 
   const hasIcons = useMemo(() => filtered.some((it) => it.icon), [filtered]);
 
-  const [activePos, setActivePos] = useState({ top: 0, height: 0 });
-  const [activeVisible, setActiveVisible] = useState(false);
-
-  useLayoutEffect(() => {
-    if (!open || filtered.length === 0) {
-      setActiveVisible(false);
-      return;
-    }
-    const list = listRef.current;
-    const el = list?.querySelector<HTMLElement>(`[data-index="${index}"]`);
-    if (!list || !el) {
-      setActiveVisible(false);
-      return;
-    }
-    const targetScrollTop =
-      el.offsetTop - list.clientHeight / 2 + el.offsetHeight / 2;
-    list.scrollTo({
-      top: Math.max(0, targetScrollTop),
-      behavior: reduce ? "auto" : "smooth",
-    });
-    setActivePos({ top: el.offsetTop, height: el.offsetHeight });
-    setActiveVisible(true);
-  }, [index, open, filtered.length, reduce]);
-
   if (!mounted) return null;
 
   let flatIndex = 0;
@@ -384,13 +350,7 @@ export default function CommandPalette() {
             y: open || reduce ? 0 : -8,
             scale: open || reduce ? 1 : 0.97,
           }}
-          transition={
-            reduce
-              ? { duration: 0.1 }
-              : open
-                ? PANEL_SPRING
-                : { duration: 0.12, ease: EASE_OUT }
-          }
+          transition={{ duration: reduce ? 0.1 : 0.15, ease: EASE_OUT }}
           onKeyDown={onKeyDown}
           className={cn(
             "w-full max-w-xl overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-surface-raised shadow-2xl will-change-transform",
@@ -420,34 +380,12 @@ export default function CommandPalette() {
           </div>
 
           <div
-            ref={listRef}
             id={`${uid}-list`}
             role="listbox"
             aria-label="Commands"
-            className="relative max-h-[54vh] overflow-y-auto overscroll-contain p-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="max-h-[54vh] overflow-y-auto overscroll-contain p-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             style={{ scrollPaddingBlock: "8px" }}
           >
-            {filtered.length > 0 && (
-              <motion.div
-                aria-hidden
-                initial={false}
-                className="pointer-events-none absolute left-2 right-2 z-0 rounded-md bg-white/[0.08] will-change-[transform,height]"
-                animate={{
-                  y: activePos.top,
-                  height: activePos.height,
-                  opacity: activeVisible ? 1 : 0,
-                }}
-                transition={
-                  reduce
-                    ? { duration: 0 }
-                    : {
-                        type: "spring",
-                        stiffness: 520,
-                        damping: 35,
-                      }
-                }
-              />
-            )}
             {filtered.length === 0 ? (
               <div className="p-8 text-center text-sm text-[var(--muted)]">
                 {i18n("noResults")}

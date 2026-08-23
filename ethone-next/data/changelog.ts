@@ -4504,6 +4504,78 @@ const v357_de: ChangelogEntry = {
   ],
 };
 
+const v358_fr: ChangelogEntry = {
+  version: "v1.8.14",
+  date: "2026-08-23",
+  title: "Polish UI : badges, toasts, Dock et thèmes",
+  items: [
+    "Correction de tous les badges invisibles (bg/text identique) dans Riot, Discord, Live, FileUpload et Flows.",
+    "L'alerte système de la barre ne réagit plus aux notifications non lues, seulement aux erreurs live/réseau.",
+    "Cartes de thème réduites pour un sélecteur plus dense.",
+    "Carte profil corrigée : badge Session vérifiée lisible, identifiant tronqué, bouton Discord adapté si déjà lié.",
+    "Badges sans bordure blanche dans SystemHealthBanner et bouton Live de la barre.",
+    "Bouton primary passé en fond accent solide pour plus de contraste.",
+    "Lanceur d'apps du Dock sans glow vert.",
+    "Bouton média du Dock cliquable pour ouvrir/fermer le flyout.",
+    "Toasts refondus avec pastille et texte colorés selon le type.",
+    "Version v1.8.14.",
+  ],
+};
+
+const v358_en: ChangelogEntry = {
+  version: "v1.8.14",
+  date: "2026-08-23",
+  title: "UI polish: badges, toasts, Dock and themes",
+  items: [
+    "Fixed all invisible badges (same bg/text) in Riot, Discord, Live, FileUpload and Flows.",
+    "Status bar alert now only triggers on live/network errors, not on unread notifications.",
+    "Theme cards reduced for a denser selector.",
+    "Profile card fixed: readable verified badge, truncated public id, Discord button adapts when already linked.",
+    "White-bordered badges removed in SystemHealthBanner and Live status bar button.",
+    "Primary button switched to solid accent background for better contrast.",
+    "Dock app launcher without green glow.",
+    "Dock media button now clickable to toggle flyout.",
+    "Toasts redesigned with colored dot and text per type.",
+    "Version v1.8.14.",
+  ],
+};
+
+const v358_es: ChangelogEntry = {
+  version: "v1.8.14",
+  date: "2026-08-23",
+  title: "Pulido UI: badges, toasts, Dock y temas",
+  items: [
+    "Corrección de todos los badges invisibles (mismo fondo/texto) en Riot, Discord, Live, FileUpload y Flows.",
+    "La alerta de la barra de estado solo se activa por errores live/red, no por notificaciones no leídas.",
+    "Tarjetas de tema reducidas para un selector más compacto.",
+    "Tarjeta de perfil corregida: badge de sesión verificada legible, id truncado, botón Discord adaptado si ya vinculado.",
+    "Badges sin borde blanco en SystemHealthBanner y botón Live de la barra.",
+    "Botón primary con fondo de acento sólido para mejor contraste.",
+    "Lanzador de apps del Dock sin glow verde.",
+    "Botón multimedia del Dock cliquable para abrir/cerrar flyout.",
+    "Toasts rediseñados con punto y texto de color según el tipo.",
+    "Versión v1.8.14.",
+  ],
+};
+
+const v358_de: ChangelogEntry = {
+  version: "v1.8.14",
+  date: "2026-08-23",
+  title: "UI-Polish: Badges, Toasts, Dock und Themes",
+  items: [
+    "Alle unsichtbaren Badges (gleicher Hintergrund/Text) in Riot, Discord, Live, FileUpload und Flows korrigiert.",
+    "Statusleisten-Alert reagiert jetzt nur auf Live/Netzwerk-Fehler, nicht auf ungelesene Benachrichtigungen.",
+    "Theme-Karten verkleinert für eine dichtere Auswahl.",
+    "Profilkarte korrigiert: lesbares Verifiziert-Badge, gekürzte ID, Discord-Button passt sich an, wenn bereits verknüpft.",
+    "Weiße Badge-Ränder in SystemHealthBanner und Live-Statusleiste entfernt.",
+    "Primary-Button auf soliden Akzent-Hintergrund für besseren Kontrast umgestellt.",
+    "Dock-App-Launcher ohne grünen Glow.",
+    "Dock-Mediabutton nun klickbar, um Flyout zu öffnen/schließen.",
+    "Toasts überarbeitet mit farbigem Punkt und Text je nach Typ.",
+    "Version v1.8.14.",
+  ],
+};
+
 const v356_fr: ChangelogEntry = {
   version: "v1.8.12",
   date: "2026-08-23",
@@ -4821,8 +4893,8 @@ const v351_de: ChangelogEntry = {
 };
 
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v356_fr, v355_fr, v354_fr, v353_fr, v352_fr, v351_fr, v350_fr, v349_fr, v348_fr, v347_fr, v346_fr, v345_fr, v344_fr, v343_fr, v147_fr, v146_fr, v145_fr, v144_fr, v143_fr, v142_fr, v141_fr, v140_fr, v139_fr, v138_fr, v137_fr, v136_fr, v135_fr, v134_fr, v133_fr, v132_fr, v131_fr, v130_fr, v206_fr, v205_fr, v204_fr, v203_fr, v202_fr, v201_fr, v200_fr, v199_fr, v198_fr, v197_fr, v196_fr, v195_fr, v194_fr, v193_fr, v192_fr, v191_fr, v190_fr, v189_fr, v188_fr, v187_fr, v186_fr, v185_fr, v184_fr, v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr, v329_fr, v330_fr, v331_fr, v332_fr, v338_fr, v340_fr, v341_fr, v342_fr],
-  en: [v356_en, v355_en, v354_en, v353_en, v352_en, v351_en, v350_en, v349_en, v348_en, v347_en, v346_en, v345_en, v344_en, v343_en, v147_en, v146_en, v145_en, v144_en, v143_en, v142_en, v141_en, v140_en, v139_en, v138_en, v137_en, v136_en, v135_en, v134_en, v133_en, v132_en, v131_en, v130_en, v206_en, v205_en, v204_en, v203_en, v202_en, v201_en, v200_en, v199_en, v198_en, v197_en, v196_en, v195_en, v194_en, v193_en, v192_en, v191_en, v190_en, v189_en, v188_en, v187_en, v186_en, v185_en, v184_en, v183_en, v182_en, v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
+  fr: [v358_fr, v357_fr, v356_fr, v355_fr, v354_fr, v353_fr, v352_fr, v351_fr, v350_fr, v349_fr, v348_fr, v347_fr, v346_fr, v345_fr, v344_fr, v343_fr, v147_fr, v146_fr, v145_fr, v144_fr, v143_fr, v142_fr, v141_fr, v140_fr, v139_fr, v138_fr, v137_fr, v136_fr, v135_fr, v134_fr, v133_fr, v132_fr, v131_fr, v130_fr, v206_fr, v205_fr, v204_fr, v203_fr, v202_fr, v201_fr, v200_fr, v199_fr, v198_fr, v197_fr, v196_fr, v195_fr, v194_fr, v193_fr, v192_fr, v191_fr, v190_fr, v189_fr, v188_fr, v187_fr, v186_fr, v185_fr, v184_fr, v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr, v329_fr, v330_fr, v331_fr, v332_fr, v338_fr, v340_fr, v341_fr, v342_fr],
+  en: [v358_en, v357_en, v356_en, v355_en, v354_en, v353_en, v352_en, v351_en, v350_en, v349_en, v348_en, v347_en, v346_en, v345_en, v344_en, v343_en, v147_en, v146_en, v145_en, v144_en, v143_en, v142_en, v141_en, v140_en, v139_en, v138_en, v137_en, v136_en, v135_en, v134_en, v133_en, v132_en, v131_en, v130_en, v206_en, v205_en, v204_en, v203_en, v202_en, v201_en, v200_en, v199_en, v198_en, v197_en, v196_en, v195_en, v194_en, v193_en, v192_en, v191_en, v190_en, v189_en, v188_en, v187_en, v186_en, v185_en, v184_en, v183_en, v182_en, v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -4876,7 +4948,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
     v342_en,
     v340_en,
   ],
-  es: [v356_es, v355_es, v354_es, v353_es, v352_es, v351_es, v350_es, v349_es, v348_es, v347_es, v346_es, v345_es, v344_es, v343_es, v147_es, v146_es, v145_es, v144_es, v143_es, v142_es, v141_es, v140_es, v139_es, v138_es, v137_es, v136_es, v135_es, v134_es, v133_es, v132_es, v131_es, v130_es, v206_es, v205_es, v204_es, v203_es, v202_es, v201_es, v200_es, v199_es, v198_es, v197_es, v196_es, v195_es, v194_es, v193_es, v192_es, v191_es, v190_es, v189_es, v188_es, v187_es, v186_es, v185_es, v184_es, v183_es, v182_es, v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
+  es: [v358_es, v357_es, v356_es, v355_es, v354_es, v353_es, v352_es, v351_es, v350_es, v349_es, v348_es, v347_es, v346_es, v345_es, v344_es, v343_es, v147_es, v146_es, v145_es, v144_es, v143_es, v142_es, v141_es, v140_es, v139_es, v138_es, v137_es, v136_es, v135_es, v134_es, v133_es, v132_es, v131_es, v130_es, v206_es, v205_es, v204_es, v203_es, v202_es, v201_es, v200_es, v199_es, v198_es, v197_es, v196_es, v195_es, v194_es, v193_es, v192_es, v191_es, v190_es, v189_es, v188_es, v187_es, v186_es, v185_es, v184_es, v183_es, v182_es, v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -4930,7 +5002,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
     v342_es,
     v340_es,
   ],
-  de: [v356_de, v355_de, v354_de, v353_de, v352_de, v351_de, v350_de, v349_de, v348_de, v347_de, v346_de, v345_de, v344_de, v343_de, v147_de, v146_de, v145_de, v144_de, v143_de, v142_de, v141_de, v140_de, v139_de, v138_de, v137_de, v136_de, v135_de, v134_de, v133_de, v132_de, v131_de, v130_de, v206_de, v205_de, v204_de, v203_de, v202_de, v201_de, v200_de, v199_de, v198_de, v197_de, v196_de, v195_de, v194_de, v193_de, v192_de, v191_de, v190_de, v189_de, v188_de, v187_de, v186_de, v185_de, v184_de, v183_de, v182_de, v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
+  de: [v358_de, v357_de, v356_de, v355_de, v354_de, v353_de, v352_de, v351_de, v350_de, v349_de, v348_de, v347_de, v346_de, v345_de, v344_de, v343_de, v147_de, v146_de, v145_de, v144_de, v143_de, v142_de, v141_de, v140_de, v139_de, v138_de, v137_de, v136_de, v135_de, v134_de, v133_de, v132_de, v131_de, v130_de, v206_de, v205_de, v204_de, v203_de, v202_de, v201_de, v200_de, v199_de, v198_de, v197_de, v196_de, v195_de, v194_de, v193_de, v192_de, v191_de, v190_de, v189_de, v188_de, v187_de, v186_de, v185_de, v184_de, v183_de, v182_de, v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",

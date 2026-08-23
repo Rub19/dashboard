@@ -2,6 +2,21 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.14 — 2026-08-23
+
+**Polish UI : badges, toasts, Dock et thèmes**
+
+- Correction de tous les badges invisibles (bg/text identique) dans Riot, Discord, Live, FileUpload et Flows.
+- L'alerte système de la barre ne réagit plus aux notifications non lues, seulement aux erreurs live/réseau.
+- Cartes de thème réduites pour un sélecteur plus dense.
+- Carte profil corrigée : badge Session vérifiée lisible, identifiant tronqué, bouton Discord adapté si déjà lié.
+- Badges sans bordure blanche dans SystemHealthBanner et bouton Live de la barre.
+- Bouton primary passé en fond accent solide pour plus de contraste.
+- Lanceur d'apps du Dock sans glow vert.
+- Bouton média du Dock cliquable pour ouvrir/fermer le flyout.
+- Toasts refondus avec pastille et texte colorés selon le type.
+- Version `v1.8.14`.
+
 ## v1.8.13 — 2026-08-23
 
 **Dashboard web : polish UI, icônes ETHONE et widget Spotify**

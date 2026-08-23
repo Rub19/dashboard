@@ -200,7 +200,7 @@ function TopBar() {
         </div>
 
         {/* Center — System status */}
-        <div className="col-start-2 hidden min-w-0 items-center justify-center justify-self-center xl:flex pointer-events-auto">
+        <div className="col-start-2 hidden min-w-0 items-center justify-center justify-self-center lg:flex pointer-events-auto">
           <SystemStatusPills />
         </div>
 

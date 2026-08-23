@@ -67,7 +67,6 @@ export default function Shell({ children }: { children: ReactNode }) {
                 <CosmicBackground />
                 <Spotlight />
                 <VisualHaptics />
-                <DynamicIslandContainer />
                 <PrivacyShield>
                 <main
                   data-v8-main
@@ -75,6 +74,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                   className="relative z-0 min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--background)] pb-32 md:pb-4"
                   tabIndex={-1}
                 >
+                  <DynamicIslandContainer />
                   <ActivityJournalProvider>
                     <PageTransition>{children}</PageTransition>
                     <AutomationRuntime />

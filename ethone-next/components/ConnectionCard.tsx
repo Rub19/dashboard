@@ -107,12 +107,12 @@ export default function ConnectionCard({
     ? config.category === "oauth"
       ? "bg-purple-500/10 text-purple-300 border-purple-500/20"
       : config.category === "api_key"
-        ? "bg-[--info] text-[--info] border-[--info]"
+        ? "bg-[--info]/10 text-[--info] border-[--info]/20"
         : "bg-amber-500/10 text-amber-300 border-amber-500/20"
     : integration.status === "oauth"
       ? "bg-purple-500/10 text-purple-300 border-purple-500/20"
       : integration.status === "api"
-        ? "bg-[--info] text-[--info] border-[--info]"
+        ? "bg-[--info]/10 text-[--info] border-[--info]/20"
         : integration.status === "local" || integration.status === "feed"
           ? "bg-amber-500/10 text-amber-300 border-amber-500/20"
           : "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
@@ -468,7 +468,7 @@ export default function ConnectionCard({
                 type="button"
                 onClick={handleConnect}
                 disabled={!clientId.trim() || !OAUTH_PROVIDERS[integration.id] || submitting}
-                className="col-span-2 flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] py-2 px-3 text-xs font-bold text-[var(--accent-contrast)] shadow-md shadow-[var(--accent-primary)]/20 transition-all hover:bg-[var(--accent-primary)] active:scale-95 disabled:opacity-50"
+                className="col-span-2 flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] py-2 px-3 text-xs font-bold text-[var(--accent-contrast)] shadow-md shadow-[var(--accent-primary)]/20 transition-all hover:bg-[var(--accent-primary)] disabled:opacity-50"
               >
                 {submitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <PlugZap className="h-3.5 w-3.5" />}
                 <span>{i18n("connect", "Connecter")}</span>
@@ -575,7 +575,7 @@ export default function ConnectionCard({
                 type="button"
                 onClick={handleSave}
                 disabled={submitting}
-                className={`flex items-center justify-center gap-1.5 rounded-xl py-2 px-2 text-xs font-bold transition-all active:scale-95 disabled:opacity-50 ${
+                className={`flex items-center justify-center gap-1.5 rounded-xl py-2 px-2 text-xs font-bold transition-all disabled:opacity-50 ${
                   isConnected
                     ? "col-span-1 bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-lg shadow-[var(--accent-primary)]/20 hover:bg-[var(--accent-primary)]"
                     : "col-span-2 bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-md shadow-[var(--accent-primary)]/20 hover:bg-[var(--accent-primary)]"
@@ -627,7 +627,7 @@ export default function ConnectionCard({
             {i18n(rawOpen ? "hideRaw" : "showRaw")}
           </span>
           {health?.ms ? (
-            <span className="rounded-lg border border-[--accent-primary] bg-[--accent-primary] px-2 py-0.5 text-[10px] font-mono text-[--accent-primary]">
+            <span className="rounded-lg border border-[--accent-primary]/30 bg-[--accent-primary]/10 px-2 py-0.5 text-[10px] font-mono text-[--accent-primary]">
               {health.ms} ms
             </span>
           ) : null}

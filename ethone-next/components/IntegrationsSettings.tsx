@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
 import { Plug } from "lucide-react";
 import { fetchWorker } from "@/lib/api";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -206,7 +205,7 @@ export default function IntegrationsSettings() {
         />
       </div>
 
-      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-4">
+      <div className="min-h-0 w-full flex-1 space-y-4 overflow-y-auto p-6 pb-10 no-scrollbar">
       {(loading || credentials.loading) && (
         <div className="flex items-center gap-3 rounded-2xl v8-panel p-5 text-sm text-zinc-400 backdrop-blur-2xl">
           <Plug className="h-5 w-5 animate-spin" />
@@ -214,9 +213,9 @@ export default function IntegrationsSettings() {
         </div>
       )}
 
-      <motion.div layout className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((integration) => renderCard(integration))}
-      </motion.div>
+      </div>
 
       <div className="rounded-2xl v8-panel p-5 text-sm text-zinc-400 backdrop-blur-2xl">
         <div className="flex items-center gap-2">

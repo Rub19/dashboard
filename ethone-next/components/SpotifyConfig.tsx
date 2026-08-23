@@ -83,7 +83,7 @@ export default function SpotifyConfig() {
 
   const statusClass =
     status === "connected"
-      ? "bg-[--accent-primary] text-[--accent-primary] border border-[--accent-primary]"
+      ? "bg-[--accent-primary]/10 text-[--accent-primary] border border-[--accent-primary]/30"
       : status === "error"
         ? "bg-rose-500/15 text-rose-300 border border-rose-500/30"
         : "bg-white/[0.04] text-zinc-400 border border-white/[0.08]";
@@ -227,7 +227,7 @@ export default function SpotifyConfig() {
               type="button"
               onClick={handleConnect}
               disabled={!rawValue.trim() || submitting || testing || checking}
-              className="flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3 py-2 text-sm font-bold text-[var(--accent-contrast)] shadow-md shadow-[var(--accent-primary)]/20 transition hover:bg-[var(--accent-primary)] active:scale-95 disabled:opacity-50"
+              className="flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3 py-2 text-sm font-bold text-[var(--accent-contrast)] shadow-md shadow-[var(--accent-primary)]/20 transition hover:bg-[var(--accent-primary)] disabled:opacity-50"
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plug className="h-4 w-4" />}
               {submitting ? i18n("connecting") : i18n("connect", "Connecter")}

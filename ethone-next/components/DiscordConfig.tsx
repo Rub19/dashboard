@@ -217,7 +217,7 @@ export default function DiscordConfig() {
               type="button"
               onClick={handleSave}
               disabled={!rawValue.trim() || submitting || testing}
-              className={`col-span-1 flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-sm font-bold transition-all active:scale-95 disabled:opacity-50 ${
+              className={`col-span-1 flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-sm font-bold transition-all disabled:opacity-50 ${
                 rawValue.trim()
                   ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-lg shadow-[var(--accent-primary)]/20 hover:bg-[var(--accent-primary)]"
                   : "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-md shadow-[var(--accent-primary)]/20 hover:bg-[var(--accent-primary)]"

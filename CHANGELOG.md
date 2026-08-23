@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.9 — 2026-08-23
+
+**Migration Pure Apple 100 % Swift et intégration avancée du Taptic Engine (Core Haptics)**
+
+- Audit et purge du dossier `ios/App/App` : suppression des résidus Capacitor/Cordova, ponts WebView et dépendances non-Apple.
+- Création de `HapticManager.swift` avec `CHHapticEngine` natif.
+- Patterns haptiques personnalisés : `playGlassTap()`, `playSuccessWave()`, `playTimerEndAlert()`.
+- Extension SwiftUI `.ethoneSensoryFeedback(_:trigger:)` sur `View`.
+- Intégration dans `NativeFloatingDock`, `TasksCard`, `FocusTimerCard`, `BrainCaptureCard`.
+- `AppDelegate.swwift` pré-chauffe le moteur haptique au lancement.
+- Version iOS `v1.8.9`.
+
 ## v1.8.8 — 2026-08-23
 
 **Audit global, isolation stricte et alignement cross-platform**

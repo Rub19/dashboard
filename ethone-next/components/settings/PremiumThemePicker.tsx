@@ -34,7 +34,7 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
 
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {PREMIUM_THEMES.map((id) => {
           const def = THEME_DEFINITIONS[id];
           const selected = resolvedValue === id;
@@ -65,10 +65,10 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.5 }}
                     transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                    className="absolute right-2 top-2 z-10 flex h-5 w-5 items-center justify-center rounded-full"
+                    className="absolute right-1.5 top-1.5 z-10 flex h-4 w-4 items-center justify-center rounded-full"
                     style={{ backgroundColor: def.accentPrimary, color: def.bgMain }}
                   >
-                    <Check className="h-3 w-3" strokeWidth={3} />
+                    <Check className="h-2.5 w-2.5" strokeWidth={3} />
                   </motion.span>
                 )}
               </AnimatePresence>
@@ -81,10 +81,10 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
                 }}
               />
 
-              <div className="relative p-3">
+              <div className="relative p-2">
                 {/* Dashboard miniature */}
                 <div
-                  className="mb-3 aspect-[16/10] w-full overflow-hidden rounded-xl border"
+                  className="mb-2 aspect-[2/1] w-full overflow-hidden rounded-xl border"
                   style={{ borderColor: def.borderSubtle, backgroundColor: def.bgMain }}
                 >
                   <div className="flex h-full w-full">
@@ -93,9 +93,9 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
                       className="h-full w-1/4 border-r"
                       style={{ borderColor: def.borderSubtle, backgroundColor: def.bgSidebar }}
                     >
-                      <div className="mt-2 ml-2 h-1.5 w-5 rounded-full" style={{ backgroundColor: def.accentPrimary }} />
-                      <div className="mt-2 ml-2 h-1 w-8 rounded-full" style={{ backgroundColor: def.borderActive }} />
-                      <div className="mt-1.5 ml-2 h-1 w-6 rounded-full" style={{ backgroundColor: def.borderSubtle }} />
+                      <div className="mt-1.5 ml-1.5 h-1 w-4 rounded-full" style={{ backgroundColor: def.accentPrimary }} />
+                      <div className="mt-1.5 ml-1.5 h-0.5 w-6 rounded-full" style={{ backgroundColor: def.borderActive }} />
+                      <div className="mt-1 ml-1.5 h-0.5 w-5 rounded-full" style={{ backgroundColor: def.borderSubtle }} />
                     </div>
                     {/* Content */}
                     <div className="flex h-full flex-1 flex-col" style={{ backgroundColor: def.bgSurface }}>
@@ -104,13 +104,13 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
                         className="flex h-1/5 w-full items-center gap-1.5 border-b px-2"
                         style={{ borderColor: def.borderSubtle, backgroundColor: def.bgSidebar }}
                       >
-                        <div className="h-2 w-2 rounded-full" style={{ backgroundColor: def.accentPrimary }} />
-                        <div className="h-1 w-10 rounded-full" style={{ backgroundColor: def.borderActive }} />
+                        <div className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: def.accentPrimary }} />
+                        <div className="h-0.5 w-8 rounded-full" style={{ backgroundColor: def.borderActive }} />
                       </div>
                       {/* Pane */}
                       <div className="flex-1 p-2">
                         <div
-                          className="mb-2 h-1/3 w-3/4 rounded-md"
+                          className="mb-1.5 h-1/3 w-3/4 rounded-md"
                           style={{ backgroundColor: def.borderSubtle }}
                         />
                         <div
@@ -125,15 +125,15 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
                 {/* Color chips */}
                 <div className="mb-2 flex items-center gap-1.5">
                   <span
-                    className="h-3 w-3 rounded-full ring-1 ring-white/20"
+                    className="h-2.5 w-2.5 rounded-full ring-1 ring-white/20"
                     style={{ backgroundColor: def.accentPrimary }}
                   />
                   <span
-                    className="h-3 w-3 rounded-full ring-1 ring-white/20"
+                    className="h-2.5 w-2.5 rounded-full ring-1 ring-white/20"
                     style={{ backgroundColor: def.accentSecondary }}
                   />
                   <span
-                    className="h-3 w-3 rounded-full ring-1 ring-white/20"
+                    className="h-2.5 w-2.5 rounded-full ring-1 ring-white/20"
                     style={{ backgroundColor: def.textMuted }}
                   />
                 </div>

@@ -58,7 +58,9 @@ final class FocusTimerModel: ObservableObject {
         pause()
         remaining = 0
         progress = 1
-        HapticManager.shared.playSuccessWave()
+        Task { @MainActor in
+            HapticManager.shared.playSuccessWave()
+        }
     }
 
     private func scheduleNotification() {

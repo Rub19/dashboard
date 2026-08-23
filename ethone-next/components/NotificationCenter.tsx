@@ -7,14 +7,14 @@ import { useNotifications, type Notification } from "@/lib/hooks/useNotification
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useIsMobile } from "@/lib/hooks/useMediaQuery";
 import { usePresence } from "@/components/PresenceProvider";
-import { Icon } from "@/lib/icons";
 import NotificationItem from "@/components/NotificationItem";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/motion/Popover";
 import Input from "@/components/Input";
 import Modal from "@/components/ui/Modal";
 import AnimatedFilterTabs from "@/components/ui/AnimatedFilterTabs";
+import EthoneGlyph, { type EthoneGlyphName } from "@/components/icons/EthoneGlyph";
 
-const FILTERS: { id: string; labelKey: string; icon: string }[] = [
+const FILTERS: { id: string; labelKey: string; icon: EthoneGlyphName }[] = [
   { id: "all", labelKey: "all", icon: "inbox" },
   { id: "unread", labelKey: "unread", icon: "mail-open" },
   { id: "important", labelKey: "important", icon: "star" },
@@ -79,7 +79,7 @@ export default function NotificationCenter() {
         id: f.id,
         label: i18n(f.labelKey),
         count: filterCounts.find((c) => c.id === f.id)?.count || undefined,
-        icon: <Icon name={f.icon} className="h-3 w-3" />,
+        icon: <EthoneGlyph name={f.icon} className="h-3 w-3" />,
       })),
     [filterCounts, i18n]
   );
@@ -144,7 +144,7 @@ export default function NotificationCenter() {
           aria-label={i18n("markAllRead")}
           title={i18n("markAllRead")}
         >
-          <Icon name="mail-open" className="h-4 w-4" />
+          <EthoneGlyph name="mail-open" className="h-4 w-4" />
         </button>
         <button
           type="button"
@@ -154,7 +154,7 @@ export default function NotificationCenter() {
           aria-label={i18n("clearAll")}
           title={i18n("clearAll")}
         >
-          <Icon name="trash-2" className="h-4 w-4" />
+          <EthoneGlyph name="trash" className="h-4 w-4" />
         </button>
       </div>
     </div>
@@ -184,7 +184,7 @@ export default function NotificationCenter() {
             className="flex h-32 flex-col items-center justify-center gap-2.5 text-center"
           >
             <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-[var(--muted)]">
-              <Icon name="bell-off" className="h-4 w-4" />
+              <EthoneGlyph name="bell-off" className="h-4 w-4" />
             </div>
             <p className="text-sm text-[var(--muted)]">{i18n("noNotifications")}</p>
           </motion.div>
@@ -229,7 +229,7 @@ export default function NotificationCenter() {
           className="relative flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95 cursor-pointer select-none"
           aria-label={i18n("notifications")}
         >
-          <Icon name="bell" className="pointer-events-none h-5 w-5" />
+          <EthoneGlyph name="bell" className="pointer-events-none h-5 w-5" />
           {unreadCount > 0 && (
             <span
               data-notification-badge

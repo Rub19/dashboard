@@ -181,9 +181,11 @@ export default function SocialDiscordCard({
     (activity) => activity.name !== "Custom Status" && activity.name !== "Spotify"
   );
 
-  const hasMusic = !!nowPlaying?.isPlaying;
+  // Keep the widget visible when Spotify returns a track without the playback
+  // flag (for example during device handoff or with a delayed API payload).
+  const hasMusic = Boolean(nowPlaying?.title || nowPlaying?.isPlaying);
   const lanyardSpotify = lanyard?.spotify;
-  const lanyardMusic =
+  const lanyardMusic: NowPlaying | null =
     lanyardSpotify && lanyardSpotify.playing
       ? {
           title: lanyardSpotify.title,
@@ -194,10 +196,12 @@ export default function SocialDiscordCard({
           isPlaying: true,
         }
       : null;
-  const activeMusic = hasMusic ? nowPlaying : lanyardMusic;
+  const activeMusic = nowPlaying?.title ? nowPlaying : lanyardMusic;
 
   const coverCandidates = useMemo(
-    () => (activeMusic ? [activeMusic.cover, (activeMusic as { artworkUrl?: string }).artworkUrl].filter(Boolean) : []),
+    () => (activeMusic
+      ? [activeMusic.cover, activeMusic.artworkUrl, ...(activeMusic.covers || [])].filter(Boolean)
+      : []),
     [activeMusic]
   );
 

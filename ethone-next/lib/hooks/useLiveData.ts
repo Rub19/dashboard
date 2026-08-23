@@ -75,6 +75,11 @@ function asNum(value: unknown): number | undefined {
   return undefined;
 }
 
+function asStringList(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.map(asStr).filter((item): item is string => Boolean(item));
+}
+
 async function fetchOptional(path: string): Promise<ApiData | null> {
   const res = (await fetchWorkerCached(path)) as { data?: ApiData } | null;
   return res?.data ?? null;
@@ -356,6 +361,7 @@ export function useLiveData(pollMs = 60000) {
             album: asStr(track.album ?? d.album),
             cover: asStr(track.cover ?? track.artworkUrl ?? track.artwork ?? d.cover ?? d.artworkUrl ?? d.artwork),
             artworkUrl: asStr(track.artworkUrl ?? track.artwork ?? track.cover ?? d.artworkUrl ?? d.artwork ?? d.cover),
+            covers: [...new Set([...asStringList(track.covers), ...asStringList(d.covers)])],
             progressMs: asNum(track.progressMs ?? d.progressMs),
             durationMs: asNum(track.durationMs ?? d.durationMs),
             isPlaying: Boolean(d.isPlaying ?? d.playing ?? track.isPlaying ?? track.playing),

@@ -5,18 +5,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { AnimatePresence, motion } from "framer-motion";
 import SafeImage from "@/components/SafeImage";
 import { useRouter } from "next/navigation";
-import {
-  Brain,
-  Play,
-  Pause,
-  SkipBack,
-  SkipForward,
-  Sparkles,
-  Timer,
-  ChevronRight,
-  Heart,
-  Music,
-} from "lucide-react";
+import { Icon } from "@/lib/icons";
 
 import LiveMediaProgress from "@/components/LiveMediaProgress";
 import { DynamicIsland, DynamicIslandView } from "@/components/ui/DynamicIsland";
@@ -49,6 +38,64 @@ function viewLabel(view: View, i18n: (key: string, fallback?: string) => string)
   }
 }
 
+function useIslandClock() {
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    const interval = window.setInterval(() => setNow(new Date()), 1000);
+    return () => window.clearInterval(interval);
+  }, []);
+
+  return useMemo(
+    () => now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false }),
+    [now],
+  );
+}
+
+function SpotifyCompact({
+  title,
+  artist,
+  coverCandidates,
+  clock,
+  fallback,
+}: {
+  title?: string;
+  artist?: string;
+  coverCandidates: (string | undefined)[];
+  clock: string;
+  fallback: string;
+}) {
+  const trackTitle = title || fallback;
+  const shouldMarquee = trackTitle.length > 24;
+
+  return (
+    <div className="flex min-h-[48px] min-w-[min(88vw,340px)] items-center gap-2.5 px-3">
+      <SafeImage
+        candidates={coverCandidates}
+        alt={trackTitle}
+        size={32}
+        className="h-8 w-8 shrink-0 rounded-lg object-cover shadow-[0_0_14px_var(--glow-color)] ring-1 ring-[var(--accent-primary)]/25"
+        iconClassName="h-4 w-4 text-[var(--accent-primary)]"
+        loading="eager"
+        priority
+        timeoutMs={3000}
+      />
+      <div className="min-w-0 flex-1 overflow-hidden">
+        <p className="ethone-track-title text-[11px] font-semibold leading-tight text-[var(--text-primary)]" title={trackTitle}>
+          <span className={cn("inline-block whitespace-nowrap", shouldMarquee && "ethone-track-title--marquee")}>
+            {trackTitle}
+          </span>
+        </p>
+        <p className="mt-0.5 truncate text-[10px] text-[var(--muted)]">{artist || fallback}</p>
+      </div>
+      <span className="flex shrink-0 items-center gap-1 rounded-md border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.04] px-1.5 py-1 font-mono text-[10px] tabular-nums text-[var(--muted)]">
+        <Icon name="clock" pack="phosphor" className="h-3 w-3" />
+        {clock}
+      </span>
+    </div>
+  );
+}
+
 function IslandBubble({
   view,
   active,
@@ -76,13 +123,13 @@ function IslandBubble({
 
   const icon =
     view === "spotify" ? (
-      <Music className={iconClass} />
+      <Icon name="music" pack="phosphor" className={iconClass} />
     ) : view === "pomodoro" ? (
-      <Timer className={iconClass} />
+      <Icon name="timer" pack="phosphor" className={iconClass} />
     ) : view === "brain" ? (
-      <Brain className={iconClass} />
+      <Icon name="brain" pack="phosphor" className={iconClass} />
     ) : (
-      <Sparkles className={iconClass} />
+      <Icon name="sparkles" pack="phosphor" className={iconClass} />
     );
 
   return (
@@ -109,13 +156,13 @@ function IslandExpandedHeader({
   const i18n = useI18n();
   const icon =
     selected === "spotify" ? (
-      <Music className="h-3.5 w-3.5 text-[--accent-primary]" />
+      <Icon name="music" pack="phosphor" className="h-3.5 w-3.5 text-[--accent-primary]" />
     ) : selected === "pomodoro" ? (
-      <Timer className="h-3.5 w-3.5 text-[var(--accent)]" />
+      <Icon name="timer" pack="phosphor" className="h-3.5 w-3.5 text-[var(--accent)]" />
     ) : selected === "brain" ? (
-      <Brain className="h-3.5 w-3.5 text-purple-400" />
+      <Icon name="brain" pack="phosphor" className="h-3.5 w-3.5 text-purple-400" />
     ) : (
-      <Sparkles className="h-3.5 w-3.5 text-zinc-500" />
+      <Icon name="sparkles" pack="phosphor" className="h-3.5 w-3.5 text-zinc-500" />
     );
   return (
     <div className={cn("-mx-6 -mt-4 mb-4 flex w-full items-center justify-between gap-3 border-b border-white/[0.06] px-6 pt-4 pb-3", className)}>
@@ -149,7 +196,7 @@ export default function DynamicIslandContainer() {
   const { settings } = useSettings();
   const { error: showError } = useToast();
   const focus = useFocus();
-  const { nowPlaying, loading: npLoading } = useNowPlaying(15000);
+  const { nowPlaying, loading: npLoading, refetch: refetchNowPlaying } = useNowPlaying(1000);
   const isThinking = useBrainActivityStore((s) => s.isThinking);
   const { visible } = useDynamicIslandStore();
 
@@ -171,6 +218,7 @@ export default function DynamicIslandContainer() {
   const [pendingSpotify, setPendingSpotify] = useState(false);
   const [isSaved, setIsSaved] = useState(nowPlaying?.isSaved ?? false);
   const [likeLoading, setLikeLoading] = useState(false);
+  const clock = useIslandClock();
 
   useEffect(() => {
     setLocalVolume(nowPlaying?.volumePercent ?? 50);
@@ -288,7 +336,7 @@ export default function DynamicIslandContainer() {
     if (!selectedView) {
       return (
         <div className={cn(base)}>
-          <Sparkles className="h-3.5 w-3.5 text-zinc-500" />
+          <Icon name="sparkles" pack="phosphor" className="h-3.5 w-3.5 text-zinc-500" />
           <span className="text-xs font-medium">{i18n("dynamicIsland", "Dynamic Island")}</span>
         </div>
       );
@@ -296,17 +344,18 @@ export default function DynamicIslandContainer() {
     switch (selectedView) {
       case "spotify":
         return (
-          <div className={cn(base)}>
-            <Music className="h-3.5 w-3.5 text-[--accent-primary]" />
-            <span className="max-w-[80px] truncate text-xs font-medium tabular-nums">
-              {nowPlaying?.title || i18n("spotify", "Spotify")}
-            </span>
-          </div>
+          <SpotifyCompact
+            title={nowPlaying?.title}
+            artist={nowPlaying?.artist}
+            coverCandidates={[nowPlaying?.cover, nowPlaying?.artworkUrl, ...(nowPlaying?.covers || [])]}
+            clock={clock}
+            fallback={i18n("spotify", "Spotify")}
+          />
         );
       case "pomodoro":
         return (
           <div className={cn(base)}>
-            <Timer className="h-3.5 w-3.5 text-[var(--accent)]" />
+            <Icon name="timer" pack="phosphor" className="h-3.5 w-3.5 text-[var(--accent)]" />
             <span className="text-xs font-medium tabular-nums">
               {focus.format(focus.state.remaining)}
             </span>
@@ -315,14 +364,14 @@ export default function DynamicIslandContainer() {
       case "brain":
         return (
           <div className={cn(base)}>
-            <Brain className="h-3.5 w-3.5 text-purple-400" />
+            <Icon name="brain" pack="phosphor" className="h-3.5 w-3.5 text-purple-400" />
             <span className="text-xs font-medium">{i18n("brain", "Brain")}</span>
           </div>
         );
       default:
         return null;
     }
-  }, [selectedView, nowPlaying, focus, i18n]);
+  }, [clock, selectedView, nowPlaying, focus, i18n]);
 
   // Spotify controls
   const spotifyControl = useCallback(
@@ -344,13 +393,14 @@ export default function DynamicIslandContainer() {
           method: "POST",
           body: JSON.stringify(body),
         });
+        refetchNowPlaying();
       } catch {
         showError(i18n("playbackControlFailed"));
       } finally {
         setPendingSpotify(false);
       }
     },
-    [settings.liveSpotifyClientId, i18n, showError],
+    [settings.liveSpotifyClientId, i18n, refetchNowPlaying, showError],
   );
 
   const togglePlay = useCallback(() => {
@@ -384,12 +434,13 @@ export default function DynamicIslandContainer() {
         body: JSON.stringify({ action, clientId, trackId }),
       });
       setIsSaved((s) => !s);
+      refetchNowPlaying();
     } catch {
       showError(i18n("playbackControlFailed"));
     } finally {
       setLikeLoading(false);
     }
-  }, [settings.liveSpotifyClientId, nowPlaying?.id, isSaved, i18n, showError]);
+  }, [settings.liveSpotifyClientId, nowPlaying?.id, isSaved, i18n, refetchNowPlaying, showError]);
 
   const onSpotifySeek = useCallback(
     (value: number) => {
@@ -435,9 +486,13 @@ export default function DynamicIslandContainer() {
                   selected={selectedView ?? "spotify"}
                   onSelect={selectView}
                 />
-                <div className="flex items-start justify-end">
-                  <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 text-[10px] font-medium text-[--accent-primary]">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="rounded-lg border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 px-2 py-1 text-[10px] font-medium text-[--accent-primary]">
                     {nowPlaying?.source || "Spotify"}
+                  </span>
+                  <span className="flex items-center gap-1 rounded-lg border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.04] px-2 py-1 font-mono text-[10px] tabular-nums text-[var(--muted)]">
+                    <Icon name="clock" pack="phosphor" className="h-3 w-3" />
+                    {clock}
                   </span>
                 </div>
 
@@ -453,11 +508,14 @@ export default function DynamicIslandContainer() {
                     timeoutMs={3000}
                   />
                   <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5">
-                    <p className="truncate text-sm font-semibold text-white">
+                    <p className="break-words text-sm font-semibold leading-snug text-[var(--text-primary)]">
                       {nowPlaying?.title || "Spotify"}
                     </p>
-                    <p className="truncate text-xs text-zinc-400">
+                    <p className="truncate text-xs text-[var(--muted)]">
                       {nowPlaying?.artist || i18n("spotifyPlaying")}
+                    </p>
+                    <p className="truncate text-[10px] text-[var(--accent-primary)]/80">
+                      {nowPlaying?.album || i18n("spotify", "Spotify")}
                     </p>
                   </div>
                   <button
@@ -477,7 +535,7 @@ export default function DynamicIslandContainer() {
                       whileTap={{ scale: 1.2 }}
                       transition={{ type: "spring", stiffness: 400, damping: 17 }}
                     >
-                      <Heart className={cn("h-4 w-4", isSaved && "fill-current")} />
+                      <Icon name="heart" pack="phosphor" className={cn("h-4 w-4", isSaved && "fill-current")} />
                     </motion.div>
                   </button>
                 </div>
@@ -506,7 +564,7 @@ export default function DynamicIslandContainer() {
                     className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
                     aria-label={i18n("previous")}
                   >
-                    <SkipBack className="h-5 w-5" />
+                    <Icon name="skipBack" pack="phosphor" className="h-5 w-5" />
                   </button>
                   <button
                     type="button"
@@ -515,7 +573,7 @@ export default function DynamicIslandContainer() {
                     className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--text-primary)] text-[var(--background)] shadow-lg transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
                     aria-label={nowPlaying?.isPlaying ? i18n("pause") : i18n("play")}
                   >
-                    {nowPlaying?.isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 fill-current" />}
+                    {nowPlaying?.isPlaying ? <Icon name="pause" pack="phosphor" className="h-5 w-5" /> : <Icon name="play" pack="phosphor" className="h-5 w-5 fill-current" />}
                   </button>
                   <button
                     type="button"
@@ -524,7 +582,7 @@ export default function DynamicIslandContainer() {
                     className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
                     aria-label={i18n("next")}
                   >
-                    <SkipForward className="h-5 w-5" />
+                    <Icon name="skipForward" pack="phosphor" className="h-5 w-5" />
                   </button>
                 </div>
               </div>
@@ -560,7 +618,7 @@ export default function DynamicIslandContainer() {
                       onClick={() => focus.resume()}
                       className="flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3 py-1.5 text-xs font-semibold text-[var(--accent-contrast)] transition-colors hover:opacity-90"
                     >
-                      <Play className="h-3.5 w-3.5" />
+                      <Icon name="play" pack="phosphor" className="h-3.5 w-3.5" />
                       {i18n("resume")}
                     </button>
                   ) : (
@@ -569,7 +627,7 @@ export default function DynamicIslandContainer() {
                       onClick={() => focus.pause()}
                       className="flex items-center gap-1.5 rounded-xl bg-[var(--text-primary)]/[0.08] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.12]"
                     >
-                      <Pause className="h-3.5 w-3.5" />
+                      <Icon name="pause" pack="phosphor" className="h-3.5 w-3.5" />
                       {i18n("pause")}
                     </button>
                   )}
@@ -579,7 +637,7 @@ export default function DynamicIslandContainer() {
                       onClick={() => focus.skipBreak()}
                       className="flex items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.08] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--text-primary)]/20 hover:text-[var(--text-primary)]"
                     >
-                      <ChevronRight className="h-3.5 w-3.5" />
+                      <Icon name="chevron-right" pack="phosphor" className="h-3.5 w-3.5" />
                       {i18n("skip")}
                     </button>
                   )}
@@ -595,7 +653,7 @@ export default function DynamicIslandContainer() {
                   onSelect={selectView}
                 />
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-500/15">
-                  <Brain className="h-6 w-6 text-purple-400" />
+                  <Icon name="brain" pack="phosphor" className="h-6 w-6 text-purple-400" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-white">{i18n("brainGenerating", "Génération en cours…")}</p>
@@ -606,7 +664,7 @@ export default function DynamicIslandContainer() {
                   onClick={() => router.push("/brain")}
                   className="flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)]/15 px-3 py-1.5 text-xs font-medium text-[var(--accent-primary)] transition-colors hover:bg-[var(--accent-primary)]/25"
                 >
-                  <Sparkles className="h-3.5 w-3.5" />
+                  <Icon name="sparkles" pack="phosphor" className="h-3.5 w-3.5" />
                   {i18n("openBrain", "Ouvrir le Brain")}
                 </button>
               </div>

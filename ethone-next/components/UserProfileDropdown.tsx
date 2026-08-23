@@ -28,6 +28,8 @@ import {
   type ChangelogEntry,
 } from "@/data/changelog";
 import { USER_STATUS_CONFIG } from "@/lib/settings";
+import PresenceGlyph from "@/components/icons/PresenceGlyph";
+import { setNativePresence } from "@/lib/apple";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/motion/Popover";
 
 function initials(name?: string) {
@@ -96,6 +98,7 @@ export default function UserProfileDropdown() {
 
   function setStatus(st: keyof typeof USER_STATUS_CONFIG) {
     update({ status: st });
+    void setNativePresence(USER_STATUS_CONFIG[st].presence);
   }
 
   const changelog = useMemo<ChangelogEntry[]>(() => {
@@ -270,15 +273,14 @@ export default function UserProfileDropdown() {
                     e.stopPropagation();
                     setStatus(st);
                   }}
+                  aria-pressed={currentStatus === st}
                   className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 transition-all ${
                     currentStatus === st
                       ? "bg-[var(--text-primary)]/[0.08] font-bold text-[var(--text-primary)] shadow-sm"
                       : "text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.03] hover:text-[var(--text-primary)]"
                   }`}
                 >
-                  <span
-                    className={`h-1.5 w-1.5 rounded-lg ${USER_STATUS_CONFIG[st].dot}`}
-                  />
+                  <PresenceGlyph status={st} className={`h-3.5 w-3.5 ${USER_STATUS_CONFIG[st].text}`} />
                   <span>{i18n(USER_STATUS_CONFIG[st].labelKey)}</span>
                 </button>
               ))}

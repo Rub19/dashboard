@@ -2109,12 +2109,6 @@ html[data-zen-mode="true"] [data-v8-main] {
   border-radius: var(--card-radius);
 }
 
-/* Dashboard-wide icon shape overrides */
-button:has(> svg),
-a:has(> svg) {
-  border-radius: 9999px;
-}
-
 [data-icon-radius="square"] [data-dock-item],
 [data-icon-radius="square"] .v8-icon-radius,
 [data-icon-radius="square"] [data-v8-rail] a,
@@ -2134,6 +2128,29 @@ a:has(> svg) {
 [data-icon-radius="pill"] [data-v8-rail] a,
 [data-icon-radius="pill"] [data-v8-rail] button {
   border-radius: 9999px;
+}
+
+@keyframes ethone-track-marquee {
+  0%, 18% { transform: translateX(0); }
+  82%, 100% { transform: translateX(calc(-100% + 210px)); }
+}
+
+.ethone-track-title {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.ethone-track-title--marquee {
+  animation: ethone-track-marquee 11s linear infinite;
+  padding-right: 2.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ethone-track-title--marquee {
+    animation: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 
@@ -2363,4 +2380,3 @@ svg.animate-spin,
   transition-property: transform, opacity, background-color, border-color, color, box-shadow;
   transition-timing-function: var(--ease-out, ease-out);
 }
-

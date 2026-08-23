@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { motion, type PanInfo, useMotionValue, useTransform } from "framer-motion";
-import { CheckCircle2, AlertCircle, Info, Loader2, AlertTriangle, X } from "lucide-react";
+import EthoneGlyph from "@/components/icons/EthoneGlyph";
 
 export type ToastType = "success" | "error" | "info" | "warning" | "loading";
 
@@ -24,27 +24,27 @@ const CONFIG: Record<
   }
 > = {
   success: {
-    icon: <CheckCircle2 className="h-4 w-4 text-[--accent-primary]" />,
+    icon: <EthoneGlyph name="check" className="h-4 w-4 text-[--accent-primary]" />,
     border: "border-[--accent-primary]",
     progress: "bg-[--accent-primary]",
   },
   error: {
-    icon: <AlertCircle className="h-4 w-4 text-[var(--danger)]" />,
+    icon: <EthoneGlyph name="alert" className="h-4 w-4 text-[var(--danger)]" />,
     border: "border-[var(--danger)]/30",
     progress: "bg-[var(--danger)]/50",
   },
   info: {
-    icon: <Info className="h-4 w-4 text-[var(--info)]" />,
+    icon: <EthoneGlyph name="update" className="h-4 w-4 text-[var(--info)]" />,
     border: "border-[var(--info)]/30",
     progress: "bg-[var(--info)]/50",
   },
   warning: {
-    icon: <AlertTriangle className="h-4 w-4 text-[var(--warning)]" />,
+    icon: <EthoneGlyph name="alert" className="h-4 w-4 text-[var(--warning)]" />,
     border: "border-[var(--warning)]/30",
     progress: "bg-[var(--warning)]/50",
   },
   loading: {
-    icon: <Loader2 className="h-4 w-4 animate-spin text-[var(--accent-primary)]" />,
+    icon: <EthoneGlyph name="refresh" className="h-4 w-4 animate-spin text-[var(--accent-primary)]" />,
     border: "border-[var(--accent-primary)]/30",
     progress: "bg-[var(--accent-primary)]/50",
   },
@@ -104,7 +104,7 @@ export default function Toast({
         className="shrink-0 rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/6 hover:text-[var(--text-primary)]"
         aria-label="Fermer"
       >
-        <X className="h-4 w-4" />
+        <EthoneGlyph name="close" className="h-4 w-4" />
       </button>
 
       {toast.duration > 0 && (

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useNotifications, type Notification, type SnoozeDuration } from "@/lib/hooks/useNotifications";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
+import EthoneGlyph from "@/components/icons/EthoneGlyph";
 
 const CATEGORY_ICONS: Record<string, string> = {
   mail: "mail",
@@ -26,7 +27,7 @@ const CATEGORY_TONES: Record<string, string> = {
   system: "bg-zinc-500/10 text-zinc-400",
   important: "bg-amber-500/10 text-amber-400",
   messages: "bg-sky-500/10 text-sky-400",
-  activity: "bg-[--accent-primary] text-[--accent-primary]",
+  activity: "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]",
   tracker: "bg-pink-500/10 text-pink-400",
   mail: "bg-sky-500/10 text-sky-400",
 };
@@ -204,7 +205,7 @@ export default function NotificationItem({
             className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--foreground)]"
             aria-label={isUnread ? i18n("markAsRead") : i18n("markAsUnread")}
           >
-            <Icon name={isUnread ? "check" : "mail"} className="h-4 w-4" />
+            <EthoneGlyph name={isUnread ? "check" : "mail-open"} className="h-4 w-4" />
           </button>
           <button
             type="button"
@@ -213,7 +214,7 @@ export default function NotificationItem({
             className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--foreground)]"
             aria-label={i18n("archive")}
           >
-            <Icon name="archive" className="h-4 w-4" />
+            <EthoneGlyph name="archive" className="h-4 w-4" />
           </button>
 
           <div ref={menuRef} className="relative">
@@ -229,7 +230,7 @@ export default function NotificationItem({
               aria-label={i18n("moreActions")}
               aria-expanded={menuOpen}
             >
-              <Icon name="more-vertical" className="h-4 w-4" />
+              <EthoneGlyph name="more" className="h-4 w-4" />
             </button>
 
             {menuOpen && (
@@ -244,7 +245,7 @@ export default function NotificationItem({
                       }}
                       className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.06]"
                     >
-                      <Icon name="chevron-left" className="h-3.5 w-3.5" />
+                      <EthoneGlyph name="back" className="h-3.5 w-3.5" />
                       {i18n("back")}
                     </button>
                     {SNOOZE_OPTIONS.map((dur) => (
@@ -268,7 +269,7 @@ export default function NotificationItem({
                       }}
                       className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--foreground)] hover:bg-[var(--text-primary)]/[0.06]"
                     >
-                      <Icon name="clock-3" className="h-3.5 w-3.5" />
+                      <EthoneGlyph name="clock" className="h-3.5 w-3.5" />
                       {i18n("snooze")}
                     </button>
                     <button
@@ -276,7 +277,7 @@ export default function NotificationItem({
                       onClick={handleImportant}
                       className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--foreground)] hover:bg-[var(--text-primary)]/[0.06]"
                     >
-                      <Icon name="alert-circle" className="h-3.5 w-3.5" />
+                      <EthoneGlyph name="alert" className="h-3.5 w-3.5" />
                       {i18n("markImportant")}
                     </button>
                     <button
@@ -284,7 +285,7 @@ export default function NotificationItem({
                       onClick={handleMute}
                       className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--foreground)] hover:bg-[var(--text-primary)]/[0.06]"
                     >
-                      <Icon name={isMuted(n.category) ? "bell" : "bell-off"} className="h-3.5 w-3.5" />
+                      <EthoneGlyph name={isMuted(n.category) ? "bell" : "bell-off"} className="h-3.5 w-3.5" />
                       {i18n(isMuted(n.category) ? "unmute" : "mute")}
                     </button>
                     <button
@@ -292,7 +293,7 @@ export default function NotificationItem({
                       onClick={handleDelete}
                       className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--danger)] hover:bg-[var(--danger)]/10"
                     >
-                      <Icon name="trash-2" className="h-3.5 w-3.5" />
+                      <EthoneGlyph name="trash" className="h-3.5 w-3.5" />
                       {i18n("delete")}
                     </button>
                   </div>

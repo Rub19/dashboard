@@ -33,7 +33,7 @@ const variantClass: Record<ButtonVariant, string> = {
   ),
   secondary: cn(
     "liquid-glass-btn text-[var(--text-primary)]",
-    "hover:bg-white/[0.14]",
+    "hover:border-[var(--accent-primary)]/30 hover:bg-[var(--accent-primary)]/10",
     "active:scale-[0.98]",
   ),
   outline: cn(

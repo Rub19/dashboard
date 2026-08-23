@@ -87,7 +87,9 @@ function mapNowPlaying(raw: unknown): NowPlaying | null {
 export function useNowPlaying(pollMs = 30000) {
   const { settings } = useSettings();
   const { performanceMode = "normal" } = settings;
-  const basePollMs = performanceMode === "low" ? 120000 : pollMs;
+  // The Dynamic Island passes 1s explicitly so Spotify skips and play/pause
+  // changes are reflected without needing a manual test in Settings.
+  const basePollMs = performanceMode === "low" && pollMs > 1000 ? 120000 : pollMs;
 
   const path = useMemo(() => {
     const source = settings.liveNowPlayingSource;
@@ -111,12 +113,15 @@ export function useNowPlaying(pollMs = 30000) {
   });
 
   useEffect(() => {
-    if (!data?.isPlaying) return;
-    // Refresh more often while music is playing to stay in sync.
-    const intervalMs = Math.min(5000, basePollMs);
+    if (!path) return;
+    // The Dynamic Island opts into a 1s watcher so it can detect a new track
+    // or a resumed play state without requiring a manual Settings test.
+    const islandWatcher = basePollMs <= 1000;
+    if (!data?.isPlaying && !islandWatcher) return;
+    const intervalMs = islandWatcher ? 1000 : Math.min(5000, basePollMs);
     const interval = setInterval(() => refresh(), intervalMs);
     return () => clearInterval(interval);
-  }, [data?.isPlaying, basePollMs, refresh]);
+  }, [data?.isPlaying, basePollMs, path, refresh]);
 
   useEffect(() => {
     function onVisible() {

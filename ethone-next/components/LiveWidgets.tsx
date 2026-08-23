@@ -784,7 +784,7 @@ export default function LiveWidgets({
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto pr-1">
+        <div className="flex-1 overflow-y-auto pr-1 no-scrollbar">
           <p className="mb-1 text-xs font-medium text-[var(--muted)]">
             {i18n("nameHistory")} · {names.length}
           </p>

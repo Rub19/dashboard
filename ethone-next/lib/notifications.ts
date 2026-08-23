@@ -1,17 +1,11 @@
 "use client";
 
-import { Capacitor } from "@capacitor/core";
-import { PushNotifications } from "@capacitor/push-notifications";
-import { LocalNotifications } from "@capacitor/local-notifications";
-import { Badge } from "@capawesome/capacitor-badge";
-
 function isNative() {
-  if (typeof window === "undefined") return false;
-  return Capacitor.isNativePlatform();
+  return false;
 }
 
 function isIOS() {
-  return isNative() && Capacitor.getPlatform() === "ios";
+  return false;
 }
 
 export type NotificationCategory = "ETHONE_TASK" | "ETHONE_BRAIN" | "ETHONE_CALENDAR";
@@ -72,46 +66,6 @@ export async function initializePushAndLocalNotifications(
   onAction?: (action: { actionId: string; notification?: { data?: Record<string, string> }; inputValue?: string }) => void
 ) {
   if (!isNative()) return;
-
-  try {
-    const perm = await PushNotifications.checkPermissions();
-    if (perm.receive !== "granted") {
-      await PushNotifications.requestPermissions();
-    }
-
-    PushNotifications.register();
-
-    PushNotifications.addListener("registration", (token) => {
-      onToken?.(token.value);
-    });
-
-    PushNotifications.addListener("pushNotificationReceived", (notification) => {
-      onMessage?.({
-        title: notification.title,
-        body: notification.body,
-        data: notification.data as Record<string, string> | undefined,
-      });
-    });
-
-    PushNotifications.addListener("pushNotificationActionPerformed", (action) => {
-      onAction?.({
-        actionId: action.actionId,
-        notification: { data: action.notification.data as Record<string, string> | undefined },
-        inputValue: (action as { inputValue?: string }).inputValue,
-      });
-    });
-
-    await PushNotifications.createChannel({
-      id: "ethone-general",
-      name: "ETHONE",
-      description: "Notifications générales ETHONE",
-      importance: 4,
-      visibility: 1,
-      vibration: true,
-    });
-  } catch {
-    // ignore on web
-  }
 }
 
 export async function scheduleLocalNotification(
@@ -123,60 +77,19 @@ export async function scheduleLocalNotification(
   category?: NotificationCategory
 ) {
   if (!isNative()) return;
-  try {
-    await LocalNotifications.schedule({
-      notifications: [
-        {
-          id,
-          title,
-          body,
-          schedule: { at },
-          extra: data,
-          actionTypeId: category,
-          sound: "beep.wav",
-          channelId: "ethone-general",
-        },
-      ],
-    });
-  } catch (err) {
-    console.warn("Local notification failed", err);
-  }
+  console.warn("Local notifications are only available in the native app.");
 }
 
 export async function cancelLocalNotifications(ids?: number[]) {
   if (!isNative()) return;
-  try {
-    if (ids && ids.length > 0) {
-      const pending = await LocalNotifications.getPending();
-      const toCancel = pending.notifications
-        .filter((n) => ids.includes(n.id))
-        .map((n) => n.id);
-      await LocalNotifications.cancel({ notifications: toCancel.map((id) => ({ id })) });
-    } else {
-      const pending = await LocalNotifications.getPending();
-      await LocalNotifications.cancel({ notifications: pending.notifications.map((n) => ({ id: n.id })) });
-    }
-  } catch {
-    // ignore
-  }
 }
 
 export async function setBadgeCount(count: number) {
   if (!isNative()) return;
-  try {
-    await Badge.set({ count });
-  } catch {
-    // ignore
-  }
 }
 
 export async function clearBadge() {
   if (!isNative()) return;
-  try {
-    await Badge.clear();
-  } catch {
-    // ignore
-  }
 }
 
 export function getNotificationCategories(): NotificationCategoryConfig[] {

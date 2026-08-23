@@ -1,106 +1,34 @@
 "use client";
 
-import { Capacitor } from "@capacitor/core";
-import { Haptics, ImpactStyle, NotificationType } from "@capacitor/haptics";
-import { androidPredefinedHaptic, androidWaveform } from "@/lib/android";
-
 function isNative() {
-  if (typeof window === "undefined") return false;
-  return Capacitor.isNativePlatform();
+  return false;
 }
 
 function isAndroid() {
-  return Capacitor.getPlatform() === "android";
+  return false;
 }
 
-export async function hapticSelectionTick() {
-  if (!isNative()) return;
-  try {
-    await Haptics.selectionChanged();
-  } catch {
-    // ignore
-  }
-}
+export async function hapticSelectionTick() {}
 
-export async function hapticLightImpact() {
-  if (!isNative()) return;
-  try {
-    await Haptics.impact({ style: ImpactStyle.Light });
-  } catch {
-    // ignore
-  }
-}
+export async function hapticLightImpact() {}
 
-export async function hapticMediumImpact() {
-  if (!isNative()) return;
-  try {
-    await Haptics.impact({ style: ImpactStyle.Medium });
-  } catch {
-    // ignore
-  }
-}
+export async function hapticMediumImpact() {}
 
-export async function hapticHeavyImpact() {
-  if (!isNative()) return;
-  try {
-    await Haptics.impact({ style: ImpactStyle.Heavy });
-  } catch {
-    // ignore
-  }
-}
+export async function hapticHeavyImpact() {}
 
-export async function hapticRigidImpact() {
-  // Capacitor 7 Haptics only exposes Light/Medium/Heavy; Heavy is used as a proxy for a rigid/stiff feedback.
-  if (!isNative()) return;
-  try {
-    await Haptics.impact({ style: ImpactStyle.Heavy });
-  } catch {
-    // ignore
-  }
-}
+export async function hapticRigidImpact() {}
 
-export async function hapticSoftImpact() {
-  if (!isNative()) return;
-  try {
-    await Haptics.impact({ style: ImpactStyle.Light });
-  } catch {
-    // ignore
-  }
-}
+export async function hapticSoftImpact() {}
 
-export async function hapticSuccess() {
-  if (!isNative()) return;
-  try {
-    await Haptics.notification({ type: NotificationType.Success });
-  } catch {
-    // ignore
-  }
-}
+export async function hapticSuccess() {}
 
-export async function hapticWarning() {
-  if (!isNative()) return;
-  try {
-    await Haptics.notification({ type: NotificationType.Warning });
-  } catch {
-    // ignore
-  }
-}
+export async function hapticWarning() {}
 
-export async function hapticError() {
-  if (!isNative()) return;
-  try {
-    await Haptics.notification({ type: NotificationType.Error });
-  } catch {
-    // ignore
-  }
-}
+export async function hapticError() {}
 
 /** Double-pulse success pattern (success + light tick). */
 export async function hapticSuccessPattern() {
-  if (isAndroid()) {
-    await androidPredefinedHaptic("double");
-    return;
-  }
+  if (isAndroid()) return;
   await hapticSuccess();
   await new Promise((resolve) => setTimeout(resolve, 120));
   await hapticLightImpact();
@@ -108,10 +36,7 @@ export async function hapticSuccessPattern() {
 
 /** Triple-shake error pattern (error + two rigid ticks). */
 export async function hapticErrorPattern() {
-  if (isAndroid()) {
-    await androidWaveform([0, 80, 50, 80, 50, 120], [0, 255, 0, 255, 0, 80]);
-    return;
-  }
+  if (isAndroid()) return;
   await hapticError();
   await new Promise((resolve) => setTimeout(resolve, 80));
   await hapticRigidImpact();

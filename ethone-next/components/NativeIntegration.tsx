@@ -2,10 +2,8 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { AppShortcuts } from "@capawesome/capacitor-app-shortcuts";
 import { useSettings } from "@/components/SettingsProvider";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
-import { App } from "@capacitor/app";
 import { onAppUrlOpen, initializePushAndLocalNotifications, updateStatusBar } from "@/lib/native";
 import { configurePurchases } from "@/lib/purchases";
 import { isNativeIOS } from "@/lib/apple";
@@ -21,28 +19,8 @@ const QUICK_ACTIONS = [
 function useQuickActions(router: ReturnType<typeof useRouter>, openPalette: () => void) {
   useEffect(() => {
     if (!isNativeIOS()) return;
-    AppShortcuts.set({ shortcuts: QUICK_ACTIONS }).catch(() => {});
-
-    const listener = AppShortcuts.addListener("click", (event) => {
-      switch (event.shortcutId) {
-        case "new-note":
-          router.push("/notes/?new=1");
-          break;
-        case "start-focus":
-          router.push("/focus/");
-          break;
-        case "scan-doc":
-          router.push("/files/?scan=1");
-          break;
-        case "search":
-          openPalette();
-          break;
-      }
-    });
-
-    return () => {
-      listener.then((h) => h.remove()).catch(() => {});
-    };
+    // Quick actions are native-only and not available in the PWA.
+    return;
   }, [router, openPalette]);
 }
 
@@ -154,29 +132,6 @@ export default function NativeIntegration() {
 
   useEffect(() => {
     configurePurchases();
-  }, []);
-
-  useEffect(() => {
-    if (typeof document === "undefined") return;
-
-    const onBack = () => {
-      // Try to close open overlays before letting the system handle back
-      const anyOverlay =
-        document.querySelector("[data-drawer-open='true']") ||
-        document.querySelector("[data-sheet-open='true']") ||
-        document.querySelector("[data-command-open='true']") ||
-        document.querySelector("[data-modal-open='true']");
-
-      if (anyOverlay) {
-        const event = new CustomEvent("v8:request-close-overlay");
-        anyOverlay.dispatchEvent(event);
-      }
-    };
-
-    const handler = App.addListener("backButton", onBack);
-    return () => {
-      handler.then((h) => h.remove());
-    };
   }, []);
 
   useEffect(() => {

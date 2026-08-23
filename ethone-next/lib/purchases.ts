@@ -1,14 +1,5 @@
 "use client";
 
-import { Capacitor } from "@capacitor/core";
-import {
-  Purchases,
-  LOG_LEVEL,
-  CustomerInfo,
-  PurchasesOffering,
-  PurchasesPackage,
-} from "@revenuecat/purchases-capacitor";
-
 const REVENUECAT_API_KEY = process.env.NEXT_PUBLIC_REVENUECAT_API_KEY || "";
 
 export const PRODUCT_IDS = {
@@ -18,9 +9,21 @@ export const PRODUCT_IDS = {
 
 export type SubscriptionPlan = keyof typeof PRODUCT_IDS;
 
+export type CustomerInfo = {
+  entitlements: { active: Record<string, { isActive: boolean; expirationDate?: string }> };
+};
+
+export type PurchasesPackage = {
+  product: { identifier: string };
+};
+
+export type PurchasesOffering = {
+  availablePackages: PurchasesPackage[];
+  current: PurchasesOffering | null;
+};
+
 function isNative() {
-  if (typeof window === "undefined") return false;
-  return Capacitor.isNativePlatform();
+  return false;
 }
 
 export async function configurePurchases(appUserID?: string) {
@@ -29,23 +32,11 @@ export async function configurePurchases(appUserID?: string) {
     console.warn("RevenueCat API key not configured");
     return;
   }
-  try {
-    await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
-    await Purchases.configure({ apiKey: REVENUECAT_API_KEY, appUserID });
-  } catch (err) {
-    console.warn("Purchases configuration failed", err);
-  }
 }
 
 export async function getOfferings(): Promise<PurchasesOffering | null> {
   if (!isNative()) return null;
-  try {
-    const offerings = await Purchases.getOfferings();
-    return offerings.current ?? null;
-  } catch (err) {
-    console.warn("Get offerings failed", err);
-    return null;
-  }
+  return null;
 }
 
 export function findProPackage(offering: PurchasesOffering | null, plan: SubscriptionPlan): PurchasesPackage | null {
@@ -56,33 +47,17 @@ export function findProPackage(offering: PurchasesOffering | null, plan: Subscri
 
 export async function purchasePackage(pkg: PurchasesPackage): Promise<{ ok: boolean; customerInfo?: CustomerInfo; error?: Error }> {
   if (!isNative()) return { ok: false, error: new Error("Achats in-app non disponibles.") };
-  try {
-    const result = await Purchases.purchasePackage({ aPackage: pkg });
-    return { ok: true, customerInfo: result.customerInfo };
-  } catch (err) {
-    return { ok: false, error: err instanceof Error ? err : new Error(String(err)) };
-  }
+  return { ok: false, error: new Error("Achats in-app non disponibles.") };
 }
 
 export async function restorePurchases(): Promise<{ ok: boolean; customerInfo?: CustomerInfo; error?: Error }> {
   if (!isNative()) return { ok: false, error: new Error("Achats in-app non disponibles.") };
-  try {
-    const result = await Purchases.restorePurchases();
-    return { ok: true, customerInfo: result.customerInfo };
-  } catch (err) {
-    return { ok: false, error: err instanceof Error ? err : new Error(String(err)) };
-  }
+  return { ok: false, error: new Error("Achats in-app non disponibles.") };
 }
 
 export async function getCustomerInfo(): Promise<CustomerInfo | null> {
   if (!isNative()) return null;
-  try {
-    const { customerInfo } = await Purchases.getCustomerInfo();
-    return customerInfo;
-  } catch (err) {
-    console.warn("Get customer info failed", err);
-    return null;
-  }
+  return null;
 }
 
 export function isPro(customerInfo: CustomerInfo | null): boolean {

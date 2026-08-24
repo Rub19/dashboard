@@ -282,7 +282,7 @@ export default function ProfileDropdown() {
                       className={`flex items-center gap-2 rounded-lg border p-2 text-xs font-medium transition-all ${
                         isActive
                           ? "border-[var(--text-primary)]/20 bg-[var(--text-primary)]/[0.08] text-[var(--text-primary)] shadow-sm"
-                          : "border-[var(--text-primary)]/[0.04] bg-[var(--text-primary)]/[0.02] text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
+                          : "border-[var(--text-primary)]/[0.04] bg-[var(--text-primary)]/[0.02] text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
                       }`}
                     >
                       <Icon
@@ -303,7 +303,7 @@ export default function ProfileDropdown() {
                   type="button"
                 onClick={handleRename}
                 disabled={pending}
-                  className="group flex flex-col items-center justify-center rounded-lg py-2 px-1 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+                  className="group flex flex-col items-center justify-center rounded-lg py-2 px-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                 >
                   <Pencil className="h-4 w-4" />
                   <span className="mt-1 text-[10px] font-medium text-zinc-400 group-hover:text-zinc-200">{i18n("rename")}</span>
@@ -312,7 +312,7 @@ export default function ProfileDropdown() {
                   type="button"
                   onClick={handleEditAvatar}
                   disabled={pending}
-                  className="group flex flex-col items-center justify-center rounded-lg py-2 px-1 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+                  className="group flex flex-col items-center justify-center rounded-lg py-2 px-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                 >
                   <Smile className="h-4 w-4" />
                   <span className="mt-1 text-[10px] font-medium text-zinc-400 group-hover:text-zinc-200">{i18n("editAvatar")}</span>
@@ -321,7 +321,7 @@ export default function ProfileDropdown() {
                   type="button"
                   onClick={handleExport}
                   disabled={pending}
-                  className="group flex flex-col items-center justify-center rounded-lg py-2 px-1 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+                  className="group flex flex-col items-center justify-center rounded-lg py-2 px-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                 >
                   <Download className="h-4 w-4" />
                   <span className="mt-1 text-[10px] font-medium text-zinc-400 group-hover:text-zinc-200">{i18n("exportProfile")}</span>
@@ -330,7 +330,7 @@ export default function ProfileDropdown() {
                   type="button"
                   onClick={handleDuplicate}
                   disabled={pending}
-                  className="group flex flex-col items-center justify-center rounded-lg py-2 px-1 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+                  className="group flex flex-col items-center justify-center rounded-lg py-2 px-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                 >
                   <Copy className="h-4 w-4" />
                   <span className="mt-1 text-[10px] font-medium text-zinc-400 group-hover:text-zinc-200">{i18n("duplicate")}</span>

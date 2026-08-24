@@ -57,7 +57,7 @@ function InfoCard({
       <div className="min-w-0 flex-1">
         <p className="text-[10px] text-[var(--text-muted)]">{label}</p>
         <div className="flex items-center gap-2">
-          <p className="text-xs font-medium text-[var(--foreground)]">{value ?? "—"}</p>
+          <p className="text-xs font-medium text-[var(--text-primary)]">{value ?? "—"}</p>
           {badge && (
             <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-1.5 py-0.5 text-[10px] text-[var(--text-muted)]">
               {badge}

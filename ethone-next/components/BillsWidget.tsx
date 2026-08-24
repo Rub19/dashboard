@@ -52,7 +52,7 @@ export default function BillsWidget({ standalone = false }: { standalone?: boole
             <Icon name="bills" className="h-4 w-4 text-[--accent-primary]" />
             <h2 className="text-sm font-semibold text-[var(--foreground)]">{i18n("billsTitle")}</h2>
           </div>
-          <span className="text-xs text-[var(--muted)]">
+          <span className="text-xs text-[var(--text-muted)]">
             {unpaidBills.length} {i18n("billsToPay")}
           </span>
         </div>
@@ -60,12 +60,12 @@ export default function BillsWidget({ standalone = false }: { standalone?: boole
 
       <div>
         <p className="text-2xl font-bold text-[--accent-primary]">{formatCurrency(totalDue)}</p>
-        <p className="text-xs text-[var(--muted)]">{unpaidBills.length} {i18n("billsToPay")}</p>
+        <p className="text-xs text-[var(--text-muted)]">{unpaidBills.length} {i18n("billsToPay")}</p>
       </div>
 
       <div className="space-y-1.5 flex-1 min-h-0">
         {upcoming.length === 0 ? (
-          <p className="text-xs text-[var(--muted)]">{i18n("noUpcomingBills")}</p>
+          <p className="text-xs text-[var(--text-muted)]">{i18n("noUpcomingBills")}</p>
         ) : (
           upcoming.slice(0, 3).map((b) => (
             <button
@@ -83,7 +83,7 @@ export default function BillsWidget({ standalone = false }: { standalone?: boole
 
       <Link
         href="/bills"
-        className="mt-2 flex items-center justify-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-xs font-medium text-[var(--muted)] transition-colors hover:text-[var(--foreground)] backdrop-blur-[var(--panel-blur)]"
+        className="mt-2 flex items-center justify-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-xs font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] backdrop-blur-[var(--panel-blur)]"
       >
         <Icon name="arrow-right" className="h-3.5 w-3.5" /> {i18n("billsManage")}
       </Link>
@@ -105,15 +105,15 @@ export default function BillsWidget({ standalone = false }: { standalone?: boole
         {selected && (
           <div className="space-y-4 p-1">
             <div className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 backdrop-blur-[var(--panel-blur)]">
-              <span className="text-sm text-[var(--muted)]">{i18n("due")}</span>
+              <span className="text-sm text-[var(--text-muted)]">{i18n("due")}</span>
               <span className="font-semibold">{formatDate(getNextDueDate(selected) || selected.dueDate)}</span>
             </div>
             <div className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 backdrop-blur-[var(--panel-blur)]">
-              <span className="text-sm text-[var(--muted)]">{i18n("amount")}</span>
+              <span className="text-sm text-[var(--text-muted)]">{i18n("amount")}</span>
               <span className="font-semibold">{formatCurrency(selected.amount, selected.currency)}</span>
             </div>
             <div className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 backdrop-blur-[var(--panel-blur)]">
-              <span className="text-sm text-[var(--muted)]">{i18n("status")}</span>
+              <span className="text-sm text-[var(--text-muted)]">{i18n("status")}</span>
               <span className={`flex items-center gap-1.5 font-semibold ${selected.paid ? "text-[--accent-primary]" : "text-amber-400"}`}>
                 <Icon name={selected.paid ? "check" : "circle"} className="h-4 w-4" />
                 {selected.paid ? i18n("paid") : i18n("unpaid")}

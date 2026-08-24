@@ -366,13 +366,13 @@ function PresetsPanel() {
       <p className="text-xs text-[var(--text-muted)]">{i18n("presetsDescription")}</p>
 
       {message && (
-        <div className="rounded-[var(--panel-radius)] border border-[var(--accent)] bg-[var(--accent-soft)] px-3 py-2 text-xs text-[var(--foreground)]">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--accent)] bg-[var(--accent-soft)] px-3 py-2 text-xs text-[var(--text-primary)]">
           {message}
         </div>
       )}
 
       <div className="space-y-2">
-        <p className="text-xs font-medium text-[var(--foreground)]">{i18n("builtInPresets")}</p>
+        <p className="text-xs font-medium text-[var(--text-primary)]">{i18n("builtInPresets")}</p>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {BUILT_IN_PRESETS.map((preset) => (
             <button
@@ -392,7 +392,7 @@ function PresetsPanel() {
       </div>
 
       <div className="space-y-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 backdrop-blur-[var(--panel-blur)]">
-        <p className="text-xs font-medium text-[var(--foreground)]">{i18n("saveCurrentAsPreset")}</p>
+        <p className="text-xs font-medium text-[var(--text-primary)]">{i18n("saveCurrentAsPreset")}</p>
         <Input
           type="text"
           value={newPresetName}
@@ -422,7 +422,7 @@ function PresetsPanel() {
 
       {customPresets.length > 0 && (
         <div className="space-y-2">
-          <p className="text-xs font-medium text-[var(--foreground)]">{i18n("customPresets")}</p>
+          <p className="text-xs font-medium text-[var(--text-primary)]">{i18n("customPresets")}</p>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {customPresets.map((preset) => (
               <div
@@ -584,7 +584,7 @@ function RawSettingsPanel() {
   return (
     <div className="space-y-3" data-section-match>
       {message && (
-        <div className="rounded-[var(--panel-radius)] border border-[var(--accent)] bg-[var(--accent-soft)] px-3 py-2 text-xs text-[var(--foreground)]">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--accent)] bg-[var(--accent-soft)] px-3 py-2 text-xs text-[var(--text-primary)]">
           {message}
         </div>
       )}
@@ -1247,7 +1247,7 @@ export default function SettingsContent({
             className="space-y-4"
           >
             {category.id === "advanced" && (
-              <h2 className="sticky top-0 z-10 -mx-1 mb-2 flex items-center gap-2 rounded-[var(--panel-radius)] border border-white/[0.06] bg-[var(--panel-bg)]/80 px-4 py-2 text-sm font-semibold text-[var(--foreground)] backdrop-blur-[var(--panel-blur)]">
+              <h2 className="sticky top-0 z-10 -mx-1 mb-2 flex items-center gap-2 rounded-[var(--panel-radius)] border border-white/[0.06] bg-[var(--panel-bg)]/80 px-4 py-2 text-sm font-semibold text-[var(--text-primary)] backdrop-blur-[var(--panel-blur)]">
                 <Icon name={category.icon} className="h-4 w-4 text-[var(--accent)]" />
                 {category.label}
               </h2>

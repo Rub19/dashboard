@@ -114,7 +114,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
             <button
               type="button"
               onClick={() => setCurrentDate((d) => addMonths(d, -1))}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--text-primary)]/5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--foreground)]"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--text-primary)]/5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--foreground)]"
               aria-label="Previous month"
             >
               <Icon name="chevron-left" className="h-4 w-4" />
@@ -131,7 +131,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
             <button
               type="button"
               onClick={() => setCurrentDate((d) => addMonths(d, 1))}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--text-primary)]/5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--foreground)]"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--text-primary)]/5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--foreground)]"
               aria-label="Next month"
             >
               <Icon name="chevron-right" className="h-4 w-4" />
@@ -153,7 +153,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
           {WEEK_DAYS.map((day) => (
             <div
               key={day}
-              className="py-3 text-center text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]"
+              className="py-3 text-center text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]"
             >
               {day}
             </div>
@@ -172,12 +172,12 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
                 key={idx}
                 onClick={() => dayItems.length > 0 && openItem(dayItems[0])}
                 className={`group relative min-h-[6.5rem] cursor-pointer border-b border-r border-[var(--panel-border)] p-2 transition-colors hover:bg-[var(--panel-bg)]/[0.03] ${
-                  !inMonth ? "bg-black/[0.08] text-[var(--muted)]" : "text-[var(--foreground)]"
+                  !inMonth ? "bg-black/[0.08] text-[var(--text-muted)]" : "text-[var(--foreground)]"
                 } ${isToday ? "bg-orange-500/10 ring-1 ring-inset ring-orange-500/30" : ""} backdrop-blur-[var(--panel-blur)]`}
               >
                 <span
                   className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium ${
-                    isToday ? "bg-orange-500 text-white" : "text-[var(--muted)] group-hover:text-[var(--foreground)]"
+                    isToday ? "bg-orange-500 text-white" : "text-[var(--text-muted)] group-hover:text-[var(--foreground)]"
                   }`}
                 >
                   {day.getDate()}
@@ -204,7 +204,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
                     </div>
                   ))}
                   {dayItems.length > 3 && (
-                    <span className="text-[10px] text-[var(--muted)]">+{dayItems.length - 3}</span>
+                    <span className="text-[10px] text-[var(--text-muted)]">+{dayItems.length - 3}</span>
                   )}
                 </div>
 
@@ -225,7 +225,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
 
         {/* Footer */}
         <div className="flex flex-col items-start justify-between gap-4 border-t border-[var(--panel-border)] bg-[var(--panel-bg)]/[0.03] px-6 py-4 sm:flex-row sm:items-center backdrop-blur-[var(--panel-blur)]">
-          <div className="flex items-center gap-4 text-xs text-[var(--muted)]">
+          <div className="flex items-center gap-4 text-xs text-[var(--text-muted)]">
             <span className="flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-full bg-purple-500" />
               MONTHLY
@@ -240,7 +240,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
             <span className="text-xs font-medium text-[var(--foreground)]">
               {subscriptionsCount} SUBSCRIPTIONS / {newCount} NEW
             </span>
-            <span className="text-xs text-[var(--muted)]">
+            <span className="text-xs text-[var(--text-muted)]">
               MONTHLY TOTAL: <span className="text-sm font-bold text-[var(--foreground)]">${monthlyTotal.toFixed(2)}</span>
             </span>
           </div>
@@ -256,7 +256,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
                 key={action.label}
                 type="button"
                 aria-label={action.label}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--text-primary)]/5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--foreground)]"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--text-primary)]/5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--foreground)]"
               >
                 <Icon name={action.icon} className="h-4 w-4" />
               </button>
@@ -274,7 +274,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
         hideFooter
       >
         {selected ? (
-          <div className="mt-2 space-y-2 text-sm text-[var(--muted)]">
+          <div className="mt-2 space-y-2 text-sm text-[var(--text-muted)]">
             <p>
               Category: <span className="text-[var(--foreground)]">{selected.category}</span>
             </p>
@@ -288,7 +288,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
             ) : null}
           </div>
         ) : (
-          <p className="text-sm text-[var(--muted)]">
+          <p className="text-sm text-[var(--text-muted)]">
             Le formulaire d&apos;ajout sera intégré prochainement.
           </p>
         )}

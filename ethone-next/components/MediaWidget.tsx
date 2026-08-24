@@ -239,7 +239,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
             type="button"
             onClick={() => control("previous")}
             disabled={!isSpotify || pending}
-            className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] disabled:opacity-40"
+            className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] disabled:opacity-40"
             aria-label={i18n("previous")}
           >
             <SkipBack className="h-4 w-4" />
@@ -259,7 +259,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
             type="button"
             onClick={() => control("next")}
             disabled={!isSpotify || pending}
-            className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] disabled:opacity-40"
+            className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] disabled:opacity-40"
             aria-label={i18n("next")}
           >
             <SkipForward className="h-4 w-4" />
@@ -273,7 +273,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
             <button
               type="button"
               onClick={() => setVolume((v) => (v > 0 ? 0 : 80))}
-              className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+              className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
               aria-label={i18n("volume")}
             >
               {volume > 0 ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}

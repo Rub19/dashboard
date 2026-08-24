@@ -233,7 +233,7 @@ export default function NotesPage() {
                   onClick={() => shareNote(note)}
                   disabled={loading}
                   data-tooltip={i18n("share")}
-                  className="shrink-0 text-[var(--muted)] transition-colors hover:text-[var(--accent-primary)] disabled:opacity-50"
+                  className="shrink-0 text-[var(--text-muted)] transition-colors hover:text-[var(--accent-primary)] disabled:opacity-50"
                 >
                   <Share2 className="h-4 w-4" />
                 </button>
@@ -243,7 +243,7 @@ export default function NotesPage() {
                   disabled={loading}
                   data-tooltip={i18n("delete")}
                   data-haptic
-                  className="shrink-0 text-[var(--muted)] transition-colors hover:text-[var(--danger)] disabled:opacity-50"
+                  className="shrink-0 text-[var(--text-muted)] transition-colors hover:text-[var(--danger)] disabled:opacity-50"
                 >
                   <Icon name="trash-2" className="h-4 w-4" />
                 </button>

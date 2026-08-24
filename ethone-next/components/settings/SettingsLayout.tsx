@@ -90,7 +90,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
             <Icon name="settings" className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-[var(--foreground)]">
+            <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
               {i18n("settingsTitle") || "Paramètres"}
             </h1>
             <p className="text-[11px] text-[var(--text-muted)]">

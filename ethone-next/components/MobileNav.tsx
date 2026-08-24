@@ -71,9 +71,9 @@ export default function MobileNav() {
                 )}
                 <Icon
                   name={item.icon}
-                  className={cn("h-5 w-5", isActive ? "text-[var(--accent)]" : "text-[var(--muted)]")}
+                  className={cn("h-5 w-5", isActive ? "text-[var(--accent)]" : "text-[var(--text-muted)]")}
                 />
-                <span className={cn("max-w-[3.5rem] truncate", isActive ? "text-[var(--foreground)]" : "text-[var(--muted)]")}>
+                <span className={cn("max-w-[3.5rem] truncate", isActive ? "text-[var(--foreground)]" : "text-[var(--text-muted)]")}>
                   {item.label}
                 </span>
               </Link>
@@ -88,8 +88,8 @@ export default function MobileNav() {
             data-haptic
             className="relative flex min-h-[44px] min-w-[56px] flex-col items-center justify-center gap-0.5 rounded-[var(--panel-radius)] px-2 py-1 text-[10px] font-medium transition-colors active:scale-[0.98] touch-manipulation"
           >
-            <Icon name="menu" className="h-5 w-5 text-[var(--muted)]" />
-            <span className="max-w-[3.5rem] truncate text-[var(--muted)]">
+            <Icon name="menu" className="h-5 w-5 text-[var(--text-muted)]" />
+            <span className="max-w-[3.5rem] truncate text-[var(--text-muted)]">
               {i18n("menu")}
             </span>
           </button>
@@ -130,7 +130,7 @@ export default function MobileNav() {
                   type="button"
                   onClick={() => setDrawerOpen(false)}
                   aria-label={i18n("close")}
-                  className="flex h-10 w-10 items-center justify-center rounded-[var(--panel-radius)] text-[var(--muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)]"
+                  className="flex h-10 w-10 items-center justify-center rounded-[var(--panel-radius)] text-[var(--text-muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)]"
                 >
                   <Icon name="close" className="h-5 w-5" />
                 </button>

@@ -443,7 +443,7 @@ export default function LoginPage() {
         </div>
         <div className="z-10 text-xs text-[var(--text-muted)]">
           <span className="inline-flex items-center gap-2.5 rounded-full border border-[var(--border)] bg-[var(--surface)]/60 px-4 py-2 shadow-lg backdrop-blur-md">
-            <span className={cn("h-2 w-2 rounded-full", online ? "bg-emerald-500" : "bg-amber-500")} />
+            <span className={cn("h-2 w-2 rounded-full", online ? "bg-[var(--success)]" : "bg-[var(--warning)]")} />
             {online ? i18n("systemOperational", "ETHONE opérationnel") : i18n("offline", "Hors ligne")}
           </span>
         </div>
@@ -483,7 +483,7 @@ export default function LoginPage() {
                       disabled={isLoading}
                       className={cn(
                         "relative z-10 select-none rounded-xl px-1 py-2.5 text-[10px] font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-raised)] sm:px-2 sm:text-xs",
-                        active ? "text-white" : "text-[var(--text-muted)] hover:text-[var(--foreground)]"
+                        active ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--foreground)]"
                       )}
                     >
                       {label}

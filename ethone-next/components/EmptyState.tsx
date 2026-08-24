@@ -75,7 +75,7 @@ export default function EmptyState({
             {resolvedEyebrow}
           </span>
         )}
-        <h2 className={`font-semibold text-[var(--foreground)] ${compact ? "text-sm" : "text-lg"}`}>{resolvedTitle}</h2>
+        <h2 className={`font-semibold text-[var(--text-primary)] ${compact ? "text-sm" : "text-lg"}`}>{resolvedTitle}</h2>
         <p className={`text-[var(--text-muted)] ${compact ? "text-xs" : "text-sm"}`}>{resolvedDescription}</p>
       </div>
       {actions && <div className="v8-empty-state__actions flex flex-wrap items-center justify-center gap-2">{actions}</div>}

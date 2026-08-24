@@ -70,7 +70,7 @@ export default function BrainContextPanel() {
 
       <Card3D>
         <p className="text-sm text-[var(--text-muted)]">{i18n("brainContextDescription")}</p>
-        <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-[var(--foreground)]">
+        <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-[var(--text-primary)]">
           <li>{i18n("language")}: {settings.language || "fr"}</li>
           <li>{i18n("density")}: {settings.density}</li>
           <li>{i18n("status")}: {settings.status}</li>

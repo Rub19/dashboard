@@ -13,7 +13,7 @@ export default function CommandBarTrigger(props: ButtonHTMLAttributes<HTMLButton
     <button
       type="button"
       onClick={() => setOpen(true)}
-      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--surface)]/80 text-[var(--muted)] transition-all hover:border-[var(--text-primary)]/20 hover:text-[var(--text-primary)] active:scale-95 cursor-pointer select-none md:h-9 md:w-auto md:rounded-full md:px-3.5"
+      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--surface)]/80 text-[var(--text-muted)] transition-all hover:border-[var(--text-primary)]/20 hover:text-[var(--text-primary)] active:scale-95 cursor-pointer select-none md:h-9 md:w-auto md:rounded-full md:px-3.5"
       aria-label={i18n("commands")}
       {...props}
     >

@@ -89,7 +89,7 @@ export default function VolumeSlider({
       <button
         type="button"
         onClick={() => onChange(isMuted ? lastNonZeroRef.current || 50 : 0)}
-        className="flex h-6 w-6 shrink-0 items-center justify-center rounded text-[var(--muted)] transition-colors hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent-primary)]"
+        className="flex h-6 w-6 shrink-0 items-center justify-center rounded text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent-primary)]"
         aria-label={isMuted ? "Activer le son" : "Couper le son"}
       >
         {isMuted ? (

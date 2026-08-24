@@ -35,7 +35,7 @@ export default function CopyableField({ label, value, copyKey }: CopyableFieldPr
         <button
           type="button"
           onClick={copyToClipboard}
-          className="flex shrink-0 items-center gap-1 text-[11px] text-[var(--muted)] transition-colors hover:text-[var(--text-primary)]"
+          className="flex shrink-0 items-center gap-1 text-[11px] text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
           aria-label={i18n("copy")}
         >
           {copied === copyKey ? (

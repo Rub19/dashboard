@@ -42,7 +42,7 @@ export default function Switch({
         disabled ? "cursor-not-allowed opacity-50" : ""
       }`}
     >
-      {label && <span className="text-sm font-medium text-[var(--foreground)]">{label}</span>}
+      {label && <span className="text-sm font-medium text-[var(--text-primary)]">{label}</span>}
       <button
         id={switchId}
         type="button"
@@ -56,13 +56,13 @@ export default function Switch({
         className={`relative rounded-full border border-[var(--border)] bg-[var(--surface-raised)] shadow-[inset_0_1px_2px_rgba(0,0,0,0.3)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] data-[state=checked]:border-[var(--accent-primary)] data-[state=checked]:bg-[var(--accent-primary)] ${classes.track}`}
       >
         <span
-          className={`absolute left-[3px] rounded-full bg-[var(--foreground)] shadow-[0_1px_3px_rgba(0,0,0,0.3)] transition-transform duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+          className={`absolute left-[3px] rounded-full bg-[var(--text-primary)] shadow-[0_1px_3px_rgba(0,0,0,0.3)] transition-transform duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
             checked ? classes.translate : "translate-x-0"
           } ${classes.thumb}`}
         />
       </button>
       {labels && (
-        <span className="text-sm text-[var(--foreground)]">{checked ? "On" : "Off"}</span>
+        <span className="text-sm text-[var(--text-primary)]">{checked ? "On" : "Off"}</span>
       )}
     </label>
   );

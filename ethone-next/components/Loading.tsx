@@ -28,7 +28,7 @@ export default function Loading({
       >
         <BrandMark size={72} />
         <div className="flex items-center gap-2">
-          <span className="text-2xl font-semibold tracking-tight text-[var(--foreground)]">ETHONE</span>
+          <span className="text-2xl font-semibold tracking-tight text-[var(--text-primary)]">ETHONE</span>
           <span className="rounded border border-[var(--border)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--text-muted)]">
             OS
           </span>
@@ -51,7 +51,7 @@ export default function Loading({
             />
             {pct < 100 && (
               <motion.div
-                className="pointer-events-none absolute inset-0 h-full w-full bg-gradient-to-r from-transparent via-[var(--foreground)]/40 to-transparent"
+                className="pointer-events-none absolute inset-0 h-full w-full bg-gradient-to-r from-transparent via-[var(--text-primary)]/40 to-transparent"
                 animate={{ x: ["-100%", "100%"] }}
                 transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
               />

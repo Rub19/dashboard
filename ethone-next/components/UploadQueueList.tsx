@@ -113,7 +113,7 @@ function QueueItem({
                 <button
                   type="button"
                   onClick={onReplace}
-                  className="rounded-lg p-1.5 text-[var(--muted)] transition hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+                  className="rounded-lg p-1.5 text-[var(--text-muted)] transition hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                   aria-label={i18n("replace")}
                 >
                   <Replace className="h-4 w-4" />
@@ -123,7 +123,7 @@ function QueueItem({
               <button
                 type="button"
                 onClick={onRemove}
-                className="rounded-lg p-1.5 text-[var(--muted)] transition hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
+                className="rounded-lg p-1.5 text-[var(--text-muted)] transition hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
                 aria-label={i18n("remove")}
               >
                 <Trash2 className="h-4 w-4" />

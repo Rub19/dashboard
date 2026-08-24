@@ -59,7 +59,7 @@ export default function BrainBriefingPanel() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-[var(--muted)]">{i18n("brainBriefingDescription")}</p>
+        <p className="text-sm text-[var(--text-muted)]">{i18n("brainBriefingDescription")}</p>
         <p className="text-sm font-medium text-[var(--accent)]">{greeting.label}</p>
       </div>
 
@@ -73,7 +73,7 @@ export default function BrainBriefingPanel() {
             >
               <div className="flex items-center gap-1.5">
                 <Icon name={s.icon} className="h-3.5 w-3.5 text-[var(--accent)]" />
-                <span className="text-xs text-[var(--muted)] truncate">{s.label}</span>
+                <span className="text-xs text-[var(--text-muted)] truncate">{s.label}</span>
               </div>
               <p className="mt-1 truncate text-base font-bold text-zinc-100">{s.value}</p>
             </div>
@@ -81,7 +81,7 @@ export default function BrainBriefingPanel() {
       </div>
 
       <div className="space-y-2">
-        <p className="text-xs font-medium text-[var(--muted)]">{i18n("visibleSections")}</p>
+        <p className="text-xs font-medium text-[var(--text-muted)]">{i18n("visibleSections")}</p>
         <div className="flex flex-wrap gap-2">
           {sections.map((s) => (
             <button
@@ -90,7 +90,7 @@ export default function BrainBriefingPanel() {
               onClick={() => toggle(s.id)}
               className={`rounded border px-2 py-1 text-xs font-medium transition-colors ${
                 hidden.has(s.id)
-                  ? "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--muted)]"
+                  ? "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--text-muted)]"
                   : "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
               } backdrop-blur-[var(--panel-blur)]`}
             >

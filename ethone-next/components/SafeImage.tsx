@@ -42,7 +42,7 @@ export default function SafeImage({
     fallbackNode = (
       <span
         className={cn(
-          "inline-flex shrink-0 items-center justify-center overflow-hidden bg-[var(--panel-bg)] text-[10px] font-medium text-[var(--foreground)]",
+          "inline-flex shrink-0 items-center justify-center overflow-hidden bg-[var(--panel-bg)] text-[10px] font-medium text-[var(--text-primary)]",
           fill && "absolute inset-0",
           className
         )}

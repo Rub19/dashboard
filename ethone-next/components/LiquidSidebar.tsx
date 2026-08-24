@@ -45,10 +45,10 @@ export default function LiquidSidebar({
             className={`relative flex w-full items-center gap-3 rounded-[var(--panel-radius)] px-3 py-2 text-sm font-medium transition-colors ${
               isActive
                 ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
-                : "text-[var(--muted)] hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)]"
+                : "text-[var(--text-muted)] hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]"
             }`}
           >
-            {item.icon && <span className={isActive ? "text-white/80" : "text-[var(--muted)]"}>{item.icon}</span>}
+            {item.icon && <span className={isActive ? "text-white/80" : "text-[var(--text-muted)]"}>{item.icon}</span>}
             <span className="min-w-0 truncate">{item.label}</span>
           </button>
         );

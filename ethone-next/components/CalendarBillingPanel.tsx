@@ -157,7 +157,7 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
       <div className="min-h-0 flex-1 overflow-y-auto os-scroll">
       <div className="space-y-2">
         {dayBills.map((b) => {
-          const brand = detectBrandMeta(b.label, { icon: "receipt", color: "var(--muted)" });
+          const brand = detectBrandMeta(b.label, { icon: "receipt", color: "var(--text-muted)" });
           return (
             <div
               key={b.id}
@@ -191,7 +191,7 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
               <button
                 type="button"
                 onClick={() => handleDelete(b)}
-                className="rounded p-1.5 text-[var(--muted)] hover:text-[var(--danger)]"
+                className="rounded p-1.5 text-[var(--text-muted)] hover:text-[var(--danger)]"
                 aria-label={i18n("delete")}
               >
                 <Icon name="trash-2" className="h-4 w-4" />

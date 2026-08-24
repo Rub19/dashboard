@@ -99,7 +99,7 @@ export default function TabList({
         <button
           type="button"
           onClick={() => setShowDrawer(true)}
-          className="flex w-full items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 py-3 text-sm font-medium text-[var(--foreground)] backdrop-blur-[var(--panel-blur)]"
+          className="flex w-full items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 py-3 text-sm font-medium text-[var(--text-primary)] backdrop-blur-[var(--panel-blur)]"
           aria-haspopup="listbox"
           aria-expanded={showDrawer}
           aria-label={label || "Select tab"}
@@ -108,7 +108,7 @@ export default function TabList({
             {activeTab?.icon}
             {activeTab?.label}
           </span>
-          <Icon name="chevron-down" className="h-4 w-4 text-[var(--muted)]" />
+          <Icon name="chevron-down" className="h-4 w-4 text-[var(--text-muted)]" />
         </button>
 
         <Modal
@@ -134,7 +134,7 @@ export default function TabList({
                     "flex w-full items-center gap-3 rounded-[var(--panel-radius)] px-4 py-3 text-left text-sm font-medium transition-colors",
                     activeId === tab.id
                       ? "bg-white/[0.12] text-white"
-                      : "text-[var(--foreground)] hover:bg-[var(--panel-bg)]",
+                      : "text-[var(--text-primary)] hover:bg-[var(--panel-bg)]",
                     tab.disabled && "opacity-40 cursor-not-allowed"
                   )}
                   role="option"
@@ -190,7 +190,7 @@ export default function TabList({
                 "relative z-0 flex min-h-[44px] min-w-[44px] items-center justify-center gap-2 whitespace-nowrap rounded-[var(--panel-radius)] px-4 py-2 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
                 active
                   ? "text-white"
-                  : "text-[var(--muted)] hover:text-[var(--foreground)]",
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
                 tab.disabled && "opacity-40 cursor-not-allowed"
               )}
             >
@@ -212,7 +212,7 @@ export default function TabList({
             <button
               type="button"
               onClick={() => scrollBy(-1)}
-              className="absolute -left-2 top-1/2 z-20 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--panel-bg)] text-[var(--muted)] shadow-md ring-1 ring-[var(--border)] hover:text-[var(--foreground)]"
+              className="absolute -left-2 top-1/2 z-20 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--panel-bg)] text-[var(--text-muted)] shadow-md ring-1 ring-[var(--border)] hover:text-[var(--text-primary)]"
               aria-label="Scroll tabs left"
             >
               <Icon name="chevron-left" className="h-4 w-4" />
@@ -222,7 +222,7 @@ export default function TabList({
             <button
               type="button"
               onClick={() => scrollBy(1)}
-              className="absolute -right-2 top-1/2 z-20 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--panel-bg)] text-[var(--muted)] shadow-md ring-1 ring-[var(--border)] hover:text-[var(--foreground)]"
+              className="absolute -right-2 top-1/2 z-20 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--panel-bg)] text-[var(--text-muted)] shadow-md ring-1 ring-[var(--border)] hover:text-[var(--text-primary)]"
               aria-label="Scroll tabs right"
             >
               <Icon name="chevron-right" className="h-4 w-4" />

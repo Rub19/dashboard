@@ -151,7 +151,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
               </div>
             )}
 
-            <p className="mb-2 text-xs font-medium text-[var(--muted)]">{i18n("presets")}</p>
+            <p className="mb-2 text-xs font-medium text-[var(--text-muted)]">{i18n("presets")}</p>
             <div className="grid grid-cols-3 gap-2">
               {PRESETS.map((p) => (
                 <button
@@ -165,7 +165,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
                 >
                   <Icon name={p.icon} className={`h-4 w-4 ${p.color}`} />
                   <span className="font-medium">{i18n(p.id)}</span>
-                  <span className="text-[10px] text-[var(--muted)]">{p.minutes} min</span>
+                  <span className="text-[10px] text-[var(--text-muted)]">{p.minutes} min</span>
                 </button>
               ))}
             </div>

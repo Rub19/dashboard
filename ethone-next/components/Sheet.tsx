@@ -90,7 +90,7 @@ export default function Sheet({
             )}
             <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-3">
               {title ? (
-                <span className="text-sm font-semibold text-[var(--foreground)]">{title}</span>
+                <span className="text-sm font-semibold text-[var(--text-primary)]">{title}</span>
               ) : (
                 <span />
               )}
@@ -100,7 +100,7 @@ export default function Sheet({
                   hapticLightImpact();
                   onOpenChange(false);
                 }}
-                className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--foreground)]"
+                className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                 aria-label={i18n("close")}
               >
                 <X className="h-4 w-4" />

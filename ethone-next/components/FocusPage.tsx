@@ -97,7 +97,7 @@ export default function FocusPage() {
           className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-medium transition-all ${
             zenMode
               ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
-              : "border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
+              : "border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
           }`}
           title={zenMode ? i18n("disableZen") : i18n("enableZen")}
         >
@@ -171,7 +171,7 @@ export default function FocusPage() {
             type="button"
             aria-label={i18n("stop")}
             onClick={stop}
-            className="flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--muted)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
           >
             <RotateCcw className="h-4 w-4" />
           </button>
@@ -183,8 +183,8 @@ export default function FocusPage() {
             disabled={!isBreak}
             className={`flex h-11 w-11 items-center justify-center rounded-xl border transition-all ${
               isBreak
-                ? "border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
-                : "border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] text-[var(--muted)] cursor-not-allowed"
+                ? "border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
+                : "border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] text-[var(--text-muted)] cursor-not-allowed"
             }`}
           >
             <SkipForward className="h-4 w-4" />

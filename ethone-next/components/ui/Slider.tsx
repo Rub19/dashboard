@@ -111,7 +111,7 @@ export default function Slider({
           }}
         />
         <div
-          className={`pointer-events-none absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full border-2 border-[var(--accent-primary)] bg-[var(--surface-raised)] shadow-md shadow-[var(--foreground)]/20 transition-transform duration-150 ease-out ${
+          className={`pointer-events-none absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full border-2 border-[var(--accent-primary)] bg-[var(--surface-raised)] shadow-md shadow-[var(--text-primary)]/20 transition-transform duration-150 ease-out ${
             dragging || hovered ? "scale-125" : "scale-100"
           } ${dragging ? "cursor-grabbing" : ""}`}
           style={{ left: `calc(${percentage}% - 8px)` }}

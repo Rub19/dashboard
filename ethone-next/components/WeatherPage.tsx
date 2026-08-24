@@ -253,7 +253,7 @@ export default function WeatherPage() {
           <button
             type="button"
             onClick={handleGeolocate}
-            className="flex h-8 w-8 items-center justify-center rounded-xl text-[var(--muted)] transition-colors hover:text-[var(--text-primary)]"
+            className="flex h-8 w-8 items-center justify-center rounded-xl text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
             aria-label={i18n("geolocate")}
           >
             <Icon name="navigation" className="h-3.5 w-3.5" />
@@ -300,7 +300,7 @@ export default function WeatherPage() {
                   type="button"
                   onClick={load}
                   disabled={loading}
-                  className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:text-[var(--text-primary)] disabled:opacity-50"
+                  className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] disabled:opacity-50"
                   aria-label={i18n("refresh")}
                 >
                   <Icon name="refresh-cw" className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />

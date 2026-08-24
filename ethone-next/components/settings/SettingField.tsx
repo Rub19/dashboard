@@ -186,12 +186,12 @@ function SettingField({ field }: { field: FieldDef }) {
             />
           )}
           <div className="flex min-w-0 flex-col">
-            <span className="text-sm font-medium text-[var(--foreground)]">{field.label}</span>
+            <span className="text-sm font-medium text-[var(--text-primary)]">{field.label}</span>
             {field.description && (
-              <span className="text-[11px] leading-tight text-[var(--muted)]">{field.description}</span>
+              <span className="text-[11px] leading-tight text-[var(--text-muted)]">{field.description}</span>
             )}
             {form.query && field.keywords && field.keywords.length > 0 && (
-              <span className="text-[10px] text-[var(--muted)]">{field.keywords.join(" > ")}</span>
+              <span className="text-[10px] text-[var(--text-muted)]">{field.keywords.join(" > ")}</span>
             )}
           </div>
         </div>

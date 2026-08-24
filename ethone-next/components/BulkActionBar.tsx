@@ -52,7 +52,7 @@ export default function BulkActionBar({
           </button>
         )}
         {children}
-        <button type="button" onClick={onClear} className="rounded-[var(--panel-radius)] px-3 py-1.5 text-xs text-[var(--muted)] hover:bg-[var(--panel-bg)]">
+        <button type="button" onClick={onClear} className="rounded-[var(--panel-radius)] px-3 py-1.5 text-xs text-[var(--text-muted)] hover:bg-[var(--panel-bg)]">
           {i18n("cancel")}
         </button>
       </div>

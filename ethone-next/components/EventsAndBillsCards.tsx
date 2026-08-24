@@ -251,7 +251,7 @@ export function InvoicesCard({
               className={`flex flex-col items-center justify-center gap-0.5 rounded-lg p-2 text-center text-xs transition-colors ${
                 active
                   ? "bg-[var(--accent-primary)] font-bold text-[var(--accent-contrast)] shadow-sm"
-                  : "text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
+                  : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
               }`}
             >
               <span className="text-[9px] opacity-70">{WEEK_DAYS[idx]}</span>

@@ -73,7 +73,7 @@ export default function MobileNav() {
                   name={item.icon}
                   className={cn("h-5 w-5", isActive ? "text-[var(--accent)]" : "text-[var(--text-muted)]")}
                 />
-                <span className={cn("max-w-[3.5rem] truncate", isActive ? "text-[var(--foreground)]" : "text-[var(--text-muted)]")}>
+                <span className={cn("max-w-[3.5rem] truncate", isActive ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]")}>
                   {item.label}
                 </span>
               </Link>
@@ -124,13 +124,13 @@ export default function MobileNav() {
               <div className="mb-6 flex items-center justify-between px-2">
                 <div className="flex items-center gap-2">
                   <BrandMark size={28} />
-                  <span className="text-lg font-semibold tracking-tight text-[var(--foreground)]">ETHONE</span>
+                  <span className="text-lg font-semibold tracking-tight text-[var(--text-primary)]">ETHONE</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setDrawerOpen(false)}
                   aria-label={i18n("close")}
-                  className="flex h-10 w-10 items-center justify-center rounded-[var(--panel-radius)] text-[var(--text-muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)]"
+                  className="flex h-10 w-10 items-center justify-center rounded-[var(--panel-radius)] text-[var(--text-muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]"
                 >
                   <Icon name="close" className="h-5 w-5" />
                 </button>
@@ -148,7 +148,7 @@ export default function MobileNav() {
                         "flex items-center gap-3 rounded-[var(--panel-radius)] px-3 py-3.5 text-sm font-medium transition-colors",
                         isActive
                           ? "bg-[var(--accent)]/10 text-[var(--accent)]"
-                          : "text-[var(--foreground)] hover:bg-[var(--panel-bg)]"
+                          : "text-[var(--text-primary)] hover:bg-[var(--panel-bg)]"
                       )}
                     >
                       <Icon name={item.icon} className="h-5 w-5" />

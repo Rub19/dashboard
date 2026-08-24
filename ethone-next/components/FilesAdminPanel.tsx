@@ -181,7 +181,7 @@ export default function FilesAdminPanel() {
             type="button"
             onClick={() => setTab(t.id)}
             className={`flex flex-1 items-center justify-center gap-1.5 rounded-[var(--panel-radius)] py-2 text-xs font-medium transition-colors sm:text-sm ${
-              tab === t.id ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "text-[var(--text-muted)] hover:text-[var(--foreground)]"
+              tab === t.id ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             }`}
           >
             <Icon name={t.icon} className="h-4 w-4" />

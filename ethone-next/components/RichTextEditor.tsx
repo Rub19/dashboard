@@ -457,7 +457,7 @@ function ToolbarButton({
       aria-pressed={active}
       data-rich-active={active}
       data-rich-command={command}
-      className={`flex h-7 w-7 items-center justify-center rounded-lg text-[var(--muted)] transition-colors ${
+      className={`flex h-7 w-7 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors ${
         active ? "bg-[var(--text-primary)]/[0.12] text-[var(--text-primary)]" : "hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
       }`}
       aria-label={label}

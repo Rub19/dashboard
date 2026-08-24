@@ -96,7 +96,7 @@ export function TiltCard({
   }, [rx, ry, gx, gy]);
 
   const transform = useMotionTemplate`perspective(1000px) rotateX(${srx}deg) rotateY(${sry}deg)`;
-  const glareBg = useMotionTemplate`radial-gradient(circle at ${gx}% ${gy}%, var(--foreground), transparent 50%)`;
+  const glareBg = useMotionTemplate`radial-gradient(circle at ${gx}% ${gy}%, var(--text-primary), transparent 50%)`;
 
   return (
     <motion.div

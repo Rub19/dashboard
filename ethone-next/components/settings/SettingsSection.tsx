@@ -34,7 +34,7 @@ function SettingsSection({
           <div className="flex h-8 w-8 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
             <Icon name={icon} className="h-4 w-4" />
           </div>
-          <h2 className="text-sm font-semibold text-[var(--foreground)]">{label}</h2>
+          <h2 className="text-sm font-semibold text-[var(--text-primary)]">{label}</h2>
         </div>
         {modifiedCount ? (
           <span className="rounded-lg bg-[var(--accent-primary)]/10 px-2.5 py-1 text-[10px] font-medium text-[var(--accent-primary)]">

@@ -76,7 +76,7 @@ export default function ChangelogModal({
                 <div>
                   <h3
                     id="changelog-modal-title"
-                    className="flex items-center gap-2 text-sm font-bold text-[var(--foreground)]"
+                    className="flex items-center gap-2 text-sm font-bold text-[var(--text-primary)]"
                   >
                     <span>{i18n("changelogTitle") || "Journal des modifications"}</span>
                     <span className="rounded-lg border border-[var(--accent)]/25 bg-[var(--accent)]/10 px-2 py-0.5 font-mono text-[10px] text-[var(--accent)]">
@@ -92,7 +92,7 @@ export default function ChangelogModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
+                className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
                 aria-label={i18n("close")}
               >
                 <X className="h-4 w-4" />

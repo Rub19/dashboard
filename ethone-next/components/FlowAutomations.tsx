@@ -139,7 +139,7 @@ export default function FlowAutomations({ activeFlow }: { activeFlow?: string })
                     <button
                       type="button"
                       onClick={() => toggleAutomationRule(rule.id)}
-                      className="rounded-lg p-1.5 text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+                      className="rounded-lg p-1.5 text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                       aria-label={rule.enabled ? i18n("disable") : i18n("enable")}
                     >
                       <Icon name={rule.enabled ? "toggle-right" : "toggle-left"} className="h-4 w-4" />
@@ -147,7 +147,7 @@ export default function FlowAutomations({ activeFlow }: { activeFlow?: string })
                     <button
                       type="button"
                       onClick={() => deleteAutomation(rule.id)}
-                      className="rounded-lg p-1.5 text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--danger)]"
+                      className="rounded-lg p-1.5 text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--danger)]"
                       aria-label={i18n("delete")}
                     >
                       <Icon name="trash-2" className="h-4 w-4" />

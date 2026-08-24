@@ -120,7 +120,7 @@ export default function NotificationCenter() {
   const header = (
     <div className="flex items-start justify-between gap-3">
       <div>
-        <h3 className="text-base font-semibold text-[var(--foreground)]">{i18n("notifications")}</h3>
+        <h3 className="text-base font-semibold text-[var(--text-primary)]">{i18n("notifications")}</h3>
         <p className="text-xs text-[var(--text-muted)]">
           {unreadCount > 0 ? (
             <>
@@ -146,7 +146,7 @@ export default function NotificationCenter() {
           type="button"
           onClick={markAllRead}
           disabled={unreadCount === 0}
-          className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-[var(--background)]/50 text-[var(--foreground)] transition-colors hover:bg-[var(--surface-hover)] disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-[var(--background)]/50 text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-hover)] disabled:cursor-not-allowed disabled:opacity-40"
           aria-label={i18n("markAllRead")}
           title={i18n("markAllRead")}
         >

@@ -66,17 +66,17 @@ export default function EmptyState({
       <div className="v8-empty-state__visual relative" aria-hidden="true">
         <span className="v8-empty-state__frame v8-empty-state__frame--back absolute inset-0 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] opacity-60" />
         <span className="v8-empty-state__frame v8-empty-state__frame--front relative z-10 flex items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-sm backdrop-blur-[var(--panel-blur)]">
-          <Icon name={resolvedIcon} className="v8-empty-state__glyph h-8 w-8 text-[var(--accent)]" />
+          <Icon name={resolvedIcon} className="v8-empty-state__glyph h-8 w-8 text-[var(--accent-primary)]" />
         </span>
       </div>
       <div className="v8-empty-state__copy max-w-md space-y-1">
         {resolvedEyebrow && !compact && (
-          <span className="v8-empty-state__eyebrow text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
+          <span className="v8-empty-state__eyebrow text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">
             {resolvedEyebrow}
           </span>
         )}
         <h2 className={`font-semibold text-[var(--foreground)] ${compact ? "text-sm" : "text-lg"}`}>{resolvedTitle}</h2>
-        <p className={`text-[var(--muted)] ${compact ? "text-xs" : "text-sm"}`}>{resolvedDescription}</p>
+        <p className={`text-[var(--text-muted)] ${compact ? "text-xs" : "text-sm"}`}>{resolvedDescription}</p>
       </div>
       {actions && <div className="v8-empty-state__actions flex flex-wrap items-center justify-center gap-2">{actions}</div>}
     </section>

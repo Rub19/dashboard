@@ -66,7 +66,7 @@ export default function FloatingLiquidDock() {
       <nav
         data-zen-hidden
         data-liquid-dock
-        className="fixed bottom-5 left-1/2 z-50 flex h-[64px] w-[92%] max-w-[390px] -translate-x-1/2 flex-row items-center justify-around rounded-[28px] pb-[env(safe-area-inset-bottom)] px-1 md:hidden"
+        className="fixed bottom-5 left-1/2 z-50 flex h-[64px] w-[92%] max-w-[390px] -translate-x-1/2 flex-row items-center justify-around rounded-full pb-[env(safe-area-inset-bottom)] px-2 md:hidden"
         style={{
           background: "rgba(20, 20, 26, 0.72)",
           backdropFilter: "blur(24px) saturate(200%)",

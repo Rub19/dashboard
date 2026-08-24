@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.17 — 2026-08-24
+
+**Refonte visuelle et polissage de l’encadrement UI**
+
+- Harmonie des tokens `--panel-bg`, `--panel-border` et `--panel-blur` pour un rendu Liquid Glass uniforme (`rgba(18,18,20,0.7)`, bordure 6 %, blur 24 px).
+- Jointures TopBar / Sidebar / main : angles internes aplatis pour un cadre continu (`rounded-l-2xl` sidebar, `rounded-r-2xl` pour la colonne droite).
+- Dock desktop passé en pilule (`rounded-full`) via `.v8-dock`.
+- Dynamic Island : bordure plus fine, ombre plus douce et `rounded-full`.
+- Dock mobile : `rounded-full` et bordures harmonisées.
+- BentoCard : séparateurs et icônes témoins repassés à 8 % blanc, espacements grid `gap-3`.
+- StatusBar : fond et bordure alignés sur les tokens du panel.
+- Version `v1.8.17`.
+
 ## v1.8.16 — 2026-08-24
 
 **Correction du crash du bouton météo et du clignotement du lecteur média**

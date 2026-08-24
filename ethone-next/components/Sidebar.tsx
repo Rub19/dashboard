@@ -253,10 +253,10 @@ function Sidebar() {
     >
       <AnimatedSidebar
         collapsible="icon"
-        variant="floating"
+        variant="sidebar"
         ariaLabel="Navigation principale"
         className="h-full bg-transparent pointer-events-auto"
-        panelClassName="m-2 h-[calc(100%-1rem)] shrink-0 rounded-2xl p-3 backdrop-blur-[var(--panel-blur)] pointer-events-auto"
+        panelClassName="m-0 h-full shrink-0 rounded-none border-0 border-r border-white/[0.05] bg-[var(--panel-bg)] p-3 pb-8 backdrop-blur-[var(--panel-blur)] pointer-events-auto pt-[calc(0.75rem+env(safe-area-inset-top))]"
       >
         <AnimatedSidebarHeader>
           <SidebarBrand />

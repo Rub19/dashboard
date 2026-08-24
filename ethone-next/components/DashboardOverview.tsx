@@ -221,7 +221,7 @@ export default function DashboardOverview() {
     <div className="flex h-full min-h-0 flex-col">
       <PullToRefresh onRefresh={() => window.location.reload()}>
         <div className="mx-auto w-full max-w-[1600px] px-2 sm:px-4">
-        <header className="shrink-0 mb-2 flex w-full items-center justify-end">
+        <header className="shrink-0 mb-3 flex w-full items-center justify-end">
         <button
           type="button"
           onClick={() => setCustomizing((v) => !v)}
@@ -279,7 +279,7 @@ export default function DashboardOverview() {
         animate="visible"
         variants={gridVariants}
         data-home-grid
-        className="grid w-full h-auto grid-cols-12 gap-2 pb-2"
+        className="grid w-full h-auto grid-cols-12 gap-3 pb-3"
       >
         {widgets.map((w) =>
           w.visible ? (

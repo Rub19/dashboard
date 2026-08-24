@@ -45,7 +45,10 @@ export function useBoot() {
 const PUBLIC_ROUTES = ["/login", "/password-recovery", "/reset-password"];
 
 const BOOT_TIMEOUT_MS = 10_000;
-const BOOT_MIN_DURATION_MS = 1_800;
+const BOOT_MIN_DURATION_MS = 600;
+const SEGMENT_1 = 150;
+const SEGMENT_2 = 300;
+const SEGMENT_3 = 450;
 
 function isPublicRoute(pathname: string | null): boolean {
   if (!pathname) return false;
@@ -197,14 +200,14 @@ export default function BootProvider({ children }: { children: ReactNode }) {
       }
 
       let target = 0;
-      if (elapsed < 400) {
-        target = (elapsed / 400) * 25;
-      } else if (elapsed < 900) {
-        target = 25 + ((elapsed - 400) / 500) * 35;
-      } else if (elapsed < 1_400) {
-        target = 60 + ((elapsed - 900) / 500) * 30;
+      if (elapsed < SEGMENT_1) {
+        target = (elapsed / SEGMENT_1) * 25;
+      } else if (elapsed < SEGMENT_2) {
+        target = 25 + ((elapsed - SEGMENT_1) / (SEGMENT_2 - SEGMENT_1)) * 35;
+      } else if (elapsed < SEGMENT_3) {
+        target = 60 + ((elapsed - SEGMENT_2) / (SEGMENT_3 - SEGMENT_2)) * 30;
       } else if (elapsed < BOOT_MIN_DURATION_MS) {
-        target = 90 + ((elapsed - 1_400) / (BOOT_MIN_DURATION_MS - 1_400)) * 10;
+        target = 90 + ((elapsed - SEGMENT_3) / (BOOT_MIN_DURATION_MS - SEGMENT_3)) * 10;
       } else {
         target = 100;
       }

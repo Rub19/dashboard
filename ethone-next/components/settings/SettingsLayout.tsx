@@ -85,7 +85,7 @@ export default function SettingsLayout() {
       {/* Header */}
       <div className="shrink-0 mb-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent)]/10 text-[var(--accent)]">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
             <Icon name="settings" className="h-5 w-5" />
           </div>
           <div>
@@ -114,14 +114,14 @@ export default function SettingsLayout() {
             className={cn(
               "flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium",
               form.hasExplicitChanges
-                ? "border-amber-500/20 bg-amber-500/10 text-amber-300"
-                : "border-[--accent-primary]/30 bg-[--accent-primary]/10 text-[--accent-primary]"
+                ? "border-[var(--warning)]/20 bg-[var(--warning)]/10 text-[var(--warning)]"
+                : "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
             )}
           >
             <span
               className={cn(
                 "h-1.5 w-1.5 rounded-full",
-                form.hasExplicitChanges ? "bg-amber-400" : "bg-[--accent-primary]"
+                form.hasExplicitChanges ? "bg-[var(--warning)]" : "bg-[var(--accent-primary)]"
               )}
             />
             {form.hasExplicitChanges
@@ -186,8 +186,8 @@ export default function SettingsLayout() {
 
       {settings.dockFloatingSave && form.hasExplicitChanges && (
         <div className="fixed inset-x-0 bottom-20 z-50 mx-auto w-max max-w-[min(90%,32rem)] animate-in slide-in-from-bottom-4">
-          <div className="flex items-center gap-3 rounded-[var(--panel-radius)] border border-amber-500/20 bg-amber-500/10 px-4 py-2.5 text-xs font-medium text-amber-300 shadow-lg backdrop-blur-[var(--panel-blur)]">
-            <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+          <div className="flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--warning)]/20 bg-[var(--warning)]/10 px-4 py-2.5 text-xs font-medium text-[var(--warning)] shadow-lg backdrop-blur-[var(--panel-blur)]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--warning)]" />
             <span className="whitespace-nowrap">{i18n("unsavedChanges") || "Modifications non enregistrées"}</span>
             <div className="ml-auto flex items-center gap-2 pl-2">
               <Button

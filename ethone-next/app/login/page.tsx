@@ -9,8 +9,6 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { cn } from "@/lib/utils";
 import { required, email as emailValidator, minLength, maxLength, passwordStrength, match, validate } from "@/lib/form-validation";
 import {
-  sendOtp,
-  verifyOtp,
   signInWithPassword,
   signInWithOAuth,
   signInWithPasskey,
@@ -160,7 +158,7 @@ export default function LoginPage() {
   const i18n = useI18n();
   const router = useRouter();
   const { success, error: showError } = useToast();
-  const { session } = useAuth();
+  const { session, signInOtp, verifyOtp } = useAuth();
   const online = useOnlineStatus();
   const reduced = !!useReducedMotion();
 
@@ -174,7 +172,6 @@ export default function LoginPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [username, setUsername] = useState("");
   const [code, setCode] = useState("");
-  const [userId, setUserId] = useState<string | null>(null);
   const [maskedEmail, setMaskedEmail] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -220,7 +217,7 @@ export default function LoginPage() {
     setMode(next);
     setOtpStep("email");
     resetForm();
-    setUserId(null);
+
     setMaskedEmail("");
     setResendIn(0);
   }, [resetForm]);
@@ -251,35 +248,34 @@ export default function LoginPage() {
     }
     setAuthState("loading");
     setError(null);
-    const result = await sendOtp(email);
-    if (!result.ok || result.error || !result.userId) {
-      setAuthState("error");
-      const human = humanError(result.error, i18n);
-      setError(human);
-      showError(i18n("error"));
+    const result = await signInOtp(email);
+    if (!result.error) {
+      setMaskedEmail(maskEmail(email));
+      setOtpStep("code");
+      setResendIn(60);
+      setAuthState("idle");
+      success(i18n("otpSent", "Code envoyé"));
       return;
     }
-    setUserId(result.userId);
-    setMaskedEmail(maskEmail(email));
-    setOtpStep("code");
-    setResendIn(60);
-    setAuthState("idle");
-    success(i18n("otpSent", "Code envoyé"));
+    setAuthState("error");
+    const human = humanError(result.error, i18n);
+    setError(human);
+    showError(i18n("error"));
   };
 
   const handleVerifyOtp = async (e?: React.FormEvent) => {
     e?.preventDefault();
     const codeError = validate(code, [required(i18n("fieldRequired")), minLength(6, i18n("invalidCode"))]);
-    if (codeError || !userId) {
+    if (codeError) {
       setAuthState("error");
-      setError(codeError || i18n("error"));
+      setError(codeError);
       showError(i18n("error"));
       return;
     }
     setAuthState("verifying");
     setError(null);
-    const result = await verifyOtp(userId, email, code, rememberMe);
-    if (!result.ok || result.error) {
+    const result = await verifyOtp(email, code, rememberMe);
+    if (result.error) {
       setAuthState("error");
       const human = humanError(result.error, i18n);
       setError(human);
@@ -383,7 +379,7 @@ export default function LoginPage() {
   const handleBackToEmail = () => {
     setOtpStep("email");
     resetForm();
-    setUserId(null);
+
     setResendIn(0);
   };
 

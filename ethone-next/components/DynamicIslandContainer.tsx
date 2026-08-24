@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import SafeImage from "@/components/SafeImage";
 import { useRouter } from "next/navigation";
@@ -205,14 +205,6 @@ export default function DynamicIslandContainer() {
   const [activeViews, setActiveViews] = useState<View[]>([]);
   const prevActiveRef = useRef<Set<View>>(new Set());
   const isInitialMount = useRef(true);
-  const collapseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // Mount lock: ignore the first mouseenter events on mount/refresh so the
-  // island does not auto-expand if the cursor happens to be over it.
-  const mountLockUntil = useRef(0);
-
-  useLayoutEffect(() => {
-    mountLockUntil.current = Date.now() + 500;
-  }, []);
 
   const [localVolume, setLocalVolume] = useState(nowPlaying?.volumePercent ?? 50);
   const [pendingSpotify, setPendingSpotify] = useState(false);
@@ -244,17 +236,12 @@ export default function DynamicIslandContainer() {
     const nextActiveViews = VIEW_ORDER.filter((v) => nextActive.has(v));
     setActiveViews(nextActiveViews);
 
-    // On initial mount/refresh, select the first active view but do not
-    // auto-expand the island. Only expand when an activity starts while
-    // the component is already mounted. Wait for the now-playing data to
-    // settle so that an already-active Spotify session doesn't trigger an
-    // expansion once it loads.
+    // On initial mount/refresh, select the first active view but force the
+    // island closed. It should only open on a deliberate click.
     if (isInitialMount.current) {
       if (!selectedView && nextActive.size > 0) {
         setSelectedView(nextActiveViews[0] ?? null);
       }
-      // Force the island closed on every mount/refresh. It should only open
-      // on a deliberate hover or click.
       setExpanded(false);
       prevActiveRef.current = nextActive;
       isInitialMount.current = false;
@@ -266,9 +253,9 @@ export default function DynamicIslandContainer() {
     );
 
     if (newViews.length > 0) {
-      // A new activity just started: surface it in the expanded view.
+      // A new activity just started: select it, but stay compact.
+      // The island only expands when the user explicitly clicks it.
       setSelectedView(newViews[0]);
-      setExpanded(true);
     } else if (selectedView && !nextActive.has(selectedView)) {
       const fallback = nextActiveViews[0] ?? null;
       setSelectedView(fallback);
@@ -297,27 +284,6 @@ export default function DynamicIslandContainer() {
     setExpanded(true);
   }, []);
 
-  const handleEnter = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (collapseTimer.current) {
-        clearTimeout(collapseTimer.current);
-        collapseTimer.current = null;
-      }
-      if (!selectedView) return;
-      // Ignore the synthetic mouseenter that can fire on mount/refresh when the
-      // cursor is already over the island. Also ignore the mount-lock window.
-      if (e.relatedTarget === null) return;
-      if (Date.now() < mountLockUntil.current) return;
-      setExpanded(true);
-    },
-    [selectedView],
-  );
-
-  const handleLeave = useCallback(() => {
-    if (!selectedView) return;
-    collapseTimer.current = setTimeout(() => setExpanded(false), 200);
-  }, [selectedView]);
-
   const toggleExpanded = useCallback(() => {
     if (!selectedView) return;
     setExpanded((v) => !v);
@@ -328,18 +294,12 @@ export default function DynamicIslandContainer() {
     return Math.min(100, Math.max(0, (1 - focus.state.remaining / focus.state.total) * 100));
   }, [focus.state.total, focus.state.remaining]);
 
-  // The compact pill shows the active activity (Spotify, Pomodoro, Brain).
-  // Keep an idle capsule visible while the feature is enabled so the island
-  // does not appear broken when there is no active activity yet.
+  // The compact pill only shows the currently active activity.
+  // No activity ⇒ the island is not rendered at all.
   const compact = useMemo(() => {
     const base = "flex h-[38px] w-full items-center justify-center gap-2 px-1 text-zinc-300";
     if (!selectedView) {
-      return (
-        <div className={cn(base)}>
-          <Icon name="sparkles" pack="phosphor" className="h-3.5 w-3.5 text-zinc-500" />
-          <span className="text-xs font-medium">{i18n("dynamicIsland", "Dynamic Island")}</span>
-        </div>
-      );
+      return null;
     }
     switch (selectedView) {
       case "spotify":
@@ -462,21 +422,19 @@ export default function DynamicIslandContainer() {
 
   return (
     <AnimatePresence>
-      {visible && (
+      {visible && activeViews.length > 0 && (
         <motion.div
           key="dynamic-island"
           initial={{ opacity: 0, y: -20, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -20, scale: 0.9 }}
           transition={{ duration: 0.25, ease: EASE_OUT }}
-          className="absolute left-0 right-0 top-2 z-40 flex justify-center pointer-events-none select-none"
+          className="fixed left-0 right-0 top-2 z-[60] flex justify-center pointer-events-none select-none"
         >
           <DynamicIsland
             view={expanded && selectedView ? selectedView : null}
             compact={compact}
             onClick={toggleExpanded}
-            onMouseEnter={handleEnter}
-            onMouseLeave={handleLeave}
             aria-label={i18n("dynamicIsland")}
           >
             <DynamicIslandView id="spotify" data-testid="dynamic-island-spotify" className="w-[340px] sm:w-[400px]">

@@ -233,7 +233,7 @@ export default function Select({
   return (
     <div className={`relative ${className}`}>
       {label && (
-        <label id={labelId} htmlFor={id} className="mb-1.5 block text-xs font-medium text-[var(--muted)]">
+        <label id={labelId} htmlFor={id} className="mb-1.5 block text-xs font-medium text-[var(--text-muted)]">
           {label}
         </label>
       )}

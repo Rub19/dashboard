@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.18 — 2026-08-24
+
+**Rework authentification et Dynamic Island**
+
+- Rework complet du login : machine à états explicite, OTP 6 chiffres, anti-boucle, messages d’erreur traduits, renvoi compte à rebours.
+- La connexion attend désormais la création et confirmation de la session avant redirection.
+- Dynamic Island : arrêt de l’ouverture automatique au chargement, ouverture uniquement au clic/tap, masquage quand aucune activité, `fixed z-[60]` au-dessus du TopBar.
+- Suppression du hover-to-expand et des timers de collapse automatique.
+- Version `v1.8.18`.
+
 ## v1.8.17 — 2026-08-24
 
 **Refonte visuelle et polissage de l’encadrement UI**

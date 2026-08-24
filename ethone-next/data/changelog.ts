@@ -5278,9 +5278,65 @@ const v361_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v361_fr, v360_fr, v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v361_en, v360_en, v359_en);
-CHANGELOG_BY_LANG.es.unshift(v361_es, v360_es, v359_es);
-CHANGELOG_BY_LANG.de.unshift(v361_de, v360_de, v359_de);
+const v362_fr: ChangelogEntry = {
+  version: "v1.8.18",
+  date: "2026-08-24",
+  title: "Rework authentification et Dynamic Island",
+  items: [
+    "Rework du login : machine à états explicite, OTP 6 chiffres, anti-boucle, messages traduits.",
+    "Connexion qui attend la création/confirmation de session avant redirection.",
+    "Dynamic Island : plus d'ouverture auto au chargement, ouverture au clic/tap, masquage sans activité.",
+    "Arrêt du hover-to-expand et des timers de collapse.",
+    "Dynamic Island fixée en z-[60] au-dessus de la TopBar.",
+    "Version v1.8.18.",
+  ],
+};
+
+const v362_en: ChangelogEntry = {
+  version: "v1.8.18",
+  date: "2026-08-24",
+  title: "Authentication and Dynamic Island rework",
+  items: [
+    "Login rework: explicit state machine, 6-digit OTP, anti-loop, translated error messages.",
+    "Login waits for session creation and confirmation before redirecting.",
+    "Dynamic Island: no auto-open on load, opens on click/tap, hides when no activity.",
+    "Removed hover-to-expand and auto-collapse timers.",
+    "Dynamic Island set to fixed z-[60] above the TopBar.",
+    "Version v1.8.18.",
+  ],
+};
+
+const v362_es: ChangelogEntry = {
+  version: "v1.8.18",
+  date: "2026-08-24",
+  title: "Rework de autenticación y Dynamic Island",
+  items: [
+    "Rework del login: máquina de estados explícita, OTP de 6 cifras, anti-bucle, mensajes traducidos.",
+    "La conexión espera la creación/confirmación de sesión antes de redirigir.",
+    "Dynamic Island: sin apertura automática al cargar, se abre al tocar/clic, se oculta sin actividad.",
+    "Se eliminó el hover-to-expand y los temporizadores de cierre automático.",
+    "Dynamic Island fijada a z-[60] por encima de la TopBar.",
+    "Versión v1.8.18.",
+  ],
+};
+
+const v362_de: ChangelogEntry = {
+  version: "v1.8.18",
+  date: "2026-08-24",
+  title: "Rework von Authentifizierung und Dynamic Island",
+  items: [
+    "Login-Rework: explizite Zustandsmaschine, 6-stelliges OTP, Anti-Loop, übersetzte Fehlermeldungen.",
+    "Login wartet auf Erstellung/Bestätigung der Sitzung vor der Weiterleitung.",
+    "Dynamic Island: keine automatische Öffnung beim Laden, öffnet sich per Klick/Tipp, versteckt sich bei Inaktivität.",
+    "Hover-to-Expand und Auto-Collapse-Timer entfernt.",
+    "Dynamic Island auf fixed z-[60] über der TopBar gesetzt.",
+    "Version v1.8.18.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v362_fr, v361_fr, v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v362_en, v361_en, v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v362_es, v361_es, v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v362_de, v361_de, v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

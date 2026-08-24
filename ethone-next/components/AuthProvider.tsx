@@ -9,6 +9,7 @@ import {
 } from "react";
 import { supabase } from "@/lib/supabase";
 import { fetchWorker } from "@/lib/api";
+import { authLog } from "@/lib/auth-log";
 import { Session, User } from "@supabase/supabase-js";
 
 type AuthContextValue = {
@@ -45,6 +46,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const [isOnline, setIsOnline] = useState(true);
 
   async function resolveSession() {
+    authLog("resolveSession", "start");
     let settled = false;
     const timeout = new Promise<never>((_, reject) =>
       setTimeout(() => {
@@ -67,10 +69,12 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       if (savedRefresh) {
+        authLog("restoreSession", "from storage");
         const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession({
           refresh_token: savedRefresh,
         });
         if (!refreshError && refreshData.session) {
+          authLog("Session restored");
           localStorage.setItem("ethone-remember-token", refreshData.session.access_token);
           localStorage.setItem("ethone-remember-refresh", refreshData.session.refresh_token);
           setSession(refreshData.session);
@@ -95,6 +99,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         timeout,
       ]);
       if (data.session) {
+        authLog("Session detected");
         setSession(data.session);
         setUser(data.session.user);
         setError(null);
@@ -124,6 +129,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, newSession) => {
+        authLog("Auth state changed", _event);
         setSession(newSession);
         setUser(newSession?.user ?? null);
         setLoading(false);
@@ -154,6 +160,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function signInOtp(email: string) {
+    authLog("OTP requested");
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: { shouldCreateUser: true },
@@ -162,12 +169,14 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function verifyOtp(email: string, code: string, rememberMe = false) {
+    authLog("OTP verification started");
     const { data, error } = await supabase.auth.verifyOtp({
       email,
       token: code,
       type: "email",
     });
     if (data.session) {
+      authLog("OTP verification result", "success");
       setSession(data.session);
       setUser(data.session.user);
       if (rememberMe) {
@@ -184,6 +193,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem("ethone-auth-type");
       }
     }
+    if (error) authLog("OTP verification result", "error");
     return { error: error ?? undefined };
   }
 

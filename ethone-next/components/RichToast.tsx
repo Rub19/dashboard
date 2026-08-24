@@ -13,27 +13,27 @@ type RichToastProps = {
 };
 
 const variantIcon: Record<RichToastVariant, string> = {
-  success: "text-[--accent-primary]",
-  error: "text-rose-400",
-  warning: "text-amber-400",
-  info: "text-[--info]",
-  neutral: "text-zinc-200",
+  success: "text-[var(--accent-primary)]",
+  error: "text-[var(--danger)]",
+  warning: "text-[var(--warning)]",
+  info: "text-[var(--info)]",
+  neutral: "text-[var(--text-primary)]",
 };
 
 const variantTitle: Record<RichToastVariant, string> = {
-  success: "text-[--accent-primary]",
-  error: "text-rose-400",
-  warning: "text-amber-400",
-  info: "text-[--info]",
-  neutral: "text-white",
+  success: "text-[var(--accent-primary)]",
+  error: "text-[var(--danger)]",
+  warning: "text-[var(--warning)]",
+  info: "text-[var(--info)]",
+  neutral: "text-[var(--text-primary)]",
 };
 
 const variantDot: Record<RichToastVariant, string> = {
-  success: "bg-[--accent-primary]",
-  error: "bg-rose-500",
-  warning: "bg-amber-500",
-  info: "bg-[--info]",
-  neutral: "bg-zinc-300",
+  success: "bg-[var(--accent-primary)]",
+  error: "bg-[var(--danger)]",
+  warning: "bg-[var(--warning)]",
+  info: "bg-[var(--info)]",
+  neutral: "bg-[var(--text-muted)]",
 };
 
 export default function RichToast({
@@ -49,7 +49,7 @@ export default function RichToast({
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.25, ease: "easeOut" }}
-        className={`flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.05] ${variantIcon[variant]}`}
+        className={`flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] ${variantIcon[variant]}`}
       >
         {icon}
       </motion.span>
@@ -59,7 +59,7 @@ export default function RichToast({
           <p className={`text-sm font-semibold leading-tight ${variantTitle[variant]}`}>{title}</p>
         </div>
         {description ? (
-          <p className="mt-0.5 text-xs leading-relaxed text-zinc-400">{description}</p>
+          <p className="mt-0.5 text-xs leading-relaxed text-[var(--text-muted)]">{description}</p>
         ) : null}
       </div>
     </div>

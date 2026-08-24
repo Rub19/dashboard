@@ -1222,6 +1222,7 @@ export default function SettingsContent({
         id={section.id}
         label={section.label}
         icon={section.icon}
+        category={section.category}
         modifiedCount={modifiedCount}
         visible={!form.query.trim() ? true : sectionVisible(section)}
       >

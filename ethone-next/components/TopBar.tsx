@@ -3,7 +3,7 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import { ChevronRight, ChevronDown, CloudSun, Sun, Moon, Timer, Eye, EyeOff, PanelLeftOpen, PanelLeftClose } from "lucide-react";
+import { ChevronRight, ChevronDown, CloudSun, Timer, Eye, EyeOff, PanelLeftOpen, PanelLeftClose } from "lucide-react";
 import { AnimatedSidebarTrigger, useAnimatedSidebar } from "@/components/motion/animated-sidebar";
 import SystemStatusPills from "@/components/SystemStatusPills";
 import CommandBarTrigger from "@/components/CommandBarTrigger";
@@ -24,6 +24,8 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useFocus } from "@/components/FocusProvider";
 import { useDynamicIslandStore } from "@/lib/stores/dynamic-island";
 import WeatherDetailPopover from "@/components/WeatherDetailPopover";
+import { Icon } from "@/lib/icons";
+import { PREMIUM_THEMES, THEME_DEFINITIONS, resolvePremiumTheme } from "@/lib/theme-engine";
 import { cn } from "@/lib/utils";
 
 const ROUTE_LABELS: Record<string, string> = {
@@ -98,18 +100,20 @@ const WeatherQuickButton = memo(function WeatherQuickButton() {
 
 const ThemeToggle = memo(function ThemeToggle() {
   const { settings, update } = useSettings();
-  const isDark = settings.darkMode ?? true;
-  const Icon = isDark ? Moon : Sun;
+  const resolved = resolvePremiumTheme(settings.theme);
+  const currentIndex = PREMIUM_THEMES.indexOf(resolved);
+  const next = PREMIUM_THEMES[(currentIndex + 1) % PREMIUM_THEMES.length];
+  const themeLabel = THEME_DEFINITIONS[resolved]?.label ?? "Thème";
 
   return (
-    <Tooltip label="Thème — (clic)" position="bottom">
+    <Tooltip label={`Thème — ${themeLabel} (clic)`} position="bottom">
       <button
         type="button"
-        onClick={() => update({ darkMode: !isDark })}
+        onClick={() => update({ theme: next })}
         className="relative flex h-10 w-10 items-center justify-center rounded-xl text-[var(--text-muted)] transition-[color,background-color,border-color,opacity,transform] duration-150 hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95 cursor-pointer select-none"
         aria-label="Thème"
       >
-        <Icon className="h-5 w-5 pointer-events-none" />
+        <Icon name="palette" className="h-5 w-5 pointer-events-none" />
       </button>
     </Tooltip>
   );

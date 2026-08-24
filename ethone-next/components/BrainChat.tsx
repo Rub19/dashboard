@@ -113,12 +113,12 @@ function renderMarkdown(text: string) {
     const lang = match[1] || "code";
     const code = match[2];
     parts.push(
-      <div key={parts.length} className="my-2 overflow-hidden rounded-lg border border-white/10 bg-black/50">
-        <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.03] px-3 py-1.5 text-[10px] text-zinc-400">
+      <div key={parts.length} className="my-2 overflow-hidden rounded-lg border border-[var(--text-primary)]/10 bg-[var(--background)]/50">
+        <div className="flex items-center justify-between border-b border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.03] px-3 py-1.5 text-[10px] text-[var(--text-muted)]">
           <span>{lang}</span>
           <CopyButton text={code} />
         </div>
-        <pre className="max-h-48 overflow-auto p-3 text-xs text-zinc-200">
+        <pre className="max-h-48 overflow-auto p-3 text-xs text-[var(--text-primary)]">
           <code className="font-mono">{code}</code>
         </pre>
       </div>
@@ -139,12 +139,12 @@ function MarkdownInline({ text }: { text: string }) {
     if (match.index > last) parts.push(<span key={parts.length}>{text.slice(last, match.index)}</span>);
     const raw = match[0];
     if (raw.startsWith("**") && raw.endsWith("**")) {
-      parts.push(<strong key={parts.length} className="font-semibold text-zinc-100">{raw.slice(2, -2)}</strong>);
+      parts.push(<strong key={parts.length} className="font-semibold text-[var(--text-primary)]">{raw.slice(2, -2)}</strong>);
     } else if ((raw.startsWith("*") && raw.endsWith("*")) || (raw.startsWith("_") && raw.endsWith("_"))) {
-      parts.push(<em key={parts.length} className="text-zinc-300">{raw.slice(1, -1)}</em>);
+      parts.push(<em key={parts.length} className="text-[var(--text-primary)]">{raw.slice(1, -1)}</em>);
     } else if (raw.startsWith("`") && raw.endsWith("`")) {
       parts.push(
-        <code key={parts.length} className="rounded bg-white/[0.08] px-1 py-0.5 font-mono text-[11px] text-[var(--accent-primary)]">
+        <code key={parts.length} className="rounded bg-[var(--text-primary)]/[0.08] px-1 py-0.5 font-mono text-[11px] text-[var(--accent-primary)]">
           {raw.slice(1, -1)}
         </code>
       );
@@ -166,7 +166,7 @@ function CopyButton({ text }: { text: string }) {
     } catch {}
   }
   return (
-    <button type="button" onClick={handleCopy} className="text-[10px] text-[var(--muted)] hover:text-[var(--text-primary)] transition-colors">
+    <button type="button" onClick={handleCopy} className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
       {copied ? "Copié" : "Copier"}
     </button>
   );
@@ -174,7 +174,7 @@ function CopyButton({ text }: { text: string }) {
 
 function TypingDots() {
   return (
-    <div className="flex items-center gap-1.5 px-3 py-2 rounded-2xl border border-white/[0.08] bg-zinc-950/80 w-fit">
+    <div className="flex items-center gap-1.5 px-3 py-2 rounded-2xl border border-[var(--text-primary)]/[0.08] bg-[var(--background)]/80 w-fit">
       {[0, 1, 2].map((i) => (
         <motion.span
           key={i}
@@ -417,7 +417,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
           </span>
           <div>
             <p className="text-sm font-semibold text-[var(--foreground)]">{i18n("brainTitle")}</p>
-            <p className="text-[10px] text-[var(--muted)]">
+            <p className="text-[10px] text-[var(--text-muted)]">
               {brain.loading ? i18n("thinking") : i18n("ready")}
             </p>
           </div>
@@ -425,7 +425,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
         <button
           type="button"
           onClick={() => brain.clearChat()}
-          className="inline-flex h-7 items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2.5 py-1 text-[10px] font-medium text-[var(--muted)] transition-colors hover:border-[var(--danger)]/40 hover:text-[var(--danger)]"
+          className="inline-flex h-7 items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2.5 py-1 text-[10px] font-medium text-[var(--text-muted)] transition-colors hover:border-[var(--danger)]/40 hover:text-[var(--danger)]"
         >
           <X className="h-3.5 w-3.5" />
           {i18n("clear")}

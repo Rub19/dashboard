@@ -69,13 +69,13 @@ export default function BrainBriefingPanel() {
           .map((s) => (
             <div
               key={s.id}
-              className="flex flex-col justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5 transition-colors hover:border-white/10"
+              className="flex flex-col justify-between rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5 transition-colors hover:border-white/10"
             >
               <div className="flex items-center gap-1.5">
                 <Icon name={s.icon} className="h-3.5 w-3.5 text-[var(--accent)]" />
                 <span className="text-xs text-[var(--text-muted)] truncate">{s.label}</span>
               </div>
-              <p className="mt-1 truncate text-base font-bold text-zinc-100">{s.value}</p>
+              <p className="mt-1 truncate text-base font-bold text-[var(--text-primary)]">{s.value}</p>
             </div>
           ))}
       </div>

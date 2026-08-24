@@ -238,12 +238,12 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
             {!hasTrack ? (
               <div className="flex items-center gap-3">
                 <SafeImage
-                  className="h-12 w-12 shrink-0 rounded-xl border border-white/10 bg-white/[0.05]"
+                  className="h-12 w-12 shrink-0 rounded-xl border border-white/10 bg-[var(--text-primary)]/[0.05]"
                   iconClassName="h-5 w-5"
                 />
                 <div className="min-w-0 flex-1">
-                  <h4 className="truncate text-xs font-bold text-white">{i18n("noLive")}</h4>
-                  <p className="truncate text-[11px] text-zinc-400">
+                  <h4 className="truncate text-xs font-bold text-[var(--text-primary)]">{i18n("noLive")}</h4>
+                  <p className="truncate text-[11px] text-[var(--text-muted)]">
                     {hasClientId ? i18n("spotifyNoPlayback") : i18n("spotifyNotConfigured")}
                   </p>
                 </div>
@@ -268,9 +268,9 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                     priority
                   />
                   <div className="min-w-0 flex-1">
-                    <h4 className="truncate text-xs font-bold text-white">{title || "—"}</h4>
-                    <p className="truncate text-[11px] text-zinc-300">{artist || "—"}</p>
-                    {album && <p className="truncate text-[10px] text-zinc-500">{album}</p>}
+                    <h4 className="truncate text-xs font-bold text-[var(--text-primary)]">{title || "—"}</h4>
+                    <p className="truncate text-[11px] text-[var(--text-primary)]">{artist || "—"}</p>
+                    {album && <p className="truncate text-[10px] text-[var(--text-muted)]">{album}</p>}
                   </div>
                   <button
                     type="button"
@@ -295,7 +295,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                   data-testid="dock-progress"
                 />
 
-                <div className="flex items-center justify-between border-t border-white/[0.04] px-2 pt-2">
+                <div className="flex items-center justify-between border-t border-[var(--text-primary)]/[0.04] px-2 pt-2">
                   <button
                     type="button"
                     onClick={skipPrevious}

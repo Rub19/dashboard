@@ -62,10 +62,10 @@ export default function MailThreadList({
 
   return (
     <div className="flex h-full w-96 shrink-0 flex-col rounded-2xl v8-panel backdrop-blur-xl overflow-hidden">
-      <div className="shrink-0 space-y-2 border-b border-white/[0.06] p-3">
+      <div className="shrink-0 space-y-2 border-b border-[var(--text-primary)]/[0.06] p-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-white">{title}</h2>
-          <span className="rounded-md bg-white/[0.05] px-1.5 py-0.5 text-[10px] font-mono text-zinc-400">{total}</span>
+          <h2 className="text-sm font-semibold text-[var(--text-primary)]">{title}</h2>
+          <span className="rounded-md bg-[var(--text-primary)]/[0.05] px-1.5 py-0.5 text-[10px] font-mono text-[var(--text-muted)]">{total}</span>
         </div>
 
         <Input
@@ -87,7 +87,7 @@ export default function MailThreadList({
               className={`rounded-md px-2.5 py-1 text-[10px] font-medium transition-colors ${
                 filter === id
                   ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
-                  : "bg-white/[0.04] text-[var(--text-muted)] hover:bg-white/[0.06] hover:text-[var(--text-primary)]"
+                  : "bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
               }`}
             >
               {i18n(id) || id}
@@ -100,12 +100,12 @@ export default function MailThreadList({
         {loading ? (
           <div className="space-y-2 p-3">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-24 w-full animate-pulse rounded-lg bg-white/[0.04]" />
+              <div key={i} className="h-24 w-full animate-pulse rounded-lg bg-[var(--text-primary)]/[0.04]" />
             ))}
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <p className="text-xs text-zinc-500">{i18n("noMessages") || "Aucun message"}</p>
+            <p className="text-xs text-[var(--text-muted)]">{i18n("noMessages") || "Aucun message"}</p>
           </div>
         ) : (
           <div>

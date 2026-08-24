@@ -24,7 +24,7 @@ const CATEGORY_TONES: Record<string, string> = {
   brain: "bg-violet-500/10 text-violet-400",
   github: "bg-orange-500/10 text-orange-400",
   integration: "bg-indigo-500/10 text-indigo-400",
-  system: "bg-zinc-500/10 text-zinc-400",
+  system: "bg-zinc-500/10 text-[var(--text-muted)]",
   important: "bg-amber-500/10 text-amber-400",
   messages: "bg-sky-500/10 text-sky-400",
   activity: "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]",
@@ -43,7 +43,7 @@ const PRIORITY_BADGE: Record<string, string> = {
   critical: "bg-red-400/10 text-red-400",
   important: "bg-amber-400/10 text-amber-400",
   normal: "bg-sky-400/10 text-sky-400",
-  silent: "bg-zinc-500/10 text-zinc-400",
+  silent: "bg-zinc-500/10 text-[var(--text-muted)]",
 };
 
 const SNOOZE_OPTIONS: SnoozeDuration[] = ["10m", "1h", "tonight", "tomorrow"];
@@ -103,7 +103,7 @@ export default function NotificationItem({
   }, [menuOpen]);
 
   const iconName = n.icon || CATEGORY_ICONS[n.type || n.category] || "bell";
-  const iconTone = CATEGORY_TONES[n.type || n.category] || CATEGORY_TONES[n.category] || "bg-zinc-500/10 text-zinc-400";
+  const iconTone = CATEGORY_TONES[n.type || n.category] || CATEGORY_TONES[n.category] || "bg-zinc-500/10 text-[var(--text-muted)]";
   const accent = PRIORITY_ACCENT[n.priority] || PRIORITY_ACCENT.normal;
   const badge = PRIORITY_BADGE[n.priority] || PRIORITY_BADGE.normal;
 
@@ -156,14 +156,14 @@ export default function NotificationItem({
       exit={{ opacity: 0, height: 0, marginBottom: 0 }}
       transition={{ duration: 0.15, ease: "easeOut" as const }}
       onClick={() => onOpen?.(n)}
-      className={`group relative cursor-pointer overflow-hidden rounded-2xl v8-panel p-3.5 transition-all hover:border-white/[0.14] hover:bg-zinc-900/80 active:scale-[0.99] ${
+      className={`group relative cursor-pointer overflow-hidden rounded-2xl v8-panel p-3.5 transition-all hover:border-[var(--text-primary)]/[0.14] hover:bg-zinc-900/80 active:scale-[0.99] ${
         n.read ? "opacity-80" : ""
       } ${accent} border-l-2`}
       data-notification-item
     >
       <div className="flex items-start gap-3.5">
         <span
-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] ${iconTone}`}
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--text-primary)]/[0.08] ${iconTone}`}
         >
           <Icon name={iconName} className="h-4 w-4" />
         </span>

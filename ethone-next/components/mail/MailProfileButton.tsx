@@ -107,7 +107,7 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="group flex w-full items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5 text-left transition-colors hover:bg-white/[0.04] hover:border-white/[0.10]"
+        className="group flex w-full items-center gap-3 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5 text-left transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:border-[var(--text-primary)]/[0.10]"
       >
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--accent-primary)_15%,transparent)] text-[var(--accent-primary)]">
           <User className="h-4 w-4" />
@@ -133,25 +133,25 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
       >
         <div className="space-y-5">
           {primary && (
-            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-              <div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-wider text-zinc-500">
+            <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-4">
+              <div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
                 <Crown className="h-3.5 w-3.5" />
                 {i18n("primaryAlias") || "Adresse principale"}
               </div>
               <div className="mt-3 flex items-center gap-3">
                 <div className="min-w-0 flex-1">
-                  <p className="flex items-center gap-2 text-sm font-medium text-white">
+                  <p className="flex items-center gap-2 text-sm font-medium text-[var(--text-primary)]">
                     <Mail className="h-4 w-4 shrink-0 text-purple-400" />
                     <span className="truncate">{primary.alias}</span>
                   </p>
-                  <p className="mt-0.5 text-[10px] text-zinc-500">
+                  <p className="mt-0.5 text-[10px] text-[var(--text-muted)]">
                     {i18n("uniquePerUser") || "Cette adresse est unique et vous est réservée."}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => copyEmail(primary.alias)}
-                  className="shrink-0 rounded-md p-1.5 text-[var(--text-muted)] transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)]"
+                  className="shrink-0 rounded-md p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                   aria-label={i18n("copy") || "Copier"}
                 >
                   {copied === primary.alias ? <CheckCircle2 className="h-4 w-4 text-[var(--success)]" /> : <Copy className="h-4 w-4" />}
@@ -190,7 +190,7 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
 
           {aliases.length > 1 && (
             <div>
-              <h4 className="mb-2 text-[10px] font-medium uppercase tracking-wider text-zinc-500">
+              <h4 className="mb-2 text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
                 {i18n("myMailAddresses") || "Mes adresses"}
               </h4>
               <div className="space-y-2">
@@ -201,15 +201,15 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
                       "flex items-center gap-3 rounded-xl border px-3 py-2.5",
                       a.is_primary
                         ? "border-purple-500/20 bg-purple-500/10"
-                        : "border-white/[0.06] bg-white/[0.02]"
+                        : "border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02]"
                     )}
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm text-zinc-200 truncate">{a.alias}</p>
-                      {a.display_name && <p className="text-[10px] text-zinc-500 truncate">{a.display_name}</p>}
+                      <p className="text-sm text-[var(--text-primary)] truncate">{a.alias}</p>
+                      {a.display_name && <p className="text-[10px] text-[var(--text-muted)] truncate">{a.display_name}</p>}
                     </div>
                     {a.is_primary ? (
-                      <span className="flex items-center gap-1 rounded-md bg-white/[0.06] px-2 py-1 text-[10px] text-purple-300">
+                      <span className="flex items-center gap-1 rounded-md bg-[var(--text-primary)]/[0.06] px-2 py-1 text-[10px] text-purple-300">
                         <Star className="h-3 w-3" />
                         {i18n("primary") || "Principale"}
                       </span>
@@ -218,7 +218,7 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
                         type="button"
                         onClick={() => handleSetPrimary(a.id)}
                         disabled={primaryLoading === a.id}
-                        className="rounded-md px-2 py-1 text-[11px] text-[var(--text-primary)] transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)] disabled:opacity-50"
+                        className="rounded-md px-2 py-1 text-[11px] text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] disabled:opacity-50"
                       >
                         {primaryLoading === a.id ? <Loader2 className="h-3 w-3 animate-spin" /> : i18n("setAsPrimary") || "Définir principale"}
                       </button>
@@ -230,8 +230,8 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
           )}
 
           {createAlias && (
-            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-              <h4 className="mb-3 text-[10px] font-medium uppercase tracking-wider text-zinc-500">
+            <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-4">
+              <h4 className="mb-3 text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
                 {i18n("addAlias") || "Ajouter une adresse"}
               </h4>
               <div className="space-y-3">
@@ -252,7 +252,7 @@ export default function MailProfileButton({ aliases, primaryAlias, updateAlias, 
                   inputSize="compact"
                   right={
                     <div className="flex items-center gap-2">
-                      <span className="shrink-0 text-[11px] text-zinc-500">@ethone.dev</span>
+                      <span className="shrink-0 text-[11px] text-[var(--text-muted)]">@ethone.dev</span>
                       <Button
                         type="button"
                         variant="secondary"

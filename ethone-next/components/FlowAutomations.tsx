@@ -89,7 +89,7 @@ export default function FlowAutomations({ activeFlow }: { activeFlow?: string })
               type="time"
               value={triggerValue}
               onChange={(e) => setTriggerValue(e.target.value)}
-              className="h-11 flex-1 rounded-xl border border-white/[0.08] bg-white/[0.04] px-3 text-sm text-white outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] md:h-10"
+              className="h-11 flex-1 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-3 text-sm text-[var(--text-primary)] outline-none transition-all duration-200 focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)] md:h-10"
             />
           ) : (
             <Select
@@ -120,7 +120,7 @@ export default function FlowAutomations({ activeFlow }: { activeFlow?: string })
         </div>
 
         {rules.length === 0 ? (
-          <p className="text-sm text-zinc-400">{i18n("noAutomations")}</p>
+          <p className="text-sm text-[var(--text-muted)]">{i18n("noAutomations")}</p>
         ) : (
           <div className="space-y-2">
             {rules.map((rule: AutomationRule) => {
@@ -128,11 +128,11 @@ export default function FlowAutomations({ activeFlow }: { activeFlow?: string })
               return (
                 <div
                   key={rule.id}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-white/[0.08] bg-white/[0.04] p-2.5"
+                  className="flex items-center justify-between gap-3 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] p-2.5"
                 >
-                  <span className="min-w-0 text-sm text-zinc-200">
-                    <span className="font-medium text-white">{triggerLabel(rule.trigger)}</span>
-                    <span className="mx-2 text-zinc-500">→</span>
+                  <span className="min-w-0 text-sm text-[var(--text-primary)]">
+                    <span className="font-medium text-[var(--text-primary)]">{triggerLabel(rule.trigger)}</span>
+                    <span className="mx-2 text-[var(--text-muted)]">→</span>
                     {actionLabelText}
                   </span>
                   <div className="flex items-center gap-1">

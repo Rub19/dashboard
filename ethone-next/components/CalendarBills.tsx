@@ -172,12 +172,12 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
                 key={idx}
                 onClick={() => dayItems.length > 0 && openItem(dayItems[0])}
                 className={`group relative min-h-[6.5rem] cursor-pointer border-b border-r border-[var(--panel-border)] p-2 transition-colors hover:bg-[var(--panel-bg)]/[0.03] ${
-                  !inMonth ? "bg-black/[0.08] text-[var(--text-muted)]" : "text-[var(--text-primary)]"
+                  !inMonth ? "bg-[var(--background)]/[0.08] text-[var(--text-muted)]" : "text-[var(--text-primary)]"
                 } ${isToday ? "bg-orange-500/10 ring-1 ring-inset ring-orange-500/30" : ""} backdrop-blur-[var(--panel-blur)]`}
               >
                 <span
                   className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium ${
-                    isToday ? "bg-orange-500 text-white" : "text-[var(--text-muted)] group-hover:text-[var(--text-primary)]"
+                    isToday ? "bg-orange-500 text-[var(--text-primary)]" : "text-[var(--text-muted)] group-hover:text-[var(--text-primary)]"
                   }`}
                 >
                   {day.getDate()}
@@ -191,7 +191,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
                       title={item.title}
                     >
                       <span
-                        className="flex h-5 w-5 items-center justify-center rounded-md text-white"
+                        className="flex h-5 w-5 items-center justify-center rounded-md text-[var(--text-primary)]"
                         style={{ backgroundColor: item.color || (item.category === "monthly" ? "#A259FF" : "#F59E0B") }}
                       >
                         <VendorLogo vendor={item.vendor} className="h-3.5 w-3.5" />

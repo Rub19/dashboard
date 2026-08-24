@@ -85,7 +85,7 @@ export default function UserProfileCard({
       <div className="flex items-start gap-4">
         {/* Avatar */}
         <div className="relative shrink-0">
-          <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl border border-white/[0.08] bg-[var(--panel-bg)]">
+          <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--panel-bg)]">
             {avatarUrl ? (
               <Image
                 src={avatarUrl}

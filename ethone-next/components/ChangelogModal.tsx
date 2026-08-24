@@ -68,7 +68,7 @@ export default function ChangelogModal({
             />
 
             {/* Fixed header */}
-            <div className="relative z-10 flex shrink-0 items-center justify-between gap-3 border-b border-white/[0.06] px-6 py-4">
+            <div className="relative z-10 flex shrink-0 items-center justify-between gap-3 border-b border-[var(--text-primary)]/[0.06] px-6 py-4">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--accent)]/25 bg-[var(--accent)]/10 text-[var(--accent)] shadow-[0_0_14px_rgba(139,92,246,0.18)]">
                   <Sparkles className="h-5 w-5" />
@@ -105,7 +105,7 @@ export default function ChangelogModal({
             </div>
 
             {/* Fixed footer */}
-            <div className="relative z-10 shrink-0 border-t border-white/[0.06] px-6 py-4">
+            <div className="relative z-10 shrink-0 border-t border-[var(--text-primary)]/[0.06] px-6 py-4">
               <button
                 type="button"
                 onClick={onClose}

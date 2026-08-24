@@ -24,7 +24,7 @@ export default function LiveStats({ records = [], updatedAt, loading, className 
   const statItems = [
     { label: i18n("connected"), value: byStatus.connected, color: "text-[--accent-primary]" },
     { label: i18n("pending"), value: byStatus.loading, color: "text-[--info]" },
-    { label: i18n("events"), value: records.length, color: "text-zinc-200" },
+    { label: i18n("events"), value: records.length, color: "text-[var(--text-primary)]" },
     { label: i18n("error"), value: byStatus.error, color: "text-rose-400" },
   ];
 
@@ -32,10 +32,10 @@ export default function LiveStats({ records = [], updatedAt, loading, className 
     <div
       className={`w-full rounded-2xl v8-panel p-3 shadow-xl backdrop-blur-2xl ${className}`}
     >
-      <div className="flex items-center justify-between gap-3 border-b border-white/[0.04] pb-2">
+      <div className="flex items-center justify-between gap-3 border-b border-[var(--text-primary)]/[0.04] pb-2">
         <div className="flex items-center gap-2">
           <Activity className="h-4 w-4 text-[--accent-primary]" />
-          <span className="text-xs font-bold uppercase tracking-wider text-white">{i18n("liveStats")}</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">{i18n("liveStats")}</span>
         </div>
         <LiveFreshness updatedAt={updatedAt} />
       </div>
@@ -46,7 +46,7 @@ export default function LiveStats({ records = [], updatedAt, loading, className 
             key={item.label}
             className="v8-inset flex items-center justify-between p-2.5"
           >
-            <span className="text-[10px] uppercase text-zinc-400">{item.label}</span>
+            <span className="text-[10px] uppercase text-[var(--text-muted)]">{item.label}</span>
             <span className={`font-mono text-xl font-bold ${item.color}`}>
               {loading ? "-" : item.value}
             </span>

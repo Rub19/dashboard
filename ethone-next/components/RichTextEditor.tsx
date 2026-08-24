@@ -366,7 +366,7 @@ export default function RichTextEditor({
             className="flex min-w-fit items-center gap-2 rounded-lg border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08]"
           >
             <span>{selectedBlock.label}</span>
-            <Icon name="chevronDown" className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
+            <Icon name="chevronDown" className="h-3.5 w-3.5 shrink-0 text-[var(--text-muted)]" />
           </button>
           <AnimatePresence>
             {blockOpen && (
@@ -414,7 +414,7 @@ export default function RichTextEditor({
         onClick={() => ref.current?.focus()}
       >
         {empty && placeholder && (
-          <span className="pointer-events-none absolute left-4 top-3 text-sm text-zinc-600">{placeholder}</span>
+          <span className="pointer-events-none absolute left-4 top-3 text-sm text-[var(--text-muted)]">{placeholder}</span>
         )}
         <div
           ref={ref}
@@ -428,7 +428,7 @@ export default function RichTextEditor({
           onKeyUp={updateFormat}
           onMouseUp={updateFormat}
           data-testid="rich-editor"
-          className="h-full min-h-0 w-full flex-1 overflow-y-auto resize-none whitespace-pre-wrap text-xs leading-relaxed text-zinc-300 outline-none sm:text-sm"
+          className="h-full min-h-0 w-full flex-1 overflow-y-auto resize-none whitespace-pre-wrap text-xs leading-relaxed text-[var(--text-primary)] outline-none sm:text-sm"
           suppressContentEditableWarning
         />
       </div>

@@ -133,7 +133,7 @@ export default function TabList({
                   className={cn(
                     "flex w-full items-center gap-3 rounded-[var(--panel-radius)] px-4 py-3 text-left text-sm font-medium transition-colors",
                     activeId === tab.id
-                      ? "bg-white/[0.12] text-white"
+                      ? "bg-[var(--text-primary)]/[0.12] text-[var(--text-primary)]"
                       : "text-[var(--text-primary)] hover:bg-[var(--panel-bg)]",
                     tab.disabled && "opacity-40 cursor-not-allowed"
                   )}
@@ -189,13 +189,13 @@ export default function TabList({
               className={cn(
                 "relative z-0 flex min-h-[44px] min-w-[44px] items-center justify-center gap-2 whitespace-nowrap rounded-[var(--panel-radius)] px-4 py-2 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
                 active
-                  ? "text-white"
+                  ? "text-[var(--text-primary)]"
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
                 tab.disabled && "opacity-40 cursor-not-allowed"
               )}
             >
               {active && (
-                <div className="absolute inset-0 -z-10 rounded-[var(--panel-radius)] bg-white/[0.12]" />
+                <div className="absolute inset-0 -z-10 rounded-[var(--panel-radius)] bg-[var(--text-primary)]/[0.12]" />
               )}
               <span className="relative z-10 flex items-center gap-2">
                 {tab.icon}

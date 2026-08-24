@@ -182,8 +182,8 @@ export default function IntegrationsSettings() {
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
       <div className="shrink-0 mb-4 space-y-4">
         <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold text-white">{i18n("connectionsTitle")}</h1>
-          <p className="text-sm text-zinc-400">{i18n("connectionsDescription")}</p>
+          <h1 className="text-2xl font-bold text-[var(--text-primary)]">{i18n("connectionsTitle")}</h1>
+          <p className="text-sm text-[var(--text-muted)]">{i18n("connectionsDescription")}</p>
         </div>
 
         <SystemHealthBanner
@@ -207,7 +207,7 @@ export default function IntegrationsSettings() {
 
       <div className="min-h-0 w-full flex-1 space-y-4 overflow-y-auto p-6 pb-10 no-scrollbar">
       {(loading || credentials.loading) && (
-        <div className="flex items-center gap-3 rounded-2xl v8-panel p-5 text-sm text-zinc-400 backdrop-blur-2xl">
+        <div className="flex items-center gap-3 rounded-2xl v8-panel p-5 text-sm text-[var(--text-muted)] backdrop-blur-2xl">
           <Plug className="h-5 w-5 animate-spin" />
           {i18n("loading")}
         </div>
@@ -217,7 +217,7 @@ export default function IntegrationsSettings() {
         {filtered.map((integration) => renderCard(integration))}
       </div>
 
-      <div className="rounded-2xl v8-panel p-5 text-sm text-zinc-400 backdrop-blur-2xl">
+      <div className="rounded-2xl v8-panel p-5 text-sm text-[var(--text-muted)] backdrop-blur-2xl">
         <div className="flex items-center gap-2">
           <Plug className="h-4 w-4" />
           <p>{i18n("oauthInfo")}</p>

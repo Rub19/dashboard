@@ -61,13 +61,13 @@ export default function MailSidebar({ active, onChange, counts, unread, onCompos
                 type="button"
                 onClick={() => onChange(id)}
                 className={`group relative flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs font-medium transition-colors ${
-                  isActive ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:bg-white/[0.03] hover:text-[var(--text-primary)]"
+                  isActive ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.03] hover:text-[var(--text-primary)]"
                 }`}
               >
                 {isActive && (
                   <motion.div
                     layoutId="activeFolderPill"
-                    className="absolute inset-0 rounded-xl bg-white/[0.06]"
+                    className="absolute inset-0 rounded-xl bg-[var(--text-primary)]/[0.06]"
                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   />
                 )}
@@ -78,7 +78,7 @@ export default function MailSidebar({ active, onChange, counts, unread, onCompos
                   {i18n(id) || id}
                 </span>
                 {count > 0 && (
-                  <span className="relative z-10 rounded-md bg-white/[0.06] px-1.5 py-0.5 text-[10px] font-mono text-[var(--text-muted)]">
+                  <span className="relative z-10 rounded-md bg-[var(--text-primary)]/[0.06] px-1.5 py-0.5 text-[10px] font-mono text-[var(--text-muted)]">
                     {id === "inbox" ? unread || count : count}
                   </span>
                 )}
@@ -96,12 +96,12 @@ export default function MailSidebar({ active, onChange, counts, unread, onCompos
           updateAlias={updateAlias}
         />
 
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
-          <p className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider">{i18n("storage") || "Stockage"}</p>
-          <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-xl bg-white/[0.05]">
+        <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5">
+          <p className="text-[10px] font-medium text-[var(--text-muted)] uppercase tracking-wider">{i18n("storage") || "Stockage"}</p>
+          <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-xl bg-[var(--text-primary)]/[0.05]">
             <div className="h-full w-[12%] rounded-xl bg-[var(--accent-primary)]" />
           </div>
-          <p className="mt-1.5 text-[10px] text-zinc-500">{i18n("usedOf") || "12% utilisé"}</p>
+          <p className="mt-1.5 text-[10px] text-[var(--text-muted)]">{i18n("usedOf") || "12% utilisé"}</p>
         </div>
       </div>
     </div>

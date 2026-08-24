@@ -249,7 +249,7 @@ export default function SocialDiscordCard({
           ) : (
             <RadioOff className="h-6 w-6 text-[var(--text-muted)]" />
           )}
-          <p className="text-sm font-medium text-zinc-300">
+          <p className="text-sm font-medium text-[var(--text-primary)]">
             {hasAnyConnection
               ? i18n("socialStandby", "Connecté — en attente d'activité")
               : i18n("socialNoSession", "Aucune session sociale active")}
@@ -277,14 +277,14 @@ export default function SocialDiscordCard({
                   className="h-full w-full rounded-2xl border border-white/10"
                   priority
                   fallback={
-                    <div className="flex h-full w-full items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-lg font-bold text-zinc-300">
+                    <div className="flex h-full w-full items-center justify-center rounded-2xl border border-white/10 bg-[var(--text-primary)]/[0.04] text-lg font-bold text-[var(--text-primary)]">
                       {displayName.slice(0, 2).toUpperCase()}
                     </div>
                   }
                 />
                 <span
                   className={cn(
-                    "absolute -bottom-1 -right-1 h-5 w-5 rounded-full border-[3px] border-zinc-950",
+                    "absolute -bottom-1 -right-1 h-5 w-5 rounded-full border-[3px] border-[var(--background)]",
                     color
                   )}
                 />
@@ -300,14 +300,14 @@ export default function SocialDiscordCard({
           )}
 
           {customStatus && (
-            <p className="max-w-full truncate rounded-lg bg-white/[0.04] px-3 py-1 text-[11px] text-zinc-300">
+            <p className="max-w-full truncate rounded-lg bg-[var(--text-primary)]/[0.04] px-3 py-1 text-[11px] text-[var(--text-primary)]">
               {customStatus}
             </p>
           )}
 
           {gameActivity && (
             <div className="w-full shrink-0 space-y-0 rounded-xl border border-[var(--text-primary)]/[0.05] bg-[var(--text-primary)]/[0.02] p-2 text-center">
-              <p className="text-[11px] font-semibold text-zinc-200">{gameActivity.name}</p>
+              <p className="text-[11px] font-semibold text-[var(--text-primary)]">{gameActivity.name}</p>
               {gameActivity.details && (
                 <p className="line-clamp-2 text-[10px] text-[var(--text-muted)]">{gameActivity.details}</p>
               )}
@@ -320,7 +320,7 @@ export default function SocialDiscordCard({
       )}
 
       {activeMusic && (
-        <div className="mt-auto flex flex-col gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] p-3">
+        <div className="mt-auto flex flex-col gap-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] p-3">
           <div className="flex items-center gap-3">
             <ClientImage
               candidates={coverCandidates}
@@ -342,7 +342,7 @@ export default function SocialDiscordCard({
 
           {activeMusic.durationMs && activeMusic.durationMs > 0 && (
             <div className="flex flex-col gap-1">
-              <div className="h-1 w-full overflow-hidden rounded-xl bg-white/[0.08]">
+              <div className="h-1 w-full overflow-hidden rounded-xl bg-[var(--text-primary)]/[0.08]">
                 <div className="h-full rounded-xl bg-[--accent-primary]" style={{ width: `${progressPct}%` }} />
               </div>
               <div className="flex items-center justify-between text-[10px] font-mono text-[var(--text-muted)]">

@@ -243,7 +243,7 @@ function WeatherDetailContent({
             <Link
               href="/weather"
               onClick={onClose}
-              className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-[var(--text-primary)] transition-opacity hover:opacity-90"
             >
               {i18n("weatherSeePage")}
               <Icon name="arrowRight" className="h-4 w-4" />

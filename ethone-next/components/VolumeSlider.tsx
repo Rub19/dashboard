@@ -119,7 +119,7 @@ export default function VolumeSlider({
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        <div className="absolute inset-0 rounded-full bg-white/[0.04] backdrop-blur-sm" />
+        <div className="absolute inset-0 rounded-full bg-[var(--text-primary)]/[0.04] backdrop-blur-sm" />
         <div
           className="absolute left-0 top-0 h-full rounded-full transition-[width] duration-75 ease-out"
           style={{
@@ -130,7 +130,7 @@ export default function VolumeSlider({
         />
         <div
           className={cn(
-            "pointer-events-none absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/[0.12] bg-white/[0.08] shadow-md transition-transform",
+            "pointer-events-none absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[var(--text-primary)]/[0.12] bg-[var(--text-primary)]/[0.08] shadow-md transition-transform",
             thumbSize,
             dragging || hovered ? "scale-125" : "scale-100",
           )}

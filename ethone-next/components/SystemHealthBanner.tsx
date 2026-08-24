@@ -48,8 +48,8 @@ export default function SystemHealthBanner({
             <Activity className="h-4 w-4" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-white">{i18n("systemHealth")}</h2>
-            <p className="text-[11px] text-zinc-400">
+            <h2 className="text-sm font-bold text-[var(--text-primary)]">{i18n("systemHealth")}</h2>
+            <p className="text-[11px] text-[var(--text-muted)]">
               {ok}/{total} {i18n("connected")}
             </p>
           </div>
@@ -106,7 +106,7 @@ export default function SystemHealthBanner({
             transition={{ duration: 0.2, ease: "easeOut" }}
             className="overflow-hidden"
           >
-            <div className="mt-3 grid gap-2 border-t border-white/[0.06] pt-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-3 grid gap-2 border-t border-[var(--text-primary)]/[0.06] pt-3 sm:grid-cols-2 lg:grid-cols-3">
               {INTEGRATIONS.map((integration) => {
                 const result = health[integration.id];
                 const configured = configuredMap[integration.id] || false;
@@ -114,14 +114,14 @@ export default function SystemHealthBanner({
                 return (
                   <div
                     key={integration.id}
-                    className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5"
+                    className="flex items-center gap-3 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5"
                   >
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.04] text-zinc-300">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--text-primary)]/[0.04] text-[var(--text-primary)]">
                       <ServiceIcon id={integration.id} icon={integration.icon} className="h-4 w-4" colored />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-xs font-medium text-zinc-200">{integration.name}</p>
-                      <p className="text-[10px] text-zinc-500">
+                      <p className="truncate text-xs font-medium text-[var(--text-primary)]">{integration.name}</p>
+                      <p className="text-[10px] text-[var(--text-muted)]">
                         {result ? `${result.ms}ms` : i18n(status === "connected" ? "connected" : status === "error" ? "error" : "notConfigured")}
                       </p>
                     </div>
@@ -131,7 +131,7 @@ export default function SystemHealthBanner({
                           ? "bg-[--accent-primary]/10 text-[--accent-primary]"
                           : status === "error"
                             ? "bg-rose-500/10 text-rose-400"
-                            : "bg-zinc-500/10 text-zinc-500"
+                            : "bg-zinc-500/10 text-[var(--text-muted)]"
                       }`}
                     >
                       {status === "connected" ? (

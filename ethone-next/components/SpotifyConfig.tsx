@@ -86,7 +86,7 @@ export default function SpotifyConfig() {
       ? "bg-green-500/10 text-green-400 border border-green-500/20"
       : status === "error"
         ? "bg-rose-500/15 text-rose-300 border border-rose-500/30"
-        : "bg-white/[0.04] text-zinc-400 border border-white/[0.08]";
+        : "bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] border border-[var(--text-primary)]/[0.08]";
 
   async function handleConnect() {
     const trimmed = rawValue.trim();
@@ -168,11 +168,11 @@ export default function SpotifyConfig() {
   if (!integration) return null;
 
   return (
-    <div className="flex h-full flex-col gap-4 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4">
+    <div className="flex h-full flex-col gap-4 rounded-2xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.02] p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="font-semibold text-white">Spotify</h3>
-          <p className="text-xs text-zinc-500">{i18n("descSpotify")}</p>
+          <h3 className="font-semibold text-[var(--text-primary)]">Spotify</h3>
+          <p className="text-xs text-[var(--text-muted)]">{i18n("descSpotify")}</p>
         </div>
         <span className={`rounded-lg px-2.5 py-1 text-[10px] font-semibold ${statusClass}`}>{statusText}</span>
       </div>
@@ -210,9 +210,9 @@ export default function SpotifyConfig() {
           )}
 
           {config?.requiresRedirectUri && origin && (
-            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-2.5">
-              <p className="text-[11px] font-medium text-zinc-300">{i18n("redirectUri")}</p>
-              <code className="mt-1 block break-all rounded-lg bg-zinc-950 px-2 py-1 text-[10px] text-zinc-400">
+            <div className="rounded-xl border border-white/10 bg-[var(--text-primary)]/[0.03] p-2.5">
+              <p className="text-[11px] font-medium text-[var(--text-primary)]">{i18n("redirectUri")}</p>
+              <code className="mt-1 block break-all rounded-lg bg-[var(--background)] px-2 py-1 text-[10px] text-[var(--text-muted)]">
                 {`${origin}${config.callbackPath}`}
               </code>
             </div>
@@ -267,7 +267,7 @@ export default function SpotifyConfig() {
       </div>
 
       {!!health?.data && (
-        <pre className="max-h-40 overflow-auto rounded-xl bg-black/30 p-3 font-mono text-[10px] text-zinc-300">
+        <pre className="max-h-40 overflow-auto rounded-xl bg-black/30 p-3 font-mono text-[10px] text-[var(--text-primary)]">
           {JSON.stringify(health.data as Record<string, unknown>, null, 2)}
         </pre>
       )}

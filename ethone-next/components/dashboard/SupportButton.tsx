@@ -16,7 +16,7 @@ const SupportButton = memo(function SupportButton({
       target="_blank"
       rel="noopener noreferrer"
       className={cn(
-        "inline-flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2 text-xs font-medium text-[var(--text-muted)] backdrop-blur-md transition-all duration-200",
+        "inline-flex items-center gap-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] px-3 py-2 text-xs font-medium text-[var(--text-muted)] backdrop-blur-md transition-all duration-200",
         "hover:border-[var(--accent-primary)]/30 hover:bg-[var(--accent-primary)]/10 hover:text-[var(--text-primary)] hover:shadow-[0_0_16px_var(--glow-color)]",
         className
       )}

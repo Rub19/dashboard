@@ -84,14 +84,14 @@ export default function TasksCard({ task, onToggle, onDelete }: TasksCardProps) 
           <p
             className={`text-xs font-medium transition-colors ${
               task.done
-                ? "text-zinc-500 line-through opacity-60"
-                : "text-zinc-200 group-hover:text-white"
+                ? "text-[var(--text-muted)] line-through opacity-60"
+                : "text-[var(--text-primary)] group-hover:text-[var(--text-primary)]"
             }`}
           >
             {task.title}
           </p>
           {due && (
-            <p className="mt-0.5 flex items-center gap-1 text-[10px] font-mono text-zinc-400">
+            <p className="mt-0.5 flex items-center gap-1 text-[10px] font-mono text-[var(--text-muted)]">
               <Calendar className="h-3 w-3" />
               {due}
             </p>

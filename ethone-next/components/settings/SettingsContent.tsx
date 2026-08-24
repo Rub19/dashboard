@@ -1247,7 +1247,7 @@ export default function SettingsContent({
             className="space-y-4"
           >
             {category.id === "advanced" && (
-              <h2 className="sticky top-0 z-10 -mx-1 mb-2 flex items-center gap-2 rounded-[var(--panel-radius)] border border-white/[0.06] bg-[var(--panel-bg)]/80 px-4 py-2 text-sm font-semibold text-[var(--text-primary)] backdrop-blur-[var(--panel-blur)]">
+              <h2 className="sticky top-0 z-10 -mx-1 mb-2 flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--panel-bg)]/80 px-4 py-2 text-sm font-semibold text-[var(--text-primary)] backdrop-blur-[var(--panel-blur)]">
                 <Icon name={category.icon} className="h-4 w-4 text-[var(--accent)]" />
                 {category.label}
               </h2>

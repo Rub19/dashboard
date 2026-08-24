@@ -104,8 +104,8 @@ export default function MailOnboarding({ aliases, createAlias, updateAlias, onCo
   const createForm = (
     <div className="space-y-4">
       {aliases.length > 0 && primary?.alias && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 text-sm text-zinc-400">
-          {i18n("currentAlias", "Adresse actuelle")}: <span className="font-medium text-zinc-200">{primary.alias}</span>
+        <div className="rounded-2xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-4 text-sm text-[var(--text-muted)]">
+          {i18n("currentAlias", "Adresse actuelle")}: <span className="font-medium text-[var(--text-primary)]">{primary.alias}</span>
         </div>
       )}
 
@@ -140,7 +140,7 @@ export default function MailOnboarding({ aliases, createAlias, updateAlias, onCo
           placeholder="votre-alias"
           disabled={loading}
           className="w-full"
-          right={<span className="shrink-0 text-sm text-zinc-500">@ethone.dev</span>}
+          right={<span className="shrink-0 text-sm text-[var(--text-muted)]">@ethone.dev</span>}
         />
       </FormField>
 
@@ -172,7 +172,7 @@ export default function MailOnboarding({ aliases, createAlias, updateAlias, onCo
         <button
           type="button"
           onClick={() => setView("confirm")}
-          className="flex w-full items-center justify-center gap-2 text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+          className="flex w-full items-center justify-center gap-2 text-sm text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
         >
           <ArrowLeft className="h-4 w-4" />
           {i18n("back", "Retour")}
@@ -190,8 +190,8 @@ export default function MailOnboarding({ aliases, createAlias, updateAlias, onCo
           <Crown className="h-3.5 w-3.5" />
           {i18n("primaryAlias") || "Adresse principale"}
         </div>
-        <p className="mt-2 text-base font-medium text-white break-all">{primary?.alias}</p>
-        <p className="mt-1 text-xs text-zinc-400">
+        <p className="mt-2 text-base font-medium text-[var(--text-primary)] break-all">{primary?.alias}</p>
+        <p className="mt-1 text-xs text-[var(--text-muted)]">
           {i18n("uniquePerUser") || "Cette adresse est unique et vous est réservée."}
         </p>
       </div>
@@ -226,7 +226,7 @@ export default function MailOnboarding({ aliases, createAlias, updateAlias, onCo
       <button
         type="button"
         onClick={() => setView("create")}
-        className="flex w-full items-center justify-center gap-2 text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+        className="flex w-full items-center justify-center gap-2 text-sm text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
       >
         {i18n("changeAlias", "Changer d'adresse")}
       </button>
@@ -239,17 +239,17 @@ export default function MailOnboarding({ aliases, createAlias, updateAlias, onCo
         initial={{ opacity: 0, y: 12, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
-        className="w-full max-w-md rounded-3xl border border-white/[0.1] bg-zinc-950/90 p-6 shadow-[0_25px_60px_rgba(0,0,0,0.85)] backdrop-blur-2xl sm:p-8 flex flex-col gap-5"
+        className="w-full max-w-md rounded-3xl border border-[var(--text-primary)]/[0.1] bg-zinc-950/90 p-6 shadow-[0_25px_60px_rgba(0,0,0,0.85)] backdrop-blur-2xl sm:p-8 flex flex-col gap-5"
       >
-        <div className="mb-1 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.04] text-purple-500">
+        <div className="mb-1 flex h-12 w-12 items-center justify-center rounded-2xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] text-purple-500">
           <Mail className="h-5 w-5" />
         </div>
 
         <div>
-          <h2 className="text-lg font-semibold text-white">
+          <h2 className="text-lg font-semibold text-[var(--text-primary)]">
             {i18n("mailOnboardingTitle") || "Configurez votre profil mail"}
           </h2>
-          <p className="mt-1 text-xs leading-relaxed text-zinc-400">
+          <p className="mt-1 text-xs leading-relaxed text-[var(--text-muted)]">
             {i18n("mailOnboardingDescription") || "Votre adresse @ethone.dev est unique et servira d'expéditeur pour tous vos messages."}
           </p>
         </div>

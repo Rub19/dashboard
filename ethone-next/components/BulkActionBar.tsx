@@ -25,7 +25,7 @@ export default function BulkActionBar({
   return (
     <div className="flex flex-wrap items-center justify-between gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 shadow-lg backdrop-blur-[var(--panel-blur)]">
       <div className="flex items-center gap-2 text-sm font-medium">
-        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--accent)] text-[10px] font-bold text-white">
+        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--accent)] text-[10px] font-bold text-[var(--text-primary)]">
           {count}
         </span>
         <span>{i18n(count === 1 ? "oneSelected" : "manySelected")}</span>

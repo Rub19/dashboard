@@ -195,7 +195,7 @@ export default function AppearanceSettings() {
       <BentoCard title="Thème & Accent" icon="palette" className="md:col-span-2">
         <div className="space-y-5">
           <div>
-            <h3 className="mb-2 text-xs font-semibold text-zinc-300">{i18n("theme")}</h3>
+            <h3 className="mb-2 text-xs font-semibold text-[var(--text-primary)]">{i18n("theme")}</h3>
             <PremiumThemePicker value={currentTheme} onChange={(theme) => handleChange("theme", theme)} />
           </div>
 

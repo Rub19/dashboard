@@ -49,7 +49,7 @@ export default function CategoryTabs({ active, onChange }: { active: string; onC
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               />
             )}
-            <span className={isActive ? "text-[var(--accent-color)]" : "text-zinc-500"}>
+            <span className={isActive ? "text-[var(--accent-color)]" : "text-[var(--text-muted)]"}>
               {CATEGORY_ICONS[cat.id] || <Plug className="h-3.5 w-3.5" />}
             </span>
             {i18n(cat.id)}

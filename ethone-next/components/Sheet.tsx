@@ -88,7 +88,7 @@ export default function Sheet({
                 <div className="h-1 w-10 rounded-full bg-[var(--text-primary)]/20" />
               </div>
             )}
-            <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-3">
+            <div className="flex items-center justify-between border-b border-[var(--text-primary)]/[0.06] px-4 py-3">
               {title ? (
                 <span className="text-sm font-semibold text-[var(--text-primary)]">{title}</span>
               ) : (

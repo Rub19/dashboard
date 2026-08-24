@@ -54,7 +54,7 @@ function Toggle({ label, checked, onChange }: ToggleProps) {
         }`}
       >
         <span
-          className={`absolute top-1 h-3 w-3 rounded-full bg-white transition-transform dark:bg-zinc-100 ${
+          className={`absolute top-1 h-3 w-3 rounded-full bg-[var(--text-primary)] transition-transform dark:bg-zinc-100 ${
             checked ? "left-5" : "left-1"
           }`}
         />
@@ -168,7 +168,7 @@ export default function DockControlCenter({
             aria-label={i18n("controlCenter")}
           >
             <div
-              className="max-h-[calc(80vh-2.5rem)] space-y-4 overflow-y-auto rounded-lg border border-zinc-200 bg-white/90 p-4 shadow-[0_16px_50px_rgba(0,0,0,0.12)] backdrop-blur-3xl dark:border-white/[0.08] dark:bg-zinc-950/90 dark:shadow-[0_16px_50px_rgba(0,0,0,0.7)]"
+              className="max-h-[calc(80vh-2.5rem)] space-y-4 overflow-y-auto rounded-lg border border-zinc-200 bg-white/90 p-4 shadow-[0_16px_50px_rgba(0,0,0,0.12)] backdrop-blur-3xl dark:border-[var(--text-primary)]/[0.08] dark:bg-zinc-950/90 dark:shadow-[0_16px_50px_rgba(0,0,0,0.7)]"
             >
               <div className="mb-2 flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-[var(--text-primary)]">{i18n("controlCenter")}</h3>
@@ -276,7 +276,7 @@ export default function DockControlCenter({
               <Link
                 href="/settings/"
                 onClick={onClose}
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-zinc-50 transition-opacity hover:opacity-90"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-[var(--text-primary)] transition-opacity hover:opacity-90"
               >
                 <Icon name="settings" className="h-4 w-4" />
                 {i18n("openSettings")}

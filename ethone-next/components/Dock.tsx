@@ -179,7 +179,7 @@ function Dock() {
           <LayoutGrid className="w-5 h-5" />
         </button>
 
-        <div className="mx-1 h-6 w-[1px] shrink-0 bg-white/[0.08]" aria-hidden="true" />
+        <div className="mx-1 h-6 w-[1px] shrink-0 bg-[var(--text-primary)]/[0.08]" aria-hidden="true" />
 
         <button
           type="button"

@@ -41,8 +41,8 @@ function MediaEqualizer({ className = "" }: { className?: string }) {
 }
 
 const SOURCE_ICON: Record<string, { icon: React.ReactNode; color: string; label: string }> = {
-  spotify: { icon: <Music className="h-3 w-3" />, color: "bg-[--accent-primary] text-white", label: "Spotify" },
-  jellyfin: { icon: <Server className="h-3 w-3" />, color: "bg-violet-500 text-white", label: "Jellyfin" },
+  spotify: { icon: <Music className="h-3 w-3" />, color: "bg-[--accent-primary] text-[var(--text-primary)]", label: "Spotify" },
+  jellyfin: { icon: <Server className="h-3 w-3" />, color: "bg-violet-500 text-[var(--text-primary)]", label: "Jellyfin" },
 };
 
 export default function MediaWidget({ className = "" }: { className?: string }) {
@@ -132,12 +132,12 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
     return (
       <div className={`w-full rounded-2xl border border-white/10 bg-zinc-950/70 p-4 shadow-2xl shadow-black/80 backdrop-blur-xl ${className}`}>
         <div className="flex flex-col items-center justify-center gap-3 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/[0.03]">
-            <Music className="h-5 w-5 text-zinc-500" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-[var(--text-primary)]/[0.03]">
+            <Music className="h-5 w-5 text-[var(--text-muted)]" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-zinc-200">{i18n("waitingForPlayback")}</p>
-            <p className="text-xs text-zinc-500">{i18n("connectSpotifyOrJellyfin")}</p>
+            <p className="text-sm font-semibold text-[var(--text-primary)]">{i18n("waitingForPlayback")}</p>
+            <p className="text-xs text-[var(--text-muted)]">{i18n("connectSpotifyOrJellyfin")}</p>
           </div>
           <div className="flex items-center gap-2">
             {hasSpotify && (
@@ -192,7 +192,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
             />
           </div>
           <div
-            className={`absolute -bottom-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full border border-white/10 shadow-sm ${sourceMeta?.color ?? "bg-zinc-500 text-white"}`}
+            className={`absolute -bottom-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full border border-white/10 shadow-sm ${sourceMeta?.color ?? "bg-zinc-500 text-[var(--text-primary)]"}`}
             title={sourceMeta?.label ?? nowPlaying?.source}
           >
             {sourceMeta?.icon ?? <Music className="h-3 w-3" />}
@@ -202,10 +202,10 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
         <div className="flex min-w-0 flex-1 flex-col gap-2">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-zinc-100" title={nowPlaying?.title || ""}>
+              <p className="truncate text-sm font-semibold text-[var(--text-primary)]" title={nowPlaying?.title || ""}>
                 {nowPlaying?.title || i18n("noTitle")}
               </p>
-              <p className="truncate text-xs text-zinc-400" title={nowPlaying?.artist || ""}>
+              <p className="truncate text-xs text-[var(--text-muted)]" title={nowPlaying?.artist || ""}>
                 {nowPlaying?.artist || i18n("noArtist")}
               </p>
             </div>
@@ -227,7 +227,7 @@ export default function MediaWidget({ className = "" }: { className?: string }) 
                 style={{ width: `${progressPct}%` }}
               />
             </div>
-            <div className="flex justify-between text-[10px] font-mono text-zinc-500">
+            <div className="flex justify-between text-[10px] font-mono text-[var(--text-muted)]">
               <span>{formatTime(progress)}</span>
               <span>{formatTime(duration)}</span>
             </div>

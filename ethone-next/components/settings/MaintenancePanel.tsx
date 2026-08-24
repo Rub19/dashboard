@@ -50,7 +50,7 @@ function InfoCard({
   badge?: string | null;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-[var(--panel-radius)] border border-white/[0.06] bg-white/[0.02] p-3">
+    <div className="flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-3">
       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--accent)]/10 text-[var(--accent)]">
         {icon}
       </span>
@@ -59,7 +59,7 @@ function InfoCard({
         <div className="flex items-center gap-2">
           <p className="text-xs font-medium text-[var(--text-primary)]">{value ?? "—"}</p>
           {badge && (
-            <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-1.5 py-0.5 text-[10px] text-[var(--text-muted)]">
+            <span className="rounded-full border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] px-1.5 py-0.5 text-[10px] text-[var(--text-muted)]">
               {badge}
             </span>
           )}

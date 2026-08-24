@@ -119,7 +119,7 @@ const CommandItemRow = memo(function CommandItemRow({
       tabIndex={-1}
       className={cn(
         "relative isolate flex w-full items-center rounded-md text-left text-sm transition-colors duration-100 ease-out outline-0 focus:outline-0 focus-visible:outline-0",
-        isActive ? "bg-white/[0.08] text-[var(--accent)]" : "text-[var(--text-muted)] hover:bg-white/[0.04]"
+        isActive ? "bg-[var(--text-primary)]/[0.08] text-[var(--accent)]" : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.04]"
       )}
     >
       <div className="relative z-10 flex flex-1 items-center gap-3 px-2 py-2">
@@ -357,7 +357,7 @@ export default function CommandPalette() {
             open ? "pointer-events-auto" : "pointer-events-none",
           )}
         >
-          <div className="flex items-center gap-3 border-b border-white/[0.06] px-4">
+          <div className="flex items-center gap-3 border-b border-[var(--text-primary)]/[0.06] px-4">
             <SearchInput
               ref={inputRef}
               value={query}
@@ -425,7 +425,7 @@ export default function CommandPalette() {
             )}
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/[0.06] px-4 py-2.5 text-[10px] text-[var(--text-muted)]">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[var(--text-primary)]/[0.06] px-4 py-2.5 text-[10px] text-[var(--text-muted)]">
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-1">
                 <kbd className="rounded border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5">Esc</kbd>

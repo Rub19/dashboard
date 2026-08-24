@@ -108,7 +108,7 @@ export default function DiscordConfig() {
       ? "bg-green-500/10 text-green-400 border border-green-500/20"
       : status === "error"
         ? "bg-rose-500/15 text-rose-300 border border-rose-500/30"
-        : "bg-white/[0.04] text-zinc-400 border border-white/[0.08]";
+        : "bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] border border-[var(--text-primary)]/[0.08]";
 
   function setMode(mode: "lanyard" | "oauth2") {
     update({ discordMode: mode });
@@ -172,16 +172,16 @@ export default function DiscordConfig() {
   if (!integration) return null;
 
   return (
-    <div className="flex h-full flex-col gap-4 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4">
+    <div className="flex h-full flex-col gap-4 rounded-2xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.02] p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="font-semibold text-white">Discord</h3>
-          <p className="text-xs text-zinc-500">{i18n("descDiscord")}</p>
+          <h3 className="font-semibold text-[var(--text-primary)]">Discord</h3>
+          <p className="text-xs text-[var(--text-muted)]">{i18n("descDiscord")}</p>
         </div>
         <span className={`rounded-lg px-2.5 py-1 text-[10px] font-semibold ${statusClass}`}>{statusText}</span>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] p-1">
+      <div className="grid grid-cols-2 gap-2 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] p-1">
         <button
           type="button"
           onClick={() => setMode("lanyard")}
@@ -258,7 +258,7 @@ export default function DiscordConfig() {
         <div className="flex flex-col gap-3">
           {isOAuthConnected ? (
             <>
-              <div className="flex items-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] p-3">
+              <div className="flex items-center gap-3 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] p-3">
                 <ClientImage
                   src={profile?.user?.avatarUrl}
                   alt={profile?.user?.globalName || profile?.user?.username || "Discord"}
@@ -266,32 +266,32 @@ export default function DiscordConfig() {
                   height={48}
                   className="h-12 w-12 rounded-full object-cover"
                   fallback={
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-800 text-sm font-bold text-zinc-400">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-800 text-sm font-bold text-[var(--text-muted)]">
                       {initials(profile?.user?.globalName || profile?.user?.username)}
                     </div>
                   }
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold text-white">
+                  <p className="truncate font-semibold text-[var(--text-primary)]">
                     {profile?.user?.globalName || profile?.user?.username || "Discord"}
                   </p>
-                  <p className="truncate text-xs text-zinc-400">@{profile?.user?.username}</p>
+                  <p className="truncate text-xs text-[var(--text-muted)]">@{profile?.user?.username}</p>
                   {profile?.user?.email && (
-                    <p className="truncate text-xs text-zinc-500">{profile.user.email}</p>
+                    <p className="truncate text-xs text-[var(--text-muted)]">{profile.user.email}</p>
                   )}
                 </div>
               </div>
 
               {!!profile?.connections && profile.connections.length > 0 && (
                 <div>
-                  <p className="mb-2 text-xs font-medium text-zinc-400">Comptes liés</p>
+                  <p className="mb-2 text-xs font-medium text-[var(--text-muted)]">Comptes liés</p>
                   <div className="flex flex-wrap gap-2">
                     {profile.connections.map((c) => {
                       const icon = iconForConnection(c.type);
                       return (
                         <span
                           key={`${c.type}:${c.id}`}
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 text-[10px] text-zinc-300"
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] px-2.5 py-1 text-[10px] text-[var(--text-primary)]"
                         >
                           <Icon pack={icon.brand ? "brand" : "lucide"} name={icon.name} className="h-3.5 w-3.5" />
                           {c.name}
@@ -304,12 +304,12 @@ export default function DiscordConfig() {
 
               {!!profile?.guilds && profile.guilds.length > 0 && (
                 <div>
-                  <p className="mb-2 text-xs font-medium text-zinc-400">Serveurs</p>
+                  <p className="mb-2 text-xs font-medium text-[var(--text-muted)]">Serveurs</p>
                   <div className="flex max-h-40 flex-wrap gap-2 overflow-y-auto no-scrollbar">
                     {profile.guilds.slice(0, 24).map((g) => (
                       <span
                         key={g.id}
-                        className="inline-flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.03] px-2.5 py-1.5 text-xs text-zinc-300"
+                        className="inline-flex items-center gap-2 rounded-lg border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] px-2.5 py-1.5 text-xs text-[var(--text-primary)]"
                       >
                         <ClientImage
                           candidates={[g.iconUrl, guildIconUrl(g.id, g.icon)]}
@@ -319,7 +319,7 @@ export default function DiscordConfig() {
                           loading="eager"
                           className="h-6 w-6 rounded-md"
                           fallback={
-                            <span className="flex h-6 w-6 items-center justify-center rounded-md bg-zinc-700 text-[10px] font-semibold uppercase text-zinc-300">
+                            <span className="flex h-6 w-6 items-center justify-center rounded-md bg-zinc-700 text-[10px] font-semibold uppercase text-[var(--text-primary)]">
                               {initials(g.name)}
                             </span>
                           }
@@ -370,7 +370,7 @@ export default function DiscordConfig() {
       )}
 
       {!!health?.data && isLanyard && (
-        <pre className="max-h-40 overflow-auto rounded-xl bg-black/30 p-3 font-mono text-[10px] text-zinc-300">
+        <pre className="max-h-40 overflow-auto rounded-xl bg-black/30 p-3 font-mono text-[10px] text-[var(--text-primary)]">
           {JSON.stringify(health.data as Record<string, unknown>, null, 2)}
         </pre>
       )}

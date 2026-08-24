@@ -63,11 +63,11 @@ function QueueItem({
       className={`relative overflow-hidden rounded-2xl border bg-zinc-950/80 p-4 shadow-md backdrop-blur-xl transition-colors ${
         task.status === "error"
           ? "border-rose-500/30 bg-rose-500/[0.04]"
-          : "border-white/[0.08]"
+          : "border-[var(--text-primary)]/[0.08]"
       }`}
     >
       <div className="flex items-start gap-3.5">
-        <div className="relative flex h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-white/[0.04]">
+        <div className="relative flex h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-[var(--text-primary)]/[0.04]">
           {isImage && objectUrl ? (
             <NextImage
               src={objectUrl}
@@ -77,11 +77,11 @@ function QueueItem({
               className="object-cover"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-zinc-500">
+            <div className="flex h-full w-full items-center justify-center text-[var(--text-muted)]">
               <Icon name={mimeIcon(task.file.type, false)} className="h-6 w-6" />
             </div>
           )}
-          <span className="absolute bottom-0 left-0 rounded-tr-md bg-[--accent-primary] px-1.5 py-0.5 text-[9px] font-bold text-white">
+          <span className="absolute bottom-0 left-0 rounded-tr-md bg-[--accent-primary] px-1.5 py-0.5 text-[9px] font-bold text-[var(--text-primary)]">
             {fileExtension(task.file)}
           </span>
         </div>
@@ -89,8 +89,8 @@ function QueueItem({
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <p className="truncate text-xs font-semibold text-white">{task.file.name}</p>
-              <p className="mt-0.5 text-[10px] text-zinc-500">
+              <p className="truncate text-xs font-semibold text-[var(--text-primary)]">{task.file.name}</p>
+              <p className="mt-0.5 text-[10px] text-[var(--text-muted)]">
                 {formatBytes(task.file.size)}
                 {dimensions ? ` • ${dimensions}` : ""}
               </p>
@@ -135,7 +135,7 @@ function QueueItem({
             <div className="mt-3 space-y-1.5">
               <div className="flex items-end justify-between">
                 <span className="text-lg font-mono font-bold text-[--accent-primary]">{progress}%</span>
-                <span className="text-[10px] font-mono text-zinc-500">
+                <span className="text-[10px] font-mono text-[var(--text-muted)]">
                   {formatTimeLeft(task.secondsLeft)}s restantes • {formatSpeed(task.speed)}
                 </span>
               </div>
@@ -147,7 +147,7 @@ function QueueItem({
                   className="h-full rounded-full bg-[--accent-primary]"
                 />
               </div>
-              <div className="flex items-center justify-between text-[10px] text-zinc-500">
+              <div className="flex items-center justify-between text-[10px] text-[var(--text-muted)]">
                 <span>{formatBytes(task.loaded)} / {formatBytes(task.total || task.file.size)}</span>
                 <span>{formatBytes(task.total || task.file.size)}</span>
               </div>
@@ -173,7 +173,7 @@ function QueueItem({
           )}
 
           {task.status === "pending" && (
-            <div className="mt-3 flex items-center gap-1.5 text-[10px] text-zinc-500">
+            <div className="mt-3 flex items-center gap-1.5 text-[10px] text-[var(--text-muted)]">
               <FileIcon className="h-3.5 w-3.5" />
               En attente
             </div>
@@ -195,9 +195,9 @@ export default function UploadQueueList({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between rounded-2xl v8-panel px-4 py-3 backdrop-blur-2xl">
-        <div className="flex items-center gap-2 text-sm font-medium text-zinc-200">
+        <div className="flex items-center gap-2 text-sm font-medium text-[var(--text-primary)]">
           <span className="text-[--accent-primary]">File d&apos;attente</span>
-          <span className="text-zinc-500">— {completed} / {tasks.length} terminé{tasks.length > 1 ? "s" : ""}</span>
+          <span className="text-[var(--text-muted)]">— {completed} / {tasks.length} terminé{tasks.length > 1 ? "s" : ""}</span>
         </div>
         {tasks.some((t) => t.status === "uploading") && (
           <span className="text-xs text-[--accent-primary]">

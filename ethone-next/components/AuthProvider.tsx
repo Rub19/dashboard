@@ -18,7 +18,7 @@ type AuthContextValue = {
   error: Error | null;
   isOnline: boolean;
   signInOtp: (email: string) => Promise<{ error?: Error }>;
-  verifyOtp: (email: string, code: string) => Promise<{ error?: Error }>;
+  verifyOtp: (email: string, code: string, rememberMe?: boolean) => Promise<{ error?: Error }>;
   signInPassword: (email: string, password: string) => Promise<{ error?: Error }>;
   signInWithOAuth: (provider: "google" | "github") => Promise<{ error?: Error; url?: string | null }>;
   signUp: (email: string, password: string, username: string) => Promise<{ error?: Error; session?: Session }>;
@@ -59,7 +59,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       const savedToken = localStorage.getItem("ethone-remember-token");
       const savedRefresh = localStorage.getItem("ethone-remember-refresh");
       const expiresAt = Number(localStorage.getItem("ethone-remember-expires") || "0");
-      const authType = localStorage.getItem("ethone-auth-type") || "otp";
 
       if (!savedToken || Date.now() >= expiresAt) {
         setSession(null);
@@ -67,7 +66,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      if (authType === "password" && savedRefresh) {
+      if (savedRefresh) {
         const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession({
           refresh_token: savedRefresh,
         });
@@ -81,21 +80,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      const refreshToken = typeof crypto !== "undefined" && "randomUUID" in crypto
-        ? crypto.randomUUID()
-        : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-      const { data: setData, error: sessionError } = await supabase.auth.setSession({
-        access_token: savedToken,
-        refresh_token: refreshToken,
-      });
-      if (!sessionError && setData.session) {
-        setSession(setData.session);
-        setUser(setData.session.user);
-        setError(null);
-      } else {
-        setSession(null);
-        setUser(null);
-      }
+      setSession(null);
+      setUser(null);
     }
 
     try {
@@ -175,7 +161,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error ?? undefined };
   }
 
-  async function verifyOtp(email: string, code: string) {
+  async function verifyOtp(email: string, code: string, rememberMe = false) {
     const { data, error } = await supabase.auth.verifyOtp({
       email,
       token: code,
@@ -184,6 +170,19 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     if (data.session) {
       setSession(data.session);
       setUser(data.session.user);
+      if (rememberMe) {
+        localStorage.setItem("ethone-remember-me", "true");
+        localStorage.setItem("ethone-remember-token", data.session.access_token);
+        localStorage.setItem("ethone-remember-refresh", data.session.refresh_token);
+        localStorage.setItem("ethone-remember-expires", String((data.session.expires_at ?? Date.now() / 1000 + 8 * 60 * 60) * 1000));
+        localStorage.setItem("ethone-auth-type", "otp");
+      } else {
+        localStorage.removeItem("ethone-remember-me");
+        localStorage.removeItem("ethone-remember-token");
+        localStorage.removeItem("ethone-remember-refresh");
+        localStorage.removeItem("ethone-remember-expires");
+        localStorage.removeItem("ethone-auth-type");
+      }
     }
     return { error: error ?? undefined };
   }

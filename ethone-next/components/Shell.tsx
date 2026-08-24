@@ -17,7 +17,6 @@ import { ActivityJournalProvider } from "@/components/ActivityJournalProvider";
 import PageTransition from "@/components/PageTransition";
 import AutomationRuntime from "@/components/AutomationRuntime";
 import Dock from "@/components/Dock";
-import StatusBar from "@/components/layout/StatusBar";
 import SkipLink from "@/components/SkipLink";
 import ContextMenuProvider from "@/components/ContextMenuProvider";
 import NativeIntegration from "@/components/NativeIntegration";
@@ -85,7 +84,6 @@ export default function Shell({ children }: { children: ReactNode }) {
             </AnimatedSidebarProvider>
             <FloatingLiquidDock />
             <Dock />
-            <StatusBar />
             <ShortcutsOverlay />
             <KeyboardShortcuts />
           </ShortcutsProvider>

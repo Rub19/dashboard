@@ -145,8 +145,8 @@ export default function NotesPage() {
       {/* Left: List & Search */}
       <div className="col-span-12 flex h-full min-h-0 flex-col gap-3 overflow-hidden lg:col-span-4">
         <div className="shrink-0 rounded-2xl v8-panel p-4 backdrop-blur-2xl">
-          <h1 className="text-2xl font-bold text-white">{i18n("notesTitle")}</h1>
-          <p className="mt-0.5 text-xs text-zinc-500">
+          <h1 className="text-2xl font-bold text-[var(--text-primary)]">{i18n("notesTitle")}</h1>
+          <p className="mt-0.5 text-xs text-[var(--text-muted)]">
             {stats.total} {i18n("notes")} · {stats.totalWords} {i18n("words")}
           </p>
         </div>
@@ -195,12 +195,12 @@ export default function NotesPage() {
         >
           {loading && items.length === 0 && (
             <div className="flex min-h-[160px] items-center justify-center rounded-2xl v8-panel p-4 backdrop-blur-2xl">
-              <Icon name="loader-2" className="h-5 w-5 animate-spin text-zinc-500" />
+              <Icon name="loader-2" className="h-5 w-5 animate-spin text-[var(--text-muted)]" />
             </div>
           )}
 
           {error && (
-            <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">{error.message}</div>
+            <div className="rounded-2xl border border-[var(--danger)]/20 bg-[var(--danger)]/10 p-4 text-sm text-[var(--danger)]">{error.message}</div>
           )}
 
           {filtered.map((note, index) => (
@@ -210,7 +210,7 @@ export default function NotesPage() {
               data-context-id={note.id}
               data-active={index === activeIndex}
               className={cn(
-                "group rounded-2xl v8-panel p-3 backdrop-blur-2xl transition-colors hover:border-white/[0.12]",
+                "group rounded-2xl v8-panel p-3 backdrop-blur-2xl transition-colors hover:border-[var(--text-primary)]/[0.12]",
                 index === activeIndex && "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10"
               )}
             >
@@ -220,9 +220,9 @@ export default function NotesPage() {
                     <CustomCheckbox checked={isSelected(note.id)} onChange={() => toggle(note.id)} />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-white">{note.title}</p>
-                    <p className="line-clamp-2 text-[11px] text-zinc-500" dangerouslySetInnerHTML={{ __html: note.body }} />
-                    <div className="mt-1.5 flex gap-2 text-[10px] text-zinc-500">
+                    <p className="truncate text-sm font-medium text-[var(--text-primary)]">{note.title}</p>
+                    <p className="line-clamp-2 text-[11px] text-[var(--text-muted)]" dangerouslySetInnerHTML={{ __html: note.body }} />
+                    <div className="mt-1.5 flex gap-2 text-[10px] text-[var(--text-muted)]">
                       {note.createdAt && <span>{formatDate(note.createdAt)}</span>}
                       <span>{wordCountFromHtml(note.body)} {i18n("words")}</span>
                     </div>
@@ -252,9 +252,10 @@ export default function NotesPage() {
           ))}
 
           {!loading && filtered.length === 0 && (
-            <div className="flex min-h-[160px] flex-col items-center justify-center gap-2 rounded-2xl v8-panel p-4 text-zinc-500">
+            <div className="flex min-h-[160px] flex-col items-center justify-center gap-2 rounded-2xl v8-panel p-4 text-center text-[var(--text-muted)]">
               <Icon name="notebook-pen" className="h-8 w-8" />
-              <p className="text-sm">{i18n("noResults")}</p>
+              <p className="text-sm font-medium text-[var(--text-primary)]">{i18n("noNotes", "Aucune note")}</p>
+              <p className="text-xs text-[var(--text-muted)]">{i18n("notesEmptyHint", "Commencez une nouvelle note pour garder une trace de vos idées.")}</p>
             </div>
           )}
         </div>
@@ -278,7 +279,7 @@ export default function NotesPage() {
         <RichTextEditor defaultValue={body} onChange={setBody} placeholder={i18n("description")} className="min-h-0 flex-1 overflow-hidden" />
 
         <div className="shrink-0 mt-4 flex flex-wrap items-center justify-between gap-2">
-          <span className="text-[11px] font-mono text-zinc-500">
+          <span className="text-[11px] font-mono text-[var(--text-muted)]">
             {currentWords} {i18n("words")} · {currentChars} caractères
           </span>
           <button

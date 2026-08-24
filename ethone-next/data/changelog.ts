@@ -5214,9 +5214,73 @@ const v360_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v360_fr, v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v360_en, v359_en);
-CHANGELOG_BY_LANG.es.unshift(v360_es, v359_es);
-CHANGELOG_BY_LANG.de.unshift(v360_de, v359_de);
+const v361_fr: ChangelogEntry = {
+  version: "v1.8.17",
+  date: "2026-08-24",
+  title: "Refonte visuelle et polissage de l’encadrement UI",
+  items: [
+    "Tokens --panel-bg, --panel-border et --panel-blur harmonisés pour un rendu Liquid Glass uniforme.",
+    "Jointures TopBar / Sidebar / main aplaties pour un cadre continu.",
+    "Dock desktop en pilule (rounded-full) via .v8-dock.",
+    "Dynamic Island avec bordure plus fine, ombre plus douce et rounded-full.",
+    "Dock mobile rounded-full et bordures harmonisées.",
+    "BentoCard : séparateurs et icônes témoins à 8 % blanc, espacements grid gap-3.",
+    "StatusBar aligné sur les tokens du panel.",
+    "Version v1.8.17.",
+  ],
+};
+
+const v361_en: ChangelogEntry = {
+  version: "v1.8.17",
+  date: "2026-08-24",
+  title: "Visual rework and UI framing polish",
+  items: [
+    "Harmonized --panel-bg, --panel-border and --panel-blur tokens for a uniform Liquid Glass look.",
+    "Flattened TopBar / Sidebar / main joints for a continuous frame.",
+    "Desktop dock turned into a pill (rounded-full) via .v8-dock.",
+    "Dynamic Island with finer border, softer shadow and rounded-full.",
+    "Mobile dock rounded-full with harmonized borders.",
+    "BentoCard separators and header icons set to 8 % white, grid gap-3.",
+    "StatusBar aligned with panel tokens.",
+    "Version v1.8.17.",
+  ],
+};
+
+const v361_es: ChangelogEntry = {
+  version: "v1.8.17",
+  date: "2026-08-24",
+  title: "Rework visual y pulido del marco UI",
+  items: [
+    "Tokens --panel-bg, --panel-border y --panel-blur armonizados para un aspecto Liquid Glass uniforme.",
+    "Uniones TopBar / Sidebar / main aplanadas para un marco continuo.",
+    "Dock de escritorio en píldora (rounded-full) vía .v8-dock.",
+    "Dynamic Island con borde más fino, sombra más suave y rounded-full.",
+    "Dock móvil rounded-full con bordes armonizados.",
+    "BentoCard: separadores e iconos de encabezado al 8 % blanco, grid gap-3.",
+    "StatusBar alineado con los tokens del panel.",
+    "Versión v1.8.17.",
+  ],
+};
+
+const v361_de: ChangelogEntry = {
+  version: "v1.8.17",
+  date: "2026-08-24",
+  title: "Visuelles Rework und UI-Rahmen-Polish",
+  items: [
+    "Tokens --panel-bg, --panel-border und --panel-blur harmonisiert für ein einheitliches Liquid-Glass-Erscheinungsbild.",
+    "TopBar / Sidebar / main-Übergänge abgeflacht für einen durchgehenden Rahmen.",
+    "Desktop-Dock als Pille (rounded-full) über .v8-dock.",
+    "Dynamic Island mit feinerer Umrandung, weicherem Schatten und rounded-full.",
+    "Mobiles Dock rounded-full mit harmonisierten Rändern.",
+    "BentoCard: Trennlinien und Header-Icons auf 8 % Weiß gesetzt, grid gap-3.",
+    "StatusBar an Panel-Tokens ausgerichtet.",
+    "Version v1.8.17.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v361_fr, v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v361_en, v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v361_es, v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v361_de, v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

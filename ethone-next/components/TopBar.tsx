@@ -169,7 +169,7 @@ function TopBar() {
   return (
     <header
       data-v8-topbar
-      className="pointer-events-none relative z-40 shrink-0 select-none rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 pt-safe backdrop-blur-[var(--panel-blur)]"
+      className="pointer-events-none relative z-40 shrink-0 select-none rounded-r-2xl rounded-l-none border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 pt-safe backdrop-blur-[var(--panel-blur)]"
     >
       {/* Mobile: compact header with logo, page title, search, notifications, profile */}
       <div className="pointer-events-auto flex h-14 items-center justify-between md:hidden">

@@ -71,7 +71,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                 <main
                   data-v8-main
                   id="main-content"
-                  className="relative z-0 min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--background)] pb-32 md:pb-4"
+                  className="relative z-0 min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden rounded-r-2xl rounded-l-none border border-[var(--panel-border)] bg-[var(--background)] pb-32 md:pb-4"
                   tabIndex={-1}
                 >
                   <DynamicIslandContainer />

@@ -2,11 +2,12 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
-import { AlertCircle, Crosshair, Loader2, Swords, User } from "lucide-react";
+import { AlertCircle, Loader2, User } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { TiltCard } from "@/components/ui/TiltCard";
 import ClientImage from "@/components/ClientImage";
+import GameIcon from "@/components/icons/GameIcon";
 import { cn } from "@/lib/utils";
 
 type RiotMatch = Record<string, unknown>;
@@ -24,20 +25,16 @@ export type RiotGamingCardProps = {
 
 const GAME_CONFIG = {
   valorant: {
-    icon: "crosshair",
     label: "Valorant",
     gradient: "from-rose-950/40 via-red-900/10 to-black/20 border-rose-500/20",
     accent: "text-rose-400",
     accentBg: "bg-rose-500",
-    fallbackIcon: Crosshair,
   },
   lol: {
-    icon: "swords",
     label: "League of Legends",
     gradient: "from-sky-950/40 via-amber-900/10 to-black/20 border-amber-500/20",
     accent: "text-amber-400",
     accentBg: "bg-amber-500",
-    fallbackIcon: Swords,
   },
 };
 
@@ -107,7 +104,6 @@ export function RiotGamingCardContent({
   const i18n = useI18n();
   const { settings } = useSettings();
   const config = GAME_CONFIG[game];
-  const IconFallback = config.fallbackIcon;
 
   const displayName = playerName || settings.liveTrackerRiotName;
   const displayTag = playerTag || settings.liveTrackerRiotTag;
@@ -238,7 +234,7 @@ export function RiotGamingCardContent({
               className="rounded-[var(--panel-radius)] object-cover shadow-lg"
               fallback={(
                 <div className={cn("flex h-full w-full items-center justify-center rounded-[var(--panel-radius)] bg-white/[0.04]", config.accent)}>
-                  <IconFallback className={cn("h-8 w-8", compact ? "h-6 w-6" : "h-8 w-8")} />
+                  <GameIcon game={game} className={cn("h-8 w-8", compact ? "h-6 w-6" : "h-8 w-8")} />
                 </div>
               )}
             />

@@ -17,13 +17,22 @@ import { useToast } from "@/components/ToastProvider";
 import { fetchWorker } from "@/lib/api";
 import { useDynamicIslandStore } from "@/lib/stores/dynamic-island";
 import { useBrainActivityStore } from "@/lib/stores/brain-activity";
+import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
 import { cn } from "@/lib/utils";
 import VolumeSlider from "@/components/VolumeSlider";
 
-type View = "spotify" | "pomodoro" | "brain";
+type View = "spotify" | "pomodoro" | "brain" | "sync";
 
 const EASE_OUT = [0.16, 1, 0.3, 1] as const;
-const VIEW_ORDER: View[] = ["spotify", "brain", "pomodoro"];
+const VIEW_PRIORITY: Record<View, number> = {
+  brain: 5, // critical / activity
+  pomodoro: 4, // action required / activity
+  sync: 3, // activité en cours
+  spotify: 2, // information contextuelle
+};
+const VIEW_ORDER: View[] = (Object.keys(VIEW_PRIORITY) as View[]).sort(
+  (a, b) => VIEW_PRIORITY[b] - VIEW_PRIORITY[a],
+);
 
 function viewLabel(view: View, i18n: (key: string, fallback?: string) => string) {
   switch (view) {
@@ -33,6 +42,8 @@ function viewLabel(view: View, i18n: (key: string, fallback?: string) => string)
       return i18n("pomodoro", "Pomodoro");
     case "brain":
       return i18n("brain", "Brain");
+    case "sync":
+      return i18n("sync", "Synchronisation");
     default:
       return "";
   }
@@ -118,7 +129,8 @@ function IslandBubble({
       : "bg-white/[0.05] text-zinc-400 hover:bg-white/[0.1] hover:text-white",
     view === "spotify" && !active && "text-[--accent-primary] hover:text-[--accent-primary]",
     view === "pomodoro" && !active && "text-[var(--accent)]",
-    view === "brain" && !active && "text-purple-400 hover:text-purple-300",
+    view === "brain" && !active && "text-[var(--info)] hover:text-[var(--info)]",
+    view === "sync" && !active && "text-[var(--info)] hover:text-[var(--info)]",
   );
 
   const icon =
@@ -128,6 +140,8 @@ function IslandBubble({
       <Icon name="timer" pack="phosphor" className={iconClass} />
     ) : view === "brain" ? (
       <Icon name="brain" pack="phosphor" className={iconClass} />
+    ) : view === "sync" ? (
+      <Icon name="arrows-clockwise" pack="phosphor" className={iconClass} />
     ) : (
       <Icon name="sparkles" pack="phosphor" className={iconClass} />
     );
@@ -160,9 +174,11 @@ function IslandExpandedHeader({
     ) : selected === "pomodoro" ? (
       <Icon name="timer" pack="phosphor" className="h-3.5 w-3.5 text-[var(--accent)]" />
     ) : selected === "brain" ? (
-      <Icon name="brain" pack="phosphor" className="h-3.5 w-3.5 text-purple-400" />
+      <Icon name="brain" pack="phosphor" className="h-3.5 w-3.5 text-[var(--info)]" />
+    ) : selected === "sync" ? (
+      <Icon name="arrows-clockwise" pack="phosphor" className="h-3.5 w-3.5 text-[var(--info)]" />
     ) : (
-      <Icon name="sparkles" pack="phosphor" className="h-3.5 w-3.5 text-zinc-500" />
+      <Icon name="sparkles" pack="phosphor" className="h-3.5 w-3.5 text-[var(--text-muted)]" />
     );
   return (
     <div className={cn("-mx-6 -mt-4 mb-4 flex w-full items-center justify-between gap-3 border-b border-white/[0.06] px-6 pt-4 pb-3", className)}>
@@ -199,9 +215,11 @@ export default function DynamicIslandContainer() {
   const { nowPlaying, loading: npLoading, refetch: refetchNowPlaying } = useNowPlaying(1000);
   const isThinking = useBrainActivityStore((s) => s.isThinking);
   const { visible } = useDynamicIslandStore();
+  const { pendingCount, syncing, lastSync } = useActivityJournal();
 
   const [expanded, setExpanded] = useState(false);
   const [selectedView, setSelectedView] = useState<View | null>(null);
+  const [userSelected, setUserSelected] = useState(false);
   const [activeViews, setActiveViews] = useState<View[]>([]);
   const prevActiveRef = useRef<Set<View>>(new Set());
   const isInitialMount = useRef(true);
@@ -220,6 +238,7 @@ export default function DynamicIslandContainer() {
   const spotifyActive = !!nowPlaying?.title || !!nowPlaying?.isPlaying;
   const pomodoroActive = focus.state.phase !== "idle";
   const brainActive = isThinking;
+  const syncActive = syncing || pendingCount > 0;
 
   useEffect(() => {
     // Don't react to activity changes while now-playing data is still
@@ -231,44 +250,42 @@ export default function DynamicIslandContainer() {
     const nextActive = new Set<View>();
     if (brainActive) nextActive.add("brain");
     if (pomodoroActive) nextActive.add("pomodoro");
+    if (syncActive) nextActive.add("sync");
     if (spotifyActive) nextActive.add("spotify");
 
     const nextActiveViews = VIEW_ORDER.filter((v) => nextActive.has(v));
     setActiveViews(nextActiveViews);
-
-    // On initial mount/refresh, select the first active view but force the
-    // island closed. It should only open on a deliberate click.
-    if (isInitialMount.current) {
-      if (!selectedView && nextActive.size > 0) {
-        setSelectedView(nextActiveViews[0] ?? null);
-      }
-      setExpanded(false);
-      prevActiveRef.current = nextActive;
-      isInitialMount.current = false;
-      return;
-    }
 
     const newViews = VIEW_ORDER.filter(
       (v) => nextActive.has(v) && !prevActiveRef.current.has(v),
     );
 
     if (newViews.length > 0) {
-      // A new activity just started: select it, but stay compact.
-      // The island only expands when the user explicitly clicks it.
+      // A new event just started: select it, but stay compact.
+      // Priority order guarantees the most important event is selected.
       setSelectedView(newViews[0]);
+    }
+
+    // On initial mount, or when the user hasn't explicitly chosen, follow
+    // the highest-priority active view.
+    if (!userSelected || isInitialMount.current) {
+      const top = nextActiveViews[0] ?? null;
+      if (top !== selectedView) setSelectedView(top);
     } else if (selectedView && !nextActive.has(selectedView)) {
       const fallback = nextActiveViews[0] ?? null;
       setSelectedView(fallback);
       if (!fallback) setExpanded(false);
-    } else if (!selectedView && nextActive.size > 0) {
-      const fallback = nextActiveViews[0] ?? null;
-      setSelectedView(fallback);
+    }
+
+    if (isInitialMount.current) {
+      setExpanded(false);
+      isInitialMount.current = false;
     }
 
     if (nextActive.size === 0) setExpanded(false);
 
     prevActiveRef.current = nextActive;
-  }, [brainActive, pomodoroActive, spotifyActive, selectedView, npLoading]);
+  }, [brainActive, pomodoroActive, syncActive, spotifyActive, selectedView, npLoading, userSelected]);
 
   // Escape collapses
   useEffect(() => {
@@ -280,6 +297,7 @@ export default function DynamicIslandContainer() {
   }, []);
 
   const selectView = useCallback((view: View) => {
+    setUserSelected(true);
     setSelectedView(view);
     setExpanded(true);
   }, []);
@@ -324,14 +342,28 @@ export default function DynamicIslandContainer() {
       case "brain":
         return (
           <div className={cn(base)}>
-            <Icon name="brain" pack="phosphor" className="h-3.5 w-3.5 text-purple-400" />
+            <Icon name="brain" pack="phosphor" className="h-3.5 w-3.5 text-[var(--info)]" />
             <span className="text-xs font-medium">{i18n("brain", "Brain")}</span>
+          </div>
+        );
+      case "sync":
+        return (
+          <div className={cn(base)}>
+            <Icon name="arrows-clockwise" pack="phosphor" className={cn("h-3.5 w-3.5 text-[var(--info)]", syncing && "animate-spin")} />
+            <span className="text-xs font-medium tabular-nums">
+              {syncing ? i18n("syncing", "Synchronisation") : i18n("syncReady", "Synchronisé")}
+            </span>
+            {pendingCount > 0 && (
+              <span className="ml-1 rounded-full bg-[var(--info)]/20 px-1.5 py-0.5 text-[10px] text-[var(--info)]">
+                {pendingCount}
+              </span>
+            )}
           </div>
         );
       default:
         return null;
     }
-  }, [clock, selectedView, nowPlaying, focus, i18n]);
+  }, [clock, selectedView, nowPlaying, focus, i18n, syncing, pendingCount]);
 
   // Spotify controls
   const spotifyControl = useCallback(
@@ -420,6 +452,16 @@ export default function DynamicIslandContainer() {
     e.stopPropagation();
   }, []);
 
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggleExpanded();
+      }
+    },
+    [toggleExpanded],
+  );
+
   return (
     <AnimatePresence>
       {visible && activeViews.length > 0 && (
@@ -429,15 +471,18 @@ export default function DynamicIslandContainer() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -20, scale: 0.9 }}
           transition={{ duration: 0.25, ease: EASE_OUT }}
-          className="fixed left-0 right-0 top-2 z-[60] flex justify-center pointer-events-none select-none"
+          className="fixed left-0 right-0 top-[max(0.5rem,env(safe-area-inset-top))] z-[45] flex justify-center pointer-events-none select-none"
         >
           <DynamicIsland
             view={expanded && selectedView ? selectedView : null}
             compact={compact}
             onClick={toggleExpanded}
+            onKeyDown={handleKeyDown}
             aria-label={i18n("dynamicIsland")}
+            tabIndex={0}
+            role="button"
           >
-            <DynamicIslandView id="spotify" data-testid="dynamic-island-spotify" className="w-[340px] sm:w-[400px]">
+            <DynamicIslandView id="spotify" data-testid="dynamic-island-spotify" className="w-[min(92vw,340px)] sm:w-[400px]">
               <div onClick={stopPropagation} className="flex w-full flex-col gap-4">
                 <IslandExpandedHeader
                   activeViews={activeViews}
@@ -546,7 +591,7 @@ export default function DynamicIslandContainer() {
               </div>
             </DynamicIslandView>
 
-            <DynamicIslandView id="pomodoro" className="w-[260px]">
+            <DynamicIslandView id="pomodoro" className="w-[min(92vw,260px)] sm:w-[320px]">
               <div onClick={stopPropagation} className="flex w-full flex-col items-center gap-4">
                 <IslandExpandedHeader
                   activeViews={activeViews}
@@ -603,7 +648,35 @@ export default function DynamicIslandContainer() {
               </div>
             </DynamicIslandView>
 
-            <DynamicIslandView id="brain" className="w-[260px]">
+            <DynamicIslandView id="sync" className="w-[min(92vw,260px)] sm:w-[320px]">
+              <div onClick={stopPropagation} className="flex w-full flex-col items-center gap-3 text-center">
+                <IslandExpandedHeader
+                  activeViews={activeViews}
+                  selected={selectedView ?? "sync"}
+                  onSelect={selectView}
+                />
+                <div className={cn("flex h-12 w-12 items-center justify-center rounded-full", syncing ? "bg-[var(--info)]/15" : "bg-[var(--surface-raised)]")}>
+                  <Icon name="arrows-clockwise" pack="phosphor" className={cn("h-6 w-6 text-[var(--info)]", syncing && "animate-spin")} />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-[var(--text-primary)]">
+                    {syncing ? i18n("syncing", "Synchronisation…") : i18n("synced", "Synchronisé")}
+                  </p>
+                  <p className="text-xs text-[var(--text-muted)]">
+                    {pendingCount > 0
+                      ? i18n("itemsPending", "{count} éléments en attente").replace("{count}", String(pendingCount))
+                      : i18n("allUpToDate", "Tout est à jour")}
+                  </p>
+                  {lastSync && (
+                    <p className="mt-0.5 text-[10px] text-[var(--text-muted)]">
+                      {i18n("lastSync", "Dernier sync")}: {lastSync.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </DynamicIslandView>
+
+            <DynamicIslandView id="brain" className="w-[min(92vw,260px)] sm:w-[320px]">
               <div onClick={stopPropagation} className="flex w-full flex-col items-center gap-3 text-center">
                 <IslandExpandedHeader
                   activeViews={activeViews}

@@ -812,71 +812,80 @@ export function SoundProvider({ children }: { children: ReactNode }) {
 
   const play = useCallback(
     (type: SoundType, packOverride?: string) => {
-      if (!settings.masterVolume || !settings.soundEffects) return;
+      try {
+        if (!settings.masterVolume || !settings.soundEffects) return;
 
-      const packId = packOverride ?? settings.soundPack;
-      if (packId === "none" || packId === "silent") return;
+        const packId = packOverride ?? settings.soundPack;
+        if (packId === "none" || packId === "silent") return;
 
-      const ctx = ensureContext();
-      if (!ctx) return;
+        const ctx = ensureContext();
+        if (!ctx) return;
 
-      if (ctx.state === "suspended") {
-        void ctx.resume();
+        if (ctx.state === "suspended") {
+          void ctx.resume();
+        }
+
+        const output = outputGainRef.current;
+        if (!output) return;
+
+        const now = performance.now();
+        const min = MIN_INTERVALS[type] ?? 90;
+        const last = lastPlayedAtRef.current.get(type) ?? -Infinity;
+        if (now - last < min) return;
+        lastPlayedAtRef.current.set(type, now);
+
+        const pack = packConfig(packId);
+        const recipe = pack.tones[type];
+        if (!recipe || recipe.volume <= 0) return;
+
+        const category = SOUND_CATEGORIES[type];
+        const categoryVolume = (settings.soundVolumes[category] ?? 100) / 100;
+        const master = (settings.soundVolume ?? 50) / 100;
+
+        const pan = settings.soundSpatial
+          ? lastPanRef.current ?? (Math.random() - 0.5) * 2 * MAX_SPATIAL_PAN
+          : null;
+
+        scheduleSound(ctx, output, type, pack, ctx.currentTime, master, categoryVolume, pan);
+      } catch {
+        // Ignorer silencieusement une erreur audio isolée.
       }
-
-      const output = outputGainRef.current;
-      if (!output) return;
-
-      const now = performance.now();
-      const min = MIN_INTERVALS[type] ?? 90;
-      const last = lastPlayedAtRef.current.get(type) ?? -Infinity;
-      if (now - last < min) return;
-      lastPlayedAtRef.current.set(type, now);
-
-      const pack = packConfig(packId);
-      const recipe = pack.tones[type];
-      if (!recipe || recipe.volume <= 0) return;
-
-      const category = SOUND_CATEGORIES[type];
-      const categoryVolume = (settings.soundVolumes[category] ?? 100) / 100;
-      const master = (settings.soundVolume ?? 50) / 100;
-
-      const pan = settings.soundSpatial
-        ? lastPanRef.current ?? (Math.random() - 0.5) * 2 * MAX_SPATIAL_PAN
-        : null;
-
-      scheduleSound(ctx, output, type, pack, ctx.currentTime, master, categoryVolume, pan);
     },
     [settings, ensureContext]
   );
 
   const playAction = useCallback(
     (action: string) => {
+      if (!action || !settings.masterVolume || !settings.soundEffects) return;
       const type = soundTypeForAction(action);
       if (type) play(type);
     },
-    [play]
+    [play, settings]
   );
 
   const playAmbient = useCallback(
     (type: SoundAmbient) => {
-      if (type === "none") {
-        stopAmbience();
-        update({ ambientSound: "none" });
-        return;
+      try {
+        if (type === "none") {
+          stopAmbience();
+          update({ ambientSound: "none" });
+          return;
+        }
+        const ctx = ensureContext();
+        if (!ctx) return;
+        if (ctx.state === "suspended") {
+          void ctx.resume();
+        }
+        if (!settingsRef.current.masterVolume) {
+          settingsRef.current = { ...settingsRef.current, masterVolume: true };
+          update({ masterVolume: true, ambientSound: type });
+        } else {
+          update({ ambientSound: type });
+        }
+        startAmbience(type);
+      } catch {
+        // Ignorer silencieusement une erreur audio isolée.
       }
-      const ctx = ensureContext();
-      if (!ctx) return;
-      if (ctx.state === "suspended") {
-        void ctx.resume();
-      }
-      if (!settingsRef.current.masterVolume) {
-        settingsRef.current = { ...settingsRef.current, masterVolume: true };
-        update({ masterVolume: true, ambientSound: type });
-      } else {
-        update({ ambientSound: type });
-      }
-      startAmbience(type);
     },
     [ensureContext, startAmbience, stopAmbience, update]
   );

@@ -46,6 +46,7 @@ import UserProfileCard from "./UserProfileCard";
 import MaintenancePanel from "./MaintenancePanel";
 import LanguageControl from "./LanguageControl";
 import SoundPackControl from "./SoundPackControl";
+import AmbientSoundControl from "@/components/AmbientSoundControl";
 import { CATEGORY_ORDER, sectionCategory } from "./SettingsNavigation";
 
 const THEMES = [
@@ -246,8 +247,6 @@ const SOUND_PACKS = [
   "cyber-pulse",
   "silent",
 ] as const;
-
-const AMBIENT_TYPES = ["none", "pink", "brown", "white", "rain", "drone"] as const;
 
 const SHADOWS = ["none", "sm", "md", "glow"] as const;
 
@@ -1021,10 +1020,11 @@ export default function SettingsContent({
       {
         key: "ambientSound",
         label: i18n("ambientSound"),
-        type: "button-grid",
-        options: AMBIENT_TYPES.map((type) => ({ id: type, label: i18n(`ambientSound${type.charAt(0).toUpperCase() + type.slice(1)}`) })),
-        cols: 3,
+        type: "custom",
         keywords: ["son", "ambiance", "bruit"],
+        render: (value, onChange) => (
+          <AmbientSoundControl value={String(value)} onChange={onChange} />
+        ),
       },
     ],
     [i18n, soundVolumeFields]

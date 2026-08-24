@@ -12,7 +12,8 @@ import { Icon } from "@/lib/icons";
 import { useLayer } from "@/components/LayerProvider";
 import Slider from "@/components/ui/Slider";
 import { useSound } from "@/lib/sound";
-import type { SoundPack, SoundAmbient } from "@/lib/settings";
+import AmbientSoundControl from "@/components/AmbientSoundControl";
+import type { SoundPack } from "@/lib/settings";
 
 const UI_ANIMATIONS = ["smooth", "snappy", "reduced"] as const;
 
@@ -32,16 +33,6 @@ const PACK_ICONS: Record<string, string> = {
   "apple-inspired": "heart",
   "cyber-pulse": "zap",
   silent: "volume-x",
-};
-
-const AMBIENCES = ["none", "rain", "pink", "drone", "white"] as const;
-
-const AMBIENCE_ICONS: Record<string, string> = {
-  none: "volume-x",
-  rain: "cloud-rain",
-  pink: "sparkles",
-  drone: "disc",
-  white: "wind",
 };
 
 type ToggleProps = {
@@ -123,7 +114,7 @@ export default function DockControlCenter({
 }) {
   const i18n = useI18n();
   const { settings, update } = useSettings();
-  const { play, playAmbient, stopAmbient, ambientSound } = useSound();
+  const { play } = useSound();
   const router = useRouter();
   const panelRef = useRef<HTMLDivElement | null>(null);
 
@@ -279,21 +270,7 @@ export default function DockControlCenter({
 
               <section className="space-y-2">
                 <p className="text-xs font-medium uppercase tracking-wider text-[var(--muted)]">{i18n("ambience")}</p>
-                <div className="grid grid-cols-3 gap-2">
-                  {AMBIENCES.map((id) => (
-                    <button
-                      key={id}
-                      type="button"
-                      onClick={() => (id === "none" || ambientSound === id ? stopAmbient() : playAmbient(id as SoundAmbient))}
-                      className={`flex flex-col items-center gap-1 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent-primary)] ${
-                        ambientSound === id ? "border-[var(--accent-primary)] text-[var(--accent-primary)]" : ""
-                      } backdrop-blur-[var(--panel-blur)]`}
-                    >
-                      <Icon name={AMBIENCE_ICONS[id] || "disc"} className="h-4 w-4" />
-                      {i18n(`ambience${id.charAt(0).toUpperCase() + id.slice(1)}`)}
-                    </button>
-                  ))}
-                </div>
+                <AmbientSoundControl compact />
               </section>
 
               <Link

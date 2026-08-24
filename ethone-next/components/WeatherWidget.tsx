@@ -88,28 +88,74 @@ export function weatherIconFromCode(code?: number, condition?: string, isDay?: b
 
 export function weatherAmbience(code?: number, isDay?: boolean): { gradient: string; border: string; glow: string } {
   const isNight = isDay === false;
-  const isSunny = code === 0 && !isNight;
-  const isRainyOrStormy =
-    (code !== undefined && code >= 51 && code <= 67) ||
-    (code !== undefined && code >= 80 && code <= 82) ||
-    (code !== undefined && code >= 95);
 
-  if (isSunny) {
+  // Thunderstorm: violet / amber "orage" theme
+  if (code !== undefined && code >= 95) {
     return {
-      gradient: "bg-gradient-to-br from-amber-500/10 via-zinc-950/80 to-zinc-950",
-      border: "border-amber-500/20",
-      glow: "bg-amber-500",
+      gradient: "bg-gradient-to-br from-violet-900/40 via-amber-950/20 to-zinc-950",
+      border: "border-violet-500/30",
+      glow: "bg-violet-500",
     };
   }
 
-  if (isRainyOrStormy) {
+  // Clear / sunny
+  if (code === 0) {
+    return isNight
+      ? {
+          gradient: "bg-gradient-to-br from-indigo-900/30 via-zinc-950/80 to-zinc-950",
+          border: "border-indigo-500/20",
+          glow: "bg-indigo-500",
+        }
+      : {
+          gradient: "bg-gradient-to-br from-amber-500/15 via-zinc-950/80 to-zinc-950",
+          border: "border-amber-500/20",
+          glow: "bg-amber-500",
+        };
+  }
+
+  // Partly cloudy
+  if (code !== undefined && code >= 1 && code <= 3) {
+    return isNight
+      ? {
+          gradient: "bg-gradient-to-br from-indigo-800/20 via-zinc-950/80 to-zinc-950",
+          border: "border-indigo-400/20",
+          glow: "bg-indigo-400",
+        }
+      : {
+          gradient: "bg-gradient-to-br from-sky-500/10 via-amber-500/5 to-zinc-950",
+          border: "border-sky-500/20",
+          glow: "bg-sky-400",
+        };
+  }
+
+  // Fog / mist
+  if (code === 45 || code === 48) {
     return {
-      gradient: "bg-gradient-to-br from-[--info] via-zinc-950/80 to-zinc-950",
-      border: "border-[--info]",
-      glow: "bg-[--info]",
+      gradient: "bg-gradient-to-br from-slate-500/10 via-zinc-950/80 to-zinc-950",
+      border: "border-slate-500/20",
+      glow: "bg-slate-400",
     };
   }
 
+  // Drizzle / rain
+  if ((code !== undefined && code >= 51 && code <= 67) || (code !== undefined && code >= 80 && code <= 82)) {
+    return {
+      gradient: "bg-gradient-to-br from-sky-700/20 via-zinc-950/80 to-zinc-950",
+      border: "border-sky-500/20",
+      glow: "bg-sky-500",
+    };
+  }
+
+  // Snow
+  if ((code !== undefined && code >= 71 && code <= 77) || (code !== undefined && code >= 85 && code <= 86)) {
+    return {
+      gradient: "bg-gradient-to-br from-cyan-600/10 via-zinc-950/80 to-zinc-950",
+      border: "border-cyan-500/20",
+      glow: "bg-cyan-400",
+    };
+  }
+
+  // Default
   return {
     gradient: "bg-gradient-to-br from-indigo-500/10 via-zinc-950/80 to-zinc-950",
     border: "border-indigo-500/20",
@@ -241,7 +287,7 @@ function WeatherSkeleton({ compact }: { compact?: boolean }) {
 export default function WeatherWidget({ data, loading, onRefresh, compact, className }: WeatherWidgetProps) {
   const i18n = useI18n();
 
-  const code = data?.weatherCode;
+  const code = useMemo(() => toNum(data?.weatherCode), [data?.weatherCode]);
   const isDay = data?.isDay;
   const condition = toStr(data?.condition) || toStr(data?.description) || "—";
   const city = toStr(data?.city) || toStr(data?.location) || "—";
@@ -400,8 +446,9 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
           <div className={`mt-auto ${compact ? "pt-2" : "pt-4"}`}>
             <div className="grid grid-cols-5 gap-2">
               {forecast.map((day, i) => {
-                const dayIcon = weatherIconFromCode(day.weatherCode, day.condition, true);
-                return <ForecastPill key={i} day={day} icon={dayIcon} colorClass={weatherIconColor(day.weatherCode, true)} compact={compact} />;
+                const dayCode = toNum(day.weatherCode);
+                const dayIcon = weatherIconFromCode(dayCode, day.condition, true);
+                return <ForecastPill key={i} day={day} icon={dayIcon} colorClass={weatherIconColor(dayCode, true)} compact={compact} />;
               })}
             </div>
           </div>

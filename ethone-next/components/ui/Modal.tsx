@@ -179,5 +179,5 @@ export default function Modal({
   );
 
   if (!mounted || typeof document === "undefined") return null;
-  return createPortal(modal, document.body);
+  return createPortal(modal, document.body, titleId);
 }

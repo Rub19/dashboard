@@ -87,9 +87,18 @@ export default function DashboardOverview() {
   const { layout, update: updateLayout } = useDesktopLayout();
 
   const widgets = useMemo<WidgetLayout[]>(() => {
-    if (layout && layout.widgets.length > 0) return layout.widgets;
     const hidden = new Set(settings.homeHiddenSections || []);
-    return DEFAULT_WIDGETS.map((w) => ({ ...w, visible: !hidden.has(w.id) }));
+    const base =
+      layout && layout.widgets.length > 0
+        ? layout.widgets
+        : DEFAULT_WIDGETS.map((w) => ({ ...w, visible: !hidden.has(w.id) }));
+    const seen = new Set<string>();
+    const sanitized = base.filter((w) => {
+      if (!w.id || seen.has(w.id)) return false;
+      seen.add(w.id);
+      return true;
+    });
+    return sanitized.length > 0 ? sanitized : DEFAULT_WIDGETS.map((w) => ({ ...w, visible: !hidden.has(w.id) }));
   }, [layout, settings.homeHiddenSections]);
 
   const sections: SectionDef[] = useMemo(

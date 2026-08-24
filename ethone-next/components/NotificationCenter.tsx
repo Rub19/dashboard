@@ -100,7 +100,13 @@ export default function NotificationCenter() {
           normalizeText(n.category).includes(q)
       );
     }
-    return list.sort((a, b) => b.timestamp - a.timestamp);
+    const sorted = list.sort((a, b) => b.timestamp - a.timestamp);
+    const seen = new Set<string>();
+    return sorted.filter((n) => {
+      if (!n.id || seen.has(n.id)) return false;
+      seen.add(n.id);
+      return true;
+    });
   }, [activeItems, filter, query]);
 
   function onOpenItem(n: Notification) {
@@ -176,8 +182,9 @@ export default function NotificationCenter() {
   const list = (
     <div className="min-h-0 flex-1 overflow-y-auto pr-1 [-webkit-overflow-scrolling:touch]">
       <AnimatePresence initial={false} mode="popLayout">
-        {filtered.length === 0 && (
+        {filtered.length === 0 ? (
           <motion.div
+            key="empty"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -188,12 +195,13 @@ export default function NotificationCenter() {
             </div>
             <p className="text-sm text-[var(--muted)]">{i18n("noNotifications")}</p>
           </motion.div>
+        ) : (
+          <div key="list" className="space-y-2">
+            {filtered.map((n) => (
+              <NotificationItem key={n.id} n={n} onOpen={onOpenItem} />
+            ))}
+          </div>
         )}
-        <div className="space-y-2">
-          {filtered.map((n) => (
-            <NotificationItem key={n.id} n={n} onOpen={onOpenItem} />
-          ))}
-        </div>
       </AnimatePresence>
     </div>
   );

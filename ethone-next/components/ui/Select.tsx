@@ -270,7 +270,7 @@ export default function Select({
         </motion.span>
       </button>
 
-      {open && ready && typeof document !== "undefined" && createPortal(listbox, document.body)}
+      {open && ready && typeof document !== "undefined" && createPortal(listbox, document.body, generatedId)}
     </div>
   );
 }

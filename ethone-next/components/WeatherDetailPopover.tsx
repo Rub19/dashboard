@@ -1,6 +1,6 @@
 "use client";
+/* eslint-disable react-hooks/refs */
 
-import { useRef } from "react";
 import { useFloating, offset, flip, shift, autoUpdate, FloatingPortal } from "@floating-ui/react";
 import Link from "next/link";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -136,7 +136,6 @@ function WeatherDetailContent({
 }: ContentProps & { placement?: "bottom-end" | "top-end" }) {
   const i18n = useI18n();
   const { settings } = useSettings();
-  const panelRef = useRef<HTMLDivElement | null>(null);
 
   const { refs, floatingStyles, placement: actualPlacement } = useFloating({
     open,
@@ -151,7 +150,7 @@ function WeatherDetailContent({
   });
 
   useLayer(open, onClose, {
-    boundary: panelRef,
+    boundary: refs.floating,
     anchor: referenceRef,
     kind: "popover",
     closeOnEscape: true,
@@ -175,18 +174,13 @@ function WeatherDetailContent({
       : []
   ).slice(0, 5);
 
-  const setRefs = (el: HTMLDivElement | null) => {
-    panelRef.current = el;
-    refs.setFloating(el as unknown as HTMLElement);
-  };
-
   const lang = settings.language || "fr";
 
   return (
     <FloatingPortal>
       {open && (
         <div
-          ref={setRefs}
+          ref={refs.setFloating as unknown as React.Ref<HTMLDivElement>}
           style={floatingStyles}
           className="v8-panel z-[90] w-80 max-w-[calc(100vw-1rem)] overflow-hidden p-4"
           role="dialog"

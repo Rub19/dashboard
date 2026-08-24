@@ -5150,9 +5150,61 @@ const v359_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v359_en);
-CHANGELOG_BY_LANG.es.unshift(v359_es);
-CHANGELOG_BY_LANG.de.unshift(v359_de);
+const v360_fr: ChangelogEntry = {
+  version: "v1.8.16",
+  date: "2026-08-24",
+  title: "Correction du crash du bouton météo",
+  items: [
+    "Correction du maximum de profondeur de mise à jour React dans WeatherDetailPopover.",
+    "Le ref de la popover météo utilise refs.setFloating de @floating-ui/react directement, évitant une boucle setState.",
+    "Ajout de clés uniques sur les createPortal de Popover, Modal, Select et CommandPalette.",
+    "Dédoublonnage défensif des notifications et des widgets du tableau de bord.",
+    "Version v1.8.16.",
+  ],
+};
+
+const v360_en: ChangelogEntry = {
+  version: "v1.8.16",
+  date: "2026-08-24",
+  title: "Weather button crash fix",
+  items: [
+    "Fixed React maximum update depth exceeded in WeatherDetailPopover.",
+    "Weather popover ref now directly uses refs.setFloating from @floating-ui/react, removing a setState loop.",
+    "Added unique keys to Popover, Modal, Select and CommandPalette createPortals.",
+    "Defensive deduplication for notifications and dashboard widgets.",
+    "Version v1.8.16.",
+  ],
+};
+
+const v360_es: ChangelogEntry = {
+  version: "v1.8.16",
+  date: "2026-08-24",
+  title: "Corrección del bloqueo del botón del tiempo",
+  items: [
+    "Corrección del exceso de profundidad máxima de actualización de React en WeatherDetailPopover.",
+    "El ref de la ventana del tiempo ahora usa directamente refs.setFloating de @floating-ui/react, evitando un bucle de setState.",
+    "Claves únicas añadidas a los createPortal de Popover, Modal, Select y CommandPalette.",
+    "Deduplicación defensiva de notificaciones y widgets del panel de control.",
+    "Versión v1.8.16.",
+  ],
+};
+
+const v360_de: ChangelogEntry = {
+  version: "v1.8.16",
+  date: "2026-08-24",
+  title: "Absturz des Wetter-Buttons behoben",
+  items: [
+    "Maximale React-Aktualisierungstiefe in WeatherDetailPopover behoben.",
+    "Der Wetter-Popover-Ref verwendet jetzt direkt refs.setFloating von @floating-ui/react und vermeidet so eine setState-Schleife.",
+    "Eindeutige Schlüssel für createPortal in Popover, Modal, Select und CommandPalette hinzugefügt.",
+    "Defensive Deduplizierung von Benachrichtigungen und Dashboard-Widgets.",
+    "Version v1.8.16.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

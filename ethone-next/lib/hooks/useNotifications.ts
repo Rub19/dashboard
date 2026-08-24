@@ -270,7 +270,8 @@ export function useNotifications() {
 
   useEffect(() => {
     const local = load();
-    const withoutDemo = local.filter((n) => !n.demo);
+    const unique = mergeLists([], local);
+    const withoutDemo = unique.filter((n) => !n.demo);
     if (withoutDemo.length !== local.length) {
       save(withoutDemo);
       saveAsync(withoutDemo);
@@ -326,10 +327,15 @@ export function useNotifications() {
     saveAsync(items);
   }, [items, loaded]);
 
-  const activeItems = useMemo(
-    () => items.filter((n) => !n.demo && !n.archived && !isSnoozed(n) && !isMuted(n.category)),
-    [items, isMuted]
-  );
+  const activeItems = useMemo(() => {
+    const seen = new Set<string>();
+    return items.filter((n) => {
+      if (!n.id || seen.has(n.id)) return false;
+      if (n.demo || n.archived || isSnoozed(n) || isMuted(n.category)) return false;
+      seen.add(n.id);
+      return true;
+    });
+  }, [items, isMuted]);
 
   const unreadCount = useMemo(
     () => activeItems.filter((n) => !n.read).length,

@@ -446,5 +446,6 @@ export default function CommandPalette() {
       </div>
     </div>,
     document.body,
+    uid,
   );
 }

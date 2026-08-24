@@ -647,5 +647,6 @@ export function PopoverContent({ children, className }: PopoverContentProps) {
       </div>
     </div>,
     document.body,
+    gooId,
   );
 }

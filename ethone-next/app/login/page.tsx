@@ -6,6 +6,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { authLog } from "@/lib/auth-log";
 import { cn } from "@/lib/utils";
 import { required, email as emailValidator, minLength, maxLength, passwordStrength, match, validate } from "@/lib/form-validation";
 import {
@@ -191,6 +192,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (authState === "success" && session) {
+      authLog("Redirecting");
       router.replace("/");
     }
   }, [authState, session, router]);
@@ -240,6 +242,7 @@ export default function LoginPage() {
 
   const handleSendOtp = async (e?: React.FormEvent) => {
     e?.preventDefault();
+    authLog("OTP requested");
     const emailError = validate(email, [required(i18n("fieldRequired")), emailValidator(i18n("emailInvalid"))]);
     if (emailError) {
       setError(emailError);
@@ -274,14 +277,17 @@ export default function LoginPage() {
     }
     setAuthState("verifying");
     setError(null);
+    authLog("OTP verification started");
     const result = await verifyOtp(email, code, rememberMe);
     if (result.error) {
+      authLog("OTP verification result", "error");
       setAuthState("error");
       const human = humanError(result.error, i18n);
       setError(human);
       showError(i18n("error"));
       return;
     }
+    authLog("OTP verification result", "success");
     setAuthState("success");
     success(i18n("loginSuccess", "Connexion réussie"));
   };

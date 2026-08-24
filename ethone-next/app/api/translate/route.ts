@@ -1,20 +1,71 @@
 "use server";
 
 import { NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import OpenAI from "openai";
 
-const apiKey = process.env.GEMINI_API_KEY;
+const apiKey = process.env.OPENROUTER_API_KEY;
 
 if (!apiKey) {
-  console.error("GEMINI_API_KEY is not configured");
+  console.error("OPENROUTER_API_KEY is not configured");
 }
 
-const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
+const openai = apiKey
+  ? new OpenAI({
+      baseURL: "https://openrouter.ai/api/v1",
+      apiKey,
+      defaultHeaders: {
+        "HTTP-Referer": process.env.OPENROUTER_REFERER || "https://ethone.dev",
+        "X-Title": process.env.OPENROUTER_TITLE || "ETHONE OS",
+      },
+    })
+  : null;
+
+const PRIMARY_MODEL = "google/gemma-4-31b-it:free";
+const FALLBACK_MODEL = "openrouter/free";
+
+async function translateDictionary(
+  model: string,
+  target: string,
+  source: Record<string, unknown>
+): Promise<Record<string, unknown>> {
+  if (!openai) {
+    throw new Error("OpenRouter client is not configured");
+  }
+
+  const systemPrompt = `You are a professional software localizer for ETHONE OS. Translate the entire provided JSON dictionary into ${target}. Keep the exact identical JSON structure, keys, markdown, and placeholders (such as {{...}}) intact. Return strictly valid JSON with no markdown, no comments, and no extra text.`;
+  const userPrompt = `Source dictionary:\n${JSON.stringify(source, null, 2)}`;
+
+  const completion = await openai.chat.completions.create({
+    model,
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
+    ],
+    response_format: { type: "json_object" },
+  });
+
+  const text = completion.choices[0]?.message?.content;
+  if (!text) throw new Error("Empty response from OpenRouter");
+
+  let parsed: Record<string, unknown>;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    const jsonMatch = text.match(/(\{[\s\S]*\}|\[[\s\S]*\])/);
+    if (!jsonMatch) throw new Error("OpenRouter did not return valid JSON");
+    const cleaned = jsonMatch[0]
+      .replace(/```(?:json)?\n?/g, "")
+      .trim();
+    parsed = JSON.parse(cleaned);
+  }
+
+  return parsed;
+}
 
 export async function POST(request: Request) {
-  if (!genAI) {
+  if (!openai) {
     return NextResponse.json(
-      { error: "GEMINI_API_KEY is not configured" },
+      { error: "OPENROUTER_API_KEY is not configured" },
       { status: 500 }
     );
   }
@@ -32,24 +83,17 @@ export async function POST(request: Request) {
       );
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-    const prompt = `You are a professional software localizer for ETHONE OS. Translate the following entire JSON dictionary into ${target}. Maintain identical JSON keys, structure, placeholders, and markdown formatting. Return strictly valid JSON.\n\n${JSON.stringify(source, null, 2)}`;
-
-    const result = await model.generateContent({
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      generationConfig: {
-        responseMimeType: "application/json",
-      },
-    });
-
-    const text = result.response.text();
-    const parsed = JSON.parse(text) as Record<string, unknown>;
-
-    return NextResponse.json({ translation: parsed });
+    try {
+      const translation = await translateDictionary(PRIMARY_MODEL, target, source);
+      return NextResponse.json({ translation });
+    } catch (primaryErr) {
+      console.warn("OpenRouter primary model failed, trying fallback:", primaryErr);
+      const translation = await translateDictionary(FALLBACK_MODEL, target, source);
+      return NextResponse.json({ translation });
+    }
   } catch (err) {
     const message = err instanceof Error ? err.message : "Translation failed";
-    console.error("Gemini translate error:", message, err);
+    console.error("OpenRouter translate error:", message, err);
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

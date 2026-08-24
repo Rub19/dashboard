@@ -183,7 +183,7 @@ export function DynamicIsland({
         // expansion reads as unfurling downward out of the pill.
         className={cn(
           "relative inline-flex items-start justify-center overflow-hidden",
-          "bg-zinc-950/85 border border-white/[0.1] text-white",
+          "bg-zinc-950/85 text-white",
           "shadow-[0_16px_40px_rgba(0,0,0,0.8)] backdrop-blur-2xl",
           "cursor-pointer pointer-events-auto select-none",
           className,

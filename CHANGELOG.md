@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.22 — 2026-08-24
+
+**Fix OTP et session remember-me**
+
+- Passage de `verifyOtp` sur `supabase.auth.verifyOtp` au lieu du Worker + `setSession` artificiel.
+- Utilisation du vrai `refresh_token` pour la récupération de session "remember me".
+- Suppression du refresh token aléatoire qui empêchait la session de persister.
+- `app/login/page.tsx` utilise directement `useAuth().signInOtp` et `useAuth().verifyOtp`.
+- Version `v1.8.22`.
+
 ## v1.8.21 — 2026-08-24
 
 **Tokenisation Design System**

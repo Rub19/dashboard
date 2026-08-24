@@ -5498,9 +5498,61 @@ const v365_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
-CHANGELOG_BY_LANG.es.unshift(v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
-CHANGELOG_BY_LANG.de.unshift(v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
+const v366_fr: ChangelogEntry = {
+  version: "v1.8.22",
+  date: "2026-08-24",
+  title: "Fix OTP et session remember-me",
+  items: [
+    "verifyOtp via supabase.auth.verifyOtp.",
+    "Vrai refresh_token pour la récupération remember me.",
+    "Suppression du refresh token aléatoire.",
+    "Login page utilise useAuth().signInOtp et verifyOtp.",
+    "Version v1.8.22.",
+  ],
+};
+
+const v366_en: ChangelogEntry = {
+  version: "v1.8.22",
+  date: "2026-08-24",
+  title: "OTP and remember-me session fix",
+  items: [
+    "verifyOtp via supabase.auth.verifyOtp.",
+    "Real refresh_token for remember-me recovery.",
+    "Removed random refresh token.",
+    "Login page uses useAuth().signInOtp and verifyOtp.",
+    "Version v1.8.22.",
+  ],
+};
+
+const v366_es: ChangelogEntry = {
+  version: "v1.8.22",
+  date: "2026-08-24",
+  title: "Fix de OTP y sesión remember-me",
+  items: [
+    "verifyOtp vía supabase.auth.verifyOtp.",
+    "refresh_token real para recuperar remember me.",
+    "Eliminación del refresh token aleatorio.",
+    "Login usa useAuth().signInOtp y verifyOtp.",
+    "Versión v1.8.22.",
+  ],
+};
+
+const v366_de: ChangelogEntry = {
+  version: "v1.8.22",
+  date: "2026-08-24",
+  title: "OTP- und Remember-Me-Session-Fix",
+  items: [
+    "verifyOtp über supabase.auth.verifyOtp.",
+    "Echter refresh_token für Remember-Me-Wiederherstellung.",
+    "Zufälliger Refresh-Token entfernt.",
+    "Login-Seite nutzt useAuth().signInOtp und verifyOtp.",
+    "Version v1.8.22.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

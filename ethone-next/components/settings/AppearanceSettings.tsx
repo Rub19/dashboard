@@ -8,6 +8,7 @@ import { isNativeAndroid } from "@/lib/android";
 import { Icon as IconifyIcon } from "@iconify/react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useSettingsForm } from "./SettingsFormContext";
+import { useToast } from "@/components/ToastProvider";
 import { ACCENTS } from "@/components/SettingsProvider";
 import { type Settings, DEFAULTS } from "@/lib/settings";
 import BentoCard from "@/components/ui/BentoCard";
@@ -128,9 +129,25 @@ export default function AppearanceSettings() {
   const i18n = useI18n();
   const { settings } = useSettings();
   const form = useSettingsForm();
+  const { show } = useToast();
   const colorInputId = useId();
 
   const handleChange = <K extends keyof Settings>(key: K, value: Settings[K]) => {
+    if (key === "theme" && value !== settings.theme) {
+      const previousTheme = settings.theme;
+      form.updateInstant(key, value);
+      show({
+        type: "info",
+        title: i18n("themeChanged", "Thème modifié"),
+        description: i18n("themeChangedDesc", "Votre apparence a été mise à jour."),
+        duration: 5000,
+        action: {
+          label: i18n("undo", "Annuler"),
+          onClick: () => form.updateInstant("theme", previousTheme),
+        },
+      });
+      return;
+    }
     form.updateInstant(key, value);
   };
 

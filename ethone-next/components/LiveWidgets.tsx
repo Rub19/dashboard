@@ -27,8 +27,8 @@ const STATUS = {
 
 const STATUS_DOT = {
   connected: "bg-[--accent-primary]",
-  loading: "bg-zinc-500",
-  empty: "bg-zinc-500",
+  loading: "bg-[var(--text-muted)]",
+  empty: "bg-[var(--text-muted)]",
   error: "bg-red-500",
 };
 
@@ -170,13 +170,13 @@ function ImageFallback({
 function discordStatusTone(status?: string) {
   switch (status) {
     case "online":
-      return { dot: "bg-[--accent-primary]", shadow: "shadow-[0_0_6px_#34d399]", label: "statusOnline" };
+      return { dot: "bg-[var(--success)]", shadow: "shadow-[0_0_6px_var(--success)]", label: "statusOnline" };
     case "idle":
-      return { dot: "bg-amber-400", shadow: "shadow-[0_0_6px_#fbbf24]", label: "statusAway" };
+      return { dot: "bg-[var(--warning)]", shadow: "shadow-[0_0_6px_var(--warning)]", label: "statusAway" };
     case "dnd":
-      return { dot: "bg-rose-400", shadow: "shadow-[0_0_6px_#fb7185]", label: "statusBusy" };
+      return { dot: "bg-[var(--danger)]", shadow: "shadow-[0_0_6px_var(--danger)]", label: "statusBusy" };
     default:
-      return { dot: "bg-zinc-500", shadow: "", label: "statusInvisible" };
+      return { dot: "bg-[var(--text-muted)]", shadow: "", label: "statusInvisible" };
   }
 }
 
@@ -662,9 +662,9 @@ export default function LiveWidgets({
     const status = lanyard.discord_status || "offline";
     const statusColor: Record<string, string> = {
       online: "bg-[--accent-primary]",
-      idle: "bg-amber-500",
-      dnd: "bg-rose-500",
-      offline: "bg-zinc-500",
+      idle: "bg-[var(--warning)]",
+      dnd: "bg-[var(--danger)]",
+      offline: "bg-[var(--text-muted)]",
     };
     const statusLabels: Record<string, string> = {
       online: "statusOnline",
@@ -776,7 +776,7 @@ export default function LiveWidgets({
               </span>
             )}
             {cape && (
-              <span className="inline-flex items-center gap-1 rounded-lg bg-amber-500/10 px-2 py-1 text-[10px] text-amber-400">
+              <span className="inline-flex items-center gap-1 rounded-lg bg-[var(--warning)]/10 px-2 py-1 text-[10px] text-[var(--warning)]">
                 <Icon name="shirt" className="h-3 w-3" />
                 Cape
               </span>
@@ -892,7 +892,7 @@ export default function LiveWidgets({
           {toStr(w.iconUrl) ? (
             <Image src={toStr(w.iconUrl) || ""} alt="" width={56} height={56} unoptimized className="h-14 w-14 object-contain" />
           ) : (
-            <Icon name="cloudSun" className="h-14 w-14 text-amber-400" />
+            <Icon name="cloudSun" className="h-14 w-14 text-[var(--warning)]" />
           )}
           <div className="min-w-0">
             {temp !== undefined && <p className="text-3xl font-bold text-[var(--text-primary)]">{temp}°C</p>}
@@ -1086,7 +1086,7 @@ export default function LiveWidgets({
             </span>
           )}
           {cape && (
-            <span className="inline-flex items-center gap-1 rounded-lg bg-amber-500/10 px-2 py-1 text-[10px] text-amber-400">
+            <span className="inline-flex items-center gap-1 rounded-lg bg-[var(--warning)]/10 px-2 py-1 text-[10px] text-[var(--warning)]">
               <Icon name="shirt" className="h-3 w-3" />
               Cape
             </span>

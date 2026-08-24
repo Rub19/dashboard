@@ -49,7 +49,7 @@ export default function LiveWidget() {
 
   const statusTone = {
     online: "bg-[--accent-primary]/10 text-[--accent-primary] ring-[--accent-primary]",
-    idle: "bg-amber-500/10 text-amber-400 ring-amber-500/30",
+    idle: "bg-[var(--warning)]/10 text-[var(--warning)] ring-[var(--warning)]/30",
     dnd: "bg-[var(--danger)]/10 text-[var(--danger)] ring-[var(--danger)]/30",
     offline: "bg-[var(--text-muted)]/10 text-[var(--text-muted)] ring-[var(--text-muted)]/30",
   }[lanyard?.discord_status || "offline"];
@@ -230,7 +230,7 @@ export default function LiveWidget() {
                           className="h-9 w-9 shrink-0 rounded-lg object-cover"
                         />
                       ) : (
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-500/10 text-violet-400">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
                           <Icon name="disc" className={`h-5 w-5 ${nowPlaying.isPlaying ? "animate-spin" : ""}`} />
                         </span>
                       )}
@@ -296,14 +296,14 @@ export default function LiveWidget() {
                         )}
                         <span
                           className={cn(
-                            "absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-zinc-950",
+                            "absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-[var(--background)]",
                             lanyard.discord_status === "online"
                               ? "bg-[--accent-primary]"
                               : lanyard.discord_status === "idle"
-                                ? "bg-amber-400"
+                                ? "bg-[var(--warning)]"
                                 : lanyard.discord_status === "dnd"
-                                  ? "bg-rose-400"
-                                  : "bg-zinc-400",
+                                  ? "bg-[var(--danger)]"
+                                  : "bg-[var(--text-muted)]",
                           )}
                         />
                       </div>

@@ -182,7 +182,7 @@ export function buildPingRequest(
       return { path: `/api/steam/player?steamId=${q(settings.liveSteamId)}` };
     case "riot":
       if (!settings.liveTrackerRiotName || !settings.liveTrackerRiotTag) return null;
-      return { path: `/api/tracker/valorant-profile?name=${q(settings.liveTrackerRiotName)}&tag=${q(settings.liveTrackerRiotTag)}` };
+      return { path: `/api/stats/valorant-profile?name=${q(settings.liveTrackerRiotName)}&tag=${q(settings.liveTrackerRiotTag)}` };
     case "minecraft":
       if (!settings.liveMinecraftUsername) return null;
       return { path: `/api/minecraft/profile?username=${q(settings.liveMinecraftUsername)}` };

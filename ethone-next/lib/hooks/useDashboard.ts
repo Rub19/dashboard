@@ -85,10 +85,10 @@ export function useHomeData() {
 
   const hasRiotId = liveTrackerRiotName && liveTrackerRiotTag;
   const valorantPath = hasRiotId
-    ? `/api/tracker/valorant-matches?name=${encodeURIComponent(liveTrackerRiotName)}&tag=${encodeURIComponent(liveTrackerRiotTag)}`
+    ? `/api/stats/valorant-matches?name=${encodeURIComponent(liveTrackerRiotName)}&tag=${encodeURIComponent(liveTrackerRiotTag)}`
     : null;
   const lolPath = hasRiotId
-    ? `/api/tracker/lol-matches?name=${encodeURIComponent(liveTrackerRiotName)}&tag=${encodeURIComponent(liveTrackerRiotTag)}`
+    ? `/api/stats/lol-matches?name=${encodeURIComponent(liveTrackerRiotName)}&tag=${encodeURIComponent(liveTrackerRiotTag)}`
     : null;
 
   const context = useMemo(() => timeContext(), []);

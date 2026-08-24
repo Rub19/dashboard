@@ -244,12 +244,12 @@ export function useLiveData(pollMs = 60000) {
 
   const hasRiotId = liveTrackerRiotName && liveTrackerRiotTag;
   const valorantPath = hasRiotId
-    ? `/api/tracker/valorant-matches?name=${encodeURIComponent(liveTrackerRiotName)}&tag=${encodeURIComponent(
+    ? `/api/stats/valorant-matches?name=${encodeURIComponent(liveTrackerRiotName)}&tag=${encodeURIComponent(
         liveTrackerRiotTag
       )}`
     : null;
   const lolPath = hasRiotId
-    ? `/api/tracker/lol-matches?name=${encodeURIComponent(liveTrackerRiotName)}&tag=${encodeURIComponent(
+    ? `/api/stats/lol-matches?name=${encodeURIComponent(liveTrackerRiotName)}&tag=${encodeURIComponent(
         liveTrackerRiotTag
       )}`
     : null;
@@ -268,12 +268,12 @@ export function useLiveData(pollMs = 60000) {
 
   const hasApexId = liveTrackerApexPlatform && liveTrackerApexIdentifier;
   const apexProfilePath = hasApexId
-    ? `/api/tracker/apex-profile?platform=${encodeURIComponent(liveTrackerApexPlatform)}&identifier=${encodeURIComponent(
+    ? `/api/stats/apex-profile?platform=${encodeURIComponent(liveTrackerApexPlatform)}&identifier=${encodeURIComponent(
         liveTrackerApexIdentifier
       )}`
     : null;
   const apexMatchesPath = hasApexId
-    ? `/api/tracker/apex-matches?platform=${encodeURIComponent(liveTrackerApexPlatform)}&identifier=${encodeURIComponent(
+    ? `/api/stats/apex-matches?platform=${encodeURIComponent(liveTrackerApexPlatform)}&identifier=${encodeURIComponent(
         liveTrackerApexIdentifier
       )}&mode=all`
     : null;

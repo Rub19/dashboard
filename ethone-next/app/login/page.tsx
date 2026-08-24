@@ -414,7 +414,7 @@ export default function LoginPage() {
         <LanguageSwitcher />
       </div>
 
-      <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden p-10 lg:flex">
+      <div className="relative hidden w-2/5 flex-col justify-between overflow-hidden p-8 lg:flex lg:w-1/2 lg:p-10 md:flex">
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[var(--surface)] via-[var(--background)] to-[var(--surface-raised)]" />
         <motion.div
           animate={reduced ? undefined : { x: [0, 20, -20, 0], y: [0, -20, 20, 0] }}
@@ -435,8 +435,8 @@ export default function LoginPage() {
         </div>
         <div className="z-10 max-w-md">
           <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[var(--accent)]">{i18n("environmentPersonal", "Environnement personnel")}</p>
-          <h1 className="mt-5 text-5xl font-bold tracking-tighter text-[var(--foreground)] lg:text-6xl">ETHONE</h1>
-          <p className="mt-4 text-xl font-light leading-relaxed text-[var(--text-muted)]">
+          <h1 className="mt-5 text-4xl font-bold tracking-tighter text-[var(--foreground)] md:text-5xl lg:text-6xl">ETHONE</h1>
+          <p className="mt-4 text-base font-light leading-relaxed text-[var(--text-muted)] md:text-lg lg:text-xl">
             {i18n("yourDigitalEnvironment", "Votre environnement numérique")}{" "}
             <span className="font-medium text-[var(--foreground)]">{i18n("reinventedAroundYou", "Réinventé autour de vous.")}</span>
           </p>
@@ -449,7 +449,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div className="relative flex w-full flex-col items-center justify-center p-4 sm:p-6 lg:w-1/2 lg:p-10">
+      <div className="relative flex w-full flex-col items-center justify-center p-4 sm:p-6 md:w-3/5 lg:w-1/2 lg:p-10">
         <div className="relative w-full max-w-md">
           <div className="pointer-events-none absolute -inset-1 rounded-[2.25rem] bg-gradient-to-br from-[var(--accent)]/20 via-transparent to-[var(--accent)]/10 blur-2xl" />
           <motion.div

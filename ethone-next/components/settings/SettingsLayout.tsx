@@ -21,7 +21,7 @@ function resolveCategory(value: string | null | undefined): string {
   return CATEGORY_ORDER.some((c) => c.id === value) ? value : sectionCategory(value);
 }
 
-export default function SettingsLayout() {
+export default function SettingsLayout({ initialSection }: { initialSection?: string }) {
   const i18n = useI18n();
   const { settings, update } = useSettings();
   const { error: showError, notify } = useToast();
@@ -30,7 +30,7 @@ export default function SettingsLayout() {
   const router = useRouter();
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const [activeCategory, setActiveCategory] = useState(() => resolveCategory(searchParams?.get("category") ?? searchParams?.get("tab")));
+  const [activeCategory, setActiveCategory] = useState(() => resolveCategory(initialSection ?? searchParams?.get("category") ?? searchParams?.get("tab")));
 
   const scrollToCategory = useCallback((id: string) => {
     const el =
@@ -41,20 +41,21 @@ export default function SettingsLayout() {
   }, []);
 
   useEffect(() => {
-    const raw = searchParams?.get("category") ?? searchParams?.get("tab");
+    const raw = initialSection ?? searchParams?.get("category") ?? searchParams?.get("tab");
     const category = resolveCategory(raw);
     setActiveCategory(category);
     const t = window.setTimeout(() => {
       scrollToCategory(raw || category);
     }, 120);
     return () => window.clearTimeout(t);
-  }, [searchParams, scrollToCategory]);
+  }, [initialSection, searchParams, scrollToCategory]);
 
   const handleSelectCategory = useCallback(
     (id: string) => {
-      router.push(`/settings?category=${id}`, { scroll: false });
+      if (id === activeCategory) return;
+      router.push(`/settings/${id}`, { scroll: false });
     },
-    [router]
+    [activeCategory, router]
   );
 
   const handleCategoryInView = useCallback((id: string) => {

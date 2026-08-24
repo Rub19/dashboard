@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.19 — 2026-08-24
+
+**Refonte Settings, Toasts et Design System**
+
+- Tokenisation des toasts (`RichToast`, `ToastContext`) et des composants de base (`Switch`, `Select`).
+- Navigation Settings avec `aria-current`, tabindex roving et support clavier complet.
+- Routing `/settings/:section` statique pour toutes les catégories.
+- Undo toast visuel sur changement de thème avec icône et action.
+- Barre de progression dans `RichToast` avec pause au survol.
+- Anti-spam par `dedupKey` pour éviter les piles de toasts.
+- Responsive Settings : safe areas iPhone / iPad, sidebar scrollable, alignements ajustés.
+- Version `v1.8.19`.
+
 ## v1.8.18 — 2026-08-24
 
 **Rework authentification et Dynamic Island**

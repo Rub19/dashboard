@@ -5334,9 +5334,73 @@ const v362_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v362_fr, v361_fr, v360_fr, v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v362_en, v361_en, v360_en, v359_en);
-CHANGELOG_BY_LANG.es.unshift(v362_es, v361_es, v360_es, v359_es);
-CHANGELOG_BY_LANG.de.unshift(v362_de, v361_de, v360_de, v359_de);
+const v363_fr: ChangelogEntry = {
+  version: "v1.8.19",
+  date: "2026-08-24",
+  title: "Refonte Settings, Toasts et Design System",
+  items: [
+    "Tokenisation des toasts et des composants de base (Switch, Select).",
+    "Navigation Settings clavier, aria-current et tabindex roving.",
+    "Routing /settings/:section statique pour toutes les catégories.",
+    "Undo toast visuel sur changement de thème.",
+    "Barre de progression dans RichToast avec pause au survol.",
+    "Anti-spam par dedupKey pour éviter les piles de toasts.",
+    "Responsive Settings et safe areas iPhone / iPad.",
+    "Version v1.8.19.",
+  ],
+};
+
+const v363_en: ChangelogEntry = {
+  version: "v1.8.19",
+  date: "2026-08-24",
+  title: "Settings, Toasts and Design System rework",
+  items: [
+    "Tokenized toasts and base components (Switch, Select).",
+    "Keyboard-friendly Settings navigation with aria-current and roving tabindex.",
+    "Static routing /settings/:section for all categories.",
+    "Visual undo toast on theme change.",
+    "Progress bar in RichToast with hover pause.",
+    "dedupKey anti-spam to avoid toast piles.",
+    "Responsive Settings and iPhone / iPad safe areas.",
+    "Version v1.8.19.",
+  ],
+};
+
+const v363_es: ChangelogEntry = {
+  version: "v1.8.19",
+  date: "2026-08-24",
+  title: "Rework de Settings, Toasts y Design System",
+  items: [
+    "Tokenización de toasts y componentes base (Switch, Select).",
+    "Navegación Settings por teclado, aria-current y tabindex roving.",
+    "Routing estático /settings/:section para todas las categorías.",
+    "Toast de deshacer visual al cambiar de tema.",
+    "Barra de progreso en RichToast con pausa al pasar el cursor.",
+    "Anti-spam con dedupKey para evitar pilas de toasts.",
+    "Settings responsive y safe areas iPhone / iPad.",
+    "Versión v1.8.19.",
+  ],
+};
+
+const v363_de: ChangelogEntry = {
+  version: "v1.8.19",
+  date: "2026-08-24",
+  title: "Rework von Settings, Toasts und Design System",
+  items: [
+    "Tokenisierung der Toasts und Basis-Komponenten (Switch, Select).",
+    "Tastatur-Navigation für Settings mit aria-current und roving tabindex.",
+    "Statisches Routing /settings/:section für alle Kategorien.",
+    "Visueller Undo-Toast beim Themenwechsel.",
+    "Fortschrittsbalken in RichToast mit Pause beim Hover.",
+    "dedupKey Anti-Spam, um Toast-Stapel zu vermeiden.",
+    "Responsive Settings und iPhone / iPad Safe Areas.",
+    "Version v1.8.19.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v363_en, v362_en, v361_en, v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v363_es, v362_es, v361_es, v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v363_de, v362_de, v361_de, v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

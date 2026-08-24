@@ -17,15 +17,17 @@ import { useToast } from "@/components/ToastProvider";
 import { fetchWorker } from "@/lib/api";
 import { useDynamicIslandStore } from "@/lib/stores/dynamic-island";
 import { useBrainActivityStore } from "@/lib/stores/brain-activity";
+import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
 import { cn } from "@/lib/utils";
 import VolumeSlider from "@/components/VolumeSlider";
 
-type View = "spotify" | "pomodoro" | "brain";
+type View = "spotify" | "pomodoro" | "brain" | "sync";
 
 const EASE_OUT = [0.16, 1, 0.3, 1] as const;
 const VIEW_PRIORITY: Record<View, number> = {
-  brain: 4, // critical / activity
-  pomodoro: 3, // action required / activity
+  brain: 5, // critical / activity
+  pomodoro: 4, // action required / activity
+  sync: 3, // activité en cours
   spotify: 2, // information contextuelle
 };
 const VIEW_ORDER: View[] = (Object.keys(VIEW_PRIORITY) as View[]).sort(
@@ -40,6 +42,8 @@ function viewLabel(view: View, i18n: (key: string, fallback?: string) => string)
       return i18n("pomodoro", "Pomodoro");
     case "brain":
       return i18n("brain", "Brain");
+    case "sync":
+      return i18n("sync", "Synchronisation");
     default:
       return "";
   }
@@ -125,7 +129,8 @@ function IslandBubble({
       : "bg-white/[0.05] text-zinc-400 hover:bg-white/[0.1] hover:text-white",
     view === "spotify" && !active && "text-[--accent-primary] hover:text-[--accent-primary]",
     view === "pomodoro" && !active && "text-[var(--accent)]",
-    view === "brain" && !active && "text-purple-400 hover:text-purple-300",
+    view === "brain" && !active && "text-[var(--info)] hover:text-[var(--info)]",
+    view === "sync" && !active && "text-[var(--info)] hover:text-[var(--info)]",
   );
 
   const icon =
@@ -135,6 +140,8 @@ function IslandBubble({
       <Icon name="timer" pack="phosphor" className={iconClass} />
     ) : view === "brain" ? (
       <Icon name="brain" pack="phosphor" className={iconClass} />
+    ) : view === "sync" ? (
+      <Icon name="arrows-clockwise" pack="phosphor" className={iconClass} />
     ) : (
       <Icon name="sparkles" pack="phosphor" className={iconClass} />
     );
@@ -167,9 +174,11 @@ function IslandExpandedHeader({
     ) : selected === "pomodoro" ? (
       <Icon name="timer" pack="phosphor" className="h-3.5 w-3.5 text-[var(--accent)]" />
     ) : selected === "brain" ? (
-      <Icon name="brain" pack="phosphor" className="h-3.5 w-3.5 text-purple-400" />
+      <Icon name="brain" pack="phosphor" className="h-3.5 w-3.5 text-[var(--info)]" />
+    ) : selected === "sync" ? (
+      <Icon name="arrows-clockwise" pack="phosphor" className="h-3.5 w-3.5 text-[var(--info)]" />
     ) : (
-      <Icon name="sparkles" pack="phosphor" className="h-3.5 w-3.5 text-zinc-500" />
+      <Icon name="sparkles" pack="phosphor" className="h-3.5 w-3.5 text-[var(--text-muted)]" />
     );
   return (
     <div className={cn("-mx-6 -mt-4 mb-4 flex w-full items-center justify-between gap-3 border-b border-white/[0.06] px-6 pt-4 pb-3", className)}>
@@ -206,6 +215,7 @@ export default function DynamicIslandContainer() {
   const { nowPlaying, loading: npLoading, refetch: refetchNowPlaying } = useNowPlaying(1000);
   const isThinking = useBrainActivityStore((s) => s.isThinking);
   const { visible } = useDynamicIslandStore();
+  const { pendingCount, syncing, lastSync } = useActivityJournal();
 
   const [expanded, setExpanded] = useState(false);
   const [selectedView, setSelectedView] = useState<View | null>(null);
@@ -228,6 +238,7 @@ export default function DynamicIslandContainer() {
   const spotifyActive = !!nowPlaying?.title || !!nowPlaying?.isPlaying;
   const pomodoroActive = focus.state.phase !== "idle";
   const brainActive = isThinking;
+  const syncActive = syncing || pendingCount > 0;
 
   useEffect(() => {
     // Don't react to activity changes while now-playing data is still
@@ -239,6 +250,7 @@ export default function DynamicIslandContainer() {
     const nextActive = new Set<View>();
     if (brainActive) nextActive.add("brain");
     if (pomodoroActive) nextActive.add("pomodoro");
+    if (syncActive) nextActive.add("sync");
     if (spotifyActive) nextActive.add("spotify");
 
     const nextActiveViews = VIEW_ORDER.filter((v) => nextActive.has(v));
@@ -273,7 +285,7 @@ export default function DynamicIslandContainer() {
     if (nextActive.size === 0) setExpanded(false);
 
     prevActiveRef.current = nextActive;
-  }, [brainActive, pomodoroActive, spotifyActive, selectedView, npLoading, userSelected]);
+  }, [brainActive, pomodoroActive, syncActive, spotifyActive, selectedView, npLoading, userSelected]);
 
   // Escape collapses
   useEffect(() => {
@@ -330,14 +342,28 @@ export default function DynamicIslandContainer() {
       case "brain":
         return (
           <div className={cn(base)}>
-            <Icon name="brain" pack="phosphor" className="h-3.5 w-3.5 text-purple-400" />
+            <Icon name="brain" pack="phosphor" className="h-3.5 w-3.5 text-[var(--info)]" />
             <span className="text-xs font-medium">{i18n("brain", "Brain")}</span>
+          </div>
+        );
+      case "sync":
+        return (
+          <div className={cn(base)}>
+            <Icon name="arrows-clockwise" pack="phosphor" className={cn("h-3.5 w-3.5 text-[var(--info)]", syncing && "animate-spin")} />
+            <span className="text-xs font-medium tabular-nums">
+              {syncing ? i18n("syncing", "Synchronisation") : i18n("syncReady", "Synchronisé")}
+            </span>
+            {pendingCount > 0 && (
+              <span className="ml-1 rounded-full bg-[var(--info)]/20 px-1.5 py-0.5 text-[10px] text-[var(--info)]">
+                {pendingCount}
+              </span>
+            )}
           </div>
         );
       default:
         return null;
     }
-  }, [clock, selectedView, nowPlaying, focus, i18n]);
+  }, [clock, selectedView, nowPlaying, focus, i18n, syncing, pendingCount]);
 
   // Spotify controls
   const spotifyControl = useCallback(
@@ -617,6 +643,34 @@ export default function DynamicIslandContainer() {
                       <Icon name="chevron-right" pack="phosphor" className="h-3.5 w-3.5" />
                       {i18n("skip")}
                     </button>
+                  )}
+                </div>
+              </div>
+            </DynamicIslandView>
+
+            <DynamicIslandView id="sync" className="w-[260px]">
+              <div onClick={stopPropagation} className="flex w-full flex-col items-center gap-3 text-center">
+                <IslandExpandedHeader
+                  activeViews={activeViews}
+                  selected={selectedView ?? "sync"}
+                  onSelect={selectView}
+                />
+                <div className={cn("flex h-12 w-12 items-center justify-center rounded-full", syncing ? "bg-[var(--info)]/15" : "bg-[var(--surface-raised)]")}>
+                  <Icon name="arrows-clockwise" pack="phosphor" className={cn("h-6 w-6 text-[var(--info)]", syncing && "animate-spin")} />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-[var(--text-primary)]">
+                    {syncing ? i18n("syncing", "Synchronisation…") : i18n("synced", "Synchronisé")}
+                  </p>
+                  <p className="text-xs text-[var(--text-muted)]">
+                    {pendingCount > 0
+                      ? i18n("itemsPending", "{count} éléments en attente").replace("{count}", String(pendingCount))
+                      : i18n("allUpToDate", "Tout est à jour")}
+                  </p>
+                  {lastSync && (
+                    <p className="mt-0.5 text-[10px] text-[var(--text-muted)]">
+                      {i18n("lastSync", "Dernier sync")}: {lastSync.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                    </p>
                   )}
                 </div>
               </div>

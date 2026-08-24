@@ -236,7 +236,7 @@ export default function BootProvider({ children }: { children: ReactNode }) {
   if (state === "error") {
     return (
       <BootContext.Provider value={{ state, retry, continueOffline }}>
-        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-5 bg-[var(--background)] p-6">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex flex-col items-center justify-center gap-5 bg-[var(--background)] p-6">
           <motion.div
             className="flex flex-col items-center gap-3"
             initial={{ opacity: 0, y: 8 }}
@@ -272,7 +272,7 @@ export default function BootProvider({ children }: { children: ReactNode }) {
   if (state === "offline") {
     return (
       <BootContext.Provider value={{ state, retry, continueOffline }}>
-        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-5 bg-[var(--background)] p-6">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex flex-col items-center justify-center gap-5 bg-[var(--background)] p-6">
           <motion.div
             className="flex flex-col items-center gap-3"
             initial={{ opacity: 0, y: 8 }}

@@ -42,7 +42,7 @@ export default function ChangelogModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: reduce ? 0 : 0.2 }}
-          className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 p-4 pb-10 pt-20 backdrop-blur-sm md:p-6 md:pb-14 md:pt-24"
+          className="fixed inset-0 z-[var(--z-modal)] flex items-start justify-center bg-black/60 p-4 pb-10 pt-20 backdrop-blur-sm md:p-6 md:pb-14 md:pt-24"
           onClick={onClose}
           role="presentation"
         >

@@ -247,7 +247,7 @@ function Sidebar() {
 
   return (
     <div
-      className="relative z-30 hidden h-full min-h-0 w-auto shrink-0 pointer-events-auto md:block"
+      className="relative z-[var(--z-sidebar)] hidden h-full min-h-0 w-auto shrink-0 pointer-events-auto md:block"
       onPointerEnter={() => setOpen(true)}
       onPointerLeave={() => setOpen(false)}
     >

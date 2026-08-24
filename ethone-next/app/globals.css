@@ -69,6 +69,18 @@
   --interaction-share: #34d399;
   --interaction-default: #a78bfa;
 
+  /* ETHONE z-index design system */
+  --z-background: -1;
+  --z-content: 0;
+  --z-sidebar: 40;
+  --z-header: 50;
+  --z-dropdown: 60;
+  --z-popover: 70;
+  --z-dock: 80;
+  --z-dynamic-island: 90;
+  --z-modal: 100;
+  --z-critical: 200;
+
   /* Legacy v8 z-index / presence / depth tokens */
   --v8-z-rail: 40;
   --v8-z-header: 30;

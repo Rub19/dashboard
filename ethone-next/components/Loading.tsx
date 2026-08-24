@@ -15,7 +15,7 @@ export default function Loading({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-5 bg-[var(--background)]"
+      className="fixed inset-0 z-[var(--z-modal)] flex flex-col items-center justify-center gap-5 bg-[var(--background)]"
       role="status"
       aria-label={message}
       data-v8-boot

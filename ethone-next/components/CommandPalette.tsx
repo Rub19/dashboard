@@ -322,7 +322,7 @@ export default function CommandPalette() {
       aria-hidden={!open}
       inert={!open}
       className={cn(
-        "fixed inset-0 z-[100]",
+        "fixed inset-0 z-[var(--z-modal)]",
         open ? "pointer-events-auto" : "pointer-events-none",
       )}
     >

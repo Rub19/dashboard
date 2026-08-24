@@ -104,7 +104,7 @@ export default function Modal({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15 }}
           onClick={() => closeOnBackdrop && onClose()}
-          className={`fixed inset-0 z-50 flex justify-center bg-[var(--background)]/70 p-4 backdrop-blur-md ${positionOuter[position]}`}
+          className={`fixed inset-0 z-[var(--z-modal)] flex justify-center bg-[var(--background)]/70 p-4 backdrop-blur-md ${positionOuter[position]}`}
         >
           <motion.div
             ref={trapRef}

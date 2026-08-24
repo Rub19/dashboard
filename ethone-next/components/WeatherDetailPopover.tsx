@@ -182,7 +182,7 @@ function WeatherDetailContent({
         <div
           ref={refs.setFloating as unknown as React.Ref<HTMLDivElement>}
           style={floatingStyles}
-          className="v8-panel z-[90] w-80 max-w-[calc(100vw-1rem)] overflow-hidden p-4"
+          className="v8-panel z-[var(--z-popover)] w-80 max-w-[calc(100vw-1rem)] overflow-hidden p-4"
           role="dialog"
           aria-modal="true"
           aria-label={i18n("weather")}

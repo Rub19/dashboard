@@ -234,7 +234,7 @@ export default function NotificationItem({
             </button>
 
             {menuOpen && (
-              <div className="absolute right-0 top-full z-30 mt-1.5 w-44 rounded-xl border border-white/[0.1] bg-zinc-950 p-1 shadow-2xl backdrop-blur-2xl">
+              <div className="absolute right-0 top-full z-[var(--z-dropdown)] mt-1.5 w-44 rounded-xl border border-[var(--text-primary)]/[0.1] bg-[var(--background)] p-1 shadow-2xl backdrop-blur-2xl">
                 {snoozeOpen ? (
                   <div className="space-y-0.5">
                     <button

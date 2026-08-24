@@ -250,7 +250,7 @@ export default function ProfileDropdown() {
               exit={{ opacity: 0, y: 8, scale: 0.98 }}
               transition={{ duration: 0.15, ease: "easeOut" as const }}
               style={{ ...floatingStyles, originX: 1, originY: 0 }}
-              className="z-[100] w-80 overflow-hidden rounded-xl border border-white/10 bg-zinc-950/90 p-3 shadow-[0_16px_40px_rgba(0,0,0,0.85)] backdrop-blur-2xl"
+              className="z-[var(--z-dropdown)] w-80 overflow-hidden rounded-xl border border-[var(--text-primary)]/10 bg-[var(--background)]/90 p-3 shadow-[0_16px_40px_rgba(0,0,0,0.85)] backdrop-blur-2xl"
             >
             {/* User Card Header */}
             <div className="flex items-center justify-between gap-3 rounded-lg border border-white/[0.06] bg-white/[0.03] p-3">

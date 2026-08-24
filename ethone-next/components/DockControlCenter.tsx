@@ -162,7 +162,7 @@ export default function DockControlCenter({
             exit={{ opacity: 0, y: 16, scale: 0.96 }}
             transition={{ type: "spring", stiffness: 350, damping: 28 }}
             style={{ transformOrigin: "bottom center" }}
-            className="fixed bottom-28 left-1/2 z-[90] w-80 max-w-[calc(100vw-1rem)] -translate-x-1/2 overflow-hidden"
+            className="fixed bottom-28 left-1/2 z-[var(--z-popover)] w-80 max-w-[calc(100vw-1rem)] -translate-x-1/2 overflow-hidden"
             role="dialog"
             aria-modal="false"
             aria-label={i18n("controlCenter")}

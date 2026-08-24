@@ -233,7 +233,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
             style={{ position: "fixed", left: pos.left, bottom: pos.bottom }}
-            className="z-[90] w-80 rounded-xl border border-white/10 bg-zinc-950/95 p-4 shadow-2xl backdrop-blur-2xl pointer-events-auto origin-bottom"
+            className="z-[var(--z-popover)] w-80 rounded-xl border border-[var(--text-primary)]/10 bg-[var(--background)]/95 p-4 shadow-2xl backdrop-blur-2xl pointer-events-auto origin-bottom"
           >
             {!hasTrack ? (
               <div className="flex items-center gap-3">

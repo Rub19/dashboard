@@ -471,7 +471,7 @@ export default function DynamicIslandContainer() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -20, scale: 0.9 }}
           transition={{ duration: 0.25, ease: EASE_OUT }}
-          className="fixed left-0 right-0 top-2 z-[45] flex justify-center pointer-events-none select-none"
+          className="fixed left-0 right-0 top-[max(0.5rem,env(safe-area-inset-top))] z-[45] flex justify-center pointer-events-none select-none"
         >
           <DynamicIsland
             view={expanded && selectedView ? selectedView : null}
@@ -482,7 +482,7 @@ export default function DynamicIslandContainer() {
             tabIndex={0}
             role="button"
           >
-            <DynamicIslandView id="spotify" data-testid="dynamic-island-spotify" className="w-[340px] sm:w-[400px]">
+            <DynamicIslandView id="spotify" data-testid="dynamic-island-spotify" className="w-[min(92vw,340px)] sm:w-[400px]">
               <div onClick={stopPropagation} className="flex w-full flex-col gap-4">
                 <IslandExpandedHeader
                   activeViews={activeViews}
@@ -591,7 +591,7 @@ export default function DynamicIslandContainer() {
               </div>
             </DynamicIslandView>
 
-            <DynamicIslandView id="pomodoro" className="w-[260px]">
+            <DynamicIslandView id="pomodoro" className="w-[min(92vw,260px)] sm:w-[320px]">
               <div onClick={stopPropagation} className="flex w-full flex-col items-center gap-4">
                 <IslandExpandedHeader
                   activeViews={activeViews}
@@ -648,7 +648,7 @@ export default function DynamicIslandContainer() {
               </div>
             </DynamicIslandView>
 
-            <DynamicIslandView id="sync" className="w-[260px]">
+            <DynamicIslandView id="sync" className="w-[min(92vw,260px)] sm:w-[320px]">
               <div onClick={stopPropagation} className="flex w-full flex-col items-center gap-3 text-center">
                 <IslandExpandedHeader
                   activeViews={activeViews}
@@ -676,7 +676,7 @@ export default function DynamicIslandContainer() {
               </div>
             </DynamicIslandView>
 
-            <DynamicIslandView id="brain" className="w-[260px]">
+            <DynamicIslandView id="brain" className="w-[min(92vw,260px)] sm:w-[320px]">
               <div onClick={stopPropagation} className="flex w-full flex-col items-center gap-3 text-center">
                 <IslandExpandedHeader
                   activeViews={activeViews}

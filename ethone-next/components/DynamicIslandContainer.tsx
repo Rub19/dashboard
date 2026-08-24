@@ -23,7 +23,14 @@ import VolumeSlider from "@/components/VolumeSlider";
 type View = "spotify" | "pomodoro" | "brain";
 
 const EASE_OUT = [0.16, 1, 0.3, 1] as const;
-const VIEW_ORDER: View[] = ["spotify", "brain", "pomodoro"];
+const VIEW_PRIORITY: Record<View, number> = {
+  brain: 4, // critical / activity
+  pomodoro: 3, // action required / activity
+  spotify: 2, // information contextuelle
+};
+const VIEW_ORDER: View[] = (Object.keys(VIEW_PRIORITY) as View[]).sort(
+  (a, b) => VIEW_PRIORITY[b] - VIEW_PRIORITY[a],
+);
 
 function viewLabel(view: View, i18n: (key: string, fallback?: string) => string) {
   switch (view) {
@@ -202,6 +209,7 @@ export default function DynamicIslandContainer() {
 
   const [expanded, setExpanded] = useState(false);
   const [selectedView, setSelectedView] = useState<View | null>(null);
+  const [userSelected, setUserSelected] = useState(false);
   const [activeViews, setActiveViews] = useState<View[]>([]);
   const prevActiveRef = useRef<Set<View>>(new Set());
   const isInitialMount = useRef(true);
@@ -236,39 +244,36 @@ export default function DynamicIslandContainer() {
     const nextActiveViews = VIEW_ORDER.filter((v) => nextActive.has(v));
     setActiveViews(nextActiveViews);
 
-    // On initial mount/refresh, select the first active view but force the
-    // island closed. It should only open on a deliberate click.
-    if (isInitialMount.current) {
-      if (!selectedView && nextActive.size > 0) {
-        setSelectedView(nextActiveViews[0] ?? null);
-      }
-      setExpanded(false);
-      prevActiveRef.current = nextActive;
-      isInitialMount.current = false;
-      return;
-    }
-
     const newViews = VIEW_ORDER.filter(
       (v) => nextActive.has(v) && !prevActiveRef.current.has(v),
     );
 
     if (newViews.length > 0) {
-      // A new activity just started: select it, but stay compact.
-      // The island only expands when the user explicitly clicks it.
+      // A new event just started: select it, but stay compact.
+      // Priority order guarantees the most important event is selected.
       setSelectedView(newViews[0]);
+    }
+
+    // On initial mount, or when the user hasn't explicitly chosen, follow
+    // the highest-priority active view.
+    if (!userSelected || isInitialMount.current) {
+      const top = nextActiveViews[0] ?? null;
+      if (top !== selectedView) setSelectedView(top);
     } else if (selectedView && !nextActive.has(selectedView)) {
       const fallback = nextActiveViews[0] ?? null;
       setSelectedView(fallback);
       if (!fallback) setExpanded(false);
-    } else if (!selectedView && nextActive.size > 0) {
-      const fallback = nextActiveViews[0] ?? null;
-      setSelectedView(fallback);
+    }
+
+    if (isInitialMount.current) {
+      setExpanded(false);
+      isInitialMount.current = false;
     }
 
     if (nextActive.size === 0) setExpanded(false);
 
     prevActiveRef.current = nextActive;
-  }, [brainActive, pomodoroActive, spotifyActive, selectedView, npLoading]);
+  }, [brainActive, pomodoroActive, spotifyActive, selectedView, npLoading, userSelected]);
 
   // Escape collapses
   useEffect(() => {
@@ -280,6 +285,7 @@ export default function DynamicIslandContainer() {
   }, []);
 
   const selectView = useCallback((view: View) => {
+    setUserSelected(true);
     setSelectedView(view);
     setExpanded(true);
   }, []);

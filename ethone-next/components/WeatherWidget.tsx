@@ -258,7 +258,7 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
   const sunset = toStr(data?.sunset);
   const forecast = useMemo(() => (data?.forecast || []).slice(0, 5), [data?.forecast]);
 
-  const { gradient, border, glow } = weatherAmbience(code, isDay);
+  const { gradient, glow } = weatherAmbience(code, isDay);
   const iconColor = weatherIconColor(code, isDay);
   const iconName = weatherIconFromCode(code, condition, isDay);
   const locale = i18n("daysShort")?.includes(",") ? "fr" : "en";
@@ -292,7 +292,7 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
 
   return (
     <TiltCard
-      className={`group h-full min-h-0 border bg-zinc-950/70 p-4 shadow-xl shadow-black/50 backdrop-blur-2xl transition-colors ${gradient} ${border} ${
+      className={`group h-full min-h-0 bg-zinc-950/70 p-4 shadow-xl shadow-black/50 backdrop-blur-2xl transition-colors ${gradient} ${
         className || ""
       }`}
     >

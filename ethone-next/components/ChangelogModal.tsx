@@ -79,7 +79,7 @@ export default function ChangelogModal({
                     className="flex items-center gap-2 text-sm font-bold text-[var(--foreground)]"
                   >
                     <span>{i18n("changelogTitle") || "Journal des modifications"}</span>
-                    <span className="rounded-lg border border-[var(--accent)]/25 bg-[var(--accent)]/10 px-2 py-0.5 font-mono text-[10px] text-[var(--accent)]">
+                    <span className="rounded-lg border border-amber-500/25 bg-amber-500/10 px-2 py-0.5 font-mono text-[10px] text-amber-300">
                       {versionLabel}
                     </span>
                   </h3>

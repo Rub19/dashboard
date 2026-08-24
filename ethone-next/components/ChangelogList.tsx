@@ -23,6 +23,32 @@ function compareVersion(a: string, b: string) {
   return 0;
 }
 
+const FR_MONTHS = [
+  "janvier", "février", "mars", "avril", "mai", "juin",
+  "juillet", "août", "septembre", "octobre", "novembre", "décembre",
+];
+
+function parseDate(dateStr: string): Date | null {
+  const iso = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (iso) return new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]));
+  const fr = dateStr.match(/^(\d{1,2})\s+([a-zA-ZÀ-ÿéûãñ]+)\s+(\d{4})$/);
+  if (fr) {
+    const day = Number(fr[1]);
+    const monthName = fr[2].toLowerCase();
+    const month = FR_MONTHS.findIndex((m) => m.toLowerCase() === monthName);
+    if (month !== -1) return new Date(Number(fr[3]), month, day);
+  }
+  const ts = Date.parse(dateStr);
+  return isNaN(ts) ? null : new Date(ts);
+}
+
+function compareDateDesc(a: ChangelogEntry, b: ChangelogEntry) {
+  const da = parseDate(a.date);
+  const db = parseDate(b.date);
+  if (!da || !db) return 0;
+  return db.getTime() - da.getTime();
+}
+
 type ItemType = "fix" | "feature" | "change" | "version" | "default";
 
 const FIX_RE = /corrige|corrections?|corrig[ée]|fix|bug|r[ée]sout|r[ée]solu|probl[èe]me|fermeture|d[ée]faut|[ée]choue|r[ée]solution|fiable|retour|restaur|restor|revert|patch|cass[ée]|broken|failed/i;
@@ -190,12 +216,7 @@ function ChangelogCard({
             {entry.title}
           </span>
           <span
-            className={cn(
-              "w-fit shrink-0 rounded-md border px-2 py-0.5 font-mono text-[10px] font-medium",
-              cfg.badgeBg,
-              cfg.badgeBorder,
-              cfg.badgeText,
-            )}
+            className="w-fit shrink-0 rounded-md border border-amber-500/25 bg-amber-500/10 px-2 py-0.5 font-mono text-[10px] font-medium text-amber-300"
           >
             {entry.version}
           </span>
@@ -235,7 +256,10 @@ interface ChangelogListProps {
 }
 
 export default function ChangelogList({ entries, limit, compact, className }: ChangelogListProps) {
-  const sorted = useMemo(() => [...entries].sort((a, b) => compareVersion(b.version, a.version)), [entries]);
+  const sorted = useMemo(
+    () => [...entries].sort((a, b) => compareDateDesc(a, b) || compareVersion(b.version, a.version)),
+    [entries],
+  );
   const visible = limit ? sorted.slice(0, limit) : sorted;
 
   return (

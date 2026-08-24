@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.18 — 2026-08-24
+
+**Normalisation du changelog (SemVer, dates, version)**
+
+- Remplacement des tags `v322`–`v328` par des versions SemVer officielles et cohérentes.
+- Harmonisation des dates au format français : « 24 août 2026 ».
+- Tri strict par date décroissante dans le modal Notes de version.
+- Synchronisation de `VERSION_LABEL`, `package.json` et `public/version.json` en `v1.8.18`.
+- Règle d’incrémentation automatique à chaque nouvelle livraison.
+
 ## v1.8.17 — 2026-08-24
 
 **Refonte visuelle et polissage de l’encadrement UI**

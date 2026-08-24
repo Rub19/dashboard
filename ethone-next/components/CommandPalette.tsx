@@ -119,7 +119,7 @@ const CommandItemRow = memo(function CommandItemRow({
       tabIndex={-1}
       className={cn(
         "relative isolate flex w-full items-center rounded-md text-left text-sm transition-colors duration-100 ease-out outline-0 focus:outline-0 focus-visible:outline-0",
-        isActive ? "bg-white/[0.08] text-[var(--accent)]" : "text-[var(--muted)] hover:bg-white/[0.04]"
+        isActive ? "bg-white/[0.08] text-[var(--accent)]" : "text-[var(--text-muted)] hover:bg-white/[0.04]"
       )}
     >
       <div className="relative z-10 flex flex-1 items-center gap-3 px-2 py-2">
@@ -134,14 +134,14 @@ const CommandItemRow = memo(function CommandItemRow({
             <span
               className={cn(
                 "text-[10px]",
-                isActive ? "text-[var(--muted)]" : "text-[var(--muted)]/70"
+                isActive ? "text-[var(--text-muted)]" : "text-[var(--text-muted)]/70"
               )}
             >
               {cmd.category}
             </span>
           )}
           {shortcut && (
-            <kbd className="rounded border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5 text-[10px] text-[var(--muted)]">
+            <kbd className="rounded border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5 text-[10px] text-[var(--text-muted)]">
               {shortcut}
             </kbd>
           )}
@@ -158,7 +158,7 @@ const CommandItemRow = memo(function CommandItemRow({
           "relative z-10 shrink-0 rounded p-1 transition-colors outline-0 focus:outline-0 focus-visible:outline-0",
           isActive
             ? "text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/10"
-            : "text-[var(--muted)] hover:bg-[var(--surface)]"
+            : "text-[var(--text-muted)] hover:bg-[var(--surface)]"
         )}
         aria-label={isPinned ? unpinTitle : pinTitle}
         title={isPinned ? unpinTitle : pinTitle}
@@ -387,7 +387,7 @@ export default function CommandPalette() {
             style={{ scrollPaddingBlock: "8px" }}
           >
             {filtered.length === 0 ? (
-              <div className="p-8 text-center text-sm text-[var(--muted)]">
+              <div className="p-8 text-center text-sm text-[var(--text-muted)]">
                 {i18n("noResults")}
               </div>
             ) : (
@@ -395,7 +395,7 @@ export default function CommandPalette() {
                 <div key={section.title} className="mb-1 last:mb-0">
                   <div
                     aria-hidden
-                    className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]"
+                    className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]"
                   >
                     {section.title}
                   </div>
@@ -425,7 +425,7 @@ export default function CommandPalette() {
             )}
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/[0.06] px-4 py-2.5 text-[10px] text-[var(--muted)]">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/[0.06] px-4 py-2.5 text-[10px] text-[var(--text-muted)]">
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-1">
                 <kbd className="rounded border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5">Esc</kbd>

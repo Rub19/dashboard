@@ -227,7 +227,7 @@ export default function DashboardOverview() {
           onClick={() => setCustomizing((v) => !v)}
           title={customizing ? i18n("done") : i18n("customize")}
           aria-label={customizing ? i18n("done") : i18n("customize")}
-          className="flex h-8 w-8 items-center justify-center rounded-lg v8-panel text-[var(--muted)] transition-colors hover:border-[var(--text-primary)]/20 hover:text-[var(--text-primary)] active:scale-95"
+          className="flex h-8 w-8 items-center justify-center rounded-lg v8-panel text-[var(--text-muted)] transition-colors hover:border-[var(--text-primary)]/20 hover:text-[var(--text-primary)] active:scale-95"
         >
           <LayoutGrid className="h-4 w-4" />
         </button>
@@ -257,7 +257,7 @@ export default function DashboardOverview() {
                 className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition-colors ${
                   visibleSet.has(s.id)
                     ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
-                    : "border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] text-[var(--muted)]"
+                    : "border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] text-[var(--text-muted)]"
                 }`}
               >
                 <Icon name={visibleSet.has(s.id) ? "eye" : "eye-off"} className="h-4 w-4" />

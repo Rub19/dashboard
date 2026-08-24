@@ -363,7 +363,7 @@ function PresetsPanel() {
 
   return (
     <div className="space-y-4" data-section-match>
-      <p className="text-xs text-[var(--muted)]">{i18n("presetsDescription")}</p>
+      <p className="text-xs text-[var(--text-muted)]">{i18n("presetsDescription")}</p>
 
       {message && (
         <div className="rounded-[var(--panel-radius)] border border-[var(--accent)] bg-[var(--accent-soft)] px-3 py-2 text-xs text-[var(--foreground)]">
@@ -439,7 +439,7 @@ function PresetsPanel() {
                     {preset.name}
                   </div>
                   {preset.description && (
-                    <div className="mt-1 text-xs text-[var(--muted)]">{preset.description}</div>
+                    <div className="mt-1 text-xs text-[var(--text-muted)]">{preset.description}</div>
                   )}
                 </button>
                 <button
@@ -508,7 +508,7 @@ function SoundPackPreview() {
               <Icon name={SOUND_PACK_ICONS[pack] || "music"} className="h-4 w-4" />
               {i18n(`soundPack${pack.charAt(0).toUpperCase() + pack.slice(1)}`)}
             </span>
-            <span className="flex items-center gap-1 text-[var(--muted)] group-hover:text-[var(--text-primary)]">
+            <span className="flex items-center gap-1 text-[var(--text-muted)] group-hover:text-[var(--text-primary)]">
               <Icon name="play" className="h-3 w-3" />
               {i18n("preview")}
             </span>

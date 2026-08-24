@@ -93,7 +93,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
             <h1 className="text-xl font-bold tracking-tight text-[var(--foreground)]">
               {i18n("settingsTitle") || "Paramètres"}
             </h1>
-            <p className="text-[11px] text-[var(--muted)]">
+            <p className="text-[11px] text-[var(--text-muted)]">
               {i18n("settingsGeneralDesc", "Personnalisez l'apparence et le comportement global d'ETHONE OS.")}
             </p>
           </div>

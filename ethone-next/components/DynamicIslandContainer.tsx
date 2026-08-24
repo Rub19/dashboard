@@ -86,9 +86,9 @@ function SpotifyCompact({
             {trackTitle}
           </span>
         </p>
-        <p className="mt-0.5 truncate text-[10px] text-[var(--muted)]">{artist || fallback}</p>
+        <p className="mt-0.5 truncate text-[10px] text-[var(--text-muted)]">{artist || fallback}</p>
       </div>
-      <span className="flex shrink-0 items-center gap-1 rounded-md border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.04] px-1.5 py-1 font-mono text-[10px] tabular-nums text-[var(--muted)]">
+      <span className="flex shrink-0 items-center gap-1 rounded-md border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.04] px-1.5 py-1 font-mono text-[10px] tabular-nums text-[var(--text-muted)]">
         <Icon name="clock" pack="phosphor" className="h-3 w-3" />
         {clock}
       </span>
@@ -448,7 +448,7 @@ export default function DynamicIslandContainer() {
                   <span className="rounded-lg border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 px-2 py-1 text-[10px] font-medium text-[--accent-primary]">
                     {nowPlaying?.source || "Spotify"}
                   </span>
-                  <span className="flex items-center gap-1 rounded-lg border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.04] px-2 py-1 font-mono text-[10px] tabular-nums text-[var(--muted)]">
+                  <span className="flex items-center gap-1 rounded-lg border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.04] px-2 py-1 font-mono text-[10px] tabular-nums text-[var(--text-muted)]">
                     <Icon name="clock" pack="phosphor" className="h-3 w-3" />
                     {clock}
                   </span>
@@ -469,7 +469,7 @@ export default function DynamicIslandContainer() {
                     <p className="break-words text-sm font-semibold leading-snug text-[var(--text-primary)]">
                       {nowPlaying?.title || "Spotify"}
                     </p>
-                    <p className="truncate text-xs text-[var(--muted)]">
+                    <p className="truncate text-xs text-[var(--text-muted)]">
                       {nowPlaying?.artist || i18n("spotifyPlaying")}
                     </p>
                     <p className="truncate text-[10px] text-[var(--accent-primary)]/80">
@@ -484,7 +484,7 @@ export default function DynamicIslandContainer() {
                       "flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200",
                       isSaved
                         ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/25"
-                        : "text-[var(--muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--accent-contrast)]",
+                        : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--accent-contrast)]",
                     )}
                     aria-label={isSaved ? i18n("unlike") : i18n("like")}
                     title={isSaved ? i18n("unlike") : i18n("like")}
@@ -519,7 +519,7 @@ export default function DynamicIslandContainer() {
                     type="button"
                     onClick={() => spotifyControl("previous")}
                     disabled={pendingSpotify || npLoading}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
                     aria-label={i18n("previous")}
                   >
                     <Icon name="skipBack" pack="phosphor" className="h-5 w-5" />
@@ -537,7 +537,7 @@ export default function DynamicIslandContainer() {
                     type="button"
                     onClick={() => spotifyControl("next")}
                     disabled={pendingSpotify || npLoading}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
                     aria-label={i18n("next")}
                   >
                     <Icon name="skipForward" pack="phosphor" className="h-5 w-5" />

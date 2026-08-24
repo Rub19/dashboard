@@ -96,7 +96,7 @@ export default function UserProfileCard({
                 className="h-full w-full object-cover"
               />
             ) : (
-              <User className="h-6 w-6 text-[var(--muted)]" />
+              <User className="h-6 w-6 text-[var(--text-muted)]" />
             )}
           </div>
           <span
@@ -118,10 +118,10 @@ export default function UserProfileCard({
             </div>
           </div>
           {email && (
-            <p className="truncate text-xs text-[var(--muted)]">{email}</p>
+            <p className="truncate text-xs text-[var(--text-muted)]">{email}</p>
           )}
           <div className="mt-0.5 flex items-center gap-2">
-            <span className="min-w-0 truncate font-mono text-[11px] text-[var(--muted)]">
+            <span className="min-w-0 truncate font-mono text-[11px] text-[var(--text-muted)]">
               {masked ? maskId(rawPublicId) : rawPublicId}
             </span>
             <button

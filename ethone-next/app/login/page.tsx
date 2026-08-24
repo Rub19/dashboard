@@ -428,18 +428,18 @@ export default function LoginPage() {
           <BrandMark size={34} />
           <div className="flex items-baseline gap-2">
             <span className="text-lg font-bold tracking-tight text-[var(--foreground)]">ETHONE</span>
-            <span className="rounded border border-[var(--border)] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--muted)]">OS</span>
+            <span className="rounded border border-[var(--border)] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">OS</span>
           </div>
         </div>
         <div className="z-10 max-w-md">
           <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[var(--accent)]">{i18n("environmentPersonal", "Environnement personnel")}</p>
           <h1 className="mt-5 text-5xl font-bold tracking-tighter text-[var(--foreground)] lg:text-6xl">ETHONE</h1>
-          <p className="mt-4 text-xl font-light leading-relaxed text-[var(--muted)]">
+          <p className="mt-4 text-xl font-light leading-relaxed text-[var(--text-muted)]">
             {i18n("yourDigitalEnvironment", "Votre environnement numérique")}{" "}
             <span className="font-medium text-[var(--foreground)]">{i18n("reinventedAroundYou", "Réinventé autour de vous.")}</span>
           </p>
         </div>
-        <div className="z-10 text-xs text-[var(--muted)]">
+        <div className="z-10 text-xs text-[var(--text-muted)]">
           <span className="inline-flex items-center gap-2.5 rounded-full border border-[var(--border)] bg-[var(--surface)]/60 px-4 py-2 shadow-lg backdrop-blur-md">
             <span className={cn("h-2 w-2 rounded-full", online ? "bg-emerald-500" : "bg-amber-500")} />
             {online ? i18n("systemOperational", "ETHONE opérationnel") : i18n("offline", "Hors ligne")}
@@ -465,7 +465,7 @@ export default function LoginPage() {
                 <BrandMark size={38} />
               </div>
               <h2 className="mt-4 text-2xl font-bold tracking-tight text-[var(--foreground)]">{i18n("welcomeBack", "Bienvenue")}</h2>
-              <p className="mt-1.5 max-w-[16rem] text-sm leading-relaxed text-[var(--muted)]">{i18n("loginDescription", "Connectez-vous à votre environnement.")}</p>
+              <p className="mt-1.5 max-w-[16rem] text-sm leading-relaxed text-[var(--text-muted)]">{i18n("loginDescription", "Connectez-vous à votre environnement.")}</p>
             </div>
 
             <div className="mt-6">
@@ -481,7 +481,7 @@ export default function LoginPage() {
                       disabled={isLoading}
                       className={cn(
                         "relative z-10 select-none rounded-xl px-1 py-2.5 text-[10px] font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-raised)] sm:px-2 sm:text-xs",
-                        active ? "text-white" : "text-[var(--muted)] hover:text-[var(--foreground)]"
+                        active ? "text-white" : "text-[var(--text-muted)] hover:text-[var(--foreground)]"
                       )}
                     >
                       {label}
@@ -511,7 +511,7 @@ export default function LoginPage() {
 
             <form onSubmit={handleSubmit} className="mt-5 space-y-4" noValidate>
               <div className="space-y-1.5">
-                <label className="block text-xs font-medium text-[var(--muted)]" htmlFor="auth-email">{i18n("email", "E-mail")}</label>
+                <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-email">{i18n("email", "E-mail")}</label>
                 <Input
                   id="auth-email"
                   type="email"
@@ -537,11 +537,11 @@ export default function LoginPage() {
                 >
                   <div className="text-center">
                     <p className="text-xs font-medium text-[var(--foreground)]">{i18n("codeSent", "Code envoyé")}</p>
-                    <p className="text-[11px] text-[var(--muted)]">{i18n("codeSentTo", "Nous avons envoyé un code à")} <span className="text-[var(--foreground)]">{maskedEmail}</span></p>
+                    <p className="text-[11px] text-[var(--text-muted)]">{i18n("codeSentTo", "Nous avons envoyé un code à")} <span className="text-[var(--foreground)]">{maskedEmail}</span></p>
                   </div>
                   <OtpInput value={code} onChange={setCode} disabled={isLoading || isSuccess} error={!!error} />
                   <div className="flex items-center justify-between">
-                    <button type="button" onClick={handleBackToEmail} disabled={isLoading} className="flex items-center gap-1 text-xs text-[var(--muted)] transition-colors hover:text-[var(--foreground)] disabled:opacity-50">
+                    <button type="button" onClick={handleBackToEmail} disabled={isLoading} className="flex items-center gap-1 text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] disabled:opacity-50">
                       <Icon name="chevron-left" className="h-3.5 w-3.5" /> {i18n("changeEmail", "Modifier l'adresse")}
                     </button>
                     <button type="button" onClick={handleResend} disabled={isLoading || resendIn > 0} className="text-xs text-[var(--accent-primary)] transition-opacity hover:opacity-80 disabled:opacity-40">
@@ -555,7 +555,7 @@ export default function LoginPage() {
                 <motion.div key="password" initial={{ opacity: reduced ? 1 : 0 }} animate={{ opacity: 1 }} className="space-y-4">
                   {mode === "password" && (
                     <div className="space-y-1.5">
-                      <label className="block text-xs font-medium text-[var(--muted)]" htmlFor="auth-password">{i18n("password", "Mot de passe")}</label>
+                      <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-password">{i18n("password", "Mot de passe")}</label>
                       <Input
                         id="auth-password"
                         type={showPassword ? "text" : "password"}
@@ -567,7 +567,7 @@ export default function LoginPage() {
                         disabled={isLoading || isSuccess}
                         error={!!error && !password}
                         right={(
-                          <button type="button" tabIndex={-1} onClick={() => setShowPassword((v) => !v)} className="text-[var(--muted)] transition-colors hover:text-[var(--foreground)]">
+                          <button type="button" tabIndex={-1} onClick={() => setShowPassword((v) => !v)} className="text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)]">
                             <Icon name={showPassword ? "eye-off" : "eye"} className="h-4 w-4" />
                           </button>
                         )}
@@ -577,7 +577,7 @@ export default function LoginPage() {
                   <div className="flex items-center justify-between">
                     <Switch checked={rememberMe} onChange={setRememberMe} label={i18n("rememberMe", "Rester connecté")} id="remember-me" />
                     {mode === "password" && (
-                      <button type="button" onClick={() => router.push("/password-recovery")} className="text-xs text-[var(--muted)] transition-colors hover:text-[var(--foreground)]">
+                      <button type="button" onClick={() => router.push("/password-recovery")} className="text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)]">
                         {i18n("forgotPassword", "Mot de passe oublié ?")}
                       </button>
                     )}
@@ -588,11 +588,11 @@ export default function LoginPage() {
               {mode === "register" && (
                 <motion.div key="register" initial={{ opacity: reduced ? 1 : 0 }} animate={{ opacity: 1 }} className="space-y-4">
                   <div className="space-y-1.5">
-                    <label className="block text-xs font-medium text-[var(--muted)]" htmlFor="auth-username">{i18n("username", "Nom d'utilisateur")}</label>
+                    <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-username">{i18n("username", "Nom d'utilisateur")}</label>
                     <Input id="auth-username" type="text" autoComplete="username" icon="user" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="rub19" disabled={isLoading || isSuccess} />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="block text-xs font-medium text-[var(--muted)]" htmlFor="auth-password-register">{i18n("password", "Mot de passe")}</label>
+                    <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-password-register">{i18n("password", "Mot de passe")}</label>
                     <Input
                       id="auth-password-register"
                       type={showPassword ? "text" : "password"}
@@ -603,14 +603,14 @@ export default function LoginPage() {
                       placeholder="••••••••"
                       disabled={isLoading || isSuccess}
                       right={(
-                        <button type="button" tabIndex={-1} onClick={() => setShowPassword((v) => !v)} className="text-[var(--muted)] transition-colors hover:text-[var(--foreground)]">
+                        <button type="button" tabIndex={-1} onClick={() => setShowPassword((v) => !v)} className="text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)]">
                           <Icon name={showPassword ? "eye-off" : "eye"} className="h-4 w-4" />
                         </button>
                       )}
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="block text-xs font-medium text-[var(--muted)]" htmlFor="auth-confirm">{i18n("confirmPassword", "Confirmer le mot de passe")}</label>
+                    <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-confirm">{i18n("confirmPassword", "Confirmer le mot de passe")}</label>
                     <Input id="auth-confirm" type="password" autoComplete="new-password" icon="lock" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" disabled={isLoading || isSuccess} />
                   </div>
                 </motion.div>
@@ -635,7 +635,7 @@ export default function LoginPage() {
               {mode !== "register" && (
                 <div className="relative flex items-center py-2">
                   <div className="flex-1 border-t border-[var(--border)]" />
-                  <span className="px-3 text-[10px] text-[var(--muted)]">{i18n("or", "ou")}</span>
+                  <span className="px-3 text-[10px] text-[var(--text-muted)]">{i18n("or", "ou")}</span>
                   <div className="flex-1 border-t border-[var(--border)]" />
                 </div>
               )}
@@ -654,13 +654,13 @@ export default function LoginPage() {
                     </Button>
                   )}
                   {!passkeyReady && (
-                    <p className="col-span-2 text-center text-xs text-[var(--muted)]">{i18n("passkeyUnsupported", "Les passkeys ne sont pas disponibles sur ce navigateur.")}</p>
+                    <p className="col-span-2 text-center text-xs text-[var(--text-muted)]">{i18n("passkeyUnsupported", "Les passkeys ne sont pas disponibles sur ce navigateur.")}</p>
                   )}
                 </div>
               )}
             </form>
 
-            <div className="mt-6 text-center text-xs text-[var(--muted)]">
+            <div className="mt-6 text-center text-xs text-[var(--text-muted)]">
               {mode === "register" ? (
                 <button type="button" onClick={() => setModeAndReset("password")} className="text-[var(--accent-primary)] transition-opacity hover:opacity-80">
                   {i18n("alreadyHaveAccount", "Déjà un compte ? Se connecter")}

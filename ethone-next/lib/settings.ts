@@ -234,10 +234,10 @@ export const USER_STATUS_CONFIG: Record<
   invisible: {
     labelKey: "statusInvisible",
     icon: "eye-off",
-    dot: "bg-[var(--muted)]",
-    text: "text-[var(--muted)]",
-    bg: "bg-[var(--muted)]/10",
-    ring: "ring-[var(--muted)]/40",
+    dot: "bg-[var(--text-muted)]",
+    text: "text-[var(--text-muted)]",
+    bg: "bg-[var(--text-muted)]/10",
+    ring: "ring-[var(--text-muted)]/40",
     presence: "offline",
   },
 };

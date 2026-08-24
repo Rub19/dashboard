@@ -249,7 +249,7 @@ export default function UserProfileDropdown() {
                   <button
                     type="button"
                     onClick={copyEmail}
-                    className="mt-0.5 flex items-center gap-1 text-left text-[11px] text-[var(--muted)] transition-colors hover:text-[var(--text-primary)]"
+                    className="mt-0.5 flex items-center gap-1 text-left text-[11px] text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
                     title="Cliquer pour copier l'email"
                   >
                     <span className="truncate font-mono">{email}</span>
@@ -277,7 +277,7 @@ export default function UserProfileDropdown() {
                   className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 transition-all ${
                     currentStatus === st
                       ? "bg-[var(--text-primary)]/[0.08] font-bold text-[var(--text-primary)] shadow-sm"
-                      : "text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.03] hover:text-[var(--text-primary)]"
+                      : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.03] hover:text-[var(--text-primary)]"
                   }`}
                 >
                   <PresenceGlyph status={st} className={`h-3.5 w-3.5 ${USER_STATUS_CONFIG[st].text}`} />

@@ -33,7 +33,7 @@ function SettingsTextInput({
     <FormField className="min-w-0" label={label}>
       <div className="relative">
         {icon && (
-          <span className="pointer-events-none absolute left-2.5 top-1/2 z-10 -translate-y-1/2 text-[var(--muted)]">
+          <span className="pointer-events-none absolute left-2.5 top-1/2 z-10 -translate-y-1/2 text-[var(--text-muted)]">
             {icon}
           </span>
         )}
@@ -64,11 +64,11 @@ export default function LiveSettings() {
 
   return (
     <div className="space-y-4" data-section-match>
-      <p className="text-xs text-[var(--muted)]">{i18n("configureToEnable")}</p>
+      <p className="text-xs text-[var(--text-muted)]">{i18n("configureToEnable")}</p>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="space-y-1">
-          <label htmlFor={selectId} className="text-[10px] font-medium uppercase tracking-wider text-[var(--muted)]">
+          <label htmlFor={selectId} className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
             {i18n("liveNowPlayingSource")}
           </label>
           <Select

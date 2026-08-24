@@ -180,7 +180,7 @@ export default function FloatingLiquidDock() {
                   type="button"
                   onClick={() => setDrawerOpen(false)}
                   aria-label={i18n("close")}
-                  className="flex h-10 w-10 items-center justify-center rounded-[var(--panel-radius)] text-[var(--muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)]"
+                  className="flex h-10 w-10 items-center justify-center rounded-[var(--panel-radius)] text-[var(--text-muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)]"
                 >
                   <Icon name="close" className="h-5 w-5" />
                 </button>

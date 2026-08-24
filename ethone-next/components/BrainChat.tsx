@@ -393,7 +393,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
         <MessageBubbleContent>
           <div className="whitespace-pre-wrap">{renderMarkdown(displayedContent(m, i))}</div>
           {hasCursor && (
-            <span className="ml-1 inline-block h-4 w-1.5 translate-y-0.5 animate-pulse rounded-sm bg-[var(--foreground)]" />
+            <span className="ml-1 inline-block h-4 w-1.5 translate-y-0.5 animate-pulse rounded-sm bg-[var(--text-primary)]" />
           )}
         </MessageBubbleContent>
         {renderProviderBadge(m, i)}
@@ -416,7 +416,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
             <Icon name="brain" className="h-4 w-4" />
           </span>
           <div>
-            <p className="text-sm font-semibold text-[var(--foreground)]">{i18n("brainTitle")}</p>
+            <p className="text-sm font-semibold text-[var(--text-primary)]">{i18n("brainTitle")}</p>
             <p className="text-[10px] text-[var(--text-muted)]">
               {brain.loading ? i18n("thinking") : i18n("ready")}
             </p>

@@ -116,7 +116,7 @@ function ForecastRow({ day, lang }: { day: WeatherData; lang: string }) {
 
   return (
     <div className="flex items-center justify-between rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm">
-      <span className="text-[var(--muted)]">{dayLabel(date, lang)}</span>
+      <span className="text-[var(--text-muted)]">{dayLabel(date, lang)}</span>
       <div className="flex items-center gap-2">
         <Icon name={weatherIconFromCode(code, condition)} className="h-4 w-4" />
         <span className="font-medium tabular-nums">
@@ -192,17 +192,17 @@ function WeatherDetailContent({
             <div className="flex items-start gap-3">
               <WeatherIcon weather={weather} className="h-10 w-10 shrink-0" />
               <div className="min-w-0 flex-1">
-                <p className="font-semibold text-[var(--foreground)]" translate="no">
+                <p className="font-semibold text-[var(--text-primary)]" translate="no">
                   {displayLocation}
                 </p>
                 {condition && (
-                  <p className="text-sm text-[var(--muted)] capitalize" translate="no">
+                  <p className="text-sm text-[var(--text-muted)] capitalize" translate="no">
                     {condition}
                   </p>
                 )}
               </div>
               <div className="shrink-0 text-right">
-                <p className="text-3xl font-bold tabular-nums text-[var(--foreground)]">
+                <p className="text-3xl font-bold tabular-nums text-[var(--text-primary)]">
                   {temp !== undefined ? `${temp}°C` : "—"}
                 </p>
               </div>
@@ -214,14 +214,14 @@ function WeatherDetailContent({
                   <div className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm">
                     <Icon name="droplets" className="h-4 w-4 text-sky-400" />
                     <span className="font-medium">{humidity}%</span>
-                    <span className="text-[var(--muted)]">{i18n("humidity")}</span>
+                    <span className="text-[var(--text-muted)]">{i18n("humidity")}</span>
                   </div>
                 )}
                 {wind !== undefined && (
                   <div className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm">
                     <Icon name="wind" className="h-4 w-4 text-[--accent-primary]" />
                     <span className="font-medium">{wind} km/h</span>
-                    <span className="text-[var(--muted)]">{i18n("wind")}</span>
+                    <span className="text-[var(--text-muted)]">{i18n("wind")}</span>
                   </div>
                 )}
               </div>
@@ -229,7 +229,7 @@ function WeatherDetailContent({
 
             {forecast.length > 0 && (
               <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                   {i18n("forecast")}
                 </p>
                 <div className="space-y-1.5">

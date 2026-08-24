@@ -406,7 +406,7 @@ export default function ConnectionCard({
                     <button
                       type="button"
                       onClick={() => handleCopy(clientSecret, "clientSecret")}
-                      className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
+                      className="text-[var(--text-muted)] transition hover:text-[var(--text-primary)]"
                       aria-label={i18n("copy")}
                       tabIndex={-1}
                     >
@@ -415,7 +415,7 @@ export default function ConnectionCard({
                     <button
                       type="button"
                       onClick={() => setShowClientSecret((v) => !v)}
-                      className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
+                      className="text-[var(--text-muted)] transition hover:text-[var(--text-primary)]"
                       aria-label={showClientSecret ? i18n("hide") : i18n("show")}
                       tabIndex={-1}
                     >
@@ -436,7 +436,7 @@ export default function ConnectionCard({
                   <button
                     type="button"
                     onClick={() => handleCopy(`${origin}${config.callbackPath}`, "redirectUri")}
-                    className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
+                    className="text-[var(--text-muted)] transition hover:text-[var(--text-primary)]"
                     aria-label={i18n("copy")}
                   >
                     {copied === "redirectUri" ? <Check className="h-3.5 w-3.5 text-[--accent-primary]" /> : <Copy className="h-3.5 w-3.5" />}
@@ -620,7 +620,7 @@ export default function ConnectionCard({
         <button
           type="button"
           onClick={() => setRawOpen((v) => !v)}
-          className="flex w-full items-center justify-between text-[10px] text-[var(--muted)] hover:text-[var(--text-primary)] transition-colors"
+          className="flex w-full items-center justify-between text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
         >
           <span className="flex items-center gap-1.5">
             {rawOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
@@ -730,7 +730,7 @@ function FieldInput({
               <button
                 type="button"
                 onClick={() => onCopy(value, field.key)}
-                className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
+                className="text-[var(--text-muted)] transition hover:text-[var(--text-primary)]"
                 aria-label={i18n("copy")}
                 tabIndex={-1}
               >
@@ -740,7 +740,7 @@ function FieldInput({
                 <button
                   type="button"
                   onClick={onTogglePassword}
-                  className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
+                  className="text-[var(--text-muted)] transition hover:text-[var(--text-primary)]"
                   aria-label={visible ? i18n("hide") : i18n("show")}
                   tabIndex={-1}
                 >
@@ -880,7 +880,7 @@ function ConfigGuidePanel({
                           <button
                             type="button"
                             onClick={() => onCopy(copyValue, copyKey)}
-                            className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
+                            className="text-[var(--text-muted)] transition hover:text-[var(--text-primary)]"
                             aria-label="Copier"
                           >
                             {copied === copyKey ? <Check className="h-3.5 w-3.5 text-[--accent-primary]" /> : <Copy className="h-3.5 w-3.5" />}

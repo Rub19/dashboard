@@ -243,9 +243,9 @@ export default function BootProvider({ children }: { children: ReactNode }) {
             animate={{ opacity: 1, y: 0 }}
           >
             <BrandMark size={72} />
-            <span className="text-2xl font-semibold tracking-tight text-[var(--foreground)]">ETHONE</span>
+            <span className="text-2xl font-semibold tracking-tight text-[var(--text-primary)]">ETHONE</span>
           </motion.div>
-          <p className="max-w-sm text-center text-sm text-[var(--muted)]">
+          <p className="max-w-sm text-center text-sm text-[var(--text-muted)]">
             {error || "ETHONE n'a pas pu démarrer correctement."}
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
@@ -259,7 +259,7 @@ export default function BootProvider({ children }: { children: ReactNode }) {
             <button
               type="button"
               onClick={continueOffline}
-              className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-5 py-2.5 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
+              className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-5 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
             >
               Continuer hors ligne
             </button>
@@ -279,9 +279,9 @@ export default function BootProvider({ children }: { children: ReactNode }) {
             animate={{ opacity: 1, y: 0 }}
           >
             <BrandMark size={72} />
-            <span className="text-2xl font-semibold tracking-tight text-[var(--foreground)]">ETHONE</span>
+            <span className="text-2xl font-semibold tracking-tight text-[var(--text-primary)]">ETHONE</span>
           </motion.div>
-          <p className="max-w-sm text-center text-sm text-[var(--muted)]">
+          <p className="max-w-sm text-center text-sm text-[var(--text-muted)]">
             Vous êtes hors ligne. ETHONE nécessite une connexion pour démarrer.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
@@ -295,7 +295,7 @@ export default function BootProvider({ children }: { children: ReactNode }) {
             <button
               type="button"
               onClick={continueOffline}
-              className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-5 py-2.5 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
+              className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-5 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
             >
               Continuer hors ligne
             </button>

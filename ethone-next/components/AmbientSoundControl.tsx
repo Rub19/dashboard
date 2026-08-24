@@ -83,7 +83,7 @@ export default function AmbientSoundControl({ value, onChange, compact }: Ambien
               compact ? "min-w-[4.5rem] flex-1" : "",
               active
                 ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] shadow-[0_0_12px_-4px_var(--accent-primary)]"
-                : "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--muted)] hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)]"
+                : "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)]"
             )}
             title={label}
             aria-pressed={active}

@@ -20,8 +20,8 @@ import { RiotGamingCardContent } from "@/components/RiotGamingCard";
 
 const STATUS = {
   connected: "text-[--accent-primary]",
-  loading: "text-[var(--muted)]",
-  empty: "text-[var(--muted)]",
+  loading: "text-[var(--text-muted)]",
+  empty: "text-[var(--text-muted)]",
   error: "text-red-400",
 };
 
@@ -159,7 +159,7 @@ function ImageFallback({
       height={size}
       className={cn("inline-flex shrink-0 items-center justify-center overflow-hidden object-cover", className)}
       fallback={
-        <span className={cn("inline-flex shrink-0 items-center justify-center overflow-hidden bg-[var(--panel-bg)] text-[10px] font-medium text-[var(--foreground)]", className)}>
+        <span className={cn("inline-flex shrink-0 items-center justify-center overflow-hidden bg-[var(--panel-bg)] text-[10px] font-medium text-[var(--text-primary)]", className)}>
           {initial}
         </span>
       }
@@ -409,7 +409,7 @@ export default function LiveWidgets({
 
         <div className="flex-1 space-y-3 overflow-y-auto pr-1">
           <div>
-            <p className="mb-1 text-xs font-medium text-[var(--muted)]">{i18n("topArtists")}</p>
+            <p className="mb-1 text-xs font-medium text-[var(--text-muted)]">{i18n("topArtists")}</p>
             {lastfmTopArtists && lastfmTopArtists.length > 0 ? (
               <ul className="space-y-1.5">
                 {lastfmTopArtists.slice(0, 5).map((a, i) => (
@@ -422,17 +422,17 @@ export default function LiveWidgets({
                       iconClassName="h-3 w-3"
                     />
                     <span className="min-w-0 flex-1 truncate">{String(a.name ?? "—")}</span>
-                    <span className="text-[10px] text-[var(--muted)]">{Number(a.playCount ?? 0)}</span>
+                    <span className="text-[10px] text-[var(--text-muted)]">{Number(a.playCount ?? 0)}</span>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-xs text-[var(--muted)]">{i18n("noResults")}</p>
+              <p className="text-xs text-[var(--text-muted)]">{i18n("noResults")}</p>
             )}
           </div>
 
           <div>
-            <p className="mb-1 text-xs font-medium text-[var(--muted)]">{i18n("topTracks")}</p>
+            <p className="mb-1 text-xs font-medium text-[var(--text-muted)]">{i18n("topTracks")}</p>
             {lastfmTopTracks && lastfmTopTracks.length > 0 ? (
               <ul className="space-y-1.5">
                 {lastfmTopTracks.slice(0, 5).map((t, i) => (
@@ -445,14 +445,14 @@ export default function LiveWidgets({
                       iconClassName="h-3 w-3"
                     />
                     <span className="min-w-0 flex-1 truncate">
-                      {String(t.name ?? "—")} <span className="text-[var(--muted)]">— {String(t.artist ?? "—")}</span>
+                      {String(t.name ?? "—")} <span className="text-[var(--text-muted)]">— {String(t.artist ?? "—")}</span>
                     </span>
-                    <span className="text-[10px] text-[var(--muted)]">{Number(t.playCount ?? 0)}</span>
+                    <span className="text-[10px] text-[var(--text-muted)]">{Number(t.playCount ?? 0)}</span>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-xs text-[var(--muted)]">{i18n("noResults")}</p>
+              <p className="text-xs text-[var(--text-muted)]">{i18n("noResults")}</p>
             )}
           </div>
         </div>
@@ -468,7 +468,7 @@ export default function LiveWidgets({
         {personaName && <p className="truncate text-sm">{personaName}</p>}
         <div className="flex-1 space-y-3 overflow-y-auto pr-1">
           <div>
-            <p className="mb-1 text-xs font-medium text-[var(--muted)]">
+            <p className="mb-1 text-xs font-medium text-[var(--text-muted)]">
               {i18n("recentGames")} · {steamRecentGames?.length ?? 0}
             </p>
             {steamRecentGames && steamRecentGames.length > 0 ? (
@@ -481,17 +481,17 @@ export default function LiveWidgets({
                       <span className="flex h-6 w-6 items-center justify-center rounded bg-[var(--panel-bg)] text-[10px]">#</span>
                     )}
                     <span className="min-w-0 flex-1 truncate">{String(g.name ?? "—")}</span>
-                    <span className="text-[10px] text-[var(--muted)]">{formatMinutes(Number(g.recentPlaytimeMinutes ?? g.playtimeMinutes ?? 0))}</span>
+                    <span className="text-[10px] text-[var(--text-muted)]">{formatMinutes(Number(g.recentPlaytimeMinutes ?? g.playtimeMinutes ?? 0))}</span>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-xs text-[var(--muted)]">{i18n("noResults")}</p>
+              <p className="text-xs text-[var(--text-muted)]">{i18n("noResults")}</p>
             )}
           </div>
 
           <div>
-            <p className="mb-1 text-xs font-medium text-[var(--muted)]">
+            <p className="mb-1 text-xs font-medium text-[var(--text-muted)]">
               {i18n("ownedGames")} · {steamOwnedGames?.length ?? 0}
             </p>
             {steamOwnedGames && steamOwnedGames.length > 0 ? (
@@ -504,17 +504,17 @@ export default function LiveWidgets({
                       <span className="flex h-6 w-6 items-center justify-center rounded bg-[var(--panel-bg)] text-[10px]">#</span>
                     )}
                     <span className="min-w-0 flex-1 truncate">{String(g.name ?? "—")}</span>
-                    <span className="text-[10px] text-[var(--muted)]">{formatMinutes(Number(g.playtimeMinutes ?? 0))}</span>
+                    <span className="text-[10px] text-[var(--text-muted)]">{formatMinutes(Number(g.playtimeMinutes ?? 0))}</span>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-xs text-[var(--muted)]">{i18n("noResults")}</p>
+              <p className="text-xs text-[var(--text-muted)]">{i18n("noResults")}</p>
             )}
           </div>
 
           <div>
-            <p className="mb-1 text-xs font-medium text-[var(--muted)]">
+            <p className="mb-1 text-xs font-medium text-[var(--text-muted)]">
               {i18n("achievements")} · {steamAchievements?.length ?? 0}
             </p>
             {steamAchievements && steamAchievements.length > 0 ? (
@@ -527,12 +527,12 @@ export default function LiveWidgets({
                       <span className="flex h-6 w-6 items-center justify-center rounded bg-[var(--panel-bg)] text-[10px]">#</span>
                     )}
                     <span className="min-w-0 flex-1 truncate">{String(a.name ?? "—")}</span>
-                    <span className="text-[10px] text-[var(--muted)]">{a.achieved ? "✓" : "·"}</span>
+                    <span className="text-[10px] text-[var(--text-muted)]">{a.achieved ? "✓" : "·"}</span>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-xs text-[var(--muted)]">{i18n("noResults")}</p>
+              <p className="text-xs text-[var(--text-muted)]">{i18n("noResults")}</p>
             )}
           </div>
         </div>
@@ -546,8 +546,8 @@ export default function LiveWidgets({
       return (
         <div className="flex h-full flex-col justify-between">
           <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
-          <p className="text-sm text-[var(--foreground)]">{i18n("noLive")}</p>
-          <p className="text-[10px] text-[var(--muted)]">{i18n("flipCard")}</p>
+          <p className="text-sm text-[var(--text-primary)]">{i18n("noLive")}</p>
+          <p className="text-[10px] text-[var(--text-muted)]">{i18n("flipCard")}</p>
         </div>
       );
     }
@@ -556,7 +556,7 @@ export default function LiveWidgets({
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
-            <p className="truncate text-base font-bold text-[var(--foreground)]" title={track.title || ""}>
+            <p className="truncate text-base font-bold text-[var(--text-primary)]" title={track.title || ""}>
               {track.title || "—"}
             </p>
           </div>
@@ -573,15 +573,15 @@ export default function LiveWidgets({
         <div className="flex-1 space-y-2 overflow-hidden">
           {track.artist && (
             <p className="flex items-center gap-2 truncate text-sm">
-              <Icon name="user" className="h-3.5 w-3.5 text-[var(--muted)]" />
-              <span className="shrink-0 text-[var(--muted)]">{i18n("artist")}</span>
+              <Icon name="user" className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+              <span className="shrink-0 text-[var(--text-muted)]">{i18n("artist")}</span>
               <span className="min-w-0 truncate" title={track.artist}>{track.artist}</span>
             </p>
           )}
           {track.album && (
             <p className="flex items-center gap-2 truncate text-sm">
-              <Icon name="disc" className="h-3.5 w-3.5 text-[var(--muted)]" />
-              <span className="shrink-0 text-[var(--muted)]">{i18n("album")}</span>
+              <Icon name="disc" className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+              <span className="shrink-0 text-[var(--text-muted)]">{i18n("album")}</span>
               <span className="min-w-0 truncate" title={track.album}>{track.album}</span>
             </p>
           )}
@@ -598,7 +598,7 @@ export default function LiveWidgets({
                 className="w-full"
                 aria-label={i18n("seek")}
               />
-              <div className="flex justify-between text-[10px] text-[var(--muted)]">
+              <div className="flex justify-between text-[10px] text-[var(--text-muted)]">
                 <span>{formatTime(track.progressMs)}</span>
                 <span>{formatTime(track.durationMs)}</span>
               </div>
@@ -610,7 +610,7 @@ export default function LiveWidgets({
           <button
             type="button"
             onClick={() => controlSpotify("previous")}
-            className="rounded-lg p-1.5 text-[var(--foreground)] hover:bg-[var(--text-primary)]/10"
+            className="rounded-lg p-1.5 text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10"
             aria-label={i18n("previous")}
           >
             <Icon name="skipBack" className="h-4 w-4" />
@@ -626,7 +626,7 @@ export default function LiveWidgets({
           <button
             type="button"
             onClick={() => controlSpotify("next")}
-            className="rounded-lg p-1.5 text-[var(--foreground)] hover:bg-[var(--text-primary)]/10"
+            className="rounded-lg p-1.5 text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10"
             aria-label={i18n("next")}
           >
             <Icon name="skipForward" className="h-4 w-4" />
@@ -653,8 +653,8 @@ export default function LiveWidgets({
       return (
         <div className="flex h-full flex-col justify-between">
           <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
-          <p className="text-sm text-[var(--foreground)]">{i18n("notConnected")}</p>
-          <p className="text-[10px] text-[var(--muted)]">{i18n("flipCard")}</p>
+          <p className="text-sm text-[var(--text-primary)]">{i18n("notConnected")}</p>
+          <p className="text-[10px] text-[var(--text-muted)]">{i18n("flipCard")}</p>
         </div>
       );
     }
@@ -680,7 +680,7 @@ export default function LiveWidgets({
           <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
           <div className="flex items-center gap-1.5 rounded-xl bg-[var(--panel-bg)] px-2 py-1">
             <span className={`h-2.5 w-2.5 rounded-full ${statusColor[status] || statusColor.offline}`} />
-            <span className="text-xs font-medium capitalize text-[var(--foreground)]">
+            <span className="text-xs font-medium capitalize text-[var(--text-primary)]">
               {i18n(statusLabels[status] || "statusOffline")}
             </span>
           </div>
@@ -695,35 +695,35 @@ export default function LiveWidgets({
             className="h-12 w-12 rounded-full border border-[var(--panel-border)] object-cover"
           />
           <div className="min-w-0">
-            <p className="truncate font-medium text-[var(--foreground)]">{lanyard.displayName || record.title}</p>
-            <p className="truncate text-[10px] text-[var(--muted)]">{lanyard.userId ? `ID: ${lanyard.userId.slice(0, 8)}…` : "—"}</p>
+            <p className="truncate font-medium text-[var(--text-primary)]">{lanyard.displayName || record.title}</p>
+            <p className="truncate text-[10px] text-[var(--text-muted)]">{lanyard.userId ? `ID: ${lanyard.userId.slice(0, 8)}…` : "—"}</p>
           </div>
         </div>
 
         <div className="flex-1 overflow-y-auto pr-1">
-          <p className="mb-1 text-xs font-medium text-[var(--muted)]">
+          <p className="mb-1 text-xs font-medium text-[var(--text-muted)]">
             {i18n("activities")} · {activities.length}
           </p>
           {activities.length > 0 ? (
             <ul className="space-y-1.5">
               {activities.slice(0, 6).map((a, i) => (
                 <li key={i} className="rounded-[var(--panel-radius)] bg-[var(--panel-bg)]/50 p-1.5 text-sm">
-                  <p className="truncate font-medium text-[var(--foreground)]">{a.name}</p>
-                  {a.details && <p className="truncate text-[10px] text-[var(--muted)]">{a.details}</p>}
-                  {a.state && <p className="truncate text-[10px] text-[var(--muted)]">{a.state}</p>}
+                  <p className="truncate font-medium text-[var(--text-primary)]">{a.name}</p>
+                  {a.details && <p className="truncate text-[10px] text-[var(--text-muted)]">{a.details}</p>}
+                  {a.state && <p className="truncate text-[10px] text-[var(--text-muted)]">{a.state}</p>}
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-xs text-[var(--muted)]">{i18n("noResults")}</p>
+            <p className="text-xs text-[var(--text-muted)]">{i18n("noResults")}</p>
           )}
         </div>
 
         {lanyard.spotify?.playing && lanyard.spotify.title && (
           <div className="rounded-[var(--panel-radius)] bg-[var(--panel-bg)]/70 p-2">
             <p className="mb-1 text-[10px] font-medium text-[--accent-primary]">Spotify</p>
-            <p className="truncate text-xs font-medium text-[var(--foreground)]">{lanyard.spotify.title}</p>
-            <p className="truncate text-[10px] text-[var(--muted)]">
+            <p className="truncate text-xs font-medium text-[var(--text-primary)]">{lanyard.spotify.title}</p>
+            <p className="truncate text-[10px] text-[var(--text-muted)]">
               {lanyard.spotify.artist}
               {lanyard.spotify.album ? ` — ${lanyard.spotify.album}` : ""}
             </p>
@@ -765,8 +765,8 @@ export default function LiveWidgets({
 
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0">
-            <p className="truncate font-medium text-[var(--foreground)]">{username || "—"}</p>
-            {uuid && <p className="text-[10px] text-[var(--muted)]">ID: {uuid.slice(0, 8)}…</p>}
+            <p className="truncate font-medium text-[var(--text-primary)]">{username || "—"}</p>
+            {uuid && <p className="text-[10px] text-[var(--text-muted)]">ID: {uuid.slice(0, 8)}…</p>}
           </div>
           <div className="flex flex-wrap items-center justify-end gap-1.5">
             {model && (
@@ -785,16 +785,16 @@ export default function LiveWidgets({
         </div>
 
         <div className="flex-1 overflow-y-auto pr-1 no-scrollbar">
-          <p className="mb-1 text-xs font-medium text-[var(--muted)]">
+          <p className="mb-1 text-xs font-medium text-[var(--text-muted)]">
             {i18n("nameHistory")} · {names.length}
           </p>
           {names.length > 0 ? (
             <ul className="space-y-1.5">
               {names.slice(-8).map((n, i) => (
                 <li key={i} className="flex items-center justify-between rounded-[var(--panel-radius)] bg-[var(--panel-bg)]/40 px-2 py-1 text-sm">
-                  <span className="truncate text-[var(--foreground)]">{toStr(n.name) || "—"}</span>
+                  <span className="truncate text-[var(--text-primary)]">{toStr(n.name) || "—"}</span>
                   {Boolean(n.changedAt) && (
-                    <span className="text-[10px] text-[var(--muted)]">
+                    <span className="text-[10px] text-[var(--text-muted)]">
                       {formatLocalDate(String(n.changedAt), mounted)}
                     </span>
                   )}
@@ -802,7 +802,7 @@ export default function LiveWidgets({
               ))}
             </ul>
           ) : (
-            <p className="text-xs text-[var(--muted)]">{i18n("noResults")}</p>
+            <p className="text-xs text-[var(--text-muted)]">{i18n("noResults")}</p>
           )}
         </div>
       </div>
@@ -815,16 +815,16 @@ export default function LiveWidgets({
       <div className="flex h-full flex-col gap-3">
         <div className="flex items-center justify-between">
           <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
-          <span className="rounded-lg bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
+          <span className="rounded-lg bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--text-muted)]">
             {i18n("billsTotalThisMonth")}
           </span>
         </div>
         <div className="flex items-baseline gap-1">
-          <span className="text-3xl font-bold text-[var(--foreground)]">{totalThisMonth > 0 ? totalThisMonth : "—"}</span>
-          {totalThisMonth > 0 && currency && <span className="text-sm text-[var(--muted)]">{currency}</span>}
+          <span className="text-3xl font-bold text-[var(--text-primary)]">{totalThisMonth > 0 ? totalThisMonth : "—"}</span>
+          {totalThisMonth > 0 && currency && <span className="text-sm text-[var(--text-muted)]">{currency}</span>}
         </div>
         <div className="flex-1 overflow-y-auto pr-1">
-          <p className="mb-1 text-xs font-medium text-[var(--muted)]">
+          <p className="mb-1 text-xs font-medium text-[var(--text-muted)]">
             {i18n("billsUpcoming")} · {upcoming.length}
           </p>
           {upcoming.length > 0 ? (
@@ -838,12 +838,12 @@ export default function LiveWidgets({
                 return (
                   <li key={i} className="rounded-[var(--panel-radius)] bg-[var(--panel-bg)]/50 p-1.5 text-sm">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="min-w-0 flex-1 truncate font-medium text-[var(--foreground)]" title={label}>{label}</span>
+                      <span className="min-w-0 flex-1 truncate font-medium text-[var(--text-primary)]" title={label}>{label}</span>
                       <span className="shrink-0 text-xs font-semibold text-[var(--accent)]">
                         {amount !== undefined ? `${amount} ${toStr(b.currency) || currency || ""}`.trim() : "—"}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between gap-2 text-[10px] text-[var(--muted)]">
+                    <div className="flex items-center justify-between gap-2 text-[10px] text-[var(--text-muted)]">
                       <span>{i18n(catKey) || category}</span>
                       {due && <span className="flex items-center gap-1"><Icon name="calendar" className="h-3 w-3" /> {formatLocalDate(due, mounted)}</span>}
                     </div>
@@ -852,7 +852,7 @@ export default function LiveWidgets({
               })}
             </ul>
           ) : (
-            <p className="text-xs text-[var(--muted)]">{i18n("noBills")}</p>
+            <p className="text-xs text-[var(--text-muted)]">{i18n("noBills")}</p>
           )}
         </div>
       </div>
@@ -864,8 +864,8 @@ export default function LiveWidgets({
       return (
         <div className="flex h-full flex-col justify-between">
           <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
-          <p className="text-sm text-[var(--foreground)]">{i18n("noForecast")}</p>
-          <p className="text-[10px] text-[var(--muted)]">{i18n("flipCard")}</p>
+          <p className="text-sm text-[var(--text-primary)]">{i18n("noForecast")}</p>
+          <p className="text-[10px] text-[var(--text-muted)]">{i18n("flipCard")}</p>
         </div>
       );
     }
@@ -882,7 +882,7 @@ export default function LiveWidgets({
         <div className="flex items-center justify-between gap-2">
           <p className="text-sm font-semibold text-[var(--accent)]">{record.label}</p>
           {city && (
-            <p className="truncate text-xs text-[var(--muted)]">
+            <p className="truncate text-xs text-[var(--text-muted)]">
               <Icon name="mapPin" className="mr-1 inline h-3 w-3" />
               {city}
             </p>
@@ -895,11 +895,11 @@ export default function LiveWidgets({
             <Icon name="cloudSun" className="h-14 w-14 text-amber-400" />
           )}
           <div className="min-w-0">
-            {temp !== undefined && <p className="text-3xl font-bold text-[var(--foreground)]">{temp}°C</p>}
-            {condition && <p className="truncate text-sm font-medium text-[var(--foreground)]">{condition}</p>}
+            {temp !== undefined && <p className="text-3xl font-bold text-[var(--text-primary)]">{temp}°C</p>}
+            {condition && <p className="truncate text-sm font-medium text-[var(--text-primary)]">{condition}</p>}
           </div>
         </div>
-        <div className="flex flex-wrap gap-2 text-[10px] text-[var(--muted)]">
+        <div className="flex flex-wrap gap-2 text-[10px] text-[var(--text-muted)]">
           {humidity !== undefined && (
             <span className="rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-2 py-1">{humidity}% {i18n("humidity")}</span>
           )}
@@ -908,7 +908,7 @@ export default function LiveWidgets({
           )}
         </div>
         <div className="flex-1 overflow-y-auto pr-1">
-          <p className="mb-1 text-xs font-medium text-[var(--muted)]">{i18n("forecast")}</p>
+          <p className="mb-1 text-xs font-medium text-[var(--text-muted)]">{i18n("forecast")}</p>
           {forecast.length > 0 ? (
             <ul className="space-y-1.5">
               {forecast.slice(0, 5).map((day, i) => {
@@ -917,10 +917,10 @@ export default function LiveWidgets({
                 const max = toNum(day.max);
                 return (
                   <li key={i} className="flex items-center justify-between rounded-[var(--panel-radius)] bg-[var(--panel-bg)]/50 px-2 py-1 text-sm">
-                    <span className="text-[var(--muted)]">
+                    <span className="text-[var(--text-muted)]">
                       {date ? formatLocalShortDate(date, mounted) : "—"}
                     </span>
-                    <span className="font-medium text-[var(--foreground)]">
+                    <span className="font-medium text-[var(--text-primary)]">
                       {min !== undefined ? `${min}°` : "—"} / {max !== undefined ? `${max}°` : "—"}
                     </span>
                   </li>
@@ -928,7 +928,7 @@ export default function LiveWidgets({
               })}
             </ul>
           ) : (
-            <p className="text-xs text-[var(--muted)]">{i18n("noForecast")}</p>
+            <p className="text-xs text-[var(--text-muted)]">{i18n("noForecast")}</p>
           )}
         </div>
       </div>
@@ -963,11 +963,11 @@ export default function LiveWidgets({
 
         {!isConnected && (
           <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
-            <Icon name={iconName} className="h-10 w-10 text-[var(--muted)]" />
-            <p className="text-sm text-[var(--foreground)]">
+            <Icon name={iconName} className="h-10 w-10 text-[var(--text-muted)]" />
+            <p className="text-sm text-[var(--text-primary)]">
               {record.status === "loading" ? i18n("loading") : record.status === "error" ? i18n("liveError") : i18n("notConnected")}
             </p>
-            {record.subtitle && <p className="text-xs text-[var(--muted)]">{record.subtitle}</p>}
+            {record.subtitle && <p className="text-xs text-[var(--text-muted)]">{record.subtitle}</p>}
           </div>
         )}
 
@@ -986,14 +986,14 @@ export default function LiveWidgets({
               </div>
             )}
             <div className="min-w-0 flex-1 overflow-hidden">
-              {record.title && <p className="truncate text-sm font-semibold text-[var(--foreground)]">{record.title}</p>}
-              {record.subtitle && <p className="truncate text-xs text-[var(--muted)]">{record.subtitle}</p>}
-              {record.meta && <p className="mt-1 truncate text-xs text-[var(--muted)]">{record.meta}</p>}
+              {record.title && <p className="truncate text-sm font-semibold text-[var(--text-primary)]">{record.title}</p>}
+              {record.subtitle && <p className="truncate text-xs text-[var(--text-muted)]">{record.subtitle}</p>}
+              {record.meta && <p className="mt-1 truncate text-xs text-[var(--text-muted)]">{record.meta}</p>}
             </div>
           </>
         )}
 
-        <p className="mt-auto text-[10px] text-[var(--muted)]">{i18n("flipCard")}</p>
+        <p className="mt-auto text-[10px] text-[var(--text-muted)]">{i18n("flipCard")}</p>
       </div>
     );
   }
@@ -1015,8 +1015,8 @@ export default function LiveWidgets({
             className="h-14 w-14 rounded-full border-2 border-[var(--panel-border)] object-cover shadow-md"
           />
           <div className="min-w-0 flex-1">
-            <p className="truncate font-semibold text-[var(--foreground)]">{record.title}</p>
-            <div className="flex items-center gap-1.5 text-xs text-[var(--muted)]">
+            <p className="truncate font-semibold text-[var(--text-primary)]">{record.title}</p>
+            <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
               <span className={`h-2 w-2 rounded-full ${tone.dot} ${tone.shadow} backdrop-blur-[var(--panel-blur)]`} />
               <span>{i18n(tone.label)}</span>
             </div>
@@ -1025,10 +1025,10 @@ export default function LiveWidgets({
 
         {activity && (
           <div className="mb-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)]/60 p-2.5">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">{i18n("activity")}</p>
-            <p className="truncate text-sm font-medium text-[var(--foreground)]">{activity.name}</p>
-            {activity.details && <p className="truncate text-xs text-[var(--muted)]">{activity.details}</p>}
-            {activity.state && <p className="truncate text-xs text-[var(--muted)]">{activity.state}</p>}
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">{i18n("activity")}</p>
+            <p className="truncate text-sm font-medium text-[var(--text-primary)]">{activity.name}</p>
+            {activity.details && <p className="truncate text-xs text-[var(--text-muted)]">{activity.details}</p>}
+            {activity.state && <p className="truncate text-xs text-[var(--text-muted)]">{activity.state}</p>}
           </div>
         )}
 
@@ -1044,8 +1044,8 @@ export default function LiveWidgets({
                 iconClassName="h-6 w-6 text-[--accent-primary]"
               />
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-[var(--foreground)]">{spotify.title}</p>
-                <p className="truncate text-xs text-[var(--muted)]">{spotify.artist}</p>
+                <p className="truncate text-sm font-medium text-[var(--text-primary)]">{spotify.title}</p>
+                <p className="truncate text-xs text-[var(--text-muted)]">{spotify.artist}</p>
               </div>
             </div>
           </div>
@@ -1073,8 +1073,8 @@ export default function LiveWidgets({
             className="h-14 w-14 rounded-[var(--panel-radius)] border-2 border-[var(--panel-border)] object-cover shadow-md"
           />
           <div className="min-w-0 flex-1">
-            <p className="truncate font-semibold text-[var(--foreground)]">{username}</p>
-            <p className="truncate text-[10px] text-[var(--muted)]">{uuid ? `ID: ${uuid.slice(0, 8)}…` : "Minecraft"}</p>
+            <p className="truncate font-semibold text-[var(--text-primary)]">{username}</p>
+            <p className="truncate text-[10px] text-[var(--text-muted)]">{uuid ? `ID: ${uuid.slice(0, 8)}…` : "Minecraft"}</p>
           </div>
         </div>
 
@@ -1094,8 +1094,8 @@ export default function LiveWidgets({
         </div>
 
         <div className="mt-auto rounded-[var(--panel-radius)] bg-[var(--panel-bg)]/60 p-2.5">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">{i18n("nameHistory")}</p>
-          <p className="text-xs text-[var(--foreground)]">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">{i18n("nameHistory")}</p>
+          <p className="text-xs text-[var(--text-primary)]">
             {(minecraftNameHistory || []).slice(-3).map((n) => toStr(n.name)).filter(Boolean).join(" → ") || "—"}
           </p>
         </div>
@@ -1166,7 +1166,7 @@ export default function LiveWidgets({
                       e.stopPropagation();
                       toggleHidden(record.id);
                     }}
-                    className="absolute left-3 top-3 z-10 rounded-lg bg-[var(--panel-bg)] p-1.5 text-[var(--foreground)] hover:bg-[var(--panel-bg)]"
+                    className="absolute left-3 top-3 z-10 rounded-lg bg-[var(--panel-bg)] p-1.5 text-[var(--text-primary)] hover:bg-[var(--panel-bg)]"
                   >
                     <Icon name={hidden.has(record.id) ? "eye-off" : "eye"} className="h-3.5 w-3.5" />
                   </button>
@@ -1263,8 +1263,8 @@ export default function LiveWidgets({
               <div className="space-y-0.5">
                 {!isSpotify && !isDiscord && !isWeather && !isMinecraft && !isRiot && !hasImageHeader && <p className="truncate font-medium">{record.title}</p>}
                 {isSpotify && <p className="truncate text-lg font-bold leading-tight">{record.title}</p>}
-                {!isDiscord && !isWeather && !isMinecraft && !isRiot && record.subtitle && <p className="truncate text-sm leading-tight text-[var(--muted)]">{record.subtitle}</p>}
-                {!isDiscord && !isWeather && !isMinecraft && !isRiot && record.meta && <p className="truncate text-xs leading-tight text-[var(--muted)]">{record.meta}</p>}
+                {!isDiscord && !isWeather && !isMinecraft && !isRiot && record.subtitle && <p className="truncate text-sm leading-tight text-[var(--text-muted)]">{record.subtitle}</p>}
+                {!isDiscord && !isWeather && !isMinecraft && !isRiot && record.meta && <p className="truncate text-xs leading-tight text-[var(--text-muted)]">{record.meta}</p>}
               </div>
 
               {isSpotify && nowPlaying?.isPlaying && (
@@ -1281,14 +1281,14 @@ export default function LiveWidgets({
                         className="w-full"
                         aria-label={i18n("seek")}
                       />
-                      <div className="flex justify-between text-[10px] text-[var(--muted)]">
+                      <div className="flex justify-between text-[10px] text-[var(--text-muted)]">
                         <span>{formatTime(nowPlaying.progressMs)}</span>
                         <span>{formatTime(nowPlaying.durationMs)}</span>
                       </div>
                     </div>
                   )}
                   <div className="flex items-center gap-1.5">
-                    <button onClick={() => controlSpotify("previous")} className="rounded-lg p-1 text-[var(--foreground)] hover:bg-[var(--text-primary)]/10">
+                    <button onClick={() => controlSpotify("previous")} className="rounded-lg p-1 text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10">
                       <Icon name="skipBack" className="h-3.5 w-3.5" />
                     </button>
                     <button
@@ -1297,7 +1297,7 @@ export default function LiveWidgets({
                     >
                       {nowPlaying.isPlaying ? <Icon name="pause" className="h-4 w-4" /> : <Icon name="play" className="h-4 w-4" />}
                     </button>
-                    <button onClick={() => controlSpotify("next")} className="rounded-lg p-1 text-[var(--foreground)] hover:bg-[var(--text-primary)]/10">
+                    <button onClick={() => controlSpotify("next")} className="rounded-lg p-1 text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10">
                       <Icon name="skipForward" className="h-3.5 w-3.5" />
                     </button>
                     <button
@@ -1348,15 +1348,15 @@ export default function LiveWidgets({
       {showHeader && (
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <h2 className="text-lg font-semibold text-[var(--foreground)]">{i18n("live")}</h2>
-            {loading && <Icon name="loader" className="h-4 w-4 animate-spin text-[var(--muted)]" />}
+            <h2 className="text-lg font-semibold text-[var(--text-primary)]">{i18n("live")}</h2>
+            {loading && <Icon name="loader" className="h-4 w-4 animate-spin text-[var(--text-muted)]" />}
           </div>
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
               onClick={() => setActiveCategory("all")}
               className={`rounded-xl px-3 py-1 text-xs font-medium transition-colors ${
-                activeCategory === "all" ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "bg-[var(--panel-bg)] text-[var(--muted)] hover:text-[var(--foreground)]"
+                activeCategory === "all" ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "bg-[var(--panel-bg)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               }`}
             >
               {i18n("all")}
@@ -1370,7 +1370,7 @@ export default function LiveWidgets({
                   type="button"
                   onClick={() => setActiveCategory(cat)}
                   className={`rounded-xl px-3 py-1 text-xs font-medium transition-colors ${
-                    activeCategory === cat ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "bg-[var(--panel-bg)] text-[var(--muted)] hover:text-[var(--foreground)]"
+                    activeCategory === cat ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "bg-[var(--panel-bg)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                   }`}
                 >
                   {i18n(categoryLabels[cat])} ({count})
@@ -1386,7 +1386,7 @@ export default function LiveWidgets({
         if (items.length === 0) return null;
         return (
           <div key={category} className="space-y-2">
-            <CategoryTag className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
+            <CategoryTag className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
               {i18n(categoryLabels[category])}
             </CategoryTag>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">

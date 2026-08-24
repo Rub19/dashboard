@@ -109,7 +109,7 @@ export default function TasksCard({ task, onToggle, onDelete }: TasksCardProps) 
         <button
           type="button"
           onClick={() => handleDelete()}
-          className="rounded-lg p-1.5 text-[var(--muted)] opacity-0 transition-all hover:bg-[var(--danger)]/10 hover:text-[var(--danger)] group-hover:opacity-100"
+          className="rounded-lg p-1.5 text-[var(--text-muted)] opacity-0 transition-all hover:bg-[var(--danger)]/10 hover:text-[var(--danger)] group-hover:opacity-100"
           aria-label="Supprimer"
         >
           <Trash2 className="h-3.5 w-3.5" />

@@ -186,7 +186,7 @@ export default function DiscordConfig() {
           type="button"
           onClick={() => setMode("lanyard")}
           className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
-            isLanyard ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)]" : "text-[var(--muted)] hover:text-[var(--text-primary)]"
+            isLanyard ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           }`}
         >
           Lanyard
@@ -195,7 +195,7 @@ export default function DiscordConfig() {
           type="button"
           onClick={() => setMode("oauth2")}
           className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
-            isOAuth2 ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)]" : "text-[var(--muted)] hover:text-[var(--text-primary)]"
+            isOAuth2 ? "bg-[var(--text-primary)]/10 text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           }`}
         >
           OAuth2

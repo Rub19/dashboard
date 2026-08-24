@@ -353,7 +353,7 @@ export function MessageBubbleCollapsible({
         aria-controls={contentId}
         onClick={() => setOpen(!currentOpen)}
         className={cn(
-          "mt-2 inline-flex h-7 items-center gap-1 rounded-full px-2 text-xs font-medium text-[var(--muted)] outline-none transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]",
+          "mt-2 inline-flex h-7 items-center gap-1 rounded-full px-2 text-xs font-medium text-[var(--text-muted)] outline-none transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]",
           triggerClassName,
         )}
       >

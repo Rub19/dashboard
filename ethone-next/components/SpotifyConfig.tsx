@@ -201,7 +201,7 @@ export default function SpotifyConfig() {
                 <button
                   type="button"
                   onClick={() => setShowClientSecret((v) => !v)}
-                  className="text-[10px] text-[var(--muted)] hover:text-[var(--text-primary)]"
+                  className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 >
                   {showClientSecret ? i18n("hide") : i18n("show")}
                 </button>

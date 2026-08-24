@@ -44,7 +44,7 @@ type ToggleProps = {
 function Toggle({ label, checked, onChange }: ToggleProps) {
   return (
     <label className="flex items-center justify-between gap-3">
-      <span className="text-sm text-[var(--foreground)]">{label}</span>
+      <span className="text-sm text-[var(--text-primary)]">{label}</span>
       <button
         type="button"
         onClick={() => onChange(!checked)}
@@ -73,8 +73,8 @@ function Range({ label, value, onChange }: RangeProps) {
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between text-xs">
-        <span className="text-[var(--foreground)]">{label}</span>
-        <span className="text-[var(--muted)]">{value}%</span>
+        <span className="text-[var(--text-primary)]">{label}</span>
+        <span className="text-[var(--text-muted)]">{value}%</span>
       </div>
       <Slider value={value} onChange={onChange} unit="%" className="w-full" aria-label={label} />
     </div>
@@ -171,19 +171,19 @@ export default function DockControlCenter({
               className="max-h-[calc(80vh-2.5rem)] space-y-4 overflow-y-auto rounded-lg border border-zinc-200 bg-white/90 p-4 shadow-[0_16px_50px_rgba(0,0,0,0.12)] backdrop-blur-3xl dark:border-white/[0.08] dark:bg-zinc-950/90 dark:shadow-[0_16px_50px_rgba(0,0,0,0.7)]"
             >
               <div className="mb-2 flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-[var(--foreground)]">{i18n("controlCenter")}</h3>
+                <h3 className="text-sm font-semibold text-[var(--text-primary)]">{i18n("controlCenter")}</h3>
                 <button
                   type="button"
                   onClick={onClose}
                     aria-label={i18n("close")}
-                  className="rounded p-1 text-[var(--muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)]"
+                  className="rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]"
                 >
                   <Icon name="close" className="h-4 w-4" />
                 </button>
               </div>
 
               <section className="space-y-2">
-                <p className="text-xs font-medium uppercase tracking-wider text-[var(--muted)]">
+                <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">
                   {i18n("controlCenterAnimations")}
                 </p>
                 <div className="grid grid-cols-3 gap-2">
@@ -203,7 +203,7 @@ export default function DockControlCenter({
               </section>
 
               <section className="space-y-2">
-                <p className="text-xs font-medium uppercase tracking-wider text-[var(--muted)]">
+                <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">
                   {i18n("quickActions")}
                 </p>
                 <div className="grid grid-cols-3 gap-2">
@@ -238,7 +238,7 @@ export default function DockControlCenter({
               </section>
 
               <section className="space-y-2">
-                <p className="text-xs font-medium uppercase tracking-wider text-[var(--muted)]">{i18n("soundPack")}</p>
+                <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">{i18n("soundPack")}</p>
                 <div className="grid grid-cols-3 gap-2">
                   {SOUND_PACKS.map((pack) => (
                     <button
@@ -269,7 +269,7 @@ export default function DockControlCenter({
               </section>
 
               <section className="space-y-2">
-                <p className="text-xs font-medium uppercase tracking-wider text-[var(--muted)]">{i18n("ambience")}</p>
+                <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">{i18n("ambience")}</p>
                 <AmbientSoundControl compact />
               </section>
 

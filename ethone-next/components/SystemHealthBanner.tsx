@@ -89,7 +89,7 @@ export default function SystemHealthBanner({
           <button
             type="button"
             onClick={() => setExpanded((v) => !v)}
-            className="rounded-xl p-1.5 text-[var(--muted)] transition hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+            className="rounded-xl p-1.5 text-[var(--text-muted)] transition hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
             aria-label={expanded ? i18n("collapse") : i18n("expand")}
           >
             {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}

@@ -276,7 +276,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                     type="button"
                     onClick={toggleLike}
                     disabled={pending || !hasClientId || !trackId}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
                     aria-label={isLiked ? i18n("unlike") : i18n("like")}
                   >
                     <Heart
@@ -300,7 +300,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                     type="button"
                     onClick={skipPrevious}
                     disabled={pending || !hasClientId}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
                     aria-label={i18n("previous")}
                   >
                     <SkipBack className="h-5 w-5" />
@@ -309,7 +309,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                     type="button"
                     onClick={() => seek(-10000)}
                     disabled={pending || !hasClientId}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
                     aria-label="-10s"
                   >
                     <RotateCcw className="h-3.5 w-3.5" />
@@ -331,7 +331,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                     type="button"
                     onClick={() => seek(10000)}
                     disabled={pending || !hasClientId}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
                     aria-label="+10s"
                   >
                     <RotateCw className="h-3.5 w-3.5" />
@@ -340,7 +340,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                     type="button"
                     onClick={skipNext}
                     disabled={pending || !hasClientId}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
                     aria-label={i18n("next")}
                   >
                     <SkipForward className="h-5 w-5" />

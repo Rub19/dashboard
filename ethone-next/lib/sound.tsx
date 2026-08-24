@@ -578,7 +578,41 @@ type AmbientState = {
   nodes: AudioScheduledSourceNode[];
 };
 
+function createRainBuffer(ctx: BaseAudioContext): AudioBuffer {
+  const duration = 6;
+  const sampleRate = ctx.sampleRate;
+  const length = Math.floor(sampleRate * duration);
+  const buffer = ctx.createBuffer(2, length, sampleRate);
+  const left = buffer.getChannelData(0);
+  const right = buffer.getChannelData(1);
+
+  const dropCount = Math.floor(duration * 70); // ~70 drops / second
+  for (let d = 0; d < dropCount; d++) {
+    const start = Math.floor(Math.random() * (length - sampleRate * 0.25));
+    const len = Math.floor((0.03 + Math.random() * 0.12) * sampleRate);
+    const amp = 0.06 + Math.random() * 0.28;
+    const pan = Math.random() * 2 - 1; // -1..1
+    const leftGain = (1 - pan) / 2;
+    const rightGain = (1 + pan) / 2;
+    const tau = 0.02 + Math.random() * 0.03; // 20-50ms decay
+
+    for (let i = 0; i < len; i++) {
+      const idx = start + i;
+      if (idx >= length) break;
+      const t = i / sampleRate;
+      const envelope = Math.exp(-t / tau);
+      const sample = (Math.random() * 2 - 1) * amp * envelope;
+      left[idx] += sample * leftGain;
+      right[idx] += sample * rightGain;
+    }
+  }
+
+  return buffer;
+}
+
 function createAmbientBuffer(ctx: BaseAudioContext, type: SoundAmbient): AudioBuffer {
+  if (type === "rain") return createRainBuffer(ctx);
+
   const duration = 4;
   const length = Math.floor(ctx.sampleRate * duration);
   const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
@@ -613,14 +647,6 @@ function createAmbientBuffer(ctx: BaseAudioContext, type: SoundAmbient): AudioBu
       const white = Math.random() * 2 - 1;
       last = (last + 0.08 * white) / 1.08;
       data[i] = last * 0.6;
-    }
-  } else {
-    // rain
-    let last = 0;
-    for (let i = 0; i < length; i++) {
-      const white = Math.random() * 2 - 1;
-      last = (last + 0.02 * white) / 1.02;
-      data[i] = last * 2.5;
     }
   }
 
@@ -707,7 +733,7 @@ export function SoundProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      const target = (type === "drone" ? 0.08 : 0.06) * master;
+      const target = (type === "drone" ? 0.08 : type === "rain" ? 0.14 : 0.08) * master;
 
       if (ambientRef.current?.type === type) {
         const now = ctx.currentTime;
@@ -728,7 +754,7 @@ export function SoundProvider({ children }: { children: ReactNode }) {
       const filter = ctx.createBiquadFilter();
       filter.type = "lowpass";
       filter.frequency.value =
-        type === "rain" ? 850 : type === "drone" ? 420 : type === "brown" ? 500 : 1800;
+        type === "rain" ? 3200 : type === "drone" ? 420 : type === "brown" ? 500 : 1800;
       filter.Q.value = 0.7;
 
       const state: AmbientState = { type, source: null, gain: ambientGain, filter, nodes: [] };

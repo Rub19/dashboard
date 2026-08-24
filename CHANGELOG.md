@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.20 — 2026-08-24
+
+**Audit boot et réduction du loading artificiel**
+
+- Audit de `BootProvider` et de la chaîne `AuthProvider` / `SettingsProvider`.
+- Identification de la durée minimum artificielle imposée à l’écran de loading.
+- `BOOT_MIN_DURATION_MS` réduit de 1 800 ms à 600 ms.
+- Courbe de progress reparamétrée (`150 / 300 / 450 / 600 ms`) pour un démarrage plus rapide.
+- Gestion du timeout, de l’erreur et du hors ligne conservée.
+- Version `v1.8.20`.
+
 ## v1.8.19 — 2026-08-24
 
 **Refonte Settings, Toasts et Design System**

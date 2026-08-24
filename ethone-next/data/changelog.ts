@@ -5398,9 +5398,61 @@ const v363_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v363_en, v362_en, v361_en, v360_en, v359_en);
-CHANGELOG_BY_LANG.es.unshift(v363_es, v362_es, v361_es, v360_es, v359_es);
-CHANGELOG_BY_LANG.de.unshift(v363_de, v362_de, v361_de, v360_de, v359_de);
+const v364_fr: ChangelogEntry = {
+  version: "v1.8.20",
+  date: "2026-08-24",
+  title: "Audit boot et réduction du loading artificiel",
+  items: [
+    "Audit de BootProvider, AuthProvider et SettingsProvider.",
+    "Durée minimum artificielle du loader réduite de 1 800 ms à 600 ms.",
+    "Courbe de progress reparamétrée pour un démarrage plus rapide.",
+    "Timeout, erreur et hors ligne conservés.",
+    "Version v1.8.20.",
+  ],
+};
+
+const v364_en: ChangelogEntry = {
+  version: "v1.8.20",
+  date: "2026-08-24",
+  title: "Boot audit and artificial loading reduction",
+  items: [
+    "Audit of BootProvider, AuthProvider and SettingsProvider.",
+    "Minimum artificial loader duration reduced from 1,800 ms to 600 ms.",
+    "Progress curve reparametrized for faster boot.",
+    "Timeout, error and offline states preserved.",
+    "Version v1.8.20.",
+  ],
+};
+
+const v364_es: ChangelogEntry = {
+  version: "v1.8.20",
+  date: "2026-08-24",
+  title: "Auditoría de boot y reducción de carga artificial",
+  items: [
+    "Auditoría de BootProvider, AuthProvider y SettingsProvider.",
+    "Duración mínima artificial del loader reducida de 1 800 ms a 600 ms.",
+    "Curva de progreso reparametrizada para un inicio más rápido.",
+    "Timeout, error y estados sin conexión conservados.",
+    "Versión v1.8.20.",
+  ],
+};
+
+const v364_de: ChangelogEntry = {
+  version: "v1.8.20",
+  date: "2026-08-24",
+  title: "Boot-Audit und Reduktion künstlicher Ladezeit",
+  items: [
+    "Audit von BootProvider, AuthProvider und SettingsProvider.",
+    "Künstliche Mindestdauer des Loaders von 1.800 ms auf 600 ms reduziert.",
+    "Progress-Kurve für schnelleren Start reparametrisiert.",
+    "Timeout, Fehler und Offline-Zustände beibehalten.",
+    "Version v1.8.20.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

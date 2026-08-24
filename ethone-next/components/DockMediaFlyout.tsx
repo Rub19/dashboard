@@ -30,7 +30,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
   const router = useRouter();
   const { success, error: showError } = useToast();
   const [open, setOpen] = useState(false);
-  const [pos, setPos] = useState({ left: 0, top: 0 });
+  const [pos, setPos] = useState({ left: 0, bottom: 0 });
   const [pending, setPending] = useState(false);
   const [isLiked, setIsLiked] = useState(!!nowPlaying?.isSaved);
   const [isPlaying, setIsPlaying] = useState(!!nowPlaying?.isPlaying);
@@ -172,9 +172,11 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
       if (!buttonRef.current) return;
       const rect = buttonRef.current.getBoundingClientRect();
       const padding = 12;
+      const gap = 8;
       const width = 320; // w-80
       const left = Math.min(rect.left, window.innerWidth - width - padding);
-      setPos({ left: Math.max(padding, left), top: rect.top - padding });
+      const bottom = window.innerHeight - rect.top - gap;
+      setPos({ left: Math.max(padding, left), bottom });
     };
     update();
     window.addEventListener("resize", update);
@@ -226,12 +228,12 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: 8, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            style={{ position: "fixed", left: pos.left, top: pos.top, transform: "translateY(-100%)" }}
-            className="z-[90] w-80 rounded-xl border border-white/10 bg-zinc-950/95 p-4 shadow-2xl backdrop-blur-2xl"
+            style={{ position: "fixed", left: pos.left, bottom: pos.bottom }}
+            className="z-[90] w-80 rounded-xl border border-white/10 bg-zinc-950/95 p-4 shadow-2xl backdrop-blur-2xl pointer-events-auto origin-bottom"
           >
             {!hasTrack ? (
               <div className="flex items-center gap-3">

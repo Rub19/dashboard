@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="bento_tasks">Aufgaben</string>
+    <string name="bento_focus_timer">Fokus-Timer</string>
+    <string name="bento_capture_brain">Brain-Erfassung</string>
+    <string name="bento_metrics">Metriken</string>
+    <string name="bento_support_stripe">Unterstützung via Stripe</string>
+</resources>

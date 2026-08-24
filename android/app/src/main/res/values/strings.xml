@@ -28,4 +28,9 @@
     <string name="widget_compact_desc">Compteur de tâches ETHONE</string>
     <string name="widget_list_desc">Liste de tâches ETHONE</string>
     <string name="widget_dashboard_desc">Dashboard ETHONE et notes</string>
+    <string name="bento_tasks">Tâches</string>
+    <string name="bento_focus_timer">Focus Timer</string>
+    <string name="bento_capture_brain">Capture Brain</string>
+    <string name="bento_metrics">Métriques</string>
+    <string name="bento_support_stripe">Soutenir via Stripe</string>
 </resources>

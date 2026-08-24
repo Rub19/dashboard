@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="bento_tasks">タスク</string>
+    <string name="bento_focus_timer">フォーカスタイマー</string>
+    <string name="bento_capture_brain">Brainキャプチャ</string>
+    <string name="bento_metrics">メトリクス</string>
+    <string name="bento_support_stripe">Stripeで支援</string>
+</resources>

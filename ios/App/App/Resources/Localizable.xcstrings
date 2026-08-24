@@ -1,0 +1,51 @@
+{
+  "sourceLanguage" : "fr",
+  "strings" : {
+    "bento_tasks" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Aufgaben" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Tasks" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Tareas" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tâches" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "タスク" } }
+      }
+    },
+    "bento_focus_timer" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Fokus-Timer" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Focus Timer" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Temporizador de enfoque" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Focus Timer" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "フォーカスタイマー" } }
+      }
+    },
+    "bento_capture_brain" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Brain-Erfassung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Brain Capture" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Captura Brain" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Capture Brain" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Brainキャプチャ" } }
+      }
+    },
+    "bento_metrics" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Metriken" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Metrics" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Métricas" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Métriques" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "メトリクス" } }
+      }
+    },
+    "bento_support_stripe" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Unterstützung via Stripe" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Support via Stripe" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Apoyar vía Stripe" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Soutenir via Stripe" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Stripeで支援" } }
+      }
+    }
+  },
+  "version" : "1.0"
+}

@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@floating-ui/react": "^0.27.20",
+    "@google/generative-ai": "^0.24.0",
     "@iconify-json/heroicons": "^1.2.3",
     "@iconify-json/lucide": "^1.2.123",
     "@iconify-json/ph": "^1.2.2",

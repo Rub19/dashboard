@@ -219,7 +219,7 @@ function WeatherBadge({
   tone?: "zinc" | "cyan" | "emerald" | "amber" | "rose" | "violet";
 }) {
   const toneClass = {
-    zinc: "text-zinc-300",
+    zinc: "text-[var(--text-primary)]",
     cyan: "text-[--info]",
     emerald: "text-[--accent-primary]",
     amber: "text-amber-400",
@@ -228,9 +228,9 @@ function WeatherBadge({
   }[tone];
 
   return (
-    <div className="flex w-full items-center gap-1.5 rounded-xl bg-white/[0.04] px-2.5 py-1.5 text-xs font-medium text-zinc-200 ring-1 ring-inset ring-white/[0.06] backdrop-blur-sm">
+    <div className="flex w-full items-center gap-1.5 rounded-xl bg-[var(--text-primary)]/[0.04] px-2.5 py-1.5 text-xs font-medium text-[var(--text-primary)] ring-1 ring-inset ring-[var(--text-primary)]/[0.06] backdrop-blur-sm">
       <Icon name={icon} className={`h-3 w-3 ${toneClass}`} />
-      {label && <span className="text-zinc-500">{label}</span>}
+      {label && <span className="text-[var(--text-muted)]">{label}</span>}
       <span>{value}</span>
     </div>
   );
@@ -243,12 +243,12 @@ function ForecastPill({ day, icon, colorClass, compact }: { day: ForecastDay; ic
   const max = toNum(day.max);
 
   return (
-    <div className="v8-inset flex min-h-[64px] flex-col items-center gap-1 p-2.5 transition-colors hover:bg-black/50">
-      <span className="text-[11px] font-medium uppercase text-zinc-400">{formatShortDay(day.date, locale)}</span>
+    <div className="v8-inset flex min-h-[64px] flex-col items-center gap-1 p-2.5 transition-colors hover:bg-[var(--background)]/50">
+      <span className="text-[11px] font-medium uppercase text-[var(--text-muted)]">{formatShortDay(day.date, locale)}</span>
       <Icon name={icon} className={`my-0.5 ${compact ? "h-4 w-4" : "h-5 w-5"} ${colorClass}`} />
-      <span className={`font-mono font-semibold text-white ${compact ? "text-[10px]" : "text-xs"}`}>
+      <span className={`font-mono font-semibold text-[var(--text-primary)] ${compact ? "text-[10px]" : "text-xs"}`}>
         {min !== undefined ? `${Math.round(min)}°` : "—"}{" "}
-        <span className="text-zinc-500">/ {max !== undefined ? `${Math.round(max)}°` : "—"}</span>
+        <span className="text-[var(--text-muted)]">/ {max !== undefined ? `${Math.round(max)}°` : "—"}</span>
       </span>
     </div>
   );
@@ -257,27 +257,27 @@ function ForecastPill({ day, icon, colorClass, compact }: { day: ForecastDay; ic
 function WeatherSkeleton({ compact }: { compact?: boolean }) {
   return (
     <div
-      className={`animate-pulse space-y-4 rounded-2xl bg-white/[0.04] p-5 backdrop-blur-2xl ${
+      className={`animate-pulse space-y-4 rounded-2xl bg-[var(--text-primary)]/[0.04] p-5 backdrop-blur-2xl ${
         compact ? "min-h-[130px]" : "min-h-[260px]"
       }`}
     >
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-4">
-          <div className={`rounded-xl bg-white/[0.06] ${compact ? "h-10 w-10" : "h-16 w-16"}`} />
+          <div className={`rounded-xl bg-[var(--text-primary)]/[0.06] ${compact ? "h-10 w-10" : "h-16 w-16"}`} />
           <div className="space-y-2">
-            <div className={`rounded bg-white/[0.06] ${compact ? "h-6 w-16" : "h-10 w-24"}`} />
-            <div className="h-3 w-32 rounded bg-white/[0.04]" />
+            <div className={`rounded bg-[var(--text-primary)]/[0.06] ${compact ? "h-6 w-16" : "h-10 w-24"}`} />
+            <div className="h-3 w-32 rounded bg-[var(--text-primary)]/[0.04]" />
           </div>
         </div>
       </div>
       <div className="flex flex-wrap gap-2">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-7 w-20 rounded-xl bg-white/[0.04]" />
+          <div key={i} className="h-7 w-20 rounded-xl bg-[var(--text-primary)]/[0.04]" />
         ))}
       </div>
       <div className="grid grid-cols-5 gap-2">
         {[...Array(compact ? 3 : 5)].map((_, i) => (
-          <div key={i} className="h-16 rounded-xl bg-white/[0.04]" />
+          <div key={i} className="h-16 rounded-xl bg-[var(--text-primary)]/[0.04]" />
         ))}
       </div>
     </div>
@@ -316,12 +316,12 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
   if (!data) {
     return (
       <div
-        className={`flex flex-col items-center justify-center gap-3 rounded-2xl border border-white/[0.06] bg-zinc-950/60 p-5 text-center backdrop-blur-2xl ${
+        className={`flex flex-col items-center justify-center gap-3 rounded-2xl border border-[var(--text-primary)]/[0.06] bg-[var(--background)]/60 p-5 text-center backdrop-blur-2xl ${
           compact ? "min-h-[130px]" : "min-h-[260px]"
         } ${className || ""}`}
       >
-        <Icon name="cloud" className="h-10 w-10 text-zinc-600" />
-        <p className="text-sm text-zinc-400">{i18n("noForecast")}</p>
+        <Icon name="cloud" className="h-10 w-10 text-[var(--text-muted)]" />
+        <p className="text-sm text-[var(--text-muted)]">{i18n("noForecast")}</p>
         {onRefresh && (
           <button
             type="button"
@@ -354,11 +354,11 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
           <div className={`flex gap-2 ${compact ? "items-center" : "flex-col items-start"}`}>
             <AnimatedWeatherIcon name={iconName} colorClass={iconColor} compact={compact} />
             <div className="min-w-0">
-              <p className={`font-bold tracking-tight text-white ${compact ? "text-2xl" : "text-3xl md:text-4xl"}`}>
+              <p className={`font-bold tracking-tight text-[var(--text-primary)] ${compact ? "text-2xl" : "text-3xl md:text-4xl"}`}>
                 {temp !== undefined ? `${Math.round(temp)}°` : "—"}
               </p>
-              <p className={`font-medium capitalize text-zinc-300 ${compact ? "text-[10px]" : "text-xs"}`}>{condition}</p>
-              <p className={`truncate text-zinc-500 ${compact ? "text-[10px]" : "text-xs"}`}>
+              <p className={`font-medium capitalize text-[var(--text-primary)] ${compact ? "text-[10px]" : "text-xs"}`}>{condition}</p>
+              <p className={`truncate text-[var(--text-muted)] ${compact ? "text-[10px]" : "text-xs"}`}>
                 {city}
                 {country ? `, ${country}` : ""}
               </p>
@@ -372,7 +372,7 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
                 onClick={onRefresh}
                 disabled={loading}
                 aria-label={i18n("refresh")}
-                className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:text-[var(--text-primary)] disabled:opacity-50"
+                className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] disabled:opacity-50"
               >
                 <motion.span
                   className="inline-block"
@@ -411,19 +411,19 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
         {!compact && (
           <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
             {sunrise && (
-              <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+              <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
                 <Icon name="sunrise" className="h-3.5 w-3.5 text-amber-300" />
                 <span>{formatTime(sunrise, locale)}</span>
               </div>
             )}
             {sunset && (
-              <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+              <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
                 <Icon name="sunset" className="h-3.5 w-3.5 text-indigo-300" />
                 <span>{formatTime(sunset, locale)}</span>
               </div>
             )}
             {pressure !== undefined && (
-              <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+              <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
                 <Icon name="gauge" className="h-3.5 w-3.5 text-[--accent-primary]" />
                 <span>
                   {Math.round(pressure)} {i18n("weatherPressureUnit") || "hPa"}
@@ -431,7 +431,7 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
               </div>
             )}
             {aqi !== undefined && (
-              <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+              <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
                 <Icon name="wind" className="h-3.5 w-3.5 text-sky-400" />
                 <span>
                   {aqiLabel || `${i18n("weatherAirQuality") || "AQI"} ${Math.round(aqi)}`}

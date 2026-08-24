@@ -170,7 +170,9 @@ function WeatherDetailContent({
   const humidity = asNum(weather?.humidityPercent);
   const wind = asNum(weather?.windSpeedKmh) ?? asNum(weather?.windSpeed);
   const forecast = (
-    Array.isArray(weather?.forecast) ? (weather.forecast as WeatherData[]) : []
+    Array.isArray(weather?.forecast)
+      ? (weather.forecast as unknown[]).filter((d): d is WeatherData => typeof d === "object" && d !== null)
+      : []
   ).slice(0, 5);
 
   const setRefs = (el: HTMLDivElement | null) => {

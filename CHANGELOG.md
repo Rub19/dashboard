@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.25 — 2026-08-24
+
+**Rework Dynamic Island**
+
+- Système de priorité et verrou utilisateur.
+- Vue synchronisation intégrée.
+- Respect des safe areas et largeurs mobiles.
+- Interactions clavier (Enter / Espace / Escape).
+- z-index sous les modals.
+- Version v1.8.25.
+
 ## v1.8.24 — 2026-08-24
 
 **Sync session multi-onglet**

@@ -5498,6 +5498,62 @@ const v365_de: ChangelogEntry = {
   ],
 };
 
+const v369_fr: ChangelogEntry = {
+  version: "v1.8.25",
+  date: "2026-08-24",
+  title: "Rework Dynamic Island",
+  items: [
+    "Priorité et verrou utilisateur.",
+    "Vue synchronisation intégrée.",
+    "Safe areas et largeurs mobiles.",
+    "Interactions clavier.",
+    "z-index sous les modals.",
+    "Version v1.8.25.",
+  ],
+};
+
+const v369_en: ChangelogEntry = {
+  version: "v1.8.25",
+  date: "2026-08-24",
+  title: "Dynamic Island rework",
+  items: [
+    "Priority and user lock.",
+    "Integrated sync view.",
+    "Safe areas and mobile widths.",
+    "Keyboard interactions.",
+    "z-index below modals.",
+    "Version v1.8.25.",
+  ],
+};
+
+const v369_es: ChangelogEntry = {
+  version: "v1.8.25",
+  date: "2026-08-24",
+  title: "Rework de Dynamic Island",
+  items: [
+    "Prioridad y bloqueo de usuario.",
+    "Vista de sincronización integrada.",
+    "Safe areas y anchos móviles.",
+    "Interacciones de teclado.",
+    "z-index bajo modals.",
+    "Versión v1.8.25.",
+  ],
+};
+
+const v369_de: ChangelogEntry = {
+  version: "v1.8.25",
+  date: "2026-08-24",
+  title: "Dynamic Island Rework",
+  items: [
+    "Priorität und Benutzer-Sperre.",
+    "Integrierte Sync-Ansicht.",
+    "Safe Areas und mobile Breiten.",
+    "Tastatur-Interaktionen.",
+    "z-index unter Modals.",
+    "Version v1.8.25.",
+  ],
+};
+
 const v368_fr: ChangelogEntry = {
   version: "v1.8.24",
   date: "2026-08-24",
@@ -5654,9 +5710,9 @@ const v366_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
-CHANGELOG_BY_LANG.es.unshift(v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
-CHANGELOG_BY_LANG.de.unshift(v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
+CHANGELOG_BY_LANG.fr.unshift(v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

@@ -181,11 +181,11 @@ export default function NotificationItem({
             )}
           </div>
 
-          <p className="mt-0.5 line-clamp-2 text-xs text-[var(--muted)]" translate="no">
+          <p className="mt-0.5 line-clamp-2 text-xs text-[var(--text-muted)]" translate="no">
             {n.message}
           </p>
 
-          <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] text-[var(--muted)]">
+          <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] text-[var(--text-muted)]">
             <span className="font-medium text-[var(--foreground)]">{n.source || categoryLabel}</span>
             <span className="text-white/20">·</span>
             <span>{formatTime(n.timestamp)}</span>
@@ -202,7 +202,7 @@ export default function NotificationItem({
             type="button"
             onClick={handleMarkRead}
             data-tooltip={isUnread ? i18n("markAsRead") : i18n("markAsUnread")}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--foreground)]"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
             aria-label={isUnread ? i18n("markAsRead") : i18n("markAsUnread")}
           >
             <EthoneGlyph name={isUnread ? "check" : "mail-open"} className="h-4 w-4" />
@@ -211,7 +211,7 @@ export default function NotificationItem({
             type="button"
             onClick={handleArchive}
             data-tooltip={i18n("archive")}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--foreground)]"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
             aria-label={i18n("archive")}
           >
             <EthoneGlyph name="archive" className="h-4 w-4" />
@@ -226,7 +226,7 @@ export default function NotificationItem({
                 setSnoozeOpen(false);
               }}
               data-tooltip={i18n("moreActions")}
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--foreground)]"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
               aria-label={i18n("moreActions")}
               aria-expanded={menuOpen}
             >
@@ -243,7 +243,7 @@ export default function NotificationItem({
                         e.stopPropagation();
                         setSnoozeOpen(false);
                       }}
-                      className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.06]"
+                      className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--text-muted)] hover:bg-[var(--surface-hover)]"
                     >
                       <EthoneGlyph name="back" className="h-3.5 w-3.5" />
                       {i18n("back")}
@@ -253,7 +253,7 @@ export default function NotificationItem({
                         key={dur}
                         type="button"
                         onClick={(e) => handleSnooze(e, dur)}
-                        className="h-9 w-full rounded-lg px-2 text-left text-xs text-[var(--foreground)] hover:bg-[var(--text-primary)]/[0.06]"
+                        className="h-9 w-full rounded-lg px-2 text-left text-xs text-[var(--foreground)] hover:bg-[var(--surface-hover)]"
                       >
                         {i18n(SNOOZE_KEYS[dur])}
                       </button>
@@ -267,7 +267,7 @@ export default function NotificationItem({
                         e.stopPropagation();
                         setSnoozeOpen(true);
                       }}
-                      className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--foreground)] hover:bg-[var(--text-primary)]/[0.06]"
+                      className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--foreground)] hover:bg-[var(--surface-hover)]"
                     >
                       <EthoneGlyph name="clock" className="h-3.5 w-3.5" />
                       {i18n("snooze")}
@@ -275,7 +275,7 @@ export default function NotificationItem({
                     <button
                       type="button"
                       onClick={handleImportant}
-                      className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--foreground)] hover:bg-[var(--text-primary)]/[0.06]"
+                      className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--foreground)] hover:bg-[var(--surface-hover)]"
                     >
                       <EthoneGlyph name="alert" className="h-3.5 w-3.5" />
                       {i18n("markImportant")}
@@ -283,7 +283,7 @@ export default function NotificationItem({
                     <button
                       type="button"
                       onClick={handleMute}
-                      className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--foreground)] hover:bg-[var(--text-primary)]/[0.06]"
+                      className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--foreground)] hover:bg-[var(--surface-hover)]"
                     >
                       <EthoneGlyph name={isMuted(n.category) ? "bell" : "bell-off"} className="h-3.5 w-3.5" />
                       {i18n(isMuted(n.category) ? "unmute" : "mute")}

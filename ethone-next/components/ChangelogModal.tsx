@@ -83,7 +83,7 @@ export default function ChangelogModal({
                       {versionLabel}
                     </span>
                   </h3>
-                  <p className="text-[11px] text-[var(--muted)]">
+                  <p className="text-[11px] text-[var(--text-muted)]">
                     {i18n("changelogDescription") || "Historique des mises à jour"}
                   </p>
                 </div>
@@ -92,7 +92,7 @@ export default function ChangelogModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--foreground)]"
+                className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
                 aria-label={i18n("close")}
               >
                 <X className="h-4 w-4" />

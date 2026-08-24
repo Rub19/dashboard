@@ -40,7 +40,7 @@ export default function VersionUpdateToast() {
                   </span>
                 )}
               </div>
-              <p className="text-[11px] text-[var(--muted)]">
+              <p className="text-[11px] text-[var(--text-muted)]">
                 {i18n("updateDescription", "Une nouvelle version d'ETHONE OS est prête. Forcez la mise à jour pour utiliser les derniers changements.")}
               </p>
             </div>
@@ -59,7 +59,7 @@ export default function VersionUpdateToast() {
                 type="button"
                 onClick={dismiss}
                 aria-label={i18n("later", "Plus tard")}
-                className="rounded-lg p-2 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.05] hover:text-[var(--text-primary)]"
+                className="rounded-lg p-2 text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
               >
                 <EthoneGlyph name="close" className="h-4 w-4" />
               </button>

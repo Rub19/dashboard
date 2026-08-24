@@ -121,7 +121,7 @@ export default function NotificationCenter() {
     <div className="flex items-start justify-between gap-3">
       <div>
         <h3 className="text-base font-semibold text-[var(--foreground)]">{i18n("notifications")}</h3>
-        <p className="text-xs text-[var(--muted)]">
+        <p className="text-xs text-[var(--text-muted)]">
           {unreadCount > 0 ? (
             <>
               {unreadCount} {i18n("unread")}
@@ -146,7 +146,7 @@ export default function NotificationCenter() {
           type="button"
           onClick={markAllRead}
           disabled={unreadCount === 0}
-          className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--background)]/50 text-[var(--foreground)] transition-colors hover:bg-[var(--text-primary)]/[0.06] disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-[var(--background)]/50 text-[var(--foreground)] transition-colors hover:bg-[var(--surface-hover)] disabled:cursor-not-allowed disabled:opacity-40"
           aria-label={i18n("markAllRead")}
           title={i18n("markAllRead")}
         >
@@ -190,10 +190,10 @@ export default function NotificationCenter() {
             exit={{ opacity: 0 }}
             className="flex h-32 flex-col items-center justify-center gap-2.5 text-center"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-[var(--muted)]">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--text-muted)]">
               <EthoneGlyph name="bell-off" className="h-4 w-4" />
             </div>
-            <p className="text-sm text-[var(--muted)]">{i18n("noNotifications")}</p>
+            <p className="text-sm text-[var(--text-muted)]">{i18n("noNotifications")}</p>
           </motion.div>
         ) : (
           <div key="list" className="space-y-2">
@@ -234,20 +234,20 @@ export default function NotificationCenter() {
         <button
           type="button"
           data-tooltip={i18n("notifications")}
-          className="relative flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95 cursor-pointer select-none"
+          className="relative flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-all hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] active:scale-95 cursor-pointer select-none"
           aria-label={i18n("notifications")}
         >
           <EthoneGlyph name="bell" className="pointer-events-none h-5 w-5" />
           {unreadCount > 0 && (
             <span
               data-notification-badge
-              className="pointer-events-none absolute right-1.5 top-1.5 flex h-4 min-w-[1rem] items-center justify-center rounded-lg bg-[var(--accent)] px-1 text-[10px] font-bold text-white"
+              className="pointer-events-none absolute right-1.5 top-1.5 flex h-4 min-w-[1rem] items-center justify-center rounded-lg bg-[var(--accent-primary)] px-1 text-[10px] font-bold text-[var(--accent-contrast)]"
             >
               {unreadCount > 99 ? "99+" : unreadCount}
             </span>
           )}
           {unreadCount === 0 && importantCount > 0 && (
-            <span className="pointer-events-none absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-amber-400" />
+            <span className="pointer-events-none absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-[var(--warning)]" />
           )}
         </button>
       </PopoverTrigger>

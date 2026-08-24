@@ -105,7 +105,8 @@ export default function DashboardOverview() {
           bills: { label: i18n("billsTitle"), icon: "bills" },
           live: { label: i18n("live"), icon: "radio" },
         };
-        return { id: w.id, ...meta[w.id] };
+        const info = meta[w.id] ?? { label: w.id, icon: "square" };
+        return { id: w.id, ...info };
       }),
     [widgets, i18n]
   );

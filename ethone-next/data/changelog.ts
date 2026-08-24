@@ -5153,12 +5153,13 @@ const v359_de: ChangelogEntry = {
 const v360_fr: ChangelogEntry = {
   version: "v1.8.16",
   date: "2026-08-24",
-  title: "Correction du crash du bouton météo",
+  title: "Correction du crash du bouton météo et du clignotement du lecteur média",
   items: [
     "Correction du maximum de profondeur de mise à jour React dans WeatherDetailPopover.",
     "Le ref de la popover météo utilise refs.setFloating de @floating-ui/react directement, évitant une boucle setState.",
     "Ajout de clés uniques sur les createPortal de Popover, Modal, Select et CommandPalette.",
     "Dédoublonnage défensif des notifications et des widgets du tableau de bord.",
+    "Correction du clignotement de la barre de progression du lecteur média : localProgress n’est resynchronisé sur nowPlaying.progressMs qu’au changement de piste (id).",
     "Version v1.8.16.",
   ],
 };
@@ -5166,12 +5167,13 @@ const v360_fr: ChangelogEntry = {
 const v360_en: ChangelogEntry = {
   version: "v1.8.16",
   date: "2026-08-24",
-  title: "Weather button crash fix",
+  title: "Weather button crash and media player flicker fix",
   items: [
     "Fixed React maximum update depth exceeded in WeatherDetailPopover.",
     "Weather popover ref now directly uses refs.setFloating from @floating-ui/react, removing a setState loop.",
     "Added unique keys to Popover, Modal, Select and CommandPalette createPortals.",
     "Defensive deduplication for notifications and dashboard widgets.",
+    "Fixed media player progress bar flickering: localProgress is only resynced to nowPlaying.progressMs on track change (id).",
     "Version v1.8.16.",
   ],
 };
@@ -5179,12 +5181,13 @@ const v360_en: ChangelogEntry = {
 const v360_es: ChangelogEntry = {
   version: "v1.8.16",
   date: "2026-08-24",
-  title: "Corrección del bloqueo del botón del tiempo",
+  title: "Corrección del bloqueo del botón del tiempo y del parpadeo del reproductor",
   items: [
     "Corrección del exceso de profundidad máxima de actualización de React en WeatherDetailPopover.",
     "El ref de la ventana del tiempo ahora usa directamente refs.setFloating de @floating-ui/react, evitando un bucle de setState.",
     "Claves únicas añadidas a los createPortal de Popover, Modal, Select y CommandPalette.",
     "Deduplicación defensiva de notificaciones y widgets del panel de control.",
+    "Corrección del parpadeo de la barra de progreso del reproductor: localProgress solo se resincroniza con nowPlaying.progressMs al cambiar de pista (id).",
     "Versión v1.8.16.",
   ],
 };
@@ -5192,12 +5195,13 @@ const v360_es: ChangelogEntry = {
 const v360_de: ChangelogEntry = {
   version: "v1.8.16",
   date: "2026-08-24",
-  title: "Absturz des Wetter-Buttons behoben",
+  title: "Absturz des Wetter-Buttons und Flackern des Mediaplayers behoben",
   items: [
     "Maximale React-Aktualisierungstiefe in WeatherDetailPopover behoben.",
     "Der Wetter-Popover-Ref verwendet jetzt direkt refs.setFloating von @floating-ui/react und vermeidet so eine setState-Schleife.",
     "Eindeutige Schlüssel für createPortal in Popover, Modal, Select und CommandPalette hinzugefügt.",
     "Defensive Deduplizierung von Benachrichtigungen und Dashboard-Widgets.",
+    "Flackern der Fortschrittsleiste des Mediaplayers behoben: localProgress wird nur beim Titelwechsel (id) mit nowPlaying.progressMs resynchronisiert.",
     "Version v1.8.16.",
   ],
 };

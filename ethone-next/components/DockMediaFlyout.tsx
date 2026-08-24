@@ -58,12 +58,17 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
   const [localVolume, setLocalVolume] = useState(nowPlaying?.volumePercent ?? 50);
 
   useEffect(() => {
-    setLocalProgress(nowPlaying?.progressMs || 0);
-    progressRef.current = nowPlaying?.progressMs || 0;
     setIsPlaying(!!nowPlaying?.isPlaying);
     setIsLiked(!!nowPlaying?.isSaved);
     setLocalVolume(nowPlaying?.volumePercent ?? 50);
-  }, [nowPlaying?.progressMs, nowPlaying?.isPlaying, nowPlaying?.isSaved, nowPlaying?.volumePercent, nowPlaying?.id]);
+  }, [nowPlaying?.isPlaying, nowPlaying?.isSaved, nowPlaying?.volumePercent]);
+
+  /* eslint-disable react-hooks/exhaustive-deps */
+  useEffect(() => {
+    progressRef.current = nowPlaying?.progressMs || 0;
+    setLocalProgress(nowPlaying?.progressMs || 0);
+  }, [nowPlaying?.id]);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   useEffect(() => {
     if (!isPlaying) return;

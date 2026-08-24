@@ -4,12 +4,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## v1.8.16 — 2026-08-24
 
-**Correction du crash du bouton météo**
+**Correction du crash du bouton météo et du clignotement du lecteur média**
 
 - Correction du maximum de profondeur de mise à jour React dans `WeatherDetailPopover`.
 - Le `ref` de la popover météo utilise désormais `refs.setFloating` de `@floating-ui/react` directement, supprimant la boucle `setState`.
 - Ajout de clés uniques sur les `createPortal` de `Popover`, `Modal`, `Select` et `CommandPalette`.
 - Dédoublonnage défensif des notifications et des widgets du tableau de bord.
+- Correction du clignotement de la barre de progression du lecteur média : `localProgress` n’est resynchronisé sur `nowPlaying.progressMs` qu’au changement de piste (`id`).
 - Version `v1.8.16`.
 
 ## v1.8.15 — 2026-08-24

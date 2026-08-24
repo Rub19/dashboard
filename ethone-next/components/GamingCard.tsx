@@ -137,6 +137,8 @@ export default function GamingCard({
   const ping = server?.ping !== undefined ? `${server.ping} ms` : null;
   const serverVersion = server?.version || null;
 
+  if (!configured && !hasProfile) return null;
+
   return (
     <TiltCard
       className={cn(

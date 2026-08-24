@@ -330,6 +330,12 @@ export function RiotGamingCardContent({
 
 export default function RiotGamingCard(props: RiotGamingCardProps) {
   const config = GAME_CONFIG[props.game];
+  const { settings } = useSettings();
+  const displayName = props.playerName || settings.liveTrackerRiotName;
+  const displayTag = props.playerTag || settings.liveTrackerRiotTag;
+  const configured = Boolean(displayName && displayTag);
+
+  if (!configured) return null;
 
   return (
     <TiltCard

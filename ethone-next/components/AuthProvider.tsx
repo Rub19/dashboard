@@ -139,10 +139,22 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
 
+    function handleStorage(event: StorageEvent) {
+      if (event.key !== "ethone-remember-token" && event.key !== "ethone-remember-me") return;
+      if (!event.newValue) {
+        setSession(null);
+        setUser(null);
+        setLoading(false);
+      } else {
+        resolveSession();
+      }
+    }
+
     if (typeof window !== "undefined") {
       setIsOnline(navigator.onLine);
       window.addEventListener("online", handleOnline);
       window.addEventListener("offline", handleOffline);
+      window.addEventListener("storage", handleStorage);
     }
 
     return () => {
@@ -150,6 +162,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       if (typeof window !== "undefined") {
         window.removeEventListener("online", handleOnline);
         window.removeEventListener("offline", handleOffline);
+        window.removeEventListener("storage", handleStorage);
       }
     };
   }, []);

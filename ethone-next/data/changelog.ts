@@ -5498,6 +5498,66 @@ const v365_de: ChangelogEntry = {
   ],
 };
 
+const v367_fr: ChangelogEntry = {
+  version: "v1.8.23",
+  date: "2026-08-24",
+  title: "Rework authentification ETHONE",
+  items: [
+    "OTP natif Supabase, anti-boucle et session confirmée.",
+    "Passkey via supabase.auth.verifyOtp (magiclink).",
+    "Remember-me avec vrai refresh_token.",
+    "Logs diagnostiques auth en dev.",
+    "Responsive login amélioré.",
+    "Tests E2E Playwright passants.",
+    "Version v1.8.23.",
+  ],
+};
+
+const v367_en: ChangelogEntry = {
+  version: "v1.8.23",
+  date: "2026-08-24",
+  title: "ETHONE authentication rework",
+  items: [
+    "Native Supabase OTP, anti-loop and confirmed session.",
+    "Passkey via supabase.auth.verifyOtp (magiclink).",
+    "Remember-me with real refresh_token.",
+    "Auth diagnostic logs in dev.",
+    "Improved login responsiveness.",
+    "Passing Playwright E2E tests.",
+    "Version v1.8.23.",
+  ],
+};
+
+const v367_es: ChangelogEntry = {
+  version: "v1.8.23",
+  date: "2026-08-24",
+  title: "Rework de autenticación ETHONE",
+  items: [
+    "OTP nativo de Supabase, anti-bucle y sesión confirmada.",
+    "Passkey vía supabase.auth.verifyOtp (magiclink).",
+    "Remember-me con refresh_token real.",
+    "Logs de diagnóstico de auth en dev.",
+    "Responsive de login mejorado.",
+    "Tests E2E Playwright pasando.",
+    "Versión v1.8.23.",
+  ],
+};
+
+const v367_de: ChangelogEntry = {
+  version: "v1.8.23",
+  date: "2026-08-24",
+  title: "ETHONE-Authentifizierungs-Rework",
+  items: [
+    "Natives Supabase-OTP, Anti-Schleife und bestätigte Sitzung.",
+    "Passkey über supabase.auth.verifyOtp (magiclink).",
+    "Remember-me mit echtem refresh_token.",
+    "Auth-Diagnose-Logs in dev.",
+    "Verbessertes Login-Responsive.",
+    "Bestandene Playwright-E2E-Tests.",
+    "Version v1.8.23.",
+  ],
+};
+
 const v366_fr: ChangelogEntry = {
   version: "v1.8.22",
   date: "2026-08-24",
@@ -5550,9 +5610,9 @@ const v366_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
-CHANGELOG_BY_LANG.es.unshift(v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
-CHANGELOG_BY_LANG.de.unshift(v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
+CHANGELOG_BY_LANG.fr.unshift(v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

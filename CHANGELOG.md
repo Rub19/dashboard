@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.23 — 2026-08-24
+
+**Rework authentification ETHONE**
+
+- OTP natif Supabase avec vérification de session et anti-boucle.
+- Passkey via `supabase.auth.verifyOtp({ type: "magiclink" })` pour une vraie session.
+- Remember-me corrigé avec le vrai `refresh_token`.
+- Logs diagnostiques auth en dev.
+- Responsive login amélioré (iPad / tablet).
+- Couleurs et accessibilité tokenisées sur la page login.
+- Tests E2E Playwright (responsive) passent.
+- Version v1.8.23.
+
 ## v1.8.22 — 2026-08-24
 
 **Fix OTP et session remember-me**

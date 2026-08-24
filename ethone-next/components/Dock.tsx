@@ -32,6 +32,7 @@ const ICONS: Record<string, string> = {
   flows: "flows",
   brain: "brain",
   weather: "cloudSun",
+  rss: "rss",
   focus: "focus",
   team: "team",
   mail: "mail",

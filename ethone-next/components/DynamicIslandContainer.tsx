@@ -560,7 +560,7 @@ export default function DynamicIslandContainer() {
                   <button
                     type="button"
                     onClick={() => spotifyControl("previous")}
-                    disabled={pendingSpotify || npLoading}
+                    disabled={pendingSpotify}
                     className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
                     aria-label={i18n("previous")}
                   >
@@ -569,7 +569,7 @@ export default function DynamicIslandContainer() {
                   <button
                     type="button"
                     onClick={togglePlay}
-                    disabled={pendingSpotify || npLoading}
+                    disabled={pendingSpotify}
                     className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--text-primary)] text-[var(--background)] shadow-lg transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
                     aria-label={nowPlaying?.isPlaying ? i18n("pause") : i18n("play")}
                   >
@@ -578,7 +578,7 @@ export default function DynamicIslandContainer() {
                   <button
                     type="button"
                     onClick={() => spotifyControl("next")}
-                    disabled={pendingSpotify || npLoading}
+                    disabled={pendingSpotify}
                     className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
                     aria-label={i18n("next")}
                   >

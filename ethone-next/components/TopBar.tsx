@@ -24,6 +24,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useFocus } from "@/components/FocusProvider";
 import { useDynamicIslandStore } from "@/lib/stores/dynamic-island";
 import WeatherDetailPopover from "@/components/WeatherDetailPopover";
+import SupportButton from "@/components/dashboard/SupportButton";
 import { Icon } from "@/lib/icons";
 import { PREMIUM_THEMES, THEME_DEFINITIONS, resolvePremiumTheme } from "@/lib/theme-engine";
 import { cn } from "@/lib/utils";
@@ -215,6 +216,7 @@ function TopBar() {
             <ThemeToggle />
             <FocusToggle />
             <DynamicIslandToggle />
+            <SupportButton />
           </div>
 
           <Tooltip label="Rechercher — ⌘K" position="bottom">

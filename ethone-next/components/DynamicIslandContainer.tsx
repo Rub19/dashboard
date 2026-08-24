@@ -217,12 +217,16 @@ export default function DynamicIslandContainer() {
   const { visible } = useDynamicIslandStore();
   const { pendingCount, syncing, lastSync } = useActivityJournal();
 
-  const [expanded, setExpanded] = useState(false);
+  type IslandMode = "IDLE" | "COMPACT" | "EXPANDED" | "INTERACTIVE";
+  const [mode, setMode] = useState<IslandMode>("IDLE");
+  const expanded = mode === "EXPANDED" || mode === "INTERACTIVE";
+  const interactive = mode === "INTERACTIVE";
   const [selectedView, setSelectedView] = useState<View | null>(null);
   const [userSelected, setUserSelected] = useState(false);
   const [activeViews, setActiveViews] = useState<View[]>([]);
   const prevActiveRef = useRef<Set<View>>(new Set());
   const isInitialMount = useRef(true);
+  const islandLeaveTimer = useRef<number | null>(null);
 
   const [localVolume, setLocalVolume] = useState(nowPlaying?.volumePercent ?? 50);
   const [pendingSpotify, setPendingSpotify] = useState(false);
@@ -274,15 +278,15 @@ export default function DynamicIslandContainer() {
     } else if (selectedView && !nextActive.has(selectedView)) {
       const fallback = nextActiveViews[0] ?? null;
       setSelectedView(fallback);
-      if (!fallback) setExpanded(false);
+      if (!fallback) setMode("IDLE");
     }
 
     if (isInitialMount.current) {
-      setExpanded(false);
+      setMode(nextActive.size > 0 ? "COMPACT" : "IDLE");
       isInitialMount.current = false;
     }
 
-    if (nextActive.size === 0) setExpanded(false);
+    if (nextActive.size === 0) setMode("IDLE");
 
     prevActiveRef.current = nextActive;
   }, [brainActive, pomodoroActive, syncActive, spotifyActive, selectedView, npLoading, userSelected]);
@@ -290,7 +294,7 @@ export default function DynamicIslandContainer() {
   // Escape collapses
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setExpanded(false);
+      if (e.key === "Escape") setMode(activeViews.length > 0 ? "COMPACT" : "IDLE");
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -299,13 +303,26 @@ export default function DynamicIslandContainer() {
   const selectView = useCallback((view: View) => {
     setUserSelected(true);
     setSelectedView(view);
-    setExpanded(true);
+    setMode("EXPANDED");
   }, []);
 
   const toggleExpanded = useCallback(() => {
     if (!selectedView) return;
-    setExpanded((v) => !v);
+    setMode((m) => (m === "COMPACT" ? "EXPANDED" : "COMPACT"));
   }, [selectedView]);
+
+  const onIslandEnter = useCallback(() => {
+    if (mode === "EXPANDED" || mode === "INTERACTIVE") {
+      setMode("INTERACTIVE");
+    }
+  }, [mode]);
+
+  const onIslandLeave = useCallback(() => {
+    if (mode === "INTERACTIVE") {
+      if (islandLeaveTimer.current) window.clearTimeout(islandLeaveTimer.current);
+      islandLeaveTimer.current = window.setTimeout(() => setMode("EXPANDED"), 400);
+    }
+  }, [mode]);
 
   const pomodoroPct = useMemo(() => {
     if (!focus.state.total) return 0;
@@ -462,6 +479,12 @@ export default function DynamicIslandContainer() {
     [toggleExpanded],
   );
 
+  useEffect(() => {
+    return () => {
+      if (islandLeaveTimer.current) window.clearTimeout(islandLeaveTimer.current);
+    };
+  }, []);
+
   return (
     <AnimatePresence>
       {visible && activeViews.length > 0 && (
@@ -478,6 +501,9 @@ export default function DynamicIslandContainer() {
             compact={compact}
             onClick={toggleExpanded}
             onKeyDown={handleKeyDown}
+            onMouseEnter={onIslandEnter}
+            onMouseLeave={onIslandLeave}
+            data-island-mode={mode}
             aria-label={i18n("dynamicIsland")}
             tabIndex={0}
             role="button"

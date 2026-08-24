@@ -5160,6 +5160,8 @@ const v360_fr: ChangelogEntry = {
     "Ajout de clés uniques sur les createPortal de Popover, Modal, Select et CommandPalette.",
     "Dédoublonnage défensif des notifications et des widgets du tableau de bord.",
     "Correction du clignotement de la barre de progression du lecteur média : localProgress n’est resynchronisé sur nowPlaying.progressMs qu’au changement de piste (id).",
+    "Modal de remerciement post-don : fermeture uniquement via la croix (backdrop et Échap désactivés).",
+    "BootProvider saute l’écran de chargement quand l’URL contient ?supported=true (retour après un don Stripe).",
     "Version v1.8.16.",
   ],
 };
@@ -5174,6 +5176,8 @@ const v360_en: ChangelogEntry = {
     "Added unique keys to Popover, Modal, Select and CommandPalette createPortals.",
     "Defensive deduplication for notifications and dashboard widgets.",
     "Fixed media player progress bar flickering: localProgress is only resynced to nowPlaying.progressMs on track change (id).",
+    "Post-donation thank-you modal can now only be closed via the X (backdrop and Escape disabled).",
+    "BootProvider skips the loading screen when the URL contains ?supported=true (Stripe donation return).",
     "Version v1.8.16.",
   ],
 };
@@ -5188,6 +5192,8 @@ const v360_es: ChangelogEntry = {
     "Claves únicas añadidas a los createPortal de Popover, Modal, Select y CommandPalette.",
     "Deduplicación defensiva de notificaciones y widgets del panel de control.",
     "Corrección del parpadeo de la barra de progreso del reproductor: localProgress solo se resincroniza con nowPlaying.progressMs al cambiar de pista (id).",
+    "El modal de agradecimiento post-donación ahora solo se cierra con la X (backdrop y Escape desactivados).",
+    "BootProvider omite la pantalla de carga cuando la URL contiene ?supported=true (vuelta tras donación Stripe).",
     "Versión v1.8.16.",
   ],
 };
@@ -5202,6 +5208,8 @@ const v360_de: ChangelogEntry = {
     "Eindeutige Schlüssel für createPortal in Popover, Modal, Select und CommandPalette hinzugefügt.",
     "Defensive Deduplizierung von Benachrichtigungen und Dashboard-Widgets.",
     "Flackern der Fortschrittsleiste des Mediaplayers behoben: localProgress wird nur beim Titelwechsel (id) mit nowPlaying.progressMs resynchronisiert.",
+    "Post-Spende-Dankesmodal kann nur noch über das X geschlossen werden (Backdrop und Escape deaktiviert).",
+    "BootProvider überspringt den Ladebildschirm, wenn die URL ?supported=true enthält (Rückkehr nach Stripe-Spende).",
     "Version v1.8.16.",
   ],
 };

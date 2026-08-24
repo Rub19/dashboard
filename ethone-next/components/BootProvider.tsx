@@ -74,9 +74,21 @@ export default function BootProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [bootProgress, setBootProgress] = useState(0);
   const [bootReady, setBootReady] = useState(false);
+  const bootReadyRef = useRef(false);
   const bootStartRef = useRef<number | null>(null);
+  const donationReturnRef = useRef(false);
 
   const publicRoute = resolvePublicRoute(pathname);
+
+  useEffect(() => {
+    bootReadyRef.current = bootReady;
+  }, [bootReady]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      donationReturnRef.current = new URLSearchParams(window.location.search).get("supported") === "true";
+    }
+  }, []);
 
   const check = useCallback(() => {
     if (typeof window !== "undefined" && !navigator.onLine) {
@@ -172,9 +184,17 @@ export default function BootProvider({ children }: { children: ReactNode }) {
     let raf = 0;
 
     const tick = () => {
+      if (bootReadyRef.current) return;
       const start = bootStartRef.current ?? Date.now();
       const elapsed = Date.now() - start;
       const authResolved = !authLoading && !authError;
+      const canShowApp = authResolved && profileLoaded;
+
+      if (donationReturnRef.current && canShowApp) {
+        setBootProgress(100);
+        setBootReady(true);
+        return;
+      }
 
       let target = 0;
       if (elapsed < 400) {
@@ -198,7 +218,6 @@ export default function BootProvider({ children }: { children: ReactNode }) {
       const next = Math.min(100, Math.max(0, Math.round(target)));
       setBootProgress(next);
 
-      const canShowApp = authResolved && profileLoaded;
       if (next >= 100 && canShowApp) {
         setBootReady(true);
         return;

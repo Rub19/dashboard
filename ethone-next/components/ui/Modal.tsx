@@ -24,6 +24,8 @@ export type ModalProps = {
   hideCloseButton?: boolean;
   position?: "center" | "bottom" | "top";
   fullScreen?: boolean;
+  closeOnBackdrop?: boolean;
+  closeOnEscape?: boolean;
   className?: string;
   contentClassName?: string;
 };
@@ -62,6 +64,8 @@ export default function Modal({
   hideCloseButton = false,
   position = "center",
   fullScreen = false,
+  closeOnBackdrop = true,
+  closeOnEscape = true,
   className = "",
   contentClassName = "",
 }: ModalProps) {
@@ -80,7 +84,7 @@ export default function Modal({
     document.body.style.overflow = "hidden";
 
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") onClose();
+      if (event.key === "Escape" && closeOnEscape) onClose();
     }
 
     document.addEventListener("keydown", onKeyDown);
@@ -89,7 +93,7 @@ export default function Modal({
       document.body.style.overflow = originalOverflow;
       document.removeEventListener("keydown", onKeyDown);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, closeOnEscape]);
 
   const modal = (
     <AnimatePresence>
@@ -99,7 +103,7 @@ export default function Modal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15 }}
-          onClick={onClose}
+          onClick={() => closeOnBackdrop && onClose()}
           className={`fixed inset-0 z-50 flex justify-center bg-[var(--background)]/70 p-4 backdrop-blur-md ${positionOuter[position]}`}
         >
           <motion.div

@@ -38,19 +38,13 @@ export default function DashboardPage() {
         description="Votre soutien aide ETHONE OS à grandir."
         cancelLabel="Fermer"
         size="sm"
+        closeOnBackdrop={false}
+        closeOnEscape={false}
+        hideFooter
       >
-        <div className="space-y-4 text-center">
-          <p className="text-[var(--foreground)]">
-            Un grand merci pour votre précieux soutien. Vous êtes génial·e.
-          </p>
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            className="inline-flex h-9 items-center justify-center rounded-xl bg-[var(--accent-primary)] px-4 text-sm font-semibold text-[var(--accent-contrast)] transition-transform hover:scale-105 active:scale-95"
-          >
-            Fermer
-          </button>
-        </div>
+        <p className="text-center text-[var(--foreground)]">
+          Un grand merci pour votre précieux soutien. Vous êtes génial·e.
+        </p>
       </Modal>
     </>
   );

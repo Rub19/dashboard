@@ -343,18 +343,18 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           unstyled: true,
           classNames: {
             toast:
-              "group relative flex w-[22rem] max-w-[calc(100vw-1.5rem)] items-start gap-3 rounded-xl border border-white/10 bg-[#0C0C0E]/95 p-3.5 text-sm shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-md",
+              "group relative flex w-[22rem] max-w-[calc(100vw-1.5rem)] items-start gap-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-3.5 text-sm text-[var(--text-primary)] shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-md",
             title: "font-medium",
-            description: "mt-0.5 text-xs text-zinc-300",
+            description: "mt-0.5 text-xs text-[var(--text-muted)]",
             actionButton:
-              "ml-auto rounded-lg border border-white/[0.08] bg-white/[0.1] px-2.5 py-1.5 text-[11px] font-semibold text-white transition-colors hover:bg-white/[0.2]",
+              "ml-auto rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1.5 text-[11px] font-semibold text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]",
             cancelButton: "hidden",
             closeButton:
-              "absolute right-2 top-2 rounded-md p-1 text-zinc-400 opacity-0 transition-all hover:bg-white/[0.1] hover:text-white group-hover:opacity-100",
-            error: "border-rose-500/20 text-rose-400",
-            success: "border-[--accent-primary] text-[--accent-primary]",
-            warning: "border-amber-500/20 text-amber-400",
-            info: "border-[--info] text-[--info]",
+              "absolute right-2 top-2 rounded-md p-1 text-[var(--text-muted)] opacity-0 transition-all hover:bg-[var(--surface)] hover:text-[var(--text-primary)] group-hover:opacity-100",
+            error: "border-[var(--danger)]/20 text-[var(--danger)]",
+            success: "border-[var(--accent-primary)] text-[var(--accent-primary)]",
+            warning: "border-[var(--warning)]/20 text-[var(--warning)]",
+            info: "border-[var(--info)] text-[var(--info)]",
           },
         }}
         icons={{

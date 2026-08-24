@@ -316,12 +316,13 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
   if (!data) {
     return (
       <div
-        className={`flex flex-col items-center justify-center gap-3 rounded-2xl border border-[var(--text-primary)]/[0.06] bg-[var(--background)]/60 p-5 text-center backdrop-blur-2xl ${
+        className={`flex flex-col items-center justify-center gap-2 rounded-2xl border border-[var(--text-primary)]/[0.06] bg-[var(--background)]/60 p-5 text-center backdrop-blur-2xl ${
           compact ? "min-h-[130px]" : "min-h-[260px]"
         } ${className || ""}`}
       >
-        <Icon name="cloud" className="h-10 w-10 text-[var(--text-muted)]" />
-        <p className="text-sm text-[var(--text-muted)]">{i18n("noForecast")}</p>
+        <Icon name="cloud" className="h-9 w-9 text-[var(--text-muted)]" />
+        <p className="text-sm font-semibold text-[var(--text-primary)]">{i18n("noForecast", "Météo indisponible")}</p>
+        <p className="text-[11px] text-[var(--text-muted)]">{i18n("weatherEmptyHint", "Vérifiez la connexion ou configurez une ville.")}</p>
         {onRefresh && (
           <button
             type="button"
@@ -338,7 +339,7 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
 
   return (
     <TiltCard
-      className={`group h-full min-h-0 bg-zinc-950/70 p-4 shadow-xl shadow-black/50 backdrop-blur-2xl transition-colors ${gradient} ${
+      className={`group h-full min-h-0 bg-[var(--background)]/70 p-4 shadow-xl shadow-[var(--background)]/50 backdrop-blur-2xl transition-colors ${gradient} ${
         className || ""
       }`}
     >

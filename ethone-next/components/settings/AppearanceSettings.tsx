@@ -129,21 +129,26 @@ export default function AppearanceSettings() {
   const i18n = useI18n();
   const { settings } = useSettings();
   const form = useSettingsForm();
-  const { show } = useToast();
+  const { show, dismiss } = useToast();
   const colorInputId = useId();
 
   const handleChange = <K extends keyof Settings>(key: K, value: Settings[K]) => {
     if (key === "theme" && value !== settings.theme) {
       const previousTheme = settings.theme;
       form.updateInstant(key, value);
-      show({
+      let toastId = "";
+      toastId = show({
         type: "info",
+        icon: <Sparkles className="h-5 w-5" />,
         title: i18n("themeChanged", "Thème modifié"),
         description: i18n("themeChangedDesc", "Votre apparence a été mise à jour."),
         duration: 5000,
         action: {
           label: i18n("undo", "Annuler"),
-          onClick: () => form.updateInstant("theme", previousTheme),
+          onClick: () => {
+            form.updateInstant("theme", previousTheme);
+            dismiss(toastId);
+          },
         },
       });
       return;

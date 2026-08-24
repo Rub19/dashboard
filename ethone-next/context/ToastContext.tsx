@@ -144,9 +144,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               title={title}
               description={description}
               variant={type as RichToastVariant}
+              action={input.action}
             />
           ),
-          { duration, action, className: border }
+          { duration, className: border }
         );
         return String(id);
       }

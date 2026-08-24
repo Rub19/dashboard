@@ -4,11 +4,17 @@ import { motion } from "framer-motion";
 
 export type RichToastVariant = "success" | "error" | "info" | "warning" | "neutral";
 
+type RichToastAction = {
+  label: string;
+  onClick: () => void;
+};
+
 type RichToastProps = {
   icon: React.ReactNode;
   title: React.ReactNode;
   description?: React.ReactNode;
   variant?: RichToastVariant;
+  action?: RichToastAction;
   className?: string;
 };
 
@@ -41,6 +47,7 @@ export default function RichToast({
   title,
   description,
   variant = "neutral",
+  action,
   className,
 }: RichToastProps) {
   return (
@@ -60,6 +67,17 @@ export default function RichToast({
         </div>
         {description ? (
           <p className="mt-0.5 text-xs leading-relaxed text-[var(--text-muted)]">{description}</p>
+        ) : null}
+        {action ? (
+          <div className="mt-2 flex justify-end">
+            <button
+              type="button"
+              onClick={action.onClick}
+              className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1 text-[11px] font-semibold text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50"
+            >
+              {action.label}
+            </button>
+          </div>
         ) : null}
       </div>
     </div>

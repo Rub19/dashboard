@@ -176,6 +176,8 @@ export function DynamicIsland({
         }
         transition={reduce ? { duration: 0 } : SHELL_SPRING}
         style={{ borderRadius: RADIUS }}
+        whileHover={reduce ? undefined : { scale: 1.03 }}
+        whileTap={reduce ? undefined : { scale: 0.97 }}
         onClick={onClick}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
@@ -183,7 +185,7 @@ export function DynamicIsland({
         // expansion reads as unfurling downward out of the pill.
         className={cn(
           "relative inline-flex items-start justify-center overflow-hidden",
-          "bg-zinc-950/85 text-white",
+          "bg-[var(--panel-bg)]/85 text-[var(--text-primary)]",
           "shadow-[0_16px_40px_rgba(0,0,0,0.8)] backdrop-blur-2xl",
           "cursor-pointer pointer-events-auto select-none",
           className,

@@ -420,6 +420,16 @@ export default function DynamicIslandContainer() {
     e.stopPropagation();
   }, []);
 
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggleExpanded();
+      }
+    },
+    [toggleExpanded],
+  );
+
   return (
     <AnimatePresence>
       {visible && activeViews.length > 0 && (
@@ -435,7 +445,10 @@ export default function DynamicIslandContainer() {
             view={expanded && selectedView ? selectedView : null}
             compact={compact}
             onClick={toggleExpanded}
+            onKeyDown={handleKeyDown}
             aria-label={i18n("dynamicIsland")}
+            tabIndex={0}
+            role="button"
           >
             <DynamicIslandView id="spotify" data-testid="dynamic-island-spotify" className="w-[340px] sm:w-[400px]">
               <div onClick={stopPropagation} className="flex w-full flex-col gap-4">

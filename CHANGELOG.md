@@ -2,6 +2,22 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.15 — 2026-08-24
+
+**Intégrations Stripe, thèmes, RSS et polish**
+
+- Icône SVG Valorant et `GameIcon` pour les jeux.
+- Boutons Démarrer du System passés en `outline`.
+- Alerte `SystemHealthBanner` corrigée (plus d'alerte jaune pour non configuré).
+- Palette Minecraft sur la carte Gaming.
+- Scrollbar noire renforcée (`.no-scrollbar` `!important`).
+- Bouton thème cyclique entre les thèmes premium.
+- Intégration du bouton de soutien Stripe (web, iOS, Android).
+- Page de retour post-paiement `/dashboard?supported=true` avec confettis.
+- Refonte du Lecteur RSS et ajout dans le Dock.
+- Correction de l'effet de couleur de l'icône météo.
+- Version `v1.8.15`.
+
 ## v1.8.14 — 2026-08-23
 
 **Polish UI : badges, toasts, Dock et thèmes**

@@ -5074,6 +5074,87 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
   ],
 };
 
+const v359_fr: ChangelogEntry = {
+  version: "v1.8.15",
+  date: "2026-08-24",
+  title: "Intégrations Stripe, thèmes, RSS et polish",
+  items: [
+    "Icône SVG Valorant et GameIcon pour les jeux.",
+    "Boutons Démarrer du System passés en outline.",
+    "Alerte SystemHealthBanner corrigée (plus d'alerte jaune pour non configuré).",
+    "Palette Minecraft sur la carte Gaming.",
+    "Scrollbar noire renforcée (.no-scrollbar !important).",
+    "Bouton thème cyclique entre les thèmes premium.",
+    "Intégration du bouton de soutien Stripe (web, iOS, Android).",
+    "Page de retour post-paiement /dashboard?supported=true avec confettis.",
+    "Refonte du Lecteur RSS et ajout dans le Dock.",
+    "Correction de l'effet de couleur de l'icône météo.",
+    "Version v1.8.15.",
+  ],
+};
+
+const v359_en: ChangelogEntry = {
+  version: "v1.8.15",
+  date: "2026-08-24",
+  title: "Stripe, themes, RSS and polish",
+  items: [
+    "Valorant SVG icon and GameIcon for games.",
+    "System Start buttons switched to outline.",
+    "SystemHealthBanner alert fixed (no amber alert for unconfigured).",
+    "Minecraft palette on Gaming card.",
+    "Black scrollbar hardening (.no-scrollbar !important).",
+    "Theme button cycles through premium themes.",
+    "Stripe support button integration (web, iOS, Android).",
+    "Post-payment return page /dashboard?supported=true with confetti.",
+    "RSS reader redesign and Dock shortcut.",
+    "Weather icon color effect fix.",
+    "Version v1.8.15.",
+  ],
+};
+
+const v359_es: ChangelogEntry = {
+  version: "v1.8.15",
+  date: "2026-08-24",
+  title: "Integraciones Stripe, temas, RSS y pulido",
+  items: [
+    "Icono SVG de Valorant y GameIcon para juegos.",
+    "Botones Iniciar del Sistema en outline.",
+    "Alerta SystemHealthBanner corregida (sin alerta ámbar para no configurado).",
+    "Paleta Minecraft en la tarjeta Gaming.",
+    "Scrollbar negra reforzada (.no-scrollbar !important).",
+    "Botón de tema cambia entre los temas premium.",
+    "Integración del botón de apoyo Stripe (web, iOS, Android).",
+    "Página de retorno post-pago /dashboard?supported=true con confeti.",
+    "Rediseño del Lector RSS y acceso en el Dock.",
+    "Corrección del efecto de color del icono del tiempo.",
+    "Versión v1.8.15.",
+  ],
+};
+
+const v359_de: ChangelogEntry = {
+  version: "v1.8.15",
+  date: "2026-08-24",
+  title: "Stripe-Integration, Themes, RSS und Polish",
+  items: [
+    "Valorant-SVG-Icon und GameIcon für Spiele.",
+    "System-Start-Buttons auf Outline umgestellt.",
+    "SystemHealthBanner-Alert korrigiert (kein Amber-Alert für nicht konfiguriert).",
+    "Minecraft-Palette auf der Gaming-Karte.",
+    "Schwarze Scrollbar verstärkt (.no-scrollbar !important).",
+    "Theme-Button wechselt zwischen Premium-Themes.",
+    "Stripe-Support-Button-Integration (Web, iOS, Android).",
+    "Post-Zahlungs-Rückkehrseite /dashboard?supported=true mit Konfetti.",
+    "RSS-Leser überarbeitet und im Dock hinzugefügt.",
+    "Farb-Effekt des Wettersymbols korrigiert.",
+    "Version v1.8.15.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v359_en);
+CHANGELOG_BY_LANG.es.unshift(v359_es);
+CHANGELOG_BY_LANG.de.unshift(v359_de);
+
 CHANGELOG_BY_LANG.fr.unshift(v357_fr);
 CHANGELOG_BY_LANG.en.unshift(v357_en);
 CHANGELOG_BY_LANG.es.unshift(v357_es);

@@ -40,11 +40,11 @@ function statusColor(status?: string) {
     case "online":
       return "bg-[--accent-primary]";
     case "idle":
-      return "bg-amber-400";
+      return "bg-[var(--warning)]";
     case "dnd":
-      return "bg-rose-500";
+      return "bg-[var(--danger)]";
     default:
-      return "bg-zinc-400";
+      return "bg-[var(--text-muted)]";
   }
 }
 
@@ -64,13 +64,13 @@ function statusLabel(status?: string) {
 function statusTone(status?: string) {
   switch (status) {
     case "dnd":
-      return "border-rose-600/20 bg-rose-500/15 text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300";
+      return "border-[var(--danger)]/20 bg-[var(--danger)]/15 text-[var(--danger)] dark:border-[var(--danger)]/30 dark:bg-[var(--danger)]/10 dark:text-[var(--danger)]";
     case "online":
       return "border-[--accent-primary] bg-[--accent-primary]/10 text-[--accent-primary] dark:border-[--accent-primary] dark:bg-[--accent-primary] dark:text-[--accent-primary]";
     case "idle":
-      return "border-amber-600/20 bg-amber-500/15 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300";
+      return "border-[var(--warning)]/20 bg-[var(--warning)]/15 text-[var(--warning)] dark:border-[var(--warning)]/30 dark:bg-[var(--warning)]/10 dark:text-[var(--warning)]";
     default:
-      return "border-zinc-500/20 bg-zinc-500/10 text-zinc-700 dark:border-zinc-500/30 dark:bg-zinc-500/10 dark:text-zinc-400";
+      return "border-[var(--text-muted)]/20 bg-[var(--text-muted)]/10 text-[var(--text-primary)] dark:border-[var(--text-muted)]/30 dark:bg-[var(--text-muted)]/10 dark:text-[var(--text-muted)]";
   }
 }
 
@@ -157,9 +157,9 @@ export default function SocialDiscordCard({
     }
     if (error && hasAnyConnection && !hasLanyard) {
       return {
-        badgeColor: "bg-rose-400",
+        badgeColor: "bg-[var(--danger)]",
         badgeLabel: i18n("error", "Erreur"),
-        badgeTone: "border-rose-500/30 bg-rose-500/10 text-rose-300",
+        badgeTone: "border-[var(--danger)]/30 bg-[var(--danger)]/10 text-[var(--danger)]",
       };
     }
     if (hasLanyard) {
@@ -226,7 +226,7 @@ export default function SocialDiscordCard({
       )}
     >
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
           Social & Media
         </span>
         <span
@@ -241,13 +241,13 @@ export default function SocialDiscordCard({
       </div>
 
       {!hasLanyard && !hasOAuth && !hasMusic ? (
-        <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-xl border border-white/[0.05] bg-white/[0.02] p-4 text-center">
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-xl border border-[var(--text-primary)]/[0.05] bg-[var(--text-primary)]/[0.02] p-4 text-center">
           {loading && hasAnyConnection ? (
-            <Loader2 className="h-6 w-6 animate-spin text-zinc-500" />
+            <Loader2 className="h-6 w-6 animate-spin text-[var(--text-muted)]" />
           ) : error && hasAnyConnection ? (
-            <AlertCircle className="h-6 w-6 text-rose-500" />
+            <AlertCircle className="h-6 w-6 text-[var(--danger)]" />
           ) : (
-            <RadioOff className="h-6 w-6 text-zinc-500" />
+            <RadioOff className="h-6 w-6 text-[var(--text-muted)]" />
           )}
           <p className="text-sm font-medium text-zinc-300">
             {hasAnyConnection
@@ -290,11 +290,11 @@ export default function SocialDiscordCard({
                 />
               </div>
               <div className="min-w-0">
-                <p className="truncate text-base font-bold text-white">{displayName}</p>
+                <p className="truncate text-base font-bold text-[var(--text-primary)]">{displayName}</p>
                 {handle && (
-                  <p className="truncate text-[11px] text-zinc-400">{handle}</p>
+                  <p className="truncate text-[11px] text-[var(--text-muted)]">{handle}</p>
                 )}
-                <p className="truncate text-[10px] text-zinc-500">{label}</p>
+                <p className="truncate text-[10px] text-[var(--text-muted)]">{label}</p>
               </div>
             </div>
           )}
@@ -306,13 +306,13 @@ export default function SocialDiscordCard({
           )}
 
           {gameActivity && (
-            <div className="w-full shrink-0 space-y-0 rounded-xl border border-white/[0.05] bg-white/[0.02] p-2 text-center">
+            <div className="w-full shrink-0 space-y-0 rounded-xl border border-[var(--text-primary)]/[0.05] bg-[var(--text-primary)]/[0.02] p-2 text-center">
               <p className="text-[11px] font-semibold text-zinc-200">{gameActivity.name}</p>
               {gameActivity.details && (
-                <p className="line-clamp-2 text-[10px] text-zinc-400">{gameActivity.details}</p>
+                <p className="line-clamp-2 text-[10px] text-[var(--text-muted)]">{gameActivity.details}</p>
               )}
               {gameActivity.state && (
-                <p className="line-clamp-2 text-[9px] text-zinc-500">{gameActivity.state}</p>
+                <p className="line-clamp-2 text-[9px] text-[var(--text-muted)]">{gameActivity.state}</p>
               )}
             </div>
           )}
@@ -335,8 +335,8 @@ export default function SocialDiscordCard({
               }
             />
             <div className="min-w-0">
-              <p className="truncate text-xs font-semibold text-white">{activeMusic.title || "—"}</p>
-              <p className="truncate text-[10px] text-zinc-400">{activeMusic.artist || "—"}</p>
+              <p className="truncate text-xs font-semibold text-[var(--text-primary)]">{activeMusic.title || "—"}</p>
+              <p className="truncate text-[10px] text-[var(--text-muted)]">{activeMusic.artist || "—"}</p>
             </div>
           </div>
 
@@ -345,7 +345,7 @@ export default function SocialDiscordCard({
               <div className="h-1 w-full overflow-hidden rounded-xl bg-white/[0.08]">
                 <div className="h-full rounded-xl bg-[--accent-primary]" style={{ width: `${progressPct}%` }} />
               </div>
-              <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500">
+              <div className="flex items-center justify-between text-[10px] font-mono text-[var(--text-muted)]">
                 <span>{formatMs(activeMusic.progressMs)}</span>
                 <span>{formatMs(activeMusic.durationMs)}</span>
               </div>
@@ -355,9 +355,9 @@ export default function SocialDiscordCard({
       )}
 
       {(hasLanyard || hasOAuth) && !customStatus && !gameActivity && !activeMusic && (
-        <div className="mt-auto flex flex-col items-center justify-center gap-1.5 rounded-xl border border-white/[0.05] bg-white/[0.02] p-3 text-center">
-          <Radio className="h-4 w-4 text-zinc-500" />
-          <p className="text-[10px] text-zinc-500">Aucune activité en cours.</p>
+        <div className="mt-auto flex flex-col items-center justify-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.05] bg-[var(--text-primary)]/[0.02] p-3 text-center">
+          <Radio className="h-4 w-4 text-[var(--text-muted)]" />
+          <p className="text-[10px] text-[var(--text-muted)]">Aucune activité en cours.</p>
         </div>
       )}
     </TiltCard>

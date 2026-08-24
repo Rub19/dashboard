@@ -125,8 +125,8 @@ function IslandBubble({
     "relative flex shrink-0 items-center justify-center rounded-full transition-all",
     size === "md" ? "h-8 w-8" : "h-7 w-7",
     active
-      ? "bg-white/[0.12] text-white ring-1 ring-white/20 shadow-[0_0_12px_rgba(255,255,255,0.08)]"
-      : "bg-white/[0.05] text-zinc-400 hover:bg-white/[0.1] hover:text-white",
+      ? "bg-[var(--text-primary)]/[0.12] text-[var(--text-primary)] ring-1 ring-[var(--text-primary)]/20 shadow-[0_0_12px_rgba(255,255,255,0.08)]"
+      : "bg-[var(--text-primary)]/[0.05] text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.1] hover:text-[var(--text-primary)]",
     view === "spotify" && !active && "text-[--accent-primary] hover:text-[--accent-primary]",
     view === "pomodoro" && !active && "text-[var(--accent)]",
     view === "brain" && !active && "text-[var(--info)] hover:text-[var(--info)]",
@@ -181,8 +181,8 @@ function IslandExpandedHeader({
       <Icon name="sparkles" pack="phosphor" className="h-3.5 w-3.5 text-[var(--text-muted)]" />
     );
   return (
-    <div className={cn("-mx-6 -mt-4 mb-4 flex w-full items-center justify-between gap-3 border-b border-white/[0.06] px-6 pt-4 pb-3", className)}>
-      <div className="flex items-center gap-1.5 text-zinc-300">
+    <div className={cn("-mx-6 -mt-4 mb-4 flex w-full items-center justify-between gap-3 border-b border-[var(--text-primary)]/[0.06] px-6 pt-4 pb-3", className)}>
+      <div className="flex items-center gap-1.5 text-[var(--text-primary)]">
         {icon}
         <span className="text-[10px] font-medium tabular-nums">{viewLabel(selected, i18n)}</span>
       </div>
@@ -201,7 +201,7 @@ function IslandExpandedHeader({
           />
         ))}
       </div>
-      <span className="text-[10px] font-medium text-zinc-500">{viewLabel(selected, i18n)}</span>
+      <span className="text-[10px] font-medium text-[var(--text-muted)]">{viewLabel(selected, i18n)}</span>
     </div>
   );
 }
@@ -315,7 +315,7 @@ export default function DynamicIslandContainer() {
   // The compact pill only shows the currently active activity.
   // No activity ⇒ the island is not rendered at all.
   const compact = useMemo(() => {
-    const base = "flex h-[38px] w-full items-center justify-center gap-2 px-1 text-zinc-300";
+    const base = "flex h-[38px] w-full items-center justify-center gap-2 px-1 text-[var(--text-primary)]";
     if (!selectedView) {
       return null;
     }
@@ -504,7 +504,7 @@ export default function DynamicIslandContainer() {
                     candidates={[nowPlaying?.cover, nowPlaying?.artworkUrl, ...(nowPlaying?.covers || [])]}
                     alt={nowPlaying?.title || "Spotify"}
                     size={56}
-                    className="h-14 w-14 shrink-0 rounded-xl object-cover shadow-lg ring-1 ring-white/10"
+                    className="h-14 w-14 shrink-0 rounded-xl object-cover shadow-lg ring-1 ring-[var(--text-primary)]/10"
                     iconClassName="h-6 w-6 text-[--accent-primary]"
                     loading="eager"
                     priority
@@ -599,15 +599,15 @@ export default function DynamicIslandContainer() {
                   onSelect={selectView}
                 />
                 <div className="flex flex-col items-center gap-1">
-                  <span className="text-4xl font-semibold tabular-nums text-white">
+                  <span className="text-4xl font-semibold tabular-nums text-[var(--text-primary)]">
                     {focus.state.format(focus.state.remaining)}
                   </span>
-                  <span className="text-xs font-medium text-zinc-400">
+                  <span className="text-xs font-medium text-[var(--text-muted)]">
                     {phaseLabels[focus.state.phase] || focus.state.phase}
                   </span>
                 </div>
 
-                <div className="h-1.5 w-full rounded-full bg-white/[0.08]">
+                <div className="h-1.5 w-full rounded-full bg-[var(--text-primary)]/[0.08]">
                   <div
                     className="h-full rounded-full bg-[var(--accent)] transition-all duration-500"
                     style={{ width: `${pomodoroPct}%` }}
@@ -683,12 +683,12 @@ export default function DynamicIslandContainer() {
                   selected={selectedView ?? "brain"}
                   onSelect={selectView}
                 />
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-500/15">
-                  <Icon name="brain" pack="phosphor" className="h-6 w-6 text-purple-400" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--info)]/15">
+                  <Icon name="brain" pack="phosphor" className="h-6 w-6 text-[var(--info)]" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-white">{i18n("brainGenerating", "Génération en cours…")}</p>
-                  <p className="text-xs text-zinc-400">{i18n("brainGeneratingHint", "Le Brain réfléchit à votre demande.")}</p>
+                  <p className="text-sm font-medium text-[var(--text-primary)]">{i18n("brainGenerating", "Génération en cours…")}</p>
+                  <p className="text-xs text-[var(--text-muted)]">{i18n("brainGeneratingHint", "Le Brain réfléchit à votre demande.")}</p>
                 </div>
                 <button
                   type="button"

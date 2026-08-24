@@ -145,10 +145,9 @@ function WorkspaceCard({
           <div className="flex items-center gap-2">
             <Button
               type="button"
-              variant={isActive ? "primary" : "secondary"}
+              variant={isActive ? "primary" : "outline"}
               size="md"
               onClick={onStart}
-              className="active:scale-95"
               leftIcon={<Icon name={isActive ? "check" : "play"} className="h-3.5 w-3.5" />}
             >
               {isActive ? i18n("active") : i18n("start")}

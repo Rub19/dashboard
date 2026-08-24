@@ -24,7 +24,7 @@ export default function SystemHealthBanner({
   const i18n = useI18n();
   const [expanded, setExpanded] = useState(false);
 
-  const { ok, errors, unconfigured, total } = useMemo(() => {
+  const { ok, errors, total } = useMemo(() => {
     const items = INTEGRATIONS.map((integration) => {
       const result = health[integration.id];
       const configured = configuredMap[integration.id] || false;
@@ -34,12 +34,11 @@ export default function SystemHealthBanner({
     return {
       ok: items.filter((i) => i.status === "connected").length,
       errors: items.filter((i) => i.status === "error").length,
-      unconfigured: items.filter((i) => i.status === "unconfigured").length,
       total: items.length,
     };
   }, [health, configuredMap]);
 
-  const tone = errors > 0 ? "error" : unconfigured > 0 ? "warning" : "success";
+  const tone = errors > 0 ? "error" : "success";
 
   return (
     <div className="mb-4 w-full overflow-hidden rounded-2xl v8-panel p-4 shadow-xl backdrop-blur-2xl">
@@ -61,19 +60,15 @@ export default function SystemHealthBanner({
             className={`inline-flex items-center gap-1 rounded-lg px-2 py-0.5 text-[10px] font-semibold ${
               tone === "success"
                 ? "bg-[--accent-primary]/10 text-[--accent-primary]"
-                : tone === "warning"
-                  ? "bg-amber-500/10 text-amber-400"
-                  : "bg-rose-500/10 text-rose-400"
+                : "bg-rose-500/10 text-rose-400"
             }`}
           >
             {tone === "success" ? (
               <CheckCircle2 className="h-3 w-3" />
-            ) : tone === "warning" ? (
-              <ChevronDown className="h-3 w-3" />
             ) : (
               <AlertCircle className="h-3 w-3" />
             )}
-            {errors > 0 ? `${errors} ${i18n("error")}` : unconfigured > 0 ? `${unconfigured} ${i18n("notConfigured")}` : i18n("all")}
+            {errors > 0 ? `${errors} ${i18n("error")}` : i18n("all")}
           </span>
 
           <span className="rounded-lg bg-[--accent-primary]/10 px-2.5 py-1 text-xs font-mono text-[--accent-primary]">

@@ -175,11 +175,11 @@ export default function GamingCard({
               fallback={(
                 <div className="flex h-full w-full items-center justify-center">
                   {loading && !hasProfile ? (
-                    <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
+                    <Loader2 className="h-8 w-8 animate-spin text-[var(--accent-primary)]" />
                   ) : error && configured && !hasProfile ? (
                     <AlertCircle className="h-8 w-8 text-rose-400" />
                   ) : (
-                    <Gamepad2 className="h-8 w-8 text-zinc-400" />
+                    <Gamepad2 className="h-8 w-8 text-[var(--accent-primary)]" />
                   )}
                 </div>
               )}

@@ -115,12 +115,12 @@ type RowProps = {
 
 function SettingsRow({ label, description, children }: RowProps) {
   return (
-    <div className="flex flex-col gap-2 border-b border-[var(--text-primary)]/[0.04] py-3 last:border-none sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-      <div className="flex-1">
+    <div className="flex flex-col gap-2 border-b border-[var(--border-subtle)] py-3 last:border-none sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+      <div className="flex-1 min-w-0">
         <h4 className="text-xs font-semibold text-[var(--text-primary)]">{label}</h4>
         {description && <p className="text-[11px] text-[var(--text-muted)]">{description}</p>}
       </div>
-      <div className="flex items-center justify-end gap-2">{children}</div>
+      <div className="flex items-center justify-start gap-2 sm:justify-end">{children}</div>
     </div>
   );
 }

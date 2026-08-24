@@ -141,6 +141,7 @@ export default function SettingsNavigation({
         aria-label="Catégories de paramètres"
         className={cn("flex items-center gap-1 overflow-x-auto pb-1 no-scrollbar", className)}
         onKeyDown={handleKeyDown}
+        style={{ paddingLeft: "env(safe-area-inset-left)", paddingRight: "env(safe-area-inset-right)" }}
       >
         {CATEGORY_ORDER.map((cat, index) => {
           const isActive = active === cat.id;

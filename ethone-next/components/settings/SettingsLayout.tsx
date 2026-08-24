@@ -165,7 +165,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
       {/* Split view */}
       <div className="flex min-h-0 w-full flex-1 gap-6 overflow-hidden">
         <aside className="hidden w-64 shrink-0 md:block">
-          <div className="sticky top-0">
+          <div className="sticky top-0 max-h-[calc(100vh-2rem)] overflow-y-auto no-scrollbar">
             <SettingsNavigation
               active={activeCategory}
               onSelect={handleSelectCategory}
@@ -176,7 +176,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
 
         <main
           ref={contentRef}
-          className="min-h-0 w-full flex-1 overflow-y-auto os-scroll pr-1 pt-4"
+          className="min-h-0 w-full flex-1 overflow-y-auto os-scroll pb-8 pr-1 pt-4"
         >
           <SettingsContent
             contentRef={contentRef}
@@ -186,8 +186,11 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
       </div>
 
       {settings.dockFloatingSave && form.hasExplicitChanges && (
-        <div className="fixed inset-x-0 bottom-20 z-50 mx-auto w-max max-w-[min(90%,32rem)] animate-in slide-in-from-bottom-4">
-          <div className="flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--warning)]/20 bg-[var(--warning)]/10 px-4 py-2.5 text-xs font-medium text-[var(--warning)] shadow-lg backdrop-blur-[var(--panel-blur)]">
+        <div
+          className="fixed bottom-20 z-50 mx-auto w-max max-w-[min(90%,32rem)] animate-in slide-in-from-bottom-4"
+          style={{ left: "env(safe-area-inset-left)", right: "env(safe-area-inset-right)" }}
+        >
+          <div className="mx-4 flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--warning)]/20 bg-[var(--warning)]/10 px-4 py-2.5 text-xs font-medium text-[var(--warning)] shadow-lg backdrop-blur-[var(--panel-blur)]">
             <span className="h-1.5 w-1.5 rounded-full bg-[var(--warning)]" />
             <span className="whitespace-nowrap">{i18n("unsavedChanges") || "Modifications non enregistrées"}</span>
             <div className="ml-auto flex items-center gap-2 pl-2">

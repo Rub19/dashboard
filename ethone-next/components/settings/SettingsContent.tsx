@@ -248,6 +248,15 @@ const SOUND_PACKS = [
   "silent",
 ] as const;
 
+const SOUND_PACK_ICONS: Record<string, string> = {
+  ethone: "music",
+  minimal: "minus",
+  classic: "disc",
+  "apple-inspired": "heart",
+  "cyber-pulse": "zap",
+  silent: "volume-x",
+};
+
 const SHADOWS = ["none", "sm", "md", "glow"] as const;
 
 const DENSITY_CUSTOM_KEYS = [
@@ -478,20 +487,34 @@ function PresetsPanel() {
 function SoundPackPreview() {
   const { play } = useSound();
   const i18n = useI18n();
+  const { settings } = useSettings();
 
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3" data-section-match>
-      {SOUND_PACKS.map((pack) => (
-        <button
-          key={pack}
-          type="button"
-          onClick={() => play("click", pack)}
-          className="flex items-center justify-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent-primary)] backdrop-blur-[var(--panel-blur)]"
-        >
-          <Icon name="play" className="h-3 w-3" />
-          {i18n("preview")}
-        </button>
-      ))}
+      {SOUND_PACKS.map((pack) => {
+        const active = settings.soundPack === pack;
+        return (
+          <button
+            key={pack}
+            type="button"
+            onClick={() => play("click", pack)}
+            className={`group flex flex-col items-center justify-center gap-1.5 rounded-[var(--panel-radius)] border p-2.5 text-[10px] font-medium transition-all active:scale-95 ${
+              active
+                ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] shadow-[0_0_12px_-4px_var(--accent-primary)]"
+                : "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--text-primary)]/[0.03]"
+            }`}
+          >
+            <span className="flex items-center gap-1.5">
+              <Icon name={SOUND_PACK_ICONS[pack] || "music"} className="h-4 w-4" />
+              {i18n(`soundPack${pack.charAt(0).toUpperCase() + pack.slice(1)}`)}
+            </span>
+            <span className="flex items-center gap-1 text-[var(--muted)] group-hover:text-[var(--text-primary)]">
+              <Icon name="play" className="h-3 w-3" />
+              {i18n("preview")}
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -565,28 +588,34 @@ function RawSettingsPanel() {
           {message}
         </div>
       )}
-      <div className="flex items-center gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <button
           type="button"
           onClick={handleExport}
-          className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent-primary)] backdrop-blur-[var(--panel-blur)]"
+          className="group flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 py-3 text-sm font-medium transition-all hover:border-[var(--accent-primary)]/50 hover:bg-[var(--text-primary)]/[0.03] active:scale-95 backdrop-blur-[var(--panel-blur)]"
         >
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+            <Icon name="download" className="h-4 w-4" />
+          </span>
           {i18n("exportPresets")}
         </button>
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent-primary)] backdrop-blur-[var(--panel-blur)]"
+          className="group flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 py-3 text-sm font-medium transition-all hover:border-[var(--accent-primary)]/50 hover:bg-[var(--text-primary)]/[0.03] active:scale-95 backdrop-blur-[var(--panel-blur)]"
         >
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+            <Icon name="upload" className="h-4 w-4" />
+          </span>
           {i18n("importPresets")}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/json"
+            onChange={(e) => handleImport(e.target.files?.[0] || null)}
+            className="hidden"
+          />
         </button>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="application/json"
-          onChange={(e) => handleImport(e.target.files?.[0] || null)}
-          className="hidden"
-        />
       </div>
     </div>
   );

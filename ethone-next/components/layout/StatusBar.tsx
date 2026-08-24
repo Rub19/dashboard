@@ -236,7 +236,7 @@ export default function StatusBar() {
     <footer
       data-v8-status-bar
       data-status-bar
-      className="fixed bottom-0 left-0 z-30 h-8 w-full select-none border-t border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 text-xs text-zinc-300 backdrop-blur-[var(--panel-blur)]"
+      className="fixed bottom-0 left-0 z-30 h-8 w-full select-none border-t border-white/[0.05] bg-[var(--panel-bg)] px-4 text-xs text-zinc-300 backdrop-blur-[var(--panel-blur)]"
     >
       <div className="flex h-full w-full items-center justify-between">
         <div className="flex min-w-0 items-center gap-2">

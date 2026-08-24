@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.24 — 2026-08-24
+
+**Sync session multi-onglet**
+
+- Écoute `storage` pour synchroniser connexion / déconnexion entre onglets.
+- Re-résolution de session quand `ethone-remember-token` ou `ethone-remember-me` change.
+- Version v1.8.24.
+
 ## v1.8.23 — 2026-08-24
 
 **Rework authentification ETHONE**

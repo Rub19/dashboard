@@ -5498,6 +5498,50 @@ const v365_de: ChangelogEntry = {
   ],
 };
 
+const v368_fr: ChangelogEntry = {
+  version: "v1.8.24",
+  date: "2026-08-24",
+  title: "Sync session multi-onglet",
+  items: [
+    "Écoute storage pour synchroniser connexion/déconnexion entre onglets.",
+    "Re-résolution de session si remember token change.",
+    "Version v1.8.24.",
+  ],
+};
+
+const v368_en: ChangelogEntry = {
+  version: "v1.8.24",
+  date: "2026-08-24",
+  title: "Cross-tab session sync",
+  items: [
+    "Listen to storage events to sync login/logout across tabs.",
+    "Re-resolve session when remember token changes.",
+    "Version v1.8.24.",
+  ],
+};
+
+const v368_es: ChangelogEntry = {
+  version: "v1.8.24",
+  date: "2026-08-24",
+  title: "Sincronización de sesión entre pestañas",
+  items: [
+    "Escucha eventos storage para sincronizar login/logout.",
+    "Re-resolución de sesión si remember token cambia.",
+    "Versión v1.8.24.",
+  ],
+};
+
+const v368_de: ChangelogEntry = {
+  version: "v1.8.24",
+  date: "2026-08-24",
+  title: "Sitzungs-Sync über Tabs",
+  items: [
+    "Storage-Events für Login/Logout-Sync über Tabs.",
+    "Session neu auflösen bei Änderung des Remember-Tokens.",
+    "Version v1.8.24.",
+  ],
+};
+
 const v367_fr: ChangelogEntry = {
   version: "v1.8.23",
   date: "2026-08-24",
@@ -5610,9 +5654,9 @@ const v366_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
-CHANGELOG_BY_LANG.es.unshift(v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
-CHANGELOG_BY_LANG.de.unshift(v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
+CHANGELOG_BY_LANG.fr.unshift(v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

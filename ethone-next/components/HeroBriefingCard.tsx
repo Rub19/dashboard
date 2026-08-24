@@ -88,6 +88,23 @@ export default function HeroBriefingCard({
 
   const storageLabel = loading ? "-" : formatStorage(dashboard?.totalSize);
 
+  const contextMessage = useMemo(() => {
+    if (loading) return i18n("loadingBrief", "Chargement de votre journée…");
+    if (todayEventsCount > 0) {
+      return i18n("todayEventsMessage", "{count} événement(s) aujourd'hui.")
+        .replace("{count}", String(todayEventsCount));
+    }
+    if (openTasksCount > 0) {
+      return i18n("openTasksMessage", "{count} tâche(s) en cours.")
+        .replace("{count}", String(openTasksCount));
+    }
+    if (nowPlaying?.title) {
+      return i18n("nowPlayingMessage", "En écoute : {title}.")
+        .replace("{title}", nowPlaying.title);
+    }
+    return greeting.tone;
+  }, [loading, todayEventsCount, openTasksCount, nowPlaying, greeting.tone, i18n]);
+
   const counters = [
     { icon: "circle-check", label: i18n("openTasks"), value: openTasksCount, text: "text-[var(--accent-primary)]", bg: "bg-[var(--accent-primary)]/10" },
     { icon: "calendar", label: i18n("todayEvents"), value: todayEventsCount, text: "text-[var(--info)]", bg: "bg-[var(--info)]/10" },
@@ -107,11 +124,11 @@ export default function HeroBriefingCard({
     <BentoCard noHeader scrollable={scrollable} className={cn("h-full", className)}>
       <div className="flex flex-1 flex-col justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <p className="text-xs font-medium uppercase tracking-wider text-[var(--muted)]">{date}</p>
+          <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">{date}</p>
           <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)] sm:text-2xl">{greeting.label}</h2>
-          <p className="text-sm text-[var(--muted)]">{greeting.tone}</p>
+          <p className="text-sm text-[var(--text-muted)]">{contextMessage}</p>
           {nowPlaying?.title && (
-            <p className="mt-1 flex items-center gap-2 text-xs text-[var(--muted)]">
+            <p className="mt-1 flex items-center gap-2 text-xs text-[var(--text-muted)]">
               <Icon name="disc" className="h-3.5 w-3.5 animate-spin-slow" />
               <span className="truncate">{nowPlaying.title}</span>
               <span>·</span>
@@ -128,7 +145,7 @@ export default function HeroBriefingCard({
             placeholder="Poser une question ou un objectif..."
             icon="brain"
             className="min-w-0 flex-1 rounded-full"
-            inputClassName="placeholder:text-[var(--muted)]"
+            inputClassName="placeholder:text-[var(--text-muted)]"
           />
           <button
             type="submit"
@@ -142,9 +159,9 @@ export default function HeroBriefingCard({
         </form>
 
         {(brain.loading || latestAssistant || brain.error) && (
-          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5 text-xs text-[var(--text-primary)]">
+          <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5 text-xs text-[var(--text-primary)]">
             {brain.loading && (
-              <div className="flex items-center gap-2 text-[var(--muted)]">
+              <div className="flex items-center gap-2 text-[var(--text-muted)]">
                 <TypingDots />
                 <span>{i18n("loading")}</span>
               </div>
@@ -184,7 +201,7 @@ export default function HeroBriefingCard({
                   </span>
                   <div className="min-w-0">
                     <p className="text-base font-bold tabular-nums leading-none text-[var(--text-primary)]">{c.value}</p>
-                    <p className="text-[9px] text-[var(--muted)]">{c.label}</p>
+                    <p className="text-[9px] text-[var(--text-muted)]">{c.label}</p>
                   </div>
                 </div>
               ))}

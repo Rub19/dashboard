@@ -497,14 +497,17 @@ export default function LoginPage() {
               {error && (
                 <motion.div
                   key="error"
+                  role="alert"
+                  aria-live="polite"
+                  aria-atomic="true"
                   initial={{ opacity: 0, height: 0, y: -8 }}
                   animate={{ opacity: 1, height: "auto", y: 0 }}
                   exit={{ opacity: 0, height: 0, y: -8 }}
                   transition={{ duration: reduced ? 0 : 0.2 }}
                   className="mt-5 overflow-hidden"
                 >
-                  <div className="flex items-start gap-2 rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-xs text-red-200">
-                    <Icon name="alert-circle" className="mt-0.5 h-4 w-4 shrink-0" />
+                  <div className="flex items-start gap-2 rounded-xl border border-[var(--danger)]/20 bg-[var(--danger)]/10 p-3 text-xs text-[var(--danger)]">
+                    <Icon name="alert-circle" className="mt-0.5 h-4 w-4 shrink-0 text-[var(--danger)]" />
                     <span>{error}</span>
                   </div>
                 </motion.div>

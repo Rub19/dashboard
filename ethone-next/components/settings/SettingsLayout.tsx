@@ -21,7 +21,7 @@ function resolveCategory(value: string | null | undefined): string {
   return CATEGORY_ORDER.some((c) => c.id === value) ? value : sectionCategory(value);
 }
 
-export default function SettingsLayout() {
+export default function SettingsLayout({ initialSection }: { initialSection?: string }) {
   const i18n = useI18n();
   const { settings, update } = useSettings();
   const { error: showError, notify } = useToast();
@@ -30,7 +30,7 @@ export default function SettingsLayout() {
   const router = useRouter();
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const [activeCategory, setActiveCategory] = useState(() => resolveCategory(searchParams?.get("category") ?? searchParams?.get("tab")));
+  const [activeCategory, setActiveCategory] = useState(() => resolveCategory(initialSection ?? searchParams?.get("category") ?? searchParams?.get("tab")));
 
   const scrollToCategory = useCallback((id: string) => {
     const el =
@@ -41,20 +41,21 @@ export default function SettingsLayout() {
   }, []);
 
   useEffect(() => {
-    const raw = searchParams?.get("category") ?? searchParams?.get("tab");
+    const raw = initialSection ?? searchParams?.get("category") ?? searchParams?.get("tab");
     const category = resolveCategory(raw);
     setActiveCategory(category);
     const t = window.setTimeout(() => {
       scrollToCategory(raw || category);
     }, 120);
     return () => window.clearTimeout(t);
-  }, [searchParams, scrollToCategory]);
+  }, [initialSection, searchParams, scrollToCategory]);
 
   const handleSelectCategory = useCallback(
     (id: string) => {
-      router.push(`/settings?category=${id}`, { scroll: false });
+      if (id === activeCategory) return;
+      router.push(`/settings/${id}`, { scroll: false });
     },
-    [router]
+    [activeCategory, router]
   );
 
   const handleCategoryInView = useCallback((id: string) => {
@@ -85,7 +86,7 @@ export default function SettingsLayout() {
       {/* Header */}
       <div className="shrink-0 mb-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent)]/10 text-[var(--accent)]">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
             <Icon name="settings" className="h-5 w-5" />
           </div>
           <div>
@@ -114,14 +115,14 @@ export default function SettingsLayout() {
             className={cn(
               "flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium",
               form.hasExplicitChanges
-                ? "border-amber-500/20 bg-amber-500/10 text-amber-300"
-                : "border-[--accent-primary]/30 bg-[--accent-primary]/10 text-[--accent-primary]"
+                ? "border-[var(--warning)]/20 bg-[var(--warning)]/10 text-[var(--warning)]"
+                : "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
             )}
           >
             <span
               className={cn(
                 "h-1.5 w-1.5 rounded-full",
-                form.hasExplicitChanges ? "bg-amber-400" : "bg-[--accent-primary]"
+                form.hasExplicitChanges ? "bg-[var(--warning)]" : "bg-[var(--accent-primary)]"
               )}
             />
             {form.hasExplicitChanges
@@ -164,7 +165,7 @@ export default function SettingsLayout() {
       {/* Split view */}
       <div className="flex min-h-0 w-full flex-1 gap-6 overflow-hidden">
         <aside className="hidden w-64 shrink-0 md:block">
-          <div className="sticky top-0">
+          <div className="sticky top-0 max-h-[calc(100vh-2rem)] overflow-y-auto no-scrollbar">
             <SettingsNavigation
               active={activeCategory}
               onSelect={handleSelectCategory}
@@ -175,7 +176,7 @@ export default function SettingsLayout() {
 
         <main
           ref={contentRef}
-          className="min-h-0 w-full flex-1 overflow-y-auto os-scroll pr-1 pt-4"
+          className="min-h-0 w-full flex-1 overflow-y-auto os-scroll pb-8 pr-1 pt-4"
         >
           <SettingsContent
             contentRef={contentRef}
@@ -185,9 +186,12 @@ export default function SettingsLayout() {
       </div>
 
       {settings.dockFloatingSave && form.hasExplicitChanges && (
-        <div className="fixed inset-x-0 bottom-20 z-50 mx-auto w-max max-w-[min(90%,32rem)] animate-in slide-in-from-bottom-4">
-          <div className="flex items-center gap-3 rounded-[var(--panel-radius)] border border-amber-500/20 bg-amber-500/10 px-4 py-2.5 text-xs font-medium text-amber-300 shadow-lg backdrop-blur-[var(--panel-blur)]">
-            <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+        <div
+          className="fixed bottom-20 z-50 mx-auto w-max max-w-[min(90%,32rem)] animate-in slide-in-from-bottom-4"
+          style={{ left: "env(safe-area-inset-left)", right: "env(safe-area-inset-right)" }}
+        >
+          <div className="mx-4 flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--warning)]/20 bg-[var(--warning)]/10 px-4 py-2.5 text-xs font-medium text-[var(--warning)] shadow-lg backdrop-blur-[var(--panel-blur)]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--warning)]" />
             <span className="whitespace-nowrap">{i18n("unsavedChanges") || "Modifications non enregistrées"}</span>
             <div className="ml-auto flex items-center gap-2 pl-2">
               <Button

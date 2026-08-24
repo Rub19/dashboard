@@ -8,6 +8,7 @@ type SwitchProps = {
   checked: boolean;
   onChange: (checked: boolean) => void;
   label?: string;
+  "aria-label"?: string;
   id?: string;
   disabled?: boolean;
   labels?: boolean;
@@ -24,6 +25,7 @@ export default function Switch({
   checked,
   onChange,
   label,
+  "aria-label": ariaLabel,
   id,
   disabled,
   labels,
@@ -46,11 +48,12 @@ export default function Switch({
         type="button"
         role="switch"
         aria-checked={checked}
+        aria-label={ariaLabel}
         aria-disabled={disabled}
         disabled={disabled}
         data-state={checked ? "checked" : "unchecked"}
         onClick={() => onChange(!checked)}
-        className={`relative rounded-full border border-[var(--border)] bg-[var(--surface-raised)] shadow-[inset_0_1px_2px_rgba(0,0,0,0.3)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] data-[state=checked]:border-[var(--accent)] data-[state=checked]:bg-[var(--accent)] ${classes.track}`}
+        className={`relative rounded-full border border-[var(--border)] bg-[var(--surface-raised)] shadow-[inset_0_1px_2px_rgba(0,0,0,0.3)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] data-[state=checked]:border-[var(--accent-primary)] data-[state=checked]:bg-[var(--accent-primary)] ${classes.track}`}
       >
         <span
           className={`absolute left-[3px] rounded-full bg-[var(--foreground)] shadow-[0_1px_3px_rgba(0,0,0,0.3)] transition-transform duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${

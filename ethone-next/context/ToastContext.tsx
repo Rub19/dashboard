@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useCallback, useMemo } from "react";
+import { createContext, useContext, useCallback, useMemo, useRef } from "react";
 import { toast as sonnerToast, Toaster } from "sonner";
 import {
   Check,
@@ -30,6 +30,7 @@ export type ToastInput = {
   description?: string;
   message?: string;
   duration?: number;
+  dedupKey?: string;
   action?: { label: string; onClick: () => void };
   icon?: React.ReactNode;
 };
@@ -112,6 +113,7 @@ function DiscordAvatar({ avatarUrl }: { avatarUrl?: string }) {
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const { play } = useSound();
   const i18n = useI18n();
+  const activeDedups = useRef<Map<string, string>>(new Map());
 
   const show = useCallback(
     (input: ToastInput) => {
@@ -123,6 +125,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           ? Infinity
           : (input.duration ?? DEFAULT_DURATION);
 
+      if (input.dedupKey) {
+        const existing = activeDedups.current.get(input.dedupKey);
+        if (existing) sonnerToast.dismiss(existing);
+      }
+
       const sound = SOUND_MAP[type];
       if (sound) play(sound as Parameters<typeof play>[0]);
 
@@ -133,50 +140,64 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           }
         : undefined;
 
+      let toastId: string | number;
       if (input.icon && type !== "loading") {
         const border =
           VARIANT_BORDER[type as keyof typeof VARIANT_BORDER] || "border-white/10";
 
-        const id = sonnerToast.custom(
+        toastId = sonnerToast.custom(
           () => (
             <RichToast
               icon={input.icon}
               title={title}
               description={description}
               variant={type as RichToastVariant}
+              action={input.action}
+              duration={duration}
             />
           ),
-          { duration, action, className: border }
+          { duration, className: border }
         );
-        return String(id);
+      } else {
+        const common = {
+          description,
+          duration,
+          ...(action ? { action } : {}),
+        };
+
+        switch (type) {
+          case "success":
+            toastId = sonnerToast.success(title, common);
+            break;
+          case "error":
+            toastId = sonnerToast.error(title, common);
+            break;
+          case "warning":
+            toastId = sonnerToast.warning(title, common);
+            break;
+          case "loading":
+            toastId = sonnerToast.loading(title, common);
+            break;
+          default:
+            toastId = sonnerToast(title, common);
+            break;
+        }
       }
 
-      const common = {
-        description,
-        duration,
-        ...(action ? { action } : {}),
-      };
+      const id = String(toastId);
 
-      let id: string | number;
-      switch (type) {
-        case "success":
-          id = sonnerToast.success(title, common);
-          break;
-        case "error":
-          id = sonnerToast.error(title, common);
-          break;
-        case "warning":
-          id = sonnerToast.warning(title, common);
-          break;
-        case "loading":
-          id = sonnerToast.loading(title, common);
-          break;
-        default:
-          id = sonnerToast(title, common);
-          break;
+      if (input.dedupKey) {
+        activeDedups.current.set(input.dedupKey, id);
+        const clearAfter =
+          typeof duration === "number" && duration !== Infinity ? duration : DEFAULT_DURATION;
+        setTimeout(() => {
+          if (activeDedups.current.get(input.dedupKey as string) === id) {
+            activeDedups.current.delete(input.dedupKey as string);
+          }
+        }, clearAfter);
       }
 
-      return String(id);
+      return id;
     },
     [play]
   );
@@ -343,18 +364,18 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           unstyled: true,
           classNames: {
             toast:
-              "group relative flex w-[22rem] max-w-[calc(100vw-1.5rem)] items-start gap-3 rounded-xl border border-white/10 bg-[#0C0C0E]/95 p-3.5 text-sm shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-md",
+              "group relative flex w-[22rem] max-w-[calc(100vw-1.5rem)] items-start gap-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-3.5 text-sm text-[var(--text-primary)] shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-md",
             title: "font-medium",
-            description: "mt-0.5 text-xs text-zinc-300",
+            description: "mt-0.5 text-xs text-[var(--text-muted)]",
             actionButton:
-              "ml-auto rounded-lg border border-white/[0.08] bg-white/[0.1] px-2.5 py-1.5 text-[11px] font-semibold text-white transition-colors hover:bg-white/[0.2]",
+              "ml-auto rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1.5 text-[11px] font-semibold text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]",
             cancelButton: "hidden",
             closeButton:
-              "absolute right-2 top-2 rounded-md p-1 text-zinc-400 opacity-0 transition-all hover:bg-white/[0.1] hover:text-white group-hover:opacity-100",
-            error: "border-rose-500/20 text-rose-400",
-            success: "border-[--accent-primary] text-[--accent-primary]",
-            warning: "border-amber-500/20 text-amber-400",
-            info: "border-[--info] text-[--info]",
+              "absolute right-2 top-2 rounded-md p-1 text-[var(--text-muted)] opacity-0 transition-all hover:bg-[var(--surface)] hover:text-[var(--text-primary)] group-hover:opacity-100",
+            error: "border-[var(--danger)]/20 text-[var(--danger)]",
+            success: "border-[var(--accent-primary)] text-[var(--accent-primary)]",
+            warning: "border-[var(--warning)]/20 text-[var(--warning)]",
+            info: "border-[var(--info)] text-[var(--info)]",
           },
         }}
         icons={{

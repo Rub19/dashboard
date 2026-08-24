@@ -196,7 +196,7 @@ export default function Select({
       }}
       className="z-[100] liquid-glass-select mt-1.5 min-w-[min(18rem,90vw)] max-w-[90vw] rounded-[var(--panel-radius)] transition-[opacity,transform] duration-150 ease-out"
     >
-      <div role="group" className="max-h-64 overflow-y-auto p-1.5">
+      <div role="group" className="max-h-64 overflow-y-auto p-1.5 no-scrollbar">
         {options.map((option, index) => {
           const isSelected = option.id === value;
           const isActive = index === activeIndex;

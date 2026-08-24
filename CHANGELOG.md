@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.8.21 — 2026-08-24
+
+**Tokenisation Design System**
+
+- `BentoCard` : bordures et surfaces alignées sur `--border-subtle` et `--surface`.
+- `Input` : fond, bordures et état d’erreur tokenisés.
+- `Modal` : hover du bouton close sur `--surface-hover`.
+- Version `v1.8.21`.
+
 ## v1.8.20 — 2026-08-24
 
 **Audit boot et réduction du loading artificiel**

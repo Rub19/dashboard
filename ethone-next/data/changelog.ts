@@ -5450,9 +5450,57 @@ const v364_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
-CHANGELOG_BY_LANG.es.unshift(v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
-CHANGELOG_BY_LANG.de.unshift(v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
+const v365_fr: ChangelogEntry = {
+  version: "v1.8.21",
+  date: "2026-08-24",
+  title: "Tokenisation Design System",
+  items: [
+    "BentoCard : bordures et surfaces tokenisées.",
+    "Input : fond, bordures et état d'erreur tokenisés.",
+    "Modal : hover du bouton close tokenisé.",
+    "Version v1.8.21.",
+  ],
+};
+
+const v365_en: ChangelogEntry = {
+  version: "v1.8.21",
+  date: "2026-08-24",
+  title: "Design System tokenization",
+  items: [
+    "BentoCard: tokenized borders and surfaces.",
+    "Input: tokenized background, borders and error state.",
+    "Modal: tokenized close button hover.",
+    "Version v1.8.21.",
+  ],
+};
+
+const v365_es: ChangelogEntry = {
+  version: "v1.8.21",
+  date: "2026-08-24",
+  title: "Tokenización del Design System",
+  items: [
+    "BentoCard: bordes y superficies tokenizadas.",
+    "Input: fondo, bordes y estado de error tokenizados.",
+    "Modal: hover del botón de cierre tokenizado.",
+    "Versión v1.8.21.",
+  ],
+};
+
+const v365_de: ChangelogEntry = {
+  version: "v1.8.21",
+  date: "2026-08-24",
+  title: "Design-System-Tokenisierung",
+  items: [
+    "BentoCard: tokenisierte Ränder und Oberflächen.",
+    "Input: tokenisierter Hintergrund, Ränder und Fehlerzustand.",
+    "Modal: tokenisierter Hover für Schließen-Button.",
+    "Version v1.8.21.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

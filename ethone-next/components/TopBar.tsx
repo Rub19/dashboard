@@ -24,6 +24,7 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useFocus } from "@/components/FocusProvider";
 import { useDynamicIslandStore } from "@/lib/stores/dynamic-island";
 import WeatherDetailPopover from "@/components/WeatherDetailPopover";
+import SupportButton from "@/components/dashboard/SupportButton";
 import { Icon } from "@/lib/icons";
 import { PREMIUM_THEMES, THEME_DEFINITIONS, resolvePremiumTheme } from "@/lib/theme-engine";
 import { cn } from "@/lib/utils";
@@ -84,7 +85,7 @@ const WeatherQuickButton = memo(function WeatherQuickButton() {
         data-tooltip-position="bottom"
         className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] px-2 text-sm transition-colors hover:bg-[var(--text-primary)]/[0.06] sm:px-3"
       >
-        <CloudSun className="h-4 w-4 pointer-events-none text-amber-400" />
+        <CloudSun className="h-4 w-4 pointer-events-none text-[var(--text-muted)]" />
         <span className="hidden font-mono text-[var(--text-primary)] lg:inline">{temp}</span>
         <ChevronDown
           className={cn(
@@ -215,6 +216,7 @@ function TopBar() {
             <ThemeToggle />
             <FocusToggle />
             <DynamicIslandToggle />
+            <SupportButton />
           </div>
 
           <Tooltip label="Rechercher — ⌘K" position="bottom">

@@ -121,14 +121,14 @@ export default function GamingCard({
     if (configured) {
       return {
         statusText: i18n("offline", "Hors ligne"),
-        statusClass: "border-zinc-500/30 bg-zinc-500/10 text-zinc-400",
-        statusDot: "bg-zinc-500",
+        statusClass: "border-[var(--text-muted)]/30 bg-[var(--text-muted)]/10 text-[var(--text-muted)]",
+        statusDot: "bg-[var(--text-muted)]",
       };
     }
     return {
       statusText: i18n("offline", "Hors ligne"),
-      statusClass: "border-zinc-500/30 bg-zinc-500/10 text-zinc-400",
-      statusDot: "bg-zinc-500",
+      statusClass: "border-[var(--text-muted)]/30 bg-[var(--text-muted)]/10 text-[var(--text-muted)]",
+      statusDot: "bg-[var(--text-muted)]",
     };
   }, [configured, error, hasProfile, i18n, loading]);
 
@@ -147,7 +147,7 @@ export default function GamingCard({
       )}
     >
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">Gaming</span>
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Gaming</span>
         <span
           className={cn(
             "inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 text-[10px] font-medium",
@@ -190,7 +190,7 @@ export default function GamingCard({
               <ClientImage
                 candidates={capeCandidates}
                 alt={i18n("cape", "Cape")}
-                className="absolute -right-2 -top-2 z-20 h-14 w-24 rounded border border-white/10 bg-zinc-950/80 object-contain p-1 drop-shadow-lg"
+                className="absolute -right-2 -top-2 z-20 h-14 w-24 rounded border border-[var(--text-primary)]/10 bg-[var(--background)]/80 object-contain p-1 drop-shadow-lg"
                 width={96}
                 height={54}
                 priority
@@ -202,32 +202,32 @@ export default function GamingCard({
           <div className="w-full text-center">
             <h4 className="truncate text-lg font-bold text-[var(--text-primary)]">{username}</h4>
             {hasProfile && (
-              <p className="text-[10px] font-mono text-zinc-500">ID: {truncateId(uuid || uuidWithDashes)}</p>
+              <p className="text-[10px] font-mono text-[var(--text-muted)]">ID: {truncateId(uuid || uuidWithDashes)}</p>
             )}
           </div>
 
           {server && (
             <div className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2">
-              <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                 {i18n("minecraftServer", "Serveur Minecraft")}
               </p>
               <div className="grid grid-cols-3 gap-2">
                 {playerCount !== null && (
                   <div className="text-center">
                     <p className="font-mono text-xs font-semibold text-[var(--text-primary)]">{playerCount}</p>
-                    <p className="text-[9px] text-[var(--muted)]">{i18n("players", "Joueurs")}</p>
+                    <p className="text-[9px] text-[var(--text-muted)]">{i18n("players", "Joueurs")}</p>
                   </div>
                 )}
                 {ping !== null && (
                   <div className="text-center">
                     <p className="font-mono text-xs font-semibold text-[var(--text-primary)]">{ping}</p>
-                    <p className="text-[9px] text-[var(--muted)]">{i18n("ping", "Ping")}</p>
+                    <p className="text-[9px] text-[var(--text-muted)]">{i18n("ping", "Ping")}</p>
                   </div>
                 )}
                 {serverVersion !== null && (
                   <div className="text-center">
                     <p className="truncate font-mono text-xs font-semibold text-[var(--text-primary)]">{serverVersion}</p>
-                    <p className="text-[9px] text-[var(--muted)]">{i18n("version", "Version")}</p>
+                    <p className="text-[9px] text-[var(--text-muted)]">{i18n("version", "Version")}</p>
                   </div>
                 )}
               </div>
@@ -237,12 +237,12 @@ export default function GamingCard({
           {hasProfile && (
             <div className="flex flex-wrap justify-center gap-1.5">
               {profile?.model && (
-                <span className="rounded-md border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
+                <span className="rounded-md border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--text-muted)]">
                   {profile.model === "slim" ? "Slim" : "Classic"}
                 </span>
               )}
               {profile?.capeUrl && (
-                <span className="rounded-md border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
+                <span className="rounded-md border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--text-muted)]">
                   {i18n("cape", "Cape")}
                 </span>
               )}
@@ -256,16 +256,16 @@ export default function GamingCard({
         </div>
       ) : (
         <div className="flex flex-1 flex-col items-center justify-center gap-3 py-2 text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04]">
-            <User className="h-7 w-7 text-zinc-400" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.04]">
+            <User className="h-7 w-7 text-[var(--text-muted)]" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-zinc-200">{i18n("minecraftNotLinked", "Aucun compte Minecraft lié")}</p>
-            <p className="text-xs text-zinc-500">{i18n("minecraftConfigureHint", "Ajoute ton pseudo pour voir ton skin")}</p>
+            <p className="text-sm font-semibold text-[var(--text-primary)]">{i18n("minecraftNotLinked", "Aucun compte Minecraft lié")}</p>
+            <p className="text-xs text-[var(--text-muted)]">{i18n("minecraftConfigureHint", "Ajoute ton pseudo pour voir ton skin")}</p>
           </div>
           <Link
             href="/settings?category=integrations"
-            className="rounded-lg bg-[--accent-primary] px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-[--accent-primary]"
+            className="rounded-lg bg-[--accent-primary] px-4 py-2 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[--accent-primary]"
           >
             {i18n("configureMinecraft", "Configurer Minecraft")}
           </Link>

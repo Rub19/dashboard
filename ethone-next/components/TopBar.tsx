@@ -85,7 +85,7 @@ const WeatherQuickButton = memo(function WeatherQuickButton() {
         data-tooltip-position="bottom"
         className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] px-2 text-sm transition-colors hover:bg-[var(--text-primary)]/[0.06] sm:px-3"
       >
-        <CloudSun className="h-4 w-4 pointer-events-none text-amber-400" />
+        <CloudSun className="h-4 w-4 pointer-events-none text-[var(--text-muted)]" />
         <span className="hidden font-mono text-[var(--text-primary)] lg:inline">{temp}</span>
         <ChevronDown
           className={cn(

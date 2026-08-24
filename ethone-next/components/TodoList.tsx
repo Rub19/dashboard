@@ -54,7 +54,7 @@ export default function TodoList({ tasks, loading, onToggle, onDelete, className
 
   if (loading && tasks.length === 0) {
     return (
-      <div className="flex items-center justify-center py-10 text-xs text-zinc-400">
+      <div className="flex items-center justify-center py-10 text-xs text-[var(--text-muted)]">
         {i18n("loading", "Chargement...")}
       </div>
     );
@@ -66,7 +66,7 @@ export default function TodoList({ tasks, loading, onToggle, onDelete, className
       scrollable ? "h-full min-h-0 overflow-hidden" : "h-auto overflow-visible",
       className
     )}>
-      <div className="shrink-0 flex items-center gap-1.5 rounded-xl border border-white/[0.04] bg-white/[0.02] p-1 text-[11px]">
+      <div className="shrink-0 flex items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.04] bg-[var(--text-primary)]/[0.02] p-1 text-[11px]">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -75,7 +75,7 @@ export default function TodoList({ tasks, loading, onToggle, onDelete, className
             className={`rounded-lg px-3 py-1 transition-all ${
               filter === tab.id
                 ? "border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.08] font-bold text-[var(--text-primary)] shadow-sm"
-                : "text-[var(--muted)] hover:text-[var(--text-primary)]"
+                : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             }`}
           >
             {tab.label}{" "}
@@ -101,14 +101,14 @@ export default function TodoList({ tasks, loading, onToggle, onDelete, className
               exit={{ opacity: 0, y: 8 }}
               className="flex flex-col items-center justify-center py-10 text-center"
             >
-              <CheckCircle2 className="mb-2 h-10 w-10 text-zinc-600/50" />
-              <p className="text-xs font-semibold text-zinc-400">
-                {i18n("tasksAllDone", "Toutes vos tâches sont accomplies !")}
+              <CheckCircle2 className="mb-2 h-10 w-10 text-[var(--text-muted)]/30" />
+              <p className="text-xs font-semibold text-[var(--text-primary)]">
+                {i18n("noTasks", "Votre journée est libre.")}
               </p>
-              <p className="mt-0.5 text-[11px] text-zinc-600">
+              <p className="mt-0.5 text-[11px] text-[var(--text-muted)]">
                 {i18n(
                   "tasksEmptyHint",
-                  "Profitez de votre temps libre ou ajoutez un nouvel objectif."
+                  "Ajoutez un objectif dès que vous êtes prêt."
                 )}
               </p>
             </motion.div>

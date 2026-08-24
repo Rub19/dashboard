@@ -38,7 +38,7 @@ export default function BentoCard({
     >
       <div className="relative z-10 flex flex-1 flex-col min-h-0">
         {!noHeader && (title || icon) && (
-          <div className="mb-2 flex flex-none items-center justify-between border-b border-white/[0.08] pb-2">
+          <div className="mb-2 flex flex-none items-center justify-between border-b border-[var(--text-primary)]/[0.08] pb-2">
             <div className="flex items-center gap-2.5">
               {icon && (
                 <span className="flex h-7 w-7 items-center justify-center text-[var(--accent-primary)]">
@@ -46,7 +46,7 @@ export default function BentoCard({
                 </span>
               )}
               {title && (
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-300">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-primary)]">
                   {title}
                 </h3>
               )}

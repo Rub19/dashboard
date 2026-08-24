@@ -86,13 +86,13 @@ export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus,
         <div className="flex flex-1 flex-col justify-between gap-3">
           <div className="space-y-2">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-2.5 py-2">
+              <div key={i} className="flex items-center gap-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-2.5 py-2">
                 <div className="h-4 w-4 animate-pulse rounded-full bg-[var(--text-primary)]/10" />
                 <div className="h-3 w-2/3 animate-pulse rounded bg-[var(--text-primary)]/10" />
               </div>
             ))}
           </div>
-          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+          <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5">
             <div className="mb-2 h-3 w-20 animate-pulse rounded bg-[var(--text-primary)]/10" />
             <div className="h-1.5 w-full animate-pulse rounded-full bg-[var(--text-primary)]/10" />
           </div>
@@ -116,12 +116,12 @@ export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus,
             events.map((e) => (
               <div
                 key={e.id}
-                className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-2.5 py-2"
+                className="flex items-center gap-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-2.5 py-2"
               >
                 <Icon name="calendar-days" className="h-4 w-4 text-[var(--info)]" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{e.title}</p>
-                  {formatEventTime(e.startAt) && <p className="text-[10px] text-[var(--muted)]">{formatEventTime(e.startAt)}</p>}
+                  {formatEventTime(e.startAt) && <p className="text-[10px] text-[var(--text-muted)]">{formatEventTime(e.startAt)}</p>}
                 </div>
               </div>
             ))}
@@ -129,14 +129,14 @@ export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus,
             nextTasks.map((t) => (
               <div
                 key={t.id}
-                className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-2.5 py-2"
+                className="flex items-center gap-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-2.5 py-2"
               >
                 <Icon name="circle" className="h-4 w-4 text-[var(--accent-primary)]" />
                 <p className="min-w-0 flex-1 truncate text-sm font-medium">{t.title}</p>
               </div>
             ))}
           {events.length === 0 && nextTasks.length === 0 && (
-            <div className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-2.5 py-2 text-sm text-[var(--muted)]">
+            <div className="flex items-center gap-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-2.5 py-2 text-sm text-[var(--text-muted)]">
               <Icon name="coffee" className="h-4 w-4" />
               <span>
                 {i18n("noImperative")} — {i18n("freeDay")}
@@ -145,9 +145,9 @@ export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus,
           )}
         </div>
 
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+        <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5">
           <div className="mb-1.5 flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-xs font-medium text-white">
+            <span className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-primary)]">
               <Icon name="timer" className="h-3.5 w-3.5 text-[var(--accent)]" />
               {i18n("focus")}
             </span>
@@ -164,14 +164,14 @@ export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus,
             )}
           </div>
           {isLive ? (
-            <div className="h-1.5 w-full overflow-hidden rounded-xl bg-white/[0.06]">
+            <div className="h-1.5 w-full overflow-hidden rounded-xl bg-[var(--text-primary)]/[0.06]">
               <div
                 className="h-full rounded-xl bg-[var(--accent-primary)] transition-all duration-1000"
                 style={{ width: `${state.total ? ((state.total - state.remaining) / state.total) * 100 : 0}%` }}
               />
             </div>
           ) : (
-            <p className="text-[10px] text-[var(--muted)]">{i18n("focusRecommended")}</p>
+            <p className="text-[10px] text-[var(--text-muted)]">{i18n("focusRecommended")}</p>
           )}
         </div>
       </div>
@@ -213,38 +213,38 @@ export function ProjectsTasksCard({
         <div className="flex items-center gap-3">
           <div className="relative flex h-20 w-20 shrink-0 items-center justify-center">
             <CircularGauge percentage={percentage} size={72} stroke={5} />
-            <span className="absolute text-xs font-bold tabular-nums text-white">{percentage}%</span>
+            <span className="absolute text-xs font-bold tabular-nums text-[var(--text-primary)]">{percentage}%</span>
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs text-[var(--muted)]">{i18n("tasksDone")}</p>
-            <p className="text-sm font-semibold text-white">
+            <p className="text-xs text-[var(--text-muted)]">{i18n("tasksDone")}</p>
+            <p className="text-sm font-semibold text-[var(--text-primary)]">
               {completed}/{totalTasks} {i18n("tasks")}
             </p>
-            <p className="text-[10px] text-[var(--muted)]">
+            <p className="text-[10px] text-[var(--text-muted)]">
               {openTasksCount} {i18n("openTasks")}
             </p>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-2">
-          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2">
-            <div className="mb-1 flex items-center gap-1.5 text-[10px] text-[var(--muted)]">
+          <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2">
+            <div className="mb-1 flex items-center gap-1.5 text-[10px] text-[var(--text-muted)]">
               <Icon name="timer" className="h-3.5 w-3.5 text-[var(--danger)]" />
               {i18n("focusMinutes")}
             </div>
             <p className="text-lg font-bold leading-none text-[var(--danger)]">{focusMinutes}</p>
           </div>
           {typeof unreadMail === "number" && (
-            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2">
-              <div className="mb-1 flex items-center gap-1.5 text-[10px] text-[var(--muted)]">
+            <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2">
+              <div className="mb-1 flex items-center gap-1.5 text-[10px] text-[var(--text-muted)]">
                 <Icon name="mail" className="h-3.5 w-3.5 text-[var(--info)]" />
                 {i18n("unread")}
               </div>
               <p className="text-lg font-bold leading-none text-[var(--info)]">{mailLoading ? "-" : unreadMail}</p>
             </div>
           )}
-          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2">
-            <div className="mb-1 flex items-center gap-1.5 text-[10px] text-[var(--muted)]">
+          <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2">
+            <div className="mb-1 flex items-center gap-1.5 text-[10px] text-[var(--text-muted)]">
               <Icon name="trophy" className="h-3.5 w-3.5 text-[var(--warning)]" />
               {i18n("focusDone")}
             </div>
@@ -280,7 +280,7 @@ export function RecentNotesCard({ notes, className = "", scrollable = true, load
   const action = (
     <Link
       href="/notes"
-      className="relative z-0 inline-flex items-center gap-1 rounded-lg border border-white/[0.08] bg-white/[0.04] px-2 py-1 text-[10px] font-medium text-zinc-300 transition-colors hover:bg-white/[0.08] hover:text-white"
+      className="relative z-0 inline-flex items-center gap-1 rounded-lg border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-2 py-1 text-[10px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
     >
       <Icon name="plus" className="h-3 w-3" />
       {i18n("createNote")}
@@ -293,7 +293,7 @@ export function RecentNotesCard({ notes, className = "", scrollable = true, load
         {loading ? (
           <div className="space-y-2">
             {[1, 2].map((i) => (
-              <div key={i} className="flex items-start gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+              <div key={i} className="flex items-start gap-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5">
                 <div className="mt-0.5 h-4 w-4 animate-pulse rounded bg-[var(--text-primary)]/10" />
                 <div className="flex-1 space-y-2">
                   <div className="h-3 w-3/4 animate-pulse rounded bg-[var(--text-primary)]/10" />
@@ -308,19 +308,19 @@ export function RecentNotesCard({ notes, className = "", scrollable = true, load
               <Link
                 key={n.id}
                 href="/notes"
-                className="group flex items-start gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5 transition-colors hover:bg-white/[0.04]"
+                className="group flex items-start gap-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5 transition-colors hover:bg-[var(--text-primary)]/[0.04]"
               >
                 <Icon name="file-text" className="mt-0.5 h-4 w-4 shrink-0 text-[var(--accent-secondary)]" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-[var(--text-primary)] group-hover:text-[var(--accent)]">{n.title}</p>
-                  <p className="text-[10px] text-[var(--muted)]">{formatNoteDate(n.updatedAt || n.createdAt)}</p>
+                  <p className="text-[10px] text-[var(--text-muted)]">{formatNoteDate(n.updatedAt || n.createdAt)}</p>
                 </div>
-                <Icon name="chevron-right" className="h-3.5 w-3.5 text-[var(--muted)] group-hover:text-[var(--text-primary)]" />
+                <Icon name="chevron-right" className="h-3.5 w-3.5 text-[var(--text-muted)] group-hover:text-[var(--text-primary)]" />
               </Link>
             ))}
           </div>
         ) : (
-          <p className="text-sm text-[var(--muted)]">{i18n("noRecentNotes")}</p>
+          <p className="text-sm text-[var(--text-muted)]">{i18n("noRecentNotes")}</p>
         )}
       </div>
     </BentoCard>

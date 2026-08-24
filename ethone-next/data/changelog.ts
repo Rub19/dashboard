@@ -5155,9 +5155,4 @@ CHANGELOG_BY_LANG.en.unshift(v359_en);
 CHANGELOG_BY_LANG.es.unshift(v359_es);
 CHANGELOG_BY_LANG.de.unshift(v359_de);
 
-CHANGELOG_BY_LANG.fr.unshift(v357_fr);
-CHANGELOG_BY_LANG.en.unshift(v357_en);
-CHANGELOG_BY_LANG.es.unshift(v357_es);
-CHANGELOG_BY_LANG.de.unshift(v357_de);
-
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

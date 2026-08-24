@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useCallback, useMemo } from "react";
+import { createContext, useContext, useCallback, useMemo, useRef } from "react";
 import { toast as sonnerToast, Toaster } from "sonner";
 import {
   Check,
@@ -30,6 +30,7 @@ export type ToastInput = {
   description?: string;
   message?: string;
   duration?: number;
+  dedupKey?: string;
   action?: { label: string; onClick: () => void };
   icon?: React.ReactNode;
 };
@@ -112,6 +113,7 @@ function DiscordAvatar({ avatarUrl }: { avatarUrl?: string }) {
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const { play } = useSound();
   const i18n = useI18n();
+  const activeDedups = useRef<Map<string, string>>(new Map());
 
   const show = useCallback(
     (input: ToastInput) => {
@@ -123,6 +125,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           ? Infinity
           : (input.duration ?? DEFAULT_DURATION);
 
+      if (input.dedupKey) {
+        const existing = activeDedups.current.get(input.dedupKey);
+        if (existing) sonnerToast.dismiss(existing);
+      }
+
       const sound = SOUND_MAP[type];
       if (sound) play(sound as Parameters<typeof play>[0]);
 
@@ -133,11 +140,12 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           }
         : undefined;
 
+      let toastId: string | number;
       if (input.icon && type !== "loading") {
         const border =
           VARIANT_BORDER[type as keyof typeof VARIANT_BORDER] || "border-white/10";
 
-        const id = sonnerToast.custom(
+        toastId = sonnerToast.custom(
           () => (
             <RichToast
               icon={input.icon}
@@ -150,35 +158,46 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           ),
           { duration, className: border }
         );
-        return String(id);
+      } else {
+        const common = {
+          description,
+          duration,
+          ...(action ? { action } : {}),
+        };
+
+        switch (type) {
+          case "success":
+            toastId = sonnerToast.success(title, common);
+            break;
+          case "error":
+            toastId = sonnerToast.error(title, common);
+            break;
+          case "warning":
+            toastId = sonnerToast.warning(title, common);
+            break;
+          case "loading":
+            toastId = sonnerToast.loading(title, common);
+            break;
+          default:
+            toastId = sonnerToast(title, common);
+            break;
+        }
       }
 
-      const common = {
-        description,
-        duration,
-        ...(action ? { action } : {}),
-      };
+      const id = String(toastId);
 
-      let id: string | number;
-      switch (type) {
-        case "success":
-          id = sonnerToast.success(title, common);
-          break;
-        case "error":
-          id = sonnerToast.error(title, common);
-          break;
-        case "warning":
-          id = sonnerToast.warning(title, common);
-          break;
-        case "loading":
-          id = sonnerToast.loading(title, common);
-          break;
-        default:
-          id = sonnerToast(title, common);
-          break;
+      if (input.dedupKey) {
+        activeDedups.current.set(input.dedupKey, id);
+        const clearAfter =
+          typeof duration === "number" && duration !== Infinity ? duration : DEFAULT_DURATION;
+        setTimeout(() => {
+          if (activeDedups.current.get(input.dedupKey as string) === id) {
+            activeDedups.current.delete(input.dedupKey as string);
+          }
+        }, clearAfter);
       }
 
-      return String(id);
+      return id;
     },
     [play]
   );

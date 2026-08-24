@@ -143,6 +143,7 @@ export default function AppearanceSettings() {
         title: i18n("themeChanged", "Thème modifié"),
         description: i18n("themeChangedDesc", "Votre apparence a été mise à jour."),
         duration: 5000,
+        dedupKey: "theme-change",
         action: {
           label: i18n("undo", "Annuler"),
           onClick: () => {

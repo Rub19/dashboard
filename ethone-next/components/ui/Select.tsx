@@ -43,6 +43,8 @@ export default function Select({
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
+  const [placement, setPlacement] = useState<"top" | "bottom">("bottom");
+  const [maxHeight, setMaxHeight] = useState(256);
   const [ready, setReady] = useState(false);
   const [mounted, setMounted] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -58,16 +60,39 @@ export default function Select({
 
   const updatePosition = useCallback(() => {
     const el = triggerRef.current;
-    if (!el) return;
+    if (!el || typeof window === "undefined") return;
     const rect = el.getBoundingClientRect();
     const width = Math.max(rect.width, 240);
-    const maxLeft = Math.max(8, (typeof window !== "undefined" ? window.innerWidth : 0) - width - 8);
+    const maxLeft = Math.max(8, window.innerWidth - width - 8);
+    const itemHeight = 40;
+    const padding = 12;
+    const contentHeight = options.length * itemHeight + padding;
+    const spaceBelow = window.innerHeight - rect.bottom - 12;
+    const spaceAbove = rect.top - 12;
+    const maxH = 256;
+
+    let top = rect.bottom + 6;
+    let place: "top" | "bottom" = "bottom";
+    let h = Math.min(maxH, contentHeight);
+
+    if (contentHeight <= spaceBelow || spaceBelow >= spaceAbove) {
+      h = Math.min(maxH, Math.min(contentHeight, spaceBelow));
+      top = rect.bottom + 6;
+      place = "bottom";
+    } else {
+      h = Math.min(maxH, Math.min(contentHeight, spaceAbove));
+      top = rect.top - h - 6;
+      place = "top";
+    }
+
+    setPlacement(place);
+    setMaxHeight(Math.max(96, h));
     setPosition({
-      top: rect.bottom + 6,
+      top,
       left: Math.max(8, Math.min(rect.left, maxLeft)),
       width,
     });
-  }, []);
+  }, [options]);
 
   useLayoutEffect(() => {
     if (!open) {
@@ -192,11 +217,12 @@ export default function Select({
         left: position.left,
         width: position.width,
         opacity: mounted ? 1 : 0,
-        transform: mounted ? "translateY(0)" : "translateY(-6px)",
+        transform: mounted ? "translateY(0)" : placement === "bottom" ? "translateY(-6px)" : "translateY(6px)",
+        background: "rgba(15, 15, 20, 0.95)",
       }}
       className="z-[100] liquid-glass-select mt-1.5 min-w-[min(18rem,90vw)] max-w-[90vw] rounded-[var(--panel-radius)] transition-[opacity,transform] duration-150 ease-out"
     >
-      <div role="group" className="max-h-64 overflow-y-auto p-1.5">
+      <div role="group" className="overflow-y-auto p-1.5 no-scrollbar" style={{ maxHeight }}>
         {options.map((option, index) => {
           const isSelected = option.id === value;
           const isActive = index === activeIndex;

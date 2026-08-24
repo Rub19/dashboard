@@ -30,10 +30,12 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
   const router = useRouter();
   const { success, error: showError } = useToast();
   const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState({ left: 0, top: 0 });
   const [pending, setPending] = useState(false);
   const [isLiked, setIsLiked] = useState(!!nowPlaying?.isSaved);
   const [isPlaying, setIsPlaying] = useState(!!nowPlaying?.isPlaying);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
   const progressRef = useRef(nowPlaying?.progressMs || 0);
   const volumeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -159,6 +161,25 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
 
   const buttonLabel = hasTrack ? `${title} - ${artist}` : i18n("media");
 
+  useEffect(() => {
+    if (!open || !buttonRef.current) return;
+    const update = () => {
+      if (!buttonRef.current) return;
+      const rect = buttonRef.current.getBoundingClientRect();
+      const padding = 12;
+      const width = 320; // w-80
+      const left = Math.min(rect.left, window.innerWidth - width - padding);
+      setPos({ left: Math.max(padding, left), top: rect.top - padding });
+    };
+    update();
+    window.addEventListener("resize", update);
+    window.addEventListener("scroll", update, true);
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("scroll", update, true);
+    };
+  }, [open]);
+
   return (
     <div
       className="group relative flex flex-col items-center"
@@ -166,6 +187,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
       onMouseLeave={handleLeave}
     >
       <button
+        ref={buttonRef}
         type="button"
         aria-label={buttonLabel}
         onClick={() => setOpen((v) => !v)}
@@ -200,10 +222,11 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
         {open && (
           <motion.div
             initial={{ opacity: 0, y: 8, scale: 0.95 }}
-            animate={{ opacity: 1, y: -12, scale: 1 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.95 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="absolute bottom-full left-0 z-50 w-80 -translate-x-6 rounded-xl border border-white/10 bg-zinc-950/95 p-4 shadow-2xl backdrop-blur-2xl"
+            style={{ position: "fixed", left: pos.left, top: pos.top, transform: "translateY(-100%)" }}
+            className="z-[90] w-80 rounded-xl border border-white/10 bg-zinc-950/95 p-4 shadow-2xl backdrop-blur-2xl"
           >
             {!hasTrack ? (
               <div className="flex items-center gap-3">

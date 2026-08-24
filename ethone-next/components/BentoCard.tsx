@@ -41,7 +41,7 @@ export default function BentoCard({
           <div className="mb-2 flex flex-none items-center justify-between border-b border-white/[0.08] pb-2">
             <div className="flex items-center gap-2.5">
               {icon && (
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--accent)]/20 bg-[var(--accent)]/10 text-[var(--accent)]">
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
                   <Icon name={icon} className="h-4 w-4" />
                 </span>
               )}

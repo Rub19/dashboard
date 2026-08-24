@@ -20,8 +20,8 @@ const openai = apiKey
     })
   : null;
 
-const PRIMARY_MODEL = "openrouter/free";
-const FALLBACK_MODEL = "google/gemma-4-31b-it:free";
+const PRIMARY_MODEL = "google/gemma-4-31b-it:free";
+const FALLBACK_MODEL = "openrouter/free";
 
 async function translateDictionary(
   model: string,
@@ -51,9 +51,10 @@ async function translateDictionary(
   try {
     parsed = JSON.parse(text);
   } catch {
-    const cleaned = text
+    const jsonMatch = text.match(/(\{[\s\S]*\}|\[[\s\S]*\])/);
+    if (!jsonMatch) throw new Error("OpenRouter did not return valid JSON");
+    const cleaned = jsonMatch[0]
       .replace(/```(?:json)?\n?/g, "")
-      .replace(/^\s*\{|^\s*\}/g, (m) => m.trim())
       .trim();
     parsed = JSON.parse(cleaned);
   }

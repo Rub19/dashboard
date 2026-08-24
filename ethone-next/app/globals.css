@@ -242,11 +242,11 @@ html[data-theme="monochrome-studio"] {
   --bg-surface: #18181b;
   --bg-sidebar: #101012;
   --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-active: rgba(255, 255, 255, 0.25);
-  --accent-primary: #ffffff;
-  --accent-secondary: #71717a;
+  --border-active: rgba(139, 92, 246, 0.35);
+  --accent-primary: #8b5cf6;
+  --accent-secondary: #10b981;
   --accent-contrast: #000000;
-  --glow-color: rgba(255, 255, 255, 0.15);
+  --glow-color: rgba(139, 92, 246, 0.25);
   --text-primary: #ffffff;
   --text-muted: #a1a1aa;
   --background: #000000;

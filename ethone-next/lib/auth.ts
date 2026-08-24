@@ -138,7 +138,8 @@ export async function signInWithOAuth(provider: Provider) {
   return { ok: !error && !!data.url, url: data.url, error };
 }
 
-export async function signInWithPasskey(email?: string) {
+export async function signInWithPasskey(email: string) {
+  if (!email) throw new Error("Email required for passkey");
   const optionsRes = await fetchWorker("/api/auth/passkey/authenticate-options", {
     method: "POST",
     body: JSON.stringify({ email }),
@@ -181,12 +182,10 @@ export async function signInWithPasskey(email?: string) {
   const tokenHash = authRes?.data?.token_hash;
   if (!tokenHash) throw new Error("Passkey authentication failed");
 
-  const refreshToken = typeof crypto !== "undefined" && "randomUUID" in crypto
-    ? crypto.randomUUID()
-    : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-  const { data, error } = await supabase.auth.setSession({
-    access_token: tokenHash,
-    refresh_token: refreshToken,
+  const { data, error } = await supabase.auth.verifyOtp({
+    email,
+    token: tokenHash,
+    type: "magiclink",
   });
   return { ok: !error && !!data.session, session: data.session, error };
 }

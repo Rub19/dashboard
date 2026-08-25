@@ -18,7 +18,6 @@ import { useLiveWidgetStore } from "@/lib/hooks/useLiveWidgetStore";
 import { useAuth } from "@/components/AuthProvider";
 import { useActiveProfile } from "@/components/SettingsProvider";
 import { useProfile } from "@/lib/hooks/useProfile";
-import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSyncStore, type SyncState } from "@/lib/stores/sync";
 import { WORKER_URL } from "@/lib/api";
@@ -186,7 +185,6 @@ export default function StatusBar() {
   const { user, signOut } = useAuth();
   const { activeProfile } = useActiveProfile();
   const { profile: publicProfile } = useProfile();
-  const { error: liveError } = useLiveData(300000);
   const { isOpen, isMinimized, openLive, closeLive } = useLiveWidgetStore();
   const online = useOnlineStatus();
   const { ping, pingging } = usePing();
@@ -205,13 +203,9 @@ export default function StatusBar() {
       .join(", ")
   );
 
-  const systemOk = online && !liveError;
-  const alertCount = liveError ? 1 : online ? 0 : 1;
-  const alertTitle = liveError
-    ? `${i18n("liveError", "Erreur live")} : ${liveError.message}`
-    : !online
-      ? i18n("v8NetworkOffline")
-      : undefined;
+  const systemOk = online;
+  const alertCount = online ? 0 : 1;
+  const alertTitle = !online ? i18n("v8NetworkOffline") : undefined;
 
   useEffect(() => {
     if (!menuOpen) return;

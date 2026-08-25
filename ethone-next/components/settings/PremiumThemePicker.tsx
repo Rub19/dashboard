@@ -88,7 +88,7 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
                   className="mb-3 aspect-[16/10] w-full overflow-hidden rounded-xl border"
                   style={{ borderColor: def.borderSubtle, backgroundColor: def.bgMain }}
                 >
-                  <div className="flex h-full w-full">
+                  <div className="relative flex h-full w-full">
                     {/* Sidebar */}
                     <div
                       className="h-full w-1/4 border-r"
@@ -111,13 +111,24 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
                       {/* Pane */}
                       <div className="flex-1 p-2">
                         <div
-                          className="mb-2 h-1/3 w-3/4 rounded-md"
+                          className="mb-1 h-1/4 w-3/4 rounded-md"
                           style={{ backgroundColor: def.borderSubtle }}
                         />
                         <div
-                          className="h-1/4 w-1/2 rounded-md"
+                          className="mb-2 h-1/5 w-1/2 rounded-md"
                           style={{ backgroundColor: def.borderActive }}
                         />
+                        <div
+                          className="h-2.5 w-8 rounded"
+                          style={{ backgroundColor: def.accentPrimary }}
+                        />
+                      </div>
+                      {/* Mini Dock */}
+                      <div
+                        className="absolute bottom-1 left-1/2 h-2.5 w-10 -translate-x-1/2 rounded-full border"
+                        style={{ borderColor: def.borderSubtle, backgroundColor: def.bgSidebar }}
+                      >
+                        <div className="mx-auto mt-0.5 h-1 w-4 rounded-full" style={{ backgroundColor: def.accentSecondary }} />
                       </div>
                     </div>
                   </div>

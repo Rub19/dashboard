@@ -60,6 +60,13 @@ const STORAGE_KEY = "ethone-activity-journal-v1";
 const MAX_ENTRIES = 120;
 const SYNC_BATCH_LIMIT = 50;
 
+function safeEventType(type?: string): string {
+  if (!type) return "activity";
+  const trimmed = type.trim();
+  if (/^[a-z0-9._:-]+$/.test(trimmed) && trimmed.length <= 32) return trimmed;
+  return "activity";
+}
+
 function safeDate(value: unknown, fallback: string): string {
   const raw = value instanceof Date ? value : typeof value === "string" || typeof value === "number" ? value : fallback;
   const parsed = new Date(raw);
@@ -209,7 +216,7 @@ export function createActivityJournal(): ActivityJournal {
       description: event.description || "",
       timestamp: event.timestamp || nowIso(),
       tone: event.tone,
-      eventType: event.eventType || event.title,
+      eventType: safeEventType(event.eventType) || "activity",
       details: event.details || {},
       synced: false,
     };
@@ -285,9 +292,9 @@ export function createActivityJournal(): ActivityJournal {
     if (unsynced.length === 0) return { ok: true, count: 0, error: null };
 
     const events = unsynced.map((entry) => ({
-      eventType: entry.eventType || entry.title,
+      eventType: safeEventType(entry.eventType),
       createdAt: entry.timestamp,
-      details: entry.details || {},
+      details: { ...entry.details, title: entry.title, originalEventType: entry.eventType },
     }));
 
     setSyncing(true);

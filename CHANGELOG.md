@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.16 — 2026-08-25
+
+**ETHONE — Correction synchronisation Activity Journal**
+
+- Sanitisation des `eventType` avant envoi au Worker.
+- Suppression du fallback sur `event.title` qui envoyait des chaînes invalides à `ethone_file_activity`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.15 — 2026-08-25
 
 **ETHONE — VersionPill cliquable**

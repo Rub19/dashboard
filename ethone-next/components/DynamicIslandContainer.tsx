@@ -409,7 +409,7 @@ export default function DynamicIslandContainer() {
               </span>
             )}
             {errorCount > 0 && (
-              <span className="ml-1 rounded-full bg-red-400/20 px-1.5 py-0.5 text-[10px] text-red-400">
+              <span className="ml-1 rounded-full bg-[var(--danger)]/20 px-1.5 py-0.5 text-[10px] text-[var(--danger)]">
                 {errorCount}
               </span>
             )}

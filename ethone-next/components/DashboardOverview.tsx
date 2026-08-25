@@ -200,6 +200,21 @@ export default function DashboardOverview() {
     }
   }, [settings.homeGrid]);
 
+  const densityGap = useMemo(() => {
+    switch (settings.densityMode) {
+      case "compact":
+      case "dense":
+      case "ultra-compact":
+        return "gap-2 pb-2";
+      case "spacious":
+      case "airy":
+      case "ultra":
+        return "gap-5 pb-5";
+      default:
+        return "gap-3 pb-3";
+    }
+  }, [settings.densityMode]);
+
   const today = useMemo(() => new Date(), []);
 
   const todayEvents = useMemo(
@@ -387,7 +402,7 @@ export default function DashboardOverview() {
               animate="visible"
               variants={gridVariants}
               data-home-grid
-              className="grid w-full h-auto grid-cols-12 gap-3 pb-3"
+              className={cn("grid w-full h-auto grid-cols-12", densityGap)}
             >
               {widgets.map(
                 (w, i) =>

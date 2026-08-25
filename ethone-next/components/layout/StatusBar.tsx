@@ -83,9 +83,9 @@ function useSessionRole() {
     (user.app_metadata?.role as string | undefined) ||
     user.role;
   if (role === "admin" || role === "owner") {
-    return { id: "admin" as const, label: "Admin", color: "text-amber-400" };
+    return { id: "admin" as const, label: "Admin", color: "text-[var(--warning)]" };
   }
-  return { id: "normal" as const, label: "Normal", color: "text-[var(--accent-primary)]" };
+  return { id: "normal" as const, label: "Normal", color: "text-[var(--success)]" };
 }
 
 function CloudSyncPill({
@@ -110,7 +110,7 @@ function CloudSyncPill({
     case "syncing":
       return (
         <StatusPill
-          icon={<Loader2 className="h-3.5 w-3.5 animate-spin text-purple-400" />}
+          icon={<Loader2 className="h-3.5 w-3.5 animate-spin text-[var(--info)]" />}
           value="Synchronisation..."
           tone="info"
         />
@@ -118,7 +118,7 @@ function CloudSyncPill({
     case "error":
       return (
         <StatusPill
-          icon={<AlertCircle className="h-3.5 w-3.5 text-red-400" />}
+          icon={<AlertCircle className="h-3.5 w-3.5 text-[var(--danger)]" />}
           value="Erreur sync"
           title={errorTitle}
           tone="error"
@@ -127,7 +127,7 @@ function CloudSyncPill({
     case "offline":
       return (
         <StatusPill
-          icon={<WifiOff className="h-3.5 w-3.5 text-amber-400" />}
+          icon={<WifiOff className="h-3.5 w-3.5 text-[var(--warning)]" />}
           value="Hors ligne"
           tone="warning"
         />
@@ -135,7 +135,7 @@ function CloudSyncPill({
     default:
       return (
         <StatusPill
-          icon={<CheckCircle2 className="h-3.5 w-3.5 text-[var(--accent-primary)]" />}
+          icon={<CheckCircle2 className="h-3.5 w-3.5 text-[var(--success)]" />}
           value={online ? "Enregistré" : "Prêt"}
           tone={online ? "success" : "error"}
         />
@@ -322,7 +322,7 @@ export default function StatusBar() {
                 <button
                   type="button"
                   onClick={handleSignOut}
-                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs text-[var(--text-primary)] transition-colors hover:bg-red-500/[0.08] hover:text-red-300"
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--danger)]/[0.08] hover:text-[var(--danger)]"
                 >
                   <LogOut className="h-3.5 w-3.5" />
                   Déconnexion
@@ -332,7 +332,7 @@ export default function StatusBar() {
           </div>
 
           <StatusPill
-            icon={systemOk ? <Circle className="h-3.5 w-3.5 fill-[var(--accent-primary)] text-[var(--accent-primary)]" /> : <AlertCircle className="h-3.5 w-3.5 text-red-400" />}
+            icon={systemOk ? <Circle className="h-3.5 w-3.5 fill-[var(--success)] text-[var(--success)]" /> : <AlertCircle className="h-3.5 w-3.5 text-[var(--danger)]" />}
             value={systemOk ? "Opérationnel" : `${alertCount} alerte${alertCount > 1 ? "s" : ""}`}
             title={alertTitle}
             tone={systemOk ? "success" : "error"}

@@ -91,13 +91,13 @@ const ConnectionCardsWidget = memo(function ConnectionCardsWidget({
             />
           ))
         ) : error ? (
-          <div className="flex h-20 w-full items-center gap-2 rounded-[var(--panel-radius)] border border-red-500/20 bg-red-500/10 px-3 text-xs text-red-300">
+          <div className="flex h-20 w-full items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--danger)]/20 bg-[var(--danger)]/10 px-3 text-xs text-[var(--danger)]">
             <Icon name="alert-circle" pack="phosphor" className="h-4 w-4 shrink-0" />
             <span className="min-w-0 flex-1">{error.message}</span>
             <button
               type="button"
               onClick={handleOpen}
-              className="shrink-0 rounded-lg border border-red-500/30 bg-red-500/10 px-2 py-1 text-[10px] font-medium text-red-300 transition-colors hover:bg-red-500/20"
+              className="shrink-0 rounded-lg border border-[var(--danger)]/30 bg-[var(--danger)]/10 px-2 py-1 text-[10px] font-medium text-[var(--danger)] transition-colors hover:bg-[var(--danger)]/20"
             >
               {i18n("check", "Vérifier")}
             </button>

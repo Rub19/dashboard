@@ -235,7 +235,7 @@ export default function StatusBar() {
       <div className="flex w-full items-end justify-between">
         <div className="pointer-events-auto flex min-w-0 items-center gap-2 bg-transparent px-0 py-0">
           <span
-            className="hidden select-none rounded-lg border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] px-2 py-0.5 text-[10px] font-semibold tracking-wide text-[var(--text-muted)] sm:inline-flex"
+            className="hidden select-none rounded-lg bg-transparent px-2 py-0.5 text-[10px] font-semibold tracking-wide text-[var(--text-muted)] sm:inline-flex"
             aria-label={i18n("appName", "ETHONE")}
           >
             ETHONE

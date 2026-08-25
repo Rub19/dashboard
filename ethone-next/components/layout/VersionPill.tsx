@@ -65,7 +65,7 @@ export default function VersionPill() {
       className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[10px] font-mono font-medium transition-all ${
         showUpdate
           ? "cursor-pointer border border-amber-500/30 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20"
-          : "border border-[var(--text-primary)]/[0.05] bg-[var(--text-primary)]/[0.02] text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.04]"
+          : "bg-transparent text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.04]"
       }`}
     >
       {showUpdate ? (

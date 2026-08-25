@@ -11,6 +11,7 @@ export type ButtonVariant =
   | "outline"
   | "ghost"
   | "danger"
+  | "success"
   | "liquid";
 
 export type ButtonSize = "sm" | "md" | "lg";
@@ -26,9 +27,8 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClass: Record<ButtonVariant, string> = {
   primary: cn(
-    "bg-[var(--accent-primary)] text-[var(--accent-contrast)]",
-    "border border-[var(--accent-primary)]",
-    "shadow-[0_0_12px_var(--glow-color)]",
+    "liquid-glass-btn liquid-glass-accent text-[var(--accent-contrast)]",
+    "shadow-[0_0_15px_var(--glow-color)]",
     "hover:brightness-110",
   ),
   secondary: cn(
@@ -40,10 +40,15 @@ const variantClass: Record<ButtonVariant, string> = {
     "border-[var(--accent-primary)]/50",
     "hover:bg-[var(--accent-primary)]/10",
   ),
-  ghost: cn("liquid-glass-btn liquid-glass-btn-ghost"),
+  ghost: "liquid-glass-btn liquid-glass-btn-ghost",
   danger: cn(
     "liquid-glass-btn liquid-glass-btn-danger",
     "shadow-lg shadow-[var(--danger)]/20",
+  ),
+  success: cn(
+    "liquid-glass-btn text-[var(--text-primary)]",
+    "bg-[var(--success)]/15 border-[var(--success)]/40",
+    "hover:bg-[var(--success)]/25 hover:border-[var(--success)]/60",
   ),
   liquid: cn("liquid-glass-btn text-[var(--text-primary)]"),
 };
@@ -54,6 +59,7 @@ const defaultHaptic: Record<ButtonVariant, HapticProfile> = {
   outline: "light",
   ghost: "light",
   danger: "heavy",
+  success: "light",
   liquid: "medium",
 };
 
@@ -93,12 +99,14 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         type="button"
         disabled={isDisabled}
+        aria-busy={isLoading}
+        aria-disabled={isDisabled}
         onClick={handleClick}
         className={cn(
-          "relative inline-flex min-h-[44px] min-w-[44px] items-center justify-center whitespace-nowrap font-semibold",
+          "relative inline-flex items-center justify-center whitespace-nowrap font-semibold",
           "transition-all duration-150 ease-out",
-          "focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:outline-none",
-          "disabled:cursor-not-allowed disabled:opacity-50",
+          "focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/60 focus-visible:outline-none",
+          "disabled:cursor-not-allowed disabled:opacity-55 disabled:saturate-0 disabled:shadow-none",
           sizeClass[size],
           variantClass[variant],
           className,

@@ -19,46 +19,34 @@ const CONFIG: Record<
   ToastType,
   {
     icon: React.ReactNode;
-    dot: string;
     border: string;
-    text: string;
     progress: string;
   }
 > = {
   success: {
-    icon: <EthoneGlyph name="check" className="h-4 w-4 text-[var(--success)]" />,
-    dot: "bg-[var(--success)] shadow-[0_0_6px_var(--success)]",
-    border: "border-[var(--success)]/30",
-    text: "text-[var(--success)]",
-    progress: "bg-[var(--success)]",
+    icon: <EthoneGlyph name="check" className="h-4 w-4 text-[--accent-primary]" />,
+    border: "border-[--accent-primary]",
+    progress: "bg-[--accent-primary]",
   },
   error: {
     icon: <EthoneGlyph name="alert" className="h-4 w-4 text-[var(--danger)]" />,
-    dot: "bg-[var(--danger)] shadow-[0_0_6px_var(--danger)]",
     border: "border-[var(--danger)]/30",
-    text: "text-[var(--danger)]",
-    progress: "bg-[var(--danger)]",
+    progress: "bg-[var(--danger)]/50",
   },
   info: {
     icon: <EthoneGlyph name="update" className="h-4 w-4 text-[var(--info)]" />,
-    dot: "bg-[var(--info)] shadow-[0_0_6px_var(--info)]",
     border: "border-[var(--info)]/30",
-    text: "text-[var(--info)]",
-    progress: "bg-[var(--info)]",
+    progress: "bg-[var(--info)]/50",
   },
   warning: {
     icon: <EthoneGlyph name="alert" className="h-4 w-4 text-[var(--warning)]" />,
-    dot: "bg-[var(--warning)] shadow-[0_0_6px_var(--warning)]",
     border: "border-[var(--warning)]/30",
-    text: "text-[var(--warning)]",
-    progress: "bg-[var(--warning)]",
+    progress: "bg-[var(--warning)]/50",
   },
   loading: {
     icon: <EthoneGlyph name="refresh" className="h-4 w-4 animate-spin text-[var(--accent-primary)]" />,
-    dot: "bg-[var(--accent-primary)] shadow-[0_0_6px_var(--accent-primary)]",
     border: "border-[var(--accent-primary)]/30",
-    text: "text-[var(--accent-primary)]",
-    progress: "bg-[var(--accent-primary)]",
+    progress: "bg-[var(--accent-primary)]/50",
   },
 };
 
@@ -93,28 +81,27 @@ export default function Toast({
   return (
     <motion.div
       layout={false}
-      initial={{ opacity: 0, y: 15, scale: 0.95 }}
+      initial={{ opacity: 0, y: 12, scale: 0.96 }}
       animate={{
         opacity: targetOpacity,
         y,
         scale,
       }}
-      exit={{ opacity: 0, y: -5, scale: 0.9 }}
-      transition={{ type: "spring", stiffness: 380, damping: 28 }}
+      exit={{ opacity: 0, y: -8, scale: 0.94 }}
+      transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.2}
       onDragEnd={handleDragEnd}
       style={{ x, opacity, zIndex: 50 - depth }}
-      className={`relative pointer-events-auto w-full min-w-0 overflow-hidden rounded-xl border bg-[var(--panel-bg)]/85 p-3.5 shadow-2xl shadow-[var(--background)]/80 backdrop-blur-xl md:min-w-[300px] md:max-w-md ${config.border} flex items-center gap-3 text-sm`}
+      className={`relative w-full min-w-0 overflow-hidden rounded-xl border bg-[var(--panel-bg)]/85 p-3.5 shadow-2xl shadow-[var(--background)]/80 backdrop-blur-xl md:min-w-[300px] md:max-w-md ${config.border} flex items-center gap-3 text-sm text-[var(--text-primary)]`}
     >
       <span className="shrink-0">{config.icon}</span>
-      <span className={`h-2 w-2 shrink-0 rounded-full ${config.dot}`} />
-      <p className={`min-w-0 flex-1 truncate ${config.text}`}>{toast.message}</p>
+      <p className="min-w-0 flex-1 truncate">{toast.message}</p>
       <button
         type="button"
         onClick={onRemove}
-        className="shrink-0 rounded p-1 text-[var(--text-muted)] opacity-70 transition-all hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] hover:opacity-100"
+        className="shrink-0 rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/6 hover:text-[var(--text-primary)]"
         aria-label="Fermer"
       >
         <EthoneGlyph name="close" className="h-4 w-4" />

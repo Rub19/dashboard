@@ -579,7 +579,7 @@ type AmbientState = {
 };
 
 function createAmbientBuffer(ctx: BaseAudioContext, type: SoundAmbient): AudioBuffer {
-  const duration = 4;
+  const duration = type === "rain" ? 16 : 4;
   const length = Math.floor(ctx.sampleRate * duration);
   const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
   const data = buffer.getChannelData(0);
@@ -614,17 +614,66 @@ function createAmbientBuffer(ctx: BaseAudioContext, type: SoundAmbient): AudioBu
       last = (last + 0.08 * white) / 1.08;
       data[i] = last * 0.6;
     }
+  } else if (type === "rain") {
+    renderRainLayer(data, ctx.sampleRate);
   } else {
-    // rain
-    let last = 0;
-    for (let i = 0; i < length; i++) {
-      const white = Math.random() * 2 - 1;
-      last = (last + 0.02 * white) / 1.02;
-      data[i] = last * 2.5;
-    }
+    for (let i = 0; i < length; i++) data[i] = 0;
   }
 
   return buffer;
+}
+
+/** Multi-layer procedural rain: continuous shower, mid-body pink noise and close droplets. */
+function renderRainLayer(data: Float32Array, sampleRate: number): void {
+  const length = data.length;
+  const dropDecay = Math.exp(-1 / (sampleRate * 0.06));
+
+  const drops: { start: number; amp: number }[] = [];
+  let t = Math.floor(sampleRate * 0.3);
+  while (t < length) {
+    t += Math.floor(sampleRate * (0.05 + Math.random() * 0.32));
+    if (t >= length) break;
+    drops.push({ start: t, amp: 0.25 + Math.random() * 0.55 });
+  }
+  drops.sort((a, b) => a.start - b.start);
+
+  let brown = 0;
+  let p0 = 0,
+    p1 = 0,
+    p2 = 0,
+    p3 = 0,
+    p4 = 0,
+    p5 = 0,
+    p6 = 0;
+  let nextDrop = 0;
+  let dropEnv = 0;
+
+  for (let i = 0; i < length; i++) {
+    const white = Math.random() * 2 - 1;
+
+    brown = (brown + 0.03 * white) / 1.03;
+
+    p0 = 0.99886 * p0 + white * 0.0555179;
+    p1 = 0.99332 * p1 + white * 0.0750759;
+    p2 = 0.969 * p2 + white * 0.153852;
+    p3 = 0.8665 * p3 + white * 0.3104856;
+    p4 = 0.55 * p4 + white * 0.5329522;
+    p5 = -0.7616 * p5 - white * 0.016898;
+    const pink = (p0 + p1 + p2 + p3 + p4 + p5 + p6 + white * 0.5362) * 0.08;
+    p6 = white * 0.115926;
+
+    while (nextDrop < drops.length && i >= drops[nextDrop].start) {
+      dropEnv += drops[nextDrop].amp;
+      nextDrop++;
+    }
+    dropEnv *= dropDecay;
+    const droplet = dropEnv * white;
+
+    const time = i / sampleRate;
+    const modulation = 0.8 + 0.13 * Math.sin(time * 0.22) + 0.07 * Math.sin(time * 0.05) + Math.random() * 0.05;
+
+    data[i] = Math.max(-1, Math.min(1, (brown * 0.42 + pink * 0.32 + droplet * 0.85) * modulation * 0.55));
+  }
 }
 
 function isMediaActive(): boolean {

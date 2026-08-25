@@ -156,10 +156,10 @@ type StatusPillProps = {
 function StatusPill({ icon, label, value, title, children, onClick, tone = "default" }: StatusPillProps) {
   const toneClass = {
     default: "hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] text-[var(--text-primary)]",
-    success: "hover:bg-[var(--accent-primary)] hover:text-[var(--accent-primary)] text-[var(--accent-primary)]",
-    warning: "hover:bg-amber-500/[0.1] hover:text-amber-300 text-amber-400",
-    error: "hover:bg-red-500/[0.1] hover:text-red-300 text-red-400",
-    info: "hover:bg-sky-500/[0.1] hover:text-sky-300 text-sky-400",
+    success: "hover:bg-[var(--success)]/[0.1] hover:text-[var(--success)] text-[var(--success)]",
+    warning: "hover:bg-[var(--warning)]/[0.1] hover:text-[var(--warning)] text-[var(--warning)]",
+    error: "hover:bg-[var(--danger)]/[0.1] hover:text-[var(--danger)] text-[var(--danger)]",
+    info: "hover:bg-[var(--info)]/[0.1] hover:text-[var(--info)] text-[var(--info)]",
   }[tone];
 
   return (
@@ -240,6 +240,12 @@ export default function StatusBar() {
     >
       <div className="flex h-full w-full items-center justify-between">
         <div className="flex min-w-0 items-center gap-2">
+          <span
+            className="hidden select-none rounded-lg border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] px-2 py-0.5 text-[10px] font-semibold tracking-wide text-[var(--text-muted)] sm:inline-flex"
+            aria-label={i18n("appName", "ETHONE")}
+          >
+            ETHONE
+          </span>
           <VersionPill />
 
           <StatusPill

@@ -71,6 +71,7 @@ export default function Modal({
 }: ModalProps) {
   const [mounted, setMounted] = useState(false);
   const titleId = useId();
+  const descId = useId();
   const trapRef = useFocusTrap<HTMLDivElement>(isOpen);
 
   useEffect(() => {
@@ -111,6 +112,7 @@ export default function Modal({
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
+            aria-describedby={description ? descId : undefined}
             initial={{ scale: 0.95, y: 12, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.95, y: 12, opacity: 0 }}
@@ -145,7 +147,7 @@ export default function Modal({
             </h2>
 
             {description && (
-              <p className="mt-1 text-xs text-[var(--text-secondary)]">{description}</p>
+              <p id={descId} className="mt-1 text-xs text-[var(--text-secondary)]">{description}</p>
             )}
 
             <div className={`mt-4 text-sm text-[var(--text-primary)] ${contentClassName}`}>{children}</div>

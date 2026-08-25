@@ -83,6 +83,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             setRef(ref, node);
           }}
           id={id}
+          aria-invalid={error}
           disabled={disabled}
           value={value}
           onChange={(e) => {

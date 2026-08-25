@@ -57,6 +57,7 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
       <button
         ref={ref}
         type="button"
+        aria-pressed={variant === "active" ? "true" : undefined}
         onClick={handleClick}
         className={cn(
           "inline-flex items-center justify-center",

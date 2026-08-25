@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.18 — 2026-08-25
+
+**ETHONE — Barre de saisie Hero / Brain refaite**
+
+- Suppression du double contour de focus intérieur sur le champ de saisie et la `TextArea`.
+- Un seul focus visuel sur le conteneur via `:focus-within`.
+- Padding et espacement améliorés entre l'icône, le texte et l'action.
+- Bouton **Brain** intégré à l'intérieur de la barre, plus compact.
+- Couleurs de focus qui suivent automatiquement l'accent du thème actuel.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.17 — 2026-08-25
 
 **ETHONE — En-tête Home retravaillé**

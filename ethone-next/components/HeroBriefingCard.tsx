@@ -174,7 +174,7 @@ const HeroBriefingCard = memo(function HeroBriefingCard({
           )}
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <form onSubmit={handleSubmit}>
           <Input
             ref={inputRef}
             type="text"
@@ -182,18 +182,20 @@ const HeroBriefingCard = memo(function HeroBriefingCard({
             onChange={handlePromptChange}
             placeholder="Poser une question ou un objectif..."
             icon="brain"
-            className="min-w-0 flex-1 rounded-full"
+            className="w-full rounded-full"
             inputClassName="placeholder:text-[var(--text-muted)]"
+            right={
+              <button
+                type="submit"
+                disabled={!prompt.trim() || brain.loading}
+                style={BRAIN_BUTTON_STYLE}
+                className="flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-full px-3 text-xs font-semibold text-[var(--accent-contrast)] shadow-[0_0_10px_var(--glow-color)] transition-all hover:opacity-90 hover:shadow-[0_0_16px_var(--glow-color)] disabled:opacity-40"
+              >
+                <Icon pack="phosphor" name="sparkles" className="h-3.5 w-3.5" />
+                Brain
+              </button>
+            }
           />
-          <button
-            type="submit"
-            disabled={!prompt.trim() || brain.loading}
-            style={BRAIN_BUTTON_STYLE}
-            className="flex h-10 w-full shrink-0 items-center justify-center gap-1.5 rounded-full px-4 text-xs font-semibold text-[var(--accent-contrast)] shadow-[0_0_12px_var(--glow-color)] transition-all hover:opacity-90 hover:shadow-[0_0_20px_var(--glow-color)] disabled:opacity-40 sm:h-9 sm:w-auto"
-          >
-            <Icon pack="phosphor" name="sparkles" className="h-3.5 w-3.5" />
-            Brain
-          </button>
         </form>
 
         <div className="flex flex-wrap gap-2">

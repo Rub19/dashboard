@@ -58,7 +58,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
             }
             onChange?.(e);
           }}
-          className={`h-full min-h-[5rem] w-full resize-y bg-transparent border-0 p-0 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none ring-0 caret-[var(--accent-primary)] ${inputClassName || ""}`}
+          className={`h-full min-h-[5rem] w-full resize-y bg-transparent border-0 p-0 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none ring-0 focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 caret-[var(--accent-primary)] ${inputClassName || ""}`}
           {...props}
         />
       </div>

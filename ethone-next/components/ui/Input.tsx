@@ -59,10 +59,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const showClear = clearable && hasValue && !disabled;
 
     const baseWrapper =
-      "group relative flex w-full min-w-0 items-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] px-3.5 text-sm text-[var(--text-primary)] outline-none backdrop-blur-md transition-all duration-200 ease-out";
+      "group/input relative flex w-full min-w-0 items-center gap-3 overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] px-4 text-sm text-[var(--text-primary)] outline-none backdrop-blur-md transition-all duration-200 ease-out";
     const hover = "hover:border-[var(--border)]";
     const focus =
-      "focus-within:border-[var(--accent-primary)]/60 focus-within:ring-1 focus-within:ring-[var(--accent-primary)]/20 focus-within:shadow-[0_0_12px_-4px_var(--glow-color)]";
+      "focus-within:border-[var(--accent-primary)]/60 focus-within:bg-[var(--surface-raised)] focus-within:ring-1 focus-within:ring-[var(--accent-primary)]/20 focus-within:shadow-[0_0_12px_-4px_var(--glow-color)]";
     const state = error
       ? "border-[var(--danger)]/50 ring-1 ring-[var(--danger)]/10 text-[var(--danger)]"
       : `${hover} ${focus}`;
@@ -90,7 +90,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             setHasValue(e.target.value.length > 0);
             onChange?.(e);
           }}
-          className={`min-w-0 flex-1 bg-transparent border-0 p-0 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none ring-0 caret-[var(--accent-primary)] disabled:cursor-not-allowed ${inputClassName || ""}`}
+          className={`min-w-0 flex-1 bg-transparent border-0 p-0 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none ring-0 focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 caret-[var(--accent-primary)] disabled:cursor-not-allowed ${inputClassName || ""}`}
           {...props}
         />
         {showClear && (

@@ -42,6 +42,7 @@ import {
 } from "@/lib/connection-config";
 import ServiceIcon from "@/components/ServiceIcon";
 import ConnectionBadge from "@/components/ConnectionBadge";
+import ConnectionGuideModal from "@/components/ConnectionGuideModal";
 import Select from "@/components/ui/Select";
 import Input from "@/components/Input";
 import FormField from "@/components/FormField";
@@ -170,7 +171,7 @@ export default function ConnectionCard({
   const [copied, setCopied] = useState<string | null>(null);
   const [clientSecret, setClientSecret] = useState((storeValues.clientSecret as string) || "");
   const [showClientSecret, setShowClientSecret] = useState(false);
-  const [showConfigGuide, setShowConfigGuide] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
   const [origin, setOrigin] = useState("");
 
   useEffect(() => {
@@ -436,23 +437,17 @@ export default function ConnectionCard({
               </div>
             )}
 
-            {config ? (
-              <ConfigGuidePanel
-                config={config}
-                origin={origin}
-                isOpen={showConfigGuide}
-                onToggle={() => setShowConfigGuide((v) => !v)}
-                copied={copied}
-                onCopy={handleCopy}
-              />
-            ) : guide ? (
-              <FieldGuide
-                guide={guide}
-                isOpen={openGuideField === "oauth"}
-                onToggle={() => toggleGuide("oauth")}
-                label={i18n("clientId") || "Client ID"}
-              />
-            ) : null}
+            {(config || guide) && (
+              <button
+                type="button"
+                onClick={() => setShowGuide(true)}
+                className="flex w-fit items-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] font-medium text-[var(--accent-primary)] transition hover:bg-[var(--accent-primary)]/10"
+                aria-label={i18n("setupGuide", "Guide pas-à-pas")}
+              >
+                <HelpCircle className="h-3.5 w-3.5" />
+                {i18n("setupGuide", "Guide pas-à-pas")}
+              </button>
+            )}
 
             <div className="grid grid-cols-3 gap-2">
               <button
@@ -505,14 +500,15 @@ export default function ConnectionCard({
         {hasInputs && (
           <div className="flex flex-col gap-2.5">
             {config && (
-              <ConfigGuidePanel
-                config={config}
-                origin={origin}
-                isOpen={showConfigGuide}
-                onToggle={() => setShowConfigGuide((v) => !v)}
-                copied={copied}
-                onCopy={handleCopy}
-              />
+              <button
+                type="button"
+                onClick={() => setShowGuide(true)}
+                className="flex w-fit items-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] font-medium text-[var(--accent-primary)] transition hover:bg-[var(--accent-primary)]/10"
+                aria-label={i18n("setupGuide", "Guide pas-à-pas")}
+              >
+                <HelpCircle className="h-3.5 w-3.5" />
+                {i18n("setupGuide", "Guide pas-à-pas")}
+              </button>
             )}
 
             {publicFields.map((f) =>
@@ -670,6 +666,15 @@ export default function ConnectionCard({
           )}
         </AnimatePresence>
       </div>
+
+      <ConnectionGuideModal
+        isOpen={showGuide}
+        onClose={() => setShowGuide(false)}
+        integrationId={integration.id}
+        origin={origin}
+        copied={copied}
+        onCopy={handleCopy}
+      />
     </motion.div>
   );
 }
@@ -787,102 +792,6 @@ function FieldGuide({
             className="overflow-hidden"
           >
             <GuidePanel guide={guide} />
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-function ConfigGuidePanel({
-  config,
-  origin,
-  isOpen,
-  onToggle,
-  copied,
-  onCopy,
-}: {
-  config: IntegrationConfig;
-  origin: string;
-  isOpen: boolean;
-  onToggle: () => void;
-  copied: string | null;
-  onCopy: (value: string, key: string) => void;
-}) {
-  return (
-    <div className="flex flex-col">
-      <div className="mb-2.5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <a
-          href={config.developerUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--accent-primary)]/20 px-3 py-1.5 text-xs font-semibold text-[var(--accent-primary)] transition-all hover:bg-[var(--accent-primary)]/30"
-        >
-          {config.developerButtonLabel}
-          <ExternalLink className="h-3 w-3" />
-        </a>
-        {config.docsUrl && (
-          <a
-            href={config.docsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-500/20 px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-zinc-500/30"
-          >
-            Documentation
-            <ExternalLink className="h-3 w-3" />
-          </a>
-        )}
-      </div>
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={isOpen}
-        className="flex w-fit items-center gap-1.5 text-[11px] text-[var(--accent-primary)] transition-colors hover:text-[var(--accent-primary)]"
-      >
-        <HelpCircle className="h-3.5 w-3.5" />
-        {isOpen ? "Masquer le guide" : "Guide pas-à-pas"}
-      </button>
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2, ease: "easeOut" as const }}
-            className="overflow-hidden"
-          >
-            <div className="mt-2 rounded-xl border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/[0.06] p-3.5">
-              <ol className="list-decimal space-y-2 pl-4">
-                {config.steps.map((step, idx) => {
-                  const copyValue =
-                    step.copyValueType === "callback"
-                      ? `${origin}${config.callbackPath}`
-                      : step.copyValueType === "homepage"
-                        ? `${origin}/`
-                        : "";
-                  const copyKey = `${config.id}-${step.copyValueType}-${idx}`;
-                  return (
-                    <li key={idx} className="text-xs leading-relaxed text-[var(--text-primary)]">
-                      <p className="font-medium text-[var(--text-primary)]">{step.title}</p>
-                      <p className="text-[var(--text-muted)]">{step.description}</p>
-                      {copyValue && (
-                        <div className="mt-1.5 flex items-center gap-2">
-                          <code className="flex-1 truncate rounded-lg bg-[var(--background)] px-2 py-1 text-[10px] text-[var(--text-muted)]">{copyValue}</code>
-                          <button
-                            type="button"
-                            onClick={() => onCopy(copyValue, copyKey)}
-                            className="text-[var(--text-muted)] transition hover:text-[var(--text-primary)]"
-                            aria-label="Copier"
-                          >
-                            {copied === copyKey ? <Check className="h-3.5 w-3.5 text-[var(--accent-primary)]" /> : <Copy className="h-3.5 w-3.5" />}
-                          </button>
-                        </div>
-                      )}
-                    </li>
-                  );
-                })}
-              </ol>
-            </div>
           </motion.div>
         )}
       </AnimatePresence>

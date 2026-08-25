@@ -196,7 +196,7 @@ function SettingField({ field }: { field: FieldDef }) {
         <div className="flex min-w-0 flex-1 items-start gap-2.5">
           {isDirty && (
             <span
-              className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[var(--accent)]"
+              className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[var(--accent-primary)]"
               title="Modifié"
               aria-label="Modifié"
             />

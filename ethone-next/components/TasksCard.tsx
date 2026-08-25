@@ -1,7 +1,7 @@
 "use client";
 
 import { memo, useCallback } from "react";
-import { Check, Calendar, Trash2 } from "lucide-react";
+import { Icon } from "@/lib/icons";
 import { hapticSuccessPattern, hapticRigidImpact } from "@/lib/haptics";
 import type { Item } from "@/lib/hooks/useItems";
 
@@ -16,10 +16,10 @@ export type Task = Item & {
 };
 
 const PRIORITY_STYLES: Record<TaskPriority, string> = {
-  high: "text-rose-400 bg-rose-500/15 border-rose-500/30",
-  urgent: "text-rose-400 bg-rose-500/15 border-rose-500/30",
-  medium: "text-amber-400 bg-amber-500/15 border-amber-500/30",
-  low: "text-blue-400 bg-blue-500/15 border-blue-500/30",
+  high: "text-[var(--danger)] bg-[var(--danger)]/15 border-[var(--danger)]/30",
+  urgent: "text-[var(--danger)] bg-[var(--danger)]/15 border-[var(--danger)]/30",
+  medium: "text-[var(--warning)] bg-[var(--warning)]/15 border-[var(--warning)]/30",
+  low: "text-[var(--info)] bg-[var(--info)]/15 border-[var(--info)]/30",
 };
 
 const PRIORITY_LABELS: Record<TaskPriority, string> = {
@@ -81,7 +81,7 @@ const TasksCard = memo(function TasksCard({ task, onToggle, onDelete }: TasksCar
           }`}
           aria-label={task.done ? "Marquer non terminée" : "Marquer terminée"}
         >
-          {task.done && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
+          {task.done && <Icon name="check" className="h-3.5 w-3.5" />}
         </button>
 
         <div className="min-w-0 flex-1">
@@ -96,7 +96,7 @@ const TasksCard = memo(function TasksCard({ task, onToggle, onDelete }: TasksCar
           </p>
           {due && (
             <p className="mt-0.5 flex items-center gap-1 text-[10px] font-mono text-[var(--text-muted)]">
-              <Calendar className="h-3 w-3" />
+              <Icon name="calendar" className="h-3 w-3" />
               {due}
             </p>
           )}
@@ -116,7 +116,7 @@ const TasksCard = memo(function TasksCard({ task, onToggle, onDelete }: TasksCar
           className="rounded-lg p-1.5 text-[var(--text-muted)] opacity-0 transition-all hover:bg-[var(--danger)]/10 hover:text-[var(--danger)] group-hover:opacity-100"
           aria-label="Supprimer"
         >
-          <Trash2 className="h-3.5 w-3.5" />
+          <Icon name="trash-2" className="h-3.5 w-3.5" />
         </button>
       </div>
     </div>

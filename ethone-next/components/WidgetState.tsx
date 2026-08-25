@@ -68,9 +68,9 @@ function WidgetState({
         className={cn(
           "h-8 w-8",
           state === "loading" && "animate-spin text-[var(--info)]",
-          state === "empty" && "text-[var(--muted)]",
+          state === "empty" && "text-[var(--text-muted)]",
           state === "disconnected" && "text-[var(--warning)]",
-          state === "error" && "text-red-400",
+          state === "error" && "text-[var(--danger)]",
           state === "offline" && "text-[var(--text-muted)]",
         )}
       />

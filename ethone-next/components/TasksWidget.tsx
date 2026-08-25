@@ -2,7 +2,7 @@
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, CheckSquare } from "lucide-react";
+import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { type Item } from "@/lib/hooks/useItems";
 import { useCloudTasks } from "@/lib/hooks/useCloudTasks";
@@ -156,7 +156,7 @@ const TasksWidget = memo(function TasksWidget({ className = "", data, scrollable
         <div className="shrink-0 flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] shadow-[0_0_12px_var(--glow-color)]">
-              <CheckSquare className="h-4 w-4" />
+              <Icon name="check-square" className="h-4 w-4" />
             </span>
             <h3 className="text-sm font-bold tracking-wide text-[var(--text-primary)]">
               {i18n("myTasks", "Mes Tâches")}
@@ -195,7 +195,7 @@ const TasksWidget = memo(function TasksWidget({ className = "", data, scrollable
                 : "cursor-not-allowed bg-[var(--surface-raised)] text-[var(--text-muted)]"
             }`}
           >
-            <Plus className="h-4 w-4" />
+            <Icon name="plus" className="h-4 w-4" />
           </button>
         </form>
 

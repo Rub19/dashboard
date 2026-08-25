@@ -119,22 +119,22 @@ export default function MaintenancePanel() {
       <ActionCard
         onClick={handleReload}
         icon={<Icon name="rotate-cw" className="h-4 w-4" />}
-        label={i18n("refreshAll") || "Vider le cache et recharger"}
+        label={i18n("refreshAll", "Vider le cache et recharger")}
       />
       <ActionCard
         onClick={handleResync}
         loading={loading}
         icon={<Icon name="refresh-cw" className="h-4 w-4" />}
-        label={i18n("resyncWorker") || "Resynchroniser avec le Worker"}
+        label={i18n("resyncWorker", "Resynchroniser avec le Worker")}
       />
       <InfoCard
         icon={<Icon name="microchip" className="h-4 w-4" />}
-        label={i18n("deviceMemory") || "Mémoire appareil"}
+        label={i18n("deviceMemory", "Mémoire appareil")}
         value={deviceMemory}
       />
       <InfoCard
         icon={<Icon name="server" className="h-4 w-4" />}
-        label={i18n("usedHeap") || "Heap JS utilisé"}
+        label={i18n("usedHeap", "Heap JS utilisé")}
         value={usedHeap}
         badge={latency}
       />

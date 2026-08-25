@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { motion, type PanInfo, useMotionValue, useTransform } from "framer-motion";
+import { useI18n } from "@/lib/hooks/useI18n";
 import EthoneGlyph from "@/components/icons/EthoneGlyph";
 
 export type ToastType = "success" | "error" | "info" | "warning" | "loading";
@@ -59,6 +60,7 @@ export default function Toast({
   depth: number;
   onRemove: () => void;
 }) {
+  const i18n = useI18n();
   const x = useMotionValue(0);
   const opacity = useTransform(x, [-120, 0, 120], [0.25, 1, 0.25]);
 
@@ -102,7 +104,7 @@ export default function Toast({
         type="button"
         onClick={onRemove}
         className="shrink-0 rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/6 hover:text-[var(--text-primary)]"
-        aria-label="Fermer"
+        aria-label={i18n("close", "Fermer")}
       >
         <EthoneGlyph name="close" className="h-4 w-4" />
       </button>

@@ -2,6 +2,7 @@
 
 import { memo, useCallback } from "react";
 import { Icon } from "@/lib/icons";
+import { useI18n } from "@/lib/hooks/useI18n";
 import { hapticSuccessPattern, hapticRigidImpact } from "@/lib/haptics";
 import type { Item } from "@/lib/hooks/useItems";
 
@@ -45,6 +46,7 @@ export type TasksCardProps = {
 };
 
 const TasksCard = memo(function TasksCard({ task, onToggle, onDelete }: TasksCardProps) {
+  const i18n = useI18n();
   const priority = task.data?.priority || "medium";
   const due = formatDueDate(task.data?.dueDate);
 
@@ -79,7 +81,7 @@ const TasksCard = memo(function TasksCard({ task, onToggle, onDelete }: TasksCar
               ? "border-[var(--accent-primary)] bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-[0_0_10px_var(--glow-color)]"
               : "border-[var(--text-primary)]/20 hover:border-[var(--accent-primary)]"
           }`}
-          aria-label={task.done ? "Marquer non terminée" : "Marquer terminée"}
+          aria-label={task.done ? i18n("markAsUndone", "Marquer non terminée") : i18n("markAsDone", "Marquer terminée")}
         >
           {task.done && <Icon name="check" className="h-3.5 w-3.5" />}
         </button>
@@ -114,7 +116,7 @@ const TasksCard = memo(function TasksCard({ task, onToggle, onDelete }: TasksCar
           type="button"
           onClick={handleDelete}
           className="rounded-lg p-1.5 text-[var(--text-muted)] opacity-0 transition-all hover:bg-[var(--danger)]/10 hover:text-[var(--danger)] group-hover:opacity-100"
-          aria-label="Supprimer"
+          aria-label={i18n("delete", "Supprimer")}
         >
           <Icon name="trash-2" className="h-3.5 w-3.5" />
         </button>

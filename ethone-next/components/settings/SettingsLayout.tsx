@@ -8,10 +8,12 @@ import Input from "@/components/Input";
 import { useSettings } from "@/components/SettingsProvider";
 import { useSettingsForm } from "./SettingsFormContext";
 import { useToast } from "@/components/ToastProvider";
-import { DEFAULTS } from "@/lib/settings";
+import { DEFAULTS, type Settings } from "@/lib/settings";
+import { CATEGORY_KEYS } from "@/lib/settings-category-keys";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import Button from "@/components/ui/Button";
+import Modal from "@/components/ui/Modal";
 import SettingsNavigation, { CATEGORY_ORDER, sectionCategory } from "./SettingsNavigation";
 import SettingsContent from "./SettingsContent";
 
@@ -31,6 +33,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
   const searchRef = useRef<HTMLInputElement>(null);
 
   const [activeCategory, setActiveCategory] = useState(() => resolveCategory(initialSection ?? searchParams?.get("category") ?? searchParams?.get("tab")));
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
 
   const scrollToCategory = useCallback((id: string) => {
     const el =
@@ -63,14 +66,37 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
   }, []);
 
   const handleReset = useCallback(() => {
-    if (!window.confirm(i18n("resetSettingsConfirm") || "Rétablir tous les paramètres par défaut ?")) return;
+    setIsResetModalOpen(true);
+  }, []);
+
+  const handleResetSection = useCallback(() => {
+    setIsResetModalOpen(false);
+    try {
+      const keys = CATEGORY_KEYS[activeCategory];
+      if (!keys || keys.length === 0) {
+        notify.reset();
+        return;
+      }
+      const next: Partial<Settings> = {};
+      for (const key of keys) {
+        (next as Record<string, unknown>)[key] = DEFAULTS[key];
+      }
+      update(next);
+      notify.reset();
+    } catch (err) {
+      showError(String(err));
+    }
+  }, [activeCategory, notify, showError, update]);
+
+  const handleResetAll = useCallback(() => {
+    setIsResetModalOpen(false);
     try {
       update({ ...DEFAULTS });
       notify.reset();
     } catch (err) {
       showError(String(err));
     }
-  }, [i18n, notify, showError, update]);
+  }, [notify, showError, update]);
 
   const handleSave = useCallback(() => {
     try {
@@ -256,6 +282,45 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
           </div>
         </div>
       )}
+
+      <Modal
+        isOpen={isResetModalOpen}
+        onClose={() => setIsResetModalOpen(false)}
+        title={i18n("resetModalTitle", "Réinitialiser les réglages")}
+        description={i18n("resetModalDescription", "Choisissez la portée de la réinitialisation.")}
+        size="sm"
+        variant="danger"
+        hideFooter
+      >
+        <div className="space-y-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+            <Button
+              type="button"
+              variant="secondary"
+              size="md"
+              onClick={() => setIsResetModalOpen(false)}
+            >
+              {i18n("cancel") || "Annuler"}
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              size="md"
+              onClick={handleResetSection}
+            >
+              {i18n("resetSection", "Réinitialiser cette section")}
+            </Button>
+            <Button
+              type="button"
+              variant="danger"
+              size="md"
+              onClick={handleResetAll}
+            >
+              {i18n("resetAll", "Réinitialiser tous les réglages")}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

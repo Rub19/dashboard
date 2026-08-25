@@ -4,6 +4,15 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## v1.9.0 — 2026-08-25
 
+**ETHONE Control Center — Modale de réinitialisation sécurisée**
+
+- Remplacement de `window.confirm()` par une modale ETHONE dans `SettingsLayout`.
+- Nouvelle option "Réinitialiser cette section" basée sur `lib/settings-category-keys.ts`.
+- Option "Réinitialiser tous les réglages" conservée avec confirmation.
+- Mapping `CATEGORY_KEYS` des clés de paramètres par catégorie Settings.
+
+## v1.9.0 — 2026-08-25
+
 **ETHONE Control Center — Diagnostic, recherche et raccourcis Settings**
 
 - Nouveau panneau `DiagnosticPanel` dans les paramètres avancés (Supabase, Worker, Cache, Thème, Sync).

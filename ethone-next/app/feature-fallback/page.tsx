@@ -28,15 +28,15 @@ function FeatureFallbackContent() {
       <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
       <Card3D>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
-          <Icon name="alert-triangle" className="mt-1 h-5 w-5 text-amber-400" />
+          <Icon name="alert-triangle" className="mt-1 h-5 w-5 text-[var(--warning)]" />
           <div className="min-w-0">
             <p className="break-words font-medium capitalize">{feature}</p>
-            <p className="break-words text-sm text-[var(--muted)]">{fallbackMessage()}</p>
+            <p className="break-words text-sm text-[var(--text-muted)]">{fallbackMessage()}</p>
           </div>
         </div>
       </Card3D>
       <Card3D>
-        <p className="break-words text-sm text-[var(--muted)]">{i18n("featureFallbackHint")}</p>
+        <p className="break-words text-sm text-[var(--text-muted)]">{i18n("featureFallbackHint")}</p>
       </Card3D>
       </div>
     </div>

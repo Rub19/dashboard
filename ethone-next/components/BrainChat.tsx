@@ -19,18 +19,6 @@ import {
   MessageBubbleContent,
   MessageBubbleGroup,
 } from "@/components/MessageBubble";
-import {
-  Sparkles,
-  ArrowUp,
-  FilePlus,
-  CircleCheck,
-  Zap,
-  Music,
-  History,
-  Loader2,
-  X,
-  RotateCcw,
-} from "lucide-react";
 import { motion } from "framer-motion";
 import TextArea from "@/components/Textarea";
 
@@ -41,13 +29,7 @@ type ActionChip = {
   onClick: () => void;
 };
 
-function getGreeting() {
-  const h = new Date().getHours();
-  if (h < 6) return "Bonne nuit";
-  if (h < 12) return "Bonjour";
-  if (h < 18) return "Bon après-midi";
-  return "Bonsoir";
-}
+
 
 function extractContentActions(content: string, handlers: {
   createNote: (title?: string) => void;
@@ -63,7 +45,7 @@ function extractContentActions(content: string, handlers: {
     chips.push({
       id: "note",
       label: "Créer une note",
-      icon: <FilePlus className="h-3.5 w-3.5" />,
+      icon: <Icon name="file-plus" pack="phosphor" className="h-3.5 w-3.5" />,
       onClick: () => handlers.createNote(),
     });
   }
@@ -71,7 +53,7 @@ function extractContentActions(content: string, handlers: {
     chips.push({
       id: "task",
       label: "Ajouter une tâche",
-      icon: <CircleCheck className="h-3.5 w-3.5" />,
+      icon: <Icon name="check-circle" pack="phosphor" className="h-3.5 w-3.5" />,
       onClick: () => handlers.createTask(),
     });
   }
@@ -80,7 +62,7 @@ function extractContentActions(content: string, handlers: {
     chips.push({
       id: "flow",
       label: "Lancer un Flow",
-      icon: <Zap className="h-3.5 w-3.5" />,
+      icon: <Icon name="zap" pack="phosphor" className="h-3.5 w-3.5" />,
       onClick: () => handlers.runFlow(flowId),
     });
   }
@@ -96,7 +78,7 @@ function extractContentActions(content: string, handlers: {
     chips.push({
       id: "planning",
       label: "Préparer le planning",
-      icon: <History className="h-3.5 w-3.5" />,
+      icon: <Icon name="clock-counter-clockwise" pack="phosphor" className="h-3.5 w-3.5" />,
       onClick: () => handlers.openPlanning(),
     });
   }
@@ -157,6 +139,7 @@ function MarkdownInline({ text }: { text: string }) {
 }
 
 function CopyButton({ text }: { text: string }) {
+  const i18n = useI18n();
   const [copied, setCopied] = useState(false);
   async function handleCopy() {
     try {
@@ -167,7 +150,7 @@ function CopyButton({ text }: { text: string }) {
   }
   return (
     <button type="button" onClick={handleCopy} className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
-      {copied ? "Copié" : "Copier"}
+      {copied ? i18n("copied", "Copié") : i18n("copy", "Copier")}
     </button>
   );
 }
@@ -178,7 +161,7 @@ function TypingDots() {
       {[0, 1, 2].map((i) => (
         <motion.span
           key={i}
-          className="h-1.5 w-1.5 rounded-full bg-zinc-400"
+          className="h-1.5 w-1.5 rounded-full bg-[var(--text-muted)]"
           animate={{ y: [0, -5, 0] }}
           transition={{ repeat: Infinity, duration: 0.6, delay: i * 0.12, ease: "easeInOut" }}
         />
@@ -254,25 +237,25 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
       {
         id: "note",
         label: "Créer une nouvelle note",
-        icon: <FilePlus className="h-3.5 w-3.5" />,
+        icon: <Icon name="file-plus" pack="phosphor" className="h-3.5 w-3.5" />,
         onClick: () => handleExecute("note.create", { title: "Idée Brain", body: "" }),
       },
       {
         id: "flow",
         label: `Lancer le flow ${i18n(activeWorkspace || "personal")}`,
-        icon: <Zap className="h-3.5 w-3.5" />,
+        icon: <Icon name="zap" pack="phosphor" className="h-3.5 w-3.5" />,
         onClick: () => handleExecute("v8.space.focus", { space: activeWorkspace || "personal" }),
       },
       {
         id: "media",
         label: nowPlaying?.title ? `Résumé média : ${nowPlaying.title}` : "Résumé média",
-        icon: <Music className="h-3.5 w-3.5" />,
+        icon: <Icon name="music" pack="phosphor" className="h-3.5 w-3.5" />,
         onClick: () => handleSend(nowPlaying?.title ? `Résume le média en cours : ${nowPlaying.title}` : "Résume ma musique en cours"),
       },
       {
         id: "activity",
         label: "Rapport d'activité",
-        icon: <History className="h-3.5 w-3.5" />,
+        icon: <Icon name="clock-counter-clockwise" pack="phosphor" className="h-3.5 w-3.5" />,
         onClick: () => handleSend("Fais-moi un rapport de mon activité récente"),
       },
     ];
@@ -346,17 +329,26 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
             : "border-purple-500/30 bg-purple-500/10 text-purple-300"
         }`}
       >
-        {isFallback ? <Icon name="zap" className="h-3 w-3" /> : <Sparkles className="h-3 w-3" />}
+        {isFallback ? <Icon name="zap" className="h-3 w-3" /> : <Icon name="sparkles" pack="phosphor" className="h-3 w-3" />}
         {m.provider}
       </span>
     );
   }
 
   function buildWelcomeMessage() {
+    const h = new Date().getHours();
+    const greeting =
+      h < 6
+        ? i18n("greetingNight", "Bonne nuit")
+        : h < 12
+          ? i18n("greetingMorning", "Bonjour")
+          : h < 18
+            ? i18n("greetingAfternoon", "Bon après-midi")
+            : i18n("greetingEvening", "Bonsoir");
     const health = records?.length ? "opérationnel" : "en cours d'initialisation";
     const flowLine = activeFlows > 0 ? `, ${activeFlows} flow${activeFlows > 1 ? "s" : ""} actif${activeFlows > 1 ? "s" : ""}` : "";
     const mediaLine = nowPlaying?.title ? `Tu écoutes/vois actuellement **${nowPlaying.title}**.` : "";
-    return `${getGreeting()} ${userName}, ravi de te retrouver sur ETHONE OS. Système **${health}**${flowLine}. ${mediaLine}\n\nQue puis-je faire pour toi aujourd'hui ?`;
+    return `${greeting} ${userName}, ravi de te retrouver sur ETHONE OS. Système **${health}**${flowLine}. ${mediaLine}\n\nQue puis-je faire pour toi aujourd'hui ?`;
   }
 
   const welcomeMessage = buildWelcomeMessage();
@@ -427,7 +419,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
           onClick={() => brain.clearChat()}
           className="inline-flex h-7 items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2.5 py-1 text-[10px] font-medium text-[var(--text-muted)] transition-colors hover:border-[var(--danger)]/40 hover:text-[var(--danger)]"
         >
-          <X className="h-3.5 w-3.5" />
+          <Icon name="x" pack="phosphor" className="h-3.5 w-3.5" />
           {i18n("clear")}
         </button>
       </div>
@@ -453,7 +445,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
           {brain.error && (
             <div className="mb-3 flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 shadow-lg backdrop-blur-md">
               <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-300">
-                <Zap className="h-3.5 w-3.5" />
+                <Icon name="zap" pack="phosphor" className="h-3.5 w-3.5" />
               </span>
               <div className="min-w-0 flex-1 text-xs text-amber-200">
                 <p className="font-medium">{String(brain.error.message)}</p>
@@ -468,7 +460,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
                     disabled={pending || brain.loading}
                     className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-[var(--warning)]/30 bg-[var(--warning)]/15 px-2.5 py-1.5 text-[10px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--warning)]/25 disabled:opacity-50"
                   >
-                    <RotateCcw className="h-3 w-3" />
+                    <Icon name="rotate-cw" pack="phosphor" className="h-3 w-3" />
                     Réessayer
                   </button>
                 )}
@@ -479,7 +471,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
                 className="shrink-0 text-[var(--warning)] transition-colors hover:text-[var(--text-primary)]"
                 aria-label={i18n("close")}
               >
-                <X className="h-3.5 w-3.5" />
+                <Icon name="x" pack="phosphor" className="h-3.5 w-3.5" />
               </button>
             </div>
           )}
@@ -510,7 +502,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
                     }}
                     className="inline-flex h-7 items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-2 py-1 text-[10px] font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--accent-primary)]/40 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--accent-primary)]"
                   >
-                    <Sparkles className="h-3 w-3" />
+                    <Icon name="sparkles" pack="phosphor" className="h-3 w-3" />
                     {s.title}
                   </button>
                 ))}
@@ -526,7 +518,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] font-bold transition-all hover:scale-105 active:scale-95 disabled:opacity-40"
                 aria-label="Envoyer"
               >
-                {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUp className="h-4 w-4" />}
+                {pending ? <Icon name="loader-2" pack="phosphor" className="h-4 w-4 animate-spin" /> : <Icon name="arrow-up" pack="phosphor" className="h-4 w-4" />}
               </button>
             </div>
           </div>

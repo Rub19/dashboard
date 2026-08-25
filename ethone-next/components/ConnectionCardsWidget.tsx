@@ -82,26 +82,28 @@ const ConnectionCardsWidget = memo(function ConnectionCardsWidget({
       className={cn("h-full", className)}
       scrollable={false}
     >
-      <div className="flex min-h-[88px] gap-2 overflow-x-auto no-scrollbar py-1">
+      <div className="grid grid-cols-2 gap-2 py-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
         {loading && filtered.length === 0 ? (
-          Array.from({ length: 4 }).map((_, i) => (
+          Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="h-20 w-28 shrink-0 rounded-[var(--panel-radius)] v8-inset animate-pulse"
+              className="h-24 w-full rounded-[var(--panel-radius)] v8-inset animate-pulse"
             />
           ))
         ) : isEmpty ? (
-          <EmptyState
-            kind="integration"
-            compact
-            inline
-            className="min-h-[88px] w-full"
-            actions={
-              <Button size="sm" variant="outline" onClick={handleOpen} leftIcon={<Icon name="plug" className="h-4 w-4" />}>
-                {i18n("connectService", "Connecter un service")}
-              </Button>
-            }
-          />
+          <div className="col-span-full w-full">
+            <EmptyState
+              kind="integration"
+              compact
+              inline
+              className="min-h-[88px] w-full"
+              actions={
+                <Button size="sm" variant="outline" onClick={handleOpen} leftIcon={<Icon name="plug" className="h-4 w-4" />}>
+                  {i18n("connectService", "Connecter un service")}
+                </Button>
+              }
+            />
+          </div>
         ) : (
           filtered.map((record) => {
             const meta = SERVICE_META[record.source] || { icon: "circle" };
@@ -110,8 +112,7 @@ const ConnectionCardsWidget = memo(function ConnectionCardsWidget({
               <Card3D
                 key={record.id}
                 onClick={handleOpen}
-                className="w-32 shrink-0 cursor-pointer p-2.5"
-                style={{ minHeight: "5rem" }}
+                className="h-24 w-full cursor-pointer p-3"
                 radius="var(--panel-radius)"
               >
                 <div className="flex h-full flex-col justify-between gap-1.5">
@@ -121,14 +122,14 @@ const ConnectionCardsWidget = memo(function ConnectionCardsWidget({
                         candidates={[record.image]}
                         alt={record.label}
                         size={28}
-                        className="h-7 w-7 rounded-lg object-cover"
-                        iconClassName="h-4 w-4 text-[var(--accent-primary)]"
+                        className="h-8 w-8 rounded-lg object-cover"
+                        iconClassName="h-5 w-5 text-[var(--accent-primary)]"
                       />
                     ) : (
                       <Icon
                         name={meta.icon}
                         pack="phosphor"
-                        className="h-5 w-5 text-[var(--accent-primary)]"
+                        className="h-6 w-6 text-[var(--accent-primary)]"
                       />
                     )}
                     <span
@@ -141,10 +142,10 @@ const ConnectionCardsWidget = memo(function ConnectionCardsWidget({
                     />
                   </div>
                   <div className="min-w-0">
-                    <p className="truncate text-[10px] font-semibold uppercase tracking-wide text-[var(--text-primary)]">
+                    <p className="truncate text-xs font-semibold uppercase tracking-wide text-[var(--text-primary)]">
                       {record.label}
                     </p>
-                    <p className="truncate text-[9px] text-[var(--text-muted)]" title={record.title}>
+                    <p className="truncate text-[10px] text-[var(--text-muted)]" title={record.title}>
                       {record.title}
                     </p>
                   </div>

@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.20 — 2026-08-25
+
+**ETHONE — Activity Journal compatible schéma DB**
+
+- Mapping des `eventType` vers les valeurs autorisées par `ethone_file_activity_event_type_check`.
+- Fallback par catégorie : `productivity` → `uploaded`, autres → `shared`.
+- L'`eventType` original est conservé dans `details`.
+- Correction du fallback Worker côté cloud (`shared` au lieu de `activity`).
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.19 — 2026-08-25
 
 **ETHONE — Correction synchronisation Activity Journal**

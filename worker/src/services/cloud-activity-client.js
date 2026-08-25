@@ -49,7 +49,7 @@ function normalizeActivity(row) {
 
 function normalizeEvent(event) {
   return {
-    event_type: safeText(event?.eventType || event?.event_type || "activity", 32),
+    event_type: safeText(event?.eventType || event?.event_type || "shared", 32),
     details: event?.details && typeof event.details === "object" ? event.details : {},
     created_at: safeText(event?.createdAt || event?.created_at, 40),
   };

@@ -60,11 +60,30 @@ const STORAGE_KEY = "ethone-activity-journal-v1";
 const MAX_ENTRIES = 120;
 const SYNC_BATCH_LIMIT = 50;
 
-function safeEventType(type?: string): string {
-  if (!type) return "v8.sync.refresh";
+const DB_EVENT_TYPES = new Set([
+  "uploaded", "shared", "link_created", "downloaded", "link_revoked",
+  "deleted", "moved", "renamed", "folder_created", "drop_received", "drop_revoked",
+]);
+
+function categoryToEventType(category?: string): string {
+  switch (category) {
+    case "productivity":
+      return "uploaded";
+    case "work":
+      return "shared";
+    case "brain":
+      return "shared";
+    case "system":
+    default:
+      return "shared";
+  }
+}
+
+function safeEventType(type?: string, category?: string): string {
+  if (!type) return categoryToEventType(category);
   const trimmed = type.trim();
-  if (/^[a-z0-9._:-]+$/.test(trimmed) && trimmed.length <= 32) return trimmed;
-  return "v8.sync.refresh";
+  if (DB_EVENT_TYPES.has(trimmed)) return trimmed;
+  return categoryToEventType(category);
 }
 
 function safeDate(value: unknown, fallback: string): string {
@@ -216,7 +235,7 @@ export function createActivityJournal(): ActivityJournal {
       description: event.description || "",
       timestamp: event.timestamp || nowIso(),
       tone: event.tone,
-      eventType: safeEventType(event.eventType) || "activity",
+      eventType: safeEventType(event.eventType, (event.category as ActivityCategory) || "system"),
       details: event.details || {},
       synced: false,
     };
@@ -292,9 +311,9 @@ export function createActivityJournal(): ActivityJournal {
     if (unsynced.length === 0) return { ok: true, count: 0, error: null };
 
     const events = unsynced.map((entry) => ({
-      eventType: safeEventType(entry.eventType),
+      eventType: safeEventType(entry.eventType, entry.category),
       createdAt: entry.timestamp,
-      details: { ...entry.details, title: entry.title, originalEventType: entry.eventType },
+      details: { ...entry.details, title: entry.title, originalEventType: entry.eventType, originalCategory: entry.category },
     }));
 
     setSyncing(true);

@@ -61,10 +61,10 @@ const MAX_ENTRIES = 120;
 const SYNC_BATCH_LIMIT = 50;
 
 function safeEventType(type?: string): string {
-  if (!type) return "activity";
+  if (!type) return "v8.sync.refresh";
   const trimmed = type.trim();
   if (/^[a-z0-9._:-]+$/.test(trimmed) && trimmed.length <= 32) return trimmed;
-  return "activity";
+  return "v8.sync.refresh";
 }
 
 function safeDate(value: unknown, fallback: string): string {

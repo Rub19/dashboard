@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.19 — 2026-08-25
+
+**ETHONE — Correction synchronisation Activity Journal**
+
+- Le fallback des `eventType` invalides est passé à `v8.sync.refresh` (une clé connue de l'application) au lieu de `activity`.
+- Cela permet aux 120 événements en attente d'être envoyés si le schéma les accepte.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.18 — 2026-08-25
 
 **ETHONE — Barre de saisie Hero / Brain refaite**

@@ -3,18 +3,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import {
-  User,
-  ShieldCheck,
-  CreditCard,
-  Sparkles,
-  Command,
-  Settings as SettingsIcon,
-  HardDrive,
-  LogOut,
-  ChevronDown,
-  AlertTriangle,
-} from "lucide-react";
 import { Icon } from "@/lib/icons";
 import { useAuth } from "@/components/AuthProvider";
 import { useActiveProfile, useSettings } from "@/components/SettingsProvider";
@@ -133,7 +121,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
       id: "profile",
       label: i18n("profile", "Mon profil"),
       description: i18n("profileDesc", "Gérer vos informations personnelles"),
-      icon: User,
+      icon: "user",
       action: () => router.push("/settings?category=profile"),
     },
     {
@@ -141,7 +129,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
       label: i18n("settings", "Réglages"),
       description: i18n("settingsDesc", "Préférences globales et personnalisation"),
       kbd: "⌘,",
-      icon: SettingsIcon,
+      icon: "settings",
       action: () => router.push("/settings"),
     },
     {
@@ -150,14 +138,14 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
       description: i18n("securityDesc", "Authentification, 2FA et sessions"),
       badge: i18n("active", "Actif"),
       badgeClass: "text-[var(--success)] bg-[var(--success)]/10 border-[var(--success)]/25",
-      icon: ShieldCheck,
+      icon: "shield-check",
       action: () => router.push("/settings?category=security"),
     },
     {
       id: "billing",
       label: i18n("billing", "Facturation"),
       description: i18n("billingDesc", "Abonnement et historique des paiements"),
-      icon: CreditCard,
+      icon: "credit-card",
       action: () => router.push("/settings?tab=billing"),
     },
     {
@@ -165,7 +153,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
       label: i18n("shortcuts", "Raccourcis"),
       description: i18n("shortcutsDesc", "Palette de commandes rapides"),
       kbd: "⌘K",
-      icon: Command,
+      icon: "command",
       action: () => setCommandOpen(true),
     },
   ];
@@ -217,7 +205,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                     className="pointer-events-none h-full w-full object-cover"
                   />
                 ) : (
-                  <User className="pointer-events-none h-4 w-4" />
+                  <Icon name="user" pack="phosphor" className="pointer-events-none h-4 w-4" />
                 )}
               </div>
               <span
@@ -231,7 +219,9 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                 {displayName}
               </span>
             </div>
-            <ChevronDown
+            <Icon
+              name="chevron-down"
+              pack="phosphor"
               className={`pointer-events-none h-4 w-4 text-[var(--text-muted)] transition-transform motion-reduce:transition-none ${
                 open ? "rotate-180" : ""
               }`}
@@ -360,7 +350,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
               <div className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2 text-[var(--text-primary)]">
                   <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]">
-                    <HardDrive className="h-3.5 w-3.5" />
+                    <Icon name="hard-drive" pack="phosphor" className="h-3.5 w-3.5" />
                   </div>
                   <span className="font-semibold text-[11px]">
                     {i18n("storage", "Stockage")}
@@ -408,7 +398,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
             >
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]">
-                  <Sparkles className="h-4 w-4" />
+                  <Icon name="sparkles" pack="phosphor" className="h-4 w-4" />
                 </div>
                 <div className="flex flex-col min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap">
@@ -436,9 +426,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
 
             {/* 5. Section Compte & Raccourcis */}
             <div className="flex flex-col gap-0.5">
-              {menuItems.map((item) => {
-                const IconComponent = item.icon;
-                return (
+              {menuItems.map((item) => (
                   <button
                     key={item.id}
                     type="button"
@@ -451,7 +439,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] text-[var(--text-muted)] transition-colors group-hover:bg-[var(--text-primary)]/[0.06] group-hover:text-[var(--text-primary)]">
-                        <IconComponent className="h-4 w-4" />
+                        <Icon pack="phosphor" name={item.icon} className="h-4 w-4" />
                       </div>
                       <div className="flex flex-col min-w-0">
                         <span className="font-medium text-[var(--text-primary)] truncate">
@@ -485,8 +473,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                       />
                     </div>
                   </button>
-                );
-              })}
+              ))}
             </div>
 
             {/* 6. Déconnexion avec confirmation propre */}
@@ -503,7 +490,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                 >
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--danger)]/30 bg-[var(--danger)]/10 text-[var(--danger)] transition-colors group-hover:bg-[var(--danger)]/20 group-hover:text-[var(--danger)]">
-                      <LogOut className="h-4 w-4" />
+                      <Icon name="log-out" pack="phosphor" className="h-4 w-4" />
                     </div>
                     <div className="flex flex-col text-left">
                       <span className="font-semibold">
@@ -523,7 +510,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
               ) : (
                 <div className="flex flex-col gap-2 rounded-xl border border-[var(--danger)]/30 bg-[var(--danger)]/10 p-3 transition-all motion-reduce:transition-none">
                   <div className="flex items-center gap-2 text-[var(--danger)]">
-                    <AlertTriangle className="h-4 w-4 shrink-0" />
+                    <Icon name="alert-triangle" pack="phosphor" className="h-4 w-4 shrink-0" />
                     <span className="text-xs font-semibold">
                       {i18n(
                         "confirmSignOutTitle",

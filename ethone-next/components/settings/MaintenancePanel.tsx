@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { RotateCcw, RefreshCw, Server, Microchip } from "lucide-react";
+import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { forceAppReload } from "@/lib/force-reload";
-import { Icon } from "@/lib/icons";
 import DiagnosticPanel from "./DiagnosticPanel";
 
 function formatMegabytes(bytes: number | undefined): string {
@@ -119,22 +118,22 @@ export default function MaintenancePanel() {
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
       <ActionCard
         onClick={handleReload}
-        icon={<RotateCcw className="h-4 w-4" />}
+        icon={<Icon name="rotate-cw" className="h-4 w-4" />}
         label={i18n("refreshAll") || "Vider le cache et recharger"}
       />
       <ActionCard
         onClick={handleResync}
         loading={loading}
-        icon={<RefreshCw className="h-4 w-4" />}
+        icon={<Icon name="refresh-cw" className="h-4 w-4" />}
         label={i18n("resyncWorker") || "Resynchroniser avec le Worker"}
       />
       <InfoCard
-        icon={<Microchip className="h-4 w-4" />}
+        icon={<Icon name="microchip" className="h-4 w-4" />}
         label={i18n("deviceMemory") || "Mémoire appareil"}
         value={deviceMemory}
       />
       <InfoCard
-        icon={<Server className="h-4 w-4" />}
+        icon={<Icon name="server" className="h-4 w-4" />}
         label={i18n("usedHeap") || "Heap JS utilisé"}
         value={usedHeap}
         badge={latency}

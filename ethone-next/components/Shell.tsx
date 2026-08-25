@@ -18,7 +18,7 @@ import PageTransition from "@/components/PageTransition";
 import AutomationRuntime from "@/components/AutomationRuntime";
 import Dock from "@/components/Dock";
 import SkipLink from "@/components/SkipLink";
-import StatusBar from "@/components/layout/StatusBar";
+
 import ContextMenuProvider from "@/components/ContextMenuProvider";
 import NativeIntegration from "@/components/NativeIntegration";
 import PrivacyShield from "@/components/PrivacyShield";
@@ -67,7 +67,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                 <main
                   data-v8-main
                   id="main-content"
-                  className="relative z-0 min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden bg-[var(--background)] pb-32"
+                  className="relative z-0 min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden bg-[var(--background)] pb-24"
                   tabIndex={-1}
                 >
                   <ActivityJournalProvider>
@@ -76,7 +76,6 @@ export default function Shell({ children }: { children: ReactNode }) {
                   </ActivityJournalProvider>
                 </main>
                 </PrivacyShield>
-                <StatusBar />
               </div>
             </AnimatedSidebarProvider>
             <DynamicIslandContainer />

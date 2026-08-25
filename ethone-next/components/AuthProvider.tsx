@@ -19,7 +19,12 @@ type AuthContextValue = {
   error: Error | null;
   isOnline: boolean;
   signInOtp: (email: string) => Promise<{ error?: Error }>;
-  verifyOtp: (email: string, code: string, rememberMe?: boolean) => Promise<{ error?: Error }>;
+  verifyOtp: (
+    email: string,
+    code: string,
+    rememberMe?: boolean,
+    type?: "email" | "magiclink" | "recovery"
+  ) => Promise<{ error?: Error }>;
   signInPassword: (email: string, password: string) => Promise<{ error?: Error }>;
   signInWithOAuth: (provider: "google" | "github") => Promise<{ error?: Error; url?: string | null }>;
   signUp: (email: string, password: string, username: string) => Promise<{ error?: Error; session?: Session }>;
@@ -36,7 +41,7 @@ export function useAuth() {
   return value;
 }
 
-const SESSION_TIMEOUT_MS = 8_000;
+const SESSION_TIMEOUT_MS = 15_000;
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
@@ -181,12 +186,17 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error ?? undefined };
   }
 
-  async function verifyOtp(email: string, code: string, rememberMe = false) {
+  async function verifyOtp(
+    email: string,
+    code: string,
+    rememberMe = false,
+    type: "email" | "magiclink" | "recovery" = "email"
+  ) {
     authLog("OTP verification started");
     const { data, error } = await supabase.auth.verifyOtp({
       email,
       token: code,
-      type: "email",
+      type,
     });
     if (data.session) {
       authLog("OTP verification result", "success");

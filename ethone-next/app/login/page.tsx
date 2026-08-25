@@ -123,7 +123,12 @@ function maskEmail(email: string) {
 }
 
 function humanError(err: unknown, i18n: (key: string, fallback?: string) => string) {
-  const msg = err instanceof Error ? err.message : String(err);
+  const errObj = typeof err === "object" && err !== null ? (err as { status?: number; name?: string; message?: string }) : null;
+  const isNetwork =
+    errObj?.status === 0 ||
+    errObj?.name === "AbortError" ||
+    err instanceof TypeError;
+  const msg = err instanceof Error ? err.message : (errObj?.message ? String(errObj.message) : String(err));
   const lower = msg.toLowerCase();
   if (lower.includes("rate") || lower.includes("trop de") || lower.includes("too many")) {
     return i18n("tooManyAttempts", "Trop de tentatives. Veuillez patienter quelques instants.");
@@ -134,7 +139,7 @@ function humanError(err: unknown, i18n: (key: string, fallback?: string) => stri
   if (lower.includes("invalid") || lower.includes("incorrect") || lower.includes("wrong") || lower.includes("invalide") || lower.includes("code")) {
     return i18n("invalidCode", "Ce code est incorrect. Vérifiez votre e-mail et réessayez.");
   }
-  if (lower.includes("network") || lower.includes("fetch") || lower.includes("worker") || lower.includes("impossible de contacter")) {
+  if (isNetwork || lower.includes("network") || lower.includes("fetch") || lower.includes("worker") || lower.includes("impossible de contacter")) {
     return i18n("networkError", "Impossible de contacter ETHONE. Vérifiez votre connexion.");
   }
   if (lower.includes("session")) {

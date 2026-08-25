@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.11 — 2026-08-25
+
+**ETHONE — ConnectionCardsWidget : catégories, couleurs d'origine, services en erreur masqués**
+
+- Services en erreur (statut rouge) masqués du widget **SERVICES**.
+- Couleurs de statut d'origine restaurées (vert `connected`, bleu `loading`).
+- Cartes 3D regroupées par catégories : Média, Social, Productivité, Gaming, Développement, Infos, Autres.
+- Métadonnées des services enrichies avec leur catégorie.
+- Validation : build, lint.
+
 ## v1.9.10 — 2026-08-25
 
 **ETHONE — Hotfixes post-release : widget 3D, sync, drag, status bar, météo**

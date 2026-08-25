@@ -1,6 +1,7 @@
 "use client";
 
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Plus, CheckSquare } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { type Item } from "@/lib/hooks/useItems";
@@ -39,13 +40,19 @@ export type TasksWidgetProps = {
 
 const TasksWidget = memo(function TasksWidget({ className = "", data, scrollable = true }: TasksWidgetProps) {
   const i18n = useI18n();
-  const handleOpenTasks = useCallback(() => { if (typeof window !== "undefined") window.location.href = "/tasks"; }, []);
+  const router = useRouter();
+  const handleOpenTasks = useCallback(() => { router.push("/tasks"); }, [router]);
   const { error: showError, notify } = useToast();
   const own = useCloudTasks();
 
   const { items, loading, create, update, remove } = data ?? own;
 
   const [newTaskTitle, setNewTaskTitle] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleFocusInput = useCallback(() => {
+    inputRef.current?.focus();
+  }, []);
 
   useEffect(() => {
     indexSpotlightItems(
@@ -115,7 +122,7 @@ const TasksWidget = memo(function TasksWidget({ className = "", data, scrollable
       className={cn("h-full", className)}
       noHeader
       scrollable={scrollable}
-      state={loading ? "loading" : items.length === 0 ? "empty" : undefined}
+      state={loading ? "loading" : undefined}
       stateMessage={items.length === 0 ? i18n("tasksEmpty", "Aucune tâche pour le moment") : undefined}
       onAction={items.length === 0 ? handleOpenTasks : undefined}
       actionLabel={i18n("addTask", "Ajouter une tâche")}
@@ -152,6 +159,7 @@ const TasksWidget = memo(function TasksWidget({ className = "", data, scrollable
           className="flex shrink-0 items-center gap-2"
         >
           <Input
+            ref={inputRef}
             type="text"
             value={newTaskTitle}
             onChange={(e) => setNewTaskTitle(e.target.value)}
@@ -180,6 +188,7 @@ const TasksWidget = memo(function TasksWidget({ className = "", data, scrollable
           loading={loading}
           onToggle={toggleTask}
           onDelete={deleteTask}
+          onNewTask={handleFocusInput}
           scrollable={scrollable}
         />
       </div>

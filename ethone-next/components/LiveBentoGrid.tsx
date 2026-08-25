@@ -1,6 +1,7 @@
 "use client";
 
 import { memo, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import LiveStats from "@/components/LiveStats";
 import BentoCard from "@/components/BentoCard";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -48,7 +49,8 @@ const LiveBentoGrid = memo(function LiveBentoGrid({
   scrollable = true,
 }: LiveBentoGridProps) {
   const i18n = useI18n();
-  const handleConnect = useCallback(() => { if (typeof window !== "undefined") window.location.href = "/settings"; }, []);
+  const router = useRouter();
+  const handleConnect = useCallback(() => { router.push("/settings?category=integrations"); }, [router]);
   const childHeight = scrollable ? "h-full" : "h-auto min-h-0";
   const connected = (records?.filter((r) => r.status === "connected").length ?? 0);
   const widgetState = state ?? (loading ? "loading" : error ? "error" : connected === 0 ? "disconnected" : undefined);

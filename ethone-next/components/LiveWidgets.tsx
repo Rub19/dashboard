@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import SafeImage from "@/components/SafeImage";
 import ClientImage from "@/components/ClientImage";
 import { cn } from "@/lib/utils";
@@ -1266,6 +1267,19 @@ export default function LiveWidgets({
                 {!isDiscord && !isWeather && !isMinecraft && !isRiot && record.subtitle && <p className="truncate text-sm leading-tight text-[var(--text-muted)]">{record.subtitle}</p>}
                 {!isDiscord && !isWeather && !isMinecraft && !isRiot && record.meta && <p className="truncate text-xs leading-tight text-[var(--text-muted)]">{record.meta}</p>}
               </div>
+
+              {record.status === "empty" && !isWeather && !isRiot && !isDiscord && !isMinecraft && (
+                <div className="mt-3 flex items-center">
+                  <Link
+                    href="/settings?category=integrations"
+                    onClick={(e) => e.stopPropagation()}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/80 px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--panel-bg)] active:scale-95"
+                  >
+                    <Icon name="link" className="h-3 w-3" />
+                    {i18n("connect", "Connecter")}
+                  </Link>
+                </div>
+              )}
 
               {isSpotify && nowPlaying?.isPlaying && (
                 <div className="mt-2 space-y-1.5" onClick={(e) => e.stopPropagation()}>

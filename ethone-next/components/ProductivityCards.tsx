@@ -2,6 +2,7 @@
 
 import { memo, useCallback, useMemo } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useFocus } from "@/components/FocusProvider";
 import BentoCard from "@/components/BentoCard";
@@ -66,7 +67,8 @@ export type DayTimelineCardProps = {
 
 function DayTimelineCardImpl({ todayEvents, nextTasks, className = "", focus, scrollable = true, loading = false }: DayTimelineCardProps) {
   const i18n = useI18n();
-  const handleAddEvent = useCallback(() => { if (typeof window !== "undefined") window.location.href = "/calendar"; }, []);
+  const router = useRouter();
+  const handleAddEvent = useCallback(() => { router.push("/calendar"); }, [router]);
   const focusCtx = useFocus();
   const { state, format, start } = focus ?? focusCtx;
 
@@ -267,7 +269,8 @@ export type RecentNotesCardProps = {
 
 function RecentNotesCardImpl({ notes, className = "", scrollable = true, loading = false }: RecentNotesCardProps) {
   const i18n = useI18n();
-  const handleAddNote = useCallback(() => { if (typeof window !== "undefined") window.location.href = "/notes"; }, []);
+  const router = useRouter();
+  const handleAddNote = useCallback(() => { router.push("/notes"); }, [router]);
   const recent = useMemo(
     () =>
       [...notes]

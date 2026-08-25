@@ -76,7 +76,7 @@ export default function Sheet({
             dragElastic={0.15}
             onDragEnd={onDragEnd}
             className={cn(
-              "fixed bottom-0 left-0 right-0 z-50 rounded-t-[2rem] liquid-glass-sheet md:hidden",
+              "fixed bottom-0 left-0 right-0 z-50 rounded-t-[2rem] liquid-glass-sheet md:hidden pb-[env(safe-area-inset-bottom)]",
               className
             )}
             style={{ maxHeight: initialHeight }}

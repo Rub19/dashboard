@@ -114,7 +114,7 @@ export default function LiveWidget() {
   }, [embedUrl]);
 
   return (
-    <div className="fixed bottom-12 right-6 z-40 flex flex-col items-end gap-2">
+    <div className="fixed bottom-[calc(3rem+env(safe-area-inset-bottom))] right-6 z-40 flex flex-col items-end gap-2">
       <AnimatePresence>
         {isOpen && !isMinimized && (
           <motion.div

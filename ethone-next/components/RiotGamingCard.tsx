@@ -223,6 +223,15 @@ export function RiotGamingCardContent({
           <AlertCircle className="h-8 w-8 text-[var(--text-muted)]" />
           <p className="text-xs text-[var(--text-muted)]">{i18n("riotNoStats", "Aucune statistique trouvée pour ce Riot ID")}</p>
           <p className="max-w-[200px] text-[10px] text-[var(--text-muted)]">{i18n("riotCheckId", "Vérifie le format Nom#TAG et la clé API")}</p>
+          <Link
+            href="/settings?category=integrations"
+            className={cn(
+              "mt-2 rounded-lg px-3 py-1.5 text-xs font-medium transition-all active:scale-95",
+              game === "valorant" ? "bg-[var(--danger)]/15 text-[var(--danger)] hover:bg-[var(--danger)]/25" : "bg-[var(--warning)]/15 text-[var(--warning)] hover:bg-[var(--warning)]/25"
+            )}
+          >
+            {i18n("configureRiot", "Configurer Riot")}
+          </Link>
         </div>
       ) : (
         <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-2 py-1">

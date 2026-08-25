@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
@@ -323,16 +324,25 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
         <Icon name="cloud" className="h-9 w-9 text-[var(--text-muted)]" />
         <p className="text-sm font-semibold text-[var(--text-primary)]">{i18n("noForecast", "Météo indisponible")}</p>
         <p className="text-[11px] text-[var(--text-muted)]">{i18n("weatherEmptyHint", "Vérifiez la connexion ou configurez une ville.")}</p>
-        {onRefresh && (
-          <button
-            type="button"
-            onClick={onRefresh}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--text-primary)]/[0.04] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
+        <div className="mt-1 flex flex-wrap items-center justify-center gap-2">
+          <Link
+            href="/weather"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] active:scale-95"
           >
-            <Icon name="refresh-cw" className="h-3 w-3" />
-            {i18n("refresh")}
-          </button>
-        )}
+            <Icon name="map-pin" className="h-3 w-3" />
+            {i18n("configureCity", "Configurer la ville")}
+          </Link>
+          {onRefresh && (
+            <button
+              type="button"
+              onClick={onRefresh}
+              className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--text-primary)]/[0.04] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] active:scale-95"
+            >
+              <Icon name="refresh-cw" className="h-3 w-3" />
+              {i18n("refresh")}
+            </button>
+          )}
+        </div>
       </div>
     );
   }

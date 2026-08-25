@@ -20,7 +20,7 @@ export default function VersionUpdateToast() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 40, scale: 0.96 }}
           transition={{ duration: 0.25, ease: "easeOut" }}
-          className="fixed bottom-6 left-1/2 z-[var(--z-critical)] w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 select-none rounded-2xl border border-[var(--panel-border)] bg-[var(--background)]/95 p-4 shadow-[0_12px_48px_rgba(0,0,0,0.7),0_0_24px_var(--glow-color)] backdrop-blur-2xl"
+          className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] left-1/2 z-[var(--z-critical)] w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 select-none rounded-2xl border border-[var(--panel-border)] bg-[var(--background)]/95 p-4 shadow-[0_12px_48px_rgba(0,0,0,0.7),0_0_24px_var(--glow-color)] backdrop-blur-2xl"
           role="status"
           aria-live="polite"
         >

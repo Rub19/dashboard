@@ -254,14 +254,23 @@ export default function SocialDiscordCard({
               ? i18n("socialStandby", "Connecté — en attente d'activité")
               : i18n("socialNoSession", "Aucune session sociale active")}
           </p>
-          {!hasAnyConnection && (
+          {!hasAnyConnection ? (
             <button
               type="button"
-              onClick={() => router.push("/settings")}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
+              onClick={() => router.push("/settings?category=integrations")}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] active:scale-95"
             >
               <ExternalLink className="h-3 w-3" />
-              Connecter Spotify / Discord
+              {i18n("connectSpotifyDiscord", "Connecter Spotify / Discord")}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => router.push("/settings?category=integrations")}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-2.5 py-1 text-[11px] font-medium text-[var(--text-muted)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95"
+            >
+              <ExternalLink className="h-3 w-3" />
+              {i18n("manageIntegrations", "Gérer les connexions")}
             </button>
           )}
         </div>

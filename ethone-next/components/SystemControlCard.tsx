@@ -62,12 +62,14 @@ const SystemControlCard = memo(function SystemControlCard({ className = "", scro
                     void setNativePresence(config.presence);
                   }}
                   aria-pressed={active}
-                  className={`flex min-h-[40px] items-center justify-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.08] px-2 py-2 text-[10px] font-medium transition-all ${
-                    active ? `${config.bg} ${config.text} ring-1 ${config.ring}` : "bg-[var(--text-primary)]/[0.02] text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.04]"
+                  className={`flex min-h-[40px] items-center justify-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.08] px-2.5 py-2 text-[11px] font-medium transition-all duration-150 active:scale-95 ${
+                    active
+                      ? `${config.bg} ${config.text} ring-1 ${config.ring} shadow-sm`
+                      : "bg-[var(--text-primary)]/[0.02] text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] hover:border-[var(--text-primary)]/20"
                   }`}
                 >
-                  <PresenceGlyph status={id as keyof typeof USER_STATUS_CONFIG} className="h-3.5 w-3.5" />
-                  {i18n(config.labelKey)}
+                  <PresenceGlyph status={id as keyof typeof USER_STATUS_CONFIG} className="h-3.5 w-3.5 shrink-0" />
+                  <span className="text-center leading-tight whitespace-normal">{i18n(config.labelKey)}</span>
                 </button>
               );
             })}
@@ -87,9 +89,10 @@ const SystemControlCard = memo(function SystemControlCard({ className = "", scro
                   type="button"
                   onClick={() => { hapticSelectionTick(); update({ aura }); }}
                   title={i18n(key)}
+                  aria-label={i18n(key)}
                   style={{ backgroundColor: palette.background }}
-                  className={`flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--text-primary)]/[0.08] transition-all hover:scale-105 sm:h-8 sm:w-8 ${
-                    active ? "ring-2 ring-inset ring-[var(--accent-primary)]" : "opacity-70 hover:opacity-100"
+                  className={`flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--text-primary)]/[0.08] transition-all duration-150 hover:scale-110 active:scale-95 sm:h-8 sm:w-8 ${
+                    active ? "ring-2 ring-inset ring-[var(--accent-primary)] shadow-sm" : "opacity-70 hover:opacity-100 hover:border-[var(--accent-primary)]/40"
                   }`}
                 >
                   <span
@@ -110,24 +113,26 @@ const SystemControlCard = memo(function SystemControlCard({ className = "", scro
               type="button"
               onClick={() => cycle(-1)}
               title={i18n("previous")}
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)] sm:h-7 sm:w-7"
+              aria-label={i18n("previous")}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[var(--text-muted)] transition-all duration-150 hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-90 sm:h-7 sm:w-7"
             >
               <Icon name="chevron-left" className="h-3.5 w-3.5" />
             </button>
-            <div className="flex flex-1 items-center justify-center gap-1.5 text-xs font-medium text-[var(--text-primary)]">
-              <span className="h-2.5 w-2.5 rounded-full bg-[var(--accent)]" aria-hidden="true" />
-              {i18n(activeMode.label)}
+            <div className="flex flex-1 items-center justify-center gap-1.5 px-1 text-center text-xs font-medium text-[var(--text-primary)]">
+              <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--accent)]" aria-hidden="true" />
+              <span>{i18n(activeMode.label)}</span>
             </div>
             <button
               type="button"
               onClick={() => cycle(1)}
               title={i18n("next")}
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)] sm:h-7 sm:w-7"
+              aria-label={i18n("next")}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[var(--text-muted)] transition-all duration-150 hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-90 sm:h-7 sm:w-7"
             >
               <Icon name="chevron-right" className="h-3.5 w-3.5" />
             </button>
           </div>
-          <p className="px-1 text-[10px] text-[var(--text-muted)]">{i18n(activeMode.copy)}</p>
+          <p className="px-1 text-[11px] leading-relaxed text-[var(--text-muted)]">{i18n(activeMode.copy)}</p>
         </div>
       </div>
     </BentoCard>

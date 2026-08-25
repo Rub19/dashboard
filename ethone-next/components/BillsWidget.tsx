@@ -2,6 +2,7 @@
 
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Card3D from "@/components/Card3D";
 import BentoCard from "@/components/BentoCard";
 import Modal from "@/components/ui/Modal";
@@ -12,9 +13,10 @@ import { listBills, upcomingBills, getNextDueDate, type Bill } from "@/lib/bills
 
 const BillsWidget = memo(function BillsWidget({ className = "", scrollable = true, standalone = false }: { className?: string; scrollable?: boolean; standalone?: boolean }) {
   const i18n = useI18n();
+  const router = useRouter();
   const [bills, setBills] = useState<Bill[]>([]);
   const [selected, setSelected] = useState<Bill | null>(null);
-  const handleOpenBills = useCallback(() => { if (typeof window !== "undefined") window.location.href = "/bills"; }, []);
+  const handleOpenBills = useCallback(() => { router.push("/bills"); }, [router]);
 
   useEffect(() => {
     setBills(listBills());

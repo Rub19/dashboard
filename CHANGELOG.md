@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.14 — 2026-08-25
+
+**ETHONE — Polish Discord, Dock et cartes de services**
+
+- Widget Discord : icône Valorant officielle, album Spotify en fond, calques corrigés pour que texte/avatar restent visibles.
+- Avatar Discord et icônes de serveurs chargées correctement.
+- Cartes de services : couleurs par catégorie et affichage des détails `subtitle`/`meta`.
+- Header Accueil plus cadré et bouton Personnaliser adouci.
+- Dock restauré en glass sans ombre noire.
+- Barre de statut transparente, sans bandeau sombre.
+- Transition de page plus douce.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.13 — 2026-08-25
 
 **ETHONE — MyConnectionsRow : alignement de l'en-tête et badge compteur**

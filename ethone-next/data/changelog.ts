@@ -6642,9 +6642,77 @@ const v403_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v403_fr, v402_fr, v401_fr, v400_fr, v399_fr, v398_fr, v397_fr, v396_fr, v395_fr, v375_fr, v374_fr, v373_fr, v372_fr, v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v403_en, v402_en, v401_en, v400_en, v399_en, v398_en, v397_en, v396_en, v395_en, v375_en, v374_en, v373_en, v372_en, v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
-CHANGELOG_BY_LANG.es.unshift(v403_es, v402_es, v401_es, v400_es, v399_es, v398_es, v397_es, v396_es, v395_es, v375_es, v374_es, v373_es, v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
-CHANGELOG_BY_LANG.de.unshift(v403_de, v402_de, v401_de, v400_de, v399_de, v398_de, v397_de, v396_de, v395_de, v375_de, v374_de, v373_de, v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
+const v404_fr: ChangelogEntry = {
+  version: "v1.9.14",
+  date: "2026-08-25",
+  title: "Polish Discord, Dock et cartes de services",
+  items: [
+    "Widget Discord : icône Valorant officielle, album Spotify en fond, calques corrigés.",
+    "Avatar Discord et icônes de serveurs chargées correctement.",
+    "Cartes de services : couleurs par catégorie et affichage des détails subtitle/meta.",
+    "Header Accueil plus cadré et bouton Personnaliser adouci.",
+    "Dock restauré en glass sans ombre noire.",
+    "Barre de statut transparente, sans bandeau sombre.",
+    "Transition de page plus douce.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.14.",
+  ],
+};
+
+const v404_en: ChangelogEntry = {
+  version: "v1.9.14",
+  date: "2026-08-25",
+  title: "Polish Discord, Dock and service cards",
+  items: [
+    "Discord widget: official Valorant icon, Spotify album as background, fixed layers.",
+    "Discord avatar and server icons loaded correctly.",
+    "Service cards: category colors and subtitle/meta details.",
+    "Home header better aligned and Customize button softened.",
+    "Dock restored as glass without black shadow.",
+    "Transparent status bar, no dark band.",
+    "Smoother page transition.",
+    "Validation: build, lint.",
+    "Version badge bottom-right: v1.9.14.",
+  ],
+};
+
+const v404_es: ChangelogEntry = {
+  version: "v1.9.14",
+  date: "2026-08-25",
+  title: "Pulido de Discord, Dock y tarjetas de servicios",
+  items: [
+    "Widget Discord: icono oficial de Valorant, álbum de Spotify como fondo, capas corregidas.",
+    "Avatar de Discord e iconos de servidores cargados correctamente.",
+    "Tarjetas de servicios: colores por categoría y detalles subtitle/meta.",
+    "Encabezado de inicio más centrado y botón Personalizar suavizado.",
+    "Dock restaurado en glass sin sombra negra.",
+    "Barra de estado transparente, sin banda oscura.",
+    "Transición de página más suave.",
+    "Validación: build, lint.",
+    "Versión mostrada abajo a la derecha: v1.9.14.",
+  ],
+};
+
+const v404_de: ChangelogEntry = {
+  version: "v1.9.14",
+  date: "2026-08-25",
+  title: "Discord-, Dock- und Servicekarten-Polish",
+  items: [
+    "Discord-Widget: offizielles Valorant-Icon, Spotify-Album als Hintergrund, Ebenen korrigiert.",
+    "Discord-Avatar und Server-Icons korrekt geladen.",
+    "Servicekarten: Kategoriefarben und subtitle/meta-Details.",
+    "Home-Header besser ausgerichtet und Anpassen-Button abgerundet.",
+    "Dock als Glass ohne schwarzen Schatten wiederhergestellt.",
+    "Transparente Statusleiste, kein dunkler Streifen.",
+    "Sanfterer Seitenübergang.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.14.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v404_fr, v403_fr, v402_fr, v401_fr, v400_fr, v399_fr, v398_fr, v397_fr, v396_fr, v395_fr, v375_fr, v374_fr, v373_fr, v372_fr, v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v404_en, v403_en, v402_en, v401_en, v400_en, v399_en, v398_en, v397_en, v396_en, v395_en, v375_en, v374_en, v373_en, v372_en, v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v404_es, v403_es, v402_es, v401_es, v400_es, v399_es, v398_es, v397_es, v396_es, v395_es, v375_es, v374_es, v373_es, v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v404_de, v403_de, v402_de, v401_de, v400_de, v399_de, v398_de, v397_de, v396_de, v395_de, v375_de, v374_de, v373_de, v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

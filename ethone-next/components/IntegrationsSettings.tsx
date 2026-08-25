@@ -12,6 +12,7 @@ import { isConfigured, pingIntegration, type PingResult } from "@/lib/connection
 import { getIntegrationConfig } from "@/lib/integrations.config";
 import SystemHealthBanner from "@/components/SystemHealthBanner";
 import CategoryTabs from "@/components/CategoryTabs";
+import MyConnectionsRow from "@/components/MyConnectionsRow";
 import ConnectionCard from "@/components/ConnectionCard";
 import DiscordConfig from "@/components/DiscordConfig";
 import SpotifyConfig from "@/components/SpotifyConfig";
@@ -95,6 +96,11 @@ export default function IntegrationsSettings() {
     return map;
   }, [settings, credentials.connected, connected]);
 
+  const myConnections = useMemo(
+    () => INTEGRATIONS.filter((integration) => configuredMap[integration.id]),
+    [configuredMap]
+  );
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     const cat = INTEGRATION_CATEGORIES.find((c) => c.id === filter);
@@ -157,6 +163,17 @@ export default function IntegrationsSettings() {
     try {
       localStorage.setItem(`ethone:clientId:${id}`, value);
     } catch {}
+  }, []);
+
+  const handleSelectMyConnection = useCallback((id: string) => {
+    setFilter("all");
+    setSearch("");
+    setHighlighted(id);
+    window.setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 80);
+    window.setTimeout(() => setHighlighted(null), 3500);
   }, []);
 
   const renderCard = (integration: (typeof INTEGRATIONS)[number]) => {
@@ -255,6 +272,12 @@ export default function IntegrationsSettings() {
       </div>
 
       <div className="min-h-0 w-full flex-1 space-y-4 overflow-y-auto p-6 pb-10 no-scrollbar">
+        <MyConnectionsRow
+          integrations={myConnections}
+          configuredMap={configuredMap}
+          health={health}
+          onSelect={handleSelectMyConnection}
+        />
       {(loading || credentials.loading) && (
         <div className="flex items-center gap-3 rounded-2xl v8-panel p-5 text-sm text-[var(--text-muted)] backdrop-blur-2xl">
           <Plug className="h-5 w-5 animate-spin" />

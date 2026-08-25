@@ -60,7 +60,7 @@ export default function BrainBriefingPanel() {
 
   const recentActivity = openTasks + todayEvents + (unreadCount || 0) + (importantCount || 0);
 
-  const synthesis = useMemo(() => {
+  const synthesis = (() => {
     if (completedToday > 0 && nextEventIn) {
       return i18n("brainSynthesisTasksEvent", "Vous avez terminé {completed} tâche(s). Votre prochaine activité est {time}.")
         .replace("{completed}", String(completedToday))
@@ -81,7 +81,7 @@ export default function BrainBriefingPanel() {
       return i18n("brainSynthesisMusic", "En écoute : {title}.").replace("{title}", nowPlaying.title);
     }
     return i18n("brainSynthesisFree", "Votre journée est libre.");
-  }, [completedToday, openTasks, nextEventIn, nowPlaying?.title, i18n]);
+  })();
 
   function toggle(section: Section) {
     setHidden((prev) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useSettings } from "@/components/SettingsProvider";
@@ -119,9 +119,12 @@ export default function HeroBriefingCard({
     { id: "note", icon: "notebook-pen", label: i18n("newNote", "Note"), href: "/notes" },
     { id: "event", icon: "calendar", label: i18n("newEvent", "Événement"), href: "/calendar" },
     { id: "focus", icon: "timer", label: i18n("focus", "Focus"), href: "/focus" },
-    { id: "brain", icon: "brain", label: i18n("brain", "Brain"), onClick: () => inputRef.current?.focus() },
     { id: "drop", icon: "upload", label: i18n("upload", "Upload"), href: "/drop" },
   ];
+
+  const focusBrain = useCallback(() => {
+    inputRef.current?.focus();
+  }, []);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -173,18 +176,22 @@ export default function HeroBriefingCard({
         <div className="flex flex-wrap gap-2">
           {quickActions.map((a) => {
             const base = "inline-flex items-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-2.5 py-1.5 text-[11px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--accent-primary)]";
-            return a.href ? (
+            return (
               <Link key={a.id} href={a.href} className={base} aria-label={a.label}>
                 <Icon name={a.icon} className="h-3 w-3" />
                 {a.label}
               </Link>
-            ) : (
-              <button key={a.id} type="button" onClick={a.onClick} className={base} aria-label={a.label}>
-                <Icon name={a.icon} className="h-3 w-3" />
-                {a.label}
-              </button>
             );
           })}
+          <button
+            type="button"
+            onClick={focusBrain}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-2.5 py-1.5 text-[11px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--accent-primary)]"
+            aria-label={i18n("brain", "Brain")}
+          >
+            <Icon name="brain" className="h-3 w-3" />
+            {i18n("brain", "Brain")}
+          </button>
         </div>
 
         {(brain.loading || latestAssistant || brain.error) && (

@@ -220,7 +220,6 @@ export default function DynamicIslandContainer() {
   type IslandMode = "IDLE" | "COMPACT" | "EXPANDED" | "INTERACTIVE";
   const [mode, setMode] = useState<IslandMode>("IDLE");
   const expanded = mode === "EXPANDED" || mode === "INTERACTIVE";
-  const interactive = mode === "INTERACTIVE";
   const [selectedView, setSelectedView] = useState<View | null>(null);
   const [userSelected, setUserSelected] = useState(false);
   const [activeViews, setActiveViews] = useState<View[]>([]);
@@ -298,7 +297,7 @@ export default function DynamicIslandContainer() {
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [activeViews.length]);
 
   const selectView = useCallback((view: View) => {
     setUserSelected(true);

@@ -15,6 +15,11 @@ import { useUserData } from "@/lib/hooks/useUserData";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { Icon } from "@/lib/icons";
 import {
+  MessageBubble,
+  MessageBubbleContent,
+  MessageBubbleGroup,
+} from "@/components/MessageBubble";
+import {
   Sparkles,
   ArrowUp,
   FilePlus,
@@ -108,12 +113,12 @@ function renderMarkdown(text: string) {
     const lang = match[1] || "code";
     const code = match[2];
     parts.push(
-      <div key={parts.length} className="my-2 overflow-hidden rounded-lg border border-white/10 bg-black/50">
-        <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.03] px-3 py-1.5 text-[10px] text-zinc-400">
+      <div key={parts.length} className="my-2 overflow-hidden rounded-lg border border-[var(--text-primary)]/10 bg-[var(--background)]/50">
+        <div className="flex items-center justify-between border-b border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.03] px-3 py-1.5 text-[10px] text-[var(--text-muted)]">
           <span>{lang}</span>
           <CopyButton text={code} />
         </div>
-        <pre className="max-h-48 overflow-auto p-3 text-xs text-zinc-200">
+        <pre className="max-h-48 overflow-auto p-3 text-xs text-[var(--text-primary)]">
           <code className="font-mono">{code}</code>
         </pre>
       </div>
@@ -134,12 +139,12 @@ function MarkdownInline({ text }: { text: string }) {
     if (match.index > last) parts.push(<span key={parts.length}>{text.slice(last, match.index)}</span>);
     const raw = match[0];
     if (raw.startsWith("**") && raw.endsWith("**")) {
-      parts.push(<strong key={parts.length} className="font-semibold text-zinc-100">{raw.slice(2, -2)}</strong>);
+      parts.push(<strong key={parts.length} className="font-semibold text-[var(--text-primary)]">{raw.slice(2, -2)}</strong>);
     } else if ((raw.startsWith("*") && raw.endsWith("*")) || (raw.startsWith("_") && raw.endsWith("_"))) {
-      parts.push(<em key={parts.length} className="text-zinc-300">{raw.slice(1, -1)}</em>);
+      parts.push(<em key={parts.length} className="text-[var(--text-primary)]">{raw.slice(1, -1)}</em>);
     } else if (raw.startsWith("`") && raw.endsWith("`")) {
       parts.push(
-        <code key={parts.length} className="rounded bg-white/[0.08] px-1 py-0.5 font-mono text-[11px] text-[var(--accent-primary)]">
+        <code key={parts.length} className="rounded bg-[var(--text-primary)]/[0.08] px-1 py-0.5 font-mono text-[11px] text-[var(--accent-primary)]">
           {raw.slice(1, -1)}
         </code>
       );
@@ -161,7 +166,7 @@ function CopyButton({ text }: { text: string }) {
     } catch {}
   }
   return (
-    <button type="button" onClick={handleCopy} className="text-[10px] text-[var(--muted)] hover:text-[var(--text-primary)] transition-colors">
+    <button type="button" onClick={handleCopy} className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
       {copied ? "Copié" : "Copier"}
     </button>
   );
@@ -169,7 +174,7 @@ function CopyButton({ text }: { text: string }) {
 
 function TypingDots() {
   return (
-    <div className="flex items-center gap-1.5 px-3 py-2 rounded-2xl border border-white/[0.08] bg-zinc-950/80 w-fit">
+    <div className="flex items-center gap-1.5 px-3 py-2 rounded-2xl border border-[var(--text-primary)]/[0.08] bg-[var(--background)]/80 w-fit">
       {[0, 1, 2].map((i) => (
         <motion.span
           key={i}
@@ -358,21 +363,18 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
 
   function renderWelcome() {
     return (
-      <div className="flex flex-col gap-3 px-2 max-w-3xl mx-auto w-full">
-        <div className="flex gap-3">
-          <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-purple-500/30 bg-purple-500/10">
-            <Sparkles className="h-4 w-4 text-purple-400" />
-          </span>
-          <div className="max-w-2xl rounded-2xl rounded-tl-sm border border-[var(--panel-border)] bg-[var(--surface-raised)]/90 px-4 py-3 text-sm text-zinc-200 shadow-xl">
+      <MessageBubbleGroup className="px-2">
+        <MessageBubble align="start" variant="tint" animateIn>
+          <MessageBubbleContent>
             <div className="leading-relaxed">{renderMarkdown(welcomeMessage)}</div>
             <div className="mt-3 flex flex-wrap gap-2">
               {welcomeChips.map((chip) => (
                 <ActionChip key={chip.id} chip={chip} />
               ))}
             </div>
-          </div>
-        </div>
-      </div>
+          </MessageBubbleContent>
+        </MessageBubble>
+      </MessageBubbleGroup>
     );
   }
 
@@ -382,131 +384,151 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
     const hasCursor = !isUser && i === brain.messages.length - 1 && (typed[i] ?? 0) < m.content.length;
 
     return (
-      <div key={i} className="max-w-3xl mx-auto w-full px-2">
-        <div className={`flex ${isUser ? "justify-end" : "justify-start"} gap-3`}>
-          {!isUser && (
-            <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-purple-500/30 bg-purple-500/10">
-              <Sparkles className="h-4 w-4 text-purple-400" />
-            </span>
+      <MessageBubble
+        key={i}
+        align={isUser ? "end" : "start"}
+        variant={isUser ? "solid" : "soft"}
+        animateIn
+      >
+        <MessageBubbleContent>
+          <div className="whitespace-pre-wrap">{renderMarkdown(displayedContent(m, i))}</div>
+          {hasCursor && (
+            <span className="ml-1 inline-block h-4 w-1.5 translate-y-0.5 animate-pulse rounded-sm bg-[var(--text-primary)]" />
           )}
-          <div className={`relative max-w-2xl text-sm ${isUser ? "text-zinc-100" : "text-zinc-200"}`}>
-            <div
-              className={`px-4 py-2.5 leading-relaxed shadow-sm ${
-                isUser
-                  ? "rounded-2xl rounded-tr-sm border border-white/10 bg-white/[0.12]"
-                  : "rounded-2xl rounded-tl-sm border border-[var(--panel-border)] bg-[var(--surface-raised)]/90 shadow-xl"
-              }`}
-            >
-              <div className="whitespace-pre-wrap">{renderMarkdown(displayedContent(m, i))}</div>
-              {hasCursor && (
-                <span className="ml-1 inline-block h-4 w-1.5 translate-y-0.5 animate-pulse rounded-sm bg-zinc-400" />
-              )}
-            </div>
-            {renderProviderBadge(m, i)}
-            {!isUser && chips.length > 0 && (
-              <div className="mt-2 flex flex-wrap gap-2">
-                {chips.map((chip) => (
-                  <ActionChip key={chip.id} chip={chip} />
-                ))}
-              </div>
-            )}
+        </MessageBubbleContent>
+        {renderProviderBadge(m, i)}
+        {!isUser && chips.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-2">
+            {chips.map((chip) => (
+              <ActionChip key={chip.id} chip={chip} />
+            ))}
           </div>
-        </div>
-      </div>
+        )}
+      </MessageBubble>
     );
   }
 
   return (
     <div className={`flex h-full min-h-0 flex-col ${className}`}>
-      <div className="flex-1 space-y-4 overflow-y-auto os-scroll pr-1 pb-4">
-        {brain.messages.length === 0 ? renderWelcome() : brain.messages.map((m, i) => renderMessage(m, i))}
+      <div className="flex items-center justify-between border-b border-[var(--panel-border)] bg-[var(--panel-bg)]/50 px-4 py-3">
+        <div className="flex items-center gap-2.5">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-purple-500/10 text-purple-400">
+            <Icon name="brain" className="h-4 w-4" />
+          </span>
+          <div>
+            <p className="text-sm font-semibold text-[var(--text-primary)]">{i18n("brainTitle")}</p>
+            <p className="text-[10px] text-[var(--text-muted)]">
+              {brain.loading ? i18n("thinking") : i18n("ready")}
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => brain.clearChat()}
+          className="inline-flex h-7 items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2.5 py-1 text-[10px] font-medium text-[var(--text-muted)] transition-colors hover:border-[var(--danger)]/40 hover:text-[var(--danger)]"
+        >
+          <X className="h-3.5 w-3.5" />
+          {i18n("clear")}
+        </button>
+      </div>
+
+      <div className="flex-1 space-y-1 overflow-y-auto os-scroll p-4">
+        {brain.messages.length === 0 ? (
+          renderWelcome()
+        ) : (
+          <MessageBubbleGroup className="max-w-3xl mx-auto w-full">
+            {brain.messages.map((m, i) => renderMessage(m, i))}
+          </MessageBubbleGroup>
+        )}
         {pending && (
-          <div className="max-w-3xl mx-auto w-full px-2 flex justify-start">
+          <div className="max-w-3xl mx-auto w-full px-2">
             <TypingDots />
           </div>
         )}
         <div ref={bottomRef} />
       </div>
 
-      <div className="max-w-3xl mx-auto w-full">
-        {brain.error && (
-          <div className="mb-2 flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 shadow-lg backdrop-blur-md">
-            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-300">
-              <Zap className="h-3.5 w-3.5" />
-            </span>
-            <div className="min-w-0 flex-1 text-xs text-amber-200">
-              <p className="font-medium">{String(brain.error.message)}</p>
-              {(brain.error as { retryable?: boolean }).retryable && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (!brain.lastPrompt || pending) return;
-                    setPending(true);
-                    brain.retry().finally(() => setPending(false));
-                  }}
-                  disabled={pending || brain.loading}
-                  className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-[var(--warning)]/30 bg-[var(--warning)]/15 px-2.5 py-1.5 text-[10px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--warning)]/25 disabled:opacity-50"
-                >
-                  <RotateCcw className="h-3 w-3" />
-                  Réessayer
-                </button>
-              )}
+      <div className="border-t border-[var(--panel-border)] bg-[var(--panel-bg)]/50 p-3">
+        <div className="max-w-3xl mx-auto w-full">
+          {brain.error && (
+            <div className="mb-3 flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 shadow-lg backdrop-blur-md">
+              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-300">
+                <Zap className="h-3.5 w-3.5" />
+              </span>
+              <div className="min-w-0 flex-1 text-xs text-amber-200">
+                <p className="font-medium">{String(brain.error.message)}</p>
+                {(brain.error as { retryable?: boolean }).retryable && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!brain.lastPrompt || pending) return;
+                      setPending(true);
+                      brain.retry().finally(() => setPending(false));
+                    }}
+                    disabled={pending || brain.loading}
+                    className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-[var(--warning)]/30 bg-[var(--warning)]/15 px-2.5 py-1.5 text-[10px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--warning)]/25 disabled:opacity-50"
+                  >
+                    <RotateCcw className="h-3 w-3" />
+                    Réessayer
+                  </button>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => brain.clearChat()}
+                className="shrink-0 text-[var(--warning)] transition-colors hover:text-[var(--text-primary)]"
+                aria-label={i18n("close")}
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => brain.clearChat()}
-              className="shrink-0 text-[var(--warning)] transition-colors hover:text-[var(--text-primary)]"
-              aria-label={i18n("close")}
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          </div>
-        )}
+          )}
 
-        <div className="liquid-glass-brain relative mt-2 rounded-2xl p-2 transition-all duration-200 focus-within:border-white/20 focus-within:ring-1 focus-within:ring-white/15 focus-within:shadow-[0_0_15px_rgba(255,255,255,0.03)]">
-          <TextArea
-            ref={textareaRef}
-            rows={1}
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Poser une question ou un objectif..."
-            disabled={pending}
-            data-testid="brain-input"
-            className="min-h-0 flex-1"
-            inputClassName="resize-none min-h-[2.75rem]"
-            style={{ maxHeight: 144 }}
-          />
-          <div className="flex items-center justify-between px-1 pt-1">
-            <div className="flex flex-wrap gap-1.5">
-              {brain.suggestions.slice(0, 3).map((s) => (
-                <button
-                  key={s.id}
-                  type="button"
-                  onClick={() => {
-                    hapticLightImpact();
-                    handleExecute(s.action, s.parameters);
-                  }}
-                  className="liquid-glass-btn inline-flex h-7 items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] text-[var(--text-primary)]"
-                >
-                  <Sparkles className="h-3 w-3" />
-                  {s.title}
-                </button>
-              ))}
+          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 shadow-sm transition-all focus-within:border-[var(--accent-primary)]/40 focus-within:ring-1 focus-within:ring-[var(--accent-primary)]/20">
+            <TextArea
+              ref={textareaRef}
+              rows={1}
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Poser une question ou un objectif..."
+              disabled={pending}
+              data-testid="brain-input"
+              className="min-h-0 flex-1"
+              inputClassName="resize-none min-h-[2.75rem] bg-transparent"
+              style={{ maxHeight: 144 }}
+            />
+            <div className="flex items-center justify-between px-1 pt-1">
+              <div className="flex flex-wrap gap-1.5">
+                {brain.suggestions.slice(0, 3).map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => {
+                      hapticLightImpact();
+                      handleExecute(s.action, s.parameters);
+                    }}
+                    className="inline-flex h-7 items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-2 py-1 text-[10px] font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--accent-primary)]/40 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--accent-primary)]"
+                  >
+                    <Sparkles className="h-3 w-3" />
+                    {s.title}
+                  </button>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  hapticMediumImpact();
+                  handleSend();
+                }}
+                disabled={pending || !prompt.trim()}
+                data-testid="brain-send-btn"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] font-bold transition-all hover:scale-105 active:scale-95 disabled:opacity-40"
+                aria-label="Envoyer"
+              >
+                {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUp className="h-4 w-4" />}
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => {
-                hapticMediumImpact();
-                handleSend();
-              }}
-              disabled={pending || !prompt.trim()}
-              data-testid="brain-send-btn"
-              className="liquid-glass-btn liquid-glass-accent flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[var(--accent-contrast)] font-bold transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
-              aria-label="Envoyer"
-            >
-              {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUp className="h-4 w-4" />}
-            </button>
           </div>
         </div>
       </div>
@@ -522,7 +544,7 @@ function ActionChip({ chip }: { chip: ActionChip }) {
         hapticLightImpact();
         chip.onClick();
       }}
-      className="group liquid-glass-btn inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-medium text-[var(--text-primary)]"
+      className="group inline-flex items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-2.5 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--accent-primary)]/40 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--accent-primary)] active:scale-[0.98]"
     >
       <span className="transition-transform group-hover:scale-110">{chip.icon}</span>
       {chip.label}

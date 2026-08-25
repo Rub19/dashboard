@@ -88,13 +88,13 @@ export default function CalendarGrid({
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent rounded-2xl" />
 
       <div className="relative z-10 mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-xl font-bold text-white">{monthLabel}</h2>
+        <h2 className="text-xl font-bold text-[var(--text-primary)]">{monthLabel}</h2>
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={prev}
             aria-label="Mois précédent"
-            className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
+            className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
           >
             <ChevronLeft className="h-3.5 w-3.5" />
           </button>
@@ -109,7 +109,7 @@ export default function CalendarGrid({
             type="button"
             onClick={next}
             aria-label="Mois suivant"
-            className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
+            className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
           >
             <ChevronRight className="h-3.5 w-3.5" />
           </button>
@@ -120,7 +120,7 @@ export default function CalendarGrid({
         {WEEK_DAYS.map((d) => (
           <div
             key={d}
-            className="py-2 text-center text-[11px] font-semibold uppercase tracking-wider text-zinc-400"
+            className="py-2 text-center text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]"
           >
             {d}
           </div>
@@ -156,9 +156,9 @@ export default function CalendarGrid({
                 className={`text-[11px] font-mono font-medium transition-colors ${
                   inMonth
                     ? isSelected
-                      ? "text-white"
-                      : "text-zinc-300 group-hover:text-white"
-                    : "text-zinc-600 opacity-40"
+                      ? "text-[var(--text-primary)]"
+                      : "text-[var(--text-primary)] group-hover:text-[var(--text-primary)]"
+                    : "text-[var(--text-muted)] opacity-40"
                 }`}
               >
                 {date.getDate()}

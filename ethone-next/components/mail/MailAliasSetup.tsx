@@ -75,15 +75,15 @@ export default function MailAliasSetup({ createAlias, onCreated }: MailAliasSetu
         initial={{ opacity: 0, y: 12, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
-        className="w-full max-w-md rounded-3xl border border-white/[0.1] bg-zinc-950/90 p-6 shadow-[0_25px_60px_rgba(0,0,0,0.85)] backdrop-blur-2xl sm:p-8 flex flex-col gap-5"
+        className="w-full max-w-md rounded-3xl border border-[var(--text-primary)]/[0.1] bg-zinc-950/90 p-6 shadow-[0_25px_60px_rgba(0,0,0,0.85)] backdrop-blur-2xl sm:p-8 flex flex-col gap-5"
       >
-        <div className="mb-1 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.04] text-purple-500">
+        <div className="mb-1 flex h-12 w-12 items-center justify-center rounded-2xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] text-purple-500">
           <Mail className="h-5 w-5" />
         </div>
 
         <div>
-          <h2 className="text-lg font-semibold text-white">Créez votre adresse ETHONE</h2>
-          <p className="mt-1 text-xs leading-relaxed text-zinc-400">
+          <h2 className="text-lg font-semibold text-[var(--text-primary)]">Créez votre adresse ETHONE</h2>
+          <p className="mt-1 text-xs leading-relaxed text-[var(--text-muted)]">
             Choisissez votre identifiant unique pour envoyer et recevoir vos messages en @ethone.dev
           </p>
         </div>
@@ -114,7 +114,7 @@ export default function MailAliasSetup({ createAlias, onCreated }: MailAliasSetu
               placeholder="votre-alias"
               disabled={loading}
               className="w-full"
-              right={<span className="shrink-0 text-xs text-zinc-500">@ethone.dev</span>}
+              right={<span className="shrink-0 text-xs text-[var(--text-muted)]">@ethone.dev</span>}
             />
           </FormField>
 

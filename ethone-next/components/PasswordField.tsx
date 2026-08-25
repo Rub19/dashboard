@@ -36,7 +36,7 @@ function StrengthMeter({ result, show }: { result: PasswordFieldResult; show: bo
         >
           {result.label}
         </motion.span>
-        <span className="text-[var(--muted)]">{Math.round(result.entropy)} bits</span>
+        <span className="text-[var(--text-muted)]">{Math.round(result.entropy)} bits</span>
       </div>
     </div>
   );
@@ -50,7 +50,7 @@ function RuleChecklist({ result, show }: { result: PasswordFieldResult; show: bo
       {result.rules.map((rule) => (
         <li
           key={rule.id}
-          className={`flex items-center gap-1.5 transition-colors ${rule.passed ? "text-[--accent-primary]" : "text-[var(--muted)]"}`}
+          className={`flex items-center gap-1.5 transition-colors ${rule.passed ? "text-[--accent-primary]" : "text-[var(--text-muted)]"}`}
         >
           <motion.span
             initial={false}
@@ -60,7 +60,7 @@ function RuleChecklist({ result, show }: { result: PasswordFieldResult; show: bo
             {rule.passed ? (
               <Icon name="check" className="h-3.5 w-3.5" />
             ) : (
-              <span className="h-1.5 w-1.5 rounded-full bg-[var(--muted)]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--text-muted)]" />
             )}
           </motion.span>
           <span className={rule.passed ? "text-[--accent-primary]" : ""}>{rule.label}</span>
@@ -81,7 +81,7 @@ function CoachingBadges({ badges }: { badges: string[] }) {
           initial={{ opacity: 0, scale: 0.8, y: 6 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ delay: i * 0.05 }}
-          className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--muted)] backdrop-blur-[var(--panel-blur)]"
+          className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--text-muted)] backdrop-blur-[var(--panel-blur)]"
         >
           {badge}
         </motion.span>
@@ -152,7 +152,7 @@ export default function PasswordField({
   return (
     <div className={`space-y-1.5 ${className}`}>
       {label && (
-        <label className="text-xs font-medium text-[var(--muted)]" htmlFor={id}>
+        <label className="text-xs font-medium text-[var(--text-muted)]" htmlFor={id}>
           {label}
         </label>
       )}
@@ -188,7 +188,7 @@ export default function PasswordField({
             <button
               type="button"
               onClick={() => setShow(!show)}
-              className="rounded p-1 text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
+              className="rounded p-1 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
               aria-label={show ? i18n("hidePassword") : i18n("showPassword")}
               title={show ? i18n("hidePassword") : i18n("showPassword")}
             >
@@ -237,7 +237,7 @@ export default function PasswordField({
                 <button
                   type="button"
                   onClick={handleGenerate}
-                  className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-xs font-medium text-[var(--foreground)] transition-colors hover:border-[var(--accent-primary)] backdrop-blur-[var(--panel-blur)]"
+                  className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-xs font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--accent-primary)] backdrop-blur-[var(--panel-blur)]"
                 >
                   <Icon name="sparkles" className="h-3.5 w-3.5 text-[var(--accent)]" />
                   Utiliser un mot de passe fort suggéré

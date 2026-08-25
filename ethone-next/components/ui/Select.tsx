@@ -22,6 +22,7 @@ type SelectProps = {
   className?: string;
   id?: string;
   "aria-label"?: string;
+  "aria-describedby"?: string;
 };
 
 export default function Select({
@@ -34,6 +35,7 @@ export default function Select({
   className = "",
   id: providedId,
   "aria-label": ariaLabel,
+  "aria-describedby": ariaDescribedBy,
 }: SelectProps) {
   const generatedId = useId();
   const id = providedId || generatedId;
@@ -60,10 +62,12 @@ export default function Select({
     const el = triggerRef.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
+    const width = Math.max(rect.width, 240);
+    const maxLeft = Math.max(8, (typeof window !== "undefined" ? window.innerWidth : 0) - width - 8);
     setPosition({
       top: rect.bottom + 6,
-      left: rect.left,
-      width: Math.max(rect.width, 240),
+      left: Math.max(8, Math.min(rect.left, maxLeft)),
+      width,
     });
   }, []);
 
@@ -192,9 +196,9 @@ export default function Select({
         opacity: mounted ? 1 : 0,
         transform: mounted ? "translateY(0)" : "translateY(-6px)",
       }}
-      className="z-[100] liquid-glass-select mt-1.5 min-w-[min(18rem,90vw)] max-w-[90vw] rounded-[var(--panel-radius)] transition-[opacity,transform] duration-150 ease-out"
+      className="z-[var(--z-dropdown)] liquid-glass-select mt-1.5 min-w-[min(18rem,90vw)] max-w-[90vw] rounded-[var(--panel-radius)] transition-[opacity,transform] duration-150 ease-out"
     >
-      <div role="group" className="max-h-64 overflow-y-auto p-1.5">
+      <div role="group" className="max-h-64 overflow-y-auto p-1.5 no-scrollbar">
         {options.map((option, index) => {
           const isSelected = option.id === value;
           const isActive = index === activeIndex;
@@ -231,7 +235,7 @@ export default function Select({
   return (
     <div className={`relative ${className}`}>
       {label && (
-        <label id={labelId} htmlFor={id} className="mb-1.5 block text-xs font-medium text-[var(--muted)]">
+        <label id={labelId} htmlFor={id} className="mb-1.5 block text-xs font-medium text-[var(--text-muted)]">
           {label}
         </label>
       )}
@@ -249,8 +253,9 @@ export default function Select({
         aria-expanded={open}
         aria-controls={listboxId}
         aria-label={ariaLabel}
+        aria-describedby={ariaDescribedBy}
         aria-labelledby={label ? labelId : undefined}
-        className={`flex h-11 w-full items-center justify-between gap-2 rounded-[var(--panel-radius)] px-3.5 text-left text-base font-medium focus:outline-none md:h-10 liquid-glass-select ${
+        className={`flex h-11 min-h-[44px] w-full items-center justify-between gap-2 rounded-[var(--panel-radius)] px-3.5 text-left text-base font-medium focus:outline-none md:h-10 liquid-glass-select ${
           disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
         } ${
           open
@@ -268,7 +273,7 @@ export default function Select({
         </motion.span>
       </button>
 
-      {open && ready && typeof document !== "undefined" && createPortal(listbox, document.body)}
+      {open && ready && typeof document !== "undefined" && createPortal(listbox, document.body, generatedId)}
     </div>
   );
 }

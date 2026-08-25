@@ -106,7 +106,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
       <div className="overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/[0.04] shadow-2xl backdrop-blur-xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--panel-border)] px-6 py-5">
-          <h2 className="text-xl font-semibold tracking-tight text-[var(--foreground)]">
+          <h2 className="text-xl font-semibold tracking-tight text-[var(--text-primary)]">
             {formatMonthYear(currentDate)}
           </h2>
 
@@ -114,7 +114,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
             <button
               type="button"
               onClick={() => setCurrentDate((d) => addMonths(d, -1))}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--text-primary)]/5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--foreground)]"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--text-primary)]/5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)]"
               aria-label="Previous month"
             >
               <Icon name="chevron-left" className="h-4 w-4" />
@@ -123,7 +123,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
             <button
               type="button"
               onClick={() => setCurrentDate(new Date())}
-              className="rounded-xl bg-[var(--text-primary)]/10 px-4 py-1.5 text-xs font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--text-primary)]/15"
+              className="rounded-xl bg-[var(--text-primary)]/10 px-4 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/15"
             >
               Today
             </button>
@@ -131,7 +131,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
             <button
               type="button"
               onClick={() => setCurrentDate((d) => addMonths(d, 1))}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--text-primary)]/5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--foreground)]"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--text-primary)]/5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)]"
               aria-label="Next month"
             >
               <Icon name="chevron-right" className="h-4 w-4" />
@@ -153,7 +153,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
           {WEEK_DAYS.map((day) => (
             <div
               key={day}
-              className="py-3 text-center text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]"
+              className="py-3 text-center text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]"
             >
               {day}
             </div>
@@ -172,12 +172,12 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
                 key={idx}
                 onClick={() => dayItems.length > 0 && openItem(dayItems[0])}
                 className={`group relative min-h-[6.5rem] cursor-pointer border-b border-r border-[var(--panel-border)] p-2 transition-colors hover:bg-[var(--panel-bg)]/[0.03] ${
-                  !inMonth ? "bg-black/[0.08] text-[var(--muted)]" : "text-[var(--foreground)]"
+                  !inMonth ? "bg-[var(--background)]/[0.08] text-[var(--text-muted)]" : "text-[var(--text-primary)]"
                 } ${isToday ? "bg-orange-500/10 ring-1 ring-inset ring-orange-500/30" : ""} backdrop-blur-[var(--panel-blur)]`}
               >
                 <span
                   className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium ${
-                    isToday ? "bg-orange-500 text-white" : "text-[var(--muted)] group-hover:text-[var(--foreground)]"
+                    isToday ? "bg-orange-500 text-[var(--text-primary)]" : "text-[var(--text-muted)] group-hover:text-[var(--text-primary)]"
                   }`}
                 >
                   {day.getDate()}
@@ -191,20 +191,20 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
                       title={item.title}
                     >
                       <span
-                        className="flex h-5 w-5 items-center justify-center rounded-md text-white"
+                        className="flex h-5 w-5 items-center justify-center rounded-md text-[var(--text-primary)]"
                         style={{ backgroundColor: item.color || (item.category === "monthly" ? "#A259FF" : "#F59E0B") }}
                       >
                         <VendorLogo vendor={item.vendor} className="h-3.5 w-3.5" />
                       </span>
                       {inMonth && (
-                        <span className="hidden text-[10px] text-[var(--foreground)] sm:inline">
+                        <span className="hidden text-[10px] text-[var(--text-primary)] sm:inline">
                           {item.title}
                         </span>
                       )}
                     </div>
                   ))}
                   {dayItems.length > 3 && (
-                    <span className="text-[10px] text-[var(--muted)]">+{dayItems.length - 3}</span>
+                    <span className="text-[10px] text-[var(--text-muted)]">+{dayItems.length - 3}</span>
                   )}
                 </div>
 
@@ -225,7 +225,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
 
         {/* Footer */}
         <div className="flex flex-col items-start justify-between gap-4 border-t border-[var(--panel-border)] bg-[var(--panel-bg)]/[0.03] px-6 py-4 sm:flex-row sm:items-center backdrop-blur-[var(--panel-blur)]">
-          <div className="flex items-center gap-4 text-xs text-[var(--muted)]">
+          <div className="flex items-center gap-4 text-xs text-[var(--text-muted)]">
             <span className="flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-full bg-purple-500" />
               MONTHLY
@@ -237,11 +237,11 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
           </div>
 
           <div className="flex items-center gap-6">
-            <span className="text-xs font-medium text-[var(--foreground)]">
+            <span className="text-xs font-medium text-[var(--text-primary)]">
               {subscriptionsCount} SUBSCRIPTIONS / {newCount} NEW
             </span>
-            <span className="text-xs text-[var(--muted)]">
-              MONTHLY TOTAL: <span className="text-sm font-bold text-[var(--foreground)]">${monthlyTotal.toFixed(2)}</span>
+            <span className="text-xs text-[var(--text-muted)]">
+              MONTHLY TOTAL: <span className="text-sm font-bold text-[var(--text-primary)]">${monthlyTotal.toFixed(2)}</span>
             </span>
           </div>
 
@@ -256,7 +256,7 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
                 key={action.label}
                 type="button"
                 aria-label={action.label}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--text-primary)]/5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--foreground)]"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--text-primary)]/5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)]"
               >
                 <Icon name={action.icon} className="h-4 w-4" />
               </button>
@@ -274,21 +274,21 @@ export default function CalendarBills({ items = [] }: { items?: CalendarItem[] }
         hideFooter
       >
         {selected ? (
-          <div className="mt-2 space-y-2 text-sm text-[var(--muted)]">
+          <div className="mt-2 space-y-2 text-sm text-[var(--text-muted)]">
             <p>
-              Category: <span className="text-[var(--foreground)]">{selected.category}</span>
+              Category: <span className="text-[var(--text-primary)]">{selected.category}</span>
             </p>
             <p>
-              Date: <span className="text-[var(--foreground)]">{selected.date}</span>
+              Date: <span className="text-[var(--text-primary)]">{selected.date}</span>
             </p>
             {selected.amount ? (
               <p>
-                Amount: <span className="text-[var(--foreground)]">${selected.amount.toFixed(2)}</span>
+                Amount: <span className="text-[var(--text-primary)]">${selected.amount.toFixed(2)}</span>
               </p>
             ) : null}
           </div>
         ) : (
-          <p className="text-sm text-[var(--muted)]">
+          <p className="text-sm text-[var(--text-muted)]">
             Le formulaire d&apos;ajout sera intégré prochainement.
           </p>
         )}

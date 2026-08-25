@@ -34,11 +34,11 @@ export default function DockWeatherFlyout() {
       >
         <CloudSun className="h-5 w-5 shrink-0 text-amber-400" />
         {temp !== null && (
-          <span className="hidden font-mono text-zinc-200 sm:inline">{temp}</span>
+          <span className="hidden font-mono text-[var(--text-primary)] sm:inline">{temp}</span>
         )}
         <ChevronUp
           className={cn(
-            "h-3.5 w-3.5 shrink-0 text-zinc-500 transition-transform duration-200",
+            "h-3.5 w-3.5 shrink-0 text-[var(--text-muted)] transition-transform duration-200",
             open && "rotate-180"
           )}
         />

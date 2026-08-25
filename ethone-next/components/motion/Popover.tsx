@@ -637,7 +637,7 @@ export function PopoverContent({ children, className }: PopoverContentProps) {
               transformOrigin: `${ALIGN_ORIGIN[align]} ${side === "bottom" ? "top" : "bottom"}`,
             }}
             className={cn(
-              "w-max max-w-[min(92vw,20rem)] p-4 text-[var(--foreground)] outline-none",
+              "w-max max-w-[min(92vw,20rem)] p-4 text-[var(--text-primary)] outline-none",
               className,
             )}
           >
@@ -647,5 +647,6 @@ export function PopoverContent({ children, className }: PopoverContentProps) {
       </div>
     </div>,
     document.body,
+    gooId,
   );
 }

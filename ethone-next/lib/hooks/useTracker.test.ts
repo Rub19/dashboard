@@ -19,7 +19,7 @@ describe("useTracker", () => {
       ],
     });
 
-    const path = "/api/tracker/valorant-matches?name=Player&tag=EUW";
+    const path = "/api/stats/valorant-matches?name=Player&tag=EUW";
     const { result } = renderHook(() => useTracker(path, "valorant:test"));
 
     await waitFor(() => expect(result.current.loading).toBe(false));
@@ -36,7 +36,7 @@ describe("useTracker", () => {
 
   it("uses sessionStorage cache and reloads when forced", async () => {
     mockedFetchWorker.mockResolvedValue({ data: [{ id: "m1" }] });
-    const path = "/api/tracker/lol-matches";
+    const path = "/api/stats/lol-matches";
 
     const { result, rerender } = renderHook(() => useTracker(path, "lol:test"));
     await waitFor(() => expect(result.current.loading).toBe(false));

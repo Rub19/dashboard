@@ -24,6 +24,8 @@ export type ModalProps = {
   hideCloseButton?: boolean;
   position?: "center" | "bottom" | "top";
   fullScreen?: boolean;
+  closeOnBackdrop?: boolean;
+  closeOnEscape?: boolean;
   className?: string;
   contentClassName?: string;
 };
@@ -62,6 +64,8 @@ export default function Modal({
   hideCloseButton = false,
   position = "center",
   fullScreen = false,
+  closeOnBackdrop = true,
+  closeOnEscape = true,
   className = "",
   contentClassName = "",
 }: ModalProps) {
@@ -80,7 +84,7 @@ export default function Modal({
     document.body.style.overflow = "hidden";
 
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") onClose();
+      if (event.key === "Escape" && closeOnEscape) onClose();
     }
 
     document.addEventListener("keydown", onKeyDown);
@@ -89,7 +93,7 @@ export default function Modal({
       document.body.style.overflow = originalOverflow;
       document.removeEventListener("keydown", onKeyDown);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, closeOnEscape]);
 
   const modal = (
     <AnimatePresence>
@@ -99,8 +103,8 @@ export default function Modal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15 }}
-          onClick={onClose}
-          className={`fixed inset-0 z-50 flex justify-center bg-[var(--background)]/70 p-4 backdrop-blur-md ${positionOuter[position]}`}
+          onClick={() => closeOnBackdrop && onClose()}
+          className={`fixed inset-0 z-[var(--z-modal)] flex justify-center bg-[var(--background)]/70 p-4 backdrop-blur-md ${positionOuter[position]}`}
         >
           <motion.div
             ref={trapRef}
@@ -112,7 +116,7 @@ export default function Modal({
             exit={{ scale: 0.95, y: 12, opacity: 0 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
             onClick={(event) => event.stopPropagation()}
-            className={`liquid-glass-modal relative w-full overflow-hidden p-4 sm:p-6 ${positionInner[position]} ${fullScreen ? "h-[calc(100dvh-2rem)] sm:h-auto sm:max-h-[90vh]" : "max-h-[90dvh] sm:max-h-[90vh]"} ${fullScreen ? "w-full sm:max-w-6xl" : sizeMap[size]} ${className}`}
+            className={`liquid-glass-modal relative w-full overflow-hidden p-6 ${positionInner[position]} ${fullScreen ? "h-[calc(100dvh-2rem)] sm:h-auto sm:max-h-[90vh]" : ""} ${fullScreen ? "w-full sm:max-w-6xl" : sizeMap[size]} ${className}`}
           >
             <div
               className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[var(--accent-primary)]/5 blur-3xl"
@@ -126,22 +130,22 @@ export default function Modal({
                   hapticLightImpact();
                   onClose();
                 }}
-                className="absolute right-4 top-4 rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/5 hover:text-[var(--text-primary)]"
+                className="absolute right-3 top-3 flex min-h-[44px] min-w-[44px] items-center justify-center rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
                 aria-label={cancelLabel}
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4" aria-hidden="true" />
               </button>
             )}
 
             <h2
               id={titleId}
-              className="pr-6 text-base font-semibold text-[var(--text-primary)] sm:text-lg"
+              className="pr-6 text-lg font-semibold text-[var(--text-primary)]"
             >
               {title}
             </h2>
 
             {description && (
-              <p className="mt-1 text-xs text-[var(--text-secondary)]">{description}</p>
+              <p className="mt-1 text-xs text-[var(--text-muted)]">{description}</p>
             )}
 
             <div className={`mt-4 text-sm text-[var(--text-primary)] ${contentClassName}`}>{children}</div>
@@ -179,5 +183,5 @@ export default function Modal({
   );
 
   if (!mounted || typeof document === "undefined") return null;
-  return createPortal(modal, document.body);
+  return createPortal(modal, document.body, titleId);
 }

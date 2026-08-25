@@ -30,10 +30,12 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
   const router = useRouter();
   const { success, error: showError } = useToast();
   const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState({ left: 0, bottom: 0 });
   const [pending, setPending] = useState(false);
   const [isLiked, setIsLiked] = useState(!!nowPlaying?.isSaved);
   const [isPlaying, setIsPlaying] = useState(!!nowPlaying?.isPlaying);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
   const progressRef = useRef(nowPlaying?.progressMs || 0);
   const volumeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -56,12 +58,17 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
   const [localVolume, setLocalVolume] = useState(nowPlaying?.volumePercent ?? 50);
 
   useEffect(() => {
-    setLocalProgress(nowPlaying?.progressMs || 0);
-    progressRef.current = nowPlaying?.progressMs || 0;
     setIsPlaying(!!nowPlaying?.isPlaying);
     setIsLiked(!!nowPlaying?.isSaved);
     setLocalVolume(nowPlaying?.volumePercent ?? 50);
-  }, [nowPlaying?.progressMs, nowPlaying?.isPlaying, nowPlaying?.isSaved, nowPlaying?.volumePercent, nowPlaying?.id]);
+  }, [nowPlaying?.isPlaying, nowPlaying?.isSaved, nowPlaying?.volumePercent]);
+
+  /* eslint-disable react-hooks/exhaustive-deps */
+  useEffect(() => {
+    progressRef.current = nowPlaying?.progressMs || 0;
+    setLocalProgress(nowPlaying?.progressMs || 0);
+  }, [nowPlaying?.id]);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -159,6 +166,27 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
 
   const buttonLabel = hasTrack ? `${title} - ${artist}` : i18n("media");
 
+  useEffect(() => {
+    if (!open || !buttonRef.current) return;
+    const update = () => {
+      if (!buttonRef.current) return;
+      const rect = buttonRef.current.getBoundingClientRect();
+      const padding = 12;
+      const gap = 8;
+      const width = 320; // w-80
+      const left = Math.min(rect.left, window.innerWidth - width - padding);
+      const bottom = window.innerHeight - rect.top - gap;
+      setPos({ left: Math.max(padding, left), bottom });
+    };
+    update();
+    window.addEventListener("resize", update);
+    window.addEventListener("scroll", update, true);
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("scroll", update, true);
+    };
+  }, [open]);
+
   return (
     <div
       className="group relative flex flex-col items-center"
@@ -166,9 +194,11 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
       onMouseLeave={handleLeave}
     >
       <button
+        ref={buttonRef}
         type="button"
         aria-label={buttonLabel}
-        className="relative flex h-11 w-11 flex-col items-center justify-center rounded-xl text-[var(--accent-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] active:scale-95"
+        onClick={() => setOpen((v) => !v)}
+        className="relative flex h-11 w-11 flex-col items-center justify-center rounded-xl text-[var(--accent-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08]"
       >
         <SafeImage
           candidates={hasTrack ? coverCandidates : undefined}
@@ -198,21 +228,22 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: 8, scale: 0.95 }}
-            animate={{ opacity: 1, y: -12, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="absolute bottom-full left-0 z-50 w-80 -translate-x-6 rounded-xl border border-white/10 bg-zinc-950/95 p-4 shadow-2xl backdrop-blur-2xl"
+            style={{ position: "fixed", left: pos.left, bottom: pos.bottom }}
+            className="z-[var(--z-popover)] w-80 rounded-xl border border-[var(--text-primary)]/10 bg-[var(--background)]/95 p-4 shadow-2xl backdrop-blur-2xl pointer-events-auto origin-bottom"
           >
             {!hasTrack ? (
               <div className="flex items-center gap-3">
                 <SafeImage
-                  className="h-12 w-12 shrink-0 rounded-xl border border-white/10 bg-white/[0.05]"
+                  className="h-12 w-12 shrink-0 rounded-xl border border-white/10 bg-[var(--text-primary)]/[0.05]"
                   iconClassName="h-5 w-5"
                 />
                 <div className="min-w-0 flex-1">
-                  <h4 className="truncate text-xs font-bold text-white">{i18n("noLive")}</h4>
-                  <p className="truncate text-[11px] text-zinc-400">
+                  <h4 className="truncate text-xs font-bold text-[var(--text-primary)]">{i18n("noLive")}</h4>
+                  <p className="truncate text-[11px] text-[var(--text-muted)]">
                     {hasClientId ? i18n("spotifyNoPlayback") : i18n("spotifyNotConfigured")}
                   </p>
                 </div>
@@ -237,15 +268,15 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                     priority
                   />
                   <div className="min-w-0 flex-1">
-                    <h4 className="truncate text-xs font-bold text-white">{title || "—"}</h4>
-                    <p className="truncate text-[11px] text-zinc-300">{artist || "—"}</p>
-                    {album && <p className="truncate text-[10px] text-zinc-500">{album}</p>}
+                    <h4 className="truncate text-xs font-bold text-[var(--text-primary)]">{title || "—"}</h4>
+                    <p className="truncate text-[11px] text-[var(--text-primary)]">{artist || "—"}</p>
+                    {album && <p className="truncate text-[10px] text-[var(--text-muted)]">{album}</p>}
                   </div>
                   <button
                     type="button"
                     onClick={toggleLike}
                     disabled={pending || !hasClientId || !trackId}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
                     aria-label={isLiked ? i18n("unlike") : i18n("like")}
                   >
                     <Heart
@@ -264,12 +295,12 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                   data-testid="dock-progress"
                 />
 
-                <div className="flex items-center justify-between border-t border-white/[0.04] px-2 pt-2">
+                <div className="flex items-center justify-between border-t border-[var(--text-primary)]/[0.04] px-2 pt-2">
                   <button
                     type="button"
                     onClick={skipPrevious}
                     disabled={pending || !hasClientId}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
                     aria-label={i18n("previous")}
                   >
                     <SkipBack className="h-5 w-5" />
@@ -278,7 +309,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                     type="button"
                     onClick={() => seek(-10000)}
                     disabled={pending || !hasClientId}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
                     aria-label="-10s"
                   >
                     <RotateCcw className="h-3.5 w-3.5" />
@@ -300,7 +331,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                     type="button"
                     onClick={() => seek(10000)}
                     disabled={pending || !hasClientId}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
                     aria-label="+10s"
                   >
                     <RotateCw className="h-3.5 w-3.5" />
@@ -309,7 +340,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                     type="button"
                     onClick={skipNext}
                     disabled={pending || !hasClientId}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
                     aria-label={i18n("next")}
                   >
                     <SkipForward className="h-5 w-5" />

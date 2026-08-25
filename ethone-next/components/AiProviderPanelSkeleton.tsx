@@ -7,9 +7,9 @@ export default function AiProviderPanelSkeleton() {
       aria-busy="true"
       aria-label="Chargement des providers IA"
     >
-      <div className="h-24 rounded-xl bg-white/[0.04]" />
-      <div className="h-24 rounded-xl bg-white/[0.04]" />
-      <div className="h-24 rounded-xl bg-white/[0.04]" />
+      <div className="h-24 rounded-xl bg-[var(--text-primary)]/[0.04]" />
+      <div className="h-24 rounded-xl bg-[var(--text-primary)]/[0.04]" />
+      <div className="h-24 rounded-xl bg-[var(--text-primary)]/[0.04]" />
     </div>
   );
 }

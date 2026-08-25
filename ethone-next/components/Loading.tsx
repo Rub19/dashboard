@@ -15,7 +15,7 @@ export default function Loading({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-5 bg-[var(--background)]"
+      className="fixed inset-0 z-[var(--z-modal)] flex flex-col items-center justify-center gap-5 bg-[var(--background)]"
       role="status"
       aria-label={message}
       data-v8-boot
@@ -28,8 +28,8 @@ export default function Loading({
       >
         <BrandMark size={72} />
         <div className="flex items-center gap-2">
-          <span className="text-2xl font-semibold tracking-tight text-[var(--foreground)]">ETHONE</span>
-          <span className="rounded border border-[var(--border)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--muted)]">
+          <span className="text-2xl font-semibold tracking-tight text-[var(--text-primary)]">ETHONE</span>
+          <span className="rounded border border-[var(--border)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--text-muted)]">
             OS
           </span>
         </div>
@@ -44,14 +44,14 @@ export default function Loading({
         {hasProgress ? (
           <div className="relative h-full w-full">
             <motion.div
-              className="h-full rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent)]"
+              className="h-full rounded-full bg-[var(--accent-primary)]"
               initial={{ width: "0%" }}
               animate={{ width: `${pct}%` }}
               transition={{ duration: 0.12, ease: "linear" }}
             />
             {pct < 100 && (
               <motion.div
-                className="pointer-events-none absolute inset-0 h-full w-full bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                className="pointer-events-none absolute inset-0 h-full w-full bg-gradient-to-r from-transparent via-[var(--text-primary)]/40 to-transparent"
                 animate={{ x: ["-100%", "100%"] }}
                 transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
               />
@@ -59,7 +59,7 @@ export default function Loading({
           </div>
         ) : (
           <motion.div
-            className="h-full w-full bg-gradient-to-r from-transparent via-[var(--accent)] to-transparent"
+            className="h-full w-full bg-gradient-to-r from-transparent via-[var(--accent-primary)] to-transparent"
             animate={{ x: ["-100%", "100%"] }}
             transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
           />
@@ -68,7 +68,7 @@ export default function Loading({
 
       {hasProgress && (
         <motion.span
-          className="font-mono text-xs font-medium tabular-nums text-[var(--muted)]"
+          className="font-mono text-xs font-medium tabular-nums text-[var(--text-muted)]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
@@ -78,7 +78,7 @@ export default function Loading({
       )}
 
       <motion.p
-        className="text-sm text-[var(--muted)]"
+        className="text-sm text-[var(--text-muted)]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}

@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
 import { Plug } from "lucide-react";
 import { fetchWorker } from "@/lib/api";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -15,6 +14,7 @@ import CategoryTabs from "@/components/CategoryTabs";
 import ConnectionCard from "@/components/ConnectionCard";
 import DiscordConfig from "@/components/DiscordConfig";
 import SpotifyConfig from "@/components/SpotifyConfig";
+import Input from "@/components/ui/Input";
 
 function clientIdFromStorage(provider: string): string {
   if (typeof window === "undefined") return "";
@@ -32,6 +32,7 @@ export default function IntegrationsSettings() {
   const [loading, setLoading] = useState(true);
   const [health, setHealth] = useState<Record<string, PingResult>>({});
   const [testingAll, setTestingAll] = useState(false);
+  const [search, setSearch] = useState("");
 
   const i18n = useI18n();
   const { settings } = useSettings();
@@ -92,10 +93,18 @@ export default function IntegrationsSettings() {
     return map;
   }, [settings, credentials.connected, connected]);
 
-  const filtered = useMemo(
-    () => (filter === "all" ? INTEGRATIONS : INTEGRATIONS.filter((i) => i.category === filter)),
-    [filter]
-  );
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    let list = filter === "all" ? INTEGRATIONS : INTEGRATIONS.filter((i) => i.category === filter);
+    if (q) {
+      list = list.filter(
+        (i) =>
+          i.name.toLowerCase().includes(q) ||
+          i.id.toLowerCase().includes(q)
+      );
+    }
+    return list;
+  }, [filter, search]);
 
   const testOne = useCallback(
     async (id: string) => {
@@ -173,8 +182,8 @@ export default function IntegrationsSettings() {
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
       <div className="shrink-0 mb-4 space-y-4">
         <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold text-white">{i18n("connectionsTitle")}</h1>
-          <p className="text-sm text-zinc-400">{i18n("connectionsDescription")}</p>
+          <h1 className="text-2xl font-bold text-[var(--text-primary)]">{i18n("connectionsTitle")}</h1>
+          <p className="text-sm text-[var(--text-muted)]">{i18n("connectionsDescription")}</p>
         </div>
 
         <SystemHealthBanner
@@ -185,21 +194,30 @@ export default function IntegrationsSettings() {
       />
 
         <CategoryTabs active={filter} onChange={setFilter} />
+        <Input
+          icon="search"
+          inputSize="compact"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder={i18n("search")}
+          clearable
+          className="max-w-md"
+        />
       </div>
 
-      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-4">
+      <div className="min-h-0 w-full flex-1 space-y-4 overflow-y-auto p-6 pb-10 no-scrollbar">
       {(loading || credentials.loading) && (
-        <div className="flex items-center gap-3 rounded-2xl v8-panel p-5 text-sm text-zinc-400 backdrop-blur-2xl">
+        <div className="flex items-center gap-3 rounded-2xl v8-panel p-5 text-sm text-[var(--text-muted)] backdrop-blur-2xl">
           <Plug className="h-5 w-5 animate-spin" />
           {i18n("loading")}
         </div>
       )}
 
-      <motion.div layout className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((integration) => renderCard(integration))}
-      </motion.div>
+      </div>
 
-      <div className="rounded-2xl v8-panel p-5 text-sm text-zinc-400 backdrop-blur-2xl">
+      <div className="rounded-2xl v8-panel p-5 text-sm text-[var(--text-muted)] backdrop-blur-2xl">
         <div className="flex items-center gap-2">
           <Plug className="h-4 w-4" />
           <p>{i18n("oauthInfo")}</p>

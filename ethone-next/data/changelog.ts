@@ -5,6 +5,198 @@ export type ChangelogEntry = {
   items: string[];
 };
 
+const v375_fr: ChangelogEntry = {
+  version: "v1.9.4",
+  date: "2026-08-25",
+  title: "Drag & drop et persistance du layout Home",
+  items: [
+    "Ajout de `@dnd-kit/core` et `@dnd-kit/sortable`.",
+    "Nouveau composant `SortableWidget` avec poignée de glisser-déposer visible en mode personnalisation.",
+    "DashboardOverview : le Home est désormais réorganisable par glisser-déposer en mode personnalisation.",
+    "La grille Home respecte l'ordre sauvegardé de l'utilisateur ; les nouveaux widgets sont ajoutés à la fin.",
+    "Déplacement d'un widget met à jour `desktop_layout` via `useDesktopLayout` et persiste dans Supabase.",
+    "Conservation des états de visibilité et de l'ordre relatif des widgets masqués lors du glisser-déposer.",
+    "Validation : `npm run build`, `npm run lint`, `npm run test:unit` restent verts.",
+    "Version affichée en bas à droite : v1.9.4.",
+  ],
+};
+
+const v375_en: ChangelogEntry = {
+  version: "v1.9.4",
+  date: "2026-08-25",
+  title: "Home drag & drop and layout persistence",
+  items: [
+    "Added `@dnd-kit/core` and `@dnd-kit/sortable`.",
+    "New `SortableWidget` component with a drag handle visible in customization mode.",
+    "DashboardOverview: the Home can now be reordered by drag & drop in customization mode.",
+    "The Home grid respects the user's saved order; new widgets are appended at the end.",
+    "Moving a widget updates `desktop_layout` via `useDesktopLayout` and persists in Supabase.",
+    "Visibility states and relative order of hidden widgets are preserved during drag & drop.",
+    "Validation: `npm run build`, `npm run lint`, `npm run test:unit` still pass.",
+    "Version badge bottom-right: v1.9.4.",
+  ],
+};
+
+const v375_es: ChangelogEntry = {
+  version: "v1.9.4",
+  date: "2026-08-25",
+  title: "Arrastrar y soltar y persistencia del layout del Home",
+  items: [
+    "Añadido `@dnd-kit/core` y `@dnd-kit/sortable`.",
+    "Nuevo componente `SortableWidget` con un asa de arrastre visible en modo personalización.",
+    "DashboardOverview: el Home ahora se puede reordenar con arrastrar y soltar en modo personalización.",
+    "La cuadrícula del Home respeta el orden guardado del usuario; los nuevos widgets se añaden al final.",
+    "Mover un widget actualiza `desktop_layout` vía `useDesktopLayout` y persiste en Supabase.",
+    "Se conservan los estados de visibilidad y el orden relativo de los widgets ocultos durante el arrastre.",
+    "Validación: `npm run build`, `npm run lint`, `npm run test:unit` siguen pasando.",
+    "Versión mostrada abajo a la derecha: v1.9.4.",
+  ],
+};
+
+const v375_de: ChangelogEntry = {
+  version: "v1.9.4",
+  date: "2026-08-25",
+  title: "Home Drag & Drop und Layout-Persistenz",
+  items: [
+    "`@dnd-kit/core` und `@dnd-kit/sortable` hinzugefügt.",
+    "Neue `SortableWidget`-Komponente mit Ziehgriff, sichtbar im Anpassungsmodus.",
+    "DashboardOverview: das Home lässt sich jetzt per Drag & Drop im Anpassungsmodus neu ordnen.",
+    "Das Home-Raster respektiert die gespeicherte Reihenfolge; neue Widgets werden am Ende angehängt.",
+    "Das Verschieben eines Widgets aktualisiert `desktop_layout` über `useDesktopLayout` und wird in Supabase persistiert.",
+    "Sichtbarkeitszustände und relative Reihenfolge ausgeblendeter Widgets bleiben beim Ziehen erhalten.",
+    "Validierung: `npm run build`, `npm run lint`, `npm run test:unit` bestehen weiterhin.",
+    "Version unten rechts: v1.9.4.",
+  ],
+};
+
+const v374_fr: ChangelogEntry = {
+  version: "v1.9.3",
+  date: "2026-08-25",
+  title: "Uniformisation des boutons, icônes et tokens",
+  items: [
+    "Nouveau composant `IconButton` pour les boutons icônes avec tailles sm/md/lg et variantes default/ghost/active.",
+    "TopBar : `ThemeToggle`, `FocusToggle`, `DynamicIslandToggle` et `WeatherQuickButton` utilisent `IconButton`/`Button` standardisés.",
+    "DashboardOverview : boutons personnaliser, terminer et sélecteurs de sections basculés sur `IconButton` et `Button`.",
+    "Remplacement des imports `lucide-react` directs par `Icon` dans `TopBar` et `DashboardOverview` pour une source d'icônes unique.",
+    "Mise à jour du `Button` et des nouveaux composants pour les tokens ETHONE (`--text-primary`, `--accent-primary`, `--text-muted`).",
+    "Validation : `npm run build`, `npm run lint`, `npm run test:unit` restent verts.",
+    "Version affichée en bas à droite : v1.9.3.",
+  ],
+};
+
+const v374_en: ChangelogEntry = {
+  version: "v1.9.3",
+  date: "2026-08-25",
+  title: "Button, icon and token unification",
+  items: [
+    "New `IconButton` component for icon buttons with sm/md/lg sizes and default/ghost/active variants.",
+    "TopBar: `ThemeToggle`, `FocusToggle`, `DynamicIslandToggle` and `WeatherQuickButton` now use standardized `IconButton`/`Button`.",
+    "DashboardOverview: customize, done and section toggle buttons moved to `IconButton` and `Button`.",
+    "Replaced direct `lucide-react` imports with `Icon` in `TopBar` and `DashboardOverview` for a single icon source.",
+    "Updated `Button` and new components to use ETHONE tokens (`--text-primary`, `--accent-primary`, `--text-muted`).",
+    "Validation: `npm run build`, `npm run lint`, `npm run test:unit` still pass.",
+    "Version badge bottom-right: v1.9.3.",
+  ],
+};
+
+const v374_es: ChangelogEntry = {
+  version: "v1.9.3",
+  date: "2026-08-25",
+  title: "Unificación de botones, iconos y tokens",
+  items: [
+    "Nuevo componente `IconButton` para botones de icono con tamaños sm/md/lg y variantes default/ghost/active.",
+    "TopBar: `ThemeToggle`, `FocusToggle`, `DynamicIslandToggle` y `WeatherQuickButton` usan `IconButton`/`Button` estandarizados.",
+    "DashboardOverview: botones personalizar, terminar y selectores de sección migrados a `IconButton` y `Button`.",
+    "Reemplazo de importaciones directas de `lucide-react` por `Icon` en `TopBar` y `DashboardOverview` para una única fuente de iconos.",
+    "Actualización de `Button` y los nuevos componentes para usar los tokens ETHONE (`--text-primary`, `--accent-primary`, `--text-muted`).",
+    "Validación: `npm run build`, `npm run lint`, `npm run test:unit` siguen pasando.",
+    "Versión mostrada abajo a la derecha: v1.9.3.",
+  ],
+};
+
+const v374_de: ChangelogEntry = {
+  version: "v1.9.3",
+  date: "2026-08-25",
+  title: "Vereinheitlichung von Schaltflächen, Symbolen und Tokens",
+  items: [
+    "Neue `IconButton`-Komponente für Icon-Buttons mit sm/md/lg-Größen und default/ghost/active-Varianten.",
+    "TopBar: `ThemeToggle`, `FocusToggle`, `DynamicIslandToggle` und `WeatherQuickButton` verwenden jetzt standardisierte `IconButton`/`Button`.",
+    "DashboardOverview: Anpassen-, Fertig- und Bereichs-Umschaltbuttons auf `IconButton` und `Button` umgestellt.",
+    "Direkte `lucide-react`-Importe durch `Icon` in `TopBar` und `DashboardOverview` ersetzt, um eine einzige Icon-Quelle zu haben.",
+    "`Button` und neue Komponenten auf ETHONE-Tokens (`--text-primary`, `--accent-primary`, `--text-muted`) aktualisiert.",
+    "Validierung: `npm run build`, `npm run lint`, `npm run test:unit` bestehen weiterhin.",
+    "Version unten rechts: v1.9.3.",
+  ],
+};
+
+const v373_fr: ChangelogEntry = {
+  version: "v1.9.2",
+  date: "2026-08-25",
+  title: "Restauration de l'identité visuelle du Home",
+  items: [
+    "Dynamic Island : portail React, positionnement fixe indépendant, capsule fermée par défaut avec horloge ETHONE, mode COMPACT sécurisé contre l'ouverture automatique.",
+    "Footer ETHONE : restauration de la barre d'état (`StatusBar`) et ajustement des marges du main.",
+    "Cartes 3D interactives : `Card3D` intègre `TiltCard` avec effet subtil au survol.",
+    "Nouveau widget `ConnectionCardsWidget` : carte de connexion 3D des services live (Spotify, Discord, GitHub, Steam, etc.) sur le Home.",
+    "Grille du Home : priorisation selon la période du jour, largeur max adaptative (`homeGrid`), fusion du layout sauvegardé avec les nouveaux widgets par défaut.",
+    "États de chargement : le Home s'affiche plus tôt, chaque widget gère son propre état de chargement au lieu d'un squelette global.",
+    "Démarrage : réduction des délais d'expiration de session et de boot pour éviter les écrans figés à 0%.",
+    "Validation : `npm run build`, `npm run lint`, `npm run test:unit` et `home-bento-layout` Playwright passent.",
+    "Version affichée en bas à droite : v1.9.2.",
+  ],
+};
+
+const v373_en: ChangelogEntry = {
+  version: "v1.9.2",
+  date: "2026-08-25",
+  title: "Home visual identity restoration",
+  items: [
+    "Dynamic Island: React portal, fixed independent positioning, default closed capsule with ETHONE clock, COMPACT mode secured against auto-open.",
+    "ETHONE footer: restored status bar (`StatusBar`) and main bottom padding.",
+    "Interactive 3D cards: `Card3D` now integrates `TiltCard` for subtle hover tilt.",
+    "New `ConnectionCardsWidget` home widget: 3D connection cards for live services (Spotify, Discord, GitHub, Steam, etc.).",
+    "Home grid: time-of-day priority, adaptive max-width (`homeGrid`), saved layout merged with new default widgets.",
+    "Loading states: home displays earlier, each widget handles its own loading state instead of a global skeleton.",
+    "Boot: reduced session and boot timeouts to avoid stuck 0% screens.",
+    "Validation: `npm run build`, `npm run lint`, `npm run test:unit` and `home-bento-layout` Playwright pass.",
+    "Version badge bottom-right: v1.9.2.",
+  ],
+};
+
+const v373_es: ChangelogEntry = {
+  version: "v1.9.2",
+  date: "2026-08-25",
+  title: "Restauración de la identidad visual del Home",
+  items: [
+    "Dynamic Island: portal de React, posicionamiento fijo e independiente, cápsula cerrada por defecto con reloj ETHONE, modo COMPACTO seguro contra apertura automática.",
+    "Pie de página ETHONE: restaurada la barra de estado (`StatusBar`) y ajustado el margen inferior del main.",
+    "Tarjetas 3D interactivas: `Card3D` integra `TiltCard` con inclinación sutil al pasar el cursor.",
+    "Nuevo widget `ConnectionCardsWidget`: tarjetas de conexión 3D de servicios en vivo (Spotify, Discord, GitHub, Steam, etc.).",
+    "Cuadrícula del Home: priorización según la hora del día, ancho máximo adaptable (`homeGrid`), layout guardado fusionado con los nuevos widgets por defecto.",
+    "Estados de carga: el Home aparece más pronto, cada widget gestiona su propio estado de carga en lugar de un esqueleto global.",
+    "Inicio: reducidos los tiempos de espera de sesión y arranque para evitar pantallas bloqueadas en 0%.",
+    "Validación: `npm run build`, `npm run lint`, `npm run test:unit` y `home-bento-layout` Playwright pasan.",
+    "Versión mostrada abajo a la derecha: v1.9.2.",
+  ],
+};
+
+const v373_de: ChangelogEntry = {
+  version: "v1.9.2",
+  date: "2026-08-25",
+  title: "Wiederherstellung der visuellen Home-Identität",
+  items: [
+    "Dynamic Island: React-Portal, feste unabhängige Positionierung, geschlossene Standardkapsel mit ETHONE-Uhr, COMPACT-Modus gegen automatisches Öffnen gesichert.",
+    "ETHONE-Fußzeile: Statusleiste (`StatusBar`) wiederhergestellt und unterer Rand des main angepasst.",
+    "Interaktive 3D-Karten: `Card3D` integriert `TiltCard` für dezente Hover-Neigung.",
+    "Neues `ConnectionCardsWidget`: 3D-Verbindungskarten für Live-Dienste (Spotify, Discord, GitHub, Steam, etc.).",
+    "Home-Raster: Tageszeit-Priorisierung, adaptive maximale Breite (`homeGrid`), gespeichertes Layout mit neuen Standard-Widgets zusammengeführt.",
+    "Ladezustände: Home wird früher angezeigt, jedes Widget verwaltet seinen eigenen Ladezustand statt eines globalen Skeletts.",
+    "Boot: Sitzungs- und Boot-Timeouts reduziert, um hängende 0%-Bildschirme zu vermeiden.",
+    "Validierung: `npm run build`, `npm run lint`, `npm run test:unit` und `home-bento-layout` Playwright bestanden.",
+    "Version unten rechts: v1.9.2.",
+  ],
+};
+
 const v173_fr: ChangelogEntry = {
   version: "v1.6.13",
   date: "2026-08-19",
@@ -4452,154 +4644,6 @@ const v350_de: ChangelogEntry = {
   ],
 };
 
-const v360_fr: ChangelogEntry = {
-  version: "v1.8.16",
-  date: "2026-08-23",
-  title: "TopBar : contrôles parfaitement alignés",
-  items: [
-    "Hauteurs uniformisées pour les boutons météo, thème, focus et Dynamic Island.",
-    "Grille gauche, centre et droite conservée avec un centrage vertical identique.",
-    "Dynamic Island décalée sous la TopBar pour éviter le chevauchement avec son bord inférieur.",
-    "Version v1.8.16.",
-  ],
-};
-
-const v360_en: ChangelogEntry = {
-  version: "v1.8.16",
-  date: "2026-08-23",
-  title: "TopBar: perfectly aligned controls",
-  items: [
-    "Unified heights for weather, theme, focus and Dynamic Island buttons.",
-    "Kept the left, center and right grid with consistent vertical centering.",
-    "Moved the Dynamic Island below the TopBar to prevent overlap with its bottom edge.",
-    "Version v1.8.16.",
-  ],
-};
-
-const v360_es: ChangelogEntry = {
-  version: "v1.8.16",
-  date: "2026-08-23",
-  title: "TopBar: controles perfectamente alineados",
-  items: [
-    "Alturas unificadas para los botones de clima, tema, focus y Dynamic Island.",
-    "La cuadrícula izquierda, central y derecha mantiene el mismo centrado vertical.",
-    "Dynamic Island se desplazó debajo de la TopBar para evitar solapamientos.",
-    "Versión v1.8.16.",
-  ],
-};
-
-const v360_de: ChangelogEntry = {
-  version: "v1.8.16",
-  date: "2026-08-23",
-  title: "TopBar: perfekt ausgerichtete Steuerelemente",
-  items: [
-    "Einheitliche Höhen für Wetter-, Theme-, Fokus- und Dynamic-Island-Schaltflächen.",
-    "Das linke, mittlere und rechte Raster bleibt mit identischer vertikaler Zentrierung erhalten.",
-    "Die Dynamic Island wurde unter die TopBar verschoben, damit sich die Kanten nicht überlagern.",
-    "Version v1.8.16.",
-  ],
-};
-
-const v359_fr: ChangelogEntry = {
-  version: "v1.8.15",
-  date: "2026-08-23",
-  title: "Spotify, Dynamic Island et widgets live stabilisés",
-  items: [
-    "Accents Spotify harmonisés avec la palette secondaire ETHONE au lieu du vert de l’ancien thème.",
-    "Dynamic Island conservée en mode compact au refresh : une activité déjà en cours ne déclenche plus d’ouverture automatique.",
-    "États de chargement corrigés pour les widgets non configurés Minecraft, Valorant et League.",
-    "Badges de statut et bloc Spotify rendus lisibles avec des fonds teintés.",
-    "Version v1.8.15.",
-  ],
-};
-
-const v359_en: ChangelogEntry = {
-  version: "v1.8.15",
-  date: "2026-08-23",
-  title: "Spotify, Dynamic Island and live widgets stabilized",
-  items: [
-    "Spotify accents now use the secondary ETHONE palette instead of the old theme green.",
-    "The Dynamic Island stays compact after refresh; an already-running activity no longer opens it automatically.",
-    "Loading states fixed for unconfigured Minecraft, Valorant and League widgets.",
-    "Status badges and the Spotify block now use readable tinted surfaces.",
-    "Version v1.8.15.",
-  ],
-};
-
-const v359_es: ChangelogEntry = {
-  version: "v1.8.15",
-  date: "2026-08-23",
-  title: "Spotify, Dynamic Island y widgets en vivo estabilizados",
-  items: [
-    "Los acentos de Spotify usan ahora la paleta secundaria de ETHONE en lugar del verde del tema anterior.",
-    "Dynamic Island permanece compacta después de actualizar; una actividad ya activa no la abre automáticamente.",
-    "Corregidos los estados de carga de los widgets de Minecraft, Valorant y League sin cuenta configurada.",
-    "Los badges de estado y el bloque de Spotify ahora usan superficies tintadas legibles.",
-    "Versión v1.8.15.",
-  ],
-};
-
-const v359_de: ChangelogEntry = {
-  version: "v1.8.15",
-  date: "2026-08-23",
-  title: "Spotify, Dynamic Island und Live-Widgets stabilisiert",
-  items: [
-    "Spotify-Akzente verwenden jetzt die sekundäre ETHONE-Palette statt des alten Theme-Grüns.",
-    "Die Dynamic Island bleibt nach dem Refresh kompakt; eine bereits laufende Aktivität öffnet sie nicht mehr automatisch.",
-    "Ladezustände für nicht konfigurierte Minecraft-, Valorant- und League-Widgets korrigiert.",
-    "Status-Badges und Spotify-Block verwenden jetzt lesbare getönte Flächen.",
-    "Version v1.8.15.",
-  ],
-};
-
-const v358_fr: ChangelogEntry = {
-  version: "v1.8.14",
-  date: "2026-08-23",
-  title: "Toast de mise à jour : palette sombre ETHONE",
-  items: [
-    "Bordure blanche remplacée par une bordure graphite teintée par l’accent ETHONE.",
-    "Fond sombre avec dégradé discret, halo accentué et badge de version cyan secondaire.",
-    "Bouton Mettre à jour harmonisé avec le contraste du thème.",
-    "Version v1.8.14.",
-  ],
-};
-
-const v358_en: ChangelogEntry = {
-  version: "v1.8.14",
-  date: "2026-08-23",
-  title: "Update toast: dark ETHONE palette",
-  items: [
-    "Replaced the white border with a graphite border tinted by the ETHONE accent.",
-    "Added a dark gradient, subtle accent glow and secondary cyan version badge.",
-    "Aligned the Update button with the theme contrast instead of the white treatment.",
-    "Version v1.8.14.",
-  ],
-};
-
-const v358_es: ChangelogEntry = {
-  version: "v1.8.14",
-  date: "2026-08-23",
-  title: "Toast de actualización: paleta oscura de ETHONE",
-  items: [
-    "Borde blanco sustituido por un borde grafito teñido con el acento de ETHONE.",
-    "Nuevo degradado oscuro, halo sutil y badge de versión cian secundario.",
-    "Botón Actualizar armonizado con el contraste del tema.",
-    "Versión v1.8.14.",
-  ],
-};
-
-const v358_de: ChangelogEntry = {
-  version: "v1.8.14",
-  date: "2026-08-23",
-  title: "Update-Toast: dunkle ETHONE-Palette",
-  items: [
-    "Weiße Umrandung durch eine vom ETHONE-Akzent getönte Graphit-Umrandung ersetzt.",
-    "Dunkler Verlauf, dezentes Akzentleuchten und sekundäres cyanfarbenes Versions-Badge hinzugefügt.",
-    "Update-Schaltfläche an den Theme-Kontrast statt an die weiße Darstellung angepasst.",
-    "Version v1.8.14.",
-  ],
-};
-
 const v357_fr: ChangelogEntry = {
   version: "v1.8.13",
   date: "2026-08-23",
@@ -4649,6 +4693,94 @@ const v357_de: ChangelogEntry = {
     "Benutzerdefinierte ETHONE-Glyphen für Präsenzstatus und Benachrichtigungen hinzugefügt.",
     "Online-, Fokus-, Beschäftigt-, Abwesend- und Unsichtbar-Status zwischen System und Profil vereinheitlicht.",
     "Version v1.8.13.",
+  ],
+};
+
+const v358_fr: ChangelogEntry = {
+  version: "v1.8.14",
+  date: "2026-08-23",
+  title: "Polish UI : badges, toasts, Dock et thèmes",
+  items: [
+    "Correction de tous les badges invisibles (bg/text identique) dans Riot, Discord, Live, FileUpload et Flows.",
+    "L'alerte système de la barre ne réagit plus aux notifications non lues, seulement aux erreurs live/réseau.",
+    "Cartes de thème réduites pour un sélecteur plus dense.",
+    "Carte profil corrigée : badge Session vérifiée lisible, identifiant tronqué, bouton Discord adapté si déjà lié.",
+    "Badges sans bordure blanche dans SystemHealthBanner et bouton Live de la barre.",
+    "Bouton primary passé en fond accent solide pour plus de contraste.",
+    "Lanceur d'apps du Dock sans glow vert.",
+    "Bouton média du Dock cliquable pour ouvrir/fermer le flyout.",
+    "Toasts refondus avec pastille et texte colorés selon le type.",
+    "Carte de profil refondue dans les paramètres : plus compacte, sans bannière.",
+    "Pastilles de statut passées en fond accent solide.",
+    "Connexion avec Discord ajoutée sur la page de login.",
+    "Bouton remonter en haut du Dock réparé.",
+    "Version v1.8.14.",
+  ],
+};
+
+const v358_en: ChangelogEntry = {
+  version: "v1.8.14",
+  date: "2026-08-23",
+  title: "UI polish: badges, toasts, Dock and themes",
+  items: [
+    "Fixed all invisible badges (same bg/text) in Riot, Discord, Live, FileUpload and Flows.",
+    "Status bar alert now only triggers on live/network errors, not on unread notifications.",
+    "Theme cards reduced for a denser selector.",
+    "Profile card fixed: readable verified badge, truncated public id, Discord button adapts when already linked.",
+    "White-bordered badges removed in SystemHealthBanner and Live status bar button.",
+    "Primary button switched to solid accent background for better contrast.",
+    "Dock app launcher without green glow.",
+    "Dock media button now clickable to toggle flyout.",
+    "Toasts redesigned with colored dot and text per type.",
+    "Profile card in settings reworked: more compact, no banner.",
+    "Status pills switched to solid accent background.",
+    "Discord sign-in added to the login page.",
+    "Dock scroll-to-top button fixed.",
+    "Version v1.8.14.",
+  ],
+};
+
+const v358_es: ChangelogEntry = {
+  version: "v1.8.14",
+  date: "2026-08-23",
+  title: "Pulido UI: badges, toasts, Dock y temas",
+  items: [
+    "Corrección de todos los badges invisibles (mismo fondo/texto) en Riot, Discord, Live, FileUpload y Flows.",
+    "La alerta de la barra de estado solo se activa por errores live/red, no por notificaciones no leídas.",
+    "Tarjetas de tema reducidas para un selector más compacto.",
+    "Tarjeta de perfil corregida: badge de sesión verificada legible, id truncado, botón Discord adaptado si ya vinculado.",
+    "Badges sin borde blanco en SystemHealthBanner y botón Live de la barra.",
+    "Botón primary con fondo de acento sólido para mejor contraste.",
+    "Lanzador de apps del Dock sin glow verde.",
+    "Botón multimedia del Dock cliquable para abrir/cerrar flyout.",
+    "Toasts rediseñados con punto y texto de color según el tipo.",
+    "Tarjeta de perfil en ajustes rediseñada: más compacta, sin banner.",
+    "Pastillas de estado con fondo de acento sólido.",
+    "Conexión con Discord añadida a la página de login.",
+    "Botón de volver arriba del Dock reparado.",
+    "Versión v1.8.14.",
+  ],
+};
+
+const v358_de: ChangelogEntry = {
+  version: "v1.8.14",
+  date: "2026-08-23",
+  title: "UI-Polish: Badges, Toasts, Dock und Themes",
+  items: [
+    "Alle unsichtbaren Badges (gleicher Hintergrund/Text) in Riot, Discord, Live, FileUpload und Flows korrigiert.",
+    "Statusleisten-Alert reagiert jetzt nur auf Live/Netzwerk-Fehler, nicht auf ungelesene Benachrichtigungen.",
+    "Theme-Karten verkleinert für eine dichtere Auswahl.",
+    "Profilkarte korrigiert: lesbares Verifiziert-Badge, gekürzte ID, Discord-Button passt sich an, wenn bereits verknüpft.",
+    "Weiße Badge-Ränder in SystemHealthBanner und Live-Statusleiste entfernt.",
+    "Primary-Button auf soliden Akzent-Hintergrund für besseren Kontrast umgestellt.",
+    "Dock-App-Launcher ohne grünen Glow.",
+    "Dock-Mediabutton nun klickbar, um Flyout zu öffnen/schließen.",
+    "Toasts überarbeitet mit farbigem Punkt und Text je nach Typ.",
+    "Profilkarte in den Einstellungen überarbeitet: kompakter, ohne Banner.",
+    "Status-Pillen auf soliden Akzent-Hintergrund umgestellt.",
+    "Discord-Anmeldung zur Login-Seite hinzugefügt.",
+    "Dock-Scroll-nach-oben-Button repariert.",
+    "Version v1.8.14.",
   ],
 };
 
@@ -4969,8 +5101,8 @@ const v351_de: ChangelogEntry = {
 };
 
 export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
-  fr: [v356_fr, v355_fr, v354_fr, v353_fr, v352_fr, v351_fr, v350_fr, v349_fr, v348_fr, v347_fr, v346_fr, v345_fr, v344_fr, v343_fr, v147_fr, v146_fr, v145_fr, v144_fr, v143_fr, v142_fr, v141_fr, v140_fr, v139_fr, v138_fr, v137_fr, v136_fr, v135_fr, v134_fr, v133_fr, v132_fr, v131_fr, v130_fr, v206_fr, v205_fr, v204_fr, v203_fr, v202_fr, v201_fr, v200_fr, v199_fr, v198_fr, v197_fr, v196_fr, v195_fr, v194_fr, v193_fr, v192_fr, v191_fr, v190_fr, v189_fr, v188_fr, v187_fr, v186_fr, v185_fr, v184_fr, v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr, v329_fr, v330_fr, v331_fr, v332_fr, v338_fr, v340_fr, v341_fr, v342_fr],
-  en: [v356_en, v355_en, v354_en, v353_en, v352_en, v351_en, v350_en, v349_en, v348_en, v347_en, v346_en, v345_en, v344_en, v343_en, v147_en, v146_en, v145_en, v144_en, v143_en, v142_en, v141_en, v140_en, v139_en, v138_en, v137_en, v136_en, v135_en, v134_en, v133_en, v132_en, v131_en, v130_en, v206_en, v205_en, v204_en, v203_en, v202_en, v201_en, v200_en, v199_en, v198_en, v197_en, v196_en, v195_en, v194_en, v193_en, v192_en, v191_en, v190_en, v189_en, v188_en, v187_en, v186_en, v185_en, v184_en, v183_en, v182_en, v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
+  fr: [v358_fr, v357_fr, v356_fr, v355_fr, v354_fr, v353_fr, v352_fr, v351_fr, v350_fr, v349_fr, v348_fr, v347_fr, v346_fr, v345_fr, v344_fr, v343_fr, v147_fr, v146_fr, v145_fr, v144_fr, v143_fr, v142_fr, v141_fr, v140_fr, v139_fr, v138_fr, v137_fr, v136_fr, v135_fr, v134_fr, v133_fr, v132_fr, v131_fr, v130_fr, v206_fr, v205_fr, v204_fr, v203_fr, v202_fr, v201_fr, v200_fr, v199_fr, v198_fr, v197_fr, v196_fr, v195_fr, v194_fr, v193_fr, v192_fr, v191_fr, v190_fr, v189_fr, v188_fr, v187_fr, v186_fr, v185_fr, v184_fr, v183_fr, v182_fr, v181_fr, v180_fr, v179_fr, v178_fr, v177_fr, v176_fr, v175_fr, v174_fr, v173_fr, v172_fr, v171_fr, v170_fr, v169_fr, v168_fr, v167_fr, v166_fr, v165_fr, v164_fr, v328_fr, v327_fr, v326_fr, v325_fr, v324_fr, v323_fr, v322_fr, v329_fr, v330_fr, v331_fr, v332_fr, v338_fr, v340_fr, v341_fr, v342_fr],
+  en: [v358_en, v357_en, v356_en, v355_en, v354_en, v353_en, v352_en, v351_en, v350_en, v349_en, v348_en, v347_en, v346_en, v345_en, v344_en, v343_en, v147_en, v146_en, v145_en, v144_en, v143_en, v142_en, v141_en, v140_en, v139_en, v138_en, v137_en, v136_en, v135_en, v134_en, v133_en, v132_en, v131_en, v130_en, v206_en, v205_en, v204_en, v203_en, v202_en, v201_en, v200_en, v199_en, v198_en, v197_en, v196_en, v195_en, v194_en, v193_en, v192_en, v191_en, v190_en, v189_en, v188_en, v187_en, v186_en, v185_en, v184_en, v183_en, v182_en, v181_en, v180_en, v179_en, v178_en, v177_en, v176_en, v175_en, v174_en, v173_en, v172_en, v171_en, v170_en, v169_en, v168_en, v167_en, v166_en, v165_en, v164_en, v328_en, v327_en, v326_en, v325_en,
     {
       version: "v324",
       date: "2026-08-10",
@@ -5024,7 +5156,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
     v342_en,
     v340_en,
   ],
-  es: [v356_es, v355_es, v354_es, v353_es, v352_es, v351_es, v350_es, v349_es, v348_es, v347_es, v346_es, v345_es, v344_es, v343_es, v147_es, v146_es, v145_es, v144_es, v143_es, v142_es, v141_es, v140_es, v139_es, v138_es, v137_es, v136_es, v135_es, v134_es, v133_es, v132_es, v131_es, v130_es, v206_es, v205_es, v204_es, v203_es, v202_es, v201_es, v200_es, v199_es, v198_es, v197_es, v196_es, v195_es, v194_es, v193_es, v192_es, v191_es, v190_es, v189_es, v188_es, v187_es, v186_es, v185_es, v184_es, v183_es, v182_es, v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
+  es: [v358_es, v357_es, v356_es, v355_es, v354_es, v353_es, v352_es, v351_es, v350_es, v349_es, v348_es, v347_es, v346_es, v345_es, v344_es, v343_es, v147_es, v146_es, v145_es, v144_es, v143_es, v142_es, v141_es, v140_es, v139_es, v138_es, v137_es, v136_es, v135_es, v134_es, v133_es, v132_es, v131_es, v130_es, v206_es, v205_es, v204_es, v203_es, v202_es, v201_es, v200_es, v199_es, v198_es, v197_es, v196_es, v195_es, v194_es, v193_es, v192_es, v191_es, v190_es, v189_es, v188_es, v187_es, v186_es, v185_es, v184_es, v183_es, v182_es, v181_es, v180_es, v179_es, v178_es, v177_es, v176_es, v175_es, v174_es, v173_es, v172_es, v171_es, v170_es, v169_es, v168_es, v167_es, v166_es, v165_es, v164_es, v328_es, v327_es, v326_es, v325_es,
     {
       version: "v324",
       date: "2026-08-10",
@@ -5078,7 +5210,7 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
     v342_es,
     v340_es,
   ],
-  de: [v356_de, v355_de, v354_de, v353_de, v352_de, v351_de, v350_de, v349_de, v348_de, v347_de, v346_de, v345_de, v344_de, v343_de, v147_de, v146_de, v145_de, v144_de, v143_de, v142_de, v141_de, v140_de, v139_de, v138_de, v137_de, v136_de, v135_de, v134_de, v133_de, v132_de, v131_de, v130_de, v206_de, v205_de, v204_de, v203_de, v202_de, v201_de, v200_de, v199_de, v198_de, v197_de, v196_de, v195_de, v194_de, v193_de, v192_de, v191_de, v190_de, v189_de, v188_de, v187_de, v186_de, v185_de, v184_de, v183_de, v182_de, v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
+  de: [v358_de, v357_de, v356_de, v355_de, v354_de, v353_de, v352_de, v351_de, v350_de, v349_de, v348_de, v347_de, v346_de, v345_de, v344_de, v343_de, v147_de, v146_de, v145_de, v144_de, v143_de, v142_de, v141_de, v140_de, v139_de, v138_de, v137_de, v136_de, v135_de, v134_de, v133_de, v132_de, v131_de, v130_de, v206_de, v205_de, v204_de, v203_de, v202_de, v201_de, v200_de, v199_de, v198_de, v197_de, v196_de, v195_de, v194_de, v193_de, v192_de, v191_de, v190_de, v189_de, v188_de, v187_de, v186_de, v185_de, v184_de, v183_de, v182_de, v181_de, v180_de, v179_de, v178_de, v177_de, v176_de, v175_de, v174_de, v173_de, v172_de, v171_de, v170_de, v169_de, v168_de, v167_de, v166_de, v165_de, v164_de, v328_de, v327_de, v326_de, v325_de,
     {
       version: "v324",
       date: "2026-08-10",
@@ -5134,21 +5266,825 @@ export const CHANGELOG_BY_LANG: Record<string, ChangelogEntry[]> = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v357_fr);
-CHANGELOG_BY_LANG.en.unshift(v357_en);
-CHANGELOG_BY_LANG.es.unshift(v357_es);
-CHANGELOG_BY_LANG.de.unshift(v357_de);
-CHANGELOG_BY_LANG.fr.unshift(v358_fr);
-CHANGELOG_BY_LANG.en.unshift(v358_en);
-CHANGELOG_BY_LANG.es.unshift(v358_es);
-CHANGELOG_BY_LANG.de.unshift(v358_de);
-CHANGELOG_BY_LANG.fr.unshift(v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v359_en);
-CHANGELOG_BY_LANG.es.unshift(v359_es);
-CHANGELOG_BY_LANG.de.unshift(v359_de);
-CHANGELOG_BY_LANG.fr.unshift(v360_fr);
-CHANGELOG_BY_LANG.en.unshift(v360_en);
-CHANGELOG_BY_LANG.es.unshift(v360_es);
-CHANGELOG_BY_LANG.de.unshift(v360_de);
+const v359_fr: ChangelogEntry = {
+  version: "v1.8.15",
+  date: "2026-08-24",
+  title: "Intégrations Stripe, thèmes, RSS et polish",
+  items: [
+    "Icône SVG Valorant et GameIcon pour les jeux.",
+    "Boutons Démarrer du System passés en outline.",
+    "Alerte SystemHealthBanner corrigée (plus d'alerte jaune pour non configuré).",
+    "Palette Minecraft sur la carte Gaming.",
+    "Scrollbar noire renforcée (.no-scrollbar !important).",
+    "Bouton thème cyclique entre les thèmes premium.",
+    "Intégration du bouton de soutien Stripe (web, iOS, Android).",
+    "Page de retour post-paiement /dashboard?supported=true avec confettis.",
+    "Refonte du Lecteur RSS et ajout dans le Dock.",
+    "Correction de l'effet de couleur de l'icône météo.",
+    "Version v1.8.15.",
+  ],
+};
+
+const v359_en: ChangelogEntry = {
+  version: "v1.8.15",
+  date: "2026-08-24",
+  title: "Stripe, themes, RSS and polish",
+  items: [
+    "Valorant SVG icon and GameIcon for games.",
+    "System Start buttons switched to outline.",
+    "SystemHealthBanner alert fixed (no amber alert for unconfigured).",
+    "Minecraft palette on Gaming card.",
+    "Black scrollbar hardening (.no-scrollbar !important).",
+    "Theme button cycles through premium themes.",
+    "Stripe support button integration (web, iOS, Android).",
+    "Post-payment return page /dashboard?supported=true with confetti.",
+    "RSS reader redesign and Dock shortcut.",
+    "Weather icon color effect fix.",
+    "Version v1.8.15.",
+  ],
+};
+
+const v359_es: ChangelogEntry = {
+  version: "v1.8.15",
+  date: "2026-08-24",
+  title: "Integraciones Stripe, temas, RSS y pulido",
+  items: [
+    "Icono SVG de Valorant y GameIcon para juegos.",
+    "Botones Iniciar del Sistema en outline.",
+    "Alerta SystemHealthBanner corregida (sin alerta ámbar para no configurado).",
+    "Paleta Minecraft en la tarjeta Gaming.",
+    "Scrollbar negra reforzada (.no-scrollbar !important).",
+    "Botón de tema cambia entre los temas premium.",
+    "Integración del botón de apoyo Stripe (web, iOS, Android).",
+    "Página de retorno post-pago /dashboard?supported=true con confeti.",
+    "Rediseño del Lector RSS y acceso en el Dock.",
+    "Corrección del efecto de color del icono del tiempo.",
+    "Versión v1.8.15.",
+  ],
+};
+
+const v359_de: ChangelogEntry = {
+  version: "v1.8.15",
+  date: "2026-08-24",
+  title: "Stripe-Integration, Themes, RSS und Polish",
+  items: [
+    "Valorant-SVG-Icon und GameIcon für Spiele.",
+    "System-Start-Buttons auf Outline umgestellt.",
+    "SystemHealthBanner-Alert korrigiert (kein Amber-Alert für nicht konfiguriert).",
+    "Minecraft-Palette auf der Gaming-Karte.",
+    "Schwarze Scrollbar verstärkt (.no-scrollbar !important).",
+    "Theme-Button wechselt zwischen Premium-Themes.",
+    "Stripe-Support-Button-Integration (Web, iOS, Android).",
+    "Post-Zahlungs-Rückkehrseite /dashboard?supported=true mit Konfetti.",
+    "RSS-Leser überarbeitet und im Dock hinzugefügt.",
+    "Farb-Effekt des Wettersymbols korrigiert.",
+    "Version v1.8.15.",
+  ],
+};
+
+const v360_fr: ChangelogEntry = {
+  version: "v1.8.16",
+  date: "2026-08-24",
+  title: "Correction du crash du bouton météo et du clignotement du lecteur média",
+  items: [
+    "Correction du maximum de profondeur de mise à jour React dans WeatherDetailPopover.",
+    "Le ref de la popover météo utilise refs.setFloating de @floating-ui/react directement, évitant une boucle setState.",
+    "Ajout de clés uniques sur les createPortal de Popover, Modal, Select et CommandPalette.",
+    "Dédoublonnage défensif des notifications et des widgets du tableau de bord.",
+    "Correction du clignotement de la barre de progression du lecteur média : localProgress n’est resynchronisé sur nowPlaying.progressMs qu’au changement de piste (id).",
+    "Modal de remerciement post-don : fermeture uniquement via la croix (backdrop et Échap désactivés).",
+    "BootProvider saute l’écran de chargement quand l’URL contient ?supported=true (retour après un don Stripe).",
+    "Version v1.8.16.",
+  ],
+};
+
+const v360_en: ChangelogEntry = {
+  version: "v1.8.16",
+  date: "2026-08-24",
+  title: "Weather button crash and media player flicker fix",
+  items: [
+    "Fixed React maximum update depth exceeded in WeatherDetailPopover.",
+    "Weather popover ref now directly uses refs.setFloating from @floating-ui/react, removing a setState loop.",
+    "Added unique keys to Popover, Modal, Select and CommandPalette createPortals.",
+    "Defensive deduplication for notifications and dashboard widgets.",
+    "Fixed media player progress bar flickering: localProgress is only resynced to nowPlaying.progressMs on track change (id).",
+    "Post-donation thank-you modal can now only be closed via the X (backdrop and Escape disabled).",
+    "BootProvider skips the loading screen when the URL contains ?supported=true (Stripe donation return).",
+    "Version v1.8.16.",
+  ],
+};
+
+const v360_es: ChangelogEntry = {
+  version: "v1.8.16",
+  date: "2026-08-24",
+  title: "Corrección del bloqueo del botón del tiempo y del parpadeo del reproductor",
+  items: [
+    "Corrección del exceso de profundidad máxima de actualización de React en WeatherDetailPopover.",
+    "El ref de la ventana del tiempo ahora usa directamente refs.setFloating de @floating-ui/react, evitando un bucle de setState.",
+    "Claves únicas añadidas a los createPortal de Popover, Modal, Select y CommandPalette.",
+    "Deduplicación defensiva de notificaciones y widgets del panel de control.",
+    "Corrección del parpadeo de la barra de progreso del reproductor: localProgress solo se resincroniza con nowPlaying.progressMs al cambiar de pista (id).",
+    "El modal de agradecimiento post-donación ahora solo se cierra con la X (backdrop y Escape desactivados).",
+    "BootProvider omite la pantalla de carga cuando la URL contiene ?supported=true (vuelta tras donación Stripe).",
+    "Versión v1.8.16.",
+  ],
+};
+
+const v360_de: ChangelogEntry = {
+  version: "v1.8.16",
+  date: "2026-08-24",
+  title: "Absturz des Wetter-Buttons und Flackern des Mediaplayers behoben",
+  items: [
+    "Maximale React-Aktualisierungstiefe in WeatherDetailPopover behoben.",
+    "Der Wetter-Popover-Ref verwendet jetzt direkt refs.setFloating von @floating-ui/react und vermeidet so eine setState-Schleife.",
+    "Eindeutige Schlüssel für createPortal in Popover, Modal, Select und CommandPalette hinzugefügt.",
+    "Defensive Deduplizierung von Benachrichtigungen und Dashboard-Widgets.",
+    "Flackern der Fortschrittsleiste des Mediaplayers behoben: localProgress wird nur beim Titelwechsel (id) mit nowPlaying.progressMs resynchronisiert.",
+    "Post-Spende-Dankesmodal kann nur noch über das X geschlossen werden (Backdrop und Escape deaktiviert).",
+    "BootProvider überspringt den Ladebildschirm, wenn die URL ?supported=true enthält (Rückkehr nach Stripe-Spende).",
+    "Version v1.8.16.",
+  ],
+};
+
+const v361_fr: ChangelogEntry = {
+  version: "v1.8.17",
+  date: "2026-08-24",
+  title: "Refonte visuelle et polissage de l’encadrement UI",
+  items: [
+    "Tokens --panel-bg, --panel-border et --panel-blur harmonisés pour un rendu Liquid Glass uniforme.",
+    "Jointures TopBar / Sidebar / main aplaties pour un cadre continu.",
+    "Dock desktop en pilule (rounded-full) via .v8-dock.",
+    "Dynamic Island avec bordure plus fine, ombre plus douce et rounded-full.",
+    "Dock mobile rounded-full et bordures harmonisées.",
+    "BentoCard : séparateurs et icônes témoins à 8 % blanc, espacements grid gap-3.",
+    "StatusBar aligné sur les tokens du panel.",
+    "Version v1.8.17.",
+  ],
+};
+
+const v361_en: ChangelogEntry = {
+  version: "v1.8.17",
+  date: "2026-08-24",
+  title: "Visual rework and UI framing polish",
+  items: [
+    "Harmonized --panel-bg, --panel-border and --panel-blur tokens for a uniform Liquid Glass look.",
+    "Flattened TopBar / Sidebar / main joints for a continuous frame.",
+    "Desktop dock turned into a pill (rounded-full) via .v8-dock.",
+    "Dynamic Island with finer border, softer shadow and rounded-full.",
+    "Mobile dock rounded-full with harmonized borders.",
+    "BentoCard separators and header icons set to 8 % white, grid gap-3.",
+    "StatusBar aligned with panel tokens.",
+    "Version v1.8.17.",
+  ],
+};
+
+const v361_es: ChangelogEntry = {
+  version: "v1.8.17",
+  date: "2026-08-24",
+  title: "Rework visual y pulido del marco UI",
+  items: [
+    "Tokens --panel-bg, --panel-border y --panel-blur armonizados para un aspecto Liquid Glass uniforme.",
+    "Uniones TopBar / Sidebar / main aplanadas para un marco continuo.",
+    "Dock de escritorio en píldora (rounded-full) vía .v8-dock.",
+    "Dynamic Island con borde más fino, sombra más suave y rounded-full.",
+    "Dock móvil rounded-full con bordes armonizados.",
+    "BentoCard: separadores e iconos de encabezado al 8 % blanco, grid gap-3.",
+    "StatusBar alineado con los tokens del panel.",
+    "Versión v1.8.17.",
+  ],
+};
+
+const v361_de: ChangelogEntry = {
+  version: "v1.8.17",
+  date: "2026-08-24",
+  title: "Visuelles Rework und UI-Rahmen-Polish",
+  items: [
+    "Tokens --panel-bg, --panel-border und --panel-blur harmonisiert für ein einheitliches Liquid-Glass-Erscheinungsbild.",
+    "TopBar / Sidebar / main-Übergänge abgeflacht für einen durchgehenden Rahmen.",
+    "Desktop-Dock als Pille (rounded-full) über .v8-dock.",
+    "Dynamic Island mit feinerer Umrandung, weicherem Schatten und rounded-full.",
+    "Mobiles Dock rounded-full mit harmonisierten Rändern.",
+    "BentoCard: Trennlinien und Header-Icons auf 8 % Weiß gesetzt, grid gap-3.",
+    "StatusBar an Panel-Tokens ausgerichtet.",
+    "Version v1.8.17.",
+  ],
+};
+
+const v362_fr: ChangelogEntry = {
+  version: "v1.8.18",
+  date: "2026-08-24",
+  title: "Rework authentification et Dynamic Island",
+  items: [
+    "Rework du login : machine à états explicite, OTP 6 chiffres, anti-boucle, messages traduits.",
+    "Connexion qui attend la création/confirmation de session avant redirection.",
+    "Dynamic Island : plus d'ouverture auto au chargement, ouverture au clic/tap, masquage sans activité.",
+    "Arrêt du hover-to-expand et des timers de collapse.",
+    "Dynamic Island fixée en z-[60] au-dessus de la TopBar.",
+    "Version v1.8.18.",
+  ],
+};
+
+const v362_en: ChangelogEntry = {
+  version: "v1.8.18",
+  date: "2026-08-24",
+  title: "Authentication and Dynamic Island rework",
+  items: [
+    "Login rework: explicit state machine, 6-digit OTP, anti-loop, translated error messages.",
+    "Login waits for session creation and confirmation before redirecting.",
+    "Dynamic Island: no auto-open on load, opens on click/tap, hides when no activity.",
+    "Removed hover-to-expand and auto-collapse timers.",
+    "Dynamic Island set to fixed z-[60] above the TopBar.",
+    "Version v1.8.18.",
+  ],
+};
+
+const v362_es: ChangelogEntry = {
+  version: "v1.8.18",
+  date: "2026-08-24",
+  title: "Rework de autenticación y Dynamic Island",
+  items: [
+    "Rework del login: máquina de estados explícita, OTP de 6 cifras, anti-bucle, mensajes traducidos.",
+    "La conexión espera la creación/confirmación de sesión antes de redirigir.",
+    "Dynamic Island: sin apertura automática al cargar, se abre al tocar/clic, se oculta sin actividad.",
+    "Se eliminó el hover-to-expand y los temporizadores de cierre automático.",
+    "Dynamic Island fijada a z-[60] por encima de la TopBar.",
+    "Versión v1.8.18.",
+  ],
+};
+
+const v362_de: ChangelogEntry = {
+  version: "v1.8.18",
+  date: "2026-08-24",
+  title: "Rework von Authentifizierung und Dynamic Island",
+  items: [
+    "Login-Rework: explizite Zustandsmaschine, 6-stelliges OTP, Anti-Loop, übersetzte Fehlermeldungen.",
+    "Login wartet auf Erstellung/Bestätigung der Sitzung vor der Weiterleitung.",
+    "Dynamic Island: keine automatische Öffnung beim Laden, öffnet sich per Klick/Tipp, versteckt sich bei Inaktivität.",
+    "Hover-to-Expand und Auto-Collapse-Timer entfernt.",
+    "Dynamic Island auf fixed z-[60] über der TopBar gesetzt.",
+    "Version v1.8.18.",
+  ],
+};
+
+const v363_fr: ChangelogEntry = {
+  version: "v1.8.19",
+  date: "2026-08-24",
+  title: "Refonte Settings, Toasts et Design System",
+  items: [
+    "Tokenisation des toasts et des composants de base (Switch, Select).",
+    "Navigation Settings clavier, aria-current et tabindex roving.",
+    "Routing /settings/:section statique pour toutes les catégories.",
+    "Undo toast visuel sur changement de thème.",
+    "Barre de progression dans RichToast avec pause au survol.",
+    "Anti-spam par dedupKey pour éviter les piles de toasts.",
+    "Responsive Settings et safe areas iPhone / iPad.",
+    "Version v1.8.19.",
+  ],
+};
+
+const v363_en: ChangelogEntry = {
+  version: "v1.8.19",
+  date: "2026-08-24",
+  title: "Settings, Toasts and Design System rework",
+  items: [
+    "Tokenized toasts and base components (Switch, Select).",
+    "Keyboard-friendly Settings navigation with aria-current and roving tabindex.",
+    "Static routing /settings/:section for all categories.",
+    "Visual undo toast on theme change.",
+    "Progress bar in RichToast with hover pause.",
+    "dedupKey anti-spam to avoid toast piles.",
+    "Responsive Settings and iPhone / iPad safe areas.",
+    "Version v1.8.19.",
+  ],
+};
+
+const v363_es: ChangelogEntry = {
+  version: "v1.8.19",
+  date: "2026-08-24",
+  title: "Rework de Settings, Toasts y Design System",
+  items: [
+    "Tokenización de toasts y componentes base (Switch, Select).",
+    "Navegación Settings por teclado, aria-current y tabindex roving.",
+    "Routing estático /settings/:section para todas las categorías.",
+    "Toast de deshacer visual al cambiar de tema.",
+    "Barra de progreso en RichToast con pausa al pasar el cursor.",
+    "Anti-spam con dedupKey para evitar pilas de toasts.",
+    "Settings responsive y safe areas iPhone / iPad.",
+    "Versión v1.8.19.",
+  ],
+};
+
+const v363_de: ChangelogEntry = {
+  version: "v1.8.19",
+  date: "2026-08-24",
+  title: "Rework von Settings, Toasts und Design System",
+  items: [
+    "Tokenisierung der Toasts und Basis-Komponenten (Switch, Select).",
+    "Tastatur-Navigation für Settings mit aria-current und roving tabindex.",
+    "Statisches Routing /settings/:section für alle Kategorien.",
+    "Visueller Undo-Toast beim Themenwechsel.",
+    "Fortschrittsbalken in RichToast mit Pause beim Hover.",
+    "dedupKey Anti-Spam, um Toast-Stapel zu vermeiden.",
+    "Responsive Settings und iPhone / iPad Safe Areas.",
+    "Version v1.8.19.",
+  ],
+};
+
+const v364_fr: ChangelogEntry = {
+  version: "v1.8.20",
+  date: "2026-08-24",
+  title: "Audit boot et réduction du loading artificiel",
+  items: [
+    "Audit de BootProvider, AuthProvider et SettingsProvider.",
+    "Durée minimum artificielle du loader réduite de 1 800 ms à 600 ms.",
+    "Courbe de progress reparamétrée pour un démarrage plus rapide.",
+    "Timeout, erreur et hors ligne conservés.",
+    "Version v1.8.20.",
+  ],
+};
+
+const v364_en: ChangelogEntry = {
+  version: "v1.8.20",
+  date: "2026-08-24",
+  title: "Boot audit and artificial loading reduction",
+  items: [
+    "Audit of BootProvider, AuthProvider and SettingsProvider.",
+    "Minimum artificial loader duration reduced from 1,800 ms to 600 ms.",
+    "Progress curve reparametrized for faster boot.",
+    "Timeout, error and offline states preserved.",
+    "Version v1.8.20.",
+  ],
+};
+
+const v364_es: ChangelogEntry = {
+  version: "v1.8.20",
+  date: "2026-08-24",
+  title: "Auditoría de boot y reducción de carga artificial",
+  items: [
+    "Auditoría de BootProvider, AuthProvider y SettingsProvider.",
+    "Duración mínima artificial del loader reducida de 1 800 ms a 600 ms.",
+    "Curva de progreso reparametrizada para un inicio más rápido.",
+    "Timeout, error y estados sin conexión conservados.",
+    "Versión v1.8.20.",
+  ],
+};
+
+const v364_de: ChangelogEntry = {
+  version: "v1.8.20",
+  date: "2026-08-24",
+  title: "Boot-Audit und Reduktion künstlicher Ladezeit",
+  items: [
+    "Audit von BootProvider, AuthProvider und SettingsProvider.",
+    "Künstliche Mindestdauer des Loaders von 1.800 ms auf 600 ms reduziert.",
+    "Progress-Kurve für schnelleren Start reparametrisiert.",
+    "Timeout, Fehler und Offline-Zustände beibehalten.",
+    "Version v1.8.20.",
+  ],
+};
+
+const v365_fr: ChangelogEntry = {
+  version: "v1.8.21",
+  date: "2026-08-24",
+  title: "Tokenisation Design System",
+  items: [
+    "BentoCard : bordures et surfaces tokenisées.",
+    "Input : fond, bordures et état d'erreur tokenisés.",
+    "Modal : hover du bouton close tokenisé.",
+    "Version v1.8.21.",
+  ],
+};
+
+const v365_en: ChangelogEntry = {
+  version: "v1.8.21",
+  date: "2026-08-24",
+  title: "Design System tokenization",
+  items: [
+    "BentoCard: tokenized borders and surfaces.",
+    "Input: tokenized background, borders and error state.",
+    "Modal: tokenized close button hover.",
+    "Version v1.8.21.",
+  ],
+};
+
+const v365_es: ChangelogEntry = {
+  version: "v1.8.21",
+  date: "2026-08-24",
+  title: "Tokenización del Design System",
+  items: [
+    "BentoCard: bordes y superficies tokenizadas.",
+    "Input: fondo, bordes y estado de error tokenizados.",
+    "Modal: hover del botón de cierre tokenizado.",
+    "Versión v1.8.21.",
+  ],
+};
+
+const v365_de: ChangelogEntry = {
+  version: "v1.8.21",
+  date: "2026-08-24",
+  title: "Design-System-Tokenisierung",
+  items: [
+    "BentoCard: tokenisierte Ränder und Oberflächen.",
+    "Input: tokenisierter Hintergrund, Ränder und Fehlerzustand.",
+    "Modal: tokenisierter Hover für Schließen-Button.",
+    "Version v1.8.21.",
+  ],
+};
+
+const v371_fr: ChangelogEntry = {
+  version: "v1.9.0",
+  date: "2026-08-25",
+  title: "Upload globale et vue Dynamic Island",
+  items: [
+    "UploadQueueProvider : file d'attente globale pour les fichiers.",
+    "Hook useUploadQueue accessible depuis n'importe quelle vue.",
+    "app/drop : les fichiers déposés passent par la queue.",
+    "UploadIslandView : vue étendue de la Dynamic Island avec états, retry et clear.",
+    "Compact upload : compteurs en cours, terminés et erreurs.",
+    "E2E a11y, ui-harmony et command-palette restent verts.",
+    "Version v1.9.0.",
+  ],
+};
+
+const v371_en: ChangelogEntry = {
+  version: "v1.9.0",
+  date: "2026-08-25",
+  title: "Global upload queue and Dynamic Island view",
+  items: [
+    "UploadQueueProvider: global upload queue for files.",
+    "useUploadQueue hook available from any view.",
+    "app/drop: dropped files now go through the queue.",
+    "UploadIslandView: expanded Dynamic Island view with states, retry and clear.",
+    "Upload compact pill: in-progress, completed and error counters.",
+    "E2E a11y, ui-harmony and command-palette suites remain green.",
+    "Version v1.9.0.",
+  ],
+};
+
+const v371_es: ChangelogEntry = {
+  version: "v1.9.0",
+  date: "2026-08-25",
+  title: "Cola de subida global y vista en Dynamic Island",
+  items: [
+    "UploadQueueProvider: cola de espera global para archivos.",
+    "Hook useUploadQueue accesible desde cualquier vista.",
+    "app/drop: los archivos arrastrados pasan por la cola.",
+    "UploadIslandView: vista extendida de Dynamic Island con estados, reintentar y limpiar.",
+    "Compacto de subida: contadores en curso, terminados y errores.",
+    "Pruebas E2E a11y, ui-harmony y command-palette siguen verdes.",
+    "Versión v1.9.0.",
+  ],
+};
+
+const v371_de: ChangelogEntry = {
+  version: "v1.9.0",
+  date: "2026-08-25",
+  title: "Globale Upload-Warteschlange und Dynamic-Island-Ansicht",
+  items: [
+    "UploadQueueProvider: globale Warteschlange für Dateien.",
+    "useUploadQueue-Hook aus jeder Ansicht verfügbar.",
+    "app/drop: abgelegte Dateien laufen über die Warteschlange.",
+    "UploadIslandView: erweiterte Dynamic-Island-Ansicht mit Status, Retry und Clear.",
+    "Kompakte Upload-Anzeige: laufende, abgeschlossene und fehlerhafte Zähler.",
+    "E2E-Tests a11y, ui-harmony und command-palette bleiben grün.",
+    "Version v1.9.0.",
+  ],
+};
+
+const v372_fr: ChangelogEntry = {
+  version: "v1.9.1",
+  date: "2026-08-25",
+  title: "Reconstruction du Control Center / Settings",
+  items: [
+    "Accessibilité : labels ARIA, rôles search/region, aria-live sur les statuts de synchro, aria-pressed sur les contrôles, navigation clavier complète.",
+    "Responsive mobile/iPad : safe-area insets, cibles tactiles >= 44 px, header pleine largeur, barre de sauvegarde flottante sécurisée.",
+    "Navigation par catégories sans rechargement, startTransition, transition subtile et suppression du Suspense inutile.",
+    "Pile d'historique globale avec undo/redo (Ctrl+Z, Ctrl+Y) et rollback en cas d'échec de persistence.",
+    "Application immédiate et sans flash des thèmes, accents et densités ; respect de prefers-reduced-motion.",
+    "Lint, tsc, test:unit et build passants.",
+    "Version v1.9.1.",
+  ],
+};
+
+const v372_en: ChangelogEntry = {
+  version: "v1.9.1",
+  date: "2026-08-25",
+  title: "Control Center / Settings rebuild",
+  items: [
+    "Accessibility: ARIA labels, search/region roles, aria-live sync status, aria-pressed controls, full keyboard navigation.",
+    "Mobile/iPad responsive: safe-area insets, touch targets >= 44 px, full-width header, safe floating save bar.",
+    "Category navigation without full reload, startTransition, subtle transition, removed unnecessary Suspense.",
+    "Global history stack with undo/redo (Ctrl+Z, Ctrl+Y) and rollback on persistence failure.",
+    "Instant, flash-free theme, accent and density updates; respects prefers-reduced-motion.",
+    "Lint, tsc, test:unit and build passing.",
+    "Version v1.9.1.",
+  ],
+};
+
+const v372_es: ChangelogEntry = {
+  version: "v1.9.1",
+  date: "2026-08-25",
+  title: "Reconstrucción del Control Center / Ajustes",
+  items: [
+    "Accesibilidad: etiquetas ARIA, roles search/region, aria-live en estado de sincronización, aria-pressed en controles, navegación completa por teclado.",
+    "Responsive móvil/iPad: insets de área segura, targets táctiles >= 44 px, header de ancho completo, barra flotante de guardado segura.",
+    "Navegación por categorías sin recarga completa, startTransition, transición sutil y eliminación del Suspense innecesario.",
+    "Pila de historial global con undo/redo (Ctrl+Z, Ctrl+Y) y rollback ante fallo de persistencia.",
+    "Aplicación inmediata y sin parpadeo de temas, acentos y densidades; respeta prefers-reduced-motion.",
+    "Lint, tsc, test:unit y build correctos.",
+    "Versión v1.9.1.",
+  ],
+};
+
+const v372_de: ChangelogEntry = {
+  version: "v1.9.1",
+  date: "2026-08-25",
+  title: "Control Center / Settings Rebuild",
+  items: [
+    "Barrierefreiheit: ARIA-Labels, search/region-Rollen, aria-live für Sync-Status, aria-pressed für Steuerelemente, vollständige Tastaturnavigation.",
+    "Mobiles/iPad-Responsive: Safe-Area-Insets, Touch-Targets >= 44 px, Header in voller Breite, sichere schwebende Speicherleiste.",
+    "Kategorienavigation ohne vollständiges Neuladen, startTransition, subtile Transition, unnötiges Suspense entfernt.",
+    "Globaler Verlaufs-Stack mit Undo/Redo (Strg+Z, Strg+Y) und Rollback bei Persistenzfehlern.",
+    "Sofortige, flimmerfreie Aktualisierung von Theme, Akzent und Dichte; beachtet prefers-reduced-motion.",
+    "Lint, tsc, test:unit und Build erfolgreich.",
+    "Version v1.9.1.",
+  ],
+};
+
+const v369_fr: ChangelogEntry = {
+  version: "v1.8.25",
+  date: "2026-08-24",
+  title: "Rework Dynamic Island",
+  items: [
+    "Priorité et verrou utilisateur.",
+    "Vue synchronisation intégrée.",
+    "Safe areas et largeurs mobiles.",
+    "Interactions clavier.",
+    "z-index sous les modals.",
+    "Version v1.8.25.",
+  ],
+};
+
+const v369_en: ChangelogEntry = {
+  version: "v1.8.25",
+  date: "2026-08-24",
+  title: "Dynamic Island rework",
+  items: [
+    "Priority and user lock.",
+    "Integrated sync view.",
+    "Safe areas and mobile widths.",
+    "Keyboard interactions.",
+    "z-index below modals.",
+    "Version v1.8.25.",
+  ],
+};
+
+const v369_es: ChangelogEntry = {
+  version: "v1.8.25",
+  date: "2026-08-24",
+  title: "Rework de Dynamic Island",
+  items: [
+    "Prioridad y bloqueo de usuario.",
+    "Vista de sincronización integrada.",
+    "Safe areas y anchos móviles.",
+    "Interacciones de teclado.",
+    "z-index bajo modals.",
+    "Versión v1.8.25.",
+  ],
+};
+
+const v369_de: ChangelogEntry = {
+  version: "v1.8.25",
+  date: "2026-08-24",
+  title: "Dynamic Island Rework",
+  items: [
+    "Priorität und Benutzer-Sperre.",
+    "Integrierte Sync-Ansicht.",
+    "Safe Areas und mobile Breiten.",
+    "Tastatur-Interaktionen.",
+    "z-index unter Modals.",
+    "Version v1.8.25.",
+  ],
+};
+
+const v370_fr: ChangelogEntry = {
+  version: "v1.9.0",
+  date: "2026-08-25",
+  title: "Bento Home, command palette et sidebar flottante",
+  items: [
+    "Quick actions depuis le Hero (tâche, note, focus, brain, upload).",
+    "Synthèse contextuelle et suggestions actionnables dans Brain.",
+    "Dynamic Island : états explicites IDLE / COMPACT / EXPANDED / INTERACTIVE.",
+    "Command palette : scroll automatique de l'item actif et navigation clavier affinée.",
+    "Sidebar flottante en verre avec la variante floating.",
+    "E2E a11y, ui-harmony et command-palette passent au vert.",
+    "Version v1.9.0.",
+  ],
+};
+
+const v370_en: ChangelogEntry = {
+  version: "v1.9.0",
+  date: "2026-08-25",
+  title: "Bento Home, command palette, and floating sidebar",
+  items: [
+    "Home quick actions from the Hero (task, note, focus, brain, upload).",
+    "Contextual synthesis and actionable suggestions in Brain.",
+    "Dynamic Island: explicit IDLE / COMPACT / EXPANDED / INTERACTIVE states.",
+    "Command palette: automatic scroll for active item and refined keyboard navigation.",
+    "Floating glass sidebar using the floating variant.",
+    "E2E a11y, ui-harmony, and command-palette suites pass.",
+    "Version v1.9.0.",
+  ],
+};
+
+const v370_es: ChangelogEntry = {
+  version: "v1.9.0",
+  date: "2026-08-25",
+  title: "Bento Home, paleta de comandos y barra lateral flotante",
+  items: [
+    "Acciones rápidas en el Hero (tarea, nota, focus, brain, upload).",
+    "Síntesis contextual y sugerencias accionables en Brain.",
+    "Dynamic Island: estados explícitos IDLE / COMPACT / EXPANDED / INTERACTIVE.",
+    "Paleta de comandos: desplazamiento automático del elemento activo y navegación por teclado refinada.",
+    "Barra lateral flotante de cristal con la variante floating.",
+    "Pruebas E2E a11y, ui-harmony y command-palette pasan.",
+    "Versión v1.9.0.",
+  ],
+};
+
+const v370_de: ChangelogEntry = {
+  version: "v1.9.0",
+  date: "2026-08-25",
+  title: "Bento-Home, Befehlspalette und schwebende Sidebar",
+  items: [
+    "Schnellaktionen vom Hero (Aufgabe, Notiz, Focus, Brain, Upload).",
+    "Kontextbezogene Synthese und umsetzbare Vorschläge in Brain.",
+    "Dynamic Island: explizite Zustände IDLE / COMPACT / EXPANDED / INTERACTIVE.",
+    "Befehlspalette: automatisches Scrollen zum aktiven Element und verfeinerte Tastaturnavigation.",
+    "Schwebende Glas-Sidebar mit der Floating-Variante.",
+    "E2E-Tests a11y, ui-harmony und command-palette bestehen.",
+    "Version v1.9.0.",
+  ],
+};
+
+const v368_fr: ChangelogEntry = {
+  version: "v1.8.24",
+  date: "2026-08-24",
+  title: "Sync session multi-onglet",
+  items: [
+    "Écoute storage pour synchroniser connexion/déconnexion entre onglets.",
+    "Re-résolution de session si remember token change.",
+    "Version v1.8.24.",
+  ],
+};
+
+const v368_en: ChangelogEntry = {
+  version: "v1.8.24",
+  date: "2026-08-24",
+  title: "Cross-tab session sync",
+  items: [
+    "Listen to storage events to sync login/logout across tabs.",
+    "Re-resolve session when remember token changes.",
+    "Version v1.8.24.",
+  ],
+};
+
+const v368_es: ChangelogEntry = {
+  version: "v1.8.24",
+  date: "2026-08-24",
+  title: "Sincronización de sesión entre pestañas",
+  items: [
+    "Escucha eventos storage para sincronizar login/logout.",
+    "Re-resolución de sesión si remember token cambia.",
+    "Versión v1.8.24.",
+  ],
+};
+
+const v368_de: ChangelogEntry = {
+  version: "v1.8.24",
+  date: "2026-08-24",
+  title: "Sitzungs-Sync über Tabs",
+  items: [
+    "Storage-Events für Login/Logout-Sync über Tabs.",
+    "Session neu auflösen bei Änderung des Remember-Tokens.",
+    "Version v1.8.24.",
+  ],
+};
+
+const v367_fr: ChangelogEntry = {
+  version: "v1.8.23",
+  date: "2026-08-24",
+  title: "Rework authentification ETHONE",
+  items: [
+    "OTP natif Supabase, anti-boucle et session confirmée.",
+    "Passkey via supabase.auth.verifyOtp (magiclink).",
+    "Remember-me avec vrai refresh_token.",
+    "Logs diagnostiques auth en dev.",
+    "Responsive login amélioré.",
+    "Tests E2E Playwright passants.",
+    "Version v1.8.23.",
+  ],
+};
+
+const v367_en: ChangelogEntry = {
+  version: "v1.8.23",
+  date: "2026-08-24",
+  title: "ETHONE authentication rework",
+  items: [
+    "Native Supabase OTP, anti-loop and confirmed session.",
+    "Passkey via supabase.auth.verifyOtp (magiclink).",
+    "Remember-me with real refresh_token.",
+    "Auth diagnostic logs in dev.",
+    "Improved login responsiveness.",
+    "Passing Playwright E2E tests.",
+    "Version v1.8.23.",
+  ],
+};
+
+const v367_es: ChangelogEntry = {
+  version: "v1.8.23",
+  date: "2026-08-24",
+  title: "Rework de autenticación ETHONE",
+  items: [
+    "OTP nativo de Supabase, anti-bucle y sesión confirmada.",
+    "Passkey vía supabase.auth.verifyOtp (magiclink).",
+    "Remember-me con refresh_token real.",
+    "Logs de diagnóstico de auth en dev.",
+    "Responsive de login mejorado.",
+    "Tests E2E Playwright pasando.",
+    "Versión v1.8.23.",
+  ],
+};
+
+const v367_de: ChangelogEntry = {
+  version: "v1.8.23",
+  date: "2026-08-24",
+  title: "ETHONE-Authentifizierungs-Rework",
+  items: [
+    "Natives Supabase-OTP, Anti-Schleife und bestätigte Sitzung.",
+    "Passkey über supabase.auth.verifyOtp (magiclink).",
+    "Remember-me mit echtem refresh_token.",
+    "Auth-Diagnose-Logs in dev.",
+    "Verbessertes Login-Responsive.",
+    "Bestandene Playwright-E2E-Tests.",
+    "Version v1.8.23.",
+  ],
+};
+
+const v366_fr: ChangelogEntry = {
+  version: "v1.8.22",
+  date: "2026-08-24",
+  title: "Fix OTP et session remember-me",
+  items: [
+    "verifyOtp via supabase.auth.verifyOtp.",
+    "Vrai refresh_token pour la récupération remember me.",
+    "Suppression du refresh token aléatoire.",
+    "Login page utilise useAuth().signInOtp et verifyOtp.",
+    "Version v1.8.22.",
+  ],
+};
+
+const v366_en: ChangelogEntry = {
+  version: "v1.8.22",
+  date: "2026-08-24",
+  title: "OTP and remember-me session fix",
+  items: [
+    "verifyOtp via supabase.auth.verifyOtp.",
+    "Real refresh_token for remember-me recovery.",
+    "Removed random refresh token.",
+    "Login page uses useAuth().signInOtp and verifyOtp.",
+    "Version v1.8.22.",
+  ],
+};
+
+const v366_es: ChangelogEntry = {
+  version: "v1.8.22",
+  date: "2026-08-24",
+  title: "Fix de OTP y sesión remember-me",
+  items: [
+    "verifyOtp vía supabase.auth.verifyOtp.",
+    "refresh_token real para recuperar remember me.",
+    "Eliminación del refresh token aleatorio.",
+    "Login usa useAuth().signInOtp y verifyOtp.",
+    "Versión v1.8.22.",
+  ],
+};
+
+const v366_de: ChangelogEntry = {
+  version: "v1.8.22",
+  date: "2026-08-24",
+  title: "OTP- und Remember-Me-Session-Fix",
+  items: [
+    "verifyOtp über supabase.auth.verifyOtp.",
+    "Echter refresh_token für Remember-Me-Wiederherstellung.",
+    "Zufälliger Refresh-Token entfernt.",
+    "Login-Seite nutzt useAuth().signInOtp und verifyOtp.",
+    "Version v1.8.22.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v375_fr, v374_fr, v373_fr, v372_fr, v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v375_en, v374_en, v373_en, v372_en, v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v375_es, v374_es, v373_es, v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v375_de, v374_de, v373_de, v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

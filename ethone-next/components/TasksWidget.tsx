@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Plus, CheckSquare } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { type Item } from "@/lib/hooks/useItems";
@@ -37,14 +38,21 @@ export type TasksWidgetProps = {
   scrollable?: boolean;
 };
 
-export default function TasksWidget({ className = "", data, scrollable = true }: TasksWidgetProps) {
+const TasksWidget = memo(function TasksWidget({ className = "", data, scrollable = true }: TasksWidgetProps) {
   const i18n = useI18n();
+  const router = useRouter();
+  const handleOpenTasks = useCallback(() => { router.push("/tasks"); }, [router]);
   const { error: showError, notify } = useToast();
   const own = useCloudTasks();
 
   const { items, loading, create, update, remove } = data ?? own;
 
   const [newTaskTitle, setNewTaskTitle] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleFocusInput = useCallback(() => {
+    inputRef.current?.focus();
+  }, []);
 
   useEffect(() => {
     indexSpotlightItems(
@@ -68,47 +76,81 @@ export default function TasksWidget({ className = "", data, scrollable = true }:
     return { total, done, open, percentage };
   }, [items]);
 
-  async function addTask(title: string) {
-    if (!title.trim()) return;
-    try {
-      await create({
-        title,
-        body: "",
-        done: false,
-        data: { category: "Général", priority: "medium" as TaskPriority },
-      });
-      setNewTaskTitle("");
-      notify.taskAdded(title);
-    } catch {
-      showError(i18n("error", "Erreur"));
-    }
-  }
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewTaskTitle(e.target.value);
+  }, []);
 
-  async function toggleTask(id: string, done: boolean) {
-    try {
-      await update(id, { done: !done });
-    } catch {
-      showError(i18n("error", "Erreur"));
-    }
-  }
+  const addTask = useCallback(
+    async (title: string) => {
+      if (!title.trim()) return;
+      try {
+        await create({
+          title,
+          body: "",
+          done: false,
+          data: { category: "Général", priority: "medium" as TaskPriority },
+        });
+        setNewTaskTitle("");
+        notify.taskAdded(title);
+      } catch {
+        showError(i18n("error", "Erreur"));
+      }
+    },
+    [create, i18n, notify, showError]
+  );
 
-  async function deleteTask(id: string) {
-    try {
-      await remove(id);
-      notify.taskDeleted();
-    } catch {
-      showError(i18n("error", "Erreur"));
-    }
-  }
+  const toggleTask = useCallback(
+    async (id: string, done: boolean) => {
+      try {
+        await update(id, { done: !done });
+      } catch {
+        showError(i18n("error", "Erreur"));
+      }
+    },
+    [i18n, showError, update]
+  );
 
-  const badge = (
-    <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-2.5 py-1 text-[11px] font-mono font-medium text-[var(--accent-primary)]">
-      {stats.done} / {stats.total} {i18n("done", "terminées")}
-    </span>
+  const deleteTask = useCallback(
+    async (id: string) => {
+      try {
+        await remove(id);
+        notify.taskDeleted();
+      } catch {
+        showError(i18n("error", "Erreur"));
+      }
+    },
+    [i18n, notify, remove, showError]
+  );
+
+  const handleFormSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      void addTask(newTaskTitle);
+    },
+    [addTask, newTaskTitle]
+  );
+
+  const badge = useMemo(
+    () => (
+      <span className="rounded-full border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-2.5 py-1 text-[11px] font-mono font-medium text-[var(--accent-primary)]">
+        {stats.done} / {stats.total} {i18n("done", "terminées")}
+      </span>
+    ),
+    [i18n, stats.done, stats.total]
   );
 
   return (
-    <BentoCard className={cn("h-full", className)} noHeader scrollable={scrollable}>
+    <BentoCard
+      title={i18n("myTasks", "Mes Tâches")}
+      icon="tasks"
+      className={cn("h-full", className)}
+      noHeader
+      scrollable={scrollable}
+      state={loading ? "loading" : undefined}
+      stateMessage={items.length === 0 ? i18n("tasksEmpty", "Aucune tâche pour le moment") : undefined}
+      onAction={items.length === 0 ? handleOpenTasks : undefined}
+      actionLabel={i18n("addTask", "Ajouter une tâche")}
+    >
       <div className={cn("flex flex-col gap-4", scrollable ? "h-full min-h-0 overflow-hidden" : "h-full justify-between")}>
         {/* Header */}
         <div className="shrink-0 flex items-start justify-between gap-3">
@@ -116,7 +158,7 @@ export default function TasksWidget({ className = "", data, scrollable = true }:
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] shadow-[0_0_12px_var(--glow-color)]">
               <CheckSquare className="h-4 w-4" />
             </span>
-            <h3 className="text-sm font-bold tracking-wide text-white">
+            <h3 className="text-sm font-bold tracking-wide text-[var(--text-primary)]">
               {i18n("myTasks", "Mes Tâches")}
             </h3>
           </div>
@@ -124,7 +166,7 @@ export default function TasksWidget({ className = "", data, scrollable = true }:
         </div>
 
         <div className="shrink-0 w-full">
-          <div className="h-1 w-full overflow-hidden rounded-full bg-white/[0.04]">
+          <div className="h-1 w-full overflow-hidden rounded-full bg-[var(--text-primary)]/[0.04]">
             <div
               className="h-full rounded-full bg-[var(--accent-primary)] transition-all duration-300"
               style={{ width: `${stats.percentage}%` }}
@@ -133,17 +175,12 @@ export default function TasksWidget({ className = "", data, scrollable = true }:
         </div>
 
         {/* Quick add */}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            addTask(newTaskTitle);
-          }}
-          className="flex shrink-0 items-center gap-2"
-        >
+        <form onSubmit={handleFormSubmit} className="flex shrink-0 items-center gap-2">
           <Input
+            ref={inputRef}
             type="text"
             value={newTaskTitle}
-            onChange={(e) => setNewTaskTitle(e.target.value)}
+            onChange={handleInputChange}
             placeholder={i18n("tasksPlaceholder", "Ajouter une tâche...")}
             data-testid="new-task-input"
             inputSize="compact"
@@ -155,7 +192,7 @@ export default function TasksWidget({ className = "", data, scrollable = true }:
             className={`flex shrink-0 items-center justify-center rounded-lg p-2 text-[var(--background)] font-bold transition-all active:scale-95 ${
               newTaskTitle.trim()
                 ? "bg-[var(--accent-primary)] hover:bg-[var(--accent-primary)] shadow-md"
-                : "cursor-not-allowed bg-[var(--surface-raised)] text-[var(--muted)]"
+                : "cursor-not-allowed bg-[var(--surface-raised)] text-[var(--text-muted)]"
             }`}
           >
             <Plus className="h-4 w-4" />
@@ -169,9 +206,12 @@ export default function TasksWidget({ className = "", data, scrollable = true }:
           loading={loading}
           onToggle={toggleTask}
           onDelete={deleteTask}
+          onNewTask={handleFocusInput}
           scrollable={scrollable}
         />
       </div>
     </BentoCard>
   );
-}
+});
+
+export default TasksWidget;

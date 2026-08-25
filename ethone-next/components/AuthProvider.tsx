@@ -9,6 +9,7 @@ import {
 } from "react";
 import { supabase } from "@/lib/supabase";
 import { fetchWorker } from "@/lib/api";
+import { authLog } from "@/lib/auth-log";
 import { Session, User } from "@supabase/supabase-js";
 
 type AuthContextValue = {
@@ -18,7 +19,12 @@ type AuthContextValue = {
   error: Error | null;
   isOnline: boolean;
   signInOtp: (email: string) => Promise<{ error?: Error }>;
-  verifyOtp: (email: string, code: string) => Promise<{ error?: Error }>;
+  verifyOtp: (
+    email: string,
+    code: string,
+    rememberMe?: boolean,
+    type?: "email" | "magiclink" | "recovery"
+  ) => Promise<{ error?: Error }>;
   signInPassword: (email: string, password: string) => Promise<{ error?: Error }>;
   signInWithOAuth: (provider: "google" | "github") => Promise<{ error?: Error; url?: string | null }>;
   signUp: (email: string, password: string, username: string) => Promise<{ error?: Error; session?: Session }>;
@@ -35,7 +41,7 @@ export function useAuth() {
   return value;
 }
 
-const SESSION_TIMEOUT_MS = 8_000;
+const SESSION_TIMEOUT_MS = 6_000;
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
@@ -45,6 +51,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const [isOnline, setIsOnline] = useState(true);
 
   async function resolveSession() {
+    authLog("resolveSession", "start");
     let settled = false;
     const timeout = new Promise<never>((_, reject) =>
       setTimeout(() => {
@@ -59,7 +66,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       const savedToken = localStorage.getItem("ethone-remember-token");
       const savedRefresh = localStorage.getItem("ethone-remember-refresh");
       const expiresAt = Number(localStorage.getItem("ethone-remember-expires") || "0");
-      const authType = localStorage.getItem("ethone-auth-type") || "otp";
 
       if (!savedToken || Date.now() >= expiresAt) {
         setSession(null);
@@ -67,11 +73,13 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      if (authType === "password" && savedRefresh) {
+      if (savedRefresh) {
+        authLog("restoreSession", "from storage");
         const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession({
           refresh_token: savedRefresh,
         });
         if (!refreshError && refreshData.session) {
+          authLog("Session restored");
           localStorage.setItem("ethone-remember-token", refreshData.session.access_token);
           localStorage.setItem("ethone-remember-refresh", refreshData.session.refresh_token);
           setSession(refreshData.session);
@@ -81,21 +89,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      const refreshToken = typeof crypto !== "undefined" && "randomUUID" in crypto
-        ? crypto.randomUUID()
-        : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-      const { data: setData, error: sessionError } = await supabase.auth.setSession({
-        access_token: savedToken,
-        refresh_token: refreshToken,
-      });
-      if (!sessionError && setData.session) {
-        setSession(setData.session);
-        setUser(setData.session.user);
-        setError(null);
-      } else {
-        setSession(null);
-        setUser(null);
-      }
+      setSession(null);
+      setUser(null);
     }
 
     try {
@@ -109,6 +104,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         timeout,
       ]);
       if (data.session) {
+        authLog("Session detected");
         setSession(data.session);
         setUser(data.session.user);
         setError(null);
@@ -138,6 +134,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, newSession) => {
+        authLog("Auth state changed", _event);
         setSession(newSession);
         setUser(newSession?.user ?? null);
         setLoading(false);
@@ -147,10 +144,22 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
 
+    function handleStorage(event: StorageEvent) {
+      if (event.key !== "ethone-remember-token" && event.key !== "ethone-remember-me") return;
+      if (!event.newValue) {
+        setSession(null);
+        setUser(null);
+        setLoading(false);
+      } else {
+        resolveSession();
+      }
+    }
+
     if (typeof window !== "undefined") {
       setIsOnline(navigator.onLine);
       window.addEventListener("online", handleOnline);
       window.addEventListener("offline", handleOffline);
+      window.addEventListener("storage", handleStorage);
     }
 
     return () => {
@@ -158,6 +167,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       if (typeof window !== "undefined") {
         window.removeEventListener("online", handleOnline);
         window.removeEventListener("offline", handleOffline);
+        window.removeEventListener("storage", handleStorage);
       }
     };
   }, []);
@@ -168,6 +178,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function signInOtp(email: string) {
+    authLog("OTP requested");
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: { shouldCreateUser: true },
@@ -175,16 +186,37 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error ?? undefined };
   }
 
-  async function verifyOtp(email: string, code: string) {
+  async function verifyOtp(
+    email: string,
+    code: string,
+    rememberMe = false,
+    type: "email" | "magiclink" | "recovery" = "email"
+  ) {
+    authLog("OTP verification started");
     const { data, error } = await supabase.auth.verifyOtp({
       email,
       token: code,
-      type: "email",
+      type,
     });
     if (data.session) {
+      authLog("OTP verification result", "success");
       setSession(data.session);
       setUser(data.session.user);
+      if (rememberMe) {
+        localStorage.setItem("ethone-remember-me", "true");
+        localStorage.setItem("ethone-remember-token", data.session.access_token);
+        localStorage.setItem("ethone-remember-refresh", data.session.refresh_token);
+        localStorage.setItem("ethone-remember-expires", String((data.session.expires_at ?? Date.now() / 1000 + 8 * 60 * 60) * 1000));
+        localStorage.setItem("ethone-auth-type", "otp");
+      } else {
+        localStorage.removeItem("ethone-remember-me");
+        localStorage.removeItem("ethone-remember-token");
+        localStorage.removeItem("ethone-remember-refresh");
+        localStorage.removeItem("ethone-remember-expires");
+        localStorage.removeItem("ethone-auth-type");
+      }
     }
+    if (error) authLog("OTP verification result", "error");
     return { error: error ?? undefined };
   }
 

@@ -1,15 +1,17 @@
 "use client";
 
 import { useId, useMemo } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Check, Moon, Sun, Sparkles } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { isNativeAndroid } from "@/lib/android";
 import { Icon as IconifyIcon } from "@iconify/react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useSettingsForm } from "./SettingsFormContext";
+import { useToast } from "@/components/ToastProvider";
 import { ACCENTS } from "@/components/SettingsProvider";
 import { type Settings, DEFAULTS } from "@/lib/settings";
+import { applyAccent } from "@/lib/theme-engine";
 import BentoCard from "@/components/ui/BentoCard";
 import PremiumThemePicker from "./PremiumThemePicker";
 import Switch from "@/components/Switch";
@@ -114,12 +116,12 @@ type RowProps = {
 
 function SettingsRow({ label, description, children }: RowProps) {
   return (
-    <div className="flex flex-col gap-2 border-b border-[var(--text-primary)]/[0.04] py-3 last:border-none sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-      <div className="flex-1">
+    <div className="flex flex-col gap-2 border-b border-[var(--border-subtle)] py-3 last:border-none sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+      <div className="flex-1 min-w-0">
         <h4 className="text-xs font-semibold text-[var(--text-primary)]">{label}</h4>
         {description && <p className="text-[11px] text-[var(--text-muted)]">{description}</p>}
       </div>
-      <div className="flex items-center justify-end gap-2">{children}</div>
+      <div className="flex items-center justify-start gap-2 sm:justify-end">{children}</div>
     </div>
   );
 }
@@ -128,9 +130,39 @@ export default function AppearanceSettings() {
   const i18n = useI18n();
   const { settings } = useSettings();
   const form = useSettingsForm();
+  const { show, dismiss } = useToast();
   const colorInputId = useId();
+  const reduce = useReducedMotion();
 
   const handleChange = <K extends keyof Settings>(key: K, value: Settings[K]) => {
+    if (typeof document !== "undefined" && (key === "accentColor" || key === "customAccent")) {
+      const nextAccentColor = key === "accentColor" ? String(value) : settings.accentColor;
+      const nextCustomAccent = key === "customAccent" ? String(value) : settings.customAccent;
+      const hex = nextAccentColor === "custom" ? nextCustomAccent : (ACCENTS[nextAccentColor] || nextCustomAccent);
+      applyAccent(document.documentElement, hex);
+    }
+
+    if (key === "theme" && value !== settings.theme) {
+      const previousTheme = settings.theme;
+      form.updateInstant(key, value);
+      let toastId = "";
+      toastId = show({
+        type: "info",
+        icon: <Sparkles className="h-5 w-5" />,
+        title: i18n("themeChanged", "Thème modifié"),
+        description: i18n("themeChangedDesc", "Votre apparence a été mise à jour."),
+        duration: 5000,
+        dedupKey: "theme-change",
+        action: {
+          label: i18n("undo", "Annuler"),
+          onClick: () => {
+            form.updateInstant("theme", previousTheme);
+            dismiss(toastId);
+          },
+        },
+      });
+      return;
+    }
     form.updateInstant(key, value);
   };
 
@@ -172,7 +204,7 @@ export default function AppearanceSettings() {
       <BentoCard title="Thème & Accent" icon="palette" className="md:col-span-2">
         <div className="space-y-5">
           <div>
-            <h3 className="mb-2 text-xs font-semibold text-[var(--text-secondary)]">{i18n("theme")}</h3>
+            <h3 className="mb-2 text-xs font-semibold text-[var(--text-primary)]">{i18n("theme")}</h3>
             <PremiumThemePicker value={currentTheme} onChange={(theme) => handleChange("theme", theme)} />
           </div>
 
@@ -186,7 +218,9 @@ export default function AppearanceSettings() {
                     key={pack.id}
                     type="button"
                     onClick={() => handleChange("iconPack", pack.id)}
-                    className={`relative flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] font-medium transition-colors ${
+                    aria-pressed={active}
+                    aria-label={pack.label}
+                    className={`relative flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] ${
                       active ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     }`}
                   >
@@ -194,7 +228,7 @@ export default function AppearanceSettings() {
                       <motion.div
                         layoutId="activeIconPack"
                         className="absolute inset-0 rounded-lg bg-[var(--text-primary)]/8"
-                        transition={{ duration: 0.15, ease: "easeOut" as const }}
+                        transition={reduce ? { duration: 0 } : { duration: 0.15, ease: "easeOut" as const }}
                       />
                     )}
                     <span className="relative z-10 flex items-center gap-1.5">
@@ -214,7 +248,9 @@ export default function AppearanceSettings() {
                   return (
                     <label
                       key={color.id}
-                      className={`relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 transition-all ${
+                      data-testid="accent-color-custom"
+                      aria-label={color.label}
+                      className={`relative flex h-11 w-11 min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-full border-2 transition-all active:scale-95 ${
                         currentAccent === "custom"
                           ? "border-[var(--text-primary)] shadow-[0_0_16px_var(--glow-color)]"
                           : "border-[var(--text-primary)]/10 hover:border-[var(--text-primary)]/40"
@@ -242,14 +278,16 @@ export default function AppearanceSettings() {
                   <button
                     key={color.id}
                     type="button"
+                    data-testid={`accent-color-${color.id}`}
                     onClick={() => handleChange("accentColor", color.id)}
-                    className={`relative h-7 w-7 rounded-full transition-all ${
+                    aria-pressed={selected}
+                    aria-label={color.label}
+                    className={`relative h-11 w-11 min-h-[44px] min-w-[44px] rounded-full transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] ${
                       selected
                         ? "ring-2 ring-[var(--text-primary)] shadow-[0_0_14px_currentColor]"
                         : "ring-1 ring-[var(--text-primary)]/10 hover:ring-[var(--text-primary)]/40"
                     }`}
                     style={{ backgroundColor: hex, color: hex }}
-                    aria-label={color.label}
                   >
                     {selected && <Check className="mx-auto h-3.5 w-3.5 text-[var(--text-primary)]" />}
                   </button>
@@ -412,12 +450,14 @@ export default function AppearanceSettings() {
       <BentoCard title="Dock & Barre d'État" icon="anchor" className="md:col-span-2">
         <div className="grid grid-cols-1 gap-0 md:grid-cols-2 md:gap-4">
           <SettingsRow label="Dock visible" description="Afficher le dock en bas de l'écran.">
-            <Switch
-              checked={settings.dockVisible}
-              onChange={(v) => handleChange("dockVisible", v)}
-              labels={false}
-              size="sm"
-            />
+            <div data-testid="dock-visible">
+              <Switch
+                checked={settings.dockVisible}
+                onChange={(v) => handleChange("dockVisible", v)}
+                labels={false}
+                size="sm"
+              />
+            </div>
           </SettingsRow>
 
           <SettingsRow label="Masquage auto" description="Réduire le dock lorsqu'il est inactif.">
@@ -430,12 +470,14 @@ export default function AppearanceSettings() {
           </SettingsRow>
 
           <SettingsRow label="Magnification" description="Zoom au survol des icônes.">
-            <Switch
-              checked={settings.dockMagnify}
-              onChange={(v) => handleChange("dockMagnify", v)}
-              labels={false}
-              size="sm"
-            />
+            <div data-testid="dock-magnify">
+              <Switch
+                checked={settings.dockMagnify}
+                onChange={(v) => handleChange("dockMagnify", v)}
+                labels={false}
+                size="sm"
+              />
+            </div>
           </SettingsRow>
 
           <SettingsRow label="Sauvegarde flottante" description="Afficher la barre flottante d'enregistrement au-dessus du dock.">
@@ -486,7 +528,7 @@ export default function AppearanceSettings() {
       </BentoCard>
 
       {modifiedCount > 0 && (
-        <div className="md:col-span-2 flex items-center gap-2 rounded-xl border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 px-3 py-2 text-[11px] text-[var(--accent-primary)]">
+        <div className="md:col-span-2 flex items-center gap-2 rounded-xl border border-[--accent-primary]/30 bg-[--accent-primary]/10 px-3 py-2 text-[11px] text-[--accent-primary]">
           <Sparkles className="h-3.5 w-3.5" />
           {modifiedCount} option{modifiedCount > 1 ? "s" : ""} modifiée{modifiedCount > 1 ? "s" : ""}
         </div>

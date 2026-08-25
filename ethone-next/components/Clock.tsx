@@ -27,9 +27,9 @@ function Clock() {
   }, []);
 
   return (
-    <span className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-400">
-      <ClockIcon className="h-3 w-3 text-zinc-500" />
-      <span className="font-mono text-zinc-200">{time}</span>
+    <span className="flex items-center gap-1.5 text-[11px] font-medium text-[var(--text-muted)]">
+      <ClockIcon className="h-3 w-3 text-[var(--text-muted)]" />
+      <span className="font-mono text-[var(--text-primary)]">{time}</span>
     </span>
   );
 }

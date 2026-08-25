@@ -20,7 +20,7 @@ function maskId(id: string) {
 }
 
 const actionBtnClass =
-  "relative inline-flex items-center justify-center whitespace-nowrap h-9 px-3 text-xs gap-2 rounded-xl font-semibold transition-all duration-150 ease-out focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:outline-none bg-[var(--text-primary)]/4 text-[var(--text-primary)] border border-[var(--panel-border)] hover:bg-[var(--text-primary)]/8 hover:border-[var(--accent-primary)]/40 active:scale-[0.98]";
+  "relative inline-flex items-center justify-center whitespace-nowrap h-9 px-3 text-xs gap-2 rounded-xl font-semibold transition-all duration-150 ease-out focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:outline-none bg-[var(--text-primary)]/4 text-[var(--text-primary)] border border-[var(--panel-border)] hover:bg-[var(--text-primary)]/8 hover:border-[var(--accent-primary)]/40";
 
 export default function UserProfileCard({
   onEditProfile,
@@ -39,6 +39,8 @@ export default function UserProfileCard({
     discordProfile?.user?.displayName ||
     discordProfile?.user?.globalName ||
     discordProfile?.user?.username;
+
+  const isDiscordLinked = Boolean(discordProfile?.connected);
 
   const fromMeta =
     (typeof meta.full_name === "string" ? meta.full_name : undefined) ||
@@ -79,46 +81,47 @@ export default function UserProfileCard({
   }, [onChangePassword]);
 
   return (
-    <div className="relative overflow-hidden rounded-t-2xl border-b border-[var(--border-5)] bg-white/[0.02]">
-      {/* Banner */}
-      <div
-        className="h-20 w-full bg-gradient-to-r from-[var(--accent)]/30 to-transparent"
-        aria-hidden="true"
-      />
-
-      <div className="-mt-6 flex items-end gap-4 px-5 pb-4">
+    <div className="relative overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4">
+      <div className="flex items-start gap-4">
         {/* Avatar */}
         <div className="relative shrink-0">
-          <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border-2 border-white/[0.08] bg-[var(--panel-bg)] shadow-lg">
+          <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--panel-bg)]">
             {avatarUrl ? (
               <Image
                 src={avatarUrl}
                 alt={displayName}
-                width={64}
-                height={64}
+                width={56}
+                height={56}
                 unoptimized
                 className="h-full w-full object-cover"
               />
             ) : (
-              <User className="h-7 w-7 text-[var(--muted)]" />
+              <User className="h-6 w-6 text-[var(--text-muted)]" />
             )}
           </div>
           <span
             className={cn(
-              "absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-[var(--bg-main)] ring-2 ring-[var(--bg-main)]",
+              "absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-[var(--bg-main)]",
               statusConfig.dot,
             )}
             title={i18n("statusVerified", "Vérifiée")}
           />
         </div>
 
-        <div className="min-w-0 flex-1 pb-1">
-          <h3 className="truncate text-base font-bold text-[var(--foreground)]">{displayName}</h3>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <h3 className="truncate text-base font-bold text-[var(--text-primary)]">{displayName}</h3>
+            {/* Session badge */}
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-[--accent-primary]/30 bg-[--accent-primary]/10 px-2 py-0.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-[--accent-primary]" />
+              <span className="text-[10px] font-medium text-[--accent-primary]">{i18n("sessionVerified", "Vérifiée")}</span>
+            </div>
+          </div>
           {email && (
-            <p className="truncate text-xs text-[var(--muted)]">{email}</p>
+            <p className="truncate text-xs text-[var(--text-muted)]">{email}</p>
           )}
-          <div className="mt-1 flex items-center gap-2">
-            <span className="font-mono text-[11px] text-[var(--muted)]">
+          <div className="mt-0.5 flex items-center gap-2">
+            <span className="min-w-0 truncate font-mono text-[11px] text-[var(--text-muted)]">
               {masked ? maskId(rawPublicId) : rawPublicId}
             </span>
             <button
@@ -134,42 +137,36 @@ export default function UserProfileCard({
         </div>
       </div>
 
-      <div className="space-y-3 px-5 pb-5">
-        {/* Session badge */}
-        <div className="inline-flex items-center gap-2 rounded-lg border border-[--accent-primary] bg-[--accent-primary] px-2.5 py-1.5">
-          <span className="h-2 w-2 rounded-full bg-[--accent-primary]" />
-          <span className="text-[11px] font-medium text-[--accent-primary]">{i18n("sessionVerified", "Session vérifiée")}</span>
-        </div>
+      {/* Quick actions */}
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <Link
+          href="/profile"
+          onClick={onEditProfile}
+          className={actionBtnClass}
+        >
+          <Camera className="h-3.5 w-3.5" />
+          <span className="truncate">{i18n("editProfile", "Modifier le profil")}</span>
+        </Link>
 
-        {/* Quick actions */}
-        <div className="flex flex-wrap items-center gap-2 pt-1">
-          <Link
-            href="/profile"
-            onClick={onEditProfile}
-            className={actionBtnClass}
-          >
-            <Camera className="h-3.5 w-3.5" />
-            <span className="truncate">{i18n("editProfile", "Modifier le profil")}</span>
-          </Link>
+        <Link
+          href={isDiscordLinked ? "/connections" : "/connections?link=discord"}
+          className={actionBtnClass}
+        >
+          <Icon name="discord" pack="brand" className="h-3.5 w-3.5" />
+          <span className="truncate">
+            {i18n(isDiscordLinked ? "linkedDiscord" : "linkDiscord", isDiscordLinked ? "Discord lié" : "Lier Discord")}
+          </span>
+        </Link>
 
-          <Link
-            href="/connections?link=discord"
-            className={actionBtnClass}
-          >
-            <Icon name="discord" pack="brand" className="h-3.5 w-3.5" />
-            <span className="truncate">{i18n("linkDiscord", "Lier Discord")}</span>
-          </Link>
-
-          <Button
-            type="button"
-            variant="secondary"
-            size="md"
-            leftIcon={<Key className="h-3.5 w-3.5" />}
-            onClick={handleChangePassword}
-          >
-            {i18n("changePassword", "Changer le mot de passe")}
-          </Button>
-        </div>
+        <Button
+          type="button"
+          variant="secondary"
+          size="md"
+          leftIcon={<Key className="h-3.5 w-3.5" />}
+          onClick={handleChangePassword}
+        >
+          {i18n("changePassword", "Changer le mot de passe")}
+        </Button>
       </div>
     </div>
   );

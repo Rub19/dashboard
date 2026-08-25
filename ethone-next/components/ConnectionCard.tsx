@@ -107,22 +107,22 @@ export default function ConnectionCard({
     ? config.category === "oauth"
       ? "bg-purple-500/10 text-purple-300 border-purple-500/20"
       : config.category === "api_key"
-        ? "bg-[--info] text-[--info] border-[--info]"
+        ? "bg-[--info]/10 text-[--info] border-[--info]/20"
         : "bg-amber-500/10 text-amber-300 border-amber-500/20"
     : integration.status === "oauth"
       ? "bg-purple-500/10 text-purple-300 border-purple-500/20"
       : integration.status === "api"
-        ? "bg-[--info] text-[--info] border-[--info]"
+        ? "bg-[--info]/10 text-[--info] border-[--info]/20"
         : integration.status === "local" || integration.status === "feed"
           ? "bg-amber-500/10 text-amber-300 border-amber-500/20"
-          : "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
+          : "bg-zinc-500/10 text-[var(--text-muted)] border-zinc-500/20";
 
   const statusClass =
     status === "connected"
-      ? "bg-[--accent-primary] text-[--accent-primary] border-[--accent-primary]"
+      ? "bg-green-500/10 text-green-400 border-green-500/20"
       : status === "error"
         ? "bg-rose-500/10 text-rose-400 border-rose-500/20"
-        : "bg-white/[0.04] text-zinc-400 border-white/[0.08]";
+        : "bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] border-[var(--text-primary)]/[0.08]";
 
   const storeValues = useMemo(() => integrationValues[integration.id] || {}, [integrationValues, integration.id]);
 
@@ -352,17 +352,17 @@ export default function ConnectionCard({
       <div>
         <div className="mb-3 flex items-start justify-between gap-2">
           <div className="flex min-w-0 items-center gap-2.5">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03]">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03]">
               <ServiceIcon id={integration.id} icon={integration.icon} className="h-5 w-5" colored />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-white">{integration.name}</h3>
+                <h3 className="text-sm font-bold text-[var(--text-primary)]">{integration.name}</h3>
                 <span className={`rounded-lg border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${methodClass}`}>
                   {config ? config.badge : i18n(methodKey)}
                 </span>
               </div>
-              <p className="truncate text-xs text-zinc-400">{config?.description || i18n(integration.description)}</p>
+              <p className="truncate text-xs text-[var(--text-muted)]">{config?.description || i18n(integration.description)}</p>
             </div>
           </div>
           <span className={`shrink-0 rounded-lg border px-2.5 py-1 text-[10px] font-semibold ${statusClass}`}>{statusText}</span>
@@ -406,7 +406,7 @@ export default function ConnectionCard({
                     <button
                       type="button"
                       onClick={() => handleCopy(clientSecret, "clientSecret")}
-                      className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
+                      className="text-[var(--text-muted)] transition hover:text-[var(--text-primary)]"
                       aria-label={i18n("copy")}
                       tabIndex={-1}
                     >
@@ -415,7 +415,7 @@ export default function ConnectionCard({
                     <button
                       type="button"
                       onClick={() => setShowClientSecret((v) => !v)}
-                      className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
+                      className="text-[var(--text-muted)] transition hover:text-[var(--text-primary)]"
                       aria-label={showClientSecret ? i18n("hide") : i18n("show")}
                       tabIndex={-1}
                     >
@@ -427,16 +427,16 @@ export default function ConnectionCard({
             )}
 
             {config?.requiresRedirectUri && origin && (
-              <div className="rounded-xl border border-white/10 bg-white/[0.03] p-2.5">
-                <p className="text-[11px] font-medium text-zinc-300">{i18n("redirectUri")}</p>
+              <div className="rounded-xl border border-white/10 bg-[var(--text-primary)]/[0.03] p-2.5">
+                <p className="text-[11px] font-medium text-[var(--text-primary)]">{i18n("redirectUri")}</p>
                 <div className="mt-1.5 flex items-center gap-2">
-                  <code className="flex-1 truncate rounded-lg bg-zinc-950 px-2 py-1 text-[10px] text-zinc-400">
+                  <code className="flex-1 truncate rounded-lg bg-[var(--background)] px-2 py-1 text-[10px] text-[var(--text-muted)]">
                     {`${origin}${config.callbackPath}`}
                   </code>
                   <button
                     type="button"
                     onClick={() => handleCopy(`${origin}${config.callbackPath}`, "redirectUri")}
-                    className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
+                    className="text-[var(--text-muted)] transition hover:text-[var(--text-primary)]"
                     aria-label={i18n("copy")}
                   >
                     {copied === "redirectUri" ? <Check className="h-3.5 w-3.5 text-[--accent-primary]" /> : <Copy className="h-3.5 w-3.5" />}
@@ -468,7 +468,7 @@ export default function ConnectionCard({
                 type="button"
                 onClick={handleConnect}
                 disabled={!clientId.trim() || !OAUTH_PROVIDERS[integration.id] || submitting}
-                className="col-span-2 flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] py-2 px-3 text-xs font-bold text-[var(--accent-contrast)] shadow-md shadow-[var(--accent-primary)]/20 transition-all hover:bg-[var(--accent-primary)] active:scale-95 disabled:opacity-50"
+                className="col-span-2 flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] py-2 px-3 text-xs font-bold text-[var(--accent-contrast)] shadow-md shadow-[var(--accent-primary)]/20 transition-all hover:bg-[var(--accent-primary)] disabled:opacity-50"
               >
                 {submitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <PlugZap className="h-3.5 w-3.5" />}
                 <span>{i18n("connect", "Connecter")}</span>
@@ -575,7 +575,7 @@ export default function ConnectionCard({
                 type="button"
                 onClick={handleSave}
                 disabled={submitting}
-                className={`flex items-center justify-center gap-1.5 rounded-xl py-2 px-2 text-xs font-bold transition-all active:scale-95 disabled:opacity-50 ${
+                className={`flex items-center justify-center gap-1.5 rounded-xl py-2 px-2 text-xs font-bold transition-all disabled:opacity-50 ${
                   isConnected
                     ? "col-span-1 bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-lg shadow-[var(--accent-primary)]/20 hover:bg-[var(--accent-primary)]"
                     : "col-span-2 bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-md shadow-[var(--accent-primary)]/20 hover:bg-[var(--accent-primary)]"
@@ -616,18 +616,18 @@ export default function ConnectionCard({
       </div>
 
       {/* Raw data accordion */}
-      <div className="mt-4 pt-3 border-t border-white/[0.04]">
+      <div className="mt-4 pt-3 border-t border-[var(--text-primary)]/[0.04]">
         <button
           type="button"
           onClick={() => setRawOpen((v) => !v)}
-          className="flex w-full items-center justify-between text-[10px] text-[var(--muted)] hover:text-[var(--text-primary)] transition-colors"
+          className="flex w-full items-center justify-between text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
         >
           <span className="flex items-center gap-1.5">
             {rawOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
             {i18n(rawOpen ? "hideRaw" : "showRaw")}
           </span>
           {health?.ms ? (
-            <span className="rounded-lg border border-[--accent-primary] bg-[--accent-primary] px-2 py-0.5 text-[10px] font-mono text-[--accent-primary]">
+            <span className="rounded-lg border border-[--accent-primary]/30 bg-[--accent-primary]/10 px-2 py-0.5 text-[10px] font-mono text-[--accent-primary]">
               {health.ms} ms
             </span>
           ) : null}
@@ -642,7 +642,7 @@ export default function ConnectionCard({
               transition={{ duration: 0.2, ease: "easeOut" as const }}
               className="overflow-hidden"
             >
-              <div className="mt-2 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+              <div className="mt-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-3">
                 {health ? (
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-xs">
@@ -658,18 +658,18 @@ export default function ConnectionCard({
                             ? i18n("connected")
                             : health.error || i18n("connectionError")}
                       </span>
-                      <span className="ml-auto text-zinc-500">{health.ms}ms</span>
+                      <span className="ml-auto text-[var(--text-muted)]">{health.ms}ms</span>
                     </div>
                     {health.data ? (
-                      <pre className="max-h-48 overflow-auto rounded-lg bg-zinc-950 p-3 font-mono text-[10px] leading-relaxed text-zinc-300">
+                      <pre className="max-h-48 overflow-auto rounded-lg bg-[var(--background)] p-3 font-mono text-[10px] leading-relaxed text-[var(--text-primary)]">
                         {JSON.stringify(health.data, null, 2)}
                       </pre>
                     ) : (
-                      <p className="text-xs text-zinc-500">{i18n("noData")}</p>
+                      <p className="text-xs text-[var(--text-muted)]">{i18n("noData")}</p>
                     )}
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2 text-sm text-zinc-500">
+                  <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     {i18n("testingInProgress")}
                   </div>
@@ -730,7 +730,7 @@ function FieldInput({
               <button
                 type="button"
                 onClick={() => onCopy(value, field.key)}
-                className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
+                className="text-[var(--text-muted)] transition hover:text-[var(--text-primary)]"
                 aria-label={i18n("copy")}
                 tabIndex={-1}
               >
@@ -740,7 +740,7 @@ function FieldInput({
                 <button
                   type="button"
                   onClick={onTogglePassword}
-                  className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
+                  className="text-[var(--text-muted)] transition hover:text-[var(--text-primary)]"
                   aria-label={visible ? i18n("hide") : i18n("show")}
                   tabIndex={-1}
                 >
@@ -835,7 +835,7 @@ function ConfigGuidePanel({
             href={config.docsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-500/20 px-3 py-1.5 text-xs font-medium text-zinc-300 transition-all hover:bg-zinc-500/30"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-500/20 px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-zinc-500/30"
           >
             Documentation
             <ExternalLink className="h-3 w-3" />
@@ -871,16 +871,16 @@ function ConfigGuidePanel({
                         : "";
                   const copyKey = `${config.id}-${step.copyValueType}-${idx}`;
                   return (
-                    <li key={idx} className="text-xs leading-relaxed text-zinc-300">
+                    <li key={idx} className="text-xs leading-relaxed text-[var(--text-primary)]">
                       <p className="font-medium text-purple-200">{step.title}</p>
-                      <p className="text-zinc-400">{step.description}</p>
+                      <p className="text-[var(--text-muted)]">{step.description}</p>
                       {copyValue && (
                         <div className="mt-1.5 flex items-center gap-2">
-                          <code className="flex-1 truncate rounded-lg bg-zinc-950 px-2 py-1 text-[10px] text-zinc-400">{copyValue}</code>
+                          <code className="flex-1 truncate rounded-lg bg-[var(--background)] px-2 py-1 text-[10px] text-[var(--text-muted)]">{copyValue}</code>
                           <button
                             type="button"
                             onClick={() => onCopy(copyValue, copyKey)}
-                            className="text-[var(--muted)] transition hover:text-[var(--text-primary)]"
+                            className="text-[var(--text-muted)] transition hover:text-[var(--text-primary)]"
                             aria-label="Copier"
                           >
                             {copied === copyKey ? <Check className="h-3.5 w-3.5 text-[--accent-primary]" /> : <Copy className="h-3.5 w-3.5" />}
@@ -916,7 +916,7 @@ function GuidePanel({ guide }: { guide: ConnectionGuide }) {
       </div>
       <ol className="list-decimal space-y-1.5 pl-4">
         {guide.keyGuide.steps.map((step, index) => (
-          <li key={index} className="text-xs leading-relaxed text-zinc-400">
+          <li key={index} className="text-xs leading-relaxed text-[var(--text-muted)]">
             {step}
           </li>
         ))}

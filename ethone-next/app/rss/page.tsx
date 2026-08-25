@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Card3D from "@/components/Card3D";
+import BentoCard from "@/components/BentoCard";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { fetchWorker } from "@/lib/api";
 import { Icon } from "@/lib/icons";
@@ -50,12 +50,14 @@ export default function RssPage() {
   }
 
   return (
-    <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
-      <h1 className="shrink-0 mb-4 text-2xl font-bold">{i18n("rssTitle")}</h1>
-
-      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
-      <Card3D>
-        <div className="flex flex-col gap-3 sm:flex-row">
+    <div className="h-full min-h-0 w-full p-4">
+      <BentoCard
+        title={i18n("rssTitle")}
+        icon="rss"
+        className="h-full w-full"
+        scrollable
+      >
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row">
           <Input
             type="url"
             value={url}
@@ -77,38 +79,42 @@ export default function RssPage() {
             {i18n("load")}
           </Button>
         </div>
-      </Card3D>
 
-      {feed && (
-        <Card3D>
-          <h2 className="text-lg font-semibold">{feed.title}</h2>
-          <p className="text-sm text-[var(--muted)]">{feed.description}</p>
-        </Card3D>
-      )}
+        {feed && (
+          <>
+            <div className="mb-4 border-b border-white/[0.06] pb-3">
+              <h2 className="text-lg font-semibold text-[var(--text-primary)]">{feed.title}</h2>
+              <p className="text-sm text-[var(--muted)]">{feed.description}</p>
+            </div>
 
-      <div className="space-y-3">
-        {feed?.items.map((item, i) => {
-          const safeLink = isAllowedHttpUrl(item.link) ? item.link : undefined;
-          return (
-            <Card3D key={i}>
-              {safeLink ? (
-                <a href={safeLink} target="_blank" rel="noopener noreferrer" className="block hover:opacity-90">
-                  <p className="font-medium">{item.title}</p>
-                  {item.description && <p className="text-sm text-[var(--muted)] line-clamp-2">{stripTags(item.description)}</p>}
-                  {item.pubDate && <p className="mt-1 text-xs text-[var(--muted)]">{new Date(item.pubDate).toLocaleString()}</p>}
-                </a>
-              ) : (
-                <div className="block">
-                  <p className="font-medium">{item.title}</p>
-                  {item.description && <p className="text-sm text-[var(--muted)] line-clamp-2">{stripTags(item.description)}</p>}
-                  {item.pubDate && <p className="mt-1 text-xs text-[var(--muted)]">{new Date(item.pubDate).toLocaleString()}</p>}
-                </div>
-              )}
-            </Card3D>
-          );
-        })}
-      </div>
-      </div>
+            <div className="space-y-3">
+              {feed.items.map((item, i) => {
+                const safeLink = isAllowedHttpUrl(item.link) ? item.link : undefined;
+                return (
+                  <div
+                    key={i}
+                    className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 transition-colors hover:border-[var(--accent-primary)]/20 hover:bg-white/[0.04]"
+                  >
+                    {safeLink ? (
+                      <a href={safeLink} target="_blank" rel="noopener noreferrer" className="block hover:opacity-90">
+                        <p className="font-medium text-[var(--text-primary)]">{item.title}</p>
+                        {item.description && <p className="text-sm text-[var(--muted)] line-clamp-2">{stripTags(item.description)}</p>}
+                        {item.pubDate && <p className="mt-1 text-xs text-[var(--muted)]">{new Date(item.pubDate).toLocaleString()}</p>}
+                      </a>
+                    ) : (
+                      <div className="block">
+                        <p className="font-medium text-[var(--text-primary)]">{item.title}</p>
+                        {item.description && <p className="text-sm text-[var(--muted)] line-clamp-2">{stripTags(item.description)}</p>}
+                        {item.pubDate && <p className="mt-1 text-xs text-[var(--muted)]">{new Date(item.pubDate).toLocaleString()}</p>}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
+      </BentoCard>
     </div>
   );
 }

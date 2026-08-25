@@ -1,5 +1,5 @@
-const CACHE_NAME = "ethone-next-v416";
-const PRECACHE = ["/", "/login/", "/offline.html"];
+const CACHE_NAME = "ethone-next-v418";
+const PRECACHE = ["/", "/login/", "/dashboard/", "/offline.html"];
 const STATIC_EXTENSIONS = [".js", ".css", ".png", ".jpg", ".jpeg", ".webp", ".svg", ".woff", ".woff2", ".ico"];
 
 const DB_NAME = "ethone-notifications";
@@ -118,9 +118,44 @@ function isStaticAsset(url) {
   return STATIC_EXTENSIONS.some((ext) => pathname.endsWith(ext)) || pathname.startsWith("/_next/");
 }
 
+const OFFLINE_HTML = `<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ETHONE · Offline</title>
+  <style>
+    :root { color-scheme: dark; --bg: #0b0c0f; --fg: #e2e4e8; --muted: #6d7482; --accent: #7c3aed; }
+    body { margin: 0; display: grid; place-items: center; min-height: 100vh; background: var(--bg); color: var(--fg); font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .card { text-align: center; padding: 2rem; border: 1px solid #222; border-radius: 1.5rem; background: #15171c; max-width: 24rem; }
+    h1 { margin: 0 0 0.5rem; font-size: 1.5rem; }
+    p { margin: 0 0 1.5rem; color: var(--muted); }
+    button { border: none; border-radius: 1rem; padding: 0.75rem 1.25rem; font-size: 0.875rem; font-weight: 600; color: white; background: var(--accent); cursor: pointer; }
+    button:hover { opacity: 0.9; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Connectivité perdue</h1>
+    <p>ETHONE n'est pas accessible sans connexion. Cette page est en cache.</p>
+    <button onclick="location.reload()">Réessayer</button>
+  </div>
+</body>
+</html>`;
+
 async function offlineFallback() {
   const cache = await caches.open(CACHE_NAME);
-  return (await cache.match("/offline.html")) || new Response("Offline", { status: 503, headers: { "Content-Type": "text/plain" } });
+  const cached = await cache.match("/offline.html");
+  if (cached) return cached;
+  try {
+    const network = await fetch("/offline.html", { cache: "no-store" });
+    if (network && network.status === 200 && network.type === "basic") {
+      const clone = network.clone();
+      cache.put("/offline.html", clone);
+      return network;
+    }
+  } catch {}
+  return new Response(OFFLINE_HTML, { status: 503, headers: { "Content-Type": "text/html" } });
 }
 
 self.addEventListener("install", (event) => {
@@ -262,15 +297,22 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (event.request.mode === "navigate") {
+    const requestUrl = new URL(event.request.url);
+    if (!requestUrl.pathname.includes(".") && !requestUrl.pathname.endsWith("/")) {
+      requestUrl.pathname += "/";
+    }
+    requestUrl.search = "";
+    const normalizedRequest = new Request(requestUrl.toString());
+
     event.respondWith(
-      fetch(event.request)
+      fetch(normalizedRequest)
         .then((response) => {
           if (!response || response.status !== 200 || response.type !== "basic") return response;
           const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          caches.open(CACHE_NAME).then((cache) => cache.put(normalizedRequest, clone));
           return response;
         })
-        .catch(() => caches.match(event.request).then((cached) => cached || offlineFallback()))
+        .catch(() => caches.match(normalizedRequest).then((cached) => cached || offlineFallback()))
     );
     return;
   }

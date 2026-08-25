@@ -32,6 +32,7 @@ const ICONS: Record<string, string> = {
   flows: "flows",
   brain: "brain",
   weather: "cloudSun",
+  rss: "rss",
   focus: "focus",
   team: "team",
   mail: "mail",
@@ -110,29 +111,21 @@ function Dock() {
   }
 
   function handleScrollTop() {
-    if (typeof document === "undefined") return;
-    const root = document.documentElement;
-    const body = document.body;
-    const target = (root.scrollTop || 0) >= (body.scrollTop || 0) ? root : body;
-    if (target.scrollTop > 0) {
-      target.scrollTo({ top: 0, behavior: "smooth" });
-    } else {
-      root.scrollTo({ top: 0, behavior: "smooth" });
-      body.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    if (typeof window === "undefined") return;
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   const dockButton =
-    "flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl text-[var(--text-muted)] transition-all duration-150 hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:bg-[var(--text-primary)]/[0.12]";
+    "flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl text-[var(--text-muted)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]";
 
   return (
     <div
-      className="v8-floating-dock fixed bottom-12 inset-x-0 z-50 hidden md:flex pointer-events-none justify-center bg-transparent p-0 m-0 border-none shadow-none outline-none"
+      className="v8-floating-dock fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] inset-x-0 z-50 hidden md:flex pointer-events-none justify-center bg-transparent p-0 m-0 border-none shadow-none outline-none"
     >
       {launcherOpen && (
         <div className="pointer-events-auto absolute bottom-full left-1/2 z-50 mb-4 w-[min(90vw,420px)] -translate-x-1/2">
-          <Card3D>
-            <div className="space-y-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-[0_10px_35px_var(--glow-color)] backdrop-blur-md">
+          <Card3D style={{ boxShadow: "none" }}>
+            <div className="space-y-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 backdrop-blur-md">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-medium text-[var(--text-primary)]">{i18n("dockLauncher")}</h3>
                 <button
@@ -144,7 +137,7 @@ function Dock() {
                   <Icon name="close" className="h-4 w-4" />
                 </button>
               </div>
-              <div className="grid max-h-[60vh] grid-cols-3 gap-2 overflow-y-auto sm:grid-cols-4">
+              <div className="grid max-h-[60vh] grid-cols-3 gap-2 overflow-y-auto no-scrollbar sm:grid-cols-4">
                 {allApps.map((app) => (
                   <button
                     key={app.id}
@@ -166,7 +159,7 @@ function Dock() {
       )}
 
       <nav
-        className="pointer-events-auto inline-flex items-center gap-2 v8-dock px-3 py-2 select-none"
+        className="pointer-events-auto inline-flex items-center gap-2 overflow-x-auto no-scrollbar v8-dock px-3 py-2 select-none"
         aria-label={i18n("dock")}
       >
         <DockMediaFlyout nowPlaying={spotifyNow} clientId={settings.liveSpotifyClientId} />
@@ -233,7 +226,7 @@ function Dock() {
           <Bell className="w-5 h-5" />
           {unreadCount > 0 && (
             <span
-              className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-[var(--danger)] ring-2 ring-[var(--bg-surface)]/80"
+              className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white/80"
               aria-hidden="true"
             />
           )}

@@ -86,10 +86,10 @@ export default function FocusPage() {
         <div className="w-full space-y-5 px-0 pb-10 pt-0">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
+          <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)] flex items-center gap-3">
             <span>{i18n("focusTitle")}</span>
           </h1>
-          <p className="text-xs text-zinc-400 mt-0.5">{i18n("focusDescription")}</p>
+          <p className="text-xs text-[var(--text-muted)] mt-0.5">{i18n("focusDescription")}</p>
         </div>
         <button
           type="button"
@@ -97,7 +97,7 @@ export default function FocusPage() {
           className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-medium transition-all ${
             zenMode
               ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
-              : "border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
+              : "border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
           }`}
           title={zenMode ? i18n("disableZen") : i18n("enableZen")}
         >
@@ -106,7 +106,7 @@ export default function FocusPage() {
         </button>
       </div>
 
-      <div className="inline-flex w-full justify-center p-1 bg-white/[0.03] border border-white/[0.08] rounded-xl backdrop-blur-md">
+      <div className="inline-flex w-full justify-center p-1 bg-[var(--text-primary)]/[0.03] border border-[var(--text-primary)]/[0.08] rounded-xl backdrop-blur-md">
         {PRESETS.map((preset) => {
           const active = activePreset === preset.id;
           return (
@@ -171,7 +171,7 @@ export default function FocusPage() {
             type="button"
             aria-label={i18n("stop")}
             onClick={stop}
-            className="flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--muted)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
           >
             <RotateCcw className="h-4 w-4" />
           </button>
@@ -183,8 +183,8 @@ export default function FocusPage() {
             disabled={!isBreak}
             className={`flex h-11 w-11 items-center justify-center rounded-xl border transition-all ${
               isBreak
-                ? "border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
-                : "border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] text-[var(--muted)] cursor-not-allowed"
+                ? "border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
+                : "border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] text-[var(--text-muted)] cursor-not-allowed"
             }`}
           >
             <SkipForward className="h-4 w-4" />
@@ -193,22 +193,22 @@ export default function FocusPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 w-full">
-        <div className="v8-panel p-4 flex flex-col items-center text-center transition-all hover:border-white/[0.16]">
+        <div className="v8-panel p-4 flex flex-col items-center text-center transition-all hover:border-[var(--text-primary)]/[0.16]">
           <Brain className="h-5 w-5 mb-2" style={{ color: "var(--accent-color, #10b981)" }} />
-          <p className="text-2xl font-bold font-mono text-white">{state.completedPomodoros}</p>
-          <p className="text-xs text-zinc-400 mt-1">{i18n("pomodoros")}</p>
+          <p className="text-2xl font-bold font-mono text-[var(--text-primary)]">{state.completedPomodoros}</p>
+          <p className="text-xs text-[var(--text-muted)] mt-1">{i18n("pomodoros")}</p>
         </div>
 
-        <div className="v8-panel p-4 flex flex-col items-center text-center transition-all hover:border-white/[0.16]">
+        <div className="v8-panel p-4 flex flex-col items-center text-center transition-all hover:border-[var(--text-primary)]/[0.16]">
           <Clock className="h-5 w-5 text-amber-400 mb-2" />
-          <p className="text-2xl font-bold font-mono text-white">{formatTotalFocus(state.totalFocusSeconds)}</p>
-          <p className="text-xs text-zinc-400 mt-1">{i18n("totalFocus")}</p>
+          <p className="text-2xl font-bold font-mono text-[var(--text-primary)]">{formatTotalFocus(state.totalFocusSeconds)}</p>
+          <p className="text-xs text-[var(--text-muted)] mt-1">{i18n("totalFocus")}</p>
         </div>
 
-        <div className="v8-panel p-4 flex flex-col items-center text-center transition-all hover:border-white/[0.16]">
+        <div className="v8-panel p-4 flex flex-col items-center text-center transition-all hover:border-[var(--text-primary)]/[0.16]">
           <Coffee className="h-5 w-5 text-[--info] mb-2" />
-          <p className="text-2xl font-bold font-mono text-white">{state.completedBreaks}</p>
-          <p className="text-xs text-zinc-400 mt-1">{i18n("breaks")}</p>
+          <p className="text-2xl font-bold font-mono text-[var(--text-primary)]">{state.completedBreaks}</p>
+          <p className="text-xs text-[var(--text-muted)] mt-1">{i18n("breaks")}</p>
         </div>
       </div>
       </div>

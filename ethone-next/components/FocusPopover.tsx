@@ -101,7 +101,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
             exit={{ opacity: 0, y: 16, scale: 0.96 }}
             transition={{ type: "spring", stiffness: 350, damping: 28 }}
             style={{ transformOrigin: "bottom center" }}
-            className="fixed bottom-28 left-1/2 z-[90] w-72 -translate-x-1/2 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-2xl outline-none backdrop-blur-[var(--panel-blur)]"
+            className="fixed bottom-[calc(7rem+env(safe-area-inset-bottom))] left-1/2 z-[90] w-72 -translate-x-1/2 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-2xl outline-none backdrop-blur-[var(--panel-blur)]"
             role="dialog"
             aria-modal="true"
             aria-label={i18n("focus")}
@@ -151,7 +151,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
               </div>
             )}
 
-            <p className="mb-2 text-xs font-medium text-[var(--muted)]">{i18n("presets")}</p>
+            <p className="mb-2 text-xs font-medium text-[var(--text-muted)]">{i18n("presets")}</p>
             <div className="grid grid-cols-3 gap-2">
               {PRESETS.map((p) => (
                 <button
@@ -165,7 +165,7 @@ export default function FocusPopover({ open, onClose, referenceRef }: { open: bo
                 >
                   <Icon name={p.icon} className={`h-4 w-4 ${p.color}`} />
                   <span className="font-medium">{i18n(p.id)}</span>
-                  <span className="text-[10px] text-[var(--muted)]">{p.minutes} min</span>
+                  <span className="text-[10px] text-[var(--text-muted)]">{p.minutes} min</span>
                 </button>
               ))}
             </div>

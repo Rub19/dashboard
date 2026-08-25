@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { createPortal } from "react-dom";
@@ -118,8 +118,8 @@ const CommandItemRow = memo(function CommandItemRow({
       onClick={() => run(cmd)}
       tabIndex={-1}
       className={cn(
-        "relative isolate flex w-full items-center rounded-md text-left text-sm transition-all duration-150 ease-out outline-0 focus:outline-0 focus-visible:outline-0",
-        isActive ? "text-[var(--accent)]" : "text-[var(--muted)]"
+        "relative isolate flex w-full items-center rounded-md text-left text-sm transition-colors duration-100 ease-out outline-0 focus:outline-0 focus-visible:outline-0",
+        isActive ? "bg-[var(--text-primary)]/[0.08] text-[var(--accent)]" : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.04]"
       )}
     >
       <div className="relative z-10 flex flex-1 items-center gap-3 px-2 py-2">
@@ -134,14 +134,14 @@ const CommandItemRow = memo(function CommandItemRow({
             <span
               className={cn(
                 "text-[10px]",
-                isActive ? "text-[var(--muted)]" : "text-[var(--muted)]/70"
+                isActive ? "text-[var(--text-muted)]" : "text-[var(--text-muted)]/70"
               )}
             >
               {cmd.category}
             </span>
           )}
           {shortcut && (
-            <kbd className="rounded border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5 text-[10px] text-[var(--muted)]">
+            <kbd className="rounded border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5 text-[10px] text-[var(--text-muted)]">
               {shortcut}
             </kbd>
           )}
@@ -158,25 +158,16 @@ const CommandItemRow = memo(function CommandItemRow({
           "relative z-10 shrink-0 rounded p-1 transition-colors outline-0 focus:outline-0 focus-visible:outline-0",
           isActive
             ? "text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/10"
-            : "text-[var(--muted)] hover:bg-[var(--surface)]"
+            : "text-[var(--text-muted)] hover:bg-[var(--surface)]"
         )}
         aria-label={isPinned ? unpinTitle : pinTitle}
         title={isPinned ? unpinTitle : pinTitle}
       >
-        <Icon name={isPinned ? "pin-off" : "pin"} className="h-3.5 w-3.5" />
+        <Icon pack="phosphor" name={isPinned ? "pin-off" : "pin"} className="h-3.5 w-3.5" />
       </button>
     </div>
   );
 });
-
-// Opened via a keyboard shortcut many times a day — entrance must read as
-// instant. Tight spring, even faster exit.
-const PANEL_SPRING = {
-  type: "spring",
-  stiffness: 560,
-  damping: 40,
-  mass: 0.5,
-} as const;
 
 export default function CommandPalette() {
   const i18n = useI18n();
@@ -190,7 +181,6 @@ export default function CommandPalette() {
   const [mounted, setMounted] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const listRef = useRef<HTMLDivElement>(null);
 
   const commandHistory = useMemo(() => createCommandHistory(), []);
   const [frequency, setFrequency] = useState(() => commandHistory.frequency());
@@ -215,6 +205,12 @@ export default function CommandPalette() {
   const filtered = useMemo<CommandItem[]>(() => {
     return searchCommands(COMMANDS as unknown as SearchableCommandItem[], query.trim(), context) as CommandItem[];
   }, [COMMANDS, query, context]);
+
+  useEffect(() => {
+    if (!open || !filtered.length) return;
+    const el = document.getElementById(`${uid}-opt-${index}`);
+    if (el) el.scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" });
+  }, [index, open, filtered.length, uid, reduce]);
 
   const sections = useMemo(() => {
     const groups: Record<string, CommandItem[]> = {};
@@ -323,30 +319,6 @@ export default function CommandPalette() {
 
   const hasIcons = useMemo(() => filtered.some((it) => it.icon), [filtered]);
 
-  const [activePos, setActivePos] = useState({ top: 0, height: 0 });
-  const [activeVisible, setActiveVisible] = useState(false);
-
-  useLayoutEffect(() => {
-    if (!open || filtered.length === 0) {
-      setActiveVisible(false);
-      return;
-    }
-    const list = listRef.current;
-    const el = list?.querySelector<HTMLElement>(`[data-index="${index}"]`);
-    if (!list || !el) {
-      setActiveVisible(false);
-      return;
-    }
-    const targetScrollTop =
-      el.offsetTop - list.clientHeight / 2 + el.offsetHeight / 2;
-    list.scrollTo({
-      top: Math.max(0, targetScrollTop),
-      behavior: reduce ? "auto" : "smooth",
-    });
-    setActivePos({ top: el.offsetTop, height: el.offsetHeight });
-    setActiveVisible(true);
-  }, [index, open, filtered.length, reduce]);
-
   if (!mounted) return null;
 
   let flatIndex = 0;
@@ -356,7 +328,7 @@ export default function CommandPalette() {
       aria-hidden={!open}
       inert={!open}
       className={cn(
-        "fixed inset-0 z-[100]",
+        "fixed inset-0 z-[var(--z-modal)]",
         open ? "pointer-events-auto" : "pointer-events-none",
       )}
     >
@@ -384,20 +356,14 @@ export default function CommandPalette() {
             y: open || reduce ? 0 : -8,
             scale: open || reduce ? 1 : 0.97,
           }}
-          transition={
-            reduce
-              ? { duration: 0.1 }
-              : open
-                ? PANEL_SPRING
-                : { duration: 0.12, ease: EASE_OUT }
-          }
+          transition={{ duration: reduce ? 0.1 : 0.15, ease: EASE_OUT }}
           onKeyDown={onKeyDown}
           className={cn(
             "w-full max-w-xl overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-surface-raised shadow-2xl will-change-transform",
             open ? "pointer-events-auto" : "pointer-events-none",
           )}
         >
-          <div className="flex items-center gap-3 border-b border-white/[0.06] px-4">
+          <div className="flex items-center gap-3 border-b border-[var(--text-primary)]/[0.06] px-4">
             <SearchInput
               ref={inputRef}
               value={query}
@@ -420,36 +386,14 @@ export default function CommandPalette() {
           </div>
 
           <div
-            ref={listRef}
             id={`${uid}-list`}
             role="listbox"
             aria-label="Commands"
-            className="relative max-h-[54vh] overflow-y-auto overscroll-contain p-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="max-h-[54vh] overflow-y-auto overscroll-contain p-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             style={{ scrollPaddingBlock: "8px" }}
           >
-            {filtered.length > 0 && (
-              <motion.div
-                aria-hidden
-                initial={false}
-                className="pointer-events-none absolute left-2 right-2 z-0 rounded-md bg-white/[0.08] will-change-[transform,height]"
-                animate={{
-                  y: activePos.top,
-                  height: activePos.height,
-                  opacity: activeVisible ? 1 : 0,
-                }}
-                transition={
-                  reduce
-                    ? { duration: 0 }
-                    : {
-                        type: "spring",
-                        stiffness: 520,
-                        damping: 35,
-                      }
-                }
-              />
-            )}
             {filtered.length === 0 ? (
-              <div className="p-8 text-center text-sm text-[var(--muted)]">
+              <div className="p-8 text-center text-sm text-[var(--text-muted)]">
                 {i18n("noResults")}
               </div>
             ) : (
@@ -457,7 +401,7 @@ export default function CommandPalette() {
                 <div key={section.title} className="mb-1 last:mb-0">
                   <div
                     aria-hidden
-                    className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]"
+                    className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]"
                   >
                     {section.title}
                   </div>
@@ -487,7 +431,7 @@ export default function CommandPalette() {
             )}
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/[0.06] px-4 py-2.5 text-[10px] text-[var(--muted)]">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[var(--text-primary)]/[0.06] px-4 py-2.5 text-[10px] text-[var(--text-muted)]">
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-1">
                 <kbd className="rounded border border-[var(--panel-border)] bg-[var(--background)] px-1.5 py-0.5">Esc</kbd>
@@ -508,5 +452,6 @@ export default function CommandPalette() {
       </div>
     </div>,
     document.body,
+    uid,
   );
 }

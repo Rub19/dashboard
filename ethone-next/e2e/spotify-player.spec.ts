@@ -54,19 +54,21 @@ async function authenticatePage(page: import("@playwright/test").Page) {
   const expiresAt = session.expires_at ? Number(session.expires_at) * 1000 : Date.now() + 3600000;
 
   await page.context().addInitScript((args) => {
-    const [token, refresh, expires, settings, island] = args;
+    const [token, refresh, expires, settings, writeAt, island] = args;
     localStorage.setItem("ethone-remember-me", "true");
     localStorage.setItem("ethone-remember-token", token);
     localStorage.setItem("ethone-remember-refresh", refresh);
     localStorage.setItem("ethone-remember-expires", String(expires));
     localStorage.setItem("ethone-auth-type", "password");
     localStorage.setItem("ethone-settings-v1", JSON.stringify(settings));
+    localStorage.setItem("ethone-settings-write-at", String(writeAt));
     localStorage.setItem("ethone_show_dynamic_island", JSON.stringify(island));
   }, [
     session.access_token,
     session.refresh_token,
     expiresAt,
     { liveNowPlayingSource: "spotify", liveSpotifyClientId: "test-client-id", performanceMode: "normal" },
+    Date.now() + 10000000000,
     { visible: true },
   ]);
 }
@@ -106,12 +108,24 @@ test.describe("Spotify player (Dynamic Island & Dock popover)", () => {
     await mockSpotifyEndpoints(page);
 
     await page.goto("/", { waitUntil: "domcontentloaded" });
-    await page.waitForTimeout(1500);
 
-    const island = page.locator('div[role="status"]').first();
+    const island = page.getByTestId("dynamic-island").first();
     await expect(island).toBeVisible({ timeout: 15000 });
+
+    // Attendre que les données Spotify arrivent et apparaissent comme une activité active.
+    await page.waitForResponse(
+      (r) => r.url().includes("/api/spotify/now-playing") && r.status() === 200,
+      { timeout: 15000 }
+    );
+    await page.waitForTimeout(300);
+
+    // Ouvrir l'îlot, sélectionner l'activité Spotify (priorité plus basse que sync).
     await island.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(300);
+    const spotifyBubble = page.getByRole("button", { name: "spotify" }).first();
+    await expect(spotifyBubble).toBeVisible({ timeout: 10000 });
+    await spotifyBubble.click();
+    await page.waitForTimeout(300);
 
     const spotifyPanel = page.getByTestId("dynamic-island-spotify");
     await expect(spotifyPanel.getByText("Test Track").first()).toBeVisible();

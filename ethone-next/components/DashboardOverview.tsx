@@ -1,11 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
-import { LayoutGrid } from "lucide-react";
-import { EASE_OUT } from "@/lib/ease";
+import { DndContext, type DragEndEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { SortableContext, arrayMove, rectSortingStrategy } from "@dnd-kit/sortable";
+import { cn } from "@/lib/utils";
 import BentoCard from "@/components/BentoCard";
+import IconButton from "@/components/ui/IconButton";
+import Button from "@/components/ui/Button";
 import HeroBriefingCard from "@/components/HeroBriefingCard";
 import SystemControlCard from "@/components/SystemControlCard";
 import { DayTimelineCard, RecentNotesCard } from "@/components/ProductivityCards";
@@ -21,14 +24,17 @@ import { useFocus } from "@/components/FocusProvider";
 import { useDesktopLayout, type WidgetLayout } from "@/lib/hooks/useDesktopLayout";
 import { Icon } from "@/lib/icons";
 import PullToRefresh from "@/components/PullToRefresh";
+import DashboardSkeleton from "@/components/DashboardSkeleton";
+import SortableWidget from "@/components/SortableWidget";
 
 const LiveBentoGrid = dynamic(() => import("@/components/LiveBentoGrid"));
 const BillsWidget = dynamic(() => import("@/components/BillsWidget"));
 const BrainBriefingPanel = dynamic(() => import("@/components/BrainBriefingPanel"));
+const ConnectionCardsWidget = dynamic(() => import("@/components/ConnectionCardsWidget"));
 
 type SectionDef = { id: string; label: string; icon: string };
 
-const homeCardClass = "h-auto min-h-0 overflow-visible";
+const homeCardClass = "h-full min-h-0";
 
 const gridVariants = {
   hidden: { opacity: 1 },
@@ -41,26 +47,33 @@ const gridVariants = {
   },
 };
 
-const widgetItemVariants = {
-  hidden: { opacity: 0, y: 18, scale: 0.97 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 0.36, ease: EASE_OUT },
-  },
-};
+
 
 const WIDGET_COL_SPAN: Record<string, string> = {
   hero: "col-span-12 lg:col-span-8",
   system: "col-span-12 lg:col-span-4",
-  daystream: "col-span-12 md:col-span-6 lg:col-span-4",
-  productivity: "col-span-12 md:col-span-6 lg:col-span-4",
-  recent: "col-span-12 lg:col-span-4",
-  brain: "col-span-12 md:col-span-6 lg:col-span-6",
-  bills: "col-span-12 md:col-span-6 lg:col-span-6",
+  daystream: "col-span-12 sm:col-span-6 lg:col-span-4",
+  productivity: "col-span-12 sm:col-span-6 lg:col-span-4",
+  recent: "col-span-12 sm:col-span-6 lg:col-span-4",
+  brain: "col-span-12 sm:col-span-6 lg:col-span-6",
+  bills: "col-span-12 sm:col-span-6 lg:col-span-6",
   live: "col-span-12",
+  connections: "col-span-12",
 };
+
+const WIDGET_PRIORITY_SCORES: Record<string, Record<string, number>> = {
+  morning: { daystream: 95, productivity: 85, hero: 75, brain: 65, recent: 55, connections: 50, bills: 40, live: 35, system: 20 },
+  work: { productivity: 95, brain: 85, hero: 75, daystream: 70, recent: 60, connections: 50, bills: 40, live: 35, system: 20 },
+  evening: { live: 95, brain: 85, hero: 70, daystream: 60, recent: 55, connections: 45, productivity: 40, bills: 35, system: 20 },
+  night: { hero: 95, brain: 80, recent: 65, connections: 55, bills: 50, system: 40, daystream: 30, productivity: 20, live: 15 },
+};
+
+function getDayPeriod(hour: number) {
+  if (hour >= 5 && hour < 12) return "morning";
+  if (hour >= 12 && hour < 18) return "work";
+  if (hour >= 18 && hour < 23) return "evening";
+  return "night";
+}
 
 const DEFAULT_WIDGETS: WidgetLayout[] = [
   { id: "hero", x: 0, y: 0, w: 12, h: 2, visible: true },
@@ -70,7 +83,8 @@ const DEFAULT_WIDGETS: WidgetLayout[] = [
   { id: "recent", x: 0, y: 2, w: 4, h: 1, visible: true },
   { id: "brain", x: 0, y: 3, w: 6, h: 1, visible: true },
   { id: "bills", x: 6, y: 3, w: 6, h: 1, visible: true },
-  { id: "live", x: 0, y: 4, w: 12, h: 2, visible: true },
+  { id: "connections", x: 0, y: 4, w: 12, h: 1, visible: true },
+  { id: "live", x: 0, y: 5, w: 12, h: 2, visible: true },
 ];
 
 export default function DashboardOverview() {
@@ -81,16 +95,79 @@ export default function DashboardOverview() {
   const tasksApi = useCloudTasks();
   const { items: notes, loading: notesLoading } = useItems("notes");
   const { items: events, loading: eventsLoading } = useItems("events");
-  const bentoLoading = loading || notesLoading || eventsLoading || tasksApi.loading;
+  const homeLoading = loading;
+  const bentoLoading = false;
   const focus = useFocus();
   const [customizing, setCustomizing] = useState(false);
   const { layout, update: updateLayout } = useDesktopLayout();
+  const hour = useMemo(() => new Date().getHours(), []);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+  );
 
   const widgets = useMemo<WidgetLayout[]>(() => {
-    if (layout && layout.widgets.length > 0) return layout.widgets;
     const hidden = new Set(settings.homeHiddenSections || []);
-    return DEFAULT_WIDGETS.map((w) => ({ ...w, visible: !hidden.has(w.id) }));
-  }, [layout, settings.homeHiddenSections]);
+    const defaults = DEFAULT_WIDGETS.map((w) => ({ ...w, visible: !hidden.has(w.id) }));
+    const saved = layout?.widgets || [];
+    const savedMap = new Map(saved.map((w) => [w.id, w]));
+
+    // Merge saved positions with the default widget set so new widgets still
+    // appear when a saved layout exists without them.
+    const merged: WidgetLayout[] = defaults.map((w) => {
+      const override = savedMap.get(w.id);
+      return override ? { ...w, ...override } : w;
+    });
+
+    // Append any custom widgets the user previously added that are not in defaults.
+    const extras = saved.filter((w) => !defaults.some((d) => d.id === w.id));
+
+    const base = [...merged, ...extras];
+    const seen = new Set<string>();
+    const sanitized = base.filter((w) => {
+      if (!w.id || seen.has(w.id)) return false;
+      seen.add(w.id);
+      return true;
+    });
+
+    let sorted: WidgetLayout[];
+    const period = getDayPeriod(hour);
+    const scores = WIDGET_PRIORITY_SCORES[period];
+
+    if (saved.length > 0) {
+      // Respect the user's persisted order for all widgets, then push newly
+      // added widgets to the end, sorted by default priority.
+      const indexMap = new Map(saved.map((w, i) => [w.id, i]));
+      const baseOffset = saved.length;
+      sorted = [...sanitized].sort(
+        (a, b) =>
+          (indexMap.get(a.id) ?? baseOffset + (scores[a.id] ?? 0)) -
+          (indexMap.get(b.id) ?? baseOffset + (scores[b.id] ?? 0))
+      );
+    } else {
+      sorted = [...sanitized].sort((a, b) => (scores[b.id] ?? 0) - (scores[a.id] ?? 0));
+    }
+
+    return sorted.length > 0 ? sorted : defaults;
+  }, [layout, settings.homeHiddenSections, hour]);
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+      if (!over || active.id === over.id) return;
+
+      const visible = widgets.filter((w) => w.visible);
+      const oldIndex = visible.findIndex((w) => w.id === active.id);
+      const newIndex = visible.findIndex((w) => w.id === over.id);
+      if (oldIndex === -1 || newIndex === -1) return;
+
+      const newVisibleOrder = arrayMove(visible, oldIndex, newIndex);
+      let visibleCursor = 0;
+      const next = widgets.map((w) => (w.visible ? newVisibleOrder[visibleCursor++] : w));
+      void updateLayout(next);
+    },
+    [widgets, updateLayout]
+  );
 
   const sections: SectionDef[] = useMemo(
     () =>
@@ -104,11 +181,24 @@ export default function DashboardOverview() {
           brain: { label: i18n("brain"), icon: "brain" },
           bills: { label: i18n("billsTitle"), icon: "bills" },
           live: { label: i18n("live"), icon: "radio" },
+          connections: { label: i18n("services", "Services"), icon: "plug" },
         };
-        return { id: w.id, ...meta[w.id] };
+        const info = meta[w.id] ?? { label: w.id, icon: "square" };
+        return { id: w.id, ...info };
       }),
     [widgets, i18n]
   );
+
+  const maxWClass = useMemo(() => {
+    switch (settings.homeGrid) {
+      case "2":
+        return "max-w-[980px]";
+      case "3":
+        return "max-w-[1280px]";
+      default:
+        return "max-w-[1600px]";
+    }
+  }, [settings.homeGrid]);
 
   const today = useMemo(() => new Date(), []);
 
@@ -131,10 +221,19 @@ export default function DashboardOverview() {
 
   const openTasksCount = openTasksList.length;
 
-  function toggleSection(id: string) {
-    const next = widgets.map((w) => (w.id === id ? { ...w, visible: !w.visible } : w));
-    void updateLayout(next);
-  }
+  const handleToggleCustomize = useCallback(() => setCustomizing((v) => !v), []);
+  const handleCloseCustomize = useCallback(() => setCustomizing(false), []);
+  const handleRefresh = useCallback(() => {
+    window.location.reload();
+  }, []);
+
+  const toggleSection = useCallback(
+    (id: string) => {
+      const next = widgets.map((w) => (w.id === id ? { ...w, visible: !w.visible } : w));
+      void updateLayout(next);
+    },
+    [widgets, updateLayout]
+  );
 
   const visibleSet = useMemo(() => new Set(widgets.filter((w) => w.visible).map((w) => w.id)), [widgets]);
 
@@ -146,7 +245,7 @@ export default function DashboardOverview() {
             greeting={greeting}
             dashboard={dashboard}
             nowPlaying={nowPlaying}
-            loading={bentoLoading}
+            loading={homeLoading}
             openTasksCount={openTasksCount}
             todayEventsCount={todayEvents.length}
             notesCount={notes.length}
@@ -162,7 +261,7 @@ export default function DashboardOverview() {
             todayEvents={todayEvents}
             nextTasks={nextTasks}
             focus={focus}
-            loading={bentoLoading}
+            loading={eventsLoading || tasksApi.loading}
             scrollable={false}
             className={homeCardClass}
           />
@@ -170,7 +269,7 @@ export default function DashboardOverview() {
       case "productivity":
         return <TasksWidget data={tasksApi} scrollable={false} className={homeCardClass} />;
       case "recent":
-        return <RecentNotesCard notes={notes} loading={bentoLoading} scrollable={false} className={homeCardClass} />;
+        return <RecentNotesCard notes={notes} loading={notesLoading} scrollable={false} className={homeCardClass} />;
       case "brain":
         return (
           <BentoCard title={i18n("brain")} icon="brain" scrollable={false} className={homeCardClass}>
@@ -182,6 +281,15 @@ export default function DashboardOverview() {
           <BentoCard title={i18n("billsTitle")} icon="bills" scrollable={false} className={homeCardClass}>
             <BillsWidget />
           </BentoCard>
+        );
+      case "connections":
+        return (
+          <ConnectionCardsWidget
+            records={live.records}
+            loading={live.loading}
+            error={live.error}
+            className={homeCardClass}
+          />
         );
       case "live":
         return (
@@ -209,18 +317,18 @@ export default function DashboardOverview() {
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <PullToRefresh onRefresh={() => window.location.reload()}>
-        <div className="mx-auto w-full max-w-[1600px] px-2 sm:px-4">
-        <header className="shrink-0 mb-2 flex w-full items-center justify-end">
-        <button
-          type="button"
-          onClick={() => setCustomizing((v) => !v)}
+      <PullToRefresh onRefresh={handleRefresh}>
+        <div className={cn("mx-auto w-full min-h-full px-2 sm:px-4", maxWClass)}>
+        <header className="shrink-0 mb-3 flex w-full items-center justify-end">
+        <IconButton
+          size="sm"
+          variant="default"
+          onClick={handleToggleCustomize}
           title={customizing ? i18n("done") : i18n("customize")}
           aria-label={customizing ? i18n("done") : i18n("customize")}
-          className="flex h-8 w-8 items-center justify-center rounded-lg v8-panel text-[var(--muted)] transition-colors hover:border-[var(--text-primary)]/20 hover:text-[var(--text-primary)] active:scale-95"
         >
-          <LayoutGrid className="h-4 w-4" />
-        </button>
+          <Icon pack="lucide" name="layout-grid" className="h-4 w-4" />
+        </IconButton>
       </header>
 
       {customizing && (
@@ -229,31 +337,33 @@ export default function DashboardOverview() {
           icon="sliders-horizontal"
           className="shrink-0 mb-4"
           action={
-            <button
-              type="button"
-              onClick={() => setCustomizing(false)}
-              className="rounded-lg border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-2 py-1 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleCloseCustomize}
             >
               {i18n("done")}
-            </button>
+            </Button>
           }
         >
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            {sections.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => toggleSection(s.id)}
-                className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition-colors ${
-                  visibleSet.has(s.id)
-                    ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
-                    : "border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] text-[var(--muted)]"
-                }`}
-              >
-                <Icon name={visibleSet.has(s.id) ? "eye" : "eye-off"} className="h-4 w-4" />
-                {s.label}
-              </button>
-            ))}
+            {sections.map((s) => {
+              const visible = visibleSet.has(s.id);
+              return (
+                <Button
+                  key={s.id}
+                  size="sm"
+                  variant={visible ? "outline" : "ghost"}
+                  onClick={() => toggleSection(s.id)}
+                  className="justify-start"
+                  leftIcon={
+                    <Icon pack={visible ? "lucide" : "lucide"} name={visible ? "eye" : "eye-off"} className="h-4 w-4" />
+                  }
+                >
+                  {s.label}
+                </Button>
+              );
+            })}
           </div>
         </BentoCard>
       )}
@@ -264,26 +374,39 @@ export default function DashboardOverview() {
         </div>
       )}
 
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={gridVariants}
-        data-home-grid
-        className="grid w-full h-auto grid-cols-12 gap-2 pb-2"
-      >
-        {widgets.map((w) =>
-          w.visible ? (
+      {bentoLoading ? (
+        <DashboardSkeleton />
+      ) : (
+        <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+          <SortableContext
+            items={widgets.filter((w) => w.visible).map((w) => w.id)}
+            strategy={rectSortingStrategy}
+          >
             <motion.div
-              key={w.id}
-              data-home-widget
-              variants={widgetItemVariants}
-              className={`${WIDGET_COL_SPAN[w.id]} flex min-w-0 flex-col`}
+              initial="hidden"
+              animate="visible"
+              variants={gridVariants}
+              data-home-grid
+              className="grid w-full h-auto grid-cols-12 gap-3 pb-3"
             >
-              {renderWidget(w.id)}
+              {widgets.map(
+                (w, i) =>
+                  w.visible && (
+                    <SortableWidget
+                      key={w.id}
+                      id={w.id}
+                      index={i}
+                      customizing={customizing}
+                      className={WIDGET_COL_SPAN[w.id]}
+                    >
+                      {renderWidget(w.id)}
+                    </SortableWidget>
+                  )
+              )}
             </motion.div>
-          ) : null
-        )}
-      </motion.div>
+          </SortableContext>
+        </DndContext>
+      )}
       </div>
       </PullToRefresh>
     </div>

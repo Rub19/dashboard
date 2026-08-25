@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { memo, useCallback } from "react";
 import { Check, Calendar, Trash2 } from "lucide-react";
 import { hapticSuccessPattern, hapticRigidImpact } from "@/lib/haptics";
 import type { Item } from "@/lib/hooks/useItems";
@@ -44,35 +44,27 @@ export type TasksCardProps = {
   onDelete: (id: string) => void;
 };
 
-export default function TasksCard({ task, onToggle, onDelete }: TasksCardProps) {
+const TasksCard = memo(function TasksCard({ task, onToggle, onDelete }: TasksCardProps) {
   const priority = task.data?.priority || "medium";
   const due = formatDueDate(task.data?.dueDate);
 
-  function handleToggle() {
+  const handleToggle = useCallback(() => {
     if (!task.done) hapticSuccessPattern();
     onToggle(task.id, !task.done);
-  }
+  }, [task.done, task.id, onToggle]);
 
-  function handleDelete(e?: { stopPropagation?: () => void }) {
-    e?.stopPropagation?.();
-    hapticRigidImpact();
-    onDelete(task.id);
-  }
+  const handleDelete = useCallback(
+    (e?: { stopPropagation?: () => void }) => {
+      e?.stopPropagation?.();
+      hapticRigidImpact();
+      onDelete(task.id);
+    },
+    [task.id, onDelete]
+  );
 
   return (
-    <motion.div
-      drag="x"
-      dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.12}
-      onDragEnd={(_, info) => {
-        if (info.offset.x > 80) {
-          handleToggle();
-        } else if (info.offset.x < -80) {
-          // Swipe left reveals delete; second left swipe deletes
-          handleDelete(info as unknown as React.MouseEvent);
-        }
-      }}
-      className="group relative flex items-center justify-between gap-3 rounded-xl border border-white/[0.05] bg-white/[0.02] p-3 transition-all duration-200 hover:border-white/[0.12] hover:bg-white/[0.05]"
+    <div
+      className="group relative flex items-center justify-between gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 transition-all duration-200 hover:border-[var(--panel-border)] hover:bg-[var(--inset-bg)]"
       onClick={handleToggle}
     >
       <div className="flex min-w-0 flex-1 items-start gap-3">
@@ -96,14 +88,14 @@ export default function TasksCard({ task, onToggle, onDelete }: TasksCardProps) 
           <p
             className={`text-xs font-medium transition-colors ${
               task.done
-                ? "text-zinc-500 line-through opacity-60"
-                : "text-zinc-200 group-hover:text-white"
+                ? "text-[var(--text-muted)] line-through opacity-60"
+                : "text-[var(--text-primary)] group-hover:text-[var(--text-primary)]"
             }`}
           >
             {task.title}
           </p>
           {due && (
-            <p className="mt-0.5 flex items-center gap-1 text-[10px] font-mono text-zinc-400">
+            <p className="mt-0.5 flex items-center gap-1 text-[10px] font-mono text-[var(--text-muted)]">
               <Calendar className="h-3 w-3" />
               {due}
             </p>
@@ -118,17 +110,17 @@ export default function TasksCard({ task, onToggle, onDelete }: TasksCardProps) 
           {PRIORITY_LABELS[priority]}
         </span>
 
-        <motion.button
+        <button
           type="button"
-          initial={{ opacity: 0 }}
-          whileHover={{ scale: 1.05 }}
-          onClick={() => handleDelete()}
-          className="rounded-lg p-1.5 text-[var(--muted)] opacity-0 transition-all hover:bg-[var(--danger)]/10 hover:text-[var(--danger)] group-hover:opacity-100"
+          onClick={handleDelete}
+          className="rounded-lg p-1.5 text-[var(--text-muted)] opacity-0 transition-all hover:bg-[var(--danger)]/10 hover:text-[var(--danger)] group-hover:opacity-100"
           aria-label="Supprimer"
         >
           <Trash2 className="h-3.5 w-3.5" />
-        </motion.button>
+        </button>
       </div>
-    </motion.div>
+    </div>
   );
-}
+});
+
+export default TasksCard;

@@ -105,8 +105,8 @@ function Section({ title, count, children }: { title: string; count: number; chi
   return (
     <section className="space-y-2">
       <header className="flex items-center gap-2">
-        <h3 className="text-sm font-semibold text-[var(--foreground)]">{title}</h3>
-        <span className="rounded-lg bg-[var(--panel-bg)] px-2 py-0.5 text-xs text-[var(--muted)]">{count}</span>
+        <h3 className="text-sm font-semibold text-[var(--text-primary)]">{title}</h3>
+        <span className="rounded-lg bg-[var(--panel-bg)] px-2 py-0.5 text-xs text-[var(--text-muted)]">{count}</span>
       </header>
       {children}
     </section>
@@ -222,20 +222,20 @@ function MissionControlDialog() {
       >
         <div className="mb-4 flex w-full items-end justify-between gap-4">
         <div>
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
             {i18n("missionNavigationSystem")}
           </span>
-          <h2 id="mission-title" className="text-2xl font-bold text-[var(--foreground)] sm:text-3xl">
+          <h2 id="mission-title" className="text-2xl font-bold text-[var(--text-primary)] sm:text-3xl">
             {i18n("missionControlTitle")}
           </h2>
-          <p className="text-sm text-[var(--muted)]">
+          <p className="text-sm text-[var(--text-muted)]">
             {i18n(activeWorkspace.flow)} / {windows.length} {i18n("missionWindows")} / {liveCards.length}{" "}
             {i18n("missionWidgets")}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <span
-            className="rounded border border-[var(--panel-border)] bg-[var(--panel-bg)] px-1.5 py-0.5 font-mono text-xs text-[var(--muted)] backdrop-blur-[var(--panel-blur)]"
+            className="rounded border border-[var(--panel-border)] bg-[var(--panel-bg)] px-1.5 py-0.5 font-mono text-xs text-[var(--text-muted)] backdrop-blur-[var(--panel-blur)]"
             aria-label={i18n("missionF2Open")}
           >
             F2
@@ -243,7 +243,7 @@ function MissionControlDialog() {
           <button
             type="button"
             onClick={() => setMissionControl(false)}
-            className="rounded-lg bg-[var(--panel-bg)] p-2 text-[var(--foreground)] transition-colors hover:bg-[var(--panel-bg)]"
+            className="rounded-lg bg-[var(--panel-bg)] p-2 text-[var(--text-primary)] transition-colors hover:bg-[var(--panel-bg)]"
             aria-label={i18n("close")}
           >
             <Icon name="close" className="h-5 w-5" />
@@ -288,11 +288,11 @@ function MissionControlDialog() {
                     <Icon name={w.icon} className="h-5 w-5" />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">
+                    <span className="block text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                       {i18n(w.flow)}
                     </span>
-                    <span className="block text-sm font-semibold text-[var(--foreground)]">{i18n(w.id)}</span>
-                    <span className="block truncate text-xs text-[var(--muted)]">{i18n(w.description)}</span>
+                    <span className="block text-sm font-semibold text-[var(--text-primary)]">{i18n(w.id)}</span>
+                    <span className="block truncate text-xs text-[var(--text-muted)]">{i18n(w.description)}</span>
                   </span>
                   {w.id === activeWorkspace.id ? (
                     <span className="rounded-lg bg-[var(--accent)]/20 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent)]">
@@ -301,7 +301,7 @@ function MissionControlDialog() {
                   ) : (
                     <Icon
                       name="arrow-right"
-                      className="h-4 w-4 shrink-0 text-[var(--muted)] opacity-0 transition-opacity group-hover:opacity-100"
+                      className="h-4 w-4 shrink-0 text-[var(--text-muted)] opacity-0 transition-opacity group-hover:opacity-100"
                     />
                   )}
                 </button>
@@ -331,17 +331,17 @@ function MissionControlDialog() {
                       <Icon name="workflow" className="h-5 w-5" />
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">
+                      <span className="block text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                         {i18n(w.id)}
                       </span>
-                      <span className="block text-sm font-semibold text-[var(--foreground)]">{i18n(w.flow)}</span>
+                      <span className="block text-sm font-semibold text-[var(--text-primary)]">{i18n(w.flow)}</span>
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-1">
                     {w.steps.map((step, i) => (
                       <span
                         key={i}
-                        className="rounded bg-[var(--panel-bg)] px-1.5 py-0.5 text-[10px] text-[var(--muted)]"
+                        className="rounded bg-[var(--panel-bg)] px-1.5 py-0.5 text-[10px] text-[var(--text-muted)]"
                       >
                         {i + 1}. {step}
                       </span>
@@ -354,12 +354,12 @@ function MissionControlDialog() {
 
           <Section title={i18n("missionWindows")} count={windows.length}>
             {windows.length === 0 ? (
-              <div className="flex flex-col items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-8 text-center text-[var(--muted)] backdrop-blur-[var(--panel-blur)]">
+              <div className="flex flex-col items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-8 text-center text-[var(--text-muted)] backdrop-blur-[var(--panel-blur)]">
                 <Icon name="scan-search" className="h-10 w-10 opacity-50" />
                 <p>{i18n("noOpenWindows")}</p>
               </div>
             ) : filtered.length === 0 ? (
-              <div className="flex flex-col items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-8 text-center text-[var(--muted)] backdrop-blur-[var(--panel-blur)]">
+              <div className="flex flex-col items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-8 text-center text-[var(--text-muted)] backdrop-blur-[var(--panel-blur)]">
                 <Icon name="scan-search" className="h-10 w-10 opacity-50" />
                 <p>{i18n("noWindowsMatch")}</p>
               </div>
@@ -386,15 +386,15 @@ function MissionControlDialog() {
                           <Icon name={routeIcon(win.route)} className="h-5 w-5" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-semibold text-[var(--foreground)]">{win.title}</p>
-                          <p className="truncate text-xs text-[var(--muted)]">{win.route}</p>
+                          <p className="truncate text-sm font-semibold text-[var(--text-primary)]">{win.title}</p>
+                          <p className="truncate text-xs text-[var(--text-muted)]">{win.route}</p>
                         </div>
                       </div>
 
                       <div className="mt-auto h-16 w-full overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 backdrop-blur-[var(--panel-blur)]">
                         <div className="flex h-full w-full flex-col gap-1.5 opacity-40">
                           <div className="h-2 w-3/4 rounded bg-[var(--accent)]/30" />
-                          <div className="h-2 w-1/2 rounded bg-[var(--muted)]/20" />
+                          <div className="h-2 w-1/2 rounded bg-[var(--text-muted)]/20" />
                           <div className="h-2 w-full rounded bg-[var(--border)]" />
                         </div>
                       </div>
@@ -417,7 +417,7 @@ function MissionControlDialog() {
               </div>
             )}
             {windows.length > 0 && (
-              <p className="text-sm text-[var(--muted)]">
+              <p className="text-sm text-[var(--text-muted)]">
                 {filtered.length} / {windows.length} {i18n("windows")}
               </p>
             )}
@@ -447,15 +447,15 @@ function MissionControlDialog() {
                 >
                   <Icon name={r.icon} className="h-5 w-5 text-[var(--accent)]" />
                   <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-semibold text-[var(--foreground)]">{i18n(r.id)}</span>
-                    <span className="block text-xs text-[var(--muted)]">{r.route}</span>
+                    <span className="block text-sm font-semibold text-[var(--text-primary)]">{i18n(r.id)}</span>
+                    <span className="block text-xs text-[var(--text-muted)]">{r.route}</span>
                   </span>
                   {pathname === r.route ? (
                     <Icon name="circle-check" className="h-4 w-4 text-[var(--accent)]" />
                   ) : (
                     <Icon
                       name="chevron-right"
-                      className="h-4 w-4 text-[var(--muted)] opacity-0 transition-opacity group-hover:opacity-100"
+                      className="h-4 w-4 text-[var(--text-muted)] opacity-0 transition-opacity group-hover:opacity-100"
                     />
                   )}
                 </button>
@@ -480,16 +480,16 @@ function MissionControlDialog() {
                 >
                   <span className={`h-2 w-2 shrink-0 rounded-full ${STATUS_DOT[record.status] || "bg-zinc-500"}`} />
                   <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-semibold text-[var(--foreground)]">
+                    <span className="block text-sm font-semibold text-[var(--text-primary)]">
                       {record.title || record.label}
                     </span>
-                    <span className="block truncate text-xs text-[var(--muted)]">
+                    <span className="block truncate text-xs text-[var(--text-muted)]">
                       {record.subtitle || record.meta || record.source}
                     </span>
                   </span>
                   <Icon
                     name="external-link"
-                    className="h-4 w-4 shrink-0 text-[var(--muted)] opacity-0 transition-opacity group-hover:opacity-100"
+                    className="h-4 w-4 shrink-0 text-[var(--text-muted)] opacity-0 transition-opacity group-hover:opacity-100"
                   />
                 </button>
               ))}
@@ -499,7 +499,7 @@ function MissionControlDialog() {
           {settings.brainEnabled && (
             <Section title={i18n("missionBrainActivity")} count={brainActivity.length}>
               {brainActivity.length === 0 ? (
-                <div className="flex flex-col items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-6 text-center text-[var(--muted)] backdrop-blur-[var(--panel-blur)]">
+                <div className="flex flex-col items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-6 text-center text-[var(--text-muted)] backdrop-blur-[var(--panel-blur)]">
                   <Icon name="brain" className="h-8 w-8 opacity-50" />
                   <p>{i18n("missionNoBrainActivity")}</p>
                   <button
@@ -531,12 +531,12 @@ function MissionControlDialog() {
                     >
                       <Icon name={b.icon} className="h-5 w-5 shrink-0 text-[var(--accent)]" />
                       <span className="min-w-0 flex-1">
-                        <span className="block text-sm font-semibold text-[var(--foreground)]">{b.title}</span>
-                        <span className="block truncate text-xs text-[var(--muted)]">{b.description}</span>
+                        <span className="block text-sm font-semibold text-[var(--text-primary)]">{b.title}</span>
+                        <span className="block truncate text-xs text-[var(--text-muted)]">{b.description}</span>
                       </span>
                       <Icon
                         name="external-link"
-                        className="h-4 w-4 shrink-0 text-[var(--muted)] opacity-0 transition-opacity group-hover:opacity-100"
+                        className="h-4 w-4 shrink-0 text-[var(--text-muted)] opacity-0 transition-opacity group-hover:opacity-100"
                       />
                     </button>
                   ))}

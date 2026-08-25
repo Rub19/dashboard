@@ -168,7 +168,6 @@ export function DynamicIsland({
         role="status"
         aria-live="polite"
         aria-atomic="true"
-        aria-roledescription="Dynamic Island"
         initial={false}
         animate={
           size
@@ -177,6 +176,8 @@ export function DynamicIsland({
         }
         transition={reduce ? { duration: 0 } : SHELL_SPRING}
         style={{ borderRadius: RADIUS }}
+        whileHover={reduce ? undefined : { scale: 1.03 }}
+        whileTap={reduce ? undefined : { scale: 0.97 }}
         onClick={onClick}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
@@ -184,8 +185,8 @@ export function DynamicIsland({
         // expansion reads as unfurling downward out of the pill.
         className={cn(
           "relative inline-flex items-start justify-center overflow-hidden",
-          "bg-[var(--bg-surface)]/85 border border-[var(--border-subtle)] text-[var(--text-primary)]",
-          "shadow-[0_16px_40px_-12px_var(--bg-overlay)] backdrop-blur-2xl",
+          "bg-[var(--panel-bg)]/85 text-[var(--text-primary)]",
+          "shadow-[0_16px_40px_rgba(0,0,0,0.8)] backdrop-blur-2xl",
           "cursor-pointer pointer-events-auto select-none",
           className,
         )}

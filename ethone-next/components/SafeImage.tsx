@@ -42,7 +42,7 @@ export default function SafeImage({
     fallbackNode = (
       <span
         className={cn(
-          "inline-flex shrink-0 items-center justify-center overflow-hidden bg-[var(--panel-bg)] text-[10px] font-medium text-[var(--foreground)]",
+          "inline-flex shrink-0 items-center justify-center overflow-hidden bg-[var(--panel-bg)] text-[10px] font-medium text-[var(--text-primary)]",
           fill && "absolute inset-0",
           className
         )}
@@ -57,13 +57,13 @@ export default function SafeImage({
     fallbackNode = (
       <span
         className={cn(
-          "inline-flex shrink-0 items-center justify-center overflow-hidden bg-white/[0.05]",
+          "inline-flex shrink-0 items-center justify-center overflow-hidden bg-[var(--text-primary)]/[0.05]",
           fill && "absolute inset-0",
           className
         )}
         aria-hidden="true"
       >
-        <Music className={cn("text-zinc-400", iconClassName)} />
+        <Music className={cn("text-[var(--text-muted)]", iconClassName)} />
       </span>
     );
   }

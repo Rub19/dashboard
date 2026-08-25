@@ -38,7 +38,7 @@ export default function CategoryTabs({ active, onChange }: { active: string; onC
             className={`relative flex items-center gap-1.5 whitespace-nowrap rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors ${
               isActive
                 ? "border-[var(--text-primary)]/20 bg-[var(--text-primary)]/[0.08] text-[var(--text-primary)]"
-                : "border-transparent text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.03] hover:text-[var(--text-primary)]"
+                : "border-transparent text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.03] hover:text-[var(--text-primary)]"
             }`}
           >
             {isActive && (
@@ -49,7 +49,7 @@ export default function CategoryTabs({ active, onChange }: { active: string; onC
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               />
             )}
-            <span className={isActive ? "text-[var(--accent-color)]" : "text-zinc-500"}>
+            <span className={isActive ? "text-[var(--accent-color)]" : "text-[var(--text-muted)]"}>
               {CATEGORY_ICONS[cat.id] || <Plug className="h-3.5 w-3.5" />}
             </span>
             {i18n(cat.id)}

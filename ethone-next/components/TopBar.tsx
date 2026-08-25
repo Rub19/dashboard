@@ -3,7 +3,7 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import { ChevronRight, ChevronDown, CloudSun, Sun, Moon, Timer, Eye, EyeOff, PanelLeftOpen, PanelLeftClose } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { AnimatedSidebarTrigger, useAnimatedSidebar } from "@/components/motion/animated-sidebar";
 import SystemStatusPills from "@/components/SystemStatusPills";
 import CommandBarTrigger from "@/components/CommandBarTrigger";
@@ -12,6 +12,8 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 import UserProfileDropdownSkeleton from "@/components/UserProfileDropdownSkeleton";
 import BrandMark from "@/components/BrandMark";
 import Tooltip from "@/components/Tooltip";
+import IconButton from "@/components/ui/IconButton";
+import Button from "@/components/ui/Button";
 
 const UserProfileDropdown = dynamic(() => import("@/components/UserProfileDropdown"), {
   ssr: false,
@@ -24,6 +26,9 @@ import { useSettings } from "@/components/SettingsProvider";
 import { useFocus } from "@/components/FocusProvider";
 import { useDynamicIslandStore } from "@/lib/stores/dynamic-island";
 import WeatherDetailPopover from "@/components/WeatherDetailPopover";
+import SupportButton from "@/components/dashboard/SupportButton";
+import { Icon } from "@/lib/icons";
+import { PREMIUM_THEMES, THEME_DEFINITIONS, resolvePremiumTheme } from "@/lib/theme-engine";
 import { cn } from "@/lib/utils";
 
 const ROUTE_LABELS: Record<string, string> = {
@@ -56,10 +61,10 @@ const SidebarTopToggle = memo(function SidebarTopToggle() {
     <Tooltip label={open ? "Réduire — ⌘B" : "Ouvrir — ⌘B"} position="bottom">
       <AnimatedSidebarTrigger
         type="button"
-        className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] shadow-lg backdrop-blur-md transition-[color,background-color,border-color,opacity,transform] hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95 cursor-pointer select-none"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] shadow-lg backdrop-blur-md transition-[color,background-color,border-color,opacity,transform] duration-150 ease-out hover:border-[var(--text-primary)]/20 hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95 focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:outline-none"
         aria-label="Basculer la barre latérale"
       >
-        {open ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
+        <Icon pack="lucide" name={open ? "panel-left-close" : "panel-left-open"} className="h-4 w-4" />
       </AnimatedSidebarTrigger>
     </Tooltip>
   );
@@ -73,44 +78,51 @@ const WeatherQuickButton = memo(function WeatherQuickButton() {
 
   return (
     <>
-      <button
+      <Button
         ref={setButtonEl}
         type="button"
+        variant="ghost"
+        size="md"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         data-tooltip="Météo"
         data-tooltip-position="bottom"
-        className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] px-2 text-sm transition-colors hover:bg-[var(--text-primary)]/[0.06] sm:px-3"
+        leftIcon={<Icon pack="lucide" name="cloud-sun" className="h-4 w-4 text-[var(--text-muted)]" />}
+        rightIcon={
+          <Icon
+            pack="lucide"
+            name="chevron-down"
+            className={cn(
+              "h-3 w-3 text-[var(--text-muted)] transition-transform duration-200",
+              open && "rotate-180",
+            )}
+          />
+        }
       >
-        <CloudSun className="h-4 w-4 pointer-events-none text-amber-400" />
-        <span className="hidden font-mono text-[var(--text-primary)] lg:inline">{temp}</span>
-        <ChevronDown
-          className={cn(
-            "h-3 w-3 text-[var(--text-muted)] transition-transform duration-200",
-            open && "rotate-180"
-          )}
-        />
-      </button>
-      <WeatherDetailPopover open={open} onClose={() => setOpen(false)} referenceRef={buttonEl} />
+        <span className="hidden font-mono lg:inline">{temp}</span>
+      </Button>
+      <WeatherDetailPopover open={open} onClose={() => setOpen(false)} referenceRef={buttonEl} weather={weather} />
     </>
   );
 });
 
 const ThemeToggle = memo(function ThemeToggle() {
   const { settings, update } = useSettings();
-  const isDark = settings.darkMode ?? true;
-  const Icon = isDark ? Moon : Sun;
+  const resolved = resolvePremiumTheme(settings.theme);
+  const currentIndex = PREMIUM_THEMES.indexOf(resolved);
+  const next = PREMIUM_THEMES[(currentIndex + 1) % PREMIUM_THEMES.length];
+  const themeLabel = THEME_DEFINITIONS[resolved]?.label ?? "Thème";
 
   return (
-    <Tooltip label="Thème — (clic)" position="bottom">
-      <button
-        type="button"
-        onClick={() => update({ darkMode: !isDark })}
-        className="relative flex h-9 w-9 items-center justify-center rounded-xl text-[var(--text-muted)] transition-[color,background-color,border-color,opacity,transform] duration-150 hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95 cursor-pointer select-none"
+    <Tooltip label={`Thème — ${themeLabel} (clic)`} position="bottom">
+      <IconButton
+        size="lg"
+        variant="ghost"
+        onClick={() => update({ theme: next })}
         aria-label="Thème"
       >
-        <Icon className="h-5 w-5 pointer-events-none" />
-      </button>
+        <Icon pack="phosphor" name="palette" className="h-5 w-5" />
+      </IconButton>
     </Tooltip>
   );
 });
@@ -121,18 +133,14 @@ const FocusToggle = memo(function FocusToggle() {
 
   return (
     <Tooltip label="Focus — F2" position="bottom">
-      <button
-        type="button"
+      <IconButton
+        size="lg"
+        variant={isActive ? "active" : "ghost"}
         onClick={() => (isActive ? focus.stop() : focus.start("pomodoro"))}
-        className={`relative flex h-9 w-9 items-center justify-center rounded-xl transition-[color,background-color,border-color,opacity,transform] duration-150 cursor-pointer select-none ${
-          isActive
-            ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]"
-            : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95"
-        }`}
         aria-label={isActive ? "Arrêter le minuteur" : "Démarrer le minuteur"}
       >
-        <Timer className="h-5 w-5 pointer-events-none" />
-      </button>
+        <Icon pack="phosphor" name="timer" className="h-5 w-5" />
+      </IconButton>
     </Tooltip>
   );
 });
@@ -142,18 +150,14 @@ const DynamicIslandToggle = memo(function DynamicIslandToggle() {
 
   return (
     <Tooltip label="Dynamic Island" position="bottom">
-      <button
-        type="button"
+      <IconButton
+        size="lg"
+        variant="ghost"
         onClick={toggle}
-        className={`relative flex h-9 w-9 items-center justify-center rounded-xl transition-[color,background-color,border-color,opacity,transform] duration-150 cursor-pointer select-none ${
-          visible
-            ? "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95"
-            : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-muted)] active:scale-95"
-        }`}
         aria-label={visible ? "Masquer la Dynamic Island" : "Afficher la Dynamic Island"}
       >
-        {visible ? <Eye className="h-5 w-5 pointer-events-none" /> : <EyeOff className="h-5 w-5 pointer-events-none" />}
-      </button>
+        <Icon pack="lucide" name={visible ? "eye" : "eye-off"} className="h-5 w-5" />
+      </IconButton>
     </Tooltip>
   );
 });
@@ -164,7 +168,7 @@ function TopBar() {
   return (
     <header
       data-v8-topbar
-      className="pointer-events-none relative z-40 shrink-0 select-none rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 pt-safe backdrop-blur-[var(--panel-blur)]"
+      className="pointer-events-none relative z-40 shrink-0 select-none border-0 border-b border-[var(--text-primary)]/[0.05] bg-[var(--panel-bg)] px-4 pt-safe backdrop-blur-[var(--panel-blur)]"
     >
       {/* Mobile: compact header with logo, page title, search, notifications, profile */}
       <div className="pointer-events-auto flex h-14 items-center justify-between md:hidden">
@@ -179,7 +183,7 @@ function TopBar() {
             <CommandBarTrigger />
           </Tooltip>
           <NotificationCenter />
-          <UserProfileDropdown />
+          <UserProfileDropdown dataTestId="user-profile-trigger-mobile" />
         </div>
       </div>
 
@@ -200,7 +204,7 @@ function TopBar() {
         </div>
 
         {/* Center — System status */}
-        <div className="col-start-2 hidden min-w-0 items-center justify-center justify-self-center xl:flex pointer-events-auto">
+        <div className="col-start-2 hidden min-w-0 items-center justify-center justify-self-center lg:flex lg:-ml-8 pointer-events-auto">
           <SystemStatusPills />
         </div>
 
@@ -211,6 +215,7 @@ function TopBar() {
             <ThemeToggle />
             <FocusToggle />
             <DynamicIslandToggle />
+            <SupportButton />
           </div>
 
           <Tooltip label="Rechercher — ⌘K" position="bottom">
@@ -223,7 +228,7 @@ function TopBar() {
             <LanguageSwitcher />
           </div>
 
-          <UserProfileDropdown />
+          <UserProfileDropdown dataTestId="user-profile-trigger-desktop" />
         </div>
       </div>
     </header>

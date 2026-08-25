@@ -46,6 +46,7 @@ import UserProfileCard from "./UserProfileCard";
 import MaintenancePanel from "./MaintenancePanel";
 import LanguageControl from "./LanguageControl";
 import SoundPackControl from "./SoundPackControl";
+import AmbientSoundControl from "@/components/AmbientSoundControl";
 import { CATEGORY_ORDER, sectionCategory } from "./SettingsNavigation";
 
 const THEMES = [
@@ -247,7 +248,14 @@ const SOUND_PACKS = [
   "silent",
 ] as const;
 
-const AMBIENT_TYPES = ["none", "pink", "brown", "white", "rain", "drone"] as const;
+const SOUND_PACK_ICONS: Record<string, string> = {
+  ethone: "music",
+  minimal: "minus",
+  classic: "disc",
+  "apple-inspired": "heart",
+  "cyber-pulse": "zap",
+  silent: "volume-x",
+};
 
 const SHADOWS = ["none", "sm", "md", "glow"] as const;
 
@@ -355,23 +363,23 @@ function PresetsPanel() {
 
   return (
     <div className="space-y-4" data-section-match>
-      <p className="text-xs text-[var(--muted)]">{i18n("presetsDescription")}</p>
+      <p className="text-xs text-[var(--text-muted)]">{i18n("presetsDescription")}</p>
 
       {message && (
-        <div className="rounded-[var(--panel-radius)] border border-[var(--accent)] bg-[var(--accent-soft)] px-3 py-2 text-xs text-[var(--foreground)]">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--accent)] bg-[var(--accent-soft)] px-3 py-2 text-xs text-[var(--text-primary)]">
           {message}
         </div>
       )}
 
       <div className="space-y-2">
-        <p className="text-xs font-medium text-[var(--foreground)]">{i18n("builtInPresets")}</p>
+        <p className="text-xs font-medium text-[var(--text-primary)]">{i18n("builtInPresets")}</p>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {BUILT_IN_PRESETS.map((preset) => (
             <button
               key={preset.id}
               type="button"
               onClick={() => handleApply(preset)}
-              className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 text-left transition-colors hover:border-[var(--accent-primary)] backdrop-blur-[var(--panel-blur)]"
+              className="min-h-[44px] rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 text-left transition-colors hover:border-[var(--accent-primary)] backdrop-blur-[var(--panel-blur)]"
             >
               <div className="flex items-center gap-2 text-sm font-medium">
                 <Icon name={preset.icon} className="h-4 w-4 text-[var(--accent-primary)]" />
@@ -384,7 +392,7 @@ function PresetsPanel() {
       </div>
 
       <div className="space-y-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 backdrop-blur-[var(--panel-blur)]">
-        <p className="text-xs font-medium text-[var(--foreground)]">{i18n("saveCurrentAsPreset")}</p>
+        <p className="text-xs font-medium text-[var(--text-primary)]">{i18n("saveCurrentAsPreset")}</p>
         <Input
           type="text"
           value={newPresetName}
@@ -406,7 +414,7 @@ function PresetsPanel() {
         <button
           type="button"
           onClick={handleExtract}
-          className="w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent-primary)] backdrop-blur-[var(--panel-blur)]"
+          className="min-h-[44px] w-full rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent-primary)] backdrop-blur-[var(--panel-blur)]"
         >
           {i18n("saveCurrentPreset")}
         </button>
@@ -414,30 +422,30 @@ function PresetsPanel() {
 
       {customPresets.length > 0 && (
         <div className="space-y-2">
-          <p className="text-xs font-medium text-[var(--foreground)]">{i18n("customPresets")}</p>
+          <p className="text-xs font-medium text-[var(--text-primary)]">{i18n("customPresets")}</p>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {customPresets.map((preset) => (
               <div
                 key={preset.id}
-                className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 backdrop-blur-[var(--panel-blur)]"
+                className="flex min-h-[44px] items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 backdrop-blur-[var(--panel-blur)]"
               >
                 <button
                   type="button"
                   onClick={() => handleApply(preset)}
-                  className="flex-1 text-left"
+                  className="min-h-[44px] flex-1 text-left"
                 >
                   <div className="flex items-center gap-2 text-sm font-medium">
                     <Icon name={preset.icon} className="h-4 w-4 text-[var(--accent-primary)]" />
                     {preset.name}
                   </div>
                   {preset.description && (
-                    <div className="mt-1 text-xs text-[var(--muted)]">{preset.description}</div>
+                    <div className="mt-1 text-xs text-[var(--text-muted)]">{preset.description}</div>
                   )}
                 </button>
                 <button
                   type="button"
                   onClick={() => setCustomPresets((prev) => removeCustomPreset(prev, preset.id))}
-                  className="rounded p-1 text-[var(--text-muted)] transition-colors hover:text-[var(--accent-primary)]"
+                  className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded p-1 text-[var(--text-muted)] transition-colors hover:text-[var(--accent-primary)]"
                   aria-label={i18n("delete")}
                 >
                   <Icon name="trash-2" className="h-4 w-4" />
@@ -452,14 +460,14 @@ function PresetsPanel() {
         <button
           type="button"
           onClick={handleExport}
-          className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent-primary)] backdrop-blur-[var(--panel-blur)]"
+          className="min-h-[44px] flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent-primary)] backdrop-blur-[var(--panel-blur)]"
         >
           {i18n("exportPresets")}
         </button>
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent-primary)] backdrop-blur-[var(--panel-blur)]"
+          className="min-h-[44px] flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent-primary)] backdrop-blur-[var(--panel-blur)]"
         >
           {i18n("importPresets")}
         </button>
@@ -479,20 +487,34 @@ function PresetsPanel() {
 function SoundPackPreview() {
   const { play } = useSound();
   const i18n = useI18n();
+  const { settings } = useSettings();
 
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3" data-section-match>
-      {SOUND_PACKS.map((pack) => (
-        <button
-          key={pack}
-          type="button"
-          onClick={() => play("click", pack)}
-          className="flex items-center justify-center gap-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-2 text-xs font-medium transition-colors hover:border-[var(--accent-primary)] backdrop-blur-[var(--panel-blur)]"
-        >
-          <Icon name="play" className="h-3 w-3" />
-          {i18n("preview")}
-        </button>
-      ))}
+      {SOUND_PACKS.map((pack) => {
+        const active = settings.soundPack === pack;
+        return (
+          <button
+            key={pack}
+            type="button"
+            onClick={() => play("click", pack)}
+            className={`group flex min-h-[44px] flex-col items-center justify-center gap-1.5 rounded-[var(--panel-radius)] border p-2.5 text-[10px] font-medium transition-all active:scale-95 ${
+              active
+                ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] shadow-[0_0_12px_-4px_var(--accent-primary)]"
+                : "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--text-primary)]/[0.03]"
+            }`}
+          >
+            <span className="flex items-center gap-1.5">
+              <Icon name={SOUND_PACK_ICONS[pack] || "music"} className="h-4 w-4" />
+              {i18n(`soundPack${pack.charAt(0).toUpperCase() + pack.slice(1)}`)}
+            </span>
+            <span className="flex items-center gap-1 text-[var(--text-muted)] group-hover:text-[var(--text-primary)]">
+              <Icon name="play" className="h-3 w-3" />
+              {i18n("preview")}
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -562,32 +584,38 @@ function RawSettingsPanel() {
   return (
     <div className="space-y-3" data-section-match>
       {message && (
-        <div className="rounded-[var(--panel-radius)] border border-[var(--accent)] bg-[var(--accent-soft)] px-3 py-2 text-xs text-[var(--foreground)]">
+        <div className="rounded-[var(--panel-radius)] border border-[var(--accent)] bg-[var(--accent-soft)] px-3 py-2 text-xs text-[var(--text-primary)]">
           {message}
         </div>
       )}
-      <div className="flex items-center gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <button
           type="button"
           onClick={handleExport}
-          className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent-primary)] backdrop-blur-[var(--panel-blur)]"
+          className="group flex min-h-[44px] items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 py-3 text-sm font-medium transition-all hover:border-[var(--accent-primary)]/50 hover:bg-[var(--text-primary)]/[0.03] active:scale-95 backdrop-blur-[var(--panel-blur)]"
         >
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+            <Icon name="download" className="h-4 w-4" />
+          </span>
           {i18n("exportPresets")}
         </button>
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="flex-1 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent-primary)] backdrop-blur-[var(--panel-blur)]"
+          className="group flex min-h-[44px] items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-4 py-3 text-sm font-medium transition-all hover:border-[var(--accent-primary)]/50 hover:bg-[var(--text-primary)]/[0.03] active:scale-95 backdrop-blur-[var(--panel-blur)]"
         >
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+            <Icon name="upload" className="h-4 w-4" />
+          </span>
           {i18n("importPresets")}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/json"
+            onChange={(e) => handleImport(e.target.files?.[0] || null)}
+            className="hidden"
+          />
         </button>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="application/json"
-          onChange={(e) => handleImport(e.target.files?.[0] || null)}
-          className="hidden"
-        />
       </div>
     </div>
   );
@@ -1021,10 +1049,11 @@ export default function SettingsContent({
       {
         key: "ambientSound",
         label: i18n("ambientSound"),
-        type: "button-grid",
-        options: AMBIENT_TYPES.map((type) => ({ id: type, label: i18n(`ambientSound${type.charAt(0).toUpperCase() + type.slice(1)}`) })),
-        cols: 3,
+        type: "custom",
         keywords: ["son", "ambiance", "bruit"],
+        render: (value, onChange) => (
+          <AmbientSoundControl value={String(value)} onChange={onChange} />
+        ),
       },
     ],
     [i18n, soundVolumeFields]
@@ -1159,6 +1188,7 @@ export default function SettingsContent({
   }, [allVisibleSections]);
 
   const categoryRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const previousQueryRef = useRef(form.query);
 
   useEffect(() => {
     const root = contentRef?.current;
@@ -1178,6 +1208,24 @@ export default function SettingsContent({
     Object.values(categoryRefs.current).forEach((el) => el && observer.observe(el));
     return () => observer.disconnect();
   }, [contentRef, onCategoryChange, allVisibleSections]);
+
+  useEffect(() => {
+    if (!form.query.trim()) {
+      previousQueryRef.current = form.query;
+      return;
+    }
+    if (previousQueryRef.current.trim()) {
+      previousQueryRef.current = form.query;
+      return;
+    }
+    previousQueryRef.current = form.query;
+    const firstCategory = CATEGORY_ORDER.find((c) => (sectionsByCategory.get(c.id)?.length ?? 0) > 0);
+    if (!firstCategory) return;
+    const el = categoryRefs.current[firstCategory.id];
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [form.query, sectionsByCategory]);
 
   const renderSection = (section: SectionDef) => {
     const modifiedCount =
@@ -1205,7 +1253,21 @@ export default function SettingsContent({
   };
 
   return (
-    <div className="w-full space-y-8 pb-12">
+    <div className="w-full space-y-8 pb-24">
+      {form.query.trim() && (
+        <div
+          className="flex items-center justify-between rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-3 py-2 text-xs text-[var(--text-muted)]"
+          role="status"
+          aria-live="polite"
+        >
+          <span>
+            {allVisibleSections.length} {allVisibleSections.length <= 1 ? "résultat" : "résultats"} pour « {form.query} »
+          </span>
+          {allVisibleSections.length === 0 && (
+            <span className="text-[var(--danger)]">Aucun paramètre trouvé.</span>
+          )}
+        </div>
+      )}
       {CATEGORY_ORDER.map((category) => {
         const sections = sectionsByCategory.get(category.id) || [];
         if (sections.length === 0) return null;
@@ -1218,7 +1280,7 @@ export default function SettingsContent({
             className="space-y-4"
           >
             {category.id === "advanced" && (
-              <h2 className="sticky top-0 z-10 -mx-1 mb-2 flex items-center gap-2 rounded-[var(--panel-radius)] border border-white/[0.06] bg-[var(--panel-bg)]/80 px-4 py-2 text-sm font-semibold text-[var(--foreground)] backdrop-blur-[var(--panel-blur)]">
+              <h2 className="sticky top-0 z-10 -mx-1 mb-2 flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--panel-bg)]/80 px-4 py-2 text-sm font-semibold text-[var(--text-primary)] backdrop-blur-[var(--panel-blur)]">
                 <Icon name={category.icon} className="h-4 w-4 text-[var(--accent)]" />
                 {category.label}
               </h2>

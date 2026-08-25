@@ -44,8 +44,11 @@ export function useBoot() {
 
 const PUBLIC_ROUTES = ["/login", "/password-recovery", "/reset-password"];
 
-const BOOT_TIMEOUT_MS = 10_000;
-const BOOT_MIN_DURATION_MS = 1_800;
+const BOOT_TIMEOUT_MS = 8_000;
+const BOOT_MIN_DURATION_MS = 600;
+const SEGMENT_1 = 150;
+const SEGMENT_2 = 300;
+const SEGMENT_3 = 450;
 
 function isPublicRoute(pathname: string | null): boolean {
   if (!pathname) return false;
@@ -74,9 +77,21 @@ export default function BootProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [bootProgress, setBootProgress] = useState(0);
   const [bootReady, setBootReady] = useState(false);
+  const bootReadyRef = useRef(false);
   const bootStartRef = useRef<number | null>(null);
+  const donationReturnRef = useRef(false);
 
   const publicRoute = resolvePublicRoute(pathname);
+
+  useEffect(() => {
+    bootReadyRef.current = bootReady;
+  }, [bootReady]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      donationReturnRef.current = new URLSearchParams(window.location.search).get("supported") === "true";
+    }
+  }, []);
 
   const check = useCallback(() => {
     if (typeof window !== "undefined" && !navigator.onLine) {
@@ -172,19 +187,27 @@ export default function BootProvider({ children }: { children: ReactNode }) {
     let raf = 0;
 
     const tick = () => {
+      if (bootReadyRef.current) return;
       const start = bootStartRef.current ?? Date.now();
       const elapsed = Date.now() - start;
       const authResolved = !authLoading && !authError;
+      const canShowApp = authResolved && profileLoaded;
+
+      if (donationReturnRef.current && canShowApp) {
+        setBootProgress(100);
+        setBootReady(true);
+        return;
+      }
 
       let target = 0;
-      if (elapsed < 400) {
-        target = (elapsed / 400) * 25;
-      } else if (elapsed < 900) {
-        target = 25 + ((elapsed - 400) / 500) * 35;
-      } else if (elapsed < 1_400) {
-        target = 60 + ((elapsed - 900) / 500) * 30;
+      if (elapsed < SEGMENT_1) {
+        target = (elapsed / SEGMENT_1) * 25;
+      } else if (elapsed < SEGMENT_2) {
+        target = 25 + ((elapsed - SEGMENT_1) / (SEGMENT_2 - SEGMENT_1)) * 35;
+      } else if (elapsed < SEGMENT_3) {
+        target = 60 + ((elapsed - SEGMENT_2) / (SEGMENT_3 - SEGMENT_2)) * 30;
       } else if (elapsed < BOOT_MIN_DURATION_MS) {
-        target = 90 + ((elapsed - 1_400) / (BOOT_MIN_DURATION_MS - 1_400)) * 10;
+        target = 90 + ((elapsed - SEGMENT_3) / (BOOT_MIN_DURATION_MS - SEGMENT_3)) * 10;
       } else {
         target = 100;
       }
@@ -198,7 +221,6 @@ export default function BootProvider({ children }: { children: ReactNode }) {
       const next = Math.min(100, Math.max(0, Math.round(target)));
       setBootProgress(next);
 
-      const canShowApp = authResolved && profileLoaded;
       if (next >= 100 && canShowApp) {
         setBootReady(true);
         return;
@@ -214,16 +236,16 @@ export default function BootProvider({ children }: { children: ReactNode }) {
   if (state === "error") {
     return (
       <BootContext.Provider value={{ state, retry, continueOffline }}>
-        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-5 bg-[var(--background)] p-6">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex flex-col items-center justify-center gap-5 bg-[var(--background)] p-6">
           <motion.div
             className="flex flex-col items-center gap-3"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
           >
             <BrandMark size={72} />
-            <span className="text-2xl font-semibold tracking-tight text-[var(--foreground)]">ETHONE</span>
+            <span className="text-2xl font-semibold tracking-tight text-[var(--text-primary)]">ETHONE</span>
           </motion.div>
-          <p className="max-w-sm text-center text-sm text-[var(--muted)]">
+          <p className="max-w-sm text-center text-sm text-[var(--text-muted)]">
             {error || "ETHONE n'a pas pu démarrer correctement."}
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
@@ -237,7 +259,7 @@ export default function BootProvider({ children }: { children: ReactNode }) {
             <button
               type="button"
               onClick={continueOffline}
-              className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-5 py-2.5 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
+              className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-5 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
             >
               Continuer hors ligne
             </button>
@@ -250,16 +272,16 @@ export default function BootProvider({ children }: { children: ReactNode }) {
   if (state === "offline") {
     return (
       <BootContext.Provider value={{ state, retry, continueOffline }}>
-        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-5 bg-[var(--background)] p-6">
+        <div className="fixed inset-0 z-[var(--z-modal)] flex flex-col items-center justify-center gap-5 bg-[var(--background)] p-6">
           <motion.div
             className="flex flex-col items-center gap-3"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
           >
             <BrandMark size={72} />
-            <span className="text-2xl font-semibold tracking-tight text-[var(--foreground)]">ETHONE</span>
+            <span className="text-2xl font-semibold tracking-tight text-[var(--text-primary)]">ETHONE</span>
           </motion.div>
-          <p className="max-w-sm text-center text-sm text-[var(--muted)]">
+          <p className="max-w-sm text-center text-sm text-[var(--text-muted)]">
             Vous êtes hors ligne. ETHONE nécessite une connexion pour démarrer.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
@@ -273,7 +295,7 @@ export default function BootProvider({ children }: { children: ReactNode }) {
             <button
               type="button"
               onClick={continueOffline}
-              className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-5 py-2.5 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
+              className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-5 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
             >
               Continuer hors ligne
             </button>

@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { fetchWorker, uploadPublic } from "@/lib/api";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useUploadQueue } from "@/lib/upload-queue";
 import { Icon } from "@/lib/icons";
 import Card3D from "@/components/Card3D";
 import Input from "@/components/Input";
@@ -29,6 +30,7 @@ type Drop = {
 
 function DropContent() {
   const i18n = useI18n();
+  const queue = useUploadQueue();
   const searchParams = useSearchParams();
   const slug = searchParams.get("slug") || "";
   const [password, setPassword] = useState(searchParams.get("password") || "");
@@ -71,7 +73,9 @@ function DropContent() {
       setSuccess(i18n("uploadedFile").replace("{{name}}", file.name));
       fetchWorker(resolveUrl).then((res) => res?.data?.drop && setDrop(res.data.drop));
     } catch (err) {
-      setError(String(err instanceof Error ? err.message : err));
+      const message = String(err instanceof Error ? err.message : err);
+      setError(message);
+      throw new Error(message);
     } finally {
       setUploading(false);
     }
@@ -155,7 +159,7 @@ function DropContent() {
                   multiple
                   className="hidden"
                   disabled={uploading}
-                  onChange={(e) => e.target.files && Array.from(e.target.files).forEach(upload)}
+                  onChange={(e) => e.target.files && queue.add(Array.from(e.target.files), upload)}
                 />
               </label>
               {uploading && <p className="text-sm text-[var(--muted)]">{i18n("uploading")}</p>}

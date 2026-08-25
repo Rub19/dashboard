@@ -37,8 +37,8 @@ function BillingCard({
           <Icon name={icon} className="h-4 w-4" />
         </div>
         <div className="min-w-0 flex-1">
-          <h3 className="truncate text-sm font-bold text-white">{title}</h3>
-          <p className="truncate text-[10px] text-zinc-500">{description}</p>
+          <h3 className="truncate text-sm font-bold text-[var(--text-primary)]">{title}</h3>
+          <p className="truncate text-[10px] text-[var(--text-muted)]">{description}</p>
         </div>
       </div>
       {children}
@@ -80,12 +80,12 @@ export default function BillingTab() {
       >
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-2xl font-bold tracking-tight text-white">—</span>
-            <span className="rounded-lg border border-zinc-500/20 bg-zinc-500/10 px-2 py-0.5 text-[10px] font-medium text-zinc-400">
+            <span className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">—</span>
+            <span className="rounded-lg border border-zinc-500/20 bg-zinc-500/10 px-2 py-0.5 text-[10px] font-medium text-[var(--text-muted)]">
               {i18n("noPlan", "Aucun abonnement")}
             </span>
           </div>
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs text-[var(--text-muted)]">
             {i18n("noPlanDescription", "Aucun plan actif pour le moment.")}
           </p>
           <button
@@ -108,18 +108,18 @@ export default function BillingTab() {
       >
         <div className="space-y-3">
           <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-bold tracking-tight text-white">
-              {storage.used.toFixed(1)} <span className="text-sm text-zinc-500">/ {storage.total.toFixed(0)} GB</span>
+            <span className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">
+              {storage.used.toFixed(1)} <span className="text-sm text-[var(--text-muted)]">/ {storage.total.toFixed(0)} GB</span>
             </span>
-            <span className="text-xs font-mono text-zinc-400">{percent}%</span>
+            <span className="text-xs font-mono text-[var(--text-muted)]">{percent}%</span>
           </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-white/[0.05]">
+          <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--text-primary)]/[0.05]">
             <div
               className="h-full rounded-full bg-[--accent-primary] transition-all"
               style={{ width: `${percent}%` }}
             />
           </div>
-          <p className="text-xs text-zinc-500">{i18n("storageHint") || "Vous utilisez moins de 15% de votre quota."}</p>
+          <p className="text-xs text-[var(--text-muted)]">{i18n("storageHint") || "Vous utilisez moins de 15% de votre quota."}</p>
         </div>
       </BillingCard>
 
@@ -132,10 +132,10 @@ export default function BillingTab() {
       >
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-2xl font-bold tracking-tight text-white">—</span>
-            <Icon name="refresh-cw" className="h-4 w-4 text-zinc-500" />
+            <span className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">—</span>
+            <Icon name="refresh-cw" className="h-4 w-4 text-[var(--text-muted)]" />
           </div>
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs text-[var(--text-muted)]">
             {i18n("noBillingCycle", "Aucun cycle de facturation configuré.")}
           </p>
         </div>

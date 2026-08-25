@@ -181,7 +181,7 @@ export default function FilesAdminPanel() {
             type="button"
             onClick={() => setTab(t.id)}
             className={`flex flex-1 items-center justify-center gap-1.5 rounded-[var(--panel-radius)] py-2 text-xs font-medium transition-colors sm:text-sm ${
-              tab === t.id ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "text-[var(--muted)] hover:text-[var(--foreground)]"
+              tab === t.id ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             }`}
           >
             <Icon name={t.icon} className="h-4 w-4" />
@@ -226,14 +226,14 @@ export default function FilesAdminPanel() {
                   <Icon name={s.icon} className="h-4 w-4 text-[var(--accent)]" />
                   <span className={`text-2xl font-bold ${s.warn ? "text-amber-400" : ""}`}>{s.value}</span>
                 </div>
-                <p className="mt-2 text-xs text-[var(--muted)]">{s.label}</p>
+                <p className="mt-2 text-xs text-[var(--text-muted)]">{s.label}</p>
               </Card3D>
             ))}
           </div>
 
           <Card3D>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-[var(--muted)]">{i18n("storageUsed")}</span>
+              <span className="text-[var(--text-muted)]">{i18n("storageUsed")}</span>
               <span className="font-medium">{dashboard ? formatBytes(dashboard.totalSize) : "-"} / {formatBytes(STORAGE_CAP)}</span>
             </div>
             <div className="mt-2 h-2 w-full overflow-hidden rounded-xl bg-[var(--panel-bg)]">
@@ -242,7 +242,7 @@ export default function FilesAdminPanel() {
                 style={{ width: `${usagePct}%` }}
               />
             </div>
-            <p className="mt-1 text-right text-[10px] text-[var(--muted)]">{usagePct}%</p>
+            <p className="mt-1 text-right text-[10px] text-[var(--text-muted)]">{usagePct}%</p>
           </Card3D>
 
           {expiredCount > 0 && (
@@ -264,12 +264,12 @@ export default function FilesAdminPanel() {
                 {dashboard.topFiles.map((f, i) => (
                   <div key={i} className="flex items-center justify-between text-sm">
                     <span className="min-w-0 truncate">{f.name || "-"}</span>
-                    <span className="text-xs text-[var(--muted)]">{formatBytes(f.size)}</span>
+                    <span className="text-xs text-[var(--text-muted)]">{formatBytes(f.size)}</span>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-[var(--muted)]">{i18n("noFiles")}</p>
+              <p className="text-sm text-[var(--text-muted)]">{i18n("noFiles")}</p>
             )}
           </Card3D>
         </div>
@@ -299,7 +299,7 @@ export default function FilesAdminPanel() {
 
           {items.length === 0 ? (
             <Card3D>
-              <p className="text-sm text-[var(--muted)]">{tab === "shares" ? i18n("noShares") : i18n("noDrops")}</p>
+              <p className="text-sm text-[var(--text-muted)]">{tab === "shares" ? i18n("noShares") : i18n("noDrops")}</p>
             </Card3D>
           ) : (
             items.map((item) => {
@@ -312,7 +312,7 @@ export default function FilesAdminPanel() {
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
                       <p className="truncate font-medium">{label}</p>
-                      <p className="text-xs text-[var(--muted)]">
+                      <p className="text-xs text-[var(--text-muted)]">
                         {i18n("visibility")}: {item.visibility || "-"}
                         {share ? ` · ${i18n("downloads")}: ${share.downloadCount || 0}` : ` · ${i18n("files")}: ${drop?.fileCount || 0}`}
                         {item.expiresAt ? ` · ${i18n("expiresAt")}: ${new Date(item.expiresAt).toLocaleDateString()}` : ""}
@@ -321,7 +321,7 @@ export default function FilesAdminPanel() {
                     <button
                       type="button"
                       onClick={() => (isShare ? revokeShare(item.id) : revokeDrop(item.id))}
-                      className="rounded p-1.5 text-[var(--muted)] hover:text-[var(--danger)]"
+                      className="rounded p-1.5 text-[var(--text-muted)] hover:text-[var(--danger)]"
                       aria-label={i18n("revoke")}
                     >
                       <Icon name="trash-2" className="h-4 w-4" />

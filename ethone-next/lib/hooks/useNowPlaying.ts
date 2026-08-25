@@ -20,7 +20,7 @@ function asNum(value: unknown): number | undefined {
 }
 
 function getArtworkUrl(np: ApiData | null): string | undefined {
-  return asStr(np?.artworkUrl || np?.cover || np?.artwork);
+  return asStr(np?.artworkUrl || np?.cover || np?.artwork || np?.image || np?.imageUrl || np?.albumImageUrl || np?.thumbnail || np?.albumArt);
 }
 
 function firstItem(list: unknown): string | undefined {
@@ -41,7 +41,11 @@ function mapNowPlaying(raw: unknown): NowPlaying | null {
 
   const trackCovers = Array.isArray(track.covers) ? track.covers : [];
   const dataCovers = Array.isArray(data.covers) ? data.covers : [];
-  const firstCover = asStr(track.cover ?? track.artworkUrl ?? track.artwork ?? data.cover ?? data.artworkUrl ?? data.artwork) || firstItem(trackCovers) || firstItem(dataCovers);
+  const firstCover =
+    asStr(track.cover ?? track.artworkUrl ?? track.artwork ?? track.image ?? track.imageUrl ?? track.albumImageUrl ?? track.thumbnail ?? track.albumArt ??
+      data.cover ?? data.artworkUrl ?? data.artwork ?? data.image ?? data.imageUrl ?? data.albumImageUrl ?? data.thumbnail ?? data.albumArt) ||
+    firstItem(trackCovers) ||
+    firstItem(dataCovers);
 
   const covers: string[] = [];
   {
@@ -53,12 +57,10 @@ function mapNowPlaying(raw: unknown): NowPlaying | null {
         covers.push(s);
       }
     };
-    add(track.cover);
-    add(track.artworkUrl);
-    add(track.artwork);
-    add(data.cover);
-    add(data.artworkUrl);
-    add(data.artwork);
+    for (const key of ["cover", "artworkUrl", "artwork", "image", "imageUrl", "albumImageUrl", "thumbnail", "albumArt"]) {
+      add(track[key]);
+      add(data[key]);
+    }
     for (const c of trackCovers) add(c);
     for (const c of dataCovers) add(c);
   }

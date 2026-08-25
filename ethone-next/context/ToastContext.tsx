@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useCallback, useMemo } from "react";
+import { createContext, useContext, useCallback, useMemo, useRef } from "react";
 import { toast as sonnerToast, Toaster } from "sonner";
 import {
   Check,
@@ -8,12 +8,14 @@ import {
   ClipboardCheck,
   Cloud,
   FileText,
+  Loader2,
   Trash2,
   Unlink,
   X,
 } from "lucide-react";
 import { useSound } from "@/lib/sound";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useIsMobile } from "@/lib/hooks/useMediaQuery";
 import RichToast, { type RichToastVariant } from "@/components/RichToast";
 import FlagIcon, { LANGUAGE_LABELS, type Language } from "@/components/FlagIcon";
 import DiscordIcon from "@/components/DiscordIcon";
@@ -29,6 +31,7 @@ export type ToastInput = {
   description?: string;
   message?: string;
   duration?: number;
+  dedupKey?: string;
   action?: { label: string; onClick: () => void };
   icon?: React.ReactNode;
 };
@@ -84,10 +87,10 @@ const SOUND_MAP: Record<ToastType, string | null> = {
 };
 
 const VARIANT_BORDER: Record<Exclude<ToastType, "loading">, string> = {
-  success: "border-[--accent-primary]",
-  error: "border-rose-500/20",
-  warning: "border-amber-500/20",
-  info: "border-[--info]",
+  success: "border-[var(--success)]/40",
+  error: "border-[var(--danger)]/40",
+  warning: "border-[var(--warning)]/40",
+  info: "border-[var(--info)]/40",
 };
 
 function DiscordAvatar({ avatarUrl }: { avatarUrl?: string }) {
@@ -111,6 +114,8 @@ function DiscordAvatar({ avatarUrl }: { avatarUrl?: string }) {
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const { play } = useSound();
   const i18n = useI18n();
+  const isMobile = useIsMobile();
+  const activeDedups = useRef<Map<string, string>>(new Map());
 
   const show = useCallback(
     (input: ToastInput) => {
@@ -122,6 +127,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           ? Infinity
           : (input.duration ?? DEFAULT_DURATION);
 
+      if (input.dedupKey) {
+        const existing = activeDedups.current.get(input.dedupKey);
+        if (existing) sonnerToast.dismiss(existing);
+      }
+
       const sound = SOUND_MAP[type];
       if (sound) play(sound as Parameters<typeof play>[0]);
 
@@ -132,50 +142,64 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           }
         : undefined;
 
+      let toastId: string | number;
       if (input.icon && type !== "loading") {
         const border =
           VARIANT_BORDER[type as keyof typeof VARIANT_BORDER] || "border-white/10";
 
-        const id = sonnerToast.custom(
+        toastId = sonnerToast.custom(
           () => (
             <RichToast
               icon={input.icon}
               title={title}
               description={description}
               variant={type as RichToastVariant}
+              action={input.action}
+              duration={duration}
             />
           ),
-          { duration, action, className: border }
+          { duration, className: border }
         );
-        return String(id);
+      } else {
+        const common = {
+          description,
+          duration,
+          ...(action ? { action } : {}),
+        };
+
+        switch (type) {
+          case "success":
+            toastId = sonnerToast.success(title, common);
+            break;
+          case "error":
+            toastId = sonnerToast.error(title, common);
+            break;
+          case "warning":
+            toastId = sonnerToast.warning(title, common);
+            break;
+          case "loading":
+            toastId = sonnerToast.loading(title, common);
+            break;
+          default:
+            toastId = sonnerToast(title, common);
+            break;
+        }
       }
 
-      const common = {
-        description,
-        duration,
-        ...(action ? { action } : {}),
-      };
+      const id = String(toastId);
 
-      let id: string | number;
-      switch (type) {
-        case "success":
-          id = sonnerToast.success(title, common);
-          break;
-        case "error":
-          id = sonnerToast.error(title, common);
-          break;
-        case "warning":
-          id = sonnerToast.warning(title, common);
-          break;
-        case "loading":
-          id = sonnerToast.loading(title, common);
-          break;
-        default:
-          id = sonnerToast(title, common);
-          break;
+      if (input.dedupKey) {
+        activeDedups.current.set(input.dedupKey, id);
+        const clearAfter =
+          typeof duration === "number" && duration !== Infinity ? duration : DEFAULT_DURATION;
+        setTimeout(() => {
+          if (activeDedups.current.get(input.dedupKey as string) === id) {
+            activeDedups.current.delete(input.dedupKey as string);
+          }
+        }, clearAfter);
       }
 
-      return String(id);
+      return id;
     },
     [play]
   );
@@ -336,27 +360,32 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     <ToastContext.Provider value={api}>
       {children}
       <Toaster
-        position="bottom-right"
+        position={isMobile ? "bottom-center" : "bottom-right"}
         closeButton
         toastOptions={{
           unstyled: true,
           classNames: {
             toast:
-              "group relative flex w-[22rem] max-w-[calc(100vw-1.5rem)] items-start gap-3 rounded-xl border border-white/10 bg-[#0C0C0E]/95 p-3.5 text-sm text-white shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-md",
-            title: "font-medium text-white",
-            description: "mt-0.5 text-xs text-zinc-300",
+              "group relative flex w-[22rem] max-w-[calc(100vw-1.5rem)] items-start gap-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-3.5 text-sm text-[var(--text-primary)] shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-md pointer-events-auto",
+            title: "font-medium",
+            description: "mt-0.5 text-xs text-[var(--text-muted)]",
             actionButton:
-              "ml-auto rounded-lg border border-white/[0.08] bg-white/[0.1] px-2.5 py-1.5 text-[11px] font-semibold text-white transition-colors hover:bg-white/[0.2]",
+              "ml-auto rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1.5 text-[11px] font-semibold text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]",
             cancelButton: "hidden",
             closeButton:
-              "absolute right-2 top-2 rounded-md p-1 text-zinc-400 opacity-0 transition-all hover:bg-white/[0.1] hover:text-white group-hover:opacity-100",
-            error: "border-rose-500/20",
-            success: "border-[--accent-primary]",
-            warning: "border-amber-500/20",
-            info: "border-[--info]",
+              "absolute right-2 top-2 rounded-md p-1 text-[var(--text-muted)] opacity-60 transition-all hover:bg-[var(--surface)] hover:text-[var(--text-primary)] hover:opacity-100 focus:opacity-100",
+            error: "border-[var(--danger)]/30 text-[var(--danger)] shadow-[0_4px_20px_rgba(244,63,94,0.12)]",
+            success: "border-[var(--success)]/30 text-[var(--success)] shadow-[0_4px_20px_rgba(52,211,153,0.12)]",
+            warning: "border-[var(--warning)]/30 text-[var(--warning)] shadow-[0_4px_20px_rgba(245,158,11,0.12)]",
+            info: "border-[var(--info)]/30 text-[var(--info)] shadow-[0_4px_20px_rgba(56,189,248,0.12)]",
           },
         }}
         icons={{
+          success: <span className="h-2.5 w-2.5 rounded-full bg-[var(--success)] shadow-[0_0_6px_var(--success)]" />,
+          error: <span className="h-2.5 w-2.5 rounded-full bg-[var(--danger)] shadow-[0_0_6px_var(--danger)]" />,
+          warning: <span className="h-2.5 w-2.5 rounded-full bg-[var(--warning)] shadow-[0_0_6px_var(--warning)]" />,
+          info: <span className="h-2.5 w-2.5 rounded-full bg-[var(--info)] shadow-[0_0_6px_var(--info)]" />,
+          loading: <Loader2 className="h-4 w-4 animate-spin text-[var(--accent-primary)]" />,
           close: <X className="h-3.5 w-3.5" />,
         }}
       />

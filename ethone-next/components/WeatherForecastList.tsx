@@ -46,18 +46,18 @@ export default function WeatherForecastList({ days }: { days: ForecastDay[] }) {
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.15, delay: i * 0.04, ease: "easeOut" }}
-            className="flex items-center justify-between border-b border-white/[0.04] px-2 py-2.5 last:border-none hover:rounded-xl hover:bg-white/[0.02] transition-colors"
+            className="flex items-center justify-between border-b border-[var(--text-primary)]/[0.04] px-2 py-2.5 last:border-none hover:rounded-xl hover:bg-[var(--text-primary)]/[0.02] transition-colors"
           >
-            <span className="w-12 text-xs font-medium text-zinc-300">{formatShortDay(day.date, locale)}</span>
-            <Icon name={icon} className={`h-4 w-4 ${color}`} />
-            <div className="mx-3 h-1 flex-1 rounded-xl bg-white/[0.04]">
+            <span className="w-12 text-xs font-medium text-[var(--text-primary)]">{formatShortDay(day.date, locale)}</span>
+            <Icon pack="phosphor" name={icon} className={`h-4 w-4 ${color}`} />
+            <div className="mx-3 h-1 flex-1 rounded-xl bg-[var(--text-primary)]/[0.04]">
               <div
                 className="relative h-full rounded-xl bg-gradient-to-r from-[--info] via-[--warning] to-[--danger]"
                 style={{ marginLeft: `${left}%`, width: `${Math.max(width, 4)}%` }}
               />
             </div>
-            <span className="text-xs font-mono text-zinc-400">
-              {min !== undefined ? `${Math.round(min)}°` : "—"} / <span className="font-semibold text-white">{max !== undefined ? `${Math.round(max)}°` : "—"}</span>
+            <span className="text-xs font-mono text-[var(--text-muted)]">
+              {min !== undefined ? `${Math.round(min)}°` : "—"} / <span className="font-semibold text-[var(--text-primary)]">{max !== undefined ? `${Math.round(max)}°` : "—"}</span>
             </span>
           </motion.div>
         );

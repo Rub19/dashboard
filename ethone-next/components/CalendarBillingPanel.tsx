@@ -128,17 +128,17 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
   const hasUnpaid = dayBills.some((b) => !b.paid);
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/75 p-4 backdrop-blur-2xl">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-[var(--text-primary)]/[0.08] bg-zinc-950/75 p-4 backdrop-blur-2xl">
       <div className="mb-4 flex shrink-0 items-center justify-between gap-3">
         <div>
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-[var(--text-muted)]">
             {selectedDate.toLocaleDateString(settings.language, {
               weekday: "long",
               day: "numeric",
               month: "long",
             })}
           </p>
-          <p className="text-lg font-semibold text-white">
+          <p className="text-lg font-semibold text-[var(--text-primary)]">
             {dayBills.length === 0
               ? i18n("noBillsDay")
               : `${dayBills.length} ${dayBills.length > 1 ? i18n("bills") : i18n("bill")}`}
@@ -149,7 +149,7 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
             <p className="text-sm font-medium text-rose-400">
               {formatCurrency(totalDue, dueCurrency, settings.language)}
             </p>
-            <p className="text-[10px] text-zinc-500">{i18n("dueToday")}</p>
+            <p className="text-[10px] text-[var(--text-muted)]">{i18n("dueToday")}</p>
           </div>
         )}
       </div>
@@ -157,25 +157,25 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
       <div className="min-h-0 flex-1 overflow-y-auto os-scroll">
       <div className="space-y-2">
         {dayBills.map((b) => {
-          const brand = detectBrandMeta(b.label, { icon: "receipt", color: "var(--muted)" });
+          const brand = detectBrandMeta(b.label, { icon: "receipt", color: "var(--text-muted)" });
           return (
             <div
               key={b.id}
-              className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5"
+              className="flex items-center gap-3 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5"
             >
               <span
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-white"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[var(--text-primary)]"
                 style={{ backgroundColor: brand.color }}
               >
                 <Icon name={brand.icon} className="h-4 w-4" />
               </span>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-white">{b.label}</p>
-                <p className="text-[10px] text-zinc-400">
+                <p className="truncate text-sm font-medium text-[var(--text-primary)]">{b.label}</p>
+                <p className="text-[10px] text-[var(--text-muted)]">
                   {i18n(b.category)} · {i18n(b.recurrence)} · {b.paid ? i18n("paid") : i18n("unpaid")}
                 </p>
               </div>
-              <p className="text-sm font-semibold text-white">{formatCurrency(b.amount, b.currency, settings.language)}</p>
+              <p className="text-sm font-semibold text-[var(--text-primary)]">{formatCurrency(b.amount, b.currency, settings.language)}</p>
               <button
                 type="button"
                 onClick={() => togglePaid(b)}
@@ -191,7 +191,7 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
               <button
                 type="button"
                 onClick={() => handleDelete(b)}
-                className="rounded p-1.5 text-[var(--muted)] hover:text-[var(--danger)]"
+                className="rounded p-1.5 text-[var(--text-muted)] hover:text-[var(--danger)]"
                 aria-label={i18n("delete")}
               >
                 <Icon name="trash-2" className="h-4 w-4" />
@@ -202,7 +202,7 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
       </div>
 
       {adding ? (
-        <div className="mt-4 space-y-2 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+        <div className="mt-4 space-y-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-3">
           <Input
             value={label}
             onChange={(e) => setLabel(e.target.value)}

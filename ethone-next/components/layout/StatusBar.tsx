@@ -230,7 +230,7 @@ export default function StatusBar() {
     <footer
       data-v8-status-bar
       data-status-bar
-      className="fixed bottom-0 left-0 z-0 h-[calc(2rem+env(safe-area-inset-bottom))] pb-[env(safe-area-inset-bottom)] w-full select-none border-t border-[var(--panel-border)]/[0.15] bg-[var(--panel-bg)]/25 px-4 text-xs text-[var(--text-primary)] backdrop-blur-[var(--panel-blur)]"
+      className="fixed bottom-0 left-0 z-0 h-[calc(2rem+env(safe-area-inset-bottom))] pb-[env(safe-area-inset-bottom)] w-full select-none border-t border-transparent bg-transparent px-4 text-xs text-[var(--text-primary)]"
     >
       <div className="flex h-full w-full items-center justify-between">
         <div className="flex min-w-0 items-center gap-2">

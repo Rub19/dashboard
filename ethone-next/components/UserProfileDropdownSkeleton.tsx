@@ -3,7 +3,7 @@
 export default function UserProfileDropdownSkeleton() {
   return (
     <div
-      className="group relative flex h-9 items-center gap-2.5 rounded-full border border-[var(--text-primary)]/[0.08] bg-zinc-900/80 pl-1.5 pr-3 text-[var(--text-primary)]"
+      className="group relative flex h-9 items-center gap-2.5 rounded-full border border-[var(--text-primary)]/[0.08] bg-[var(--bg-main)]/80 pl-1.5 pr-3 text-[var(--text-primary)]"
       aria-hidden="true"
     >
       <div className="h-7 w-7 rounded-full bg-[var(--text-primary)]/[0.06]" />

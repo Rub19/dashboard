@@ -54,7 +54,7 @@ function Toggle({ label, checked, onChange }: ToggleProps) {
         }`}
       >
         <span
-          className={`absolute top-1 h-3 w-3 rounded-full bg-[var(--text-primary)] transition-transform dark:bg-zinc-100 ${
+          className={`absolute top-1 h-3 w-3 rounded-full bg-[var(--text-primary)] transition-transform ${
             checked ? "left-5" : "left-1"
           }`}
         />
@@ -168,7 +168,7 @@ export default function DockControlCenter({
             aria-label={i18n("controlCenter")}
           >
             <div
-              className="max-h-[calc(80vh-2.5rem)] space-y-4 overflow-y-auto rounded-lg border border-zinc-200 bg-white/90 p-4 shadow-[0_16px_50px_rgba(0,0,0,0.12)] backdrop-blur-3xl dark:border-[var(--text-primary)]/[0.08] dark:bg-zinc-950/90 dark:shadow-[0_16px_50px_rgba(0,0,0,0.7)]"
+              className="max-h-[calc(80vh-2.5rem)] space-y-4 overflow-y-auto rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-2xl backdrop-blur-3xl"
             >
               <div className="mb-2 flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-[var(--text-primary)]">{i18n("controlCenter")}</h3>

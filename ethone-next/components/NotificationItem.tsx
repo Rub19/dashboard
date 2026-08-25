@@ -20,30 +20,30 @@ const CATEGORY_ICONS: Record<string, string> = {
 };
 
 const CATEGORY_TONES: Record<string, string> = {
-  security: "bg-rose-500/10 text-rose-400",
-  brain: "bg-violet-500/10 text-violet-400",
-  github: "bg-orange-500/10 text-orange-400",
-  integration: "bg-indigo-500/10 text-indigo-400",
-  system: "bg-zinc-500/10 text-[var(--text-muted)]",
-  important: "bg-amber-500/10 text-amber-400",
-  messages: "bg-sky-500/10 text-sky-400",
+  security: "bg-[var(--danger)]/10 text-[var(--danger)]",
+  brain: "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]",
+  github: "bg-[var(--warning)]/10 text-[var(--warning)]",
+  integration: "bg-[var(--info)]/10 text-[var(--info)]",
+  system: "bg-[var(--text-muted)]/10 text-[var(--text-muted)]",
+  important: "bg-[var(--warning)]/10 text-[var(--warning)]",
+  messages: "bg-[var(--info)]/10 text-[var(--info)]",
   activity: "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]",
-  tracker: "bg-pink-500/10 text-pink-400",
-  mail: "bg-sky-500/10 text-sky-400",
+  tracker: "bg-[var(--danger)]/10 text-[var(--danger)]",
+  mail: "bg-[var(--info)]/10 text-[var(--info)]",
 };
 
 const PRIORITY_ACCENT: Record<string, string> = {
-  critical: "border-l-red-400",
-  important: "border-l-amber-400",
-  normal: "border-l-sky-400",
-  silent: "border-l-zinc-600",
+  critical: "border-l-[var(--danger)]",
+  important: "border-l-[var(--warning)]",
+  normal: "border-l-[var(--info)]",
+  silent: "border-l-[var(--text-muted)]",
 };
 
 const PRIORITY_BADGE: Record<string, string> = {
-  critical: "bg-red-400/10 text-red-400",
-  important: "bg-amber-400/10 text-amber-400",
-  normal: "bg-sky-400/10 text-sky-400",
-  silent: "bg-zinc-500/10 text-[var(--text-muted)]",
+  critical: "bg-[var(--danger)]/10 text-[var(--danger)]",
+  important: "bg-[var(--warning)]/10 text-[var(--warning)]",
+  normal: "bg-[var(--info)]/10 text-[var(--info)]",
+  silent: "bg-[var(--text-muted)]/10 text-[var(--text-muted)]",
 };
 
 const SNOOZE_OPTIONS: SnoozeDuration[] = ["10m", "1h", "tonight", "tomorrow"];
@@ -156,7 +156,7 @@ export default function NotificationItem({
       exit={{ opacity: 0, height: 0, marginBottom: 0 }}
       transition={{ duration: 0.15, ease: "easeOut" as const }}
       onClick={() => onOpen?.(n)}
-      className={`group relative cursor-pointer overflow-hidden rounded-2xl v8-panel p-3.5 transition-all hover:border-[var(--text-primary)]/[0.14] hover:bg-zinc-900/80 active:scale-[0.99] ${
+      className={`group relative cursor-pointer overflow-hidden rounded-2xl v8-panel p-3.5 transition-all hover:border-[var(--text-primary)]/[0.14] hover:bg-[var(--text-primary)]/[0.06] active:scale-[0.99] ${
         n.read ? "opacity-80" : ""
       } ${accent} border-l-2`}
       data-notification-item
@@ -187,7 +187,7 @@ export default function NotificationItem({
 
           <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] text-[var(--text-muted)]">
             <span className="font-medium text-[var(--text-primary)]">{n.source || categoryLabel}</span>
-            <span className="text-white/20">·</span>
+            <span className="text-[var(--text-primary)]/20">·</span>
             <span>{formatTime(n.timestamp)}</span>
             <span
               className={`rounded-md px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${badge}`}

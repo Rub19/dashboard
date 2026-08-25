@@ -69,7 +69,7 @@ const DockItem = forwardRef<HTMLButtonElement | HTMLAnchorElement, DockItemProps
           />
         )}
         {badge !== undefined && badge > 0 && (
-          <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold text-[var(--text-primary)]">
+          <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--danger)] px-1 text-[10px] font-semibold text-[var(--text-primary)]">
             {badge > 99 ? "99+" : badge}
           </span>
         )}
@@ -80,7 +80,7 @@ const DockItem = forwardRef<HTMLButtonElement | HTMLAnchorElement, DockItemProps
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 4 }}
               transition={{ duration: 0.12, ease: "easeOut" }}
-              className="pointer-events-none absolute -top-8 left-1/2 z-50 -translate-x-1/2 whitespace-nowrap rounded-md border border-white/10 bg-zinc-900/90 px-2 py-0.5 text-[10px] font-medium text-[var(--text-primary)] shadow-lg backdrop-blur-md"
+              className="pointer-events-none absolute -top-8 left-1/2 z-50 -translate-x-1/2 whitespace-nowrap rounded-md border border-[var(--text-primary)]/[0.1] bg-[var(--bg-main)]/90 px-2 py-0.5 text-[10px] font-medium text-[var(--text-primary)] shadow-lg backdrop-blur-md"
             >
               {label}
             </motion.div>

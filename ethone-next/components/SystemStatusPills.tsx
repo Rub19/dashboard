@@ -48,7 +48,7 @@ function StatusPill({ icon, children, onClick, title }: StatusPillProps) {
 }
 
 function Separator() {
-  return <span className="h-3 w-[1px] bg-white/10" />;
+  return <span className="h-3 w-[1px] bg-[var(--text-primary)]/10" />;
 }
 
 function SystemStatusPills() {
@@ -62,11 +62,11 @@ function SystemStatusPills() {
   const workspaceLabel = i18n(workspace) || workspace;
 
   const syncIcon = syncing ? (
-    <RefreshCw className="h-3 w-3 animate-spin text-sky-400" />
+    <RefreshCw className="h-3 w-3 animate-spin text-[var(--info)]" />
   ) : online ? (
-    <Cloud className="h-3 w-3 text-[--accent-primary]" />
+    <Cloud className="h-3 w-3 text-[var(--accent-primary)]" />
   ) : (
-    <CloudOff className="h-3 w-3 text-rose-400" />
+    <CloudOff className="h-3 w-3 text-[var(--danger)]" />
   );
 
   const syncLabel = syncing ? i18n("v8Syncing") || "Sync" : online ? i18n("v8Synced") || "Sync" : i18n("v8Offline") || "Offline";

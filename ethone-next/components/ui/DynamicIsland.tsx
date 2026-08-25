@@ -186,7 +186,7 @@ export function DynamicIsland({
         className={cn(
           "relative inline-flex items-start justify-center overflow-hidden",
           "bg-[var(--panel-bg)]/85 text-[var(--text-primary)]",
-          "shadow-[0_16px_40px_rgba(0,0,0,0.8)] backdrop-blur-2xl",
+          "shadow-2xl backdrop-blur-2xl",
           "cursor-pointer pointer-events-auto select-none",
           className,
         )}

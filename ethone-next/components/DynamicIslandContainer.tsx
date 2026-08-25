@@ -131,7 +131,7 @@ function IslandBubble({
     "relative flex shrink-0 items-center justify-center rounded-full transition-all",
     size === "md" ? "h-8 w-8" : "h-7 w-7",
     active
-      ? "bg-[var(--text-primary)]/[0.12] text-[var(--text-primary)] ring-1 ring-[var(--text-primary)]/20 shadow-[0_0_12px_rgba(255,255,255,0.08)]"
+      ? "bg-[var(--text-primary)]/[0.12] text-[var(--text-primary)] ring-1 ring-[var(--text-primary)]/20 shadow-[0_0_12px_var(--glow-color)]"
       : "bg-[var(--text-primary)]/[0.05] text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.1] hover:text-[var(--text-primary)]",
     view === "spotify" && !active && "text-[var(--accent-primary)] hover:text-[var(--accent-primary)]",
     view === "pomodoro" && !active && "text-[var(--accent)]",
@@ -647,7 +647,7 @@ export default function DynamicIslandContainer() {
                     type="button"
                     onClick={togglePlay}
                     disabled={pendingSpotify || npLoading}
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--text-primary)] text-[var(--background)] shadow-lg transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-lg transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
                     aria-label={nowPlaying?.isPlaying ? i18n("pause") : i18n("play")}
                   >
                     {nowPlaying?.isPlaying ? <Icon name="pause" pack="phosphor" className="h-5 w-5" /> : <Icon name="play" pack="phosphor" className="h-5 w-5 fill-current" />}

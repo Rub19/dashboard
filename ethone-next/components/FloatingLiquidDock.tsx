@@ -66,16 +66,7 @@ export default function FloatingLiquidDock() {
       <nav
         data-zen-hidden
         data-liquid-dock
-        className="fixed bottom-5 left-1/2 z-50 flex h-[64px] w-[92%] max-w-[390px] -translate-x-1/2 flex-row items-center justify-around rounded-full pb-[env(safe-area-inset-bottom)] px-2 md:hidden"
-        style={{
-          background: "rgba(20, 20, 26, 0.72)",
-          backdropFilter: "blur(24px) saturate(200%)",
-          WebkitBackdropFilter: "blur(24px) saturate(200%)",
-          border: "1px solid rgba(255, 255, 255, 0.14)",
-          borderTop: "1px solid rgba(255, 255, 255, 0.30)",
-          boxShadow:
-            "inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), 0 16px 36px -10px rgba(0, 0, 0, 0.6)",
-        }}
+        className="fixed bottom-5 left-1/2 z-[var(--z-dock)] flex h-[64px] w-[92%] max-w-[390px] -translate-x-1/2 flex-row items-center justify-around rounded-full border border-[var(--panel-border)] bg-[var(--panel-bg)]/80 pb-[env(safe-area-inset-bottom)] px-2 shadow-2xl backdrop-blur-2xl md:hidden"
       >
         {visibleItems.map((item) => {
           const isActive = isActiveRoute(pathname, item.href);
@@ -97,8 +88,7 @@ export default function FloatingLiquidDock() {
                     damping: 32,
                     mass: 0.8,
                   }}
-                  className="absolute inset-0 -z-10 rounded-2xl bg-[var(--accent-primary)]/15"
-                  style={{ boxShadow: "inset 0 1px 1px rgba(255,255,255,0.12)" }}
+                  className="absolute inset-0 -z-10 rounded-2xl bg-[var(--accent-primary)]/15 shadow-[inset_0_1px_1px_rgba(255,255,255,0.12)]"
                 />
               )}
               <Icon

@@ -45,7 +45,7 @@ export default function MobileNav() {
       <nav
         data-zen-hidden
         className={cn(
-          "liquid-glass fixed bottom-4 left-1/2 z-50 mb-[env(safe-area-inset-bottom)] h-[64px] w-[92%] max-w-[380px] -translate-x-1/2 rounded-[28px] px-2 py-2 transition-transform md:hidden",
+          "liquid-glass fixed bottom-4 left-1/2 z-[var(--z-dock)] mb-[env(safe-area-inset-bottom)] h-[64px] w-[92%] max-w-[380px] -translate-x-1/2 rounded-[28px] px-2 py-2 transition-transform md:hidden",
           drawerOpen ? "translate-y-[calc(100%+2rem)]" : "translate-y-0"
         )}
       >
@@ -105,7 +105,7 @@ export default function MobileNav() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
-              className="fixed inset-0 z-50 bg-[var(--panel-bg)]/60 backdrop-blur-sm md:hidden"
+              className="fixed inset-0 z-[var(--z-dock)] bg-[var(--panel-bg)]/60 backdrop-blur-sm md:hidden"
               onClick={() => setDrawerOpen(false)}
               aria-hidden="true"
             />
@@ -118,7 +118,7 @@ export default function MobileNav() {
               dragConstraints={{ left: -340, right: 0 }}
               dragElastic={0.05}
               onDragEnd={handleDrawerDragEnd}
-              className="fixed left-0 top-0 z-50 h-dvh w-[min(85vw,320px)] overflow-y-auto overscroll-contain border-r border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-2xl no-scrollbar md:hidden backdrop-blur-[var(--panel-blur)]"
+              className="fixed left-0 top-0 z-[var(--z-dock)] h-dvh w-[min(85vw,320px)] overflow-y-auto overscroll-contain border-r border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-2xl no-scrollbar md:hidden backdrop-blur-[var(--panel-blur)]"
               role="dialog"
               aria-label={i18n("navigation")}
             >

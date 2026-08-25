@@ -120,10 +120,10 @@ function Dock() {
 
   return (
     <div
-      className="v8-floating-dock fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] inset-x-0 z-50 hidden md:flex pointer-events-none justify-center bg-transparent p-0 m-0 border-none shadow-none outline-none"
+      className="v8-floating-dock fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] inset-x-0 z-[var(--z-dock)] hidden md:flex pointer-events-none justify-center bg-transparent p-0 m-0 border-none shadow-none outline-none"
     >
       {launcherOpen && (
-        <div className="pointer-events-auto absolute bottom-full left-1/2 z-50 mb-4 w-[min(90vw,420px)] -translate-x-1/2">
+        <div className="pointer-events-auto absolute bottom-full left-1/2 z-[var(--z-dock)] mb-4 w-[min(90vw,420px)] -translate-x-1/2">
           <Card3D style={{ boxShadow: "none" }}>
             <div className="space-y-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 backdrop-blur-md">
               <div className="flex items-center justify-between">
@@ -226,7 +226,7 @@ function Dock() {
           <Bell className="w-5 h-5" />
           {unreadCount > 0 && (
             <span
-              className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white/80"
+              className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-[var(--danger)] ring-2 ring-[var(--bg-surface)]"
               aria-hidden="true"
             />
           )}

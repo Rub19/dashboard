@@ -184,7 +184,7 @@ function TopBar() {
             <CommandBarTrigger />
           </Tooltip>
           <NotificationCenter />
-          <UserProfileDropdown />
+          <UserProfileDropdown dataTestId="user-profile-trigger-mobile" />
         </div>
       </div>
 
@@ -229,7 +229,7 @@ function TopBar() {
             <LanguageSwitcher />
           </div>
 
-          <UserProfileDropdown />
+          <UserProfileDropdown dataTestId="user-profile-trigger-desktop" />
         </div>
       </div>
     </header>

@@ -82,6 +82,7 @@ export default function MobileNav() {
 
           <button
             type="button"
+            data-testid="mobile-nav-menu"
             onClick={() => { hapticMediumImpact(); setDrawerOpen(true); }}
             aria-haspopup="dialog"
             aria-expanded={drawerOpen}

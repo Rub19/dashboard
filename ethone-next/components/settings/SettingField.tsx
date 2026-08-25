@@ -186,6 +186,7 @@ function SettingField({ field }: { field: FieldDef }) {
 
   return (
     <div
+      data-testid={`setting-field-${settingKey}`}
       data-setting-key={settingKey}
       data-setting-path={path}
       data-setting-label={field.label}

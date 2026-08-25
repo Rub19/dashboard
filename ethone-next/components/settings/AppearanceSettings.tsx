@@ -248,6 +248,7 @@ export default function AppearanceSettings() {
                   return (
                     <label
                       key={color.id}
+                      data-testid="accent-color-custom"
                       aria-label={color.label}
                       className={`relative flex h-11 w-11 min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-full border-2 transition-all active:scale-95 ${
                         currentAccent === "custom"
@@ -277,6 +278,7 @@ export default function AppearanceSettings() {
                   <button
                     key={color.id}
                     type="button"
+                    data-testid={`accent-color-${color.id}`}
                     onClick={() => handleChange("accentColor", color.id)}
                     aria-pressed={selected}
                     aria-label={color.label}
@@ -448,12 +450,14 @@ export default function AppearanceSettings() {
       <BentoCard title="Dock & Barre d'État" icon="anchor" className="md:col-span-2">
         <div className="grid grid-cols-1 gap-0 md:grid-cols-2 md:gap-4">
           <SettingsRow label="Dock visible" description="Afficher le dock en bas de l'écran.">
-            <Switch
-              checked={settings.dockVisible}
-              onChange={(v) => handleChange("dockVisible", v)}
-              labels={false}
-              size="sm"
-            />
+            <div data-testid="dock-visible">
+              <Switch
+                checked={settings.dockVisible}
+                onChange={(v) => handleChange("dockVisible", v)}
+                labels={false}
+                size="sm"
+              />
+            </div>
           </SettingsRow>
 
           <SettingsRow label="Masquage auto" description="Réduire le dock lorsqu'il est inactif.">
@@ -466,12 +470,14 @@ export default function AppearanceSettings() {
           </SettingsRow>
 
           <SettingsRow label="Magnification" description="Zoom au survol des icônes.">
-            <Switch
-              checked={settings.dockMagnify}
-              onChange={(v) => handleChange("dockMagnify", v)}
-              labels={false}
-              size="sm"
-            />
+            <div data-testid="dock-magnify">
+              <Switch
+                checked={settings.dockMagnify}
+                onChange={(v) => handleChange("dockMagnify", v)}
+                labels={false}
+                size="sm"
+              />
+            </div>
           </SettingsRow>
 
           <SettingsRow label="Sauvegarde flottante" description="Afficher la barre flottante d'enregistrement au-dessus du dock.">

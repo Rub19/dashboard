@@ -118,7 +118,7 @@ export default function SettingsProvider({
     loadSettingsAsync()
       .then(({ settings: remote, updatedAt }) => {
         setSettings((prev) => {
-          const localWriteAt = getWriteAt();
+          const localWriteAt = getWriteAt(active || undefined);
           const remoteTs = updatedAt ? new Date(updatedAt).getTime() : 0;
           // Local is the source of truth unless the server has a newer write.
           const next =
@@ -342,7 +342,7 @@ export default function SettingsProvider({
       }
       saveTimeoutRef.current = window.setTimeout(() => {
         const snapshot = saveSnapshotRef.current;
-        saveSettingsAsync(settingsRef.current)
+        saveSettingsAsync(settingsRef.current, active || undefined)
           .then(() => useSyncStore.getState().setStatus("user_settings", "idle"))
           .catch(() => {
             useSyncStore.getState().setStatus("user_settings", "error");

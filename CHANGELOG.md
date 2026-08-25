@@ -4,6 +4,14 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## v1.9.1 — 2026-08-25
 
+**ETHONE Control Center — Parcours E2E, persistance et sélecteurs de test**
+
+- Nouveau test Playwright `e2e/settings-journey.spec.ts` reproduisant le parcours complet (login, settings, thème, accent, densité, dock, notifications, home, mail, refresh, logout, reconnect, vérification persistance) en desktop, tablette et mobile.
+- Sélecteurs `data-testid` ajoutés dans les composants Settings, profil, mail pour fiabiliser les tests.
+- Correction de la persistance `getWriteAt` / `setWriteAt` par `profileId` dans `lib/settings.ts`.
+
+## v1.9.1 — 2026-08-25
+
 **ETHONE Control Center — Accessibilité, responsive, undo et transitions Settings**
 
 - Accessibilité complète des paramètres : rôles ARIA, `aria-live`, navigation clavier, focus rings, touch targets 44px.

@@ -108,6 +108,7 @@ export default function SettingsNavigation({
         key={cat.id}
         ref={(el) => { buttonsRef.current[index] = el; }}
         type="button"
+        data-testid={`settings-nav-${cat.id}`}
         tabIndex={isActive ? 0 : -1}
         aria-current={isActive ? "page" : undefined}
         onClick={() => onSelect(cat.id)}
@@ -158,6 +159,7 @@ export default function SettingsNavigation({
               key={cat.id}
               ref={(el) => { buttonsRef.current[index] = el; }}
               type="button"
+              data-testid={`settings-nav-${cat.id}`}
               tabIndex={isActive ? 0 : -1}
               aria-current={isActive ? "page" : undefined}
               onClick={() => onSelect(cat.id)}

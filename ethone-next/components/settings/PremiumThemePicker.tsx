@@ -47,6 +47,7 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
               onClick={() => handleSelect(id)}
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
+              data-testid={`premium-theme-${id}`}
               className={`group relative overflow-hidden rounded-2xl border-2 text-left transition-shadow duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--border-active)] focus:ring-offset-2 focus:ring-offset-[var(--bg-main)] ${
                 selected
                   ? "border-[var(--accent-primary)] shadow-[0_0_24px_var(--glow-color)]"

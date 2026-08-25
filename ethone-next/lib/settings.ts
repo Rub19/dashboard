@@ -388,10 +388,14 @@ export const DEFAULTS: Settings = {
 const KEY = "ethone-settings-v1";
 const WRITE_AT_KEY = "ethone-settings-write-at";
 
-export function getWriteAt(): number {
+function writeAtKey(profileId?: string): string {
+  return profileId ? `${WRITE_AT_KEY}:${profileId}` : WRITE_AT_KEY;
+}
+
+export function getWriteAt(profileId?: string): number {
   if (typeof window === "undefined") return 0;
   try {
-    const raw = localStorage.getItem(WRITE_AT_KEY);
+    const raw = localStorage.getItem(writeAtKey(profileId));
     if (!raw) return 0;
     const n = parseInt(raw, 10);
     return Number.isNaN(n) ? 0 : n;
@@ -400,10 +404,10 @@ export function getWriteAt(): number {
   }
 }
 
-export function setWriteAt(ts: number) {
+export function setWriteAt(ts: number, profileId?: string) {
   if (typeof window === "undefined") return;
   try {
-    localStorage.setItem(WRITE_AT_KEY, String(ts));
+    localStorage.setItem(writeAtKey(profileId), String(ts));
   } catch {}
 }
 
@@ -495,8 +499,9 @@ export function loadSettings(profileId?: string): Settings {
 
 export function saveSettings(settings: Settings, profileId?: string) {
   if (typeof window === "undefined") return;
-  localStorage.setItem(localSettingsKey(profileId), JSON.stringify(settings));
-  setWriteAt(Date.now());
+  const key = localSettingsKey(profileId);
+  localStorage.setItem(key, JSON.stringify(settings));
+  setWriteAt(Date.now(), profileId);
 }
 
 export type RemoteSettings = { settings: Partial<Settings>; updatedAt?: string };
@@ -521,8 +526,8 @@ export async function loadSettingsAsync(): Promise<RemoteSettings> {
   }
 }
 
-export async function saveSettingsAsync(settings: Settings): Promise<void> {
-  saveSettings(settings);
+export async function saveSettingsAsync(settings: Settings, profileId?: string): Promise<void> {
+  saveSettings(settings, profileId);
   try {
     const { data: sessionData } = await supabase.auth.getSession();
     const userId = sessionData?.session?.user?.id;
@@ -547,7 +552,7 @@ export async function saveSettingsAsync(settings: Settings): Promise<void> {
       .single();
 
     if (error) throw error;
-    if (data?.updated_at) setWriteAt(new Date(data.updated_at).getTime());
+    if (data?.updated_at) setWriteAt(new Date(data.updated_at).getTime(), profileId);
   } catch (err) {
     // localStorage already holds the fallback for offline scenarios.
     throw err;

@@ -45,6 +45,7 @@ export default function MailThreadItem({ messages, active, onClick, onToggleStar
   return (
     <button
       type="button"
+      data-testid="mail-thread-item"
       onClick={onClick}
       className={`group relative w-full border-b border-[var(--text-primary)]/[0.04] p-3.5 text-left transition-colors ${
         active ? "bg-[var(--text-primary)]/[0.04]" : "hover:bg-[var(--text-primary)]/[0.02]"

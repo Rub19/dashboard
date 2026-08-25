@@ -71,6 +71,7 @@ export function ButtonGridControl<T extends string>({
     return (
       <div
         id={groupId}
+        data-testid="button-grid"
         role="group"
         aria-label={aria["aria-label"]}
         aria-describedby={aria["aria-describedby"]}
@@ -82,6 +83,7 @@ export function ButtonGridControl<T extends string>({
             <button
               key={opt.id}
               type="button"
+              data-testid={`button-grid-option-${opt.id}`}
               onClick={() => onChange(opt.id)}
               aria-pressed={active}
               className={cn(
@@ -122,6 +124,7 @@ export function ButtonGridControl<T extends string>({
           <button
             key={opt.id}
             type="button"
+            data-testid={`button-grid-option-${opt.id}`}
             onClick={() => onChange(opt.id)}
             aria-pressed={active}
             className={cn(

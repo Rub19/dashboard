@@ -154,7 +154,7 @@ export default function MailDetailView({
 
       {/* Header */}
       <div className="border-b border-[var(--text-primary)]/[0.06] px-4 py-4">
-        <h2 className="text-sm font-semibold text-[var(--text-primary)]">{first.subject || "(aucun objet)"}</h2>
+        <h2 data-testid="mail-detail-subject" className="text-sm font-semibold text-[var(--text-primary)]">{first.subject || "(aucun objet)"}</h2>
         <div className="mt-3 flex items-center gap-3">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] text-xs font-bold text-[var(--text-primary)]">
             {initialsFrom(first.from_name || "", first.from_address)}

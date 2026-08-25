@@ -51,7 +51,7 @@ const STATUS_KEYS = [
   "invisible",
 ] as const satisfies readonly (keyof typeof USER_STATUS_CONFIG)[];
 
-export default function UserProfileDropdown() {
+export default function UserProfileDropdown({ dataTestId = "user-profile-trigger" }: { dataTestId?: string }) {
   const i18n = useI18n();
   const router = useRouter();
   const toast = useToast();
@@ -196,6 +196,7 @@ export default function UserProfileDropdown() {
         <PopoverTrigger>
           <button
             type="button"
+            data-testid={dataTestId}
             data-tooltip="Profil"
             data-tooltip-position="bottom"
             className="group relative flex h-9 items-center gap-2.5 rounded-full border border-[var(--text-primary)]/[0.08] bg-[var(--surface)]/80 pl-1.5 pr-3 text-[var(--text-primary)] transition-all hover:border-[var(--text-primary)]/20 active:scale-95 cursor-pointer select-none"
@@ -240,7 +241,11 @@ export default function UserProfileDropdown() {
 
         {/* Dropdown Content */}
         <PopoverContent className="w-[360px] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3.5 shadow-[0_16px_50px_var(--glow-color)] backdrop-blur-2xl">
-          <div className="flex w-full flex-col gap-2.5 select-none">
+          <div
+            data-testid={`${dataTestId}-menu`}
+            data-open={open}
+            className="flex w-full flex-col gap-2.5 select-none"
+          >
             {/* 1. Header du profil */}
             <div className="flex items-center gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02] p-2.5">
               <div className="relative flex h-12 w-12 shrink-0 items-center justify-center">
@@ -489,6 +494,7 @@ export default function UserProfileDropdown() {
               {!confirmSignOut ? (
                 <button
                   type="button"
+                  data-testid="profile-logout-button"
                   onClick={(e) => {
                     e.stopPropagation();
                     setConfirmSignOut(true);
@@ -544,6 +550,7 @@ export default function UserProfileDropdown() {
                     </button>
                     <button
                       type="button"
+                      data-testid="profile-logout-confirm"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleSignOut();

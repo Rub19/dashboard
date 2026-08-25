@@ -172,13 +172,13 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
 
   return (
     <div className={cn("flex h-full min-h-0 flex-col v8-panel overflow-hidden bg-gradient-to-br p-4", config.gradient, className)}>
-      <div className="flex items-center justify-between">
-        <span className={cn("text-[11px] font-semibold uppercase tracking-wider", config.accent)}>
+      <div className="flex items-center justify-between gap-3">
+        <span className={cn("min-w-0 truncate text-[11px] font-semibold uppercase tracking-wider", config.accent)}>
           {config.label}
         </span>
         <span
           className={cn(
-            "inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 text-[10px] font-medium",
+            "inline-flex shrink-0 items-center gap-1.5 rounded-lg border px-2 py-0.5 text-[10px] font-medium",
             status.badge
           )}
         >
@@ -217,6 +217,16 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
         <div className="flex flex-1 flex-col items-center justify-center gap-2 py-2 text-center">
           <AlertCircle className="h-8 w-8 text-[var(--danger)]" />
           <p className="text-xs text-[var(--text-muted)]">{i18n("liveError", "Impossible de charger les stats")}</p>
+          <p className="max-w-[200px] text-[10px] text-[var(--text-muted)]">{i18n("riotCheckId", "Vérifie le format Nom#TAG et la clé API")}</p>
+          <Link
+            href="/settings?category=integrations"
+            className={cn(
+              "mt-2 rounded-lg px-3 py-1.5 text-xs font-medium transition-all active:scale-95",
+              game === "valorant" ? "bg-[var(--danger)]/15 text-[var(--danger)] hover:bg-[var(--danger)]/25" : "bg-[var(--warning)]/15 text-[var(--warning)] hover:bg-[var(--warning)]/25"
+            )}
+          >
+            {i18n("configureRiot", "Configurer Riot")}
+          </Link>
         </div>
       ) : !hasProfile ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-2 py-2 text-center">

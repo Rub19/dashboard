@@ -83,6 +83,20 @@ const BrainBriefingPanel = memo(function BrainBriefingPanel({ _className = "", _
     return i18n("brainSynthesisFree", "Votre journée est libre.");
   }, [completedToday, nextEventIn, openTasks, nowPlaying?.title, i18n]);
 
+  const recommendations = useMemo(
+    () => {
+      const items: { icon: string; label: string; href: string }[] = [];
+      if (openTasks > 0) items.push({ icon: "tasks", label: i18n("openTasks", "Tâches"), href: "/tasks" });
+      else items.push({ icon: "plus", label: i18n("newTask", "Nouvelle tâche"), href: "/tasks" });
+      if (todayEvents > 0) items.push({ icon: "calendar", label: i18n("todayEvents", "Agenda"), href: "/calendar" });
+      if (nowPlaying?.title) items.push({ icon: "disc", label: i18n("nowPlaying", "Musique"), href: "/plugins/spotify" });
+      else if (unreadCount && unreadCount > 0) items.push({ icon: "mail", label: i18n("unread", "Mails"), href: "/mail" });
+      if (items.length > 3) items.length = 3;
+      return items;
+    },
+    [openTasks, todayEvents, nowPlaying?.title, unreadCount, i18n]
+  );
+
   const toggle = useCallback((section: Section) => {
     setHidden((prev) => {
       const next = new Set(prev);
@@ -146,6 +160,16 @@ const BrainBriefingPanel = memo(function BrainBriefingPanel({ _className = "", _
             >
               {i18n("dismiss", "Ignorer")}
             </button>
+            {recommendations.map((r) => (
+              <Link
+                key={r.href}
+                href={r.href}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 px-2.5 py-1.5 text-[11px] font-medium text-[var(--accent-primary)] transition-colors hover:bg-[var(--accent-primary)]/15"
+              >
+                <Icon name={r.icon} className="h-3 w-3" />
+                {r.label}
+              </Link>
+            ))}
           </div>
         </div>
       )}

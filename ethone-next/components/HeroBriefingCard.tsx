@@ -75,6 +75,14 @@ const HeroBriefingCard = memo(function HeroBriefingCard({
     setIsThinking(brain.loading);
   }, [brain.loading, setIsThinking]);
 
+  const [time, setTime] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setTime(new Date());
+    const interval = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   const date = useMemo(
     () =>
       new Date().toLocaleDateString(settings.language || "fr", {
@@ -84,6 +92,11 @@ const HeroBriefingCard = memo(function HeroBriefingCard({
       }),
     [settings.language]
   );
+
+  const timeLabel = useMemo(() => {
+    if (!time) return "—";
+    return time.toLocaleTimeString(settings.language || "fr", { hour: "2-digit", minute: "2-digit" });
+  }, [time, settings.language]);
 
   const latestAssistant = useMemo(() => {
     for (let i = brain.messages.length - 1; i >= 0; i--) {
@@ -155,7 +168,12 @@ const HeroBriefingCard = memo(function HeroBriefingCard({
     <BentoCard noHeader scrollable={scrollable} className={cn("h-full", className)}>
       <div className="flex flex-1 flex-col justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">{date}</p>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">{date}</p>
+            <p className="font-mono text-xs font-medium tabular-nums text-[var(--accent)]" aria-live="off">
+              {timeLabel}
+            </p>
+          </div>
           <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)] sm:text-2xl">{greeting.label}</h2>
           <p className="text-sm text-[var(--text-muted)]">{contextMessage}</p>
           {nowPlaying?.title && (

@@ -41,7 +41,7 @@ export function useAuth() {
   return value;
 }
 
-const SESSION_TIMEOUT_MS = 15_000;
+const SESSION_TIMEOUT_MS = 6_000;
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);

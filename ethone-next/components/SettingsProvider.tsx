@@ -4,7 +4,7 @@ import { activityJournal } from "@/lib/activity-journal";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { deepEqual } from "@/lib/equal";
 import { useProfiles, type Profile } from "@/lib/hooks/useProfiles";
-import { loadSettings, saveSettings, saveSettingsAsync, loadSettingsAsync, migrateSettings, getWriteAt, Settings, DEFAULTS, type ThemeMode } from "@/lib/settings";
+import { loadSettings, saveSettings, saveSettingsAsync, loadSettingsAsync, migrateSettings, getWriteAt, setWriteAt, Settings, DEFAULTS, type ThemeMode } from "@/lib/settings";
 import { applyPreset, type Preset } from "@/lib/preset-engine";
 import { supabase } from "@/lib/supabase";
 import { useSyncStore } from "@/lib/stores/sync";
@@ -112,15 +112,53 @@ export default function SettingsProvider({
 
   useEffect(() => {
     if (!loaded) return;
-    const local = loadSettings(active || undefined);
+
+    const profileId = active || undefined;
+    const defaultLocal = loadSettings();
+    const profileLocal = loadSettings(profileId);
+    const defaultWriteAt = getWriteAt();
+    const profileWriteAt = getWriteAt(profileId);
+
+    let local = profileLocal;
+    let localWriteAt = profileWriteAt;
+
+    const profileKeyEmpty = profileWriteAt === 0;
+    const defaultHasData = defaultWriteAt > 0 || !deepEqual(defaultLocal, DEFAULTS);
+
+    if (profileId) {
+      if (profileKeyEmpty && defaultHasData) {
+        // Migrate legacy/default-key settings into the active profile key.
+        local = defaultLocal;
+        localWriteAt = defaultWriteAt > 0 ? defaultWriteAt : Date.now();
+        try {
+          saveSettings(defaultLocal, profileId);
+          setWriteAt(localWriteAt, profileId);
+        } catch {}
+      } else if (defaultWriteAt > profileWriteAt && !deepEqual(defaultLocal, DEFAULTS)) {
+        // Default key has a more recent write, use it as the source of truth.
+        local = defaultLocal;
+        localWriteAt = defaultWriteAt;
+      }
+    } else {
+      local = defaultLocal;
+      localWriteAt = defaultWriteAt;
+    }
+
+    // If local settings exist but have no write timestamp (legacy/test contexts),
+    // stamp them as "now" so they are not silently overwritten by an older remote state.
+    if (localWriteAt === 0 && !deepEqual(local, DEFAULTS)) {
+      localWriteAt = Date.now();
+      try {
+        setWriteAt(localWriteAt, profileId);
+      } catch {}
+    }
+
     setSettings(local);
     useSyncStore.getState().setStatus("user_settings", "syncing");
     loadSettingsAsync()
       .then(({ settings: remote, updatedAt }) => {
         setSettings((prev) => {
-          const localWriteAt = getWriteAt(active || undefined);
           const remoteTs = updatedAt ? new Date(updatedAt).getTime() : 0;
-          // Local is the source of truth unless the server has a newer write.
           const next =
             remoteTs > localWriteAt
               ? { ...DEFAULTS, ...local, ...remote }

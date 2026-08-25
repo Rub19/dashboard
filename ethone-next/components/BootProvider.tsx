@@ -44,7 +44,7 @@ export function useBoot() {
 
 const PUBLIC_ROUTES = ["/login", "/password-recovery", "/reset-password"];
 
-const BOOT_TIMEOUT_MS = 10_000;
+const BOOT_TIMEOUT_MS = 8_000;
 const BOOT_MIN_DURATION_MS = 600;
 const SEGMENT_1 = 150;
 const SEGMENT_2 = 300;

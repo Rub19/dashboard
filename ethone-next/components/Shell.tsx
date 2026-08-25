@@ -17,13 +17,13 @@ import { ActivityJournalProvider } from "@/components/ActivityJournalProvider";
 import PageTransition from "@/components/PageTransition";
 import AutomationRuntime from "@/components/AutomationRuntime";
 import Dock from "@/components/Dock";
+import StatusBar from "@/components/layout/StatusBar";
 import SkipLink from "@/components/SkipLink";
 import ContextMenuProvider from "@/components/ContextMenuProvider";
 import NativeIntegration from "@/components/NativeIntegration";
 import PrivacyShield from "@/components/PrivacyShield";
 
 import LiveWidgetSkeleton from "@/components/LiveWidgetSkeleton";
-import DynamicIslandSkeleton from "@/components/DynamicIslandSkeleton";
 
 const LiveWidget = dynamic(() => import("@/components/LiveWidget"), {
   ssr: false,
@@ -32,10 +32,7 @@ const LiveWidget = dynamic(() => import("@/components/LiveWidget"), {
 const CosmicBackground = dynamic(() => import("@/components/CosmicBackground"), { ssr: false });
 const Spotlight = dynamic(() => import("@/components/Spotlight"), { ssr: false });
 const VisualHaptics = dynamic(() => import("@/components/VisualHaptics"), { ssr: false });
-const DynamicIslandContainer = dynamic(() => import("@/components/DynamicIslandContainer"), {
-  ssr: false,
-  loading: () => <DynamicIslandSkeleton />,
-});
+import DynamicIslandContainer from "@/components/DynamicIslandContainer";
 const ShortcutsOverlay = dynamic(() => import("@/components/ShortcutsOverlay"), { ssr: false });
 const KeyboardShortcuts = dynamic(() => import("@/components/KeyboardShortcuts"), { ssr: false });
 
@@ -70,10 +67,9 @@ export default function Shell({ children }: { children: ReactNode }) {
                 <main
                   data-v8-main
                   id="main-content"
-                  className="relative z-0 min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden bg-[var(--background)] pb-32 md:pb-4"
+                  className="relative z-0 min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden bg-[var(--background)] pb-32"
                   tabIndex={-1}
                 >
-                  <DynamicIslandContainer />
                   <ActivityJournalProvider>
                     <PageTransition>{children}</PageTransition>
                     <AutomationRuntime />
@@ -82,6 +78,8 @@ export default function Shell({ children }: { children: ReactNode }) {
                 </PrivacyShield>
               </div>
             </AnimatedSidebarProvider>
+            <DynamicIslandContainer />
+            <StatusBar />
             <FloatingLiquidDock />
             <Dock />
             <ShortcutsOverlay />

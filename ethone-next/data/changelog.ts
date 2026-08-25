@@ -5,6 +5,74 @@ export type ChangelogEntry = {
   items: string[];
 };
 
+const v373_fr: ChangelogEntry = {
+  version: "v1.9.2",
+  date: "2026-08-25",
+  title: "Restauration de l'identité visuelle du Home",
+  items: [
+    "Dynamic Island : portail React, positionnement fixe indépendant, capsule fermée par défaut avec horloge ETHONE, mode COMPACT sécurisé contre l'ouverture automatique.",
+    "Footer ETHONE : restauration de la barre d'état (`StatusBar`) et ajustement des marges du main.",
+    "Cartes 3D interactives : `Card3D` intègre `TiltCard` avec effet subtil au survol.",
+    "Nouveau widget `ConnectionCardsWidget` : carte de connexion 3D des services live (Spotify, Discord, GitHub, Steam, etc.) sur le Home.",
+    "Grille du Home : priorisation selon la période du jour, largeur max adaptative (`homeGrid`), fusion du layout sauvegardé avec les nouveaux widgets par défaut.",
+    "États de chargement : le Home s'affiche plus tôt, chaque widget gère son propre état de chargement au lieu d'un squelette global.",
+    "Démarrage : réduction des délais d'expiration de session et de boot pour éviter les écrans figés à 0%.",
+    "Validation : `npm run build`, `npm run lint`, `npm run test:unit` et `home-bento-layout` Playwright passent.",
+    "Version affichée en bas à droite : v1.9.2.",
+  ],
+};
+
+const v373_en: ChangelogEntry = {
+  version: "v1.9.2",
+  date: "2026-08-25",
+  title: "Home visual identity restoration",
+  items: [
+    "Dynamic Island: React portal, fixed independent positioning, default closed capsule with ETHONE clock, COMPACT mode secured against auto-open.",
+    "ETHONE footer: restored status bar (`StatusBar`) and main bottom padding.",
+    "Interactive 3D cards: `Card3D` now integrates `TiltCard` for subtle hover tilt.",
+    "New `ConnectionCardsWidget` home widget: 3D connection cards for live services (Spotify, Discord, GitHub, Steam, etc.).",
+    "Home grid: time-of-day priority, adaptive max-width (`homeGrid`), saved layout merged with new default widgets.",
+    "Loading states: home displays earlier, each widget handles its own loading state instead of a global skeleton.",
+    "Boot: reduced session and boot timeouts to avoid stuck 0% screens.",
+    "Validation: `npm run build`, `npm run lint`, `npm run test:unit` and `home-bento-layout` Playwright pass.",
+    "Version badge bottom-right: v1.9.2.",
+  ],
+};
+
+const v373_es: ChangelogEntry = {
+  version: "v1.9.2",
+  date: "2026-08-25",
+  title: "Restauración de la identidad visual del Home",
+  items: [
+    "Dynamic Island: portal de React, posicionamiento fijo e independiente, cápsula cerrada por defecto con reloj ETHONE, modo COMPACTO seguro contra apertura automática.",
+    "Pie de página ETHONE: restaurada la barra de estado (`StatusBar`) y ajustado el margen inferior del main.",
+    "Tarjetas 3D interactivas: `Card3D` integra `TiltCard` con inclinación sutil al pasar el cursor.",
+    "Nuevo widget `ConnectionCardsWidget`: tarjetas de conexión 3D de servicios en vivo (Spotify, Discord, GitHub, Steam, etc.).",
+    "Cuadrícula del Home: priorización según la hora del día, ancho máximo adaptable (`homeGrid`), layout guardado fusionado con los nuevos widgets por defecto.",
+    "Estados de carga: el Home aparece más pronto, cada widget gestiona su propio estado de carga en lugar de un esqueleto global.",
+    "Inicio: reducidos los tiempos de espera de sesión y arranque para evitar pantallas bloqueadas en 0%.",
+    "Validación: `npm run build`, `npm run lint`, `npm run test:unit` y `home-bento-layout` Playwright pasan.",
+    "Versión mostrada abajo a la derecha: v1.9.2.",
+  ],
+};
+
+const v373_de: ChangelogEntry = {
+  version: "v1.9.2",
+  date: "2026-08-25",
+  title: "Wiederherstellung der visuellen Home-Identität",
+  items: [
+    "Dynamic Island: React-Portal, feste unabhängige Positionierung, geschlossene Standardkapsel mit ETHONE-Uhr, COMPACT-Modus gegen automatisches Öffnen gesichert.",
+    "ETHONE-Fußzeile: Statusleiste (`StatusBar`) wiederhergestellt und unterer Rand des main angepasst.",
+    "Interaktive 3D-Karten: `Card3D` integriert `TiltCard` für dezente Hover-Neigung.",
+    "Neues `ConnectionCardsWidget`: 3D-Verbindungskarten für Live-Dienste (Spotify, Discord, GitHub, Steam, etc.).",
+    "Home-Raster: Tageszeit-Priorisierung, adaptive maximale Breite (`homeGrid`), gespeichertes Layout mit neuen Standard-Widgets zusammengeführt.",
+    "Ladezustände: Home wird früher angezeigt, jedes Widget verwaltet seinen eigenen Ladezustand statt eines globalen Skeletts.",
+    "Boot: Sitzungs- und Boot-Timeouts reduziert, um hängende 0%-Bildschirme zu vermeiden.",
+    "Validierung: `npm run build`, `npm run lint`, `npm run test:unit` und `home-bento-layout` Playwright bestanden.",
+    "Version unten rechts: v1.9.2.",
+  ],
+};
+
 const v173_fr: ChangelogEntry = {
   version: "v1.6.13",
   date: "2026-08-19",
@@ -5890,9 +5958,9 @@ const v366_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v372_fr, v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v372_en, v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
-CHANGELOG_BY_LANG.es.unshift(v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
-CHANGELOG_BY_LANG.de.unshift(v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
+CHANGELOG_BY_LANG.fr.unshift(v373_fr, v372_fr, v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v373_en, v372_en, v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v373_es, v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v373_de, v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

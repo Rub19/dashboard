@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.2 — 2026-08-25
+
+**ETHONE Home — Restauration de l'identité visuelle et de l'expérience OS**
+
+- Dynamic Island : portail React, positionnement fixe indépendant, capsule fermée par défaut avec horloge ETHONE, mode COMPACT sécurisé contre l'ouverture automatique.
+- Footer ETHONE : restauration de la barre d'état (`StatusBar`) et ajustement des marges du `main`.
+- Cartes 3D interactives : `Card3D` intègre `TiltCard` avec effet subtil au survol.
+- Nouveau widget `ConnectionCardsWidget` : carte de connexion 3D des services live (Spotify, Discord, GitHub, Steam, etc.) sur le Home.
+- Grille du Home : priorisation selon la période du jour, largeur max adaptative (`homeGrid`), fusion du layout sauvegardé avec les nouveaux widgets par défaut.
+- États de chargement : le Home s'affiche plus tôt, chaque widget gère son propre état de chargement au lieu d'un squelette global.
+- Démarrage : réduction des délais d'expiration de session et de boot pour éviter les écrans figés à 0%.
+- Validation : `npm run build`, `npm run lint`, `npm run test:unit` et le test Playwright `home-bento-layout` passent.
+
 ## v1.9.1 — 2026-08-25
 
 **ETHONE Control Center — Parcours E2E, persistance et sélecteurs de test**

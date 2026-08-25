@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import SafeImage from "@/components/SafeImage";
 import { useRouter } from "next/navigation";
@@ -342,12 +343,17 @@ export default function DynamicIslandContainer() {
     return Math.min(100, Math.max(0, (1 - focus.state.remaining / focus.state.total) * 100));
   }, [focus.state.total, focus.state.remaining]);
 
-  // The compact pill only shows the currently active activity.
-  // No activity ⇒ the island is not rendered at all.
+  // The compact pill shows the active activity, or a default ETHONE clock
+  // capsule when the island is visible but no specific activity is present.
   const compact = useMemo(() => {
     const base = "flex h-[38px] w-full items-center justify-center gap-2 px-1 text-[var(--text-primary)]";
     if (!selectedView) {
-      return null;
+      return (
+        <div className={cn(base)}>
+          <Icon name="sparkles" pack="phosphor" className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
+          <span className="text-xs font-medium tabular-nums">{clock}</span>
+        </div>
+      );
     }
     switch (selectedView) {
       case "spotify":
@@ -511,15 +517,23 @@ export default function DynamicIslandContainer() {
     [toggleExpanded],
   );
 
+  // Always promote a IDLE island to COMPACT as soon as an activity appears,
+  // but never auto-expand beyond the compact capsule.
+  useEffect(() => {
+    if (mode === "IDLE" && activeViews.length > 0) {
+      setMode("COMPACT");
+    }
+  }, [mode, activeViews]);
+
   useEffect(() => {
     return () => {
       if (islandLeaveTimer.current) window.clearTimeout(islandLeaveTimer.current);
     };
   }, []);
 
-  return (
+  const islandContent = (
     <AnimatePresence>
-      {visible && activeViews.length > 0 && (
+      {visible && (
         <motion.div
           key="dynamic-island"
           initial={{ opacity: 0, y: -20, scale: 0.9 }}
@@ -529,6 +543,7 @@ export default function DynamicIslandContainer() {
           className="fixed left-0 right-0 top-[max(0.5rem,env(safe-area-inset-top))] z-[var(--z-dynamic-island)] flex justify-center pointer-events-none select-none"
         >
           <DynamicIsland
+            data-testid="dynamic-island"
             view={expanded && selectedView ? selectedView : null}
             compact={compact}
             onClick={toggleExpanded}
@@ -774,4 +789,7 @@ export default function DynamicIslandContainer() {
       )}
     </AnimatePresence>
   );
+
+  if (typeof document === "undefined" || !document.body) return null;
+  return createPortal(islandContent, document.body);
 }

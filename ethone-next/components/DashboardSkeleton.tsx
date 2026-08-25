@@ -12,6 +12,7 @@ const WIDGET_COL_SPAN: Record<string, string> = {
   brain: "col-span-12 md:col-span-6 lg:col-span-6",
   bills: "col-span-12 md:col-span-6 lg:col-span-6",
   live: "col-span-12",
+  connections: "col-span-12",
 };
 
 const SKELETON_WIDGETS = [
@@ -22,6 +23,7 @@ const SKELETON_WIDGETS = [
   { id: "recent", h: 1 },
   { id: "brain", h: 1 },
   { id: "bills", h: 1 },
+  { id: "connections", h: 1 },
   { id: "live", h: 2 },
 ];
 

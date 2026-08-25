@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { LayoutGrid } from "lucide-react";
 import { EASE_OUT } from "@/lib/ease";
+import { cn } from "@/lib/utils";
 import BentoCard from "@/components/BentoCard";
 import HeroBriefingCard from "@/components/HeroBriefingCard";
 import SystemControlCard from "@/components/SystemControlCard";
@@ -26,10 +27,11 @@ import DashboardSkeleton from "@/components/DashboardSkeleton";
 const LiveBentoGrid = dynamic(() => import("@/components/LiveBentoGrid"));
 const BillsWidget = dynamic(() => import("@/components/BillsWidget"));
 const BrainBriefingPanel = dynamic(() => import("@/components/BrainBriefingPanel"));
+const ConnectionCardsWidget = dynamic(() => import("@/components/ConnectionCardsWidget"));
 
 type SectionDef = { id: string; label: string; icon: string };
 
-const homeCardClass = "h-auto min-h-0 overflow-visible";
+const homeCardClass = "h-full min-h-0";
 
 const gridVariants = {
   hidden: { opacity: 1 },
@@ -61,13 +63,14 @@ const WIDGET_COL_SPAN: Record<string, string> = {
   brain: "col-span-12 sm:col-span-6 lg:col-span-6",
   bills: "col-span-12 sm:col-span-6 lg:col-span-6",
   live: "col-span-12",
+  connections: "col-span-12",
 };
 
 const WIDGET_PRIORITY_SCORES: Record<string, Record<string, number>> = {
-  morning: { daystream: 90, productivity: 80, hero: 70, brain: 60, recent: 50, bills: 40, live: 30, system: 20 },
-  work: { productivity: 90, brain: 80, hero: 70, daystream: 60, recent: 50, bills: 40, live: 30, system: 20 },
-  evening: { live: 90, brain: 80, hero: 70, daystream: 60, recent: 50, productivity: 40, bills: 30, system: 20 },
-  night: { hero: 90, brain: 70, recent: 60, bills: 50, system: 40, daystream: 30, productivity: 20, live: 10 },
+  morning: { daystream: 95, productivity: 85, hero: 75, brain: 65, recent: 55, connections: 50, bills: 40, live: 35, system: 20 },
+  work: { productivity: 95, brain: 85, hero: 75, daystream: 70, recent: 60, connections: 50, bills: 40, live: 35, system: 20 },
+  evening: { live: 95, brain: 85, hero: 70, daystream: 60, recent: 55, connections: 45, productivity: 40, bills: 35, system: 20 },
+  night: { hero: 95, brain: 80, recent: 65, connections: 55, bills: 50, system: 40, daystream: 30, productivity: 20, live: 15 },
 };
 
 function getDayPeriod(hour: number) {
@@ -85,7 +88,8 @@ const DEFAULT_WIDGETS: WidgetLayout[] = [
   { id: "recent", x: 0, y: 2, w: 4, h: 1, visible: true },
   { id: "brain", x: 0, y: 3, w: 6, h: 1, visible: true },
   { id: "bills", x: 6, y: 3, w: 6, h: 1, visible: true },
-  { id: "live", x: 0, y: 4, w: 12, h: 2, visible: true },
+  { id: "connections", x: 0, y: 4, w: 12, h: 1, visible: true },
+  { id: "live", x: 0, y: 5, w: 12, h: 2, visible: true },
 ];
 
 export default function DashboardOverview() {
@@ -96,7 +100,8 @@ export default function DashboardOverview() {
   const tasksApi = useCloudTasks();
   const { items: notes, loading: notesLoading } = useItems("notes");
   const { items: events, loading: eventsLoading } = useItems("events");
-  const bentoLoading = loading || notesLoading || eventsLoading || tasksApi.loading;
+  const homeLoading = loading;
+  const bentoLoading = false;
   const focus = useFocus();
   const [customizing, setCustomizing] = useState(false);
   const { layout, update: updateLayout } = useDesktopLayout();
@@ -104,22 +109,32 @@ export default function DashboardOverview() {
 
   const widgets = useMemo<WidgetLayout[]>(() => {
     const hidden = new Set(settings.homeHiddenSections || []);
-    const base =
-      layout && layout.widgets.length > 0
-        ? layout.widgets
-        : DEFAULT_WIDGETS.map((w) => ({ ...w, visible: !hidden.has(w.id) }));
+    const defaults = DEFAULT_WIDGETS.map((w) => ({ ...w, visible: !hidden.has(w.id) }));
+    const saved = layout?.widgets || [];
+    const savedMap = new Map(saved.map((w) => [w.id, w]));
+
+    // Merge saved positions with the default widget set so new widgets still
+    // appear when a saved layout exists without them.
+    const merged: WidgetLayout[] = defaults.map((w) => {
+      const override = savedMap.get(w.id);
+      return override ? { ...w, ...override } : w;
+    });
+
+    // Append any custom widgets the user previously added that are not in defaults.
+    const extras = saved.filter((w) => !defaults.some((d) => d.id === w.id));
+
+    const base = [...merged, ...extras];
     const seen = new Set<string>();
     const sanitized = base.filter((w) => {
       if (!w.id || seen.has(w.id)) return false;
       seen.add(w.id);
       return true;
     });
+
     const period = getDayPeriod(hour);
     const scores = WIDGET_PRIORITY_SCORES[period];
-    const sorted = [...sanitized].sort(
-      (a, b) => (scores[b.id] ?? 0) - (scores[a.id] ?? 0)
-    );
-    return sorted.length > 0 ? sorted : DEFAULT_WIDGETS.map((w) => ({ ...w, visible: !hidden.has(w.id) }));
+    const sorted = [...sanitized].sort((a, b) => (scores[b.id] ?? 0) - (scores[a.id] ?? 0));
+    return sorted.length > 0 ? sorted : defaults;
   }, [layout, settings.homeHiddenSections, hour]);
 
   const sections: SectionDef[] = useMemo(
@@ -134,12 +149,24 @@ export default function DashboardOverview() {
           brain: { label: i18n("brain"), icon: "brain" },
           bills: { label: i18n("billsTitle"), icon: "bills" },
           live: { label: i18n("live"), icon: "radio" },
+          connections: { label: i18n("services", "Services"), icon: "plug" },
         };
         const info = meta[w.id] ?? { label: w.id, icon: "square" };
         return { id: w.id, ...info };
       }),
     [widgets, i18n]
   );
+
+  const maxWClass = useMemo(() => {
+    switch (settings.homeGrid) {
+      case "2":
+        return "max-w-[980px]";
+      case "3":
+        return "max-w-[1280px]";
+      default:
+        return "max-w-[1600px]";
+    }
+  }, [settings.homeGrid]);
 
   const today = useMemo(() => new Date(), []);
 
@@ -186,7 +213,7 @@ export default function DashboardOverview() {
             greeting={greeting}
             dashboard={dashboard}
             nowPlaying={nowPlaying}
-            loading={bentoLoading}
+            loading={homeLoading}
             openTasksCount={openTasksCount}
             todayEventsCount={todayEvents.length}
             notesCount={notes.length}
@@ -202,7 +229,7 @@ export default function DashboardOverview() {
             todayEvents={todayEvents}
             nextTasks={nextTasks}
             focus={focus}
-            loading={bentoLoading}
+            loading={eventsLoading || tasksApi.loading}
             scrollable={false}
             className={homeCardClass}
           />
@@ -210,7 +237,7 @@ export default function DashboardOverview() {
       case "productivity":
         return <TasksWidget data={tasksApi} scrollable={false} className={homeCardClass} />;
       case "recent":
-        return <RecentNotesCard notes={notes} loading={bentoLoading} scrollable={false} className={homeCardClass} />;
+        return <RecentNotesCard notes={notes} loading={notesLoading} scrollable={false} className={homeCardClass} />;
       case "brain":
         return (
           <BentoCard title={i18n("brain")} icon="brain" scrollable={false} className={homeCardClass}>
@@ -222,6 +249,15 @@ export default function DashboardOverview() {
           <BentoCard title={i18n("billsTitle")} icon="bills" scrollable={false} className={homeCardClass}>
             <BillsWidget />
           </BentoCard>
+        );
+      case "connections":
+        return (
+          <ConnectionCardsWidget
+            records={live.records}
+            loading={live.loading}
+            error={live.error}
+            className={homeCardClass}
+          />
         );
       case "live":
         return (
@@ -250,7 +286,7 @@ export default function DashboardOverview() {
   return (
     <div className="flex h-full min-h-0 flex-col">
       <PullToRefresh onRefresh={handleRefresh}>
-        <div className="mx-auto w-full max-w-[1600px] px-2 sm:px-4">
+        <div className={cn("mx-auto w-full min-h-full px-2 sm:px-4", maxWClass)}>
         <header className="shrink-0 mb-3 flex w-full items-center justify-end">
         <button
           type="button"

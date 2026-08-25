@@ -1,24 +1,18 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { useRef, useCallback } from "react";
-import type { TargetAndTransition, Transition } from "framer-motion";
+import type { ReactNode } from "react";
+import type { HTMLMotionProps, MotionStyle } from "framer-motion";
 import { motion, useMotionTemplate, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
 import { SPRING_MOUSE } from "@/lib/ease";
 import { useHoverCapable } from "@/lib/hooks/use-hover-capable";
 import { useSettings } from "@/components/SettingsProvider";
 import { cn } from "@/lib/utils";
 
-export interface TiltCardProps {
+export interface TiltCardProps extends HTMLMotionProps<"div"> {
   children: ReactNode;
   max?: number;
   glare?: boolean;
-  className?: string;
-  initial?: TargetAndTransition;
-  animate?: TargetAndTransition;
-  exit?: TargetAndTransition;
-  transition?: Transition;
-  layout?: boolean | "position" | "size" | "preserve-aspect";
 }
 
 export function TiltCard({
@@ -26,11 +20,8 @@ export function TiltCard({
   max = 12,
   glare = false,
   className,
-  initial,
-  animate,
-  exit,
-  transition,
-  layout,
+  style,
+  ...rest
 }: TiltCardProps) {
   const ref = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
@@ -98,23 +89,23 @@ export function TiltCard({
   const transform = useMotionTemplate`perspective(1000px) rotateX(${srx}deg) rotateY(${sry}deg)`;
   const glareBg = useMotionTemplate`radial-gradient(circle at ${gx}% ${gy}%, var(--text-primary), transparent 50%)`;
 
+  const baseStyle: MotionStyle | undefined = enabled
+    ? ({ transform, ...style } as MotionStyle)
+    : style;
+
   return (
     <motion.div
       ref={ref}
-      layout={layout}
-      initial={initial}
-      animate={animate}
-      exit={exit}
-      transition={transition}
       onMouseMove={enabled ? onMove : undefined}
       onMouseLeave={enabled ? onLeave : undefined}
       data-card-isolated="true"
-      style={enabled ? { transform, transformStyle: "preserve-3d" } : undefined}
+      style={baseStyle}
       className={cn(
         "relative overflow-hidden rounded-2xl backface-hidden",
-        enabled ? "will-change-transform" : "",
+        enabled ? "will-change-transform [transform-style:preserve-3d]" : "",
         className,
       )}
+      {...rest}
     >
       {children}
       {glare && enabled ? (

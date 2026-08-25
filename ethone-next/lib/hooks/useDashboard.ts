@@ -101,12 +101,20 @@ export function useHomeData() {
 
     async function load() {
       try {
+        const DASHBOARD_TIMEOUT_MS = 6_000;
+        const withTimeout = <T,>(promise: Promise<T>, ms: number): Promise<T> => {
+          const timeout = new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error("timeout")), ms)
+          );
+          return Promise.race([promise, timeout]);
+        };
+
         const [dash, np, la, val, lo] = await Promise.allSettled([
-          fetchWorker("/api/cloud/dashboard"),
-          nowPlayingPath ? fetchWorker(nowPlayingPath) : Promise.resolve(null),
-          lanyardPath ? fetchWorker(lanyardPath) : Promise.resolve(null),
-          valorantPath ? fetchWorker(valorantPath) : Promise.resolve(null),
-          lolPath ? fetchWorker(lolPath) : Promise.resolve(null),
+          withTimeout(fetchWorker("/api/cloud/dashboard"), DASHBOARD_TIMEOUT_MS),
+          nowPlayingPath ? withTimeout(fetchWorker(nowPlayingPath), DASHBOARD_TIMEOUT_MS) : Promise.resolve(null),
+          lanyardPath ? withTimeout(fetchWorker(lanyardPath), DASHBOARD_TIMEOUT_MS) : Promise.resolve(null),
+          valorantPath ? withTimeout(fetchWorker(valorantPath), DASHBOARD_TIMEOUT_MS) : Promise.resolve(null),
+          lolPath ? withTimeout(fetchWorker(lolPath), DASHBOARD_TIMEOUT_MS) : Promise.resolve(null),
         ]);
 
         if (cancelled) return;

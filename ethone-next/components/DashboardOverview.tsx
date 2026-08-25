@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
+import { LayoutGrid } from "lucide-react";
 import { DndContext, type DragEndEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, arrayMove, rectSortingStrategy } from "@dnd-kit/sortable";
 import { cn } from "@/lib/utils";
@@ -333,22 +334,22 @@ export default function DashboardOverview() {
     <div className="flex h-full min-h-0 flex-col">
       <PullToRefresh onRefresh={handleRefresh}>
         <div className={cn("mx-auto w-full min-h-full px-2 sm:px-4", maxWClass)}>
-        <header className="shrink-0 mb-4 flex w-full items-end justify-between gap-4">
+        <header className="shrink-0 mb-4 flex w-full items-center justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)] sm:text-2xl">
+          <h1 className="text-2xl font-bold leading-none tracking-tight text-[var(--text-primary)] sm:text-[1.75rem]">
             {i18n("home", "Accueil")}
           </h1>
-          <p className="text-xs text-[var(--text-muted)]">
+          <p className="mt-0.5 text-[10px] leading-tight text-[var(--text-muted)]">
             {i18n("homeDescription", "Votre espace personnel, en un coup d'œil.")}
           </p>
         </div>
         <Button
           size="sm"
-          variant={customizing ? "primary" : "outline"}
+          variant={customizing ? "primary" : "secondary"}
           onClick={handleToggleCustomize}
           title={customizing ? i18n("done") : i18n("customize")}
           aria-label={customizing ? i18n("done") : i18n("customize")}
-          leftIcon={<Icon name="layout-grid" pack="lucide" className="h-4 w-4" />}
+          leftIcon={<LayoutGrid className="h-4 w-4" />}
         >
           {customizing ? i18n("done") : i18n("customize")}
         </Button>

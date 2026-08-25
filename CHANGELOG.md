@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.13 — 2026-08-25
+
+**ETHONE — MyConnectionsRow : alignement de l'en-tête et badge compteur**
+
+- Haut de la ligne **Mes connexions** corrigé pour aligner le titre et le badge compteur.
+- Badge compteur normalisé en h-4 avec `leading-none`.
+- Validation : build, lint.
+
 ## v1.9.12 — 2026-08-25
 
 **ETHONE — Sidebar : intégration standard et plus de flottement**

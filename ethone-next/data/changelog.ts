@@ -6594,9 +6594,57 @@ const v402_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v402_fr, v401_fr, v400_fr, v399_fr, v398_fr, v397_fr, v396_fr, v395_fr, v375_fr, v374_fr, v373_fr, v372_fr, v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v402_en, v401_en, v400_en, v399_en, v398_en, v397_en, v396_en, v395_en, v375_en, v374_en, v373_en, v372_en, v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
-CHANGELOG_BY_LANG.es.unshift(v402_es, v401_es, v400_es, v399_es, v398_es, v397_es, v396_es, v395_es, v375_es, v374_es, v373_es, v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
-CHANGELOG_BY_LANG.de.unshift(v402_de, v401_de, v400_de, v399_de, v398_de, v397_de, v396_de, v395_de, v375_de, v374_de, v373_de, v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
+const v403_fr: ChangelogEntry = {
+  version: "v1.9.13",
+  date: "2026-08-25",
+  title: "MyConnectionsRow — alignement de l'en-tête",
+  items: [
+    "Haut de l'en-tête 'Mes connexions' corrigé : titre et badge alignés sans débordement.",
+    "Badge de compteur forcé en h-4 avec leading-none pour un rendu compact.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.13.",
+  ],
+};
+
+const v403_en: ChangelogEntry = {
+  version: "v1.9.13",
+  date: "2026-08-25",
+  title: "MyConnectionsRow — header alignment",
+  items: [
+    "Fixed 'My connections' header top: title and badge aligned without overflow.",
+    "Counter badge forced to h-4 with leading-none for a compact render.",
+    "Validation: build, lint.",
+    "Version badge bottom-right: v1.9.13.",
+  ],
+};
+
+const v403_es: ChangelogEntry = {
+  version: "v1.9.13",
+  date: "2026-08-25",
+  title: "MyConnectionsRow — alineación del encabezado",
+  items: [
+    "Parte superior del encabezado 'Mis conexiones' corregida: título y badge alineados sin desbordamiento.",
+    "Badge de contador forzado a h-4 con leading-none para una representación compacta.",
+    "Validación: build, lint.",
+    "Versión mostrada abajo a la derecha: v1.9.13.",
+  ],
+};
+
+const v403_de: ChangelogEntry = {
+  version: "v1.9.13",
+  date: "2026-08-25",
+  title: "MyConnectionsRow — Kopfzeilenausrichtung",
+  items: [
+    "Oberer Teil der 'Meine Verbindungen'-Kopfzeile korrigiert: Titel und Badge ohne Überlappung ausgerichtet.",
+    "Zähler-Badge auf h-4 mit leading-none für eine kompakte Darstellung festgelegt.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.13.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v403_fr, v402_fr, v401_fr, v400_fr, v399_fr, v398_fr, v397_fr, v396_fr, v395_fr, v375_fr, v374_fr, v373_fr, v372_fr, v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v403_en, v402_en, v401_en, v400_en, v399_en, v398_en, v397_en, v396_en, v395_en, v375_en, v374_en, v373_en, v372_en, v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v403_es, v402_es, v401_es, v400_es, v399_es, v398_es, v397_es, v396_es, v395_es, v375_es, v374_es, v373_es, v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v403_de, v402_de, v401_de, v400_de, v399_de, v398_de, v397_de, v396_de, v395_de, v375_de, v374_de, v373_de, v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

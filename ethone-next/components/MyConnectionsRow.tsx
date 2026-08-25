@@ -22,8 +22,8 @@ export default function MyConnectionsRow({ integrations, configuredMap, health, 
   return (
     <div className="mb-5 space-y-2">
       <div className="flex items-center gap-2">
-        <h3 className="text-xs font-semibold text-[var(--text-primary)]">{i18n("myConnections", "Mes connexions")}</h3>
-        <span className="rounded-full bg-[var(--accent-primary)]/10 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
+        <h3 className="text-xs font-semibold leading-none text-[var(--text-primary)]">{i18n("myConnections", "Mes connexions")}</h3>
+        <span className="inline-flex h-4 items-center rounded-full bg-[var(--accent-primary)]/10 px-1.5 text-[10px] font-semibold leading-none text-[var(--accent-primary)]">
           {integrations.length}
         </span>
       </div>

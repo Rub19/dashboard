@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   AlertCircle,
   Check,
   CheckCircle2,
   ChevronDown,
+  ChevronRight,
   ChevronUp,
   Copy,
   Eye,
@@ -43,9 +44,16 @@ import {
 import ServiceIcon from "@/components/ServiceIcon";
 import ConnectionBadge from "@/components/ConnectionBadge";
 import ConnectionGuideModal from "@/components/ConnectionGuideModal";
+import ConnectionDetailDrawer from "@/components/ConnectionDetailDrawer";
 import Select from "@/components/ui/Select";
 import Input from "@/components/Input";
 import FormField from "@/components/FormField";
+
+export type SyncEvent = {
+  type: "connected" | "disconnected" | "synced" | "error";
+  at: number;
+  message?: string;
+};
 
 export type CredentialsApi = {
   save: (provider: string, credential: ProviderCredential) => Promise<unknown>;
@@ -195,8 +203,40 @@ export default function ConnectionCard({
   const [clientSecret, setClientSecret] = useState((storeValues.clientSecret as string) || "");
   const [showClientSecret, setShowClientSecret] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [testing, setTesting] = useState(false);
+  const [lastSync, setLastSync] = useState<number | undefined>();
+  const [history, setHistory] = useState<SyncEvent[]>([]);
   const [origin, setOrigin] = useState("");
+  const prevConnected = useRef(isConnected);
+  const mounted = useRef(false);
+
+  useEffect(() => {
+    mounted.current = true;
+  }, []);
+
+  useEffect(() => {
+    if (!mounted.current || prevConnected.current === isConnected) return;
+    prevConnected.current = isConnected;
+    setHistory((h) => [
+      ...h,
+      { type: isConnected ? "connected" : "disconnected", at: Date.now(), message: isConnected ? "Connecté" : "Déconnecté" },
+    ]);
+    if (isConnected) setLastSync(Date.now());
+  }, [isConnected]);
+
+  useEffect(() => {
+    if (!mounted.current || !health) return;
+    setHistory((h) => [
+      ...h,
+      {
+        type: health.status === "connected" ? "synced" : "error",
+        at: Date.now(),
+        message: health.status === "connected" ? "Synchronisation réussie" : health.error || health.status,
+      },
+    ]);
+    if (health.status === "connected") setLastSync(Date.now());
+  }, [health]);
 
   useEffect(() => {
     if (rawOpen && onTest) onTest(integration.id);
@@ -388,6 +428,14 @@ export default function ConnectionCard({
             </div>
           </div>
           <ConnectionBadge variant={statusVariant} dot>{statusText}</ConnectionBadge>
+          <button
+            type="button"
+            onClick={() => setDrawerOpen(true)}
+            className="ml-1 flex h-7 w-7 items-center justify-center rounded-lg text-[var(--text-muted)] transition hover:bg-[var(--text-primary)]/[0.05] hover:text-[var(--text-primary)]"
+            aria-label={i18n("openDetails", "Ouvrir les détails")}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
         </div>
 
         {integration.id === "github" && gitHubStatus && gitHubStatus.indicator !== "none" && (
@@ -707,6 +755,21 @@ export default function ConnectionCard({
         origin={origin}
         copied={copied}
         onCopy={handleCopy}
+      />
+
+      <ConnectionDetailDrawer
+        integration={integration}
+        config={config}
+        isOpen={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        status={status as PingResult["status"]}
+        health={health}
+        lastSync={lastSync}
+        history={history}
+        onTest={handleTest}
+        onConnect={isOauth ? handleConnect : handleSave}
+        onDisconnect={handleDisconnect}
+        onGuide={() => setShowGuide(true)}
       />
     </motion.div>
   );

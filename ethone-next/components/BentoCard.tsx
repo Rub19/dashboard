@@ -4,6 +4,7 @@ import { ReactNode } from "react";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { hapticLightImpact } from "@/lib/haptics";
+import WidgetState, { type WidgetStateType } from "./WidgetState";
 
 export type BentoCardProps = {
   title?: string;
@@ -14,6 +15,10 @@ export type BentoCardProps = {
   className?: string;
   noHeader?: boolean;
   scrollable?: boolean;
+  state?: WidgetStateType;
+  stateMessage?: string;
+  onAction?: () => void;
+  actionLabel?: string;
 };
 
 export default function BentoCard({
@@ -25,6 +30,10 @@ export default function BentoCard({
   className = "",
   noHeader,
   scrollable = true,
+  state,
+  stateMessage,
+  onAction,
+  actionLabel,
 }: BentoCardProps) {
   return (
     <div
@@ -65,7 +74,19 @@ export default function BentoCard({
             scrollable ? "os-scroll min-h-0 overflow-y-auto" : "min-h-0 justify-between"
           )}
         >
-          {children}
+          {state ? (
+            <WidgetState
+              state={state}
+              title={title}
+              icon={icon}
+              message={stateMessage}
+              onAction={onAction}
+              actionLabel={actionLabel}
+              compact
+            />
+          ) : (
+            children
+          )}
         </div>
       </div>
     </div>

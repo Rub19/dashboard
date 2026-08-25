@@ -55,13 +55,27 @@ const widgetItemVariants = {
 const WIDGET_COL_SPAN: Record<string, string> = {
   hero: "col-span-12 lg:col-span-8",
   system: "col-span-12 lg:col-span-4",
-  daystream: "col-span-12 md:col-span-6 lg:col-span-4",
-  productivity: "col-span-12 md:col-span-6 lg:col-span-4",
-  recent: "col-span-12 lg:col-span-4",
-  brain: "col-span-12 md:col-span-6 lg:col-span-6",
-  bills: "col-span-12 md:col-span-6 lg:col-span-6",
+  daystream: "col-span-12 sm:col-span-6 lg:col-span-4",
+  productivity: "col-span-12 sm:col-span-6 lg:col-span-4",
+  recent: "col-span-12 sm:col-span-6 lg:col-span-4",
+  brain: "col-span-12 sm:col-span-6 lg:col-span-6",
+  bills: "col-span-12 sm:col-span-6 lg:col-span-6",
   live: "col-span-12",
 };
+
+const WIDGET_PRIORITY_SCORES: Record<string, Record<string, number>> = {
+  morning: { daystream: 90, productivity: 80, hero: 70, brain: 60, recent: 50, bills: 40, live: 30, system: 20 },
+  work: { productivity: 90, brain: 80, hero: 70, daystream: 60, recent: 50, bills: 40, live: 30, system: 20 },
+  evening: { live: 90, brain: 80, hero: 70, daystream: 60, recent: 50, productivity: 40, bills: 30, system: 20 },
+  night: { hero: 90, brain: 70, recent: 60, bills: 50, system: 40, daystream: 30, productivity: 20, live: 10 },
+};
+
+function getDayPeriod(hour: number) {
+  if (hour >= 5 && hour < 12) return "morning";
+  if (hour >= 12 && hour < 18) return "work";
+  if (hour >= 18 && hour < 23) return "evening";
+  return "night";
+}
 
 const DEFAULT_WIDGETS: WidgetLayout[] = [
   { id: "hero", x: 0, y: 0, w: 12, h: 2, visible: true },
@@ -86,6 +100,7 @@ export default function DashboardOverview() {
   const focus = useFocus();
   const [customizing, setCustomizing] = useState(false);
   const { layout, update: updateLayout } = useDesktopLayout();
+  const hour = useMemo(() => new Date().getHours(), []);
 
   const widgets = useMemo<WidgetLayout[]>(() => {
     const hidden = new Set(settings.homeHiddenSections || []);
@@ -99,8 +114,13 @@ export default function DashboardOverview() {
       seen.add(w.id);
       return true;
     });
-    return sanitized.length > 0 ? sanitized : DEFAULT_WIDGETS.map((w) => ({ ...w, visible: !hidden.has(w.id) }));
-  }, [layout, settings.homeHiddenSections]);
+    const period = getDayPeriod(hour);
+    const scores = WIDGET_PRIORITY_SCORES[period];
+    const sorted = [...sanitized].sort(
+      (a, b) => (scores[b.id] ?? 0) - (scores[a.id] ?? 0)
+    );
+    return sorted.length > 0 ? sorted : DEFAULT_WIDGETS.map((w) => ({ ...w, visible: !hidden.has(w.id) }));
+  }, [layout, settings.homeHiddenSections, hour]);
 
   const sections: SectionDef[] = useMemo(
     () =>

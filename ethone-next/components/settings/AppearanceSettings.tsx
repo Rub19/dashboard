@@ -243,6 +243,8 @@ export default function AppearanceSettings() {
                     key={color.id}
                     type="button"
                     onClick={() => handleChange("accentColor", color.id)}
+                    data-testid={`accent-color-${color.id}`}
+                    aria-pressed={selected}
                     className={`relative h-7 w-7 rounded-full transition-all ${
                       selected
                         ? "ring-2 ring-[var(--text-primary)] shadow-[0_0_14px_currentColor]"

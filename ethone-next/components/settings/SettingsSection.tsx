@@ -23,6 +23,7 @@ function SettingsSection({
 
   return (
     <motion.div
+      id={`section-${id}`}
       data-section={id}
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}

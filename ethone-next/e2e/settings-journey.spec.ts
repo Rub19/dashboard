@@ -121,10 +121,10 @@ for (const viewport of VIEWPORTS) {
     await screenshot(page, `${viewport.name}-06-density-compact.png`);
 
     // 8. Change dock setting (disable dockMagnify), forcing at least one update
-    const appearanceSection = page.locator("#section-appearance");
-    await appearanceSection.scrollIntoViewIfNeeded();
-    const dockMagnify = appearanceSection.locator(
-      '[data-testid="dock-magnify"] button[role="switch"]'
+    const workspaceSection = page.locator("#section-workspace");
+    await workspaceSection.scrollIntoViewIfNeeded();
+    const dockMagnify = workspaceSection.locator(
+      '[data-testid="setting-field-dockMagnify"] button[role="switch"]'
     );
     await dockMagnify.scrollIntoViewIfNeeded();
     await dockMagnify.waitFor({ timeout: 10000 });

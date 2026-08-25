@@ -55,6 +55,7 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
                 backgroundColor: def.bgMain,
                 color: def.textPrimary,
               }}
+              data-testid={`premium-theme-${id}`}
               aria-pressed={selected}
             >
               {/* Selected checkmark */}

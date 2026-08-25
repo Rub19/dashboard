@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.10 — 2026-08-25
+
+**ETHONE — Hotfixes post-release : widget 3D, sync, drag, status bar, météo**
+
+- `ConnectionCardsWidget` : passage en grille de cartes 3D responsive.
+- `SortableWidget` : drag possible sur toute la carte en mode personnalisation.
+- `LiveBentoGrid` : état déconnecté au lieu d'erreur globale.
+- `StatusBar` : restauration de la barre en bas de page.
+- `Dynamic Island` : fermeture au clic à l'extérieur.
+- `WeatherPage` : messages d'erreur de géolocalisation explicites.
+- Validation : build, lint.
+
 ## v1.9.9 — 2026-08-25
 
 **ETHONE — Migration Next.js : phases 4 à 9 polish & cohérence**

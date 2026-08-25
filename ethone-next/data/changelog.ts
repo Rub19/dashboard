@@ -6422,9 +6422,73 @@ const v399_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v399_fr, v398_fr, v397_fr, v396_fr, v395_fr, v375_fr, v374_fr, v373_fr, v372_fr, v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v399_en, v398_en, v397_en, v396_en, v395_en, v375_en, v374_en, v373_en, v372_en, v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
-CHANGELOG_BY_LANG.es.unshift(v399_es, v398_es, v397_es, v396_es, v395_es, v375_es, v374_es, v373_es, v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
-CHANGELOG_BY_LANG.de.unshift(v399_de, v398_de, v397_de, v396_de, v395_de, v375_de, v374_de, v373_de, v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
+const v400_fr: ChangelogEntry = {
+  version: "v1.9.10",
+  date: "2026-08-25",
+  title: "Hotfixes post-release : widget 3D, sync, drag, status bar, météo",
+  items: [
+    "ConnectionCardsWidget : passage en grille de cartes 3D responsive.",
+    "SortableWidget : drag possible sur toute la carte en mode personnalisation.",
+    "LiveBentoGrid : état déconnecté au lieu d'erreur globale.",
+    "StatusBar : restauration de la barre en bas de page.",
+    "Dynamic Island : fermeture au clic à l'extérieur.",
+    "WeatherPage : messages d'erreur de géolocalisation explicites.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.10.",
+  ],
+};
+
+const v400_en: ChangelogEntry = {
+  version: "v1.9.10",
+  date: "2026-08-25",
+  title: "Post-release hotfixes: 3D widget, sync, drag, status bar, weather",
+  items: [
+    "ConnectionCardsWidget: switched to a responsive 3D card grid.",
+    "SortableWidget: full-card drag in customize mode.",
+    "LiveBentoGrid: disconnected state instead of global error.",
+    "StatusBar: restored bottom status bar.",
+    "Dynamic Island: close on outside click.",
+    "WeatherPage: explicit geolocation error messages.",
+    "Validation: build, lint.",
+    "Version badge bottom-right: v1.9.10.",
+  ],
+};
+
+const v400_es: ChangelogEntry = {
+  version: "v1.9.10",
+  date: "2026-08-25",
+  title: "Hotfixes post-release: widget 3D, sync, arrastrar, barra, clima",
+  items: [
+    "ConnectionCardsWidget: cambio a una cuadrícula de tarjetas 3D responsive.",
+    "SortableWidget: arrastre de toda la tarjeta en modo personalización.",
+    "LiveBentoGrid: estado desconectado en lugar de error global.",
+    "StatusBar: barra de estado inferior restaurada.",
+    "Dynamic Island: cierre al hacer clic fuera.",
+    "WeatherPage: mensajes de error de geolocalización explícitos.",
+    "Validación: build, lint.",
+    "Versión mostrada abajo a la derecha: v1.9.10.",
+  ],
+};
+
+const v400_de: ChangelogEntry = {
+  version: "v1.9.10",
+  date: "2026-08-25",
+  title: "Hotfixes nach Release: 3D-Widget, Sync, Drag, Statusleiste, Wetter",
+  items: [
+    "ConnectionCardsWidget: Umstellung auf responsives 3D-Karten-Raster.",
+    "SortableWidget: ganze Karte im Anpassungsmodus ziehbar.",
+    "LiveBentoGrid: getrennter Status statt globaler Fehler.",
+    "StatusBar: untere Statusleiste wiederhergestellt.",
+    "Dynamic Island: Schließen bei Klick außerhalb.",
+    "WeatherPage: eindeutige Geolokalisierungs-Fehlermeldungen.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.10.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v400_fr, v399_fr, v398_fr, v397_fr, v396_fr, v395_fr, v375_fr, v374_fr, v373_fr, v372_fr, v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v400_en, v399_en, v398_en, v397_en, v396_en, v395_en, v375_en, v374_en, v373_en, v372_en, v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v400_es, v399_es, v398_es, v397_es, v396_es, v395_es, v375_es, v374_es, v373_es, v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v400_de, v399_de, v398_de, v397_de, v396_de, v395_de, v375_de, v374_de, v373_de, v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

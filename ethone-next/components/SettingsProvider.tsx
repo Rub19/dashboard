@@ -105,6 +105,8 @@ export default function SettingsProvider({
     settingsRef.current = settings;
   }, [settings]);
 
+  const CLOCK_SKEW_BUFFER_MS = 5000;
+
   const activeContext = useMemo<ActiveProfileValue>(
     () => ({ active, activeProfile, loaded, reload }),
     [active, activeProfile, loaded, reload]
@@ -159,8 +161,9 @@ export default function SettingsProvider({
       .then(({ settings: remote, updatedAt }) => {
         setSettings((prev) => {
           const remoteTs = updatedAt ? new Date(updatedAt).getTime() : 0;
+          const remoteIsNewer = remoteTs > localWriteAt + CLOCK_SKEW_BUFFER_MS;
           const next =
-            remoteTs > localWriteAt
+            remoteIsNewer
               ? { ...DEFAULTS, ...local, ...remote }
               : { ...DEFAULTS, ...local };
           return deepEqual(next, prev) ? prev : next;
@@ -356,7 +359,6 @@ export default function SettingsProvider({
       }
 
       // Snapshot the previous state so we can roll back if persistence fails.
-      saveSnapshotRef.current = prev;
       settingsRef.current = next;
       setSettings(next);
 
@@ -379,18 +381,10 @@ export default function SettingsProvider({
         clearTimeout(saveTimeoutRef.current);
       }
       saveTimeoutRef.current = window.setTimeout(() => {
-        const snapshot = saveSnapshotRef.current;
         saveSettingsAsync(settingsRef.current, active || undefined)
           .then(() => useSyncStore.getState().setStatus("user_settings", "idle"))
           .catch(() => {
             useSyncStore.getState().setStatus("user_settings", "error");
-            if (snapshot) {
-              settingsRef.current = snapshot;
-              setSettings(snapshot);
-              try {
-                saveSettings(snapshot, active || undefined);
-              } catch {}
-            }
           });
       }, 400);
     },
@@ -408,7 +402,6 @@ export default function SettingsProvider({
   );
 
   const saveTimeoutRef = useRef<number | null>(null);
-  const saveSnapshotRef = useRef<Settings | null>(null);
   const previousSettingsRef = useRef<Settings | null>(null);
   const previousEffectSettingsRef = useRef<Settings | null>(null);
   useEffect(() => {

@@ -5,6 +5,70 @@ export type ChangelogEntry = {
   items: string[];
 };
 
+const v375_fr: ChangelogEntry = {
+  version: "v1.9.4",
+  date: "2026-08-25",
+  title: "Drag & drop et persistance du layout Home",
+  items: [
+    "Ajout de `@dnd-kit/core` et `@dnd-kit/sortable`.",
+    "Nouveau composant `SortableWidget` avec poignée de glisser-déposer visible en mode personnalisation.",
+    "DashboardOverview : le Home est désormais réorganisable par glisser-déposer en mode personnalisation.",
+    "La grille Home respecte l'ordre sauvegardé de l'utilisateur ; les nouveaux widgets sont ajoutés à la fin.",
+    "Déplacement d'un widget met à jour `desktop_layout` via `useDesktopLayout` et persiste dans Supabase.",
+    "Conservation des états de visibilité et de l'ordre relatif des widgets masqués lors du glisser-déposer.",
+    "Validation : `npm run build`, `npm run lint`, `npm run test:unit` restent verts.",
+    "Version affichée en bas à droite : v1.9.4.",
+  ],
+};
+
+const v375_en: ChangelogEntry = {
+  version: "v1.9.4",
+  date: "2026-08-25",
+  title: "Home drag & drop and layout persistence",
+  items: [
+    "Added `@dnd-kit/core` and `@dnd-kit/sortable`.",
+    "New `SortableWidget` component with a drag handle visible in customization mode.",
+    "DashboardOverview: the Home can now be reordered by drag & drop in customization mode.",
+    "The Home grid respects the user's saved order; new widgets are appended at the end.",
+    "Moving a widget updates `desktop_layout` via `useDesktopLayout` and persists in Supabase.",
+    "Visibility states and relative order of hidden widgets are preserved during drag & drop.",
+    "Validation: `npm run build`, `npm run lint`, `npm run test:unit` still pass.",
+    "Version badge bottom-right: v1.9.4.",
+  ],
+};
+
+const v375_es: ChangelogEntry = {
+  version: "v1.9.4",
+  date: "2026-08-25",
+  title: "Arrastrar y soltar y persistencia del layout del Home",
+  items: [
+    "Añadido `@dnd-kit/core` y `@dnd-kit/sortable`.",
+    "Nuevo componente `SortableWidget` con un asa de arrastre visible en modo personalización.",
+    "DashboardOverview: el Home ahora se puede reordenar con arrastrar y soltar en modo personalización.",
+    "La cuadrícula del Home respeta el orden guardado del usuario; los nuevos widgets se añaden al final.",
+    "Mover un widget actualiza `desktop_layout` vía `useDesktopLayout` y persiste en Supabase.",
+    "Se conservan los estados de visibilidad y el orden relativo de los widgets ocultos durante el arrastre.",
+    "Validación: `npm run build`, `npm run lint`, `npm run test:unit` siguen pasando.",
+    "Versión mostrada abajo a la derecha: v1.9.4.",
+  ],
+};
+
+const v375_de: ChangelogEntry = {
+  version: "v1.9.4",
+  date: "2026-08-25",
+  title: "Home Drag & Drop und Layout-Persistenz",
+  items: [
+    "`@dnd-kit/core` und `@dnd-kit/sortable` hinzugefügt.",
+    "Neue `SortableWidget`-Komponente mit Ziehgriff, sichtbar im Anpassungsmodus.",
+    "DashboardOverview: das Home lässt sich jetzt per Drag & Drop im Anpassungsmodus neu ordnen.",
+    "Das Home-Raster respektiert die gespeicherte Reihenfolge; neue Widgets werden am Ende angehängt.",
+    "Das Verschieben eines Widgets aktualisiert `desktop_layout` über `useDesktopLayout` und wird in Supabase persistiert.",
+    "Sichtbarkeitszustände und relative Reihenfolge ausgeblendeter Widgets bleiben beim Ziehen erhalten.",
+    "Validierung: `npm run build`, `npm run lint`, `npm run test:unit` bestehen weiterhin.",
+    "Version unten rechts: v1.9.4.",
+  ],
+};
+
 const v374_fr: ChangelogEntry = {
   version: "v1.9.3",
   date: "2026-08-25",
@@ -6018,9 +6082,9 @@ const v366_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v374_fr, v373_fr, v372_fr, v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v374_en, v373_en, v372_en, v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
-CHANGELOG_BY_LANG.es.unshift(v374_es, v373_es, v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
-CHANGELOG_BY_LANG.de.unshift(v374_de, v373_de, v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
+CHANGELOG_BY_LANG.fr.unshift(v375_fr, v374_fr, v373_fr, v372_fr, v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v375_en, v374_en, v373_en, v372_en, v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v375_es, v374_es, v373_es, v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v375_de, v374_de, v373_de, v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

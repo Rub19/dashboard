@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.4 — 2026-08-25
+
+**ETHONE Home — Drag & drop et persistance du layout**
+
+- Ajout de `@dnd-kit/core` et `@dnd-kit/sortable`.
+- Nouveau composant `SortableWidget` avec poignée de glisser-déposer visible en mode personnalisation.
+- `DashboardOverview` : le Home est désormais réorganisable par glisser-déposer en mode personnalisation.
+- La grille Home respecte l'ordre sauvegardé de l'utilisateur ; les nouveaux widgets sont ajoutés à la fin.
+- Déplacement d'un widget met à jour `desktop_layout` via `useDesktopLayout` et persiste dans Supabase.
+- Conservation des états de visibilité et de l'ordre relatif des widgets masqués lors du glisser-déposer.
+- Validation : `npm run build`, `npm run lint`, `npm run test:unit` restent verts.
+
 ## v1.9.3 — 2026-08-25
 
 **ETHONE UI — Uniformisation des boutons, icônes et tokens**

@@ -3,7 +3,8 @@
 import { useCallback, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
-import { EASE_OUT } from "@/lib/ease";
+import { DndContext, type DragEndEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { SortableContext, arrayMove, rectSortingStrategy } from "@dnd-kit/sortable";
 import { cn } from "@/lib/utils";
 import BentoCard from "@/components/BentoCard";
 import IconButton from "@/components/ui/IconButton";
@@ -24,6 +25,7 @@ import { useDesktopLayout, type WidgetLayout } from "@/lib/hooks/useDesktopLayou
 import { Icon } from "@/lib/icons";
 import PullToRefresh from "@/components/PullToRefresh";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
+import SortableWidget from "@/components/SortableWidget";
 
 const LiveBentoGrid = dynamic(() => import("@/components/LiveBentoGrid"));
 const BillsWidget = dynamic(() => import("@/components/BillsWidget"));
@@ -45,15 +47,7 @@ const gridVariants = {
   },
 };
 
-const widgetItemVariants = {
-  hidden: { opacity: 0, y: 18, scale: 0.97 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 0.36, ease: EASE_OUT },
-  },
-};
+
 
 const WIDGET_COL_SPAN: Record<string, string> = {
   hero: "col-span-12 lg:col-span-8",
@@ -108,6 +102,10 @@ export default function DashboardOverview() {
   const { layout, update: updateLayout } = useDesktopLayout();
   const hour = useMemo(() => new Date().getHours(), []);
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+  );
+
   const widgets = useMemo<WidgetLayout[]>(() => {
     const hidden = new Set(settings.homeHiddenSections || []);
     const defaults = DEFAULT_WIDGETS.map((w) => ({ ...w, visible: !hidden.has(w.id) }));
@@ -132,11 +130,44 @@ export default function DashboardOverview() {
       return true;
     });
 
+    let sorted: WidgetLayout[];
     const period = getDayPeriod(hour);
     const scores = WIDGET_PRIORITY_SCORES[period];
-    const sorted = [...sanitized].sort((a, b) => (scores[b.id] ?? 0) - (scores[a.id] ?? 0));
+
+    if (saved.length > 0) {
+      // Respect the user's persisted order for all widgets, then push newly
+      // added widgets to the end, sorted by default priority.
+      const indexMap = new Map(saved.map((w, i) => [w.id, i]));
+      const baseOffset = saved.length;
+      sorted = [...sanitized].sort(
+        (a, b) =>
+          (indexMap.get(a.id) ?? baseOffset + (scores[a.id] ?? 0)) -
+          (indexMap.get(b.id) ?? baseOffset + (scores[b.id] ?? 0))
+      );
+    } else {
+      sorted = [...sanitized].sort((a, b) => (scores[b.id] ?? 0) - (scores[a.id] ?? 0));
+    }
+
     return sorted.length > 0 ? sorted : defaults;
   }, [layout, settings.homeHiddenSections, hour]);
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+      if (!over || active.id === over.id) return;
+
+      const visible = widgets.filter((w) => w.visible);
+      const oldIndex = visible.findIndex((w) => w.id === active.id);
+      const newIndex = visible.findIndex((w) => w.id === over.id);
+      if (oldIndex === -1 || newIndex === -1) return;
+
+      const newVisibleOrder = arrayMove(visible, oldIndex, newIndex);
+      let visibleCursor = 0;
+      const next = widgets.map((w) => (w.visible ? newVisibleOrder[visibleCursor++] : w));
+      void updateLayout(next);
+    },
+    [widgets, updateLayout]
+  );
 
   const sections: SectionDef[] = useMemo(
     () =>
@@ -346,26 +377,35 @@ export default function DashboardOverview() {
       {bentoLoading ? (
         <DashboardSkeleton />
       ) : (
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={gridVariants}
-          data-home-grid
-          className="grid w-full h-auto grid-cols-12 gap-3 pb-3"
-        >
-          {widgets.map((w) =>
-            w.visible ? (
-              <motion.div
-                key={w.id}
-                data-home-widget
-                variants={widgetItemVariants}
-                className={`${WIDGET_COL_SPAN[w.id]} flex min-w-0 flex-col`}
-              >
-                {renderWidget(w.id)}
-              </motion.div>
-            ) : null
-          )}
-        </motion.div>
+        <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+          <SortableContext
+            items={widgets.filter((w) => w.visible).map((w) => w.id)}
+            strategy={rectSortingStrategy}
+          >
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={gridVariants}
+              data-home-grid
+              className="grid w-full h-auto grid-cols-12 gap-3 pb-3"
+            >
+              {widgets.map(
+                (w, i) =>
+                  w.visible && (
+                    <SortableWidget
+                      key={w.id}
+                      id={w.id}
+                      index={i}
+                      customizing={customizing}
+                      className={WIDGET_COL_SPAN[w.id]}
+                    >
+                      {renderWidget(w.id)}
+                    </SortableWidget>
+                  )
+              )}
+            </motion.div>
+          </SortableContext>
+        </DndContext>
       )}
       </div>
       </PullToRefresh>

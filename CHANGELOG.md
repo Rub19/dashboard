@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.12 — 2026-08-25
+
+**ETHONE — Sidebar : intégration standard et plus de flottement**
+
+- `Sidebar` passée du style `floating` au style `sidebar` pour s'attacher au bord gauche.
+- Suppression de la marge flottante et des coins arrondis gauches.
+- Bordure droite avec coins arrondis à droite pour un rendu plus intégré au shell.
+- Validation : build, lint.
+
 ## v1.9.11 — 2026-08-25
 
 **ETHONE — ConnectionCardsWidget : catégories, couleurs d'origine, services en erreur masqués**

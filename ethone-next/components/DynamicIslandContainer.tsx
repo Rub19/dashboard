@@ -219,12 +219,12 @@ export default function DynamicIslandContainer() {
   const i18n = useI18n();
   const router = useRouter();
   const { settings } = useSettings();
-  const { error: showError } = useToast();
+  const { success: showSuccess, error: showError } = useToast();
   const focus = useFocus();
   const { nowPlaying, loading: npLoading, refetch: refetchNowPlaying } = useNowPlaying(1000);
   const isThinking = useBrainActivityStore((s) => s.isThinking);
   const { visible } = useDynamicIslandStore();
-  const { pendingCount, syncing, lastSync, sync } = useActivityJournal();
+  const { pendingCount, syncing, lastSync, syncError, sync } = useActivityJournal();
   const queue = useUploadQueue();
   const uploadingCount = queue.items.filter((it) => it.status === "uploading" || it.status === "queued").length;
   const completedCount = queue.items.filter((it) => it.status === "completed").length;
@@ -757,14 +757,31 @@ export default function DynamicIslandContainer() {
                   {pendingCount > 0 && !syncing && (
                     <button
                       type="button"
-                      onClick={(e) => {
+                      disabled={syncing}
+                      onClick={async (e) => {
                         e.stopPropagation();
-                        void sync();
+                        const res = await sync();
+                        if (res.ok) {
+                          showSuccess(
+                            i18n("synced", "Synchronisé"),
+                            i18n("syncItemsOk", `${res.count} éléments synchronisés`)
+                          );
+                        } else {
+                          showError(
+                            i18n("syncFailed", "Échec de la synchronisation"),
+                            syncError?.message || i18n("syncFailedDescription", "Le Worker n'a pas pu synchroniser.")
+                          );
+                        }
                       }}
-                      className="mt-2 rounded-lg bg-[var(--accent-primary)] px-3 py-1.5 text-xs font-medium text-[var(--accent-contrast)] transition-colors hover:bg-[var(--accent-primary)]/90"
+                      className="mt-2 rounded-lg bg-[var(--accent-primary)] px-3 py-1.5 text-xs font-medium text-[var(--accent-contrast)] transition-colors hover:bg-[var(--accent-primary)]/90 disabled:opacity-50"
                     >
                       {i18n("syncNow", "Synchroniser maintenant")}
                     </button>
+                  )}
+                  {syncError && !syncing && (
+                    <p className="mt-1 max-w-[220px] text-center text-[10px] text-[var(--danger)]">
+                      {syncError.message}
+                    </p>
                   )}
                 </div>
               </div>

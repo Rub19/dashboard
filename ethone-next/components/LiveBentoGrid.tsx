@@ -53,7 +53,7 @@ const LiveBentoGrid = memo(function LiveBentoGrid({
   const handleConnect = useCallback(() => { router.push("/settings?category=integrations"); }, [router]);
   const childHeight = scrollable ? "h-full" : "h-auto min-h-0";
   const connected = (records?.filter((r) => r.status === "connected").length ?? 0);
-  const widgetState = state ?? (loading ? "loading" : error ? "error" : connected === 0 ? "disconnected" : undefined);
+  const widgetState = state ?? (loading ? "loading" : connected === 0 ? "disconnected" : undefined);
   if (widgetState) {
     return (
       <BentoCard

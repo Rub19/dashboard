@@ -1,7 +1,5 @@
-import { Suspense } from "react";
 import { SettingsFormProvider } from "@/components/settings/SettingsFormContext";
 import SettingsLayout from "@/components/settings/SettingsLayout";
-import SettingsLayoutSkeleton from "@/components/settings/SettingsLayoutSkeleton";
 
 const SETTINGS_SECTIONS = [
   "profile",
@@ -26,10 +24,8 @@ export default async function SettingsSectionPage({
   const { section } = await Promise.resolve(params);
 
   return (
-    <Suspense fallback={<SettingsLayoutSkeleton />}>
-      <SettingsFormProvider>
-        <SettingsLayout initialSection={section} />
-      </SettingsFormProvider>
-    </Suspense>
+    <SettingsFormProvider>
+      <SettingsLayout initialSection={section} />
+    </SettingsFormProvider>
   );
 }

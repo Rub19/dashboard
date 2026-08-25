@@ -14,6 +14,7 @@ export type SliderProps = {
   showValue?: boolean;
   className?: string;
   "aria-label"?: string;
+  "aria-describedby"?: string;
 };
 
 export default function Slider({
@@ -26,6 +27,7 @@ export default function Slider({
   showValue = true,
   className = "",
   "aria-label": ariaLabel,
+  "aria-describedby": ariaDescribedBy,
 }: SliderProps) {
   const [dragging, setDragging] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -92,6 +94,7 @@ export default function Slider({
         ref={trackRef}
         role="slider"
         aria-label={ariaLabel}
+        aria-describedby={ariaDescribedBy}
         aria-valuemin={min}
         aria-valuemax={max}
         aria-valuenow={clamped}
@@ -100,16 +103,18 @@ export default function Slider({
         onKeyDown={handleKeyDown}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="relative h-1.5 w-full cursor-pointer rounded-xl bg-[var(--border-subtle)] outline-none transition-colors duration-200 hover:bg-[var(--border)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
+        className="relative flex min-h-[44px] w-full cursor-pointer items-center rounded-xl outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
       >
-        <div
-          className="pointer-events-none absolute left-0 top-0 h-full rounded-xl transition-colors duration-150"
-          style={{
-            width: `${percentage}%`,
-            background: "var(--accent-primary)",
-            boxShadow: "0 0 10px var(--glow-color)",
-          }}
-        />
+        <div className="relative h-1.5 w-full overflow-hidden rounded-xl bg-[var(--border-subtle)] transition-colors duration-200 hover:bg-[var(--border)]">
+          <div
+            className="pointer-events-none absolute left-0 top-0 h-full rounded-xl transition-colors duration-150"
+            style={{
+              width: `${percentage}%`,
+              background: "var(--accent-primary)",
+              boxShadow: "0 0 10px var(--glow-color)",
+            }}
+          />
+        </div>
         <div
           className={`pointer-events-none absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full border-2 border-[var(--accent-primary)] bg-[var(--surface-raised)] shadow-md shadow-[var(--text-primary)]/20 transition-transform duration-150 ease-out ${
             dragging || hovered ? "scale-125" : "scale-100"

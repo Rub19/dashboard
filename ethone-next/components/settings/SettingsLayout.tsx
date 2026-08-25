@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { RotateCcw, Save, X, ChevronRight } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Input from "@/components/Input";
@@ -27,43 +27,63 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
   const { settings, update } = useSettings();
   const { error: showError, notify } = useToast();
   const form = useSettingsForm();
-  const searchParams = useSearchParams();
+  const params = useParams();
   const router = useRouter();
   const contentRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
-  const [activeCategory, setActiveCategory] = useState(() => resolveCategory(initialSection ?? searchParams?.get("category") ?? searchParams?.get("tab")));
+  const sectionParam = typeof params?.section === "string" ? params.section : undefined;
+  const [activeCategory, setActiveCategory] = useState(() =>
+    resolveCategory(initialSection ?? sectionParam)
+  );
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [, startTransition] = useTransition();
 
   const scrollToCategory = useCallback((id: string) => {
     const el =
       (contentRef.current?.querySelector(`[data-section="${id}"]`) as HTMLElement | null) ||
       (contentRef.current?.querySelector(`[data-category="${id}"]`) as HTMLElement | null);
     if (!el) return;
-    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    requestAnimationFrame(() => {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   }, []);
 
   useEffect(() => {
-    const raw = initialSection ?? searchParams?.get("category") ?? searchParams?.get("tab");
+    const raw = initialSection ?? sectionParam;
     const category = resolveCategory(raw);
     setActiveCategory(category);
     const t = window.setTimeout(() => {
       scrollToCategory(raw || category);
     }, 120);
     return () => window.clearTimeout(t);
-  }, [initialSection, searchParams, scrollToCategory]);
+  }, [initialSection, sectionParam, scrollToCategory]);
 
   const handleSelectCategory = useCallback(
     (id: string) => {
       if (id === activeCategory) return;
-      router.push(`/settings/${id}`, { scroll: false });
+      setIsNavigating(true);
+      startTransition(() => {
+        router.push(`/settings/${id}`, { scroll: false });
+      });
+      // The active category is updated by the params effect / scrollspy.
+      // The visual transition is driven by isNavigating.
+      window.setTimeout(() => {
+        setIsNavigating(false);
+        scrollToCategory(id);
+      }, 120);
     },
-    [activeCategory, router]
+    [activeCategory, router, scrollToCategory]
   );
 
-  const handleCategoryInView = useCallback((id: string) => {
-    setActiveCategory(id);
-  }, []);
+  const handleCategoryInView = useCallback(
+    (id: string) => {
+      if (isNavigating) return;
+      setActiveCategory(id);
+    },
+    [isNavigating]
+  );
 
   const handleReset = useCallback(() => {
     setIsResetModalOpen(true);
@@ -109,96 +129,128 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+      const isMac = navigator.platform.toLowerCase().includes("mac");
+      const ctrl = e.ctrlKey || e.metaKey;
+
+      if (ctrl && e.key.toLowerCase() === "k") {
         e.preventDefault();
         searchRef.current?.focus();
         searchRef.current?.select();
       }
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") {
+
+      if (ctrl && e.key.toLowerCase() === "s") {
         e.preventDefault();
         handleSave();
       }
+
       if (e.key === "Escape" && form.query.trim()) {
         e.preventDefault();
         form.setQuery("");
       }
+
+      const isUndo = !e.shiftKey && e.key.toLowerCase() === "z";
+      const isRedo =
+        (isMac && e.shiftKey && e.key.toLowerCase() === "z") ||
+        (!isMac && (e.key.toLowerCase() === "y" || (e.shiftKey && e.key.toLowerCase() === "z")));
+
+      if (ctrl && isUndo) {
+        e.preventDefault();
+        form.undo();
+      }
+
+      if (ctrl && isRedo) {
+        e.preventDefault();
+        form.redo();
+      }
     }
+
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [form, handleSave]);
 
   return (
-    <div className="flex h-full min-h-0 w-full select-none flex-col overflow-hidden p-4 sm:p-6">
+    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:p-6 sm:pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
       {/* Header */}
-      <div className="shrink-0 mb-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
-            <Icon name="settings" className="h-5 w-5" />
+      <header className="mb-4 shrink-0">
+        <div className="flex w-full min-w-0 max-w-full flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+              <Icon name="settings" className="h-5 w-5" aria-hidden="true" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
+                {i18n("settingsTitle") || "Paramètres"}
+              </h1>
+              <p className="text-[11px] text-[var(--text-muted)]">
+                {i18n("settingsGeneralDesc", "Personnalisez l'apparence et le comportement global d'ETHONE OS.")}
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
-              {i18n("settingsTitle") || "Paramètres"}
-            </h1>
-            <p className="text-[11px] text-[var(--text-muted)]">
-              {i18n("settingsGeneralDesc", "Personnalisez l'apparence et le comportement global d'ETHONE OS.")}
-            </p>
-          </div>
-        </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <Input
-            ref={searchRef}
-            type="text"
-            value={form.query}
-            onChange={(e) => form.setQuery(e.target.value)}
-            placeholder={i18n("journalSearchPlaceholder") || "Rechercher..."}
-            aria-label={i18n("journalSearchPlaceholder") || "Rechercher"}
-            icon="search"
-            inputSize="compact"
-            className="w-full sm:w-56"
-          />
+          <div className="flex w-full min-w-0 flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
+            <form
+              role="search"
+              onSubmit={(e) => e.preventDefault()}
+              className="w-full min-w-0 sm:w-auto"
+            >
+              <Input
+                ref={searchRef}
+                type="text"
+                value={form.query}
+                onChange={(e) => form.setQuery(e.target.value)}
+                placeholder={i18n("journalSearchPlaceholder") || "Rechercher..."}
+                aria-label={i18n("journalSearchPlaceholder") || "Rechercher"}
+                icon="search"
+                inputSize="compact"
+                className="w-full min-w-0 sm:w-56"
+              />
+            </form>
 
-          <div
-            className={cn(
-              "flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium",
-              form.hasExplicitChanges
-                ? "border-[var(--warning)]/20 bg-[var(--warning)]/10 text-[var(--warning)]"
-                : "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
-            )}
-          >
-            <span
+            <div
               className={cn(
-                "h-1.5 w-1.5 rounded-full",
-                form.hasExplicitChanges ? "bg-[var(--warning)]" : "bg-[var(--accent-primary)]"
+                "flex min-h-[44px] items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium",
+                form.hasExplicitChanges
+                  ? "border-[var(--warning)]/20 bg-[var(--warning)]/10 text-[var(--warning)]"
+                  : "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
               )}
-            />
-            {form.hasExplicitChanges
-              ? i18n("unsavedChanges") || "Modifications non enregistrées"
-              : i18n("synced") || "Synchronisé"}
-          </div>
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              <span
+                className={cn(
+                  "h-1.5 w-1.5 rounded-full",
+                  form.hasExplicitChanges ? "bg-[var(--warning)]" : "bg-[var(--accent-primary)]"
+                )}
+                aria-hidden="true"
+              />
+              {form.hasExplicitChanges
+                ? i18n("unsavedChanges") || "Modifications non enregistrées"
+                : i18n("synced") || "Synchronisé"}
+            </div>
 
-          <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="secondary"
-              size="md"
-              leftIcon={<RotateCcw className="h-3.5 w-3.5" />}
-              onClick={handleReset}
-            >
-              {i18n("reset") || "Rétablir"}
-            </Button>
-            <Button
-              type="button"
-              variant="primary"
-              size="md"
-              leftIcon={<Save className="h-3.5 w-3.5" />}
-              onClick={handleSave}
-            >
-              {i18n("save") || "Enregistrer"}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="secondary"
+                size="md"
+                leftIcon={<RotateCcw className="h-3.5 w-3.5" />}
+                onClick={handleReset}
+              >
+                {i18n("reset") || "Rétablir"}
+              </Button>
+              <Button
+                type="button"
+                variant="primary"
+                size="md"
+                leftIcon={<Save className="h-3.5 w-3.5" />}
+                onClick={handleSave}
+              >
+                {i18n("save") || "Enregistrer"}
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Mobile category strip */}
       <div className="mb-4 block md:hidden">
@@ -210,9 +262,9 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
       </div>
 
       {/* Split view */}
-      <div className="flex min-h-0 w-full flex-1 gap-6 overflow-hidden">
-        <aside className="hidden w-64 shrink-0 md:block">
-          <div className="sticky top-0 max-h-[calc(100vh-2rem)] overflow-y-auto no-scrollbar">
+      <div className="flex min-h-0 w-full flex-1 gap-4 overflow-hidden sm:gap-6">
+        <aside className="hidden w-64 shrink-0 overflow-y-auto pr-1 no-scrollbar md:block">
+          <div className="sticky top-0 max-h-[calc(100vh-2rem)]">
             <SettingsNavigation
               active={activeCategory}
               onSelect={handleSelectCategory}
@@ -230,27 +282,46 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
             aria-label="Breadcrumb"
             className="mb-4 flex items-center gap-1.5 text-xs text-[var(--text-muted)]"
           >
-            <span>{i18n("settingsTitle") || "Paramètres"}</span>
-            <ChevronRight className="h-3.5 w-3.5 shrink-0 opacity-50" />
-            <span className="font-medium text-[var(--text-primary)]">
-              {CATEGORY_ORDER.find((c) => c.id === activeCategory)?.label ?? activeCategory}
-            </span>
+            <ol className="flex items-center gap-1.5">
+              <li>
+                <span>{i18n("settingsTitle") || "Paramètres"}</span>
+              </li>
+              <li aria-hidden="true">
+                <ChevronRight className="h-3.5 w-3.5 shrink-0 opacity-50" />
+              </li>
+              <li>
+                <span
+                  className="font-medium text-[var(--text-primary)]"
+                  aria-current="page"
+                >
+                  {CATEGORY_ORDER.find((c) => c.id === activeCategory)?.label ?? activeCategory}
+                </span>
+              </li>
+            </ol>
           </nav>
 
-          <SettingsContent
-            contentRef={contentRef}
-            onCategoryChange={handleCategoryInView}
-          />
+          <div
+            className={cn(
+              "transition-[opacity,transform] duration-300 ease-out will-change-transform",
+              isNavigating ? "translate-y-1 opacity-90" : "translate-y-0 opacity-100"
+            )}
+          >
+            <SettingsContent
+              contentRef={contentRef}
+              onCategoryChange={handleCategoryInView}
+            />
+          </div>
         </main>
       </div>
 
       {settings.dockFloatingSave && form.hasExplicitChanges && (
         <div
-          className="fixed bottom-20 z-50 mx-auto w-max max-w-[min(90%,32rem)] animate-in slide-in-from-bottom-4"
-          style={{ left: "env(safe-area-inset-left)", right: "env(safe-area-inset-right)" }}
+          className="fixed bottom-[max(5rem,env(safe-area-inset-bottom)+4.5rem)] left-[max(1rem,env(safe-area-inset-left))] right-[max(1rem,env(safe-area-inset-right))] z-50 mx-auto w-max max-w-[min(90%,32rem)] animate-in slide-in-from-bottom-4 sm:left-1/2 sm:-translate-x-1/2"
+          aria-live="polite"
+          aria-atomic="true"
         >
           <div className="mx-4 flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--warning)]/20 bg-[var(--warning)]/10 px-4 py-2.5 text-xs font-medium text-[var(--warning)] shadow-lg backdrop-blur-[var(--panel-blur)]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[var(--warning)]" />
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--warning)]" aria-hidden="true" />
             <span className="whitespace-nowrap">{i18n("unsavedChanges") || "Modifications non enregistrées"}</span>
             <div className="ml-auto flex items-center gap-2 pl-2">
               <Button

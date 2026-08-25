@@ -29,7 +29,7 @@ function ActionCard({
       type="button"
       onClick={onClick}
       disabled={loading}
-      className="group flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 text-left transition-all hover:border-[var(--accent-primary)]/40 hover:bg-[var(--text-primary)]/[0.03] active:scale-[0.98] disabled:opacity-60 backdrop-blur-[var(--panel-blur)]"
+      className="group flex min-h-[44px] items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 text-left transition-all hover:border-[var(--accent-primary)]/40 hover:bg-[var(--text-primary)]/[0.03] active:scale-[0.98] disabled:opacity-60 backdrop-blur-[var(--panel-blur)]"
     >
       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] transition-colors group-hover:bg-[var(--accent-primary)]/15">
         {loading ? <Icon name="loader-2" className="h-4 w-4 animate-spin" /> : icon}

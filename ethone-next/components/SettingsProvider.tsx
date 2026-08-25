@@ -188,6 +188,12 @@ export default function SettingsProvider({
 
   useEffect(() => {
     const root = document.documentElement;
+    const prev = previousEffectSettingsRef.current;
+    const changed = prev && (prev.theme !== settings.theme || prev.accentColor !== settings.accentColor || prev.customAccent !== settings.customAccent || prev.densityMode !== settings.densityMode || prev.fontSize !== settings.fontSize || prev.radius !== settings.radius || prev.radiusStyle !== settings.radiusStyle || prev.iconRadius !== settings.iconRadius || prev.glassEnabled !== settings.glassEnabled || prev.fontFamily !== settings.fontFamily || prev.dockScale !== settings.dockScale || prev.dockAlign !== settings.dockAlign || prev.dockGlass !== settings.dockGlass || prev.layoutPreset !== settings.layoutPreset || prev.wallpaper !== settings.wallpaper || prev.aura !== settings.aura || prev.backgroundEffect !== settings.backgroundEffect || prev.backgroundSpeed !== settings.backgroundSpeed || prev.shadow !== settings.shadow);
+
+    if (changed) {
+      root.setAttribute("data-no-transitions", "true");
+    }
 
     // Apply the premium theme engine directly to the root for zero-lag switching.
     applyTheme(settings.theme);
@@ -289,6 +295,14 @@ export default function SettingsProvider({
     Object.entries(densityValues).forEach(([key, value]) => {
       root.style.setProperty(`--density-${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`, `${value}${UNIT[key] || ""}`);
     });
+
+    if (changed) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => root.removeAttribute("data-no-transitions"));
+      });
+    }
+
+    previousEffectSettingsRef.current = settings;
   }, [settings, active]);
 
   const update = useCallback(
@@ -302,9 +316,22 @@ export default function SettingsProvider({
       if (deepEqual(next, prev)) {
         return;
       }
+
+      // Snapshot the previous state so we can roll back if persistence fails.
+      saveSnapshotRef.current = prev;
       settingsRef.current = next;
       setSettings(next);
-      saveSettings(next, active || undefined);
+
+      try {
+        saveSettings(next, active || undefined);
+      } catch {
+        // Local persistence failed; revert to the previous state immediately.
+        settingsRef.current = prev;
+        setSettings(prev);
+        useSyncStore.getState().setStatus("user_settings", "error");
+        return;
+      }
+
       useSyncStore.getState().setStatus("user_settings", "syncing");
 
       // Debounce the Supabase round-trip so rapid changes (sliders, theme clicks)
@@ -314,9 +341,19 @@ export default function SettingsProvider({
         clearTimeout(saveTimeoutRef.current);
       }
       saveTimeoutRef.current = window.setTimeout(() => {
+        const snapshot = saveSnapshotRef.current;
         saveSettingsAsync(settingsRef.current)
           .then(() => useSyncStore.getState().setStatus("user_settings", "idle"))
-          .catch(() => useSyncStore.getState().setStatus("user_settings", "error"));
+          .catch(() => {
+            useSyncStore.getState().setStatus("user_settings", "error");
+            if (snapshot) {
+              settingsRef.current = snapshot;
+              setSettings(snapshot);
+              try {
+                saveSettings(snapshot, active || undefined);
+              } catch {}
+            }
+          });
       }, 400);
     },
     [active]
@@ -333,7 +370,9 @@ export default function SettingsProvider({
   );
 
   const saveTimeoutRef = useRef<number | null>(null);
+  const saveSnapshotRef = useRef<Settings | null>(null);
   const previousSettingsRef = useRef<Settings | null>(null);
+  const previousEffectSettingsRef = useRef<Settings | null>(null);
   useEffect(() => {
     const prev = previousSettingsRef.current;
     previousSettingsRef.current = settings;

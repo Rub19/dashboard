@@ -130,10 +130,10 @@ export default function Modal({
                   hapticLightImpact();
                   onClose();
                 }}
-                className="absolute right-4 top-4 rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
+                className="absolute right-3 top-3 flex min-h-[44px] min-w-[44px] items-center justify-center rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
                 aria-label={cancelLabel}
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4" aria-hidden="true" />
               </button>
             )}
 

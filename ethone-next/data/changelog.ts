@@ -5558,6 +5558,66 @@ const v371_de: ChangelogEntry = {
   ],
 };
 
+const v372_fr: ChangelogEntry = {
+  version: "v1.9.1",
+  date: "2026-08-25",
+  title: "Reconstruction du Control Center / Settings",
+  items: [
+    "Accessibilité : labels ARIA, rôles search/region, aria-live sur les statuts de synchro, aria-pressed sur les contrôles, navigation clavier complète.",
+    "Responsive mobile/iPad : safe-area insets, cibles tactiles >= 44 px, header pleine largeur, barre de sauvegarde flottante sécurisée.",
+    "Navigation par catégories sans rechargement, startTransition, transition subtile et suppression du Suspense inutile.",
+    "Pile d'historique globale avec undo/redo (Ctrl+Z, Ctrl+Y) et rollback en cas d'échec de persistence.",
+    "Application immédiate et sans flash des thèmes, accents et densités ; respect de prefers-reduced-motion.",
+    "Lint, tsc, test:unit et build passants.",
+    "Version v1.9.1.",
+  ],
+};
+
+const v372_en: ChangelogEntry = {
+  version: "v1.9.1",
+  date: "2026-08-25",
+  title: "Control Center / Settings rebuild",
+  items: [
+    "Accessibility: ARIA labels, search/region roles, aria-live sync status, aria-pressed controls, full keyboard navigation.",
+    "Mobile/iPad responsive: safe-area insets, touch targets >= 44 px, full-width header, safe floating save bar.",
+    "Category navigation without full reload, startTransition, subtle transition, removed unnecessary Suspense.",
+    "Global history stack with undo/redo (Ctrl+Z, Ctrl+Y) and rollback on persistence failure.",
+    "Instant, flash-free theme, accent and density updates; respects prefers-reduced-motion.",
+    "Lint, tsc, test:unit and build passing.",
+    "Version v1.9.1.",
+  ],
+};
+
+const v372_es: ChangelogEntry = {
+  version: "v1.9.1",
+  date: "2026-08-25",
+  title: "Reconstrucción del Control Center / Ajustes",
+  items: [
+    "Accesibilidad: etiquetas ARIA, roles search/region, aria-live en estado de sincronización, aria-pressed en controles, navegación completa por teclado.",
+    "Responsive móvil/iPad: insets de área segura, targets táctiles >= 44 px, header de ancho completo, barra flotante de guardado segura.",
+    "Navegación por categorías sin recarga completa, startTransition, transición sutil y eliminación del Suspense innecesario.",
+    "Pila de historial global con undo/redo (Ctrl+Z, Ctrl+Y) y rollback ante fallo de persistencia.",
+    "Aplicación inmediata y sin parpadeo de temas, acentos y densidades; respeta prefers-reduced-motion.",
+    "Lint, tsc, test:unit y build correctos.",
+    "Versión v1.9.1.",
+  ],
+};
+
+const v372_de: ChangelogEntry = {
+  version: "v1.9.1",
+  date: "2026-08-25",
+  title: "Control Center / Settings Rebuild",
+  items: [
+    "Barrierefreiheit: ARIA-Labels, search/region-Rollen, aria-live für Sync-Status, aria-pressed für Steuerelemente, vollständige Tastaturnavigation.",
+    "Mobiles/iPad-Responsive: Safe-Area-Insets, Touch-Targets >= 44 px, Header in voller Breite, sichere schwebende Speicherleiste.",
+    "Kategorienavigation ohne vollständiges Neuladen, startTransition, subtile Transition, unnötiges Suspense entfernt.",
+    "Globaler Verlaufs-Stack mit Undo/Redo (Strg+Z, Strg+Y) und Rollback bei Persistenzfehlern.",
+    "Sofortige, flimmerfreie Aktualisierung von Theme, Akzent und Dichte; beachtet prefers-reduced-motion.",
+    "Lint, tsc, test:unit und Build erfolgreich.",
+    "Version v1.9.1.",
+  ],
+};
+
 const v369_fr: ChangelogEntry = {
   version: "v1.8.25",
   date: "2026-08-24",
@@ -5830,9 +5890,9 @@ const v366_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
-CHANGELOG_BY_LANG.es.unshift(v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
-CHANGELOG_BY_LANG.de.unshift(v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
+CHANGELOG_BY_LANG.fr.unshift(v372_fr, v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v372_en, v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

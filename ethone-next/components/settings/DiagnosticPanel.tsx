@@ -162,6 +162,8 @@ export default function DiagnosticPanel() {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div
+            aria-live="polite"
+            aria-atomic="true"
             className={cn(
               "flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] font-medium",
               globalStatus === "success" && "border-[var(--success)]/30 bg-[var(--success)]/10 text-[var(--success)]",

@@ -22,6 +22,7 @@ type SelectProps = {
   className?: string;
   id?: string;
   "aria-label"?: string;
+  "aria-describedby"?: string;
 };
 
 export default function Select({
@@ -34,6 +35,7 @@ export default function Select({
   className = "",
   id: providedId,
   "aria-label": ariaLabel,
+  "aria-describedby": ariaDescribedBy,
 }: SelectProps) {
   const generatedId = useId();
   const id = providedId || generatedId;
@@ -251,8 +253,9 @@ export default function Select({
         aria-expanded={open}
         aria-controls={listboxId}
         aria-label={ariaLabel}
+        aria-describedby={ariaDescribedBy}
         aria-labelledby={label ? labelId : undefined}
-        className={`flex h-11 w-full items-center justify-between gap-2 rounded-[var(--panel-radius)] px-3.5 text-left text-base font-medium focus:outline-none md:h-10 liquid-glass-select ${
+        className={`flex h-11 min-h-[44px] w-full items-center justify-between gap-2 rounded-[var(--panel-radius)] px-3.5 text-left text-base font-medium focus:outline-none md:h-10 liquid-glass-select ${
           disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
         } ${
           open

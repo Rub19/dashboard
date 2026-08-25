@@ -95,7 +95,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={isDisabled}
         onClick={handleClick}
         className={cn(
-          "relative inline-flex items-center justify-center whitespace-nowrap font-semibold",
+          "relative inline-flex min-h-[44px] min-w-[44px] items-center justify-center whitespace-nowrap font-semibold",
           "transition-all duration-150 ease-out",
           "focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:outline-none",
           "disabled:cursor-not-allowed disabled:opacity-50",

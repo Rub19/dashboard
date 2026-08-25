@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.1 — 2026-08-25
+
+**ETHONE Control Center — Accessibilité, responsive, undo et transitions Settings**
+
+- Accessibilité complète des paramètres : rôles ARIA, `aria-live`, navigation clavier, focus rings, touch targets 44px.
+- Responsive Settings : navigation mobile `snap-x`, safe-areas, header pleine largeur, breakpoints couverts.
+- Suppression du `Suspense` inutile sur les routes Settings et transitions `startTransition` entre catégories.
+- Undo / Redo global dans Settings (`Ctrl/Cmd + Z`, `Ctrl/Cmd + Y`) avec pile d'historique.
+- Cohérence des contrôles (Button, Input, Switch, Slider, Select, Modal) sur les tokens ETHONE.
+- Thème / accent / densité : application immédiate, rollback sur échec, respect `prefers-reduced-motion`.
+- Version `v1.9.1` synchronisée.
+
 ## v1.9.0 — 2026-08-25
 
 **ETHONE Control Center — Modale de réinitialisation sécurisée**

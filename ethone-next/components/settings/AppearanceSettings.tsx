@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useMemo } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Check, Moon, Sun, Sparkles } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { isNativeAndroid } from "@/lib/android";
@@ -11,6 +11,7 @@ import { useSettingsForm } from "./SettingsFormContext";
 import { useToast } from "@/components/ToastProvider";
 import { ACCENTS } from "@/components/SettingsProvider";
 import { type Settings, DEFAULTS } from "@/lib/settings";
+import { applyAccent } from "@/lib/theme-engine";
 import BentoCard from "@/components/ui/BentoCard";
 import PremiumThemePicker from "./PremiumThemePicker";
 import Switch from "@/components/Switch";
@@ -131,8 +132,16 @@ export default function AppearanceSettings() {
   const form = useSettingsForm();
   const { show, dismiss } = useToast();
   const colorInputId = useId();
+  const reduce = useReducedMotion();
 
   const handleChange = <K extends keyof Settings>(key: K, value: Settings[K]) => {
+    if (typeof document !== "undefined" && (key === "accentColor" || key === "customAccent")) {
+      const nextAccentColor = key === "accentColor" ? String(value) : settings.accentColor;
+      const nextCustomAccent = key === "customAccent" ? String(value) : settings.customAccent;
+      const hex = nextAccentColor === "custom" ? nextCustomAccent : (ACCENTS[nextAccentColor] || nextCustomAccent);
+      applyAccent(document.documentElement, hex);
+    }
+
     if (key === "theme" && value !== settings.theme) {
       const previousTheme = settings.theme;
       form.updateInstant(key, value);
@@ -209,7 +218,9 @@ export default function AppearanceSettings() {
                     key={pack.id}
                     type="button"
                     onClick={() => handleChange("iconPack", pack.id)}
-                    className={`relative flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] font-medium transition-colors ${
+                    aria-pressed={active}
+                    aria-label={pack.label}
+                    className={`relative flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] ${
                       active ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     }`}
                   >
@@ -217,7 +228,7 @@ export default function AppearanceSettings() {
                       <motion.div
                         layoutId="activeIconPack"
                         className="absolute inset-0 rounded-lg bg-[var(--text-primary)]/8"
-                        transition={{ duration: 0.15, ease: "easeOut" as const }}
+                        transition={reduce ? { duration: 0 } : { duration: 0.15, ease: "easeOut" as const }}
                       />
                     )}
                     <span className="relative z-10 flex items-center gap-1.5">
@@ -237,7 +248,8 @@ export default function AppearanceSettings() {
                   return (
                     <label
                       key={color.id}
-                      className={`relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 transition-all active:scale-95 ${
+                      aria-label={color.label}
+                      className={`relative flex h-11 w-11 min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-full border-2 transition-all active:scale-95 ${
                         currentAccent === "custom"
                           ? "border-[var(--text-primary)] shadow-[0_0_16px_var(--glow-color)]"
                           : "border-[var(--text-primary)]/10 hover:border-[var(--text-primary)]/40"
@@ -266,13 +278,14 @@ export default function AppearanceSettings() {
                     key={color.id}
                     type="button"
                     onClick={() => handleChange("accentColor", color.id)}
-                    className={`relative h-7 w-7 rounded-full transition-all active:scale-95 ${
+                    aria-pressed={selected}
+                    aria-label={color.label}
+                    className={`relative h-11 w-11 min-h-[44px] min-w-[44px] rounded-full transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] ${
                       selected
                         ? "ring-2 ring-[var(--text-primary)] shadow-[0_0_14px_currentColor]"
                         : "ring-1 ring-[var(--text-primary)]/10 hover:ring-[var(--text-primary)]/40"
                     }`}
                     style={{ backgroundColor: hex, color: hex }}
-                    aria-label={color.label}
                   >
                     {selected && <Check className="mx-auto h-3.5 w-3.5 text-[var(--text-primary)]" />}
                   </button>

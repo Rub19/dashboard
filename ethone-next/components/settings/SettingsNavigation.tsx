@@ -89,6 +89,8 @@ export default function SettingsNavigation({
         const last = CATEGORY_ORDER.length - 1;
         onSelect(CATEGORY_ORDER[last].id);
         focusIndex(last);
+      } else if (e.key === "Enter" || e.key === " ") {
+        // Let the button click handle activation while keeping focus.
       }
     },
     [activeIndex, direction, focusIndex, onSelect]
@@ -107,11 +109,11 @@ export default function SettingsNavigation({
         ref={(el) => { buttonsRef.current[index] = el; }}
         type="button"
         tabIndex={isActive ? 0 : -1}
-        aria-current={isActive ? "true" : undefined}
+        aria-current={isActive ? "page" : undefined}
         onClick={() => onSelect(cat.id)}
         onKeyDown={handleKeyDown}
         className={cn(
-          "group flex items-center gap-3 rounded-[var(--panel-radius)] px-3 py-2 text-left text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
+          "group flex min-h-[44px] w-full items-center gap-3 rounded-[var(--panel-radius)] px-3 py-2 text-left text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
           isActive
             ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
             : "text-[var(--text-muted)] hover:bg-[var(--surface-hover)]/30 hover:text-[var(--text-primary)]"
@@ -125,11 +127,11 @@ export default function SettingsNavigation({
               : "bg-[var(--surface-raised)] text-[var(--text-muted)] group-hover:text-[var(--text-primary)]"
           )}
         >
-          <Icon name={cat.icon} className="h-4 w-4" />
+          <Icon name={cat.icon} className="h-4 w-4" aria-hidden="true" />
         </span>
         <span className="truncate">{cat.label}</span>
         {isActive && (
-          <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]" />
+          <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]" aria-hidden="true" />
         )}
       </button>
     );
@@ -139,9 +141,15 @@ export default function SettingsNavigation({
     return (
       <nav
         aria-label="Catégories de paramètres"
-        className={cn("flex items-center gap-1 overflow-x-auto pb-1 no-scrollbar", className)}
+        className={cn(
+          "flex items-center gap-1 overflow-x-auto pb-2 no-scrollbar snap-x snap-mandatory",
+          className
+        )}
         onKeyDown={handleKeyDown}
-        style={{ paddingLeft: "env(safe-area-inset-left)", paddingRight: "env(safe-area-inset-right)" }}
+        style={{
+          paddingLeft: "max(0.5rem, env(safe-area-inset-left))",
+          paddingRight: "max(0.5rem, env(safe-area-inset-right))",
+        }}
       >
         {CATEGORY_ORDER.map((cat, index) => {
           const isActive = active === cat.id;
@@ -151,17 +159,17 @@ export default function SettingsNavigation({
               ref={(el) => { buttonsRef.current[index] = el; }}
               type="button"
               tabIndex={isActive ? 0 : -1}
-              aria-current={isActive ? "true" : undefined}
+              aria-current={isActive ? "page" : undefined}
               onClick={() => onSelect(cat.id)}
               onKeyDown={handleKeyDown}
               className={cn(
-                "flex shrink-0 items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
+                "flex shrink-0 snap-start items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] min-h-[44px] min-w-[44px] touch-manipulation",
                 isActive
                   ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
                   : "border-transparent text-[var(--text-muted)] hover:bg-[var(--surface-hover)]/30 hover:text-[var(--text-primary)]"
               )}
             >
-              <Icon name={cat.icon} className="h-3.5 w-3.5" />
+              <Icon name={cat.icon} className="h-3.5 w-3.5" aria-hidden="true" />
               <span className="whitespace-nowrap">{cat.label}</span>
             </button>
           );

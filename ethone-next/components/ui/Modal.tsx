@@ -116,7 +116,7 @@ export default function Modal({
             exit={{ scale: 0.95, y: 12, opacity: 0 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
             onClick={(event) => event.stopPropagation()}
-            className={`liquid-glass-modal relative w-full overflow-hidden p-6 ${positionInner[position]} ${fullScreen ? "h-[calc(100dvh-2rem)] sm:h-auto sm:max-h-[90vh]" : ""} ${fullScreen ? "w-full sm:max-w-6xl" : sizeMap[size]} ${className}`}
+            className={`liquid-glass-modal relative w-full overflow-hidden p-4 sm:p-6 ${positionInner[position]} ${fullScreen ? "h-[calc(100dvh-2rem)] sm:h-auto sm:max-h-[90vh]" : "max-h-[90dvh] sm:max-h-[90vh]"} ${fullScreen ? "w-full sm:max-w-6xl" : sizeMap[size]} ${className}`}
           >
             <div
               className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[var(--accent-primary)]/5 blur-3xl"
@@ -139,13 +139,13 @@ export default function Modal({
 
             <h2
               id={titleId}
-              className="pr-6 text-lg font-semibold text-[var(--text-primary)]"
+              className="pr-6 text-base font-semibold text-[var(--text-primary)] sm:text-lg"
             >
               {title}
             </h2>
 
             {description && (
-              <p className="mt-1 text-xs text-[var(--text-muted)]">{description}</p>
+              <p className="mt-1 text-xs text-[var(--text-secondary)]">{description}</p>
             )}
 
             <div className={`mt-4 text-sm text-[var(--text-primary)] ${contentClassName}`}>{children}</div>

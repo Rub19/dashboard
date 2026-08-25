@@ -100,19 +100,19 @@ const SyncBadge = memo(function SyncBadge({ collapsed }: { collapsed: boolean })
       dot: "bg-[var(--accent-primary)]",
     },
     error: {
-      icon: <AlertCircle className="h-3 w-3 text-red-400" />,
+      icon: <AlertCircle className="h-3 w-3 text-[var(--danger)]" />,
       label: i18n("error", "Erreur"),
-      dot: "bg-red-400",
+      dot: "bg-[var(--danger)]",
     },
     offline: {
-      icon: <WifiOff className="h-3 w-3 text-amber-400" />,
+      icon: <WifiOff className="h-3 w-3 text-[var(--warning)]" />,
       label: i18n("offline", "Hors ligne"),
-      dot: "bg-amber-400",
+      dot: "bg-[var(--warning)]",
     },
     idle: {
-      icon: <CheckCircle2 className="h-3 w-3 text-[--accent-primary]" />,
+      icon: <CheckCircle2 className="h-3 w-3 text-[var(--accent-primary)]" />,
       label: i18n("synced", "Sync"),
-      dot: "bg-[--accent-primary]",
+      dot: "bg-[var(--accent-primary)]",
     },
   };
   const statusConfig = config[status];
@@ -173,7 +173,7 @@ const SidebarProfile = memo(function SidebarProfile({ collapsed }: { collapsed: 
         ) : (
           <User className={cn("text-[var(--text-muted)]", collapsed ? "h-3.5 w-3.5" : "h-4 w-4")} />
         )}
-        <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--background)] bg-[--accent-primary]" aria-hidden="true" />
+        <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--background)] bg-[var(--accent-primary)]" aria-hidden="true" />
       </div>
       {!collapsed && (
         <span className="min-w-0 flex-1 truncate text-[11px] font-medium text-[var(--text-primary)]">

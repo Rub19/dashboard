@@ -59,7 +59,7 @@ export default function MobileNav() {
                 aria-current={isActive ? "page" : undefined}
                 data-haptic
                 onPointerDown={hapticLightImpact}
-                className="relative flex min-h-[44px] min-w-[56px] flex-col items-center justify-center gap-0.5 rounded-[var(--panel-radius)] px-2 py-1 text-[10px] font-medium transition-colors active:scale-[0.98] touch-manipulation"
+                className="relative flex min-h-[44px] flex-1 min-w-0 flex-col items-center justify-center gap-0.5 rounded-[var(--panel-radius)] px-1 py-1 text-[10px] font-medium transition-colors touch-manipulation"
               >
                 {isActive && (
                   <motion.div
@@ -87,7 +87,7 @@ export default function MobileNav() {
             aria-haspopup="dialog"
             aria-expanded={drawerOpen}
             data-haptic
-            className="relative flex min-h-[44px] min-w-[56px] flex-col items-center justify-center gap-0.5 rounded-[var(--panel-radius)] px-2 py-1 text-[10px] font-medium transition-colors active:scale-[0.98] touch-manipulation"
+            className="relative flex min-h-[44px] flex-1 min-w-0 flex-col items-center justify-center gap-0.5 rounded-[var(--panel-radius)] px-1 py-1 text-[10px] font-medium transition-colors touch-manipulation"
           >
             <Icon name="menu" className="h-5 w-5 text-[var(--text-muted)]" />
             <span className="max-w-[3.5rem] truncate text-[var(--text-muted)]">

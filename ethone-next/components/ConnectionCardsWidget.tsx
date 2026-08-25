@@ -51,13 +51,13 @@ const CATEGORY_STYLE: Record<
   string,
   { icon: string; border: string; bg: string; text: string }
 > = {
-  media: { icon: "text-indigo-400", border: "border-indigo-500/20", bg: "bg-indigo-500/10", text: "text-indigo-300" },
-  social: { icon: "text-pink-400", border: "border-pink-500/20", bg: "bg-pink-500/10", text: "text-pink-300" },
-  productivity: { icon: "text-amber-400", border: "border-amber-500/20", bg: "bg-amber-500/10", text: "text-amber-300" },
-  gaming: { icon: "text-emerald-400", border: "border-emerald-500/20", bg: "bg-emerald-500/10", text: "text-emerald-300" },
-  development: { icon: "text-cyan-400", border: "border-cyan-500/20", bg: "bg-cyan-500/10", text: "text-cyan-300" },
-  info: { icon: "text-sky-400", border: "border-sky-500/20", bg: "bg-sky-500/10", text: "text-sky-300" },
-  other: { icon: "text-zinc-400", border: "border-zinc-500/20", bg: "bg-zinc-500/10", text: "text-zinc-300" },
+  media: { icon: "text-indigo-400", border: "border-indigo-500/30", bg: "bg-indigo-500/15", text: "text-indigo-300" },
+  social: { icon: "text-pink-400", border: "border-pink-500/30", bg: "bg-pink-500/15", text: "text-pink-300" },
+  productivity: { icon: "text-amber-400", border: "border-amber-500/30", bg: "bg-amber-500/15", text: "text-amber-300" },
+  gaming: { icon: "text-emerald-400", border: "border-emerald-500/30", bg: "bg-emerald-500/15", text: "text-emerald-300" },
+  development: { icon: "text-cyan-400", border: "border-cyan-500/30", bg: "bg-cyan-500/15", text: "text-cyan-300" },
+  info: { icon: "text-sky-400", border: "border-sky-500/30", bg: "bg-sky-500/15", text: "text-sky-300" },
+  other: { icon: "text-zinc-400", border: "border-zinc-500/30", bg: "bg-zinc-500/15", text: "text-zinc-300" },
 };
 
 const CATEGORY_ORDER = ["media", "social", "productivity", "gaming", "development", "info", "other"];
@@ -160,7 +160,7 @@ const ConnectionCardsWidget = memo(function ConnectionCardsWidget({
                       <Card3D
                         key={record.id}
                         onClick={handleOpen}
-                        className={cn("h-28 w-full cursor-pointer p-3", style.border, style.bg)}
+                        className={cn("h-36 w-full cursor-pointer p-3", style.border, style.bg)}
                         radius="var(--panel-radius)"
                       >
                         <div className="relative z-10 flex h-full flex-col justify-between gap-1.5">
@@ -190,21 +190,21 @@ const ConnectionCardsWidget = memo(function ConnectionCardsWidget({
                             />
                           </div>
                           <div className="min-w-0 space-y-0.5">
-                            <p className="truncate text-[11px] font-bold uppercase tracking-wide text-[var(--text-primary)]">
-                              {record.label}
+                            <p className="truncate text-[11px] font-bold uppercase tracking-wide" title={record.label}>
+                              <span className={style.text}>{record.label}</span>
                             </p>
                             {record.title && (
-                              <p className="truncate text-[10px] text-[var(--text-muted)]" title={record.title}>
+                              <p className="line-clamp-1 text-[10px] text-[var(--text-muted)]" title={record.title}>
                                 {record.title}
                               </p>
                             )}
                             {record.subtitle && (
-                              <p className="truncate text-[9px] text-[var(--text-muted)]/60" title={record.subtitle}>
+                              <p className="line-clamp-2 text-[9px] text-[var(--text-muted)]/70" title={record.subtitle}>
                                 {record.subtitle}
                               </p>
                             )}
                             {record.meta && (
-                              <p className={cn("truncate text-[9px] font-medium", style.text)} title={record.meta}>
+                              <p className={cn("line-clamp-1 text-[9px] font-medium", style.text)} title={record.meta}>
                                 {record.meta}
                               </p>
                             )}

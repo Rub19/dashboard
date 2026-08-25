@@ -17,8 +17,6 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 **Bento Home, command palette et sidebar flottante**
 
-**Bento Home, command palette et sidebar flottante**
-
 - Quick actions depuis le Hero (tâche, note, focus, brain, upload).
 - Synthèse contextuelle et suggestions actionnables dans Brain.
 - Dynamic Island : états explicites IDLE / COMPACT / EXPANDED / INTERACTIVE.

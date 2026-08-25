@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useSettings } from "@/components/SettingsProvider";
@@ -22,20 +22,24 @@ function formatStorage(bytes = 0) {
   return `${usedMB.toFixed(1)} Mo / 1 Go`;
 }
 
-function TypingDots() {
+const BRAIN_BUTTON_STYLE = { backgroundColor: "var(--accent-color, var(--accent-primary))" };
+const TYPING_DOTS = [0, 1, 2];
+const TYPING_ANIMATE = { y: [0, -3, 0] };
+
+const TypingDots = memo(function TypingDots() {
   return (
     <span className="inline-flex items-center gap-1">
-      {[0, 1, 2].map((d) => (
+      {TYPING_DOTS.map((d) => (
         <motion.span
           key={d}
           className="h-1.5 w-1.5 rounded-full bg-[var(--accent-color,var(--accent))]"
-          animate={{ y: [0, -3, 0] }}
+          animate={TYPING_ANIMATE}
           transition={{ repeat: Infinity, duration: 0.5, delay: d * 0.1, ease: "easeInOut" }}
         />
       ))}
     </span>
   );
-}
+});
 
 export type HeroBriefingCardProps = {
   greeting: { label: string; tone: string };
@@ -49,7 +53,7 @@ export type HeroBriefingCardProps = {
   scrollable?: boolean;
 };
 
-export default function HeroBriefingCard({
+const HeroBriefingCard = memo(function HeroBriefingCard({
   greeting,
   dashboard,
   nowPlaying,
@@ -107,32 +111,45 @@ export default function HeroBriefingCard({
     return greeting.tone;
   }, [loading, todayEventsCount, openTasksCount, nowPlaying, greeting.tone, i18n]);
 
-  const counters = [
-    { icon: "circle-check", label: i18n("openTasks"), value: openTasksCount, text: "text-[var(--accent-primary)]", bg: "bg-[var(--accent-primary)]/10" },
-    { icon: "calendar", label: i18n("todayEvents"), value: todayEventsCount, text: "text-[var(--info)]", bg: "bg-[var(--info)]/10" },
-    { icon: "notebook-pen", label: i18n("notes"), value: notesCount, text: "text-[var(--accent-secondary)]", bg: "bg-[var(--accent-secondary)]/10" },
-    { icon: "hard-drive", label: i18n("storageUsed"), value: storageLabel, text: "text-[var(--warning)]", bg: "bg-[var(--warning)]/10" },
-  ];
+  const counters = useMemo(
+    () => [
+      { icon: "circle-check", label: i18n("openTasks"), value: openTasksCount, text: "text-[var(--accent-primary)]", bg: "bg-[var(--accent-primary)]/10" },
+      { icon: "calendar", label: i18n("todayEvents"), value: todayEventsCount, text: "text-[var(--info)]", bg: "bg-[var(--info)]/10" },
+      { icon: "notebook-pen", label: i18n("notes"), value: notesCount, text: "text-[var(--accent-secondary)]", bg: "bg-[var(--accent-secondary)]/10" },
+      { icon: "hard-drive", label: i18n("storageUsed"), value: storageLabel, text: "text-[var(--warning)]", bg: "bg-[var(--warning)]/10" },
+    ],
+    [i18n, openTasksCount, todayEventsCount, notesCount, storageLabel]
+  );
 
-  const quickActions = [
-    { id: "task", icon: "circle-check", label: i18n("newTask", "Tâche"), href: "/tasks" },
-    { id: "note", icon: "notebook-pen", label: i18n("newNote", "Note"), href: "/notes" },
-    { id: "event", icon: "calendar", label: i18n("newEvent", "Événement"), href: "/calendar" },
-    { id: "focus", icon: "timer", label: i18n("focus", "Focus"), href: "/focus" },
-    { id: "drop", icon: "upload", label: i18n("upload", "Upload"), href: "/drop" },
-  ];
+  const quickActions = useMemo(
+    () => [
+      { id: "task", icon: "circle-check", label: i18n("newTask", "Tâche"), href: "/tasks" },
+      { id: "note", icon: "notebook-pen", label: i18n("newNote", "Note"), href: "/notes" },
+      { id: "event", icon: "calendar", label: i18n("newEvent", "Événement"), href: "/calendar" },
+      { id: "focus", icon: "timer", label: i18n("focus", "Focus"), href: "/focus" },
+      { id: "drop", icon: "upload", label: i18n("upload", "Upload"), href: "/drop" },
+    ],
+    [i18n]
+  );
 
   const focusBrain = useCallback(() => {
     inputRef.current?.focus();
   }, []);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const text = prompt.trim();
-    if (!text || brain.loading) return;
-    brain.send(text);
-    setPrompt("");
-  }
+  const handlePromptChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setPrompt(e.target.value);
+  }, []);
+
+  const handleSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      const text = prompt.trim();
+      if (!text || brain.loading) return;
+      brain.send(text);
+      setPrompt("");
+    },
+    [prompt, brain]
+  );
 
   return (
     <BentoCard noHeader scrollable={scrollable} className={cn("h-full", className)}>
@@ -156,7 +173,7 @@ export default function HeroBriefingCard({
             ref={inputRef}
             type="text"
             value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
+            onChange={handlePromptChange}
             placeholder="Poser une question ou un objectif..."
             icon="brain"
             className="min-w-0 flex-1 rounded-full"
@@ -165,7 +182,7 @@ export default function HeroBriefingCard({
           <button
             type="submit"
             disabled={!prompt.trim() || brain.loading}
-            style={{ backgroundColor: "var(--accent-color, var(--accent-primary))" }}
+            style={BRAIN_BUTTON_STYLE}
             className="flex h-10 w-full shrink-0 items-center justify-center gap-1.5 rounded-full px-4 text-xs font-semibold text-[var(--accent-contrast)] shadow-[0_0_12px_var(--glow-color)] transition-all hover:opacity-90 hover:shadow-[0_0_20px_var(--glow-color)] disabled:opacity-40 sm:h-9 sm:w-auto"
           >
             <Icon pack="phosphor" name="sparkles" className="h-3.5 w-3.5" />
@@ -245,4 +262,6 @@ export default function HeroBriefingCard({
       </div>
     </BentoCard>
   );
-}
+});
+
+export default HeroBriefingCard;

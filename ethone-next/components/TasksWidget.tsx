@@ -76,43 +76,67 @@ const TasksWidget = memo(function TasksWidget({ className = "", data, scrollable
     return { total, done, open, percentage };
   }, [items]);
 
-  async function addTask(title: string) {
-    if (!title.trim()) return;
-    try {
-      await create({
-        title,
-        body: "",
-        done: false,
-        data: { category: "Général", priority: "medium" as TaskPriority },
-      });
-      setNewTaskTitle("");
-      notify.taskAdded(title);
-    } catch {
-      showError(i18n("error", "Erreur"));
-    }
-  }
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewTaskTitle(e.target.value);
+  }, []);
 
-  async function toggleTask(id: string, done: boolean) {
-    try {
-      await update(id, { done: !done });
-    } catch {
-      showError(i18n("error", "Erreur"));
-    }
-  }
+  const addTask = useCallback(
+    async (title: string) => {
+      if (!title.trim()) return;
+      try {
+        await create({
+          title,
+          body: "",
+          done: false,
+          data: { category: "Général", priority: "medium" as TaskPriority },
+        });
+        setNewTaskTitle("");
+        notify.taskAdded(title);
+      } catch {
+        showError(i18n("error", "Erreur"));
+      }
+    },
+    [create, i18n, notify, showError]
+  );
 
-  async function deleteTask(id: string) {
-    try {
-      await remove(id);
-      notify.taskDeleted();
-    } catch {
-      showError(i18n("error", "Erreur"));
-    }
-  }
+  const toggleTask = useCallback(
+    async (id: string, done: boolean) => {
+      try {
+        await update(id, { done: !done });
+      } catch {
+        showError(i18n("error", "Erreur"));
+      }
+    },
+    [i18n, showError, update]
+  );
 
-  const badge = (
-    <span className="rounded-full border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-2.5 py-1 text-[11px] font-mono font-medium text-[var(--accent-primary)]">
-      {stats.done} / {stats.total} {i18n("done", "terminées")}
-    </span>
+  const deleteTask = useCallback(
+    async (id: string) => {
+      try {
+        await remove(id);
+        notify.taskDeleted();
+      } catch {
+        showError(i18n("error", "Erreur"));
+      }
+    },
+    [i18n, notify, remove, showError]
+  );
+
+  const handleFormSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      void addTask(newTaskTitle);
+    },
+    [addTask, newTaskTitle]
+  );
+
+  const badge = useMemo(
+    () => (
+      <span className="rounded-full border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-2.5 py-1 text-[11px] font-mono font-medium text-[var(--accent-primary)]">
+        {stats.done} / {stats.total} {i18n("done", "terminées")}
+      </span>
+    ),
+    [i18n, stats.done, stats.total]
   );
 
   return (
@@ -151,18 +175,12 @@ const TasksWidget = memo(function TasksWidget({ className = "", data, scrollable
         </div>
 
         {/* Quick add */}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            addTask(newTaskTitle);
-          }}
-          className="flex shrink-0 items-center gap-2"
-        >
+        <form onSubmit={handleFormSubmit} className="flex shrink-0 items-center gap-2">
           <Input
             ref={inputRef}
             type="text"
             value={newTaskTitle}
-            onChange={(e) => setNewTaskTitle(e.target.value)}
+            onChange={handleInputChange}
             placeholder={i18n("tasksPlaceholder", "Ajouter une tâche...")}
             data-testid="new-task-input"
             inputSize="compact"

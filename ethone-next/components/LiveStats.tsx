@@ -1,5 +1,6 @@
 "use client";
 
+import { memo, useMemo } from "react";
 import { Activity } from "lucide-react";
 import LiveFreshness from "@/components/LiveFreshness";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -12,21 +13,30 @@ export type LiveStatsProps = {
   className?: string;
 };
 
-export default function LiveStats({ records = [], updatedAt, loading, className = "" }: LiveStatsProps) {
+const LiveStats = memo(function LiveStats({ records = [], updatedAt, loading, className = "" }: LiveStatsProps) {
   const i18n = useI18n();
 
-  const byStatus = {
-    connected: records.filter((r) => r.status === "connected").length,
-    loading: records.filter((r) => r.status === "loading").length,
-    error: records.filter((r) => r.status === "error").length,
-  };
+  const byStatus = useMemo(() => {
+    let connected = 0;
+    let loadingCount = 0;
+    let errorCount = 0;
+    for (const r of records) {
+      if (r.status === "connected") connected++;
+      else if (r.status === "loading") loadingCount++;
+      else if (r.status === "error") errorCount++;
+    }
+    return { connected, loading: loadingCount, error: errorCount };
+  }, [records]);
 
-  const statItems = [
-    { label: i18n("connected"), value: byStatus.connected, color: "text-[--accent-primary]" },
-    { label: i18n("pending"), value: byStatus.loading, color: "text-[--info]" },
-    { label: i18n("events"), value: records.length, color: "text-[var(--text-primary)]" },
-    { label: i18n("error"), value: byStatus.error, color: "text-rose-400" },
-  ];
+  const statItems = useMemo(
+    () => [
+      { label: i18n("connected"), value: byStatus.connected, color: "text-[--accent-primary]" },
+      { label: i18n("pending"), value: byStatus.loading, color: "text-[--info]" },
+      { label: i18n("events"), value: records.length, color: "text-[var(--text-primary)]" },
+      { label: i18n("error"), value: byStatus.error, color: "text-rose-400" },
+    ],
+    [i18n, byStatus.connected, byStatus.loading, byStatus.error, records.length]
+  );
 
   return (
     <div
@@ -55,4 +65,6 @@ export default function LiveStats({ records = [], updatedAt, loading, className 
       </div>
     </div>
   );
-}
+});
+
+export default LiveStats;

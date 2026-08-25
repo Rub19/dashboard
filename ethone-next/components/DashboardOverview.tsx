@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { LayoutGrid } from "lucide-react";
@@ -162,10 +162,19 @@ export default function DashboardOverview() {
 
   const openTasksCount = openTasksList.length;
 
-  function toggleSection(id: string) {
-    const next = widgets.map((w) => (w.id === id ? { ...w, visible: !w.visible } : w));
-    void updateLayout(next);
-  }
+  const handleToggleCustomize = useCallback(() => setCustomizing((v) => !v), []);
+  const handleCloseCustomize = useCallback(() => setCustomizing(false), []);
+  const handleRefresh = useCallback(() => {
+    window.location.reload();
+  }, []);
+
+  const toggleSection = useCallback(
+    (id: string) => {
+      const next = widgets.map((w) => (w.id === id ? { ...w, visible: !w.visible } : w));
+      void updateLayout(next);
+    },
+    [widgets, updateLayout]
+  );
 
   const visibleSet = useMemo(() => new Set(widgets.filter((w) => w.visible).map((w) => w.id)), [widgets]);
 
@@ -240,12 +249,12 @@ export default function DashboardOverview() {
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <PullToRefresh onRefresh={() => window.location.reload()}>
+      <PullToRefresh onRefresh={handleRefresh}>
         <div className="mx-auto w-full max-w-[1600px] px-2 sm:px-4">
         <header className="shrink-0 mb-3 flex w-full items-center justify-end">
         <button
           type="button"
-          onClick={() => setCustomizing((v) => !v)}
+          onClick={handleToggleCustomize}
           title={customizing ? i18n("done") : i18n("customize")}
           aria-label={customizing ? i18n("done") : i18n("customize")}
           className="flex h-8 w-8 items-center justify-center rounded-lg v8-panel text-[var(--text-muted)] transition-colors hover:border-[var(--text-primary)]/20 hover:text-[var(--text-primary)] active:scale-95"
@@ -262,7 +271,7 @@ export default function DashboardOverview() {
           action={
             <button
               type="button"
-              onClick={() => setCustomizing(false)}
+              onClick={handleCloseCustomize}
               className="rounded-lg border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-2 py-1 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
             >
               {i18n("done")}

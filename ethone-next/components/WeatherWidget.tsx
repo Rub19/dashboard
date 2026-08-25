@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -188,7 +188,13 @@ function formatTime(iso?: string, locale = "fr"): string {
   return new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit" }).format(d);
 }
 
-function AnimatedWeatherIcon({
+const ANIMATED_ICON_ANIMATE = { y: [0, -4, 0] };
+const ANIMATED_ICON_TRANSITION = { duration: 4, repeat: Infinity, ease: "easeInOut" as const };
+const SKELETON_PILLS = Array.from({ length: 4 });
+const SKELETON_COMPACT_GRID = Array.from({ length: 3 });
+const SKELETON_FULL_GRID = Array.from({ length: 5 });
+
+const AnimatedWeatherIcon = memo(function AnimatedWeatherIcon({
   name,
   colorClass,
   compact,
@@ -199,16 +205,16 @@ function AnimatedWeatherIcon({
 }) {
   return (
     <motion.div
-      animate={{ y: [0, -4, 0] }}
-      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+      animate={ANIMATED_ICON_ANIMATE}
+      transition={ANIMATED_ICON_TRANSITION}
       className={`shrink-0 ${compact ? "h-10 w-10" : "h-14 w-14 md:h-16 md:w-16"}`}
     >
       <Icon name={name} className={`h-full w-full ${colorClass}`} />
     </motion.div>
   );
-}
+});
 
-function WeatherBadge({
+const WeatherBadge = memo(function WeatherBadge({
   icon,
   label,
   value,
@@ -235,9 +241,9 @@ function WeatherBadge({
       <span>{value}</span>
     </div>
   );
-}
+});
 
-function ForecastPill({ day, icon, colorClass, compact }: { day: ForecastDay; icon: string; colorClass: string; compact?: boolean }) {
+const ForecastPill = memo(function ForecastPill({ day, icon, colorClass, compact }: { day: ForecastDay; icon: string; colorClass: string; compact?: boolean }) {
   const i18n = useI18n();
   const locale = i18n("daysShort")?.includes(",") ? "fr" : "en";
   const min = toNum(day.min);
@@ -253,9 +259,10 @@ function ForecastPill({ day, icon, colorClass, compact }: { day: ForecastDay; ic
       </span>
     </div>
   );
-}
+});
 
-function WeatherSkeleton({ compact }: { compact?: boolean }) {
+const WeatherSkeleton = memo(function WeatherSkeleton({ compact }: { compact?: boolean }) {
+  const grid = compact ? SKELETON_COMPACT_GRID : SKELETON_FULL_GRID;
   return (
     <div
       className={`animate-pulse space-y-4 rounded-2xl bg-[var(--text-primary)]/[0.04] p-5 backdrop-blur-2xl ${
@@ -272,20 +279,20 @@ function WeatherSkeleton({ compact }: { compact?: boolean }) {
         </div>
       </div>
       <div className="flex flex-wrap gap-2">
-        {[...Array(4)].map((_, i) => (
+        {SKELETON_PILLS.map((_, i) => (
           <div key={i} className="h-7 w-20 rounded-xl bg-[var(--text-primary)]/[0.04]" />
         ))}
       </div>
       <div className="grid grid-cols-5 gap-2">
-        {[...Array(compact ? 3 : 5)].map((_, i) => (
+        {grid.map((_, i) => (
           <div key={i} className="h-16 rounded-xl bg-[var(--text-primary)]/[0.04]" />
         ))}
       </div>
     </div>
   );
-}
+});
 
-export default function WeatherWidget({ data, loading, onRefresh, compact, className }: WeatherWidgetProps) {
+const WeatherWidget = memo(function WeatherWidget({ data, loading, onRefresh, compact, className }: WeatherWidgetProps) {
   const i18n = useI18n();
 
   const code = useMemo(() => toNum(data?.weatherCode), [data?.weatherCode]);
@@ -467,4 +474,6 @@ export default function WeatherWidget({ data, loading, onRefresh, compact, class
       </div>
     </TiltCard>
   );
-}
+});
+
+export default WeatherWidget;

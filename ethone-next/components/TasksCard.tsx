@@ -1,5 +1,6 @@
 "use client";
 
+import { memo, useCallback } from "react";
 import { Check, Calendar, Trash2 } from "lucide-react";
 import { hapticSuccessPattern, hapticRigidImpact } from "@/lib/haptics";
 import type { Item } from "@/lib/hooks/useItems";
@@ -43,20 +44,23 @@ export type TasksCardProps = {
   onDelete: (id: string) => void;
 };
 
-export default function TasksCard({ task, onToggle, onDelete }: TasksCardProps) {
+const TasksCard = memo(function TasksCard({ task, onToggle, onDelete }: TasksCardProps) {
   const priority = task.data?.priority || "medium";
   const due = formatDueDate(task.data?.dueDate);
 
-  function handleToggle() {
+  const handleToggle = useCallback(() => {
     if (!task.done) hapticSuccessPattern();
     onToggle(task.id, !task.done);
-  }
+  }, [task.done, task.id, onToggle]);
 
-  function handleDelete(e?: { stopPropagation?: () => void }) {
-    e?.stopPropagation?.();
-    hapticRigidImpact();
-    onDelete(task.id);
-  }
+  const handleDelete = useCallback(
+    (e?: { stopPropagation?: () => void }) => {
+      e?.stopPropagation?.();
+      hapticRigidImpact();
+      onDelete(task.id);
+    },
+    [task.id, onDelete]
+  );
 
   return (
     <div
@@ -108,7 +112,7 @@ export default function TasksCard({ task, onToggle, onDelete }: TasksCardProps) 
 
         <button
           type="button"
-          onClick={() => handleDelete()}
+          onClick={handleDelete}
           className="rounded-lg p-1.5 text-[var(--text-muted)] opacity-0 transition-all hover:bg-[var(--danger)]/10 hover:text-[var(--danger)] group-hover:opacity-100"
           aria-label="Supprimer"
         >
@@ -117,4 +121,6 @@ export default function TasksCard({ task, onToggle, onDelete }: TasksCardProps) 
       </div>
     </div>
   );
-}
+});
+
+export default TasksCard;

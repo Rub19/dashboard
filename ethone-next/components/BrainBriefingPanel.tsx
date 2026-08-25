@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import Link from "next/link";
 import { useHomeData } from "@/lib/hooks/useDashboard";
 import { useItems } from "@/lib/hooks/useItems";
@@ -48,19 +48,19 @@ const BrainBriefingPanel = memo(function BrainBriefingPanel({ _className = "", _
     if (remainingMinutes === 0) return i18n("inHours", "dans {count} h").replace("{count}", String(hours));
     return i18n("inHoursMinutes", "dans {h} h {m}").replace("{h}", String(hours)).replace("{m}", String(remainingMinutes));
   }, [nextEvent, now, i18n]);
-  const todayEvents = useMemo(
-    () =>
-      events.filter((e) => {
-        const start = e.startAt ? new Date(e.startAt) : null;
-        const now = new Date();
-        return start && start.getDate() === now.getDate() && start.getMonth() === now.getMonth() && start.getFullYear() === now.getFullYear();
-      }).length,
-    [events]
-  );
+  const todayEvents = useMemo(() => {
+    const todayDate = now.getDate();
+    const todayMonth = now.getMonth();
+    const todayYear = now.getFullYear();
+    return events.filter((e) => {
+      const start = e.startAt ? new Date(e.startAt) : null;
+      return start && start.getDate() === todayDate && start.getMonth() === todayMonth && start.getFullYear() === todayYear;
+    }).length;
+  }, [events, now]);
 
   const recentActivity = openTasks + todayEvents + (unreadCount || 0) + (importantCount || 0);
 
-  const synthesis = (() => {
+  const synthesis = useMemo(() => {
     if (completedToday > 0 && nextEventIn) {
       return i18n("brainSynthesisTasksEvent", "Vous avez terminé {completed} tâche(s). Votre prochaine activité est {time}.")
         .replace("{completed}", String(completedToday))
@@ -81,26 +81,37 @@ const BrainBriefingPanel = memo(function BrainBriefingPanel({ _className = "", _
       return i18n("brainSynthesisMusic", "En écoute : {title}.").replace("{title}", nowPlaying.title);
     }
     return i18n("brainSynthesisFree", "Votre journée est libre.");
-  })();
+  }, [completedToday, nextEventIn, openTasks, nowPlaying?.title, i18n]);
 
-  function toggle(section: Section) {
+  const toggle = useCallback((section: Section) => {
     setHidden((prev) => {
       const next = new Set(prev);
       if (next.has(section)) next.delete(section);
       else next.add(section);
       return next;
     });
-  }
+  }, []);
 
-  const sections: { id: Section; label: string; icon: string; value: React.ReactNode }[] = [
-    { id: "weather", label: i18n("weather"), icon: "cloud-sun", value: weatherLoading ? "-" : `${weather?.temperature ?? "-"}° — ${weather?.description ?? ""}` },
-    { id: "agenda", label: i18n("todayEvents"), icon: "calendar", value: todayEvents },
-    { id: "tasks", label: i18n("openTasks"), icon: "tasks", value: openTasks },
-    { id: "mail", label: i18n("unread"), icon: "mail", value: unreadCount || 0 },
-    { id: "notifications", label: i18n("important"), icon: "bell", value: importantCount || 0 },
-    { id: "activity", label: i18n("activity"), icon: "activity", value: recentActivity },
-    { id: "nowPlaying", label: i18n("nowPlaying"), icon: "music", value: nowPlaying?.title || i18n("none") },
-  ];
+  const handleStartFocus = useCallback(() => {
+    focus.start("focus");
+  }, [focus]);
+
+  const handleDismissSynthesis = useCallback(() => {
+    setSynthesisDismissed(true);
+  }, []);
+
+  const sections: { id: Section; label: string; icon: string; value: React.ReactNode }[] = useMemo(
+    () => [
+      { id: "weather", label: i18n("weather"), icon: "cloud-sun", value: weatherLoading ? "-" : `${weather?.temperature ?? "-"}° — ${weather?.description ?? ""}` },
+      { id: "agenda", label: i18n("todayEvents"), icon: "calendar", value: todayEvents },
+      { id: "tasks", label: i18n("openTasks"), icon: "tasks", value: openTasks },
+      { id: "mail", label: i18n("unread"), icon: "mail", value: unreadCount || 0 },
+      { id: "notifications", label: i18n("important"), icon: "bell", value: importantCount || 0 },
+      { id: "activity", label: i18n("activity"), icon: "activity", value: recentActivity },
+      { id: "nowPlaying", label: i18n("nowPlaying"), icon: "music", value: nowPlaying?.title || i18n("none") },
+    ],
+    [i18n, weatherLoading, weather, todayEvents, openTasks, unreadCount, importantCount, recentActivity, nowPlaying?.title]
+  );
 
   return (
     <div className="space-y-4">
@@ -115,7 +126,7 @@ const BrainBriefingPanel = memo(function BrainBriefingPanel({ _className = "", _
           <div className="mt-2 flex flex-wrap gap-2">
             <button
               type="button"
-              onClick={() => focus.start("focus")}
+              onClick={handleStartFocus}
               className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--accent-primary)] px-2.5 py-1.5 text-[11px] font-semibold text-[var(--accent-contrast)] transition-opacity hover:opacity-90"
             >
               <Icon name="timer" className="h-3 w-3" />
@@ -130,7 +141,7 @@ const BrainBriefingPanel = memo(function BrainBriefingPanel({ _className = "", _
             </Link>
             <button
               type="button"
-              onClick={() => setSynthesisDismissed(true)}
+              onClick={handleDismissSynthesis}
               className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.08] px-2.5 py-1.5 text-[11px] font-medium text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
             >
               {i18n("dismiss", "Ignorer")}

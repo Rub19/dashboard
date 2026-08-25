@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Plus } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -20,7 +20,7 @@ export type TodoListProps = {
   scrollable?: boolean;
 };
 
-export default function TodoList({ tasks, loading, onToggle, onDelete, onNewTask, className = "", scrollable = true }: TodoListProps) {
+const TodoList = memo(function TodoList({ tasks, loading, onToggle, onDelete, onNewTask, className = "", scrollable = true }: TodoListProps) {
   const i18n = useI18n();
   const [filter, setFilter] = useState<Filter>("all");
 
@@ -45,10 +45,20 @@ export default function TodoList({ tasks, loading, onToggle, onDelete, onNewTask
     return tasks;
   }, [tasks, filter]);
 
+  const handleSelect = useCallback(
+    (task: Task) => onToggle(task.id, !!task.done),
+    [onToggle]
+  );
+
+  const handleDeleteTask = useCallback(
+    (task: Task) => onDelete(task.id),
+    [onDelete]
+  );
+
   const { activeIndex, handleKeyDown } = useListKeyboard({
     items: filtered,
-    onSelect: (task) => onToggle(task.id, !!task.done),
-    onDelete: (task) => onDelete(task.id),
+    onSelect: handleSelect,
+    onDelete: handleDeleteTask,
     selectMessage: null,
     deleteMessage: null,
   });
@@ -151,4 +161,6 @@ export default function TodoList({ tasks, loading, onToggle, onDelete, onNewTask
       </div>
     </div>
   );
-}
+});
+
+export default TodoList;

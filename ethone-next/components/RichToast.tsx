@@ -21,15 +21,15 @@ type RichToastProps = {
 };
 
 const variantIcon: Record<RichToastVariant, string> = {
-  success: "text-[var(--accent-primary)]",
-  error: "text-[var(--danger)]",
-  warning: "text-[var(--warning)]",
-  info: "text-[var(--info)]",
-  neutral: "text-[var(--text-primary)]",
+  success: "text-[var(--success)] border-[var(--success)]/30 bg-[var(--success)]/10",
+  error: "text-[var(--danger)] border-[var(--danger)]/30 bg-[var(--danger)]/10",
+  warning: "text-[var(--warning)] border-[var(--warning)]/30 bg-[var(--warning)]/10",
+  info: "text-[var(--info)] border-[var(--info)]/30 bg-[var(--info)]/10",
+  neutral: "text-[var(--text-primary)] border-[var(--border-subtle)] bg-[var(--surface)]",
 };
 
 const variantTitle: Record<RichToastVariant, string> = {
-  success: "text-[var(--accent-primary)]",
+  success: "text-[var(--success)]",
   error: "text-[var(--danger)]",
   warning: "text-[var(--warning)]",
   info: "text-[var(--info)]",
@@ -37,11 +37,19 @@ const variantTitle: Record<RichToastVariant, string> = {
 };
 
 const variantDot: Record<RichToastVariant, string> = {
-  success: "bg-[var(--accent-primary)]",
+  success: "bg-[var(--success)] shadow-[0_0_6px_var(--success)]",
+  error: "bg-[var(--danger)] shadow-[0_0_6px_var(--danger)]",
+  warning: "bg-[var(--warning)] shadow-[0_0_6px_var(--warning)]",
+  info: "bg-[var(--info)] shadow-[0_0_6px_var(--info)]",
+  neutral: "bg-[var(--text-muted)]",
+};
+
+const variantProgress: Record<RichToastVariant, string> = {
+  success: "bg-[var(--success)]",
   error: "bg-[var(--danger)]",
   warning: "bg-[var(--warning)]",
   info: "bg-[var(--info)]",
-  neutral: "bg-[var(--text-muted)]",
+  neutral: "bg-[var(--accent-primary)]",
 };
 
 export default function RichToast({
@@ -94,7 +102,7 @@ export default function RichToast({
       </div>
       {showProgress && (
         <div
-          className="toast-progress mt-3 h-0.5 w-full origin-left rounded-full bg-[var(--accent-primary)]/60"
+          className={`toast-progress mt-3 h-0.5 w-full origin-left rounded-full ${variantProgress[variant] || "bg-[var(--accent-primary)]"}`}
           style={{
             animationDuration: `${duration}ms`,
             animationPlayState: playState,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { memo, useCallback, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, ExternalLink, Loader2, Music, Radio, RadioOff } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
@@ -82,7 +82,7 @@ function formatMs(ms?: number): string {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-export default function SocialDiscordCard({
+const SocialDiscordCard = memo(function SocialDiscordCard({
   lanyard,
   nowPlaying,
   loading,
@@ -93,6 +93,10 @@ export default function SocialDiscordCard({
   const i18n = useI18n();
   const { settings, update } = useSettings();
   const { profile: oauthProfile } = useDiscordOAuth();
+
+  const handleConnectIntegrations = useCallback(() => {
+    router.push("/settings?category=integrations");
+  }, [router]);
 
   const isOAuth = Boolean(oauthProfile?.connected);
   const oauthUserId = oauthProfile?.user?.id;
@@ -257,7 +261,7 @@ export default function SocialDiscordCard({
           {!hasAnyConnection ? (
             <button
               type="button"
-              onClick={() => router.push("/settings?category=integrations")}
+              onClick={handleConnectIntegrations}
               className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] active:scale-95"
             >
               <ExternalLink className="h-3 w-3" />
@@ -266,7 +270,7 @@ export default function SocialDiscordCard({
           ) : (
             <button
               type="button"
-              onClick={() => router.push("/settings?category=integrations")}
+              onClick={handleConnectIntegrations}
               className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-2.5 py-1 text-[11px] font-medium text-[var(--text-muted)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95"
             >
               <ExternalLink className="h-3 w-3" />
@@ -371,4 +375,6 @@ export default function SocialDiscordCard({
       )}
     </TiltCard>
   );
-}
+});
+
+export default SocialDiscordCard;

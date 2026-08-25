@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import Link from "next/link";
 import { AlertCircle, Loader2, User } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
@@ -91,7 +91,7 @@ function winRate(matches?: RiotMatch[] | null, count = 5): string {
   return String(Math.round((wins / list.length) * 100));
 }
 
-export function RiotGamingCardContent({
+export const RiotGamingCardContent = memo(function RiotGamingCardContent({
   game,
   matches,
   playerName,
@@ -335,9 +335,9 @@ export function RiotGamingCardContent({
       )}
     </div>
   );
-}
+});
 
-export default function RiotGamingCard(props: RiotGamingCardProps) {
+const RiotGamingCard = memo(function RiotGamingCard(props: RiotGamingCardProps) {
   const config = GAME_CONFIG[props.game];
   const { settings } = useSettings();
   const displayName = props.playerName || settings.liveTrackerRiotName;
@@ -356,4 +356,6 @@ export default function RiotGamingCard(props: RiotGamingCardProps) {
       <RiotGamingCardContent {...props} className={cn(config.gradient, props.className)} />
     </TiltCard>
   );
-}
+});
+
+export default RiotGamingCard;

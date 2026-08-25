@@ -11,12 +11,23 @@ import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { listBills, upcomingBills, getNextDueDate, type Bill } from "@/lib/bills-manager";
 
+function formatCurrency(amount: number, currency = "EUR") {
+  return new Intl.NumberFormat(undefined, { style: "currency", currency }).format(amount);
+}
+
+function formatDate(date?: string) {
+  if (!date) return "-";
+  return new Date(date).toLocaleDateString();
+}
+
 const BillsWidget = memo(function BillsWidget({ className = "", scrollable = true, standalone = false }: { className?: string; scrollable?: boolean; standalone?: boolean }) {
   const i18n = useI18n();
   const router = useRouter();
   const [bills, setBills] = useState<Bill[]>([]);
   const [selected, setSelected] = useState<Bill | null>(null);
   const handleOpenBills = useCallback(() => { router.push("/bills"); }, [router]);
+  const handleSelectBill = useCallback((b: Bill) => setSelected(b), []);
+  const handleCloseModal = useCallback(() => setSelected(null), []);
 
   useEffect(() => {
     setBills(listBills());
@@ -39,15 +50,9 @@ const BillsWidget = memo(function BillsWidget({ className = "", scrollable = tru
     [bills]
   );
 
-  const upcoming = upcomingBills(7);
-
-  const formatCurrency = (amount: number, currency = "EUR") =>
-    new Intl.NumberFormat(undefined, { style: "currency", currency }).format(amount);
-
-  const formatDate = (date?: string) => {
-    if (!date) return "-";
-    return new Date(date).toLocaleDateString();
-  };
+  // Recalculate upcoming whenever the bills state updates.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const upcoming = useMemo(() => upcomingBills(7), [bills]);
 
   const content = (
     <div className="flex flex-1 flex-col justify-between gap-3">
@@ -80,7 +85,7 @@ const BillsWidget = memo(function BillsWidget({ className = "", scrollable = tru
             <button
               key={b.id}
               type="button"
-              onClick={() => setSelected(b)}
+              onClick={() => handleSelectBill(b)}
               className="flex w-full items-center justify-between rounded-xl border border-[var(--text-primary)]/[0.04] bg-[var(--text-primary)]/[0.02] px-2.5 py-1.5 text-xs transition-colors hover:bg-[var(--text-primary)]/[0.06]"
             >
               <span className="min-w-0 flex-1 truncate text-left">{b.label}</span>
@@ -122,7 +127,7 @@ const BillsWidget = memo(function BillsWidget({ className = "", scrollable = tru
 
       <Modal
         isOpen={!!selected}
-        onClose={() => setSelected(null)}
+        onClose={handleCloseModal}
         title={selected?.label || ""}
         size="sm"
         position="bottom"
@@ -148,7 +153,7 @@ const BillsWidget = memo(function BillsWidget({ className = "", scrollable = tru
             <Link
               href="/bills"
               className="flex w-full items-center justify-center gap-1.5 rounded-[var(--panel-radius)] bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--text-primary)] transition-opacity hover:opacity-90"
-              onClick={() => setSelected(null)}
+              onClick={handleCloseModal}
             >
               <Icon name="arrow-right" className="h-4 w-4" /> {i18n("billsManage")}
             </Link>

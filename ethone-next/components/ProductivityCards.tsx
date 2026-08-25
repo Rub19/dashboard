@@ -72,6 +72,10 @@ function DayTimelineCardImpl({ todayEvents, nextTasks, className = "", focus, sc
   const focusCtx = useFocus();
   const { state, format, start } = focus ?? focusCtx;
 
+  const handleStartPomodoro = useCallback(() => {
+    start("pomodoro");
+  }, [start]);
+
   const isLive = state.phase !== "idle";
 
   const events = useMemo(
@@ -83,6 +87,17 @@ function DayTimelineCardImpl({ todayEvents, nextTasks, className = "", focus, sc
     [todayEvents]
   );
 
+  const badge = useMemo(
+    () =>
+      isLive ? (
+        <span className="inline-flex items-center gap-1 rounded-lg bg-[var(--accent-primary)]/10 px-2 py-0.5 text-[10px] font-medium text-[var(--accent-primary)]">
+          <Icon name="radio" className="h-3 w-3" />
+          <span className="uppercase tracking-wider">{i18n("live")}</span>
+        </span>
+      ) : undefined,
+    [isLive, i18n]
+  );
+
   if (loading) {
     return (
       <BentoCard title={i18n("daystream")} icon="calendar" className={cn("h-full", className)} scrollable={scrollable} state="loading">
@@ -90,13 +105,6 @@ function DayTimelineCardImpl({ todayEvents, nextTasks, className = "", focus, sc
       </BentoCard>
     );
   }
-
-  const badge = isLive ? (
-    <span className="inline-flex items-center gap-1 rounded-lg bg-[var(--accent-primary)]/10 px-2 py-0.5 text-[10px] font-medium text-[var(--accent-primary)]">
-      <Icon name="radio" className="h-3 w-3" />
-      <span className="uppercase tracking-wider">{i18n("live")}</span>
-    </span>
-  ) : undefined;
 
   const isEmpty = events.length === 0 && nextTasks.length === 0;
 
@@ -158,7 +166,7 @@ function DayTimelineCardImpl({ todayEvents, nextTasks, className = "", focus, sc
             ) : (
               <button
                 type="button"
-                onClick={() => start("pomodoro")}
+                onClick={handleStartPomodoro}
                 className="text-[10px] font-medium text-[var(--accent-primary)] hover:underline"
               >
                 {i18n("start")}
@@ -195,7 +203,7 @@ export type ProjectsTasksCardProps = {
   scrollable?: boolean;
 };
 
-export function ProjectsTasksCard({
+function ProjectsTasksCardImpl({
   openTasksCount,
   completed,
   totalTasks,
@@ -260,6 +268,8 @@ export function ProjectsTasksCard({
   );
 }
 
+export const ProjectsTasksCard = memo(ProjectsTasksCardImpl);
+
 export type RecentNotesCardProps = {
   notes: Item[];
   className?: string;
@@ -283,14 +293,17 @@ function RecentNotesCardImpl({ notes, className = "", scrollable = true, loading
     [notes]
   );
 
-  const action = (
-    <Link
-      href="/notes"
-      className="relative z-0 inline-flex items-center gap-1 rounded-lg border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-2 py-1 text-[10px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
-    >
-      <Icon name="plus" className="h-3 w-3" />
-      {i18n("createNote")}
-    </Link>
+  const action = useMemo(
+    () => (
+      <Link
+        href="/notes"
+        className="relative z-0 inline-flex items-center gap-1 rounded-lg border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-2 py-1 text-[10px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
+      >
+        <Icon name="plus" className="h-3 w-3" />
+        {i18n("createNote")}
+      </Link>
+    ),
+    [i18n]
   );
 
   const isEmpty = !loading && recent.length === 0;
@@ -335,7 +348,7 @@ function RecentNotesCardImpl({ notes, className = "", scrollable = true, loading
 
 export const RecentNotesCard = memo(RecentNotesCardImpl);
 
-export default function ProductivityCards({
+function ProductivityCardsImpl({
   todayEvents,
   nextTasks,
   openTasksCount,
@@ -377,3 +390,6 @@ export default function ProductivityCards({
     </div>
   );
 }
+
+const ProductivityCards = memo(ProductivityCardsImpl);
+export default ProductivityCards;

@@ -44,6 +44,26 @@ const SystemControlCard = memo(function SystemControlCard({ className = "", scro
     update({ sessionMode: SESSION_MODES[nextIndex].id });
   }, [currentIndex, update]);
 
+  const handlePrevMode = useCallback(() => cycle(-1), [cycle]);
+  const handleNextMode = useCallback(() => cycle(1), [cycle]);
+
+  const handleStatusSelect = useCallback(
+    (id: string, presence: string) => {
+      hapticMediumImpact();
+      update({ status: id as keyof typeof USER_STATUS_CONFIG });
+      void setNativePresence(presence);
+    },
+    [update]
+  );
+
+  const handleAuraSelect = useCallback(
+    (aura: (typeof AURAS)[number]) => {
+      hapticSelectionTick();
+      update({ aura });
+    },
+    [update]
+  );
+
   return (
     <BentoCard title={i18n("system")} icon="sliders-horizontal" className={cn("h-full", className)} scrollable={scrollable}>
       <div className="flex flex-1 flex-col justify-between gap-3">
@@ -56,11 +76,7 @@ const SystemControlCard = memo(function SystemControlCard({ className = "", scro
                 <button
                   key={id}
                   type="button"
-                  onClick={() => {
-                    hapticMediumImpact();
-                    update({ status: id as keyof typeof USER_STATUS_CONFIG });
-                    void setNativePresence(config.presence);
-                  }}
+                  onClick={() => handleStatusSelect(id, config.presence)}
                   aria-pressed={active}
                   className={`flex min-h-[40px] items-center justify-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.08] px-2.5 py-2 text-[11px] font-medium transition-all duration-150 active:scale-95 ${
                     active
@@ -87,7 +103,7 @@ const SystemControlCard = memo(function SystemControlCard({ className = "", scro
                 <button
                   key={aura}
                   type="button"
-                  onClick={() => { hapticSelectionTick(); update({ aura }); }}
+                  onClick={() => handleAuraSelect(aura)}
                   title={i18n(key)}
                   aria-label={i18n(key)}
                   style={{ backgroundColor: palette.background }}
@@ -111,7 +127,7 @@ const SystemControlCard = memo(function SystemControlCard({ className = "", scro
           <div className="flex items-center gap-1 rounded-lg border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.02] p-1">
             <button
               type="button"
-              onClick={() => cycle(-1)}
+              onClick={handlePrevMode}
               title={i18n("previous")}
               aria-label={i18n("previous")}
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[var(--text-muted)] transition-all duration-150 hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-90 sm:h-7 sm:w-7"
@@ -124,7 +140,7 @@ const SystemControlCard = memo(function SystemControlCard({ className = "", scro
             </div>
             <button
               type="button"
-              onClick={() => cycle(1)}
+              onClick={handleNextMode}
               title={i18n("next")}
               aria-label={i18n("next")}
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[var(--text-muted)] transition-all duration-150 hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-90 sm:h-7 sm:w-7"

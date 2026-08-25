@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import Link from "next/link";
 import { AlertCircle, Gamepad2, Loader2, User } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
@@ -34,7 +34,7 @@ type GamingCardProps = {
   className?: string;
 };
 
-export default function GamingCard({
+const GamingCard = memo(function GamingCard({
   minecraft,
   loading,
   error,
@@ -271,4 +271,6 @@ export default function GamingCard({
       )}
     </TiltCard>
   );
-}
+});
+
+export default GamingCard;

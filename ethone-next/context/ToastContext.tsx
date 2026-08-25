@@ -86,10 +86,10 @@ const SOUND_MAP: Record<ToastType, string | null> = {
 };
 
 const VARIANT_BORDER: Record<Exclude<ToastType, "loading">, string> = {
-  success: "border-[--accent-primary]",
-  error: "border-rose-500/20",
-  warning: "border-amber-500/20",
-  info: "border-[--info]",
+  success: "border-[var(--success)]/40",
+  error: "border-[var(--danger)]/40",
+  warning: "border-[var(--warning)]/40",
+  info: "border-[var(--info)]/40",
 };
 
 function DiscordAvatar({ avatarUrl }: { avatarUrl?: string }) {
@@ -364,26 +364,26 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           unstyled: true,
           classNames: {
             toast:
-              "group relative flex w-[22rem] max-w-[calc(100vw-1.5rem)] items-start gap-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-3.5 text-sm text-[var(--text-primary)] shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-md",
+              "group relative flex w-[22rem] max-w-[calc(100vw-1.5rem)] items-start gap-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-3.5 text-sm text-[var(--text-primary)] shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-md pointer-events-auto",
             title: "font-medium",
             description: "mt-0.5 text-xs text-[var(--text-muted)]",
             actionButton:
               "ml-auto rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1.5 text-[11px] font-semibold text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]",
             cancelButton: "hidden",
             closeButton:
-              "absolute right-2 top-2 rounded-md p-1 text-[var(--text-muted)] opacity-0 transition-all hover:bg-[var(--surface)] hover:text-[var(--text-primary)] group-hover:opacity-100",
-            error: "border-[var(--danger)]/20 text-[var(--danger)]",
-            success: "border-[var(--accent-primary)] text-[var(--accent-primary)]",
-            warning: "border-[var(--warning)]/20 text-[var(--warning)]",
-            info: "border-[var(--info)] text-[var(--info)]",
+              "absolute right-2 top-2 rounded-md p-1 text-[var(--text-muted)] opacity-60 transition-all hover:bg-[var(--surface)] hover:text-[var(--text-primary)] hover:opacity-100 focus:opacity-100",
+            error: "border-[var(--danger)]/30 text-[var(--danger)] shadow-[0_4px_20px_rgba(244,63,94,0.12)]",
+            success: "border-[var(--success)]/30 text-[var(--success)] shadow-[0_4px_20px_rgba(52,211,153,0.12)]",
+            warning: "border-[var(--warning)]/30 text-[var(--warning)] shadow-[0_4px_20px_rgba(245,158,11,0.12)]",
+            info: "border-[var(--info)]/30 text-[var(--info)] shadow-[0_4px_20px_rgba(56,189,248,0.12)]",
           },
         }}
         icons={{
-          success: <span className="h-2.5 w-2.5 rounded-full bg-[--accent-primary]" />,
-          error: <span className="h-2.5 w-2.5 rounded-full bg-rose-500" />,
-          warning: <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />,
-          info: <span className="h-2.5 w-2.5 rounded-full bg-[--info]" />,
-          loading: <Loader2 className="h-4 w-4 animate-spin text-[--accent-primary]" />,
+          success: <span className="h-2.5 w-2.5 rounded-full bg-[var(--success)] shadow-[0_0_6px_var(--success)]" />,
+          error: <span className="h-2.5 w-2.5 rounded-full bg-[var(--danger)] shadow-[0_0_6px_var(--danger)]" />,
+          warning: <span className="h-2.5 w-2.5 rounded-full bg-[var(--warning)] shadow-[0_0_6px_var(--warning)]" />,
+          info: <span className="h-2.5 w-2.5 rounded-full bg-[var(--info)] shadow-[0_0_6px_var(--info)]" />,
+          loading: <Loader2 className="h-4 w-4 animate-spin text-[var(--accent-primary)]" />,
           close: <X className="h-3.5 w-3.5" />,
         }}
       />

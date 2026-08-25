@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.0 — 2026-08-25
+
+**Bento Home, command palette et sidebar flottante**
+
+- Quick actions depuis le Hero (tâche, note, focus, brain, upload).
+- Synthèse contextuelle et suggestions actionnables dans Brain.
+- Dynamic Island : états explicites IDLE / COMPACT / EXPANDED / INTERACTIVE.
+- Command palette : scroll automatique de l'item actif et navigation clavier affinée.
+- Sidebar flottante en verre avec la variante floating.
+- E2E a11y, ui-harmony et command-palette passent au vert.
+- Version v1.9.0.
+
 ## v1.8.25 — 2026-08-24
 
 **Rework Dynamic Island**

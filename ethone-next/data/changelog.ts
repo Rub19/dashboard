@@ -5554,6 +5554,66 @@ const v369_de: ChangelogEntry = {
   ],
 };
 
+const v370_fr: ChangelogEntry = {
+  version: "v1.9.0",
+  date: "2026-08-25",
+  title: "Bento Home, command palette et sidebar flottante",
+  items: [
+    "Quick actions depuis le Hero (tâche, note, focus, brain, upload).",
+    "Synthèse contextuelle et suggestions actionnables dans Brain.",
+    "Dynamic Island : états explicites IDLE / COMPACT / EXPANDED / INTERACTIVE.",
+    "Command palette : scroll automatique de l'item actif et navigation clavier affinée.",
+    "Sidebar flottante en verre avec la variante floating.",
+    "E2E a11y, ui-harmony et command-palette passent au vert.",
+    "Version v1.9.0.",
+  ],
+};
+
+const v370_en: ChangelogEntry = {
+  version: "v1.9.0",
+  date: "2026-08-25",
+  title: "Bento Home, command palette, and floating sidebar",
+  items: [
+    "Home quick actions from the Hero (task, note, focus, brain, upload).",
+    "Contextual synthesis and actionable suggestions in Brain.",
+    "Dynamic Island: explicit IDLE / COMPACT / EXPANDED / INTERACTIVE states.",
+    "Command palette: automatic scroll for active item and refined keyboard navigation.",
+    "Floating glass sidebar using the floating variant.",
+    "E2E a11y, ui-harmony, and command-palette suites pass.",
+    "Version v1.9.0.",
+  ],
+};
+
+const v370_es: ChangelogEntry = {
+  version: "v1.9.0",
+  date: "2026-08-25",
+  title: "Bento Home, paleta de comandos y barra lateral flotante",
+  items: [
+    "Acciones rápidas en el Hero (tarea, nota, focus, brain, upload).",
+    "Síntesis contextual y sugerencias accionables en Brain.",
+    "Dynamic Island: estados explícitos IDLE / COMPACT / EXPANDED / INTERACTIVE.",
+    "Paleta de comandos: desplazamiento automático del elemento activo y navegación por teclado refinada.",
+    "Barra lateral flotante de cristal con la variante floating.",
+    "Pruebas E2E a11y, ui-harmony y command-palette pasan.",
+    "Versión v1.9.0.",
+  ],
+};
+
+const v370_de: ChangelogEntry = {
+  version: "v1.9.0",
+  date: "2026-08-25",
+  title: "Bento-Home, Befehlspalette und schwebende Sidebar",
+  items: [
+    "Schnellaktionen vom Hero (Aufgabe, Notiz, Focus, Brain, Upload).",
+    "Kontextbezogene Synthese und umsetzbare Vorschläge in Brain.",
+    "Dynamic Island: explizite Zustände IDLE / COMPACT / EXPANDED / INTERACTIVE.",
+    "Befehlspalette: automatisches Scrollen zum aktiven Element und verfeinerte Tastaturnavigation.",
+    "Schwebende Glas-Sidebar mit der Floating-Variante.",
+    "E2E-Tests a11y, ui-harmony und command-palette bestehen.",
+    "Version v1.9.0.",
+  ],
+};
+
 const v368_fr: ChangelogEntry = {
   version: "v1.8.24",
   date: "2026-08-24",
@@ -5710,9 +5770,9 @@ const v366_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
-CHANGELOG_BY_LANG.es.unshift(v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
-CHANGELOG_BY_LANG.de.unshift(v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
+CHANGELOG_BY_LANG.fr.unshift(v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

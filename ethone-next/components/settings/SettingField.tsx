@@ -192,7 +192,7 @@ function SettingField({ field }: { field: FieldDef }) {
       data-setting-label={field.label}
       className={`relative px-4 py-2 transition-opacity ${hidden ? "hidden" : ""}`}
     >
-      <div className="flex min-h-[44px] items-start justify-between gap-3">
+      <div className="flex min-h-[44px] flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
         <div className="flex min-w-0 flex-1 items-start gap-2.5">
           {isDirty && (
             <span
@@ -215,7 +215,7 @@ function SettingField({ field }: { field: FieldDef }) {
             )}
           </div>
         </div>
-        <div className="flex min-w-0 items-center gap-2">
+        <div className="flex w-full min-w-0 items-center gap-2 sm:w-auto">
           {isDirty && (
             <button
               type="button"

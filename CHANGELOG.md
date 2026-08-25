@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.17 — 2026-08-25
+
+**ETHONE — En-tête Home retravaillé**
+
+- L'en-tête de la page Home est désormais une carte glass subtile.
+- "Accueil" devient un surtitre discret en lettres capitales.
+- La description est plus douce et mieux hiérarchisée.
+- Le bouton **Personnaliser** est transformé en pill plus compact.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.16 — 2026-08-25
 
 **ETHONE — Correction synchronisation Activity Journal**

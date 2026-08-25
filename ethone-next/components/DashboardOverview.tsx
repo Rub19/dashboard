@@ -334,14 +334,14 @@ export default function DashboardOverview() {
     <div className="flex h-full min-h-0 flex-col">
       <PullToRefresh onRefresh={handleRefresh}>
         <div className={cn("mx-auto w-full min-h-full px-2 sm:px-4", maxWClass)}>
-        <header className="shrink-0 mb-4 flex w-full items-center justify-between gap-4">
+        <header className="shrink-0 mb-5 flex w-full items-center justify-between gap-4 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.25] p-4 shadow-sm backdrop-blur-[var(--panel-blur)]">
         <div className="min-w-0">
-          <h1 className="text-2xl font-bold leading-none tracking-tight text-[var(--text-primary)] sm:text-[1.75rem]">
+          <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--text-muted)]">
             {i18n("home", "Accueil")}
-          </h1>
-          <p className="mt-0.5 text-[10px] leading-tight text-[var(--text-muted)]">
-            {i18n("homeDescription", "Votre espace personnel, en un coup d'œil.")}
           </p>
+          <h1 className="mt-0.5 text-base font-semibold leading-tight tracking-tight text-[var(--text-primary)] sm:text-lg">
+            {i18n("homeDescription", "Votre espace personnel, en un coup d'œil.")}
+          </h1>
         </div>
         <Button
           size="sm"
@@ -349,7 +349,8 @@ export default function DashboardOverview() {
           onClick={handleToggleCustomize}
           title={customizing ? i18n("done") : i18n("customize")}
           aria-label={customizing ? i18n("done") : i18n("customize")}
-          leftIcon={<LayoutGrid className="h-4 w-4" />}
+          leftIcon={<LayoutGrid className="h-3.5 w-3.5" />}
+          className="h-8 rounded-full px-3 text-[11px]"
         >
           {customizing ? i18n("done") : i18n("customize")}
         </Button>

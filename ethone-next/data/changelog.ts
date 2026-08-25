@@ -6290,9 +6290,73 @@ const v397_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v397_fr, v396_fr, v395_fr, v375_fr, v374_fr, v373_fr, v372_fr, v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v397_en, v396_en, v395_en, v375_en, v374_en, v373_en, v372_en, v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
-CHANGELOG_BY_LANG.es.unshift(v397_es, v396_es, v395_es, v375_es, v374_es, v373_es, v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
-CHANGELOG_BY_LANG.de.unshift(v397_de, v396_de, v395_de, v375_de, v374_de, v373_de, v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
+const v398_fr: ChangelogEntry = {
+  version: "v1.9.8",
+  date: "2026-08-25",
+  title: "Rework Connexions / Integration Hub",
+  items: [
+    "Audit de l’existant Connexions (IntegrationsSettings, ConnectionCard, hooks, OAuth, API keys).",
+    "Header premium, recherche étendue et catégories avec compteurs.",
+    "Badges unifiés `ConnectionBadge` basés sur les tokens du design system.",
+    "Modale `ConnectionGuideModal` pour tutoriels et guides pas-à-pas.",
+    "État testing par card et affichage du résultat + latence.",
+    "Section `MyConnectionsRow` avec navigation rapide vers les connexions actives.",
+    "Validation responsive 420 viewports et accessibilité 9 viewports sans régression.",
+    "Version affichée en bas à droite : v1.9.8.",
+  ],
+};
+
+const v398_en: ChangelogEntry = {
+  version: "v1.9.8",
+  date: "2026-08-25",
+  title: "Connections / Integration Hub rework",
+  items: [
+    "Audit of existing Connections (IntegrationsSettings, ConnectionCard, hooks, OAuth, API keys).",
+    "Premium header, extended search and categories with counts.",
+    "Unified `ConnectionBadge` based on design system tokens.",
+    "`ConnectionGuideModal` modal for tutorials and step-by-step guides.",
+    "Per-card testing state and result + latency display.",
+    "`MyConnectionsRow` section with quick navigation to active connections.",
+    "Responsive validation 420 viewports and accessibility 9 viewports with no regression.",
+    "Version badge bottom-right: v1.9.8.",
+  ],
+};
+
+const v398_es: ChangelogEntry = {
+  version: "v1.9.8",
+  date: "2026-08-25",
+  title: "Rework de Connexiones / Integration Hub",
+  items: [
+    "Auditoría de Connexiones existente (IntegrationsSettings, ConnectionCard, hooks, OAuth, API keys).",
+    "Header premium, búsqueda extendida y categorías con contadores.",
+    "Badges unificados `ConnectionBadge` basados en tokens del design system.",
+    "Modal `ConnectionGuideModal` para tutoriales y guías paso a paso.",
+    "Estado de testing por card y visualización del resultado + latencia.",
+    "Sección `MyConnectionsRow` con navegación rápida a conexiones activas.",
+    "Validación responsive 420 viewports y accesibilidad 9 viewports sin regresión.",
+    "Versión mostrada abajo a la derecha: v1.9.8.",
+  ],
+};
+
+const v398_de: ChangelogEntry = {
+  version: "v1.9.8",
+  date: "2026-08-25",
+  title: "Connections / Integration Hub Rework",
+  items: [
+    "Audit der bestehenden Connections (IntegrationsSettings, ConnectionCard, Hooks, OAuth, API-Keys).",
+    "Premium-Header, erweiterte Suche und Kategorien mit Zählern.",
+    "Vereinheitlichte `ConnectionBadge` basierend auf Design-System-Tokens.",
+    "`ConnectionGuideModal`-Modal für Tutorials und Schritt-für-Schritt-Anleitungen.",
+    "Testing-Status pro Card und Ergebnis + Latenz-Anzeige.",
+    "`MyConnectionsRow`-Bereich mit schneller Navigation zu aktiven Verbindungen.",
+    "Responsive-Validierung 420 Viewports und Barrierefreiheit 9 Viewports ohne Regression.",
+    "Version unten rechts: v1.9.8.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v398_fr, v397_fr, v396_fr, v395_fr, v375_fr, v374_fr, v373_fr, v372_fr, v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v398_en, v397_en, v396_en, v395_en, v375_en, v374_en, v373_en, v372_en, v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v398_es, v397_es, v396_es, v395_es, v375_es, v374_es, v373_es, v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v398_de, v397_de, v396_de, v395_de, v375_de, v374_de, v373_de, v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

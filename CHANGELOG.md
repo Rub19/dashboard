@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.8 — 2026-08-25
+
+**ETHONE — Rework Connexions / Integration Hub**
+
+- Pass 1 : audit de l’existant Connexions (IntegrationsSettings, ConnectionCard, hooks, OAuth, API keys).
+- Pass 2 : header premium, recherche étendue (nom, catégorie, description, badge, authentification), catégories avec compteurs.
+- Pass 3 : badges unifiés `ConnectionBadge` basés sur les tokens, suppression des couleurs hardcodées.
+- Pass 4 : modale `ConnectionGuideModal` pour tutoriels et guides pas-à-pas.
+- Pass 5 : état `testing` par card et affichage du résultat + latence via `ConnectionTestResult`.
+- Pass 6 : section `MyConnectionsRow` avec navigation rapide vers les connexions actives.
+- Pass 7 : validation responsive 420 viewports et accessibilité 9 viewports sans régression.
+- Pass 8 : version `v1.9.8`, build, lint, tests unitaires et Playwright.
+
 ## v1.9.7 — 2026-08-25
 
 **ETHONE — Rework Settings / Control Center**

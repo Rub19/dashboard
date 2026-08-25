@@ -552,6 +552,7 @@ export default function DynamicIslandContainer() {
             onMouseLeave={onIslandLeave}
             data-island-mode={mode}
             aria-label={i18n("dynamicIsland")}
+            aria-expanded={expanded}
             tabIndex={0}
             role="button"
           >

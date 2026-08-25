@@ -15,20 +15,23 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { fetchWorker } from "@/lib/api";
+import { useUploadQueue } from "@/lib/upload-queue";
 import { useDynamicIslandStore } from "@/lib/stores/dynamic-island";
 import { useBrainActivityStore } from "@/lib/stores/brain-activity";
 import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
 import { cn } from "@/lib/utils";
 import VolumeSlider from "@/components/VolumeSlider";
+import UploadIslandView from "@/components/UploadIslandView";
 
-type View = "spotify" | "pomodoro" | "brain" | "sync";
+type View = "spotify" | "pomodoro" | "brain" | "sync" | "upload";
 
 const EASE_OUT = [0.16, 1, 0.3, 1] as const;
 const VIEW_PRIORITY: Record<View, number> = {
   brain: 5, // critical / activity
   pomodoro: 4, // action required / activity
-  sync: 3, // activité en cours
-  spotify: 2, // information contextuelle
+  upload: 3, // ongoing upload
+  sync: 2, // activité en cours
+  spotify: 1, // information contextuelle
 };
 const VIEW_ORDER: View[] = (Object.keys(VIEW_PRIORITY) as View[]).sort(
   (a, b) => VIEW_PRIORITY[b] - VIEW_PRIORITY[a],
@@ -44,6 +47,8 @@ function viewLabel(view: View, i18n: (key: string, fallback?: string) => string)
       return i18n("brain", "Brain");
     case "sync":
       return i18n("sync", "Synchronisation");
+    case "upload":
+      return i18n("upload", "Upload");
     default:
       return "";
   }
@@ -131,6 +136,7 @@ function IslandBubble({
     view === "pomodoro" && !active && "text-[var(--accent)]",
     view === "brain" && !active && "text-[var(--info)] hover:text-[var(--info)]",
     view === "sync" && !active && "text-[var(--info)] hover:text-[var(--info)]",
+    view === "upload" && !active && "text-[var(--info)] hover:text-[var(--info)]",
   );
 
   const icon =
@@ -142,6 +148,8 @@ function IslandBubble({
       <Icon name="brain" pack="phosphor" className={iconClass} />
     ) : view === "sync" ? (
       <Icon name="arrows-clockwise" pack="phosphor" className={iconClass} />
+    ) : view === "upload" ? (
+      <Icon name="upload-cloud" pack="phosphor" className={iconClass} />
     ) : (
       <Icon name="sparkles" pack="phosphor" className={iconClass} />
     );
@@ -216,6 +224,11 @@ export default function DynamicIslandContainer() {
   const isThinking = useBrainActivityStore((s) => s.isThinking);
   const { visible } = useDynamicIslandStore();
   const { pendingCount, syncing, lastSync } = useActivityJournal();
+  const queue = useUploadQueue();
+  const uploadingCount = queue.items.filter((it) => it.status === "uploading" || it.status === "queued").length;
+  const completedCount = queue.items.filter((it) => it.status === "completed").length;
+  const errorCount = queue.items.filter((it) => it.status === "error").length;
+  const uploadActive = queue.items.length > 0;
 
   type IslandMode = "IDLE" | "COMPACT" | "EXPANDED" | "INTERACTIVE";
   const [mode, setMode] = useState<IslandMode>("IDLE");
@@ -253,6 +266,7 @@ export default function DynamicIslandContainer() {
     const nextActive = new Set<View>();
     if (brainActive) nextActive.add("brain");
     if (pomodoroActive) nextActive.add("pomodoro");
+    if (uploadActive) nextActive.add("upload");
     if (syncActive) nextActive.add("sync");
     if (spotifyActive) nextActive.add("spotify");
 
@@ -288,7 +302,7 @@ export default function DynamicIslandContainer() {
     if (nextActive.size === 0) setMode("IDLE");
 
     prevActiveRef.current = nextActive;
-  }, [brainActive, pomodoroActive, syncActive, spotifyActive, selectedView, npLoading, userSelected]);
+  }, [brainActive, pomodoroActive, syncActive, spotifyActive, uploadActive, selectedView, npLoading, userSelected]);
 
   // Escape collapses
   useEffect(() => {
@@ -376,10 +390,29 @@ export default function DynamicIslandContainer() {
             )}
           </div>
         );
+      case "upload":
+        return (
+          <div className={cn(base)}>
+            <Icon name="upload-cloud" pack="phosphor" className={cn("h-3.5 w-3.5 text-[var(--info)]", uploadingCount > 0 && "animate-pulse")} />
+            <span className="text-xs font-medium tabular-nums">
+              {uploadingCount > 0 ? `${uploadingCount} ...` : i18n("upload", "Upload")}
+            </span>
+            {completedCount > 0 && (
+              <span className="ml-1 rounded-full bg-[var(--success)]/20 px-1.5 py-0.5 text-[10px] text-[var(--success)]">
+                +{completedCount}
+              </span>
+            )}
+            {errorCount > 0 && (
+              <span className="ml-1 rounded-full bg-red-400/20 px-1.5 py-0.5 text-[10px] text-red-400">
+                {errorCount}
+              </span>
+            )}
+          </div>
+        );
       default:
         return null;
     }
-  }, [clock, selectedView, nowPlaying, focus, i18n, syncing, pendingCount]);
+  }, [clock, selectedView, nowPlaying, focus, i18n, syncing, pendingCount, uploadingCount, completedCount, errorCount]);
 
   // Spotify controls
   const spotifyControl = useCallback(
@@ -723,6 +756,17 @@ export default function DynamicIslandContainer() {
                   <Icon name="sparkles" pack="phosphor" className="h-3.5 w-3.5" />
                   {i18n("openBrain", "Ouvrir le Brain")}
                 </button>
+              </div>
+            </DynamicIslandView>
+
+            <DynamicIslandView id="upload" className="w-[min(92vw,280px)] sm:w-[340px]">
+              <div onClick={stopPropagation} className="flex w-full flex-col items-center gap-3">
+                <IslandExpandedHeader
+                  activeViews={activeViews}
+                  selected={selectedView ?? "upload"}
+                  onSelect={selectView}
+                />
+                <UploadIslandView />
               </div>
             </DynamicIslandView>
           </DynamicIsland>

@@ -21,6 +21,7 @@ import CommandPaletteProvider from "@/components/CommandPaletteProvider";
 import OAuthHandler from "@/components/OAuthHandler";
 import UIProvider from "@/components/UIProvider";
 import BootProvider from "@/components/BootProvider";
+import { UploadQueueProvider } from "@/lib/upload-queue";
 
 const inter = Inter({
   variable: "--font-geist-sans",
@@ -90,7 +91,9 @@ export default function RootLayout({
                         <ServiceWorker />
                         <VersionUpdateToast />
                         <OAuthHandler />
-                        <BootProvider>{children}</BootProvider>
+                        <UploadQueueProvider>
+                          <BootProvider>{children}</BootProvider>
+                        </UploadQueueProvider>
                       </ToastProvider>
                     </SoundProvider>
                   </CommandPaletteProvider>

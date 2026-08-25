@@ -316,7 +316,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
 
       {settings.dockFloatingSave && form.hasExplicitChanges && (
         <div
-          className="fixed bottom-[max(5rem,env(safe-area-inset-bottom)+4.5rem)] left-[max(1rem,env(safe-area-inset-left))] right-[max(1rem,env(safe-area-inset-right))] z-50 mx-auto w-max max-w-[min(90%,32rem)] animate-in slide-in-from-bottom-4 sm:left-1/2 sm:-translate-x-1/2"
+          className="fixed bottom-[max(5rem,env(safe-area-inset-bottom)+4.5rem)] left-[max(1rem,env(safe-area-inset-left))] right-[max(1rem,env(safe-area-inset-right))] z-[var(--z-modal)] mx-auto w-max max-w-[min(90%,32rem)] animate-in slide-in-from-bottom-4 sm:left-1/2 sm:-translate-x-1/2"
           aria-live="polite"
           aria-atomic="true"
         >

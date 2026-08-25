@@ -237,7 +237,7 @@ export default function ComposeMailModal({
             initial={{ opacity: 0, y: 20, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.98 }}
-            className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-50 flex h-[min(640px,90vh)] max-h-[90vh] w-[min(560px,96vw)] flex-col overflow-hidden rounded-2xl border border-[var(--text-primary)]/[0.08] bg-zinc-950/95 shadow-2xl backdrop-blur-2xl"
+            className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-[var(--z-modal)] flex h-[min(640px,90vh)] max-h-[90vh] w-[min(560px,96vw)] flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 shadow-2xl backdrop-blur-2xl"
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-[var(--text-primary)]/[0.06] px-4 py-3">

@@ -38,7 +38,7 @@ export default function LanguageSelector() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-40 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1 shadow-2xl backdrop-blur-[var(--panel-blur)]">
+        <div className="absolute right-0 top-full z-[var(--z-modal)] mt-2 w-40 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1 shadow-2xl backdrop-blur-[var(--panel-blur)]">
           {SUPPORTED_LOCALES.map((l) => (
             <button
               key={l}

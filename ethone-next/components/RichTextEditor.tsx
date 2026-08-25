@@ -376,7 +376,7 @@ export default function RichTextEditor({
                 exit={{ opacity: 0, y: -4, scale: 0.98 }}
                 transition={{ duration: 0.12, ease: "easeOut" }}
                 data-rich-block-listbox
-                className="absolute left-0 top-full z-50 mt-1.5 min-w-fit overflow-hidden rounded-xl border border-white/10 bg-zinc-900/95 p-1 shadow-2xl backdrop-blur-xl"
+                className="absolute left-0 top-full z-[var(--z-modal)] mt-1.5 min-w-fit overflow-hidden rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 p-1 shadow-2xl backdrop-blur-xl"
               >
                 {BLOCK_TOOLS.map((tool) => (
                   <button

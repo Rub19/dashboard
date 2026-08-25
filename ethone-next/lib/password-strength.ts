@@ -60,7 +60,7 @@ export function evaluatePasswordField(password: string): PasswordFieldResult {
 
   const labels: PasswordFieldResult["label"][] = ["Très faible", "Faible", "Moyen", "Bon", "Fort"];
   const colors = ["#ef4444", "#f97316", "#eab308", "#22d3ee", "#34d399"];
-  const tailwindColors = ["text-red-400", "text-orange-400", "text-amber-400", "text-[--info]", "text-[--accent-primary]"];
+  const tailwindColors = ["text-red-400", "text-orange-400", "text-amber-400", "text-[var(--info)]", "text-[var(--accent-primary)]"];
 
   const coaching: string[] = [];
   if (password.length > 0) {

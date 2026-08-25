@@ -205,7 +205,7 @@ export default function ProfilePage() {
             </button>
 
             {saved && (
-              <span className="flex items-center gap-1 text-sm text-[--accent-primary]">
+              <span className="flex items-center gap-1 text-sm text-[var(--accent-primary)]">
                 <Icon name="check" className="h-4 w-4" /> {i18n("saved")}
               </span>
             )}

@@ -100,8 +100,8 @@ const GamingCard = memo(function GamingCard({
     if (loading && !hasProfile) {
       return {
         statusText: i18n("loading", "Chargement"),
-        statusClass: "border-[--info] bg-[--info]/10 text-[--info]",
-        statusDot: "bg-[--info]",
+        statusClass: "border-[var(--info)] bg-[var(--info)]/10 text-[var(--info)]",
+        statusDot: "bg-[var(--info)]",
       };
     }
     if (error && configured && !hasProfile) {

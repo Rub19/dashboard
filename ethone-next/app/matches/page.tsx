@@ -122,7 +122,7 @@ function MatchCard({ match, game }: { match: Record<string, string | number | un
                               {p.gold !== undefined && <StatBadge label="Or" value={p.gold} color="text-amber-400" />}
                               {p.vision !== undefined && <StatBadge label="Vision" value={p.vision} />}
                               {p.damage !== undefined && <StatBadge label="Dégâts" value={p.damage} color="text-red-400" />}
-                              {p.healing !== undefined && <StatBadge label="Soins" value={p.healing} color="text-[--accent-primary]" />}
+                              {p.healing !== undefined && <StatBadge label="Soins" value={p.healing} color="text-[var(--accent-primary)]" />}
                               {p.headshots !== undefined && <StatBadge label="Headshots" value={p.headshots} />}
                               {p.placement !== undefined && <StatBadge label="Place" value={`#${p.placement}`} color="text-violet-400" />}
                             </div>

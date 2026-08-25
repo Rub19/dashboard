@@ -169,7 +169,7 @@ export function weatherIconColor(code?: number, isDay?: boolean): string {
   if (code !== undefined && code >= 1 && code <= 3) return isDay === false ? "text-indigo-300" : "text-amber-300";
   if (code === 45 || code === 48) return "text-slate-400";
   if ((code !== undefined && code >= 51 && code <= 67) || (code !== undefined && code >= 80 && code <= 82)) return "text-sky-400";
-  if ((code !== undefined && code >= 71 && code <= 77) || (code !== undefined && code >= 85 && code <= 86)) return "text-[--info]";
+  if ((code !== undefined && code >= 71 && code <= 77) || (code !== undefined && code >= 85 && code <= 86)) return "text-[var(--info)]";
   if (code !== undefined && code >= 95) return "text-violet-400";
   return isDay === false ? "text-indigo-300" : "text-amber-400";
 }
@@ -227,7 +227,7 @@ const WeatherBadge = memo(function WeatherBadge({
 }) {
   const toneClass = {
     zinc: "text-[var(--text-primary)]",
-    cyan: "text-[--info]",
+    cyan: "text-[var(--info)]",
     emerald: "text-[var(--accent-primary)]",
     amber: "text-amber-400",
     rose: "text-rose-400",

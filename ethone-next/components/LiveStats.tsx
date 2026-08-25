@@ -31,7 +31,7 @@ const LiveStats = memo(function LiveStats({ records = [], updatedAt, loading, cl
   const statItems = useMemo(
     () => [
       { label: i18n("connected"), value: byStatus.connected, color: "text-[var(--accent-primary)]" },
-      { label: i18n("pending"), value: byStatus.loading, color: "text-[--info]" },
+      { label: i18n("pending"), value: byStatus.loading, color: "text-[var(--info)]" },
       { label: i18n("events"), value: records.length, color: "text-[var(--text-primary)]" },
       { label: i18n("error"), value: byStatus.error, color: "text-rose-400" },
     ],

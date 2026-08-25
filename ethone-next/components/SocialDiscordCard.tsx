@@ -154,9 +154,9 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
   const { badgeColor, badgeLabel, badgeTone } = useMemo(() => {
     if (loading && !hasLanyard && hasAnyConnection) {
       return {
-        badgeColor: "bg-[--info]",
+        badgeColor: "bg-[var(--info)]",
         badgeLabel: i18n("loading", "Chargement"),
-        badgeTone: "border-[--info] bg-[--info]/10 text-[--info]",
+        badgeTone: "border-[var(--info)] bg-[var(--info)]/10 text-[var(--info)]",
       };
     }
     if (error && hasAnyConnection && !hasLanyard) {

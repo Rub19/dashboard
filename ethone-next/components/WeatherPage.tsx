@@ -202,7 +202,7 @@ export default function WeatherPage() {
 
   const metrics: { icon: string; iconColor: string; label: string; value: string; sub?: string }[] = [];
   if (wind !== undefined) {
-    metrics.push({ icon: "wind", iconColor: "text-[--info]", label: i18n("wind"), value: `${Math.round(wind)} km/h`, sub: i18n("weatherWindSub") || "Vitesse" });
+    metrics.push({ icon: "wind", iconColor: "text-[var(--info)]", label: i18n("wind"), value: `${Math.round(wind)} km/h`, sub: i18n("weatherWindSub") || "Vitesse" });
   }
   if (humidity !== undefined) {
     metrics.push({ icon: "droplets", iconColor: "text-blue-400", label: i18n("humidity"), value: `${Math.round(humidity)}%`, sub: i18n("weatherHumiditySub") || "Humidité relative" });

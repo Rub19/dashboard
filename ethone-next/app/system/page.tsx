@@ -25,9 +25,9 @@ const WORKSPACES = [
     flow: "Essentiel",
     icon: "user",
     accent: {
-      badge: "bg-[--accent-primary]/10 text-[--accent-primary]",
-      icon: "bg-[--accent-primary]/10 text-[--accent-primary]",
-      ring: "ring-[--accent-primary]/30",
+      badge: "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]",
+      icon: "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]",
+      ring: "ring-[var(--accent-primary)]/30",
     },
     steps: ["Capturer", "Organiser", "Exécuter"],
     widgets: ["notes", "tasks", "calendar", "brain"],
@@ -260,7 +260,7 @@ export default function SystemPage() {
             icon="activity"
             value={activeSpacesCount}
             label={i18n("active")}
-            tone="bg-[--accent-primary]/10 text-[--accent-primary]"
+            tone="bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
           />
           <StatCard
             icon="workflow"
@@ -324,7 +324,7 @@ export default function SystemPage() {
                         </div>
                       </div>
                       {isActive && (
-                        <span className={`rounded-md px-2 py-0.5 text-[10px] font-semibold ${workspace?.accent.badge ?? "bg-[--accent-primary]/10 text-[--accent-primary]"}`}>
+                        <span className={`rounded-md px-2 py-0.5 text-[10px] font-semibold ${workspace?.accent.badge ?? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"}`}>
                           {i18n("active")}
                         </span>
                       )}
@@ -371,7 +371,7 @@ export default function SystemPage() {
                         </div>
                       </div>
                       {isActive && (
-                        <span className={`rounded-md px-2 py-0.5 text-[10px] font-semibold ${workspace?.accent.badge ?? "bg-[--accent-primary]/10 text-[--accent-primary]"}`}>
+                        <span className={`rounded-md px-2 py-0.5 text-[10px] font-semibold ${workspace?.accent.badge ?? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"}`}>
                           {i18n("active")}
                         </span>
                       )}

@@ -52,7 +52,7 @@ export default function WeatherForecastList({ days }: { days: ForecastDay[] }) {
             <Icon pack="phosphor" name={icon} className={`h-4 w-4 ${color}`} />
             <div className="mx-3 h-1 flex-1 rounded-xl bg-[var(--text-primary)]/[0.04]">
               <div
-                className="relative h-full rounded-xl bg-gradient-to-r from-[--info] via-[--warning] to-[--danger]"
+                className="relative h-full rounded-xl bg-gradient-to-r from-[var(--info)] via-[var(--warning)] to-[var(--danger)]"
                 style={{ marginLeft: `${left}%`, width: `${Math.max(width, 4)}%` }}
               />
             </div>

@@ -70,7 +70,7 @@ const TYPES = [
 ];
 
 const CATEGORY_META: Record<ActivityCategory, { color: string; bg: string; border: string }> = {
-  productivity: { color: "text-[--info]", bg: "bg-[--info]", border: "border-[--info]" },
+  productivity: { color: "text-[var(--info)]", bg: "bg-[var(--info)]", border: "border-[var(--info)]" },
   work: { color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/20" },
   system: { color: "text-[var(--accent-primary)]", bg: "bg-[var(--accent-primary)]", border: "border-[var(--accent-primary)]" },
   brain: { color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
@@ -113,7 +113,7 @@ function StatCard({ label, value, sub, icon, tone = "emerald" }: StatCardProps) 
   const toneRing = {
     emerald: "hover:border-[var(--accent-primary)]",
     amber: "hover:border-amber-500/30",
-    cyan: "hover:border-[--info]",
+    cyan: "hover:border-[var(--info)]",
     purple: "hover:border-purple-500/30",
   }[tone];
 
@@ -393,7 +393,7 @@ export default function ActivityHub() {
               label={i18n("averagePerDay") || "Moyenne / jour"}
               value={stats.average}
               sub={`${stats.weekTotal} ${i18n("thisWeek") || "cette semaine"}`}
-              icon={<TrendingUp className="h-5 w-5 text-[--info]" />}
+              icon={<TrendingUp className="h-5 w-5 text-[var(--info)]" />}
               tone="cyan"
             />
             <StatCard

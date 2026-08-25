@@ -29,7 +29,7 @@ const SUGGESTED_WIDGETS: Record<string, string[]> = {
 };
 
 const ACCENT_CLASSES: Record<string, string> = {
-  mint: "bg-[--accent-primary]",
+  mint: "bg-[var(--accent-primary)]",
   sky: "bg-sky-400",
   amber: "bg-amber-400",
   violet: "bg-violet-500",
@@ -228,7 +228,7 @@ export default function ProfileSelectionPage() {
                 <div className="flex items-center gap-2">
                   <p className="font-medium">{p.name}</p>
                   {active === p.id && (
-                    <span className="inline-flex items-center gap-1 rounded-lg bg-[--accent-primary] px-2 py-0.5 text-[10px] font-semibold text-[--accent-primary]">
+                    <span className="inline-flex items-center gap-1 rounded-lg bg-[var(--accent-primary)] px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
                       <Icon name="check" className="h-3 w-3" /> {i18n("active")}
                     </span>
                   )}

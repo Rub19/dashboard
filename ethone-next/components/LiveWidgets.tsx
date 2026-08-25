@@ -111,7 +111,7 @@ const GRADIENTS: Record<string, string> = {
   minecraft: "from-[var(--accent-primary)] via-[var(--accent-primary)] to-black/20 border-[var(--accent-primary)]",
   steam: "from-sky-950/30 via-blue-900/10 to-black/20 border-sky-600/20",
   rss: "from-amber-950/30 via-orange-900/10 to-black/20 border-amber-600/20",
-  bluesky: "from-sky-950/30 via-[--info] to-black/20 border-sky-600/20",
+  bluesky: "from-sky-950/30 via-[var(--info)] to-black/20 border-sky-600/20",
   bills: "from-[var(--accent-primary)] via-yellow-900/10 to-black/20 border-[var(--accent-primary)]",
   valorant: "from-rose-950/30 via-red-900/10 to-black/20 border-rose-600/20",
   lol: "from-yellow-950/30 via-amber-900/10 to-black/20 border-yellow-600/20",

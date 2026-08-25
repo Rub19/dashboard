@@ -206,7 +206,7 @@ export default function FocusPage() {
         </div>
 
         <div className="v8-panel p-4 flex flex-col items-center text-center transition-all hover:border-[var(--text-primary)]/[0.16]">
-          <Coffee className="h-5 w-5 text-[--info] mb-2" />
+          <Coffee className="h-5 w-5 text-[var(--info)] mb-2" />
           <p className="text-2xl font-bold font-mono text-[var(--text-primary)]">{state.completedBreaks}</p>
           <p className="text-xs text-[var(--text-muted)] mt-1">{i18n("breaks")}</p>
         </div>

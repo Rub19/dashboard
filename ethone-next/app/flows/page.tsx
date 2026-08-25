@@ -45,8 +45,8 @@ const TEMPLATES = [
     id: "studio",
     desc: "Création, notes, médias et espace libre.",
     icon: "palette",
-    color: "bg-[--accent-primary]/10 text-[--accent-primary]",
-    badge: "bg-[--accent-primary]/10 text-[--accent-primary]",
+    color: "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]",
+    badge: "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]",
     steps: ["Explorer", "Relier", "Publier"],
     widgets: ["notes", "files", "brain", "calendar"],
   },
@@ -181,7 +181,7 @@ export default function FlowsPage() {
 
   const statCards = [
     {
-      icon: <Zap className="h-5 w-5 text-[--accent-primary]" />,
+      icon: <Zap className="h-5 w-5 text-[var(--accent-primary)]" />,
       value: activeCount,
       label: "Flows actifs",
     },
@@ -331,7 +331,7 @@ export default function FlowsPage() {
                               key={rule.id}
                               className={`flex items-center gap-2 rounded-xl border px-2 py-1 text-xs ${
                                 rule.enabled
-                                  ? "border-[--accent-primary] bg-[--accent-primary]/10 text-[--accent-primary]"
+                                  ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
                                   : "border-white/[0.06] bg-white/[0.02] text-zinc-400"
                               }`}
                             >

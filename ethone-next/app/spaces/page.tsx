@@ -22,9 +22,9 @@ const WORKSPACES = [
   {
     id: "personal",
     accent: {
-      badge: "bg-[--accent-primary]/10 text-[--accent-primary]",
-      icon: "bg-[--accent-primary]/10 text-[--accent-primary]",
-      ring: "ring-[--accent-primary]/30",
+      badge: "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]",
+      icon: "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]",
+      ring: "ring-[var(--accent-primary)]/30",
     },
     icon: "user",
     steps: ["Capturer", "Organiser", "Exécuter"],
@@ -174,7 +174,7 @@ export default function SpacesPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Card3D>
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[--accent-primary]/10 text-[--accent-primary]">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
               <Icon name="layout-grid" className="h-5 w-5" />
             </span>
             <div>
@@ -293,7 +293,7 @@ export default function SpacesPage() {
                 </div>
 
                 {isActive && (
-                  <div className="flex items-center gap-2 text-xs font-semibold capitalize text-[--accent-primary]">
+                  <div className="flex items-center gap-2 text-xs font-semibold capitalize text-[var(--accent-primary)]">
                     <Icon name="check" className="h-3.5 w-3.5" />
                     {i18n("active")}
                   </div>

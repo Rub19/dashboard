@@ -130,8 +130,8 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
     if (loading && !hasProfile) {
       return {
         text: i18n("loading", "Chargement"),
-        dot: "bg-[--info]",
-        badge: "border-[--info] bg-[--info]/10 text-[--info]",
+        dot: "bg-[var(--info)]",
+        badge: "border-[var(--info)] bg-[var(--info)]/10 text-[var(--info)]",
       };
     }
     if (error && configured && !hasProfile) {

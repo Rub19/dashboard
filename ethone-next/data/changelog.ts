@@ -6354,9 +6354,77 @@ const v398_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v398_fr, v397_fr, v396_fr, v395_fr, v375_fr, v374_fr, v373_fr, v372_fr, v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v398_en, v397_en, v396_en, v395_en, v375_en, v374_en, v373_en, v372_en, v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
-CHANGELOG_BY_LANG.es.unshift(v398_es, v397_es, v396_es, v395_es, v375_es, v374_es, v373_es, v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
-CHANGELOG_BY_LANG.de.unshift(v398_de, v397_de, v396_de, v395_de, v375_de, v374_de, v373_de, v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
+const v399_fr: ChangelogEntry = {
+  version: "v1.9.9",
+  date: "2026-08-25",
+  title: "Phases 4-9 : polish, tokens, i18n, icônes",
+  items: [
+    "Phase 4 : Dynamic Island & Dock — z-index tokenisés, ombres et couleurs unifiés.",
+    "Phase 5 : Dashboard / Widget Shell — tokens priorités tâches, icônes unifiées, states.",
+    "Phase 6 : Settings & Profil — icônes Icon unifiées, MaintenancePanel tokenisé.",
+    "Phase 4bis : z-index restants et fonds sombres remplacés par les tokens.",
+    "Phase 7 : Toasts, Command Palette, Notifications — icônes unifiées, tokens.",
+    "Phase 8 : i18n & A11y — labels traduisibles, toasts, MaintenancePanel.",
+    "Phase 9 : Brain & feature-fallback — icônes unifiées, salutations i18n, tokens.",
+    "Validation : build, lint, tests unitaires.",
+    "Version affichée en bas à droite : v1.9.9.",
+  ],
+};
+
+const v399_en: ChangelogEntry = {
+  version: "v1.9.9",
+  date: "2026-08-25",
+  title: "Phases 4-9 : polish, tokens, i18n, icons",
+  items: [
+    "Phase 4: Dynamic Island & Dock — tokenized z-index, unified shadows and colors.",
+    "Phase 5: Dashboard / Widget Shell — task priority tokens, unified icons, states.",
+    "Phase 6: Settings & Profile — unified Icon icons, tokenized MaintenancePanel.",
+    "Phase 4bis: remaining z-index and hardcoded dark backgrounds replaced by tokens.",
+    "Phase 7: Toasts, Command Palette, Notifications — unified icons, tokens.",
+    "Phase 8: i18n & A11y — translatable labels, toasts, MaintenancePanel.",
+    "Phase 9: Brain & feature-fallback — unified icons, i18n greetings, tokens.",
+    "Validation: build, lint, unit tests.",
+    "Version badge bottom-right: v1.9.9.",
+  ],
+};
+
+const v399_es: ChangelogEntry = {
+  version: "v1.9.9",
+  date: "2026-08-25",
+  title: "Fases 4-9 : polish, tokens, i18n, iconos",
+  items: [
+    "Fase 4: Dynamic Island y Dock — z-index tokenizados, sombras y colores unificados.",
+    "Fase 5: Dashboard / Widget Shell — tokens de prioridad de tareas, iconos unificados, estados.",
+    "Fase 6: Settings y Perfil — iconos Icon unificados, MaintenancePanel tokenizado.",
+    "Fase 4bis: z-index restantes y fondos oscuros hardcodeados reemplazados por tokens.",
+    "Fase 7: Toasts, Command Palette, Notificaciones — iconos unificados, tokens.",
+    "Fase 8: i18n y A11y — etiquetas traducibles, toasts, MaintenancePanel.",
+    "Fase 9: Brain y feature-fallback — iconos unificados, saludos i18n, tokens.",
+    "Validación: build, lint, tests unitarios.",
+    "Versión mostrada abajo a la derecha: v1.9.9.",
+  ],
+};
+
+const v399_de: ChangelogEntry = {
+  version: "v1.9.9",
+  date: "2026-08-25",
+  title: "Phasen 4-9 : Polish, Tokens, i18n, Icons",
+  items: [
+    "Phase 4: Dynamic Island & Dock — tokenisierte z-Indizes, vereinheitlichte Schatten und Farben.",
+    "Phase 5: Dashboard / Widget Shell — Aufgabenprioritäts-Token, vereinheitlichte Icons, States.",
+    "Phase 6: Settings & Profil — vereinheitlichte Icon-Icons, tokenisiertes MaintenancePanel.",
+    "Phase 4bis: verbleibende z-Indizes und hardcodierte dunkle Hintergründe durch Tokens ersetzt.",
+    "Phase 7: Toasts, Command Palette, Benachrichtigungen — vereinheitlichte Icons, Tokens.",
+    "Phase 8: i18n & A11y — übersetzbare Labels, Toasts, MaintenancePanel.",
+    "Phase 9: Brain & feature-fallback — vereinheitlichte Icons, i18n-Begrüßungen, Tokens.",
+    "Validierung: build, lint, Unit-Tests.",
+    "Version unten rechts: v1.9.9.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v399_fr, v398_fr, v397_fr, v396_fr, v395_fr, v375_fr, v374_fr, v373_fr, v372_fr, v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v399_en, v398_en, v397_en, v396_en, v395_en, v375_en, v374_en, v373_en, v372_en, v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v399_es, v398_es, v397_es, v396_es, v395_es, v375_es, v374_es, v373_es, v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v399_de, v398_de, v397_de, v396_de, v395_de, v375_de, v374_de, v373_de, v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

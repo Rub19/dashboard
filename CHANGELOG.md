@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.9 — 2026-08-25
+
+**ETHONE — Migration Next.js : phases 4 à 9 polish & cohérence**
+
+- Phase 4 : Dynamic Island & Dock — z-index tokens, ombres et couleurs uniformisées.
+- Phase 5 : Dashboard / Widget Shell — tokens pour les priorités, icônes unifiées, states cohérents.
+- Phase 6 : Settings & Profil — icônes `Icon` unifiées et `MaintenancePanel` tokenisé.
+- Phase 4bis : z-index restants et fonds sombres hardcodés remplacés par les tokens.
+- Phase 7 : Toasts, Command Palette, Notifications — icônes unifiées, fonds et bordures tokenisés.
+- Phase 8 : i18n & accessibilité — labels traduisibles, toasts, MaintenancePanel.
+- Phase 9 : Brain & feature-fallback — icônes unifiées, salutations i18n, tokens.
+- Validation : build, lint, tests unitaires.
+
 ## v1.9.8 — 2026-08-25
 
 **ETHONE — Rework Connexions / Integration Hub**

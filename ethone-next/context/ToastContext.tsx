@@ -2,17 +2,7 @@
 
 import { createContext, useContext, useCallback, useMemo, useRef } from "react";
 import { toast as sonnerToast, Toaster } from "sonner";
-import {
-  Check,
-  CheckSquare,
-  ClipboardCheck,
-  Cloud,
-  FileText,
-  Loader2,
-  Trash2,
-  Unlink,
-  X,
-} from "lucide-react";
+import { Icon } from "@/lib/icons";
 import { useSound } from "@/lib/sound";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useIsMobile } from "@/lib/hooks/useMediaQuery";
@@ -103,7 +93,7 @@ function DiscordAvatar({ avatarUrl }: { avatarUrl?: string }) {
       height={36}
       className="h-9 w-9 rounded-lg"
       fallback={
-        <span className="flex h-full w-full items-center justify-center text-zinc-200">
+        <span className="flex h-full w-full items-center justify-center text-[var(--text-primary)]">
           <DiscordIcon className="h-5 w-5" />
         </span>
       }
@@ -145,7 +135,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       let toastId: string | number;
       if (input.icon && type !== "loading") {
         const border =
-          VARIANT_BORDER[type as keyof typeof VARIANT_BORDER] || "border-white/10";
+          VARIANT_BORDER[type as keyof typeof VARIANT_BORDER] || "border-[var(--panel-border)]";
 
         toastId = sonnerToast.custom(
           () => (
@@ -271,7 +261,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         show({
           type: "info",
           title: i18n("disconnectSuccess", "Déconnecté de Discord"),
-          icon: <Unlink className="h-5 w-5" />,
+          icon: <Icon name="unlink" pack="phosphor" className="h-5 w-5" />,
           duration: 3000,
         }),
 
@@ -280,7 +270,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           type: "success",
           title: title || i18n("settingsSaved", "Préférences sauvegardées"),
           description: description || i18n("syncedViaWorker", "Synchronisées via le Worker"),
-          icon: <Cloud className="h-5 w-5" />,
+          icon: <Icon name="cloud" pack="phosphor" className="h-5 w-5" />,
           duration: 3000,
         }),
 
@@ -289,7 +279,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           type: "info",
           title: i18n("settingsReset", "Paramètres rétablis"),
           description: i18n("defaultPreferencesRestored", "Valeurs par défaut restaurées"),
-          icon: <Check className="h-5 w-5" />,
+          icon: <Icon name="check" pack="phosphor" className="h-5 w-5" />,
           duration: 3000,
         }),
 
@@ -298,7 +288,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           type: "success",
           title: i18n("noteCreated", "Note créée"),
           description: noteTitle,
-          icon: <FileText className="h-5 w-5" />,
+          icon: <Icon name="file-text" pack="phosphor" className="h-5 w-5" />,
           duration: 3000,
         }),
 
@@ -306,7 +296,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         show({
           type: "info",
           title: `${i18n("deleted", "Supprimée")}${count > 1 ? ` (${count})` : ""}`,
-          icon: <Trash2 className="h-5 w-5" />,
+          icon: <Icon name="trash-2" pack="phosphor" className="h-5 w-5" />,
           duration: 3000,
         }),
 
@@ -315,7 +305,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           type: "success",
           title: i18n("added", "Tâche ajoutée"),
           description: taskTitle,
-          icon: <CheckSquare className="h-5 w-5" />,
+          icon: <Icon name="check-square" pack="phosphor" className="h-5 w-5" />,
           duration: 3000,
         }),
 
@@ -323,7 +313,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         show({
           type: "info",
           title: i18n("deleted", "Tâche supprimée"),
-          icon: <Trash2 className="h-5 w-5" />,
+          icon: <Icon name="trash-2" pack="phosphor" className="h-5 w-5" />,
           duration: 3000,
         }),
 
@@ -331,7 +321,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         show({
           type: "success",
           title: i18n("copied", "Copié dans le presse-papiers"),
-          icon: <ClipboardCheck className="h-5 w-5" />,
+          icon: <Icon name="clipboard-check" pack="phosphor" className="h-5 w-5" />,
           duration: 2000,
         }),
     }),
@@ -366,7 +356,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           unstyled: true,
           classNames: {
             toast:
-              "group relative flex w-[22rem] max-w-[calc(100vw-1.5rem)] items-start gap-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-3.5 text-sm text-[var(--text-primary)] shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-md pointer-events-auto",
+              "group relative flex w-[22rem] max-w-[calc(100vw-1.5rem)] items-start gap-3 rounded-[var(--panel-radius)] border border-[var(--border)] bg-[var(--surface-raised)] p-3.5 text-sm text-[var(--text-primary)] shadow-2xl backdrop-blur-md pointer-events-auto",
             title: "font-medium",
             description: "mt-0.5 text-xs text-[var(--text-muted)]",
             actionButton:
@@ -385,8 +375,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           error: <span className="h-2.5 w-2.5 rounded-full bg-[var(--danger)] shadow-[0_0_6px_var(--danger)]" />,
           warning: <span className="h-2.5 w-2.5 rounded-full bg-[var(--warning)] shadow-[0_0_6px_var(--warning)]" />,
           info: <span className="h-2.5 w-2.5 rounded-full bg-[var(--info)] shadow-[0_0_6px_var(--info)]" />,
-          loading: <Loader2 className="h-4 w-4 animate-spin text-[var(--accent-primary)]" />,
-          close: <X className="h-3.5 w-3.5" />,
+          loading: <Icon name="loader-2" pack="phosphor" className="h-4 w-4 animate-spin text-[var(--accent-primary)]" />,
+          close: <Icon name="x" pack="phosphor" className="h-3.5 w-3.5" />,
         }}
       />
     </ToastContext.Provider>

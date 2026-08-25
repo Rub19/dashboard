@@ -359,7 +359,7 @@ export default function CommandPalette() {
           transition={{ duration: reduce ? 0.1 : 0.15, ease: EASE_OUT }}
           onKeyDown={onKeyDown}
           className={cn(
-            "w-full max-w-xl overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-surface-raised shadow-2xl will-change-transform",
+            "w-full max-w-xl overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-2xl will-change-transform",
             open ? "pointer-events-auto" : "pointer-events-none",
           )}
         >

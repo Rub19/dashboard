@@ -30,7 +30,7 @@ export default function LanguageControl({ value, onChange, options }: LanguageCo
       value={value}
       onChange={onChange}
       options={selectOptions}
-      className="min-w-[10rem]"
+      className="w-full min-w-0 sm:min-w-[10rem]"
     />
   );
 }

@@ -52,7 +52,7 @@ function InfoCard({
 }) {
   return (
     <div className="flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-3">
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--accent)]/10 text-[var(--accent)]">
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
         {icon}
       </span>
       <div className="min-w-0 flex-1">

@@ -3,10 +3,11 @@
 import { useCallback, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
-import { LayoutGrid } from "lucide-react";
 import { EASE_OUT } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 import BentoCard from "@/components/BentoCard";
+import IconButton from "@/components/ui/IconButton";
+import Button from "@/components/ui/Button";
 import HeroBriefingCard from "@/components/HeroBriefingCard";
 import SystemControlCard from "@/components/SystemControlCard";
 import { DayTimelineCard, RecentNotesCard } from "@/components/ProductivityCards";
@@ -288,15 +289,15 @@ export default function DashboardOverview() {
       <PullToRefresh onRefresh={handleRefresh}>
         <div className={cn("mx-auto w-full min-h-full px-2 sm:px-4", maxWClass)}>
         <header className="shrink-0 mb-3 flex w-full items-center justify-end">
-        <button
-          type="button"
+        <IconButton
+          size="sm"
+          variant="default"
           onClick={handleToggleCustomize}
           title={customizing ? i18n("done") : i18n("customize")}
           aria-label={customizing ? i18n("done") : i18n("customize")}
-          className="flex h-8 w-8 items-center justify-center rounded-lg v8-panel text-[var(--text-muted)] transition-colors hover:border-[var(--text-primary)]/20 hover:text-[var(--text-primary)] active:scale-95"
         >
-          <LayoutGrid className="h-4 w-4" />
-        </button>
+          <Icon pack="lucide" name="layout-grid" className="h-4 w-4" />
+        </IconButton>
       </header>
 
       {customizing && (
@@ -305,31 +306,33 @@ export default function DashboardOverview() {
           icon="sliders-horizontal"
           className="shrink-0 mb-4"
           action={
-            <button
-              type="button"
+            <Button
+              size="sm"
+              variant="ghost"
               onClick={handleCloseCustomize}
-              className="rounded-lg border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-2 py-1 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
             >
               {i18n("done")}
-            </button>
+            </Button>
           }
         >
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            {sections.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => toggleSection(s.id)}
-                className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition-colors ${
-                  visibleSet.has(s.id)
-                    ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
-                    : "border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] text-[var(--text-muted)]"
-                }`}
-              >
-                <Icon name={visibleSet.has(s.id) ? "eye" : "eye-off"} className="h-4 w-4" />
-                {s.label}
-              </button>
-            ))}
+            {sections.map((s) => {
+              const visible = visibleSet.has(s.id);
+              return (
+                <Button
+                  key={s.id}
+                  size="sm"
+                  variant={visible ? "outline" : "ghost"}
+                  onClick={() => toggleSection(s.id)}
+                  className="justify-start"
+                  leftIcon={
+                    <Icon pack={visible ? "lucide" : "lucide"} name={visible ? "eye" : "eye-off"} className="h-4 w-4" />
+                  }
+                >
+                  {s.label}
+                </Button>
+              );
+            })}
           </div>
         </BentoCard>
       )}

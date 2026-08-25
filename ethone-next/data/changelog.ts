@@ -5,6 +5,66 @@ export type ChangelogEntry = {
   items: string[];
 };
 
+const v374_fr: ChangelogEntry = {
+  version: "v1.9.3",
+  date: "2026-08-25",
+  title: "Uniformisation des boutons, icônes et tokens",
+  items: [
+    "Nouveau composant `IconButton` pour les boutons icônes avec tailles sm/md/lg et variantes default/ghost/active.",
+    "TopBar : `ThemeToggle`, `FocusToggle`, `DynamicIslandToggle` et `WeatherQuickButton` utilisent `IconButton`/`Button` standardisés.",
+    "DashboardOverview : boutons personnaliser, terminer et sélecteurs de sections basculés sur `IconButton` et `Button`.",
+    "Remplacement des imports `lucide-react` directs par `Icon` dans `TopBar` et `DashboardOverview` pour une source d'icônes unique.",
+    "Mise à jour du `Button` et des nouveaux composants pour les tokens ETHONE (`--text-primary`, `--accent-primary`, `--text-muted`).",
+    "Validation : `npm run build`, `npm run lint`, `npm run test:unit` restent verts.",
+    "Version affichée en bas à droite : v1.9.3.",
+  ],
+};
+
+const v374_en: ChangelogEntry = {
+  version: "v1.9.3",
+  date: "2026-08-25",
+  title: "Button, icon and token unification",
+  items: [
+    "New `IconButton` component for icon buttons with sm/md/lg sizes and default/ghost/active variants.",
+    "TopBar: `ThemeToggle`, `FocusToggle`, `DynamicIslandToggle` and `WeatherQuickButton` now use standardized `IconButton`/`Button`.",
+    "DashboardOverview: customize, done and section toggle buttons moved to `IconButton` and `Button`.",
+    "Replaced direct `lucide-react` imports with `Icon` in `TopBar` and `DashboardOverview` for a single icon source.",
+    "Updated `Button` and new components to use ETHONE tokens (`--text-primary`, `--accent-primary`, `--text-muted`).",
+    "Validation: `npm run build`, `npm run lint`, `npm run test:unit` still pass.",
+    "Version badge bottom-right: v1.9.3.",
+  ],
+};
+
+const v374_es: ChangelogEntry = {
+  version: "v1.9.3",
+  date: "2026-08-25",
+  title: "Unificación de botones, iconos y tokens",
+  items: [
+    "Nuevo componente `IconButton` para botones de icono con tamaños sm/md/lg y variantes default/ghost/active.",
+    "TopBar: `ThemeToggle`, `FocusToggle`, `DynamicIslandToggle` y `WeatherQuickButton` usan `IconButton`/`Button` estandarizados.",
+    "DashboardOverview: botones personalizar, terminar y selectores de sección migrados a `IconButton` y `Button`.",
+    "Reemplazo de importaciones directas de `lucide-react` por `Icon` en `TopBar` y `DashboardOverview` para una única fuente de iconos.",
+    "Actualización de `Button` y los nuevos componentes para usar los tokens ETHONE (`--text-primary`, `--accent-primary`, `--text-muted`).",
+    "Validación: `npm run build`, `npm run lint`, `npm run test:unit` siguen pasando.",
+    "Versión mostrada abajo a la derecha: v1.9.3.",
+  ],
+};
+
+const v374_de: ChangelogEntry = {
+  version: "v1.9.3",
+  date: "2026-08-25",
+  title: "Vereinheitlichung von Schaltflächen, Symbolen und Tokens",
+  items: [
+    "Neue `IconButton`-Komponente für Icon-Buttons mit sm/md/lg-Größen und default/ghost/active-Varianten.",
+    "TopBar: `ThemeToggle`, `FocusToggle`, `DynamicIslandToggle` und `WeatherQuickButton` verwenden jetzt standardisierte `IconButton`/`Button`.",
+    "DashboardOverview: Anpassen-, Fertig- und Bereichs-Umschaltbuttons auf `IconButton` und `Button` umgestellt.",
+    "Direkte `lucide-react`-Importe durch `Icon` in `TopBar` und `DashboardOverview` ersetzt, um eine einzige Icon-Quelle zu haben.",
+    "`Button` und neue Komponenten auf ETHONE-Tokens (`--text-primary`, `--accent-primary`, `--text-muted`) aktualisiert.",
+    "Validierung: `npm run build`, `npm run lint`, `npm run test:unit` bestehen weiterhin.",
+    "Version unten rechts: v1.9.3.",
+  ],
+};
+
 const v373_fr: ChangelogEntry = {
   version: "v1.9.2",
   date: "2026-08-25",
@@ -5958,9 +6018,9 @@ const v366_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v373_fr, v372_fr, v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v373_en, v372_en, v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
-CHANGELOG_BY_LANG.es.unshift(v373_es, v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
-CHANGELOG_BY_LANG.de.unshift(v373_de, v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
+CHANGELOG_BY_LANG.fr.unshift(v374_fr, v373_fr, v372_fr, v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v374_en, v373_en, v372_en, v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v374_es, v373_es, v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v374_de, v373_de, v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

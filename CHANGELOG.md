@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.3 — 2026-08-25
+
+**ETHONE UI — Uniformisation des boutons, icônes et tokens**
+
+- Nouveau composant `IconButton` pour les boutons icônes (tailles sm/md/lg, variantes default/ghost/active).
+- `TopBar` : `ThemeToggle`, `FocusToggle`, `DynamicIslandToggle` et `WeatherQuickButton` utilisent `IconButton`/`Button` standardisés.
+- `DashboardOverview` : boutons personnaliser, terminer et sélecteurs de sections basculés sur `IconButton`/`Button`.
+- Remplacement des imports `lucide-react` directs par `Icon` dans `TopBar` et `DashboardOverview` pour une source d'icônes unique.
+- `Button` et nouveaux composants alignés sur les tokens ETHONE (`--text-primary`, `--accent-primary`, `--text-muted`).
+- Validation : `npm run build`, `npm run lint`, `npm run test:unit` restent verts.
+
 ## v1.9.2 — 2026-08-25
 
 **ETHONE Home — Restauration de l'identité visuelle et de l'expérience OS**

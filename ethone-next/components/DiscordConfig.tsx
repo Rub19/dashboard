@@ -105,9 +105,9 @@ export default function DiscordConfig() {
 
   const statusClass =
     status === "connected"
-      ? "bg-green-500/10 text-green-400 border border-green-500/20"
+      ? "bg-[var(--success)]/10 text-[var(--success)] border border-[var(--success)]/20"
       : status === "error"
-        ? "bg-rose-500/15 text-rose-300 border border-rose-500/30"
+        ? "bg-[var(--danger)]/15 text-[var(--danger)] border border-[var(--danger)]/30"
         : "bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] border border-[var(--text-primary)]/[0.08]";
 
   function setMode(mode: "lanyard" | "oauth2") {
@@ -370,7 +370,7 @@ export default function DiscordConfig() {
       )}
 
       {!!health?.data && isLanyard && (
-        <pre className="max-h-40 overflow-auto rounded-xl bg-black/30 p-3 font-mono text-[10px] text-[var(--text-primary)]">
+        <pre className="max-h-40 overflow-auto rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/50 p-3 font-mono text-[10px] text-[var(--text-primary)]">
           {JSON.stringify(health.data as Record<string, unknown>, null, 2)}
         </pre>
       )}

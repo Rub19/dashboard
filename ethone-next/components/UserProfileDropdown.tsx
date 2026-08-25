@@ -149,7 +149,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
       label: i18n("security", "Sécurité"),
       description: i18n("securityDesc", "Authentification, 2FA et sessions"),
       badge: i18n("active", "Actif"),
-      badgeClass: "text-emerald-400 bg-emerald-500/10 border-emerald-500/25",
+      badgeClass: "text-[var(--success)] bg-[var(--success)]/10 border-[var(--success)]/25",
       icon: ShieldCheck,
       action: () => router.push("/settings?category=security"),
     },
@@ -278,7 +278,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                   <span className="truncate text-xs font-bold text-[var(--text-primary)] max-w-[150px]">
                     {displayName}
                   </span>
-                  <div className="inline-flex items-center gap-1 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-medium text-emerald-400">
+                  <div className="inline-flex items-center gap-1 rounded-full border border-[var(--success)]/25 bg-[var(--success)]/10 px-1.5 py-0.5 text-[9px] font-medium text-[var(--success)]">
                     <Icon
                       pack="phosphor"
                       name="shield-check"
@@ -502,14 +502,14 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                   className="group flex w-full items-center justify-between rounded-xl border border-transparent p-2 text-xs text-[var(--danger)] transition-all hover:border-[var(--danger)]/20 hover:bg-[var(--danger)]/10 hover:text-[var(--danger)] min-h-[44px]"
                 >
                   <div className="flex items-center gap-2.5">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-400 transition-colors group-hover:bg-rose-500/20 group-hover:text-rose-300">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--danger)]/30 bg-[var(--danger)]/10 text-[var(--danger)] transition-colors group-hover:bg-[var(--danger)]/20 group-hover:text-[var(--danger)]">
                       <LogOut className="h-4 w-4" />
                     </div>
                     <div className="flex flex-col text-left">
                       <span className="font-semibold">
                         {i18n("signOut", "Se déconnecter")}
                       </span>
-                      <span className="text-[10px] text-rose-400/70">
+                      <span className="text-[10px] text-[var(--danger)]/70">
                         {i18n("quitSession", "Fermer la session active")}
                       </span>
                     </div>
@@ -521,8 +521,8 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                   />
                 </button>
               ) : (
-                <div className="flex flex-col gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 transition-all motion-reduce:transition-none">
-                  <div className="flex items-center gap-2 text-rose-400">
+                <div className="flex flex-col gap-2 rounded-xl border border-[var(--danger)]/30 bg-[var(--danger)]/10 p-3 transition-all motion-reduce:transition-none">
+                  <div className="flex items-center gap-2 text-[var(--danger)]">
                     <AlertTriangle className="h-4 w-4 shrink-0" />
                     <span className="text-xs font-semibold">
                       {i18n(
@@ -555,7 +555,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                         e.stopPropagation();
                         handleSignOut();
                       }}
-                      className="flex-1 rounded-lg border border-rose-500/40 bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700 transition-colors shadow-sm min-h-[40px]"
+                      className="flex-1 rounded-lg border border-[var(--danger)]/40 bg-[var(--danger)] px-3 py-2 text-xs font-semibold text-[var(--accent-contrast)] hover:bg-[var(--danger)]/90 transition-colors shadow-sm min-h-[40px]"
                     >
                       {i18n("signOut", "Se déconnecter")}
                     </button>

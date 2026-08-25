@@ -17,6 +17,8 @@ import ConnectionCard from "@/components/ConnectionCard";
 import DiscordConfig from "@/components/DiscordConfig";
 import SpotifyConfig from "@/components/SpotifyConfig";
 import Input from "@/components/ui/Input";
+import { EmptyState } from "@/components/ui";
+import { ErrorState } from "@/components/ui";
 
 
 function clientIdFromStorage(provider: string): string {
@@ -33,6 +35,7 @@ export default function IntegrationsSettings() {
   const [connected, setConnected] = useState<Record<string, boolean>>({});
   const [clientIds, setClientIds] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [health, setHealth] = useState<Record<string, PingResult>>({});
   const [testingAll, setTestingAll] = useState(false);
   const [search, setSearch] = useState("");
@@ -75,6 +78,7 @@ export default function IntegrationsSettings() {
 
   useEffect(() => {
     setLoading(true);
+    setFetchError(null);
     fetchWorker("/api/connections")
       .then((res) => {
         const rows = Array.isArray(res?.data) ? res.data : [];
@@ -84,9 +88,12 @@ export default function IntegrationsSettings() {
         });
         setConnected(map);
       })
-      .catch(() => setConnected({}))
+      .catch((err) => {
+        setConnected({});
+        setFetchError(err instanceof Error ? err.message : i18n("connectionError", "Impossible de récupérer les connexions"));
+      })
       .finally(() => setLoading(false));
-  }, []);
+  }, [i18n]);
 
   const configuredMap = useMemo(() => {
     const map: Record<string, boolean> = {};
@@ -285,9 +292,52 @@ export default function IntegrationsSettings() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((integration) => renderCard(integration))}
-      </div>
+      {fetchError && (
+        <ErrorState
+          title={i18n("error", "Erreur")}
+          description={fetchError}
+          onRetry={() => {
+            setFetchError(null);
+            setConnected({});
+            setLoading(true);
+            fetchWorker("/api/connections")
+              .then((res) => {
+                const rows = Array.isArray(res?.data) ? res.data : [];
+                const map: Record<string, boolean> = {};
+                rows.forEach((row: { provider: string; connected: boolean }) => {
+                  map[row.provider] = row.connected;
+                });
+                setConnected(map);
+              })
+              .catch(() => {})
+              .finally(() => setLoading(false));
+          }}
+        />
+      )}
+
+      {!loading && !credentials.loading && filtered.length === 0 ? (
+        <EmptyState
+          title={i18n("noResults", "Aucun résultat")}
+          description={i18n("noResultsDescription", "Aucune intégration ne correspond à votre recherche.")}
+          icon="search-x"
+          action={
+            <button
+              type="button"
+              onClick={() => {
+                setSearch("");
+                setFilter("all");
+              }}
+              className="rounded-lg bg-[var(--accent-primary)] px-3 py-1.5 text-xs font-medium text-[var(--accent-contrast)] transition hover:bg-[var(--accent-primary)]/90"
+            >
+              {i18n("clearFilters", "Effacer")}
+            </button>
+          }
+        />
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((integration) => renderCard(integration))}
+        </div>
+      )}
 
       <div className="rounded-2xl v8-panel p-5 text-sm text-[var(--text-muted)] backdrop-blur-2xl">
         <div className="flex items-center gap-2">

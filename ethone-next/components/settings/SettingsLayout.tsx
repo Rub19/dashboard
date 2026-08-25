@@ -263,8 +263,8 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
 
       {/* Split view */}
       <div className="flex min-h-0 w-full flex-1 gap-4 overflow-hidden sm:gap-6">
-        <aside className="hidden w-64 shrink-0 overflow-y-auto pr-1 no-scrollbar md:block">
-          <div className="sticky top-0 max-h-[calc(100vh-2rem)]">
+        <aside className="hidden h-full w-64 shrink-0 overflow-y-auto pr-1 no-scrollbar md:block">
+          <div className="sticky top-0 h-full max-h-full">
             <SettingsNavigation
               active={activeCategory}
               onSelect={handleSelectCategory}

@@ -346,8 +346,9 @@ export function useLiveData(pollMs = 60000) {
         );
         if (failures.length) {
           setError(failures[0].reason instanceof Error ? failures[0].reason : new Error(String(failures[0].reason)));
-          for (const failure of failures) {
-            console.error("Live data source failed:", failure.reason);
+          const reasons = [...new Set(failures.map((f) => (f.reason instanceof Error ? f.reason.message : String(f.reason))))];
+          if (reasons.length) {
+            console.warn(`Live data source(s) failed: ${reasons.length} unique`, reasons.slice(0, 3));
           }
         }
         if (np.status === "fulfilled") {

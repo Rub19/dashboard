@@ -13,5 +13,7 @@ export async function healthRoute({ env }) {
     source: "ethone-worker",
     cached: false,
     runtime: Object.freeze({ cache: cacheDiagnostics(), outbound: externalRequestDiagnostics() })
+  }, {
+    headers: { "Cross-Origin-Resource-Policy": "cross-origin" }
   });
 }

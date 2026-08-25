@@ -1253,7 +1253,7 @@ export default function SettingsContent({
   };
 
   return (
-    <div className="w-full space-y-8 pb-12">
+    <div className="w-full space-y-8 pb-24">
       {form.query.trim() && (
         <div
           className="flex items-center justify-between rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-3 py-2 text-xs text-[var(--text-muted)]"

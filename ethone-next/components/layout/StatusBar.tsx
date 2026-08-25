@@ -230,10 +230,10 @@ export default function StatusBar() {
     <footer
       data-v8-status-bar
       data-status-bar
-      className="fixed bottom-0 left-0 z-0 h-[calc(2rem+env(safe-area-inset-bottom))] pb-[env(safe-area-inset-bottom)] w-full select-none border-t border-transparent bg-transparent px-4 text-xs text-[var(--text-primary)]"
+      className="fixed bottom-3 left-3 right-3 z-0 h-auto select-none bg-transparent px-0 text-xs text-[var(--text-primary)] pointer-events-none"
     >
-      <div className="flex h-full w-full items-center justify-between">
-        <div className="flex min-w-0 items-center gap-2">
+      <div className="flex w-full items-end justify-between">
+        <div className="pointer-events-auto flex min-w-0 items-center gap-2 rounded-xl border border-[var(--panel-border)]/60 bg-[var(--panel-bg)]/70 px-2 py-1 backdrop-blur-md">
           <span
             className="hidden select-none rounded-lg border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] px-2 py-0.5 text-[10px] font-semibold tracking-wide text-[var(--text-muted)] sm:inline-flex"
             aria-label={i18n("appName", "ETHONE")}
@@ -257,7 +257,7 @@ export default function StatusBar() {
           <CloudSyncPill status={syncStatus} online={online} errorSources={syncErrorSources} i18n={i18n} />
         </div>
 
-        <div className="flex min-w-0 items-center gap-2">
+        <div className="pointer-events-auto flex min-w-0 items-center gap-2 rounded-xl border border-[var(--panel-border)]/60 bg-[var(--panel-bg)]/70 px-2 py-1 backdrop-blur-md">
           {isOpen ? (
             <button
               type="button"

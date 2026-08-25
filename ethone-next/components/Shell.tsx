@@ -18,6 +18,7 @@ import PageTransition from "@/components/PageTransition";
 import AutomationRuntime from "@/components/AutomationRuntime";
 import Dock from "@/components/Dock";
 import SkipLink from "@/components/SkipLink";
+import StatusBar from "@/components/layout/StatusBar";
 
 import ContextMenuProvider from "@/components/ContextMenuProvider";
 import NativeIntegration from "@/components/NativeIntegration";
@@ -75,6 +76,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                     <AutomationRuntime />
                   </ActivityJournalProvider>
                 </main>
+                <StatusBar />
                 </PrivacyShield>
               </div>
             </AnimatedSidebarProvider>

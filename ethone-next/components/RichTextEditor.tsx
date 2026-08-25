@@ -246,7 +246,7 @@ export default function RichTextEditor({
       const selection = window.getSelection();
       if (selection && !selection.isCollapsed) {
         const text = selection.toString();
-        document.execCommand("insertHTML", false, `<code class="rounded bg-zinc-800/60 px-1 py-0.5 font-mono text-xs text-[--accent-primary]">${escapeHtml(text)}</code>`);
+        document.execCommand("insertHTML", false, `<code class="rounded bg-zinc-800/60 px-1 py-0.5 font-mono text-xs text-[var(--accent-primary)]">${escapeHtml(text)}</code>`);
       }
     } else {
       document.execCommand(cmd, false, value);
@@ -393,7 +393,7 @@ export default function RichTextEditor({
                     }`}
                   >
                     <span>{tool.label}</span>
-                    {format.block === tool.value && <Icon name="check" className="h-3.5 w-3.5 text-[--accent-primary]" />}
+                    {format.block === tool.value && <Icon name="check" className="h-3.5 w-3.5 text-[var(--accent-primary)]" />}
                   </button>
                 ))}
               </motion.div>

@@ -20,14 +20,14 @@ import Slider from "@/components/ui/Slider";
 import { RiotGamingCardContent } from "@/components/RiotGamingCard";
 
 const STATUS = {
-  connected: "text-[--accent-primary]",
+  connected: "text-[var(--accent-primary)]",
   loading: "text-[var(--text-muted)]",
   empty: "text-[var(--text-muted)]",
   error: "text-red-400",
 };
 
 const STATUS_DOT = {
-  connected: "bg-[--accent-primary]",
+  connected: "bg-[var(--accent-primary)]",
   loading: "bg-[var(--text-muted)]",
   empty: "bg-[var(--text-muted)]",
   error: "bg-red-500",
@@ -100,7 +100,7 @@ const CATEGORIES: Record<string, "gaming" | "social" | "productivity"> = {
 
 const GRADIENTS: Record<string, string> = {
   nowplaying: "from-violet-900/30 via-fuchsia-900/10 to-black/20 border-violet-500/20",
-  lanyard: "from-indigo-900/30 via-[--accent-primary] to-black/20 border-indigo-500/20",
+  lanyard: "from-indigo-900/30 via-[var(--accent-primary)] to-black/20 border-indigo-500/20",
   github: "from-zinc-800/40 to-black/20 border-zinc-500/20",
   todoist: "from-rose-900/30 to-black/20 border-rose-500/20",
   reddit: "from-orange-900/30 to-black/20 border-orange-500/20",
@@ -108,15 +108,15 @@ const GRADIENTS: Record<string, string> = {
   weather: "from-sky-900/30 via-amber-900/10 to-black/20 border-sky-500/20",
   lastfm: "from-red-950/30 via-rose-900/10 to-black/20 border-red-600/20",
   twitch: "from-violet-950/30 via-fuchsia-900/10 to-black/20 border-violet-600/20",
-  minecraft: "from-[--accent-primary] via-[--accent-primary] to-black/20 border-[--accent-primary]",
+  minecraft: "from-[var(--accent-primary)] via-[var(--accent-primary)] to-black/20 border-[var(--accent-primary)]",
   steam: "from-sky-950/30 via-blue-900/10 to-black/20 border-sky-600/20",
   rss: "from-amber-950/30 via-orange-900/10 to-black/20 border-amber-600/20",
   bluesky: "from-sky-950/30 via-[--info] to-black/20 border-sky-600/20",
-  bills: "from-[--accent-primary] via-yellow-900/10 to-black/20 border-[--accent-primary]",
+  bills: "from-[var(--accent-primary)] via-yellow-900/10 to-black/20 border-[var(--accent-primary)]",
   valorant: "from-rose-950/30 via-red-900/10 to-black/20 border-rose-600/20",
   lol: "from-yellow-950/30 via-amber-900/10 to-black/20 border-yellow-600/20",
   "google-calendar": "from-red-900/30 via-rose-900/10 to-black/20 border-red-500/20",
-  "google-drive": "from-[--accent-primary] via-[--accent-primary] to-black/20 border-[--accent-primary]",
+  "google-drive": "from-[var(--accent-primary)] via-[var(--accent-primary)] to-black/20 border-[var(--accent-primary)]",
   notion: "from-zinc-800/40 to-black/20 border-zinc-500/20",
   tracker: "from-orange-950/30 via-amber-900/10 to-black/20 border-orange-600/20",
   apex: "from-orange-950/30 via-red-900/10 to-black/20 border-orange-600/20",
@@ -566,7 +566,7 @@ export default function LiveWidgets({
             alt=""
             size={48}
             className="h-12 w-12 shrink-0 overflow-hidden rounded-[var(--panel-radius)] object-cover shadow-md"
-            iconClassName="h-5 w-5 text-[--accent-primary]"
+            iconClassName="h-5 w-5 text-[var(--accent-primary)]"
             fallback="music"
           />
         </div>
@@ -662,7 +662,7 @@ export default function LiveWidgets({
 
     const status = lanyard.discord_status || "offline";
     const statusColor: Record<string, string> = {
-      online: "bg-[--accent-primary]",
+      online: "bg-[var(--accent-primary)]",
       idle: "bg-[var(--warning)]",
       dnd: "bg-[var(--danger)]",
       offline: "bg-[var(--text-muted)]",
@@ -722,7 +722,7 @@ export default function LiveWidgets({
 
         {lanyard.spotify?.playing && lanyard.spotify.title && (
           <div className="rounded-[var(--panel-radius)] bg-[var(--panel-bg)]/70 p-2">
-            <p className="mb-1 text-[10px] font-medium text-[--accent-primary]">Spotify</p>
+            <p className="mb-1 text-[10px] font-medium text-[var(--accent-primary)]">Spotify</p>
             <p className="truncate text-xs font-medium text-[var(--text-primary)]">{lanyard.spotify.title}</p>
             <p className="truncate text-[10px] text-[var(--text-muted)]">
               {lanyard.spotify.artist}
@@ -771,7 +771,7 @@ export default function LiveWidgets({
           </div>
           <div className="flex flex-wrap items-center justify-end gap-1.5">
             {model && (
-              <span className="inline-flex items-center gap-1 rounded-lg bg-[--accent-primary] px-2 py-1 text-[10px] text-[--accent-primary]">
+              <span className="inline-flex items-center gap-1 rounded-lg bg-[var(--accent-primary)] px-2 py-1 text-[10px] text-[var(--accent-primary)]">
                 <Icon name="box" className="h-3 w-3" />
                 {model}
               </span>
@@ -1034,15 +1034,15 @@ export default function LiveWidgets({
         )}
 
         {spotify?.playing && spotify.title && (
-          <div className="mt-auto rounded-[var(--panel-radius)] bg-[--accent-primary] p-2.5">
-            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-[--accent-primary]">Spotify</p>
+          <div className="mt-auto rounded-[var(--panel-radius)] bg-[var(--accent-primary)] p-2.5">
+            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--accent-primary)]">Spotify</p>
             <div className="flex items-center gap-2">
               <SafeImage
                 candidates={[spotify.artworkUrl, spotify.artwork].filter((c): c is string => typeof c === "string" && c.length > 0)}
                 alt=""
                 size={40}
                 className="h-10 w-10 rounded-[var(--panel-radius)] object-cover"
-                iconClassName="h-6 w-6 text-[--accent-primary]"
+                iconClassName="h-6 w-6 text-[var(--accent-primary)]"
               />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-[var(--text-primary)]">{spotify.title}</p>
@@ -1081,7 +1081,7 @@ export default function LiveWidgets({
 
         <div className="mb-3 flex flex-wrap gap-2">
           {model && (
-            <span className="inline-flex items-center gap-1 rounded-lg bg-[--accent-primary] px-2 py-1 text-[10px] text-[--accent-primary]">
+            <span className="inline-flex items-center gap-1 rounded-lg bg-[var(--accent-primary)] px-2 py-1 text-[10px] text-[var(--accent-primary)]">
               <Icon name="box" className="h-3 w-3" />
               {model}
             </span>
@@ -1199,13 +1199,13 @@ export default function LiveWidgets({
                     alt=""
                     size={80}
                     className="h-20 w-20 shrink-0 overflow-hidden rounded-[var(--panel-radius)] object-cover shadow-lg"
-                    iconClassName="h-8 w-8 text-[--accent-primary]"
+                    iconClassName="h-8 w-8 text-[var(--accent-primary)]"
                     fallback="music"
                     loading="eager"
                     priority
                   />
                   <div className="flex min-w-0 flex-col gap-1 pb-1">
-                    <span className="text-[10px] font-semibold uppercase tracking-wider text-[--accent-primary]">LIVE</span>
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--accent-primary)]">LIVE</span>
                     <Equalizer bars={6} className="h-4" />
                   </div>
                 </div>

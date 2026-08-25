@@ -30,7 +30,7 @@ import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { useTopbarDropdown } from "@/lib/hooks/useTopbarDropdown";
 
 const WORKSPACES = [
-  { id: "personal", icon: User, color: "text-[--accent-primary]" },
+  { id: "personal", icon: User, color: "text-[var(--accent-primary)]" },
   { id: "focus", icon: Target, color: "text-sky-400" },
   { id: "studio", icon: Sparkles, color: "text-rose-400" },
   { id: "gaming", icon: Gamepad2, color: "text-amber-400" },
@@ -261,8 +261,8 @@ export default function ProfileDropdown() {
                   <p className="truncate text-[11px] text-[var(--text-muted)] max-w-[160px]">{email}</p>
                 </div>
               </div>
-              <span className="flex shrink-0 items-center gap-1 rounded-lg border border-[--accent-primary] bg-[--accent-primary] px-2 py-0.5 text-[10px] font-semibold text-[--accent-primary]">
-                <span className="h-1.5 w-1.5 rounded-full bg-[--accent-primary] animate-pulse" />
+              <span className="flex shrink-0 items-center gap-1 rounded-lg border border-[var(--accent-primary)] bg-[var(--accent-primary)] px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] animate-pulse" />
                 {i18n("active") || "Actif"}
               </span>
             </div>

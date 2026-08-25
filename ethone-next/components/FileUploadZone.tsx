@@ -86,7 +86,7 @@ export default function FileUploadZone({
       transition={{ duration: 0.25, ease: "easeOut" }}
       className={`group relative flex min-h-[12rem] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 p-8 text-center transition-all duration-300 select-none ${
         dragging
-          ? "border-solid border-[--accent-primary] bg-[--accent-primary] shadow-[0_0_30px_var(--glow-color)]"
+          ? "border-solid border-[var(--accent-primary)] bg-[var(--accent-primary)] shadow-[0_0_30px_var(--glow-color)]"
           : "border-dashed border-zinc-700/60 bg-zinc-950/70 hover:border-zinc-500/60 hover:bg-zinc-900/50"
       } ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
     >
@@ -103,13 +103,13 @@ export default function FileUploadZone({
             <motion.div
               animate={{ y: [0, -4, 0] }}
               transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-              className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[--accent-primary]/10 text-[--accent-primary] ring-1 ring-[--accent-primary]"
+              className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] ring-1 ring-[var(--accent-primary)]"
             >
               <Upload className="h-7 w-7" />
             </motion.div>
             <h3 className="text-base font-bold text-[var(--text-primary)]">Relâchez pour téléverser</h3>
             {dragMeta && (
-              <div className="flex items-center gap-2 rounded-full border border-[--accent-primary] bg-[--accent-primary]/10 px-3 py-1 text-[--accent-primary]">
+              <div className="flex items-center gap-2 rounded-full border border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 px-3 py-1 text-[var(--accent-primary)]">
                 <File className="h-3.5 w-3.5" />
                 <span className="text-[11px] font-mono font-medium">
                   {dragMeta.name}
@@ -127,12 +127,12 @@ export default function FileUploadZone({
             transition={{ duration: 0.2 }}
             className="flex flex-col items-center gap-3"
           >
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] text-[var(--text-muted)] ring-1 ring-white/5 transition-colors group-hover:text-[--accent-primary]">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] text-[var(--text-muted)] ring-1 ring-white/5 transition-colors group-hover:text-[var(--accent-primary)]">
               <UploadCloud className="h-7 w-7" />
             </div>
             <h3 className="text-sm font-medium text-[var(--text-primary)]">
               Glissez vos fichiers ici ou{" "}
-              <span className="text-[--accent-primary] underline underline-offset-2">parcourez</span>
+              <span className="text-[var(--accent-primary)] underline underline-offset-2">parcourez</span>
             </h3>
             <p className="max-w-[18rem] text-[11px] text-[var(--text-muted)]">
               PNG, JPG, PDF, MP4 — jusqu&apos;à 50 Mo

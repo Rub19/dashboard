@@ -30,7 +30,7 @@ const LiveStats = memo(function LiveStats({ records = [], updatedAt, loading, cl
 
   const statItems = useMemo(
     () => [
-      { label: i18n("connected"), value: byStatus.connected, color: "text-[--accent-primary]" },
+      { label: i18n("connected"), value: byStatus.connected, color: "text-[var(--accent-primary)]" },
       { label: i18n("pending"), value: byStatus.loading, color: "text-[--info]" },
       { label: i18n("events"), value: records.length, color: "text-[var(--text-primary)]" },
       { label: i18n("error"), value: byStatus.error, color: "text-rose-400" },
@@ -44,7 +44,7 @@ const LiveStats = memo(function LiveStats({ records = [], updatedAt, loading, cl
     >
       <div className="flex items-center justify-between gap-3 border-b border-[var(--text-primary)]/[0.04] pb-2">
         <div className="flex items-center gap-2">
-          <Activity className="h-4 w-4 text-[--accent-primary]" />
+          <Activity className="h-4 w-4 text-[var(--accent-primary)]" />
           <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">{i18n("liveStats")}</span>
         </div>
         <LiveFreshness updatedAt={updatedAt} />

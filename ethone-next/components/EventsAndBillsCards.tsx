@@ -42,7 +42,7 @@ export function EventsCard({ date, items, onAdd }: EventsCardProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-[--accent-primary]" />
+          <Calendar className="h-4 w-4 text-[var(--accent-primary)]" />
           <span className="text-sm font-bold text-[var(--text-primary)]">Événements</span>
         </div>
 
@@ -229,7 +229,7 @@ export function InvoicesCard({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Receipt className="h-4 w-4 text-[--accent-primary]" />
+          <Receipt className="h-4 w-4 text-[var(--accent-primary)]" />
           <span className="text-sm font-bold text-[var(--text-primary)]">Factures</span>
         </div>
         <div className="text-right">

@@ -64,7 +64,7 @@ const DockItem = forwardRef<HTMLButtonElement | HTMLAnchorElement, DockItemProps
         {active && (
           <motion.span
             layoutId="active-dot"
-            className="absolute -bottom-1.5 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[--accent-primary] shadow-[0_0_6px_var(--glow-color)]"
+            className="absolute -bottom-1.5 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[var(--accent-primary)] shadow-[0_0_6px_var(--glow-color)]"
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
           />
         )}

@@ -72,12 +72,12 @@ const TYPES = [
 const CATEGORY_META: Record<ActivityCategory, { color: string; bg: string; border: string }> = {
   productivity: { color: "text-[--info]", bg: "bg-[--info]", border: "border-[--info]" },
   work: { color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/20" },
-  system: { color: "text-[--accent-primary]", bg: "bg-[--accent-primary]", border: "border-[--accent-primary]" },
+  system: { color: "text-[var(--accent-primary)]", bg: "bg-[var(--accent-primary)]", border: "border-[var(--accent-primary)]" },
   brain: { color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
 };
 
 const TONE_META: Record<string, { labelKey: string; color: string; bg: string }> = {
-  success: { labelKey: "statusSuccess", color: "text-[--accent-primary]", bg: "bg-[--accent-primary] border border-[--accent-primary]" },
+  success: { labelKey: "statusSuccess", color: "text-[var(--accent-primary)]", bg: "bg-[var(--accent-primary)] border border-[var(--accent-primary)]" },
   error: { labelKey: "statusError", color: "text-red-300", bg: "bg-red-500/15 border border-red-500/25" },
   failure: { labelKey: "statusError", color: "text-red-300", bg: "bg-red-500/15 border border-red-500/25" },
   warning: { labelKey: "statusWarning", color: "text-amber-300", bg: "bg-amber-500/15 border border-amber-500/25" },
@@ -111,7 +111,7 @@ type StatCardProps = {
 
 function StatCard({ label, value, sub, icon, tone = "emerald" }: StatCardProps) {
   const toneRing = {
-    emerald: "hover:border-[--accent-primary]",
+    emerald: "hover:border-[var(--accent-primary)]",
     amber: "hover:border-amber-500/30",
     cyan: "hover:border-[--info]",
     purple: "hover:border-purple-500/30",
@@ -379,7 +379,7 @@ export default function ActivityHub() {
               label={i18n("today")}
               value={stats.todayCount}
               sub={diffText}
-              icon={<Activity className="h-5 w-5 text-[--accent-primary]" />}
+              icon={<Activity className="h-5 w-5 text-[var(--accent-primary)]" />}
               tone="emerald"
             />
             <StatCard

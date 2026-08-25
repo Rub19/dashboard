@@ -86,12 +86,11 @@ export default function OfflineIndicator() {
       aria-live="polite"
     >
       <motion.div
-        layout
         initial={{ opacity: 0, y: -16, scale: 0.94 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -12, scale: 0.96 }}
         transition={{ type: "spring", stiffness: 400, damping: 28 }}
-        className={`pointer-events-auto flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-medium shadow-[0_8px_30px_rgba(0,0,0,0.5)] backdrop-blur-xl transition-colors duration-300 ${config.border} ${config.bg} ${config.text}`}
+        className={`pointer-events-auto flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-medium shadow-2xl backdrop-blur-xl transition-colors duration-300 ${config.border} ${config.bg} ${config.text}`}
         role={config.role}
       >
         {config.icon}

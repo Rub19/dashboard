@@ -64,7 +64,7 @@ function BentoContextMenuItem({
           className={`mr-2.5 h-4 w-4 shrink-0 transition-colors ${
             item.danger
               ? "text-[var(--text-muted)] group-hover:text-rose-400"
-              : "text-[var(--text-muted)] group-hover:text-[--accent-primary]"
+              : "text-[var(--text-muted)] group-hover:text-[var(--accent-primary)]"
           }`}
         />
         <span

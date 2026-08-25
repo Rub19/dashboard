@@ -84,7 +84,7 @@ const WORKSPACES: Workspace[] = [
 ];
 
 const STATUS_DOT: Record<string, string> = {
-  connected: "bg-[--accent-primary]",
+  connected: "bg-[var(--accent-primary)]",
   loading: "bg-zinc-500",
   empty: "bg-zinc-500",
   error: "bg-red-500",

@@ -47,10 +47,10 @@ function dateKey(iso = ""): string {
 
 export function heatLevelClass(count: number): string {
   if (count === 0) return "bg-[var(--text-primary)]/[0.03] border border-[var(--text-primary)]/[0.05] rounded-sm";
-  if (count <= 2) return "bg-[--accent-primary] border border-[--accent-primary] rounded-sm";
-  if (count <= 5) return "bg-[--accent-primary] border border-[--accent-primary] rounded-sm";
-  if (count <= 9) return "bg-[--accent-primary] rounded-sm shadow-[0_0_6px_var(--glow-color)]";
-  return "bg-[--accent-primary] rounded-sm shadow-[0_0_10px_var(--glow-color)]";
+  if (count <= 2) return "bg-[var(--accent-primary)] border border-[var(--accent-primary)] rounded-sm";
+  if (count <= 5) return "bg-[var(--accent-primary)] border border-[var(--accent-primary)] rounded-sm";
+  if (count <= 9) return "bg-[var(--accent-primary)] rounded-sm shadow-[0_0_6px_var(--glow-color)]";
+  return "bg-[var(--accent-primary)] rounded-sm shadow-[0_0_10px_var(--glow-color)]";
 }
 
 function useLocale(): string {
@@ -175,7 +175,7 @@ export default function ActivityHeatmap({ entries, weeks = 53 }: ActivityHeatmap
                     onMouseMove={moveTooltip}
                     onMouseLeave={hideTooltip}
                     className={`h-3 w-3 cursor-pointer ${heatLevelClass(cell.count)} ${
-                      cell.isToday ? "ring-2 ring-[--accent-primary] ring-offset-1 ring-offset-zinc-950" : ""
+                      cell.isToday ? "ring-2 ring-[var(--accent-primary)] ring-offset-1 ring-offset-[var(--bg-main)]" : ""
                     }`}
                     aria-label={`${cell.count} ${i18n("journalContributions") || "contributions"} ${i18n("journalOnDate") || "le"} ${cell.date.toLocaleDateString()}`}
                   />
@@ -207,7 +207,7 @@ export default function ActivityHeatmap({ entries, weeks = 53 }: ActivityHeatmap
             className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-full rounded-lg border border-[var(--text-primary)]/[0.08] bg-zinc-950/90 px-2.5 py-1.5 text-[11px] text-[var(--text-primary)] shadow-xl backdrop-blur-xl"
             style={{ left: tooltip.x, top: tooltip.y }}
           >
-            <span className="font-semibold text-[--accent-primary]">{tooltip.count}</span>{" "}
+            <span className="font-semibold text-[var(--accent-primary)]">{tooltip.count}</span>{" "}
             {i18n("journalContributions") || "contributions"} {i18n("journalOnDate") || "le"} {tooltip.date}
           </motion.div>
         )}

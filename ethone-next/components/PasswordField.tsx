@@ -9,7 +9,7 @@ import { evaluatePasswordField, suggestStrongPassword, type PasswordFieldResult 
 
 function StrengthMeter({ result, show }: { result: PasswordFieldResult; show: boolean }) {
   if (!show) return null;
-  const colors = ["bg-red-500", "bg-orange-500", "bg-amber-500", "bg-[--info]", "bg-[--accent-primary]"];
+  const colors = ["bg-red-500", "bg-orange-500", "bg-amber-500", "bg-[var(--info)]", "bg-[var(--accent-primary)]"];
 
   return (
     <div className="space-y-2">
@@ -50,7 +50,7 @@ function RuleChecklist({ result, show }: { result: PasswordFieldResult; show: bo
       {result.rules.map((rule) => (
         <li
           key={rule.id}
-          className={`flex items-center gap-1.5 transition-colors ${rule.passed ? "text-[--accent-primary]" : "text-[var(--text-muted)]"}`}
+          className={`flex items-center gap-1.5 transition-colors ${rule.passed ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]"}`}
         >
           <motion.span
             initial={false}
@@ -63,7 +63,7 @@ function RuleChecklist({ result, show }: { result: PasswordFieldResult; show: bo
               <span className="h-1.5 w-1.5 rounded-full bg-[var(--text-muted)]" />
             )}
           </motion.span>
-          <span className={rule.passed ? "text-[--accent-primary]" : ""}>{rule.label}</span>
+          <span className={rule.passed ? "text-[var(--accent-primary)]" : ""}>{rule.label}</span>
         </li>
       ))}
     </ul>
@@ -179,7 +179,7 @@ export default function PasswordField({
                   initial={{ opacity: 0, x: 8, scale: 0.8 }}
                   animate={{ opacity: 1, x: 0, scale: 1 }}
                   exit={{ opacity: 0, x: 8, scale: 0.8 }}
-                  className="rounded-lg bg-[--accent-primary] px-2 py-0.5 text-[10px] text-[--accent-primary]"
+                  className="rounded-lg bg-[var(--accent-primary)] px-2 py-0.5 text-[10px] text-[var(--accent-primary)]"
                 >
                   ✓ Collé
                 </motion.span>
@@ -205,7 +205,6 @@ export default function PasswordField({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              layout
               transition={{ duration: 0.15, ease: "easeOut" as const }}
               className="space-y-2 overflow-hidden pt-2"
             >
@@ -224,7 +223,7 @@ export default function PasswordField({
                     {["Généré", "Unique", "Sécurisé"].map((badge) => (
                       <span
                         key={badge}
-                        className="rounded-lg border border-[--accent-primary] bg-[--accent-primary] px-2 py-0.5 text-[10px] font-medium text-[--accent-primary]"
+                        className="rounded-lg border border-[var(--accent-primary)] bg-[var(--accent-primary)] px-2 py-0.5 text-[10px] font-medium text-[var(--accent-primary)]"
                       >
                         {badge}
                       </span>

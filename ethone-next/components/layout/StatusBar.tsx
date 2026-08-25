@@ -85,7 +85,7 @@ function useSessionRole() {
   if (role === "admin" || role === "owner") {
     return { id: "admin" as const, label: "Admin", color: "text-amber-400" };
   }
-  return { id: "normal" as const, label: "Normal", color: "text-[--accent-primary]" };
+  return { id: "normal" as const, label: "Normal", color: "text-[var(--accent-primary)]" };
 }
 
 function CloudSyncPill({
@@ -135,7 +135,7 @@ function CloudSyncPill({
     default:
       return (
         <StatusPill
-          icon={<CheckCircle2 className="h-3.5 w-3.5 text-[--accent-primary]" />}
+          icon={<CheckCircle2 className="h-3.5 w-3.5 text-[var(--accent-primary)]" />}
           value={online ? "Enregistré" : "Prêt"}
           tone={online ? "success" : "error"}
         />
@@ -156,7 +156,7 @@ type StatusPillProps = {
 function StatusPill({ icon, label, value, title, children, onClick, tone = "default" }: StatusPillProps) {
   const toneClass = {
     default: "hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] text-[var(--text-primary)]",
-    success: "hover:bg-[--accent-primary] hover:text-[--accent-primary] text-[--accent-primary]",
+    success: "hover:bg-[var(--accent-primary)] hover:text-[var(--accent-primary)] text-[var(--accent-primary)]",
     warning: "hover:bg-amber-500/[0.1] hover:text-amber-300 text-amber-400",
     error: "hover:bg-red-500/[0.1] hover:text-red-300 text-red-400",
     info: "hover:bg-sky-500/[0.1] hover:text-sky-300 text-sky-400",
@@ -262,9 +262,9 @@ export default function StatusBar() {
             <button
               type="button"
               onClick={() => (isMinimized ? openLive() : closeLive())}
-              className="flex items-center gap-1.5 rounded-lg border border-[--accent-primary]/30 bg-[--accent-primary]/10 px-2.5 py-1 text-xs font-medium text-[--accent-primary] transition-all hover:bg-[--accent-primary]/20"
+              className="flex items-center gap-1.5 rounded-lg border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-2.5 py-1 text-xs font-medium text-[var(--accent-primary)] transition-all hover:bg-[var(--accent-primary)]/20"
             >
-              <Radio className="h-3.5 w-3.5 animate-pulse text-[--accent-primary]" />
+              <Radio className="h-3.5 w-3.5 animate-pulse text-[var(--accent-primary)]" />
               <span>{isMinimized ? i18n("liveMinimized") || "Live réduit" : i18n("liveActive") || "Live actif"}</span>
             </button>
           ) : (
@@ -326,7 +326,7 @@ export default function StatusBar() {
           </div>
 
           <StatusPill
-            icon={systemOk ? <Circle className="h-3.5 w-3.5 fill-[--accent-primary] text-[--accent-primary]" /> : <AlertCircle className="h-3.5 w-3.5 text-red-400" />}
+            icon={systemOk ? <Circle className="h-3.5 w-3.5 fill-[var(--accent-primary)] text-[var(--accent-primary)]" /> : <AlertCircle className="h-3.5 w-3.5 text-red-400" />}
             value={systemOk ? "Opérationnel" : `${alertCount} alerte${alertCount > 1 ? "s" : ""}`}
             title={alertTitle}
             tone={systemOk ? "success" : "error"}

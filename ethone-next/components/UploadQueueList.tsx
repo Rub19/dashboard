@@ -81,7 +81,7 @@ function QueueItem({
               <Icon name={mimeIcon(task.file.type, false)} className="h-6 w-6" />
             </div>
           )}
-          <span className="absolute bottom-0 left-0 rounded-tr-md bg-[--accent-primary] px-1.5 py-0.5 text-[9px] font-bold text-[var(--text-primary)]">
+          <span className="absolute bottom-0 left-0 rounded-tr-md bg-[var(--accent-primary)] px-1.5 py-0.5 text-[9px] font-bold text-[var(--text-primary)]">
             {fileExtension(task.file)}
           </span>
         </div>
@@ -134,7 +134,7 @@ function QueueItem({
           {isUploading && (
             <div className="mt-3 space-y-1.5">
               <div className="flex items-end justify-between">
-                <span className="text-lg font-mono font-bold text-[--accent-primary]">{progress}%</span>
+                <span className="text-lg font-mono font-bold text-[var(--accent-primary)]">{progress}%</span>
                 <span className="text-[10px] font-mono text-[var(--text-muted)]">
                   {formatTimeLeft(task.secondsLeft)}s restantes • {formatSpeed(task.speed)}
                 </span>
@@ -144,7 +144,7 @@ function QueueItem({
                   initial={false}
                   animate={{ width: `${progress}%` }}
                   transition={{ duration: 0.2, ease: "easeOut" }}
-                  className="h-full rounded-full bg-[--accent-primary]"
+                  className="h-full rounded-full bg-[var(--accent-primary)]"
                 />
               </div>
               <div className="flex items-center justify-between text-[10px] text-[var(--text-muted)]">
@@ -156,7 +156,7 @@ function QueueItem({
 
           {task.status === "success" && (
             <div className="mt-3 flex items-center gap-1.5">
-              <span className="flex items-center gap-1 rounded-lg border border-[--accent-primary] bg-[--accent-primary] px-2 py-0.5 text-[10px] font-semibold text-[--accent-primary]">
+              <span className="flex items-center gap-1 rounded-lg border border-[var(--accent-primary)] bg-[var(--accent-primary)] px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
                 <CheckCircle2 className="h-3.5 w-3.5" />
                 {i18n("uploadedInstant") || "Téléversé à l’instant"}
               </span>
@@ -196,11 +196,11 @@ export default function UploadQueueList({
     <div className="space-y-3">
       <div className="flex items-center justify-between rounded-2xl v8-panel px-4 py-3 backdrop-blur-2xl">
         <div className="flex items-center gap-2 text-sm font-medium text-[var(--text-primary)]">
-          <span className="text-[--accent-primary]">File d&apos;attente</span>
+          <span className="text-[var(--accent-primary)]">File d&apos;attente</span>
           <span className="text-[var(--text-muted)]">— {completed} / {tasks.length} terminé{tasks.length > 1 ? "s" : ""}</span>
         </div>
         {tasks.some((t) => t.status === "uploading") && (
-          <span className="text-xs text-[--accent-primary]">
+          <span className="text-xs text-[var(--accent-primary)]">
             {tasks.filter((t) => t.status === "uploading").length} en cours
           </span>
         )}
@@ -211,7 +211,6 @@ export default function UploadQueueList({
           {tasks.map((task) => (
             <motion.div
               key={task.id}
-              layout
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96 }}

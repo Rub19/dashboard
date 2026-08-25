@@ -59,7 +59,7 @@ export default function BrainContextPanel() {
         <Card3D>
           <p className="text-sm text-[var(--text-muted)]">{i18n("nowPlaying")}</p>
           <div className="mt-2 flex items-center gap-3">
-            <Icon name="disc" className="h-5 w-5 animate-spin-slow text-[--accent-primary]" />
+            <Icon name="disc" className="h-5 w-5 animate-spin-slow text-[var(--accent-primary)]" />
             <div>
               <p className="font-medium">{nowPlaying.title}</p>
               <p className="text-xs text-[var(--text-muted)]">{nowPlaying.artist}</p>

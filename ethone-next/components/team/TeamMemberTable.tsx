@@ -13,7 +13,7 @@ const FILTERS = ["all", "admins", "members", "pending"] as const;
 const ROLE_META: Record<TeamRole, { label: string; color: string; border: string; bg: string }> = {
   owner: { label: "Propriétaire", color: "text-violet-400", border: "border-violet-500/30", bg: "bg-violet-500/10" },
   admin: { label: "Admin", color: "text-purple-400", border: "border-purple-500/30", bg: "bg-purple-500/10" },
-  senior: { label: "Développeur", color: "text-[--info]", border: "border-[--info]", bg: "bg-[--info]" },
+  senior: { label: "Développeur", color: "text-[var(--info)]", border: "border-[var(--info)]", bg: "bg-[var(--info)]" },
   junior: { label: "Éditeur", color: "text-sky-400", border: "border-sky-500/30", bg: "bg-sky-500/10" },
   assistant: { label: "Éditeur", color: "text-sky-400", border: "border-sky-500/30", bg: "bg-sky-500/10" },
   viewer: { label: "Lecteur", color: "text-[var(--text-muted)]", border: "border-zinc-500/30", bg: "bg-zinc-500/10" },
@@ -52,8 +52,8 @@ function StatusBadge({ status, invitedAt }: { status: TeamStatus; invitedAt?: st
   const i18n = useI18n();
   if (status === "active") {
     return (
-      <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-[--accent-primary]">
-        <span className="h-2 w-2 rounded-full bg-[--accent-primary]" />
+      <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-[var(--accent-primary)]">
+        <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)]" />
         {i18n("online") || "En ligne"}
       </span>
     );
@@ -142,7 +142,7 @@ export default function TeamMemberTable({ members, loading, onUpdateRole, onRemo
               {filter === id && (
                 <motion.div
                   layoutId="teamFilterPill"
-                  className="absolute inset-0 rounded-lg bg-[--accent-primary] border border-[--accent-primary]"
+                  className="absolute inset-0 rounded-lg bg-[var(--accent-primary)] border border-[var(--accent-primary)]"
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}

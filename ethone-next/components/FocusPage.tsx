@@ -216,7 +216,7 @@ export default function FocusPage() {
 
       {zenMode && (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90 backdrop-blur-2xl">
-          <div className="absolute inset-0 bg-gradient-radial from-[--accent-primary] via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-radial from-[var(--accent-primary)] via-transparent to-transparent" />
           <FocusTimerRing
             progress={progress}
             remaining={format(state.remaining)}

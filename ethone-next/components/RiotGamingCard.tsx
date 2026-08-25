@@ -144,8 +144,8 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
     if (hasProfile) {
       return {
         text: i18n("connected", "Connecté"),
-        dot: "bg-[--accent-primary]",
-        badge: "border-[--accent-primary] bg-[--accent-primary]/10 text-[--accent-primary]",
+        dot: "bg-[var(--accent-primary)]",
+        badge: "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]",
       };
     }
     return {
@@ -261,7 +261,7 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
                 className={cn(
                   "mt-0.5 inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold",
                   (meta?.result as string).toLowerCase() === "victory"
-                    ? "bg-[--accent-primary]/10 text-[--accent-primary]"
+                    ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
                     : "bg-[var(--danger)]/10 text-[var(--danger)]"
                 )}
               >
@@ -317,7 +317,7 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
                     key={i}
                     className={cn(
                       "h-1.5 rounded-full",
-                      r?.toLowerCase() === "victory" ? "w-3 bg-[--accent-primary]" : "w-1.5 bg-rose-500"
+                      r?.toLowerCase() === "victory" ? "w-3 bg-[var(--accent-primary)]" : "w-1.5 bg-rose-500"
                     )}
                     title={asStr(getMeta(m)?.agentName)}
                   />

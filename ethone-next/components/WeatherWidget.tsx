@@ -228,7 +228,7 @@ const WeatherBadge = memo(function WeatherBadge({
   const toneClass = {
     zinc: "text-[var(--text-primary)]",
     cyan: "text-[--info]",
-    emerald: "text-[--accent-primary]",
+    emerald: "text-[var(--accent-primary)]",
     amber: "text-amber-400",
     rose: "text-rose-400",
     violet: "text-violet-400",
@@ -442,7 +442,7 @@ const WeatherWidget = memo(function WeatherWidget({ data, loading, onRefresh, co
             )}
             {pressure !== undefined && (
               <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
-                <Icon name="gauge" className="h-3.5 w-3.5 text-[--accent-primary]" />
+                <Icon name="gauge" className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                 <span>
                   {Math.round(pressure)} {i18n("weatherPressureUnit") || "hPa"}
                 </span>

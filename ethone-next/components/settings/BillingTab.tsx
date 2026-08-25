@@ -8,7 +8,7 @@ import { Icon } from "@/lib/icons";
 type Accent = "emerald" | "amber" | "sky" | "violet" | "rose";
 
 const accentMap: Record<Accent, string> = {
-  emerald: "text-[--accent-primary] bg-[--accent-primary] border-[--accent-primary]",
+  emerald: "text-[var(--accent-primary)] bg-[var(--accent-primary)] border-[var(--accent-primary)]",
   amber: "text-amber-400 bg-amber-500/10 border-amber-500/20",
   sky: "text-sky-400 bg-sky-500/10 border-sky-500/20",
   violet: "text-violet-400 bg-violet-500/10 border-violet-500/20",
@@ -115,7 +115,7 @@ export default function BillingTab() {
           </div>
           <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--text-primary)]/[0.05]">
             <div
-              className="h-full rounded-full bg-[--accent-primary] transition-all"
+              className="h-full rounded-full bg-[var(--accent-primary)] transition-all"
               style={{ width: `${percent}%` }}
             />
           </div>

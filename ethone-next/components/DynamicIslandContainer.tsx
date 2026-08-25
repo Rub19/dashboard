@@ -133,7 +133,7 @@ function IslandBubble({
     active
       ? "bg-[var(--text-primary)]/[0.12] text-[var(--text-primary)] ring-1 ring-[var(--text-primary)]/20 shadow-[0_0_12px_rgba(255,255,255,0.08)]"
       : "bg-[var(--text-primary)]/[0.05] text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.1] hover:text-[var(--text-primary)]",
-    view === "spotify" && !active && "text-[--accent-primary] hover:text-[--accent-primary]",
+    view === "spotify" && !active && "text-[var(--accent-primary)] hover:text-[var(--accent-primary)]",
     view === "pomodoro" && !active && "text-[var(--accent)]",
     view === "brain" && !active && "text-[var(--info)] hover:text-[var(--info)]",
     view === "sync" && !active && "text-[var(--info)] hover:text-[var(--info)]",
@@ -179,7 +179,7 @@ function IslandExpandedHeader({
   const i18n = useI18n();
   const icon =
     selected === "spotify" ? (
-      <Icon name="music" pack="phosphor" className="h-3.5 w-3.5 text-[--accent-primary]" />
+      <Icon name="music" pack="phosphor" className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
     ) : selected === "pomodoro" ? (
       <Icon name="timer" pack="phosphor" className="h-3.5 w-3.5 text-[var(--accent)]" />
     ) : selected === "brain" ? (
@@ -563,7 +563,7 @@ export default function DynamicIslandContainer() {
                   onSelect={selectView}
                 />
                 <div className="flex items-center justify-between gap-2">
-                  <span className="rounded-lg border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 px-2 py-1 text-[10px] font-medium text-[--accent-primary]">
+                  <span className="rounded-lg border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 px-2 py-1 text-[10px] font-medium text-[var(--accent-primary)]">
                     {nowPlaying?.source || "Spotify"}
                   </span>
                   <span className="flex items-center gap-1 rounded-lg border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.04] px-2 py-1 font-mono text-[10px] tabular-nums text-[var(--text-muted)]">
@@ -578,7 +578,7 @@ export default function DynamicIslandContainer() {
                     alt={nowPlaying?.title || "Spotify"}
                     size={56}
                     className="h-14 w-14 shrink-0 rounded-xl object-cover shadow-lg ring-1 ring-[var(--text-primary)]/10"
-                    iconClassName="h-6 w-6 text-[--accent-primary]"
+                    iconClassName="h-6 w-6 text-[var(--accent-primary)]"
                     loading="eager"
                     priority
                     timeoutMs={3000}

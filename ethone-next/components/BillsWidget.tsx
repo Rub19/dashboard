@@ -59,7 +59,7 @@ const BillsWidget = memo(function BillsWidget({ className = "", scrollable = tru
       {standalone && (
         <div className="mb-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Icon name="bills" className="h-4 w-4 text-[--accent-primary]" />
+            <Icon name="bills" className="h-4 w-4 text-[var(--accent-primary)]" />
             <h2 className="text-sm font-semibold text-[var(--text-primary)]">{i18n("billsTitle")}</h2>
           </div>
           <span className="text-xs text-[var(--text-muted)]">
@@ -69,7 +69,7 @@ const BillsWidget = memo(function BillsWidget({ className = "", scrollable = tru
       )}
 
       <div>
-        <p className="text-2xl font-bold text-[--accent-primary]">{formatCurrency(totalDue)}</p>
+        <p className="text-2xl font-bold text-[var(--accent-primary)]">{formatCurrency(totalDue)}</p>
         <p className="text-xs text-[var(--text-muted)]">{unpaidBills.length} {i18n("billsToPay")}</p>
       </div>
 
@@ -145,7 +145,7 @@ const BillsWidget = memo(function BillsWidget({ className = "", scrollable = tru
             </div>
             <div className="flex items-center justify-between rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 backdrop-blur-[var(--panel-blur)]">
               <span className="text-sm text-[var(--text-muted)]">{i18n("status")}</span>
-              <span className={`flex items-center gap-1.5 font-semibold ${selected.paid ? "text-[--accent-primary]" : "text-[var(--warning)]"}`}>
+              <span className={`flex items-center gap-1.5 font-semibold ${selected.paid ? "text-[var(--accent-primary)]" : "text-[var(--warning)]"}`}>
                 <Icon name={selected.paid ? "check" : "circle"} className="h-4 w-4" />
                 {selected.paid ? i18n("paid") : i18n("unpaid")}
               </span>

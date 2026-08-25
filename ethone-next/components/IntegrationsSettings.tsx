@@ -169,7 +169,7 @@ export default function IntegrationsSettings() {
         data-service={integration.id}
         className={`scroll-mt-6 h-full rounded-2xl transition-shadow ${
           isHighlighted
-            ? "ring-2 ring-[--accent-primary] ring-offset-0"
+            ? "ring-2 ring-[var(--accent-primary)] ring-offset-0"
             : "ring-0 ring-transparent"
         }`}
       >

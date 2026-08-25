@@ -59,7 +59,7 @@ export default function SystemHealthBanner({
           <span
             className={`inline-flex items-center gap-1 rounded-lg px-2 py-0.5 text-[10px] font-semibold ${
               tone === "success"
-                ? "bg-[--accent-primary]/10 text-[--accent-primary]"
+                ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
                 : "bg-rose-500/10 text-rose-400"
             }`}
           >
@@ -71,8 +71,8 @@ export default function SystemHealthBanner({
             {errors > 0 ? `${errors} ${i18n("error")}` : i18n("all")}
           </span>
 
-          <span className="rounded-lg bg-[--accent-primary]/10 px-2.5 py-1 text-xs font-mono text-[--accent-primary]">
-            <span className="mr-1 inline-block h-2 w-2 rounded-full bg-[--accent-primary]" />
+          <span className="rounded-lg bg-[var(--accent-primary)]/10 px-2.5 py-1 text-xs font-mono text-[var(--accent-primary)]">
+            <span className="mr-1 inline-block h-2 w-2 rounded-full bg-[var(--accent-primary)]" />
             {i18n("latency")}: 30 ms
           </span>
 
@@ -128,7 +128,7 @@ export default function SystemHealthBanner({
                     <div
                       className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
                         status === "connected"
-                          ? "bg-[--accent-primary]/10 text-[--accent-primary]"
+                          ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
                           : status === "error"
                             ? "bg-rose-500/10 text-rose-400"
                             : "bg-zinc-500/10 text-[var(--text-muted)]"

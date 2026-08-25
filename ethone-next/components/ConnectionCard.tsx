@@ -410,7 +410,7 @@ export default function ConnectionCard({
                       aria-label={i18n("copy")}
                       tabIndex={-1}
                     >
-                      {copied === "clientSecret" ? <Check className="h-3.5 w-3.5 text-[--accent-primary]" /> : <Copy className="h-3.5 w-3.5" />}
+                      {copied === "clientSecret" ? <Check className="h-3.5 w-3.5 text-[var(--accent-primary)]" /> : <Copy className="h-3.5 w-3.5" />}
                     </button>
                     <button
                       type="button"
@@ -439,7 +439,7 @@ export default function ConnectionCard({
                     className="text-[var(--text-muted)] transition hover:text-[var(--text-primary)]"
                     aria-label={i18n("copy")}
                   >
-                    {copied === "redirectUri" ? <Check className="h-3.5 w-3.5 text-[--accent-primary]" /> : <Copy className="h-3.5 w-3.5" />}
+                    {copied === "redirectUri" ? <Check className="h-3.5 w-3.5 text-[var(--accent-primary)]" /> : <Copy className="h-3.5 w-3.5" />}
                   </button>
                 </div>
               </div>
@@ -627,7 +627,7 @@ export default function ConnectionCard({
             {i18n(rawOpen ? "hideRaw" : "showRaw")}
           </span>
           {health?.ms ? (
-            <span className="rounded-lg border border-[--accent-primary]/30 bg-[--accent-primary]/10 px-2 py-0.5 text-[10px] font-mono text-[--accent-primary]">
+            <span className="rounded-lg border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-2 py-0.5 text-[10px] font-mono text-[var(--accent-primary)]">
               {health.ms} ms
             </span>
           ) : null}
@@ -647,11 +647,11 @@ export default function ConnectionCard({
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-xs">
                       {health.status === "connected" || health.ok ? (
-                        <CheckCircle2 className="h-4 w-4 text-[--accent-primary]" />
+                        <CheckCircle2 className="h-4 w-4 text-[var(--accent-primary)]" />
                       ) : (
                         <AlertCircle className="h-4 w-4 text-rose-400" />
                       )}
-                      <span className={health.ok ? "text-[--accent-primary]" : "text-rose-400"}>
+                      <span className={health.ok ? "text-[var(--accent-primary)]" : "text-rose-400"}>
                         {health.status === "unconfigured"
                           ? i18n("notConfigured") || "Non configuré"
                           : health.ok
@@ -734,7 +734,7 @@ function FieldInput({
                 aria-label={i18n("copy")}
                 tabIndex={-1}
               >
-                {copied === field.key ? <Check className="h-3.5 w-3.5 text-[--accent-primary]" /> : <Copy className="h-3.5 w-3.5" />}
+                {copied === field.key ? <Check className="h-3.5 w-3.5 text-[var(--accent-primary)]" /> : <Copy className="h-3.5 w-3.5" />}
               </button>
               {isPassword && (
                 <button
@@ -883,7 +883,7 @@ function ConfigGuidePanel({
                             className="text-[var(--text-muted)] transition hover:text-[var(--text-primary)]"
                             aria-label="Copier"
                           >
-                            {copied === copyKey ? <Check className="h-3.5 w-3.5 text-[--accent-primary]" /> : <Copy className="h-3.5 w-3.5" />}
+                            {copied === copyKey ? <Check className="h-3.5 w-3.5 text-[var(--accent-primary)]" /> : <Copy className="h-3.5 w-3.5" />}
                           </button>
                         </div>
                       )}

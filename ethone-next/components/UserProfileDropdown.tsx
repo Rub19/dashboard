@@ -205,7 +205,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
             aria-haspopup="true"
           >
             <div className="pointer-events-none relative flex h-7 w-7 shrink-0 items-center justify-center">
-              <div className="pointer-events-none flex h-full w-full items-center justify-center overflow-hidden rounded-full border border-[var(--text-primary)]/10 bg-gradient-to-tr from-[--accent-primary] to-[--info] text-[--accent-primary]">
+              <div className="pointer-events-none flex h-full w-full items-center justify-center overflow-hidden rounded-full border border-[var(--text-primary)]/10 bg-gradient-to-tr from-[var(--accent-primary)] to-[--info] text-[var(--accent-primary)]">
                 {avatarUrl ? (
                   <Image
                     src={avatarUrl}

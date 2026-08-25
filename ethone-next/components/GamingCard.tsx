@@ -263,7 +263,7 @@ const GamingCard = memo(function GamingCard({
           </div>
           <Link
             href="/settings?category=integrations"
-            className="rounded-lg bg-[--accent-primary] px-4 py-2 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[--accent-primary]"
+            className="rounded-lg bg-[var(--accent-primary)] px-4 py-2 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--accent-primary)]"
           >
             {i18n("configureMinecraft", "Configurer Minecraft")}
           </Link>

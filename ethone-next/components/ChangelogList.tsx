@@ -69,11 +69,11 @@ const TYPE_CONFIG: Record<
   },
   feature: {
     icon: Sparkles,
-    dot: "bg-[--accent-primary]",
-    iconColor: "text-[--accent-primary]",
-    badgeBg: "bg-[--accent-primary]",
-    badgeBorder: "border-[--accent-primary]",
-    badgeText: "text-[--accent-primary]",
+    dot: "bg-[var(--accent-primary)]",
+    iconColor: "text-[var(--accent-primary)]",
+    badgeBg: "bg-[var(--accent-primary)]",
+    badgeBorder: "border-[var(--accent-primary)]",
+    badgeText: "text-[var(--accent-primary)]",
     borderColor: "var(--glow-color)",
   },
   change: {

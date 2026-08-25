@@ -24,9 +24,9 @@ const CONFIG: Record<
   }
 > = {
   success: {
-    icon: <EthoneGlyph name="check" className="h-4 w-4 text-[--accent-primary]" />,
-    border: "border-[--accent-primary]",
-    progress: "bg-[--accent-primary]",
+    icon: <EthoneGlyph name="check" className="h-4 w-4 text-[var(--accent-primary)]" />,
+    border: "border-[var(--accent-primary)]",
+    progress: "bg-[var(--accent-primary)]",
   },
   error: {
     icon: <EthoneGlyph name="alert" className="h-4 w-4 text-[var(--danger)]" />,

@@ -150,10 +150,9 @@ export default function NotificationItem({
 
   return (
     <motion.div
-      layout
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+      exit={{ opacity: 0, y: -8, scale: 0.98 }}
       transition={{ duration: 0.15, ease: "easeOut" as const }}
       onClick={() => onOpen?.(n)}
       className={`group relative cursor-pointer overflow-hidden rounded-2xl v8-panel p-3.5 transition-all hover:border-[var(--text-primary)]/[0.14] hover:bg-[var(--text-primary)]/[0.06] active:scale-[0.99] ${

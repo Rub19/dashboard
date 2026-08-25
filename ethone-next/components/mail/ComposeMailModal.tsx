@@ -344,7 +344,7 @@ export default function ComposeMailModal({
                   {to.map((t, i) => (
                     <span
                       key={`${t}-${i}`}
-                      className="flex items-center gap-1 rounded-md bg-[--accent-primary] px-2 py-1 text-sm text-[--accent-primary]"
+                      className="flex items-center gap-1 rounded-md bg-[var(--accent-primary)] px-2 py-1 text-sm text-[var(--accent-primary)]"
                     >
                       {t}
                       <button type="button" onClick={() => removeTag(to, setTo, i)} className="text-[var(--accent-primary)] hover:text-[var(--text-primary)]">

@@ -112,9 +112,9 @@ export default function UserProfileCard({
           <div className="flex items-center gap-2">
             <h3 className="truncate text-base font-bold text-[var(--text-primary)]">{displayName}</h3>
             {/* Session badge */}
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-[--accent-primary]/30 bg-[--accent-primary]/10 px-2 py-0.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-[--accent-primary]" />
-              <span className="text-[10px] font-medium text-[--accent-primary]">{i18n("sessionVerified", "Vérifiée")}</span>
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-2 py-0.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]" />
+              <span className="text-[10px] font-medium text-[var(--accent-primary)]">{i18n("sessionVerified", "Vérifiée")}</span>
             </div>
           </div>
           {email && (

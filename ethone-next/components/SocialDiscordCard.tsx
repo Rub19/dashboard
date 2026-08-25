@@ -38,7 +38,7 @@ function defaultAvatarIndex(userId?: string, discriminator?: string): number {
 function statusColor(status?: string) {
   switch (status) {
     case "online":
-      return "bg-[--accent-primary]";
+      return "bg-[var(--accent-primary)]";
     case "idle":
       return "bg-[var(--warning)]";
     case "dnd":
@@ -66,7 +66,7 @@ function statusTone(status?: string) {
     case "dnd":
       return "border-[var(--danger)]/20 bg-[var(--danger)]/15 text-[var(--danger)] dark:border-[var(--danger)]/30 dark:bg-[var(--danger)]/10 dark:text-[var(--danger)]";
     case "online":
-      return "border-[--accent-primary] bg-[--accent-primary]/10 text-[--accent-primary] dark:border-[--accent-primary] dark:bg-[--accent-primary] dark:text-[--accent-primary]";
+      return "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] dark:border-[var(--accent-primary)] dark:bg-[var(--accent-primary)] dark:text-[var(--accent-primary)]";
     case "idle":
       return "border-[var(--warning)]/20 bg-[var(--warning)]/15 text-[var(--warning)] dark:border-[var(--warning)]/30 dark:bg-[var(--warning)]/10 dark:text-[var(--warning)]";
     default:
@@ -171,9 +171,9 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
     }
     if (hasAnyConnection) {
       return {
-        badgeColor: "bg-[--accent-primary]",
+        badgeColor: "bg-[var(--accent-primary)]",
         badgeLabel: i18n("connected", "Connecté"),
-        badgeTone: "border-[--accent-primary] bg-[--accent-primary]/10 text-[--accent-primary]",
+        badgeTone: "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]",
       };
     }
     return { badgeColor: color, badgeLabel: label, badgeTone: statusTone(status) };
@@ -342,7 +342,7 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
               height={40}
               className="h-10 w-10 shrink-0 rounded-lg"
               fallback={
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[--accent-primary]/10 text-[--accent-primary]">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
                   <Music className="h-4 w-4" />
                 </div>
               }
@@ -356,7 +356,7 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
           {activeMusic.durationMs && activeMusic.durationMs > 0 && (
             <div className="flex flex-col gap-1">
               <div className="h-1 w-full overflow-hidden rounded-xl bg-[var(--text-primary)]/[0.08]">
-                <div className="h-full rounded-xl bg-[--accent-primary]" style={{ width: `${progressPct}%` }} />
+                <div className="h-full rounded-xl bg-[var(--accent-primary)]" style={{ width: `${progressPct}%` }} />
               </div>
               <div className="flex items-center justify-between text-[10px] font-mono text-[var(--text-muted)]">
                 <span>{formatMs(activeMusic.progressMs)}</span>

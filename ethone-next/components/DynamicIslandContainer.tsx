@@ -224,7 +224,7 @@ export default function DynamicIslandContainer() {
   const { nowPlaying, loading: npLoading, refetch: refetchNowPlaying } = useNowPlaying(1000);
   const isThinking = useBrainActivityStore((s) => s.isThinking);
   const { visible } = useDynamicIslandStore();
-  const { pendingCount, syncing, lastSync } = useActivityJournal();
+  const { pendingCount, syncing, lastSync, sync } = useActivityJournal();
   const queue = useUploadQueue();
   const uploadingCount = queue.items.filter((it) => it.status === "uploading" || it.status === "queued").length;
   const completedCount = queue.items.filter((it) => it.status === "completed").length;
@@ -387,7 +387,11 @@ export default function DynamicIslandContainer() {
           <div className={cn(base)}>
             <Icon name="arrows-clockwise" pack="phosphor" className={cn("h-3.5 w-3.5 text-[var(--info)]", syncing && "animate-spin")} />
             <span className="text-xs font-medium tabular-nums">
-              {syncing ? i18n("syncing", "Synchronisation") : i18n("syncReady", "Synchronisé")}
+              {syncing
+                ? i18n("syncing", "Synchronisation")
+                : pendingCount > 0
+                  ? i18n("syncPending", "En attente")
+                  : i18n("synced", "Synchronisé")}
             </span>
             {pendingCount > 0 && (
               <span className="ml-1 rounded-full bg-[var(--info)]/20 px-1.5 py-0.5 text-[10px] text-[var(--info)]">
@@ -734,17 +738,33 @@ export default function DynamicIslandContainer() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-[var(--text-primary)]">
-                    {syncing ? i18n("syncing", "Synchronisation…") : i18n("synced", "Synchronisé")}
+                    {syncing
+                      ? i18n("syncing", "Synchronisation…")
+                      : pendingCount > 0
+                        ? i18n("syncPending", "En attente")
+                        : i18n("synced", "Synchronisé")}
                   </p>
                   <p className="text-xs text-[var(--text-muted)]">
                     {pendingCount > 0
                       ? i18n("itemsPending", "{count} éléments en attente").replace("{count}", String(pendingCount))
                       : i18n("allUpToDate", "Tout est à jour")}
                   </p>
-                  {lastSync && (
+                  {lastSync && !syncing && pendingCount === 0 && (
                     <p className="mt-0.5 text-[10px] text-[var(--text-muted)]">
                       {i18n("lastSync", "Dernier sync")}: {lastSync.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                     </p>
+                  )}
+                  {pendingCount > 0 && !syncing && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void sync();
+                      }}
+                      className="mt-2 rounded-lg bg-[var(--accent-primary)] px-3 py-1.5 text-xs font-medium text-[var(--accent-contrast)] transition-colors hover:bg-[var(--accent-primary)]/90"
+                    >
+                      {i18n("syncNow", "Synchroniser maintenant")}
+                    </button>
                   )}
                 </div>
               </div>

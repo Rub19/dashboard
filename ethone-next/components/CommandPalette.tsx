@@ -206,6 +206,12 @@ export default function CommandPalette() {
     return searchCommands(COMMANDS as unknown as SearchableCommandItem[], query.trim(), context) as CommandItem[];
   }, [COMMANDS, query, context]);
 
+  useEffect(() => {
+    if (!open || !filtered.length) return;
+    const el = document.getElementById(`${uid}-opt-${index}`);
+    if (el) el.scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" });
+  }, [index, open, filtered.length, uid, reduce]);
+
   const sections = useMemo(() => {
     const groups: Record<string, CommandItem[]> = {};
     for (const cmd of filtered) {

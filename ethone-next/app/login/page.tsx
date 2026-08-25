@@ -572,7 +572,7 @@ export default function LoginPage() {
                         disabled={isLoading || isSuccess}
                         error={!!error && !password}
                         right={(
-                          <button type="button" tabIndex={-1} onClick={() => setShowPassword((v) => !v)} className="text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)]">
+                          <button type="button" tabIndex={-1} onClick={() => setShowPassword((v) => !v)} aria-label={i18n("togglePassword", "Afficher ou masquer le mot de passe")} aria-pressed={showPassword} className="text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)]">
                             <Icon name={showPassword ? "eye-off" : "eye"} className="h-4 w-4" />
                           </button>
                         )}
@@ -608,7 +608,7 @@ export default function LoginPage() {
                       placeholder="••••••••"
                       disabled={isLoading || isSuccess}
                       right={(
-                        <button type="button" tabIndex={-1} onClick={() => setShowPassword((v) => !v)} className="text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)]">
+                        <button type="button" tabIndex={-1} onClick={() => setShowPassword((v) => !v)} aria-label={i18n("togglePassword", "Afficher ou masquer le mot de passe")} aria-pressed={showPassword} className="text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)]">
                           <Icon name={showPassword ? "eye-off" : "eye"} className="h-4 w-4" />
                         </button>
                       )}

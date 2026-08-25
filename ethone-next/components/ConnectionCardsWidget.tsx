@@ -47,6 +47,19 @@ const CATEGORY_META: Record<string, { icon: string; label: string }> = {
   other: { icon: "circle", label: "Autres" },
 };
 
+const CATEGORY_STYLE: Record<
+  string,
+  { icon: string; border: string; bg: string; text: string }
+> = {
+  media: { icon: "text-indigo-400", border: "border-indigo-500/20", bg: "bg-indigo-500/10", text: "text-indigo-300" },
+  social: { icon: "text-pink-400", border: "border-pink-500/20", bg: "bg-pink-500/10", text: "text-pink-300" },
+  productivity: { icon: "text-amber-400", border: "border-amber-500/20", bg: "bg-amber-500/10", text: "text-amber-300" },
+  gaming: { icon: "text-emerald-400", border: "border-emerald-500/20", bg: "bg-emerald-500/10", text: "text-emerald-300" },
+  development: { icon: "text-cyan-400", border: "border-cyan-500/20", bg: "bg-cyan-500/10", text: "text-cyan-300" },
+  info: { icon: "text-sky-400", border: "border-sky-500/20", bg: "bg-sky-500/10", text: "text-sky-300" },
+  other: { icon: "text-zinc-400", border: "border-zinc-500/20", bg: "bg-zinc-500/10", text: "text-zinc-300" },
+};
+
 const CATEGORY_ORDER = ["media", "social", "productivity", "gaming", "development", "info", "other"];
 
 function statusTone(status: LiveRecord["status"]) {
@@ -132,10 +145,11 @@ const ConnectionCardsWidget = memo(function ConnectionCardsWidget({
         ) : (
           categories.map((cat) => {
             const catMeta = CATEGORY_META[cat] || CATEGORY_META.other;
+            const style = CATEGORY_STYLE[cat] || CATEGORY_STYLE.other;
             return (
               <div key={cat}>
                 <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">
-                  <Icon name={catMeta.icon} pack="phosphor" className="h-3.5 w-3.5" />
+                  <Icon name={catMeta.icon} pack="phosphor" className={cn("h-3.5 w-3.5", style.icon)} />
                   {i18n(`category.${cat}`, catMeta.label)}
                 </div>
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
@@ -146,24 +160,24 @@ const ConnectionCardsWidget = memo(function ConnectionCardsWidget({
                       <Card3D
                         key={record.id}
                         onClick={handleOpen}
-                        className="h-24 w-full cursor-pointer p-3"
+                        className={cn("h-28 w-full cursor-pointer p-3", style.border, style.bg)}
                         radius="var(--panel-radius)"
                       >
-                        <div className="flex h-full flex-col justify-between gap-1.5">
+                        <div className="relative z-10 flex h-full flex-col justify-between gap-1.5">
                           <div className="flex items-start justify-between">
                             {record.image ? (
                               <SafeImage
                                 candidates={[record.image]}
                                 alt={record.label}
-                                size={28}
-                                className="h-8 w-8 rounded-lg object-cover"
-                                iconClassName="h-5 w-5 text-[var(--accent-primary)]"
+                                size={36}
+                                className="h-9 w-9 rounded-lg object-cover"
+                                iconClassName={cn("h-5 w-5", style.icon)}
                               />
                             ) : (
                               <Icon
                                 name={meta.icon}
                                 pack="phosphor"
-                                className="h-6 w-6 text-[var(--accent-primary)]"
+                                className={cn("h-6 w-6", style.icon)}
                               />
                             )}
                             <span
@@ -175,13 +189,25 @@ const ConnectionCardsWidget = memo(function ConnectionCardsWidget({
                               aria-hidden
                             />
                           </div>
-                          <div className="min-w-0">
-                            <p className="truncate text-xs font-semibold uppercase tracking-wide text-[var(--text-primary)]">
+                          <div className="min-w-0 space-y-0.5">
+                            <p className="truncate text-[11px] font-bold uppercase tracking-wide text-[var(--text-primary)]">
                               {record.label}
                             </p>
-                            <p className="truncate text-[10px] text-[var(--text-muted)]" title={record.title}>
-                              {record.title}
-                            </p>
+                            {record.title && (
+                              <p className="truncate text-[10px] text-[var(--text-muted)]" title={record.title}>
+                                {record.title}
+                              </p>
+                            )}
+                            {record.subtitle && (
+                              <p className="truncate text-[9px] text-[var(--text-muted)]/60" title={record.subtitle}>
+                                {record.subtitle}
+                              </p>
+                            )}
+                            {record.meta && (
+                              <p className={cn("truncate text-[9px] font-medium", style.text)} title={record.meta}>
+                                {record.meta}
+                              </p>
+                            )}
                           </div>
                         </div>
                       </Card3D>

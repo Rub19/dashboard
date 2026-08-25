@@ -21,6 +21,7 @@ import { useFocus } from "@/components/FocusProvider";
 import { useDesktopLayout, type WidgetLayout } from "@/lib/hooks/useDesktopLayout";
 import { Icon } from "@/lib/icons";
 import PullToRefresh from "@/components/PullToRefresh";
+import DashboardSkeleton from "@/components/DashboardSkeleton";
 
 const LiveBentoGrid = dynamic(() => import("@/components/LiveBentoGrid"));
 const BillsWidget = dynamic(() => import("@/components/BillsWidget"));
@@ -274,26 +275,30 @@ export default function DashboardOverview() {
         </div>
       )}
 
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={gridVariants}
-        data-home-grid
-        className="grid w-full h-auto grid-cols-12 gap-3 pb-3"
-      >
-        {widgets.map((w) =>
-          w.visible ? (
-            <motion.div
-              key={w.id}
-              data-home-widget
-              variants={widgetItemVariants}
-              className={`${WIDGET_COL_SPAN[w.id]} flex min-w-0 flex-col`}
-            >
-              {renderWidget(w.id)}
-            </motion.div>
-          ) : null
-        )}
-      </motion.div>
+      {bentoLoading ? (
+        <DashboardSkeleton />
+      ) : (
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={gridVariants}
+          data-home-grid
+          className="grid w-full h-auto grid-cols-12 gap-3 pb-3"
+        >
+          {widgets.map((w) =>
+            w.visible ? (
+              <motion.div
+                key={w.id}
+                data-home-widget
+                variants={widgetItemVariants}
+                className={`${WIDGET_COL_SPAN[w.id]} flex min-w-0 flex-col`}
+              >
+                {renderWidget(w.id)}
+              </motion.div>
+            ) : null
+          )}
+        </motion.div>
+      )}
       </div>
       </PullToRefresh>
     </div>

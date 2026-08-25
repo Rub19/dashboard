@@ -7,6 +7,8 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import BentoCard from "@/components/BentoCard";
 import Card3D from "@/components/Card3D";
 import SafeImage from "@/components/SafeImage";
+import EmptyState from "@/components/EmptyState";
+import Button from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import type { LiveRecord } from "@/lib/hooks/useLiveData";
 
@@ -69,11 +71,9 @@ const ConnectionCardsWidget = memo(function ConnectionCardsWidget({
     [records]
   );
 
-  if (!loading && !error && filtered.length === 0) {
-    return null;
-  }
-
   const handleOpen = () => router.push("/connections");
+
+  const isEmpty = !loading && !error && filtered.length === 0;
 
   return (
     <BentoCard
@@ -102,6 +102,18 @@ const ConnectionCardsWidget = memo(function ConnectionCardsWidget({
               {i18n("check", "Vérifier")}
             </button>
           </div>
+        ) : isEmpty ? (
+          <EmptyState
+            kind="integration"
+            compact
+            inline
+            className="min-h-[88px] w-full"
+            actions={
+              <Button size="sm" variant="outline" onClick={handleOpen} leftIcon={<Icon name="plug" className="h-4 w-4" />}>
+                {i18n("connectService", "Connecter un service")}
+              </Button>
+            }
+          />
         ) : (
           filtered.map((record) => {
             const meta = SERVICE_META[record.source] || { icon: "circle" };

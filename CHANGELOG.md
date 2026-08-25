@@ -2,6 +2,21 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.5 — 2026-08-25
+
+**ETHONE — Final UI polish, tokens, accessibilité et performance**
+
+- PASS 1 : consolidation du design system, polish boutons, glass et ambiance pluie.
+- PASS 2 : Dynamic Island, Dock, z-index et micro-interactions.
+- PASS 3 : Settings tokenisé, previews thèmes, badges, skeletons.
+- PASS 4 : ajustements Dynamic Island, MobileNav, Sidebar tokens et Modal padding.
+- PASS 5 : thèmes, remplacement des couleurs hardcodées par les tokens du design system.
+- PASS 6 : accessibilité, aria-pressed, aria-invalid, aria-describedby, focus visible.
+- PASS 7 : performance, suppression des layout inutiles, normalisation des tokens CSS.
+- PASS 8 : polish final, normalisation complète des tokens CSS dans toute l'application.
+- Version passée en `v1.9.5`.
+- Validation : `npm run build`, `npm run lint` restent verts.
+
 ## v1.9.4 — 2026-08-25
 
 **ETHONE Home — Drag & drop et persistance du layout**

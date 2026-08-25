@@ -69,6 +69,78 @@ const v375_de: ChangelogEntry = {
   ],
 };
 
+const v395_fr: ChangelogEntry = {
+  version: "v1.9.5",
+  date: "2026-08-25",
+  title: "Polish final, tokens, accessibilité et performance",
+  items: [
+    "PASS 1 : consolidation du design system, polish boutons, glass et ambiance pluie.",
+    "PASS 2 : Dynamic Island, Dock, z-index et micro-interactions.",
+    "PASS 3 : Settings tokenisé, previews thèmes, badges, skeletons.",
+    "PASS 4 : ajustements Dynamic Island, MobileNav, Sidebar tokens et Modal padding.",
+    "PASS 5 : thèmes, remplacement des couleurs hardcodées par les tokens du design system.",
+    "PASS 6 : accessibilité, aria-pressed, aria-invalid, aria-describedby, focus visible.",
+    "PASS 7 : performance, suppression des layout inutiles, normalisation des tokens CSS.",
+    "PASS 8 : polish final, normalisation complète des tokens CSS dans toute l'application.",
+    "Validation : `npm run build`, `npm run lint` restent verts.",
+    "Version affichée en bas à droite : v1.9.5.",
+  ],
+};
+
+const v395_en: ChangelogEntry = {
+  version: "v1.9.5",
+  date: "2026-08-25",
+  title: "Final polish, tokens, accessibility and performance",
+  items: [
+    "PASS 1: design system consolidation, buttons, glass and rain ambience polish.",
+    "PASS 2: Dynamic Island, Dock, z-index and micro-interactions.",
+    "PASS 3: tokenized Settings, theme previews, badges, skeletons.",
+    "PASS 4: Dynamic Island, MobileNav, Sidebar tokens and Modal padding adjustments.",
+    "PASS 5: themes, replacement of hardcoded colors with design system tokens.",
+    "PASS 6: accessibility, aria-pressed, aria-invalid, aria-describedby, visible focus.",
+    "PASS 7: performance, removal of unnecessary layout animations, CSS token normalization.",
+    "PASS 8: final polish, full CSS token normalization across the entire app.",
+    "Validation: `npm run build`, `npm run lint` remain green.",
+    "Version badge bottom-right: v1.9.5.",
+  ],
+};
+
+const v395_es: ChangelogEntry = {
+  version: "v1.9.5",
+  date: "2026-08-25",
+  title: "Polish final, tokens, accesibilidad y rendimiento",
+  items: [
+    "PASS 1: consolidación del design system, botones, glass y ambiente de lluvia.",
+    "PASS 2: Dynamic Island, Dock, z-index y micro-interacciones.",
+    "PASS 3: Settings tokenizado, vistas previas de temas, badges, skeletons.",
+    "PASS 4: ajustes de Dynamic Island, MobileNav, Sidebar tokens y Modal padding.",
+    "PASS 5: temas, sustitución de colores hardcodeados por tokens del design system.",
+    "PASS 6: accesibilidad, aria-pressed, aria-invalid, aria-describedby, foco visible.",
+    "PASS 7: rendimiento, eliminación de layouts innecesarios, normalización de tokens CSS.",
+    "PASS 8: polish final, normalización completa de tokens CSS en toda la aplicación.",
+    "Validación: `npm run build`, `npm run lint` siguen pasando.",
+    "Versión mostrada abajo a la derecha: v1.9.5.",
+  ],
+};
+
+const v395_de: ChangelogEntry = {
+  version: "v1.9.5",
+  date: "2026-08-25",
+  title: "Finaler Polish, Tokens, Barrierefreiheit und Performance",
+  items: [
+    "PASS 1: Konsolidierung des Design-Systems, Buttons, Glass und Regen-Ambiente.",
+    "PASS 2: Dynamic Island, Dock, z-index und Micro-Interaktionen.",
+    "PASS 3: Tokenisierte Settings, Theme-Vorschauen, Badges, Skeletons.",
+    "PASS 4: Anpassungen Dynamic Island, MobileNav, Sidebar-Tokens und Modal-Padding.",
+    "PASS 5: Themes, Ersetzung hartcodierter Farben durch Design-System-Tokens.",
+    "PASS 6: Barrierefreiheit, aria-pressed, aria-invalid, aria-describedby, sichtbarer Fokus.",
+    "PASS 7: Performance, Entfernung unnötiger Layout-Animationen, CSS-Token-Normalisierung.",
+    "PASS 8: Finaler Polish, vollständige CSS-Token-Normalisierung in der gesamten App.",
+    "Validierung: `npm run build`, `npm run lint` bleiben grün.",
+    "Version unten rechts: v1.9.5.",
+  ],
+};
+
 const v374_fr: ChangelogEntry = {
   version: "v1.9.3",
   date: "2026-08-25",
@@ -6082,9 +6154,9 @@ const v366_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v375_fr, v374_fr, v373_fr, v372_fr, v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v375_en, v374_en, v373_en, v372_en, v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
-CHANGELOG_BY_LANG.es.unshift(v375_es, v374_es, v373_es, v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
-CHANGELOG_BY_LANG.de.unshift(v375_de, v374_de, v373_de, v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
+CHANGELOG_BY_LANG.fr.unshift(v395_fr, v375_fr, v374_fr, v373_fr, v372_fr, v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v395_en, v375_en, v374_en, v373_en, v372_en, v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v395_es, v375_es, v374_es, v373_es, v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v395_de, v375_de, v374_de, v373_de, v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

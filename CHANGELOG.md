@@ -4,6 +4,19 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## v1.9.0 — 2026-08-25
 
+**Upload globale et vue Dynamic Island**
+
+- `UploadQueueProvider` : file d'attente globale pour les fichiers.
+- Hook `useUploadQueue` accessible depuis n'importe quelle vue.
+- `app/drop` : les fichiers déposés passent par la queue.
+- `UploadIslandView` : vue étendue de la Dynamic Island avec états, retry et clear.
+- Compact upload : compteurs en cours, terminés et erreurs.
+- E2E a11y, ui-harmony et command-palette restent verts.
+
+## v1.9.0 — 2026-08-25
+
+**Bento Home, command palette et sidebar flottante**
+
 **Bento Home, command palette et sidebar flottante**
 
 - Quick actions depuis le Hero (tâche, note, focus, brain, upload).

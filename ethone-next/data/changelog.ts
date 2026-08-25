@@ -5498,6 +5498,66 @@ const v365_de: ChangelogEntry = {
   ],
 };
 
+const v371_fr: ChangelogEntry = {
+  version: "v1.9.0",
+  date: "2026-08-25",
+  title: "Upload globale et vue Dynamic Island",
+  items: [
+    "UploadQueueProvider : file d'attente globale pour les fichiers.",
+    "Hook useUploadQueue accessible depuis n'importe quelle vue.",
+    "app/drop : les fichiers déposés passent par la queue.",
+    "UploadIslandView : vue étendue de la Dynamic Island avec états, retry et clear.",
+    "Compact upload : compteurs en cours, terminés et erreurs.",
+    "E2E a11y, ui-harmony et command-palette restent verts.",
+    "Version v1.9.0.",
+  ],
+};
+
+const v371_en: ChangelogEntry = {
+  version: "v1.9.0",
+  date: "2026-08-25",
+  title: "Global upload queue and Dynamic Island view",
+  items: [
+    "UploadQueueProvider: global upload queue for files.",
+    "useUploadQueue hook available from any view.",
+    "app/drop: dropped files now go through the queue.",
+    "UploadIslandView: expanded Dynamic Island view with states, retry and clear.",
+    "Upload compact pill: in-progress, completed and error counters.",
+    "E2E a11y, ui-harmony and command-palette suites remain green.",
+    "Version v1.9.0.",
+  ],
+};
+
+const v371_es: ChangelogEntry = {
+  version: "v1.9.0",
+  date: "2026-08-25",
+  title: "Cola de subida global y vista en Dynamic Island",
+  items: [
+    "UploadQueueProvider: cola de espera global para archivos.",
+    "Hook useUploadQueue accesible desde cualquier vista.",
+    "app/drop: los archivos arrastrados pasan por la cola.",
+    "UploadIslandView: vista extendida de Dynamic Island con estados, reintentar y limpiar.",
+    "Compacto de subida: contadores en curso, terminados y errores.",
+    "Pruebas E2E a11y, ui-harmony y command-palette siguen verdes.",
+    "Versión v1.9.0.",
+  ],
+};
+
+const v371_de: ChangelogEntry = {
+  version: "v1.9.0",
+  date: "2026-08-25",
+  title: "Globale Upload-Warteschlange und Dynamic-Island-Ansicht",
+  items: [
+    "UploadQueueProvider: globale Warteschlange für Dateien.",
+    "useUploadQueue-Hook aus jeder Ansicht verfügbar.",
+    "app/drop: abgelegte Dateien laufen über die Warteschlange.",
+    "UploadIslandView: erweiterte Dynamic-Island-Ansicht mit Status, Retry und Clear.",
+    "Kompakte Upload-Anzeige: laufende, abgeschlossene und fehlerhafte Zähler.",
+    "E2E-Tests a11y, ui-harmony und command-palette bleiben grün.",
+    "Version v1.9.0.",
+  ],
+};
+
 const v369_fr: ChangelogEntry = {
   version: "v1.8.25",
   date: "2026-08-24",
@@ -5770,9 +5830,9 @@ const v366_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
-CHANGELOG_BY_LANG.es.unshift(v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
-CHANGELOG_BY_LANG.de.unshift(v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
+CHANGELOG_BY_LANG.fr.unshift(v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

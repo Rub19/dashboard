@@ -345,7 +345,7 @@ export default function DashboardOverview() {
         </div>
         <Button
           size="sm"
-          variant={customizing ? "primary" : "secondary"}
+          variant={customizing ? "primary" : "ghost"}
           onClick={handleToggleCustomize}
           title={customizing ? i18n("done") : i18n("customize")}
           aria-label={customizing ? i18n("done") : i18n("customize")}

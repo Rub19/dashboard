@@ -6,6 +6,7 @@ import { AlertCircle, ExternalLink, Loader2, Music, Radio, RadioOff } from "luci
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { Icon } from "@/lib/icons";
 import type { LanyardPresence, NowPlaying } from "@/lib/hooks/useLiveData";
 import ClientImage from "@/components/ClientImage";
 import { TiltCard } from "@/components/ui/TiltCard";
@@ -19,21 +20,7 @@ type SocialDiscordCardProps = {
   className?: string;
 };
 
-function defaultAvatarIndex(userId?: string, discriminator?: string): number {
-  if (discriminator && /^\d{1,4}$/.test(discriminator)) {
-    return parseInt(discriminator, 10) % 5;
-  }
-  if (userId && /^\d+$/.test(userId)) {
-    try {
-      const tail = userId.slice(-6);
-      const index = Number(tail) % 6;
-      return Number.isFinite(index) && index >= 0 ? index : 0;
-    } catch {
-      return 0;
-    }
-  }
-  return 0;
-}
+
 
 function statusColor(status?: string) {
   switch (status) {
@@ -111,7 +98,6 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
   const avatarHash = lanyard?.avatarHash;
   const discriminator = lanyard?.discriminator;
   const avatarUrl = lanyard?.avatarUrl || oauthProfile?.user?.avatarUrl;
-  const avatarUrlSmall = oauthProfile?.user?.avatarUrlSmall;
   const username = lanyard?.username || oauthProfile?.user?.username;
   const displayName = lanyard?.displayName || lanyard?.username || oauthProfile?.user?.displayName || oauthProfile?.user?.username || "Discord";
 
@@ -123,16 +109,6 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
     }
     return "";
   }, [avatarHash, userId, avatarUrl]);
-
-  const fallbackAvatar = useMemo(
-    () => `https://cdn.discordapp.com/embed/avatars/${defaultAvatarIndex(userId, discriminator)}.png`,
-    [userId, discriminator]
-  );
-
-  const avatarCandidates = useMemo(
-    () => [primaryAvatar, avatarUrlSmall, fallbackAvatar].filter(Boolean),
-    [primaryAvatar, avatarUrlSmall, fallbackAvatar]
-  );
 
   const rawStatus = lanyard?.discord_status || "offline";
   const status = rawStatus;
@@ -222,13 +198,27 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
     return null;
   }, [discriminator, username]);
 
+
+
   return (
     <TiltCard
       className={cn(
-        "flex h-full min-h-0 flex-col v8-panel overflow-hidden bg-gradient-to-br from-indigo-950/40 via-purple-900/10 to-black/20 p-4 shadow-xl shadow-black/50 backdrop-blur-2xl transition-all hover:border-indigo-500/25",
+        "relative flex h-full min-h-0 flex-col v8-panel overflow-hidden bg-gradient-to-br from-indigo-950/40 via-purple-900/10 to-black/20 p-4 shadow-xl shadow-black/50 backdrop-blur-2xl transition-all hover:border-indigo-500/25",
         className
       )}
     >
+      {activeMusic?.cover && (
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <ClientImage
+            candidates={[activeMusic.cover]}
+            alt=""
+            fill
+            className="!z-0 object-cover opacity-20 blur-sm"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
           Social & Media
@@ -284,10 +274,10 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
             <div className="flex flex-col items-center gap-2 text-center">
               <div className="relative h-16 w-16 shrink-0">
                 <ClientImage
-                  candidates={avatarCandidates}
+                  candidates={[primaryAvatar]}
                   alt={displayName}
                   fill
-                  className="h-full w-full rounded-2xl border border-white/10"
+                  className="rounded-2xl border border-white/10"
                   priority
                   fallback={
                     <div className="flex h-full w-full items-center justify-center rounded-2xl border border-white/10 bg-[var(--text-primary)]/[0.04] text-lg font-bold text-[var(--text-primary)]">
@@ -319,8 +309,15 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
           )}
 
           {gameActivity && (
-            <div className="w-full shrink-0 space-y-0 rounded-xl border border-[var(--text-primary)]/[0.05] bg-[var(--text-primary)]/[0.02] p-2 text-center">
-              <p className="text-[11px] font-semibold text-[var(--text-primary)]">{gameActivity.name}</p>
+            <div className="w-full shrink-0 rounded-xl border border-[var(--text-primary)]/[0.05] bg-[var(--text-primary)]/[0.02] p-2 text-center">
+              <div className="flex items-center justify-center gap-1.5">
+                {gameActivity.name === "VALORANT" ? (
+                  <Icon pack="brand" name="valorant" className="h-4 w-4 text-[var(--danger)]" />
+                ) : (
+                  <Icon pack="lucide" name="gamepad-2" className="h-4 w-4 text-[var(--text-muted)]" />
+                )}
+                <p className="text-[11px] font-semibold text-[var(--text-primary)]">{gameActivity.name}</p>
+              </div>
               {gameActivity.details && (
                 <p className="line-clamp-2 text-[10px] text-[var(--text-muted)]">{gameActivity.details}</p>
               )}

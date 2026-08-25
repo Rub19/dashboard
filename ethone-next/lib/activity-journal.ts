@@ -58,7 +58,7 @@ export type ActivitySnapshot = {
 
 const STORAGE_KEY = "ethone-activity-journal-v1";
 const MAX_ENTRIES = 120;
-const SYNC_BATCH_LIMIT = 100;
+const SYNC_BATCH_LIMIT = 50;
 
 function safeDate(value: unknown, fallback: string): string {
   const raw = value instanceof Date ? value : typeof value === "string" || typeof value === "number" ? value : fallback;
@@ -279,10 +279,10 @@ export function createActivityJournal(): ActivityJournal {
     return () => syncSubscribers.delete(subscriber);
   }
 
-  async function sync(): Promise<{ ok: boolean; count: number }> {
-    if (isSyncing) return { ok: true, count: 0 };
+  async function sync(): Promise<{ ok: boolean; count: number; error: Error | null }> {
+    if (isSyncing) return { ok: true, count: 0, error: null };
     const unsynced = pending().slice(0, SYNC_BATCH_LIMIT);
-    if (unsynced.length === 0) return { ok: true, count: 0 };
+    if (unsynced.length === 0) return { ok: true, count: 0, error: null };
 
     const events = unsynced.map((entry) => ({
       eventType: entry.eventType || entry.title,
@@ -302,9 +302,9 @@ export function createActivityJournal(): ActivityJournal {
       });
       saveState(state);
       emit();
-      return { ok: true, count: unsynced.length };
-    } catch {
-      return { ok: false, count: 0 };
+      return { ok: true, count: unsynced.length, error: null };
+    } catch (err) {
+      return { ok: false, count: 0, error: err instanceof Error ? err : new Error(String(err)) };
     } finally {
       setSyncing(false);
     }

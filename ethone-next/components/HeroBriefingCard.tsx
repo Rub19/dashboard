@@ -155,10 +155,12 @@ const HeroBriefingCard = memo(function HeroBriefingCard({
   return (
     <BentoCard noHeader scrollable={scrollable} className={cn("h-full", className)}>
       <div className="flex flex-1 flex-col justify-between gap-4">
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1.5">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">{date}</p>
-            <LiveClock language={settings.language} />
+            <p className="text-[10px] font-medium text-[var(--text-muted)]">{date}</p>
+            <span className="rounded-md bg-[var(--text-primary)]/[0.04] px-1.5 py-0.5">
+              <LiveClock language={settings.language} />
+            </span>
           </div>
           <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)] sm:text-2xl">{greeting.label}</h2>
           <p className="text-sm text-[var(--text-muted)]">{contextMessage}</p>

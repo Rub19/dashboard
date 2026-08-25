@@ -7,7 +7,6 @@ import { DndContext, type DragEndEvent, PointerSensor, useSensor, useSensors } f
 import { SortableContext, arrayMove, rectSortingStrategy } from "@dnd-kit/sortable";
 import { cn } from "@/lib/utils";
 import BentoCard from "@/components/BentoCard";
-import IconButton from "@/components/ui/IconButton";
 import Button from "@/components/ui/Button";
 import HeroBriefingCard from "@/components/HeroBriefingCard";
 import SystemControlCard from "@/components/SystemControlCard";
@@ -334,16 +333,25 @@ export default function DashboardOverview() {
     <div className="flex h-full min-h-0 flex-col">
       <PullToRefresh onRefresh={handleRefresh}>
         <div className={cn("mx-auto w-full min-h-full px-2 sm:px-4", maxWClass)}>
-        <header className="shrink-0 mb-3 flex w-full items-center justify-end">
-        <IconButton
+        <header className="shrink-0 mb-4 flex w-full items-end justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)] sm:text-2xl">
+            {i18n("home", "Accueil")}
+          </h1>
+          <p className="text-xs text-[var(--text-muted)]">
+            {i18n("homeDescription", "Votre espace personnel, en un coup d'œil.")}
+          </p>
+        </div>
+        <Button
           size="sm"
-          variant="default"
+          variant={customizing ? "primary" : "outline"}
           onClick={handleToggleCustomize}
           title={customizing ? i18n("done") : i18n("customize")}
           aria-label={customizing ? i18n("done") : i18n("customize")}
+          leftIcon={<Icon name="layout-grid" pack="lucide" className="h-4 w-4" />}
         >
-          <Icon pack="lucide" name="layout-grid" className="h-4 w-4" />
-        </IconButton>
+          {customizing ? i18n("done") : i18n("customize")}
+        </Button>
       </header>
 
       {customizing && (

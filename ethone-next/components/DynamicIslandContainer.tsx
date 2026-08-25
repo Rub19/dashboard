@@ -327,17 +327,23 @@ export default function DynamicIslandContainer() {
   }, [selectedView]);
 
   const onIslandEnter = useCallback(() => {
-    if (mode === "EXPANDED" || mode === "INTERACTIVE") {
+    if (islandLeaveTimer.current) window.clearTimeout(islandLeaveTimer.current);
+    if (mode === "COMPACT") {
+      if (activeViews.length > 0 && !selectedView) setSelectedView(activeViews[0]);
+      setMode("EXPANDED");
+    } else if (mode === "EXPANDED" || mode === "INTERACTIVE") {
       setMode("INTERACTIVE");
     }
-  }, [mode]);
+  }, [mode, activeViews, selectedView]);
 
   const onIslandLeave = useCallback(() => {
-    if (mode === "INTERACTIVE") {
-      if (islandLeaveTimer.current) window.clearTimeout(islandLeaveTimer.current);
+    if (islandLeaveTimer.current) window.clearTimeout(islandLeaveTimer.current);
+    if (mode === "EXPANDED" && !userSelected) {
+      islandLeaveTimer.current = window.setTimeout(() => setMode("COMPACT"), 400);
+    } else if (mode === "INTERACTIVE") {
       islandLeaveTimer.current = window.setTimeout(() => setMode("EXPANDED"), 400);
     }
-  }, [mode]);
+  }, [mode, userSelected]);
 
   const pomodoroPct = useMemo(() => {
     if (!focus.state.total) return 0;
@@ -777,11 +783,6 @@ export default function DynamicIslandContainer() {
                           showSuccess(
                             i18n("synced", "Synchronisé"),
                             i18n("syncItemsOk", `${res.count} éléments synchronisés`)
-                          );
-                        } else {
-                          showError(
-                            i18n("syncFailed", "Échec de la synchronisation"),
-                            syncError?.message || i18n("syncFailedDescription", "Le Worker n'a pas pu synchroniser.")
                           );
                         }
                       }}

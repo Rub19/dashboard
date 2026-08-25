@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { User } from "lucide-react";
 import { Icon } from "@/lib/icons";
 import { useAuth } from "@/components/AuthProvider";
 import { useActiveProfile, useSettings } from "@/components/SettingsProvider";
@@ -114,7 +115,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = "v1.9.13";
+  const VERSION_LABEL = "v1.9.12";
 
   const menuItems = [
     {
@@ -205,7 +206,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                     className="pointer-events-none h-full w-full object-cover"
                   />
                 ) : (
-                  <Icon name="user" pack="phosphor" className="pointer-events-none h-4 w-4" />
+                  <User className="pointer-events-none h-4 w-4" />
                 )}
               </div>
               <span

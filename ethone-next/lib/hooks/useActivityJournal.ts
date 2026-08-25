@@ -43,7 +43,7 @@ export function useActivityJournal(options: UseActivityJournalOptions = {}) {
       }
       setPendingCount(activityJournal.pendingCount());
       if (!res.ok) {
-        setSyncError(new Error("Échec de la synchronisation"));
+        setSyncError((res as { error?: Error | null }).error || new Error("Échec de la synchronisation"));
       }
       return res;
     } catch (err) {

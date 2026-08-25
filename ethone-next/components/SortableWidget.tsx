@@ -35,6 +35,7 @@ export default function SortableWidget({
     transform: CSS.Transform.toString(transform),
     transition,
     zIndex: isDragging ? 50 : undefined,
+    touchAction: customizing ? "none" : undefined,
   };
 
   return (
@@ -42,17 +43,18 @@ export default function SortableWidget({
       ref={setNodeRef}
       style={style}
       data-home-widget
-      className={cn("relative flex min-w-0 flex-col", className)}
+      className={cn(
+        "relative flex min-w-0 flex-col",
+        customizing && "cursor-grab active:cursor-grabbing",
+        className
+      )}
+      {...attributes}
+      {...listeners}
     >
       {customizing && (
-        <button
-          type="button"
-          className="absolute right-2 top-2 z-10 rounded border border-[var(--text-primary)]/[0.08] bg-[var(--panel-bg)] p-1 text-[var(--text-muted)] shadow-sm transition-colors hover:border-[var(--text-primary)]/20 hover:text-[var(--text-primary)]"
-          {...attributes}
-          {...listeners}
-        >
-          <Icon pack="lucide" name="grip-vertical" className="h-3.5 w-3.5" />
-        </button>
+        <div className="pointer-events-none absolute right-2 top-2 z-10 rounded border border-[var(--text-primary)]/[0.08] bg-[var(--panel-bg)] p-1 text-[var(--text-muted)] shadow-sm">
+          <Icon name="dots-six-vertical" pack="phosphor" className="h-3.5 w-3.5" />
+        </div>
       )}
       <motion.div
         initial={{ opacity: 0, y: 18, scale: 0.97 }}

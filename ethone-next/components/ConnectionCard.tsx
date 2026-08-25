@@ -41,6 +41,7 @@ import {
   getServiceMethodKey,
 } from "@/lib/connection-config";
 import ServiceIcon from "@/components/ServiceIcon";
+import ConnectionBadge from "@/components/ConnectionBadge";
 import Select from "@/components/ui/Select";
 import Input from "@/components/Input";
 import FormField from "@/components/FormField";
@@ -103,26 +104,18 @@ export default function ConnectionCard({
           : i18n("notConfigured", "Non connecté");
 
   const methodKey = config ? config.category : getServiceMethodKey(integration.status);
-  const methodClass = config
-    ? config.category === "oauth"
-      ? "bg-purple-500/10 text-purple-300 border-purple-500/20"
-      : config.category === "api_key"
-        ? "bg-[var(--info)]/10 text-[var(--info)] border-[var(--info)]/20"
-        : "bg-amber-500/10 text-amber-300 border-amber-500/20"
-    : integration.status === "oauth"
-      ? "bg-purple-500/10 text-purple-300 border-purple-500/20"
-      : integration.status === "api"
-        ? "bg-[var(--info)]/10 text-[var(--info)] border-[var(--info)]/20"
-        : integration.status === "local" || integration.status === "feed"
-          ? "bg-amber-500/10 text-amber-300 border-amber-500/20"
-          : "bg-zinc-500/10 text-[var(--text-muted)] border-zinc-500/20";
-
-  const statusClass =
-    status === "connected"
-      ? "bg-green-500/10 text-green-400 border-green-500/20"
-      : status === "error"
-        ? "bg-rose-500/10 text-rose-400 border-rose-500/20"
-        : "bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] border-[var(--text-primary)]/[0.08]";
+  const methodVariant = (config ? config.category : getServiceMethodKey(integration.status)) as
+    | "oauth"
+    | "api"
+    | "api_key"
+    | "webhook"
+    | "local"
+    | "feed"
+    | "restricted"
+    | "limited"
+    | "unconfigured";
+  const statusVariant: "connected" | "error" | "unconfigured" =
+    status === "connected" ? "connected" : status === "error" ? "error" : "unconfigured";
 
   const storeValues = useMemo(() => integrationValues[integration.id] || {}, [integrationValues, integration.id]);
 
@@ -358,14 +351,12 @@ export default function ConnectionCard({
             <div className="min-w-0">
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-bold text-[var(--text-primary)]">{integration.name}</h3>
-                <span className={`rounded-lg border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${methodClass}`}>
-                  {config ? config.badge : i18n(methodKey)}
-                </span>
+                <ConnectionBadge variant={methodVariant}>{config ? config.badge : i18n(methodKey)}</ConnectionBadge>
               </div>
               <p className="truncate text-xs text-[var(--text-muted)]">{config?.description || i18n(integration.description)}</p>
             </div>
           </div>
-          <span className={`shrink-0 rounded-lg border px-2.5 py-1 text-[10px] font-semibold ${statusClass}`}>{statusText}</span>
+          <ConnectionBadge variant={statusVariant} dot>{statusText}</ConnectionBadge>
         </div>
 
         {integration.id === "github" && gitHubStatus && gitHubStatus.indicator !== "none" && (
@@ -825,7 +816,7 @@ function ConfigGuidePanel({
           href={config.developerUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-lg bg-purple-500/20 px-3 py-1.5 text-xs font-semibold text-purple-300 transition-all hover:bg-purple-500/30"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--accent-primary)]/20 px-3 py-1.5 text-xs font-semibold text-[var(--accent-primary)] transition-all hover:bg-[var(--accent-primary)]/30"
         >
           {config.developerButtonLabel}
           <ExternalLink className="h-3 w-3" />
@@ -860,7 +851,7 @@ function ConfigGuidePanel({
             transition={{ duration: 0.2, ease: "easeOut" as const }}
             className="overflow-hidden"
           >
-            <div className="mt-2 rounded-xl border border-purple-500/20 bg-purple-500/[0.06] p-3.5">
+            <div className="mt-2 rounded-xl border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/[0.06] p-3.5">
               <ol className="list-decimal space-y-2 pl-4">
                 {config.steps.map((step, idx) => {
                   const copyValue =
@@ -872,7 +863,7 @@ function ConfigGuidePanel({
                   const copyKey = `${config.id}-${step.copyValueType}-${idx}`;
                   return (
                     <li key={idx} className="text-xs leading-relaxed text-[var(--text-primary)]">
-                      <p className="font-medium text-purple-200">{step.title}</p>
+                      <p className="font-medium text-[var(--text-primary)]">{step.title}</p>
                       <p className="text-[var(--text-muted)]">{step.description}</p>
                       {copyValue && (
                         <div className="mt-1.5 flex items-center gap-2">
@@ -901,14 +892,14 @@ function ConfigGuidePanel({
 
 function GuidePanel({ guide }: { guide: ConnectionGuide }) {
   return (
-    <div className="mt-2 rounded-xl border border-purple-500/20 bg-purple-500/[0.06] p-3.5">
+    <div className="mt-2 rounded-xl border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/[0.06] p-3.5">
       <div className="mb-2.5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <span className="text-xs font-medium text-purple-200">Comment obtenir cette clé ?</span>
+        <span className="text-xs font-medium text-[var(--text-primary)]">Comment obtenir cette clé ?</span>
         <a
           href={guide.keyGuide.dashboardUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-lg bg-purple-500/20 px-3 py-1.5 text-xs font-semibold text-purple-300 transition-all hover:bg-purple-500/30"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--accent-primary)]/20 px-3 py-1.5 text-xs font-semibold text-[var(--accent-primary)] transition-all hover:bg-[var(--accent-primary)]/30"
         >
           {guide.keyGuide.linkText}
           <ExternalLink className="h-3 w-3" />

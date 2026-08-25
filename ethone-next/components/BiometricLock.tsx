@@ -51,10 +51,10 @@ export default function BiometricLock({ children, title, className = "" }: Biome
         {available ? <Fingerprint className="h-8 w-8" /> : <ShieldCheck className="h-8 w-8" />}
       </div>
       <div>
-        <p className="text-sm font-semibold text-[var(--text-primary)]">
+        <p className="text-sm font-semibold text-[var(--foreground)]">
           {title || i18n("secureArea", "Zone sécurisée")}
         </p>
-        <p className="mt-1 text-xs text-[var(--text-muted)]">
+        <p className="mt-1 text-xs text-[var(--muted)]">
           {available
             ? i18n("biometricPrompt", "Utilisez Face ID / Touch ID pour déverrouiller.")
             : i18n("biometricUnavailable", "Authentification biométrique indisponible.")}

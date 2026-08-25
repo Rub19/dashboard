@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useId } from "react";
+import { memo } from "react";
 import { Icon } from "@/lib/icons";
 import { useSettings } from "@/components/SettingsProvider";
 import { DEFAULTS } from "@/lib/settings";
@@ -85,11 +85,6 @@ function SettingField({ field }: { field: FieldDef }) {
 
   const isDirty = JSON.stringify(value) !== JSON.stringify(defaultValue);
 
-  const fieldId = useId();
-  const labelId = `${fieldId}-label`;
-  const descId = `${fieldId}-desc`;
-  const describedBy = field.description ? descId : undefined;
-
   const onChange = async (v: unknown) => {
     if (saveMode === "explicit") {
       form.setExplicit(settingKey, v);
@@ -115,7 +110,7 @@ function SettingField({ field }: { field: FieldDef }) {
   const control = (() => {
     switch (field.type) {
       case "toggle":
-        return <SwitchControl checked={Boolean(value)} onChange={(v) => onChange(v)} aria-label={field.label} aria-describedby={describedBy} />;
+        return <SwitchControl checked={Boolean(value)} onChange={(v) => onChange(v)} />;
       case "range": {
         return (
           <RangeControl
@@ -124,8 +119,6 @@ function SettingField({ field }: { field: FieldDef }) {
             min={field.min}
             max={field.max}
             unit={field.unit}
-            aria-label={field.label}
-            aria-describedby={describedBy}
           />
         );
       }
@@ -136,8 +129,6 @@ function SettingField({ field }: { field: FieldDef }) {
             onChange={(v) => onChange(v)}
             options={field.options}
             cols={field.cols}
-            aria-label={field.label}
-            aria-describedby={describedBy}
           />
         );
       case "checkbox-list":
@@ -146,20 +137,16 @@ function SettingField({ field }: { field: FieldDef }) {
             value={Array.isArray(value) ? (value as string[]) : []}
             onChange={(v) => onChange(v)}
             options={field.options}
-            aria-label={field.label}
-            aria-describedby={describedBy}
           />
         );
       case "color":
-        return <ColorControl value={String(value ?? "#000000")} onChange={(v) => onChange(v)} aria-label={field.label} aria-describedby={describedBy} />;
+        return <ColorControl value={String(value ?? "#000000")} onChange={(v) => onChange(v)} />;
       case "select":
         return (
           <SelectControl
             value={String(value ?? "")}
             onChange={(v) => onChange(v)}
             options={field.options}
-            aria-label={field.label}
-            aria-describedby={describedBy}
           />
         );
       case "text":
@@ -171,8 +158,6 @@ function SettingField({ field }: { field: FieldDef }) {
             onChange={(v) => onChange(v)}
             type={field.type}
             autoComplete={field.autoComplete}
-            aria-label={field.label}
-            aria-describedby={describedBy}
           />
         );
       case "custom":
@@ -186,13 +171,12 @@ function SettingField({ field }: { field: FieldDef }) {
 
   return (
     <div
-      data-testid={`setting-field-${settingKey}`}
       data-setting-key={settingKey}
       data-setting-path={path}
       data-setting-label={field.label}
       className={`relative px-4 py-2 transition-opacity ${hidden ? "hidden" : ""}`}
     >
-      <div className="flex min-h-[44px] items-start justify-between gap-3">
+      <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 flex-1 items-start gap-2.5">
           {isDirty && (
             <span
@@ -202,27 +186,23 @@ function SettingField({ field }: { field: FieldDef }) {
             />
           )}
           <div className="flex min-w-0 flex-col">
-            <span id={labelId} className="text-sm font-medium text-[var(--text-primary)]">
-              {field.label}
-            </span>
+            <span className="text-sm font-medium text-[var(--foreground)]">{field.label}</span>
             {field.description && (
-              <span id={descId} className="text-[11px] leading-tight text-[var(--text-muted)]">
-                {field.description}
-              </span>
+              <span className="text-[11px] leading-tight text-[var(--muted)]">{field.description}</span>
             )}
             {form.query && field.keywords && field.keywords.length > 0 && (
-              <span className="text-[10px] text-[var(--text-muted)]">{field.keywords.join(" > ")}</span>
+              <span className="text-[10px] text-[var(--muted)]">{field.keywords.join(" > ")}</span>
             )}
           </div>
         </div>
-        <div className="flex min-w-0 items-center gap-2">
+        <div className="flex items-center gap-2">
           {isDirty && (
             <button
               type="button"
               onClick={handleUndo}
-              className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-[var(--panel-radius)] p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--accent-primary)]"
+              className="rounded-[var(--panel-radius)] p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--accent-primary)]"
               title="Rétablir la valeur par défaut"
-              aria-label="Rétablir la valeur par défaut"
+              aria-label="Rétablir"
             >
               <Icon name="rotate-ccw" className="h-3.5 w-3.5" />
             </button>

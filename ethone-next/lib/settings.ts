@@ -234,10 +234,10 @@ export const USER_STATUS_CONFIG: Record<
   invisible: {
     labelKey: "statusInvisible",
     icon: "eye-off",
-    dot: "bg-[var(--text-muted)]",
-    text: "text-[var(--text-muted)]",
-    bg: "bg-[var(--text-muted)]/10",
-    ring: "ring-[var(--text-muted)]/40",
+    dot: "bg-[var(--muted)]",
+    text: "text-[var(--muted)]",
+    bg: "bg-[var(--muted)]/10",
+    ring: "ring-[var(--muted)]/40",
     presence: "offline",
   },
 };
@@ -246,7 +246,7 @@ export const DEFAULTS: Settings = {
   darkMode: true,
   useMaterialYou: false,
   theme: "obsidian",
-  iconPack: "phosphor",
+  iconPack: "lucide",
   densityMode: "comfortable",
   fontSize: 100,
   fontFamily: "sans",
@@ -388,14 +388,10 @@ export const DEFAULTS: Settings = {
 const KEY = "ethone-settings-v1";
 const WRITE_AT_KEY = "ethone-settings-write-at";
 
-function writeAtKey(profileId?: string): string {
-  return profileId ? `${WRITE_AT_KEY}:${profileId}` : WRITE_AT_KEY;
-}
-
-export function getWriteAt(profileId?: string): number {
+export function getWriteAt(): number {
   if (typeof window === "undefined") return 0;
   try {
-    const raw = localStorage.getItem(writeAtKey(profileId));
+    const raw = localStorage.getItem(WRITE_AT_KEY);
     if (!raw) return 0;
     const n = parseInt(raw, 10);
     return Number.isNaN(n) ? 0 : n;
@@ -404,10 +400,10 @@ export function getWriteAt(profileId?: string): number {
   }
 }
 
-export function setWriteAt(ts: number, profileId?: string) {
+export function setWriteAt(ts: number) {
   if (typeof window === "undefined") return;
   try {
-    localStorage.setItem(writeAtKey(profileId), String(ts));
+    localStorage.setItem(WRITE_AT_KEY, String(ts));
   } catch {}
 }
 
@@ -499,9 +495,8 @@ export function loadSettings(profileId?: string): Settings {
 
 export function saveSettings(settings: Settings, profileId?: string) {
   if (typeof window === "undefined") return;
-  const key = localSettingsKey(profileId);
-  localStorage.setItem(key, JSON.stringify(settings));
-  setWriteAt(Date.now(), profileId);
+  localStorage.setItem(localSettingsKey(profileId), JSON.stringify(settings));
+  setWriteAt(Date.now());
 }
 
 export type RemoteSettings = { settings: Partial<Settings>; updatedAt?: string };
@@ -526,8 +521,8 @@ export async function loadSettingsAsync(): Promise<RemoteSettings> {
   }
 }
 
-export async function saveSettingsAsync(settings: Settings, profileId?: string): Promise<void> {
-  saveSettings(settings, profileId);
+export async function saveSettingsAsync(settings: Settings): Promise<void> {
+  saveSettings(settings);
   try {
     const { data: sessionData } = await supabase.auth.getSession();
     const userId = sessionData?.session?.user?.id;
@@ -552,7 +547,7 @@ export async function saveSettingsAsync(settings: Settings, profileId?: string):
       .single();
 
     if (error) throw error;
-    if (data?.updated_at) setWriteAt(new Date(data.updated_at).getTime(), profileId);
+    if (data?.updated_at) setWriteAt(new Date(data.updated_at).getTime());
   } catch (err) {
     // localStorage already holds the fallback for offline scenarios.
     throw err;

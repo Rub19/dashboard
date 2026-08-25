@@ -165,6 +165,11 @@ export function resolveTheme(theme: string): { theme: PremiumTheme; dark: boolea
   return { theme: resolved, dark: true };
 }
 
+/** Mix two CSS color strings in the srgb color space. */
+function colorMix(a: string, b: string, pct = 50): string {
+  return `color-mix(in srgb, ${a} ${pct}%, ${b})`;
+}
+
 /** Compute a black-or-white contrast color for an arbitrary accent hex. */
 export function getContrastColor(hex: string): "#000000" | "#FFFFFF" {
   const normalized = hex.replace("#", "");
@@ -207,22 +212,30 @@ export function applyTheme(themeId: PremiumTheme | string): void {
   root.style.setProperty("--bg-main", def.bgMain);
   root.style.setProperty("--bg-surface", def.bgSurface);
   root.style.setProperty("--bg-sidebar", def.bgSidebar);
+  root.style.setProperty("--bg-card", colorMix(def.bgSurface, def.bgSidebar, 35));
+  root.style.setProperty("--bg-input", "rgba(255, 255, 255, 0.05)");
+  root.style.setProperty("--bg-overlay", "rgba(0, 0, 0, 0.55)");
+  root.style.setProperty("--bg-raised", def.bgSidebar);
   root.style.setProperty("--border-subtle", def.borderSubtle);
   root.style.setProperty("--border-active", def.borderActive);
+  root.style.setProperty("--text-primary", def.textPrimary);
+  root.style.setProperty("--text-secondary", colorMix(def.textPrimary, def.textMuted, 30));
+  root.style.setProperty("--text-muted", def.textMuted);
+  root.style.setProperty("--text-disabled", colorMix(def.textMuted, def.bgMain, 42));
+  root.style.setProperty("--text-inverse", def.bgMain);
   root.style.setProperty("--accent-primary", def.accentPrimary);
   root.style.setProperty("--accent-secondary", def.accentSecondary);
   root.style.setProperty("--accent-contrast", def.accentContrast);
   root.style.setProperty("--glow-color", def.glowColor);
-  root.style.setProperty("--text-primary", def.textPrimary);
-  root.style.setProperty("--text-muted", def.textMuted);
 
   // Keep the legacy token surface readable by the rest of the app.
   root.style.setProperty("--background", def.bgMain);
   root.style.setProperty("--foreground", def.textPrimary);
   root.style.setProperty("--surface", def.bgSurface);
-  root.style.setProperty("--surface-raised", def.bgSurface);
+  root.style.setProperty("--surface-raised", def.bgSidebar);
   root.style.setProperty("--border", def.borderSubtle);
   root.style.setProperty("--muted", def.textMuted);
+  root.style.setProperty("--accent", def.accentPrimary);
 
   // v8 ambient canvas/text so the legacy v8 surfaces stay on-palette.
   root.style.setProperty("--v8-canvas", def.bgMain);

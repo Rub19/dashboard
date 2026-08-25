@@ -124,25 +124,25 @@ export default function LiveMediaProgress({
         )}
         aria-label="Progression"
       >
-        <div className="absolute inset-0 rounded-full bg-[var(--text-primary)]/[0.04] backdrop-blur-sm" />
+        <div className="absolute inset-0 rounded-full bg-white/[0.04] backdrop-blur-sm" />
         <div
           ref={fillRef}
           className="pointer-events-none absolute left-0 top-0 h-full rounded-full transition-[width] duration-75 ease-out will-change-[width]"
           style={{
             width: "0%",
-            backgroundColor: "color-mix(in srgb, var(--accent-color, var(--accent, #10b981)) 85%, transparent)",
-            boxShadow: "0 0 10px color-mix(in srgb, var(--accent-color, var(--accent, #10b981)) 30%, transparent)",
+            backgroundColor: "color-mix(in srgb, var(--accent-secondary, var(--accent, #8b5cf6)) 85%, transparent)",
+            boxShadow: "0 0 10px color-mix(in srgb, var(--accent-secondary, var(--accent, #8b5cf6)) 30%, transparent)",
           }}
         />
         <div
           ref={thumbRef}
           className={cn(
-            "pointer-events-none absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[var(--text-primary)]/[0.12] bg-[var(--text-primary)]/[0.08] shadow-md transition-transform duration-150 will-change-[left]",
+            "pointer-events-none absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/[0.12] bg-white/[0.08] shadow-md transition-transform duration-150 will-change-[left]",
             dragging || hovered ? "scale-125" : "scale-100",
           )}
           style={{
             left: "0%",
-            boxShadow: "0 0 10px color-mix(in srgb, var(--accent-color, var(--accent, #10b981)) 35%, transparent)",
+            boxShadow: "0 0 10px color-mix(in srgb, var(--accent-secondary, var(--accent, #8b5cf6)) 35%, transparent)",
           }}
         />
       </div>

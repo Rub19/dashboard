@@ -7,22 +7,6 @@ import { useSettings } from "@/components/SettingsProvider";
 import { cn } from "@/lib/utils";
 import type { ChangelogEntry } from "@/data/changelog";
 
-function parseVersion(v: string) {
-  const parts = v.replace(/^v/, "").split(".").map(Number);
-  return parts;
-}
-
-function compareVersion(a: string, b: string) {
-  const av = parseVersion(a);
-  const bv = parseVersion(b);
-  for (let i = 0; i < Math.max(av.length, bv.length); i++) {
-    const x = av[i] || 0;
-    const y = bv[i] || 0;
-    if (x !== y) return x - y;
-  }
-  return 0;
-}
-
 type ItemType = "fix" | "feature" | "change" | "version" | "default";
 
 const FIX_RE = /corrige|corrections?|corrig[ée]|fix|bug|r[ée]sout|r[ée]solu|probl[èe]me|fermeture|d[ée]faut|[ée]choue|r[ée]solution|fiable|retour|restaur|restor|revert|patch|cass[ée]|broken|failed/i;
@@ -97,10 +81,10 @@ const TYPE_CONFIG: Record<
   default: {
     icon: Dot,
     dot: "bg-zinc-500",
-    iconColor: "text-[var(--text-muted)]",
+    iconColor: "text-zinc-400",
     badgeBg: "bg-zinc-500/10",
     badgeBorder: "border-zinc-500/20",
-    badgeText: "text-[var(--text-primary)]",
+    badgeText: "text-zinc-300",
     borderColor: "rgba(161,161,170,0.25)",
   },
 };
@@ -126,7 +110,7 @@ function ChangelogItem({ item, title, dim }: { item: string; title: string; dim?
     <li
       className={cn(
         "flex items-start gap-2.5 text-sm font-medium leading-relaxed",
-        dim ? "text-[var(--text-primary)]" : "text-[var(--text-primary)]",
+        dim ? "text-zinc-300" : "text-zinc-100",
       )}
     >
       <span
@@ -186,7 +170,7 @@ function ChangelogCard({
     >
       <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
-          <span className={cn("text-base font-bold", dim ? "text-[var(--text-primary)]" : "text-[var(--text-primary)]")}>
+          <span className={cn("text-base font-bold", dim ? "text-zinc-200" : "text-white")}>
             {entry.title}
           </span>
           <span
@@ -200,7 +184,7 @@ function ChangelogCard({
             {entry.version}
           </span>
         </div>
-        <span className="shrink-0 text-[10px] text-[var(--text-muted)]">
+        <span className="shrink-0 text-[10px] text-zinc-500">
           {formatDate(entry.date, settings.language)}
         </span>
       </div>
@@ -235,8 +219,7 @@ interface ChangelogListProps {
 }
 
 export default function ChangelogList({ entries, limit, compact, className }: ChangelogListProps) {
-  const sorted = useMemo(() => [...entries].sort((a, b) => compareVersion(b.version, a.version)), [entries]);
-  const visible = limit ? sorted.slice(0, limit) : sorted;
+  const visible = limit ? entries.slice(0, limit) : entries;
 
   return (
     <div className={cn("flex flex-col", compact ? "gap-2.5" : "gap-4", className)}>

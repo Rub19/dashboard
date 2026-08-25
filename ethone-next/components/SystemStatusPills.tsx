@@ -37,8 +37,8 @@ function StatusPill({ icon, children, onClick, title }: StatusPillProps) {
       type={onClick ? "button" : undefined}
       onClick={onClick}
       title={title}
-      className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-medium text-[var(--text-muted)] transition-[color,background-color,opacity] ${
-        onClick ? "hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] cursor-pointer" : ""
+      className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-medium text-zinc-400 transition-[color,background-color,opacity] ${
+        onClick ? "hover:bg-white/[0.06] hover:text-zinc-200 cursor-pointer" : ""
       }`}
     >
       <span className="shrink-0">{icon}</span>
@@ -72,8 +72,8 @@ function SystemStatusPills() {
   const syncLabel = syncing ? i18n("v8Syncing") || "Sync" : online ? i18n("v8Synced") || "Sync" : i18n("v8Offline") || "Offline";
 
   return (
-    <div className="hidden items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] p-1 md:flex">
-      <StatusPill icon={<Briefcase className="h-3 w-3 text-[var(--text-muted)]" />} title={i18n("workspace")}>
+    <div className="hidden items-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.03] p-1 md:flex">
+      <StatusPill icon={<Briefcase className="h-3 w-3 text-zinc-500" />} title={i18n("workspace")}>
         {workspaceLabel}
       </StatusPill>
 
@@ -91,7 +91,7 @@ function SystemStatusPills() {
 
       <Separator />
 
-      <div className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-medium text-[var(--text-muted)]">
+      <div className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-medium text-zinc-400">
         <Clock />
       </div>
     </div>

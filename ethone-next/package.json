@@ -1,6 +1,6 @@
 {
   "name": "ethone-next",
-  "version": "1.9.4",
+  "version": "1.8.16",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -16,11 +16,7 @@
     "audit:responsive": "node scripts/responsive-audit.mjs"
   },
   "dependencies": {
-    "@dnd-kit/core": "^6.3.1",
-    "@dnd-kit/sortable": "^10.0.0",
-    "@dnd-kit/utilities": "^3.2.2",
     "@floating-ui/react": "^0.27.20",
-    "@google/generative-ai": "^0.24.0",
     "@iconify-json/heroicons": "^1.2.3",
     "@iconify-json/lucide": "^1.2.123",
     "@iconify-json/ph": "^1.2.2",
@@ -31,12 +27,9 @@
     "@internationalized/date": "^3.12.3",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.2",
-    "@types/canvas-confetti": "^1.9.0",
-    "canvas-confetti": "^1.9.4",
     "framer-motion": "^13.1.0",
     "lucide-react": "^1.31.0",
     "next": "16.3.1",
-    "openai": "^7.4.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "sonner": "^1.7.4",

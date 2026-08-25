@@ -71,7 +71,7 @@ function Avatar({
         height={wh}
         unoptimized
         onError={() => setImgError(true)}
-        className={`${className} object-cover border border-[var(--text-primary)]/[0.08]`}
+        className={`${className} object-cover border border-white/[0.08]`}
       />
     );
   }
@@ -237,7 +237,7 @@ export default function ProfileDropdown() {
       >
         <Avatar url={avatarUrl} name={displayName} size="sm" />
         <span className="hidden whitespace-nowrap text-sm font-medium 2xl:inline">{displayName}</span>
-        <ChevronDown className={`h-4 w-4 text-[var(--text-muted)] transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+        <ChevronDown className={`h-4 w-4 text-zinc-500 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
 
       <FloatingPortal>
@@ -250,15 +250,15 @@ export default function ProfileDropdown() {
               exit={{ opacity: 0, y: 8, scale: 0.98 }}
               transition={{ duration: 0.15, ease: "easeOut" as const }}
               style={{ ...floatingStyles, originX: 1, originY: 0 }}
-              className="z-[var(--z-dropdown)] w-80 overflow-hidden rounded-xl border border-[var(--text-primary)]/10 bg-[var(--background)]/90 p-3 shadow-[0_16px_40px_rgba(0,0,0,0.85)] backdrop-blur-2xl"
+              className="z-[100] w-80 overflow-hidden rounded-xl border border-white/10 bg-zinc-950/90 p-3 shadow-[0_16px_40px_rgba(0,0,0,0.85)] backdrop-blur-2xl"
             >
             {/* User Card Header */}
-            <div className="flex items-center justify-between gap-3 rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] p-3">
+            <div className="flex items-center justify-between gap-3 rounded-lg border border-white/[0.06] bg-white/[0.03] p-3">
               <div className="flex min-w-0 items-center gap-3">
                 <Avatar url={avatarUrl} name={displayName} size="md" />
                 <div className="min-w-0">
-                  <p className="truncate text-xs font-bold text-[var(--text-primary)] leading-tight">{displayName}</p>
-                  <p className="truncate text-[11px] text-[var(--text-muted)] max-w-[160px]">{email}</p>
+                  <p className="truncate text-xs font-bold text-white leading-tight">{displayName}</p>
+                  <p className="truncate text-[11px] text-zinc-400 max-w-[160px]">{email}</p>
                 </div>
               </div>
               <span className="flex shrink-0 items-center gap-1 rounded-lg border border-[--accent-primary] bg-[--accent-primary] px-2 py-0.5 text-[10px] font-semibold text-[--accent-primary]">
@@ -269,7 +269,7 @@ export default function ProfileDropdown() {
 
             {/* Workspace Switcher */}
             <div className="space-y-1.5 pt-2">
-              <p className="px-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">{i18n("workspace")}</p>
+              <p className="px-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">{i18n("workspace")}</p>
               <div className="grid grid-cols-2 gap-1.5">
                 {WORKSPACES.map((w) => {
                   const isActive = activeSpace === w.id;
@@ -282,7 +282,7 @@ export default function ProfileDropdown() {
                       className={`flex items-center gap-2 rounded-lg border p-2 text-xs font-medium transition-all ${
                         isActive
                           ? "border-[var(--text-primary)]/20 bg-[var(--text-primary)]/[0.08] text-[var(--text-primary)] shadow-sm"
-                          : "border-[var(--text-primary)]/[0.04] bg-[var(--text-primary)]/[0.02] text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
+                          : "border-[var(--text-primary)]/[0.04] bg-[var(--text-primary)]/[0.02] text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
                       }`}
                     >
                       <Icon
@@ -298,56 +298,56 @@ export default function ProfileDropdown() {
 
             {/* Quick Profile Actions */}
             {activeProfile && (
-              <div className="grid grid-cols-4 gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.05] bg-[var(--text-primary)]/[0.02] p-1 pt-3">
+              <div className="grid grid-cols-4 gap-1.5 rounded-lg border border-white/[0.05] bg-white/[0.02] p-1 pt-3">
                 <button
                   type="button"
                 onClick={handleRename}
                 disabled={pending}
-                  className="group flex flex-col items-center justify-center rounded-lg py-2 px-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+                  className="group flex flex-col items-center justify-center rounded-lg py-2 px-1 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                 >
                   <Pencil className="h-4 w-4" />
-                  <span className="mt-1 text-[10px] font-medium text-[var(--text-muted)] group-hover:text-[var(--text-primary)]">{i18n("rename")}</span>
+                  <span className="mt-1 text-[10px] font-medium text-zinc-400 group-hover:text-zinc-200">{i18n("rename")}</span>
                 </button>
                 <button
                   type="button"
                   onClick={handleEditAvatar}
                   disabled={pending}
-                  className="group flex flex-col items-center justify-center rounded-lg py-2 px-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+                  className="group flex flex-col items-center justify-center rounded-lg py-2 px-1 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                 >
                   <Smile className="h-4 w-4" />
-                  <span className="mt-1 text-[10px] font-medium text-[var(--text-muted)] group-hover:text-[var(--text-primary)]">{i18n("editAvatar")}</span>
+                  <span className="mt-1 text-[10px] font-medium text-zinc-400 group-hover:text-zinc-200">{i18n("editAvatar")}</span>
                 </button>
                 <button
                   type="button"
                   onClick={handleExport}
                   disabled={pending}
-                  className="group flex flex-col items-center justify-center rounded-lg py-2 px-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+                  className="group flex flex-col items-center justify-center rounded-lg py-2 px-1 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                 >
                   <Download className="h-4 w-4" />
-                  <span className="mt-1 text-[10px] font-medium text-[var(--text-muted)] group-hover:text-[var(--text-primary)]">{i18n("exportProfile")}</span>
+                  <span className="mt-1 text-[10px] font-medium text-zinc-400 group-hover:text-zinc-200">{i18n("exportProfile")}</span>
                 </button>
                 <button
                   type="button"
                   onClick={handleDuplicate}
                   disabled={pending}
-                  className="group flex flex-col items-center justify-center rounded-lg py-2 px-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+                  className="group flex flex-col items-center justify-center rounded-lg py-2 px-1 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                 >
                   <Copy className="h-4 w-4" />
-                  <span className="mt-1 text-[10px] font-medium text-[var(--text-muted)] group-hover:text-[var(--text-primary)]">{i18n("duplicate")}</span>
+                  <span className="mt-1 text-[10px] font-medium text-zinc-400 group-hover:text-zinc-200">{i18n("duplicate")}</span>
                 </button>
               </div>
             )}
 
             {/* Profile Switcher */}
-            <div className="space-y-1.5 border-t border-[var(--text-primary)]/[0.06] pt-2">
+            <div className="space-y-1.5 border-t border-white/[0.06] pt-2">
               <div className="flex items-center justify-between px-1">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">{i18n("manageProfiles")}</p>
-                {loaded && <span className="text-[10px] text-[var(--text-muted)]">{profiles.length}</span>}
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">{i18n("manageProfiles")}</p>
+                {loaded && <span className="text-[10px] text-zinc-500">{profiles.length}</span>}
               </div>
               {!loaded ? (
-                <p className="text-xs text-[var(--text-muted)]">{i18n("loading")}</p>
+                <p className="text-xs text-zinc-500">{i18n("loading")}</p>
               ) : profiles.length === 0 ? (
-                <p className="text-xs text-[var(--text-muted)]">{i18n("noSpaces")}</p>
+                <p className="text-xs text-zinc-500">{i18n("noSpaces")}</p>
               ) : (
                 <div className="flex flex-col gap-1">
                   {profiles.map((p) => {
@@ -365,7 +365,7 @@ export default function ProfileDropdown() {
                         <Avatar url={isActive ? avatarUrl : undefined} name={p.name} size="sm" />
                         <div className="min-w-0 flex-1">
                           <p className="truncate font-medium">{p.name}</p>
-                          <p className="truncate text-[10px] text-[var(--text-muted)]">{i18n(p.workspace)}</p>
+                          <p className="truncate text-[10px] text-zinc-500">{i18n(p.workspace)}</p>
                         </div>
                         {isActive && <Check className="h-4 w-4 text-[var(--accent-color)]" />}
                       </button>
@@ -376,9 +376,9 @@ export default function ProfileDropdown() {
             </div>
 
             {/* Team quick access */}
-            <div className="border-t border-[var(--text-primary)]/[0.06] pt-2">
+            <div className="border-t border-white/[0.06] pt-2">
               <div className="flex items-center justify-between px-1">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">{i18n("teamTitle")}</p>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">{i18n("teamTitle")}</p>
                 <button
                   type="button"
                   onClick={() => {
@@ -391,7 +391,7 @@ export default function ProfileDropdown() {
                 </button>
               </div>
               {members.length === 0 ? (
-                <p className="px-1 pt-1 text-xs text-[var(--text-muted)]">{i18n("noTeam")}</p>
+                <p className="px-1 pt-1 text-xs text-zinc-500">{i18n("noTeam")}</p>
               ) : (
                 <div className="mt-1.5 flex items-center gap-2 px-1">
                   <div className="flex -space-x-2">
@@ -399,19 +399,19 @@ export default function ProfileDropdown() {
                       <div
                         key={m.id}
                         title={m.display_name || m.email}
-                        className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-[var(--background)] text-[10px] font-medium text-[var(--text-primary)]"
+                        className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-zinc-950 text-[10px] font-medium text-white"
                         style={{ background: "var(--accent-color, #10b981)" }}
                       >
                         {initials(m.display_name || m.email)}
                       </div>
                     ))}
                     {extraMembers > 0 && (
-                      <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-[var(--background)] bg-zinc-900 text-[10px] font-medium text-[var(--text-muted)]">
+                      <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-zinc-950 bg-zinc-900 text-[10px] font-medium text-zinc-400">
                         +{extraMembers}
                       </div>
                     )}
                   </div>
-                  <span className="text-xs text-[var(--text-muted)]">
+                  <span className="text-xs text-zinc-500">
                     {members.length} {i18n("members")}
                   </span>
                 </div>
@@ -419,7 +419,7 @@ export default function ProfileDropdown() {
             </div>
 
             {/* Footer nav */}
-            <div className="flex flex-col gap-0.5 border-t border-[var(--text-primary)]/[0.06] pt-2">
+            <div className="flex flex-col gap-0.5 border-t border-white/[0.06] pt-2">
               <button
                 type="button"
                 onClick={() => {
@@ -428,7 +428,7 @@ export default function ProfileDropdown() {
                 }}
                 className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.04]"
               >
-                <User className="h-4 w-4 text-[var(--text-muted)]" />
+                <User className="h-4 w-4 text-zinc-400" />
                 {i18n("myProfile")}
               </button>
               <button
@@ -439,9 +439,9 @@ export default function ProfileDropdown() {
                 }}
                 className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.04]"
               >
-                <Sliders className="h-4 w-4 text-[var(--text-muted)]" />
+                <Sliders className="h-4 w-4 text-zinc-400" />
                 {i18n("settings")}
-                <span className="ml-auto text-[10px] text-[var(--text-muted)]">⌘,</span>
+                <span className="ml-auto text-[10px] text-zinc-600">⌘,</span>
               </button>
               <button
                 type="button"
@@ -453,7 +453,7 @@ export default function ProfileDropdown() {
               >
                 <Sparkles className="h-4 w-4 text-purple-400" />
                 {i18n("changelog")}
-                <span className="ml-auto text-[10px] text-[var(--text-muted)]">v1.0</span>
+                <span className="ml-auto text-[10px] text-zinc-500">v1.0</span>
               </button>
               {activeProfile && profiles.length > 1 && (
                 <button

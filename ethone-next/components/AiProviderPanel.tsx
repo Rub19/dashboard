@@ -10,7 +10,7 @@ export function AiProviderPanel() {
   const { status, quota, loading, error } = useAiStatus();
 
   if (loading) {
-    return <p className="text-sm text-[var(--text-muted)]">Chargement des providers IA...</p>;
+    return <p className="text-sm text-[var(--muted)]">Chargement des providers IA...</p>;
   }
 
   if (error) {
@@ -27,26 +27,26 @@ export function AiProviderPanel() {
   return (
     <div className="space-y-4">
       <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 backdrop-blur-[var(--panel-blur)]">
-        <p className="text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">Primary AI</p>
+        <p className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">Primary AI</p>
         <div className="mt-2 flex items-center gap-2">
           <span className="h-2 w-2 rounded-full bg-[--accent-primary]" />
           <span className="text-sm font-medium">{primary?.label || status?.primary || "Cloudflare Workers AI"}</span>
         </div>
-        <p className="mt-1 text-xs text-[var(--text-muted)]">{primary?.defaultModel || status?.cloudflare?.model}</p>
+        <p className="mt-1 text-xs text-[var(--muted)]">{primary?.defaultModel || status?.cloudflare?.model}</p>
       </div>
 
       <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 backdrop-blur-[var(--panel-blur)]">
-        <p className="text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">Fallback AI</p>
+        <p className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">Fallback AI</p>
         <div className="mt-2 flex items-center gap-2">
           <span className={`h-2 w-2 rounded-full ${fallback ? "bg-amber-500" : "bg-red-500"}`} />
           <span className="text-sm font-medium">{fallback?.label || status?.fallback || "Non configuré"}</span>
         </div>
-        <p className="mt-1 text-xs text-[var(--text-muted)]">{fallback?.defaultModel}</p>
+        <p className="mt-1 text-xs text-[var(--muted)]">{fallback?.defaultModel}</p>
       </div>
 
       {quota && (
         <div className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 backdrop-blur-[var(--panel-blur)]">
-          <p className="text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">Cloudflare Quota</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">Cloudflare Quota</p>
           <div className="mt-2 flex items-center justify-between text-sm">
             <span>{Math.round(quota.used)} / {quota.budget} neurons</span>
             <span className={`font-medium ${quota.exhausted ? "text-red-400" : quota.prepare ? "text-amber-400" : quota.warning ? "text-yellow-400" : "text-[--accent-primary]"}`}>

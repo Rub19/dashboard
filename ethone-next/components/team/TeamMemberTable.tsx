@@ -16,7 +16,7 @@ const ROLE_META: Record<TeamRole, { label: string; color: string; border: string
   senior: { label: "Développeur", color: "text-[--info]", border: "border-[--info]", bg: "bg-[--info]" },
   junior: { label: "Éditeur", color: "text-sky-400", border: "border-sky-500/30", bg: "bg-sky-500/10" },
   assistant: { label: "Éditeur", color: "text-sky-400", border: "border-sky-500/30", bg: "bg-sky-500/10" },
-  viewer: { label: "Lecteur", color: "text-[var(--text-muted)]", border: "border-zinc-500/30", bg: "bg-zinc-500/10" },
+  viewer: { label: "Lecteur", color: "text-zinc-400", border: "border-zinc-500/30", bg: "bg-zinc-500/10" },
 };
 
 const ROLES: TeamRole[] = ["owner", "admin", "senior", "junior", "assistant", "viewer"];
@@ -40,7 +40,7 @@ function Avatar({ member }: { member: TeamMember }) {
 
   return (
     <span
-      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--text-primary)]/[0.08] text-[11px] font-bold text-[var(--text-primary)]"
+      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/[0.08] text-[11px] font-bold text-zinc-200"
       style={{ background: bg }}
     >
       {member.initials || "?"}
@@ -68,7 +68,7 @@ function StatusBadge({ status, invitedAt }: { status: TeamStatus; invitedAt?: st
     );
   }
   return (
-    <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-[var(--text-muted)]">
+    <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-zinc-500">
       <span className="h-2 w-2 rounded-full bg-zinc-500" />
       {i18n(status) || status}
     </span>
@@ -129,14 +129,14 @@ export default function TeamMemberTable({ members, loading, onUpdateRole, onRemo
           className="min-w-0 w-full sm:w-72"
         />
 
-        <div className="flex items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-1">
+        <div className="flex items-center gap-1.5 rounded-xl border border-white/[0.06] bg-white/[0.02] p-1">
           {FILTERS.map((id) => (
             <button
               key={id}
               type="button"
               onClick={() => setFilter(id)}
               className={`relative rounded-lg px-3 py-1.5 text-[11px] font-medium transition-colors ${
-                filter === id ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                filter === id ? "text-white" : "text-zinc-500 hover:text-zinc-300"
               }`}
             >
               {filter === id && (
@@ -153,7 +153,7 @@ export default function TeamMemberTable({ members, loading, onUpdateRole, onRemo
       </div>
 
       <div className="overflow-hidden rounded-2xl v8-panel backdrop-blur-xl">
-        <div className="grid grid-cols-12 px-4 py-2.5 bg-[var(--text-primary)]/[0.02] border-b border-[var(--text-primary)]/[0.05] text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider">
+        <div className="grid grid-cols-12 px-4 py-2.5 bg-white/[0.02] border-b border-white/[0.05] text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
           <span className="col-span-5">{i18n("member")}</span>
           <span className="col-span-3">{i18n("role")}</span>
           <span className="col-span-2">{i18n("status")}</span>
@@ -163,16 +163,16 @@ export default function TeamMemberTable({ members, loading, onUpdateRole, onRemo
         {loading ? (
           <div className="space-y-1 p-4">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-12 w-full animate-pulse rounded bg-[var(--text-primary)]/[0.04]" />
+              <div key={i} className="h-12 w-full animate-pulse rounded bg-white/[0.04]" />
             ))}
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <Users className="h-8 w-8 text-[var(--text-muted)] mb-2" />
-            <p className="text-sm font-medium text-[var(--text-primary)]">
+            <Users className="h-8 w-8 text-zinc-600 mb-2" />
+            <p className="text-sm font-medium text-zinc-300">
               {i18n("teamEmptyTitle") || "Vous êtes le seul membre de cet espace"}
             </p>
-            <p className="text-xs text-[var(--text-muted)] mt-1 max-w-xs">
+            <p className="text-xs text-zinc-500 mt-1 max-w-xs">
               {i18n("teamEmptyDescription") ||
                 "Invitez des collaborateurs pour partager vos flows, vos intégrations et vos notes."}
             </p>
@@ -187,13 +187,13 @@ export default function TeamMemberTable({ members, loading, onUpdateRole, onRemo
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -6 }}
                   transition={{ duration: 0.15 }}
-                  className="grid grid-cols-12 items-center px-4 py-3 border-b border-[var(--text-primary)]/[0.04] last:border-b-0 hover:bg-[var(--text-primary)]/[0.02] transition-colors"
+                  className="grid grid-cols-12 items-center px-4 py-3 border-b border-white/[0.04] last:border-b-0 hover:bg-white/[0.02] transition-colors"
                 >
                   <div className="col-span-5 flex items-center gap-3 min-w-0">
                     <Avatar member={m} />
                     <div className="min-w-0">
-                      <p className="truncate text-xs font-semibold text-[var(--text-primary)]">{m.display_name || m.email}</p>
-                      <p className="truncate text-[11px] text-[var(--text-muted)]">{m.email}</p>
+                      <p className="truncate text-xs font-semibold text-white">{m.display_name || m.email}</p>
+                      <p className="truncate text-[11px] text-zinc-500">{m.email}</p>
                     </div>
                   </div>
 
@@ -222,7 +222,7 @@ export default function TeamMemberTable({ members, loading, onUpdateRole, onRemo
                           type="button"
                           onClick={() => onUpdateRole(m.id, (m.role === "admin" ? "viewer" : "admin") as TeamRole)}
                           aria-label={i18n("editRole") || "Modifier le rôle"}
-                          className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+                          className="rounded p-1.5 text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-white"
                         >
                           <Shield className="h-3.5 w-3.5" />
                         </button>
@@ -230,7 +230,7 @@ export default function TeamMemberTable({ members, loading, onUpdateRole, onRemo
                           type="button"
                           onClick={() => onRemove(m.id)}
                           aria-label={i18n("removeMember") || "Retirer"}
-                          className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-red-500/10 hover:text-red-400"
+                          className="rounded p-1.5 text-zinc-400 transition-colors hover:bg-red-500/10 hover:text-red-400"
                         >
                           <UserX className="h-3.5 w-3.5" />
                         </button>

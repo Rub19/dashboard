@@ -244,12 +244,12 @@ export function useLiveData(pollMs = 60000) {
 
   const hasRiotId = liveTrackerRiotName && liveTrackerRiotTag;
   const valorantPath = hasRiotId
-    ? `/api/stats/valorant-matches?name=${encodeURIComponent(liveTrackerRiotName)}&tag=${encodeURIComponent(
+    ? `/api/tracker/valorant-matches?name=${encodeURIComponent(liveTrackerRiotName)}&tag=${encodeURIComponent(
         liveTrackerRiotTag
       )}`
     : null;
   const lolPath = hasRiotId
-    ? `/api/stats/lol-matches?name=${encodeURIComponent(liveTrackerRiotName)}&tag=${encodeURIComponent(
+    ? `/api/tracker/lol-matches?name=${encodeURIComponent(liveTrackerRiotName)}&tag=${encodeURIComponent(
         liveTrackerRiotTag
       )}`
     : null;
@@ -268,12 +268,12 @@ export function useLiveData(pollMs = 60000) {
 
   const hasApexId = liveTrackerApexPlatform && liveTrackerApexIdentifier;
   const apexProfilePath = hasApexId
-    ? `/api/stats/apex-profile?platform=${encodeURIComponent(liveTrackerApexPlatform)}&identifier=${encodeURIComponent(
+    ? `/api/tracker/apex-profile?platform=${encodeURIComponent(liveTrackerApexPlatform)}&identifier=${encodeURIComponent(
         liveTrackerApexIdentifier
       )}`
     : null;
   const apexMatchesPath = hasApexId
-    ? `/api/stats/apex-matches?platform=${encodeURIComponent(liveTrackerApexPlatform)}&identifier=${encodeURIComponent(
+    ? `/api/tracker/apex-matches?platform=${encodeURIComponent(liveTrackerApexPlatform)}&identifier=${encodeURIComponent(
         liveTrackerApexIdentifier
       )}&mode=all`
     : null;
@@ -346,9 +346,8 @@ export function useLiveData(pollMs = 60000) {
         );
         if (failures.length) {
           setError(failures[0].reason instanceof Error ? failures[0].reason : new Error(String(failures[0].reason)));
-          const reasons = [...new Set(failures.map((f) => (f.reason instanceof Error ? f.reason.message : String(f.reason))))];
-          if (reasons.length) {
-            console.warn(`Live data source(s) failed: ${reasons.length} unique`, reasons.slice(0, 3));
+          for (const failure of failures) {
+            console.error("Live data source failed:", failure.reason);
           }
         }
         if (np.status === "fulfilled") {

@@ -49,9 +49,6 @@ export function Checkbox({
         disabled ? "cursor-not-allowed" : "cursor-pointer",
         className,
       )}
-      onClick={() => {
-        if (!disabled) onCheckedChange(!checked);
-      }}
     >
       <motion.button
         id={id}
@@ -63,7 +60,6 @@ export function Checkbox({
         disabled={disabled}
         onClick={(e) => {
           onClick?.(e);
-          e.stopPropagation();
           if (!disabled) onCheckedChange(!checked);
         }}
         whileTap={reduce || disabled ? undefined : { scale: 0.92 }}

@@ -154,12 +154,12 @@ export default function MatchesPage() {
   const path = useMemo(() => {
     if (tab === "apex") {
       if (!settings.liveTrackerApexIdentifier) return "";
-      return `/api/stats/apex-matches?platform=${encodeURIComponent(settings.liveTrackerApexPlatform)}&identifier=${encodeURIComponent(settings.liveTrackerApexIdentifier)}&mode=all`;
+      return `/api/tracker/apex-matches?platform=${encodeURIComponent(settings.liveTrackerApexPlatform)}&identifier=${encodeURIComponent(settings.liveTrackerApexIdentifier)}&mode=all`;
     }
     if (!settings.liveTrackerRiotName || !settings.liveTrackerRiotTag) return "";
     return tab === "valorant"
-      ? `/api/stats/valorant-matches?name=${encodeURIComponent(settings.liveTrackerRiotName)}&tag=${encodeURIComponent(settings.liveTrackerRiotTag)}`
-      : `/api/stats/lol-matches?name=${encodeURIComponent(settings.liveTrackerRiotName)}&tag=${encodeURIComponent(settings.liveTrackerRiotTag)}`;
+      ? `/api/tracker/valorant-matches?name=${encodeURIComponent(settings.liveTrackerRiotName)}&tag=${encodeURIComponent(settings.liveTrackerRiotTag)}`
+      : `/api/tracker/lol-matches?name=${encodeURIComponent(settings.liveTrackerRiotName)}&tag=${encodeURIComponent(settings.liveTrackerRiotTag)}`;
   }, [
     tab,
     settings.liveTrackerRiotName,

@@ -78,7 +78,7 @@ export default function CalendarInvoicesPage() {
             onAdd={openAdd}
           />
 
-          <div className="flex flex-wrap items-center gap-2 text-[10px] text-[var(--text-muted)]">
+          <div className="flex flex-wrap items-center gap-2 text-[10px] text-zinc-500">
             <span className="flex items-center gap-1.5">
               <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
               Réunion
@@ -103,32 +103,32 @@ export default function CalendarInvoicesPage() {
         hideFooter
       >
         {selectedItem ? (
-          <div className="mt-2 space-y-2 text-sm text-[var(--text-muted)]">
+          <div className="mt-2 space-y-2 text-sm text-zinc-400">
             <p>
-              Catégorie : <span className="text-[var(--text-primary)]">{selectedItem.category}</span>
+              Catégorie : <span className="text-white">{selectedItem.category}</span>
             </p>
             <p>
-              Date : <span className="text-[var(--text-primary)]">{selectedItem.date}</span>
+              Date : <span className="text-white">{selectedItem.date}</span>
             </p>
             {selectedItem.amount ? (
               <p>
-                Montant : <span className="text-[var(--text-primary)]">${selectedItem.amount.toFixed(2)}</span>
+                Montant : <span className="text-white">${selectedItem.amount.toFixed(2)}</span>
               </p>
             ) : null}
             {selectedItem.vendor && (
-              <div className="mt-3 flex items-center gap-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] p-3">
+              <div className="mt-3 flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] p-3">
                 <span
-                  className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-primary)]"
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-white"
                   style={{ backgroundColor: selectedItem.color || "#A259FF" }}
                 >
                   <VendorLogo vendor={selectedItem.vendor} className="h-4 w-4" />
                 </span>
-                <span className="text-sm font-medium text-[var(--text-primary)]">{selectedItem.title}</span>
+                <span className="text-sm font-medium text-white">{selectedItem.title}</span>
               </div>
             )}
           </div>
         ) : (
-          <div className="mt-2 flex flex-col items-center justify-center gap-2 py-8 text-center text-[var(--text-muted)]">
+          <div className="mt-2 flex flex-col items-center justify-center gap-2 py-8 text-center text-zinc-500">
             <Calendar className="h-6 w-6" />
             <p className="text-sm">{i18n("addInvoiceSoon", "Le formulaire d'ajout sera intégré prochainement.")}</p>
           </div>

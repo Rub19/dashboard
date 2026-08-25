@@ -48,10 +48,10 @@ export default function LiveWidget() {
   const discordHandle = lanyard?.username ? (lanyard?.discriminator ? `${lanyard.username}#${lanyard.discriminator}` : `@${lanyard.username}`) : null;
 
   const statusTone = {
-    online: "bg-[--accent-primary]/10 text-[--accent-primary] ring-[--accent-primary]",
-    idle: "bg-[var(--warning)]/10 text-[var(--warning)] ring-[var(--warning)]/30",
-    dnd: "bg-[var(--danger)]/10 text-[var(--danger)] ring-[var(--danger)]/30",
-    offline: "bg-[var(--text-muted)]/10 text-[var(--text-muted)] ring-[var(--text-muted)]/30",
+    online: "bg-[--accent-primary] text-[--accent-primary] ring-[--accent-primary]",
+    idle: "bg-amber-500/10 text-amber-400 ring-amber-500/30",
+    dnd: "bg-rose-500/10 text-rose-400 ring-rose-500/30",
+    offline: "bg-zinc-500/10 text-zinc-400 ring-zinc-500/30",
   }[lanyard?.discord_status || "offline"];
 
   const statusLabel = {
@@ -114,7 +114,7 @@ export default function LiveWidget() {
   }, [embedUrl]);
 
   return (
-    <div className="fixed bottom-[calc(3rem+env(safe-area-inset-bottom))] right-6 z-40 flex flex-col items-end gap-2">
+    <div className="fixed bottom-12 right-6 z-40 flex flex-col items-end gap-2">
       <AnimatePresence>
         {isOpen && !isMinimized && (
           <motion.div
@@ -134,26 +134,26 @@ export default function LiveWidget() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className={`w-80 cursor-grab overflow-hidden rounded-2xl border border-[var(--text-primary)]/10 bg-[var(--background)]/90 shadow-[0_0_40px_rgba(0,0,0,0.8)] backdrop-blur-2xl active:cursor-grabbing ${
+            className={`w-80 cursor-grab overflow-hidden rounded-2xl border border-white/10 bg-zinc-950/90 shadow-[0_0_40px_rgba(0,0,0,0.8)] backdrop-blur-2xl active:cursor-grabbing ${
               expanded ? "w-[720px]" : ""
             }`}
           >
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-3 py-2">
+            <div className="flex items-center justify-between border-b border-white/[0.06] bg-white/[0.02] px-3 py-2">
               <div className="flex items-center gap-2">
-                <GripVertical className="h-4 w-4 text-[var(--text-muted)] cursor-grab" />
+                <GripVertical className="h-4 w-4 text-zinc-500 cursor-grab" />
                 <span className="relative flex h-4 w-4 items-center justify-center">
                   <span className="absolute h-2 w-2 rounded-full bg-[--accent-primary] animate-ping" />
                   <span className="h-2 w-2 rounded-full bg-[--accent-primary]" />
                 </span>
-                <span className="text-xs font-bold text-[var(--text-primary)] tracking-wider">LIVE</span>
+                <span className="text-xs font-bold text-white tracking-wider">LIVE</span>
               </div>
               <div className="flex items-center gap-1">
                 <button
                   type="button"
                   aria-label={expanded ? i18n("shrink") || "Réduire" : i18n("expand") || "Agrandir"}
                   onClick={() => toggleExpand()}
-                  className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+                  className="rounded p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                 >
                   <Maximize2 className="h-3.5 w-3.5" />
                 </button>
@@ -161,7 +161,7 @@ export default function LiveWidget() {
                   type="button"
                   aria-label={i18n("minimize") || "Minimiser"}
                   onClick={() => toggleMinimize()}
-                  className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+                  className="rounded p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                 >
                   <ChevronDown className="h-3.5 w-3.5" />
                 </button>
@@ -169,7 +169,7 @@ export default function LiveWidget() {
                   type="button"
                   aria-label={i18n("close") || "Fermer"}
                   onClick={() => closeLive()}
-                  className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--danger)]"
+                  className="rounded p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--danger)]"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -187,14 +187,14 @@ export default function LiveWidget() {
                   {/* Stream area */}
                   <div className="space-y-1">
                     <div className="flex items-center justify-between px-0.5">
-                      <span className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
+                      <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-500">
                         {i18n("liveDirectStream", "Flux direct")}
                       </span>
-                      <span className="text-[10px] text-[var(--text-muted)]">
+                      <span className="text-[10px] text-zinc-600">
                         {i18n("liveStreamHint", "HLS / WebRTC / iframe")}
                       </span>
                     </div>
-                    <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--background)]">
+                    <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/[0.06] bg-black">
                       {streamUrl && isSecureStream ? (
                         <iframe
                           src={embedUrl}
@@ -204,12 +204,12 @@ export default function LiveWidget() {
                           sandbox={isYouTube ? "allow-scripts allow-presentation allow-popups" : "allow-same-origin allow-scripts allow-presentation"}
                         />
                       ) : (
-                        <div className="flex h-full w-full flex-col items-center justify-center gap-2 px-4 text-[var(--text-muted)]">
+                        <div className="flex h-full w-full flex-col items-center justify-center gap-2 px-4 text-zinc-500">
                           <Radio className="h-8 w-8 animate-pulse text-[--accent-primary]" />
                           <p className="text-center text-[11px]">
                             {i18n("liveStreamWaiting", "En attente du flux direct...")}
                           </p>
-                          <p className="max-w-[220px] text-center text-[10px] text-[var(--text-muted)]">
+                          <p className="max-w-[220px] text-center text-[10px] text-zinc-600">
                             {i18n("liveStreamHelp", "Collez une URL de flux vidéo dans le champ ci-dessous.")}
                           </p>
                         </div>
@@ -219,7 +219,7 @@ export default function LiveWidget() {
 
                   {/* Now playing */}
                   {nowPlaying?.isPlaying ? (
-                    <div className="flex items-center gap-3 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2">
+                    <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2">
                       {nowPlaying.cover || nowPlaying.artworkUrl ? (
                         <Image
                           src={nowPlaying.cover || nowPlaying.artworkUrl || ""}
@@ -230,25 +230,25 @@ export default function LiveWidget() {
                           className="h-9 w-9 shrink-0 rounded-lg object-cover"
                         />
                       ) : (
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-500/10 text-violet-400">
                           <Icon name="disc" className={`h-5 w-5 ${nowPlaying.isPlaying ? "animate-spin" : ""}`} />
                         </span>
                       )}
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-[var(--text-primary)]">{nowPlaying.title}</p>
-                        <p className="truncate text-xs text-[var(--text-muted)]">
+                        <p className="truncate text-sm font-medium text-zinc-100">{nowPlaying.title}</p>
+                        <p className="truncate text-xs text-zinc-500">
                           <span className="text-[--accent-primary]">{nowPlaying.source || "Spotify"}</span>
                           {nowPlaying.artist ? ` — ${nowPlaying.artist}` : ""}
                         </p>
                       </div>
                     </div>
                   ) : loading ? (
-                    <div className="h-8 w-2/3 animate-pulse rounded bg-[var(--text-primary)]/[0.04]" />
+                    <div className="h-8 w-2/3 animate-pulse rounded bg-white/[0.04]" />
                   ) : null}
 
                   {/* Spotify controls */}
                   {nowPlaying && (
-                    <div className="flex items-center justify-center gap-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-1.5">
+                    <div className="flex items-center justify-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] p-1.5">
                       <button
                         type="button"
                         aria-label={i18n("previous")}
@@ -278,7 +278,7 @@ export default function LiveWidget() {
 
                   {/* Lanyard status */}
                   {lanyard?.discord_status && (
-                    <div className="flex items-center gap-3 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5">
+                    <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
                       <div className="relative h-10 w-10 shrink-0">
                         {discordAvatarUrl ? (
                           <Image
@@ -287,7 +287,7 @@ export default function LiveWidget() {
                             width={40}
                             height={40}
                             unoptimized
-                            className="h-full w-full rounded-xl object-cover ring-1 ring-[var(--text-primary)]/10"
+                            className="h-full w-full rounded-xl object-cover ring-1 ring-white/10"
                           />
                         ) : (
                           <span className={cn("flex h-full w-full items-center justify-center rounded-xl text-sm font-bold", statusTone)}>
@@ -296,23 +296,23 @@ export default function LiveWidget() {
                         )}
                         <span
                           className={cn(
-                            "absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-[var(--background)]",
+                            "absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-zinc-950",
                             lanyard.discord_status === "online"
                               ? "bg-[--accent-primary]"
                               : lanyard.discord_status === "idle"
-                                ? "bg-[var(--warning)]"
+                                ? "bg-amber-400"
                                 : lanyard.discord_status === "dnd"
-                                  ? "bg-[var(--danger)]"
-                                  : "bg-[var(--text-muted)]",
+                                  ? "bg-rose-400"
+                                  : "bg-zinc-400",
                           )}
                         />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-[var(--text-primary)]">{discordDisplayName}</p>
-                        <p className="truncate text-xs text-[var(--text-muted)]">
-                          <span className="text-[var(--text-muted)]">{discordHandle || "Discord"}</span>
-                          {discordHandle ? <span className="mx-1.5 text-[var(--text-muted)]">·</span> : null}
-                          <span className="text-[var(--text-muted)]">{statusLabel}</span>
+                        <p className="truncate text-sm font-medium text-zinc-100">{discordDisplayName}</p>
+                        <p className="truncate text-xs text-zinc-500">
+                          <span className="text-zinc-400">{discordHandle || "Discord"}</span>
+                          {discordHandle ? <span className="mx-1.5 text-zinc-700">·</span> : null}
+                          <span className="text-zinc-400">{statusLabel}</span>
                         </p>
                       </div>
                     </div>
@@ -320,7 +320,7 @@ export default function LiveWidget() {
 
                   {/* Discord Spotify activity */}
                   {lanyardSpotify?.playing && (
-                    <div className="flex items-center gap-3 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5">
+                    <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
                       {lanyardSpotify.artworkUrl || lanyardSpotify.artwork ? (
                         <Image
                           src={lanyardSpotify.artworkUrl || lanyardSpotify.artwork || ""}
@@ -331,13 +331,13 @@ export default function LiveWidget() {
                           className="h-9 w-9 shrink-0 rounded-lg object-cover"
                         />
                       ) : (
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[--accent-primary]/10 text-[--accent-primary]">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[--accent-primary] text-[--accent-primary]">
                           <Music className="h-5 w-5" />
                         </span>
                       )}
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-[var(--text-primary)]">{lanyardSpotify.title || "—"}</p>
-                        <p className="truncate text-xs text-[var(--text-muted)]">
+                        <p className="truncate text-sm font-medium text-zinc-100">{lanyardSpotify.title || "—"}</p>
+                        <p className="truncate text-xs text-zinc-500">
                           <span className="text-[--accent-primary]">Spotify</span>
                           {lanyardSpotify.artist ? ` — ${lanyardSpotify.artist}` : ""}
                         </p>
@@ -368,7 +368,7 @@ export default function LiveWidget() {
                               }
                             }}
                             title={i18n("paste", "Coller")}
-                            className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+                            className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
                           >
                             <ClipboardPaste className="h-3.5 w-3.5" />
                           </button>
@@ -377,7 +377,7 @@ export default function LiveWidget() {
                               type="button"
                               onClick={() => setLiveSource("")}
                               title={i18n("clear", "Effacer")}
-                              className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] text-[var(--text-muted)] transition-colors hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
+                              className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] text-[var(--muted)] transition-colors hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
                             >
                               <X className="h-3.5 w-3.5" />
                             </button>
@@ -386,7 +386,7 @@ export default function LiveWidget() {
                       }
                     />
                   </FormField>
-                  <p className="px-0.5 text-[10px] text-[var(--text-muted)]">
+                  <p className="px-0.5 text-[10px] text-zinc-600">
                     {i18n("liveStreamInputHelp", "Colle une URL HLS (.m3u8), WebRTC ou iframe de caméra/stream.")}
                   </p>
                 </div>

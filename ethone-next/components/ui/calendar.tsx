@@ -140,7 +140,7 @@ export function Calendar({
   return (
     <div
       className={cn(
-        "flex flex-col overflow-hidden rounded-2xl border border-[var(--text-primary)]/[0.08] bg-zinc-950/75 p-4 backdrop-blur-2xl",
+        "flex flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/75 p-4 backdrop-blur-2xl",
         className,
       )}
     >
@@ -172,7 +172,7 @@ export function Calendar({
             />
           </div>
         ) : (
-          <span className="text-sm font-medium text-[var(--text-primary)]">{monthYearLabel}</span>
+          <span className="text-sm font-medium text-white">{monthYearLabel}</span>
         )}
 
         <button
@@ -185,7 +185,7 @@ export function Calendar({
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-1 text-center text-[11px] text-[var(--text-muted)]">
+      <div className="grid grid-cols-7 gap-1 text-center text-[11px] text-zinc-500">
         {weekdays.map((d) => (
           <div key={d}>{d}</div>
         ))}

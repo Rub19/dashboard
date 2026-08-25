@@ -12,8 +12,7 @@ import { Icon } from "@/lib/icons";
 import { useLayer } from "@/components/LayerProvider";
 import Slider from "@/components/ui/Slider";
 import { useSound } from "@/lib/sound";
-import AmbientSoundControl from "@/components/AmbientSoundControl";
-import type { SoundPack } from "@/lib/settings";
+import type { SoundPack, SoundAmbient } from "@/lib/settings";
 
 const UI_ANIMATIONS = ["smooth", "snappy", "reduced"] as const;
 
@@ -35,6 +34,16 @@ const PACK_ICONS: Record<string, string> = {
   silent: "volume-x",
 };
 
+const AMBIENCES = ["none", "rain", "pink", "drone", "white"] as const;
+
+const AMBIENCE_ICONS: Record<string, string> = {
+  none: "volume-x",
+  rain: "cloud-rain",
+  pink: "sparkles",
+  drone: "disc",
+  white: "wind",
+};
+
 type ToggleProps = {
   label: string;
   checked: boolean;
@@ -44,7 +53,7 @@ type ToggleProps = {
 function Toggle({ label, checked, onChange }: ToggleProps) {
   return (
     <label className="flex items-center justify-between gap-3">
-      <span className="text-sm text-[var(--text-primary)]">{label}</span>
+      <span className="text-sm text-[var(--foreground)]">{label}</span>
       <button
         type="button"
         onClick={() => onChange(!checked)}
@@ -54,7 +63,7 @@ function Toggle({ label, checked, onChange }: ToggleProps) {
         }`}
       >
         <span
-          className={`absolute top-1 h-3 w-3 rounded-full bg-[var(--text-primary)] transition-transform dark:bg-zinc-100 ${
+          className={`absolute top-1 h-3 w-3 rounded-full bg-white transition-transform dark:bg-zinc-100 ${
             checked ? "left-5" : "left-1"
           }`}
         />
@@ -73,8 +82,8 @@ function Range({ label, value, onChange }: RangeProps) {
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between text-xs">
-        <span className="text-[var(--text-primary)]">{label}</span>
-        <span className="text-[var(--text-muted)]">{value}%</span>
+        <span className="text-[var(--foreground)]">{label}</span>
+        <span className="text-[var(--muted)]">{value}%</span>
       </div>
       <Slider value={value} onChange={onChange} unit="%" className="w-full" aria-label={label} />
     </div>
@@ -114,7 +123,7 @@ export default function DockControlCenter({
 }) {
   const i18n = useI18n();
   const { settings, update } = useSettings();
-  const { play } = useSound();
+  const { play, playAmbient, stopAmbient, ambientSound } = useSound();
   const router = useRouter();
   const panelRef = useRef<HTMLDivElement | null>(null);
 
@@ -162,28 +171,28 @@ export default function DockControlCenter({
             exit={{ opacity: 0, y: 16, scale: 0.96 }}
             transition={{ type: "spring", stiffness: 350, damping: 28 }}
             style={{ transformOrigin: "bottom center" }}
-            className="fixed bottom-[calc(7rem+env(safe-area-inset-bottom))] left-1/2 z-[var(--z-popover)] w-80 max-w-[calc(100vw-1rem)] -translate-x-1/2 overflow-hidden"
+            className="fixed bottom-28 left-1/2 z-[90] w-80 max-w-[calc(100vw-1rem)] -translate-x-1/2 overflow-hidden"
             role="dialog"
             aria-modal="false"
             aria-label={i18n("controlCenter")}
           >
             <div
-              className="max-h-[calc(80vh-2.5rem)] space-y-4 overflow-y-auto rounded-lg border border-zinc-200 bg-white/90 p-4 shadow-[0_16px_50px_rgba(0,0,0,0.12)] backdrop-blur-3xl dark:border-[var(--text-primary)]/[0.08] dark:bg-zinc-950/90 dark:shadow-[0_16px_50px_rgba(0,0,0,0.7)]"
+              className="max-h-[calc(80vh-2.5rem)] space-y-4 overflow-y-auto rounded-lg border border-zinc-200 bg-white/90 p-4 shadow-[0_16px_50px_rgba(0,0,0,0.12)] backdrop-blur-3xl dark:border-white/[0.08] dark:bg-zinc-950/90 dark:shadow-[0_16px_50px_rgba(0,0,0,0.7)]"
             >
               <div className="mb-2 flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-[var(--text-primary)]">{i18n("controlCenter")}</h3>
+                <h3 className="text-sm font-semibold text-[var(--foreground)]">{i18n("controlCenter")}</h3>
                 <button
                   type="button"
                   onClick={onClose}
                     aria-label={i18n("close")}
-                  className="rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]"
+                  className="rounded p-1 text-[var(--muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)]"
                 >
                   <Icon name="close" className="h-4 w-4" />
                 </button>
               </div>
 
               <section className="space-y-2">
-                <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">
+                <p className="text-xs font-medium uppercase tracking-wider text-[var(--muted)]">
                   {i18n("controlCenterAnimations")}
                 </p>
                 <div className="grid grid-cols-3 gap-2">
@@ -203,7 +212,7 @@ export default function DockControlCenter({
               </section>
 
               <section className="space-y-2">
-                <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">
+                <p className="text-xs font-medium uppercase tracking-wider text-[var(--muted)]">
                   {i18n("quickActions")}
                 </p>
                 <div className="grid grid-cols-3 gap-2">
@@ -238,7 +247,7 @@ export default function DockControlCenter({
               </section>
 
               <section className="space-y-2">
-                <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">{i18n("soundPack")}</p>
+                <p className="text-xs font-medium uppercase tracking-wider text-[var(--muted)]">{i18n("soundPack")}</p>
                 <div className="grid grid-cols-3 gap-2">
                   {SOUND_PACKS.map((pack) => (
                     <button
@@ -269,14 +278,28 @@ export default function DockControlCenter({
               </section>
 
               <section className="space-y-2">
-                <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">{i18n("ambience")}</p>
-                <AmbientSoundControl compact />
+                <p className="text-xs font-medium uppercase tracking-wider text-[var(--muted)]">{i18n("ambience")}</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {AMBIENCES.map((id) => (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => (id === "none" || ambientSound === id ? stopAmbient() : playAmbient(id as SoundAmbient))}
+                      className={`flex flex-col items-center gap-1 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 text-[10px] font-medium transition-colors hover:border-[var(--accent-primary)] ${
+                        ambientSound === id ? "border-[var(--accent-primary)] text-[var(--accent-primary)]" : ""
+                      } backdrop-blur-[var(--panel-blur)]`}
+                    >
+                      <Icon name={AMBIENCE_ICONS[id] || "disc"} className="h-4 w-4" />
+                      {i18n(`ambience${id.charAt(0).toUpperCase() + id.slice(1)}`)}
+                    </button>
+                  ))}
+                </div>
               </section>
 
               <Link
                 href="/settings/"
                 onClick={onClose}
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-[var(--text-primary)] transition-opacity hover:opacity-90"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-zinc-50 transition-opacity hover:opacity-90"
               >
                 <Icon name="settings" className="h-4 w-4" />
                 {i18n("openSettings")}

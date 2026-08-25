@@ -167,14 +167,14 @@ export default function ShortcutsOverlay() {
                   <div className="space-y-2.5">
                     {group.shortcuts.map((shortcut, i) => (
                       <div key={i} className="flex items-start justify-between gap-3 text-xs">
-                        <span className="text-[var(--text-muted)]">{shortcut.label}</span>
+                        <span className="text-[var(--muted)]">{shortcut.label}</span>
                         <span className="flex shrink-0 items-center gap-1">
                           {shortcut.keys.map((key, j) => (
                             <span key={j}>
-                              <kbd className="rounded bg-[var(--panel-bg)] px-1.5 py-0.5 text-[10px] text-[var(--text-primary)]">
+                              <kbd className="rounded bg-[var(--panel-bg)] px-1.5 py-0.5 text-[10px] text-[var(--foreground)]">
                                 {key}
                               </kbd>
-                              {j < shortcut.keys.length - 1 && <span className="text-[var(--text-muted)]">+</span>}
+                              {j < shortcut.keys.length - 1 && <span className="text-[var(--muted)]">+</span>}
                             </span>
                           ))}
                         </span>
@@ -184,7 +184,7 @@ export default function ShortcutsOverlay() {
                 </section>
               ))}
             </div>
-            <footer className="flex items-center justify-center gap-2 border-t border-[var(--panel-border)] p-3 text-xs text-[var(--text-muted)]">
+            <footer className="flex items-center justify-center gap-2 border-t border-[var(--panel-border)] p-3 text-xs text-[var(--muted)]">
               <kbd className="rounded bg-[var(--panel-bg)] px-1 py-0.5">Ctrl</kbd>
               <span>+</span>
               <kbd className="rounded bg-[var(--panel-bg)] px-1 py-0.5">/</kbd>

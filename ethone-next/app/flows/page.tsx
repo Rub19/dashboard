@@ -45,8 +45,8 @@ const TEMPLATES = [
     id: "studio",
     desc: "Création, notes, médias et espace libre.",
     icon: "palette",
-    color: "bg-[--accent-primary]/10 text-[--accent-primary]",
-    badge: "bg-[--accent-primary]/10 text-[--accent-primary]",
+    color: "bg-[--accent-primary] text-[--accent-primary]",
+    badge: "bg-[--accent-primary] text-[--accent-primary]",
     steps: ["Explorer", "Relier", "Publier"],
     widgets: ["notes", "files", "brain", "calendar"],
   },
@@ -331,7 +331,7 @@ export default function FlowsPage() {
                               key={rule.id}
                               className={`flex items-center gap-2 rounded-xl border px-2 py-1 text-xs ${
                                 rule.enabled
-                                  ? "border-[--accent-primary] bg-[--accent-primary]/10 text-[--accent-primary]"
+                                  ? "border-[--accent-primary] bg-[--accent-primary] text-[--accent-primary]"
                                   : "border-white/[0.06] bg-white/[0.02] text-zinc-400"
                               }`}
                             >

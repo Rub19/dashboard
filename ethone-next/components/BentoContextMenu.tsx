@@ -63,8 +63,8 @@ function BentoContextMenuItem({
         <Icon
           className={`mr-2.5 h-4 w-4 shrink-0 transition-colors ${
             item.danger
-              ? "text-[var(--text-muted)] group-hover:text-rose-400"
-              : "text-[var(--text-muted)] group-hover:text-[--accent-primary]"
+              ? "text-zinc-400 group-hover:text-rose-400"
+              : "text-zinc-400 group-hover:text-[--accent-primary]"
           }`}
         />
         <span
@@ -76,7 +76,7 @@ function BentoContextMenuItem({
         </span>
       </div>
       {item.shortcut && (
-        <kbd className="rounded-md border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)] transition-colors group-hover:text-[var(--text-primary)]">
+        <kbd className="rounded-md border border-white/[0.08] bg-white/[0.04] px-1.5 py-0.5 font-mono text-[10px] text-zinc-400 transition-colors group-hover:text-zinc-300">
           {item.shortcut}
         </kbd>
       )}
@@ -238,13 +238,13 @@ const BentoContextMenu = forwardRef<HTMLDivElement, BentoContextMenuProps>(
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.12, ease: "easeOut" }}
         style={{ left: x, top: y }}
-        className="fixed z-[9999] min-w-[220px] select-none rounded-2xl border border-[var(--text-primary)]/[0.1] bg-zinc-950/85 p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.8)] backdrop-blur-2xl"
+        className="fixed z-[9999] min-w-[220px] select-none rounded-2xl border border-white/[0.1] bg-zinc-950/85 p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.8)] backdrop-blur-2xl"
       >
         {items.map((item, index) =>
           item.kind === "separator" ? (
             <div
               key={item.id ?? `sep-${index}`}
-              className="my-1 h-px bg-[var(--text-primary)]/[0.06]"
+              className="my-1 h-px bg-white/[0.06]"
             />
           ) : (
             <BentoContextMenuItem key={item.id} item={item} onClose={onClose} />

@@ -45,10 +45,9 @@ export default function MailThreadItem({ messages, active, onClick, onToggleStar
   return (
     <button
       type="button"
-      data-testid="mail-thread-item"
       onClick={onClick}
-      className={`group relative w-full border-b border-[var(--text-primary)]/[0.04] p-3.5 text-left transition-colors ${
-        active ? "bg-[var(--text-primary)]/[0.04]" : "hover:bg-[var(--text-primary)]/[0.02]"
+      className={`group relative w-full border-b border-white/[0.04] p-3.5 text-left transition-colors ${
+        active ? "bg-white/[0.04]" : "hover:bg-white/[0.02]"
       }`}
     >
       {active && (
@@ -69,7 +68,7 @@ export default function MailThreadItem({ messages, active, onClick, onToggleStar
       <p className="mt-0.5 line-clamp-2 text-[11px] text-[var(--text-muted)]">{snippet}</p>
 
       <div className="mt-2 flex items-center justify-between gap-2">
-        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] text-[10px] font-bold text-[var(--text-muted)]">
+        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.04] text-[10px] font-bold text-[var(--text-muted)]">
           {initialsFrom(first.from_name || "", first.from_address)}
         </span>
         {onToggleStar && (

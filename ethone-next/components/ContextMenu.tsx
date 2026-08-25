@@ -203,9 +203,9 @@ export default function ContextMenu({
                 onPointerEnter={() => setActiveId(item.id)}
                 className={`flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-left text-sm transition-colors hover:bg-[var(--panel-bg)] focus:bg-[var(--panel-bg)] disabled:opacity-40 disabled:hover:bg-transparent ${
                   item.id === activeId ? "bg-[var(--panel-bg)]" : ""
-                } ${item.danger ? "text-[var(--danger)]" : "text-[var(--text-primary)]"}`}
+                } ${item.danger ? "text-[var(--danger)]" : "text-[var(--foreground)]"}`}
               >
-                {item.icon && <Icon name={item.icon} className="h-4 w-4 text-[var(--text-muted)]" />}
+                {item.icon && <Icon name={item.icon} className="h-4 w-4 text-[var(--muted)]" />}
                 <span className="flex-1 truncate">{item.label}</span>
               </button>
             )

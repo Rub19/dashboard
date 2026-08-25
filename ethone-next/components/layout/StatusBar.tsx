@@ -18,6 +18,7 @@ import { useLiveWidgetStore } from "@/lib/hooks/useLiveWidgetStore";
 import { useAuth } from "@/components/AuthProvider";
 import { useActiveProfile } from "@/components/SettingsProvider";
 import { useProfile } from "@/lib/hooks/useProfile";
+import { useNotifications } from "@/lib/hooks/useNotifications";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSyncStore, type SyncState } from "@/lib/stores/sync";
@@ -77,7 +78,7 @@ function usePing() {
 
 function useSessionRole() {
   const { user } = useAuth();
-  if (!user) return { id: "guest" as const, label: "Invité", color: "text-[var(--text-muted)]" };
+  if (!user) return { id: "guest" as const, label: "Invité", color: "text-zinc-400" };
   const role =
     (user.user_metadata?.role as string | undefined) ||
     (user.app_metadata?.role as string | undefined) ||
@@ -155,7 +156,7 @@ type StatusPillProps = {
 
 function StatusPill({ icon, label, value, title, children, onClick, tone = "default" }: StatusPillProps) {
   const toneClass = {
-    default: "hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] text-[var(--text-primary)]",
+    default: "hover:bg-white/[0.06] hover:text-white text-zinc-200",
     success: "hover:bg-[--accent-primary] hover:text-[--accent-primary] text-[--accent-primary]",
     warning: "hover:bg-amber-500/[0.1] hover:text-amber-300 text-amber-400",
     error: "hover:bg-red-500/[0.1] hover:text-red-300 text-red-400",
@@ -168,7 +169,7 @@ function StatusPill({ icon, label, value, title, children, onClick, tone = "defa
       onClick={onClick}
       title={title}
       className={`group flex min-w-0 items-center gap-1.5 rounded-lg px-2 py-0.5 text-xs transition-colors ${
-        onClick ? `${toneClass} cursor-pointer` : "text-[var(--text-muted)]"
+        onClick ? `${toneClass} cursor-pointer` : "text-zinc-400"
       }`}
     >
       {icon && <span className="shrink-0">{icon}</span>}
@@ -186,6 +187,7 @@ export default function StatusBar() {
   const { user, signOut } = useAuth();
   const { activeProfile } = useActiveProfile();
   const { profile: publicProfile } = useProfile();
+  const { unreadCount } = useNotifications();
   const { error: liveError } = useLiveData(300000);
   const { isOpen, isMinimized, openLive, closeLive } = useLiveWidgetStore();
   const online = useOnlineStatus();
@@ -205,12 +207,12 @@ export default function StatusBar() {
       .join(", ")
   );
 
-  const systemOk = online && !liveError;
-  const alertCount = liveError ? 1 : online ? 0 : 1;
+  const systemOk = online && !liveError && unreadCount === 0;
+  const alertCount = liveError ? 1 : unreadCount;
   const alertTitle = liveError
     ? `${i18n("liveError", "Erreur live")} : ${liveError.message}`
-    : !online
-      ? i18n("v8NetworkOffline")
+    : unreadCount > 0
+      ? `${unreadCount} ${i18n("unreadNotifications", "notifications non lues")}`
       : undefined;
 
   useEffect(() => {
@@ -236,12 +238,10 @@ export default function StatusBar() {
     <footer
       data-v8-status-bar
       data-status-bar
-      className="fixed bottom-0 left-0 z-30 h-[calc(2rem+env(safe-area-inset-bottom))] pb-[env(safe-area-inset-bottom)] w-full select-none border-t border-[var(--text-primary)]/[0.05] bg-[var(--panel-bg)] px-4 text-xs text-[var(--text-primary)] backdrop-blur-[var(--panel-blur)]"
+      className="fixed bottom-0 left-0 z-30 h-8 w-full select-none border-t border-white/[0.04] bg-zinc-950/50 px-4 text-xs text-zinc-300 backdrop-blur-[var(--panel-blur)] pointer-events-none"
     >
       <div className="flex h-full w-full items-center justify-between">
         <div className="flex min-w-0 items-center gap-2">
-          <VersionPill />
-
           <StatusPill
             icon={<Shield className="h-3.5 w-3.5" />}
             value={sessionRole.label}
@@ -262,7 +262,7 @@ export default function StatusBar() {
             <button
               type="button"
               onClick={() => (isMinimized ? openLive() : closeLive())}
-              className="flex items-center gap-1.5 rounded-lg border border-[--accent-primary]/30 bg-[--accent-primary]/10 px-2.5 py-1 text-xs font-medium text-[--accent-primary] transition-all hover:bg-[--accent-primary]/20"
+              className="flex items-center gap-1.5 rounded-lg border border-[--accent-primary] bg-[--accent-primary] px-2.5 py-1 text-xs font-medium text-[--accent-primary] transition-all hover:bg-[--accent-primary]"
             >
               <Radio className="h-3.5 w-3.5 animate-pulse text-[--accent-primary]" />
               <span>{isMinimized ? i18n("liveMinimized") || "Live réduit" : i18n("liveActive") || "Live actif"}</span>
@@ -272,7 +272,7 @@ export default function StatusBar() {
               type="button"
               onClick={() => openLive()}
               aria-label={i18n("openLive") || "Ouvrir Live"}
-              className="rounded-lg p-1 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
+              className="rounded-lg p-1 text-zinc-500 transition-colors hover:text-white"
             >
               <Radio className="h-3.5 w-3.5" />
             </button>
@@ -282,7 +282,7 @@ export default function StatusBar() {
             icon={
               online ? (
                 pingging ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin text-[var(--text-muted)]" />
+                  <Loader2 className="h-3.5 w-3.5 animate-spin text-zinc-400" />
                 ) : (
                   <Wifi className="h-3.5 w-3.5" />
                 )
@@ -308,7 +308,7 @@ export default function StatusBar() {
                     setMenuOpen(false);
                     router.push("/profile");
                   }}
-                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs text-zinc-300 transition-colors hover:bg-white/[0.04] hover:text-white"
                 >
                   <User className="h-3.5 w-3.5" />
                   Profil
@@ -316,7 +316,7 @@ export default function StatusBar() {
                 <button
                   type="button"
                   onClick={handleSignOut}
-                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs text-[var(--text-primary)] transition-colors hover:bg-red-500/[0.08] hover:text-red-300"
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs text-zinc-300 transition-colors hover:bg-red-500/[0.08] hover:text-red-300"
                 >
                   <LogOut className="h-3.5 w-3.5" />
                   Déconnexion
@@ -324,6 +324,8 @@ export default function StatusBar() {
               </div>
             )}
           </div>
+
+          <VersionPill />
 
           <StatusPill
             icon={systemOk ? <Circle className="h-3.5 w-3.5 fill-[--accent-primary] text-[--accent-primary]" /> : <AlertCircle className="h-3.5 w-3.5 text-red-400" />}

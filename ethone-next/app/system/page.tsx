@@ -25,9 +25,9 @@ const WORKSPACES = [
     flow: "Essentiel",
     icon: "user",
     accent: {
-      badge: "bg-[--accent-primary]/10 text-[--accent-primary]",
-      icon: "bg-[--accent-primary]/10 text-[--accent-primary]",
-      ring: "ring-[--accent-primary]/30",
+      badge: "bg-[--accent-primary] text-[--accent-primary]",
+      icon: "bg-[--accent-primary] text-[--accent-primary]",
+      ring: "ring-[--accent-primary]",
     },
     steps: ["Capturer", "Organiser", "Exécuter"],
     widgets: ["notes", "tasks", "calendar", "brain"],
@@ -94,7 +94,7 @@ function WorkspaceCard({
   const i18n = useI18n();
 
   return (
-    <BentoCard noHeader scrollable={false} className="h-full">
+    <BentoCard noHeader className="h-full">
       <div className="flex h-full flex-col gap-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -145,9 +145,10 @@ function WorkspaceCard({
           <div className="flex items-center gap-2">
             <Button
               type="button"
-              variant={isActive ? "primary" : "outline"}
+              variant={isActive ? "primary" : "secondary"}
               size="md"
               onClick={onStart}
+              className="active:scale-95"
               leftIcon={<Icon name={isActive ? "check" : "play"} className="h-3.5 w-3.5" />}
             >
               {isActive ? i18n("active") : i18n("start")}
@@ -177,7 +178,7 @@ function StatCard({
   tone: string;
 }) {
   return (
-    <BentoCard noHeader scrollable={false}>
+    <BentoCard noHeader>
       <div className="flex items-center gap-3">
         <span
           className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${tone}`}
@@ -242,7 +243,7 @@ export default function SystemPage() {
 
   return (
     <div className="flex h-full min-h-0 w-full flex-col overflow-hidden">
-      <div className="min-h-0 w-full flex-1 space-y-6 overflow-y-auto p-6 pb-10 no-scrollbar">
+      <div className="min-h-0 w-full flex-1 space-y-5 overflow-y-auto os-scroll">
         <div>
           <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Mission Control</p>
           <h1 className="text-2xl font-bold text-white">{i18n("systemTitle")}</h1>
@@ -260,7 +261,7 @@ export default function SystemPage() {
             icon="activity"
             value={activeSpacesCount}
             label={i18n("active")}
-            tone="bg-[--accent-primary]/10 text-[--accent-primary]"
+            tone="bg-[--accent-primary] text-[--accent-primary]"
           />
           <StatCard
             icon="workflow"
@@ -291,7 +292,6 @@ export default function SystemPage() {
           <BentoCard
             title={i18n("recentSpaces", "Spaces récents")}
             icon="layout-grid"
-            scrollable={false}
           >
             {recentSpaces.length === 0 ? (
               <div className="flex h-full items-center text-sm text-zinc-400">
@@ -324,7 +324,7 @@ export default function SystemPage() {
                         </div>
                       </div>
                       {isActive && (
-                        <span className={`rounded-md px-2 py-0.5 text-[10px] font-semibold ${workspace?.accent.badge ?? "bg-[--accent-primary]/10 text-[--accent-primary]"}`}>
+                        <span className={`rounded-md px-2 py-0.5 text-[10px] font-semibold ${workspace?.accent.badge ?? "bg-[--accent-primary] text-[--accent-primary]"}`}>
                           {i18n("active")}
                         </span>
                       )}
@@ -338,7 +338,6 @@ export default function SystemPage() {
           <BentoCard
             title={i18n("recentFlows", "Flows récents")}
             icon="workflow"
-            scrollable={false}
           >
             {recentFlows.length === 0 ? (
               <div className="flex h-full items-center text-sm text-zinc-400">
@@ -371,7 +370,7 @@ export default function SystemPage() {
                         </div>
                       </div>
                       {isActive && (
-                        <span className={`rounded-md px-2 py-0.5 text-[10px] font-semibold ${workspace?.accent.badge ?? "bg-[--accent-primary]/10 text-[--accent-primary]"}`}>
+                        <span className={`rounded-md px-2 py-0.5 text-[10px] font-semibold ${workspace?.accent.badge ?? "bg-[--accent-primary] text-[--accent-primary]"}`}>
                           {i18n("active")}
                         </span>
                       )}
@@ -384,7 +383,7 @@ export default function SystemPage() {
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <BentoCard noHeader scrollable={false}>
+          <BentoCard noHeader>
             <Link
               href="/spaces"
               className="flex h-full items-center gap-3 text-zinc-200 hover:text-[var(--accent)]"
@@ -399,7 +398,7 @@ export default function SystemPage() {
             </Link>
           </BentoCard>
 
-          <BentoCard noHeader scrollable={false}>
+          <BentoCard noHeader>
             <Link
               href="/flows"
               className="flex h-full items-center gap-3 text-zinc-200 hover:text-[var(--accent)]"

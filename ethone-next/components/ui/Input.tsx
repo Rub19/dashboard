@@ -59,12 +59,12 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const showClear = clearable && hasValue && !disabled;
 
     const baseWrapper =
-      "group relative flex w-full min-w-0 items-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] px-3.5 text-sm text-[var(--text-primary)] outline-none backdrop-blur-md transition-all duration-200 ease-out min-h-[44px]";
-    const hover = "hover:border-[var(--border)]";
+      "group relative flex w-full items-center gap-2 rounded-xl border border-white/[0.08] bg-[var(--text-primary)]/[0.04] px-3.5 text-sm text-[var(--text-primary)] outline-none backdrop-blur-md transition-all duration-200 ease-out";
+    const hover = "hover:border-white/[0.18]";
     const focus =
       "focus-within:border-[var(--accent-primary)]/60 focus-within:ring-1 focus-within:ring-[var(--accent-primary)]/20 focus-within:shadow-[0_0_20px_var(--glow-color)]";
     const state = error
-      ? "border-[var(--danger)]/50 ring-1 ring-[var(--danger)]/10 text-[var(--danger)]"
+      ? "border-red-500/50 ring-1 ring-red-500/10 text-red-200"
       : `${hover} ${focus}`;
     const opacity = disabled ? "opacity-50 cursor-not-allowed" : "";
 

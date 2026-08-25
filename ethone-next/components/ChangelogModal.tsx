@@ -42,7 +42,7 @@ export default function ChangelogModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: reduce ? 0 : 0.2 }}
-          className="fixed inset-0 z-[var(--z-modal)] flex items-start justify-center bg-black/60 p-4 pb-10 pt-20 backdrop-blur-sm md:p-6 md:pb-14 md:pt-24"
+          className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 p-4 pb-10 pt-20 backdrop-blur-sm md:p-6 md:pb-14 md:pt-24"
           onClick={onClose}
           role="presentation"
         >
@@ -68,7 +68,7 @@ export default function ChangelogModal({
             />
 
             {/* Fixed header */}
-            <div className="relative z-10 flex shrink-0 items-center justify-between gap-3 border-b border-[var(--text-primary)]/[0.06] px-6 py-4">
+            <div className="relative z-10 flex shrink-0 items-center justify-between gap-3 border-b border-white/[0.06] px-6 py-4">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--accent)]/25 bg-[var(--accent)]/10 text-[var(--accent)] shadow-[0_0_14px_rgba(139,92,246,0.18)]">
                   <Sparkles className="h-5 w-5" />
@@ -76,14 +76,14 @@ export default function ChangelogModal({
                 <div>
                   <h3
                     id="changelog-modal-title"
-                    className="flex items-center gap-2 text-sm font-bold text-[var(--text-primary)]"
+                    className="flex items-center gap-2 text-sm font-bold text-[var(--foreground)]"
                   >
                     <span>{i18n("changelogTitle") || "Journal des modifications"}</span>
                     <span className="rounded-lg border border-[var(--accent)]/25 bg-[var(--accent)]/10 px-2 py-0.5 font-mono text-[10px] text-[var(--accent)]">
                       {versionLabel}
                     </span>
                   </h3>
-                  <p className="text-[11px] text-[var(--text-muted)]">
+                  <p className="text-[11px] text-[var(--muted)]">
                     {i18n("changelogDescription") || "Historique des mises à jour"}
                   </p>
                 </div>
@@ -92,7 +92,7 @@ export default function ChangelogModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
+                className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--foreground)]"
                 aria-label={i18n("close")}
               >
                 <X className="h-4 w-4" />
@@ -105,7 +105,7 @@ export default function ChangelogModal({
             </div>
 
             {/* Fixed footer */}
-            <div className="relative z-10 shrink-0 border-t border-[var(--text-primary)]/[0.06] px-6 py-4">
+            <div className="relative z-10 shrink-0 border-t border-white/[0.06] px-6 py-4">
               <button
                 type="button"
                 onClick={onClose}

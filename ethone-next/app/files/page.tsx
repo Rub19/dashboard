@@ -432,7 +432,7 @@ export default function FilesPage() {
 
       <Checkbox
         checked={isAllSelected}
-        onCheckedChange={(checked) => (checked ? selectAll() : clear())}
+        onCheckedChange={() => (isAllSelected ? clear() : selectAll())}
         label={i18n("selectAll")}
         className="text-sm text-[var(--muted)]"
       />

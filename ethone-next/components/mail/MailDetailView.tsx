@@ -40,9 +40,9 @@ function AttachmentCard({ attachment }: { attachment: MailAttachment }) {
     <button
       type="button"
       onClick={handleDownload}
-      className="flex items-center gap-2 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] p-2 text-left transition-colors hover:bg-[var(--text-primary)]/[0.06]"
+      className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] p-2 text-left transition-colors hover:bg-white/[0.06]"
     >
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--text-primary)]/[0.05] text-[var(--text-muted)]">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.05] text-[var(--text-muted)]">
         <Paperclip className="h-4 w-4" />
       </span>
       <div className="min-w-0 flex-1">
@@ -80,11 +80,11 @@ export default function MailDetailView({
   if (!thread || !first || !last) {
     return (
       <div className="flex h-full flex-1 flex-col items-center justify-center rounded-2xl v8-panel p-8 text-center backdrop-blur-xl">
-        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] text-[var(--text-muted)] shadow-inner">
+        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.03] text-zinc-500 shadow-inner">
           <Inbox className="h-6 w-6" />
         </div>
-        <h3 className="text-sm font-semibold text-[var(--text-primary)]">{i18n("inboxEmpty") || "Votre boîte est propre"}</h3>
-        <p className="mt-1 max-w-xs text-xs text-[var(--text-muted)]">
+        <h3 className="text-sm font-semibold text-white">{i18n("inboxEmpty") || "Votre boîte est propre"}</h3>
+        <p className="mt-1 max-w-xs text-xs text-zinc-400">
           {i18n("inboxEmptyDescription") ||
             "Tous les messages ont été traités ou archivés. Vous êtes à jour."}
         </p>
@@ -99,12 +99,12 @@ export default function MailDetailView({
   return (
     <div className="flex h-full flex-1 flex-col overflow-hidden rounded-2xl v8-panel backdrop-blur-xl">
       {/* Toolbar */}
-      <div className="flex items-center justify-between border-b border-[var(--text-primary)]/[0.06] px-4 py-2.5">
+      <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-2.5">
         <div className="flex items-center gap-1">
           <button
             type="button"
             onClick={onReply}
-            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)]"
           >
             <Reply className="h-3.5 w-3.5" />
             {i18n("reply") || "Répondre"}
@@ -112,7 +112,7 @@ export default function MailDetailView({
           <button
             type="button"
             onClick={onForward}
-            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)]"
           >
             <Forward className="h-3.5 w-3.5" />
             {i18n("forward") || "Transférer"}
@@ -120,7 +120,7 @@ export default function MailDetailView({
           <button
             type="button"
             onClick={onToggleRead}
-            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)]"
           >
             <MailOpen className="h-3.5 w-3.5" />
             {i18n(isRead ? "markAsUnread" : "markAsRead")}
@@ -138,7 +138,7 @@ export default function MailDetailView({
           <button
             type="button"
             onClick={onArchive}
-            className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+            className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-white/[0.06] hover:text-[var(--text-primary)]"
           >
             <Archive className="h-4 w-4" />
           </button>
@@ -153,20 +153,20 @@ export default function MailDetailView({
       </div>
 
       {/* Header */}
-      <div className="border-b border-[var(--text-primary)]/[0.06] px-4 py-4">
-        <h2 data-testid="mail-detail-subject" className="text-sm font-semibold text-[var(--text-primary)]">{first.subject || "(aucun objet)"}</h2>
+      <div className="border-b border-white/[0.06] px-4 py-4">
+        <h2 className="text-sm font-semibold text-white">{first.subject || "(aucun objet)"}</h2>
         <div className="mt-3 flex items-center gap-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] text-xs font-bold text-[var(--text-primary)]">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.04] text-xs font-bold text-zinc-300">
             {initialsFrom(first.from_name || "", first.from_address)}
           </span>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-xs font-semibold text-[var(--text-primary)]">{sender}</p>
-            <p className="truncate text-[11px] text-[var(--text-muted)]">{first.from_address}</p>
+            <p className="truncate text-xs font-semibold text-white">{sender}</p>
+            <p className="truncate text-[11px] text-zinc-500">{first.from_address}</p>
           </div>
-          <span className="shrink-0 text-[11px] text-[var(--text-muted)]">{formatMailDate(last.received_at)}</span>
+          <span className="shrink-0 text-[11px] text-zinc-500">{formatMailDate(last.received_at)}</span>
         </div>
-        <p className="mt-2 text-[11px] text-[var(--text-muted)]">
-          <span className="font-medium text-[var(--text-muted)]">{i18n("to") || "À"}:</span>{" "}
+        <p className="mt-2 text-[11px] text-zinc-500">
+          <span className="font-medium text-zinc-400">{i18n("to") || "À"}:</span>{" "}
           {(first.to_addresses || []).join(", ")}
         </p>
       </div>
@@ -176,13 +176,13 @@ export default function MailDetailView({
         {thread.map((msg) => (
           <div key={msg.id} className="mb-4 last:mb-0">
             <div className="mb-1 flex items-center justify-between">
-              <p className="text-[11px] text-[var(--text-muted)]">
-                <span className="font-medium text-[var(--text-muted)]">{msg.from_name || msg.from_address}</span>{" "}
-                <span className="text-[var(--text-muted)]">•</span> {formatMailDate(msg.received_at)}
+              <p className="text-[11px] text-zinc-500">
+                <span className="font-medium text-zinc-400">{msg.from_name || msg.from_address}</span>{" "}
+                <span className="text-zinc-600">•</span> {formatMailDate(msg.received_at)}
               </p>
             </div>
             <div
-              className="prose prose-invert prose-sm max-w-none text-sm text-[var(--text-primary)]"
+              className="prose prose-invert prose-sm max-w-none text-sm text-zinc-300"
               dangerouslySetInnerHTML={{ __html: msg.body_html || msg.body_text?.replace(/\n/g, "<br>") || "" }}
             />
           </div>
@@ -190,7 +190,7 @@ export default function MailDetailView({
 
         {allAttachments.length > 0 && (
           <div className="mt-4 space-y-2">
-            <p className="text-[11px] font-medium text-[var(--text-muted)] uppercase tracking-wider">
+            <p className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">
               {i18n("attachments") || "Pièces jointes"}
             </p>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">

@@ -36,12 +36,12 @@ export default function DailyBriefing({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="text-2xl font-bold">{greeting.label}</h2>
-          <p className="text-[var(--text-muted)]">{greeting.tone}</p>
+          <p className="text-[var(--muted)]">{greeting.tone}</p>
           {nowPlaying?.title && (
-            <p className="mt-2 flex items-center gap-2 text-sm text-[var(--text-muted)]">
+            <p className="mt-2 flex items-center gap-2 text-sm text-[var(--muted)]">
               <Icon name="disc" className="h-4 w-4 animate-spin-slow" />
               <span className="truncate">{nowPlaying.title}</span>
-              <span className="text-[var(--text-muted)]">·</span>
+              <span className="text-[var(--muted)]">·</span>
               <span className="truncate">{nowPlaying.artist}</span>
             </p>
           )}
@@ -55,7 +55,7 @@ export default function DailyBriefing({
             >
               <Icon name={s.icon} className={`h-4 w-4 ${s.color}`} />
               <span className="text-lg font-bold tabular-nums">{loading ? "-" : s.value}</span>
-              <span className="text-[10px] text-[var(--text-muted)]">{s.label}</span>
+              <span className="text-[10px] text-[var(--muted)]">{s.label}</span>
             </div>
           ))}
         </div>

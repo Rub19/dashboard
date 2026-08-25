@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { AlertCircle, Gamepad2, Loader2, User } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
@@ -34,7 +34,7 @@ type GamingCardProps = {
   className?: string;
 };
 
-const GamingCard = memo(function GamingCard({
+export default function GamingCard({
   minecraft,
   loading,
   error,
@@ -95,12 +95,13 @@ const GamingCard = memo(function GamingCard({
   const isBody = renderSrc ? bodySet.has(renderSrc) : true;
 
   const server = profile?.server;
+  const isOnline = server?.online ?? hasProfile;
 
   const { statusText, statusClass, statusDot } = useMemo(() => {
-    if (loading && !hasProfile) {
+    if (loading && configured && !hasProfile) {
       return {
         statusText: i18n("loading", "Chargement"),
-        statusClass: "border-[--info] bg-[--info]/10 text-[--info]",
+        statusClass: "border-[var(--info)]/30 bg-[var(--info)]/10 text-[var(--info)]",
         statusDot: "bg-[--info]",
       };
     }
@@ -113,24 +114,26 @@ const GamingCard = memo(function GamingCard({
     }
     if (hasProfile) {
       return {
-        statusText: i18n("online", "En ligne"),
-        statusClass: "border-green-500/20 bg-green-500/10 text-green-400",
-        statusDot: "bg-green-500",
+        statusText: isOnline ? i18n("online", "En ligne") : i18n("offline", "Hors ligne"),
+        statusClass: isOnline
+          ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
+          : "border-zinc-500/30 bg-zinc-500/10 text-zinc-400",
+        statusDot: isOnline ? "bg-[--accent-primary]" : "bg-zinc-500",
       };
     }
     if (configured) {
       return {
         statusText: i18n("offline", "Hors ligne"),
-        statusClass: "border-[var(--text-muted)]/30 bg-[var(--text-muted)]/10 text-[var(--text-muted)]",
-        statusDot: "bg-[var(--text-muted)]",
+        statusClass: "border-zinc-500/30 bg-zinc-500/10 text-zinc-400",
+        statusDot: "bg-zinc-500",
       };
     }
     return {
       statusText: i18n("offline", "Hors ligne"),
-      statusClass: "border-[var(--text-muted)]/30 bg-[var(--text-muted)]/10 text-[var(--text-muted)]",
-      statusDot: "bg-[var(--text-muted)]",
+      statusClass: "border-zinc-500/30 bg-zinc-500/10 text-zinc-400",
+      statusDot: "bg-zinc-500",
     };
-  }, [configured, error, hasProfile, i18n, loading]);
+  }, [configured, error, hasProfile, isOnline, i18n, loading]);
 
   const playerCount =
     server?.players !== undefined && server?.maxPlayers !== undefined ? `${server.players}/${server.maxPlayers}` : null;
@@ -140,12 +143,12 @@ const GamingCard = memo(function GamingCard({
   return (
     <TiltCard
       className={cn(
-        "flex h-full min-h-0 flex-col v8-panel border-[#6a9e3e]/20 bg-gradient-to-br from-[#2d4a24] via-[#1e2e17] to-[#120d08] p-4 shadow-xl shadow-[#0b130b]/70 backdrop-blur-2xl transition-all hover:border-[#6a9e3e]/50",
+        "flex h-full min-h-0 flex-col v8-panel border-[#5865F2]/20 bg-gradient-to-br from-[#242844] via-[#171a2b] to-[#090a10] p-4 shadow-xl shadow-[#0b0d18]/70 backdrop-blur-2xl transition-all hover:border-[#5865F2]/50",
         className
       )}
     >
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Gaming</span>
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Gaming</span>
         <span
           className={cn(
             "inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 text-[10px] font-medium",
@@ -173,11 +176,11 @@ const GamingCard = memo(function GamingCard({
               fallback={(
                 <div className="flex h-full w-full items-center justify-center">
                   {loading && !hasProfile ? (
-                    <Loader2 className="h-8 w-8 animate-spin text-[var(--accent-primary)]" />
+                    <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
                   ) : error && configured && !hasProfile ? (
                     <AlertCircle className="h-8 w-8 text-rose-400" />
                   ) : (
-                    <Gamepad2 className="h-8 w-8 text-[var(--accent-primary)]" />
+                    <Gamepad2 className="h-8 w-8 text-zinc-400" />
                   )}
                 </div>
               )}
@@ -188,7 +191,7 @@ const GamingCard = memo(function GamingCard({
               <ClientImage
                 candidates={capeCandidates}
                 alt={i18n("cape", "Cape")}
-                className="absolute -right-2 -top-2 z-20 h-14 w-24 rounded border border-[var(--text-primary)]/10 bg-[var(--background)]/80 object-contain p-1 drop-shadow-lg"
+                className="absolute -right-2 -top-2 z-20 h-14 w-24 rounded border border-white/10 bg-zinc-950/80 object-contain p-1 drop-shadow-lg"
                 width={96}
                 height={54}
                 priority
@@ -198,34 +201,34 @@ const GamingCard = memo(function GamingCard({
           </div>
 
           <div className="w-full text-center">
-            <h4 className="truncate text-lg font-bold text-[var(--text-primary)]">{username}</h4>
+            <h4 className="truncate text-lg font-bold text-white">{username}</h4>
             {hasProfile && (
-              <p className="text-[10px] font-mono text-[var(--text-muted)]">ID: {truncateId(uuid || uuidWithDashes)}</p>
+              <p className="text-[10px] font-mono text-zinc-500">ID: {truncateId(uuid || uuidWithDashes)}</p>
             )}
           </div>
 
-          {server && (
-            <div className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2">
-              <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+          {hasProfile && server && (
+            <div className="w-full rounded-xl border border-white/[0.05] bg-white/[0.02] p-2">
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
                 {i18n("minecraftServer", "Serveur Minecraft")}
               </p>
               <div className="grid grid-cols-3 gap-2">
                 {playerCount !== null && (
                   <div className="text-center">
-                    <p className="font-mono text-xs font-semibold text-[var(--text-primary)]">{playerCount}</p>
-                    <p className="text-[9px] text-[var(--text-muted)]">{i18n("players", "Joueurs")}</p>
+                    <p className="font-mono text-xs font-semibold text-zinc-200">{playerCount}</p>
+                    <p className="text-[9px] text-zinc-500">{i18n("players", "Joueurs")}</p>
                   </div>
                 )}
                 {ping !== null && (
                   <div className="text-center">
-                    <p className="font-mono text-xs font-semibold text-[var(--text-primary)]">{ping}</p>
-                    <p className="text-[9px] text-[var(--text-muted)]">{i18n("ping", "Ping")}</p>
+                    <p className="font-mono text-xs font-semibold text-zinc-200">{ping}</p>
+                    <p className="text-[9px] text-zinc-500">{i18n("ping", "Ping")}</p>
                   </div>
                 )}
                 {serverVersion !== null && (
                   <div className="text-center">
-                    <p className="truncate font-mono text-xs font-semibold text-[var(--text-primary)]">{serverVersion}</p>
-                    <p className="text-[9px] text-[var(--text-muted)]">{i18n("version", "Version")}</p>
+                    <p className="truncate font-mono text-xs font-semibold text-zinc-200">{serverVersion}</p>
+                    <p className="text-[9px] text-zinc-500">{i18n("version", "Version")}</p>
                   </div>
                 )}
               </div>
@@ -235,17 +238,17 @@ const GamingCard = memo(function GamingCard({
           {hasProfile && (
             <div className="flex flex-wrap justify-center gap-1.5">
               {profile?.model && (
-                <span className="rounded-md border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--text-muted)]">
+                <span className="rounded-md border border-white/[0.06] bg-white/[0.04] px-2 py-0.5 text-[10px] text-zinc-300">
                   {profile.model === "slim" ? "Slim" : "Classic"}
                 </span>
               )}
               {profile?.capeUrl && (
-                <span className="rounded-md border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2 py-0.5 text-[10px] text-[var(--text-muted)]">
+                <span className="rounded-md border border-white/[0.06] bg-white/[0.04] px-2 py-0.5 text-[10px] text-zinc-300">
                   {i18n("cape", "Cape")}
                 </span>
               )}
-              {server?.online && (
-                <span className="rounded-md border border-green-500/20 bg-green-500/10 px-2 py-0.5 text-[10px] text-green-400">
+              {isOnline && (
+                <span className="rounded-md border border-[--accent-primary] bg-[--accent-primary] px-2 py-0.5 text-[10px] text-[--accent-primary]">
                   {i18n("serverActive", "Serveur actif")}
                 </span>
               )}
@@ -254,16 +257,16 @@ const GamingCard = memo(function GamingCard({
         </div>
       ) : (
         <div className="flex flex-1 flex-col items-center justify-center gap-3 py-2 text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.04]">
-            <User className="h-7 w-7 text-[var(--text-muted)]" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04]">
+            <User className="h-7 w-7 text-zinc-400" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-[var(--text-primary)]">{i18n("minecraftNotLinked", "Aucun compte Minecraft lié")}</p>
-            <p className="text-xs text-[var(--text-muted)]">{i18n("minecraftConfigureHint", "Ajoute ton pseudo pour voir ton skin")}</p>
+            <p className="text-sm font-semibold text-zinc-200">{i18n("minecraftNotLinked", "Aucun compte Minecraft lié")}</p>
+            <p className="text-xs text-zinc-500">{i18n("minecraftConfigureHint", "Ajoute ton pseudo pour voir ton skin")}</p>
           </div>
           <Link
             href="/settings?category=integrations"
-            className="rounded-lg bg-[--accent-primary] px-4 py-2 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[--accent-primary]"
+            className="rounded-lg bg-[--accent-primary] px-4 py-2 text-xs font-medium text-[--accent-primary] transition-colors hover:bg-[--accent-primary]"
           >
             {i18n("configureMinecraft", "Configurer Minecraft")}
           </Link>
@@ -271,6 +274,4 @@ const GamingCard = memo(function GamingCard({
       )}
     </TiltCard>
   );
-});
-
-export default GamingCard;
+}

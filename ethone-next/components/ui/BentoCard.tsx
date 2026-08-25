@@ -24,14 +24,14 @@ function BentoCard({
   return (
     <div
       onPointerDown={hapticLightImpact}
-      className={`group v8-panel relative flex min-h-0 w-full flex-col p-4 transition-[border-color,box-shadow] duration-200 hover:border-[var(--accent-primary)]/20 ${className}`}
+      className={`group liquid-glass-card relative flex min-h-0 w-full flex-col rounded-2xl p-4 active:scale-[0.995] ${className}`}
       style={style}
     >
       {title && (
-        <div className="relative z-10 mb-2 flex shrink-0 items-center justify-between border-b border-[var(--border-subtle)] pb-2">
+        <div className="relative z-10 mb-2 flex shrink-0 items-center justify-between border-b border-[var(--text-primary)]/[0.05] pb-2">
           <div className="flex items-center gap-2.5">
             {icon && (
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--text-primary)]">
+              <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.04] text-[var(--text-primary)]">
                 <Icon name={icon} className="h-4 w-4" />
               </span>
             )}

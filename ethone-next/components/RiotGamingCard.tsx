@@ -1,13 +1,12 @@
 "use client";
 
-import { memo, useMemo } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
-import { AlertCircle, Loader2, User } from "lucide-react";
+import { AlertCircle, Crosshair, Loader2, Swords, User } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { TiltCard } from "@/components/ui/TiltCard";
 import ClientImage from "@/components/ClientImage";
-import GameIcon from "@/components/icons/GameIcon";
 import { cn } from "@/lib/utils";
 
 type RiotMatch = Record<string, unknown>;
@@ -25,16 +24,20 @@ export type RiotGamingCardProps = {
 
 const GAME_CONFIG = {
   valorant: {
+    icon: "crosshair",
     label: "Valorant",
     gradient: "from-rose-950/40 via-red-900/10 to-black/20 border-rose-500/20",
-    accent: "text-[var(--danger)]",
+    accent: "text-rose-400",
     accentBg: "bg-rose-500",
+    fallbackIcon: Crosshair,
   },
   lol: {
+    icon: "swords",
     label: "League of Legends",
     gradient: "from-sky-950/40 via-amber-900/10 to-black/20 border-amber-500/20",
-    accent: "text-[var(--warning)]",
+    accent: "text-amber-400",
     accentBg: "bg-amber-500",
+    fallbackIcon: Swords,
   },
 };
 
@@ -91,7 +94,7 @@ function winRate(matches?: RiotMatch[] | null, count = 5): string {
   return String(Math.round((wins / list.length) * 100));
 }
 
-export const RiotGamingCardContent = memo(function RiotGamingCardContent({
+export function RiotGamingCardContent({
   game,
   matches,
   playerName,
@@ -104,6 +107,7 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
   const i18n = useI18n();
   const { settings } = useSettings();
   const config = GAME_CONFIG[game];
+  const IconFallback = config.fallbackIcon;
 
   const displayName = playerName || settings.liveTrackerRiotName;
   const displayTag = playerTag || settings.liveTrackerRiotTag;
@@ -127,31 +131,31 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
   const score = (meta?.score as Record<string, unknown>) || null;
 
   const status = useMemo(() => {
-    if (loading && !hasProfile) {
+    if (loading && configured && !hasProfile) {
       return {
         text: i18n("loading", "Chargement"),
         dot: "bg-[--info]",
-        badge: "border-[--info] bg-[--info]/10 text-[--info]",
+        badge: "border-[var(--info)]/30 bg-[var(--info)]/10 text-[var(--info)]",
       };
     }
     if (error && configured && !hasProfile) {
       return {
         text: i18n("error", "Erreur"),
         dot: "bg-rose-400",
-        badge: "border-rose-500/30 bg-[var(--danger)]/10 text-rose-300",
+        badge: "border-rose-500/30 bg-rose-500/10 text-rose-300",
       };
     }
     if (hasProfile) {
       return {
         text: i18n("connected", "Connecté"),
         dot: "bg-[--accent-primary]",
-        badge: "border-[--accent-primary] bg-[--accent-primary]/10 text-[--accent-primary]",
+        badge: "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]",
       };
     }
     return {
       text: i18n("offline", "Hors ligne"),
-      dot: "bg-[var(--text-muted)]",
-      badge: "border-[var(--text-muted)]/30 bg-[var(--text-muted)]/10 text-[var(--text-muted)]",
+      dot: "bg-zinc-500",
+      badge: "border-zinc-500/30 bg-zinc-500/10 text-zinc-400",
     };
   }, [configured, error, hasProfile, i18n, loading]);
 
@@ -187,22 +191,22 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
         </span>
       </div>
 
-      {!configured ? (
+      {!configured || (!hasProfile && !loading) ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-3 py-2 text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.04]">
-            <User className="h-7 w-7 text-[var(--text-muted)]" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04]">
+            <User className="h-7 w-7 text-zinc-400" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-[var(--text-primary)]">
+            <p className="text-sm font-semibold text-zinc-200">
               {i18n("riotNotLinked", game === "valorant" ? "Aucun compte Valorant lié" : "Aucun compte League lié")}
             </p>
-            <p className="text-xs text-[var(--text-muted)]">{i18n("riotConfigureHint", "Ajoute ton Riot ID pour voir tes stats")}</p>
+            <p className="text-xs text-zinc-500">{i18n("riotConfigureHint", "Ajoute ton Riot ID pour voir tes stats")}</p>
           </div>
           <Link
             href="/settings?category=integrations"
             className={cn(
-              "rounded-lg px-4 py-2 text-xs font-medium transition-colors hover:bg-[var(--text-primary)]/[0.05]",
-              game === "valorant" ? "bg-[var(--danger)]/10 text-[var(--danger)] hover:bg-[var(--danger)]/20" : "bg-[var(--warning)]/10 text-[var(--warning)] hover:bg-[var(--warning)]/20"
+              "rounded-lg px-4 py-2 text-xs font-medium transition-colors hover:bg-white/5",
+              game === "valorant" ? "bg-rose-500/10 text-rose-400 hover:bg-rose-500/20" : "bg-amber-500/10 text-amber-400 hover:bg-amber-500/20"
             )}
           >
             {i18n("configureRiot", "Configurer Riot")}
@@ -210,28 +214,13 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
         </div>
       ) : loading && !hasProfile ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-2 py-2">
-          <Loader2 className="h-8 w-8 animate-spin text-[var(--text-muted)]" />
-          <p className="text-xs text-[var(--text-muted)]">{i18n("loading", "Chargement")}</p>
+          <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
+          <p className="text-xs text-zinc-500">{i18n("loading", "Chargement")}</p>
         </div>
       ) : error && !hasProfile ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-2 py-2 text-center">
-          <AlertCircle className="h-8 w-8 text-[var(--danger)]" />
-          <p className="text-xs text-[var(--text-muted)]">{i18n("liveError", "Impossible de charger les stats")}</p>
-        </div>
-      ) : !hasProfile ? (
-        <div className="flex flex-1 flex-col items-center justify-center gap-2 py-2 text-center">
-          <AlertCircle className="h-8 w-8 text-[var(--text-muted)]" />
-          <p className="text-xs text-[var(--text-muted)]">{i18n("riotNoStats", "Aucune statistique trouvée pour ce Riot ID")}</p>
-          <p className="max-w-[200px] text-[10px] text-[var(--text-muted)]">{i18n("riotCheckId", "Vérifie le format Nom#TAG et la clé API")}</p>
-          <Link
-            href="/settings?category=integrations"
-            className={cn(
-              "mt-2 rounded-lg px-3 py-1.5 text-xs font-medium transition-all active:scale-95",
-              game === "valorant" ? "bg-[var(--danger)]/15 text-[var(--danger)] hover:bg-[var(--danger)]/25" : "bg-[var(--warning)]/15 text-[var(--warning)] hover:bg-[var(--warning)]/25"
-            )}
-          >
-            {i18n("configureRiot", "Configurer Riot")}
-          </Link>
+          <AlertCircle className="h-8 w-8 text-rose-400" />
+          <p className="text-xs text-zinc-500">{i18n("liveError", "Impossible de charger les stats")}</p>
         </div>
       ) : (
         <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-2 py-1">
@@ -242,18 +231,18 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
               fill
               className="rounded-[var(--panel-radius)] object-cover shadow-lg"
               fallback={(
-                <div className={cn("flex h-full w-full items-center justify-center rounded-[var(--panel-radius)] bg-[var(--text-primary)]/[0.04]", config.accent)}>
-                  <GameIcon game={game} className={cn("h-8 w-8", compact ? "h-6 w-6" : "h-8 w-8")} />
+                <div className={cn("flex h-full w-full items-center justify-center rounded-[var(--panel-radius)] bg-white/[0.04]", config.accent)}>
+                  <IconFallback className={cn("h-8 w-8", compact ? "h-6 w-6" : "h-8 w-8")} />
                 </div>
               )}
             />
           </div>
 
           <div className="w-full text-center">
-            <h4 className={cn("truncate font-bold text-[var(--text-primary)]", compact ? "text-sm" : "text-base")} title={asStr(meta?.agentName)}>
+            <h4 className={cn("truncate font-bold text-white", compact ? "text-sm" : "text-base")} title={asStr(meta?.agentName)}>
               {asStr(meta?.agentName) || "—"}
             </h4>
-            <p className="truncate text-[10px] text-[var(--text-muted)]">
+            <p className="truncate text-[10px] text-zinc-400">
               {asStr(meta?.mapName) || "—"} · {asStr(meta?.modeName) || "—"}
             </p>
             {Boolean(meta?.result) && (
@@ -261,13 +250,13 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
                 className={cn(
                   "mt-0.5 inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold",
                   (meta?.result as string).toLowerCase() === "victory"
-                    ? "bg-[--accent-primary]/10 text-[--accent-primary]"
-                    : "bg-[var(--danger)]/10 text-[var(--danger)]"
+                    ? "bg-[--accent-primary] text-[--accent-primary]"
+                    : "bg-rose-500/10 text-rose-400"
                 )}
               >
                 {asStr(meta?.result)}
                 {score && (
-                  <span className="ml-1.5 font-mono text-[var(--text-muted)]">
+                  <span className="ml-1.5 font-mono text-zinc-400">
                     {asNum(score.team)} - {asNum(score.opponent)}
                   </span>
                 )}
@@ -277,33 +266,33 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
 
           <div className={cn("grid w-full gap-2", compact ? "grid-cols-3" : "grid-cols-3")}>
             {mainStatKeys.map((s) => (
-              <div key={s.key} className="rounded-xl border border-[var(--text-primary)]/[0.05] bg-[var(--text-primary)]/[0.02] p-1.5 text-center">
-                <p className={cn("font-mono font-semibold text-[var(--text-primary)]", compact ? "text-xs" : "text-sm")}>
+              <div key={s.key} className="rounded-xl border border-white/[0.05] bg-white/[0.02] p-1.5 text-center">
+                <p className={cn("font-mono font-semibold text-white", compact ? "text-xs" : "text-sm")}>
                   {statValue(stats, s.key)}
                 </p>
-                <p className="text-[9px] text-[var(--text-muted)]">{s.label}</p>
+                <p className="text-[9px] text-zinc-500">{s.label}</p>
               </div>
             ))}
-            <div className="rounded-xl border border-[var(--text-primary)]/[0.05] bg-[var(--text-primary)]/[0.02] p-1.5 text-center">
-              <p className={cn("font-mono font-semibold text-[var(--text-primary)]", compact ? "text-xs" : "text-sm")}>{kda(stats)}</p>
-              <p className="text-[9px] text-[var(--text-muted)]">KDA</p>
+            <div className="rounded-xl border border-white/[0.05] bg-white/[0.02] p-1.5 text-center">
+              <p className={cn("font-mono font-semibold text-white", compact ? "text-xs" : "text-sm")}>{kda(stats)}</p>
+              <p className="text-[9px] text-zinc-500">KDA</p>
             </div>
             {!compact && (
-              <div className="rounded-xl border border-[var(--text-primary)]/[0.05] bg-[var(--text-primary)]/[0.02] p-1.5 text-center">
-                <p className="font-mono text-sm font-semibold text-[var(--text-primary)]">{winRate(matches)}%</p>
-                <p className="text-[9px] text-[var(--text-muted)]">{i18n("winRate", "Winrate")}</p>
+              <div className="rounded-xl border border-white/[0.05] bg-white/[0.02] p-1.5 text-center">
+                <p className="font-mono text-sm font-semibold text-white">{winRate(matches)}%</p>
+                <p className="text-[9px] text-zinc-500">{i18n("winRate", "Winrate")}</p>
               </div>
             )}
             {!compact && game === "valorant" && (
-              <div className="rounded-xl border border-[var(--text-primary)]/[0.05] bg-[var(--text-primary)]/[0.02] p-1.5 text-center">
-                <p className="font-mono text-sm font-semibold text-[var(--text-primary)]">{statValue(stats, "adr")}</p>
-                <p className="text-[9px] text-[var(--text-muted)]">ADR</p>
+              <div className="rounded-xl border border-white/[0.05] bg-white/[0.02] p-1.5 text-center">
+                <p className="font-mono text-sm font-semibold text-white">{statValue(stats, "adr")}</p>
+                <p className="text-[9px] text-zinc-500">ADR</p>
               </div>
             )}
             {!compact && game === "lol" && (
-              <div className="rounded-xl border border-[var(--text-primary)]/[0.05] bg-[var(--text-primary)]/[0.02] p-1.5 text-center">
-                <p className="font-mono text-sm font-semibold text-[var(--text-primary)]">{statValue(stats, "csPerMin")}</p>
-                <p className="text-[9px] text-[var(--text-muted)]">CS/min</p>
+              <div className="rounded-xl border border-white/[0.05] bg-white/[0.02] p-1.5 text-center">
+                <p className="font-mono text-sm font-semibold text-white">{statValue(stats, "csPerMin")}</p>
+                <p className="text-[9px] text-zinc-500">CS/min</p>
               </div>
             )}
           </div>
@@ -327,7 +316,7 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
           )}
 
           {displayName && (
-            <p className="truncate text-[10px] text-[var(--text-muted)]">
+            <p className="truncate text-[10px] text-zinc-500">
               {displayName}#{displayTag || "—"}
             </p>
           )}
@@ -335,16 +324,10 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
       )}
     </div>
   );
-});
+}
 
-const RiotGamingCard = memo(function RiotGamingCard(props: RiotGamingCardProps) {
+export default function RiotGamingCard(props: RiotGamingCardProps) {
   const config = GAME_CONFIG[props.game];
-  const { settings } = useSettings();
-  const displayName = props.playerName || settings.liveTrackerRiotName;
-  const displayTag = props.playerTag || settings.liveTrackerRiotTag;
-  const configured = Boolean(displayName && displayTag);
-
-  if (!configured) return null;
 
   return (
     <TiltCard
@@ -356,6 +339,4 @@ const RiotGamingCard = memo(function RiotGamingCard(props: RiotGamingCardProps) 
       <RiotGamingCardContent {...props} className={cn(config.gradient, props.className)} />
     </TiltCard>
   );
-});
-
-export default RiotGamingCard;
+}

@@ -76,7 +76,7 @@ export default function Sheet({
             dragElastic={0.15}
             onDragEnd={onDragEnd}
             className={cn(
-              "fixed bottom-0 left-0 right-0 z-50 rounded-t-[2rem] liquid-glass-sheet md:hidden pb-[env(safe-area-inset-bottom)]",
+              "fixed bottom-0 left-0 right-0 z-50 rounded-t-[2rem] liquid-glass-sheet md:hidden",
               className
             )}
             style={{ maxHeight: initialHeight }}
@@ -88,9 +88,9 @@ export default function Sheet({
                 <div className="h-1 w-10 rounded-full bg-[var(--text-primary)]/20" />
               </div>
             )}
-            <div className="flex items-center justify-between border-b border-[var(--text-primary)]/[0.06] px-4 py-3">
+            <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-3">
               {title ? (
-                <span className="text-sm font-semibold text-[var(--text-primary)]">{title}</span>
+                <span className="text-sm font-semibold text-[var(--foreground)]">{title}</span>
               ) : (
                 <span />
               )}
@@ -100,7 +100,7 @@ export default function Sheet({
                   hapticLightImpact();
                   onOpenChange(false);
                 }}
-                className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+                className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--foreground)]"
                 aria-label={i18n("close")}
               >
                 <X className="h-4 w-4" />

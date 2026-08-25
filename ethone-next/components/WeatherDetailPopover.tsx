@@ -1,12 +1,15 @@
 "use client";
-/* eslint-disable react-hooks/refs */
 
+import { useRef } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useFloating, offset, flip, shift, autoUpdate, FloatingPortal } from "@floating-ui/react";
+import Image from "next/image";
 import Link from "next/link";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useSettings } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
+import Card3D from "@/components/Card3D";
 import { useLayer } from "@/components/LayerProvider";
 
 type WeatherData = Record<string, unknown>;
@@ -81,19 +84,19 @@ function WeatherIcon({
 
   if (iconUrl) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
+      <Image
         src={iconUrl}
         alt=""
         width={40}
         height={40}
+        unoptimized
         className={`${className || ""} object-contain`}
       />
     );
   }
 
   const iconName = weatherIconFromCode(code, condition, isDay);
-  return <Icon pack="phosphor" name={iconName} className={className} />;
+  return <Icon name={iconName} className={className} />;
 }
 
 function dayLabel(isoDate: string | undefined, lang: string): string {
@@ -116,9 +119,9 @@ function ForecastRow({ day, lang }: { day: WeatherData; lang: string }) {
 
   return (
     <div className="flex items-center justify-between rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm">
-      <span className="text-[var(--text-muted)]">{dayLabel(date, lang)}</span>
+      <span className="text-[var(--muted)]">{dayLabel(date, lang)}</span>
       <div className="flex items-center gap-2">
-        <Icon pack="phosphor" name={weatherIconFromCode(code, condition)} className="h-4 w-4" />
+        <Icon name={weatherIconFromCode(code, condition)} className="h-4 w-4" />
         <span className="font-medium tabular-nums">
           {min !== undefined ? `${min}°` : "—"} / {max !== undefined ? `${max}°` : "—"}
         </span>
@@ -136,6 +139,7 @@ function WeatherDetailContent({
 }: ContentProps & { placement?: "bottom-end" | "top-end" }) {
   const i18n = useI18n();
   const { settings } = useSettings();
+  const panelRef = useRef<HTMLDivElement | null>(null);
 
   const { refs, floatingStyles, placement: actualPlacement } = useFloating({
     open,
@@ -145,19 +149,19 @@ function WeatherDetailContent({
     placement,
     strategy: "fixed",
     whileElementsMounted: autoUpdate,
-    middleware: [offset(8), flip({ padding: 8, crossAxis: false }), shift({ padding: 8, crossAxis: false })],
+    middleware: [offset(8), flip({ padding: 8, crossAxis: false }), shift({ padding: 8 })],
     elements: { reference: referenceRef },
   });
 
   useLayer(open, onClose, {
-    boundary: refs.floating,
+    boundary: panelRef,
     anchor: referenceRef,
     kind: "popover",
     closeOnEscape: true,
     closeOnOutside: true,
-    closeOnResize: false,
-    closeOnScroll: false,
-    initialFocus: false,
+    closeOnResize: true,
+    closeOnScroll: true,
+    initialFocus: true,
     trapFocus: false,
   });
 
@@ -169,88 +173,99 @@ function WeatherDetailContent({
   const humidity = asNum(weather?.humidityPercent);
   const wind = asNum(weather?.windSpeedKmh) ?? asNum(weather?.windSpeed);
   const forecast = (
-    Array.isArray(weather?.forecast)
-      ? (weather.forecast as unknown[]).filter((d): d is WeatherData => typeof d === "object" && d !== null)
-      : []
+    Array.isArray(weather?.forecast) ? (weather.forecast as WeatherData[]) : []
   ).slice(0, 5);
+
+  const setRefs = (el: HTMLDivElement | null) => {
+    panelRef.current = el;
+    refs.setFloating(el as unknown as HTMLElement);
+  };
 
   const lang = settings.language || "fr";
 
   return (
     <FloatingPortal>
-      {open && (
-        <div
-          ref={refs.setFloating as unknown as React.Ref<HTMLDivElement>}
-          style={floatingStyles}
-          className="v8-panel z-[var(--z-popover)] w-80 max-w-[calc(100vw-1rem)] overflow-hidden p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-label={i18n("weather")}
-          data-weather-placement={actualPlacement}
-        >
-          <div className="space-y-4">
-            <div className="flex items-start gap-3">
-              <WeatherIcon weather={weather} className="h-10 w-10 shrink-0" />
-              <div className="min-w-0 flex-1">
-                <p className="font-semibold text-[var(--text-primary)]" translate="no">
-                  {displayLocation}
-                </p>
-                {condition && (
-                  <p className="text-sm text-[var(--text-muted)] capitalize" translate="no">
-                    {condition}
-                  </p>
-                )}
-              </div>
-              <div className="shrink-0 text-right">
-                <p className="text-3xl font-bold tabular-nums text-[var(--text-primary)]">
-                  {temp !== undefined ? `${temp}°C` : "—"}
-                </p>
-              </div>
-            </div>
-
-            {(humidity !== undefined || wind !== undefined) && (
-              <div className="grid grid-cols-2 gap-2">
-                {humidity !== undefined && (
-                  <div className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm">
-                    <Icon pack="phosphor" name="droplets" className="h-4 w-4 text-sky-400" />
-                    <span className="font-medium">{humidity}%</span>
-                    <span className="text-[var(--text-muted)]">{i18n("humidity")}</span>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            ref={setRefs}
+            initial={{ opacity: 0, y: -8, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.96 }}
+            transition={{ duration: 0.15, ease: "easeOut" as const }}
+            style={floatingStyles}
+            className="z-[90] w-80 max-w-[calc(100vw-1rem)]"
+            role="dialog"
+            aria-modal="true"
+            aria-label={i18n("weather")}
+            data-weather-placement={actualPlacement}
+          >
+            <Card3D>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <WeatherIcon weather={weather} className="h-10 w-10 shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-[var(--foreground)]" translate="no">
+                      {displayLocation}
+                    </p>
+                    {condition && (
+                      <p className="text-sm text-[var(--muted)] capitalize" translate="no">
+                        {condition}
+                      </p>
+                    )}
                   </div>
-                )}
-                {wind !== undefined && (
-                  <div className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm">
-                    <Icon pack="phosphor" name="wind" className="h-4 w-4 text-[--accent-primary]" />
-                    <span className="font-medium">{wind} km/h</span>
-                    <span className="text-[var(--text-muted)]">{i18n("wind")}</span>
+                  <div className="shrink-0 text-right">
+                    <p className="text-3xl font-bold tabular-nums text-[var(--foreground)]">
+                      {temp !== undefined ? `${temp}°C` : "—"}
+                    </p>
                   </div>
-                )}
-              </div>
-            )}
-
-            {forecast.length > 0 && (
-              <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-                  {i18n("forecast")}
-                </p>
-                <div className="space-y-1.5">
-                  {forecast.map((day, i) => (
-                    <ForecastRow key={i} day={day} lang={lang} />
-                  ))}
                 </div>
-              </div>
-            )}
 
-            <Link
-              href="/weather"
-              onClick={onClose}
-              className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-[var(--text-primary)] transition-opacity hover:opacity-90"
-            >
-              {i18n("weatherSeePage")}
-              <Icon pack="phosphor" name="arrowRight" className="h-4 w-4" />
-            </Link>
-          </div>
-        </div>
-      )}
+                {(humidity !== undefined || wind !== undefined) && (
+                  <div className="grid grid-cols-2 gap-2">
+                    {humidity !== undefined && (
+                      <div className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm">
+                        <Icon name="droplets" className="h-4 w-4 text-sky-400" />
+                        <span className="font-medium">{humidity}%</span>
+                        <span className="text-[var(--muted)]">{i18n("humidity")}</span>
+                      </div>
+                    )}
+                    {wind !== undefined && (
+                      <div className="flex items-center gap-2 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] px-3 py-2 text-sm">
+                        <Icon name="wind" className="h-4 w-4 text-[--accent-primary]" />
+                        <span className="font-medium">{wind} km/h</span>
+                        <span className="text-[var(--muted)]">{i18n("wind")}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {forecast.length > 0 && (
+                  <div>
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
+                      {i18n("forecast")}
+                    </p>
+                    <div className="space-y-1.5">
+                      {forecast.map((day, i) => (
+                        <ForecastRow key={i} day={day} lang={lang} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <Link
+                  href="/weather"
+                  onClick={onClose}
+                  className="flex w-full items-center justify-center gap-2 rounded-[var(--panel-radius)] bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                >
+                  {i18n("weatherSeePage")}
+                  <Icon name="arrowRight" className="h-4 w-4" />
+                </Link>
+              </div>
+            </Card3D>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </FloatingPortal>
   );
 }

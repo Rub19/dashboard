@@ -43,7 +43,7 @@ export function EventsCard({ date, items, onAdd }: EventsCardProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Calendar className="h-4 w-4 text-[--accent-primary]" />
-          <span className="text-sm font-bold text-[var(--text-primary)]">Événements</span>
+          <span className="text-sm font-bold text-white">Événements</span>
         </div>
 
         <div className="relative">
@@ -57,7 +57,7 @@ export function EventsCard({ date, items, onAdd }: EventsCardProps) {
           </button>
 
           {menuOpen && (
-            <div className="absolute right-0 top-full z-20 mt-1.5 min-w-[8rem] rounded-xl border border-[var(--text-primary)]/[0.08] bg-zinc-900 p-1 shadow-xl backdrop-blur-xl">
+            <div className="absolute right-0 top-full z-20 mt-1.5 min-w-[8rem] rounded-xl border border-white/[0.08] bg-zinc-900 p-1 shadow-xl backdrop-blur-xl">
               {EVENT_SOURCES.map((s) => (
                 <button
                   key={s}
@@ -82,27 +82,27 @@ export function EventsCard({ date, items, onAdd }: EventsCardProps) {
 
       {/* Content */}
       {filteredItems.length === 0 ? (
-        <div className="flex flex-col gap-1 rounded-xl border border-[var(--text-primary)]/[0.04] bg-[var(--text-primary)]/[0.02] p-3.5">
-          <p className="text-xs font-semibold text-[var(--text-primary)]">{label}</p>
-          <p className="text-xs text-[var(--text-muted)]">Aucun événement pour cette date.</p>
+        <div className="flex flex-col gap-1 rounded-xl border border-white/[0.04] bg-white/[0.02] p-3.5">
+          <p className="text-xs font-semibold text-white">{label}</p>
+          <p className="text-xs text-zinc-500">Aucun événement pour cette date.</p>
         </div>
       ) : (
         <ul className="flex flex-col gap-2">
           {filteredItems.map((item) => (
             <li
               key={item.id}
-              className="flex items-center gap-3 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] p-2.5"
+              className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.03] p-2.5"
             >
               <span
-                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[var(--text-primary)]"
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-white"
                 style={{ backgroundColor: item.color || "#A259FF" }}
               >
                 <VendorLogo vendor={item.vendor} className="h-3.5 w-3.5" />
               </span>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-[var(--text-primary)]">{item.title}</p>
+                <p className="truncate text-sm font-medium text-white">{item.title}</p>
                 {item.amount !== undefined && (
-                  <p className="text-[10px] text-[var(--text-muted)]">
+                  <p className="text-[10px] text-zinc-400">
                     {item.amount > 0
                       ? item.amount.toLocaleString("fr-FR", {
                           style: "currency",
@@ -230,16 +230,16 @@ export function InvoicesCard({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Receipt className="h-4 w-4 text-[--accent-primary]" />
-          <span className="text-sm font-bold text-[var(--text-primary)]">Factures</span>
+          <span className="text-sm font-bold text-white">Factures</span>
         </div>
         <div className="text-right">
-          <p className="text-xl font-bold font-mono tracking-tight text-[var(--text-primary)]">{amountText}</p>
-          <p className="text-[10px] text-[var(--text-muted)]">{upcomingText}</p>
+          <p className="text-xl font-bold font-mono tracking-tight text-white">{amountText}</p>
+          <p className="text-[10px] text-zinc-400">{upcomingText}</p>
         </div>
       </div>
 
       {/* Day selector */}
-      <div className="grid grid-cols-7 gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.05] bg-[var(--text-primary)]/[0.02] p-1">
+      <div className="grid grid-cols-7 gap-1.5 rounded-xl border border-white/[0.05] bg-white/[0.02] p-1">
         {days.map((day, idx) => {
           const active = isSameDay(day, activeDate);
           const hasItem = items.some((it) => it.date === toISODate(day));
@@ -251,7 +251,7 @@ export function InvoicesCard({
               className={`flex flex-col items-center justify-center gap-0.5 rounded-lg p-2 text-center text-xs transition-colors ${
                 active
                   ? "bg-[var(--accent-primary)] font-bold text-[var(--accent-contrast)] shadow-sm"
-                  : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
+                  : "text-[var(--muted)] hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
               }`}
             >
               <span className="text-[9px] opacity-70">{WEEK_DAYS[idx]}</span>

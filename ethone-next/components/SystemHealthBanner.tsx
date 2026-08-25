@@ -24,7 +24,7 @@ export default function SystemHealthBanner({
   const i18n = useI18n();
   const [expanded, setExpanded] = useState(false);
 
-  const { ok, errors, total } = useMemo(() => {
+  const { ok, errors, unconfigured, total } = useMemo(() => {
     const items = INTEGRATIONS.map((integration) => {
       const result = health[integration.id];
       const configured = configuredMap[integration.id] || false;
@@ -34,11 +34,12 @@ export default function SystemHealthBanner({
     return {
       ok: items.filter((i) => i.status === "connected").length,
       errors: items.filter((i) => i.status === "error").length,
+      unconfigured: items.filter((i) => i.status === "unconfigured").length,
       total: items.length,
     };
   }, [health, configuredMap]);
 
-  const tone = errors > 0 ? "error" : "success";
+  const tone = errors > 0 ? "error" : unconfigured > 0 ? "warning" : "success";
 
   return (
     <div className="mb-4 w-full overflow-hidden rounded-2xl v8-panel p-4 shadow-xl backdrop-blur-2xl">
@@ -48,8 +49,8 @@ export default function SystemHealthBanner({
             <Activity className="h-4 w-4" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-[var(--text-primary)]">{i18n("systemHealth")}</h2>
-            <p className="text-[11px] text-[var(--text-muted)]">
+            <h2 className="text-sm font-bold text-white">{i18n("systemHealth")}</h2>
+            <p className="text-[11px] text-zinc-400">
               {ok}/{total} {i18n("connected")}
             </p>
           </div>
@@ -57,21 +58,25 @@ export default function SystemHealthBanner({
 
         <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-start">
           <span
-            className={`inline-flex items-center gap-1 rounded-lg px-2 py-0.5 text-[10px] font-semibold ${
+            className={`inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 text-[10px] font-semibold ${
               tone === "success"
-                ? "bg-[--accent-primary]/10 text-[--accent-primary]"
-                : "bg-rose-500/10 text-rose-400"
+                ? "border-[--accent-primary] bg-[--accent-primary] text-[--accent-primary]"
+                : tone === "warning"
+                  ? "border-amber-500/20 bg-amber-500/10 text-amber-400"
+                  : "border-rose-500/20 bg-rose-500/10 text-rose-400"
             }`}
           >
             {tone === "success" ? (
               <CheckCircle2 className="h-3 w-3" />
+            ) : tone === "warning" ? (
+              <ChevronDown className="h-3 w-3" />
             ) : (
               <AlertCircle className="h-3 w-3" />
             )}
-            {errors > 0 ? `${errors} ${i18n("error")}` : i18n("all")}
+            {errors > 0 ? `${errors} ${i18n("error")}` : unconfigured > 0 ? `${unconfigured} ${i18n("notConfigured")}` : i18n("all")}
           </span>
 
-          <span className="rounded-lg bg-[--accent-primary]/10 px-2.5 py-1 text-xs font-mono text-[--accent-primary]">
+          <span className="rounded-lg border border-[--accent-primary] bg-[--accent-primary] px-2.5 py-1 text-xs font-mono text-[--accent-primary]">
             <span className="mr-1 inline-block h-2 w-2 rounded-full bg-[--accent-primary]" />
             {i18n("latency")}: 30 ms
           </span>
@@ -89,7 +94,7 @@ export default function SystemHealthBanner({
           <button
             type="button"
             onClick={() => setExpanded((v) => !v)}
-            className="rounded-xl p-1.5 text-[var(--text-muted)] transition hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+            className="rounded-xl p-1.5 text-[var(--muted)] transition hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
             aria-label={expanded ? i18n("collapse") : i18n("expand")}
           >
             {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -106,7 +111,7 @@ export default function SystemHealthBanner({
             transition={{ duration: 0.2, ease: "easeOut" }}
             className="overflow-hidden"
           >
-            <div className="mt-3 grid gap-2 border-t border-[var(--text-primary)]/[0.06] pt-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-3 grid gap-2 border-t border-white/[0.06] pt-3 sm:grid-cols-2 lg:grid-cols-3">
               {INTEGRATIONS.map((integration) => {
                 const result = health[integration.id];
                 const configured = configuredMap[integration.id] || false;
@@ -114,24 +119,24 @@ export default function SystemHealthBanner({
                 return (
                   <div
                     key={integration.id}
-                    className="flex items-center gap-3 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5"
+                    className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5"
                   >
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--text-primary)]/[0.04] text-[var(--text-primary)]">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.04] text-zinc-300">
                       <ServiceIcon id={integration.id} icon={integration.icon} className="h-4 w-4" colored />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-xs font-medium text-[var(--text-primary)]">{integration.name}</p>
-                      <p className="text-[10px] text-[var(--text-muted)]">
+                      <p className="truncate text-xs font-medium text-zinc-200">{integration.name}</p>
+                      <p className="text-[10px] text-zinc-500">
                         {result ? `${result.ms}ms` : i18n(status === "connected" ? "connected" : status === "error" ? "error" : "notConfigured")}
                       </p>
                     </div>
                     <div
                       className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
                         status === "connected"
-                          ? "bg-[--accent-primary]/10 text-[--accent-primary]"
+                          ? "bg-[--accent-primary] text-[--accent-primary]"
                           : status === "error"
                             ? "bg-rose-500/10 text-rose-400"
-                            : "bg-zinc-500/10 text-[var(--text-muted)]"
+                            : "bg-zinc-500/10 text-zinc-500"
                       }`}
                     >
                       {status === "connected" ? (

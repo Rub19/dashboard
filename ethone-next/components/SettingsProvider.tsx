@@ -4,7 +4,7 @@ import { activityJournal } from "@/lib/activity-journal";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { deepEqual } from "@/lib/equal";
 import { useProfiles, type Profile } from "@/lib/hooks/useProfiles";
-import { loadSettings, saveSettings, saveSettingsAsync, loadSettingsAsync, migrateSettings, getWriteAt, setWriteAt, Settings, DEFAULTS, type ThemeMode } from "@/lib/settings";
+import { loadSettings, saveSettings, saveSettingsAsync, loadSettingsAsync, migrateSettings, getWriteAt, Settings, DEFAULTS, type ThemeMode } from "@/lib/settings";
 import { applyPreset, type Preset } from "@/lib/preset-engine";
 import { supabase } from "@/lib/supabase";
 import { useSyncStore } from "@/lib/stores/sync";
@@ -105,8 +105,6 @@ export default function SettingsProvider({
     settingsRef.current = settings;
   }, [settings]);
 
-  const CLOCK_SKEW_BUFFER_MS = 5000;
-
   const activeContext = useMemo<ActiveProfileValue>(
     () => ({ active, activeProfile, loaded, reload }),
     [active, activeProfile, loaded, reload]
@@ -114,56 +112,17 @@ export default function SettingsProvider({
 
   useEffect(() => {
     if (!loaded) return;
-
-    const profileId = active || undefined;
-    const defaultLocal = loadSettings();
-    const profileLocal = loadSettings(profileId);
-    const defaultWriteAt = getWriteAt();
-    const profileWriteAt = getWriteAt(profileId);
-
-    let local = profileLocal;
-    let localWriteAt = profileWriteAt;
-
-    const profileKeyEmpty = profileWriteAt === 0;
-    const defaultHasData = defaultWriteAt > 0 || !deepEqual(defaultLocal, DEFAULTS);
-
-    if (profileId) {
-      if (profileKeyEmpty && defaultHasData) {
-        // Migrate legacy/default-key settings into the active profile key.
-        local = defaultLocal;
-        localWriteAt = defaultWriteAt > 0 ? defaultWriteAt : Date.now();
-        try {
-          saveSettings(defaultLocal, profileId);
-          setWriteAt(localWriteAt, profileId);
-        } catch {}
-      } else if (defaultWriteAt > profileWriteAt && !deepEqual(defaultLocal, DEFAULTS)) {
-        // Default key has a more recent write, use it as the source of truth.
-        local = defaultLocal;
-        localWriteAt = defaultWriteAt;
-      }
-    } else {
-      local = defaultLocal;
-      localWriteAt = defaultWriteAt;
-    }
-
-    // If local settings exist but have no write timestamp (legacy/test contexts),
-    // stamp them as "now" so they are not silently overwritten by an older remote state.
-    if (localWriteAt === 0 && !deepEqual(local, DEFAULTS)) {
-      localWriteAt = Date.now();
-      try {
-        setWriteAt(localWriteAt, profileId);
-      } catch {}
-    }
-
+    const local = loadSettings(active || undefined);
     setSettings(local);
     useSyncStore.getState().setStatus("user_settings", "syncing");
     loadSettingsAsync()
       .then(({ settings: remote, updatedAt }) => {
         setSettings((prev) => {
+          const localWriteAt = getWriteAt();
           const remoteTs = updatedAt ? new Date(updatedAt).getTime() : 0;
-          const remoteIsNewer = remoteTs > localWriteAt + CLOCK_SKEW_BUFFER_MS;
+          // Local is the source of truth unless the server has a newer write.
           const next =
-            remoteIsNewer
+            remoteTs > localWriteAt
               ? { ...DEFAULTS, ...local, ...remote }
               : { ...DEFAULTS, ...local };
           return deepEqual(next, prev) ? prev : next;
@@ -229,12 +188,6 @@ export default function SettingsProvider({
 
   useEffect(() => {
     const root = document.documentElement;
-    const prev = previousEffectSettingsRef.current;
-    const changed = prev && (prev.theme !== settings.theme || prev.accentColor !== settings.accentColor || prev.customAccent !== settings.customAccent || prev.densityMode !== settings.densityMode || prev.fontSize !== settings.fontSize || prev.radius !== settings.radius || prev.radiusStyle !== settings.radiusStyle || prev.iconRadius !== settings.iconRadius || prev.glassEnabled !== settings.glassEnabled || prev.fontFamily !== settings.fontFamily || prev.dockScale !== settings.dockScale || prev.dockAlign !== settings.dockAlign || prev.dockGlass !== settings.dockGlass || prev.layoutPreset !== settings.layoutPreset || prev.wallpaper !== settings.wallpaper || prev.aura !== settings.aura || prev.backgroundEffect !== settings.backgroundEffect || prev.backgroundSpeed !== settings.backgroundSpeed || prev.shadow !== settings.shadow);
-
-    if (changed) {
-      root.setAttribute("data-no-transitions", "true");
-    }
 
     // Apply the premium theme engine directly to the root for zero-lag switching.
     applyTheme(settings.theme);
@@ -336,14 +289,6 @@ export default function SettingsProvider({
     Object.entries(densityValues).forEach(([key, value]) => {
       root.style.setProperty(`--density-${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`, `${value}${UNIT[key] || ""}`);
     });
-
-    if (changed) {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => root.removeAttribute("data-no-transitions"));
-      });
-    }
-
-    previousEffectSettingsRef.current = settings;
   }, [settings, active]);
 
   const update = useCallback(
@@ -357,21 +302,9 @@ export default function SettingsProvider({
       if (deepEqual(next, prev)) {
         return;
       }
-
-      // Snapshot the previous state so we can roll back if persistence fails.
       settingsRef.current = next;
       setSettings(next);
-
-      try {
-        saveSettings(next, active || undefined);
-      } catch {
-        // Local persistence failed; revert to the previous state immediately.
-        settingsRef.current = prev;
-        setSettings(prev);
-        useSyncStore.getState().setStatus("user_settings", "error");
-        return;
-      }
-
+      saveSettings(next, active || undefined);
       useSyncStore.getState().setStatus("user_settings", "syncing");
 
       // Debounce the Supabase round-trip so rapid changes (sliders, theme clicks)
@@ -381,11 +314,9 @@ export default function SettingsProvider({
         clearTimeout(saveTimeoutRef.current);
       }
       saveTimeoutRef.current = window.setTimeout(() => {
-        saveSettingsAsync(settingsRef.current, active || undefined)
+        saveSettingsAsync(settingsRef.current)
           .then(() => useSyncStore.getState().setStatus("user_settings", "idle"))
-          .catch(() => {
-            useSyncStore.getState().setStatus("user_settings", "error");
-          });
+          .catch(() => useSyncStore.getState().setStatus("user_settings", "error"));
       }, 400);
     },
     [active]
@@ -403,7 +334,6 @@ export default function SettingsProvider({
 
   const saveTimeoutRef = useRef<number | null>(null);
   const previousSettingsRef = useRef<Settings | null>(null);
-  const previousEffectSettingsRef = useRef<Settings | null>(null);
   useEffect(() => {
     const prev = previousSettingsRef.current;
     previousSettingsRef.current = settings;

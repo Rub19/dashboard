@@ -79,28 +79,28 @@ export function FloatingWindow({ win }: { win: WindowState }) {
         <div className="flex items-center gap-1">
           <button
             onClick={() => updateWindow(win.id, { height: win.height > 100 ? 48 : 360 })}
-            className="rounded p-1 text-[var(--text-muted)] hover:bg-[var(--panel-bg)]"
+            className="rounded p-1 text-[var(--muted)] hover:bg-[var(--panel-bg)]"
             aria-label={i18n("minimize")}
           >
             <Icon name="minus" className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={toggleFullscreen}
-            className="rounded p-1 text-[var(--text-muted)] hover:bg-[var(--panel-bg)]"
+            className="rounded p-1 text-[var(--muted)] hover:bg-[var(--panel-bg)]"
             aria-label={i18n("fullscreen")}
           >
             <Icon name="expand" className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={toggleMaximize}
-            className="rounded p-1 text-[var(--text-muted)] hover:bg-[var(--panel-bg)]"
+            className="rounded p-1 text-[var(--muted)] hover:bg-[var(--panel-bg)]"
             aria-label={i18n(win.maximized ? "restore" : "maximize")}
           >
             <Icon name={win.maximized ? "minimize" : "maximize"} className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={() => closeWindow(win.id)}
-            className="rounded p-1 text-[var(--text-muted)] hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
+            className="rounded p-1 text-[var(--muted)] hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
             aria-label={i18n("close")}
           >
             <Icon name="close" className="h-3.5 w-3.5" />

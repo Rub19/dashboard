@@ -64,12 +64,12 @@ export default function LanguageSwitcher() {
               className={`group flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                 active
                   ? "bg-[var(--text-primary)]/[0.08] text-[var(--text-primary)] ring-1 ring-[var(--panel-border)]/10"
-                  : "text-[var(--text-primary)] hover:bg-[var(--text-primary)]/[0.06]"
+                  : "text-[var(--foreground)] hover:bg-[var(--text-primary)]/[0.06]"
               }`}
             >
               <FlagIcon code={lang} className="h-4 w-5" />
               <span className="pointer-events-none uppercase">{lang}</span>
-              <span className={active ? "pointer-events-none text-[var(--text-muted)]" : "pointer-events-none text-[var(--text-muted)]"}>
+              <span className={active ? "pointer-events-none text-[var(--muted)]" : "pointer-events-none text-[var(--muted)]"}>
                 {LANGUAGE_LABELS[lang]}
               </span>
               {active && (

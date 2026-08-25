@@ -50,11 +50,11 @@ function aqiLabel(aqi: number): string {
 function WeatherPageSkeleton() {
   return (
     <div className="grid animate-pulse grid-cols-12 gap-4">
-      <div className="col-span-12 min-h-[260px] rounded-2xl bg-[var(--text-primary)]/[0.03] lg:col-span-8" />
-      <div className="col-span-12 min-h-[260px] rounded-2xl bg-[var(--text-primary)]/[0.03] lg:col-span-4" />
+      <div className="col-span-12 min-h-[260px] rounded-2xl bg-white/[0.03] lg:col-span-8" />
+      <div className="col-span-12 min-h-[260px] rounded-2xl bg-white/[0.03] lg:col-span-4" />
       <div className="col-span-12 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {[...Array(6)].map((_, i) => (
-          <div key={i} className="h-28 rounded-2xl bg-[var(--text-primary)]/[0.03]" />
+          <div key={i} className="h-28 rounded-2xl bg-white/[0.03]" />
         ))}
       </div>
     </div>
@@ -228,11 +228,10 @@ export default function WeatherPage() {
 
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden p-4 sm:p-6">
-      <div className="mx-auto flex h-full w-full max-w-7xl flex-col">
       <header className="shrink-0 mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">{i18n("weather")}</h1>
-          <p className="text-sm text-[var(--text-muted)]">{i18n("weatherDescription")}</p>
+          <h1 className="text-2xl font-bold text-white">{i18n("weather")}</h1>
+          <p className="text-sm text-zinc-500">{i18n("weatherDescription")}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="flex items-center gap-2">
@@ -253,10 +252,10 @@ export default function WeatherPage() {
           <button
             type="button"
             onClick={handleGeolocate}
-            className="flex h-8 w-8 items-center justify-center rounded-xl text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
+            className="flex h-8 w-8 items-center justify-center rounded-xl text-[var(--muted)] transition-colors hover:text-[var(--text-primary)]"
             aria-label={i18n("geolocate")}
           >
-            <Icon pack="phosphor" name="navigation" className="h-3.5 w-3.5" />
+            <Icon name="navigation" className="h-3.5 w-3.5" />
           </button>
 
           <button
@@ -274,41 +273,41 @@ export default function WeatherPage() {
       ) : loading && !weather ? (
         <WeatherPageSkeleton />
       ) : !weather ? (
-        <div className="flex min-h-[320px] flex-col items-center justify-center gap-3 rounded-2xl border border-[var(--text-primary)]/[0.06] p-6 text-center">
-          <Icon pack="phosphor" name="cloud" className="h-10 w-10 text-[var(--text-muted)]" />
-          <p className="text-sm text-[var(--text-muted)]">{i18n("noForecast")}</p>
+        <div className="flex min-h-[320px] flex-col items-center justify-center gap-3 rounded-2xl border border-white/[0.06] p-6 text-center">
+          <Icon name="cloud" className="h-10 w-10 text-zinc-600" />
+          <p className="text-sm text-zinc-400">{i18n("noForecast")}</p>
         </div>
       ) : (
         <div className="grid w-full grid-cols-12 gap-4">
           {/* Hero */}
-          <div className="relative col-span-12 overflow-hidden rounded-2xl border border-[var(--text-primary)]/[0.08] p-6 lg:col-span-8">
+          <div className="relative col-span-12 overflow-hidden rounded-2xl border border-white/[0.08] p-6 lg:col-span-8">
 
             <div className="relative z-10 flex h-full flex-col justify-between">
               <div className="flex items-start justify-between">
                 <div>
-                  <div className="flex items-center gap-2 text-lg font-bold text-[var(--text-primary)]">
-                    <Icon pack="phosphor" name="mapPin" className="h-4 w-4 text-[var(--text-muted)]" />
+                  <div className="flex items-center gap-2 text-lg font-bold text-white">
+                    <Icon name="mapPin" className="h-4 w-4 text-zinc-500" />
                     <span>
                       {city}
                       {country ? `, ${country}` : ""}
                     </span>
                   </div>
-                  <p className="mt-0.5 text-xs font-medium capitalize text-[var(--text-primary)]">{condition}</p>
-                  <p className="text-[10px] text-[var(--text-muted)]">{localTime}</p>
+                  <p className="mt-0.5 text-xs font-medium capitalize text-zinc-300">{condition}</p>
+                  <p className="text-[10px] text-zinc-500">{localTime}</p>
                 </div>
                 <button
                   type="button"
                   onClick={load}
                   disabled={loading}
-                  className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] disabled:opacity-50"
+                  className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:text-[var(--text-primary)] disabled:opacity-50"
                   aria-label={i18n("refresh")}
                 >
-                  <Icon pack="phosphor" name="refresh-cw" className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+                  <Icon name="refresh-cw" className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
                 </button>
               </div>
 
               <div className="mt-6 flex items-start gap-3">
-                <span className="text-6xl font-mono font-bold tracking-tight text-[var(--text-primary)] sm:text-7xl">
+                <span className="text-6xl font-mono font-bold tracking-tight text-white sm:text-7xl">
                   {temp !== undefined ? `${Math.round(temp)}°` : "—"}
                 </span>
                 <motion.div
@@ -316,18 +315,18 @@ export default function WeatherPage() {
                   transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                   className="h-10 w-10 sm:h-12 sm:w-12"
                 >
-                  <Icon pack="phosphor" name={iconName} className={`h-full w-full ${iconColor}`} />
+                  <Icon name={iconName} className={`h-full w-full ${iconColor}`} />
                 </motion.div>
               </div>
 
-              <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-[var(--text-muted)]">
+              <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-zinc-400">
                 {feelsLike !== undefined && (
-                  <span className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] px-2.5 py-1">
+                  <span className="rounded-xl border border-white/[0.06] bg-white/[0.03] px-2.5 py-1">
                     Ressenti {Math.round(feelsLike)}°
                   </span>
                 )}
                 {todayMin !== undefined && todayMax !== undefined && (
-                  <span className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] px-2.5 py-1">
+                  <span className="rounded-xl border border-white/[0.06] bg-white/[0.03] px-2.5 py-1">
                     Min: {Math.round(todayMin)}° • Max: {Math.round(todayMax)}°
                   </span>
                 )}
@@ -336,8 +335,8 @@ export default function WeatherPage() {
           </div>
 
           {/* Forecast */}
-          <div className="col-span-12 rounded-2xl border border-[var(--text-primary)]/[0.08] p-5 lg:col-span-4">
-            <h3 className="mb-2 text-sm font-semibold text-[var(--text-primary)]">{i18n("weatherForecast") || "Prévisions"}</h3>
+          <div className="col-span-12 rounded-2xl border border-white/[0.08] p-5 lg:col-span-4">
+            <h3 className="mb-2 text-sm font-semibold text-white">{i18n("weatherForecast") || "Prévisions"}</h3>
             <WeatherForecastList days={forecast} />
           </div>
 
@@ -349,7 +348,6 @@ export default function WeatherPage() {
           </div>
         </div>
       )}
-    </div>
     </div>
   </div>
   );

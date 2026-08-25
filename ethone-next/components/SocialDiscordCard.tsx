@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, ExternalLink, Loader2, Music, Radio, RadioOff } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
@@ -40,11 +40,11 @@ function statusColor(status?: string) {
     case "online":
       return "bg-[--accent-primary]";
     case "idle":
-      return "bg-[var(--warning)]";
+      return "bg-amber-400";
     case "dnd":
-      return "bg-[var(--danger)]";
+      return "bg-rose-500";
     default:
-      return "bg-[var(--text-muted)]";
+      return "bg-zinc-400";
   }
 }
 
@@ -64,13 +64,13 @@ function statusLabel(status?: string) {
 function statusTone(status?: string) {
   switch (status) {
     case "dnd":
-      return "border-[var(--danger)]/20 bg-[var(--danger)]/15 text-[var(--danger)] dark:border-[var(--danger)]/30 dark:bg-[var(--danger)]/10 dark:text-[var(--danger)]";
+      return "border-rose-600/20 bg-rose-500/15 text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300";
     case "online":
-      return "border-[--accent-primary] bg-[--accent-primary]/10 text-[--accent-primary] dark:border-[--accent-primary] dark:bg-[--accent-primary] dark:text-[--accent-primary]";
+      return "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] dark:border-[var(--accent-primary)]/30 dark:bg-[var(--accent-primary)]/10 dark:text-[var(--accent-primary)]";
     case "idle":
-      return "border-[var(--warning)]/20 bg-[var(--warning)]/15 text-[var(--warning)] dark:border-[var(--warning)]/30 dark:bg-[var(--warning)]/10 dark:text-[var(--warning)]";
+      return "border-amber-600/20 bg-amber-500/15 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300";
     default:
-      return "border-[var(--text-muted)]/20 bg-[var(--text-muted)]/10 text-[var(--text-primary)] dark:border-[var(--text-muted)]/30 dark:bg-[var(--text-muted)]/10 dark:text-[var(--text-muted)]";
+      return "border-zinc-500/20 bg-zinc-500/10 text-zinc-700 dark:border-zinc-500/30 dark:bg-zinc-500/10 dark:text-zinc-400";
   }
 }
 
@@ -82,7 +82,7 @@ function formatMs(ms?: number): string {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-const SocialDiscordCard = memo(function SocialDiscordCard({
+export default function SocialDiscordCard({
   lanyard,
   nowPlaying,
   loading,
@@ -93,10 +93,6 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
   const i18n = useI18n();
   const { settings, update } = useSettings();
   const { profile: oauthProfile } = useDiscordOAuth();
-
-  const handleConnectIntegrations = useCallback(() => {
-    router.push("/settings?category=integrations");
-  }, [router]);
 
   const isOAuth = Boolean(oauthProfile?.connected);
   const oauthUserId = oauthProfile?.user?.id;
@@ -156,14 +152,14 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
       return {
         badgeColor: "bg-[--info]",
         badgeLabel: i18n("loading", "Chargement"),
-        badgeTone: "border-[--info] bg-[--info]/10 text-[--info]",
+        badgeTone: "border-[var(--info)]/30 bg-[var(--info)]/10 text-[var(--info)]",
       };
     }
     if (error && hasAnyConnection && !hasLanyard) {
       return {
-        badgeColor: "bg-[var(--danger)]",
+        badgeColor: "bg-rose-400",
         badgeLabel: i18n("error", "Erreur"),
-        badgeTone: "border-[var(--danger)]/30 bg-[var(--danger)]/10 text-[var(--danger)]",
+        badgeTone: "border-rose-500/30 bg-rose-500/10 text-rose-300",
       };
     }
     if (hasLanyard) {
@@ -173,7 +169,7 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
       return {
         badgeColor: "bg-[--accent-primary]",
         badgeLabel: i18n("connected", "Connecté"),
-        badgeTone: "border-[--accent-primary] bg-[--accent-primary]/10 text-[--accent-primary]",
+        badgeTone: "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]",
       };
     }
     return { badgeColor: color, badgeLabel: label, badgeTone: statusTone(status) };
@@ -230,7 +226,7 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
       )}
     >
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
           Social & Media
         </span>
         <span
@@ -245,36 +241,27 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
       </div>
 
       {!hasLanyard && !hasOAuth && !hasMusic ? (
-        <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-xl border border-[var(--text-primary)]/[0.05] bg-[var(--text-primary)]/[0.02] p-4 text-center">
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-xl border border-white/[0.05] bg-white/[0.02] p-4 text-center">
           {loading && hasAnyConnection ? (
-            <Loader2 className="h-6 w-6 animate-spin text-[var(--text-muted)]" />
+            <Loader2 className="h-6 w-6 animate-spin text-zinc-500" />
           ) : error && hasAnyConnection ? (
-            <AlertCircle className="h-6 w-6 text-[var(--danger)]" />
+            <AlertCircle className="h-6 w-6 text-rose-500" />
           ) : (
-            <RadioOff className="h-6 w-6 text-[var(--text-muted)]" />
+            <RadioOff className="h-6 w-6 text-zinc-500" />
           )}
-          <p className="text-sm font-medium text-[var(--text-primary)]">
+          <p className="text-sm font-medium text-zinc-300">
             {hasAnyConnection
               ? i18n("socialStandby", "Connecté — en attente d'activité")
               : i18n("socialNoSession", "Aucune session sociale active")}
           </p>
-          {!hasAnyConnection ? (
+          {!hasAnyConnection && (
             <button
               type="button"
-              onClick={handleConnectIntegrations}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] active:scale-95"
+              onClick={() => router.push("/settings")}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
             >
               <ExternalLink className="h-3 w-3" />
-              {i18n("connectSpotifyDiscord", "Connecter Spotify / Discord")}
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleConnectIntegrations}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-2.5 py-1 text-[11px] font-medium text-[var(--text-muted)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95"
-            >
-              <ExternalLink className="h-3 w-3" />
-              {i18n("manageIntegrations", "Gérer les connexions")}
+              Connecter Spotify / Discord
             </button>
           )}
         </div>
@@ -290,42 +277,42 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
                   className="h-full w-full rounded-2xl border border-white/10"
                   priority
                   fallback={
-                    <div className="flex h-full w-full items-center justify-center rounded-2xl border border-white/10 bg-[var(--text-primary)]/[0.04] text-lg font-bold text-[var(--text-primary)]">
+                    <div className="flex h-full w-full items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-lg font-bold text-zinc-300">
                       {displayName.slice(0, 2).toUpperCase()}
                     </div>
                   }
                 />
                 <span
                   className={cn(
-                    "absolute -bottom-1 -right-1 h-5 w-5 rounded-full border-[3px] border-[var(--background)]",
+                    "absolute -bottom-1 -right-1 h-5 w-5 rounded-full border-[3px] border-zinc-950",
                     color
                   )}
                 />
               </div>
               <div className="min-w-0">
-                <p className="truncate text-base font-bold text-[var(--text-primary)]">{displayName}</p>
+                <p className="truncate text-base font-bold text-white">{displayName}</p>
                 {handle && (
-                  <p className="truncate text-[11px] text-[var(--text-muted)]">{handle}</p>
+                  <p className="truncate text-[11px] text-zinc-400">{handle}</p>
                 )}
-                <p className="truncate text-[10px] text-[var(--text-muted)]">{label}</p>
+                <p className="truncate text-[10px] text-zinc-500">{label}</p>
               </div>
             </div>
           )}
 
           {customStatus && (
-            <p className="max-w-full truncate rounded-lg bg-[var(--text-primary)]/[0.04] px-3 py-1 text-[11px] text-[var(--text-primary)]">
+            <p className="max-w-full truncate rounded-lg bg-white/[0.04] px-3 py-1 text-[11px] text-zinc-300">
               {customStatus}
             </p>
           )}
 
           {gameActivity && (
-            <div className="w-full shrink-0 space-y-0 rounded-xl border border-[var(--text-primary)]/[0.05] bg-[var(--text-primary)]/[0.02] p-2 text-center">
-              <p className="text-[11px] font-semibold text-[var(--text-primary)]">{gameActivity.name}</p>
+            <div className="w-full shrink-0 space-y-0 rounded-xl border border-white/[0.05] bg-white/[0.02] p-2 text-center">
+              <p className="text-[11px] font-semibold text-zinc-200">{gameActivity.name}</p>
               {gameActivity.details && (
-                <p className="line-clamp-2 text-[10px] text-[var(--text-muted)]">{gameActivity.details}</p>
+                <p className="line-clamp-2 text-[10px] text-zinc-400">{gameActivity.details}</p>
               )}
               {gameActivity.state && (
-                <p className="line-clamp-2 text-[9px] text-[var(--text-muted)]">{gameActivity.state}</p>
+                <p className="line-clamp-2 text-[9px] text-zinc-500">{gameActivity.state}</p>
               )}
             </div>
           )}
@@ -333,32 +320,31 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
       )}
 
       {activeMusic && (
-        <div className="mt-auto flex flex-col gap-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] p-3">
+        <div className="mt-auto flex flex-col gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] p-3">
           <div className="flex items-center gap-3">
             <ClientImage
               candidates={coverCandidates}
               alt={activeMusic.title || ""}
-              width={40}
-              height={40}
+              fill
               className="h-10 w-10 shrink-0 rounded-lg"
               fallback={
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[--accent-primary]/10 text-[--accent-primary]">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-secondary)]/15 text-[var(--accent-secondary)]">
                   <Music className="h-4 w-4" />
                 </div>
               }
             />
             <div className="min-w-0">
-              <p className="truncate text-xs font-semibold text-[var(--text-primary)]">{activeMusic.title || "—"}</p>
-              <p className="truncate text-[10px] text-[var(--text-muted)]">{activeMusic.artist || "—"}</p>
+              <p className="truncate text-xs font-semibold text-white">{activeMusic.title || "—"}</p>
+              <p className="truncate text-[10px] text-zinc-400">{activeMusic.artist || "—"}</p>
             </div>
           </div>
 
           {activeMusic.durationMs && activeMusic.durationMs > 0 && (
             <div className="flex flex-col gap-1">
-              <div className="h-1 w-full overflow-hidden rounded-xl bg-[var(--text-primary)]/[0.08]">
-                <div className="h-full rounded-xl bg-[--accent-primary]" style={{ width: `${progressPct}%` }} />
+              <div className="h-1 w-full overflow-hidden rounded-xl bg-white/[0.08]">
+                <div className="h-full rounded-xl bg-[var(--accent-secondary)]" style={{ width: `${progressPct}%` }} />
               </div>
-              <div className="flex items-center justify-between text-[10px] font-mono text-[var(--text-muted)]">
+              <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500">
                 <span>{formatMs(activeMusic.progressMs)}</span>
                 <span>{formatMs(activeMusic.durationMs)}</span>
               </div>
@@ -368,13 +354,11 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
       )}
 
       {(hasLanyard || hasOAuth) && !customStatus && !gameActivity && !activeMusic && (
-        <div className="mt-auto flex flex-col items-center justify-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.05] bg-[var(--text-primary)]/[0.02] p-3 text-center">
-          <Radio className="h-4 w-4 text-[var(--text-muted)]" />
-          <p className="text-[10px] text-[var(--text-muted)]">Aucune activité en cours.</p>
+        <div className="mt-auto flex flex-col items-center justify-center gap-1.5 rounded-xl border border-white/[0.05] bg-white/[0.02] p-3 text-center">
+          <Radio className="h-4 w-4 text-zinc-500" />
+          <p className="text-[10px] text-zinc-500">Aucune activité en cours.</p>
         </div>
       )}
     </TiltCard>
   );
-});
-
-export default SocialDiscordCard;
+}

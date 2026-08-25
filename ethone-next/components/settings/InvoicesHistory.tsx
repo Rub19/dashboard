@@ -36,8 +36,8 @@ export default function InvoicesHistory() {
       {/* Header */}
       <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="text-sm font-bold text-[var(--text-primary)]">{i18n("invoiceHistory") || "Historique des factures"}</h2>
-          <p className="text-[10px] text-[var(--text-muted)]">{i18n("invoiceHistoryDescription") || "Liste des paiements et échéances récentes"}</p>
+          <h2 className="text-sm font-bold text-white">{i18n("invoiceHistory") || "Historique des factures"}</h2>
+          <p className="text-[10px] text-zinc-500">{i18n("invoiceHistoryDescription") || "Liste des paiements et échéances récentes"}</p>
         </div>
         <div className="flex items-center gap-1">
           <button
@@ -59,7 +59,7 @@ export default function InvoicesHistory() {
 
       <div className="overflow-x-auto">
         <table className="w-full min-w-[36rem]">
-          <thead className="bg-[var(--text-primary)]/[0.02] border-b border-[var(--text-primary)]/[0.06] text-xs font-medium text-[var(--text-muted)]">
+          <thead className="bg-white/[0.02] border-b border-white/[0.06] text-xs font-medium text-zinc-400">
             <tr>
               <th className="px-4 py-2.5 text-left font-medium">{i18n("invoice") || "Facture"}</th>
               <th className="px-4 py-2.5 text-left font-medium">{i18n("date") || "Date"}</th>
@@ -71,7 +71,7 @@ export default function InvoicesHistory() {
           <tbody>
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-xs text-[var(--text-muted)]">
+                <td colSpan={5} className="px-4 py-8 text-center text-xs text-zinc-500">
                   {i18n("noInvoices", "Aucune facture enregistrée.")}
                 </td>
               </tr>
@@ -79,20 +79,20 @@ export default function InvoicesHistory() {
               rows.map((bill) => (
                 <tr
                   key={bill.id}
-                  className="border-b border-[var(--text-primary)]/[0.04] transition-colors hover:bg-[var(--text-primary)]/[0.03]"
+                  className="border-b border-white/[0.04] transition-colors hover:bg-white/[0.03]"
                 >
-                  <td className="px-4 py-3 text-sm text-[var(--text-primary)]">{bill.label}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-[var(--text-muted)] whitespace-nowrap">
+                  <td className="px-4 py-3 text-sm text-zinc-200">{bill.label}</td>
+                  <td className="px-4 py-3 font-mono text-xs text-zinc-400 whitespace-nowrap">
                     {formatDate(bill.dueDate)}
                   </td>
-                  <td className="px-4 py-3 text-right font-mono text-sm text-[var(--text-primary)] whitespace-nowrap">
+                  <td className="px-4 py-3 text-right font-mono text-sm text-zinc-200 whitespace-nowrap">
                     {formatCurrency(bill.amount, bill.currency)}
                   </td>
                   <td className="px-4 py-3">
                     <span
                       className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-mono text-[11px] ${
                         bill.paid
-                          ? "border-[--accent-primary]/30 bg-[--accent-primary]/10 text-[--accent-primary]"
+                          ? "border-[--accent-primary] bg-[--accent-primary] text-[--accent-primary]"
                           : "border-amber-500/20 bg-amber-500/10 text-amber-400"
                       }`}
                     >

@@ -1,8 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import SafeImage from "@/components/SafeImage";
 import { useRouter } from "next/navigation";
@@ -16,27 +15,15 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { fetchWorker } from "@/lib/api";
-import { useUploadQueue } from "@/lib/upload-queue";
 import { useDynamicIslandStore } from "@/lib/stores/dynamic-island";
 import { useBrainActivityStore } from "@/lib/stores/brain-activity";
-import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
 import { cn } from "@/lib/utils";
 import VolumeSlider from "@/components/VolumeSlider";
-import UploadIslandView from "@/components/UploadIslandView";
 
-type View = "spotify" | "pomodoro" | "brain" | "sync" | "upload";
+type View = "spotify" | "pomodoro" | "brain";
 
 const EASE_OUT = [0.16, 1, 0.3, 1] as const;
-const VIEW_PRIORITY: Record<View, number> = {
-  brain: 5, // critical / activity
-  pomodoro: 4, // action required / activity
-  upload: 3, // ongoing upload
-  sync: 2, // activité en cours
-  spotify: 1, // information contextuelle
-};
-const VIEW_ORDER: View[] = (Object.keys(VIEW_PRIORITY) as View[]).sort(
-  (a, b) => VIEW_PRIORITY[b] - VIEW_PRIORITY[a],
-);
+const VIEW_ORDER: View[] = ["spotify", "brain", "pomodoro"];
 
 function viewLabel(view: View, i18n: (key: string, fallback?: string) => string) {
   switch (view) {
@@ -46,10 +33,6 @@ function viewLabel(view: View, i18n: (key: string, fallback?: string) => string)
       return i18n("pomodoro", "Pomodoro");
     case "brain":
       return i18n("brain", "Brain");
-    case "sync":
-      return i18n("sync", "Synchronisation");
-    case "upload":
-      return i18n("upload", "Upload");
     default:
       return "";
   }
@@ -103,9 +86,9 @@ function SpotifyCompact({
             {trackTitle}
           </span>
         </p>
-        <p className="mt-0.5 truncate text-[10px] text-[var(--text-muted)]">{artist || fallback}</p>
+        <p className="mt-0.5 truncate text-[10px] text-[var(--muted)]">{artist || fallback}</p>
       </div>
-      <span className="flex shrink-0 items-center gap-1 rounded-md border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.04] px-1.5 py-1 font-mono text-[10px] tabular-nums text-[var(--text-muted)]">
+      <span className="flex shrink-0 items-center gap-1 rounded-md border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.04] px-1.5 py-1 font-mono text-[10px] tabular-nums text-[var(--muted)]">
         <Icon name="clock" pack="phosphor" className="h-3 w-3" />
         {clock}
       </span>
@@ -131,13 +114,11 @@ function IslandBubble({
     "relative flex shrink-0 items-center justify-center rounded-full transition-all",
     size === "md" ? "h-8 w-8" : "h-7 w-7",
     active
-      ? "bg-[var(--text-primary)]/[0.12] text-[var(--text-primary)] ring-1 ring-[var(--text-primary)]/20 shadow-[0_0_12px_rgba(255,255,255,0.08)]"
+      ? "bg-[var(--text-primary)]/[0.12] text-[var(--text-primary)] ring-1 ring-[var(--text-primary)]/20 shadow-[0_0_12px_var(--glow-color)]"
       : "bg-[var(--text-primary)]/[0.05] text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.1] hover:text-[var(--text-primary)]",
-    view === "spotify" && !active && "text-[--accent-primary] hover:text-[--accent-primary]",
+    view === "spotify" && !active && "text-[var(--accent-secondary)] hover:text-[var(--accent-secondary)]",
     view === "pomodoro" && !active && "text-[var(--accent)]",
-    view === "brain" && !active && "text-[var(--info)] hover:text-[var(--info)]",
-    view === "sync" && !active && "text-[var(--info)] hover:text-[var(--info)]",
-    view === "upload" && !active && "text-[var(--info)] hover:text-[var(--info)]",
+    view === "brain" && !active && "text-[var(--accent-secondary)] hover:text-[var(--accent-primary)]",
   );
 
   const icon =
@@ -147,10 +128,6 @@ function IslandBubble({
       <Icon name="timer" pack="phosphor" className={iconClass} />
     ) : view === "brain" ? (
       <Icon name="brain" pack="phosphor" className={iconClass} />
-    ) : view === "sync" ? (
-      <Icon name="arrows-clockwise" pack="phosphor" className={iconClass} />
-    ) : view === "upload" ? (
-      <Icon name="upload-cloud" pack="phosphor" className={iconClass} />
     ) : (
       <Icon name="sparkles" pack="phosphor" className={iconClass} />
     );
@@ -179,19 +156,17 @@ function IslandExpandedHeader({
   const i18n = useI18n();
   const icon =
     selected === "spotify" ? (
-      <Icon name="music" pack="phosphor" className="h-3.5 w-3.5 text-[--accent-primary]" />
+      <Icon name="music" pack="phosphor" className="h-3.5 w-3.5 text-[var(--accent-secondary)]" />
     ) : selected === "pomodoro" ? (
       <Icon name="timer" pack="phosphor" className="h-3.5 w-3.5 text-[var(--accent)]" />
     ) : selected === "brain" ? (
-      <Icon name="brain" pack="phosphor" className="h-3.5 w-3.5 text-[var(--info)]" />
-    ) : selected === "sync" ? (
-      <Icon name="arrows-clockwise" pack="phosphor" className="h-3.5 w-3.5 text-[var(--info)]" />
+      <Icon name="brain" pack="phosphor" className="h-3.5 w-3.5 text-[var(--accent-secondary)]" />
     ) : (
       <Icon name="sparkles" pack="phosphor" className="h-3.5 w-3.5 text-[var(--text-muted)]" />
     );
   return (
-    <div className={cn("-mx-6 -mt-4 mb-4 flex w-full items-center justify-between gap-3 border-b border-[var(--text-primary)]/[0.06] px-6 pt-4 pb-3", className)}>
-      <div className="flex items-center gap-1.5 text-[var(--text-primary)]">
+    <div className={cn("-mx-6 -mt-4 mb-4 flex w-full items-center justify-between gap-3 border-b border-[var(--border-subtle)] px-6 pt-4 pb-3", className)}>
+      <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
         {icon}
         <span className="text-[10px] font-medium tabular-nums">{viewLabel(selected, i18n)}</span>
       </div>
@@ -224,22 +199,21 @@ export default function DynamicIslandContainer() {
   const { nowPlaying, loading: npLoading, refetch: refetchNowPlaying } = useNowPlaying(1000);
   const isThinking = useBrainActivityStore((s) => s.isThinking);
   const { visible } = useDynamicIslandStore();
-  const { pendingCount, syncing, lastSync } = useActivityJournal();
-  const queue = useUploadQueue();
-  const uploadingCount = queue.items.filter((it) => it.status === "uploading" || it.status === "queued").length;
-  const completedCount = queue.items.filter((it) => it.status === "completed").length;
-  const errorCount = queue.items.filter((it) => it.status === "error").length;
-  const uploadActive = queue.items.length > 0;
 
-  type IslandMode = "IDLE" | "COMPACT" | "EXPANDED" | "INTERACTIVE";
-  const [mode, setMode] = useState<IslandMode>("IDLE");
-  const expanded = mode === "EXPANDED" || mode === "INTERACTIVE";
+  const [expanded, setExpanded] = useState(false);
   const [selectedView, setSelectedView] = useState<View | null>(null);
-  const [userSelected, setUserSelected] = useState(false);
   const [activeViews, setActiveViews] = useState<View[]>([]);
   const prevActiveRef = useRef<Set<View>>(new Set());
   const isInitialMount = useRef(true);
-  const islandLeaveTimer = useRef<number | null>(null);
+  const initialNowPlayingLoadStarted = useRef(false);
+  const collapseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Mount lock: ignore the first mouseenter events on mount/refresh so the
+  // island does not auto-expand if the cursor happens to be over it.
+  const mountLockUntil = useRef(0);
+
+  useLayoutEffect(() => {
+    mountLockUntil.current = Date.now() + 500;
+  }, []);
 
   const [localVolume, setLocalVolume] = useState(nowPlaying?.volumePercent ?? 50);
   const [pendingSpotify, setPendingSpotify] = useState(false);
@@ -255,103 +229,130 @@ export default function DynamicIslandContainer() {
   const spotifyActive = !!nowPlaying?.title || !!nowPlaying?.isPlaying;
   const pomodoroActive = focus.state.phase !== "idle";
   const brainActive = isThinking;
-  const syncActive = syncing || pendingCount > 0;
+  const hasConfiguredNowPlaying =
+    (settings.liveNowPlayingSource === "spotify" && Boolean(settings.liveSpotifyClientId)) ||
+    (settings.liveNowPlayingSource === "lanyard" && Boolean(settings.liveNowPlayingIdentity)) ||
+    (settings.liveNowPlayingSource === "lastfm" && Boolean(settings.liveNowPlayingIdentity));
 
   useEffect(() => {
     // Don't react to activity changes while now-playing data is still
     // loading. Otherwise a refetch that temporarily clears the track would
     // be treated as "new activity" when the data comes back and the island
     // would auto-expand.
-    if (npLoading) return;
+    if (npLoading) {
+      initialNowPlayingLoadStarted.current = true;
+      return;
+    }
+
+    // useCachedFetch starts with loading=false before its first effect runs.
+    // Wait for that first request to settle so an already-playing track is
+    // treated as initial state, never as a newly-started activity.
+    if (isInitialMount.current && hasConfiguredNowPlaying && !nowPlaying && !initialNowPlayingLoadStarted.current) {
+      return;
+    }
 
     const nextActive = new Set<View>();
     if (brainActive) nextActive.add("brain");
     if (pomodoroActive) nextActive.add("pomodoro");
-    if (uploadActive) nextActive.add("upload");
-    if (syncActive) nextActive.add("sync");
     if (spotifyActive) nextActive.add("spotify");
 
     const nextActiveViews = VIEW_ORDER.filter((v) => nextActive.has(v));
     setActiveViews(nextActiveViews);
+
+    // On initial mount/refresh, select the first active view but do not
+    // auto-expand the island. Only expand when an activity starts while
+    // the component is already mounted. Wait for the now-playing data to
+    // settle so that an already-active Spotify session doesn't trigger an
+    // expansion once it loads.
+    if (isInitialMount.current) {
+      if (!selectedView && nextActive.size > 0) {
+        setSelectedView(nextActiveViews[0] ?? null);
+      }
+      // Force the island closed on every mount/refresh. It should only open
+      // on a deliberate hover or click.
+      setExpanded(false);
+      prevActiveRef.current = nextActive;
+      isInitialMount.current = false;
+      return;
+    }
 
     const newViews = VIEW_ORDER.filter(
       (v) => nextActive.has(v) && !prevActiveRef.current.has(v),
     );
 
     if (newViews.length > 0) {
-      // A new event just started: select it, but stay compact.
-      // Priority order guarantees the most important event is selected.
+      // A new activity just started: surface it in the expanded view.
       setSelectedView(newViews[0]);
-    }
-
-    // On initial mount, or when the user hasn't explicitly chosen, follow
-    // the highest-priority active view.
-    if (!userSelected || isInitialMount.current) {
-      const top = nextActiveViews[0] ?? null;
-      if (top !== selectedView) setSelectedView(top);
+      setExpanded(true);
     } else if (selectedView && !nextActive.has(selectedView)) {
       const fallback = nextActiveViews[0] ?? null;
       setSelectedView(fallback);
-      if (!fallback) setMode("IDLE");
+      if (!fallback) setExpanded(false);
+    } else if (!selectedView && nextActive.size > 0) {
+      const fallback = nextActiveViews[0] ?? null;
+      setSelectedView(fallback);
     }
 
-    if (isInitialMount.current) {
-      setMode(nextActive.size > 0 ? "COMPACT" : "IDLE");
-      isInitialMount.current = false;
-    }
-
-    if (nextActive.size === 0) setMode("IDLE");
+    if (nextActive.size === 0) setExpanded(false);
 
     prevActiveRef.current = nextActive;
-  }, [brainActive, pomodoroActive, syncActive, spotifyActive, uploadActive, selectedView, npLoading, userSelected]);
+  }, [brainActive, hasConfiguredNowPlaying, nowPlaying, pomodoroActive, selectedView, spotifyActive, npLoading]);
 
   // Escape collapses
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setMode(activeViews.length > 0 ? "COMPACT" : "IDLE");
+      if (e.key === "Escape") setExpanded(false);
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [activeViews.length]);
+  }, []);
 
   const selectView = useCallback((view: View) => {
-    setUserSelected(true);
     setSelectedView(view);
-    setMode("EXPANDED");
+    setExpanded(true);
   }, []);
+
+  const handleEnter = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (collapseTimer.current) {
+        clearTimeout(collapseTimer.current);
+        collapseTimer.current = null;
+      }
+      if (!selectedView) return;
+      // Ignore the synthetic mouseenter that can fire on mount/refresh when the
+      // cursor is already over the island. Also ignore the mount-lock window.
+      if (e.relatedTarget === null) return;
+      if (Date.now() < mountLockUntil.current) return;
+      setExpanded(true);
+    },
+    [selectedView],
+  );
+
+  const handleLeave = useCallback(() => {
+    if (!selectedView) return;
+    collapseTimer.current = setTimeout(() => setExpanded(false), 200);
+  }, [selectedView]);
 
   const toggleExpanded = useCallback(() => {
     if (!selectedView) return;
-    setMode((m) => (m === "COMPACT" ? "EXPANDED" : "COMPACT"));
+    setExpanded((v) => !v);
   }, [selectedView]);
-
-  const onIslandEnter = useCallback(() => {
-    if (mode === "EXPANDED" || mode === "INTERACTIVE") {
-      setMode("INTERACTIVE");
-    }
-  }, [mode]);
-
-  const onIslandLeave = useCallback(() => {
-    if (mode === "INTERACTIVE") {
-      if (islandLeaveTimer.current) window.clearTimeout(islandLeaveTimer.current);
-      islandLeaveTimer.current = window.setTimeout(() => setMode("EXPANDED"), 400);
-    }
-  }, [mode]);
 
   const pomodoroPct = useMemo(() => {
     if (!focus.state.total) return 0;
     return Math.min(100, Math.max(0, (1 - focus.state.remaining / focus.state.total) * 100));
   }, [focus.state.total, focus.state.remaining]);
 
-  // The compact pill shows the active activity, or a default ETHONE clock
-  // capsule when the island is visible but no specific activity is present.
+  // The compact pill shows the active activity (Spotify, Pomodoro, Brain).
+  // Keep an idle capsule visible while the feature is enabled so the island
+  // does not appear broken when there is no active activity yet.
   const compact = useMemo(() => {
-    const base = "flex h-[38px] w-full items-center justify-center gap-2 px-1 text-[var(--text-primary)]";
+    const base = "flex h-[38px] w-full items-center justify-center gap-2 px-1 text-[var(--text-secondary)]";
     if (!selectedView) {
       return (
         <div className={cn(base)}>
-          <Icon name="sparkles" pack="phosphor" className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
-          <span className="text-xs font-medium tabular-nums">{clock}</span>
+          <Icon name="sparkles" pack="phosphor" className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+          <span className="text-xs font-medium">{i18n("dynamicIsland", "Dynamic Island")}</span>
         </div>
       );
     }
@@ -378,47 +379,14 @@ export default function DynamicIslandContainer() {
       case "brain":
         return (
           <div className={cn(base)}>
-            <Icon name="brain" pack="phosphor" className="h-3.5 w-3.5 text-[var(--info)]" />
+            <Icon name="brain" pack="phosphor" className="h-3.5 w-3.5 text-[var(--accent-secondary)]" />
             <span className="text-xs font-medium">{i18n("brain", "Brain")}</span>
-          </div>
-        );
-      case "sync":
-        return (
-          <div className={cn(base)}>
-            <Icon name="arrows-clockwise" pack="phosphor" className={cn("h-3.5 w-3.5 text-[var(--info)]", syncing && "animate-spin")} />
-            <span className="text-xs font-medium tabular-nums">
-              {syncing ? i18n("syncing", "Synchronisation") : i18n("syncReady", "Synchronisé")}
-            </span>
-            {pendingCount > 0 && (
-              <span className="ml-1 rounded-full bg-[var(--info)]/20 px-1.5 py-0.5 text-[10px] text-[var(--info)]">
-                {pendingCount}
-              </span>
-            )}
-          </div>
-        );
-      case "upload":
-        return (
-          <div className={cn(base)}>
-            <Icon name="upload-cloud" pack="phosphor" className={cn("h-3.5 w-3.5 text-[var(--info)]", uploadingCount > 0 && "animate-pulse")} />
-            <span className="text-xs font-medium tabular-nums">
-              {uploadingCount > 0 ? `${uploadingCount} ...` : i18n("upload", "Upload")}
-            </span>
-            {completedCount > 0 && (
-              <span className="ml-1 rounded-full bg-[var(--success)]/20 px-1.5 py-0.5 text-[10px] text-[var(--success)]">
-                +{completedCount}
-              </span>
-            )}
-            {errorCount > 0 && (
-              <span className="ml-1 rounded-full bg-red-400/20 px-1.5 py-0.5 text-[10px] text-red-400">
-                {errorCount}
-              </span>
-            )}
           </div>
         );
       default:
         return null;
     }
-  }, [clock, selectedView, nowPlaying, focus, i18n, syncing, pendingCount, uploadingCount, completedCount, errorCount]);
+  }, [clock, selectedView, nowPlaying, focus, i18n]);
 
   // Spotify controls
   const spotifyControl = useCallback(
@@ -507,31 +475,7 @@ export default function DynamicIslandContainer() {
     e.stopPropagation();
   }, []);
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLDivElement>) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        toggleExpanded();
-      }
-    },
-    [toggleExpanded],
-  );
-
-  // Always promote a IDLE island to COMPACT as soon as an activity appears,
-  // but never auto-expand beyond the compact capsule.
-  useEffect(() => {
-    if (mode === "IDLE" && activeViews.length > 0) {
-      setMode("COMPACT");
-    }
-  }, [mode, activeViews]);
-
-  useEffect(() => {
-    return () => {
-      if (islandLeaveTimer.current) window.clearTimeout(islandLeaveTimer.current);
-    };
-  }, []);
-
-  const islandContent = (
+  return (
     <AnimatePresence>
       {visible && (
         <motion.div
@@ -540,22 +484,17 @@ export default function DynamicIslandContainer() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -20, scale: 0.9 }}
           transition={{ duration: 0.25, ease: EASE_OUT }}
-          className="fixed left-0 right-0 top-[max(0.5rem,env(safe-area-inset-top))] z-[var(--z-dynamic-island)] flex justify-center pointer-events-none select-none"
+          className="fixed left-1/2 top-[4.75rem] z-[60] -translate-x-1/2 pointer-events-none select-none"
         >
           <DynamicIsland
-            data-testid="dynamic-island"
             view={expanded && selectedView ? selectedView : null}
             compact={compact}
             onClick={toggleExpanded}
-            onKeyDown={handleKeyDown}
-            onMouseEnter={onIslandEnter}
-            onMouseLeave={onIslandLeave}
-            data-island-mode={mode}
+            onMouseEnter={handleEnter}
+            onMouseLeave={handleLeave}
             aria-label={i18n("dynamicIsland")}
-            tabIndex={0}
-            role="button"
           >
-            <DynamicIslandView id="spotify" data-testid="dynamic-island-spotify" className="w-[min(92vw,340px)] sm:w-[400px]">
+            <DynamicIslandView id="spotify" data-testid="dynamic-island-spotify" className="w-[min(92vw,340px)] sm:w-[min(92vw,400px)]">
               <div onClick={stopPropagation} className="flex w-full flex-col gap-4">
                 <IslandExpandedHeader
                   activeViews={activeViews}
@@ -563,10 +502,10 @@ export default function DynamicIslandContainer() {
                   onSelect={selectView}
                 />
                 <div className="flex items-center justify-between gap-2">
-                  <span className="rounded-lg border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 px-2 py-1 text-[10px] font-medium text-[--accent-primary]">
+                  <span className="rounded-lg border border-[var(--accent-secondary)]/30 bg-[var(--accent-secondary)]/10 px-2 py-1 text-[10px] font-medium text-[var(--accent-secondary)]">
                     {nowPlaying?.source || "Spotify"}
                   </span>
-                  <span className="flex items-center gap-1 rounded-lg border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.04] px-2 py-1 font-mono text-[10px] tabular-nums text-[var(--text-muted)]">
+                  <span className="flex items-center gap-1 rounded-lg border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.04] px-2 py-1 font-mono text-[10px] tabular-nums text-[var(--muted)]">
                     <Icon name="clock" pack="phosphor" className="h-3 w-3" />
                     {clock}
                   </span>
@@ -577,8 +516,8 @@ export default function DynamicIslandContainer() {
                     candidates={[nowPlaying?.cover, nowPlaying?.artworkUrl, ...(nowPlaying?.covers || [])]}
                     alt={nowPlaying?.title || "Spotify"}
                     size={56}
-                    className="h-14 w-14 shrink-0 rounded-xl object-cover shadow-lg ring-1 ring-[var(--text-primary)]/10"
-                    iconClassName="h-6 w-6 text-[--accent-primary]"
+                    className="h-14 w-14 shrink-0 rounded-xl object-cover shadow-lg ring-1 ring-[var(--border-subtle)]"
+                    iconClassName="h-6 w-6 text-[var(--accent-secondary)]"
                     loading="eager"
                     priority
                     timeoutMs={3000}
@@ -587,10 +526,10 @@ export default function DynamicIslandContainer() {
                     <p className="break-words text-sm font-semibold leading-snug text-[var(--text-primary)]">
                       {nowPlaying?.title || "Spotify"}
                     </p>
-                    <p className="truncate text-xs text-[var(--text-muted)]">
+                    <p className="truncate text-xs text-[var(--muted)]">
                       {nowPlaying?.artist || i18n("spotifyPlaying")}
                     </p>
-                    <p className="truncate text-[10px] text-[var(--accent-primary)]/80">
+                    <p className="truncate text-[10px] text-[var(--accent-secondary)]/90">
                       {nowPlaying?.album || i18n("spotify", "Spotify")}
                     </p>
                   </div>
@@ -601,8 +540,8 @@ export default function DynamicIslandContainer() {
                     className={cn(
                       "flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200",
                       isSaved
-                        ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/25"
-                        : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--accent-contrast)]",
+                        ? "bg-[var(--accent-secondary)]/15 text-[var(--accent-secondary)] hover:bg-[var(--accent-secondary)]/25"
+                        : "text-[var(--muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--accent-contrast)]",
                     )}
                     aria-label={isSaved ? i18n("unlike") : i18n("like")}
                     title={isSaved ? i18n("unlike") : i18n("like")}
@@ -637,7 +576,7 @@ export default function DynamicIslandContainer() {
                     type="button"
                     onClick={() => spotifyControl("previous")}
                     disabled={pendingSpotify || npLoading}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
                     aria-label={i18n("previous")}
                   >
                     <Icon name="skipBack" pack="phosphor" className="h-5 w-5" />
@@ -655,7 +594,7 @@ export default function DynamicIslandContainer() {
                     type="button"
                     onClick={() => spotifyControl("next")}
                     disabled={pendingSpotify || npLoading}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
                     aria-label={i18n("next")}
                   >
                     <Icon name="skipForward" pack="phosphor" className="h-5 w-5" />
@@ -664,7 +603,7 @@ export default function DynamicIslandContainer() {
               </div>
             </DynamicIslandView>
 
-            <DynamicIslandView id="pomodoro" className="w-[min(92vw,260px)] sm:w-[320px]">
+            <DynamicIslandView id="pomodoro" className="w-[min(88vw,260px)]">
               <div onClick={stopPropagation} className="flex w-full flex-col items-center gap-4">
                 <IslandExpandedHeader
                   activeViews={activeViews}
@@ -721,43 +660,15 @@ export default function DynamicIslandContainer() {
               </div>
             </DynamicIslandView>
 
-            <DynamicIslandView id="sync" className="w-[min(92vw,260px)] sm:w-[320px]">
-              <div onClick={stopPropagation} className="flex w-full flex-col items-center gap-3 text-center">
-                <IslandExpandedHeader
-                  activeViews={activeViews}
-                  selected={selectedView ?? "sync"}
-                  onSelect={selectView}
-                />
-                <div className={cn("flex h-12 w-12 items-center justify-center rounded-full", syncing ? "bg-[var(--info)]/15" : "bg-[var(--surface-raised)]")}>
-                  <Icon name="arrows-clockwise" pack="phosphor" className={cn("h-6 w-6 text-[var(--info)]", syncing && "animate-spin")} />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-[var(--text-primary)]">
-                    {syncing ? i18n("syncing", "Synchronisation…") : i18n("synced", "Synchronisé")}
-                  </p>
-                  <p className="text-xs text-[var(--text-muted)]">
-                    {pendingCount > 0
-                      ? i18n("itemsPending", "{count} éléments en attente").replace("{count}", String(pendingCount))
-                      : i18n("allUpToDate", "Tout est à jour")}
-                  </p>
-                  {lastSync && (
-                    <p className="mt-0.5 text-[10px] text-[var(--text-muted)]">
-                      {i18n("lastSync", "Dernier sync")}: {lastSync.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </DynamicIslandView>
-
-            <DynamicIslandView id="brain" className="w-[min(92vw,260px)] sm:w-[320px]">
+            <DynamicIslandView id="brain" className="w-[min(88vw,260px)]">
               <div onClick={stopPropagation} className="flex w-full flex-col items-center gap-3 text-center">
                 <IslandExpandedHeader
                   activeViews={activeViews}
                   selected={selectedView ?? "brain"}
                   onSelect={selectView}
                 />
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--info)]/15">
-                  <Icon name="brain" pack="phosphor" className="h-6 w-6 text-[var(--info)]" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--accent-secondary)]/15">
+                  <Icon name="brain" pack="phosphor" className="h-6 w-6 text-[var(--accent-secondary)]" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-[var(--text-primary)]">{i18n("brainGenerating", "Génération en cours…")}</p>
@@ -773,23 +684,9 @@ export default function DynamicIslandContainer() {
                 </button>
               </div>
             </DynamicIslandView>
-
-            <DynamicIslandView id="upload" className="w-[min(92vw,280px)] sm:w-[340px]">
-              <div onClick={stopPropagation} className="flex w-full flex-col items-center gap-3">
-                <IslandExpandedHeader
-                  activeViews={activeViews}
-                  selected={selectedView ?? "upload"}
-                  onSelect={selectView}
-                />
-                <UploadIslandView />
-              </div>
-            </DynamicIslandView>
           </DynamicIsland>
         </motion.div>
       )}
     </AnimatePresence>
   );
-
-  if (typeof document === "undefined" || !document.body) return null;
-  return createPortal(islandContent, document.body);
 }

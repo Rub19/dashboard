@@ -1,11 +1,6 @@
 "use client";
 
-import { memo, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import LiveStats from "@/components/LiveStats";
-import BentoCard from "@/components/BentoCard";
-import { useI18n } from "@/lib/hooks/useI18n";
-import type { WidgetStateType } from "@/components/WidgetState";
 import GamingCard from "@/components/GamingCard";
 import SocialDiscordCard from "@/components/SocialDiscordCard";
 import RiotGamingCard from "@/components/RiotGamingCard";
@@ -26,12 +21,11 @@ export type LiveBentoGridProps = {
   updatedAt?: Date | null;
   loading?: boolean;
   error?: Error | null;
-  state?: WidgetStateType;
   className?: string;
   scrollable?: boolean;
 };
 
-const LiveBentoGrid = memo(function LiveBentoGrid({
+export default function LiveBentoGrid({
   nowPlaying,
   lanyard,
   weather,
@@ -44,33 +38,10 @@ const LiveBentoGrid = memo(function LiveBentoGrid({
   updatedAt,
   loading,
   error,
-  state,
   className = "",
   scrollable = true,
 }: LiveBentoGridProps) {
-  const i18n = useI18n();
-  const router = useRouter();
-  const handleConnect = useCallback(() => { router.push("/settings?category=integrations"); }, [router]);
   const childHeight = scrollable ? "h-full" : "h-auto min-h-0";
-  const connected = (records?.filter((r) => r.status === "connected").length ?? 0);
-  const widgetState = state ?? (loading ? "loading" : error ? "error" : connected === 0 ? "disconnected" : undefined);
-  if (widgetState) {
-    return (
-      <BentoCard
-        title={i18n("live")}
-        icon="radio"
-        state={widgetState}
-        stateMessage={widgetState === "disconnected" ? i18n("liveDisconnected", "Aucune source live connectée") : undefined}
-        onAction={widgetState === "disconnected" ? handleConnect : undefined}
-        actionLabel={widgetState === "disconnected" ? i18n("connect", "Connecter") : undefined}
-        className={cn("h-full", className)}
-        scrollable={scrollable}
-      >
-        <div />
-      </BentoCard>
-    );
-  }
-
   return (
     <div className={cn(
       "flex min-h-0 w-full flex-col gap-2",
@@ -81,7 +52,7 @@ const LiveBentoGrid = memo(function LiveBentoGrid({
       <div className={cn(
         "grid w-full items-stretch gap-2",
         scrollable
-          ? "min-h-0 flex-1 auto-rows-fr grid-cols-12 overflow-y-auto overflow-x-hidden no-scrollbar"
+          ? "min-h-0 flex-1 auto-rows-fr grid-cols-12 overflow-y-auto overflow-x-hidden os-scroll"
           : "h-auto min-h-0 auto-rows-min grid-cols-12 overflow-visible"
       )}>
         <GamingCard
@@ -110,7 +81,7 @@ const LiveBentoGrid = memo(function LiveBentoGrid({
           playerTag={liveTrackerRiotTag}
           loading={loading}
           error={error}
-          className={cn("col-span-12 md:col-span-6", childHeight)}
+          className={cn("col-span-12 lg:col-span-4", childHeight)}
         />
         <RiotGamingCard
           game="lol"
@@ -119,11 +90,9 @@ const LiveBentoGrid = memo(function LiveBentoGrid({
           playerTag={liveTrackerRiotTag}
           loading={loading}
           error={error}
-          className={cn("col-span-12 md:col-span-6", childHeight)}
+          className={cn("col-span-12 lg:col-span-4", childHeight)}
         />
       </div>
     </div>
   );
-});
-
-export default LiveBentoGrid;
+}

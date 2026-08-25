@@ -66,7 +66,7 @@ export default function FloatingLiquidDock() {
       <nav
         data-zen-hidden
         data-liquid-dock
-        className="fixed bottom-5 left-1/2 z-50 flex h-[64px] w-[92%] max-w-[390px] -translate-x-1/2 flex-row items-center justify-around rounded-full pb-[env(safe-area-inset-bottom)] px-2 md:hidden"
+        className="fixed bottom-5 left-1/2 z-50 flex h-[64px] w-[92%] max-w-[390px] -translate-x-1/2 flex-row items-center justify-around rounded-[28px] pb-[env(safe-area-inset-bottom)] px-1 md:hidden"
         style={{
           background: "rgba(20, 20, 26, 0.72)",
           backdropFilter: "blur(24px) saturate(200%)",
@@ -172,7 +172,7 @@ export default function FloatingLiquidDock() {
               <div className="mb-6 flex items-center justify-between px-2">
                 <div className="flex items-center gap-2">
                   <BrandMark size={28} />
-                  <span className="text-lg font-semibold tracking-tight text-[var(--text-primary)]">
+                  <span className="text-lg font-semibold tracking-tight text-[var(--foreground)]">
                     ETHONE
                   </span>
                 </div>
@@ -180,7 +180,7 @@ export default function FloatingLiquidDock() {
                   type="button"
                   onClick={() => setDrawerOpen(false)}
                   aria-label={i18n("close")}
-                  className="flex h-10 w-10 items-center justify-center rounded-[var(--panel-radius)] text-[var(--text-muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]"
+                  className="flex h-10 w-10 items-center justify-center rounded-[var(--panel-radius)] text-[var(--muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--foreground)]"
                 >
                   <Icon name="close" className="h-5 w-5" />
                 </button>
@@ -198,7 +198,7 @@ export default function FloatingLiquidDock() {
                         "flex items-center gap-3 rounded-[var(--panel-radius)] px-3 py-3.5 text-sm font-medium transition-colors",
                         isActive
                           ? "bg-[var(--accent)]/10 text-[var(--accent)]"
-                          : "text-[var(--text-primary)] hover:bg-[var(--panel-bg)]"
+                          : "text-[var(--foreground)] hover:bg-[var(--panel-bg)]"
                       )}
                     >
                       <Icon name={item.icon} className="h-5 w-5" />

@@ -237,11 +237,11 @@ export default function ComposeMailModal({
             initial={{ opacity: 0, y: 20, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.98 }}
-            className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-50 flex h-[min(640px,90vh)] max-h-[90vh] w-[min(560px,96vw)] flex-col overflow-hidden rounded-2xl border border-[var(--text-primary)]/[0.08] bg-zinc-950/95 shadow-2xl backdrop-blur-2xl"
+            className="fixed bottom-4 right-4 z-50 flex h-[min(640px,90vh)] max-h-[90vh] w-[min(560px,96vw)] flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-950/95 shadow-2xl backdrop-blur-2xl"
           >
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-[var(--text-primary)]/[0.06] px-4 py-3">
-              <h2 className="text-sm font-semibold text-[var(--text-primary)]">{i18n("newMessage") || "Nouveau message"}</h2>
+            <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-3">
+              <h2 className="text-sm font-semibold text-white">{i18n("newMessage") || "Nouveau message"}</h2>
               <Button
                 type="button"
                 variant="ghost"
@@ -254,11 +254,11 @@ export default function ComposeMailModal({
             </div>
 
             {/* Fields */}
-            <div className="shrink-0 space-y-1 border-b border-[var(--text-primary)]/[0.06] px-4 py-2">
+            <div className="shrink-0 space-y-1 border-b border-white/[0.06] px-4 py-2">
               {/* From / alias */}
               <div className="flex flex-col gap-1 py-2.5">
                 <div className="flex items-center gap-2">
-                  <span className="shrink-0 text-sm font-medium text-[var(--text-muted)]">{i18n("from") || "De"}</span>
+                  <span className="shrink-0 text-sm font-medium text-zinc-500">{i18n("from") || "De"}</span>
                   {hasAliases ? (
                     <Select
                       value={fromAliasId || (showAliasCreate ? "new" : "")}
@@ -278,7 +278,7 @@ export default function ComposeMailModal({
                       className="min-w-0 flex-1"
                     />
                   ) : (
-                    <span className="text-sm text-[var(--text-muted)]">{i18n("noAlias") || "Aucune adresse"}</span>
+                    <span className="text-sm text-zinc-400">{i18n("noAlias") || "Aucune adresse"}</span>
                   )}
                 </div>
 
@@ -299,7 +299,7 @@ export default function ComposeMailModal({
                       inputSize="compact"
                       className="min-w-0 flex-1"
                     />
-                    <span className="text-sm text-[var(--text-muted)]">@ethone.dev</span>
+                    <span className="text-sm text-zinc-500">@ethone.dev</span>
                     <Button
                       type="button"
                       variant="ghost"
@@ -339,7 +339,7 @@ export default function ComposeMailModal({
               </div>
 
               <div className="flex items-center gap-2 py-2.5">
-                <span className="shrink-0 text-sm font-medium text-[var(--text-muted)]">{i18n("to") || "À"}</span>
+                <span className="shrink-0 text-sm font-medium text-zinc-500">{i18n("to") || "À"}</span>
                 <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1">
                   {to.map((t, i) => (
                     <span
@@ -365,12 +365,12 @@ export default function ComposeMailModal({
               </div>
 
               <div className="flex items-center gap-2 py-2.5">
-                <span className="shrink-0 text-sm font-medium text-[var(--text-muted)]">{i18n("cc") || "Cc"}</span>
+                <span className="shrink-0 text-sm font-medium text-zinc-500">{i18n("cc") || "Cc"}</span>
                 <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1">
                   {cc.map((c, i) => (
                     <span
                       key={`${c}-${i}`}
-                      className="flex items-center gap-1 rounded-md bg-[var(--text-primary)]/[0.06] px-2 py-1 text-sm text-[var(--text-primary)]"
+                      className="flex items-center gap-1 rounded-md bg-white/[0.06] px-2 py-1 text-sm text-zinc-300"
                     >
                       {c}
                       <button type="button" onClick={() => removeTag(cc, setCc, i)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
@@ -390,12 +390,12 @@ export default function ComposeMailModal({
               </div>
 
               <div className="flex items-center gap-2 py-2.5">
-                <span className="shrink-0 text-sm font-medium text-[var(--text-muted)]">{i18n("bcc") || "Cci"}</span>
+                <span className="shrink-0 text-sm font-medium text-zinc-500">{i18n("bcc") || "Cci"}</span>
                 <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1">
                   {bcc.map((b, i) => (
                     <span
                       key={`${b}-${i}`}
-                      className="flex items-center gap-1 rounded-md bg-[var(--text-primary)]/[0.06] px-2 py-1 text-sm text-[var(--text-primary)]"
+                      className="flex items-center gap-1 rounded-md bg-white/[0.06] px-2 py-1 text-sm text-zinc-300"
                     >
                       {b}
                       <button type="button" onClick={() => removeTag(bcc, setBcc, i)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
@@ -415,7 +415,7 @@ export default function ComposeMailModal({
               </div>
 
               <div className="flex items-center gap-2 py-2.5">
-                <span className="shrink-0 text-sm font-medium text-[var(--text-muted)]">{i18n("subject") || "Objet"}</span>
+                <span className="shrink-0 text-sm font-medium text-zinc-500">{i18n("subject") || "Objet"}</span>
                 <Input
                   type="text"
                   value={subject}
@@ -441,7 +441,7 @@ export default function ComposeMailModal({
                 {attachments.map((a, i) => (
                   <span
                     key={`${a.filename}-${i}`}
-                    className="flex items-center gap-1 rounded-md border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] px-2 py-1 text-xs text-[var(--text-primary)]"
+                    className="flex items-center gap-1 rounded-md border border-white/[0.08] bg-white/[0.03] px-2 py-1 text-xs text-zinc-300"
                   >
                     {a.filename}
                     <button
@@ -457,7 +457,7 @@ export default function ComposeMailModal({
             )}
 
             {/* Footer */}
-            <div className="flex items-center justify-between border-t border-[var(--text-primary)]/[0.06] px-4 py-3">
+            <div className="flex items-center justify-between border-t border-white/[0.06] px-4 py-3">
               <div className="flex items-center gap-1">
                 <Button
                     type="button"

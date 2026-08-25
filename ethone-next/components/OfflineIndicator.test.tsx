@@ -39,11 +39,9 @@ describe('OfflineIndicator', () => {
     const banner = await screen.findByText(/hors ligne/i);
     expect(banner).toBeTruthy();
 
-    // Simulate going back online (transitions to syncing).
+    // Simulate going back online.
     onLineSpy.mockReturnValue(true);
     fireEvent(window, new Event('online'));
     expect(screen.queryByText(/hors ligne/i)).toBeNull();
-    const syncBanner = await screen.findByText(/synchronisation/i);
-    expect(syncBanner).toBeTruthy();
   });
 });

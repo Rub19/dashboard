@@ -31,8 +31,8 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     });
 
     const base =
-      "group relative w-full rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] p-3 text-sm text-[var(--text-primary)] outline-none backdrop-blur-md transition-all duration-200 ease-out";
-    const hover = "hover:border-[var(--text-primary)]/[0.18]";
+      "group relative w-full rounded-xl border border-white/[0.08] bg-[var(--text-primary)]/[0.04] p-3 text-sm text-[var(--text-primary)] outline-none backdrop-blur-md transition-all duration-200 ease-out";
+    const hover = "hover:border-white/[0.18]";
     const focus =
       "focus-within:border-[var(--accent-primary)]/60 focus-within:ring-1 focus-within:ring-[var(--accent-primary)]/20 focus-within:shadow-[0_0_20px_var(--glow-color)]";
     const state = error

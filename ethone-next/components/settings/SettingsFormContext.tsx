@@ -12,19 +12,6 @@ type MicroSave = {
   at: number;
 };
 
-type HistoryItem = {
-  key: string;
-  path?: string;
-  previous: unknown;
-  value: unknown;
-};
-
-type HistoryEntry = {
-  id: string;
-  at: number;
-  items: HistoryItem[];
-};
-
 type SettingsFormState = {
   query: string;
   setQuery: (q: string) => void;
@@ -46,12 +33,6 @@ type SettingsFormState = {
   updateInstant: (key: string, value: unknown, path?: string) => void;
   matchesSearch: (text: string, keywords?: string[]) => boolean;
   isKnownSetting: (key: string, path?: string) => boolean;
-  /** Global form history / undo. */
-  history: HistoryEntry[];
-  canUndo: boolean;
-  canRedo: boolean;
-  undo: () => void;
-  redo: () => void;
 };
 
 const SettingsFormContext = createContext<SettingsFormState | null>(null);
@@ -62,20 +43,12 @@ export function useSettingsForm() {
   return ctx;
 }
 
-const HISTORY_LIMIT = 20;
-
-function makeId() {
-  return Math.random().toString(36).slice(2, 9);
-}
-
 export function SettingsFormProvider({ children }: { children: React.ReactNode }) {
   const { settings, update } = useSettings();
   const [query, setQuery] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [draft, setDraft] = useState<Draft>({});
   const [microSaves, setMicroSaves] = useState<MicroSave[]>([]);
-  const [history, setHistory] = useState<HistoryEntry[]>([]);
-  const [future, setFuture] = useState<HistoryEntry[]>([]);
 
   const defaults = DEFAULTS as Record<string, unknown>;
 
@@ -96,62 +69,14 @@ export function SettingsFormProvider({ children }: { children: React.ReactNode }
     [draft, settings]
   );
 
-  const pushHistory = useCallback((entry: HistoryEntry) => {
-    setHistory((prev) => [...prev, entry].slice(-HISTORY_LIMIT));
-    setFuture([]);
-  }, []);
-
-  const snapshot = useCallback(
-    (items: HistoryItem[]) => {
-      pushHistory({ id: makeId(), at: Date.now(), items });
-    },
-    [pushHistory]
-  );
-
-  const applyEntry = useCallback(
-    (entry: HistoryEntry) => {
-      const source = settings as Record<string, unknown>;
-      let next = { ...source } as Record<string, unknown>;
-      const keysToClear: string[] = [];
-
-      for (const item of entry.items) {
-        if (item.path) {
-          next = setValueByPath(next, item.path, item.value);
-        } else {
-          next[item.key] = item.value;
-        }
-        if (item.key in draft) {
-          keysToClear.push(item.key);
-        }
-      }
-
-      if (keysToClear.length) {
-        setDraft((prev) => {
-          const copy = { ...prev };
-          for (const k of keysToClear) delete copy[k];
-          return copy;
-        });
-      }
-
-      update(next as Partial<Settings>);
-    },
-    [settings, update, draft]
-  );
-
   const updateInstant = useCallback(
     (key: string, value: unknown, path?: string) => {
-      const source = settings as Record<string, unknown>;
-      const previous = path ? getValueByPath(source, path) : source[key];
-
       if (path) {
-        const next = setValueByPath(source, path, value);
+        const next = setValueByPath(settings as Record<string, unknown>, path, value);
         update(next as Partial<Settings>);
       } else {
         update({ [key]: value } as Partial<Settings>);
       }
-
-      snapshot([{ key, path, previous, value }]);
-
       const at = Date.now();
       setMicroSaves((prev) => {
         const filtered = prev.filter((m) => m.key !== key);
@@ -161,7 +86,7 @@ export function SettingsFormProvider({ children }: { children: React.ReactNode }
         setMicroSaves((prev) => prev.filter((m) => !(m.key === key && m.at === at)));
       }, 1500);
     },
-    [settings, update, snapshot]
+    [settings, update]
   );
 
   const triggerInstantSaved = useCallback((key: string) => {
@@ -175,14 +100,9 @@ export function SettingsFormProvider({ children }: { children: React.ReactNode }
     }, 1500);
   }, []);
 
-  const setExplicit = useCallback(
-    (key: string, value: unknown) => {
-      const previous = currentValue(key);
-      setDraft((prev) => ({ ...prev, [key]: value }));
-      snapshot([{ key, previous, value }]);
-    },
-    [currentValue, snapshot]
-  );
+  const setExplicit = useCallback((key: string, value: unknown) => {
+    setDraft((prev) => ({ ...prev, [key]: value }));
+  }, []);
 
   const clearExplicitKey = useCallback((key: string) => {
     setDraft((prev) => {
@@ -218,10 +138,6 @@ export function SettingsFormProvider({ children }: { children: React.ReactNode }
             ? getValueByPath(defaults, path)
             : defaults[key];
 
-      const source = settings as Record<string, unknown>;
-      const previous = path ? getValueByPath(source, path) : source[key];
-      snapshot([{ key, path, previous, value: defaultVal }]);
-
       if (key in draft) {
         setDraft((prev) => {
           const next = { ...prev };
@@ -239,49 +155,8 @@ export function SettingsFormProvider({ children }: { children: React.ReactNode }
         update({ [key]: defaultVal } as Partial<Settings>);
       }
     },
-    [settings, update, defaults, draft, snapshot]
+    [settings, update, defaults, draft]
   );
-
-  const undo = useCallback(() => {
-    const entry = history[history.length - 1];
-    if (!entry) return;
-
-    const source = settings as Record<string, unknown>;
-    let next = { ...source } as Record<string, unknown>;
-    const keysToClear: string[] = [];
-
-    for (const item of entry.items) {
-      const previous = item.previous;
-      if (item.path) {
-        next = setValueByPath(next, item.path, previous);
-      } else {
-        next[item.key] = previous;
-      }
-      if (item.key in draft) {
-        keysToClear.push(item.key);
-      }
-    }
-
-    if (keysToClear.length) {
-      setDraft((prev) => {
-        const copy = { ...prev };
-        for (const k of keysToClear) delete copy[k];
-        return copy;
-      });
-    }
-
-    update(next as Partial<Settings>);
-    setHistory((prev) => prev.slice(0, -1));
-    setFuture((prev) => [entry, ...prev].slice(0, HISTORY_LIMIT));
-  }, [history, settings, update, draft]);
-
-  const redo = useCallback(() => {
-    const entry = future[0];
-    if (!entry) return;
-    applyEntry(entry);
-    setFuture((prev) => prev.slice(1));
-    setHistory((prev) => [...prev, entry].slice(-HISTORY_LIMIT));
-  }, [future, applyEntry]);
 
   const isDirty = useCallback((key: string, value: unknown, defaultValue: unknown) => {
     void key;
@@ -310,9 +185,6 @@ export function SettingsFormProvider({ children }: { children: React.ReactNode }
     [query]
   );
 
-  const canUndo = history.length > 0;
-  const canRedo = future.length > 0;
-
   const value = useMemo(
     () => ({
       query,
@@ -335,11 +207,6 @@ export function SettingsFormProvider({ children }: { children: React.ReactNode }
       updateInstant,
       matchesSearch,
       isKnownSetting,
-      history,
-      canUndo,
-      canRedo,
-      undo,
-      redo,
     }),
     [
       query,
@@ -360,11 +227,6 @@ export function SettingsFormProvider({ children }: { children: React.ReactNode }
       matchesSearch,
       triggerInstantSaved,
       isKnownSetting,
-      history,
-      canUndo,
-      canRedo,
-      undo,
-      redo,
     ]
   );
 

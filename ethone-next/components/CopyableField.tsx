@@ -29,13 +29,13 @@ export default function CopyableField({ label, value, copyKey }: CopyableFieldPr
 
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-[11px] font-medium text-[var(--text-primary)]">{label}</span>
-      <div className="flex items-center justify-between gap-2 rounded-xl border border-[var(--text-primary)]/[0.08] bg-zinc-900/90 px-3 py-2">
+      <span className="text-[11px] font-medium text-zinc-300">{label}</span>
+      <div className="flex items-center justify-between gap-2 rounded-xl border border-white/[0.08] bg-zinc-900/90 px-3 py-2">
         <code className="min-w-0 truncate text-xs font-mono text-[--accent-primary]">{value}</code>
         <button
           type="button"
           onClick={copyToClipboard}
-          className="flex shrink-0 items-center gap-1 text-[11px] text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
+          className="flex shrink-0 items-center gap-1 text-[11px] text-[var(--muted)] transition-colors hover:text-[var(--text-primary)]"
           aria-label={i18n("copy")}
         >
           {copied === copyKey ? (

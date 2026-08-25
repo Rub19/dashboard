@@ -32,8 +32,8 @@ describe("useLiveData", () => {
       if (p.startsWith("/api/weather")) return { data: { temperature: 22, condition: "Sunny" } };
       if (p.startsWith("/api/github/profile")) return { data: { login: "testuser" } };
       if (p.startsWith("/api/lanyard/presence")) return { data: { discord_status: "online" } };
-      if (p.startsWith("/api/stats/valorant-matches")) return { data: [{ map: "Ascent", mode: "Competitive" }] };
-      if (p.startsWith("/api/stats/lol-matches")) return { data: [{ champion: "Ahri", result: "Win" }] };
+      if (p.startsWith("/api/tracker/valorant-matches")) return { data: [{ map: "Ascent", mode: "Competitive" }] };
+      if (p.startsWith("/api/tracker/lol-matches")) return { data: [{ champion: "Ahri", result: "Win" }] };
       if (p.startsWith("/api/steam/player")) return { data: { personaName: "SteamUser" } };
       if (p.startsWith("/api/minecraft/profile")) return { data: { name: "MinecraftUser" } };
       if (p.startsWith("/api/lastfm/recent-tracks")) return { data: { track: [{ name: "Track", artist: "Artist" }] } };

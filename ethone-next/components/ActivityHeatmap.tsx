@@ -46,7 +46,7 @@ function dateKey(iso = ""): string {
 }
 
 export function heatLevelClass(count: number): string {
-  if (count === 0) return "bg-[var(--text-primary)]/[0.03] border border-[var(--text-primary)]/[0.05] rounded-sm";
+  if (count === 0) return "bg-white/[0.03] border border-white/[0.05] rounded-sm";
   if (count <= 2) return "bg-[--accent-primary] border border-[--accent-primary] rounded-sm";
   if (count <= 5) return "bg-[--accent-primary] border border-[--accent-primary] rounded-sm";
   if (count <= 9) return "bg-[--accent-primary] rounded-sm shadow-[0_0_6px_var(--glow-color)]";
@@ -142,7 +142,7 @@ export default function ActivityHeatmap({ entries, weeks = 53 }: ActivityHeatmap
           {monthLabels.map((m, i) => (
             <span
               key={i}
-              className="text-[10px] font-medium uppercase text-[var(--text-muted)]"
+              className="text-[10px] font-medium uppercase text-zinc-500"
               style={{
                 marginLeft: i === 0 ? m.index * COL : undefined,
               }}
@@ -156,7 +156,7 @@ export default function ActivityHeatmap({ entries, weeks = 53 }: ActivityHeatmap
           {/* Day labels */}
           <div className="mr-2 flex w-5 flex-col items-end gap-1.5 py-0.5">
             {dayLabels.map((label, i) => (
-              <span key={i} className="h-3 text-[9px] leading-3 text-[var(--text-muted)]">
+              <span key={i} className="h-3 text-[9px] leading-3 text-zinc-500">
                 {label}
               </span>
             ))}
@@ -186,7 +186,7 @@ export default function ActivityHeatmap({ entries, weeks = 53 }: ActivityHeatmap
         </div>
 
         {/* Legend */}
-        <div className="mt-3 flex items-center justify-end gap-2 text-[10px] text-[var(--text-muted)]">
+        <div className="mt-3 flex items-center justify-end gap-2 text-[10px] text-zinc-500">
           <span>{i18n("less") || "Moins"}</span>
           <div className="flex gap-1">
             {[0, 1, 3, 6, 10].map((c) => (
@@ -204,7 +204,7 @@ export default function ActivityHeatmap({ entries, weeks = 53 }: ActivityHeatmap
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 4, scale: 0.96 }}
             transition={{ duration: 0.12 }}
-            className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-full rounded-lg border border-[var(--text-primary)]/[0.08] bg-zinc-950/90 px-2.5 py-1.5 text-[11px] text-[var(--text-primary)] shadow-xl backdrop-blur-xl"
+            className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-full rounded-lg border border-white/[0.08] bg-zinc-950/90 px-2.5 py-1.5 text-[11px] text-zinc-200 shadow-xl backdrop-blur-xl"
             style={{ left: tooltip.x, top: tooltip.y }}
           >
             <span className="font-semibold text-[--accent-primary]">{tooltip.count}</span>{" "}

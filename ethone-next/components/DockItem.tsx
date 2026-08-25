@@ -69,7 +69,7 @@ const DockItem = forwardRef<HTMLButtonElement | HTMLAnchorElement, DockItemProps
           />
         )}
         {badge !== undefined && badge > 0 && (
-          <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold text-[var(--text-primary)]">
+          <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold text-white">
             {badge > 99 ? "99+" : badge}
           </span>
         )}
@@ -80,7 +80,7 @@ const DockItem = forwardRef<HTMLButtonElement | HTMLAnchorElement, DockItemProps
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 4 }}
               transition={{ duration: 0.12, ease: "easeOut" }}
-              className="pointer-events-none absolute -top-8 left-1/2 z-50 -translate-x-1/2 whitespace-nowrap rounded-md border border-white/10 bg-zinc-900/90 px-2 py-0.5 text-[10px] font-medium text-[var(--text-primary)] shadow-lg backdrop-blur-md"
+              className="pointer-events-none absolute -top-8 left-1/2 z-50 -translate-x-1/2 whitespace-nowrap rounded-md border border-white/10 bg-zinc-900/90 px-2 py-0.5 text-[10px] font-medium text-zinc-200 shadow-lg backdrop-blur-md"
             >
               {label}
             </motion.div>
@@ -90,10 +90,10 @@ const DockItem = forwardRef<HTMLButtonElement | HTMLAnchorElement, DockItemProps
     );
 
     const baseClass = [
-      "group relative flex h-12 w-12 items-center justify-center rounded-xl text-[var(--text-muted)] transition-[color,background-color,opacity,transform]",
-      "hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]",
+      "group relative flex h-12 w-12 items-center justify-center rounded-xl text-zinc-400 transition-[color,background-color,opacity,transform]",
+      "hover:bg-white/[0.08] hover:text-white",
       "active:scale-95",
-      active ? "text-[var(--text-primary)]" : "",
+      active ? "text-white" : "",
       className,
     ].join(" ");
 

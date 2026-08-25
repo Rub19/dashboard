@@ -1,8 +1,7 @@
 "use client";
 
-import { memo, useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useFocus } from "@/components/FocusProvider";
 import BentoCard from "@/components/BentoCard";
@@ -65,16 +64,10 @@ export type DayTimelineCardProps = {
   loading?: boolean;
 };
 
-function DayTimelineCardImpl({ todayEvents, nextTasks, className = "", focus, scrollable = true, loading = false }: DayTimelineCardProps) {
+export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus, scrollable = true, loading = false }: DayTimelineCardProps) {
   const i18n = useI18n();
-  const router = useRouter();
-  const handleAddEvent = useCallback(() => { router.push("/calendar"); }, [router]);
   const focusCtx = useFocus();
   const { state, format, start } = focus ?? focusCtx;
-
-  const handleStartPomodoro = useCallback(() => {
-    start("pomodoro");
-  }, [start]);
 
   const isLive = state.phase !== "idle";
 
@@ -87,51 +80,48 @@ function DayTimelineCardImpl({ todayEvents, nextTasks, className = "", focus, sc
     [todayEvents]
   );
 
-  const badge = useMemo(
-    () =>
-      isLive ? (
-        <span className="inline-flex items-center gap-1 rounded-lg bg-[var(--accent-primary)]/10 px-2 py-0.5 text-[10px] font-medium text-[var(--accent-primary)]">
-          <Icon name="radio" className="h-3 w-3" />
-          <span className="uppercase tracking-wider">{i18n("live")}</span>
-        </span>
-      ) : undefined,
-    [isLive, i18n]
-  );
-
   if (loading) {
     return (
-      <BentoCard title={i18n("daystream")} icon="calendar" className={cn("h-full", className)} scrollable={scrollable} state="loading">
-        <div />
+      <BentoCard title={i18n("daystream")} icon="calendar" className={cn("h-full", className)} scrollable={scrollable}>
+        <div className="flex flex-1 flex-col justify-between gap-3">
+          <div className="space-y-2">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-2.5 py-2">
+                <div className="h-4 w-4 animate-pulse rounded-full bg-[var(--text-primary)]/10" />
+                <div className="h-3 w-2/3 animate-pulse rounded bg-[var(--text-primary)]/10" />
+              </div>
+            ))}
+          </div>
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+            <div className="mb-2 h-3 w-20 animate-pulse rounded bg-[var(--text-primary)]/10" />
+            <div className="h-1.5 w-full animate-pulse rounded-full bg-[var(--text-primary)]/10" />
+          </div>
+        </div>
       </BentoCard>
     );
   }
 
-  const isEmpty = events.length === 0 && nextTasks.length === 0;
+  const badge = isLive ? (
+    <span className="inline-flex items-center gap-1 rounded-lg bg-[var(--accent-primary)]/10 px-2 py-0.5 text-[10px] font-medium text-[var(--accent-primary)]">
+      <Icon name="radio" className="h-3 w-3" />
+      <span className="uppercase tracking-wider">{i18n("live")}</span>
+    </span>
+  ) : undefined;
 
   return (
-    <BentoCard
-      title={i18n("daystream")}
-      icon="calendar"
-      className={cn("h-full", className)}
-      badge={badge}
-      scrollable={scrollable}
-      state={isEmpty ? "empty" : undefined}
-      stateMessage={isEmpty ? i18n("dayTimelineEmpty", "Aucun événement ou tâche aujourd'hui") : undefined}
-      onAction={isEmpty ? handleAddEvent : undefined}
-      actionLabel={i18n("seeAgenda", "Voir mon agenda")}
-    >
+    <BentoCard title={i18n("daystream")} icon="calendar" className={cn("h-full", className)} badge={badge} scrollable={scrollable}>
       <div className="flex flex-1 flex-col justify-between gap-3">
         <div className="space-y-2">
           {events.length > 0 &&
             events.map((e) => (
               <div
                 key={e.id}
-                className="flex items-center gap-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-2.5 py-2"
+                className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-2.5 py-2"
               >
                 <Icon name="calendar-days" className="h-4 w-4 text-[var(--info)]" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{e.title}</p>
-                  {formatEventTime(e.startAt) && <p className="text-[10px] text-[var(--text-muted)]">{formatEventTime(e.startAt)}</p>}
+                  {formatEventTime(e.startAt) && <p className="text-[10px] text-[var(--muted)]">{formatEventTime(e.startAt)}</p>}
                 </div>
               </div>
             ))}
@@ -139,14 +129,14 @@ function DayTimelineCardImpl({ todayEvents, nextTasks, className = "", focus, sc
             nextTasks.map((t) => (
               <div
                 key={t.id}
-                className="flex items-center gap-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-2.5 py-2"
+                className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-2.5 py-2"
               >
                 <Icon name="circle" className="h-4 w-4 text-[var(--accent-primary)]" />
                 <p className="min-w-0 flex-1 truncate text-sm font-medium">{t.title}</p>
               </div>
             ))}
           {events.length === 0 && nextTasks.length === 0 && (
-            <div className="flex items-center gap-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-2.5 py-2 text-sm text-[var(--text-muted)]">
+            <div className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-2.5 py-2 text-sm text-[var(--muted)]">
               <Icon name="coffee" className="h-4 w-4" />
               <span>
                 {i18n("noImperative")} — {i18n("freeDay")}
@@ -155,9 +145,9 @@ function DayTimelineCardImpl({ todayEvents, nextTasks, className = "", focus, sc
           )}
         </div>
 
-        <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5">
+        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
           <div className="mb-1.5 flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-primary)]">
+            <span className="flex items-center gap-1.5 text-xs font-medium text-white">
               <Icon name="timer" className="h-3.5 w-3.5 text-[var(--accent)]" />
               {i18n("focus")}
             </span>
@@ -166,7 +156,7 @@ function DayTimelineCardImpl({ todayEvents, nextTasks, className = "", focus, sc
             ) : (
               <button
                 type="button"
-                onClick={handleStartPomodoro}
+                onClick={() => start("pomodoro")}
                 className="text-[10px] font-medium text-[var(--accent-primary)] hover:underline"
               >
                 {i18n("start")}
@@ -174,22 +164,20 @@ function DayTimelineCardImpl({ todayEvents, nextTasks, className = "", focus, sc
             )}
           </div>
           {isLive ? (
-            <div className="h-1.5 w-full overflow-hidden rounded-xl bg-[var(--text-primary)]/[0.06]">
+            <div className="h-1.5 w-full overflow-hidden rounded-xl bg-white/[0.06]">
               <div
                 className="h-full rounded-xl bg-[var(--accent-primary)] transition-all duration-1000"
                 style={{ width: `${state.total ? ((state.total - state.remaining) / state.total) * 100 : 0}%` }}
               />
             </div>
           ) : (
-            <p className="text-[10px] text-[var(--text-muted)]">{i18n("focusRecommended")}</p>
+            <p className="text-[10px] text-[var(--muted)]">{i18n("focusRecommended")}</p>
           )}
         </div>
       </div>
     </BentoCard>
   );
 }
-
-export const DayTimelineCard = memo(DayTimelineCardImpl);
 
 export type ProjectsTasksCardProps = {
   openTasksCount: number;
@@ -203,7 +191,7 @@ export type ProjectsTasksCardProps = {
   scrollable?: boolean;
 };
 
-function ProjectsTasksCardImpl({
+export function ProjectsTasksCard({
   openTasksCount,
   completed,
   totalTasks,
@@ -225,38 +213,38 @@ function ProjectsTasksCardImpl({
         <div className="flex items-center gap-3">
           <div className="relative flex h-20 w-20 shrink-0 items-center justify-center">
             <CircularGauge percentage={percentage} size={72} stroke={5} />
-            <span className="absolute text-xs font-bold tabular-nums text-[var(--text-primary)]">{percentage}%</span>
+            <span className="absolute text-xs font-bold tabular-nums text-white">{percentage}%</span>
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs text-[var(--text-muted)]">{i18n("tasksDone")}</p>
-            <p className="text-sm font-semibold text-[var(--text-primary)]">
+            <p className="text-xs text-[var(--muted)]">{i18n("tasksDone")}</p>
+            <p className="text-sm font-semibold text-white">
               {completed}/{totalTasks} {i18n("tasks")}
             </p>
-            <p className="text-[10px] text-[var(--text-muted)]">
+            <p className="text-[10px] text-[var(--muted)]">
               {openTasksCount} {i18n("openTasks")}
             </p>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-2">
-          <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2">
-            <div className="mb-1 flex items-center gap-1.5 text-[10px] text-[var(--text-muted)]">
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2">
+            <div className="mb-1 flex items-center gap-1.5 text-[10px] text-[var(--muted)]">
               <Icon name="timer" className="h-3.5 w-3.5 text-[var(--danger)]" />
               {i18n("focusMinutes")}
             </div>
             <p className="text-lg font-bold leading-none text-[var(--danger)]">{focusMinutes}</p>
           </div>
           {typeof unreadMail === "number" && (
-            <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2">
-              <div className="mb-1 flex items-center gap-1.5 text-[10px] text-[var(--text-muted)]">
+            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2">
+              <div className="mb-1 flex items-center gap-1.5 text-[10px] text-[var(--muted)]">
                 <Icon name="mail" className="h-3.5 w-3.5 text-[var(--info)]" />
                 {i18n("unread")}
               </div>
               <p className="text-lg font-bold leading-none text-[var(--info)]">{mailLoading ? "-" : unreadMail}</p>
             </div>
           )}
-          <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2">
-            <div className="mb-1 flex items-center gap-1.5 text-[10px] text-[var(--text-muted)]">
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2">
+            <div className="mb-1 flex items-center gap-1.5 text-[10px] text-[var(--muted)]">
               <Icon name="trophy" className="h-3.5 w-3.5 text-[var(--warning)]" />
               {i18n("focusDone")}
             </div>
@@ -268,8 +256,6 @@ function ProjectsTasksCardImpl({
   );
 }
 
-export const ProjectsTasksCard = memo(ProjectsTasksCardImpl);
-
 export type RecentNotesCardProps = {
   notes: Item[];
   className?: string;
@@ -277,10 +263,8 @@ export type RecentNotesCardProps = {
   loading?: boolean;
 };
 
-function RecentNotesCardImpl({ notes, className = "", scrollable = true, loading = false }: RecentNotesCardProps) {
+export function RecentNotesCard({ notes, className = "", scrollable = true, loading = false }: RecentNotesCardProps) {
   const i18n = useI18n();
-  const router = useRouter();
-  const handleAddNote = useCallback(() => { router.push("/notes"); }, [router]);
   const recent = useMemo(
     () =>
       [...notes]
@@ -293,62 +277,57 @@ function RecentNotesCardImpl({ notes, className = "", scrollable = true, loading
     [notes]
   );
 
-  const action = useMemo(
-    () => (
-      <Link
-        href="/notes"
-        className="relative z-0 inline-flex items-center gap-1 rounded-lg border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-2 py-1 text-[10px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
-      >
-        <Icon name="plus" className="h-3 w-3" />
-        {i18n("createNote")}
-      </Link>
-    ),
-    [i18n]
+  const action = (
+    <Link
+      href="/notes"
+      className="relative z-0 inline-flex items-center gap-1 rounded-lg border border-white/[0.08] bg-white/[0.04] px-2 py-1 text-[10px] font-medium text-zinc-300 transition-colors hover:bg-white/[0.08] hover:text-white"
+    >
+      <Icon name="plus" className="h-3 w-3" />
+      {i18n("createNote")}
+    </Link>
   );
 
-  const isEmpty = !loading && recent.length === 0;
-
   return (
-    <BentoCard
-      title={i18n("recent")}
-      icon="history"
-      className={cn("h-full", className)}
-      action={action}
-      scrollable={scrollable}
-      state={loading ? "loading" : isEmpty ? "empty" : undefined}
-      stateMessage={isEmpty ? i18n("noRecentNotes", "Aucune note récente") : undefined}
-      onAction={isEmpty ? handleAddNote : undefined}
-      actionLabel={i18n("createNote")}
-    >
+    <BentoCard title={i18n("recent")} icon="history" className={cn("h-full", className)} action={action} scrollable={scrollable}>
       <div className="flex flex-1 flex-col justify-between gap-2">
-        {!loading && recent.length > 0 ? (
+        {loading ? (
+          <div className="space-y-2">
+            {[1, 2].map((i) => (
+              <div key={i} className="flex items-start gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+                <div className="mt-0.5 h-4 w-4 animate-pulse rounded bg-[var(--text-primary)]/10" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-3 w-3/4 animate-pulse rounded bg-[var(--text-primary)]/10" />
+                  <div className="h-2 w-1/3 animate-pulse rounded bg-[var(--text-primary)]/10" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : recent.length > 0 ? (
           <div className="space-y-2">
             {recent.map((n) => (
               <Link
                 key={n.id}
                 href="/notes"
-                className="group flex items-start gap-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5 transition-colors hover:bg-[var(--text-primary)]/[0.04]"
+                className="group flex items-start gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5 transition-colors hover:bg-white/[0.04]"
               >
                 <Icon name="file-text" className="mt-0.5 h-4 w-4 shrink-0 text-[var(--accent-secondary)]" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-[var(--text-primary)] group-hover:text-[var(--accent)]">{n.title}</p>
-                  <p className="text-[10px] text-[var(--text-muted)]">{formatNoteDate(n.updatedAt || n.createdAt)}</p>
+                  <p className="text-[10px] text-[var(--muted)]">{formatNoteDate(n.updatedAt || n.createdAt)}</p>
                 </div>
-                <Icon name="chevron-right" className="h-3.5 w-3.5 text-[var(--text-muted)] group-hover:text-[var(--text-primary)]" />
+                <Icon name="chevron-right" className="h-3.5 w-3.5 text-[var(--muted)] group-hover:text-[var(--text-primary)]" />
               </Link>
             ))}
           </div>
         ) : (
-          <div />
+          <p className="text-sm text-[var(--muted)]">{i18n("noRecentNotes")}</p>
         )}
       </div>
     </BentoCard>
   );
 }
 
-export const RecentNotesCard = memo(RecentNotesCardImpl);
-
-function ProductivityCardsImpl({
+export default function ProductivityCards({
   todayEvents,
   nextTasks,
   openTasksCount,
@@ -390,6 +369,3 @@ function ProductivityCardsImpl({
     </div>
   );
 }
-
-const ProductivityCards = memo(ProductivityCardsImpl);
-export default ProductivityCards;

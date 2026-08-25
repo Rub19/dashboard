@@ -22,9 +22,9 @@ const WORKSPACES = [
   {
     id: "personal",
     accent: {
-      badge: "bg-[--accent-primary]/10 text-[--accent-primary]",
-      icon: "bg-[--accent-primary]/10 text-[--accent-primary]",
-      ring: "ring-[--accent-primary]/30",
+      badge: "bg-[--accent-primary] text-[--accent-primary]",
+      icon: "bg-[--accent-primary] text-[--accent-primary]",
+      ring: "ring-[--accent-primary]",
     },
     icon: "user",
     steps: ["Capturer", "Organiser", "Exécuter"],
@@ -130,7 +130,7 @@ export default function SpacesPage() {
         </span>
       </div>
 
-      <div className="min-h-0 w-full flex-1 space-y-6 overflow-y-auto p-6 pb-10 no-scrollbar">
+      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
       <Card3D>
         <h2 className="mb-3 text-sm font-semibold capitalize text-[var(--foreground)]">{i18n("active")} {i18n("spaces")}</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -174,7 +174,7 @@ export default function SpacesPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Card3D>
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[--accent-primary]/10 text-[--accent-primary]">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[--accent-primary] text-[--accent-primary]">
               <Icon name="layout-grid" className="h-5 w-5" />
             </span>
             <div>

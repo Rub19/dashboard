@@ -100,19 +100,19 @@ const SyncBadge = memo(function SyncBadge({ collapsed }: { collapsed: boolean })
       dot: "bg-[var(--accent-primary)]",
     },
     error: {
-      icon: <AlertCircle className="h-3 w-3 text-red-400" />,
+      icon: <AlertCircle className="h-3 w-3 text-[var(--danger)]" />,
       label: i18n("error", "Erreur"),
-      dot: "bg-red-400",
+      dot: "bg-[var(--danger)]",
     },
     offline: {
-      icon: <WifiOff className="h-3 w-3 text-amber-400" />,
+      icon: <WifiOff className="h-3 w-3 text-[var(--warning)]" />,
       label: i18n("offline", "Hors ligne"),
-      dot: "bg-amber-400",
+      dot: "bg-[var(--warning)]",
     },
     idle: {
-      icon: <CheckCircle2 className="h-3 w-3 text-[--accent-primary]" />,
+      icon: <CheckCircle2 className="h-3 w-3 text-[var(--accent-primary)]" />,
       label: i18n("synced", "Sync"),
-      dot: "bg-[--accent-primary]",
+      dot: "bg-[var(--accent-primary)]",
     },
   };
   const statusConfig = config[status];
@@ -173,7 +173,7 @@ const SidebarProfile = memo(function SidebarProfile({ collapsed }: { collapsed: 
         ) : (
           <User className={cn("text-[var(--text-muted)]", collapsed ? "h-3.5 w-3.5" : "h-4 w-4")} />
         )}
-        <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--background)] bg-[--accent-primary]" aria-hidden="true" />
+        <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--background)] bg-[var(--accent-primary)]" aria-hidden="true" />
       </div>
       {!collapsed && (
         <span className="min-w-0 flex-1 truncate text-[11px] font-medium text-[var(--text-primary)]">
@@ -205,7 +205,7 @@ const SidebarFooter = memo(function SidebarFooter() {
         <button
           type="button"
           onClick={() => router.push("/settings")}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border-transparent bg-transparent text-[var(--text-muted)] transition-colors hover:border-[var(--panel-border)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border-transparent bg-transparent text-[var(--muted)] transition-colors hover:border-[var(--panel-border)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
           aria-label={i18n("settings")}
           title={i18n("settings")}
         >
@@ -215,7 +215,7 @@ const SidebarFooter = memo(function SidebarFooter() {
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border-transparent bg-transparent text-[var(--text-muted)] transition-colors hover:border-[var(--panel-border)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border-transparent bg-transparent text-[var(--muted)] transition-colors hover:border-[var(--panel-border)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
           aria-label={i18n("collapseSidebar", "Réduire")}
           title={i18n("collapseSidebar", "Réduire")}
         >
@@ -247,7 +247,7 @@ function Sidebar() {
 
   return (
     <div
-      className="relative z-[var(--z-sidebar)] hidden h-full min-h-0 w-auto shrink-0 pointer-events-auto md:block"
+      className="relative z-30 hidden h-full min-h-0 w-auto shrink-0 pointer-events-auto md:block"
       onPointerEnter={() => setOpen(true)}
       onPointerLeave={() => setOpen(false)}
     >
@@ -255,8 +255,8 @@ function Sidebar() {
         collapsible="icon"
         variant="floating"
         ariaLabel="Navigation principale"
-        className="m-2 h-[calc(100%-1rem)] bg-transparent pointer-events-auto"
-        panelClassName="m-0 h-full shrink-0 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 pb-8 backdrop-blur-[var(--panel-blur)] pointer-events-auto pt-[calc(0.75rem+env(safe-area-inset-top))]"
+        className="h-full bg-transparent pointer-events-auto"
+        panelClassName="m-2 h-[calc(100%-1rem)] shrink-0 rounded-2xl p-3 backdrop-blur-[var(--panel-blur)] pointer-events-auto"
       >
         <AnimatedSidebarHeader>
           <SidebarBrand />
@@ -267,7 +267,7 @@ function Sidebar() {
               <AnimatedSidebarMenuItem key={app.id}>
                 <AnimatedSidebarMenuButton
                   isActive={isActive(app)}
-                  icon={<Icon pack="phosphor" name={app.icon} className="h-5 w-5" />}
+                  icon={<Icon name={app.icon} className="h-5 w-5" />}
                   shortcut={SHORTCUTS[app.id]}
                   onSelect={() => router.push(app.href)}
                 >

@@ -579,7 +579,7 @@ type AmbientState = {
 };
 
 function createAmbientBuffer(ctx: BaseAudioContext, type: SoundAmbient): AudioBuffer {
-  const duration = 4;
+  const duration = type === "rain" ? 16 : 4;
   const length = Math.floor(ctx.sampleRate * duration);
   const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
   const data = buffer.getChannelData(0);
@@ -614,17 +614,66 @@ function createAmbientBuffer(ctx: BaseAudioContext, type: SoundAmbient): AudioBu
       last = (last + 0.08 * white) / 1.08;
       data[i] = last * 0.6;
     }
+  } else if (type === "rain") {
+    renderRainLayer(data, ctx.sampleRate);
   } else {
-    // rain
-    let last = 0;
-    for (let i = 0; i < length; i++) {
-      const white = Math.random() * 2 - 1;
-      last = (last + 0.02 * white) / 1.02;
-      data[i] = last * 2.5;
-    }
+    for (let i = 0; i < length; i++) data[i] = 0;
   }
 
   return buffer;
+}
+
+/** Multi-layer procedural rain: continuous shower, mid-body pink noise and close droplets. */
+function renderRainLayer(data: Float32Array, sampleRate: number): void {
+  const length = data.length;
+  const dropDecay = Math.exp(-1 / (sampleRate * 0.06));
+
+  const drops: { start: number; amp: number }[] = [];
+  let t = Math.floor(sampleRate * 0.3);
+  while (t < length) {
+    t += Math.floor(sampleRate * (0.05 + Math.random() * 0.32));
+    if (t >= length) break;
+    drops.push({ start: t, amp: 0.25 + Math.random() * 0.55 });
+  }
+  drops.sort((a, b) => a.start - b.start);
+
+  let brown = 0;
+  let p0 = 0,
+    p1 = 0,
+    p2 = 0,
+    p3 = 0,
+    p4 = 0,
+    p5 = 0,
+    p6 = 0;
+  let nextDrop = 0;
+  let dropEnv = 0;
+
+  for (let i = 0; i < length; i++) {
+    const white = Math.random() * 2 - 1;
+
+    brown = (brown + 0.03 * white) / 1.03;
+
+    p0 = 0.99886 * p0 + white * 0.0555179;
+    p1 = 0.99332 * p1 + white * 0.0750759;
+    p2 = 0.969 * p2 + white * 0.153852;
+    p3 = 0.8665 * p3 + white * 0.3104856;
+    p4 = 0.55 * p4 + white * 0.5329522;
+    p5 = -0.7616 * p5 - white * 0.016898;
+    const pink = (p0 + p1 + p2 + p3 + p4 + p5 + p6 + white * 0.5362) * 0.08;
+    p6 = white * 0.115926;
+
+    while (nextDrop < drops.length && i >= drops[nextDrop].start) {
+      dropEnv += drops[nextDrop].amp;
+      nextDrop++;
+    }
+    dropEnv *= dropDecay;
+    const droplet = dropEnv * white;
+
+    const time = i / sampleRate;
+    const modulation = 0.8 + 0.13 * Math.sin(time * 0.22) + 0.07 * Math.sin(time * 0.05) + Math.random() * 0.05;
+
+    data[i] = Math.max(-1, Math.min(1, (brown * 0.42 + pink * 0.32 + droplet * 0.85) * modulation * 0.55));
+  }
 }
 
 function isMediaActive(): boolean {
@@ -812,80 +861,71 @@ export function SoundProvider({ children }: { children: ReactNode }) {
 
   const play = useCallback(
     (type: SoundType, packOverride?: string) => {
-      try {
-        if (!settings.masterVolume || !settings.soundEffects) return;
+      if (!settings.masterVolume || !settings.soundEffects) return;
 
-        const packId = packOverride ?? settings.soundPack;
-        if (packId === "none" || packId === "silent") return;
+      const packId = packOverride ?? settings.soundPack;
+      if (packId === "none" || packId === "silent") return;
 
-        const ctx = ensureContext();
-        if (!ctx) return;
+      const ctx = ensureContext();
+      if (!ctx) return;
 
-        if (ctx.state === "suspended") {
-          void ctx.resume();
-        }
-
-        const output = outputGainRef.current;
-        if (!output) return;
-
-        const now = performance.now();
-        const min = MIN_INTERVALS[type] ?? 90;
-        const last = lastPlayedAtRef.current.get(type) ?? -Infinity;
-        if (now - last < min) return;
-        lastPlayedAtRef.current.set(type, now);
-
-        const pack = packConfig(packId);
-        const recipe = pack.tones[type];
-        if (!recipe || recipe.volume <= 0) return;
-
-        const category = SOUND_CATEGORIES[type];
-        const categoryVolume = (settings.soundVolumes[category] ?? 100) / 100;
-        const master = (settings.soundVolume ?? 50) / 100;
-
-        const pan = settings.soundSpatial
-          ? lastPanRef.current ?? (Math.random() - 0.5) * 2 * MAX_SPATIAL_PAN
-          : null;
-
-        scheduleSound(ctx, output, type, pack, ctx.currentTime, master, categoryVolume, pan);
-      } catch {
-        // Ignorer silencieusement une erreur audio isolée.
+      if (ctx.state === "suspended") {
+        void ctx.resume();
       }
+
+      const output = outputGainRef.current;
+      if (!output) return;
+
+      const now = performance.now();
+      const min = MIN_INTERVALS[type] ?? 90;
+      const last = lastPlayedAtRef.current.get(type) ?? -Infinity;
+      if (now - last < min) return;
+      lastPlayedAtRef.current.set(type, now);
+
+      const pack = packConfig(packId);
+      const recipe = pack.tones[type];
+      if (!recipe || recipe.volume <= 0) return;
+
+      const category = SOUND_CATEGORIES[type];
+      const categoryVolume = (settings.soundVolumes[category] ?? 100) / 100;
+      const master = (settings.soundVolume ?? 50) / 100;
+
+      const pan = settings.soundSpatial
+        ? lastPanRef.current ?? (Math.random() - 0.5) * 2 * MAX_SPATIAL_PAN
+        : null;
+
+      scheduleSound(ctx, output, type, pack, ctx.currentTime, master, categoryVolume, pan);
     },
     [settings, ensureContext]
   );
 
   const playAction = useCallback(
     (action: string) => {
-      if (!action || !settings.masterVolume || !settings.soundEffects) return;
       const type = soundTypeForAction(action);
       if (type) play(type);
     },
-    [play, settings]
+    [play]
   );
 
   const playAmbient = useCallback(
     (type: SoundAmbient) => {
-      try {
-        if (type === "none") {
-          stopAmbience();
-          update({ ambientSound: "none" });
-          return;
-        }
-        const ctx = ensureContext();
-        if (!ctx) return;
-        if (ctx.state === "suspended") {
-          void ctx.resume();
-        }
-        if (!settingsRef.current.masterVolume) {
-          settingsRef.current = { ...settingsRef.current, masterVolume: true };
-          update({ masterVolume: true, ambientSound: type });
-        } else {
-          update({ ambientSound: type });
-        }
-        startAmbience(type);
-      } catch {
-        // Ignorer silencieusement une erreur audio isolée.
+      if (type === "none") {
+        stopAmbience();
+        update({ ambientSound: "none" });
+        return;
       }
+      const ctx = ensureContext();
+      if (!ctx) return;
+      if (ctx.state === "suspended") {
+        void ctx.resume();
+      }
+      if (!settingsRef.current.masterVolume) {
+        settingsRef.current = { ...settingsRef.current, masterVolume: true };
+        update({ masterVolume: true, ambientSound: type });
+      } else {
+        update({ ambientSound: type });
+      }
+      startAmbience(type);
     },
     [ensureContext, startAmbience, stopAmbience, update]
   );

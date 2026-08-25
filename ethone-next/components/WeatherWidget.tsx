@@ -1,7 +1,6 @@
 "use client";
 
-import { memo, useMemo } from "react";
-import Link from "next/link";
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
@@ -89,74 +88,28 @@ export function weatherIconFromCode(code?: number, condition?: string, isDay?: b
 
 export function weatherAmbience(code?: number, isDay?: boolean): { gradient: string; border: string; glow: string } {
   const isNight = isDay === false;
+  const isSunny = code === 0 && !isNight;
+  const isRainyOrStormy =
+    (code !== undefined && code >= 51 && code <= 67) ||
+    (code !== undefined && code >= 80 && code <= 82) ||
+    (code !== undefined && code >= 95);
 
-  // Thunderstorm: violet / amber "orage" theme
-  if (code !== undefined && code >= 95) {
+  if (isSunny) {
     return {
-      gradient: "bg-gradient-to-br from-violet-900/40 via-amber-950/20 to-zinc-950",
-      border: "border-violet-500/30",
-      glow: "bg-violet-500",
+      gradient: "bg-gradient-to-br from-amber-500/10 via-zinc-950/80 to-zinc-950",
+      border: "border-amber-500/20",
+      glow: "bg-amber-500",
     };
   }
 
-  // Clear / sunny
-  if (code === 0) {
-    return isNight
-      ? {
-          gradient: "bg-gradient-to-br from-indigo-900/30 via-zinc-950/80 to-zinc-950",
-          border: "border-indigo-500/20",
-          glow: "bg-indigo-500",
-        }
-      : {
-          gradient: "bg-gradient-to-br from-amber-500/15 via-zinc-950/80 to-zinc-950",
-          border: "border-amber-500/20",
-          glow: "bg-amber-500",
-        };
-  }
-
-  // Partly cloudy
-  if (code !== undefined && code >= 1 && code <= 3) {
-    return isNight
-      ? {
-          gradient: "bg-gradient-to-br from-indigo-800/20 via-zinc-950/80 to-zinc-950",
-          border: "border-indigo-400/20",
-          glow: "bg-indigo-400",
-        }
-      : {
-          gradient: "bg-gradient-to-br from-sky-500/10 via-amber-500/5 to-zinc-950",
-          border: "border-sky-500/20",
-          glow: "bg-sky-400",
-        };
-  }
-
-  // Fog / mist
-  if (code === 45 || code === 48) {
+  if (isRainyOrStormy) {
     return {
-      gradient: "bg-gradient-to-br from-slate-500/10 via-zinc-950/80 to-zinc-950",
-      border: "border-slate-500/20",
-      glow: "bg-slate-400",
+      gradient: "bg-gradient-to-br from-[--info] via-zinc-950/80 to-zinc-950",
+      border: "border-[--info]",
+      glow: "bg-[--info]",
     };
   }
 
-  // Drizzle / rain
-  if ((code !== undefined && code >= 51 && code <= 67) || (code !== undefined && code >= 80 && code <= 82)) {
-    return {
-      gradient: "bg-gradient-to-br from-sky-700/20 via-zinc-950/80 to-zinc-950",
-      border: "border-sky-500/20",
-      glow: "bg-sky-500",
-    };
-  }
-
-  // Snow
-  if ((code !== undefined && code >= 71 && code <= 77) || (code !== undefined && code >= 85 && code <= 86)) {
-    return {
-      gradient: "bg-gradient-to-br from-cyan-600/10 via-zinc-950/80 to-zinc-950",
-      border: "border-cyan-500/20",
-      glow: "bg-cyan-400",
-    };
-  }
-
-  // Default
   return {
     gradient: "bg-gradient-to-br from-indigo-500/10 via-zinc-950/80 to-zinc-950",
     border: "border-indigo-500/20",
@@ -188,13 +141,7 @@ function formatTime(iso?: string, locale = "fr"): string {
   return new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit" }).format(d);
 }
 
-const ANIMATED_ICON_ANIMATE = { y: [0, -4, 0] };
-const ANIMATED_ICON_TRANSITION = { duration: 4, repeat: Infinity, ease: "easeInOut" as const };
-const SKELETON_PILLS = Array.from({ length: 4 });
-const SKELETON_COMPACT_GRID = Array.from({ length: 3 });
-const SKELETON_FULL_GRID = Array.from({ length: 5 });
-
-const AnimatedWeatherIcon = memo(function AnimatedWeatherIcon({
+function AnimatedWeatherIcon({
   name,
   colorClass,
   compact,
@@ -205,16 +152,16 @@ const AnimatedWeatherIcon = memo(function AnimatedWeatherIcon({
 }) {
   return (
     <motion.div
-      animate={ANIMATED_ICON_ANIMATE}
-      transition={ANIMATED_ICON_TRANSITION}
+      animate={{ y: [0, -4, 0] }}
+      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       className={`shrink-0 ${compact ? "h-10 w-10" : "h-14 w-14 md:h-16 md:w-16"}`}
     >
       <Icon name={name} className={`h-full w-full ${colorClass}`} />
     </motion.div>
   );
-});
+}
 
-const WeatherBadge = memo(function WeatherBadge({
+function WeatherBadge({
   icon,
   label,
   value,
@@ -226,7 +173,7 @@ const WeatherBadge = memo(function WeatherBadge({
   tone?: "zinc" | "cyan" | "emerald" | "amber" | "rose" | "violet";
 }) {
   const toneClass = {
-    zinc: "text-[var(--text-primary)]",
+    zinc: "text-zinc-300",
     cyan: "text-[--info]",
     emerald: "text-[--accent-primary]",
     amber: "text-amber-400",
@@ -235,67 +182,66 @@ const WeatherBadge = memo(function WeatherBadge({
   }[tone];
 
   return (
-    <div className="flex w-full items-center gap-1.5 rounded-xl bg-[var(--text-primary)]/[0.04] px-2.5 py-1.5 text-xs font-medium text-[var(--text-primary)] ring-1 ring-inset ring-[var(--text-primary)]/[0.06] backdrop-blur-sm">
+    <div className="flex w-full items-center gap-1.5 rounded-xl bg-white/[0.04] px-2.5 py-1.5 text-xs font-medium text-zinc-200 ring-1 ring-inset ring-white/[0.06] backdrop-blur-sm">
       <Icon name={icon} className={`h-3 w-3 ${toneClass}`} />
-      {label && <span className="text-[var(--text-muted)]">{label}</span>}
+      {label && <span className="text-zinc-500">{label}</span>}
       <span>{value}</span>
     </div>
   );
-});
+}
 
-const ForecastPill = memo(function ForecastPill({ day, icon, colorClass, compact }: { day: ForecastDay; icon: string; colorClass: string; compact?: boolean }) {
+function ForecastPill({ day, icon, colorClass, compact }: { day: ForecastDay; icon: string; colorClass: string; compact?: boolean }) {
   const i18n = useI18n();
   const locale = i18n("daysShort")?.includes(",") ? "fr" : "en";
   const min = toNum(day.min);
   const max = toNum(day.max);
 
   return (
-    <div className="v8-inset flex min-h-[64px] flex-col items-center gap-1 p-2.5 transition-colors hover:bg-[var(--background)]/50">
-      <span className="text-[11px] font-medium uppercase text-[var(--text-muted)]">{formatShortDay(day.date, locale)}</span>
+    <div className="v8-inset flex min-h-[64px] flex-col items-center gap-1 p-2.5 transition-colors hover:bg-black/50">
+      <span className="text-[11px] font-medium uppercase text-zinc-400">{formatShortDay(day.date, locale)}</span>
       <Icon name={icon} className={`my-0.5 ${compact ? "h-4 w-4" : "h-5 w-5"} ${colorClass}`} />
-      <span className={`font-mono font-semibold text-[var(--text-primary)] ${compact ? "text-[10px]" : "text-xs"}`}>
+      <span className={`font-mono font-semibold text-white ${compact ? "text-[10px]" : "text-xs"}`}>
         {min !== undefined ? `${Math.round(min)}°` : "—"}{" "}
-        <span className="text-[var(--text-muted)]">/ {max !== undefined ? `${Math.round(max)}°` : "—"}</span>
+        <span className="text-zinc-500">/ {max !== undefined ? `${Math.round(max)}°` : "—"}</span>
       </span>
     </div>
   );
-});
+}
 
-const WeatherSkeleton = memo(function WeatherSkeleton({ compact }: { compact?: boolean }) {
-  const grid = compact ? SKELETON_COMPACT_GRID : SKELETON_FULL_GRID;
+function WeatherSkeleton({ compact }: { compact?: boolean }) {
   return (
     <div
-      className={`animate-pulse space-y-4 rounded-2xl bg-[var(--text-primary)]/[0.04] p-5 backdrop-blur-2xl ${
+      className={`animate-pulse space-y-4 rounded-2xl bg-white/[0.04] p-5 backdrop-blur-2xl ${
         compact ? "min-h-[130px]" : "min-h-[260px]"
       }`}
     >
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-4">
-          <div className={`rounded-xl bg-[var(--text-primary)]/[0.06] ${compact ? "h-10 w-10" : "h-16 w-16"}`} />
+          <div className={`rounded-xl bg-white/[0.06] ${compact ? "h-10 w-10" : "h-16 w-16"}`} />
           <div className="space-y-2">
-            <div className={`rounded bg-[var(--text-primary)]/[0.06] ${compact ? "h-6 w-16" : "h-10 w-24"}`} />
-            <div className="h-3 w-32 rounded bg-[var(--text-primary)]/[0.04]" />
+            <div className={`rounded bg-white/[0.06] ${compact ? "h-6 w-16" : "h-10 w-24"}`} />
+            <div className="h-3 w-32 rounded bg-white/[0.04]" />
           </div>
         </div>
       </div>
       <div className="flex flex-wrap gap-2">
-        {SKELETON_PILLS.map((_, i) => (
-          <div key={i} className="h-7 w-20 rounded-xl bg-[var(--text-primary)]/[0.04]" />
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="h-7 w-20 rounded-xl bg-white/[0.04]" />
         ))}
       </div>
       <div className="grid grid-cols-5 gap-2">
-        {grid.map((_, i) => (
-          <div key={i} className="h-16 rounded-xl bg-[var(--text-primary)]/[0.04]" />
+        {[...Array(compact ? 3 : 5)].map((_, i) => (
+          <div key={i} className="h-16 rounded-xl bg-white/[0.04]" />
         ))}
       </div>
     </div>
   );
-});
+}
 
-const WeatherWidget = memo(function WeatherWidget({ data, loading, onRefresh, compact, className }: WeatherWidgetProps) {
+export default function WeatherWidget({ data, loading, onRefresh, compact, className }: WeatherWidgetProps) {
   const i18n = useI18n();
 
-  const code = useMemo(() => toNum(data?.weatherCode), [data?.weatherCode]);
+  const code = data?.weatherCode;
   const isDay = data?.isDay;
   const condition = toStr(data?.condition) || toStr(data?.description) || "—";
   const city = toStr(data?.city) || toStr(data?.location) || "—";
@@ -312,7 +258,7 @@ const WeatherWidget = memo(function WeatherWidget({ data, loading, onRefresh, co
   const sunset = toStr(data?.sunset);
   const forecast = useMemo(() => (data?.forecast || []).slice(0, 5), [data?.forecast]);
 
-  const { gradient, glow } = weatherAmbience(code, isDay);
+  const { gradient, border, glow } = weatherAmbience(code, isDay);
   const iconColor = weatherIconColor(code, isDay);
   const iconName = weatherIconFromCode(code, condition, isDay);
   const locale = i18n("daysShort")?.includes(",") ? "fr" : "en";
@@ -324,39 +270,29 @@ const WeatherWidget = memo(function WeatherWidget({ data, loading, onRefresh, co
   if (!data) {
     return (
       <div
-        className={`flex flex-col items-center justify-center gap-2 rounded-2xl border border-[var(--text-primary)]/[0.06] bg-[var(--background)]/60 p-5 text-center backdrop-blur-2xl ${
+        className={`flex flex-col items-center justify-center gap-3 rounded-2xl border border-white/[0.06] bg-zinc-950/60 p-5 text-center backdrop-blur-2xl ${
           compact ? "min-h-[130px]" : "min-h-[260px]"
         } ${className || ""}`}
       >
-        <Icon name="cloud" className="h-9 w-9 text-[var(--text-muted)]" />
-        <p className="text-sm font-semibold text-[var(--text-primary)]">{i18n("noForecast", "Météo indisponible")}</p>
-        <p className="text-[11px] text-[var(--text-muted)]">{i18n("weatherEmptyHint", "Vérifiez la connexion ou configurez une ville.")}</p>
-        <div className="mt-1 flex flex-wrap items-center justify-center gap-2">
-          <Link
-            href="/weather"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] active:scale-95"
+        <Icon name="cloud" className="h-10 w-10 text-zinc-600" />
+        <p className="text-sm text-zinc-400">{i18n("noForecast")}</p>
+        {onRefresh && (
+          <button
+            type="button"
+            onClick={onRefresh}
+            className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--text-primary)]/[0.04] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)]"
           >
-            <Icon name="map-pin" className="h-3 w-3" />
-            {i18n("configureCity", "Configurer la ville")}
-          </Link>
-          {onRefresh && (
-            <button
-              type="button"
-              onClick={onRefresh}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--text-primary)]/[0.04] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] active:scale-95"
-            >
-              <Icon name="refresh-cw" className="h-3 w-3" />
-              {i18n("refresh")}
-            </button>
-          )}
-        </div>
+            <Icon name="refresh-cw" className="h-3 w-3" />
+            {i18n("refresh")}
+          </button>
+        )}
       </div>
     );
   }
 
   return (
     <TiltCard
-      className={`group h-full min-h-0 bg-[var(--background)]/70 p-4 shadow-xl shadow-[var(--background)]/50 backdrop-blur-2xl transition-colors ${gradient} ${
+      className={`group h-full min-h-0 border bg-zinc-950/70 p-4 shadow-xl shadow-black/50 backdrop-blur-2xl transition-colors ${gradient} ${border} ${
         className || ""
       }`}
     >
@@ -372,11 +308,11 @@ const WeatherWidget = memo(function WeatherWidget({ data, loading, onRefresh, co
           <div className={`flex gap-2 ${compact ? "items-center" : "flex-col items-start"}`}>
             <AnimatedWeatherIcon name={iconName} colorClass={iconColor} compact={compact} />
             <div className="min-w-0">
-              <p className={`font-bold tracking-tight text-[var(--text-primary)] ${compact ? "text-2xl" : "text-3xl md:text-4xl"}`}>
+              <p className={`font-bold tracking-tight text-white ${compact ? "text-2xl" : "text-3xl md:text-4xl"}`}>
                 {temp !== undefined ? `${Math.round(temp)}°` : "—"}
               </p>
-              <p className={`font-medium capitalize text-[var(--text-primary)] ${compact ? "text-[10px]" : "text-xs"}`}>{condition}</p>
-              <p className={`truncate text-[var(--text-muted)] ${compact ? "text-[10px]" : "text-xs"}`}>
+              <p className={`font-medium capitalize text-zinc-300 ${compact ? "text-[10px]" : "text-xs"}`}>{condition}</p>
+              <p className={`truncate text-zinc-500 ${compact ? "text-[10px]" : "text-xs"}`}>
                 {city}
                 {country ? `, ${country}` : ""}
               </p>
@@ -390,7 +326,7 @@ const WeatherWidget = memo(function WeatherWidget({ data, loading, onRefresh, co
                 onClick={onRefresh}
                 disabled={loading}
                 aria-label={i18n("refresh")}
-                className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] disabled:opacity-50"
+                className="rounded-lg p-1.5 text-[var(--muted)] transition-colors hover:text-[var(--text-primary)] disabled:opacity-50"
               >
                 <motion.span
                   className="inline-block"
@@ -429,19 +365,19 @@ const WeatherWidget = memo(function WeatherWidget({ data, loading, onRefresh, co
         {!compact && (
           <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
             {sunrise && (
-              <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
+              <div className="flex items-center gap-1.5 text-xs text-zinc-400">
                 <Icon name="sunrise" className="h-3.5 w-3.5 text-amber-300" />
                 <span>{formatTime(sunrise, locale)}</span>
               </div>
             )}
             {sunset && (
-              <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
+              <div className="flex items-center gap-1.5 text-xs text-zinc-400">
                 <Icon name="sunset" className="h-3.5 w-3.5 text-indigo-300" />
                 <span>{formatTime(sunset, locale)}</span>
               </div>
             )}
             {pressure !== undefined && (
-              <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
+              <div className="flex items-center gap-1.5 text-xs text-zinc-400">
                 <Icon name="gauge" className="h-3.5 w-3.5 text-[--accent-primary]" />
                 <span>
                   {Math.round(pressure)} {i18n("weatherPressureUnit") || "hPa"}
@@ -449,7 +385,7 @@ const WeatherWidget = memo(function WeatherWidget({ data, loading, onRefresh, co
               </div>
             )}
             {aqi !== undefined && (
-              <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
+              <div className="flex items-center gap-1.5 text-xs text-zinc-400">
                 <Icon name="wind" className="h-3.5 w-3.5 text-sky-400" />
                 <span>
                   {aqiLabel || `${i18n("weatherAirQuality") || "AQI"} ${Math.round(aqi)}`}
@@ -464,9 +400,8 @@ const WeatherWidget = memo(function WeatherWidget({ data, loading, onRefresh, co
           <div className={`mt-auto ${compact ? "pt-2" : "pt-4"}`}>
             <div className="grid grid-cols-5 gap-2">
               {forecast.map((day, i) => {
-                const dayCode = toNum(day.weatherCode);
-                const dayIcon = weatherIconFromCode(dayCode, day.condition, true);
-                return <ForecastPill key={i} day={day} icon={dayIcon} colorClass={weatherIconColor(dayCode, true)} compact={compact} />;
+                const dayIcon = weatherIconFromCode(day.weatherCode, day.condition, true);
+                return <ForecastPill key={i} day={day} icon={dayIcon} colorClass={weatherIconColor(day.weatherCode, true)} compact={compact} />;
               })}
             </div>
           </div>
@@ -474,6 +409,4 @@ const WeatherWidget = memo(function WeatherWidget({ data, loading, onRefresh, co
       </div>
     </TiltCard>
   );
-});
-
-export default WeatherWidget;
+}

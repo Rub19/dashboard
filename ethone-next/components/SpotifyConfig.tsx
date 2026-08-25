@@ -83,10 +83,10 @@ export default function SpotifyConfig() {
 
   const statusClass =
     status === "connected"
-      ? "bg-green-500/10 text-green-400 border border-green-500/20"
+      ? "bg-[--accent-primary] text-[--accent-primary] border border-[--accent-primary]"
       : status === "error"
         ? "bg-rose-500/15 text-rose-300 border border-rose-500/30"
-        : "bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] border border-[var(--text-primary)]/[0.08]";
+        : "bg-white/[0.04] text-zinc-400 border border-white/[0.08]";
 
   async function handleConnect() {
     const trimmed = rawValue.trim();
@@ -168,11 +168,11 @@ export default function SpotifyConfig() {
   if (!integration) return null;
 
   return (
-    <div className="flex h-full flex-col gap-4 rounded-2xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.02] p-4">
+    <div className="flex h-full flex-col gap-4 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="font-semibold text-[var(--text-primary)]">Spotify</h3>
-          <p className="text-xs text-[var(--text-muted)]">{i18n("descSpotify")}</p>
+          <h3 className="font-semibold text-white">Spotify</h3>
+          <p className="text-xs text-zinc-500">{i18n("descSpotify")}</p>
         </div>
         <span className={`rounded-lg px-2.5 py-1 text-[10px] font-semibold ${statusClass}`}>{statusText}</span>
       </div>
@@ -201,7 +201,7 @@ export default function SpotifyConfig() {
                 <button
                   type="button"
                   onClick={() => setShowClientSecret((v) => !v)}
-                  className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  className="text-[10px] text-[var(--muted)] hover:text-[var(--text-primary)]"
                 >
                   {showClientSecret ? i18n("hide") : i18n("show")}
                 </button>
@@ -210,9 +210,9 @@ export default function SpotifyConfig() {
           )}
 
           {config?.requiresRedirectUri && origin && (
-            <div className="rounded-xl border border-white/10 bg-[var(--text-primary)]/[0.03] p-2.5">
-              <p className="text-[11px] font-medium text-[var(--text-primary)]">{i18n("redirectUri")}</p>
-              <code className="mt-1 block break-all rounded-lg bg-[var(--background)] px-2 py-1 text-[10px] text-[var(--text-muted)]">
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-2.5">
+              <p className="text-[11px] font-medium text-zinc-300">{i18n("redirectUri")}</p>
+              <code className="mt-1 block break-all rounded-lg bg-zinc-950 px-2 py-1 text-[10px] text-zinc-400">
                 {`${origin}${config.callbackPath}`}
               </code>
             </div>
@@ -227,7 +227,7 @@ export default function SpotifyConfig() {
               type="button"
               onClick={handleConnect}
               disabled={!rawValue.trim() || submitting || testing || checking}
-              className="flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3 py-2 text-sm font-bold text-[var(--accent-contrast)] shadow-md shadow-[var(--accent-primary)]/20 transition hover:bg-[var(--accent-primary)] disabled:opacity-50"
+              className="flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3 py-2 text-sm font-bold text-[var(--accent-contrast)] shadow-md shadow-[var(--accent-primary)]/20 transition hover:bg-[var(--accent-primary)] active:scale-95 disabled:opacity-50"
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plug className="h-4 w-4" />}
               {submitting ? i18n("connecting") : i18n("connect", "Connecter")}
@@ -267,7 +267,7 @@ export default function SpotifyConfig() {
       </div>
 
       {!!health?.data && (
-        <pre className="max-h-40 overflow-auto rounded-xl bg-black/30 p-3 font-mono text-[10px] text-[var(--text-primary)]">
+        <pre className="max-h-40 overflow-auto rounded-xl bg-black/30 p-3 font-mono text-[10px] text-zinc-300">
           {JSON.stringify(health.data as Record<string, unknown>, null, 2)}
         </pre>
       )}

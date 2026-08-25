@@ -81,11 +81,11 @@ const TONE_META: Record<string, { labelKey: string; color: string; bg: string }>
   error: { labelKey: "statusError", color: "text-red-300", bg: "bg-red-500/15 border border-red-500/25" },
   failure: { labelKey: "statusError", color: "text-red-300", bg: "bg-red-500/15 border border-red-500/25" },
   warning: { labelKey: "statusWarning", color: "text-amber-300", bg: "bg-amber-500/15 border border-amber-500/25" },
-  note: { labelKey: "journalTypeNote", color: "text-[var(--text-primary)]", bg: "bg-[var(--text-primary)]/[0.06] border border-[var(--text-primary)]/[0.08]" },
-  task: { labelKey: "journalTypeTask", color: "text-[var(--text-primary)]", bg: "bg-[var(--text-primary)]/[0.06] border border-[var(--text-primary)]/[0.08]" },
-  calendar: { labelKey: "journalTypeEvent", color: "text-[var(--text-primary)]", bg: "bg-[var(--text-primary)]/[0.06] border border-[var(--text-primary)]/[0.08]" },
-  file: { labelKey: "journalTypeFile", color: "text-[var(--text-primary)]", bg: "bg-[var(--text-primary)]/[0.06] border border-[var(--text-primary)]/[0.08]" },
-  navigation: { labelKey: "journalTypeRoute", color: "text-[var(--text-primary)]", bg: "bg-[var(--text-primary)]/[0.06] border border-[var(--text-primary)]/[0.08]" },
+  note: { labelKey: "journalTypeNote", color: "text-zinc-300", bg: "bg-white/[0.06] border border-white/[0.08]" },
+  task: { labelKey: "journalTypeTask", color: "text-zinc-300", bg: "bg-white/[0.06] border border-white/[0.08]" },
+  calendar: { labelKey: "journalTypeEvent", color: "text-zinc-300", bg: "bg-white/[0.06] border border-white/[0.08]" },
+  file: { labelKey: "journalTypeFile", color: "text-zinc-300", bg: "bg-white/[0.06] border border-white/[0.08]" },
+  navigation: { labelKey: "journalTypeRoute", color: "text-zinc-300", bg: "bg-white/[0.06] border border-white/[0.08]" },
 };
 
 function matchesType(eventType: string | undefined, type: string): boolean {
@@ -119,15 +119,15 @@ function StatCard({ label, value, sub, icon, tone = "emerald" }: StatCardProps) 
 
   return (
     <div
-      className={`group bg-zinc-950/80 border border-[var(--text-primary)]/[0.08] backdrop-blur-xl p-4 rounded-2xl shadow-lg hover:border-white/15 transition-all ${toneRing}`}
+      className={`group bg-zinc-950/80 border border-white/[0.08] backdrop-blur-xl p-4 rounded-2xl shadow-lg hover:border-white/15 transition-all ${toneRing}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-[10px] font-medium text-[var(--text-muted)] uppercase tracking-wider">{label}</p>
-          <p className="text-2xl font-mono font-bold tracking-tight text-[var(--text-primary)] mt-1">{value}</p>
-          <p className="text-[11px] text-[var(--text-muted)] mt-1">{sub}</p>
+          <p className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider">{label}</p>
+          <p className="text-2xl font-mono font-bold tracking-tight text-white mt-1">{value}</p>
+          <p className="text-[11px] text-zinc-500 mt-1">{sub}</p>
         </div>
-        <div className="shrink-0 rounded-xl bg-[var(--text-primary)]/[0.04] p-2 ring-1 ring-inset ring-[var(--text-primary)]/[0.06]">{icon}</div>
+        <div className="shrink-0 rounded-xl bg-white/[0.04] p-2 ring-1 ring-inset ring-white/[0.06]">{icon}</div>
       </div>
     </div>
   );
@@ -135,14 +135,14 @@ function StatCard({ label, value, sub, icon, tone = "emerald" }: StatCardProps) 
 
 function StatSkeleton() {
   return (
-    <div className="bg-zinc-950/80 border border-[var(--text-primary)]/[0.08] backdrop-blur-xl p-4 rounded-2xl shadow-lg animate-pulse">
+    <div className="bg-zinc-950/80 border border-white/[0.08] backdrop-blur-xl p-4 rounded-2xl shadow-lg animate-pulse">
       <div className="flex items-start justify-between gap-3">
         <div className="w-full space-y-2">
-          <div className="h-3 w-16 rounded bg-[var(--text-primary)]/[0.06]" />
-          <div className="h-8 w-20 rounded bg-[var(--text-primary)]/[0.08]" />
-          <div className="h-3 w-28 rounded bg-[var(--text-primary)]/[0.04]" />
+          <div className="h-3 w-16 rounded bg-white/[0.06]" />
+          <div className="h-8 w-20 rounded bg-white/[0.08]" />
+          <div className="h-3 w-28 rounded bg-white/[0.04]" />
         </div>
-        <div className="h-10 w-10 rounded-xl bg-[var(--text-primary)]/[0.04]" />
+        <div className="h-10 w-10 rounded-xl bg-white/[0.04]" />
       </div>
     </div>
   );
@@ -159,7 +159,7 @@ function TimelineItem({
 }) {
   const meta = CATEGORY_META[event.category] || CATEGORY_META.system;
   const tone = event.tone || event.category;
-  const toneMeta = TONE_META[tone] || { labelKey: event.category, color: "text-[var(--text-primary)]", bg: "bg-[var(--text-primary)]/[0.06] border border-[var(--text-primary)]/[0.08]" };
+  const toneMeta = TONE_META[tone] || { labelKey: event.category, color: "text-zinc-300", bg: "bg-white/[0.06] border border-white/[0.08]" };
   const date = new Date(event.timestamp);
 
   return (
@@ -168,17 +168,17 @@ function TimelineItem({
         <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${meta.bg} ${meta.border}`}>
           <Icon name={event.icon || "activity"} className={`h-4 w-4 ${meta.color}`} />
         </span>
-        <div className="mt-1 h-full w-px border-l border-[var(--text-primary)]/[0.08]" />
+        <div className="mt-1 h-full w-px border-l border-white/[0.08]" />
       </div>
       <div className="min-w-0 flex-1 pb-5">
         <div className="flex flex-wrap items-center gap-2">
-          <p className="text-xs font-semibold text-[var(--text-primary)]">{event.title}</p>
+          <p className="text-xs font-semibold text-zinc-100">{event.title}</p>
           <span className={`text-[10px] px-1.5 py-0.5 rounded ${toneMeta.color} ${toneMeta.bg}`}>
             {i18n(toneMeta.labelKey)}
           </span>
         </div>
-        <p className="text-[11px] text-[var(--text-muted)] mt-1 leading-relaxed">{event.description}</p>
-        <p className="text-[11px] font-mono text-[var(--text-muted)] mt-1">
+        <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">{event.description}</p>
+        <p className="text-[11px] font-mono text-zinc-500 mt-1">
           {formatLocalDate(date, mounted)} · {formatLocalTime(event.timestamp, mounted)}
         </p>
       </div>
@@ -365,8 +365,8 @@ export default function ActivityHub() {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">{i18n("activityJournal")}</h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">{i18n("activityJournalDescription")}</p>
+          <h1 className="text-2xl font-bold text-white">{i18n("activityJournal")}</h1>
+          <p className="text-sm text-zinc-500 mt-1">{i18n("activityJournalDescription")}</p>
         </div>
         <AnimatedFilterTabs tabs={periodTabs} activeId={period} onChange={setPeriod} />
       </div>
@@ -415,18 +415,18 @@ export default function ActivityHub() {
       </div>
 
       {/* Heatmap */}
-      <div className="bg-zinc-950/80 border border-[var(--text-primary)]/[0.08] backdrop-blur-xl rounded-2xl p-4 shadow-lg">
+      <div className="bg-zinc-950/80 border border-white/[0.08] backdrop-blur-xl rounded-2xl p-4 shadow-lg">
         <div className="mb-4 flex items-center justify-between gap-3">
-          <h2 className="text-sm font-semibold text-[var(--text-primary)]">{i18n("activityHeatmap")}</h2>
-          <span className="text-[10px] text-[var(--text-muted)]">{i18n("activityLastDays").replace("{{count}}", "365")}</span>
+          <h2 className="text-sm font-semibold text-white">{i18n("activityHeatmap")}</h2>
+          <span className="text-[10px] text-zinc-500">{i18n("activityLastDays").replace("{{count}}", "365")}</span>
         </div>
-        {mounted ? <ActivityHeatmap entries={entries} /> : <div className="h-40 animate-pulse rounded-xl bg-[var(--text-primary)]/[0.04]" />}
+        {mounted ? <ActivityHeatmap entries={entries} /> : <div className="h-40 animate-pulse rounded-xl bg-white/[0.04]" />}
       </div>
 
       {/* Toolbar */}
-      <div className="bg-zinc-950/80 border border-[var(--text-primary)]/[0.08] backdrop-blur-xl rounded-2xl p-4 shadow-lg">
+      <div className="bg-zinc-950/80 border border-white/[0.08] backdrop-blur-xl rounded-2xl p-4 shadow-lg">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <h2 className="text-sm font-semibold text-[var(--text-primary)]">{i18n("activityJournalEntries")}</h2>
+          <h2 className="text-sm font-semibold text-white">{i18n("activityJournalEntries")}</h2>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:flex-wrap">
             <Input
@@ -473,7 +473,7 @@ export default function ActivityHub() {
               )}
 
               {lastSyncText && !syncError && (
-                <span className="text-[11px] text-[var(--text-muted)] hidden sm:inline">{lastSyncText}</span>
+                <span className="text-[11px] text-zinc-500 hidden sm:inline">{lastSyncText}</span>
               )}
 
               <button
@@ -490,7 +490,7 @@ export default function ActivityHub() {
         </div>
 
         <div className="mt-3 flex items-center justify-between">
-          <p className="text-xs text-[var(--text-muted)]">
+          <p className="text-xs text-zinc-500">
             {i18n("journalShowing").replace("{{count}}", String(filteredEntries.length))}
             {pendingCount > 0 ? ` · ${i18n("journalPending").replace("{{count}}", String(pendingCount))}` : ""}
           </p>
@@ -498,9 +498,9 @@ export default function ActivityHub() {
       </div>
 
       {/* Timeline */}
-      <div className="bg-zinc-950/80 border border-[var(--text-primary)]/[0.08] backdrop-blur-xl rounded-2xl p-4 shadow-lg">
+      <div className="bg-zinc-950/80 border border-white/[0.08] backdrop-blur-xl rounded-2xl p-4 shadow-lg">
         {grouped.length === 0 ? (
-          <p className="text-sm text-[var(--text-muted)]">{i18n("journalNoEntries")}</p>
+          <p className="text-sm text-zinc-500">{i18n("journalNoEntries")}</p>
         ) : (
           <div className="space-y-5">
             <AnimatePresence initial={false}>
@@ -513,7 +513,7 @@ export default function ActivityHub() {
                   transition={{ duration: 0.15 }}
                   className="space-y-2"
                 >
-                  <span className="text-xs font-mono text-[var(--text-muted)] bg-[var(--text-primary)]/[0.03] px-2.5 py-1 rounded-md border border-[var(--text-primary)]/[0.05] inline-block">
+                  <span className="text-xs font-mono text-zinc-500 bg-white/[0.03] px-2.5 py-1 rounded-md border border-white/[0.05] inline-block">
                     {formatLocalDate(new Date(key), mounted)}
                   </span>
                   <div className="space-y-0">

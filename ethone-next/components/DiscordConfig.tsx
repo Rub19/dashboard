@@ -8,7 +8,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { pingIntegration, type PingResult } from "@/lib/connection-config";
 import { integrationById } from "@/lib/integrations";
-import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useDiscordOAuth, type DiscordGuild } from "@/lib/hooks/useDiscordOAuth";
 import { Icon } from "@/lib/icons";
 import ClientImage from "@/components/ClientImage";
 import SecureInput from "@/components/ui/SecureInput";
@@ -50,6 +50,31 @@ function guildIconUrl(id?: string, icon?: string) {
   if (!id || !icon) return "";
   const ext = icon.startsWith("a_") ? "gif" : "png";
   return `https://cdn.discordapp.com/icons/${encodeURIComponent(id)}/${encodeURIComponent(icon)}.${ext}?size=128`;
+}
+
+function GuildIcon({ guild }: { guild: DiscordGuild }) {
+  const [error, setError] = useState(false);
+  const url = guild.iconUrl || guildIconUrl(guild.id, guild.icon);
+  if (error || !url) {
+    return (
+      <span className="flex h-6 w-6 items-center justify-center rounded-md bg-zinc-700 text-[10px] font-semibold uppercase text-[var(--text-primary)]">
+        {initials(guild.name)}
+      </span>
+    );
+  }
+  return (
+    <>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={url}
+        alt=""
+        className="h-6 w-6 rounded-md object-cover"
+        referrerPolicy="no-referrer"
+        loading="lazy"
+        onError={() => setError(true)}
+      />
+    </>
+  );
 }
 
 export default function DiscordConfig() {
@@ -311,19 +336,7 @@ export default function DiscordConfig() {
                         key={g.id}
                         className="inline-flex items-center gap-2 rounded-lg border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] px-2.5 py-1.5 text-xs text-[var(--text-primary)]"
                       >
-                        <ClientImage
-                          candidates={[g.iconUrl, guildIconUrl(g.id, g.icon)]}
-                          alt=""
-                          width={24}
-                          height={24}
-                          loading="eager"
-                          className="h-6 w-6 rounded-md"
-                          fallback={
-                            <span className="flex h-6 w-6 items-center justify-center rounded-md bg-zinc-700 text-[10px] font-semibold uppercase text-[var(--text-primary)]">
-                              {initials(g.name)}
-                            </span>
-                          }
-                        />
+                        <GuildIcon guild={g} />
                         {g.name}
                       </span>
                     ))}

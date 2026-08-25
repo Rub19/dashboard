@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.15 — 2026-08-25
+
+**ETHONE — VersionPill cliquable**
+
+- La pastille de version en bas à droite est désormais cliquable.
+- Clique → toast affichant la version et le hash du commit (si connu).
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.14 — 2026-08-25
 
 **ETHONE — Polish Discord, Dock et cartes de services**

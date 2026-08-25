@@ -5,6 +5,7 @@ import { useVersionChecker, type VersionData } from "@/lib/hooks/useVersionCheck
 import { forceAppReload } from "@/lib/force-reload";
 import { formatVersion } from "@/lib/version";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useToast } from "@/components/ToastProvider";
 
 function formatBuildInfo(data: { commit?: string | null; buildAt?: string } | null): string {
   if (!data) return "";
@@ -28,20 +29,30 @@ function isDifferentBuild(a: VersionData | null, b: VersionData | null): boolean
 
 export default function VersionPill() {
   const i18n = useI18n();
+  const { info } = useToast();
   const { currentData, newData, hasUpdate } = useVersionChecker();
 
   const showUpdate = hasUpdate || isDifferentBuild(currentData, newData);
   const data = showUpdate ? newData : currentData;
   const label = formatVersion(data?.version ?? null);
+  const buildInfo = formatBuildInfo(data) || i18n("noBuildInfo", "Aucune information de build");
   const title =
     (showUpdate
       ? i18n("newVersionClickToReload", "Nouvelle version disponible, cliquez pour recharger")
       : i18n("currentVersion", "Version actuelle")) + formatBuildInfo(data);
 
+  function handleClick() {
+    if (showUpdate) {
+      forceAppReload(data?.version ?? null, data);
+      return;
+    }
+    info(i18n("currentVersion", "Version actuelle") + " " + label, buildInfo);
+  }
+
   return (
     <button
       type="button"
-      onClick={() => (showUpdate ? forceAppReload(data?.version ?? null, data) : undefined)}
+      onClick={handleClick}
       title={title}
       className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[10px] font-mono font-medium transition-all ${
         showUpdate

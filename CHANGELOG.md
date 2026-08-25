@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.7 — 2026-08-25
+
+**ETHONE — Rework Settings / Control Center**
+
+- Pass 1 : audit de l’architecture Settings existante.
+- Pass 2 : navigation sidebar avec descriptions i18n et mapping `CATEGORY_KEYS` corrigé.
+- Pass 3 : tokens unifiés pour `SettingsSection` et `SettingField`.
+- Pass 4 : previews de thèmes enrichis (bouton + dock miniature).
+- Pass 5 : aperçu son i18n et respect `reduced-motion` sur `AmbientSoundControl`.
+- Pass 6 : `LanguageControl` responsive et tokens `MaintenancePanel` unifiés.
+- Pass 7 : `SettingField` responsive mobile et validation 420 viewports Playwright.
+- Pass 8 : version `v1.9.7`, full Playwright, changelog.
+
 ## v1.9.6 — 2026-08-25
 
 **ETHONE — Rework Home complet**

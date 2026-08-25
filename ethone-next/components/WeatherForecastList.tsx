@@ -49,7 +49,7 @@ export default function WeatherForecastList({ days }: { days: ForecastDay[] }) {
             className="flex items-center justify-between border-b border-[var(--text-primary)]/[0.04] px-2 py-2.5 last:border-none hover:rounded-xl hover:bg-[var(--text-primary)]/[0.02] transition-colors"
           >
             <span className="w-12 text-xs font-medium text-[var(--text-primary)]">{formatShortDay(day.date, locale)}</span>
-            <Icon name={icon} className={`h-4 w-4 ${color}`} />
+            <Icon pack="phosphor" name={icon} className={`h-4 w-4 ${color}`} />
             <div className="mx-3 h-1 flex-1 rounded-xl bg-[var(--text-primary)]/[0.04]">
               <div
                 className="relative h-full rounded-xl bg-gradient-to-r from-[--info] via-[--warning] to-[--danger]"

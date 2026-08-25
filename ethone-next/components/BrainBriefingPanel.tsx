@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import Link from "next/link";
 import { useHomeData } from "@/lib/hooks/useDashboard";
 import { useItems } from "@/lib/hooks/useItems";
@@ -13,7 +13,7 @@ import { Icon } from "@/lib/icons";
 
 type Section = "weather" | "agenda" | "tasks" | "mail" | "notifications" | "activity" | "nowPlaying";
 
-export default function BrainBriefingPanel() {
+const BrainBriefingPanel = memo(function BrainBriefingPanel({ _className = "", _scrollable = true, _standalone = true }: { _className?: string; _scrollable?: boolean; _standalone?: boolean }) {
   const i18n = useI18n();
   const { settings } = useSettings();
   const { greeting, nowPlaying } = useHomeData();
@@ -177,4 +177,6 @@ export default function BrainBriefingPanel() {
       </div>
     </div>
   );
-}
+});
+
+export default BrainBriefingPanel;

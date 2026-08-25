@@ -256,7 +256,7 @@ export default function WeatherPage() {
             className="flex h-8 w-8 items-center justify-center rounded-xl text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
             aria-label={i18n("geolocate")}
           >
-            <Icon name="navigation" className="h-3.5 w-3.5" />
+            <Icon pack="phosphor" name="navigation" className="h-3.5 w-3.5" />
           </button>
 
           <button
@@ -275,7 +275,7 @@ export default function WeatherPage() {
         <WeatherPageSkeleton />
       ) : !weather ? (
         <div className="flex min-h-[320px] flex-col items-center justify-center gap-3 rounded-2xl border border-[var(--text-primary)]/[0.06] p-6 text-center">
-          <Icon name="cloud" className="h-10 w-10 text-[var(--text-muted)]" />
+          <Icon pack="phosphor" name="cloud" className="h-10 w-10 text-[var(--text-muted)]" />
           <p className="text-sm text-[var(--text-muted)]">{i18n("noForecast")}</p>
         </div>
       ) : (
@@ -287,7 +287,7 @@ export default function WeatherPage() {
               <div className="flex items-start justify-between">
                 <div>
                   <div className="flex items-center gap-2 text-lg font-bold text-[var(--text-primary)]">
-                    <Icon name="mapPin" className="h-4 w-4 text-[var(--text-muted)]" />
+                    <Icon pack="phosphor" name="mapPin" className="h-4 w-4 text-[var(--text-muted)]" />
                     <span>
                       {city}
                       {country ? `, ${country}` : ""}
@@ -303,7 +303,7 @@ export default function WeatherPage() {
                   className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] disabled:opacity-50"
                   aria-label={i18n("refresh")}
                 >
-                  <Icon name="refresh-cw" className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+                  <Icon pack="phosphor" name="refresh-cw" className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
                 </button>
               </div>
 
@@ -316,7 +316,7 @@ export default function WeatherPage() {
                   transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                   className="h-10 w-10 sm:h-12 sm:w-12"
                 >
-                  <Icon name={iconName} className={`h-full w-full ${iconColor}`} />
+                  <Icon pack="phosphor" name={iconName} className={`h-full w-full ${iconColor}`} />
                 </motion.div>
               </div>
 

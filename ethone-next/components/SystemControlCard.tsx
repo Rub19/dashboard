@@ -1,5 +1,6 @@
 "use client";
 
+import { memo, useCallback } from "react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
@@ -29,7 +30,7 @@ const SESSION_MODES: { id: SessionMode; icon: string; label: string; copy: strin
   { id: "night", icon: "moon", label: "sessionModeNight", copy: "sessionModeNightCopy" },
 ];
 
-export default function SystemControlCard({ className = "", scrollable = true }: { className?: string; scrollable?: boolean }) {
+const SystemControlCard = memo(function SystemControlCard({ className = "", scrollable = true }: { className?: string; scrollable?: boolean }) {
   const i18n = useI18n();
   const { settings, update } = useSettings();
 
@@ -37,11 +38,11 @@ export default function SystemControlCard({ className = "", scrollable = true }:
   const currentIndex = activeModeIndex >= 0 ? activeModeIndex : 0;
   const activeMode = SESSION_MODES[currentIndex];
 
-  function cycle(delta: number) {
+  const cycle = useCallback((delta: number) => {
     hapticMediumImpact();
     const nextIndex = (currentIndex + delta + SESSION_MODES.length) % SESSION_MODES.length;
     update({ sessionMode: SESSION_MODES[nextIndex].id });
-  }
+  }, [currentIndex, update]);
 
   return (
     <BentoCard title={i18n("system")} icon="sliders-horizontal" className={cn("h-full", className)} scrollable={scrollable}>
@@ -131,4 +132,6 @@ export default function SystemControlCard({ className = "", scrollable = true }:
       </div>
     </BentoCard>
   );
-}
+});
+
+export default SystemControlCard;

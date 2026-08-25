@@ -143,7 +143,7 @@ export default function HeroBriefingCard({
           <p className="text-sm text-[var(--text-muted)]">{contextMessage}</p>
           {nowPlaying?.title && (
             <p className="mt-1 flex items-center gap-2 text-xs text-[var(--text-muted)]">
-              <Icon name="disc" className="h-3.5 w-3.5 animate-spin-slow" />
+              <Icon pack="phosphor" name="disc" className="h-3.5 w-3.5 animate-spin-slow" />
               <span className="truncate">{nowPlaying.title}</span>
               <span>·</span>
               <span className="truncate">{nowPlaying.artist}</span>
@@ -168,7 +168,7 @@ export default function HeroBriefingCard({
             style={{ backgroundColor: "var(--accent-color, var(--accent-primary))" }}
             className="flex h-10 w-full shrink-0 items-center justify-center gap-1.5 rounded-full px-4 text-xs font-semibold text-[var(--accent-contrast)] shadow-[0_0_12px_var(--glow-color)] transition-all hover:opacity-90 hover:shadow-[0_0_20px_var(--glow-color)] disabled:opacity-40 sm:h-9 sm:w-auto"
           >
-            <Icon name="sparkles" className="h-3.5 w-3.5" />
+            <Icon pack="phosphor" name="sparkles" className="h-3.5 w-3.5" />
             Brain
           </button>
         </form>
@@ -178,7 +178,7 @@ export default function HeroBriefingCard({
             const base = "inline-flex items-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-2.5 py-1.5 text-[11px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--accent-primary)]";
             return (
               <Link key={a.id} href={a.href} className={base} aria-label={a.label}>
-                <Icon name={a.icon} className="h-3 w-3" />
+                <Icon pack="phosphor" name={a.icon} className="h-3 w-3" />
                 {a.label}
               </Link>
             );
@@ -189,7 +189,7 @@ export default function HeroBriefingCard({
             className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-2.5 py-1.5 text-[11px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--accent-primary)]"
             aria-label={i18n("brain", "Brain")}
           >
-            <Icon name="brain" className="h-3 w-3" />
+            <Icon pack="phosphor" name="brain" className="h-3 w-3" />
             {i18n("brain", "Brain")}
           </button>
         </div>
@@ -233,7 +233,7 @@ export default function HeroBriefingCard({
                   <span
                     className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${c.bg} ${c.text}`}
                   >
-                    <Icon name={c.icon} className="h-3.5 w-3.5" />
+                    <Icon pack="phosphor" name={c.icon} className="h-3.5 w-3.5" />
                   </span>
                   <div className="min-w-0">
                     <p className="text-base font-bold tabular-nums leading-none text-[var(--text-primary)]">{c.value}</p>

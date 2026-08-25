@@ -163,7 +163,7 @@ const CommandItemRow = memo(function CommandItemRow({
         aria-label={isPinned ? unpinTitle : pinTitle}
         title={isPinned ? unpinTitle : pinTitle}
       >
-        <Icon name={isPinned ? "pin-off" : "pin"} className="h-3.5 w-3.5" />
+        <Icon pack="phosphor" name={isPinned ? "pin-off" : "pin"} className="h-3.5 w-3.5" />
       </button>
     </div>
   );

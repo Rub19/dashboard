@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useUploadQueue } from "@/lib/upload-queue";
@@ -18,7 +19,7 @@ function statusIcon(status: string) {
   }
 }
 
-export default function UploadIslandView() {
+const UploadIslandView = memo(function UploadIslandView() {
   const i18n = useI18n();
   const { items, remove, retry, clearCompleted } = useUploadQueue();
   const uploading = items.filter((it) => it.status === "uploading" || it.status === "queued").length;
@@ -88,4 +89,6 @@ export default function UploadIslandView() {
       )}
     </div>
   );
-}
+});
+
+export default UploadIslandView;

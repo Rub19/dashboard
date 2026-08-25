@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Plus, CheckSquare } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { type Item } from "@/lib/hooks/useItems";
@@ -37,8 +37,9 @@ export type TasksWidgetProps = {
   scrollable?: boolean;
 };
 
-export default function TasksWidget({ className = "", data, scrollable = true }: TasksWidgetProps) {
+const TasksWidget = memo(function TasksWidget({ className = "", data, scrollable = true }: TasksWidgetProps) {
   const i18n = useI18n();
+  const handleOpenTasks = useCallback(() => { if (typeof window !== "undefined") window.location.href = "/tasks"; }, []);
   const { error: showError, notify } = useToast();
   const own = useCloudTasks();
 
@@ -108,7 +109,17 @@ export default function TasksWidget({ className = "", data, scrollable = true }:
   );
 
   return (
-    <BentoCard className={cn("h-full", className)} noHeader scrollable={scrollable}>
+    <BentoCard
+      title={i18n("myTasks", "Mes Tâches")}
+      icon="tasks"
+      className={cn("h-full", className)}
+      noHeader
+      scrollable={scrollable}
+      state={loading ? "loading" : items.length === 0 ? "empty" : undefined}
+      stateMessage={items.length === 0 ? i18n("tasksEmpty", "Aucune tâche pour le moment") : undefined}
+      onAction={items.length === 0 ? handleOpenTasks : undefined}
+      actionLabel={i18n("addTask", "Ajouter une tâche")}
+    >
       <div className={cn("flex flex-col gap-4", scrollable ? "h-full min-h-0 overflow-hidden" : "h-full justify-between")}>
         {/* Header */}
         <div className="shrink-0 flex items-start justify-between gap-3">
@@ -174,4 +185,6 @@ export default function TasksWidget({ className = "", data, scrollable = true }:
       </div>
     </BentoCard>
   );
-}
+});
+
+export default TasksWidget;

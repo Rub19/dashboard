@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { memo, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useFocus } from "@/components/FocusProvider";
@@ -64,8 +64,9 @@ export type DayTimelineCardProps = {
   loading?: boolean;
 };
 
-export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus, scrollable = true, loading = false }: DayTimelineCardProps) {
+function DayTimelineCardImpl({ todayEvents, nextTasks, className = "", focus, scrollable = true, loading = false }: DayTimelineCardProps) {
   const i18n = useI18n();
+  const handleAddEvent = useCallback(() => { if (typeof window !== "undefined") window.location.href = "/calendar"; }, []);
   const focusCtx = useFocus();
   const { state, format, start } = focus ?? focusCtx;
 
@@ -82,21 +83,8 @@ export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus,
 
   if (loading) {
     return (
-      <BentoCard title={i18n("daystream")} icon="calendar" className={cn("h-full", className)} scrollable={scrollable}>
-        <div className="flex flex-1 flex-col justify-between gap-3">
-          <div className="space-y-2">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="flex items-center gap-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-2.5 py-2">
-                <div className="h-4 w-4 animate-pulse rounded-full bg-[var(--text-primary)]/10" />
-                <div className="h-3 w-2/3 animate-pulse rounded bg-[var(--text-primary)]/10" />
-              </div>
-            ))}
-          </div>
-          <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5">
-            <div className="mb-2 h-3 w-20 animate-pulse rounded bg-[var(--text-primary)]/10" />
-            <div className="h-1.5 w-full animate-pulse rounded-full bg-[var(--text-primary)]/10" />
-          </div>
-        </div>
+      <BentoCard title={i18n("daystream")} icon="calendar" className={cn("h-full", className)} scrollable={scrollable} state="loading">
+        <div />
       </BentoCard>
     );
   }
@@ -108,8 +96,20 @@ export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus,
     </span>
   ) : undefined;
 
+  const isEmpty = events.length === 0 && nextTasks.length === 0;
+
   return (
-    <BentoCard title={i18n("daystream")} icon="calendar" className={cn("h-full", className)} badge={badge} scrollable={scrollable}>
+    <BentoCard
+      title={i18n("daystream")}
+      icon="calendar"
+      className={cn("h-full", className)}
+      badge={badge}
+      scrollable={scrollable}
+      state={isEmpty ? "empty" : undefined}
+      stateMessage={isEmpty ? i18n("dayTimelineEmpty", "Aucun événement ou tâche aujourd'hui") : undefined}
+      onAction={isEmpty ? handleAddEvent : undefined}
+      actionLabel={i18n("seeAgenda", "Voir mon agenda")}
+    >
       <div className="flex flex-1 flex-col justify-between gap-3">
         <div className="space-y-2">
           {events.length > 0 &&
@@ -178,6 +178,8 @@ export function DayTimelineCard({ todayEvents, nextTasks, className = "", focus,
     </BentoCard>
   );
 }
+
+export const DayTimelineCard = memo(DayTimelineCardImpl);
 
 export type ProjectsTasksCardProps = {
   openTasksCount: number;
@@ -263,8 +265,9 @@ export type RecentNotesCardProps = {
   loading?: boolean;
 };
 
-export function RecentNotesCard({ notes, className = "", scrollable = true, loading = false }: RecentNotesCardProps) {
+function RecentNotesCardImpl({ notes, className = "", scrollable = true, loading = false }: RecentNotesCardProps) {
   const i18n = useI18n();
+  const handleAddNote = useCallback(() => { if (typeof window !== "undefined") window.location.href = "/notes"; }, []);
   const recent = useMemo(
     () =>
       [...notes]
@@ -287,22 +290,22 @@ export function RecentNotesCard({ notes, className = "", scrollable = true, load
     </Link>
   );
 
+  const isEmpty = !loading && recent.length === 0;
+
   return (
-    <BentoCard title={i18n("recent")} icon="history" className={cn("h-full", className)} action={action} scrollable={scrollable}>
+    <BentoCard
+      title={i18n("recent")}
+      icon="history"
+      className={cn("h-full", className)}
+      action={action}
+      scrollable={scrollable}
+      state={loading ? "loading" : isEmpty ? "empty" : undefined}
+      stateMessage={isEmpty ? i18n("noRecentNotes", "Aucune note récente") : undefined}
+      onAction={isEmpty ? handleAddNote : undefined}
+      actionLabel={i18n("createNote")}
+    >
       <div className="flex flex-1 flex-col justify-between gap-2">
-        {loading ? (
-          <div className="space-y-2">
-            {[1, 2].map((i) => (
-              <div key={i} className="flex items-start gap-2 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5">
-                <div className="mt-0.5 h-4 w-4 animate-pulse rounded bg-[var(--text-primary)]/10" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-3 w-3/4 animate-pulse rounded bg-[var(--text-primary)]/10" />
-                  <div className="h-2 w-1/3 animate-pulse rounded bg-[var(--text-primary)]/10" />
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : recent.length > 0 ? (
+        {!loading && recent.length > 0 ? (
           <div className="space-y-2">
             {recent.map((n) => (
               <Link
@@ -320,12 +323,14 @@ export function RecentNotesCard({ notes, className = "", scrollable = true, load
             ))}
           </div>
         ) : (
-          <p className="text-sm text-[var(--text-muted)]">{i18n("noRecentNotes")}</p>
+          <div />
         )}
       </div>
     </BentoCard>
   );
 }
+
+export const RecentNotesCard = memo(RecentNotesCardImpl);
 
 export default function ProductivityCards({
   todayEvents,

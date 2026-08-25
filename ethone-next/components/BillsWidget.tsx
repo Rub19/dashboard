@@ -1,17 +1,20 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Card3D from "@/components/Card3D";
+import BentoCard from "@/components/BentoCard";
 import Modal from "@/components/ui/Modal";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
+import { cn } from "@/lib/utils";
 import { listBills, upcomingBills, getNextDueDate, type Bill } from "@/lib/bills-manager";
 
-export default function BillsWidget({ standalone = false }: { standalone?: boolean }) {
+const BillsWidget = memo(function BillsWidget({ className = "", scrollable = true, standalone = false }: { className?: string; scrollable?: boolean; standalone?: boolean }) {
   const i18n = useI18n();
   const [bills, setBills] = useState<Bill[]>([]);
   const [selected, setSelected] = useState<Bill | null>(null);
+  const handleOpenBills = useCallback(() => { if (typeof window !== "undefined") window.location.href = "/bills"; }, []);
 
   useEffect(() => {
     setBills(listBills());
@@ -94,9 +97,26 @@ export default function BillsWidget({ standalone = false }: { standalone?: boole
     </div>
   );
 
+  const widgetState = bills.length === 0 ? "empty" : undefined;
+
   return (
     <>
-      {standalone ? <Card3D>{content}</Card3D> : content}
+      {standalone ? (
+        <Card3D>{content}</Card3D>
+      ) : (
+        <BentoCard
+          title={i18n("billsTitle")}
+          icon="bills"
+          scrollable={scrollable}
+          className={cn("h-full", className)}
+          state={widgetState}
+          stateMessage={widgetState ? i18n("billsEmpty", "Aucune facture enregistrée") : undefined}
+          onAction={widgetState ? handleOpenBills : undefined}
+          actionLabel={i18n("billsManage")}
+        >
+          {content}
+        </BentoCard>
+      )}
 
       <Modal
         isOpen={!!selected}
@@ -135,4 +155,6 @@ export default function BillsWidget({ standalone = false }: { standalone?: boole
       </Modal>
     </>
   );
-}
+});
+
+export default BillsWidget;

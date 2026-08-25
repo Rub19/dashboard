@@ -114,7 +114,7 @@ const ThemeToggle = memo(function ThemeToggle() {
         className="relative flex h-10 w-10 items-center justify-center rounded-xl text-[var(--text-muted)] transition-[color,background-color,border-color,opacity,transform] duration-150 hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] active:scale-95 cursor-pointer select-none"
         aria-label="Thème"
       >
-        <Icon name="palette" className="h-5 w-5 pointer-events-none" />
+        <Icon pack="phosphor" name="palette" className="h-5 w-5 pointer-events-none" />
       </button>
     </Tooltip>
   );

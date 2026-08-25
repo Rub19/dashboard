@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { cn } from "@/lib/utils";
@@ -17,7 +18,7 @@ type WidgetStateProps = {
   className?: string;
 };
 
-export default function WidgetState({
+function WidgetState({
   state,
   title,
   icon,
@@ -91,3 +92,6 @@ export default function WidgetState({
     </div>
   );
 }
+
+const MemoizedWidgetState = memo(WidgetState);
+export default MemoizedWidgetState;

@@ -267,7 +267,7 @@ function Sidebar() {
               <AnimatedSidebarMenuItem key={app.id}>
                 <AnimatedSidebarMenuButton
                   isActive={isActive(app)}
-                  icon={<Icon name={app.icon} className="h-5 w-5" />}
+                  icon={<Icon pack="phosphor" name={app.icon} className="h-5 w-5" />}
                   shortcut={SHORTCUTS[app.id]}
                   onSelect={() => router.push(app.href)}
                 >

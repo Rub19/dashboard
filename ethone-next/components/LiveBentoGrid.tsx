@@ -1,6 +1,10 @@
 "use client";
 
+import { memo, useCallback } from "react";
 import LiveStats from "@/components/LiveStats";
+import BentoCard from "@/components/BentoCard";
+import { useI18n } from "@/lib/hooks/useI18n";
+import type { WidgetStateType } from "@/components/WidgetState";
 import GamingCard from "@/components/GamingCard";
 import SocialDiscordCard from "@/components/SocialDiscordCard";
 import RiotGamingCard from "@/components/RiotGamingCard";
@@ -21,11 +25,12 @@ export type LiveBentoGridProps = {
   updatedAt?: Date | null;
   loading?: boolean;
   error?: Error | null;
+  state?: WidgetStateType;
   className?: string;
   scrollable?: boolean;
 };
 
-export default function LiveBentoGrid({
+const LiveBentoGrid = memo(function LiveBentoGrid({
   nowPlaying,
   lanyard,
   weather,
@@ -38,10 +43,32 @@ export default function LiveBentoGrid({
   updatedAt,
   loading,
   error,
+  state,
   className = "",
   scrollable = true,
 }: LiveBentoGridProps) {
+  const i18n = useI18n();
+  const handleConnect = useCallback(() => { if (typeof window !== "undefined") window.location.href = "/settings"; }, []);
   const childHeight = scrollable ? "h-full" : "h-auto min-h-0";
+  const connected = (records?.filter((r) => r.status === "connected").length ?? 0);
+  const widgetState = state ?? (loading ? "loading" : error ? "error" : connected === 0 ? "disconnected" : undefined);
+  if (widgetState) {
+    return (
+      <BentoCard
+        title={i18n("live")}
+        icon="radio"
+        state={widgetState}
+        stateMessage={widgetState === "disconnected" ? i18n("liveDisconnected", "Aucune source live connectée") : undefined}
+        onAction={widgetState === "disconnected" ? handleConnect : undefined}
+        actionLabel={widgetState === "disconnected" ? i18n("connect", "Connecter") : undefined}
+        className={cn("h-full", className)}
+        scrollable={scrollable}
+      >
+        <div />
+      </BentoCard>
+    );
+  }
+
   return (
     <div className={cn(
       "flex min-h-0 w-full flex-col gap-2",
@@ -95,4 +122,6 @@ export default function LiveBentoGrid({
       </div>
     </div>
   );
-}
+});
+
+export default LiveBentoGrid;

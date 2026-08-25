@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import { memo, type ReactNode } from "react";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { hapticLightImpact } from "@/lib/haptics";
@@ -21,7 +21,7 @@ export type BentoCardProps = {
   actionLabel?: string;
 };
 
-export default function BentoCard({
+function BentoCard({
   title,
   icon,
   action,
@@ -51,7 +51,7 @@ export default function BentoCard({
             <div className="flex items-center gap-2.5">
               {icon && (
                 <span className="flex h-7 w-7 items-center justify-center text-[var(--accent-primary)]">
-                  <Icon name={icon} className="h-4 w-4" />
+                  <Icon name={icon} pack="phosphor" className="h-4 w-4" />
                 </span>
               )}
               {title && (
@@ -92,3 +92,6 @@ export default function BentoCard({
     </div>
   );
 }
+
+const MemoizedBentoCard = memo(BentoCard);
+export default MemoizedBentoCard;

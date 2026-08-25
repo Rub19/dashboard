@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
 import { useSound } from "@/lib/sound";
+import { useSettings } from "@/components/SettingsProvider";
 import { cn } from "@/lib/utils";
 import type { SoundAmbient } from "@/lib/settings";
 
@@ -24,7 +25,7 @@ export type AmbientSoundControlProps = {
   compact?: boolean;
 };
 
-function SoundWave({ active }: { active: boolean }) {
+function SoundWave({ active, reduced }: { active: boolean; reduced?: boolean }) {
   if (!active) return null;
   return (
     <div className="mt-1.5 flex h-2.5 items-end gap-px">
@@ -32,14 +33,18 @@ function SoundWave({ active }: { active: boolean }) {
         <motion.span
           key={i}
           className="w-0.5 rounded-full bg-[var(--accent-primary)]"
-          animate={{ height: [4, 10, 6, 12, 6, 4] }}
-          transition={{
-            duration: 1.2,
-            repeat: Infinity,
-            repeatType: "reverse",
-            delay: i * 0.12,
-            ease: "easeInOut",
-          }}
+          animate={reduced ? { height: 6 } : { height: [4, 10, 6, 12, 6, 4] }}
+          transition={
+            reduced
+              ? { duration: 0 }
+              : {
+                  duration: 1.2,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  delay: i * 0.12,
+                  ease: "easeInOut",
+                }
+          }
           style={{ originY: 1 }}
         />
       ))}
@@ -49,7 +54,9 @@ function SoundWave({ active }: { active: boolean }) {
 
 export default function AmbientSoundControl({ value, onChange, compact }: AmbientSoundControlProps) {
   const i18n = useI18n();
+  const { settings } = useSettings();
   const { playAmbient, stopAmbient, ambientSound } = useSound();
+  const reducedMotion = !!settings.reducedMotion;
 
   const current = (value ?? ambientSound) || "none";
 
@@ -93,7 +100,7 @@ export default function AmbientSoundControl({ value, onChange, compact }: Ambien
               className={cn("h-5 w-5 transition-transform group-hover:scale-110", active ? "text-[var(--accent-primary)]" : "")}
             />
             <span className="mt-1.5 text-[10px] font-medium">{label}</span>
-            <SoundWave active={active} />
+            <SoundWave active={active} reduced={reducedMotion} />
             {active && !compact && (
               <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] shadow-[0_0_6px_var(--accent-primary)]" />
             )}

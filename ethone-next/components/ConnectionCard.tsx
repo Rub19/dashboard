@@ -52,6 +52,29 @@ export type CredentialsApi = {
   remove: (provider: string) => Promise<void>;
 };
 
+function ConnectionTestResult({ health }: { health?: PingResult }) {
+  const i18n = useI18n();
+  if (!health) return null;
+  const variant: "connected" | "error" | "unconfigured" =
+    health.status === "connected" ? "connected" : health.status === "error" ? "error" : "unconfigured";
+  const text =
+    health.status === "connected"
+      ? i18n("connectionOperational", "Connexion opérationnelle")
+      : health.status === "error"
+        ? i18n("connectionFailed", "Connexion impossible")
+        : i18n(health.status, health.status);
+  return (
+    <div className="mt-2 flex items-center gap-2">
+      <ConnectionBadge variant={variant} dot>{text}</ConnectionBadge>
+      {health.ms > 0 && (
+        <span className="rounded-md border border-[var(--panel-border)] bg-[var(--panel-bg)] px-1.5 py-0.5 text-[10px] font-mono text-[var(--text-muted)]">
+          {health.ms}ms
+        </span>
+      )}
+    </div>
+  );
+}
+
 export default function ConnectionCard({
   integration,
   clientId,
@@ -172,6 +195,7 @@ export default function ConnectionCard({
   const [clientSecret, setClientSecret] = useState((storeValues.clientSecret as string) || "");
   const [showClientSecret, setShowClientSecret] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
+  const [testing, setTesting] = useState(false);
   const [origin, setOrigin] = useState("");
 
   useEffect(() => {
@@ -304,7 +328,13 @@ export default function ConnectionCard({
   }
 
   async function handleTest() {
-    if (onTest) await onTest(integration.id);
+    if (!onTest) return;
+    setTesting(true);
+    try {
+      await onTest(integration.id);
+    } finally {
+      setTesting(false);
+    }
   }
 
   async function handleCopy(value: string, key: string) {
@@ -462,13 +492,14 @@ export default function ConnectionCard({
               <button
                 type="button"
                 onClick={handleTest}
-                disabled={submitting || !onTest}
+                disabled={submitting || testing || !onTest}
                 className="col-span-1 flex items-center justify-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] py-2 px-2 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] disabled:opacity-50"
               >
-                <RefreshCw className="h-3.5 w-3.5" />
-                <span className="truncate">{i18n("testConnection")}</span>
+                {testing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+                <span className="truncate">{testing ? i18n("testingInProgress", "Test…") : i18n("testConnection", "Tester")}</span>
               </button>
             </div>
+            <ConnectionTestResult health={health} />
           </div>
         )}
 
@@ -478,11 +509,11 @@ export default function ConnectionCard({
             <button
               type="button"
               onClick={handleTest}
-              disabled={submitting || !onTest}
+              disabled={submitting || testing || !onTest}
               className="flex items-center justify-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] py-2 px-2 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] disabled:opacity-50"
             >
-              <RefreshCw className="h-3.5 w-3.5" />
-              <span className="truncate">{i18n("testConnection")}</span>
+              {testing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+              <span className="truncate">{testing ? i18n("testingInProgress", "Test…") : i18n("testConnection", "Tester")}</span>
             </button>
             <button
               type="button"
@@ -493,6 +524,7 @@ export default function ConnectionCard({
               <LogOut className="h-3.5 w-3.5" />
               <span className="truncate">{i18n("disconnect", "Déconnecter")}</span>
             </button>
+            <ConnectionTestResult health={health} />
           </div>
         )}
 
@@ -580,11 +612,11 @@ export default function ConnectionCard({
               <button
                 type="button"
                 onClick={handleTest}
-                disabled={submitting || !onTest}
+                disabled={submitting || testing || !onTest}
                 className="col-span-1 flex items-center justify-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] py-2 px-2 text-xs font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] disabled:opacity-50"
               >
-                <RefreshCw className="h-3.5 w-3.5" />
-                <span className="truncate">{i18n("testConnection")}</span>
+                {testing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+                <span className="truncate">{testing ? i18n("testingInProgress", "Test…") : i18n("testConnection", "Tester")}</span>
               </button>
               {isConnected && (
                 <button
@@ -597,6 +629,7 @@ export default function ConnectionCard({
                   <span className="truncate">{i18n("disconnect", "Déconnecter")}</span>
                 </button>
               )}
+              <ConnectionTestResult health={health} />
             </div>
           </div>
         )}

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -64,6 +65,7 @@ export default function HeroBriefingCard({
   const brain = useBrain();
   const setIsThinking = useBrainActivityStore((s) => s.setIsThinking);
   const [prompt, setPrompt] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setIsThinking(brain.loading);
@@ -112,6 +114,15 @@ export default function HeroBriefingCard({
     { icon: "hard-drive", label: i18n("storageUsed"), value: storageLabel, text: "text-[var(--warning)]", bg: "bg-[var(--warning)]/10" },
   ];
 
+  const quickActions = [
+    { id: "task", icon: "circle-check", label: i18n("newTask", "Tâche"), href: "/tasks" },
+    { id: "note", icon: "notebook-pen", label: i18n("newNote", "Note"), href: "/notes" },
+    { id: "event", icon: "calendar", label: i18n("newEvent", "Événement"), href: "/calendar" },
+    { id: "focus", icon: "timer", label: i18n("focus", "Focus"), href: "/focus" },
+    { id: "brain", icon: "brain", label: i18n("brain", "Brain"), onClick: () => inputRef.current?.focus() },
+    { id: "drop", icon: "upload", label: i18n("upload", "Upload"), href: "/drop" },
+  ];
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const text = prompt.trim();
@@ -139,6 +150,7 @@ export default function HeroBriefingCard({
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <Input
+            ref={inputRef}
             type="text"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
@@ -157,6 +169,23 @@ export default function HeroBriefingCard({
             Brain
           </button>
         </form>
+
+        <div className="flex flex-wrap gap-2">
+          {quickActions.map((a) => {
+            const base = "inline-flex items-center gap-1.5 rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-2.5 py-1.5 text-[11px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--accent-primary)]";
+            return a.href ? (
+              <Link key={a.id} href={a.href} className={base} aria-label={a.label}>
+                <Icon name={a.icon} className="h-3 w-3" />
+                {a.label}
+              </Link>
+            ) : (
+              <button key={a.id} type="button" onClick={a.onClick} className={base} aria-label={a.label}>
+                <Icon name={a.icon} className="h-3 w-3" />
+                {a.label}
+              </button>
+            );
+          })}
+        </div>
 
         {(brain.loading || latestAssistant || brain.error) && (
           <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5 text-xs text-[var(--text-primary)]">

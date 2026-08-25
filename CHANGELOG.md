@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.6 — 2026-08-25
+
+**ETHONE — Rework Home complet**
+
+- Pass 1 : cartes 3D / connexions toujours visibles avec empty state intégration.
+- Pass 2 : Hero avec horloge live et Brain avec recommandations contextuelles.
+- Pass 3 : footer / status bar ETHONE avec tokens sémantiques.
+- Pass 4 : Dynamic Island — aria-expanded et contrôle des ouvertures.
+- Pass 5 : tokens sémantiques sur les statuts d’erreur et grid du Home pilotée par la density.
+- Pass 6 : extraction `LiveClock` pour réduire les re-renders, validation tests unitaires.
+- Pass 7 : audit responsive, 420 tests Playwright sans overflow horizontal.
+- Pass 8 : version `v1.9.6` et synthèse.
+
 ## v1.9.5 — 2026-08-25
 
 **ETHONE — Final UI polish, tokens, accessibilité et performance**

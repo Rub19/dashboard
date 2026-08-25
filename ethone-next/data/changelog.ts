@@ -6154,9 +6154,77 @@ const v366_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v395_fr, v375_fr, v374_fr, v373_fr, v372_fr, v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v395_en, v375_en, v374_en, v373_en, v372_en, v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
-CHANGELOG_BY_LANG.es.unshift(v395_es, v375_es, v374_es, v373_es, v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
-CHANGELOG_BY_LANG.de.unshift(v395_de, v375_de, v374_de, v373_de, v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
+const v396_fr: ChangelogEntry = {
+  version: "v1.9.6",
+  date: "2026-08-25",
+  title: "Rework Home complet",
+  items: [
+    "Cartes 3D / connexions toujours visibles avec empty state intégration.",
+    "Hero avec horloge live et Brain avec recommandations contextuelles.",
+    "Footer / status bar ETHONE avec tokens sémantiques.",
+    "Dynamic Island : aria-expanded et contrôle des ouvertures.",
+    "Tokens sémantiques sur les statuts d'erreur et grid Home pilotée par la density.",
+    "Extraction LiveClock pour réduire les re-renders, tests unitaires verts.",
+    "Audit responsive : 420 tests Playwright sans overflow horizontal.",
+    "Validation : `npm run build`, `npm run lint`, `npm run test:unit` restent verts.",
+    "Version affichée en bas à droite : v1.9.6.",
+  ],
+};
+
+const v396_en: ChangelogEntry = {
+  version: "v1.9.6",
+  date: "2026-08-25",
+  title: "Full Home rework",
+  items: [
+    "3D connection cards always visible with integration empty state.",
+    "Hero with live clock and Brain with contextual recommendations.",
+    "ETHONE footer / status bar with semantic tokens.",
+    "Dynamic Island: aria-expanded and open control.",
+    "Semantic tokens on error states and Home grid driven by density.",
+    "LiveClock extraction to reduce re-renders, unit tests green.",
+    "Responsive audit: 420 Playwright tests with no horizontal overflow.",
+    "Validation: `npm run build`, `npm run lint`, `npm run test:unit` still pass.",
+    "Version badge bottom-right: v1.9.6.",
+  ],
+};
+
+const v396_es: ChangelogEntry = {
+  version: "v1.9.6",
+  date: "2026-08-25",
+  title: "Rework completo del Home",
+  items: [
+    "Tarjetas 3D / conexiones siempre visibles con empty state de integración.",
+    "Hero con reloj en vivo y Brain con recomendaciones contextuales.",
+    "Footer / barra de estado ETHONE con tokens semánticos.",
+    "Dynamic Island: aria-expanded y control de apertura.",
+    "Tokens semánticos en estados de error y cuadrícula Home según density.",
+    "Extracción de LiveClock para reducir re-renders, tests unitarios pasan.",
+    "Auditoría responsive: 420 tests Playwright sin desbordamiento horizontal.",
+    "Validación: `npm run build`, `npm run lint`, `npm run test:unit` siguen pasando.",
+    "Versión mostrada abajo a la derecha: v1.9.6.",
+  ],
+};
+
+const v396_de: ChangelogEntry = {
+  version: "v1.9.6",
+  date: "2026-08-25",
+  title: "Komplettes Home-Rework",
+  items: [
+    "3D-Verbindungskarten immer sichtbar mit Integration-Empty-State.",
+    "Hero mit Live-Uhr und Brain mit kontextuellen Empfehlungen.",
+    "ETHONE Footer / Statusleiste mit semantischen Tokens.",
+    "Dynamic Island: aria-expanded und Öffnungskontrolle.",
+    "Semantische Tokens bei Fehlerstatus und Home-Raster gesteuert nach Density.",
+    "LiveClock ausgelagert, um Re-Renders zu reduzieren, Unit-Tests bestehen.",
+    "Responsive-Audit: 420 Playwright-Tests ohne horizontales Overflow.",
+    "Validierung: `npm run build`, `npm run lint`, `npm run test:unit` bestehen weiterhin.",
+    "Version unten rechts: v1.9.6.",
+  ],
+};
+
+CHANGELOG_BY_LANG.fr.unshift(v396_fr, v395_fr, v375_fr, v374_fr, v373_fr, v372_fr, v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v396_en, v395_en, v375_en, v374_en, v373_en, v372_en, v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v396_es, v395_es, v375_es, v374_es, v373_es, v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v396_de, v395_de, v375_de, v374_de, v373_de, v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

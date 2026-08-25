@@ -2,19 +2,21 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Plug } from "lucide-react";
+import { Plug, RefreshCcw, Zap } from "lucide-react";
 import { fetchWorker } from "@/lib/api";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useProviderCredentials } from "@/lib/hooks/useProviderCredentials";
-import { INTEGRATIONS } from "@/lib/integrations";
+import { INTEGRATIONS, INTEGRATION_CATEGORIES } from "@/lib/integrations";
 import { isConfigured, pingIntegration, type PingResult } from "@/lib/connection-config";
+import { getIntegrationConfig } from "@/lib/integrations.config";
 import SystemHealthBanner from "@/components/SystemHealthBanner";
 import CategoryTabs from "@/components/CategoryTabs";
 import ConnectionCard from "@/components/ConnectionCard";
 import DiscordConfig from "@/components/DiscordConfig";
 import SpotifyConfig from "@/components/SpotifyConfig";
 import Input from "@/components/ui/Input";
+
 
 function clientIdFromStorage(provider: string): string {
   if (typeof window === "undefined") return "";
@@ -95,16 +97,31 @@ export default function IntegrationsSettings() {
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
+    const cat = INTEGRATION_CATEGORIES.find((c) => c.id === filter);
     let list = filter === "all" ? INTEGRATIONS : INTEGRATIONS.filter((i) => i.category === filter);
     if (q) {
-      list = list.filter(
-        (i) =>
-          i.name.toLowerCase().includes(q) ||
-          i.id.toLowerCase().includes(q)
-      );
+      list = list.filter((i) => {
+        const config = getIntegrationConfig(i.id);
+        const haystack = [
+          i.name,
+          i.id,
+          i18n(i.description, i.description),
+          i.category,
+          cat?.label || "",
+          config?.badge || "",
+          config?.description || "",
+          config?.name || "",
+          config?.category || "",
+          config?.developerButtonLabel || "",
+          i.status,
+        ]
+          .join(" ")
+          .toLowerCase();
+        return haystack.includes(q);
+      });
     }
     return list;
-  }, [filter, search]);
+  }, [filter, search, i18n]);
 
   const testOne = useCallback(
     async (id: string) => {
@@ -181,28 +198,60 @@ export default function IntegrationsSettings() {
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
       <div className="shrink-0 mb-4 space-y-4">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">{i18n("connectionsTitle")}</h1>
-          <p className="text-sm text-[var(--text-muted)]">{i18n("connectionsDescription")}</p>
+        <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+              <Plug className="h-5 w-5" />
+            </div>
+            <div>
+              <h1 className="text-lg font-semibold tracking-tight text-[var(--text-primary)]">{i18n("connectionsTitle", "Connexions")}</h1>
+              <p className="text-xs text-[var(--text-muted)]">{i18n("connectionsDescription", "Gérez vos intégrations et connectez ETHONE à votre environnement numérique.")}</p>
+            </div>
+          </div>
+
+          <div className="flex w-full items-center gap-2 sm:w-auto">
+            <button
+              type="button"
+              onClick={testAll}
+              disabled={testingAll}
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-[var(--accent-primary)] px-3 py-2 text-xs font-semibold text-[var(--accent-contrast)] shadow-sm shadow-[var(--accent-primary)]/20 transition hover:bg-[var(--accent-primary)]/90 disabled:opacity-50 sm:flex-none"
+            >
+              {testingAll ? <RefreshCcw className="h-3.5 w-3.5 animate-spin" /> : <Zap className="h-3.5 w-3.5" />}
+              {i18n("testAllConnections", "Tester toutes")}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setSearch("");
+                setFilter("all");
+              }}
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-xs font-medium text-[var(--text-primary)] transition hover:bg-[var(--surface-hover)]/40 sm:flex-none"
+            >
+              <RefreshCcw className="h-3.5 w-3.5" />
+              {i18n("clearFilters", "Effacer")}
+            </button>
+          </div>
         </div>
 
         <SystemHealthBanner
-        configuredMap={configuredMap}
-        health={health}
-        testing={testingAll}
-        onTestAll={testAll}
-      />
-
-        <CategoryTabs active={filter} onChange={setFilter} />
-        <Input
-          icon="search"
-          inputSize="compact"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder={i18n("search")}
-          clearable
-          className="max-w-md"
+          configuredMap={configuredMap}
+          health={health}
+          testing={testingAll}
+          onTestAll={testAll}
         />
+
+        <div className="flex flex-col gap-3">
+          <Input
+            icon="search"
+            inputSize="compact"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={i18n("searchIntegration", "Rechercher une intégration…")}
+            clearable
+            className="w-full"
+          />
+          <CategoryTabs active={filter} onChange={setFilter} />
+        </div>
       </div>
 
       <div className="min-h-0 w-full flex-1 space-y-4 overflow-y-auto p-6 pb-10 no-scrollbar">

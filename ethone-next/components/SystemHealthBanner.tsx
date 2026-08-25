@@ -24,72 +24,90 @@ export default function SystemHealthBanner({
   const i18n = useI18n();
   const [expanded, setExpanded] = useState(false);
 
-  const { ok, errors, total } = useMemo(() => {
-    const items = INTEGRATIONS.map((integration) => {
-      const result = health[integration.id];
-      const configured = configuredMap[integration.id] || false;
-      const status: PingResult["status"] = result ? result.status : configured ? "connected" : "unconfigured";
-      return { status };
-    });
+  const { ok, errors, total, avgLatency } = useMemo(() => {
+    const { ok, err, msSum, msCount } = INTEGRATIONS.reduce(
+      (acc, integration) => {
+        const result = health[integration.id];
+        const configured = configuredMap[integration.id] || false;
+        const status: PingResult["status"] = result ? result.status : configured ? "connected" : "unconfigured";
+        if (status === "connected") acc.ok += 1;
+        if (status === "error") acc.err += 1;
+        if (result && result.ms > 0) {
+          acc.msSum += result.ms;
+          acc.msCount += 1;
+        }
+        return acc;
+      },
+      { ok: 0, err: 0, msSum: 0, msCount: 0 }
+    );
     return {
-      ok: items.filter((i) => i.status === "connected").length,
-      errors: items.filter((i) => i.status === "error").length,
-      total: items.length,
+      ok,
+      errors: err,
+      total: INTEGRATIONS.length,
+      avgLatency: msCount > 0 ? Math.round(msSum / msCount) : 0,
     };
   }, [health, configuredMap]);
 
-  const tone = errors > 0 ? "error" : "success";
+  const tone = errors > 0 ? "error" : ok > 0 ? "success" : "warning";
 
   return (
-    <div className="mb-4 w-full overflow-hidden rounded-2xl v8-panel p-4 shadow-xl backdrop-blur-2xl">
+    <div className="mb-4 w-full overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-sm backdrop-blur-[var(--panel-blur)]">
       <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-color)]/10 text-[var(--accent-color)]">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
             <Activity className="h-4 w-4" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-[var(--text-primary)]">{i18n("systemHealth")}</h2>
+            <h2 className="text-sm font-semibold text-[var(--text-primary)]">{i18n("connectionsStatus", "État des connexions")}</h2>
             <p className="text-[11px] text-[var(--text-muted)]">
-              {ok}/{total} {i18n("connected")}
+              {ok}/{total} {i18n("connected", "connectées")}
+              {errors > 0 && ` · ${errors} ${i18n("error", "erreur").toLowerCase()}`}
+              {avgLatency > 0 && ` · ${avgLatency}ms`}
             </p>
           </div>
         </div>
 
-        <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-start">
+        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
           <span
-            className={`inline-flex items-center gap-1 rounded-lg px-2 py-0.5 text-[10px] font-semibold ${
+            className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[10px] font-semibold ${
               tone === "success"
-                ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
-                : "bg-rose-500/10 text-rose-400"
+                ? "border-[var(--success)]/20 bg-[var(--success)]/10 text-[var(--success)]"
+                : tone === "error"
+                  ? "border-[var(--danger)]/20 bg-[var(--danger)]/10 text-[var(--danger)]"
+                  : "border-[var(--warning)]/20 bg-[var(--warning)]/10 text-[var(--warning)]"
             }`}
           >
             {tone === "success" ? (
               <CheckCircle2 className="h-3 w-3" />
-            ) : (
+            ) : tone === "error" ? (
               <AlertCircle className="h-3 w-3" />
+            ) : (
+              <Activity className="h-3 w-3" />
             )}
-            {errors > 0 ? `${errors} ${i18n("error")}` : i18n("all")}
+            {tone === "success" ? i18n("allOk", "Tout fonctionne") : tone === "error" ? `${errors} ${i18n("needAttention", "erreur(s)")}` : i18n("notConfigured", "Non configuré")}
           </span>
 
-          <span className="rounded-lg bg-[var(--accent-primary)]/10 px-2.5 py-1 text-xs font-mono text-[var(--accent-primary)]">
-            <span className="mr-1 inline-block h-2 w-2 rounded-full bg-[var(--accent-primary)]" />
-            {i18n("latency")}: 30 ms
-          </span>
+          {avgLatency > 0 && (
+            <span className="rounded-lg border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 px-2.5 py-1 text-xs font-mono text-[var(--accent-primary)]">
+              <span className="mr-1 inline-block h-2 w-2 rounded-full bg-[var(--accent-primary)]" />
+              {avgLatency} ms
+            </span>
+          )}
 
           <button
             type="button"
             onClick={onTestAll}
             disabled={testing}
-            className="flex items-center gap-1.5 rounded-xl bg-[var(--accent-color)]/10 px-3 py-1.5 text-xs font-medium text-[var(--accent-color)] transition hover:bg-[var(--accent-color)]/20 disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-lg border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 px-3 py-1.5 text-xs font-medium text-[var(--accent-primary)] transition hover:bg-[var(--accent-primary)]/20 disabled:opacity-50"
           >
             {testing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
-            {i18n("testAll")}
+            {i18n("testAll", "Tester toutes")}
           </button>
 
           <button
             type="button"
             onClick={() => setExpanded((v) => !v)}
-            className="rounded-xl p-1.5 text-[var(--text-muted)] transition hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+            className="rounded-lg p-1.5 text-[var(--text-muted)] transition hover:bg-[var(--surface-hover)]/40 hover:text-[var(--text-primary)]"
             aria-label={expanded ? i18n("collapse") : i18n("expand")}
           >
             {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -128,10 +146,10 @@ export default function SystemHealthBanner({
                     <div
                       className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
                         status === "connected"
-                          ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
+                          ? "bg-[var(--success)]/10 text-[var(--success)]"
                           : status === "error"
-                            ? "bg-rose-500/10 text-rose-400"
-                            : "bg-zinc-500/10 text-[var(--text-muted)]"
+                            ? "bg-[var(--danger)]/10 text-[var(--danger)]"
+                            : "bg-[var(--text-primary)]/[0.05] text-[var(--text-muted)]"
                       }`}
                     >
                       {status === "connected" ? (

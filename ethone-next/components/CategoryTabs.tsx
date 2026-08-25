@@ -4,7 +4,8 @@ import { useMemo, useRef } from "react";
 import { motion } from "framer-motion";
 import { Blocks, BriefcaseBusiness, Brain, Code2, Gamepad2, HeartPulse, MessageSquare, Music, Plug } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { INTEGRATION_CATEGORIES } from "@/lib/integrations";
+import { INTEGRATION_CATEGORIES, INTEGRATIONS } from "@/lib/integrations";
+import { cn } from "@/lib/utils";
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   all: <Blocks className="h-3.5 w-3.5" />,
@@ -17,6 +18,11 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   ai: <Brain className="h-3.5 w-3.5" />,
 };
 
+function countByCategory(id: string) {
+  if (id === "all") return INTEGRATIONS.length;
+  return INTEGRATIONS.filter((i) => i.category === id).length;
+}
+
 export default function CategoryTabs({ active, onChange }: { active: string; onChange: (id: string) => void }) {
   const i18n = useI18n();
   const tabsRef = useRef<HTMLDivElement>(null);
@@ -26,33 +32,47 @@ export default function CategoryTabs({ active, onChange }: { active: string; onC
   return (
     <div
       ref={tabsRef}
-      className="mb-5 flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none"
+      role="tablist"
+      aria-label={i18n("categories", "Catégories")}
+      className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar"
     >
       {tabs.map((cat) => {
         const isActive = active === cat.id;
+        const count = countByCategory(cat.id);
         return (
           <button
             key={cat.id}
             type="button"
+            role="tab"
+            aria-selected={isActive}
             onClick={() => onChange(cat.id)}
-            className={`relative flex items-center gap-1.5 whitespace-nowrap rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors ${
+            className={cn(
+              "group relative flex min-h-[40px] shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-3.5 py-2 text-xs font-medium transition-all",
               isActive
-                ? "border-[var(--text-primary)]/20 bg-[var(--text-primary)]/[0.08] text-[var(--text-primary)]"
-                : "border-transparent text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.03] hover:text-[var(--text-primary)]"
-            }`}
+                ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
+                : "border-transparent bg-[var(--panel-bg)] text-[var(--text-muted)] hover:bg-[var(--surface-hover)]/40 hover:text-[var(--text-primary)]"
+            )}
           >
             {isActive && (
               <motion.div
                 layoutId="activeCategoryPill"
-                className="absolute inset-0 rounded-xl border border-[var(--accent-color)]/30 bg-[var(--accent-color)]/5"
+                className="absolute inset-0 rounded-full border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/5"
                 style={{ zIndex: -1 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               />
             )}
-            <span className={isActive ? "text-[var(--accent-color)]" : "text-[var(--text-muted)]"}>
+            <span className={cn("transition-colors", isActive ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)] group-hover:text-[var(--text-primary)]")}>
               {CATEGORY_ICONS[cat.id] || <Plug className="h-3.5 w-3.5" />}
             </span>
-            {i18n(cat.id)}
+            <span>{i18n(cat.id, cat.label)}</span>
+            <span
+              className={cn(
+                "ml-0.5 flex h-4 min-w-[1.25rem] items-center justify-center rounded-full px-1 text-[10px] font-semibold",
+                isActive ? "bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]" : "bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)]"
+              )}
+            >
+              {count}
+            </span>
           </button>
         );
       })}

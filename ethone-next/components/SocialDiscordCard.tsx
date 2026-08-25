@@ -216,10 +216,11 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
             className="!z-0 object-cover opacity-20 blur-sm"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
+          <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
         </div>
       )}
-      <div className="flex items-center justify-between">
+      <div className="relative z-20 flex h-full min-h-0 flex-col">
+        <div className="flex items-center justify-between">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
           Social & Media
         </span>
@@ -370,6 +371,7 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
           <p className="text-[10px] text-[var(--text-muted)]">Aucune activité en cours.</p>
         </div>
       )}
+      </div>
     </TiltCard>
   );
 });

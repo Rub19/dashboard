@@ -49,9 +49,6 @@ export function Checkbox({
         disabled ? "cursor-not-allowed" : "cursor-pointer",
         className,
       )}
-      onClick={() => {
-        if (!disabled) onCheckedChange(!checked);
-      }}
     >
       <motion.button
         id={id}

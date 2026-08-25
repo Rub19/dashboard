@@ -1,6 +1,7 @@
 "use client";
 
 import { Icon } from "@/lib/icons";
+import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
 export const STATE_PRESETS = {
@@ -66,7 +67,7 @@ export default function EmptyState({
       <div className="v8-empty-state__visual relative" aria-hidden="true">
         <span className="v8-empty-state__frame v8-empty-state__frame--back absolute inset-0 rounded-[var(--panel-radius)] bg-[var(--panel-bg)] opacity-60" />
         <span className="v8-empty-state__frame v8-empty-state__frame--front relative z-10 flex items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 shadow-sm backdrop-blur-[var(--panel-blur)]">
-          <Icon name={resolvedIcon} className="v8-empty-state__glyph h-8 w-8 text-[var(--accent-primary)]" />
+          <Icon name={resolvedIcon} className={cn("v8-empty-state__glyph h-8 w-8 text-[var(--accent-primary)]", isBusy && "animate-spin")} />
         </span>
       </div>
       <div className="v8-empty-state__copy max-w-md space-y-1">

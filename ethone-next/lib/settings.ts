@@ -246,7 +246,7 @@ export const DEFAULTS: Settings = {
   darkMode: true,
   useMaterialYou: false,
   theme: "obsidian",
-  iconPack: "lucide",
+  iconPack: "phosphor",
   densityMode: "comfortable",
   fontSize: 100,
   fontFamily: "sans",

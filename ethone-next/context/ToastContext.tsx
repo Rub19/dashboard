@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useSound } from "@/lib/sound";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useIsMobile } from "@/lib/hooks/useMediaQuery";
 import RichToast, { type RichToastVariant } from "@/components/RichToast";
 import FlagIcon, { LANGUAGE_LABELS, type Language } from "@/components/FlagIcon";
 import DiscordIcon from "@/components/DiscordIcon";
@@ -113,6 +114,7 @@ function DiscordAvatar({ avatarUrl }: { avatarUrl?: string }) {
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const { play } = useSound();
   const i18n = useI18n();
+  const isMobile = useIsMobile();
   const activeDedups = useRef<Map<string, string>>(new Map());
 
   const show = useCallback(
@@ -358,7 +360,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     <ToastContext.Provider value={api}>
       {children}
       <Toaster
-        position="bottom-right"
+        position={isMobile ? "bottom-center" : "bottom-right"}
         closeButton
         toastOptions={{
           unstyled: true,

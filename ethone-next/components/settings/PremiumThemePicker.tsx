@@ -11,7 +11,7 @@ import {
   THEME_DEFINITIONS,
   resolvePremiumTheme,
 } from "@/lib/theme-engine";
-import { transitionTheme } from "@/lib/theme-transition";
+import { transitionTheme, getEffectiveAccent } from "@/lib/theme-transition";
 
 type PremiumThemePickerProps = {
   value: ThemeMode;
@@ -38,6 +38,7 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
         {PREMIUM_THEMES.map((id) => {
           const def = THEME_DEFINITIONS[id];
           const selected = resolvedValue === id;
+          const activeAccent = getEffectiveAccent(id, settings.accentColor, settings.customAccent);
 
           return (
             <motion.button
@@ -93,7 +94,7 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
                       className="h-full w-1/4 border-r"
                       style={{ borderColor: def.borderSubtle, backgroundColor: def.bgSidebar }}
                     >
-                      <div className="mt-1.5 ml-1.5 h-1 w-4 rounded-full" style={{ backgroundColor: def.accentPrimary }} />
+                      <div className="mt-1.5 ml-1.5 h-1 w-4 rounded-full" style={{ backgroundColor: activeAccent }} />
                       <div className="mt-1.5 ml-1.5 h-0.5 w-6 rounded-full" style={{ backgroundColor: def.borderActive }} />
                       <div className="mt-1 ml-1.5 h-0.5 w-5 rounded-full" style={{ backgroundColor: def.borderSubtle }} />
                     </div>
@@ -104,7 +105,7 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
                         className="flex h-1/5 w-full items-center gap-1.5 border-b px-2"
                         style={{ borderColor: def.borderSubtle, backgroundColor: def.bgSidebar }}
                       >
-                        <div className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: def.accentPrimary }} />
+                        <div className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: activeAccent }} />
                         <div className="h-0.5 w-8 rounded-full" style={{ backgroundColor: def.borderActive }} />
                       </div>
                       {/* Pane */}
@@ -122,20 +123,42 @@ export default function PremiumThemePicker({ value, onChange }: PremiumThemePick
                   </div>
                 </div>
 
-                {/* Color chips */}
-                <div className="mb-2 flex items-center gap-1.5">
+                {/* Color chips & active accent preview */}
+                <div className="mb-2 flex items-center justify-between gap-1.5">
+                  <div className="flex items-center gap-1.5">
+                    <span
+                      className="h-2.5 w-2.5 rounded-full ring-1 ring-white/20"
+                      style={{ backgroundColor: def.accentPrimary }}
+                      title="Accent thème"
+                    />
+                    <span
+                      className="h-2.5 w-2.5 rounded-full ring-1 ring-white/20"
+                      style={{ backgroundColor: def.accentSecondary }}
+                      title="Accent secondaire"
+                    />
+                    <span
+                      className="h-2.5 w-2.5 rounded-full ring-1 ring-white/20"
+                      style={{ backgroundColor: def.textMuted }}
+                      title="Texte atténué"
+                    />
+                  </div>
+
+                  {/* Pastille visuelle de l'accent actif */}
                   <span
-                    className="h-2.5 w-2.5 rounded-full ring-1 ring-white/20"
-                    style={{ backgroundColor: def.accentPrimary }}
-                  />
-                  <span
-                    className="h-2.5 w-2.5 rounded-full ring-1 ring-white/20"
-                    style={{ backgroundColor: def.accentSecondary }}
-                  />
-                  <span
-                    className="h-2.5 w-2.5 rounded-full ring-1 ring-white/20"
-                    style={{ backgroundColor: def.textMuted }}
-                  />
+                    className="flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[9px] font-medium"
+                    style={{
+                      borderColor: def.borderSubtle,
+                      backgroundColor: `${def.bgSidebar}cc`,
+                      color: def.textPrimary,
+                    }}
+                    title={`Accent actif : ${settings.accentColor}`}
+                  >
+                    <span
+                      className="h-2 w-2 rounded-full ring-1 ring-white/30"
+                      style={{ backgroundColor: activeAccent }}
+                    />
+                    <span className="text-[9px] opacity-80">Accent</span>
+                  </span>
                 </div>
 
                 <h4 className="text-xs font-semibold leading-tight" style={{ color: def.textPrimary }}>

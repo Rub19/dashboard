@@ -2,11 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { RotateCcw, Save } from "lucide-react";
+import { RotateCcw, Save, X, ChevronRight } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Input from "@/components/Input";
 import { useSettings } from "@/components/SettingsProvider";
-import { X } from "lucide-react";
 import { useSettingsForm } from "./SettingsFormContext";
 import { useToast } from "@/components/ToastProvider";
 import { DEFAULTS } from "@/lib/settings";
@@ -178,6 +177,18 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
           ref={contentRef}
           className="min-h-0 w-full flex-1 overflow-y-auto os-scroll pb-8 pr-1 pt-4"
         >
+          {/* Breadcrumb */}
+          <nav
+            aria-label="Breadcrumb"
+            className="mb-4 flex items-center gap-1.5 text-xs text-[var(--text-muted)]"
+          >
+            <span>{i18n("settingsTitle") || "Paramètres"}</span>
+            <ChevronRight className="h-3.5 w-3.5 shrink-0 opacity-50" />
+            <span className="font-medium text-[var(--text-primary)]">
+              {CATEGORY_ORDER.find((c) => c.id === activeCategory)?.label ?? activeCategory}
+            </span>
+          </nav>
+
           <SettingsContent
             contentRef={contentRef}
             onCategoryChange={handleCategoryInView}

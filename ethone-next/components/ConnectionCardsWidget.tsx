@@ -67,7 +67,7 @@ const ConnectionCardsWidget = memo(function ConnectionCardsWidget({
   const router = useRouter();
 
   const filtered = useMemo(
-    () => records.filter((r) => r.status === "connected" || r.status === "loading"),
+    () => records.filter((r) => r.status !== "empty"),
     [records]
   );
 

@@ -148,7 +148,7 @@ export default function WeatherPage() {
 
   function handleGeolocate() {
     if (typeof navigator === "undefined" || !navigator.geolocation) {
-      showError(i18n("error"));
+      showError(i18n("geolocationNotSupported", "Géolocalisation non supportée"));
       return;
     }
     navigator.geolocation.getCurrentPosition(
@@ -166,10 +166,10 @@ export default function WeatherPage() {
           setSearchTerm(city);
           success(i18n("cityFound"));
         } catch {
-          showError(i18n("weatherError"));
+          showError(i18n("geolocationError", "Géolocalisation impossible"));
         }
       },
-      () => showError(i18n("weatherError"))
+      () => showError(i18n("geolocationError", "Géolocalisation impossible"))
     );
   }
 

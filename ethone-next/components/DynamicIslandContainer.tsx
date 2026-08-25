@@ -240,6 +240,7 @@ export default function DynamicIslandContainer() {
   const prevActiveRef = useRef<Set<View>>(new Set());
   const isInitialMount = useRef(true);
   const islandLeaveTimer = useRef<number | null>(null);
+  const islandRef = useRef<HTMLDivElement | null>(null);
 
   const [localVolume, setLocalVolume] = useState(nowPlaying?.volumePercent ?? 50);
   const [pendingSpotify, setPendingSpotify] = useState(false);
@@ -535,6 +536,16 @@ export default function DynamicIslandContainer() {
     };
   }, []);
 
+  useEffect(() => {
+    if (mode !== "EXPANDED" && mode !== "INTERACTIVE") return;
+    function handlePointerDown(e: PointerEvent) {
+      if (!islandRef.current || islandRef.current.contains(e.target as Node)) return;
+      setMode(activeViews.length > 0 ? "COMPACT" : "IDLE");
+    }
+    document.addEventListener("pointerdown", handlePointerDown, true);
+    return () => document.removeEventListener("pointerdown", handlePointerDown, true);
+  }, [mode, activeViews]);
+
   const islandContent = (
     <AnimatePresence>
       {visible && (
@@ -547,6 +558,7 @@ export default function DynamicIslandContainer() {
           className="fixed left-0 right-0 top-[max(0.5rem,env(safe-area-inset-top))] z-[var(--z-dynamic-island)] flex justify-center pointer-events-none select-none"
         >
           <DynamicIsland
+            ref={islandRef}
             data-testid="dynamic-island"
             view={expanded && selectedView ? selectedView : null}
             compact={compact}

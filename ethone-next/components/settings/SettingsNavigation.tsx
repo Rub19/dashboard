@@ -3,22 +3,25 @@
 import { useCallback, useEffect, useRef } from "react";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/lib/hooks/useI18n";
 
 export type CategoryDef = {
   id: string;
   label: string;
+  description: string;
+  descriptionKey?: string;
   icon: string;
 };
 
 export const CATEGORY_ORDER: CategoryDef[] = [
-  { id: "profile", label: "Général & Profil", icon: "user" },
-  { id: "appearance", label: "Apparence & Thèmes", icon: "palette" },
-  { id: "audio", label: "Audio & Sons", icon: "volume-2" },
-  { id: "workspace", label: "Espace de travail & Dock", icon: "layout-grid" },
-  { id: "language", label: "Langue & Région", icon: "globe" },
-  { id: "notifications", label: "Notifications & Alertes", icon: "bell" },
-  { id: "security", label: "Sécurité, Sessions & Cloud", icon: "shield" },
-  { id: "advanced", label: "Avancé & Maintenance", icon: "sliders-horizontal" },
+  { id: "profile", label: "Général & Profil", description: "Compte et préférences générales", descriptionKey: "settingsNavProfile", icon: "user" },
+  { id: "appearance", label: "Apparence & Thèmes", description: "Thèmes, couleurs et animations", descriptionKey: "settingsNavAppearance", icon: "palette" },
+  { id: "audio", label: "Audio & Sons", description: "Sons et volume", descriptionKey: "settingsNavAudio", icon: "volume-2" },
+  { id: "workspace", label: "Espace de travail & Dock", description: "Dock, densité et layout", descriptionKey: "settingsNavWorkspace", icon: "layout-grid" },
+  { id: "language", label: "Langue & Région", description: "Langue, date et fuseau horaire", descriptionKey: "settingsNavLanguage", icon: "globe" },
+  { id: "notifications", label: "Notifications & Alertes", description: "Notifications Brain, Mail, sécurité", descriptionKey: "settingsNavNotifications", icon: "bell" },
+  { id: "security", label: "Sécurité, Sessions & Cloud", description: "Sessions, passkeys et accès", descriptionKey: "settingsNavSecurity", icon: "shield" },
+  { id: "advanced", label: "Avancé & Maintenance", description: "Cache, sync, diagnostics et logs", descriptionKey: "settingsNavAdvanced", icon: "sliders-horizontal" },
 ];
 
 export const CATEGORY_SECTIONS: Record<string, string[]> = {
@@ -52,6 +55,7 @@ export default function SettingsNavigation({
   direction = "vertical",
   className,
 }: SettingsNavigationProps) {
+  const i18n = useI18n();
   const buttonsRef = useRef<(HTMLButtonElement | null)[]>([]);
 
   const activeIndex = CATEGORY_ORDER.findIndex((c) => c.id === active);
@@ -114,7 +118,7 @@ export default function SettingsNavigation({
         onClick={() => onSelect(cat.id)}
         onKeyDown={handleKeyDown}
         className={cn(
-          "group flex min-h-[44px] w-full items-center gap-3 rounded-[var(--panel-radius)] px-3 py-2 text-left text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
+          "group flex min-h-[44px] w-full items-start gap-3 rounded-[var(--panel-radius)] px-3 py-2 text-left text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
           isActive
             ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
             : "text-[var(--text-muted)] hover:bg-[var(--surface-hover)]/30 hover:text-[var(--text-primary)]"
@@ -130,7 +134,12 @@ export default function SettingsNavigation({
         >
           <Icon name={cat.icon} className="h-4 w-4" aria-hidden="true" />
         </span>
-        <span className="truncate">{cat.label}</span>
+        <span className="flex min-w-0 flex-col items-start text-left">
+          <span className="truncate">{cat.label}</span>
+          <span className="truncate text-[11px] font-normal text-[var(--text-muted)]">
+            {i18n(cat.descriptionKey || "", cat.description)}
+          </span>
+        </span>
         {isActive && (
           <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]" aria-hidden="true" />
         )}

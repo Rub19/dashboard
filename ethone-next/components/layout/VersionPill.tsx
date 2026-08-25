@@ -10,13 +10,15 @@ import { useToast } from "@/components/ToastProvider";
 function formatBuildInfo(data: { commit?: string | null; buildAt?: string } | null): string {
   if (!data) return "";
   const parts: string[] = [];
-  if (data.commit) parts.push(`commit ${data.commit.slice(0, 7)}`);
+  if (data.commit) parts.push(`#${data.commit.slice(0, 7)}`);
   if (data.buildAt) {
     try {
-      parts.push(new Date(data.buildAt).toLocaleString());
+      const d = new Date(data.buildAt);
+      parts.push(d.toLocaleDateString());
+      parts.push(d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" }));
     } catch {}
   }
-  return parts.length ? ` (${parts.join(" · ")})` : "";
+  return parts.join(" · ");
 }
 
 function isDifferentBuild(a: VersionData | null, b: VersionData | null): boolean {
@@ -29,7 +31,7 @@ function isDifferentBuild(a: VersionData | null, b: VersionData | null): boolean
 
 export default function VersionPill() {
   const i18n = useI18n();
-  const { info } = useToast();
+  const { show } = useToast();
   const { currentData, newData, hasUpdate } = useVersionChecker();
 
   const showUpdate = hasUpdate || isDifferentBuild(currentData, newData);
@@ -39,14 +41,20 @@ export default function VersionPill() {
   const title =
     (showUpdate
       ? i18n("newVersionClickToReload", "Nouvelle version disponible, cliquez pour recharger")
-      : i18n("currentVersion", "Version actuelle")) + formatBuildInfo(data);
+      : i18n("currentVersion", "Version actuelle")) + (formatBuildInfo(data) ? ` — ${formatBuildInfo(data)}` : "");
 
   function handleClick() {
     if (showUpdate) {
       forceAppReload(data?.version ?? null, data);
       return;
     }
-    info(i18n("currentVersion", "Version actuelle") + " " + label, buildInfo);
+    show({
+      type: "info",
+      title: i18n("currentVersion", "Version actuelle"),
+      description: `${label} · ${buildInfo}`,
+      icon: <Tag className="h-5 w-5 text-[var(--text-muted)]" />,
+      duration: 4000,
+    });
   }
 
   return (

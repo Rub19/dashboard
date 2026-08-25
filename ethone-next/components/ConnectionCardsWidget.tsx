@@ -60,7 +60,7 @@ export type ConnectionCardsWidgetProps = {
 const ConnectionCardsWidget = memo(function ConnectionCardsWidget({
   records = [],
   loading,
-  error,
+  error: _error,
   className = "",
 }: ConnectionCardsWidgetProps) {
   const i18n = useI18n();
@@ -73,7 +73,7 @@ const ConnectionCardsWidget = memo(function ConnectionCardsWidget({
 
   const handleOpen = () => router.push("/connections");
 
-  const isEmpty = !loading && !error && filtered.length === 0;
+  const isEmpty = !loading && filtered.length === 0;
 
   return (
     <BentoCard
@@ -90,18 +90,6 @@ const ConnectionCardsWidget = memo(function ConnectionCardsWidget({
               className="h-20 w-28 shrink-0 rounded-[var(--panel-radius)] v8-inset animate-pulse"
             />
           ))
-        ) : error ? (
-          <div className="flex h-20 w-full items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--danger)]/20 bg-[var(--danger)]/10 px-3 text-xs text-[var(--danger)]">
-            <Icon name="alert-circle" pack="phosphor" className="h-4 w-4 shrink-0" />
-            <span className="min-w-0 flex-1">{error.message}</span>
-            <button
-              type="button"
-              onClick={handleOpen}
-              className="shrink-0 rounded-lg border border-[var(--danger)]/30 bg-[var(--danger)]/10 px-2 py-1 text-[10px] font-medium text-[var(--danger)] transition-colors hover:bg-[var(--danger)]/20"
-            >
-              {i18n("check", "Vérifier")}
-            </button>
-          </div>
         ) : isEmpty ? (
           <EmptyState
             kind="integration"

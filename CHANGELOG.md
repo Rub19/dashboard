@@ -4,6 +4,16 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## v1.9.0 — 2026-08-25
 
+**ETHONE Control Center — Diagnostic, recherche et raccourcis Settings**
+
+- Nouveau panneau `DiagnosticPanel` dans les paramètres avancés (Supabase, Worker, Cache, Thème, Sync).
+- Intégration du diagnostic dans `MaintenancePanel`.
+- Recherche Settings : scroll automatique vers la première catégorie correspondante et compteur de résultats.
+- Raccourcis clavier globaux dans Settings : `Ctrl/Cmd + K` (focus recherche) et `Ctrl/Cmd + S` (sauvegarder).
+- Optimisation des callbacks `handleSave` / `handleReset` avec `useCallback`.
+
+## v1.9.0 — 2026-08-25
+
 **Upload globale et vue Dynamic Island**
 
 - `UploadQueueProvider` : file d'attente globale pour les fichiers.

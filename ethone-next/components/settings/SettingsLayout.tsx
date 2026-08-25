@@ -28,6 +28,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
   const searchParams = useSearchParams();
   const router = useRouter();
   const contentRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
 
   const [activeCategory, setActiveCategory] = useState(() => resolveCategory(initialSection ?? searchParams?.get("category") ?? searchParams?.get("tab")));
 
@@ -61,7 +62,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
     setActiveCategory(id);
   }, []);
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     if (!window.confirm(i18n("resetSettingsConfirm") || "Rétablir tous les paramètres par défaut ?")) return;
     try {
       update({ ...DEFAULTS });
@@ -69,16 +70,36 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
     } catch (err) {
       showError(String(err));
     }
-  };
+  }, [i18n, notify, showError, update]);
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     try {
       form.saveExplicit();
       notify.sync();
     } catch (err) {
       showError(String(err));
     }
-  };
+  }, [form, notify, showError]);
+
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        searchRef.current?.focus();
+        searchRef.current?.select();
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        handleSave();
+      }
+      if (e.key === "Escape" && form.query.trim()) {
+        e.preventDefault();
+        form.setQuery("");
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [form, handleSave]);
 
   return (
     <div className="flex h-full min-h-0 w-full select-none flex-col overflow-hidden p-4 sm:p-6">
@@ -100,6 +121,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <Input
+            ref={searchRef}
             type="text"
             value={form.query}
             onChange={(e) => form.setQuery(e.target.value)}

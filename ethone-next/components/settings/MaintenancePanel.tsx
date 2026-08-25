@@ -5,6 +5,7 @@ import { RotateCcw, RefreshCw, Server, Microchip } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { forceAppReload } from "@/lib/force-reload";
 import { Icon } from "@/lib/icons";
+import DiagnosticPanel from "./DiagnosticPanel";
 
 function formatMegabytes(bytes: number | undefined): string {
   if (bytes === undefined || bytes === null || Number.isNaN(bytes)) return "N/A";
@@ -113,7 +114,9 @@ export default function MaintenancePanel() {
   };
 
   return (
-    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2" data-section-match>
+    <div className="space-y-4" data-section-match>
+      <DiagnosticPanel />
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
       <ActionCard
         onClick={handleReload}
         icon={<RotateCcw className="h-4 w-4" />}
@@ -136,6 +139,7 @@ export default function MaintenancePanel() {
         value={usedHeap}
         badge={latency}
       />
+    </div>
     </div>
   );
 }

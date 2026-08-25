@@ -1188,6 +1188,7 @@ export default function SettingsContent({
   }, [allVisibleSections]);
 
   const categoryRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const previousQueryRef = useRef(form.query);
 
   useEffect(() => {
     const root = contentRef?.current;
@@ -1207,6 +1208,24 @@ export default function SettingsContent({
     Object.values(categoryRefs.current).forEach((el) => el && observer.observe(el));
     return () => observer.disconnect();
   }, [contentRef, onCategoryChange, allVisibleSections]);
+
+  useEffect(() => {
+    if (!form.query.trim()) {
+      previousQueryRef.current = form.query;
+      return;
+    }
+    if (previousQueryRef.current.trim()) {
+      previousQueryRef.current = form.query;
+      return;
+    }
+    previousQueryRef.current = form.query;
+    const firstCategory = CATEGORY_ORDER.find((c) => (sectionsByCategory.get(c.id)?.length ?? 0) > 0);
+    if (!firstCategory) return;
+    const el = categoryRefs.current[firstCategory.id];
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [form.query, sectionsByCategory]);
 
   const renderSection = (section: SectionDef) => {
     const modifiedCount =
@@ -1235,6 +1254,20 @@ export default function SettingsContent({
 
   return (
     <div className="w-full space-y-8 pb-12">
+      {form.query.trim() && (
+        <div
+          className="flex items-center justify-between rounded-lg border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] px-3 py-2 text-xs text-[var(--text-muted)]"
+          role="status"
+          aria-live="polite"
+        >
+          <span>
+            {allVisibleSections.length} {allVisibleSections.length <= 1 ? "résultat" : "résultats"} pour « {form.query} »
+          </span>
+          {allVisibleSections.length === 0 && (
+            <span className="text-[var(--danger)]">Aucun paramètre trouvé.</span>
+          )}
+        </div>
+      )}
       {CATEGORY_ORDER.map((category) => {
         const sections = sectionsByCategory.get(category.id) || [];
         if (sections.length === 0) return null;

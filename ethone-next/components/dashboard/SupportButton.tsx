@@ -23,7 +23,7 @@ const SupportButton = memo(function SupportButton({
       aria-label="Soutenir le projet"
     >
       <Icon name="coffee" className="h-4 w-4" />
-      <span className="hidden sm:inline">Soutenir</span>
+      <span className="hidden xl:inline">Soutenir</span>
     </a>
   );
 });

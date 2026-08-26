@@ -18,8 +18,8 @@ export default function CommandBarTrigger(props: ButtonHTMLAttributes<HTMLButton
       {...props}
     >
       <Search className="pointer-events-none h-5 w-5" />
-      <span className="pointer-events-none hidden md:inline md:ml-2 text-sm">{i18n("commands")}</span>
-      <kbd className="pointer-events-none hidden md:inline-flex items-center gap-0.5 rounded border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.08] px-1.5 py-0.5 text-[11px] font-mono text-[var(--text-primary)] md:ml-2">
+      <span className="pointer-events-none hidden xl:inline xl:ml-2 text-sm">{i18n("commands")}</span>
+      <kbd className="pointer-events-none hidden xl:inline-flex items-center gap-0.5 rounded border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.08] px-1.5 py-0.5 text-[11px] font-mono text-[var(--text-primary)] xl:ml-2">
         <span className="pointer-events-none select-none mr-0.5">⌘</span>
         <span className="pointer-events-none select-none">K</span>
       </kbd>

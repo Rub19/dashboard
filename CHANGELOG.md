@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.21 — 2026-08-27
+
+**ETHONE — Topbar responsive, moyennes résolutions**
+
+- Fix du chevauchement des boutons topbar sur la réso du screenshot.
+- `Soutenir`, `Commandes` et l’email profil passent en texte masqué jusqu’à `xl`.
+- `CommandBarTrigger` : texte + `⌘K` affichés seulement à partir de `xl`.
+- `UserProfileDropdown` : nom affiché seulement à partir de `xl`, `max-w` limité à `14ch`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.20 — 2026-08-26
 
 **ETHONE — Fichiers v2 : polish final**

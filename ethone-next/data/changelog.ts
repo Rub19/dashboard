@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.21",
+  date: "2026-08-27",
+  title: "Topbar responsive — moyennes résolutions",
+  items: [
+    "Résolution du chevauchement des boutons topbar sur écrans moyens.",
+    "Texte `Soutenir`, `Commandes` et email profil masqués jusqu’à `xl`.",
+    "`UserProfileDropdown` : nom affiché uniquement à partir de `xl`, max-width 14ch.",
+    "`CommandBarTrigger` : texte + kbd affichés à partir de `xl`.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.21.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.21",
+  date: "2026-08-27",
+  title: "Topbar responsive — medium screens",
+  items: [
+    "Fixed topbar button overlap on medium screens.",
+    "`Soutenir`, `Commandes`, and profile email text hidden until `xl`.",
+    "`UserProfileDropdown`: name shown only from `xl`, max-width 14ch.",
+    "`CommandBarTrigger`: text + kbd shown from `xl`.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.21.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.21",
+  date: "2026-08-27",
+  title: "Topbar responsive — pantallas medianas",
+  items: [
+    "Corrección de la superposición de botones de topbar en pantallas medianas.",
+    "Texto `Soutenir`, `Commandes` y email del perfil oculto hasta `xl`.",
+    "`UserProfileDropdown` : nombre visible solo desde `xl`, max-width 14ch.",
+    "`CommandBarTrigger` : texto + kbd visibles desde `xl`.",
+    "Validación : build, lint.",
+    "Versión : v1.10.21.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.21",
+  date: "2026-08-27",
+  title: "Topbar responsive — mittlere Bildschirme",
+  items: [
+    "Topbar-Button-Überlappung auf mittleren Bildschirmen behoben.",
+    "Text `Soutenir`, `Commandes` und Profil-E-Mail bis `xl` ausgeblendet.",
+    "`UserProfileDropdown`: Name erst ab `xl` sichtbar, max-width 14ch.",
+    "`CommandBarTrigger`: Text + KBD ab `xl` sichtbar.",
+    "Validierung: build, lint.",
+    "Version: v1.10.21.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.20",
   date: "2026-08-26",
   title: "Fichiers v2 — polish final",

@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.79 — 2026-08-26
+
+**ETHONE — Activity Hub : insights, export et gestion**
+
+- `components/ActivityHub.tsx` : layout en grille (heatmap/timeline à gauche, insights à droite).
+- Section **Brain Insights** : catégorie principale, période d'activité, source la plus active, week-end.
+- Section **Activité par catégorie** avec barres de progression.
+- Modal d'**export CSV/JSON** avec téléchargement client.
+- Modal de **suppression de l'historique** avec confirmation.
+- Toasts d'export et d'effacement.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.78 — 2026-08-26
 
 **ETHONE — Activity Hub : timeline groupée et recherche**

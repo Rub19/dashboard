@@ -68,6 +68,12 @@ export function useActivityJournal(options: UseActivityJournalOptions = {}) {
     return () => clearTimeout(t);
   }, [pendingCount, syncing, sync]);
 
+  const clear = useCallback(() => {
+    activityJournal.clear();
+    setEntries([]);
+    setPendingCount(0);
+  }, []);
+
   return {
     entries,
     pendingCount,
@@ -75,6 +81,7 @@ export function useActivityJournal(options: UseActivityJournalOptions = {}) {
     lastSync,
     syncError,
     sync,
+    clear,
     capture: activityJournal.capture,
     captureRoute: activityJournal.captureRoute,
   };

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Activity, Flame, TrendingUp, CheckCircle2, RefreshCw, Loader2, AlertCircle } from "lucide-react";
+import { Activity, Flame, TrendingUp, CheckCircle2, RefreshCw, Loader2, AlertCircle, Download, Trash2, FileJson, FileSpreadsheet, Lightbulb, BarChart2 } from "lucide-react";
 import { useItems } from "@/lib/hooks/useItems";
 import { useCloudFiles } from "@/lib/hooks/useCloudFiles";
 import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
@@ -13,6 +13,9 @@ import { Icon } from "@/lib/icons";
 import Input from "@/components/Input";
 import AnimatedFilterTabs from "@/components/ui/AnimatedFilterTabs";
 import Card from "@/components/ui/Card";
+import Button from "@/components/ui/Button";
+import Modal from "@/components/ui/Modal";
+import { useToast } from "@/components/ToastProvider";
 import ActivityHeatmap from "./ActivityHeatmap";
 
 function dateKey(iso = ""): string {
@@ -36,8 +39,19 @@ function addDays(d: Date, days: number): Date {
   return copy;
 }
 
+function capitalize(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
 function formatLocalDate(d: Date, mounted: boolean): string {
   return mounted ? d.toLocaleDateString() : dateKey(d.toISOString());
+}
+
+function displayCategory(e: ActivityEntry): string | null {
+  for (const chip of CATEGORY_CHIPS) {
+    if (chip.match(e)) return chip.id;
+  }
+  return null;
 }
 
 function clusterDayEvents(list: ActivityEntry[], thresholdMs = 12 * 60 * 1000) { // 12 minutes
@@ -283,6 +297,7 @@ function TimelineGroup({
 
 export default function ActivityHub() {
   const i18n = useI18n();
+  const { toast } = useToast();
   const [period, setPeriod] = useState<string>("365");
   const [query, setQuery] = useState("");
   const [activeChips, setActiveChips] = useState<string[]>([]);
@@ -290,6 +305,9 @@ export default function ActivityHub() {
   const [now, setNow] = useState<number | null>(null);
   const [today, setToday] = useState<Date | null>(null);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+  const [exportOpen, setExportOpen] = useState(false);
+  const [clearOpen, setClearOpen] = useState(false);
+  const [exportFormat, setExportFormat] = useState<"csv" | "json">("csv");
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -327,7 +345,7 @@ export default function ActivityHub() {
     [notes, tasks, events, files]
   );
 
-  const { entries, pendingCount, syncing, syncError, lastSync, sync } = useActivityJournal({
+  const { entries, pendingCount, syncing, syncError, lastSync, sync, clear } = useActivityJournal({
     snapshot,
     syncInterval: 30000,
   });
@@ -475,12 +493,134 @@ export default function ActivityHub() {
     return `${stats.diff} ${i18n("sinceYesterday") || "vs hier"}`;
   }, [stats.diff, i18n]);
 
+  const categoryBreakdown = useMemo(() => {
+    const map = new Map<string, number>();
+    let total = 0;
+    for (const e of filteredEntries) {
+      const id = displayCategory(e);
+      if (!id) continue;
+      map.set(id, (map.get(id) || 0) + 1);
+      total++;
+    }
+    return Array.from(map.entries())
+      .map(([id, count]) => {
+        const chip = CATEGORY_CHIPS.find((c) => c.id === id);
+        return {
+          id,
+          label: chip?.label || id,
+          count,
+          percent: total > 0 ? Math.round((count / total) * 100) : 0,
+        };
+      })
+      .sort((a, b) => b.count - a.count);
+  }, [filteredEntries]);
+
+  const insights = useMemo(() => {
+    if (filteredEntries.length < 3) return [] as { icon: string; title: string; desc: string }[];
+    const items: { icon: string; title: string; desc: string }[] = [];
+
+    const top = categoryBreakdown[0];
+    if (top && top.percent > 0) {
+      items.push({
+        icon: "star",
+        title: i18n("insightTopCategory", "{{category}} en tête").replace("{{category}}", top.label),
+        desc: i18n("insightTopCategoryDesc", "{{percent}}% de votre activité concerne cette catégorie.")
+          .replace("{{percent}}", String(top.percent)),
+      });
+    }
+
+    const periods: Record<string, number> = { morning: 0, afternoon: 0, evening: 0, night: 0 };
+    for (const e of filteredEntries) {
+      const h = new Date(e.timestamp).getHours();
+      if (h >= 5 && h < 12) periods.morning++;
+      else if (h >= 12 && h < 18) periods.afternoon++;
+      else if (h >= 18 && h < 23) periods.evening++;
+      else periods.night++;
+    }
+    const peak = Object.entries(periods).sort((a, b) => b[1] - a[1])[0];
+    const periodLabels: Record<string, string> = {
+      morning: i18n("morning", "le matin"),
+      afternoon: i18n("afternoon", "l'après-midi"),
+      evening: i18n("evening", "le soir"),
+      night: i18n("night", "la nuit"),
+    };
+    if (peak && peak[1] > 0) {
+      items.push({
+        icon: "clock",
+        title: i18n("insightPeakTime", "Votre activité est concentrée {{period}}").replace("{{period}}", periodLabels[peak[0]]),
+        desc: i18n("insightPeakTimeDesc", "C'est la période où vous utilisez le plus ETHONE."),
+      });
+    }
+
+    const sources = new Map<string, number>();
+    for (const e of filteredEntries) sources.set(e.source, (sources.get(e.source) || 0) + 1);
+    const topSource = Array.from(sources.entries()).sort((a, b) => b[1] - a[1])[0];
+    if (topSource && topSource[1] >= 2) {
+      items.push({
+        icon: "plug",
+        title: i18n("insightTopSource", "{{source}} est votre source la plus active").replace("{{source}}", capitalize(topSource[0])),
+        desc: i18n("insightTopSourceDesc", "{{count}} événements enregistrés.").replace("{{count}}", String(topSource[1])),
+      });
+    }
+
+    let weekend = 0;
+    let totalDays = 0;
+    for (const e of filteredEntries) {
+      const day = new Date(e.timestamp).getDay();
+      if (day === 0 || day === 6) weekend++;
+      totalDays++;
+    }
+    if (totalDays > 0 && weekend / totalDays > 0.55) {
+      items.push({
+        icon: "calendar",
+        title: i18n("insightWeekend", "Votre activité est plus élevée le week-end"),
+        desc: i18n("insightWeekendDesc", "{{percent}}% des événements ont lieu en fin de semaine.")
+          .replace("{{percent}}", String(Math.round((weekend / totalDays) * 100))),
+      });
+    }
+
+    return items;
+  }, [filteredEntries, categoryBreakdown, i18n]);
+
   const toggleChip = (id: string) => {
     if (id === "all") {
       setActiveChips([]);
       return;
     }
     setActiveChips((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  };
+
+  const handleExport = () => {
+    if (filteredEntries.length === 0) return;
+    const date = new Date().toISOString().slice(0, 10);
+    let content = "";
+    let filename = "";
+    if (exportFormat === "json") {
+      content = JSON.stringify(filteredEntries, null, 2);
+      filename = `ethone-activity-${date}.json`;
+    } else {
+      const header = "timestamp,title,description,source,category,eventType";
+      const rows = filteredEntries.map((e) =>
+        [e.timestamp, `"${e.title.replace(/"/g, '""')}"`, `"${e.description.replace(/"/g, '""')}"`, e.source, e.category, e.eventType || ""].join(",")
+      );
+      content = [header, ...rows].join("\n");
+      filename = `ethone-activity-${date}.csv`;
+    }
+    const blob = new Blob([content], { type: exportFormat === "json" ? "application/json" : "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+    setExportOpen(false);
+    toast.success(i18n("exportDone", "Export terminé"), i18n("exportDoneDesc", "Votre activité a été téléchargée."));
+  };
+
+  const handleClear = () => {
+    clear();
+    setClearOpen(false);
+    toast.success(i18n("historyCleared", "Historique effacé"), i18n("historyClearedDesc", "Votre journal d'activité a été supprimé."));
   };
 
   return (
@@ -568,8 +708,11 @@ export default function ActivityHub() {
         )}
       </div>
 
-      {/* Heatmap */}
-      <Card padding="md">
+      {/* Heatmap / Timeline */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <div className="space-y-4 lg:col-span-2">
+          {/* Heatmap */}
+          <Card padding="md">
         <div className="mb-4 flex items-center justify-between gap-3">
           <h2 className="text-sm font-semibold text-[var(--text-primary)]">{i18n("activityHeatmap", "Activité")}</h2>
           <span className="text-[10px] text-[var(--text-muted)]">{i18n("activityLastDays", "{{count}} derniers jours").replace("{{count}}", String(periodDays))}</span>
@@ -741,6 +884,142 @@ export default function ActivityHub() {
           </div>
         )}
       </div>
+        </div>
+
+        {/* Insights & breakdown */}
+        <div className="space-y-4">
+          <Card padding="md">
+            <div className="mb-3 flex items-center gap-2">
+              <Lightbulb className="h-4 w-4 text-[var(--accent-primary)]" />
+              <h2 className="text-sm font-semibold text-[var(--text-primary)]">{i18n("brainInsights", "Brain Insights")}</h2>
+            </div>
+            {insights.length === 0 ? (
+              <p className="text-xs text-[var(--text-muted)]">
+                {i18n("noInsights", "Pas encore assez de données pour générer des insights.")}
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {insights.map((insight, i) => (
+                  <div key={i} className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-3">
+                    <div className="flex items-center gap-2">
+                      <Icon name={insight.icon} pack="phosphor" className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
+                      <p className="text-[11px] font-medium text-[var(--text-primary)]">{insight.title}</p>
+                    </div>
+                    <p className="mt-1 text-[10px] text-[var(--text-muted)] leading-relaxed">{insight.desc}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+
+          <Card padding="md">
+            <div className="mb-3 flex items-center gap-2">
+              <BarChart2 className="h-4 w-4 text-[var(--accent-primary)]" />
+              <h2 className="text-sm font-semibold text-[var(--text-primary)]">{i18n("activityByCategory", "Activité par catégorie")}</h2>
+            </div>
+            {categoryBreakdown.length === 0 ? (
+              <p className="text-xs text-[var(--text-muted)]">{i18n("noCategoryData", "Aucune catégorie pour cette période.")}</p>
+            ) : (
+              <div className="space-y-2">
+                {categoryBreakdown.map((c) => (
+                  <div key={c.id}>
+                    <div className="mb-1 flex items-center justify-between text-[10px] text-[var(--text-primary)]">
+                      <span>{c.label}</span>
+                      <span className="text-[var(--text-muted)]">{c.percent}%</span>
+                    </div>
+                    <div className="h-1.5 w-full rounded-full bg-[var(--text-primary)]/[0.04]">
+                      <div
+                        className="h-1.5 rounded-full bg-[var(--accent-primary)]"
+                        style={{ width: `${c.percent}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+
+          <Card padding="md">
+            <div className="mb-3 flex items-center gap-2">
+              <Icon name="settings" pack="phosphor" className="h-4 w-4 text-[var(--accent-primary)]" />
+              <h2 className="text-sm font-semibold text-[var(--text-primary)]">{i18n("historyManagement", "Gestion de l'historique")}</h2>
+            </div>
+            <p className="text-[11px] text-[var(--text-muted)]">
+              {i18n("historyManagementDesc", "Exportez ou supprimez votre activité ETHONE.")}
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Button size="sm" variant="secondary" leftIcon={<Download className="h-3.5 w-3.5" />} onClick={() => setExportOpen(true)}>
+                {i18n("export", "Exporter")}
+              </Button>
+              <Button size="sm" variant="danger" leftIcon={<Trash2 className="h-3.5 w-3.5" />} onClick={() => setClearOpen(true)}>
+                {i18n("clearHistory", "Effacer")}
+              </Button>
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      {/* Export modal */}
+      <Modal
+        isOpen={exportOpen}
+        onClose={() => setExportOpen(false)}
+        title={i18n("exportActivity", "Exporter l'activité")}
+        description={i18n("exportActivityDesc", "Choisissez le format et les données à exporter.")}
+        size="sm"
+        onConfirm={handleExport}
+        confirmLabel={i18n("download", "Télécharger")}
+        confirmDisabled={filteredEntries.length === 0}
+      >
+        <div className="space-y-4">
+          <div>
+            <p className="mb-2 text-[11px] text-[var(--text-muted)]">{i18n("format", "Format")}</p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setExportFormat("csv")}
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-medium transition-colors",
+                  exportFormat === "csv"
+                    ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]"
+                    : "border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                )}
+              >
+                <FileSpreadsheet className="h-3.5 w-3.5" />
+                CSV
+              </button>
+              <button
+                type="button"
+                onClick={() => setExportFormat("json")}
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-medium transition-colors",
+                  exportFormat === "json"
+                    ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]"
+                    : "border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                )}
+              >
+                <FileJson className="h-3.5 w-3.5" />
+                JSON
+              </button>
+            </div>
+          </div>
+          <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-3 text-xs text-[var(--text-muted)]">
+            {filteredEntries.length} {i18n("eventsToExport", "événements à exporter")}
+          </div>
+        </div>
+      </Modal>
+
+      {/* Clear modal */}
+      <Modal
+        isOpen={clearOpen}
+        onClose={() => setClearOpen(false)}
+        title={i18n("clearHistoryTitle", "Effacer l'historique")}
+        description={i18n("clearHistoryDesc", "Cette action supprime définitivement votre journal d'activité local. Cette action est irréversible.")}
+        size="sm"
+        variant="danger"
+        onConfirm={handleClear}
+        confirmLabel={i18n("confirmClear", "Supprimer")}
+        cancelLabel={i18n("cancel", "Annuler")}
+      />
     </div>
   );
 }

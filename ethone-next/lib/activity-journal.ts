@@ -197,6 +197,7 @@ export interface ActivityJournal {
   pendingCount: () => number;
   syncing: () => boolean;
   subscribeSync: (subscriber: (syncing: boolean) => void) => () => void;
+  clear: () => void;
   destroy: () => void;
 }
 
@@ -305,6 +306,12 @@ export function createActivityJournal(): ActivityJournal {
     return () => syncSubscribers.delete(subscriber);
   }
 
+  function clear() {
+    state.entries = [];
+    saveState(state);
+    emit();
+  }
+
   async function sync(): Promise<{ ok: boolean; count: number; error: Error | null }> {
     if (isSyncing) return { ok: true, count: 0, error: null };
     const unsynced = pending().slice(0, SYNC_BATCH_LIMIT);
@@ -352,6 +359,7 @@ export function createActivityJournal(): ActivityJournal {
     pendingCount,
     syncing,
     subscribeSync,
+    clear,
     destroy,
   });
 }

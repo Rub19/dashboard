@@ -7206,6 +7206,70 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.79",
+  date: "2026-08-26",
+  title: "Activity Hub — insights, export et gestion",
+  items: [
+    "Section Brain Insights : catégorie en tête, période d'activité, source la plus active, week-end.",
+    "Section Activité par catégorie avec barres de progression.",
+    "Layout en grille : heatmap/timeline à gauche, insights à droite.",
+    "Modal d'export CSV/JSON.",
+    "Modal de confirmation d'effacement de l'historique.",
+    "Toasts d'export et d'effacement.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.79.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.79",
+  date: "2026-08-26",
+  title: "Activity Hub — insights, export and management",
+  items: [
+    "Brain Insights section: top category, peak time, most active source, weekend.",
+    "Activity by category section with progress bars.",
+    "Grid layout: heatmap/timeline on the left, insights on the right.",
+    "CSV/JSON export modal.",
+    "Clear history confirmation modal.",
+    "Export and clear toasts.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.79.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.79",
+  date: "2026-08-26",
+  title: "Activity Hub — insights, exportación y gestión",
+  items: [
+    "Sección Brain Insights: categoría principal, periodo de actividad, fuente más activa, fin de semana.",
+    "Sección Actividad por categoría con barras de progreso.",
+    "Layout en cuadrícula: heatmap/timeline a la izquierda, insights a la derecha.",
+    "Modal de exportación CSV/JSON.",
+    "Modal de confirmación para borrar el historial.",
+    "Toasts de exportación y borrado.",
+    "Validación : build, lint.",
+    "Versión : v1.9.79.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.79",
+  date: "2026-08-26",
+  title: "Activity Hub — Insights, Export und Verwaltung",
+  items: [
+    "Brain Insights Bereich: Top-Kategorie, Hauptaktivitätszeit, aktivste Quelle, Wochenende.",
+    "Aktivität nach Kategorie mit Fortschrittsbalken.",
+    "Rasterlayout: Heatmap/Timeline links, Insights rechts.",
+    "CSV/JSON Export Modal.",
+    "Bestätigungsmodal zum Löschen des Verlaufs.",
+    "Toasts für Export und Löschen.",
+    "Validierung: build, lint.",
+    "Version: v1.9.79.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.78",
   date: "2026-08-26",
   title: "Activity Hub — timeline groupée et recherche",

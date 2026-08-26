@@ -292,13 +292,14 @@ export async function saveSpotifyTrack(env, userId, clientId, trackId, save = tr
   const accessToken = await validAccessToken(env, userId, clientId);
   const id = safeText(trackId, 64);
   if (!id) throw httpError("INVALID_PARAMETER", 400);
-  await requestExternal(new URL("/v1/me/tracks", API_ORIGIN), {
+  const url = new URL("/v1/me/tracks", API_ORIGIN);
+  url.searchParams.set("ids", id);
+  await requestExternal(url, {
     env,
     expectedOrigin: API_ORIGIN,
     service: "spotify",
     method: save ? "PUT" : "DELETE",
-    headers: { authorization: `Bearer ${accessToken}`, "content-type": "application/json" },
-    body: JSON.stringify({ ids: [id] }),
+    headers: { authorization: `Bearer ${accessToken}` },
     retries: 0,
     maxBytes: 8192
   });

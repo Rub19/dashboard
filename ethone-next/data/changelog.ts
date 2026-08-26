@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.81",
+  date: "2026-08-26",
+  title: "Spotify — correction du bouton like",
+  items: [
+    "Le Worker envoie maintenant les `ids` en paramètre d'URL pour sauvegarder/supprimer un morceau Spotify (PUT/DELETE /v1/me/tracks).",
+    "Correction du like/unlike dans DynamicIsland et DockMedia.",
+    "Tests Worker : 156/156 passent.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.81.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.81",
+  date: "2026-08-26",
+  title: "Spotify — like button fix",
+  items: [
+    "Worker now sends `ids` as query parameters for Spotify save/unsave (PUT/DELETE /v1/me/tracks).",
+    "Fixed like/unlike in DynamicIsland and Dock.",
+    "Worker tests: 156/156 passing.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.81.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.81",
+  date: "2026-08-26",
+  title: "Spotify — arreglo del botón like",
+  items: [
+    "El Worker ahora envía `ids` como parámetros de URL para guardar/quitar canciones de Spotify (PUT/DELETE /v1/me/tracks).",
+    "Corrección de like/unlike en DynamicIsland y Dock.",
+    "Tests Worker : 156/156 pasan.",
+    "Validación : build, lint.",
+    "Versión : v1.9.81.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.81",
+  date: "2026-08-26",
+  title: "Spotify — Like-Button-Fix",
+  items: [
+    "Worker sendet `ids` jetzt als URL-Parameter für Spotify save/unsave (PUT/DELETE /v1/me/tracks).",
+    "Like/Unlike in DynamicIsland und Dock korrigiert.",
+    "Worker-Tests: 156/156 bestanden.",
+    "Validierung: build, lint.",
+    "Version: v1.9.81.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.80",
   date: "2026-08-26",
   title: "Riot — taille des cartes et niveau 3D",

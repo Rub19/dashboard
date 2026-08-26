@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.81 — 2026-08-26
+
+**ETHONE — Spotify : correction du bouton like**
+
+- `worker/src/services/spotify-oauth-client.js` : la sauvegarde/suppression d'un morceau Spotify utilise désormais le paramètre `ids` dans l'URL (`PUT`/`DELETE /v1/me/tracks`) au lieu d'un body JSON.
+- Cela corrige le like/unlike dans `DynamicIslandContainer` et `DockMediaFlyout`.
+- Tests Worker : 156/156 passent.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.80 — 2026-08-26
 
 **ETHONE — Riot : taille des cartes et niveau 3D**

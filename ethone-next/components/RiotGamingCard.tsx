@@ -31,7 +31,7 @@ const GAME_CONFIG = {
     accentBg: "bg-rose-500",
   },
   lol: {
-    label: "League of Legends",
+    label: "LoL",
     gradient: "from-sky-950/40 via-amber-900/10 to-black/20 border-amber-500/20",
     accent: "text-[var(--warning)]",
     accentBg: "bg-amber-500",
@@ -358,6 +358,8 @@ const RiotGamingCard = memo(function RiotGamingCard(props: RiotGamingCardProps) 
 
   return (
     <TiltCard
+      max={6}
+      glare={settings.uiGlow}
       className={cn(
         "h-full min-h-0 transition-all",
         props.game === "valorant" ? "hover:border-rose-500/25" : "hover:border-amber-500/25"

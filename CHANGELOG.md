@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.80 — 2026-08-26
+
+**ETHONE — Riot : taille des cartes et niveau 3D**
+
+- `components/LiveBentoGrid.tsx` : les cartes `RiotGamingCard` passent en `col-span-12 lg:col-span-4` comme les autres cartes.
+- `components/RiotGamingCard.tsx` :
+  - label LoL raccourci en `LoL` pour éviter le tronquage.
+  - Tilt `max` aligné à `6` (même niveau que `Card3D` des Connexions).
+  - Glare synchronisé avec `settings.uiGlow`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.79 — 2026-08-26
 
 **ETHONE — Activity Hub : insights, export et gestion**

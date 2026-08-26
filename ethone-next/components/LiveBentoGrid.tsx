@@ -110,7 +110,8 @@ const LiveBentoGrid = memo(function LiveBentoGrid({
           playerTag={liveTrackerRiotTag}
           loading={loading}
           error={error}
-          className={cn("col-span-12 md:col-span-6", childHeight)}
+          compact
+          className={cn("col-span-12 lg:col-span-4", childHeight)}
         />
         <RiotGamingCard
           game="lol"
@@ -119,7 +120,8 @@ const LiveBentoGrid = memo(function LiveBentoGrid({
           playerTag={liveTrackerRiotTag}
           loading={loading}
           error={error}
-          className={cn("col-span-12 md:col-span-6", childHeight)}
+          compact
+          className={cn("col-span-12 lg:col-span-4", childHeight)}
         />
       </div>
     </div>

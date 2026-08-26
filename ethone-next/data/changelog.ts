@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.80",
+  date: "2026-08-26",
+  title: "Riot — taille des cartes et niveau 3D",
+  items: [
+    "Les cartes Valorant et LoL dans le LiveBentoGrid passent à la même taille `col-span-4` que les autres cartes.",
+    "Activation du mode `compact` pour un rendu cohérent dans la grille.",
+    "Uniformisation du niveau 3D (Tilt `max={6}`) et du glare avec les cellules de Connexions.",
+    "Raccourcissement du label LoL pour éviter le tronquage.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.80.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.80",
+  date: "2026-08-26",
+  title: "Riot — card sizing and 3D level",
+  items: [
+    "Valorant and LoL cards in LiveBentoGrid now use `col-span-4` like the other cards.",
+    "Enabled `compact` mode for consistent rendering in the grid.",
+    "Unified 3D tilt level (`max={6}`) and glare with the Connections cells.",
+    "Shortened LoL label to prevent truncation.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.80.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.80",
+  date: "2026-08-26",
+  title: "Riot — tamaño de tarjetas y nivel 3D",
+  items: [
+    "Las tarjetas Valorant y LoL en LiveBentoGrid ahora usan `col-span-4` como las demás.",
+    "Modo `compact` activado para un renderizado coherente.",
+    "Nivel de inclinación 3D (`max={6}`) y glare unificados con las celdas de Conexiones.",
+    "Etiqueta LoL acortada para evitar truncamiento.",
+    "Validación : build, lint.",
+    "Versión : v1.9.80.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.80",
+  date: "2026-08-26",
+  title: "Riot — Kartengröße und 3D-Neigung",
+  items: [
+    "Valorant- und LoL-Karten im LiveBentoGrid verwenden jetzt `col-span-4` wie die anderen Karten.",
+    "`compact`-Modus aktiviert für konsistentes Rendering im Raster.",
+    "3D-Neigungsstufe (`max={6}`) und Glare mit den Verbindungszellen vereinheitlicht.",
+    "LoL-Label verkürzt, um Abschneiden zu vermeiden.",
+    "Validierung: build, lint.",
+    "Version: v1.9.80.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.79",
   date: "2026-08-26",
   title: "Activity Hub — insights, export et gestion",

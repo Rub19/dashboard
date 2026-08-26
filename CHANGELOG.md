@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.38 — 2026-08-26
+
+**ETHONE — Mobile login pass 8 (accessibilité)**
+
+- Les onglets de mode d'authentification annoncent `aria-pressed`.
+- Les liens secondaires (créer un compte, déjà un compte, mot de passe oublié) sont désactivés pendant le chargement.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.37 — 2026-08-26
 
 **ETHONE — TopBar : switch Dynamic Island**

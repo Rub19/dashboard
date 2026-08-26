@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.38",
+  date: "2026-08-26",
+  title: "Mobile login pass 8 — accessibilité",
+  items: [
+    "Les onglets de mode d'authentification annoncent `aria-pressed`.",
+    "Les liens secondaires (créer un compte, déjà un compte, mot de passe oublié) sont désactivés pendant le chargement.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.38.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.38",
+  date: "2026-08-26",
+  title: "Mobile login pass 8 — accessibility",
+  items: [
+    "Auth mode tabs now expose `aria-pressed`.",
+    "Secondary links (create account, already have an account, forgot password) are disabled during loading.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.38.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.38",
+  date: "2026-08-26",
+  title: "Mobile login pass 8 — accesibilidad",
+  items: [
+    "Las pestañas de modo de autenticación ahora exponen `aria-pressed`.",
+    "Los enlaces secundarios (crear cuenta, ya tengo cuenta, contraseña olvidada) se desactivan durante la carga.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.38.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.38",
+  date: "2026-08-26",
+  title: "Mobile Login Pass 8 — Barrierefreiheit",
+  items: [
+    "Auth-Modus-Tabs zeigen jetzt `aria-pressed` an.",
+    "Sekundäre Links (Konto erstellen, bereits Konto, Passwort vergessen) sind während des Ladens deaktiviert.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.38.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.37",
   date: "2026-08-26",
   title: "TopBar — switch Dynamic Island",

@@ -559,6 +559,7 @@ export default function LoginPage() {
                       type="button"
                       onClick={() => { triggerHaptic("light"); setModeAndReset(m); }}
                       disabled={isLoading}
+                      aria-pressed={active}
                       className={cn(
                         "relative z-10 select-none rounded-xl px-1 py-2.5 text-[10px] font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-raised)] sm:px-2 sm:text-xs",
                         compactLandscape && "py-2",
@@ -691,7 +692,7 @@ export default function LoginPage() {
                   <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
                     <Switch checked={rememberMe} onChange={setRememberMe} label={i18n("rememberMe", "Rester connecté")} id="remember-me" size="lg" />
                     {mode === "password" && (
-                      <button type="button" onClick={() => router.push("/password-recovery")} className="text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)]">
+                      <button type="button" onClick={() => router.push("/password-recovery")} disabled={isLoading || isSuccess} className="text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] disabled:opacity-40">
                         {i18n("forgotPassword", "Mot de passe oublié ?")}
                       </button>
                     )}
@@ -783,11 +784,11 @@ export default function LoginPage() {
 
             <div className={cn("mt-6 text-center text-xs text-[var(--text-muted)]", compactLandscape && "mt-4")}>
               {mode === "register" ? (
-                <button type="button" onClick={() => { triggerHaptic("light"); setModeAndReset("password"); }} className="h-10 rounded-lg px-3 py-2 text-[var(--accent-primary)] transition-all hover:opacity-80 active:scale-95">
+                <button type="button" onClick={() => { triggerHaptic("light"); setModeAndReset("password"); }} disabled={isLoading || isSuccess} className="h-10 rounded-lg px-3 py-2 text-[var(--accent-primary)] transition-all hover:opacity-80 active:scale-95 disabled:opacity-40 disabled:active:scale-100">
                   {i18n("alreadyHaveAccount", "Déjà un compte ? Se connecter")}
                 </button>
               ) : (
-                <button type="button" onClick={() => { triggerHaptic("light"); setModeAndReset("register"); }} className="h-10 rounded-lg px-3 py-2 text-[var(--accent-primary)] transition-all hover:opacity-80 active:scale-95">
+                <button type="button" onClick={() => { triggerHaptic("light"); setModeAndReset("register"); }} disabled={isLoading || isSuccess} className="h-10 rounded-lg px-3 py-2 text-[var(--accent-primary)] transition-all hover:opacity-80 active:scale-95 disabled:opacity-40 disabled:active:scale-100">
                   {i18n("createAccount", "Créer un compte")}
                 </button>
               )}

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import ClientImage from "@/components/ClientImage";
 import { cloneElement, memo, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -162,13 +162,15 @@ const SidebarProfile = memo(function SidebarProfile({ collapsed }: { collapsed: 
         collapsed ? "h-9 w-9" : "h-8 w-8"
       )}>
         {avatarUrl ? (
-          <Image
+          <ClientImage
             src={avatarUrl}
             alt={displayName}
             width={32}
             height={32}
-            unoptimized
             className="h-full w-full object-cover"
+            fallback={
+              <User className={cn("text-[var(--text-muted)]", collapsed ? "h-3.5 w-3.5" : "h-4 w-4")} />
+            }
           />
         ) : (
           <User className={cn("text-[var(--text-muted)]", collapsed ? "h-3.5 w-3.5" : "h-4 w-4")} />

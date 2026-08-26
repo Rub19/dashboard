@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
+import ClientImage from "@/components/ClientImage";
 import { GripVertical, Radio, Maximize2, ChevronDown, X, Music, ClipboardPaste } from "lucide-react";
 import { useLiveWidgetStore } from "@/lib/hooks/useLiveWidgetStore";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -221,13 +221,17 @@ export default function LiveWidget() {
                   {nowPlaying?.isPlaying ? (
                     <div className="flex items-center gap-3 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2">
                       {nowPlaying.cover || nowPlaying.artworkUrl ? (
-                        <Image
-                          src={nowPlaying.cover || nowPlaying.artworkUrl || ""}
+                        <ClientImage
+                          src={nowPlaying.cover || nowPlaying.artworkUrl}
                           alt={nowPlaying.title || ""}
                           width={36}
                           height={36}
-                          unoptimized
                           className="h-9 w-9 shrink-0 rounded-lg object-cover"
+                          fallback={
+                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+                              <Icon name="disc" className={`h-5 w-5 ${nowPlaying.isPlaying ? "animate-spin" : ""}`} />
+                            </span>
+                          }
                         />
                       ) : (
                         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
@@ -281,13 +285,17 @@ export default function LiveWidget() {
                     <div className="flex items-center gap-3 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5">
                       <div className="relative h-10 w-10 shrink-0">
                         {discordAvatarUrl ? (
-                          <Image
+                          <ClientImage
                             src={discordAvatarUrl}
                             alt={discordDisplayName}
                             width={40}
                             height={40}
-                            unoptimized
                             className="h-full w-full rounded-xl object-cover ring-1 ring-[var(--text-primary)]/10"
+                            fallback={
+                              <span className={cn("flex h-full w-full items-center justify-center rounded-xl text-sm font-bold", statusTone)}>
+                                {discordDisplayName.slice(0, 2).toUpperCase()}
+                              </span>
+                            }
                           />
                         ) : (
                           <span className={cn("flex h-full w-full items-center justify-center rounded-xl text-sm font-bold", statusTone)}>
@@ -322,13 +330,17 @@ export default function LiveWidget() {
                   {lanyardSpotify?.playing && (
                     <div className="flex items-center gap-3 rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5">
                       {lanyardSpotify.artworkUrl || lanyardSpotify.artwork ? (
-                        <Image
-                          src={lanyardSpotify.artworkUrl || lanyardSpotify.artwork || ""}
+                        <ClientImage
+                          src={lanyardSpotify.artworkUrl || lanyardSpotify.artwork}
                           alt={lanyardSpotify.title || ""}
                           width={36}
                           height={36}
-                          unoptimized
                           className="h-9 w-9 shrink-0 rounded-lg object-cover"
+                          fallback={
+                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+                              <Music className="h-5 w-5" />
+                            </span>
+                          }
                         />
                       ) : (
                         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">

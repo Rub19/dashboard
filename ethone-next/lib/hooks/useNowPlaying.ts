@@ -10,6 +10,14 @@ type ApiData = Record<string, unknown>;
 function asStr(value: unknown): string | undefined {
   if (typeof value === "string") return value;
   if (typeof value === "number") return String(value);
+  if (value !== null && typeof value === "object") {
+    if ("url" in value && typeof (value as Record<string, unknown>).url === "string") {
+      return (value as Record<string, unknown>).url as string;
+    }
+    if ("src" in value && typeof (value as Record<string, unknown>).src === "string") {
+      return (value as Record<string, unknown>).src as string;
+    }
+  }
   return undefined;
 }
 

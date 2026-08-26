@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.26 — 2026-08-26
+
+**ETHONE — Audit et robustesse du chargement des images**
+
+- `ClientImage` : fallback par défaut depuis `alt` si aucun fourni, timeout 8 s, `crossOrigin='anonymous'`, acceptation des `data:image`.
+- Remplacement de `next/image` par `ClientImage` dans `LiveWidget`, `LiveWidgets`, `Sidebar`, `UserProfileDropdown`, `UserProfileCard`.
+- `useNowPlaying` : extraction automatique des URLs dans les objets `url`/`src` pour les couvertures.
+- `SocialDiscordCard` : pas de fond par défaut si l'image de couverture échoue.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.25 — 2026-08-26
 
 **ETHONE — Polish Notes et corrections visuelles**

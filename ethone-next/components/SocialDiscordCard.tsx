@@ -215,6 +215,7 @@ const SocialDiscordCard = memo(function SocialDiscordCard({
             fill
             className="!z-0 object-cover opacity-20 blur-sm"
             priority
+            fallback={null}
           />
           <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
         </div>

@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.26",
+  date: "2026-08-26",
+  title: "Audit et robustesse du chargement des images",
+  items: [
+    "`ClientImage` : fallback par défaut basé sur `alt` si aucun fourni, timeout augmenté à 8 s, CORS `crossOrigin='anonymous'`, URLs `data:image` acceptées.",
+    "Remplacement de `next/image` par `ClientImage` dans `LiveWidget`, `LiveWidgets`, `Sidebar`, `UserProfileDropdown`, `UserProfileCard`.",
+    "`useNowPlaying` : extraction automatique des URLs dans les objets `url`/`src` pour les couvertures Spotify/Discord.",
+    "`SocialDiscordCard` : pas de fond par défaut si l'image de couverture échoue.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.26.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.26",
+  date: "2026-08-26",
+  title: "Image loading audit and robustness",
+  items: [
+    "`ClientImage` : default fallback from `alt` if none provided, timeout raised to 8s, `crossOrigin='anonymous'`, `data:image` URLs accepted.",
+    "Replaced `next/image` with `ClientImage` in `LiveWidget`, `LiveWidgets`, `Sidebar`, `UserProfileDropdown`, `UserProfileCard`.",
+    "`useNowPlaying` : auto-extract `url`/`src` from objects for Spotify/Discord covers.",
+    "`SocialDiscordCard` : no background fallback when the cover image fails.",
+    "Validation: build, lint.",
+    "Version badge bottom-right: v1.9.26.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.26",
+  date: "2026-08-26",
+  title: "Auditoría y robustez de carga de imágenes",
+  items: [
+    "`ClientImage` : fallback por defecto desde `alt` si no se proporciona, timeout subido a 8 s, `crossOrigin='anonymous'`, URLs `data:image` aceptadas.",
+    "Reemplazo de `next/image` por `ClientImage` en `LiveWidget`, `LiveWidgets`, `Sidebar`, `UserProfileDropdown`, `UserProfileCard`.",
+    "`useNowPlaying` : extracción automática de URLs en objetos `url`/`src` para portadas Spotify/Discord.",
+    "`SocialDiscordCard` : sin fondo de respaldo cuando la imagen de portada falla.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.26.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.26",
+  date: "2026-08-26",
+  title: "Bildlade-Audit und Robustheit",
+  items: [
+    "`ClientImage` : Standard-Fallback aus `alt`, wenn keiner angegeben, Timeout auf 8 s erhöht, `crossOrigin='anonymous'`, `data:image`-URLs erlaubt.",
+    "`next/image` durch `ClientImage` ersetzt in `LiveWidget`, `LiveWidgets`, `Sidebar`, `UserProfileDropdown`, `UserProfileCard`.",
+    "`useNowPlaying` : automatische URL-Extraktion aus `url`/`src`-Objekten für Spotify/Discord-Cover.",
+    "`SocialDiscordCard` : kein Hintergrund-Fallback, wenn das Coverbild fehlschlägt.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.26.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.25",
   date: "2026-08-26",
   title: "Polish Notes et corrections visuelles",

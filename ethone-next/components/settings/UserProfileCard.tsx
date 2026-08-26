@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import Image from "next/image";
+import ClientImage from "@/components/ClientImage";
 import Link from "next/link";
 import { User, Key, Camera, Eye, EyeOff } from "lucide-react";
 import { useProfile } from "@/lib/hooks/useProfile";
@@ -90,13 +90,13 @@ export default function UserProfileCard({
         <div className="relative shrink-0">
           <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--panel-bg)]">
             {avatarUrl ? (
-              <Image
+              <ClientImage
                 src={avatarUrl}
                 alt={displayName}
                 width={56}
                 height={56}
-                unoptimized
                 className="h-full w-full object-cover"
+                fallback={<User className="h-6 w-6 text-[var(--text-muted)]" />}
               />
             ) : (
               <User className="h-6 w-6 text-[var(--text-muted)]" />

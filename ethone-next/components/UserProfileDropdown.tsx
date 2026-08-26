@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Image from "next/image";
+import ClientImage from "@/components/ClientImage";
 import { useRouter } from "next/navigation";
 import { User } from "lucide-react";
 import { Icon } from "@/lib/icons";
@@ -115,7 +115,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = "v1.9.25";
+  const VERSION_LABEL = "v1.9.26";
 
   const menuItems = [
     {
@@ -196,14 +196,13 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
             <div className="pointer-events-none relative flex h-7 w-7 shrink-0 items-center justify-center">
               <div className="pointer-events-none flex h-full w-full items-center justify-center overflow-hidden rounded-full border border-[var(--text-primary)]/10 bg-gradient-to-tr from-[var(--accent-primary)] to-[var(--info)] text-[var(--accent-primary)]">
                 {avatarUrl ? (
-                  <Image
+                  <ClientImage
                     src={avatarUrl}
                     alt=""
                     width={36}
                     height={36}
-                    unoptimized
-                    referrerPolicy="no-referrer"
                     className="pointer-events-none h-full w-full object-cover"
+                    fallback={<User className="pointer-events-none h-4 w-4" />}
                   />
                 ) : (
                   <User className="pointer-events-none h-4 w-4" />
@@ -242,14 +241,17 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
               <div className="relative flex h-12 w-12 shrink-0 items-center justify-center">
                 <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-xl border border-[var(--panel-border)] bg-gradient-to-tr from-[var(--accent-primary)]/20 to-[var(--accent-secondary)]/20 text-[var(--text-primary)]">
                   {avatarUrl ? (
-                    <Image
+                    <ClientImage
                       src={avatarUrl}
                       alt=""
                       width={48}
                       height={48}
-                      unoptimized
-                      referrerPolicy="no-referrer"
                       className="h-full w-full object-cover"
+                      fallback={
+                        <span className="text-sm font-bold">
+                          {initials(displayName)}
+                        </span>
+                      }
                     />
                   ) : (
                     <span className="text-sm font-bold">

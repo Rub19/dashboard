@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import SafeImage from "@/components/SafeImage";
 import ClientImage from "@/components/ClientImage";
@@ -477,7 +476,7 @@ export default function LiveWidgets({
                 {steamRecentGames.slice(0, 5).map((g, i) => (
                   <li key={i} className="flex items-center gap-2 text-sm">
                     {g.iconUrl ? (
-                      <Image src={String(g.iconUrl)} alt="" width={24} height={24} unoptimized className="h-6 w-6 rounded object-cover" />
+                      <ClientImage src={String(g.iconUrl)} alt="" width={24} height={24} className="h-6 w-6 rounded object-cover" fallback={<span className="flex h-6 w-6 items-center justify-center rounded bg-[var(--panel-bg)] text-[10px]">#</span>} />
                     ) : (
                       <span className="flex h-6 w-6 items-center justify-center rounded bg-[var(--panel-bg)] text-[10px]">#</span>
                     )}
@@ -500,7 +499,7 @@ export default function LiveWidgets({
                 {steamOwnedGames.slice(0, 5).map((g, i) => (
                   <li key={i} className="flex items-center gap-2 text-sm">
                     {g.iconUrl ? (
-                      <Image src={String(g.iconUrl)} alt="" width={24} height={24} unoptimized className="h-6 w-6 rounded object-cover" />
+                      <ClientImage src={String(g.iconUrl)} alt="" width={24} height={24} className="h-6 w-6 rounded object-cover" fallback={<span className="flex h-6 w-6 items-center justify-center rounded bg-[var(--panel-bg)] text-[10px]">#</span>} />
                     ) : (
                       <span className="flex h-6 w-6 items-center justify-center rounded bg-[var(--panel-bg)] text-[10px]">#</span>
                     )}
@@ -523,7 +522,7 @@ export default function LiveWidgets({
                 {steamAchievements.slice(0, 5).map((a, i) => (
                   <li key={i} className="flex items-center gap-2 text-sm">
                     {a.iconUrl ? (
-                      <Image src={String(a.iconUrl)} alt="" width={24} height={24} unoptimized className="h-6 w-6 rounded object-cover" />
+                      <ClientImage src={String(a.iconUrl)} alt="" width={24} height={24} className="h-6 w-6 rounded object-cover" fallback={<span className="flex h-6 w-6 items-center justify-center rounded bg-[var(--panel-bg)] text-[10px]">#</span>} />
                     ) : (
                       <span className="flex h-6 w-6 items-center justify-center rounded bg-[var(--panel-bg)] text-[10px]">#</span>
                     )}
@@ -891,7 +890,7 @@ export default function LiveWidgets({
         </div>
         <div className="flex items-center gap-3">
           {toStr(w.iconUrl) ? (
-            <Image src={toStr(w.iconUrl) || ""} alt="" width={56} height={56} unoptimized className="h-14 w-14 object-contain" />
+            <ClientImage src={toStr(w.iconUrl) || ""} alt="" width={56} height={56} className="h-14 w-14 object-contain" fallback={<Icon name="cloudSun" className="h-14 w-14 text-[var(--warning)]" />} />
           ) : (
             <Icon name="cloudSun" className="h-14 w-14 text-[var(--warning)]" />
           )}

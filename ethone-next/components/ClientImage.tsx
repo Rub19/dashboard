@@ -23,10 +23,10 @@ type ClientImageProps = {
 type ImageStatus = "idle" | "loading" | "ok" | "error";
 
 function isValidImageUrl(src?: string): src is string {
-  return typeof src === "string" && src.length > 0 && /^https?:\/\/\S+/.test(src);
+  return typeof src === "string" && src.length > 0 && /^(https?:\/\/|data:image\/)\S+/.test(src);
 }
 
-export function useClientImage(candidates: (string | undefined)[], timeoutMs = 4000) {
+export function useClientImage(candidates: (string | undefined)[], timeoutMs = 8000) {
   const sources = useMemo(() => candidates.filter(isValidImageUrl), [candidates]);
   const [index, setIndex] = useState(0);
   const [status, setStatus] = useState<ImageStatus>(sources.length > 0 ? "loading" : "error");
@@ -107,7 +107,7 @@ export default function ClientImage({
   className,
   style,
   fallback,
-  timeoutMs = 4000,
+  timeoutMs = 8000,
   priority,
   loading,
   onResolve,
@@ -179,14 +179,27 @@ export default function ClientImage({
     className
   );
 
+  const initial = (alt || "?").slice(0, 2).toUpperCase();
+  const resolvedFallback = fallback !== undefined ? fallback : (
+    <span
+      className={cn(
+        "inline-flex h-full w-full items-center justify-center overflow-hidden bg-[var(--panel-bg)] text-[10px] font-medium text-[var(--text-primary)]",
+        className
+      )}
+      aria-hidden="true"
+    >
+      {initial}
+    </span>
+  );
+
   return (
     <span
       className={cn("relative inline-flex", fill && "h-full w-full")}
       style={style}
       aria-label={alt || undefined}
     >
-      {status !== "ok" && fallback && (
-        <span className={cn("absolute inset-0 z-0", fill && "h-full w-full")}>{fallback}</span>
+      {status !== "ok" && (
+        <span className={cn("absolute inset-0 z-0", fill && "h-full w-full")}>{resolvedFallback}</span>
       )}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -203,6 +216,7 @@ export default function ClientImage({
         onError={handleError}
         loading={priority ? "eager" : loading}
         decoding={priority ? "sync" : "async"}
+        crossOrigin="anonymous"
         referrerPolicy="no-referrer"
       />
     </span>

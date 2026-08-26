@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.34 — 2026-08-26
+
+**ETHONE — Version update notif + cache fix**
+
+- `/version.json` : headers `no-cache, no-store, must-revalidate` pour éviter le cache Cloudflare/navigateur.
+- `useVersionChecker` : fetch en `cache: reload` + headers anti-cache ; expose toujours la dernière version distante à l'UI.
+- `VersionPill` affiche désormais la dernière version distante connue (pas seulement `localStorage`).
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.33 — 2026-08-26
 
 **ETHONE — Mobile login pass 6 (focus au changement de mode)**

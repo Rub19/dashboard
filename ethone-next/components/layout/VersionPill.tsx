@@ -35,7 +35,7 @@ export default function VersionPill() {
   const { currentData, newData, hasUpdate } = useVersionChecker();
 
   const showUpdate = hasUpdate || isDifferentBuild(currentData, newData);
-  const data = showUpdate ? newData : currentData;
+  const data = newData ?? currentData;
   const label = formatVersion(data?.version ?? null);
   const buildInfo = formatBuildInfo(data) || i18n("noBuildInfo", "Aucune information de build");
   const title =

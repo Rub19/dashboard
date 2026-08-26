@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.34",
+  date: "2026-08-26",
+  title: "Version update notif + cache fix",
+  items: [
+    "`/version.json` : headers `no-cache, no-store, must-revalidate` pour éviter le cache Cloudflare/navigateur.",
+    "`useVersionChecker` : fetch en `cache: reload` + headers anti-cache ; expose toujours la dernière version distante à l'UI.",
+    "`VersionPill` affiche désormais la dernière version distante connue (pas seulement localStorage).",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.34.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.34",
+  date: "2026-08-26",
+  title: "Version update notif + cache fix",
+  items: [
+    "`/version.json` : `no-cache, no-store, must-revalidate` headers to prevent Cloudflare/browser caching.",
+    "`useVersionChecker` : `cache: reload` + anti-cache headers ; always exposes latest remote version to the UI.",
+    "`VersionPill` now displays the latest known remote version (not just localStorage).",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.34.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.34",
+  date: "2026-08-26",
+  title: "Version update notif + cache fix",
+  items: [
+    "`/version.json` : cabeceras `no-cache, no-store, must-revalidate` para evitar caché de Cloudflare/navegador.",
+    "`useVersionChecker` : `cache: reload` + cabeceras anti-caché ; expone siempre la última versión remota en la UI.",
+    "`VersionPill` ahora muestra la última versión remota conocida (no solo localStorage).",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.34.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.34",
+  date: "2026-08-26",
+  title: "Version update notif + cache fix",
+  items: [
+    "`/version.json` : `no-cache, no-store, must-revalidate` Header, um Cloudflare/Browser-Caching zu vermeiden.",
+    "`useVersionChecker` : `cache: reload` + Anti-Cache Header ; zeigt immer die neueste Remote-Version in der UI.",
+    "`VersionPill` zeigt jetzt die neueste bekannte Remote-Version (nicht nur localStorage).",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.34.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.33",
   date: "2026-08-26",
   title: "Mobile login pass 6 — focus au changement de mode",

@@ -28,8 +28,12 @@ async function fetchVersion(): Promise<VersionData | null> {
   const tryFetch = async (path: string) => {
     try {
       const res = await fetch(`${path}?t=${Date.now()}`, {
-        cache: "no-store",
-        headers: { Accept: "application/json" },
+        cache: "reload",
+        headers: {
+          Accept: "application/json",
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          Pragma: "no-cache",
+        },
       });
       if (!res.ok) return null;
       const data = (await res.json()) as unknown;
@@ -115,11 +119,15 @@ export function useVersionChecker(): UseVersionChecker {
     saveStored(data);
   }, []);
 
-  const setAsNew = useCallback((data: VersionData) => {
+  const setAsRemote = useCallback((data: VersionData) => {
     newDataRef.current = data;
     setNewData(data);
-    setHasUpdate(true);
   }, []);
+
+  const setAsNew = useCallback((data: VersionData) => {
+    setAsRemote(data);
+    setHasUpdate(true);
+  }, [setAsRemote]);
 
   const check = useCallback(async () => {
     if (checkingRef.current) return;
@@ -154,12 +162,17 @@ export function useVersionChecker(): UseVersionChecker {
         const dismissedAt = Number(localStorage.getItem(DISMISS_KEY) || "0");
         if (now - dismissedAt > DISMISS_COOLDOWN) {
           setAsNew(remote);
+        } else {
+          // dismissed recently, but still expose latest remote to the UI
+          setAsRemote(remote);
         }
+      } else {
+        setAsRemote(remote);
       }
     } finally {
       checkingRef.current = false;
     }
-  }, [setAsCurrent, setAsNew]);
+  }, [setAsCurrent, setAsNew, setAsRemote]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;

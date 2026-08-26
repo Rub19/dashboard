@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.37",
+  date: "2026-08-26",
+  title: "TopBar — switch Dynamic Island",
+  items: [
+    "Le bouton de visibilité de la Dynamic Island est devenu un vrai switch On/Off dans la TopBar.",
+    "Utilisation du composant `Switch` standard, avec taille `sm` et labels.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.37.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.37",
+  date: "2026-08-26",
+  title: "TopBar — Dynamic Island switch",
+  items: [
+    "The Dynamic Island visibility button is now a real On/Off switch in the TopBar.",
+    "Uses the standard `Switch` component, with `sm` size and labels.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.37.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.37",
+  date: "2026-08-26",
+  title: "TopBar — switch Dynamic Island",
+  items: [
+    "El botón de visibilidad de la Dynamic Island ahora es un interruptor On/Off real en la TopBar.",
+    "Usa el componente `Switch` estándar, con tamaño `sm` y etiquetas.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.37.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.37",
+  date: "2026-08-26",
+  title: "TopBar — Dynamic Island Switch",
+  items: [
+    "Der Dynamic Island-Sichtbarkeitsknopf ist nun ein echter On/Off-Schalter in der TopBar.",
+    "Verwendet die Standardkomponente `Switch`, Größe `sm` mit Labels.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.37.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.36",
   date: "2026-08-26",
   title: "Mobile login pass 7 — clavier iOS",

@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.37 — 2026-08-26
+
+**ETHONE — TopBar : switch Dynamic Island**
+
+- Le bouton de visibilité de la Dynamic Island est devenu un vrai switch On/Off dans la TopBar.
+- Utilisation du composant `Switch` standard, avec taille `sm` et labels.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.36 — 2026-08-26
 
 **ETHONE — Mobile login pass 7 (clavier iOS)**

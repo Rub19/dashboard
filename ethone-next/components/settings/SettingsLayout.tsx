@@ -198,11 +198,11 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
                 type="text"
                 value={form.query}
                 onChange={(e) => form.setQuery(e.target.value)}
-                placeholder={i18n("journalSearchPlaceholder") || "Rechercher..."}
-                aria-label={i18n("journalSearchPlaceholder") || "Rechercher"}
+                placeholder={i18n("settingsSearchPlaceholder", "Rechercher dans les réglages...")}
+                aria-label={i18n("settingsSearchPlaceholder", "Rechercher dans les réglages")}
                 icon="search"
                 inputSize="compact"
-                className="w-full min-w-0 sm:w-56"
+                className="w-full min-w-0 sm:w-80"
               />
             </form>
 
@@ -244,6 +244,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
                 size="md"
                 leftIcon={<Save className="h-3.5 w-3.5" />}
                 onClick={handleSave}
+                disabled={!form.hasExplicitChanges}
               >
                 {i18n("save") || "Enregistrer"}
               </Button>

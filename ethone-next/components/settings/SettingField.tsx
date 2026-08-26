@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useId } from "react";
+import { memo } from "react";
 import { Icon } from "@/lib/icons";
 import { useSettings } from "@/components/SettingsProvider";
 import { DEFAULTS } from "@/lib/settings";
@@ -85,9 +85,8 @@ function SettingField({ field }: { field: FieldDef }) {
 
   const isDirty = JSON.stringify(value) !== JSON.stringify(defaultValue);
 
-  const fieldId = useId();
-  const labelId = `${fieldId}-label`;
-  const descId = `${fieldId}-desc`;
+  const labelId = `${settingKey}-label`;
+  const descId = `${settingKey}-desc`;
   const describedBy = field.description ? descId : undefined;
 
   const onChange = async (v: unknown) => {
@@ -190,10 +189,10 @@ function SettingField({ field }: { field: FieldDef }) {
       data-setting-key={settingKey}
       data-setting-path={path}
       data-setting-label={field.label}
-      className={`relative px-4 py-2 transition-opacity ${hidden ? "hidden" : ""}`}
+      className={`relative px-4 py-3 transition-opacity ${hidden ? "hidden" : ""}`}
     >
-      <div className="flex min-h-[44px] flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
-        <div className="flex min-w-0 flex-1 items-start gap-2.5">
+      <div className="grid min-h-[44px] grid-cols-1 items-start gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)]">
+        <div className="flex min-w-0 items-start gap-2.5">
           {isDirty && (
             <span
               className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[var(--accent-primary)]"
@@ -215,19 +214,19 @@ function SettingField({ field }: { field: FieldDef }) {
             )}
           </div>
         </div>
-        <div className="flex w-full min-w-0 items-center gap-2 sm:w-auto">
+        <div className="flex min-w-0 items-center gap-2">
           {isDirty && (
             <button
               type="button"
               onClick={handleUndo}
-              className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-[var(--panel-radius)] p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--accent-primary)]"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.05] hover:text-[var(--accent-primary)]"
               title="Rétablir la valeur par défaut"
               aria-label="Rétablir la valeur par défaut"
             >
               <Icon name="rotate-ccw" className="h-3.5 w-3.5" />
             </button>
           )}
-          {control}
+          <div className="min-w-0 flex-1">{control}</div>
         </div>
       </div>
     </div>

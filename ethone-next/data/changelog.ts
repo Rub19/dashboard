@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.78",
+  date: "2026-08-26",
+  title: "Activity Hub — timeline groupée et recherche",
+  items: [
+    "Regroupement des événements similaires dans la timeline (fenêtre de 12 minutes).",
+    "Expansion d'un groupe au clic.",
+    "Raccourci clavier Ctrl+K / ⌘+K pour focus la recherche.",
+    "Empty state propre avec titre, description et lien vers le dashboard.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.78.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.78",
+  date: "2026-08-26",
+  title: "Activity Hub — grouped timeline and search",
+  items: [
+    "Grouped similar events in timeline (12-minute window).",
+    "Expand a group on click.",
+    "Ctrl+K / ⌘+K keyboard shortcut to focus search.",
+    "Clean empty state with title, description, and link to dashboard.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.78.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.78",
+  date: "2026-08-26",
+  title: "Activity Hub — timeline agrupada y búsqueda",
+  items: [
+    "Agrupación de eventos similares en la timeline (ventana de 12 minutos).",
+    "Expansión de un grupo al hacer clic.",
+    "Atajo de teclado Ctrl+K / ⌘+K para enfocar la búsqueda.",
+    "Empty state limpio con título, descripción y enlace al dashboard.",
+    "Validación : build, lint.",
+    "Versión : v1.9.78.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.78",
+  date: "2026-08-26",
+  title: "Activity Hub — gruppierte Timeline und Suche",
+  items: [
+    "Ähnliche Ereignisse in der Timeline gruppieren (12-Minuten-Fenster).",
+    "Gruppe per Klick erweitern.",
+    "Tastenkürzel Strg+K / ⌘+K zur Fokussierung der Suche.",
+    "Sauberer Empty State mit Titel, Beschreibung und Link zum Dashboard.",
+    "Validierung: build, lint.",
+    "Version: v1.9.78.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.77",
   date: "2026-08-26",
   title: "Activity Hub — heatmap et filtres",

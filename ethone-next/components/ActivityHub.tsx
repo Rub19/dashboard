@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Activity, Flame, TrendingUp, CheckCircle2, RefreshCw, Loader2, AlertCircle } from "lucide-react";
 import { useItems } from "@/lib/hooks/useItems";
@@ -40,8 +40,40 @@ function formatLocalDate(d: Date, mounted: boolean): string {
   return mounted ? d.toLocaleDateString() : dateKey(d.toISOString());
 }
 
+function clusterDayEvents(list: ActivityEntry[], thresholdMs = 12 * 60 * 1000) { // 12 minutes
+  const clusters: { key: string; items: ActivityEntry[] }[] = [];
+  let current: typeof clusters[0] | null = null;
+  for (const e of list) {
+    const t = new Date(e.timestamp).getTime();
+    if (
+      current &&
+      e.title === current.items[0].title &&
+      new Date(current.items[current.items.length - 1].timestamp).getTime() - t <= thresholdMs
+    ) {
+      current.items.push(e);
+    } else {
+      const key = `${dateKey(e.timestamp)}-${e.title}-${e.id}`;
+      current = { key, items: [e] };
+      clusters.push(current);
+    }
+  }
+  return clusters;
+}
+
 function formatLocalTime(iso: string, mounted: boolean): string {
   return mounted ? new Date(iso).toLocaleTimeString() : "";
+}
+
+function formatRelative(iso: string, now: number, i18n: (k: string, ...args: unknown[]) => string): string {
+  const ms = now - new Date(iso).getTime();
+  const seconds = Math.max(0, Math.floor(ms / 1000));
+  if (seconds < 60) return i18n("justNow", "à l'instant");
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${i18n("minutesAgo", "il y a {{count}} min").replace("{{count}}", String(minutes))}`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${i18n("hoursAgo", "il y a {{count}} h").replace("{{count}}", String(hours))}`;
+  const days = Math.floor(hours / 24);
+  return `${i18n("daysAgo", "il y a {{count}} j").replace("{{count}}", String(days))}`;
 }
 
 const PERIODS = [
@@ -184,6 +216,71 @@ function TimelineItem({
   );
 }
 
+function TimelineGroup({
+  events,
+  mounted,
+  i18n,
+  now,
+  expanded,
+  onToggle,
+}: {
+  events: ActivityEntry[];
+  mounted: boolean;
+  i18n: (key: string, ...args: unknown[]) => string;
+  now: number | null;
+  expanded: boolean;
+  onToggle: () => void;
+}) {
+  const first = events[0];
+  const meta = CATEGORY_META[first.category] || CATEGORY_META.system;
+  const count = events.length;
+  return (
+    <div className="relative flex gap-3">
+      <div className="relative flex flex-col items-center">
+        <span className={cn("relative flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border", meta.bg, meta.border)}>
+          <Icon name={first.icon || "activity"} className={cn("h-4 w-4", meta.color)} />
+          <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--accent-primary)] text-[10px] font-bold text-[var(--accent-contrast)]">
+            {count}
+          </span>
+        </span>
+        <div className="mt-1 h-full w-px border-l border-[var(--text-primary)]/[0.08]" />
+      </div>
+      <div className="min-w-0 flex-1 pb-5">
+        <button type="button" onClick={onToggle} className="w-full text-left">
+          <div className="flex items-center gap-2">
+            <p className="text-xs font-semibold text-[var(--text-primary)]">
+              {count} {first.title}
+            </p>
+          </div>
+          <p className="text-[11px] text-[var(--text-muted)] mt-1">
+            {now ? formatRelative(first.timestamp, now, i18n) : ""}
+          </p>
+        </button>
+        <AnimatePresence initial={false}>
+          {expanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
+            >
+              <div className="mt-2 space-y-2 border-l border-[var(--text-primary)]/[0.08] pl-3">
+                {events.map((event) => (
+                  <div key={event.id} className="text-[11px] text-[var(--text-muted)]">
+                    <span className="font-medium text-[var(--text-primary)]">{formatLocalTime(event.timestamp, mounted)}</span>
+                    {" · "}{event.description}
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
 export default function ActivityHub() {
   const i18n = useI18n();
   const [period, setPeriod] = useState<string>("365");
@@ -192,6 +289,8 @@ export default function ActivityHub() {
   const [mounted, setMounted] = useState(false);
   const [now, setNow] = useState<number | null>(null);
   const [today, setToday] = useState<Date | null>(null);
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+  const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -199,6 +298,18 @@ export default function ActivityHub() {
     setNow(Date.now());
     const id = setInterval(() => setNow(Date.now()), 60000);
     return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        searchRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, []);
 
   const { items: notes } = useItems("notes");
@@ -477,13 +588,14 @@ export default function ActivityHub() {
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:flex-wrap">
             <Input
+              ref={searchRef}
               type="text"
               icon="search"
               clearable
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder={i18n("journalSearchPlaceholder")}
-              aria-label={i18n("journalSearchPlaceholder")}
+              placeholder={i18n("journalSearchPlaceholder", "Rechercher... (Ctrl+K)")}
+              aria-label={i18n("journalSearchPlaceholder", "Rechercher dans votre activité")}
               inputSize="compact"
               className="min-w-0 w-full sm:w-56"
             />
@@ -567,7 +679,23 @@ export default function ActivityHub() {
       {/* Timeline */}
       <div className="bg-zinc-950/80 border border-[var(--text-primary)]/[0.08] backdrop-blur-xl rounded-2xl p-4 shadow-lg">
         {grouped.length === 0 ? (
-          <p className="text-sm text-[var(--text-muted)]">{i18n("journalNoEntries")}</p>
+          <div className="flex flex-col items-center justify-center py-10 text-center">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)]">
+              <Icon name="inbox" pack="phosphor" className="h-6 w-6" />
+            </div>
+            <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+              {i18n("activityEmptyTitle", "Aucune activité pour le moment")}
+            </h3>
+            <p className="mt-1 max-w-sm text-xs text-[var(--text-muted)]">
+              {i18n("activityEmptyDescription", "Votre activité ETHONE apparaîtra ici lorsque vous commencerez à utiliser vos services.")}
+            </p>
+            <a
+              href="/dashboard"
+              className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)]/10 px-3.5 py-2 text-xs font-medium text-[var(--accent-primary)] transition-colors hover:bg-[var(--accent-primary)]/20"
+            >
+              {i18n("exploreEthone", "Explorer ETHONE")}
+            </a>
+          </div>
         ) : (
           <div className="space-y-5">
             <AnimatePresence initial={false}>
@@ -584,9 +712,28 @@ export default function ActivityHub() {
                     {formatLocalDate(new Date(key), mounted)}
                   </span>
                   <div className="space-y-0">
-                    {group.map((event) => (
-                      <TimelineItem key={event.id} event={event} mounted={mounted} i18n={i18n} />
-                    ))}
+                    {clusterDayEvents(group).map(({ key: clusterKey, items }) =>
+                      items.length === 1 ? (
+                        <TimelineItem key={clusterKey} event={items[0]} mounted={mounted} i18n={i18n} />
+                      ) : (
+                        <TimelineGroup
+                          key={clusterKey}
+                          events={items}
+                          mounted={mounted}
+                          i18n={i18n}
+                          now={now}
+                          expanded={expandedGroups.has(clusterKey)}
+                          onToggle={() =>
+                            setExpandedGroups((prev) => {
+                              const next = new Set(prev);
+                              if (next.has(clusterKey)) next.delete(clusterKey);
+                              else next.add(clusterKey);
+                              return next;
+                            })
+                          }
+                        />
+                      )
+                    )}
                   </div>
                 </motion.div>
               ))}

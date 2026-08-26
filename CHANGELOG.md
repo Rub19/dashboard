@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.78 — 2026-08-26
+
+**ETHONE — Activity Hub : timeline groupée et recherche**
+
+- `components/ActivityHub.tsx` : regroupement automatique des événements similaires (12 minutes) avec expansion au clic.
+- `TimelineGroup` : affiche le nombre d'événements et détaille les entrées à l'expansion.
+- Raccourci `Ctrl+K` / `⌘+K` pour focus la recherche.
+- Empty state propre avec titre, description et bouton "Explorer ETHONE".
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.77 — 2026-08-26
 
 **ETHONE — Activity Hub : filtres et heatmap**

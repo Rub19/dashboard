@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Inbox, Star, Send, FileEdit, Archive, Trash2, AlertTriangle, SquarePen } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -35,6 +36,24 @@ const FOLDER_ICONS: Record<MailFolder, React.ReactNode> = {
 
 export default function MailSidebar({ active, onChange, counts, unread, onCompose, canCompose = true, aliases = [], createAlias, updateAlias }: MailSidebarProps) {
   const i18n = useI18n();
+  const [storage, setStorage] = useState({ used: 1.2, total: 10 });
+
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !navigator.storage?.estimate) return;
+    navigator.storage
+      .estimate()
+      .then((est) => {
+        const total = (est.quota || 10 * 1024 ** 3) / 1024 ** 3;
+        const used = (est.usage || 0) / 1024 ** 3;
+        setStorage({ used: Math.max(0.1, used), total: Math.max(used, total) });
+      })
+      .catch(() => {});
+  }, []);
+
+  const percent = useMemo(
+    () => Math.min(100, Math.max(1, Math.round((storage.used / storage.total) * 100))),
+    [storage]
+  );
 
   return (
     <div className="flex h-full w-56 shrink-0 flex-col justify-between rounded-2xl v8-panel p-3 backdrop-blur-xl">
@@ -99,9 +118,14 @@ export default function MailSidebar({ active, onChange, counts, unread, onCompos
         <div className="rounded-xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.02] p-2.5">
           <p className="text-[10px] font-medium text-[var(--text-muted)] uppercase tracking-wider">{i18n("storage") || "Stockage"}</p>
           <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-xl bg-[var(--text-primary)]/[0.05]">
-            <div className="h-full w-[12%] rounded-xl bg-[var(--accent-primary)]" />
+            <div
+              className="h-full rounded-xl bg-[var(--accent-primary)] transition-all duration-300 motion-reduce:transition-none"
+              style={{ width: `${percent}%` }}
+            />
           </div>
-          <p className="mt-1.5 text-[10px] text-[var(--text-muted)]">{i18n("usedOf") || "12% utilisé"}</p>
+          <p className="mt-1.5 text-[10px] text-[var(--text-muted)]">
+            {storage.used.toFixed(1)} / {storage.total.toFixed(0)} Go · {percent}%
+          </p>
         </div>
       </div>
     </div>

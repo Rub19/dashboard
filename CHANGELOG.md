@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.24 — 2026-08-27
+
+**ETHONE — Riot Gaming Card : dimensions et persistence des clés**
+
+- Redimensionnement des cartes Riot pour matcher les dimensions de Minecraft / météo / Discord.
+- Correction des couleurs hardcodées (`rose` / `amber`) en variables de thème.
+- Migration Supabase : ajout de `riot` comme provider valide avec `henrikApiKey` / `riotApiKey`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.23 — 2026-08-27
 
 **ETHONE — Topbar responsive, sidebar ouverte**

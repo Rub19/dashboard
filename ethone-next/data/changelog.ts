@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.24",
+  date: "2026-08-27",
+  title: "Riot Gaming Card — dimensions et persistence clés",
+  items: [
+    "Redimensionnement des cartes Riot pour matcher Minecraft / météo / Discord.",
+    "Correction des couleurs hardcodées (rose/amber) en variables de thème.",
+    "Migration Supabase : ajout de `riot` comme provider valide avec `henrikApiKey` / `riotApiKey`.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.24.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.24",
+  date: "2026-08-27",
+  title: "Riot Gaming Card — sizing and key persistence",
+  items: [
+    "Resized Riot cards to match Minecraft / weather / Discord cards.",
+    "Fixed hardcoded rose/amber colors to theme variables.",
+    "Supabase migration: added `riot` as a valid provider with `henrikApiKey` / `riotApiKey`.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.24.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.24",
+  date: "2026-08-27",
+  title: "Riot Gaming Card — tamaño y persistencia de claves",
+  items: [
+    "Redimensionamiento de las tarjetas Riot para igualar a Minecraft / clima / Discord.",
+    "Corrección de colores hardcodeados (rose/amber) a variables de tema.",
+    "Migración Supabase : añadido `riot` como proveedor válido con `henrikApiKey` / `riotApiKey`.",
+    "Validación : build, lint.",
+    "Versión : v1.10.24.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.24",
+  date: "2026-08-27",
+  title: "Riot Gaming Card — Größe und Schlüssel-Persistenz",
+  items: [
+    "Riot-Karten an Minecraft / Wetter / Discord Karten angeglichen.",
+    "Feste rose/amber Farben in Theme-Variablen korrigiert.",
+    "Supabase-Migration: `riot` als gültiger Provider mit `henrikApiKey` / `riotApiKey` hinzugefügt.",
+    "Validierung: build, lint.",
+    "Version: v1.10.24.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.23",
   date: "2026-08-27",
   title: "Topbar responsive — sidebar ouverte",

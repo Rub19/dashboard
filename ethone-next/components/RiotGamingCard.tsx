@@ -26,15 +26,13 @@ export type RiotGamingCardProps = {
 const GAME_CONFIG = {
   valorant: {
     label: "Valorant",
-    gradient: "from-rose-950/40 via-red-900/10 to-black/20 border-rose-500/20",
+    gradient: "from-rose-950/40 via-red-900/10 to-black/20 border-[var(--danger)]/20",
     accent: "text-[var(--danger)]",
-    accentBg: "bg-rose-500",
   },
   lol: {
     label: "LoL",
-    gradient: "from-sky-950/40 via-amber-900/10 to-black/20 border-amber-500/20",
+    gradient: "from-sky-950/40 via-amber-900/10 to-black/20 border-[var(--warning)]/20",
     accent: "text-[var(--warning)]",
-    accentBg: "bg-amber-500",
   },
 };
 
@@ -137,8 +135,8 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
     if (error && configured && !hasProfile) {
       return {
         text: i18n("error", "Erreur"),
-        dot: "bg-rose-400",
-        badge: "border-rose-500/30 bg-[var(--danger)]/10 text-rose-300",
+        dot: "bg-[var(--danger)]",
+        badge: "border-[var(--danger)]/30 bg-[var(--danger)]/10 text-[var(--danger)]",
       };
     }
     if (hasProfile) {
@@ -171,7 +169,7 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
   }, [game]);
 
   return (
-    <div className={cn("flex h-full min-h-0 flex-col v8-panel overflow-hidden bg-gradient-to-br p-4", config.gradient, className)}>
+    <div className={cn("flex h-full min-h-0 w-full flex-col v8-panel overflow-hidden bg-gradient-to-br p-4", config.gradient, className)}>
       <div className="flex items-center justify-between gap-3">
         <span className={cn("min-w-0 truncate text-[11px] font-semibold uppercase tracking-wider", config.accent)}>
           {config.label}
@@ -327,7 +325,7 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
                     key={i}
                     className={cn(
                       "h-1.5 rounded-full",
-                      r?.toLowerCase() === "victory" ? "w-3 bg-[var(--accent-primary)]" : "w-1.5 bg-rose-500"
+                      r?.toLowerCase() === "victory" ? "w-3 bg-[var(--accent-primary)]" : "w-1.5 bg-[var(--danger)]"
                     )}
                     title={asStr(getMeta(m)?.agentName)}
                   />
@@ -348,7 +346,6 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
 });
 
 const RiotGamingCard = memo(function RiotGamingCard(props: RiotGamingCardProps) {
-  const config = GAME_CONFIG[props.game];
   const { settings } = useSettings();
   const displayName = props.playerName || settings.liveTrackerRiotName;
   const displayTag = props.playerTag || settings.liveTrackerRiotTag;
@@ -360,12 +357,17 @@ const RiotGamingCard = memo(function RiotGamingCard(props: RiotGamingCardProps) 
     <TiltCard
       max={6}
       glare={settings.uiGlow}
-      className={cn(
-        "h-full min-h-0 transition-all",
-        props.game === "valorant" ? "hover:border-rose-500/25" : "hover:border-amber-500/25"
-      )}
+      className={cn("h-full min-h-0 w-full transition-all", props.className)}
     >
-      <RiotGamingCardContent {...props} className={cn(config.gradient, props.className)} />
+      <RiotGamingCardContent
+        {...props}
+        className={cn(
+          "transition-all",
+          props.game === "valorant"
+            ? "hover:border-[var(--danger)]/25"
+            : "hover:border-[var(--warning)]/25"
+        )}
+      />
     </TiltCard>
   );
 });

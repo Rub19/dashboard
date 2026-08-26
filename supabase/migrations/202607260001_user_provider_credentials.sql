@@ -3,7 +3,7 @@ begin;
 create table if not exists public.user_provider_credentials (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid not null references auth.users(id) on delete cascade,
-  provider text not null check (provider in ('steam', 'twitch', 'lastfm', 'henrik', 'tracker')),
+  provider text not null check (provider in ('steam', 'twitch', 'lastfm', 'henrik', 'tracker', 'riot')),
   credential jsonb not null,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
@@ -13,6 +13,17 @@ create table if not exists public.user_provider_credentials (
         credential ? 'clientId' and credential ? 'clientSecret'
         and char_length(credential ->> 'clientId') between 4 and 128
         and char_length(credential ->> 'clientSecret') between 4 and 128
+      )
+      when 'riot' then (
+        (
+          credential ? 'henrikApiKey'
+          and char_length(credential ->> 'henrikApiKey') between 4 and 200
+        )
+        or
+        (
+          credential ? 'riotApiKey'
+          and char_length(credential ->> 'riotApiKey') between 4 and 200
+        )
       )
       else (
         credential ? 'apiKey'

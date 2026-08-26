@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
-import { fetchWorker } from "@/lib/api";
+import { fetchWorkerCached } from "@/lib/hooks/useCachedFetch";
 import { Icon } from "@/lib/icons";
 import SearchInput from "@/components/ui/SearchInput";
 import WeatherMetricCard from "@/components/WeatherMetricCard";
@@ -102,8 +102,8 @@ export default function WeatherPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetchWorker(`/api/weather?city=${encodeURIComponent(searchTerm)}`);
-      setWeather((res?.data as WeatherData) || null);
+      const res = (await fetchWorkerCached(`/api/weather?city=${encodeURIComponent(searchTerm)}`)) as { data?: WeatherData } | null;
+      setWeather(res?.data || null);
     } catch {
       setError(i18n("weatherError"));
     } finally {
@@ -117,7 +117,7 @@ export default function WeatherPage() {
     setError(null);
     async function run() {
       try {
-        const res = await fetchWorker(`/api/weather?city=${encodeURIComponent(searchTerm)}`);
+        const res = (await fetchWorkerCached(`/api/weather?city=${encodeURIComponent(searchTerm)}`)) as { data?: WeatherData } | null;
         if (cancelled) return;
         if (res?.data) {
           setWeather(res.data as WeatherData);

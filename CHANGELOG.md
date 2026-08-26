@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.63 — 2026-08-26
+
+**ETHONE — Widget météo compact pour le Home**
+
+- Nouveau `WeatherHomeWidget` : température, condition, ville, min/max, UV.
+- Design compact cohérent avec les autres widgets du Home via le composant `Card`.
+- Petite animation d'icône subtile.
+- Clic ouvrant la page Météo complète.
+- Page Météo et `useLiveData` partagent le cache via `fetchWorkerCached`.
+- Skeleton local sans loading global.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.62 — 2026-08-26
 
 **ETHONE — Dynamic Island 2.0 : étape 6 — file d'événements**

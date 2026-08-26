@@ -7206,6 +7206,70 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.63",
+  date: "2026-08-26",
+  title: "Widget météo compact pour le Home",
+  items: [
+    "Nouveau `WeatherHomeWidget` affichant température, condition, ville, min/max, UV.",
+    "Design compact cohérent avec les autres widgets du Home via le composant `Card`.",
+    "Petite animation d'icône subtile.",
+    "Clic ouvrant la page Météo complète.",
+    "Page Météo et `useLiveData` partagent le cache via `fetchWorkerCached`.",
+    "Skeleton local sans loading global.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.63.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.63",
+  date: "2026-08-26",
+  title: "Compact weather widget for Home",
+  items: [
+    "New `WeatherHomeWidget` showing temperature, condition, city, min/max, UV.",
+    "Compact design consistent with other Home widgets using the `Card` component.",
+    "Subtle icon animation.",
+    "Click opens the full Weather page.",
+    "Weather page and `useLiveData` share cache via `fetchWorkerCached`.",
+    "Local skeleton, no global loading.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.63.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.63",
+  date: "2026-08-26",
+  title: "Widget de clima compacto para el Home",
+  items: [
+    "Nuevo `WeatherHomeWidget` con temperatura, condición, ciudad, mín/máx, UV.",
+    "Diseño compacto coherente con los otros widgets del Home mediante `Card`.",
+    "Animación de icono sutil.",
+    "Clic abre la página del tiempo completa.",
+    "Página del tiempo y `useLiveData` comparten caché vía `fetchWorkerCached`.",
+    "Skeleton local sin loading global.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.63.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.63",
+  date: "2026-08-26",
+  title: "Kompaktes Wetter-Widget für Home",
+  items: [
+    "Neues `WeatherHomeWidget` mit Temperatur, Zustand, Stadt, Min/Max, UV.",
+    "Kompaktes Design konsistent mit anderen Home-Widgets dank `Card`.",
+    "Subtile Icon-Animation.",
+    "Klick öffnet die vollständige Wetterseite.",
+    "Wetterseite und `useLiveData` teilen den Cache über `fetchWorkerCached`.",
+    "Lokales Skeleton, kein globales Loading.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.63.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.62",
   date: "2026-08-26",
   title: "Dynamic Island 2.0 — étape 6 : file d'événements",

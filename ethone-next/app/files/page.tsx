@@ -104,6 +104,7 @@ export default function FilesPage() {
   const [sort, setSort] = useState<"name" | "size" | "date" | "type">("name");
   const [showFolders, setShowFolders] = useState(false);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
+  const [showDuplicates, setShowDuplicates] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -132,6 +133,23 @@ export default function FilesPage() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [query, setQuery, addOpen, setAddOpen, previewFile, setPreviewFile]);
 
+  const { duplicateIds, duplicateCount } = useMemo(() => {
+    const groups = new Map<string, CloudFile[]>();
+    for (const file of files) {
+      if (file.isFolder) continue;
+      const key = `${file.name}|${file.size}`;
+      const group = groups.get(key) || [];
+      group.push(file);
+      groups.set(key, group);
+    }
+    const dups: CloudFile[] = [];
+    for (const [, group] of groups) {
+      if (group.length > 1) dups.push(...group);
+    }
+    const ids = new Set(dups.map((f) => f.driveFileId));
+    return { duplicateIds: ids, duplicateCount: dups.length };
+  }, [files]);
+
   const filteredFiles = useMemo(() => {
     if (favorites) return sortFiles(files, sort);
     let list = files.filter((f) => {
@@ -147,8 +165,11 @@ export default function FilesPage() {
       const q = query.toLowerCase();
       list = list.filter((f) => f.name.toLowerCase().includes(q));
     }
+    if (showDuplicates) {
+      list = list.filter((f) => !f.isFolder && duplicateIds.has(f.driveFileId));
+    }
     return sortFiles(list, sort);
-  }, [files, favorites, showFolders, parentId, trashed, query, sort]);
+  }, [files, favorites, showFolders, parentId, trashed, query, sort, showDuplicates, duplicateIds]);
 
   function getFileTime(file: CloudFile) {
     const raw = file.updatedAt || file.createdAt || 0;
@@ -474,6 +495,24 @@ export default function FilesPage() {
           aria-label={i18n("sortBy")}
           className="min-w-0"
         />
+        {duplicateCount > 0 && (
+          <button
+            type="button"
+            onClick={() => setShowDuplicates((s) => !s)}
+            className={cn(
+              "rounded-xl border px-2.5 py-1.5 text-xs font-medium transition-colors",
+              showDuplicates
+                ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
+                : "border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.25] text-[var(--text-muted)] hover:text-[var(--text-primary)]",
+            )}
+            aria-label={i18n("duplicates", "Doublons")}
+            title={i18n("duplicates", "Doublons")}
+          >
+            <Icon name="copy" className="mr-1.5 inline h-3.5 w-3.5" />
+            {duplicateCount} {i18n("duplicates", "doublons")}
+          </button>
+        )}
+
         <div className="flex items-center gap-1 rounded-xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.25] p-1">
           <button
             type="button"
@@ -503,7 +542,7 @@ export default function FilesPage() {
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        {(parentId !== null || query || showFolders || favorites || trashed || sort !== "name") && (
+        {(parentId !== null || query || showFolders || favorites || trashed || sort !== "name" || showDuplicates) && (
           <>
             {parentId !== null && (
               <Button
@@ -543,6 +582,11 @@ export default function FilesPage() {
             {sort !== "name" && (
               <Button size="sm" variant="secondary" onClick={() => setSort("name")} rightIcon={<Icon name="x" className="h-3 w-3" />}>
                 {i18n("sortBy")}: {i18n(sort)}
+              </Button>
+            )}
+            {showDuplicates && (
+              <Button size="sm" variant="secondary" onClick={() => setShowDuplicates(false)} rightIcon={<Icon name="x" className="h-3 w-3" />}>
+                {i18n("duplicates", "Doublons")}
               </Button>
             )}
           </>

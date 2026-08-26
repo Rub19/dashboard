@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.91",
+  date: "2026-08-26",
+  title: "Fichiers — phase 8 : détection de doublons",
+  items: [
+    "Détection de doublons basée sur nom + taille.",
+    "Bouton dans la barre d'outils indiquant le nombre de doublons détectés.",
+    "Mode doublon : filtre la liste pour n'afficher que les fichiers en double.",
+    "Puce de filtre active pour quitter le mode doublon.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.91.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.91",
+  date: "2026-08-26",
+  title: "Files — phase 8: duplicate detection",
+  items: [
+    "Duplicate detection based on name + size.",
+    "Toolbar button showing the number of detected duplicates.",
+    "Duplicate mode: filters the list to only show duplicate files.",
+    "Active filter chip to exit duplicate mode.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.91.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.91",
+  date: "2026-08-26",
+  title: "Archivos — fase 8: detección de duplicados",
+  items: [
+    "Detección de duplicados basada en nombre + tamaño.",
+    "Botón en la barra de herramientas que indica la cantidad de duplicados detectados.",
+    "Modo duplicado: filtra la lista para mostrar solo archivos duplicados.",
+    "Chip de filtro activo para salir del modo duplicado.",
+    "Validación : build, lint.",
+    "Versión : v1.9.91.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.91",
+  date: "2026-08-26",
+  title: "Dateien — Phase 8: Duplikat-Erkennung",
+  items: [
+    "Duplikat-Erkennung basierend auf Name + Größe.",
+    "Toolbar-Button zeigt die Anzahl erkannter Duplikate an.",
+    "Duplikat-Modus: filtert die Liste, um nur doppelte Dateien anzuzeigen.",
+    "Aktiver Filter-Chip zum Verlassen des Duplikat-Modus.",
+    "Validierung: build, lint.",
+    "Version: v1.9.91.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.90",
   date: "2026-08-26",
   title: "Fichiers — phase 7 : fichiers récemment utilisés",

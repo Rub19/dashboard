@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.91 — 2026-08-26
+
+**ETHONE — Fichiers : phase 8 détection de doublons**
+
+- `app/files/page.tsx` :
+  - Détection de doublons basée sur `nom + taille`.
+  - Bouton dans la barre d'outils affichant le nombre de fichiers en double.
+  - Clic sur le bouton = filtre la liste pour ne montrer que les doublons.
+  - Puce de filtre active pour quitter le mode doublon.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.90 — 2026-08-26
 
 **ETHONE — Fichiers : phase 7 fichiers récemment utilisés**

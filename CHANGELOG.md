@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.86 — 2026-08-26
+
+**ETHONE — Fichiers : phase 3 filtres actifs et raccourcis**
+
+- `app/files/page.tsx` :
+  - Puces de filtres actifs affichées sous la barre d'outils (recherche, dossier, favoris, corbeille, tri).
+  - Chaque puce retire son filtre au clic.
+  - Champ de recherche avec icône et bouton reset intégré.
+  - Raccourcis : `Ctrl/Cmd + K` focus recherche, `Ctrl/Cmd + U` ouvrir Ajouter, `Esc` clear/fermer.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.85 — 2026-08-26
 
 **ETHONE — Fichiers : phase 2 aperçu rapide**

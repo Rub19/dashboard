@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useCloudFiles, type CloudFile } from "@/lib/hooks/useCloudFiles";
 import { useUserState } from "@/lib/hooks/useUserState";
 import { useShares } from "@/lib/hooks/useShares";
@@ -99,6 +99,33 @@ export default function FilesPage() {
   const [submitting, setSubmitting] = useState(false);
   const [sort, setSort] = useState<"name" | "size" | "date" | "type">("name");
   const [showFolders, setShowFolders] = useState(false);
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        if (query) {
+          e.preventDefault();
+          setQuery("");
+          searchRef.current?.blur();
+        } else if (addOpen) {
+          setAddOpen(false);
+        } else if (previewFile) {
+          setPreviewFile(null);
+        }
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        searchRef.current?.focus();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "u") {
+        e.preventDefault();
+        setAddOpen(true);
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [query, setQuery, addOpen, setAddOpen, previewFile, setPreviewFile]);
 
   const filteredFiles = useMemo(() => {
     if (favorites) return sortFiles(files, sort);
@@ -406,7 +433,10 @@ export default function FilesPage() {
           }}
         />
         <Input
+          ref={searchRef}
           type="search"
+          icon="search"
+          clearable
           aria-label={i18n("searchFiles")}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -425,6 +455,53 @@ export default function FilesPage() {
           aria-label={i18n("sortBy")}
           className="min-w-0"
         />
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        {(parentId !== null || query || showFolders || favorites || trashed || sort !== "name") && (
+          <>
+            {parentId !== null && (
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => setParentId(null)}
+                rightIcon={<Icon name="x" className="h-3 w-3" />}
+              >
+                {i18n("folder")}: {files.find((f) => f.driveFileId === parentId)?.name || "..."}
+              </Button>
+            )}
+            {query && (
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => setQuery("")}
+                rightIcon={<Icon name="x" className="h-3 w-3" />}
+              >
+                {i18n("search")}: {query}
+              </Button>
+            )}
+            {showFolders && (
+              <Button size="sm" variant="secondary" onClick={() => setShowFolders(false)} rightIcon={<Icon name="x" className="h-3 w-3" />}>
+                {i18n("folders")}
+              </Button>
+            )}
+            {favorites && (
+              <Button size="sm" variant="secondary" onClick={() => setFavorites(false)} rightIcon={<Icon name="x" className="h-3 w-3" />}>
+                {i18n("favorites")}
+              </Button>
+            )}
+            {trashed && (
+              <Button size="sm" variant="secondary" onClick={() => setTrashed(false)} rightIcon={<Icon name="x" className="h-3 w-3" />}>
+                {i18n("trash")}
+              </Button>
+            )}
+            {sort !== "name" && (
+              <Button size="sm" variant="secondary" onClick={() => setSort("name")} rightIcon={<Icon name="x" className="h-3 w-3" />}>
+                {i18n("sortBy")}: {i18n(sort)}
+              </Button>
+            )}
+          </>
+        )}
       </div>
 
       {hasSelection && (

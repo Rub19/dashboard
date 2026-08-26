@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.86",
+  date: "2026-08-26",
+  title: "Fichiers — phase 3 : filtres actifs + raccourcis",
+  items: [
+    "Puces de filtres actifs affichées sous la barre d'outils (recherche, dossier, favoris, corbeille, tri, dossier courant).",
+    "Chaque puce permet de retirer son filtre en un clic.",
+    "Champ de recherche avec icône loupe et bouton de reset intégré.",
+    "Raccourcis clavier : `Ctrl/Cmd + K` pour focus recherche, `Ctrl/Cmd + U` pour ouvrir Ajouter, `Esc` pour clear/fermer.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.86.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.86",
+  date: "2026-08-26",
+  title: "Files — phase 3: active filters + shortcuts",
+  items: [
+    "Active filter chips shown below the toolbar (search, folder, favorites, trash, sort, current folder).",
+    "Each chip can remove its filter in one click.",
+    "Search input with search icon and built-in clear button.",
+    "Keyboard shortcuts: `Ctrl/Cmd + K` to focus search, `Ctrl/Cmd + U` to open Add, `Esc` to clear/close.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.86.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.86",
+  date: "2026-08-26",
+  title: "Archivos — fase 3: filtros activos + atajos",
+  items: [
+    "Chips de filtros activos bajo la barra de herramientas (búsqueda, carpeta, favoritos, papelera, orden, carpeta actual).",
+    "Cada chip puede quitar su filtro con un clic.",
+    "Campo de búsqueda con icono de lupa y botón de limpiar integrado.",
+    "Atajos de teclado: `Ctrl/Cmd + K` para enfocar búsqueda, `Ctrl/Cmd + U` para abrir Añadir, `Esc` para limpiar/cerrar.",
+    "Validación : build, lint.",
+    "Versión : v1.9.86.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.86",
+  date: "2026-08-26",
+  title: "Dateien — Phase 3: aktive Filter + Shortcuts",
+  items: [
+    "Aktive Filter-Chips unter der Toolbar (Suche, Ordner, Favoriten, Papierkorb, Sortierung, aktueller Ordner).",
+    "Jeder Chip kann seinen Filter mit einem Klick entfernen.",
+    "Suchfeld mit Lupen-Icon und integriertem Reset-Button.",
+    "Tastaturkürzel: `Strg/Cmd + K` für Suche-Fokus, `Strg/Cmd + U` zum Öffnen von Hinzufügen, `Esc` zum Schließen.",
+    "Validierung: build, lint.",
+    "Version: v1.9.86.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.85",
   date: "2026-08-26",
   title: "Fichiers — phase 2 : aperçu rapide",

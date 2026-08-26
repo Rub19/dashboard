@@ -17,8 +17,9 @@ import { useSelection } from "@/lib/hooks/useSelection";
 import BulkActionBar from "@/components/BulkActionBar";
 import { formatBytes, mimeIcon, sortFiles } from "@/lib/files";
 import FilesAdminPanel from "@/components/FilesAdminPanel";
-import FileUploader from "@/components/FileUploader";
+import FileAddModal from "@/components/FileAddModal";
 import Input from "@/components/Input";
+import Button from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
 import { Checkbox } from "@/components/ui/Checkbox";
 
@@ -57,7 +58,6 @@ type Modal =
   | { type: "drop" }
   | { type: "rename"; file: CloudFile }
   | { type: "move"; file: CloudFile }
-  | { type: "create-folder" }
   | null;
 
 export default function FilesPage() {
@@ -91,6 +91,7 @@ export default function FilesPage() {
   const { create: createDrop } = useDrops();
 
   const [modal, setModal] = useState<Modal>(null);
+  const [addOpen, setAddOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
   const [form, setForm] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -127,20 +128,14 @@ export default function FilesPage() {
     setClientId(id);
   }
 
-  async function handleCreateFolder(e: React.FormEvent) {
-    e.preventDefault();
-    if (!form.folderName || !clientId) return;
-    setSubmitting(true);
+  async function handleCreateFolder(name: string) {
+    if (!clientId) return;
     try {
-      await createFolder(form.folderName, parentId);
-      setModal(null);
-      setForm({});
+      await createFolder(name, parentId);
       success(i18n("createFolder"));
       await reload();
     } catch (err) {
       toastError(String(err));
-    } finally {
-      setSubmitting(false);
     }
   }
 
@@ -319,46 +314,48 @@ export default function FilesPage() {
 
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
-      <div className="shrink-0 mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-bold">{i18n("filesTitle")}</h1>
+      <div className="shrink-0 mb-4 flex flex-col gap-3 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.25] p-3 shadow-sm backdrop-blur-[var(--panel-blur)] sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+            <Icon name="files" className="h-5 w-5" />
+          </div>
+          <div>
+            <h1 className="text-base font-semibold leading-tight">{i18n("filesTitle")}</h1>
+            <p className="text-[10px] text-[var(--text-muted)]">
+              {clientId ? i18n("driveConnected", "Google Drive connecté") : i18n("noDriveConnected", "Aucun Drive connecté")}
+            </p>
+          </div>
+        </div>
         <div className="flex flex-wrap items-center gap-2">
-          {!clientId ? (
-            <button
-              type="button"
-              onClick={connectDrive}
-              className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm font-medium hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
+          <Button
+            size="sm"
+            onClick={() => setAddOpen(true)}
+            leftIcon={<Icon name="plus" className="h-4 w-4" />}
+          >
+            {i18n("add", "Ajouter")}
+          </Button>
+          {clientId && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => { setForm({ visibility: "public" }); setModal({ type: "drop" }); }}
+              leftIcon={<Icon name="inbox" className="h-4 w-4" />}
             >
-              <Icon name="cloud" className="h-4 w-4" /> {i18n("connectDrive")}
-            </button>
-          ) : (
-            <>
-              <button
-                type="button"
-                onClick={() => { setForm({}); setModal({ type: "create-folder" }); }}
-                className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm font-medium hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
-              >
-                <Icon name="folder-plus" className="h-4 w-4" /> {i18n("createFolder")}
-              </button>
-              <button
-                type="button"
-                onClick={() => setAdminOpen(true)}
-                className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm font-medium hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
-              >
-                <Icon name="shield" className="h-4 w-4" /> {i18n("admin")}
-              </button>
-              <button
-                type="button"
-                onClick={() => { setForm({ visibility: "public" }); setModal({ type: "drop" }); }}
-                className="flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm font-medium hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
-              >
-                <Icon name="inbox" className="h-4 w-4" /> {i18n("createDrop")}
-              </button>
-            </>
+              {i18n("createDrop")}
+            </Button>
           )}
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setAdminOpen(true)}
+            leftIcon={<Icon name="shield" className="h-4 w-4" />}
+          >
+            {i18n("admin")}
+          </Button>
           <button
             type="button"
             onClick={reload}
-            className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] p-2 text-[var(--muted)] hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]"
+            className="rounded-[var(--panel-radius)] p-2 text-[var(--text-muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]"
             aria-label={i18n("refresh")}
           >
             <Icon name="refresh-cw" className="h-4 w-4" />
@@ -366,10 +363,6 @@ export default function FilesPage() {
         </div>
       </div>
       <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
-      {clientId && (
-        <FileUploader clientId={clientId} parentId={parentId} onAllComplete={() => { success(i18n("uploadFile")); reload(); }} />
-      )}
-
       {quota && (
         <Card3D>
           <div className="space-y-2">
@@ -377,8 +370,8 @@ export default function FilesPage() {
               <span className="text-[var(--muted)]">{i18n("storageUsed")}</span>
               <span className="font-medium">{formatBytes(quota.used)} / {formatBytes(quota.total)}</span>
             </div>
-            <div className="h-2 w-full overflow-hidden rounded-xl bg-[var(--border)]">
-              <div className="h-full rounded-xl bg-violet-500" style={{ width: `${quotaPercent}%` }} />
+            <div className="h-2 w-full overflow-hidden rounded-xl bg-[var(--text-primary)]/[0.08]">
+              <div className="h-full rounded-xl bg-[var(--accent-primary)]" style={{ width: `${quotaPercent}%` }} />
             </div>
           </div>
         </Card3D>
@@ -618,7 +611,6 @@ export default function FilesPage() {
         isOpen={!!modal}
         onClose={() => setModal(null)}
         title={
-          modal?.type === "create-folder" ? i18n("createFolder") :
           modal?.type === "rename" ? i18n("renameFile") :
           modal?.type === "move" ? i18n("moveTo") :
           modal?.type === "share" ? i18n("shareFile") :
@@ -627,22 +619,6 @@ export default function FilesPage() {
         size="md"
         hideFooter
       >
-            {modal?.type === "create-folder" && (
-              <form onSubmit={handleCreateFolder} className="space-y-4">
-                <Input
-                  autoFocus
-                  type="text"
-                  value={form.folderName || ""}
-                  onChange={(e) => setForm({ ...form, folderName: e.target.value })}
-                  placeholder={i18n("newFolder")}
-                />
-                <div className="flex justify-end gap-2">
-                  <button type="button" onClick={() => setModal(null)} className="rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--panel-bg)]">{i18n("cancel")}</button>
-                  <button type="submit" disabled={submitting} className="rounded-[var(--panel-radius)] bg-[var(--accent-primary)] px-3 py-2 text-sm font-semibold text-[var(--accent-contrast)] disabled:opacity-50">{i18n("create")}</button>
-                </div>
-              </form>
-            )}
-
             {modal?.type === "rename" && (
               <form onSubmit={handleRename} className="space-y-4">
                 <Input
@@ -784,6 +760,16 @@ export default function FilesPage() {
               </form>
             )}
       </Modal>
+
+      <FileAddModal
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        clientId={clientId}
+        parentId={parentId}
+        onUploadComplete={() => { success(i18n("uploadFile")); reload(); }}
+        onCreateFolder={handleCreateFolder}
+        onConnectDrive={connectDrive}
+      />
 
       <Modal
         isOpen={adminOpen}

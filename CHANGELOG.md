@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.84 — 2026-08-26
+
+**ETHONE — Fichiers : phase 1 layout + modale Ajouter**
+
+- `components/FileAddModal.tsx` : nouvelle modale Ajouter avec 4 onglets (Téléverser / Lien / Google Drive / Dossier).
+- `app/files/page.tsx` : header refondu avec badge d'état Drive, bouton Ajouter principal, Drop et Admin en secondaire.
+- L'upload `FileUploader` et la création de dossier sont déplacés dans la modale.
+- La barre de quota utilise maintenant `var(--accent-primary)`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.83 — 2026-08-26
 
 **ETHONE — Dynamic Island : polish final**

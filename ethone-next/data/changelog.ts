@@ -7206,6 +7206,66 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.84",
+  date: "2026-08-26",
+  title: "Fichiers — phase 1 : layout + modale Ajouter",
+  items: [
+    "Nouveau composant `FileAddModal` avec 4 onglets : Téléverser, Lien, Google Drive, Dossier.",
+    "L'upload est maintenant intégré dans la modale Ajouter.",
+    "Header de la page Fichiers refondu : plus aéré, avec pastille d'état Drive et bouton Ajouter principal.",
+    "Bouton Créer un dossier déplacé dans la modale Ajouter.",
+    "Quota de stockage utilise désormais la couleur d'accent du thème.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.84.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.84",
+  date: "2026-08-26",
+  title: "Files — phase 1: layout + Add modal",
+  items: [
+    "New `FileAddModal` component with 4 tabs: Upload, Link, Google Drive, Folder.",
+    "Upload is now integrated in the Add modal.",
+    "Reworked Files page header: cleaner, with Drive status badge and primary Add button.",
+    "Create folder moved to the Add modal.",
+    "Storage quota now uses the theme accent color.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.84.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.84",
+  date: "2026-08-26",
+  title: "Archivos — fase 1: layout + modal Añadir",
+  items: [
+    "Nuevo componente `FileAddModal` con 4 pestañas: Subir, Enlace, Google Drive, Carpeta.",
+    "La subida ahora está integrada en el modal Añadir.",
+    "Cabecera de la página Archivos rediseñada: más limpia, con badge de estado Drive y botón Añadir principal.",
+    "Crear carpeta movido al modal Añadir.",
+    "La cuota de almacenamiento usa ahora el color de acento del tema.",
+    "Validación : build, lint.",
+    "Versión : v1.9.84.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.84",
+  date: "2026-08-26",
+  title: "Dateien — Phase 1: Layout + Hinzufügen-Modal",
+  items: [
+    "Neue `FileAddModal`-Komponente mit 4 Tabs: Hochladen, Link, Google Drive, Ordner.",
+    "Upload jetzt im Hinzufügen-Modal integriert.",
+    "Überarbeiteter Dateien-Header: aufgeräumter, mit Drive-Status-Badge und primärem Hinzufügen-Button.",
+    "Ordner erstellen in das Hinzufügen-Modal verschoben.",
+    "Speicherquote nutzt jetzt die Akzentfarbe des Themes.",
+    "Validierung: build, lint.",
+    "Version: v1.9.84.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.83",
   date: "2026-08-26",
   title: "Dynamic Island — polish final",

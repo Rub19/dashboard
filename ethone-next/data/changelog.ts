@@ -7206,6 +7206,66 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.87",
+  date: "2026-08-26",
+  title: "Fichiers — phase 4 : grille/liste et cartes modernes",
+  items: [
+    "Nouveau composant `FileCard` unifié pour les vues liste et grille.",
+    "Bascule liste/grille dans la barre d'outils avec icônes actives.",
+    "Vue grille : 2/3/4 colonnes selon la taille d'écran, cartes carrées centrées.",
+    "Vue liste : disposition compacte conservée avec actions rapides.",
+    "Cartes avec hover, transitions et stopPropagation sur les actions.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.87.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.87",
+  date: "2026-08-26",
+  title: "Files — phase 4: grid/list and modern cards",
+  items: [
+    "New unified `FileCard` component for list and grid views.",
+    "List/grid toggle in the toolbar with active icons.",
+    "Grid view: 2/3/4 columns based on screen size, centered square cards.",
+    "List view: compact layout kept with quick actions.",
+    "Cards with hover, transitions and stopPropagation on actions.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.87.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.87",
+  date: "2026-08-26",
+  title: "Archivos — fase 4: cuadrícula/lista y tarjetas modernas",
+  items: [
+    "Nuevo componente `FileCard` unificado para vistas de lista y cuadrícula.",
+    "Alternancia lista/cuadrícula en la barra de herramientas con iconos activos.",
+    "Vista de cuadrícula: 2/3/4 columnas según el tamaño de pantalla, tarjetas cuadradas centradas.",
+    "Vista de lista: diseño compacto conservado con acciones rápidas.",
+    "Tarjetas con hover, transiciones y stopPropagation en acciones.",
+    "Validación : build, lint.",
+    "Versión : v1.9.87.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.87",
+  date: "2026-08-26",
+  title: "Dateien — Phase 4: Raster/Liste und moderne Karten",
+  items: [
+    "Neue einheitliche `FileCard`-Komponente für Listen- und Rasteransicht.",
+    "Liste/Raster-Umschaltung in der Toolbar mit aktiven Icons.",
+    "Rasteransicht: 2/3/4 Spalten je Bildschirmgröße, zentrierte quadratische Karten.",
+    "Listenansicht: Kompaktes Layout mit Schnellaktionen beibehalten.",
+    "Karten mit Hover, Transitionen und stopPropagation auf Aktionen.",
+    "Validierung: build, lint.",
+    "Version: v1.9.87.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.86",
   date: "2026-08-26",
   title: "Fichiers — phase 3 : filtres actifs + raccourcis",

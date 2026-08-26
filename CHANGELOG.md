@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.87 — 2026-08-26
+
+**ETHONE — Fichiers : phase 4 grille/liste et cartes modernes**
+
+- `components/FileCard.tsx` : nouveau composant unifié pour les vues liste et grille.
+- `app/files/page.tsx` : ajout d'un toggle liste/grille dans le header.
+- Vue grille : 2/3/4 colonnes (sm/md/lg), cartes carrées centrées.
+- Vue liste : disposition compacte conservée.
+- Les cartes utilisent `Card3D`, transitions, hover, et stopPropagation sur les boutons d'action.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.86 — 2026-08-26
 
 **ETHONE — Fichiers : phase 3 filtres actifs et raccourcis**

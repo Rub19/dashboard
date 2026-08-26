@@ -8,6 +8,7 @@ import { useDrops } from "@/lib/hooks/useDrops";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { fetchWorker } from "@/lib/api";
+import { cn } from "@/lib/utils";
 import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
 import Modal from "@/components/ui/Modal";
@@ -15,10 +16,11 @@ import TabList from "@/components/tabs/TabList";
 import ContextMenu from "@/components/ContextMenu";
 import { useSelection } from "@/lib/hooks/useSelection";
 import BulkActionBar from "@/components/BulkActionBar";
-import { formatBytes, mimeIcon, sortFiles } from "@/lib/files";
+import { formatBytes, sortFiles } from "@/lib/files";
 import FilesAdminPanel from "@/components/FilesAdminPanel";
 import FileAddModal from "@/components/FileAddModal";
 import FilePreview from "@/components/FilePreview";
+import FileCard from "@/components/FileCard";
 import Input from "@/components/Input";
 import Button from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
@@ -99,6 +101,7 @@ export default function FilesPage() {
   const [submitting, setSubmitting] = useState(false);
   const [sort, setSort] = useState<"name" | "size" | "date" | "type">("name");
   const [showFolders, setShowFolders] = useState(false);
+  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -455,6 +458,32 @@ export default function FilesPage() {
           aria-label={i18n("sortBy")}
           className="min-w-0"
         />
+        <div className="flex items-center gap-1 rounded-xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.25] p-1">
+          <button
+            type="button"
+            onClick={() => setViewMode("list")}
+            className={cn(
+              "rounded-lg p-1.5 transition-colors",
+              viewMode === "list" ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]" : "text-[var(--text-muted)] hover:bg-[var(--panel-bg)]",
+            )}
+            aria-label={i18n("listView", "List")}
+            title={i18n("listView", "List")}
+          >
+            <Icon name="list" className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode("grid")}
+            className={cn(
+              "rounded-lg p-1.5 transition-colors",
+              viewMode === "grid" ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]" : "text-[var(--text-muted)] hover:bg-[var(--panel-bg)]",
+            )}
+            aria-label={i18n("gridView", "Grid")}
+            title={i18n("gridView", "Grid")}
+          >
+            <Icon name="grid-2x2" className="h-4 w-4" />
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -546,152 +575,46 @@ export default function FilesPage() {
         </Card3D>
       )}
 
-      <div className="grid grid-cols-1 gap-3">
+      <div className={cn("grid gap-3", viewMode === "list" ? "grid-cols-1" : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 auto-rows-fr")}>
         {loading ? (
           <>
-            {[...Array(4)].map((_, i) => (
-              <Card3D key={i}>
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 shrink-0 animate-pulse rounded-[var(--panel-radius)] bg-[var(--border)]" />
-                  <div className="min-w-0 flex-1 space-y-2">
-                    <div className="h-3.5 w-2/5 animate-pulse rounded bg-[var(--border)]" />
-                    <div className="h-2.5 w-1/4 animate-pulse rounded bg-[var(--border)]" />
+            {[...Array(viewMode === "list" ? 4 : 8)].map((_, i) => (
+              <Card3D key={i} className="h-full">
+                <div className={cn("h-full animate-pulse", viewMode === "grid" && "flex flex-col items-center justify-center gap-2")}>
+                  <div className={cn("shrink-0 rounded-[var(--panel-radius)] bg-[var(--border)]", viewMode === "grid" ? "h-14 w-14" : "h-10 w-10")} />
+                  <div className="space-y-2">
+                    <div className="h-3.5 w-32 rounded bg-[var(--border)]" />
+                    <div className="h-2.5 w-20 rounded bg-[var(--border)]" />
                   </div>
-                  <div className="h-4 w-20 animate-pulse rounded bg-[var(--border)]" />
                 </div>
               </Card3D>
             ))}
           </>
         ) : filteredFiles.length === 0 ? (
-          <Card3D>
+          <Card3D className="col-span-full">
             <p className="text-sm text-[var(--muted)]">{i18n("noFiles")}</p>
           </Card3D>
         ) : (
           filteredFiles.map((file) => (
             <ContextMenu key={file.id} items={fileContextItems(file)}>
-              <Card3D>
-                <div className="flex min-w-0 flex-col items-start gap-3 sm:flex-row sm:items-center">
-                  <Checkbox
-                    checked={isSelected(file.id)}
-                    onCheckedChange={() => toggle(file.id)}
-                    aria-label={i18n("select")}
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => openFile(file)}
-                    data-haptic
-                    className="flex min-w-0 flex-1 items-center gap-3 text-left"
-                  >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--panel-bg)] text-[var(--muted)]">
-                    <Icon name={mimeIcon(file.mimeType, file.isFolder)} className="h-5 w-5" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium">{file.name}</p>
-                    <p className="truncate text-xs text-[var(--muted)]">
-                      {file.isFolder ? i18n("folders") : `${formatBytes(file.size)} · ${file.mimeType || "-"}`}
-                    </p>
-                  </div>
-                </button>
-
-                <div className="flex flex-wrap items-center justify-end gap-1">
-                  <button
-                    type="button"
-                    aria-label={file.isFavorite ? i18n("removeFromFavorites") : i18n("addToFavorites")}
-                    data-tooltip={file.isFavorite ? i18n("removeFromFavorites") : i18n("addToFavorites")}
-                    data-haptic
-                    onClick={() => favoriteFile(file.driveFileId, !file.isFavorite)}
-                    className={`rounded p-1.5 ${file.isFavorite ? "text-[var(--danger)]" : "text-[var(--muted)]"} hover:bg-[var(--panel-bg)]`}
-                  >
-                    <Icon name={file.isFavorite ? "heart" : "heart-off"} className="h-4 w-4" />
-                  </button>
-
-                  {!file.isFolder && clientId && (
-                    <button
-                      type="button"
-                      aria-label={i18n("download")}
-                      data-tooltip={i18n("download")}
-                      data-haptic
-                      onClick={() => downloadDriveFile(file)}
-                      className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--panel-bg)]"
-                    >
-                      <Icon name="download" className="h-4 w-4" />
-                    </button>
-                  )}
-
-                  <button
-                    type="button"
-                    aria-label={i18n("share")}
-                    data-tooltip={i18n("share")}
-                    data-haptic
-                    onClick={() => openShare(file)}
-                    className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--panel-bg)]"
-                  >
-                    <Icon name="share-2" className="h-4 w-4" />
-                  </button>
-
-                  <button
-                    type="button"
-                    aria-label={i18n("rename")}
-                    data-tooltip={i18n("rename")}
-                    data-haptic
-                    onClick={() => { setForm({ name: file.name }); setModal({ type: "rename", file }); }}
-                    className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--panel-bg)]"
-                  >
-                    <Icon name="pencil" className="h-4 w-4" />
-                  </button>
-
-                  <button
-                    type="button"
-                    aria-label={i18n("move")}
-                    data-tooltip={i18n("move")}
-                    data-haptic
-                    onClick={() => { setModal({ type: "move", file }); }}
-                    className="rounded p-1.5 text-[var(--muted)] hover:bg-[var(--panel-bg)]"
-                  >
-                    <Icon name="folder-input" className="h-4 w-4" />
-                  </button>
-
-                  {trashed ? (
-                    <button
-                      type="button"
-                      aria-label={i18n("restore")}
-                      data-tooltip={i18n("restore")}
-                      data-haptic
-                      onClick={() => restoreFile(file.driveFileId)}
-                      className="rounded p-1.5 text-[var(--success)] hover:bg-[var(--success)]/10"
-                    >
-                      <Icon name="rotate-ccw" className="h-4 w-4" />
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      aria-label={i18n("trash")}
-                      data-tooltip={i18n("trash")}
-                      data-haptic
-                      onClick={() => trashFile(file.driveFileId)}
-                      className="rounded p-1.5 text-[var(--muted)] hover:text-[var(--danger)]"
-                    >
-                      <Icon name="trash-2" className="h-4 w-4" />
-                    </button>
-                  )}
-
-                  {trashed && (
-                    <button
-                      type="button"
-                      aria-label={i18n("delete")}
-                      data-tooltip={i18n("delete")}
-                      data-haptic
-                      onClick={() => deleteFile(file.driveFileId)}
-                      className="rounded p-1.5 text-[var(--danger)] hover:bg-[var(--danger)]/10"
-                    >
-                      <Icon name="trash" className="h-4 w-4" />
-                    </button>
-                  )}
-                </div>
-              </div>
-            </Card3D>
-          </ContextMenu>
+              <FileCard
+                file={file}
+                viewMode={viewMode}
+                selected={isSelected(file.id)}
+                trashed={trashed}
+                clientId={clientId}
+                onToggle={() => toggle(file.id)}
+                onOpen={() => openFile(file)}
+                onDownload={() => downloadDriveFile(file)}
+                onShare={() => openShare(file)}
+                onRename={() => { setForm({ name: file.name }); setModal({ type: "rename", file }); }}
+                onMove={() => setModal({ type: "move", file })}
+                onFavorite={() => favoriteFile(file.driveFileId, !file.isFavorite)}
+                onTrash={() => trashFile(file.driveFileId)}
+                onDelete={() => deleteFile(file.driveFileId)}
+                onRestore={() => restoreFile(file.driveFileId)}
+              />
+            </ContextMenu>
           ))
         )}
       </div>

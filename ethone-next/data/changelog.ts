@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.12",
+  date: "2026-08-26",
+  title: "Shell — suppression du fond noir en bas",
+  items: [
+    "`components/Shell.tsx` : fond uniforme (`--background`) pour la zone principale, plus de dégradé vers `--panel-bg`.",
+    "Retrait du padding-bottom de 8rem excédentaire.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.12.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.12",
+  date: "2026-08-26",
+  title: "Shell — remove bottom black area",
+  items: [
+    "`components/Shell.tsx`: uniform main background (`--background`), removed gradient to `--panel-bg`.",
+    "Removed the excessive 8rem bottom padding.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.12.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.12",
+  date: "2026-08-26",
+  title: "Shell — eliminar fondo negro inferior",
+  items: [
+    "`components/Shell.tsx`: fondo principal uniforme (`--background`), sin degradado a `--panel-bg`.",
+    "Eliminado el padding-bottom excesivo de 8rem.",
+    "Validación : build, lint.",
+    "Versión : v1.10.12.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.12",
+  date: "2026-08-26",
+  title: "Shell — schwarzer Bereich unten entfernt",
+  items: [
+    "`components/Shell.tsx`: einheitlicher Haupt-Hintergrund (`--background`), Verlauf zu `--panel-bg` entfernt.",
+    "Überschüssiges 8rem Padding unten entfernt.",
+    "Validierung: build, lint.",
+    "Version: v1.10.12.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.11",
   date: "2026-08-26",
   title: "Fichiers — header Finder + nettoyage 3D",

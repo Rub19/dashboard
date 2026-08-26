@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.62 — 2026-08-26
+
+**ETHONE — Dynamic Island 2.0 : étape 6 — file d'événements**
+
+- Nouveau store `useIslandQueueStore` pour la file de la Dynamic Island.
+- Types d'événements : `spotify`, `pomodoro`, `brain`, `sync`, `upload`, `notification`, `timer`, `call`, `system`.
+- Priorités fixes par type avec override possible (`priority`).
+- Hook `useDynamicIslandQueue` expose `queue`, `top`, `activeViews`, `register`, `unregister`, `clear`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.61 — 2026-08-26
 
 **ETHONE — UI polish : étape 5 — toasts**

@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.62",
+  date: "2026-08-26",
+  title: "Dynamic Island 2.0 — étape 6 : file d'événements",
+  items: [
+    "Nouveau store `useIslandQueueStore` pour la file de la Dynamic Island.",
+    "Types d'événements : spotify, pomodoro, brain, sync, upload, notification, timer, call, system.",
+    "Priorités fixes par type avec override possible (`priority`).",
+    "Hook `useDynamicIslandQueue` expose queue, top, activeViews, register, unregister, clear.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.62.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.62",
+  date: "2026-08-26",
+  title: "Dynamic Island 2.0 — step 6: event queue",
+  items: [
+    "New `useIslandQueueStore` for the Dynamic Island queue.",
+    "Event types: spotify, pomodoro, brain, sync, upload, notification, timer, call, system.",
+    "Fixed per-type priority with optional override (`priority`).",
+    "`useDynamicIslandQueue` hook exposes queue, top, activeViews, register, unregister, clear.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.62.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.62",
+  date: "2026-08-26",
+  title: "Dynamic Island 2.0 — paso 6: cola de eventos",
+  items: [
+    "Nuevo store `useIslandQueueStore` para la cola de la Dynamic Island.",
+    "Tipos de eventos: spotify, pomodoro, brain, sync, upload, notification, timer, call, system.",
+    "Prioridades fijas por tipo con override opcional (`priority`).",
+    "Hook `useDynamicIslandQueue` expone queue, top, activeViews, register, unregister, clear.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.62.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.62",
+  date: "2026-08-26",
+  title: "Dynamic Island 2.0 — Schritt 6: Event-Warteschlange",
+  items: [
+    "Neuer `useIslandQueueStore` für die Dynamic-Island-Warteschlange.",
+    "Event-Typen: spotify, pomodoro, brain, sync, upload, notification, timer, call, system.",
+    "Feste Prioritäten pro Typ mit optionalem Override (`priority`).",
+    "Hook `useDynamicIslandQueue` gibt queue, top, activeViews, register, unregister, clear zurück.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.62.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.61",
   date: "2026-08-26",
   title: "UI polish — étape 5 : toasts",

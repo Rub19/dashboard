@@ -296,7 +296,7 @@ export default function LiveWidgets({
   const layout = settings.activityLiveLayout || [];
   const baseRecords = (customizing
     ? records
-    : records.filter((r) => !hidden.has(r.id) && r.status === "connected")
+    : records.filter((r) => !hidden.has(r.id) && r.status === "connected" && r.source !== "nowplaying")
   ).map((r) => ({ ...r }));
   const orderMap = new Map(layout.map((id, i) => [id, i]));
   const visibleRecords = [...baseRecords].sort((a, b) => (orderMap.get(a.id) ?? Infinity) - (orderMap.get(b.id) ?? Infinity));

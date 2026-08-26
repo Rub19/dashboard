@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.1",
+  date: "2026-08-26",
+  title: "Fichiers — recherche par type, extension et résumé",
+  items: [
+    "La recherche Fichiers scanne maintenant le nom, le type MIME, l’extension et le `brainSummary`.",
+    "Compatible avec les requêtes comme `pdf`, `image`, `.mp4`, etc.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.1.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.1",
+  date: "2026-08-26",
+  title: "Files — search by type, extension and summary",
+  items: [
+    "Files search now scans name, MIME type, file extension and `brainSummary`.",
+    "Supports queries like `pdf`, `image`, `.mp4`, etc.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.1.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.1",
+  date: "2026-08-26",
+  title: "Archivos — búsqueda por tipo, extensión y resumen",
+  items: [
+    "La búsqueda de archivos ahora escanea nombre, tipo MIME, extensión y `brainSummary`.",
+    "Soporta consultas como `pdf`, `image`, `.mp4`, etc.",
+    "Validación : build, lint.",
+    "Versión : v1.10.1.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.1",
+  date: "2026-08-26",
+  title: "Dateien — Suche nach Typ, Erweiterung und Zusammenfassung",
+  items: [
+    "Dateisuche scannt jetzt Name, MIME-Typ, Dateierweiterung und `brainSummary`.",
+    "Unterstützt Anfragen wie `pdf`, `image`, `.mp4`, etc.",
+    "Validierung: build, lint.",
+    "Version: v1.10.1.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.0",
   date: "2026-08-26",
   title: "Fichiers — finition de la file d’attente d’upload",

@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.1 — 2026-08-26
+
+**ETHONE — Fichiers : recherche par type, extension et résumé**
+
+- `app/files/page.tsx` : la recherche scanne maintenant :
+  - le nom du fichier,
+  - le type MIME,
+  - l’extension (avec ou sans point),
+  - le `brainSummary`.
+- Permet des requêtes comme `pdf`, `image`, `.mp4`, `document`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.0 — 2026-08-26
 
 **ETHONE — Fichiers : finition de la file d’attente d’upload**

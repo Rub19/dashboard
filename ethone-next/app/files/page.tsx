@@ -177,7 +177,15 @@ export default function FilesPage() {
     }
     if (query.trim()) {
       const q = query.toLowerCase();
-      list = list.filter((f) => f.name.toLowerCase().includes(q));
+      const ext = q.startsWith(".") ? q.slice(1) : q;
+      list = list.filter((f) => {
+        const name = f.name.toLowerCase();
+        const mime = (f.mimeType || "").toLowerCase();
+        const extMatch = name.includes(q) || name.endsWith(`.${ext}`);
+        const mimeMatch = mime.includes(q);
+        const summaryMatch = (f.brainSummary || "").toLowerCase().includes(q);
+        return extMatch || mimeMatch || summaryMatch;
+      });
     }
     if (showDuplicates) {
       list = list.filter((f) => !f.isFolder && duplicateIds.has(f.driveFileId));

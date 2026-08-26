@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.32 — 2026-08-26
+
+**ETHONE — Mobile login pass 5 (fix build + reduced motion)**
+
+- Correction du build Cloudflare : le hook `useVisualViewport.ts` n'était pas commité (fichier manquant).
+- Respect `prefers-reduced-motion` sur OTP, Language Switcher et Switch (transitions désactivées).
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.31 — 2026-08-26
 
 **ETHONE — Mobile login pass 4 (landscape, offline, OTP auto)**

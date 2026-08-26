@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.32",
+  date: "2026-08-26",
+  title: "Mobile login pass 5 — fix build + reduced motion",
+  items: [
+    "Correction du build Cloudflare : le hook `useVisualViewport.ts` n'était pas commité (fichier manquant).",
+    "Respect `prefers-reduced-motion` sur OTP, Language Switcher et Switch (transitions désactivées).",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.32.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.32",
+  date: "2026-08-26",
+  title: "Mobile login pass 5 — build fix + reduced motion",
+  items: [
+    "Cloudflare build fix : `useVisualViewport.ts` hook was not committed (missing file).",
+    "Respect `prefers-reduced-motion` on OTP, Language Switcher and Switch (disable transitions).",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.32.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.32",
+  date: "2026-08-26",
+  title: "Mobile login pass 5 — fix build + reduced motion",
+  items: [
+    "Corrección del build de Cloudflare : el hook `useVisualViewport.ts` no estaba commitado (fichero perdido).",
+    "Respeto de `prefers-reduced-motion` en OTP, Language Switcher y Switch (transiciones desactivadas).",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.32.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.32",
+  date: "2026-08-26",
+  title: "Mobile Login Pass 5 — Build-Fix + Reduced Motion",
+  items: [
+    "Cloudflare Build Fix : `useVisualViewport.ts` Hook war nicht committed (fehlende Datei).",
+    "Beachtet `prefers-reduced-motion` für OTP, Language Switcher und Switch (Übergänge deaktiviert).",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.32.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.31",
   date: "2026-08-26",
   title: "Mobile login pass 4 — landscape, offline, OTP auto",

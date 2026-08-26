@@ -24,6 +24,14 @@ export type FileAddModalProps = {
   initialTab?: TabId;
 };
 
+function normalizeLink(url: string) {
+  const v = url.trim();
+  if (!v) return v;
+  if (/^[a-z][a-z0-9+.-]*:/i.test(v) || v.startsWith("//")) return v;
+  if (!v.includes(".") && !v.includes("localhost")) return v;
+  return `https://${v}`;
+}
+
 export default function FileAddModal({
   open,
   onClose,
@@ -103,9 +111,9 @@ export default function FileAddModal({
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                // Placeholder: links require backend support; copy to clipboard for now.
-                if (linkUrl) {
-                  navigator.clipboard.writeText(linkUrl).catch(() => {});
+                const normalized = normalizeLink(linkUrl);
+                if (normalized) {
+                  navigator.clipboard.writeText(normalized).catch(() => {});
                   setLinkUrl("");
                   onClose();
                 }
@@ -114,9 +122,11 @@ export default function FileAddModal({
             >
               <p className="text-sm text-[var(--text-muted)]">{i18n("addLinkHint", "Ajoutez un lien externe à votre espace (fonctionnalité en préparation).")}</p>
               <Input
-                type="url"
+                type="text"
+                inputMode="url"
                 value={linkUrl}
                 onChange={(e) => setLinkUrl(e.target.value)}
+                onBlur={() => setLinkUrl((v) => normalizeLink(v))}
                 placeholder="https://..."
                 aria-label={i18n("url")}
               />

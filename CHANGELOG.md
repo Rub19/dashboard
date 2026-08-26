@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.8 — 2026-08-26
+
+**ETHONE — Fichiers : préfixe https automatique pour les liens**
+
+- `components/FileAddModal.tsx` : les URL sans protocole sont automatiquement préfixées en `https://`.
+- Passage en `type="text"` avec `inputMode="url"` pour éviter le blocage natif du navigateur.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.7 — 2026-08-26
 
 **ETHONE — Fichiers : phase 5, finitions UI**

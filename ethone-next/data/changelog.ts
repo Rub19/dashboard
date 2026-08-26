@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.8",
+  date: "2026-08-26",
+  title: "Fichiers — préfixe https automatique pour les liens",
+  items: [
+    "`FileAddModal` : les URL sans protocole sont automatiquement préfixées en `https://` au blur et à la validation.",
+    "Suppression du `type=url` natif pour éviter le blocage navigateur.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.8.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.8",
+  date: "2026-08-26",
+  title: "Files — auto https prefix for links",
+  items: [
+    "`FileAddModal`: URLs without a protocol are automatically prefixed with `https://` on blur and submit.",
+    "Removed native `type=url` to avoid browser blocking.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.8.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.8",
+  date: "2026-08-26",
+  title: "Archivos — prefijo https automático para enlaces",
+  items: [
+    "`FileAddModal`: las URL sin protocolo se prefijan automáticamente con `https://` en blur y envío.",
+    "Se eliminó el `type=url` nativo para evitar bloqueos del navegador.",
+    "Validación : build, lint.",
+    "Versión : v1.10.8.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.8",
+  date: "2026-08-26",
+  title: "Dateien — automatisches https-Präfix für Links",
+  items: [
+    "`FileAddModal`: URLs ohne Protokoll werden beim Blur und Absenden automatisch mit `https://` vorangestellt.",
+    "Nativer `type=url` entfernt, um Browser-Blockaden zu vermeiden.",
+    "Validierung: build, lint.",
+    "Version: v1.10.8.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.7",
   date: "2026-08-26",
   title: "Fichiers — phase 5 : finitions UI",

@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.59",
+  date: "2026-08-26",
+  title: "UI polish — étape 3 : boutons",
+  items: [
+    "Ajout de l'état `active:scale-[0.97] active:brightness-95` sur le composant `Button`.",
+    "Variant `success` repassé en `text-[var(--success)]` pour la cohérence.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.59.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.59",
+  date: "2026-08-26",
+  title: "UI polish — step 3: buttons",
+  items: [
+    "Added `active:scale-[0.97] active:brightness-95` state to the `Button` component.",
+    "`success` variant now uses `text-[var(--success)]` for consistency.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.59.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.59",
+  date: "2026-08-26",
+  title: "UI polish — paso 3: botones",
+  items: [
+    "Añadido estado `active:scale-[0.97] active:brightness-95` al componente `Button`.",
+    "Variante `success` vuelve a `text-[var(--success)]` para coherencia.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.59.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.59",
+  date: "2026-08-26",
+  title: "UI polish — Schritt 3: Buttons",
+  items: [
+    "`active:scale-[0.97] active:brightness-95` zum `Button`-Komponente hinzugefügt.",
+    "`success`-Variante auf `text-[var(--success)]` zurückgesetzt.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.59.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.58",
   date: "2026-08-26",
   title: "UI polish — étape 2 : badges unifiés",

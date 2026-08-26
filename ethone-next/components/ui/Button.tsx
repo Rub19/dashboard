@@ -48,7 +48,7 @@ const variantClass: Record<ButtonVariant, string> = {
     "shadow-lg shadow-[var(--danger)]/20",
   ),
   success: cn(
-    "border border-[var(--success)]/40 bg-[var(--success)]/15 text-[var(--text-primary)]",
+    "border border-[var(--success)]/40 bg-[var(--success)]/15 text-[var(--success)]",
     "hover:bg-[var(--success)]/25 hover:border-[var(--success)]/60",
   ),
   liquid: cn(
@@ -110,6 +110,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           "relative inline-flex items-center justify-center whitespace-nowrap font-semibold",
           "transition-all duration-150 ease-out",
           "focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/60 focus-visible:outline-none",
+          "active:scale-[0.97] active:brightness-95",
           "disabled:cursor-not-allowed disabled:opacity-55 disabled:saturate-0 disabled:shadow-none",
           sizeClass[size],
           variantClass[variant],

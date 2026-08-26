@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.59 — 2026-08-26
+
+**ETHONE — UI polish : étape 3 — boutons**
+
+- Ajout de l'état `active:scale-[0.97] active:brightness-95` sur le composant `Button`.
+- Variant `success` repassé en `text-[var(--success)]`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.58 — 2026-08-26
 
 **ETHONE — UI polish : étape 2 — badges unifiés**

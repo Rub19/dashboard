@@ -60,6 +60,14 @@ export function useActivityJournal(options: UseActivityJournalOptions = {}) {
     return () => clearInterval(interval);
   }, [options.syncInterval, sync]);
 
+  useEffect(() => {
+    if (pendingCount === 0 || syncing) return;
+    const t = setTimeout(() => {
+      sync().catch(() => {});
+    }, 1500);
+    return () => clearTimeout(t);
+  }, [pendingCount, syncing, sync]);
+
   return {
     entries,
     pendingCount,

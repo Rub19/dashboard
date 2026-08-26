@@ -7205,6 +7205,54 @@ CHANGELOG_BY_LANG.es.unshift({
   ],
 });
 
+CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.24",
+  date: "2026-08-26",
+  title: "Synchronisation automatique en cas d'éléments en attente",
+  items: [
+    "`useActivityJournal` lance un sync automatique 1,5 s après l'apparition d'éléments en attente.",
+    "Le bouton 'Synchroniser maintenant' reste utilisable pour un déclenchement immédiat.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.24.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.24",
+  date: "2026-08-26",
+  title: "Auto-sync when items are pending",
+  items: [
+    "`useActivityJournal` now triggers a sync 1.5 s after pending items appear.",
+    "'Sync now' button still available for immediate trigger.",
+    "Validation: build, lint.",
+    "Version badge bottom-right: v1.9.24.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.24",
+  date: "2026-08-26",
+  title: "Sincronización automática con elementos en espera",
+  items: [
+    "`useActivityJournal` inicia una sincronización 1,5 s después de que aparezcan elementos en espera.",
+    "El botón 'Sincronizar ahora' sigue disponible para un disparo inmediato.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.24.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.24",
+  date: "2026-08-26",
+  title: "Automatische Synchronisierung bei ausstehenden Elementen",
+  items: [
+    "`useActivityJournal` startet 1,5 s nach dem Auftreten ausstehender Elementen einen Sync.",
+    "'Jetzt synchronisieren'-Button bleibt für sofortige Auslösung verfügbar.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.24.",
+  ],
+});
+
 CHANGELOG_BY_LANG.de.unshift({
   version: "v1.9.23",
   date: "2026-08-26",

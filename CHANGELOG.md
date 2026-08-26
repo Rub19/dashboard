@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.24 — 2026-08-26
+
+**ETHONE — Synchronisation automatique en cas d'éléments en attente**
+
+- `useActivityJournal` lance un sync automatique 1,5 s après l'apparition d'éléments en attente.
+- Le bouton **Synchroniser maintenant** reste utilisable pour un déclenchement immédiat.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.23 — 2026-08-26
 
 **ETHONE — Polish visuel global : header, dock, barre d'état et sidebar**

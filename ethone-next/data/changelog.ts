@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.90",
+  date: "2026-08-26",
+  title: "Fichiers — phase 7 : fichiers récemment utilisés",
+  items: [
+    "Section `Récemment utilisés` au-dessus de la liste principale.",
+    "Sélectionne les 5 derniers fichiers (non-dossiers, non-corbeille) triés par `updatedAt` puis `createdAt`.",
+    "Affiche les fichiers récents en grille compacte avec les mêmes actions.",
+    "S'affiche uniquement à la racine, sans recherche/filtres actifs.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.90.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.90",
+  date: "2026-08-26",
+  title: "Files — phase 7: recently used files",
+  items: [
+    "New `Recently used` section above the main list.",
+    "Picks the 5 latest non-folder, non-trashed files sorted by `updatedAt` then `createdAt`.",
+    "Shows recent files in a compact grid with the same actions.",
+    "Only visible at root level, when no active search/filters.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.90.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.90",
+  date: "2026-08-26",
+  title: "Archivos — fase 7: archivos recientemente usados",
+  items: [
+    "Nueva sección `Usados recientemente` encima de la lista principal.",
+    "Selecciona los 5 últimos archivos que no sean carpetas ni papelera, ordenados por `updatedAt` y `createdAt`.",
+    "Muestra archivos recientes en cuadrícula compacta con las mismas acciones.",
+    "Visible solo en la raíz, sin búsqueda/filtros activos.",
+    "Validación : build, lint.",
+    "Versión : v1.9.90.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.90",
+  date: "2026-08-26",
+  title: "Dateien — Phase 7: kürzlich verwendete Dateien",
+  items: [
+    "Neuer Bereich `Kürzlich verwendet` über der Hauptliste.",
+    "Wählt die 5 neuesten Nicht-Ordner-, Nicht-Papierkorb-Dateien sortiert nach `updatedAt` dann `createdAt`.",
+    "Zeigt kürzliche Dateien in kompaktem Raster mit denselben Aktionen.",
+    "Nur auf Root-Ebene sichtbar, wenn keine aktive Suche/Filter.",
+    "Validierung: build, lint.",
+    "Version: v1.9.90.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.89",
   date: "2026-08-26",
   title: "Fichiers — phase 6 : menu contextuel moderne",

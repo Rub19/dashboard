@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.90 — 2026-08-26
+
+**ETHONE — Fichiers : phase 7 fichiers récemment utilisés**
+
+- `app/files/page.tsx` : section `Récemment utilisés`.
+  - Sélectionne les 5 derniers fichiers non-dossiers, non-corbeille, triés par `updatedAt` puis `createdAt`.
+  - Affichage en grille compacte (2/3/5 colonnes) avec toutes les actions et menu contextuel.
+  - S'affiche uniquement à la racine sans recherche/filtres actifs.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.89 — 2026-08-26
 
 **ETHONE — Fichiers : phase 6 menu contextuel moderne**

@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.7",
+  date: "2026-08-26",
+  title: "Fichiers — phase 5 : finitions UI",
+  items: [
+    "Header de vue liste sticky avec `z-10` et `backdrop-blur`.",
+    "Meilleure cohérence du z-index et du défilement.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.7.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.7",
+  date: "2026-08-26",
+  title: "Files — phase 5: UI polish",
+  items: [
+    "List view header is sticky with `z-10` and `backdrop-blur`.",
+    "Better z-index and scroll consistency.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.7.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.7",
+  date: "2026-08-26",
+  title: "Archivos — fase 5: retoques UI",
+  items: [
+    "Encabezado de vista lista fijo con `z-10` y `backdrop-blur`.",
+    "Mejor coherencia de z-index y desplazamiento.",
+    "Validación : build, lint.",
+    "Versión : v1.10.7.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.7",
+  date: "2026-08-26",
+  title: "Dateien — Phase 5: UI-Polish",
+  items: [
+    "Listen-Header ist sticky mit `z-10` und `backdrop-blur`.",
+    "Bessere Z-Index- und Scroll-Konsistenz.",
+    "Validierung: build, lint.",
+    "Version: v1.10.7.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.6",
   date: "2026-08-26",
   title: "Fichiers — phase 4 : aperçu texte et liens",

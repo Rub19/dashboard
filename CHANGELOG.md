@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.7 — 2026-08-26
+
+**ETHONE — Fichiers : phase 5, finitions UI**
+
+- Header de vue liste sticky avec `z-10` et `backdrop-blur`.
+- Meilleure cohérence du défilement et du z-index.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.6 — 2026-08-26
 
 **ETHONE — Fichiers : phase 4, aperçu texte et liens**

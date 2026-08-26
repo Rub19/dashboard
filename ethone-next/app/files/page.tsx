@@ -737,7 +737,7 @@ export default function FilesPage() {
       )}
 
       {viewMode === "list" && !loading && filteredFiles.length > 0 && (
-        <div className="hidden rounded-2xl border-b border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-[var(--panel-padding)] text-[11px] font-medium text-[var(--text-muted)] sm:grid sm:grid-cols-[1.5rem_2.5rem_minmax(0,1fr)_6rem_6rem_7rem] sm:items-center sm:gap-3">
+        <div className="sticky top-0 z-10 hidden rounded-2xl border-b border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-[var(--panel-padding)] text-[11px] font-medium text-[var(--text-muted)] backdrop-blur-[var(--panel-blur)] sm:grid sm:grid-cols-[1.5rem_2.5rem_minmax(0,1fr)_6rem_6rem_7rem] sm:items-center sm:gap-3">
           <span />
           <span />
           <span>{i18n("name", "Nom")}</span>

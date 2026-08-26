@@ -352,6 +352,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       <Toaster
         position={isMobile ? "bottom-center" : "bottom-right"}
         closeButton
+        expand
+        visibleToasts={4}
+        offset="1rem"
         toastOptions={{
           unstyled: true,
           classNames: {

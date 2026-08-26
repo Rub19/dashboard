@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.61 — 2026-08-26
+
+**ETHONE — UI polish : étape 5 — toasts**
+
+- Amélioration du `Toaster` : expansion automatique, maximum 4 toasts visibles, offset aéré.
+- Position conservée : `bottom-center` mobile, `bottom-right` desktop.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.60 — 2026-08-26
 
 **ETHONE — UI polish : étape 4 — système de cards**

@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.61",
+  date: "2026-08-26",
+  title: "UI polish — étape 5 : toasts",
+  items: [
+    "Amélioration du `Toaster` : expansion automatique, max 4 toasts visibles, offset aéré.",
+    "Position conservée : bottom-center mobile, bottom-right desktop.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.61.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.61",
+  date: "2026-08-26",
+  title: "UI polish — step 5: toasts",
+  items: [
+    "Improved `Toaster` : auto expand, max 4 visible toasts, airy offset.",
+    "Position kept: bottom-center on mobile, bottom-right on desktop.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.61.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.61",
+  date: "2026-08-26",
+  title: "UI polish — paso 5: toasts",
+  items: [
+    "Mejora del `Toaster` : expansión automática, máximo 4 toasts visibles, offset espacioso.",
+    "Posición conservada: bottom-center en móvil, bottom-right en desktop.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.61.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.61",
+  date: "2026-08-26",
+  title: "UI polish — Schritt 5: Toasts",
+  items: [
+    "`Toaster` verbessert: automatisches Expandieren, max. 4 sichtbare Toasts, luftiger Offset.",
+    "Position beibehalten: bottom-center auf Mobil, bottom-right auf Desktop.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.61.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.60",
   date: "2026-08-26",
   title: "UI polish — étape 4 : système de cards",

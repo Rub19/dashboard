@@ -6,8 +6,11 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { fetchWorker } from "@/lib/api";
 import { ADMIN_EMAIL } from "@/lib/admin";
 import { Icon } from "@/lib/icons";
-import Card3D from "@/components/Card3D";
+import { cn } from "@/lib/utils";
 import { RefreshCw, Lock, Users, Layers, HardDrive, Mail, Activity, BarChart3 } from "lucide-react";
+
+const adminCardClass =
+  "min-w-0 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] transition-colors duration-150 hover:border-[var(--accent)]/30";
 
 type AdminStats = {
   users: number;
@@ -40,7 +43,7 @@ type StatCardProps = {
 
 function StatCard({ label, value, icon, tone = "text-[var(--accent)]" }: StatCardProps) {
   return (
-    <Card3D className="h-full">
+    <div className={cn(adminCardClass, "h-full")}>
       <div className="flex h-full flex-col justify-between gap-3 p-4">
         <div className="flex items-start justify-between">
           <span className={tone}>{icon}</span>
@@ -50,7 +53,7 @@ function StatCard({ label, value, icon, tone = "text-[var(--accent)]" }: StatCar
         </div>
         <p className="text-xs font-medium text-[var(--muted)]">{label}</p>
       </div>
-    </Card3D>
+    </div>
   );
 }
 
@@ -131,20 +134,20 @@ export default function AdminPage() {
         </div>
 
         {error && (
-          <Card3D>
+          <div className={adminCardClass}>
             <div className="flex items-center gap-2 p-4 text-sm text-rose-400">
               <Icon name="alert-triangle" className="h-4 w-4" />
               {error}
             </div>
-          </Card3D>
+          </div>
         )}
 
         {loading && !stats && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[...Array(4)].map((_, i) => (
-              <Card3D key={i} className="h-28">
+              <div key={i} className={cn(adminCardClass, "h-28")}>
                 <div className="h-full animate-pulse rounded-xl bg-[var(--panel-bg)]" />
-              </Card3D>
+              </div>
             ))}
           </div>
         )}
@@ -179,7 +182,7 @@ export default function AdminPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-              <Card3D>
+              <div className={adminCardClass}>
                 <div className="space-y-3 p-4">
                   <div className="flex items-center gap-2 text-sm font-semibold text-[var(--foreground)]">
                     <Icon name="notes" className="h-4 w-4 text-[var(--accent)]" />
@@ -192,9 +195,9 @@ export default function AdminPage() {
                     <MiniStat label={i18n("total", "Total")} value={stats.content.items} icon="layers" />
                   </div>
                 </div>
-              </Card3D>
+              </div>
 
-              <Card3D>
+              <div className={adminCardClass}>
                 <div className="space-y-3 p-4">
                   <div className="flex items-center gap-2 text-sm font-semibold text-[var(--foreground)]">
                     <Icon name="mail" className="h-4 w-4 text-[var(--accent)]" />
@@ -206,9 +209,9 @@ export default function AdminPage() {
                     <MiniStat label={i18n("threads", "Conversations")} value={stats.mail.threads} icon="message-circle" />
                   </div>
                 </div>
-              </Card3D>
+              </div>
 
-              <Card3D>
+              <div className={adminCardClass}>
                 <div className="space-y-3 p-4">
                   <div className="flex items-center gap-2 text-sm font-semibold text-[var(--foreground)]">
                     <Activity className="h-4 w-4 text-[var(--accent)]" />
@@ -220,7 +223,7 @@ export default function AdminPage() {
                     <MiniStat label={i18n("teamMembers", "Membres équipe")} value={stats.activity.teamMembers} icon="users" />
                   </div>
                 </div>
-              </Card3D>
+              </div>
             </div>
           </>
         )}

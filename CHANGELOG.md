@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.35 — 2026-08-26
+
+**ETHONE — Admin : cartes sans effet 3D**
+
+- Remplacement de `Card3D` par des cartes plates dans `app/admin/page.tsx`.
+- Les cartes gardent l'arrondi, la bordure et le fond, mais sans tilt/glare.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.34 — 2026-08-26
 
 **ETHONE — Version update notif + cache fix**

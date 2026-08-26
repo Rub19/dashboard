@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.35",
+  date: "2026-08-26",
+  title: "Admin — cartes sans effet 3D",
+  items: [
+    "Remplacement de `Card3D` par des cartes plates (`div`) dans `app/admin/page.tsx`.",
+    "Les cartes admin gardent l'arrondi, la bordure et le fond, mais sans tilt/glare.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.35.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.35",
+  date: "2026-08-26",
+  title: "Admin — flat cards",
+  items: [
+    "Replaced `Card3D` with flat `div` cards in `app/admin/page.tsx`.",
+    "Admin cards keep the radius, border and background, without tilt/glare.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.35.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.35",
+  date: "2026-08-26",
+  title: "Admin — tarjetas planas",
+  items: [
+    "Sustitución de `Card3D` por `div` planos en `app/admin/page.tsx`.",
+    "Las tarjetas admin conservan el radio, el borde y el fondo, sin tilt/glare.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.35.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.35",
+  date: "2026-08-26",
+  title: "Admin — flache Karten",
+  items: [
+    "`Card3D` durch flache `div`-Karten in `app/admin/page.tsx` ersetzt.",
+    "Admin-Karten behalten Radius, Rand und Hintergrund, ohne Tilt/Glare.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.35.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.34",
   date: "2026-08-26",
   title: "Version update notif + cache fix",

@@ -60,14 +60,14 @@ function QueueItem({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl border bg-zinc-950/80 p-4 shadow-md backdrop-blur-xl transition-colors ${
+      className={`relative overflow-hidden rounded-2xl border bg-[var(--panel-bg)]/[0.8] p-4 shadow-sm transition-colors ${
         task.status === "error"
-          ? "border-rose-500/30 bg-rose-500/[0.04]"
-          : "border-[var(--text-primary)]/[0.08]"
+          ? "border-[var(--danger)]/30 bg-[var(--danger)]/[0.04]"
+          : "border-[var(--panel-border)]/[0.12]"
       }`}
     >
       <div className="flex items-start gap-3.5">
-        <div className="relative flex h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-[var(--text-primary)]/[0.04]">
+        <div className="relative flex h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-[var(--panel-border)]/[0.2] bg-[var(--panel-bg)]">
           {isImage && objectUrl ? (
             <NextImage
               src={objectUrl}
@@ -101,7 +101,7 @@ function QueueItem({
                 <button
                   type="button"
                   onClick={onRetry}
-                  className="flex items-center gap-1 rounded-lg border border-[var(--danger)]/30 bg-[var(--danger)]/10 px-2 py-1 text-[10px] font-semibold text-[var(--danger)] transition hover:bg-[var(--danger)]/20"
+                  className="flex items-center gap-1 rounded-lg border border-[var(--danger)]/20 bg-[var(--danger)]/10 px-2 py-1 text-[10px] font-semibold text-[var(--danger)] transition hover:bg-[var(--danger)]/20"
                   aria-label={i18n("retry")}
                 >
                   <RefreshCcw className="h-3 w-3" />
@@ -139,7 +139,7 @@ function QueueItem({
                   {formatTimeLeft(task.secondsLeft)}s restantes • {formatSpeed(task.speed)}
                 </span>
               </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--panel-border)]/[0.3]">
                 <motion.div
                   initial={false}
                   animate={{ width: `${progress}%` }}
@@ -156,7 +156,7 @@ function QueueItem({
 
           {task.status === "success" && (
             <div className="mt-3 flex items-center gap-1.5">
-              <span className="flex items-center gap-1 rounded-lg border border-[var(--accent-primary)] bg-[var(--accent-primary)] px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
+              <span className="flex items-center gap-1 rounded-lg border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)]">
                 <CheckCircle2 className="h-3.5 w-3.5" />
                 {i18n("uploadedInstant") || "Téléversé à l’instant"}
               </span>
@@ -165,7 +165,7 @@ function QueueItem({
 
           {task.status === "error" && (
             <div className="mt-3 flex items-center gap-1.5">
-              <span className="flex items-center gap-1 text-[10px] font-semibold text-rose-400">
+              <span className="flex items-center gap-1 text-[10px] font-semibold text-[var(--danger)]">
                 <AlertCircle className="h-3.5 w-3.5" />
                 {task.error || i18n("uploadFailed") || "Échec de connexion — Fichier conservé"}
               </span>
@@ -175,7 +175,7 @@ function QueueItem({
           {task.status === "pending" && (
             <div className="mt-3 flex items-center gap-1.5 text-[10px] text-[var(--text-muted)]">
               <FileIcon className="h-3.5 w-3.5" />
-              En attente
+              {i18n("pending", "En attente")}
             </div>
           )}
         </div>
@@ -190,14 +190,15 @@ export default function UploadQueueList({
   onRemove,
   onReplace,
 }: UploadQueueListProps) {
+  const i18n = useI18n();
   const completed = tasks.filter((t) => t.status === "success").length;
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between rounded-2xl v8-panel px-4 py-3 backdrop-blur-2xl">
         <div className="flex items-center gap-2 text-sm font-medium text-[var(--text-primary)]">
-          <span className="text-[var(--accent-primary)]">File d&apos;attente</span>
-          <span className="text-[var(--text-muted)]">— {completed} / {tasks.length} terminé{tasks.length > 1 ? "s" : ""}</span>
+          <span className="text-[var(--accent-primary)]">{i18n("uploadQueue", "File d’attente")}</span>
+          <span className="text-[var(--text-muted)]">— {completed} / {tasks.length} {i18n("uploadCompleted", "terminé")}{tasks.length > 1 ? "s" : ""}</span>
         </div>
         {tasks.some((t) => t.status === "uploading") && (
           <span className="text-xs text-[var(--accent-primary)]">

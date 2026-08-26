@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.0 — 2026-08-26
+
+**ETHONE — Fichiers : finition de la file d’attente d’upload**
+
+- `components/UploadQueueList.tsx` :
+  - Utilisation exclusive des variables de thème ETHONE, suppression des couleurs `zinc`.
+  - Correction du badge `Téléversé` qui rendait le texte invisible.
+  - Piste de progression et fonds thémés.
+  - Textes `File d’attente` et `En attente` passés par `i18n`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.99 — 2026-08-26
 
 **ETHONE — Fichiers : action Copier le lien**

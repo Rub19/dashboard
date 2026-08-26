@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.0",
+  date: "2026-08-26",
+  title: "Fichiers — finition de la file d’attente d’upload",
+  items: [
+    "Thème ETHONE appliqué à `UploadQueueList` : suppression des couleurs zinc.",
+    "Correction du badge `Téléversé` qui rendait le texte invisible.",
+    "Piste de progression et fonds adaptés aux variables de thème.",
+    "Textes `File d’attente` et `En attente` passés par `i18n`.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.0.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.0",
+  date: "2026-08-26",
+  title: "Files — upload queue polish",
+  items: [
+    "ETHONE theme applied to `UploadQueueList`: removed zinc colors.",
+    "Fixed `Uploaded` badge that made text invisible.",
+    "Progress track and backgrounds now use theme variables.",
+    "`Queue` and `Pending` texts are now i18n-aware.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.0.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.0",
+  date: "2026-08-26",
+  title: "Archivos — acabado de la cola de subida",
+  items: [
+    "Tema ETHONE aplicado a `UploadQueueList`: eliminados colores zinc.",
+    "Corregida la insignia `Subido` que hacía el texto invisible.",
+    "Barra de progreso y fondos adaptados a las variables del tema.",
+    "Textos `Cola` y `Pendiente` ahora pasan por `i18n`.",
+    "Validación : build, lint.",
+    "Versión : v1.10.0.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.0",
+  date: "2026-08-26",
+  title: "Dateien — Upload-Warteschlange aufgehübscht",
+  items: [
+    "ETHONE-Theme auf `UploadQueueList` angewendet: Zink-Farben entfernt.",
+    "`Hochgeladen`-Badge korrigiert, der Text war unsichtbar.",
+    "Fortschrittsbalken und Hintergründe verwenden jetzt Theme-Variablen.",
+    "Texte `Warteschlange` und `Ausstehend` sind jetzt i18n-fähig.",
+    "Validierung: build, lint.",
+    "Version: v1.10.0.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.99",
   date: "2026-08-26",
   title: "Fichiers — action Copier le lien",

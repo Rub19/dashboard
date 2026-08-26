@@ -152,6 +152,34 @@ export default function UIProvider({ children }: { children: React.ReactNode }) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tooltip?.label, tooltip?.target]);
 
+  // Hide if the target's data-tooltip attribute is removed or the element leaves the DOM.
+  useEffect(() => {
+    if (!tooltip) return;
+    const target = tooltip.target;
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.type === "attributes" && mutation.attributeName === "data-tooltip") {
+          if (!target.hasAttribute("data-tooltip")) {
+            hideTooltip(true);
+          }
+        }
+      }
+    });
+    observer.observe(target, { attributes: true, attributeFilter: ["data-tooltip"] });
+
+    const check = setInterval(() => {
+      if (!target.isConnected || !target.hasAttribute("data-tooltip")) {
+        hideTooltip(true);
+      }
+    }, 150);
+
+    return () => {
+      observer.disconnect();
+      clearInterval(check);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tooltip?.target]);
+
   const requestShowTooltip = useCallback(
     (target: HTMLElement, immediate = false) => {
       if (!target || target === activeTarget.current || (target === pendingTarget.current && !immediate)) return;

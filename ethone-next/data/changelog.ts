@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.14",
+  date: "2026-08-26",
+  title: "UI — tooltips qui disparaissent proprement",
+  items: [
+    "`components/UIProvider.tsx` : les tooltips sont maintenant cachés si la cible perd `data-tooltip` ou est retirée du DOM.",
+    "Corrige le nom de catégorie qui restait affiché dans la sidebar.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.14.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.14",
+  date: "2026-08-26",
+  title: "UI — tooltips now hide cleanly",
+  items: [
+    "`components/UIProvider.tsx`: tooltips now hide when the target loses `data-tooltip` or is removed from the DOM.",
+    "Fixes the category name that stayed visible in the sidebar.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.14.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.14",
+  date: "2026-08-26",
+  title: "UI — tooltips ocultados limpiamente",
+  items: [
+    "`components/UIProvider.tsx`: los tooltips ahora se ocultan cuando el objetivo pierde `data-tooltip` o se retira del DOM.",
+    "Corrige el nombre de categoría que permanecía visible en la sidebar.",
+    "Validación : build, lint.",
+    "Versión : v1.10.14.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.14",
+  date: "2026-08-26",
+  title: "UI — Tooltips verschwinden sauber",
+  items: [
+    "`components/UIProvider.tsx`: Tooltips werden jetzt ausgeblendet, wenn das Ziel `data-tooltip` verliert oder aus dem DOM entfernt wird.",
+    "Behebt den Kategorienamen, der in der Sidebar sichtbar blieb.",
+    "Validierung: build, lint.",
+    "Version: v1.10.14.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.13",
   date: "2026-08-26",
   title: "Switch — taille corrigée et login ajusté",

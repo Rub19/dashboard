@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.14 — 2026-08-26
+
+**ETHONE — UI : tooltips qui disparaissent proprement**
+
+- `components/UIProvider.tsx` : ajout d’un `MutationObserver` et d’une vérification de connexion.
+- Si la cible perd `data-tooltip` ou est retirée du DOM, le tooltip est caché immédiatement.
+- Corrige le nom de catégorie qui restait affiché dans la sidebar.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.13 — 2026-08-26
 
 **ETHONE — Switch : taille corrigée**

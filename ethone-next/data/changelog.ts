@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.10",
+  date: "2026-08-26",
+  title: "Fichiers — vrai rework visuel : cartes + empty state",
+  items: [
+    "`FileCard` complètement refondu : aperçus d’images plus grands, cartes de type Finder, liste en rangées fines.",
+    "Empty state repensé : zone d’upload directe pour Drive connecté, accueil plus clair sans Drive.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.10.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.10",
+  date: "2026-08-26",
+  title: "Files — real visual rework: cards + empty state",
+  items: [
+    "Full `FileCard` redesign: bigger image previews, Finder-like cards, slim list rows.",
+    "Reworked empty state: direct upload zone for connected Drive, cleaner welcome when not.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.10.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.10",
+  date: "2026-08-26",
+  title: "Archivos — rework visual real: tarjetas + empty state",
+  items: [
+    "`FileCard` completamente rediseñado: vistas previas más grandes, tarjetas estilo Finder, filas de lista finas.",
+    "Empty state rediseñado: zona de subida directa con Drive conectado, bienvenida más clara sin él.",
+    "Validación : build, lint.",
+    "Versión : v1.10.10.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.10",
+  date: "2026-08-26",
+  title: "Dateien — echtes visuelles Rework: Karten + Empty State",
+  items: [
+    "`FileCard` komplett neu gestaltet: größere Bildvorschauen, Finder-ähnliche Karten, schlanke Listenzeilen.",
+    "Empty State überarbeitet: direkte Upload-Zone bei verbundenem Drive, klarere Begrüßung ohne Drive.",
+    "Validierung: build, lint.",
+    "Version: v1.10.10.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.9",
   date: "2026-08-26",
   title: "Admin Fichiers — cartes plates",

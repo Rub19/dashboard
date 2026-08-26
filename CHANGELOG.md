@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.10 — 2026-08-26
+
+**ETHONE — Fichiers : vrai rework visuel, cartes et empty state**
+
+- `components/FileCard.tsx` : refonte complète des cartes.
+  - Aperçus images/vidéos/audio plus grands (ratio 4:3).
+  - Style proche d’un vrai gestionnaire de fichiers.
+  - Liste en rangées fines avec métas alignées.
+- `app/files/page.tsx` : empty state refondu.
+  - Zone d’upload directe lorsqu’un Drive est connecté.
+  - Accueil plus clair sans Drive connecté.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.9 — 2026-08-26
 
 **ETHONE — Admin Fichiers : cartes plates**

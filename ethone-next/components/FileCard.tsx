@@ -28,7 +28,7 @@ export type FileCardProps = {
 function formatDateShort(raw?: string) {
   if (!raw) return "—";
   try {
-    return new Date(raw).toLocaleDateString(undefined, { day: "numeric", month: "short" });
+    return new Date(raw).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "2-digit" });
   } catch {
     return raw;
   }
@@ -52,200 +52,144 @@ export default function FileCard({
   const isGrid = viewMode === "grid";
   const iconName = mimeIcon(file.mimeType, file.isFolder);
 
+  const isImage = file.mimeType.startsWith("image/");
+  const isVideo = file.mimeType.startsWith("video/");
+  const isAudio = file.mimeType.startsWith("audio/");
+  const isVisual = isImage || isVideo || isAudio;
+
   const imageFallback = (
-    <div className="flex h-full w-full items-center justify-center rounded-[var(--panel-radius)] bg-[var(--panel-bg)] text-[var(--text-muted)]">
-      <Icon name={iconName} className={cn("transition-transform", isGrid ? "h-9 w-9" : "h-5 w-5")} />
+    <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-[var(--text-muted)]">
+      <Icon name={iconName} className="h-10 w-10" />
+      <span className="text-[10px] uppercase tracking-wider">{file.mimeType || "-"}</span>
     </div>
   );
 
-  const iconPreview = (
-    <div className={cn(
-      "relative shrink-0 overflow-hidden rounded-[var(--panel-radius)] border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]",
-      isGrid ? "h-24 w-24" : "h-10 w-10",
-    )}>
-      {isGrid ? (
-        <SafeImage
-          candidates={[file.thumbnailLink, file.iconUrl]}
-          alt={file.name}
-          size={96}
-          className="h-full w-full object-contain p-2"
-          iconClassName="h-9 w-9 text-[var(--text-muted)]"
-          loading="lazy"
-          fallback="none"
-        />
+  const actionIcon = (name: string, label: string, onClick: () => void, variant: "default" | "danger" = "default") => (
+    <button
+      type="button"
+      onClick={(e) => { e.stopPropagation(); onClick(); }}
+      aria-label={label}
+      data-tooltip={label}
+      className={cn(
+        "rounded p-1.5 transition-colors hover:bg-[var(--panel-bg)]",
+        variant === "danger" ? "text-[var(--danger)]" : "text-[var(--text-muted)]",
+      )}
+    >
+      <Icon name={name} className="h-4 w-4" />
+    </button>
+  );
+
+  const gridContent = (
+    <div className="relative flex h-full flex-col overflow-hidden">
+      <div
+        className="relative flex w-full items-center justify-center bg-[var(--bg-main)] p-4"
+        style={{ aspectRatio: "4/3" }}
+      >
+        {isVisual && (file.thumbnailLink || file.iconUrl) ? (
+          <SafeImage
+            candidates={[file.thumbnailLink, file.iconUrl]}
+            alt={file.name}
+            size={256}
+            className="h-full w-full rounded-xl object-cover"
+            iconClassName="h-10 w-10 text-[var(--accent-primary)]"
+            loading="lazy"
+            fallback="none"
+          />
+        ) : (
+          imageFallback
+        )}
+        {file.isFavorite && (
+          <Icon name="heart" className="absolute right-2 top-2 h-4 w-4 text-[var(--danger)]" />
+        )}
+      </div>
+
+      <div className="flex flex-1 flex-col justify-between p-3">
+        <div className="min-w-0">
+          <p className="line-clamp-2 text-sm font-medium text-[var(--text-primary)]" title={file.name}>
+            {file.name}
+          </p>
+          <p className="mt-0.5 text-[11px] text-[var(--text-muted)]">
+            {file.isFolder
+              ? i18n("folder")
+              : `${formatBytes(file.size)} · ${formatDateShort(file.updatedAt)}`}
+          </p>
+        </div>
+        <div onClick={(e) => e.stopPropagation()} className="mt-2 flex items-center gap-0.5">
+          {actionIcon(file.isFavorite ? "heart" : "heart-off", file.isFavorite ? i18n("removeFromFavorites") : i18n("addToFavorites"), onFavorite)}
+          {!file.isFolder && clientId && actionIcon("download", i18n("download"), onDownload)}
+          {trashed
+            ? actionIcon("rotate-ccw", i18n("restore"), onRestore)
+            : actionIcon("trash-2", i18n("trash"), onTrash)}
+          {trashed && actionIcon("trash", i18n("delete"), onDelete, "danger")}
+        </div>
+      </div>
+    </div>
+  );
+
+  const listContent = (
+    <>
+      <Checkbox
+        checked={selected ?? false}
+        onCheckedChange={onToggle ?? (() => {})}
+        aria-label={i18n("select")}
+        onClick={(e) => e.stopPropagation()}
+      />
+      <button type="button" onClick={onOpen} className="focus:outline-none">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[var(--bg-main)] text-[var(--text-muted)]">
+          <SafeImage
+            candidates={[file.thumbnailLink, file.iconUrl]}
+            alt={file.name}
+            size={40}
+            className="h-full w-full object-contain p-1"
+            iconClassName="h-5 w-5"
+            loading="lazy"
+            fallback="none"
+          />
+        </div>
+      </button>
+      <button type="button" onClick={onOpen} className="min-w-0 flex-1 text-left focus:outline-none">
+        <p className="truncate text-sm font-medium text-[var(--text-primary)]" title={file.name}>
+          {file.name}
+        </p>
+        <p className="truncate text-[11px] text-[var(--text-muted)] sm:hidden">
+          {file.isFolder ? i18n("folder") : `${formatBytes(file.size)} · ${formatDateShort(file.updatedAt)}`}
+        </p>
+      </button>
+      {!file.isFolder ? (
+        <>
+          <span className="hidden truncate text-right text-xs text-[var(--text-muted)] sm:block">{formatBytes(file.size)}</span>
+          <span className="hidden truncate text-right text-xs text-[var(--text-muted)] sm:block">{formatDateShort(file.updatedAt)}</span>
+        </>
       ) : (
         <>
-          {file.thumbnailLink || file.iconUrl ? (
-            <SafeImage
-              candidates={[file.thumbnailLink, file.iconUrl]}
-              alt={file.name}
-              size={40}
-              className="h-full w-full object-contain p-1"
-              iconClassName="h-5 w-5 text-[var(--text-muted)]"
-              loading="lazy"
-              fallback="none"
-            />
-          ) : imageFallback}
+          <span className="hidden text-right text-xs text-[var(--text-muted)] sm:block">—</span>
+          <span className="hidden text-right text-xs text-[var(--text-muted)] sm:block">—</span>
         </>
       )}
-    </div>
-  );
-
-  const actions = (
-    <div
-      className={cn(
-        "flex items-center gap-0.5",
-        isGrid ? "w-full justify-center pt-2" : "justify-end",
-      )}
-      onClick={(e) => e.stopPropagation()}
-    >
-      <button
-        type="button"
-        aria-label={file.isFavorite ? i18n("removeFromFavorites") : i18n("addToFavorites")}
-        data-tooltip={file.isFavorite ? i18n("removeFromFavorites") : i18n("addToFavorites")}
-        data-haptic
-        onClick={(e) => { e.stopPropagation(); onFavorite(); }}
-        className={cn(
-          "rounded p-1.5 transition-colors hover:bg-[var(--panel-bg)]",
-          file.isFavorite ? "text-[var(--danger)]" : "text-[var(--text-muted)]",
-        )}
-      >
-        <Icon name={file.isFavorite ? "heart" : "heart-off"} className="h-4 w-4" />
-      </button>
-
-      {!file.isFolder && clientId && (
-        <button
-          type="button"
-          aria-label={i18n("download")}
-          data-tooltip={i18n("download")}
-          data-haptic
-          onClick={(e) => { e.stopPropagation(); onDownload(); }}
-          className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--panel-bg)]"
-        >
-          <Icon name="download" className="h-4 w-4" />
-        </button>
-      )}
-
-      {trashed ? (
-        <button
-          type="button"
-          aria-label={i18n("restore")}
-          data-tooltip={i18n("restore")}
-          data-haptic
-          onClick={(e) => { e.stopPropagation(); onRestore(); }}
-          className="rounded p-1.5 text-[var(--success)] transition-colors hover:bg-[var(--success)]/10"
-        >
-          <Icon name="rotate-ccw" className="h-4 w-4" />
-        </button>
-      ) : (
-        <button
-          type="button"
-          aria-label={i18n("trash")}
-          data-tooltip={i18n("trash")}
-          data-haptic
-          onClick={(e) => { e.stopPropagation(); onTrash(); }}
-          className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--danger)]"
-        >
-          <Icon name="trash-2" className="h-4 w-4" />
-        </button>
-      )}
-
-      {trashed && (
-        <button
-          type="button"
-          aria-label={i18n("delete")}
-          data-tooltip={i18n("delete")}
-          data-haptic
-          onClick={(e) => { e.stopPropagation(); onDelete(); }}
-          className="rounded p-1.5 text-[var(--danger)] transition-colors hover:bg-[var(--danger)]/10"
-        >
-          <Icon name="trash" className="h-4 w-4" />
-        </button>
-      )}
-    </div>
+      <div onClick={(e) => e.stopPropagation()} className="flex items-center justify-end gap-0.5">
+        {actionIcon(file.isFavorite ? "heart" : "heart-off", file.isFavorite ? i18n("removeFromFavorites") : i18n("addToFavorites"), onFavorite)}
+        {!file.isFolder && clientId && actionIcon("download", i18n("download"), onDownload)}
+        {trashed
+          ? actionIcon("rotate-ccw", i18n("restore"), onRestore)
+          : actionIcon("trash-2", i18n("trash"), onTrash)}
+        {trashed && actionIcon("trash", i18n("delete"), onDelete, "danger")}
+      </div>
+    </>
   );
 
   return (
     <div
       data-haptic
+      onClick={isGrid ? onOpen : undefined}
       className={cn(
-        "group h-full min-w-0 overflow-hidden rounded-2xl border bg-[var(--panel-bg)] p-[var(--panel-padding)] shadow-sm transition-[border-color,box-shadow] duration-150 hover:border-[var(--accent-primary)]/30 hover:shadow-md",
-        selected
-          ? "border-[var(--accent-primary)]/50 ring-1 ring-[var(--accent-primary)]/20"
-          : "border-[var(--panel-border)]/[0.12]",
+        "group select-none transition-[border-color,box-shadow,background-color] duration-150",
+        isGrid
+          ? "h-full cursor-pointer overflow-hidden rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)] shadow-sm hover:border-[var(--accent-primary)]/40 hover:shadow-md"
+          : "grid cursor-pointer grid-cols-[1.5rem_2.5rem_minmax(0,1fr)_4rem] items-center gap-3 rounded-xl border-b border-[var(--panel-border)]/[0.08] px-3 py-2.5 last:border-b-0 hover:bg-[var(--panel-bg)]/[0.4] sm:grid-cols-[1.5rem_2.5rem_minmax(0,1fr)_6rem_6rem_7rem]",
+        selected && "bg-[var(--accent-primary)]/5 hover:bg-[var(--accent-primary)]/10",
       )}
     >
-      {isGrid ? (
-        <div className="flex h-full min-w-0 flex-col items-center justify-between text-center p-1">
-          <button
-            type="button"
-            onClick={onOpen}
-            className="flex w-full min-w-0 flex-col items-center gap-3 text-left focus:outline-none"
-          >
-            {iconPreview}
-            <div className="min-w-0 flex-1">
-              <p className="line-clamp-2 text-sm font-medium text-[var(--text-primary)]" title={file.name}>
-                {file.name}
-              </p>
-              <p className="truncate text-[11px] text-[var(--text-muted)]">
-                {file.isFolder
-                  ? i18n("folder")
-                  : `${formatBytes(file.size)} · ${formatDateShort(file.updatedAt)}`}
-              </p>
-            </div>
-          </button>
-          {actions}
-        </div>
-      ) : (
-        <div className="grid h-full min-w-0 grid-cols-[1.5rem_2.5rem_minmax(0,1fr)_4rem] items-center gap-3 sm:grid-cols-[1.5rem_2.5rem_minmax(0,1fr)_6rem_6rem_7rem]">
-          <Checkbox
-            checked={selected ?? false}
-            onCheckedChange={onToggle ?? (() => {})}
-            aria-label={i18n("select")}
-            onClick={(e) => e.stopPropagation()}
-          />
-          <button
-            type="button"
-            onClick={onOpen}
-            className="focus:outline-none"
-          >
-            {iconPreview}
-          </button>
-          <button
-            type="button"
-            onClick={onOpen}
-            className="min-w-0 text-left focus:outline-none"
-          >
-            <p className="truncate text-sm font-medium text-[var(--text-primary)]" title={file.name}>
-              {file.name}
-            </p>
-            <p className="truncate text-[11px] text-[var(--text-muted)] sm:hidden">
-              {file.isFolder
-                ? i18n("folder")
-                : `${formatBytes(file.size)} · ${formatDateShort(file.updatedAt)}`}
-            </p>
-          </button>
-          {!file.isFolder && (
-            <>
-              <p className="hidden truncate text-right text-xs text-[var(--text-muted)] sm:block">
-                {formatBytes(file.size)}
-              </p>
-              <p className="hidden truncate text-right text-xs text-[var(--text-muted)] sm:block">
-                {formatDateShort(file.updatedAt)}
-              </p>
-            </>
-          )}
-          {file.isFolder && (
-            <>
-              <span className="hidden text-right text-xs text-[var(--text-muted)] sm:block">—</span>
-              <span className="hidden text-right text-xs text-[var(--text-muted)] sm:block">—</span>
-            </>
-          )}
-          <div onClick={(e) => e.stopPropagation()} className="flex items-center justify-end gap-0.5">
-            {actions}
-          </div>
-        </div>
-      )}
+      {isGrid ? gridContent : listContent}
     </div>
   );
 }

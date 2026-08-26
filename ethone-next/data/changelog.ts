@@ -6918,6 +6918,66 @@ const v408_de: ChangelogEntry = {
   ],
 };
 
+const v412_fr: ChangelogEntry = {
+  version: "v1.9.22",
+  date: "2026-08-26",
+  title: "Rework Settings complet — ambiant audio, recherche, toasts et layout",
+  items: [
+    "Nouvelles ambiances sonores procédurales : Pluie, Vent, Océan, Cheminée, Forêt, Café, Nuit, plus les bruits de couleur.",
+    "Dropdown de résultats dans la recherche Settings.",
+    "Toasts unifiés via RichToast avec icônes et barre de progression.",
+    "Transitions du contenu Settings sans layout shift.",
+    "Lignes de la section Apparence alignées sur le nouveau design system.",
+    "Validation : build, lint, test:unit.",
+    "Version affichée en bas à droite : v1.9.22.",
+  ],
+};
+
+const v412_en: ChangelogEntry = {
+  version: "v1.9.22",
+  date: "2026-08-26",
+  title: "Full Settings rework — ambient audio, search, toasts and layout",
+  items: [
+    "New procedural ambient sounds: Rain, Wind, Ocean, Fireplace, Forest, Cafe, Night, plus color noises.",
+    "Settings search result dropdown.",
+    "Unified toasts via RichToast with icons and progress bar.",
+    "Settings content transitions without layout shift.",
+    "Appearance section rows aligned with the new design system.",
+    "Validation: build, lint, test:unit.",
+    "Version badge bottom-right: v1.9.22.",
+  ],
+};
+
+const v412_es: ChangelogEntry = {
+  version: "v1.9.22",
+  date: "2026-08-26",
+  title: "Rework completo de Settings — audio ambiental, búsqueda, toasts y layout",
+  items: [
+    "Nuevos sonidos ambientales procedurales: Lluvia, Viento, Océano, Chimenea, Bosque, Café, Noche, más ruidos de color.",
+    "Dropdown de resultados en la búsqueda de Settings.",
+    "Toasts unificados mediante RichToast con iconos y barra de progreso.",
+    "Transiciones del contenido de Settings sin layout shift.",
+    "Filas de la sección Apariencia alineadas con el nuevo design system.",
+    "Validación: build, lint, test:unit.",
+    "Versión mostrada abajo a la derecha: v1.9.22.",
+  ],
+};
+
+const v412_de: ChangelogEntry = {
+  version: "v1.9.22",
+  date: "2026-08-26",
+  title: "Vollständiges Settings-Rework — Ambient-Audio, Suche, Toasts und Layout",
+  items: [
+    "Neue prozedurale Umgebungsgeräusche: Regen, Wind, Ozean, Kamin, Wald, Café, Nacht, plus Farbrauschen.",
+    "Dropdown mit Suchergebnissen in Settings.",
+    "Einheitliche Toasts über RichToast mit Icons und Fortschrittsbalken.",
+    "Settings-Inhaltstransitionen ohne Layout Shift.",
+    "Erscheinungsbild-Zeilen am neuen Designsystem ausgerichtet.",
+    "Validierung: build, lint, test:unit.",
+    "Version unten rechts: v1.9.22.",
+  ],
+};
+
 const v411_fr: ChangelogEntry = {
   version: "v1.9.21",
   date: "2026-08-26",
@@ -7086,9 +7146,9 @@ const v409_de: ChangelogEntry = {
   ],
 };
 
-CHANGELOG_BY_LANG.fr.unshift(v411_fr, v410_fr, v409_fr, v408_fr, v407_fr, v406_fr, v405_fr, v404_fr, v403_fr, v402_fr, v401_fr, v400_fr, v399_fr, v398_fr, v397_fr, v396_fr, v395_fr, v375_fr, v374_fr, v373_fr, v372_fr, v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
-CHANGELOG_BY_LANG.en.unshift(v411_en, v410_en, v409_en, v408_en, v407_en, v406_en, v405_en, v404_en, v403_en, v402_en, v401_en, v400_en, v399_en, v398_en, v397_en, v396_en, v395_en, v375_en, v374_en, v373_en, v372_en, v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
-CHANGELOG_BY_LANG.es.unshift(v411_es, v410_es, v409_es, v408_es, v407_es, v406_es, v405_es, v404_es, v403_es, v402_es, v401_es, v400_es, v399_es, v398_es, v397_es, v396_es, v395_es, v375_es, v374_es, v373_es, v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
-CHANGELOG_BY_LANG.de.unshift(v411_de, v410_de, v409_de, v408_de, v407_de, v406_de, v405_de, v404_de, v403_de, v402_de, v401_de, v400_de, v399_de, v398_de, v397_de, v396_de, v395_de, v375_de, v374_de, v373_de, v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
+CHANGELOG_BY_LANG.fr.unshift(v412_fr, v411_fr, v410_fr, v409_fr, v408_fr, v407_fr, v406_fr, v405_fr, v404_fr, v403_fr, v402_fr, v401_fr, v400_fr, v399_fr, v398_fr, v397_fr, v396_fr, v395_fr, v375_fr, v374_fr, v373_fr, v372_fr, v371_fr, v370_fr, v369_fr, v368_fr, v367_fr, v366_fr, v365_fr, v364_fr, v363_fr, v362_fr, v361_fr, v360_fr, v359_fr);
+CHANGELOG_BY_LANG.en.unshift(v412_en, v411_en, v410_en, v409_en, v408_en, v407_en, v406_en, v405_en, v404_en, v403_en, v402_en, v401_en, v400_en, v399_en, v398_en, v397_en, v396_en, v395_en, v375_en, v374_en, v373_en, v372_en, v371_en, v370_en, v369_en, v368_en, v367_en, v366_en, v365_en, v364_en, v363_en, v362_en, v361_en, v360_en, v359_en);
+CHANGELOG_BY_LANG.es.unshift(v412_es, v411_es, v410_es, v409_es, v408_es, v407_es, v406_es, v405_es, v404_es, v403_es, v402_es, v401_es, v400_es, v399_es, v398_es, v397_es, v396_es, v395_es, v375_es, v374_es, v373_es, v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
+CHANGELOG_BY_LANG.de.unshift(v412_de, v411_de, v410_de, v409_de, v408_de, v407_de, v406_de, v405_de, v404_de, v403_de, v402_de, v401_de, v400_de, v399_de, v398_de, v397_de, v396_de, v395_de, v375_de, v374_de, v373_de, v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
 
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

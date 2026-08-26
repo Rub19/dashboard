@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.22 — 2026-08-26
+
+**ETHONE — Full Settings rework : ambient audio, recherche, toasts et layout**
+
+- Nouvelles ambiances sonores procédurales : Pluie, Vent, Océan, Cheminée, Forêt, Café, Nuit, plus bruits de couleur.
+- Dropdown de résultats dans la recherche Settings.
+- Toasts unifiés via `RichToast` avec icônes et barre de progression.
+- Transitions du contenu Settings sans layout shift.
+- Lignes de la section Apparence alignées sur le nouveau design system.
+- Validation : `npm run build`, `npm run lint`, `npm run test:unit`.
+
 ## v1.9.21 — 2026-08-26
 
 **ETHONE — Refonte Settings (layout, champs, profil et statut)**

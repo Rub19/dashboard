@@ -38,6 +38,8 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
   );
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
+  const [searchResults, setSearchResults] = useState<{ type: "section" | "field"; id: string; label: string | null; sectionId?: string }[]>([]);
+  const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [, startTransition] = useTransition();
 
   const scrollToCategory = useCallback((id: string) => {
@@ -48,6 +50,24 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
     requestAnimationFrame(() => {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
     });
+  }, []);
+
+  const scrollToSearchResult = useCallback((result: { type: "section" | "field"; id: string; sectionId?: string }) => {
+    let el: HTMLElement | null = null;
+    if (result.type === "section") {
+      el = contentRef.current?.querySelector(`[data-section="${CSS.escape(result.id)}"]`) as HTMLElement | null;
+    } else {
+      el = contentRef.current?.querySelector(`[data-setting-key="${CSS.escape(result.id)}"]`) as HTMLElement | null;
+    }
+    if (!el && result.sectionId) {
+      el = contentRef.current?.querySelector(`[data-section="${CSS.escape(result.sectionId)}"]`) as HTMLElement | null;
+    }
+    if (!el) return;
+    requestAnimationFrame(() => {
+      el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      el?.focus({ preventScroll: true });
+    });
+    setShowSearchDropdown(false);
   }, []);
 
   useEffect(() => {
@@ -168,6 +188,32 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [form, handleSave]);
 
+  useEffect(() => {
+    if (!form.query.trim()) {
+      setSearchResults([]);
+      setShowSearchDropdown(false);
+      return;
+    }
+    const t = window.setTimeout(() => {
+      const root = contentRef.current;
+      if (!root) return;
+      const sections = Array.from(root.querySelectorAll('[data-section]:not([hidden])')).map((el) => ({
+        type: "section" as const,
+        id: (el as HTMLElement).getAttribute("data-section") || "",
+        label: (el as HTMLElement).getAttribute("data-section-label") || (el as HTMLElement).querySelector("h2")?.textContent || "",
+      })).filter((r) => r.id);
+      const fields = Array.from(root.querySelectorAll('[data-setting-label]:not(.hidden)')).map((el) => ({
+        type: "field" as const,
+        id: (el as HTMLElement).getAttribute("data-setting-key") || "",
+        label: (el as HTMLElement).getAttribute("data-setting-label") || "",
+        sectionId: (el as HTMLElement).closest('[data-section]')?.getAttribute("data-section") || "",
+      })).filter((r) => r.id && r.label);
+      setSearchResults([...sections, ...fields].slice(0, 8));
+      setShowSearchDropdown(true);
+    }, 120);
+    return () => window.clearTimeout(t);
+  }, [form.query, contentRef]);
+
   return (
     <div className="flex h-full min-h-0 w-full flex-col overflow-hidden p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:p-6 sm:pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
       {/* Header */}
@@ -191,7 +237,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
             <form
               role="search"
               onSubmit={(e) => e.preventDefault()}
-              className="w-full min-w-0 sm:w-auto"
+              className="relative w-full min-w-0 sm:w-80"
             >
               <Input
                 ref={searchRef}
@@ -202,8 +248,30 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
                 aria-label={i18n("settingsSearchPlaceholder", "Rechercher dans les réglages")}
                 icon="search"
                 inputSize="compact"
-                className="w-full min-w-0 sm:w-80"
+                className="w-full min-w-0"
               />
+              {showSearchDropdown && searchResults.length > 0 && (
+                <div
+                  className="absolute left-0 right-0 top-full z-[var(--z-dropdown)] mt-1.5 max-h-64 overflow-y-auto rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1.5 shadow-lg backdrop-blur-[var(--panel-blur)]"
+                  role="listbox"
+                  aria-label={i18n("searchResults", "Résultats de recherche")}
+                >
+                  {searchResults.map((result) => (
+                    <button
+                      key={`${result.type}-${result.id}`}
+                      type="button"
+                      onClick={() => scrollToSearchResult(result)}
+                      className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-left text-sm text-[var(--text-primary)] transition-colors hover:bg-[var(--accent-primary)]/10 hover:text-[var(--accent-primary)]"
+                      role="option"
+                      aria-selected={false}
+                    >
+                      <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", result.type === "section" ? "bg-[var(--accent-primary)]" : "bg-[var(--text-muted)]")} />
+                      <span className="min-w-0 flex-1 truncate">{result.label}</span>
+                      <span className="shrink-0 text-[10px] text-[var(--text-muted)]">{result.type === "section" ? i18n("section") || "Section" : i18n("setting") || "Paramètre"}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </form>
 
             <div

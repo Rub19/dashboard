@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.47",
+  date: "2026-08-26",
+  title: "Dynamic Island Spotify — ajustements compact",
+  items: [
+    "Icône/pochette revenue à un format carré 36×36 arrondi (`rounded-lg`), intégré dans la pilule sans découpe gauche.",
+    "Texte (titre + artiste) centré, artiste en `text-primary`/85 pour meilleur contraste.",
+    "Badge horaire `h-8` avec `px-2.5 py-1.5` pour un meilleur centrage.",
+    "Suppression des padding parasites à droite.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.47.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.47",
+  date: "2026-08-26",
+  title: "Dynamic Island Spotify — compact tweaks",
+  items: [
+    "Cover/icon back to a 36×36 rounded square (`rounded-lg`), integrated inside the pill with no left cut.",
+    "Title and artist centered, artist in `text-primary`/85 for better contrast.",
+    "Time badge `h-8` with `px-2.5 py-1.5` for better centering.",
+    "Removed stray right padding.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.47.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.47",
+  date: "2026-08-26",
+  title: "Dynamic Island Spotify — ajustes compactos",
+  items: [
+    "Portada/icono de vuelta a un cuadrado 36×36 redondeado (`rounded-lg`), integrado en la píldora sin corte izquierdo.",
+    "Título y artista centrados, artista en `text-primary`/85 para mejor contraste.",
+    "Badge de hora `h-8` con `px-2.5 py-1.5` para mejor centrado.",
+    "Eliminado padding sobrante a la derecha.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.47.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.47",
+  date: "2026-08-26",
+  title: "Dynamic Island Spotify — Kompaktanpassungen",
+  items: [
+    "Cover/Icon zurück auf 36×36 abgerundetes Quadrat (`rounded-lg`), in die Pille integriert ohne linken Ausschnitt.",
+    "Titel und Künstler zentriert, Künstler in `text-primary`/85 für besseren Kontrast.",
+    "Zeit-Badge `h-8` mit `px-2.5 py-1.5` für bessere Zentrierung.",
+    "Überflüssiges rechtes Padding entfernt.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.47.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.46",
   date: "2026-08-26",
   title: "Pochettes d'album — correction chargement",

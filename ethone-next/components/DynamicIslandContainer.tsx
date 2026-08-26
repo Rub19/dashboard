@@ -85,24 +85,24 @@ function SpotifyCompact({
   const trackTitle = title || fallback;
 
   return (
-    <div className="flex h-14 min-w-[min(90vw,380px)] items-center justify-between gap-4 pr-4">
+    <div className="flex min-h-[56px] min-w-[min(90vw,380px)] items-center justify-between gap-0 px-0 py-3">
       <SafeImage
         candidates={coverCandidates}
         alt={trackTitle}
-        size={56}
-        className="h-14 w-14 shrink-0 rounded-l-[32px] object-cover bg-[var(--text-primary)]/[0.04]"
-        iconClassName="h-6 w-6 text-[var(--accent-primary)]"
+        size={36}
+        className="h-9 w-9 shrink-0 rounded-lg object-cover bg-[var(--panel-bg)]"
+        iconClassName="h-5 w-5 text-[var(--text-muted)]"
         loading="eager"
         priority
         timeoutMs={3000}
       />
-      <div className="min-w-0 flex-1 overflow-hidden text-center">
+      <div className="min-w-0 flex-1 overflow-hidden px-3 text-center">
         <p className="truncate text-[11px] font-semibold leading-tight text-[var(--text-primary)]" title={trackTitle}>
           {trackTitle}
         </p>
-        <p className="mt-0.5 truncate text-[10px] text-[var(--text-primary)]/75">{artist || fallback}</p>
+        <p className="mt-0.5 truncate text-[10px] text-[var(--text-primary)]/85">{artist || fallback}</p>
       </div>
-      <span className="flex h-7 shrink-0 items-center gap-1 rounded-md border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.04] px-2 py-1 font-mono text-[10px] tabular-nums text-[var(--text-primary)]/80">
+      <span className="flex h-8 shrink-0 items-center gap-1 rounded-md border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.04] px-2.5 py-1.5 font-mono text-[10px] tabular-nums text-[var(--text-primary)]/80">
         <Icon name="clock" pack="phosphor" className="h-3 w-3" />
         {clock}
       </span>

@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.47 — 2026-08-26
+
+**ETHONE — Dynamic Island Spotify : ajustements compact**
+
+- Icône/pochette revenue à un carré 36×36 arrondi, intégrée dans la pilule sans découpe gauche.
+- Texte (titre + artiste) centré, artiste en `text-primary`/85 pour meilleur contraste.
+- Badge horaire `h-8` avec `px-2.5 py-1.5` pour un meilleur calage.
+- Suppression du padding droit superflu.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.46 — 2026-08-26
 
 **ETHONE — Pochettes d'album : correction chargement**

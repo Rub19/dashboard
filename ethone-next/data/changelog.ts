@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.36",
+  date: "2026-08-26",
+  title: "Mobile login pass 7 — clavier iOS",
+  items: [
+    "Ajout de `autoCorrect=off`, `autoCapitalize=off`, `spellCheck=false` et `enterKeyHint` sur tous les champs du login.",
+    "OTP : numéros sans correction, sans capitalisation et sans vérification orthographique.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.36.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.36",
+  date: "2026-08-26",
+  title: "Mobile login pass 7 — iOS keyboard",
+  items: [
+    "Added `autoCorrect=off`, `autoCapitalize=off`, `spellCheck=false` and `enterKeyHint` to all login fields.",
+    "OTP: digits with no autocorrect, no capitalization and no spell checking.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.36.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.36",
+  date: "2026-08-26",
+  title: "Mobile login pass 7 — teclado iOS",
+  items: [
+    "Añadido `autoCorrect=off`, `autoCapitalize=off`, `spellCheck=false` y `enterKeyHint` a todos los campos de login.",
+    "OTP : dígitos sin autocorrección, sin capitalización y sin corrección ortográfica.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.36.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.36",
+  date: "2026-08-26",
+  title: "Mobile Login Pass 7 — iOS Tastatur",
+  items: [
+    "`autoCorrect=off`, `autoCapitalize=off`, `spellCheck=false` und `enterKeyHint` zu allen Login-Feldern hinzugefügt.",
+    "OTP: Ziffern ohne Autokorrektur, ohne Großschreibung und ohne Rechtschreibprüfung.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.36.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.35",
   date: "2026-08-26",
   title: "Admin — cartes sans effet 3D",

@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.36 — 2026-08-26
+
+**ETHONE — Mobile login pass 7 (clavier iOS)**
+
+- Ajout de `autoCorrect=off`, `autoCapitalize=off`, `spellCheck=false` et `enterKeyHint` sur tous les champs du login.
+- OTP : numéros sans correction, sans capitalisation et sans vérification orthographique.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.35 — 2026-08-26
 
 **ETHONE — Admin : cartes sans effet 3D**

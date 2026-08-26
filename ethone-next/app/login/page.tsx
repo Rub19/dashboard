@@ -98,6 +98,10 @@ function OtpInput({ value, onChange, disabled, error }: OtpInputProps) {
           inputMode="numeric"
           pattern="\d*"
           autoComplete={i === 0 ? "one-time-code" : "off"}
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck="false"
+          enterKeyHint="next"
           maxLength={1}
           value={d}
           disabled={disabled}
@@ -616,6 +620,10 @@ export default function LoginPage() {
                   inputSize="large"
                   autoComplete="email"
                   inputMode="email"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck="false"
+                  enterKeyHint="next"
                   icon="mail"
                   value={email}
                   onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
@@ -661,6 +669,10 @@ export default function LoginPage() {
                         type={showPassword ? "text" : "password"}
                         inputSize="large"
                         autoComplete="current-password"
+                        autoCorrect="off"
+                        autoCapitalize="off"
+                        spellCheck="false"
+                        enterKeyHint="go"
                         icon="lock"
                         value={password}
                         onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
@@ -691,7 +703,7 @@ export default function LoginPage() {
                 <motion.div key="register" initial={{ opacity: reduced ? 1 : 0 }} animate={{ opacity: 1 }} className="space-y-4">
                   <div className="space-y-1.5">
                     <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-username">{i18n("username", "Nom d'utilisateur")}</label>
-                    <Input id="auth-username" type="text" inputSize="large" autoComplete="username" icon="user" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="rub19" disabled={isLoading || isSuccess} inputClassName="text-base sm:text-sm" />
+                    <Input id="auth-username" type="text" inputSize="large" autoComplete="username" autoCorrect="off" autoCapitalize="off" spellCheck="false" enterKeyHint="next" icon="user" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="rub19" disabled={isLoading || isSuccess} inputClassName="text-base sm:text-sm" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-password-register">{i18n("password", "Mot de passe")}</label>
@@ -700,6 +712,10 @@ export default function LoginPage() {
                       type={showPassword ? "text" : "password"}
                       inputSize="large"
                       autoComplete="new-password"
+                      autoCorrect="off"
+                      autoCapitalize="off"
+                      spellCheck="false"
+                      enterKeyHint="next"
                       icon="lock"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -715,7 +731,7 @@ export default function LoginPage() {
                   </div>
                   <div className="space-y-1.5">
                     <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-confirm">{i18n("confirmPassword", "Confirmer le mot de passe")}</label>
-                    <Input id="auth-confirm" type="password" inputSize="large" autoComplete="new-password" icon="lock" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" disabled={isLoading || isSuccess} inputClassName="text-base sm:text-sm" />
+                    <Input id="auth-confirm" type="password" inputSize="large" autoComplete="new-password" autoCorrect="off" autoCapitalize="off" spellCheck="false" enterKeyHint="go" icon="lock" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" disabled={isLoading || isSuccess} inputClassName="text-base sm:text-sm" />
                   </div>
                 </motion.div>
               )}

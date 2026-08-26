@@ -7206,6 +7206,50 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.51",
+  date: "2026-08-26",
+  title: "Dynamic Island — Spotify prioritaire sur la synchro",
+  items: [
+    "Priorité `spotify` (2) remontée au-dessus de `sync` (1) : la pilule affiche Spotify dès qu'un morceau est actif, même si la synchro est en cours.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.51.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.51",
+  date: "2026-08-26",
+  title: "Dynamic Island — Spotify prioritized over sync",
+  items: [
+    "Raised `spotify` priority (2) above `sync` (1): the pill shows Spotify as soon as a track is active, even while sync is running.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.51.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.51",
+  date: "2026-08-26",
+  title: "Dynamic Island — Spotify priorizado sobre sync",
+  items: [
+    "Prioridad `spotify` (2) subida por encima de `sync` (1): la píldora muestra Spotify en cuanto hay una canción activa, incluso si la sincronización está en curso.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.51.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.51",
+  date: "2026-08-26",
+  title: "Dynamic Island — Spotify vor Sync priorisiert",
+  items: [
+    "Priorität `spotify` (2) über `sync` (1) gesetzt: die Pille zeigt Spotify, sobald ein Track aktiv ist, auch während der Synchronisation läuft.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.51.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.50",
   date: "2026-08-26",
   title: "Dynamic Island Spotify — bouton play + pochettes",

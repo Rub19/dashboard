@@ -31,8 +31,8 @@ const VIEW_PRIORITY: Record<View, number> = {
   brain: 5, // critical / activity
   pomodoro: 4, // action required / activity
   upload: 3, // ongoing upload
-  sync: 2, // activité en cours
-  spotify: 1, // information contextuelle
+  spotify: 2, // information contextuelle, mais préféré à sync
+  sync: 1, // activité en cours
 };
 const VIEW_ORDER: View[] = (Object.keys(VIEW_PRIORITY) as View[]).sort(
   (a, b) => VIEW_PRIORITY[b] - VIEW_PRIORITY[a],

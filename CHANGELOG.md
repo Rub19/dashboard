@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.51 — 2026-08-26
+
+**ETHONE — Dynamic Island : Spotify prioritaire sur la synchro**
+
+- Priorité `spotify` remontée au-dessus de `sync` : la pilule affiche Spotify dès qu'un morceau est actif, même si la synchro est en cours.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.50 — 2026-08-26
 
 **ETHONE — Dynamic Island Spotify : bouton play + pochettes**

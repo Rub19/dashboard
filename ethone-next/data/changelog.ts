@@ -7206,6 +7206,50 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.48",
+  date: "2026-08-26",
+  title: "TopBar — info système de retour",
+  items: [
+    "Restauration de `SystemStatusPills` (workspace, sync, horloge) au centre de la `TopBar`.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.48.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.48",
+  date: "2026-08-26",
+  title: "TopBar — restored system info",
+  items: [
+    "Restored `SystemStatusPills` (workspace, sync, clock) in the center of the `TopBar`.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.48.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.48",
+  date: "2026-08-26",
+  title: "TopBar — información del sistema restaurada",
+  items: [
+    "Restaurado `SystemStatusPills` (workspace, sync, reloj) en el centro de la `TopBar`.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.48.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.48",
+  date: "2026-08-26",
+  title: "TopBar — Systeminfo zurückgeholt",
+  items: [
+    "`SystemStatusPills` (Workspace, Sync, Uhr) wieder in die Mitte der `TopBar` eingefügt.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.48.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.47",
   date: "2026-08-26",
   title: "Dynamic Island Spotify — ajustements compact",

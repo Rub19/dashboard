@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.48 — 2026-08-26
+
+**ETHONE — TopBar : info système de retour**
+
+- Restauration de `SystemStatusPills` (workspace, sync, horloge) au centre de la `TopBar`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.47 — 2026-08-26
 
 **ETHONE — Dynamic Island Spotify : ajustements compact**

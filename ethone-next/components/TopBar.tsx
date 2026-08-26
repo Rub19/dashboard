@@ -26,6 +26,7 @@ import { useFocus } from "@/components/FocusProvider";
 import { useDynamicIslandStore } from "@/lib/stores/dynamic-island";
 import WeatherDetailPopover from "@/components/WeatherDetailPopover";
 import SupportButton from "@/components/dashboard/SupportButton";
+import SystemStatusPills from "@/components/SystemStatusPills";
 import { Icon } from "@/lib/icons";
 import { PREMIUM_THEMES, THEME_DEFINITIONS, resolvePremiumTheme } from "@/lib/theme-engine";
 import { cn } from "@/lib/utils";
@@ -202,8 +203,10 @@ function TopBar() {
           </nav>
         </div>
 
-        {/* Center — reserved for Dynamic Island */}
-        <div className="col-start-2 hidden w-44 items-center justify-center justify-self-center lg:flex pointer-events-none" />
+        {/* Center — system status pills */}
+        <div className="pointer-events-auto col-start-2 hidden items-center justify-center justify-self-center lg:flex">
+          <SystemStatusPills />
+        </div>
 
         {/* Right — Quick tools, palette, profile */}
         <div className="col-start-3 flex min-w-0 items-center justify-end gap-2.5 sm:gap-4 justify-self-end pointer-events-auto">

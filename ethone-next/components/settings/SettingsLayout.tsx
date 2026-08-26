@@ -244,7 +244,8 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
                 size="md"
                 leftIcon={<Save className="h-3.5 w-3.5" />}
                 onClick={handleSave}
-                disabled={!form.hasExplicitChanges}
+                disabled={!form.hasExplicitChanges || form.isSaving}
+                isLoading={form.isSaving}
               >
                 {i18n("save") || "Enregistrer"}
               </Button>
@@ -347,6 +348,8 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
                     showError(String(err));
                   }
                 }}
+                disabled={!form.hasExplicitChanges || form.isSaving}
+                isLoading={form.isSaving}
               >
                 {i18n("save") || "Enregistrer"}
               </Button>

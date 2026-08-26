@@ -52,6 +52,8 @@ type SettingsFormState = {
   canRedo: boolean;
   undo: () => void;
   redo: () => void;
+  /** Save UI state. */
+  isSaving: boolean;
 };
 
 const SettingsFormContext = createContext<SettingsFormState | null>(null);
@@ -73,6 +75,7 @@ export function SettingsFormProvider({ children }: { children: React.ReactNode }
   const [query, setQuery] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [draft, setDraft] = useState<Draft>({});
+  const [isSaving, setIsSaving] = useState(false);
   const [microSaves, setMicroSaves] = useState<MicroSave[]>([]);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [future, setFuture] = useState<HistoryEntry[]>([]);
@@ -194,6 +197,7 @@ export function SettingsFormProvider({ children }: { children: React.ReactNode }
   }, []);
 
   const saveExplicit = useCallback(() => {
+    setIsSaving(true);
     const known = Object.fromEntries(
       Object.entries(draft).filter(([key]) => key !== "accountPassword")
     );
@@ -201,6 +205,7 @@ export function SettingsFormProvider({ children }: { children: React.ReactNode }
       update(known as Partial<Settings>);
     }
     setDraft({});
+    window.setTimeout(() => setIsSaving(false), 600);
   }, [draft, update]);
 
   const cancelExplicit = useCallback(() => {
@@ -340,9 +345,11 @@ export function SettingsFormProvider({ children }: { children: React.ReactNode }
       canRedo,
       undo,
       redo,
+      isSaving,
     }),
     [
       query,
+      isSaving,
       showAdvanced,
       draft,
       microSaves,

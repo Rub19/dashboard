@@ -141,7 +141,7 @@ export default function NotesPage() {
   }
 
   return (
-    <div className="h-full min-h-0 w-full grid grid-cols-12 gap-5 overflow-hidden p-4">
+    <div className="h-full min-h-0 w-full grid grid-cols-12 items-stretch gap-5 overflow-hidden p-4">
       {/* Left: List & Search */}
       <div className="col-span-12 flex h-full min-h-0 flex-col gap-3 overflow-hidden lg:col-span-4">
         <div className="shrink-0 rounded-2xl v8-panel p-4 backdrop-blur-2xl">
@@ -171,7 +171,7 @@ export default function NotesPage() {
                 { id: "words", label: i18n("sortByWords") },
               ]}
               aria-label={i18n("sortBy")}
-              className="min-w-0 w-28"
+              className="min-w-[120px] w-36"
             />
           </div>
         </div>
@@ -278,7 +278,7 @@ export default function NotesPage() {
 
         <RichTextEditor defaultValue={body} onChange={setBody} placeholder={i18n("description")} className="min-h-0 flex-1 overflow-hidden" />
 
-        <div className="shrink-0 mt-4 flex flex-wrap items-center justify-between gap-2">
+        <div className="shrink-0 mb-6 mt-4 flex flex-wrap items-center justify-between gap-2">
           <span className="text-[11px] font-mono text-[var(--text-muted)]">
             {currentWords} {i18n("words")} · {currentChars} caractères
           </span>

@@ -314,51 +314,51 @@ export default function RichTextEditor({
   return (
     <div className={`v8-rich-text flex h-full min-h-0 flex-col ${className}`}>
       <div
-        className="mb-4 flex flex-wrap items-center gap-1 v8-inset p-1.5"
+        className="mb-4 flex flex-wrap items-center gap-2 rounded-2xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] p-2"
         role="toolbar"
         aria-label="Formatage du texte"
         onMouseDown={(e) => e.preventDefault()}
       >
-        {INLINE_TOOLS.map((tool) => (
-          <ToolbarButton
-            key={tool.command}
-            active={format[tool.command as keyof typeof format] as boolean}
-            onClick={() => exec(tool.command, undefined)}
-            label={tool.label}
-            icon={tool.icon}
-            data-rich-command={tool.command}
-          />
-        ))}
+        <div className="inline-flex items-center gap-0.5 rounded-lg bg-[var(--text-primary)]/[0.04] p-0.5">
+          {INLINE_TOOLS.map((tool) => (
+            <ToolbarButton
+              key={tool.command}
+              active={format[tool.command as keyof typeof format] as boolean}
+              onClick={() => exec(tool.command, undefined)}
+              label={tool.label}
+              icon={tool.icon}
+              data-rich-command={tool.command}
+            />
+          ))}
+        </div>
 
-        <span className="mx-1 h-4 w-[1px] bg-white/10" />
+        <div className="inline-flex items-center gap-0.5 rounded-lg bg-[var(--text-primary)]/[0.04] p-0.5">
+          {ALIGN_TOOLS.map((tool) => (
+            <ToolbarButton
+              key={tool.command}
+              active={format.justify === tool.command.replace("justify", "").toLowerCase()}
+              onClick={() => exec(tool.command, undefined)}
+              label={tool.label}
+              icon={tool.icon}
+              data-rich-command={tool.command}
+            />
+          ))}
+        </div>
 
-        {ALIGN_TOOLS.map((tool) => (
-          <ToolbarButton
-            key={tool.command}
-            active={format.justify === tool.command.replace("justify", "").toLowerCase()}
-            onClick={() => exec(tool.command, undefined)}
-            label={tool.label}
-            icon={tool.icon}
-            data-rich-command={tool.command}
-          />
-        ))}
+        <div className="inline-flex items-center gap-0.5 rounded-lg bg-[var(--text-primary)]/[0.04] p-0.5">
+          {LIST_TOOLS.map((tool) => (
+            <ToolbarButton
+              key={tool.command}
+              active={tool.command === "insertUnorderedList" ? format.list : format.orderedList}
+              onClick={() => exec(tool.command, undefined)}
+              label={tool.label}
+              icon={tool.icon}
+              data-rich-command={tool.command}
+            />
+          ))}
+        </div>
 
-        <span className="mx-1 h-4 w-[1px] bg-white/10" />
-
-        {LIST_TOOLS.map((tool) => (
-          <ToolbarButton
-            key={tool.command}
-            active={tool.command === "insertUnorderedList" ? format.list : format.orderedList}
-            onClick={() => exec(tool.command, undefined)}
-            label={tool.label}
-            icon={tool.icon}
-            data-rich-command={tool.command}
-          />
-        ))}
-
-        <span className="mx-1 h-4 w-[1px] bg-white/10" />
-
-        <div className="relative">
+        <div className="relative inline-flex items-center rounded-lg bg-[var(--text-primary)]/[0.04] p-0.5">
           <button
             ref={blockButtonRef}
             type="button"
@@ -401,12 +401,12 @@ export default function RichTextEditor({
           </AnimatePresence>
         </div>
 
-        <span className="mx-1 h-4 w-[1px] bg-white/10" />
-
-        <ToolbarButton active={false} onClick={insertLink} label="Lien" icon="link" data-rich-command="createLink" />
-        <ToolbarButton active={false} onClick={() => exec("unlink")} label="Supprimer le lien" icon="unlink" data-rich-command="unlink" />
-        <ToolbarButton active={false} onClick={insertImage} label="Image" icon="image" data-rich-command="insertImage" />
-        <ToolbarButton active={false} onClick={clearFormatting} label="Effacer le format" icon="remove-formatting" data-rich-command="removeFormat" />
+        <div className="inline-flex items-center gap-0.5 rounded-lg bg-[var(--text-primary)]/[0.04] p-0.5">
+          <ToolbarButton active={false} onClick={insertLink} label="Lien" icon="link" data-rich-command="createLink" />
+          <ToolbarButton active={false} onClick={() => exec("unlink")} label="Supprimer le lien" icon="unlink" data-rich-command="unlink" />
+          <ToolbarButton active={false} onClick={insertImage} label="Image" icon="image" data-rich-command="insertImage" />
+          <ToolbarButton active={false} onClick={clearFormatting} label="Effacer le format" icon="remove-formatting" data-rich-command="removeFormat" />
+        </div>
       </div>
 
       <div

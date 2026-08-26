@@ -353,7 +353,7 @@ export default function DynamicIslandContainer() {
   // The compact pill shows the active activity, or a default ETHONE clock
   // capsule when the island is visible but no specific activity is present.
   const compact = useMemo(() => {
-    const base = "flex h-[38px] w-full items-center justify-center gap-2 whitespace-nowrap px-1 text-[var(--text-primary)]";
+    const base = "flex h-full w-full items-center justify-center gap-2 whitespace-nowrap px-1 text-[var(--text-primary)]";
     if (!selectedView) {
       return (
         <div className={cn(base)}>

@@ -7206,6 +7206,70 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.25",
+  date: "2026-08-26",
+  title: "Polish Notes et corrections visuelles",
+  items: [
+    "`TopBar` : réservation de largeur centrale pour le Dynamic Island, qui ne chevauche plus la météo.",
+    "`NotesPage` : sélecteur de tri plus large (`w-36`) pour ne plus être coupé.",
+    "`NotesPage` : bouton 'Enregistrer' remonté avec `mb-6` et `main` padding bas augmenté.",
+    "`NotesPage` : les deux colonnes partagent la même hauteur (`items-stretch`).",
+    "`RichTextEditor` : barre d'outils regroupée par sections avec séparateurs visuels.",
+    "`Dock` et `Shell` : dock remonté et padding bas augmenté pour éviter tout recouvrement.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.25.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.25",
+  date: "2026-08-26",
+  title: "Notes polish and visual fixes",
+  items: [
+    "`TopBar` : central width reserved for Dynamic Island, no longer overlapping weather.",
+    "`NotesPage` : sort selector widened (`w-36`) so it isn't truncated.",
+    "`NotesPage` : 'Save' button raised with `mb-6` and increased `main` bottom padding.",
+    "`NotesPage` : two columns share the same height (`items-stretch`).",
+    "`RichTextEditor` : toolbar grouped by sections with visual separators.",
+    "`Dock` and `Shell` : dock raised and bottom padding increased to avoid any overlap.",
+    "Validation: build, lint.",
+    "Version badge bottom-right: v1.9.25.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.25",
+  date: "2026-08-26",
+  title: "Pulido de Notas y correcciones visuales",
+  items: [
+    "`TopBar` : ancho central reservado para Dynamic Island, sin superponerse al clima.",
+    "`NotesPage` : selector de ordenación más ancho (`w-36`) para no cortarse.",
+    "`NotesPage` : botón 'Guardar' elevado con `mb-6` y padding inferior del `main` aumentado.",
+    "`NotesPage` : las dos columnas comparten la misma altura (`items-stretch`).",
+    "`RichTextEditor` : barra de herramientas agrupada por secciones con separadores visuales.",
+    "`Dock` y `Shell` : dock elevado y padding inferior aumentado para evitar superposiciones.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.25.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.25",
+  date: "2026-08-26",
+  title: "Notes-Polish und visuelle Korrekturen",
+  items: [
+    "`TopBar` : zentrale Breite für Dynamic Island reserviert, überlappt Wetter nicht mehr.",
+    "`NotesPage` : Sortier-Select verbreitert (`w-36`), damit es nicht abgeschnitten wird.",
+    "`NotesPage` : 'Speichern'-Button mit `mb-6` angehoben und unterer `main`-Padding erhöht.",
+    "`NotesPage` : beide Spalten teilen sich die gleiche Höhe (`items-stretch`).",
+    "`RichTextEditor` : Toolbar nach Abschnitten gruppiert mit visuellen Trennern.",
+    "`Dock` und `Shell` : Dock angehoben und unterer Padding erhöht, um Überlappungen zu vermeiden.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.25.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.24",
   date: "2026-08-26",
   title: "Synchronisation automatique en cas d'éléments en attente",

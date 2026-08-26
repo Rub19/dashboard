@@ -207,7 +207,7 @@ function TopBar() {
         </div>
 
         {/* Center — reserved for Dynamic Island */}
-        <div className="col-start-2 hidden min-w-0 items-center justify-center justify-self-center lg:flex pointer-events-none" />
+        <div className="col-start-2 hidden w-44 items-center justify-center justify-self-center lg:flex pointer-events-none" />
 
         {/* Right — Quick tools, palette, profile */}
         <div className="col-start-3 flex min-w-0 items-center justify-end gap-2.5 sm:gap-4 justify-self-end pointer-events-auto">

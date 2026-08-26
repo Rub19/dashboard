@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.25 — 2026-08-26
+
+**ETHONE — Polish Notes et corrections visuelles**
+
+- `TopBar` : réservation de largeur centrale pour le Dynamic Island, qui ne chevauche plus la météo.
+- `NotesPage` : sélecteur de tri plus large (`w-36`) pour ne plus être coupé.
+- `NotesPage` : bouton **Enregistrer** remonté et `main` padding bas augmenté.
+- `NotesPage` : les deux colonnes partagent la même hauteur (`items-stretch`).
+- `RichTextEditor` : barre d'outils regroupée par sections avec séparateurs visuels.
+- `Dock` / `Shell` : dock remonté et padding bas augmenté.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.24 — 2026-08-26
 
 **ETHONE — Synchronisation automatique en cas d'éléments en attente**

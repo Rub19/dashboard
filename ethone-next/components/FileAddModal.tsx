@@ -20,6 +20,7 @@ export type FileAddModalProps = {
   onCreateFolder: (name: string) => Promise<void> | void;
   onConnectDrive: () => void;
   loading?: boolean;
+  initialFiles?: File[];
 };
 
 export default function FileAddModal({
@@ -31,6 +32,7 @@ export default function FileAddModal({
   onCreateFolder,
   onConnectDrive,
   loading,
+  initialFiles,
 }: FileAddModalProps) {
   const i18n = useI18n();
   const [tab, setTab] = useState<TabId>("upload");
@@ -85,6 +87,7 @@ export default function FileAddModal({
                 <FileUploader
                   clientId={clientId}
                   parentId={parentId}
+                  initialFiles={initialFiles}
                   onAllComplete={() => {
                     onUploadComplete();
                     onClose();

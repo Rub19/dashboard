@@ -16,11 +16,13 @@ export default function FileUploader({
   parentId,
   onAllComplete,
   onFileUploaded,
+  initialFiles,
 }: {
   clientId?: string;
   parentId?: string | null;
   onAllComplete?: () => void;
   onFileUploaded?: (file: File) => void;
+  initialFiles?: File[];
 }) {
   const i18n = useI18n();
   const [queue, setQueue] = useState<UploadTask[]>([]);
@@ -314,6 +316,12 @@ export default function FileUploader({
     setReplaceId(id);
     inputRef.current?.click();
   }
+
+  useEffect(() => {
+    if (initialFiles && initialFiles.length > 0) {
+      addFiles(initialFiles);
+    }
+  }, [initialFiles, addFiles]);
 
   useEffect(() => {
     if (queue.length === 0) {

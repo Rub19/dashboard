@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.88 — 2026-08-26
+
+**ETHONE — Fichiers : phase 5 drag & drop global**
+
+- `components/FileDropOverlay.tsx` : overlay global qui capture le drag & drop sur toute la page Fichiers.
+- `components/FileUploader.tsx` : accepte `initialFiles` pour ingérer les fichiers déposés.
+- `components/FileAddModal.tsx` : passe `initialFiles` à l'uploader.
+- `app/files/page.tsx` : drop n'importe où → ouverture de la modale Ajouter avec les fichiers en attente.
+- Overlay animé, preview du premier fichier, fond flouté, respect `prefers-reduced-motion`.
+- Désactivé si aucun Drive connecté.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.87 — 2026-08-26
 
 **ETHONE — Fichiers : phase 4 grille/liste et cartes modernes**

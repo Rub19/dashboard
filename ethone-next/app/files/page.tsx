@@ -21,6 +21,7 @@ import FilesAdminPanel from "@/components/FilesAdminPanel";
 import FileAddModal from "@/components/FileAddModal";
 import FilePreview from "@/components/FilePreview";
 import FileCard from "@/components/FileCard";
+import FileDropOverlay from "@/components/FileDropOverlay";
 import Input from "@/components/Input";
 import Button from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
@@ -97,6 +98,7 @@ export default function FilesPage() {
   const [addOpen, setAddOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
   const [previewFile, setPreviewFile] = useState<CloudFile | null>(null);
+  const [droppedFiles, setDroppedFiles] = useState<File[]>([]);
   const [form, setForm] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [sort, setSort] = useState<"name" | "size" | "date" | "type">("name");
@@ -774,6 +776,13 @@ export default function FilesPage() {
             )}
       </Modal>
 
+      {clientId && (
+        <FileDropOverlay
+          onDrop={(files) => { setDroppedFiles(files); setAddOpen(true); }}
+          disabled={!clientId}
+        />
+      )}
+
       {previewFile && (
         <FilePreview
           open={!!previewFile}
@@ -794,10 +803,11 @@ export default function FilesPage() {
 
       <FileAddModal
         open={addOpen}
-        onClose={() => setAddOpen(false)}
+        onClose={() => { setAddOpen(false); setDroppedFiles([]); }}
         clientId={clientId}
         parentId={parentId}
-        onUploadComplete={() => { success(i18n("uploadFile")); reload(); }}
+        initialFiles={droppedFiles}
+        onUploadComplete={() => { setDroppedFiles([]); success(i18n("uploadFile")); reload(); }}
         onCreateFolder={handleCreateFolder}
         onConnectDrive={connectDrive}
       />

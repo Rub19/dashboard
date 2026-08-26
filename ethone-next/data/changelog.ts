@@ -7206,6 +7206,66 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.88",
+  date: "2026-08-26",
+  title: "Fichiers — phase 5 : drag & drop global",
+  items: [
+    "Nouveau `FileDropOverlay` : glisser-déposer n'importe où sur la page Fichiers.",
+    "Overlay avec animation, preview du premier fichier, fond flouté et zone de drop au centre.",
+    "Les fichiers déposés ouvrent directement la modale Ajouter sur l'onglet Upload.",
+    "`FileUploader` accepte un prop `initialFiles` pour ingérer les fichiers déposés.",
+    "Respecte `prefers-reduced-motion` et désactivé si aucun Drive connecté.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.88.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.88",
+  date: "2026-08-26",
+  title: "Files — phase 5: global drag & drop",
+  items: [
+    "New `FileDropOverlay`: drag and drop anywhere on the Files page.",
+    "Overlay with animation, first file preview, blurred backdrop and centered drop zone.",
+    "Dropped files open the Add modal directly on the Upload tab.",
+    "`FileUploader` now accepts an `initialFiles` prop to ingest dropped files.",
+    "Respects `prefers-reduced-motion` and disabled when no Drive is connected.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.88.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.88",
+  date: "2026-08-26",
+  title: "Archivos — fase 5: arrastrar y soltar global",
+  items: [
+    "Nuevo `FileDropOverlay`: arrastrar y soltar en cualquier parte de la página Archivos.",
+    "Overlay con animación, vista previa del primer archivo, fondo difuminado y zona de drop centrada.",
+    "Los archivos soltados abren directamente el modal Añadir en la pestaña Subir.",
+    "`FileUploader` acepta ahora un prop `initialFiles` para ingerir archivos soltados.",
+    "Respeta `prefers-reduced-motion` y se desactiva si no hay Drive conectado.",
+    "Validación : build, lint.",
+    "Versión : v1.9.88.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.88",
+  date: "2026-08-26",
+  title: "Dateien — Phase 5: globaler Drag & Drop",
+  items: [
+    "Neues `FileDropOverlay`: Drag & Drop überall auf der Dateien-Seite.",
+    "Overlay mit Animation, Vorschau der ersten Datei, verschwommenem Hintergrund und zentrierter Drop-Zone.",
+    "Abgelegte Dateien öffnen direkt das Hinzufügen-Modal im Upload-Tab.",
+    "`FileUploader` akzeptiert nun ein `initialFiles`-Prop, um abgelegte Dateien zu verarbeiten.",
+    "Respektiert `prefers-reduced-motion` und deaktiviert sich, wenn kein Drive verbunden ist.",
+    "Validierung: build, lint.",
+    "Version: v1.9.88.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.87",
   date: "2026-08-26",
   title: "Fichiers — phase 4 : grille/liste et cartes modernes",

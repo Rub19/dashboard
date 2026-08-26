@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.77 — 2026-08-26
+
+**ETHONE — Activity Hub : filtres et heatmap**
+
+- `components/ActivityHub.tsx` : filtres de catégories sous forme de chips.
+- Sélecteur de période étendu (Aujourd'hui, Hier, 7j, 30j, 3m, 6m, 1an).
+- La heatmap adapte son nombre de semaines à la période sélectionnée.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.76 — 2026-08-26
 
 **ETHONE — Activity Hub : première passe**

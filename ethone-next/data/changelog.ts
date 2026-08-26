@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.77",
+  date: "2026-08-26",
+  title: "Activity Hub — heatmap et filtres",
+  items: [
+    "Filtres de catégorie sous forme de chips (Productivité, Brain, Gaming, Média, etc.).",
+    "Sélecteur de période étendu : Aujourd'hui, Hier, 7j, 30j, 3m, 6m, 1an.",
+    "La heatmap s'adapte à la période sélectionnée.",
+    "Toolbar unifiée : recherche, chips, synchronisation.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.77.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.77",
+  date: "2026-08-26",
+  title: "Activity Hub — heatmap and filters",
+  items: [
+    "Category filters as chips (Productivity, Brain, Gaming, Media, etc.).",
+    "Extended period selector: Today, Yesterday, 7d, 30d, 3m, 6m, 1y.",
+    "Heatmap adapts to the selected period.",
+    "Unified toolbar: search, chips, sync.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.77.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.77",
+  date: "2026-08-26",
+  title: "Activity Hub — heatmap y filtros",
+  items: [
+    "Filtros de categoría en chips (Productividad, Brain, Gaming, Medios, etc.).",
+    "Selector de período extendido : Hoy, Ayer, 7d, 30d, 3m, 6m, 1a.",
+    "El heatmap se adapta al período seleccionado.",
+    "Barra de herramientas unificada : búsqueda, chips, sincronización.",
+    "Validación : build, lint.",
+    "Versión : v1.9.77.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.77",
+  date: "2026-08-26",
+  title: "Activity Hub — Heatmap und Filter",
+  items: [
+    "Kategoriefilter als Chips (Produktivität, Brain, Gaming, Medien, etc.).",
+    "Erweiterte Zeitraumauswahl : Heute, Gestern, 7T, 30T, 3M, 6M, 1J.",
+    "Heatmap passt sich an den gewählten Zeitraum an.",
+    "Vereinigte Toolbar : Suche, Chips, Synchronisation.",
+    "Validierung: build, lint.",
+    "Version: v1.9.77.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.76",
   date: "2026-08-26",
   title: "Activity Hub — première passe",

@@ -8,9 +8,9 @@ import { useCloudFiles } from "@/lib/hooks/useCloudFiles";
 import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
 import { useI18n } from "@/lib/hooks/useI18n";
 import type { ActivityCategory, ActivityEntry, ActivitySnapshot } from "@/lib/activity-journal";
+import { cn } from "@/lib/utils";
 import { Icon } from "@/lib/icons";
 import Input from "@/components/Input";
-import Select from "@/components/ui/Select";
 import AnimatedFilterTabs from "@/components/ui/AnimatedFilterTabs";
 import Card from "@/components/ui/Card";
 import ActivityHeatmap from "./ActivityHeatmap";
@@ -45,30 +45,23 @@ function formatLocalTime(iso: string, mounted: boolean): string {
 }
 
 const PERIODS = [
+  { id: "1", label: "Aujourd'hui" },
+  { id: "2", label: "Hier" },
   { id: "7", label: "7j" },
   { id: "30", label: "30j" },
-  { id: "90", label: "90j" },
-  { id: "365", label: "365j" },
+  { id: "90", label: "3m" },
+  { id: "180", label: "6m" },
+  { id: "365", label: "1an" },
 ];
 
-const CATEGORIES: { id: ActivityCategory | "all"; labelKey: string; icon: string }[] = [
-  { id: "all", labelKey: "all", icon: "layout-grid" },
-  { id: "productivity", labelKey: "productivity", icon: "zap" },
-  { id: "work", labelKey: "work", icon: "briefcase" },
-  { id: "system", labelKey: "system", icon: "settings" },
-  { id: "brain", labelKey: "brain", icon: "brain" },
-];
-
-const TYPES = [
-  { id: "all", labelKey: "journalTypeAll" },
-  { id: "action", labelKey: "journalTypeAction" },
-  { id: "route", labelKey: "journalTypeRoute" },
-  { id: "derived", labelKey: "journalTypeDerived" },
-  { id: "note", labelKey: "journalTypeNote" },
-  { id: "task", labelKey: "journalTypeTask" },
-  { id: "event", labelKey: "journalTypeEvent" },
-  { id: "file", labelKey: "journalTypeFile" },
-];
+function weeksForPeriod(days: number): number {
+  if (days <= 2) return 1;
+  if (days <= 7) return 2;
+  if (days <= 30) return 5;
+  if (days <= 90) return 13;
+  if (days <= 180) return 26;
+  return 53;
+}
 
 const CATEGORY_META: Record<ActivityCategory, { color: string; bg: string; border: string }> = {
   productivity: { color: "text-[var(--info)]", bg: "bg-[var(--info)]", border: "border-[var(--info)]" },
@@ -76,6 +69,23 @@ const CATEGORY_META: Record<ActivityCategory, { color: string; bg: string; borde
   system: { color: "text-[var(--accent-primary)]", bg: "bg-[var(--accent-primary)]", border: "border-[var(--accent-primary)]" },
   brain: { color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
 };
+
+type ChipDef = { id: string; label: string; match: (e: ActivityEntry) => boolean };
+
+const CATEGORY_CHIPS: ChipDef[] = [
+  { id: "productivity", label: "Productivité", match: (e) => e.category === "productivity" },
+  { id: "gaming", label: "Gaming", match: (e) => /discord|steam/i.test(e.source) },
+  { id: "media", label: "Média", match: (e) => /spotify|youtube/i.test(e.source) },
+  { id: "development", label: "Développement", match: (e) => /github|gitlab/i.test(e.source) },
+  { id: "brain", label: "Brain", match: (e) => e.category === "brain" },
+  { id: "settings", label: "Réglages", match: (e) => e.category === "system" && /settings|theme|appearance/.test(e.eventType || "") },
+  { id: "security", label: "Sécurité", match: (e) => /password|otp|passkey|login|new.device/i.test(e.eventType || "") },
+  { id: "sessions", label: "Sessions", match: (e) => (e.eventType || "").startsWith("route:home") },
+  { id: "widgets", label: "Widgets", match: (e) => /widget/i.test(e.eventType || "") },
+  { id: "connections", label: "Connexions", match: (e) => /sync|connection/i.test(e.eventType || "") },
+  { id: "automations", label: "Automations", match: (e) => /automation/i.test(e.eventType || "") },
+  { id: "system", label: "Système", match: (e) => e.category === "system" },
+];
 
 const TONE_META: Record<string, { labelKey: string; color: string; bg: string }> = {
   success: { labelKey: "statusSuccess", color: "text-[var(--accent-primary)]", bg: "bg-[var(--accent-primary)] border border-[var(--accent-primary)]" },
@@ -88,19 +98,6 @@ const TONE_META: Record<string, { labelKey: string; color: string; bg: string }>
   file: { labelKey: "journalTypeFile", color: "text-[var(--text-primary)]", bg: "bg-[var(--text-primary)]/[0.06] border border-[var(--text-primary)]/[0.08]" },
   navigation: { labelKey: "journalTypeRoute", color: "text-[var(--text-primary)]", bg: "bg-[var(--text-primary)]/[0.06] border border-[var(--text-primary)]/[0.08]" },
 };
-
-function matchesType(eventType: string | undefined, type: string): boolean {
-  if (!eventType) return type === "all";
-  if (type === "all") return true;
-  if (type === "action") return eventType.startsWith("v8.") || eventType === "v8.brain.call";
-  if (type === "route") return eventType.startsWith("route:");
-  if (type === "derived") return eventType.startsWith("derived:");
-  if (type === "note") return eventType === "derived:note";
-  if (type === "task") return eventType === "derived:task";
-  if (type === "event") return eventType === "derived:event";
-  if (type === "file") return eventType === "derived:file";
-  return true;
-}
 
 type StatCardProps = {
   label: string;
@@ -191,8 +188,7 @@ export default function ActivityHub() {
   const i18n = useI18n();
   const [period, setPeriod] = useState<string>("365");
   const [query, setQuery] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<ActivityCategory | "all">("all");
-  const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [activeChips, setActiveChips] = useState<string[]>([]);
   const [mounted, setMounted] = useState(false);
   const [now, setNow] = useState<number | null>(null);
   const [today, setToday] = useState<Date | null>(null);
@@ -235,8 +231,9 @@ export default function ActivityHub() {
 
   const filteredEntries = useMemo(() => {
     let list = entries.filter((e) => new Date(e.timestamp) >= cutoff);
-    if (categoryFilter !== "all") list = list.filter((e) => e.category === categoryFilter);
-    if (typeFilter !== "all") list = list.filter((e) => matchesType(e.eventType, typeFilter));
+    if (activeChips.length > 0) {
+      list = list.filter((e) => activeChips.some((id) => CATEGORY_CHIPS.find((c) => c.id === id)?.match(e)));
+    }
     if (query.trim()) {
       const q = query.toLowerCase();
       list = list.filter(
@@ -248,7 +245,18 @@ export default function ActivityHub() {
       );
     }
     return list;
-  }, [entries, cutoff, categoryFilter, typeFilter, query]);
+  }, [entries, cutoff, activeChips, query]);
+
+  const chipCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const e of entries) {
+      if (new Date(e.timestamp) < cutoff) continue;
+      for (const chip of CATEGORY_CHIPS) {
+        if (chip.match(e)) counts.set(chip.id, (counts.get(chip.id) || 0) + 1);
+      }
+    }
+    return counts;
+  }, [entries, cutoff]);
 
   const todayDate = useMemo(() => today ?? new Date(0), [today]);
 
@@ -350,21 +358,19 @@ export default function ActivityHub() {
 
   const periodTabs = useMemo(() => PERIODS.map((p) => ({ id: p.id, label: p.label })), []);
 
-  const categoryOptions = useMemo(
-    () => CATEGORIES.map((c) => ({ id: c.id, label: i18n(c.labelKey) })),
-    [i18n]
-  );
-
-  const typeOptions = useMemo(
-    () => TYPES.map((t) => ({ id: t.id, label: i18n(t.labelKey) })),
-    [i18n]
-  );
-
   const diffText = useMemo(() => {
     if (stats.diff === 0) return i18n("sameAsYesterday") || "= hier";
     if (stats.diff > 0) return `+${stats.diff} ${i18n("sinceYesterday") || "vs hier"}`;
     return `${stats.diff} ${i18n("sinceYesterday") || "vs hier"}`;
   }, [stats.diff, i18n]);
+
+  const toggleChip = (id: string) => {
+    if (id === "all") {
+      setActiveChips([]);
+      return;
+    }
+    setActiveChips((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  };
 
   return (
     <div className="space-y-6">
@@ -452,13 +458,17 @@ export default function ActivityHub() {
       </div>
 
       {/* Heatmap */}
-      <div className="bg-zinc-950/80 border border-[var(--text-primary)]/[0.08] backdrop-blur-xl rounded-2xl p-4 shadow-lg">
+      <Card padding="md">
         <div className="mb-4 flex items-center justify-between gap-3">
-          <h2 className="text-sm font-semibold text-[var(--text-primary)]">{i18n("activityHeatmap")}</h2>
-          <span className="text-[10px] text-[var(--text-muted)]">{i18n("activityLastDays").replace("{{count}}", "365")}</span>
+          <h2 className="text-sm font-semibold text-[var(--text-primary)]">{i18n("activityHeatmap", "Activité")}</h2>
+          <span className="text-[10px] text-[var(--text-muted)]">{i18n("activityLastDays", "{{count}} derniers jours").replace("{{count}}", String(periodDays))}</span>
         </div>
-        {mounted ? <ActivityHeatmap entries={entries} /> : <div className="h-40 animate-pulse rounded-xl bg-[var(--text-primary)]/[0.04]" />}
-      </div>
+        {mounted ? (
+          <ActivityHeatmap entries={entries} weeks={weeksForPeriod(periodDays)} />
+        ) : (
+          <div className="h-40 animate-pulse rounded-xl bg-[var(--text-primary)]/[0.04]" />
+        )}
+      </Card>
 
       {/* Toolbar */}
       <div className="bg-zinc-950/80 border border-[var(--text-primary)]/[0.08] backdrop-blur-xl rounded-2xl p-4 shadow-lg">
@@ -478,21 +488,41 @@ export default function ActivityHub() {
               className="min-w-0 w-full sm:w-56"
             />
 
-            <div className="flex items-center gap-2">
-              <Select
-                value={categoryFilter}
-                onChange={(value) => setCategoryFilter(value as ActivityCategory | "all")}
-                options={categoryOptions}
-                aria-label={i18n("journalFilterCategory")}
-                className="h-9 w-36 text-xs"
-              />
-              <Select
-                value={typeFilter}
-                onChange={setTypeFilter}
-                options={typeOptions}
-                aria-label={i18n("journalFilterType")}
-                className="h-9 w-36 text-xs"
-              />
+            <div className="flex w-full flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => toggleChip("all")}
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors",
+                  activeChips.length === 0
+                    ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]"
+                    : "border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--text-primary)]/[0.06]",
+                )}
+              >
+                {i18n("all", "Toutes")}
+              </button>
+              {CATEGORY_CHIPS.map((chip) => {
+                const count = chipCounts.get(chip.id) || 0;
+                const active = activeChips.includes(chip.id);
+                return (
+                  <button
+                    key={chip.id}
+                    type="button"
+                    disabled={count === 0}
+                    onClick={() => toggleChip(chip.id)}
+                    className={cn(
+                      "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors",
+                      active
+                        ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]"
+                        : "border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--text-primary)]/[0.06]",
+                      count === 0 && "opacity-40 cursor-not-allowed",
+                    )}
+                  >
+                    {chip.label}
+                    <span className="rounded-full bg-[var(--text-primary)]/[0.08] px-1.5 py-0.5 text-[10px] text-[var(--text-muted)]">{count}</span>
+                  </button>
+                );
+              })}
             </div>
 
             <div className="flex items-center gap-2 ml-auto">

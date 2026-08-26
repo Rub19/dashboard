@@ -10,7 +10,6 @@ export default function DashboardPage() {
   const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
   const hasThanked = useRef(false);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     if (hasThanked.current) return;
@@ -19,26 +18,19 @@ export default function DashboardPage() {
     hasThanked.current = true;
     setOpen(true);
 
-    if (canvasRef.current) {
-      confetti
-        .create(canvasRef.current, { resize: true })({
-          particleCount: 160,
-          spread: 90,
-          origin: { y: 0.55 },
-          colors: ["#10B981", "#06B6D4", "#F43F5E", "#F59E0B", "#FFFFFF"],
-        });
-    }
+    confetti({
+      particleCount: 160,
+      spread: 90,
+      origin: { y: 0.55 },
+      zIndex: 100000,
+      colors: ["#10B981", "#06B6D4", "#F43F5E", "#F59E0B", "#FFFFFF"],
+    });
 
     window.history.replaceState(null, "", "/dashboard");
   }, [searchParams]);
 
   return (
     <>
-      <canvas
-        ref={canvasRef}
-        className="pointer-events-none fixed inset-0 z-[9999]"
-        aria-hidden="true"
-      />
       <DashboardOverview />
       <Modal
         isOpen={open}

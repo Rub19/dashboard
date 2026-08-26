@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.11 — 2026-08-26
+
+**ETHONE — Fichiers : header Finder et nettoyage 3D**
+
+- `app/files/page.tsx` : header unique avec chemin de navigation, stockage et toolbar fusionnée.
+- Suppression du fil d’Ariane dupliqué.
+- Nettoyage des dernières cartes 3D dans les composants Fichiers.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.10 — 2026-08-26
 
 **ETHONE — Fichiers : vrai rework visuel, cartes et empty state**

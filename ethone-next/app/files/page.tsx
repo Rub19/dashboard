@@ -429,25 +429,42 @@ export default function FilesPage() {
 
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
-      <div className="shrink-0 mb-4 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-3 shadow-sm backdrop-blur-[var(--panel-blur)]">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
-              <Icon name="files" className="h-5 w-5" />
-            </div>
-            <div>
-              <h1 className="text-base font-semibold leading-tight">{i18n("filesTitle")}</h1>
-              <p className="text-[10px] text-[var(--text-muted)]">
+      <div className="shrink-0 mb-3 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-3 shadow-sm backdrop-blur-[var(--panel-blur)]">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <h1 className="flex items-center gap-2 text-base font-semibold">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+                <Icon name="files" className="h-4 w-4" />
+              </span>
+              {i18n("filesTitle")}
+              {quota && (
+                <span className="hidden items-center gap-1.5 rounded-full border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] px-2 py-0.5 text-[10px] font-normal text-[var(--text-muted)] sm:inline-flex">
+                  {formatBytes(quota.used)} / {formatBytes(quota.total)}
+                </span>
+              )}
+            </h1>
+            {parentId !== null ? (
+              <nav aria-label={i18n("folders")} className="mt-1 flex flex-wrap items-center gap-1 text-xs text-[var(--text-muted)]">
+                <button type="button" onClick={() => setParentId(null)} className="hover:text-[var(--text-primary)]">{i18n("filesTitle")}</button>
+                {path.map((folder) => (
+                  <span key={folder.driveFileId} className="flex items-center gap-1">
+                    <Icon name="chevron-right" className="h-3 w-3" />
+                    <button
+                      type="button"
+                      onClick={() => setParentId(folder.driveFileId)}
+                      className="hover:text-[var(--text-primary)]"
+                    >
+                      {folder.name}
+                    </button>
+                  </span>
+                ))}
+                <Icon name="chevron-right" className="h-3 w-3" />
+                <span className="text-[var(--text-primary)]">{files.find((f) => f.driveFileId === parentId)?.name}</span>
+              </nav>
+            ) : (
+              <p className="mt-1 text-[11px] text-[var(--text-muted)]">
                 {clientId ? i18n("driveConnected", "Google Drive connecté") : i18n("noDriveConnected", "Aucun Drive connecté")}
               </p>
-            </div>
-            {quota && (
-              <div className="hidden items-center gap-1.5 rounded-full border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] px-2.5 py-1 text-[10px] sm:flex">
-                <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]" />
-                <span className="text-[var(--text-muted)]">{formatBytes(quota.used)}</span>
-                <span className="text-[var(--text-muted)]/60">/</span>
-                <span className="text-[var(--text-primary)]">{formatBytes(quota.total)}</span>
-              </div>
             )}
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -486,6 +503,90 @@ export default function FilesPage() {
             </button>
           </div>
         </div>
+
+        <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[var(--panel-border)]/[0.12] pt-3">
+          <TabList
+            tabs={[
+              { id: "all", label: i18n("all"), content: null },
+              { id: "folders", label: i18n("folders"), content: null },
+              { id: "favorites", label: i18n("favorites"), content: null },
+              { id: "trash", label: i18n("trash"), content: null },
+            ]}
+            activeId={showFolders ? "folders" : favorites ? "favorites" : trashed ? "trash" : "all"}
+            onSelect={(id) => {
+              setShowFolders(id === "folders");
+              setFavorites(id === "favorites");
+              setTrashed(id === "trash");
+            }}
+          />
+          <Input
+            ref={searchRef}
+            type="search"
+            icon="search"
+            clearable
+            aria-label={i18n("searchFiles")}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={i18n("searchFiles")}
+            className="min-w-0 flex-1"
+          />
+          <Select
+            value={sort}
+            onChange={(value) => setSort(value as typeof sort)}
+            options={[
+              { id: "name", label: i18n("sortByName") },
+              { id: "size", label: i18n("sortBySize") },
+              { id: "date", label: i18n("sortByDate") },
+              { id: "type", label: i18n("sortByType") },
+            ]}
+            aria-label={i18n("sortBy")}
+            className="min-w-0"
+          />
+          {duplicateCount > 0 && (
+            <button
+              type="button"
+              onClick={() => setShowDuplicates((s) => !s)}
+              className={cn(
+                "rounded-xl border px-2.5 py-1.5 text-xs font-medium transition-colors",
+                showDuplicates
+                  ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
+                  : "border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.25] text-[var(--text-muted)] hover:text-[var(--text-primary)]",
+              )}
+              aria-label={i18n("duplicates", "Doublons")}
+              title={i18n("duplicates", "Doublons")}
+            >
+              <Icon name="copy" className="mr-1.5 inline h-3.5 w-3.5" />
+              {duplicateCount} {i18n("duplicates", "doublons")}
+            </button>
+          )}
+
+          <div className="flex items-center gap-1 rounded-xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.25] p-1">
+            <button
+              type="button"
+              onClick={() => setViewMode("list")}
+              className={cn(
+                "rounded-lg p-1.5 transition-colors",
+                viewMode === "list" ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]" : "text-[var(--text-muted)] hover:bg-[var(--panel-bg)]",
+              )}
+              aria-label={i18n("listView", "List")}
+              title={i18n("listView", "List")}
+            >
+              <Icon name="list" className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("grid")}
+              className={cn(
+                "rounded-lg p-1.5 transition-colors",
+                viewMode === "grid" ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]" : "text-[var(--text-muted)] hover:bg-[var(--panel-bg)]",
+              )}
+              aria-label={i18n("gridView", "Grid")}
+              title={i18n("gridView", "Grid")}
+            >
+              <Icon name="grid-2x2" className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
       </div>
       <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
       {quota && quotaPercent >= 90 && (
@@ -494,89 +595,7 @@ export default function FilesPage() {
         </div>
       )}
 
-      <div className="sticky top-0 z-10 mb-3 flex flex-wrap items-center gap-2 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.6] p-2 shadow-sm backdrop-blur-[var(--panel-blur)]">
-        <TabList
-          tabs={[
-            { id: "all", label: i18n("all"), content: null },
-            { id: "folders", label: i18n("folders"), content: null },
-            { id: "favorites", label: i18n("favorites"), content: null },
-            { id: "trash", label: i18n("trash"), content: null },
-          ]}
-          activeId={showFolders ? "folders" : favorites ? "favorites" : trashed ? "trash" : "all"}
-          onSelect={(id) => {
-            setShowFolders(id === "folders");
-            setFavorites(id === "favorites");
-            setTrashed(id === "trash");
-          }}
-        />
-        <Input
-          ref={searchRef}
-          type="search"
-          icon="search"
-          clearable
-          aria-label={i18n("searchFiles")}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={i18n("searchFiles")}
-          className="min-w-0 flex-1"
-        />
-        <Select
-          value={sort}
-          onChange={(value) => setSort(value as typeof sort)}
-          options={[
-            { id: "name", label: i18n("sortByName") },
-            { id: "size", label: i18n("sortBySize") },
-            { id: "date", label: i18n("sortByDate") },
-            { id: "type", label: i18n("sortByType") },
-          ]}
-          aria-label={i18n("sortBy")}
-          className="min-w-0"
-        />
-        {duplicateCount > 0 && (
-          <button
-            type="button"
-            onClick={() => setShowDuplicates((s) => !s)}
-            className={cn(
-              "rounded-xl border px-2.5 py-1.5 text-xs font-medium transition-colors",
-              showDuplicates
-                ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
-                : "border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.25] text-[var(--text-muted)] hover:text-[var(--text-primary)]",
-            )}
-            aria-label={i18n("duplicates", "Doublons")}
-            title={i18n("duplicates", "Doublons")}
-          >
-            <Icon name="copy" className="mr-1.5 inline h-3.5 w-3.5" />
-            {duplicateCount} {i18n("duplicates", "doublons")}
-          </button>
-        )}
 
-        <div className="flex items-center gap-1 rounded-xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.25] p-1">
-          <button
-            type="button"
-            onClick={() => setViewMode("list")}
-            className={cn(
-              "rounded-lg p-1.5 transition-colors",
-              viewMode === "list" ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]" : "text-[var(--text-muted)] hover:bg-[var(--panel-bg)]",
-            )}
-            aria-label={i18n("listView", "List")}
-            title={i18n("listView", "List")}
-          >
-            <Icon name="list" className="h-4 w-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewMode("grid")}
-            className={cn(
-              "rounded-lg p-1.5 transition-colors",
-              viewMode === "grid" ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]" : "text-[var(--text-muted)] hover:bg-[var(--panel-bg)]",
-            )}
-            aria-label={i18n("gridView", "Grid")}
-            title={i18n("gridView", "Grid")}
-          >
-            <Icon name="grid-2x2" className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
 
       <div className="flex flex-wrap items-center gap-2">
         {(parentId !== null || query || showFolders || favorites || trashed || sort !== "name" || showDuplicates) && (
@@ -704,25 +723,7 @@ export default function FilesPage() {
         />
       )}
 
-      {parentId !== null && (
-        <nav aria-label={i18n("folders")} className="flex flex-wrap items-center gap-2 text-sm text-[var(--muted)]">
-          <button type="button" onClick={() => setParentId(null)} className="hover:text-[var(--foreground)]">{i18n("filesTitle")}</button>
-          {path.map((folder) => (
-            <span key={folder.driveFileId} className="flex items-center gap-2">
-              <Icon name="chevron-right" className="h-3 w-3" />
-              <button
-                type="button"
-                onClick={() => setParentId(folder.driveFileId)}
-                className="hover:text-[var(--foreground)]"
-              >
-                {folder.name}
-              </button>
-            </span>
-          ))}
-          <Icon name="chevron-right" className="h-3 w-3" />
-          <span className="text-[var(--foreground)]">{files.find((f) => f.driveFileId === parentId)?.name}</span>
-        </nav>
-      )}
+
 
       {error && (
         <EmptyState

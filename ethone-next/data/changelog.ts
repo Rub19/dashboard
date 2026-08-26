@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.11",
+  date: "2026-08-26",
+  title: "Fichiers — header Finder + nettoyage 3D",
+  items: [
+    "`app/files/page.tsx` : header unique avec titre, chemin de navigation (path), stockage et boutons d’actions.",
+    "Toolbar fusionnée dans le header : onglets, recherche, tri, doublons, vue liste/grille.",
+    "Suppression du fil d’Ariane dupliqué dans le contenu.",
+    "Nettoyage des dernières cartes 3D restantes dans les composants Fichiers.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.11.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.11",
+  date: "2026-08-26",
+  title: "Files — Finder header + 3D cleanup",
+  items: [
+    "`app/files/page.tsx`: single header with title, breadcrumb path, storage badge and action buttons.",
+    "Toolbar merged into header: tabs, search, sort, duplicates, list/grid view.",
+    "Removed the duplicated breadcrumb from the content area.",
+    "Cleaned the remaining 3D cards in Files components.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.11.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.11",
+  date: "2026-08-26",
+  title: "Archivos — header Finder y limpieza 3D",
+  items: [
+    "`app/files/page.tsx`: header único con título, ruta de navegación, almacenamiento y botones de acción.",
+    "Toolbar fusionada en el header: pestañas, búsqueda, orden, duplicados, vista lista/cuadrícula.",
+    "Eliminado el breadcrumb duplicado del contenido.",
+    "Limpieza de las últimas tarjetas 3D restantes en componentes Archivos.",
+    "Validación : build, lint.",
+    "Versión : v1.10.11.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.11",
+  date: "2026-08-26",
+  title: "Dateien — Finder-Header + 3D-Bereinigung",
+  items: [
+    "`app/files/page.tsx`: einzelner Header mit Titel, Breadcrumb-Pfad, Speicher-Badge und Aktionsbuttons.",
+    "Toolbar in Header zusammengeführt: Tabs, Suche, Sortierung, Duplikate, Listen-/Rasteransicht.",
+    "Duplizierter Breadcrumb aus dem Inhaltsbereich entfernt.",
+    "Bereinigung der letzten verbleibenden 3D-Karten in Dateien-Komponenten.",
+    "Validierung: build, lint.",
+    "Version: v1.10.11.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.10",
   date: "2026-08-26",
   title: "Fichiers — vrai rework visuel : cartes + empty state",

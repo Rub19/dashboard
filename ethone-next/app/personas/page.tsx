@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Card3D from "@/components/Card3D";
+import FlatCard from "@/components/FlatCard";
 import Input from "@/components/Input";
 import { useUserData } from "@/lib/hooks/useUserData";
 import { useSettings } from "@/components/SettingsProvider";
@@ -87,7 +87,7 @@ export default function PersonasPage() {
       <h1 className="shrink-0 mb-4 text-2xl font-bold">{i18n("personasTitle")}</h1>
 
       <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
-      <Card3D>
+      <FlatCard>
         <div className="space-y-4">
           <p className="text-sm text-[var(--muted)]">{i18n("personasDescription")}</p>
           <div className="flex flex-col gap-3 sm:flex-row">
@@ -116,14 +116,14 @@ export default function PersonasPage() {
             />
           </div>
         </div>
-      </Card3D>
+      </FlatCard>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {personas.map((p) => {
           const data = p.data as { theme?: string };
           const isEditing = editing === p.id;
           return (
-            <Card3D key={p.id}>
+            <FlatCard key={p.id}>
               {isEditing ? (
                 <div className="space-y-3">
                   <Input
@@ -168,7 +168,7 @@ export default function PersonasPage() {
                   </div>
                 </div>
               )}
-            </Card3D>
+            </FlatCard>
           );
         })}
       </div>

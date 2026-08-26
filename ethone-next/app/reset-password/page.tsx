@@ -6,7 +6,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { updatePassword } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ToastProvider";
-import Card3D from "@/components/Card3D";
+import FlatCard from "@/components/FlatCard";
 import { Icon } from "@/lib/icons";
 import Input from "@/components/Input";
 import FormField from "@/components/FormField";
@@ -65,7 +65,7 @@ export default function ResetPasswordPage() {
         <div className="flex min-h-full w-full items-center justify-center p-4">
           <div className="w-full max-w-md space-y-6 lg:max-w-lg">
             <h1 className="text-2xl font-bold">{i18n("resetPasswordTitle")}</h1>
-            <Card3D>
+            <FlatCard>
         {!session ? (
           <div className="flex items-center gap-3 text-[var(--muted)]">
             <Icon name="loader" className="h-5 w-5 animate-spin" />
@@ -107,7 +107,7 @@ export default function ResetPasswordPage() {
             </button>
           </form>
         )}
-      </Card3D>
+      </FlatCard>
           </div>
         </div>
       </div>

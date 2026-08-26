@@ -5,7 +5,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useBrain } from "@/lib/hooks/useBrain";
 import { useMail } from "@/lib/hooks/useMail";
 import { usePresence } from "@/components/PresenceProvider";
-import Card3D from "@/components/Card3D";
+import FlatCard from "@/components/FlatCard";
 import { Icon } from "@/lib/icons";
 import TabList from "@/components/tabs/TabList";
 import { useToast } from "@/components/ToastProvider";
@@ -165,7 +165,7 @@ export default function BrainPage() {
         <button type="button" onClick={brain.loadMemories} className="rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-2 text-sm hover:bg-[var(--panel-bg)] backdrop-blur-[var(--panel-blur)]">{i18n("loadMemories")}</button>
         <div className="space-y-2">
           {brain.memories.map((m) => (
-            <Card3D key={m.id}>
+            <FlatCard key={m.id}>
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0">
                   <p className="text-xs text-[var(--muted)]">{m.category}</p>
@@ -178,11 +178,11 @@ export default function BrainPage() {
                 }} className="rounded p-1 text-[var(--muted)] hover:bg-[var(--panel-bg)]"><Icon name="pencil" className="h-4 w-4" /></button>
                 <button type="button" onClick={() => handleDeleteMemory(m.id)} className="rounded p-1 text-[var(--danger)] hover:bg-[var(--panel-bg)]"><Icon name="trash-2" className="h-4 w-4" /></button>
               </div>
-            </Card3D>
+            </FlatCard>
           ))}
         </div>
 
-        <Card3D>
+        <FlatCard>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium">{i18n("brainMemoryCategories")}</p>
@@ -211,7 +211,7 @@ export default function BrainPage() {
               {recentMemories.map((m: BrainMemoryItem) => {
                 const display = typeof m.content === "string" ? m.content : JSON.stringify(m.content, null, 2);
                 return (
-                  <Card3D key={m.id}>
+                  <FlatCard key={m.id}>
                     <div className="space-y-1">
                       <div className="flex items-center justify-between gap-2">
                         <p className="text-xs font-medium">{m.id}</p>
@@ -219,13 +219,13 @@ export default function BrainPage() {
                       </div>
                       <p className="line-clamp-3 text-xs text-[var(--foreground)]">{display.length > 200 ? `${display.slice(0, 200)}…` : display}</p>
                     </div>
-                  </Card3D>
+                  </FlatCard>
                 );
               })}
               {!recentMemories.length && <p className="text-sm text-[var(--muted)]">{i18n("noResults")}</p>}
             </div>
           </div>
-        </Card3D>
+        </FlatCard>
       </div>
     );
   }
@@ -234,7 +234,7 @@ export default function BrainPage() {
     return (
       <div className="space-y-3">
         {brain.registry.definitions().map((def) => (
-          <Card3D key={def.id}>
+          <FlatCard key={def.id}>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <p className="font-medium">{def.title}</p>
@@ -252,7 +252,7 @@ export default function BrainPage() {
                 />
               ))}
             </div>
-          </Card3D>
+          </FlatCard>
         ))}
       </div>
     );
@@ -285,7 +285,7 @@ export default function BrainPage() {
         </div>
         <div className="space-y-2">
           {brain.automations.map((rule) => (
-            <Card3D key={rule.id}>
+            <FlatCard key={rule.id}>
               <div className="flex items-center justify-between gap-2">
                 <div>
                   <p className="font-medium">{rule.trigger.type}: {rule.trigger.value}</p>
@@ -296,7 +296,7 @@ export default function BrainPage() {
                   <button type="button" onClick={() => brain.removeAutomationRule(rule.id)} className="rounded p-1 text-[var(--danger)] hover:bg-[var(--panel-bg)]"><Icon name="trash-2" className="h-4 w-4" /></button>
                 </div>
               </div>
-            </Card3D>
+            </FlatCard>
           ))}
         </div>
       </div>
@@ -307,7 +307,7 @@ export default function BrainPage() {
     return (
       <div className="space-y-3">
         {brain.providers.map((p) => (
-          <Card3D key={p.id}>
+          <FlatCard key={p.id}>
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium">{p.label}</p>
@@ -322,7 +322,7 @@ export default function BrainPage() {
                 {i18n("test")}
               </button>
             </div>
-          </Card3D>
+          </FlatCard>
         ))}
       </div>
     );
@@ -332,7 +332,7 @@ export default function BrainPage() {
     return (
       <div className="space-y-4">
         <BrainContextPanel />
-        <Card3D>
+        <FlatCard>
           <div className="flex items-center justify-between">
             <p className="text-sm font-medium">{i18n("brainContextTitle")}</p>
             <span className="text-xs text-[var(--muted)]">{brain.context.route}</span>
@@ -340,7 +340,7 @@ export default function BrainPage() {
           <pre className="mt-2 max-h-[40vh] overflow-auto rounded-[var(--panel-radius)] bg-[var(--panel-bg)] p-3 text-xs text-[var(--foreground)]">
             {JSON.stringify(brain.context, null, 2)}
           </pre>
-        </Card3D>
+        </FlatCard>
       </div>
     );
   }
@@ -349,7 +349,7 @@ export default function BrainPage() {
     return (
       <div className="space-y-4">
         <p className="text-sm text-[var(--muted)]">{i18n("brainPrivacyTitle")}</p>
-        <Card3D>
+        <FlatCard>
           <div className="grid grid-cols-2 gap-2">
             {BRAIN_PERMISSION_CATEGORIES.map((p) => (
               <Checkbox
@@ -360,7 +360,7 @@ export default function BrainPage() {
               />
             ))}
           </div>
-        </Card3D>
+        </FlatCard>
       </div>
     );
   }
@@ -387,7 +387,7 @@ export default function BrainPage() {
         <p className="text-sm text-[var(--muted)]">{i18n("brainDiagnosticsTitle")}</p>
         <div className="space-y-2">
           {brain.providers.map((p) => (
-            <Card3D key={p.id}>
+            <FlatCard key={p.id}>
               <div className="flex items-center justify-between">
                 <span className="font-medium">{p.label}</span>
                 <Button
@@ -407,7 +407,7 @@ export default function BrainPage() {
                 <p className="text-xs text-[var(--muted)]">{i18n("brainLatency")}: {brain.providerStatus.latencyMs}ms</p>
               )}
               <p className="text-xs text-[var(--muted)]">{p.status} — {p.privacy}</p>
-            </Card3D>
+            </FlatCard>
           ))}
         </div>
       </div>
@@ -421,10 +421,10 @@ export default function BrainPage() {
         {brain.messages.length === 0 ? (
           <p className="text-sm text-[var(--muted)]">{i18n("brainNoWrapup")}</p>
         ) : (
-          <Card3D>
+          <FlatCard>
             <p className="text-sm">{brain.messages.length} messages</p>
             <p className="text-xs text-[var(--muted)]">{i18n("brainNoWrapup")}</p>
-          </Card3D>
+          </FlatCard>
         )}
         <Button
           type="button"
@@ -533,7 +533,7 @@ export default function BrainPage() {
   function renderPreferences() {
     return (
       <div className="space-y-4">
-        <Card3D>
+        <FlatCard>
           <p className="mb-2 text-sm font-medium">{i18n("persona")}</p>
           <div className="flex flex-wrap gap-2">
             {BRAIN_PERSONAS.map((p) => (
@@ -547,24 +547,24 @@ export default function BrainPage() {
               </button>
             ))}
           </div>
-        </Card3D>
-        <Card3D>
+        </FlatCard>
+        <FlatCard>
           <p className="mb-2 text-sm font-medium">{i18n("tone")}</p>
           <div className="flex flex-wrap gap-2">
             {BRAIN_TONES.map((t) => (
               <button key={t} type="button" onClick={() => brain.patch("tone", t)} className={`rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs ${brain.preferences.tone === t ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "hover:bg-[var(--panel-bg)]"} backdrop-blur-[var(--panel-blur)]`}>{t}</button>
             ))}
           </div>
-        </Card3D>
-        <Card3D>
+        </FlatCard>
+        <FlatCard>
           <p className="mb-2 text-sm font-medium">{i18n("detail")}</p>
           <div className="flex flex-wrap gap-2">
             {BRAIN_DETAIL.map((d) => (
               <button key={d} type="button" onClick={() => brain.patch("detail", d)} className={`rounded-[var(--panel-radius)] border border-[var(--panel-border)] px-3 py-1.5 text-xs ${brain.preferences.detail === d ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)]" : "hover:bg-[var(--panel-bg)]"} backdrop-blur-[var(--panel-blur)]`}>{d}</button>
             ))}
           </div>
-        </Card3D>
-        <Card3D>
+        </FlatCard>
+        <FlatCard>
           <p className="mb-2 text-sm font-medium">{i18n("activeProvider")}</p>
           <Select
             value={brain.preferences.provider.active}
@@ -573,8 +573,8 @@ export default function BrainPage() {
             aria-label={i18n("provider")}
             className="min-w-0"
           />
-        </Card3D>
-        <Card3D>
+        </FlatCard>
+        <FlatCard>
           <p className="mb-2 text-sm font-medium">{i18n("permissions")}</p>
           <div className="grid grid-cols-2 gap-2">
             {BRAIN_PERMISSION_CATEGORIES.map((p) => (
@@ -586,8 +586,8 @@ export default function BrainPage() {
               />
             ))}
           </div>
-        </Card3D>
-        <Card3D>
+        </FlatCard>
+        <FlatCard>
           <p className="mb-2 text-sm font-medium">{i18n("memoryCategories")}</p>
           <div className="grid grid-cols-2 gap-2">
             {BRAIN_MEMORY_CATEGORIES.map((c) => (
@@ -599,7 +599,7 @@ export default function BrainPage() {
               />
             ))}
           </div>
-        </Card3D>
+        </FlatCard>
       </div>
     );
   }
@@ -620,7 +620,7 @@ export default function BrainPage() {
         />
       </div>
       <div className="min-h-0 w-full flex-1 overflow-hidden">
-        <Card3D className="h-full min-h-0 overflow-hidden">
+        <FlatCard className="h-full min-h-0 overflow-hidden">
           <div className="h-full min-h-0 overflow-y-auto os-scroll">
             {activeTab === "chat" && renderChat()}
             {activeTab === "briefing" && <BrainBriefingPanel />}
@@ -635,7 +635,7 @@ export default function BrainPage() {
             {activeTab === "diagnostics" && renderDiagnostics()}
             {activeTab === "wrapup" && renderWrapup()}
           </div>
-        </Card3D>
+        </FlatCard>
       </div>
       {renderWrapupSheet()}
     </div>

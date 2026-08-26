@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { fetchWorker, WORKER_URL } from "@/lib/api";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
-import Card3D from "@/components/Card3D";
+import FlatCard from "@/components/FlatCard";
 import Input from "@/components/Input";
 import Button from "@/components/ui/Button";
 
@@ -66,9 +66,9 @@ function ShareContent() {
   if (!slug) {
     return (
       <div className="flex h-full min-h-0 w-full items-center justify-center overflow-y-auto os-scroll">
-        <Card3D>
+        <FlatCard>
           <p className="text-sm text-[var(--muted)]">{i18n("noShareLink")}</p>
-        </Card3D>
+        </FlatCard>
       </div>
     );
   }
@@ -79,7 +79,7 @@ function ShareContent() {
   return (
     <div className="flex h-full min-h-0 w-full items-center justify-center overflow-y-auto os-scroll">
       <div className="w-full max-w-sm sm:max-w-md lg:max-w-lg space-y-4">
-        <Card3D>
+        <FlatCard>
           <h1 className="mb-4 flex flex-wrap items-center gap-2 break-words text-xl font-bold">
             <Icon name="share-2" className="h-6 w-6 text-violet-400" />
             {i18n("sharedFile")}
@@ -175,7 +175,7 @@ function ShareContent() {
               </button>
             </div>
           )}
-        </Card3D>
+        </FlatCard>
       </div>
     </div>
   );
@@ -184,7 +184,7 @@ function ShareContent() {
 export default function SharePage() {
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
-      <Suspense fallback={<div className="flex h-full min-h-0 w-full items-center justify-center overflow-y-auto os-scroll"><Card3D><p className="text-sm text-[var(--muted)]">Loading...</p></Card3D></div>}>
+      <Suspense fallback={<div className="flex h-full min-h-0 w-full items-center justify-center overflow-y-auto os-scroll"><FlatCard><p className="text-sm text-[var(--muted)]">Loading...</p></FlatCard></div>}>
         <ShareContent />
       </Suspense>
     </div>

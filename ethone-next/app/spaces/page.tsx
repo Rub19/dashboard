@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Card3D from "@/components/Card3D";
+import FlatCard from "@/components/FlatCard";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useUserData, type UserDataRecord } from "@/lib/hooks/useUserData";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
@@ -131,7 +131,7 @@ export default function SpacesPage() {
       </div>
 
       <div className="min-h-0 w-full flex-1 space-y-6 overflow-y-auto p-6 pb-10 no-scrollbar">
-      <Card3D>
+      <FlatCard>
         <h2 className="mb-3 text-sm font-semibold capitalize text-[var(--foreground)]">{i18n("active")} {i18n("spaces")}</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {WORKSPACES.map((w) => {
@@ -169,10 +169,10 @@ export default function SpacesPage() {
             );
           })}
         </div>
-      </Card3D>
+      </FlatCard>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Card3D>
+        <FlatCard>
           <div className="flex items-center gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
               <Icon name="layout-grid" className="h-5 w-5" />
@@ -182,9 +182,9 @@ export default function SpacesPage() {
               <p className="text-xs text-[var(--muted)]">{i18n("dedicatedEnvironments")}</p>
             </div>
           </div>
-        </Card3D>
+        </FlatCard>
 
-        <Card3D>
+        <FlatCard>
           <div className="flex items-center gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-violet-500/10 text-violet-400">
               <Icon name="layers" className="h-5 w-5" />
@@ -194,16 +194,16 @@ export default function SpacesPage() {
               <p className="text-xs text-[var(--muted)]">{i18n("integratedModels")}</p>
             </div>
           </div>
-        </Card3D>
+        </FlatCard>
       </div>
 
       {error && (
-        <Card3D>
+        <FlatCard>
           <p className="text-sm text-red-400">{error.message}</p>
-        </Card3D>
+        </FlatCard>
       )}
 
-      <Card3D>
+      <FlatCard>
         <div className="space-y-4">
           <div>
             <h2 className="font-semibold">{i18n("dedicatedEnvironments")}</h2>
@@ -235,14 +235,14 @@ export default function SpacesPage() {
             {i18n("create")}: <span className="font-medium text-[var(--accent)]">{i18n(activeSpace)}</span>
           </p>
         </div>
-      </Card3D>
+      </FlatCard>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {spaces.map((space) => {
           const workspace = getWorkspace(space, i18n);
           const isActive = workspace?.id === activeSpace;
           return (
-            <Card3D key={space.id}>
+            <FlatCard key={space.id}>
               <div className="space-y-3">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
@@ -299,7 +299,7 @@ export default function SpacesPage() {
                   </div>
                 )}
               </div>
-            </Card3D>
+            </FlatCard>
           );
         })}
       </div>

@@ -5,7 +5,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useSecurity } from "@/lib/hooks/useSecurity";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
-import Card3D from "@/components/Card3D";
+import FlatCard from "@/components/FlatCard";
 import { Icon } from "@/lib/icons";
 import Button from "@/components/ui/Button";
 import BiometricLock from "@/components/BiometricLock";
@@ -64,7 +64,7 @@ export default function SecurityPage() {
       <BiometricLock title={i18n("securityTitle")}>
       <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card3D>
+        <FlatCard>
           <div className="flex items-center gap-3">
             <Icon name="shield" className="h-8 w-8 text-violet-400" />
             <div>
@@ -72,8 +72,8 @@ export default function SecurityPage() {
               <p className="font-medium">{i18n("otpPasskeys")}</p>
             </div>
           </div>
-        </Card3D>
-        <Card3D>
+        </FlatCard>
+        <FlatCard>
           <div className="flex items-center gap-3">
             <Icon name="lock" className="h-8 w-8 text-[var(--accent-primary)]" />
             <div>
@@ -81,8 +81,8 @@ export default function SecurityPage() {
               <p className="font-medium">{i18n("tlsJwt")}</p>
             </div>
           </div>
-        </Card3D>
-        <Card3D>
+        </FlatCard>
+        <FlatCard>
           <div className="flex items-center gap-3">
             <Icon name="smartphone" className="h-8 w-8 text-amber-400" />
             <div>
@@ -90,8 +90,8 @@ export default function SecurityPage() {
               <p className="font-medium">{loading ? "-" : devices.length}</p>
             </div>
           </div>
-        </Card3D>
-        <Card3D>
+        </FlatCard>
+        <FlatCard>
           <div className="flex items-center gap-3">
             <Icon name="history" className="h-8 w-8 text-sky-400" />
             <div>
@@ -99,11 +99,11 @@ export default function SecurityPage() {
               <p className="font-medium">{loading ? "-" : events.length} {i18n(events.length > 1 ? "events" : "event")}</p>
             </div>
           </div>
-        </Card3D>
+        </FlatCard>
       </div>
 
       <h2 className="text-lg font-semibold">{i18n("passkeys")}</h2>
-      <Card3D>
+      <FlatCard>
         <div className="flex flex-wrap items-center gap-2">
           <Input
             type="text"
@@ -122,14 +122,14 @@ export default function SecurityPage() {
             {i18n("addPasskey")}
           </Button>
         </div>
-      </Card3D>
+      </FlatCard>
 
       <div className="space-y-2">
         {passkeys.length === 0 ? (
-          <Card3D><p className="text-sm text-[var(--muted)]">{i18n("noPasskeys")}</p></Card3D>
+          <FlatCard><p className="text-sm text-[var(--muted)]">{i18n("noPasskeys")}</p></FlatCard>
         ) : (
           passkeys.map((p) => (
-            <Card3D key={p.id}>
+            <FlatCard key={p.id}>
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0">
                   {renaming === p.id ? (
@@ -156,7 +156,7 @@ export default function SecurityPage() {
                   <button type="button" onClick={() => revokePasskey(p.id).then(() => success(i18n("removed"))).catch((err) => showError(String(err)))} className="rounded p-1 text-[var(--danger)] hover:bg-[var(--panel-bg)]"><Icon name="trash-2" className="h-4 w-4" /></button>
                 </div>
               </div>
-            </Card3D>
+            </FlatCard>
           ))
         )}
       </div>
@@ -164,10 +164,10 @@ export default function SecurityPage() {
       <h2 className="text-lg font-semibold">{i18n("devices")}</h2>
       <div className="space-y-2">
         {devices.length === 0 ? (
-          <Card3D><p className="text-sm text-[var(--muted)]">{i18n("noDevices")}</p></Card3D>
+          <FlatCard><p className="text-sm text-[var(--muted)]">{i18n("noDevices")}</p></FlatCard>
         ) : (
           devices.map((d) => (
-            <Card3D key={d.id}>
+            <FlatCard key={d.id}>
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0">
                   <p className="font-medium">{d.name || d.user_agent}</p>
@@ -180,7 +180,7 @@ export default function SecurityPage() {
                   <button type="button" onClick={() => removeDevice(d.id).then(() => success(i18n("removed"))).catch((err) => showError(String(err)))} className="rounded p-1 text-[var(--danger)] hover:bg-[var(--panel-bg)]"><Icon name="trash-2" className="h-4 w-4" /></button>
                 </div>
               </div>
-            </Card3D>
+            </FlatCard>
           ))
         )}
       </div>
@@ -188,12 +188,12 @@ export default function SecurityPage() {
       <h2 className="text-lg font-semibold">{i18n("securityEvents")}</h2>
       <div className="space-y-2">
         {loading ? (
-          <Card3D><div className="h-4 w-1/3 animate-pulse rounded bg-[var(--border)]" /></Card3D>
+          <FlatCard><div className="h-4 w-1/3 animate-pulse rounded bg-[var(--border)]" /></FlatCard>
         ) : events.length === 0 ? (
-          <Card3D><p className="text-sm text-[var(--muted)]">{i18n("noSecurityEvents")}</p></Card3D>
+          <FlatCard><p className="text-sm text-[var(--muted)]">{i18n("noSecurityEvents")}</p></FlatCard>
         ) : (
           events.slice(0, 50).map((event) => (
-            <Card3D key={event.id}>
+            <FlatCard key={event.id}>
               <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0">
                   <p className="truncate font-medium">{event.kind || event.action || i18n("event")}</p>
@@ -203,7 +203,7 @@ export default function SecurityPage() {
                   {event.ip || event.status || "-"}
                 </span>
               </div>
-            </Card3D>
+            </FlatCard>
           ))
         )}
       </div>

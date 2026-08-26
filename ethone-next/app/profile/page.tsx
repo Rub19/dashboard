@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Card3D from "@/components/Card3D";
+import FlatCard from "@/components/FlatCard";
 import { useAuth } from "@/components/AuthProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useProfile } from "@/lib/hooks/useProfile";
@@ -70,9 +70,9 @@ export default function ProfilePage() {
       <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
         <h1 className="shrink-0 mb-4 text-2xl font-bold">{i18n("profileTitle")}</h1>
         <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
-        <Card3D>
+        <FlatCard>
           <div className="h-8 w-1/3 animate-pulse rounded bg-[var(--border)]" />
-        </Card3D>
+        </FlatCard>
         </div>
       </div>
     );
@@ -83,7 +83,7 @@ export default function ProfilePage() {
       <h1 className="shrink-0 mb-4 text-2xl font-bold">{i18n("profileTitle")}</h1>
 
       <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
-      <Card3D>
+      <FlatCard>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
           <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--accent)] text-2xl font-bold text-white">
             {profile?.display_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "?"}
@@ -96,10 +96,10 @@ export default function ProfilePage() {
             )}
           </div>
         </div>
-      </Card3D>
+      </FlatCard>
 
       {profile?.public_id && (
-        <Card3D>
+        <FlatCard>
           <div className="space-y-2">
             <label className="text-sm font-medium">{i18n("publicId")}</label>
             <div className="flex min-w-0 items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-3 py-2 text-sm backdrop-blur-[var(--panel-blur)]">
@@ -118,10 +118,10 @@ export default function ProfilePage() {
             </div>
             <p className="break-words text-xs text-[var(--muted)]">{i18n("publicIdHint")}</p>
           </div>
-        </Card3D>
+        </FlatCard>
       )}
 
-      <Card3D>
+      <FlatCard>
         <div className="space-y-4">
           <FormField label={i18n("username")} help={i18n("displayNameHint")}>
             <Input
@@ -211,10 +211,10 @@ export default function ProfilePage() {
             )}
           </div>
         </div>
-      </Card3D>
+      </FlatCard>
 
       {form.username && publicProfile.profile && (
-        <Card3D>
+        <FlatCard>
           <div className="space-y-2">
             <h2 className="text-sm font-medium">{i18n("publicProfilePreview")}</h2>
             <div className="flex items-center gap-3 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3 backdrop-blur-[var(--panel-blur)]">
@@ -231,7 +231,7 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
-        </Card3D>
+        </FlatCard>
       )}
       </div>
     </div>

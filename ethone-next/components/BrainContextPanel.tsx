@@ -8,7 +8,7 @@ import { useFocus } from "@/components/FocusProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { Icon } from "@/lib/icons";
-import Card3D from "./Card3D";
+import FlatCard from "./FlatCard";
 
 export default function BrainContextPanel() {
   const i18n = useI18n();
@@ -45,18 +45,18 @@ export default function BrainContextPanel() {
       <p className="text-sm text-[var(--text-muted)]">{i18n("brainContextTitle")}</p>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {context.map((c) => (
-          <Card3D key={c.label}>
+          <FlatCard key={c.label}>
             <div className="flex items-center gap-2">
               <Icon name={c.icon} className="h-4 w-4 text-[var(--accent)]" />
               <span className="text-xs text-[var(--text-muted)]">{c.label}</span>
             </div>
             <p className="mt-1 text-lg font-bold">{c.value}</p>
-          </Card3D>
+          </FlatCard>
         ))}
       </div>
 
       {nowPlaying?.title && (
-        <Card3D>
+        <FlatCard>
           <p className="text-sm text-[var(--text-muted)]">{i18n("nowPlaying")}</p>
           <div className="mt-2 flex items-center gap-3">
             <Icon name="disc" className="h-5 w-5 animate-spin-slow text-[var(--accent-primary)]" />
@@ -65,17 +65,17 @@ export default function BrainContextPanel() {
               <p className="text-xs text-[var(--text-muted)]">{nowPlaying.artist}</p>
             </div>
           </div>
-        </Card3D>
+        </FlatCard>
       )}
 
-      <Card3D>
+      <FlatCard>
         <p className="text-sm text-[var(--text-muted)]">{i18n("brainContextDescription")}</p>
         <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-[var(--text-primary)]">
           <li>{i18n("language")}: {settings.language || "fr"}</li>
           <li>{i18n("density")}: {settings.density}</li>
           <li>{i18n("status")}: {settings.status}</li>
         </ul>
-      </Card3D>
+      </FlatCard>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Card3D from "@/components/Card3D";
+import FlatCard from "@/components/FlatCard";
 import { useUserData } from "@/lib/hooks/useUserData";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -49,7 +49,7 @@ export default function MacrosPage() {
       <h1 className="shrink-0 mb-4 text-2xl font-bold">{i18n("macrosTitle")}</h1>
 
       <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
-      <Card3D>
+      <FlatCard>
         <div className="space-y-4">
           <p className="text-sm text-[var(--muted)]">{i18n("macrosDescription")}</p>
           <div className="flex flex-col gap-3 sm:flex-row">
@@ -91,13 +91,13 @@ export default function MacrosPage() {
             />
           </div>
         </div>
-      </Card3D>
+      </FlatCard>
 
       <div className="space-y-3">
         {macros.map((m) => {
           const data = m.data as { action?: string; href?: string; setting?: string };
           return (
-            <Card3D key={m.id}>
+            <FlatCard key={m.id}>
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-violet-500/10 text-violet-400">
@@ -112,7 +112,7 @@ export default function MacrosPage() {
                   <Icon name="trash-2" className="h-4 w-4" />
                 </button>
               </div>
-            </Card3D>
+            </FlatCard>
           );
         })}
       </div>

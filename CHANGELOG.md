@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.22 — 2026-08-27
+
+**ETHONE — Suppression des cartes 3D sauf connexions**
+
+- Création de `components/FlatCard.tsx` (même style que `Card3D`, sans effet 3D).
+- Remplacement de `Card3D` par `FlatCard` dans 20 composants / pages.
+- `Card3D` conservé uniquement dans `components/ConnectionCardsWidget.tsx`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.21 — 2026-08-27
 
 **ETHONE — Topbar responsive, moyennes résolutions**

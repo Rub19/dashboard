@@ -3,7 +3,7 @@
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useI18n } from "@/lib/hooks/useI18n";
-import Card3D from "@/components/Card3D";
+import FlatCard from "@/components/FlatCard";
 import { Icon } from "@/lib/icons";
 import { useSettings } from "@/components/SettingsProvider";
 
@@ -26,7 +26,7 @@ function FeatureFallbackContent() {
       <h1 className="shrink-0 mb-4 text-2xl font-bold">{i18n("featureFallbackTitle")}</h1>
 
       <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
-      <Card3D>
+      <FlatCard>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
           <Icon name="alert-triangle" className="mt-1 h-5 w-5 text-[var(--warning)]" />
           <div className="min-w-0">
@@ -34,10 +34,10 @@ function FeatureFallbackContent() {
             <p className="break-words text-sm text-[var(--text-muted)]">{fallbackMessage()}</p>
           </div>
         </div>
-      </Card3D>
-      <Card3D>
+      </FlatCard>
+      <FlatCard>
         <p className="break-words text-sm text-[var(--text-muted)]">{i18n("featureFallbackHint")}</p>
-      </Card3D>
+      </FlatCard>
       </div>
     </div>
   );
@@ -46,7 +46,7 @@ function FeatureFallbackContent() {
 export default function FeatureFallbackPage() {
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
-      <Suspense fallback={<div className="flex h-full min-h-0 w-full items-center justify-center"><Card3D><div className="h-8 w-1/3 animate-pulse rounded bg-[var(--border)]" /></Card3D></div>}>
+      <Suspense fallback={<div className="flex h-full min-h-0 w-full items-center justify-center"><FlatCard><div className="h-8 w-1/3 animate-pulse rounded bg-[var(--border)]" /></FlatCard></div>}>
         <FeatureFallbackContent />
       </Suspense>
     </div>

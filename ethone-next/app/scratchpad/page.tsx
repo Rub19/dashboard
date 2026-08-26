@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
-import Card3D from "@/components/Card3D";
+import FlatCard from "@/components/FlatCard";
 import Modal from "@/components/ui/Modal";
 import FormField from "@/components/FormField";
 import Textarea from "@/components/Textarea";
@@ -66,7 +66,7 @@ export default function ScratchpadPage() {
       </div>
 
       <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll">
-      <Card3D className="h-full">
+      <FlatCard className="h-full">
         <FormField
           label={i18n("scratchpadTitle")}
           help={`${charCount} ${i18n("characters")} · ${wordCount} ${i18n("words")} · ${statusLabel[status]}`}
@@ -78,7 +78,7 @@ export default function ScratchpadPage() {
             className="h-full min-h-[40vh] resize-none p-4 leading-relaxed sm:min-h-[50vh]"
           />
         </FormField>
-      </Card3D>
+      </FlatCard>
 
       <Modal
         isOpen={sheetOpen}

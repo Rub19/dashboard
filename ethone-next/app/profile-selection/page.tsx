@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import Card3D from "@/components/Card3D";
+import FlatCard from "@/components/FlatCard";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useProfiles, type Profile } from "@/lib/hooks/useProfiles";
 import { useToast } from "@/components/ToastProvider";
@@ -72,7 +72,7 @@ export default function ProfileSelectionPage() {
       <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
         <h1 className="shrink-0 mb-4 text-2xl font-bold">{i18n("profileSelectionTitle")}</h1>
         <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
-          <Card3D><div className="h-8 w-1/3 animate-pulse rounded bg-[var(--border)]" /></Card3D>
+          <FlatCard><div className="h-8 w-1/3 animate-pulse rounded bg-[var(--border)]" /></FlatCard>
         </div>
       </div>
     );
@@ -114,7 +114,7 @@ export default function ProfileSelectionPage() {
       <h1 className="shrink-0 mb-4 text-2xl font-bold">{i18n("profileSelectionTitle")}</h1>
 
       <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
-      <Card3D>
+      <FlatCard>
         <div className="space-y-4">
           <FormField label={i18n("newProfile")}>
             <Input
@@ -190,9 +190,9 @@ export default function ProfileSelectionPage() {
             {i18n("create")}
           </Button>
         </div>
-      </Card3D>
+      </FlatCard>
 
-      <Card3D>
+      <FlatCard>
         <div className="flex items-start gap-3">
           <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${ACCENT_CLASSES[preview.accent] || "bg-violet-500"}`}>
             {preview.avatar.kind === "image" ? (
@@ -218,11 +218,11 @@ export default function ProfileSelectionPage() {
             </p>
           </div>
         </div>
-      </Card3D>
+      </FlatCard>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {profiles.map((p) => (
-          <Card3D key={p.id}>
+          <FlatCard key={p.id}>
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
@@ -257,12 +257,12 @@ export default function ProfileSelectionPage() {
             >
               {active === p.id ? i18n("active") : i18n("select")}
             </Button>
-          </Card3D>
+          </FlatCard>
         ))}
       </div>
 
       {activeProfile && (
-        <Card3D>
+        <FlatCard>
           <div className="flex items-center gap-3">
             <span className={`flex h-8 w-8 items-center justify-center rounded-full ${ACCENT_CLASSES[activeProfile.accent] || "bg-violet-500"}`}>
               <Icon name={WORKSPACE_ICONS[activeProfile.workspace] || "user-round"} className="h-4 w-4 text-white" />
@@ -272,12 +272,12 @@ export default function ProfileSelectionPage() {
               <p className="text-xs text-[var(--muted)]">{i18n("profileSelectionHint")}</p>
             </div>
           </div>
-        </Card3D>
+        </FlatCard>
       )}
 
-      <Card3D>
+      <FlatCard>
         <p className="text-sm text-[var(--muted)]">{i18n("profileSelectionHint")}</p>
-      </Card3D>
+      </FlatCard>
       </div>
     </div>
   );

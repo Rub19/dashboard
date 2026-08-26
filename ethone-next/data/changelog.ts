@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.22",
+  date: "2026-08-27",
+  title: "Suppression des cartes 3D sauf connexions",
+  items: [
+    "Création de `components/FlatCard.tsx` (même style que `Card3D` sans effet 3D).",
+    "Remplacement de `Card3D` par `FlatCard` dans 20 composants/pages.",
+    "`Card3D` conservé uniquement dans `components/ConnectionCardsWidget.tsx`.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.22.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.22",
+  date: "2026-08-27",
+  title: "Removed 3D cards except for connection cards",
+  items: [
+    "Created `components/FlatCard.tsx` (same style as `Card3D` but without 3D effect).",
+    "Replaced `Card3D` with `FlatCard` in 20 components/pages.",
+    "`Card3D` kept only in `components/ConnectionCardsWidget.tsx`.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.22.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.22",
+  date: "2026-08-27",
+  title: "Eliminación de tarjetas 3D excepto conexiones",
+  items: [
+    "Creación de `components/FlatCard.tsx` (mismo estilo que `Card3D` sin efecto 3D).",
+    "Reemplazo de `Card3D` por `FlatCard` en 20 componentes/páginas.",
+    "`Card3D` conservado solo en `components/ConnectionCardsWidget.tsx`.",
+    "Validación : build, lint.",
+    "Versión : v1.10.22.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.22",
+  date: "2026-08-27",
+  title: "3D-Karten entfernt, außer Verbindungskarten",
+  items: [
+    "Erstellung von `components/FlatCard.tsx` (gleicher Stil wie `Card3D`, aber ohne 3D-Effekt).",
+    "`Card3D` durch `FlatCard` in 20 Komponenten/Seiten ersetzt.",
+    "`Card3D` nur in `components/ConnectionCardsWidget.tsx` beibehalten.",
+    "Validierung: build, lint.",
+    "Version: v1.10.22.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.21",
   date: "2026-08-27",
   title: "Topbar responsive — moyennes résolutions",

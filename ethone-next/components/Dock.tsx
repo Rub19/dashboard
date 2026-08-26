@@ -10,7 +10,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useNotifications } from "@/lib/hooks/useNotifications";
 import { useNowPlaying } from "@/lib/hooks/useNowPlaying";
 import { Icon } from "@/lib/icons";
-import Card3D from "@/components/Card3D";
+import FlatCard from "@/components/FlatCard";
 import DockControlCenter from "@/components/DockControlCenter";
 import FocusPopover from "@/components/FocusPopover";
 import DockMediaFlyout from "@/components/DockMediaFlyout";
@@ -124,7 +124,7 @@ function Dock() {
     >
       {launcherOpen && (
         <div className="pointer-events-auto absolute bottom-full left-1/2 z-[var(--z-dock)] mb-4 w-[min(90vw,420px)] -translate-x-1/2">
-          <Card3D style={{ boxShadow: "none" }}>
+          <FlatCard style={{ boxShadow: "none" }}>
             <div className="space-y-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-4 backdrop-blur-md">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-medium text-[var(--text-primary)]">{i18n("dockLauncher")}</h3>
@@ -154,7 +154,7 @@ function Dock() {
                 ))}
               </div>
             </div>
-          </Card3D>
+          </FlatCard>
         </div>
       )}
 

@@ -3,7 +3,7 @@
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import Card3D from "@/components/Card3D";
+import FlatCard from "@/components/FlatCard";
 import BentoCard from "@/components/BentoCard";
 import Modal from "@/components/ui/Modal";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -109,7 +109,7 @@ const BillsWidget = memo(function BillsWidget({ className = "", scrollable = tru
   return (
     <>
       {standalone ? (
-        <Card3D>{content}</Card3D>
+        <FlatCard>{content}</FlatCard>
       ) : (
         <BentoCard
           title={i18n("billsTitle")}

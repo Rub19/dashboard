@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { resetPassword } from "@/lib/auth";
 import { useToast } from "@/components/ToastProvider";
-import Card3D from "@/components/Card3D";
+import FlatCard from "@/components/FlatCard";
 import Input from "@/components/Input";
 import FormField from "@/components/FormField";
 
@@ -35,7 +35,7 @@ export default function PasswordRecoveryPage() {
         <div className="flex min-h-full w-full items-center justify-center p-4">
           <div className="w-full max-w-md space-y-6 lg:max-w-lg">
             <h1 className="text-2xl font-bold">{i18n("passwordRecoveryTitle")}</h1>
-            <Card3D>
+            <FlatCard>
               {sent ? (
                 <p className="break-words text-sm text-[var(--accent-primary)]">{i18n("recoverySent")}</p>
               ) : (
@@ -61,7 +61,7 @@ export default function PasswordRecoveryPage() {
                   </button>
                 </form>
               )}
-            </Card3D>
+            </FlatCard>
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import Card3D from "@/components/Card3D";
+import FlatCard from "@/components/FlatCard";
 import { Icon } from "@/lib/icons";
 import Button from "@/components/ui/Button";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -21,9 +21,9 @@ export default function PluginClient() {
       <div className="h-full min-h-0 w-full flex flex-col overflow-hidden p-6">
         <h1 className="shrink-0 mb-4 break-words text-2xl font-bold">{i18n("pluginsTitle")}</h1>
         <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
-          <Card3D>
+          <FlatCard>
             <p className="break-words text-sm text-[var(--muted)]">{i18n("notFound")}</p>
-          </Card3D>
+          </FlatCard>
         </div>
       </div>
     );
@@ -47,7 +47,7 @@ export default function PluginClient() {
         </div>
       </div>
 
-      <Card3D>
+      <FlatCard>
         <div className="space-y-4">
           {live?.image && (
             <div className="flex justify-center">
@@ -76,7 +76,7 @@ export default function PluginClient() {
             {i18n("configure")}
           </Button>
         </div>
-      </Card3D>
+      </FlatCard>
       </div>
     </div>
   );

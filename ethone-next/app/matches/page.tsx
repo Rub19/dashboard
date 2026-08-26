@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useTracker, type TrackerGame, type TrackerPlayer } from "@/lib/hooks/useTracker";
-import Card3D from "@/components/Card3D";
+import FlatCard from "@/components/FlatCard";
 import LiquidSidebar from "@/components/LiquidSidebar";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -61,7 +61,7 @@ function MatchCard({ match, game }: { match: Record<string, string | number | un
   });
 
   return (
-    <Card3D>
+    <FlatCard>
       <div className="space-y-3">
         <div className="flex items-center gap-3">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-violet-500/10 text-violet-400">
@@ -137,7 +137,7 @@ function MatchCard({ match, game }: { match: Record<string, string | number | un
           </div>
         )}
       </div>
-    </Card3D>
+    </FlatCard>
   );
 }
 
@@ -292,9 +292,9 @@ export default function MatchesPage() {
             ))}
           </div>
         ) : (
-          <Card3D>
+          <FlatCard>
             <p className="text-sm text-[var(--muted)]">{i18n("noMatches")}</p>
-          </Card3D>
+          </FlatCard>
         )}
         </div>
       </div>

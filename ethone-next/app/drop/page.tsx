@@ -6,7 +6,7 @@ import { fetchWorker, uploadPublic } from "@/lib/api";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useUploadQueue } from "@/lib/upload-queue";
 import { Icon } from "@/lib/icons";
-import Card3D from "@/components/Card3D";
+import FlatCard from "@/components/FlatCard";
 import Input from "@/components/Input";
 import Button from "@/components/ui/Button";
 
@@ -88,9 +88,9 @@ function DropContent() {
   if (!slug) {
     return (
       <div className="flex h-full min-h-0 w-full items-center justify-center overflow-y-auto os-scroll">
-        <Card3D>
+        <FlatCard>
           <p className="text-sm text-[var(--muted)]">{i18n("noDropLink")}</p>
-        </Card3D>
+        </FlatCard>
       </div>
     );
   }
@@ -98,7 +98,7 @@ function DropContent() {
   return (
     <div className="flex h-full min-h-0 w-full items-center justify-center overflow-y-auto os-scroll">
       <div className="w-full max-w-sm sm:max-w-md lg:max-w-lg space-y-4">
-        <Card3D>
+        <FlatCard>
           <h1 className="mb-4 flex flex-wrap items-center gap-2 break-words text-xl font-bold">
             <Icon name="inbox" className="h-6 w-6 text-[var(--accent-primary)]" />
             {drop?.title || i18n("drop")}
@@ -173,7 +173,7 @@ function DropContent() {
               </button>
             </div>
           )}
-        </Card3D>
+        </FlatCard>
       </div>
     </div>
   );
@@ -182,7 +182,7 @@ function DropContent() {
 export default function DropPage() {
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
-      <Suspense fallback={<div className="flex h-full min-h-0 w-full items-center justify-center overflow-y-auto os-scroll"><Card3D><p className="text-sm text-[var(--muted)]">Loading...</p></Card3D></div>}>
+      <Suspense fallback={<div className="flex h-full min-h-0 w-full items-center justify-center overflow-y-auto os-scroll"><FlatCard><p className="text-sm text-[var(--muted)]">Loading...</p></FlatCard></div>}>
         <DropContent />
       </Suspense>
     </div>

@@ -4,7 +4,7 @@ import { useFocus } from "@/components/FocusProvider";
 import { useNotifications } from "@/lib/hooks/useNotifications";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { Icon } from "@/lib/icons";
-import Card3D from "./Card3D";
+import FlatCard from "./FlatCard";
 import type { CloudDashboard, NowPlaying } from "@/lib/hooks/useDashboard";
 
 export default function DailyBriefing({
@@ -32,7 +32,7 @@ export default function DailyBriefing({
   ];
 
   return (
-    <Card3D>
+    <FlatCard>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="text-2xl font-bold">{greeting.label}</h2>
@@ -60,6 +60,6 @@ export default function DailyBriefing({
           ))}
         </div>
       </div>
-    </Card3D>
+    </FlatCard>
   );
 }

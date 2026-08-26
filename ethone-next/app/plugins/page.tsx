@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Card3D from "@/components/Card3D";
+import FlatCard from "@/components/FlatCard";
 import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useWindowManager } from "@/components/WindowManagerProvider";
 import { Icon } from "@/lib/icons";
@@ -30,7 +30,7 @@ export default function PluginsPage() {
           const connected = live?.status === "connected";
 
           return (
-            <Card3D key={p.id}>
+            <FlatCard key={p.id}>
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--panel-radius)] bg-[var(--panel-bg)] text-[var(--accent)]">
@@ -65,7 +65,7 @@ export default function PluginsPage() {
                   </button>
                 </div>
               </div>
-            </Card3D>
+            </FlatCard>
           );
         })}
       </div>

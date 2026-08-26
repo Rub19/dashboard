@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.92 — 2026-08-26
+
+**ETHONE — Fichiers : phase 9 empty states et apparition des cartes**
+
+- `app/files/page.tsx` :
+  - Intégration du composant `EmptyState` pour les états vides et les erreurs.
+  - Empty state avec icône adaptée et action `Ajouter`/`Connecter Drive` ou `Réessayer`.
+  - Animation d'apparition des cartes (fade + translation) avec délai progressif via `framer-motion`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.91 — 2026-08-26
 
 **ETHONE — Fichiers : phase 8 détection de doublons**

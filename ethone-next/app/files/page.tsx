@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { useCloudFiles, type CloudFile } from "@/lib/hooks/useCloudFiles";
 import { useUserState } from "@/lib/hooks/useUserState";
 import { useShares } from "@/lib/hooks/useShares";
@@ -22,6 +23,7 @@ import FileAddModal from "@/components/FileAddModal";
 import FilePreview from "@/components/FilePreview";
 import FileCard from "@/components/FileCard";
 import FileDropOverlay from "@/components/FileDropOverlay";
+import EmptyState from "@/components/ui/EmptyState";
 import Input from "@/components/Input";
 import Button from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
@@ -660,9 +662,16 @@ export default function FilesPage() {
       )}
 
       {error && (
-        <Card3D>
-          <p className="text-sm text-red-400">{error.message}</p>
-        </Card3D>
+        <EmptyState
+          icon="alert-circle"
+          title={i18n("error", "Erreur")}
+          description={error.message}
+          action={
+            <Button size="sm" onClick={reload} leftIcon={<Icon name="refresh-cw" className="h-4 w-4" />}>
+              {i18n("retry")}
+            </Button>
+          }
+        />
       )}
 
       <div className={cn("grid gap-3", viewMode === "list" ? "grid-cols-1" : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 auto-rows-fr")}>
@@ -681,12 +690,31 @@ export default function FilesPage() {
             ))}
           </>
         ) : filteredFiles.length === 0 ? (
-          <Card3D className="col-span-full">
-            <p className="text-sm text-[var(--muted)]">{i18n("noFiles")}</p>
-          </Card3D>
+          <EmptyState
+            className="col-span-full"
+            icon={trashed ? "trash-2" : showDuplicates ? "copy" : showFolders ? "folder" : "inbox"}
+            title={i18n("noFiles")}
+            description={showDuplicates ? i18n("noDuplicates", "Aucun doublon détecté") : i18n("noFilesDescription", "Aucun fichier à afficher")}
+            action={
+              !clientId ? (
+                <Button size="sm" onClick={connectDrive}>{i18n("connectDrive")}</Button>
+              ) : (
+                <Button size="sm" onClick={() => setAddOpen(true)} leftIcon={<Icon name="plus" className="h-4 w-4" />}>
+                  {i18n("add", "Ajouter")}
+                </Button>
+              )
+            }
+          />
         ) : (
-          filteredFiles.map((file) => (
-            <ContextMenu key={file.id} items={fileContextItems(file)}>
+          filteredFiles.map((file, i) => (
+            <motion.div
+              key={file.id}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.15, delay: i * 0.02 }}
+              className="h-full"
+            >
+            <ContextMenu items={fileContextItems(file)}>
               <FileCard
                 file={file}
                 viewMode={viewMode}
@@ -705,6 +733,7 @@ export default function FilesPage() {
                 onRestore={() => restoreFile(file.driveFileId)}
               />
             </ContextMenu>
+            </motion.div>
           ))
         )}
       </div>

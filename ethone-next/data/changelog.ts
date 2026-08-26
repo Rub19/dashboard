@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.92",
+  date: "2026-08-26",
+  title: "Fichiers — phase 9 : empty states et apparition des cartes",
+  items: [
+    "Remplacement des messages bruts par `EmptyState` pour les états vides et les erreurs.",
+    "Empty state avec icône adaptée (corbeille, doublons, dossiers, inbox) et action `Ajouter`/`Connecter Drive`.",
+    "État d'erreur avec bouton `Réessayer`.",
+    "Animation d'apparition des cartes (fade + translation) avec délai progressif.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.92.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.92",
+  date: "2026-08-26",
+  title: "Files — phase 9: empty states and card appear",
+  items: [
+    "Replaced raw messages with `EmptyState` for empty and error states.",
+    "Empty state with adaptive icon (trash, duplicates, folders, inbox) and `Add`/`Connect Drive` action.",
+    "Error state with `Retry` button.",
+    "Card appear animation (fade + slide) with progressive delay.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.92.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.92",
+  date: "2026-08-26",
+  title: "Archivos — fase 9: estados vacíos y aparición de tarjetas",
+  items: [
+    "Mensajes crudos reemplazados por `EmptyState` para estados vacíos y errores.",
+    "Estado vacío con icono adaptativo (papelera, duplicados, carpetas, inbox) y acción `Añadir`/`Conectar Drive`.",
+    "Estado de error con botón `Reintentar`.",
+    "Animación de aparición de tarjetas (fade + desliz) con retardo progresivo.",
+    "Validación : build, lint.",
+    "Versión : v1.9.92.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.92",
+  date: "2026-08-26",
+  title: "Dateien — Phase 9: Empty States und Karten-Animation",
+  items: [
+    "Rohe Nachrichten durch `EmptyState` für leere und Fehlerzustände ersetzt.",
+    "Empty State mit adaptivem Icon (Papierkorb, Duplikate, Ordner, Inbox) und `Hinzufügen`/`Drive verbinden`-Aktion.",
+    "Fehlerzustand mit `Wiederholen`-Button.",
+    "Karten-Erscheinungsanimation (Fade + Verschiebung) mit progressivem Verzögerung.",
+    "Validierung: build, lint.",
+    "Version: v1.9.92.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.91",
   date: "2026-08-26",
   title: "Fichiers — phase 8 : détection de doublons",

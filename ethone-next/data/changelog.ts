@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.18",
+  date: "2026-08-26",
+  title: "Fichiers v2 — menu Ajouter",
+  items: [
+    "Refonte de `components/FileAddModal.tsx`.",
+    "Vrai menu d'actions sous forme de 4 cards (Importer, Lien, Google Drive, Dossier).",
+    "Panel de contenu propre pour chaque action, sans onglets classiques.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.18.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.18",
+  date: "2026-08-26",
+  title: "Files v2 — Add menu",
+  items: [
+    "Rework of `components/FileAddModal.tsx`.",
+    "Real action menu as 4 cards (Import, Link, Google Drive, Folder).",
+    "Clean content panel for each action, no classic tabs.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.18.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.18",
+  date: "2026-08-26",
+  title: "Ficheros v2 — menú Añadir",
+  items: [
+    "Refactorización de `components/FileAddModal.tsx`.",
+    "Menú de acciones real con 4 tarjetas (Importar, Enlace, Google Drive, Carpeta).",
+    "Panel de contenido limpio para cada acción, sin pestañas clásicas.",
+    "Validación : build, lint.",
+    "Versión : v1.10.18.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.18",
+  date: "2026-08-26",
+  title: "Dateien v2 — Hinzufügen-Menü",
+  items: [
+    "Überarbeitung von `components/FileAddModal.tsx`.",
+    "Echtes Aktionsmenü als 4 Karten (Importieren, Link, Google Drive, Ordner).",
+    "Sauberer Inhaltsbereich für jede Aktion, keine klassischen Tabs.",
+    "Validierung: build, lint.",
+    "Version: v1.10.18.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.17",
   date: "2026-08-26",
   title: "Fichiers v2 — preview panel",

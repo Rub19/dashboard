@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.18 — 2026-08-26
+
+**ETHONE — Fichiers v2 : menu Ajouter**
+
+- Refonte de `components/FileAddModal.tsx`.
+- Vrai menu d’actions sous forme de 4 cards : Importer, Lien, Google Drive, Dossier.
+- Panel de contenu propre pour chaque action.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.17 — 2026-08-26
 
 **ETHONE — Fichiers v2 : preview panel**

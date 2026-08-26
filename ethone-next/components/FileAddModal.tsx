@@ -4,7 +4,6 @@ import { useState } from "react";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import Input from "@/components/Input";
-import TabList from "@/components/tabs/TabList";
 import FileUploader from "@/components/FileUploader";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
@@ -63,11 +62,11 @@ export default function FileAddModal({
     }
   }
 
-  const tabs = [
-    { id: "upload", label: i18n("importFile", "Importer un fichier"), content: null },
-    { id: "link", label: i18n("addLink", "Ajouter un lien"), content: null },
-    { id: "drive", label: i18n("drive", "Google Drive"), content: null },
-    { id: "folder", label: i18n("createFolder", "Créer un dossier"), content: null },
+  const actions: { id: TabId; label: string; desc: string; icon: string }[] = [
+    { id: "upload", label: i18n("importFile", "Importer"), desc: i18n("importFileDesc", "Depuis votre appareil"), icon: "upload" },
+    { id: "link", label: i18n("addLink", "Lien"), desc: i18n("addLinkDesc", "Ajouter une URL"), icon: "link" },
+    { id: "drive", label: i18n("drive", "Google Drive"), desc: i18n("driveDesc", "Connecter / vérifier"), icon: "cloud" },
+    { id: "folder", label: i18n("createFolder", "Dossier"), desc: i18n("createFolderDesc", "Nouveau dossier"), icon: "folder-plus" },
   ];
 
   return (
@@ -75,21 +74,39 @@ export default function FileAddModal({
       isOpen={open}
       onClose={onClose}
       title={i18n("add", "Ajouter")}
-      size="lg"
+      size="md"
       hideFooter
       contentClassName="p-0"
     >
-      <div className="flex flex-col">
-        <TabList tabs={tabs} activeId={tab} onSelect={(id) => setTab(id as TabId)} />
+      <div className="p-4">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {actions.map((a) => (
+            <button
+              key={a.id}
+              type="button"
+              onClick={() => setTab(a.id)}
+              className={`
+                flex flex-col items-center gap-1.5 rounded-xl border p-3 text-center transition-all
+                ${tab === a.id
+                  ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
+                  : "border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.25] text-[var(--text-muted)] hover:bg-[var(--panel-bg)]/[0.4] hover:text-[var(--text-primary)]"}
+              `}
+            >
+              <Icon name={a.icon} className="h-5 w-5" />
+              <span className="text-xs font-medium">{a.label}</span>
+              <span className="text-[10px] opacity-70">{a.desc}</span>
+            </button>
+          ))}
+        </div>
 
-        <div className="min-h-[180px] space-y-4 p-4">
+        <div className="mt-4 min-h-[180px] rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.2] p-4">
           {tab === "upload" && (
             <div className="space-y-3">
               {!clientId ? (
-                <div className="rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-6 text-center">
-                  <Icon name="cloud" className="mx-auto mb-2 h-8 w-8 text-[var(--text-muted)]" />
+                <div className="flex flex-col items-center gap-3 py-4 text-center">
+                  <Icon name="cloud" className="h-8 w-8 text-[var(--text-muted)]" />
                   <p className="text-sm text-[var(--text-muted)]">{i18n("connectDriveToUpload", "Connectez Google Drive pour téléverser des fichiers.")}</p>
-                  <Button size="sm" variant="secondary" onClick={onConnectDrive} className="mt-3" leftIcon={<Icon name="cloud" className="h-4 w-4" />}>
+                  <Button size="sm" variant="secondary" onClick={onConnectDrive} leftIcon={<Icon name="cloud" className="h-4 w-4" />}>
                     {i18n("connectDrive", "Connecter Drive")}
                   </Button>
                 </div>
@@ -120,7 +137,7 @@ export default function FileAddModal({
               }}
               className="space-y-4"
             >
-              <p className="text-sm text-[var(--text-muted)]">{i18n("addLinkHint", "Ajoutez un lien externe à votre espace (fonctionnalité en préparation).")}</p>
+              <p className="text-sm text-[var(--text-muted)]">{i18n("addLinkHint", "Ajoutez un lien externe à votre espace.")}</p>
               <Input
                 type="text"
                 inputMode="url"
@@ -142,8 +159,8 @@ export default function FileAddModal({
           )}
 
           {tab === "drive" && (
-            <div className="space-y-4 text-center">
-              <Icon name="cloud" className="mx-auto h-10 w-10 text-[var(--text-muted)]" />
+            <div className="flex flex-col items-center gap-3 py-4 text-center">
+              <Icon name="cloud" className="h-10 w-10 text-[var(--text-muted)]" />
               <p className="text-sm text-[var(--text-muted)]">
                 {clientId
                   ? i18n("driveConnected", "Google Drive est connecté.")

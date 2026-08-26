@@ -476,7 +476,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
             </div>
           )}
 
-          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-2 shadow-sm transition-all focus-within:border-[var(--accent-primary)]/40 focus-within:ring-1 focus-within:ring-[var(--accent-primary)]/20">
+          <div className="rounded-2xl bg-[var(--panel-bg)]/60 p-2">
             <TextArea
               ref={textareaRef}
               rows={1}
@@ -486,7 +486,7 @@ export default function BrainChat({ brain, className = "" }: { brain: ReturnType
               placeholder="Poser une question ou un objectif..."
               disabled={pending}
               data-testid="brain-input"
-              className="min-h-0 flex-1"
+              className="min-h-0 flex-1 p-2"
               inputClassName="resize-none min-h-[2.75rem] bg-transparent"
               style={{ maxHeight: 144 }}
             />

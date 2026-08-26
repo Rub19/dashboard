@@ -59,7 +59,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const showClear = clearable && hasValue && !disabled;
 
     const baseWrapper =
-      "group/input relative flex w-full min-w-0 items-center gap-3 overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] px-4 text-sm text-[var(--text-primary)] outline-none backdrop-blur-md transition-all duration-200 ease-out";
+      "group/input relative flex w-full min-w-0 items-center gap-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] px-4 text-sm text-[var(--text-primary)] outline-none backdrop-blur-md transition-all duration-200 ease-out";
     const hover = "hover:border-[var(--border)]";
     const focus =
       "focus-within:border-[var(--accent-primary)]/60 focus-within:bg-[var(--surface-raised)] focus-within:ring-1 focus-within:ring-[var(--accent-primary)]/20 focus-within:shadow-[0_0_12px_-4px_var(--glow-color)]";
@@ -119,7 +119,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             <Icon name="x" className="h-4 w-4" />
           </button>
         )}
-        {right && <div className="shrink-0">{right}</div>}
+        {right && <div className="shrink-0 pl-2">{right}</div>}
       </div>
     );
   }

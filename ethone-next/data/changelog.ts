@@ -7206,6 +7206,66 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.27",
+  date: "2026-08-26",
+  title: "Refonte UI des barres de saisie et question",
+  items: [
+    "`Input` : suppression de `overflow-hidden` (glow visible), `gap-4`, espace `pl-2` avant l'action droite, focus unique au conteneur.",
+    "`TextArea` : `rounded-2xl`, `overflow-hidden`, glow plus subtil, focus conteneur unique.",
+    "`HeroBriefingCard` : le bouton Brain de droite ne dépasse plus et suit le thème sans bordure interne.",
+    "`BrainChat` : suppression du focus double autour du `TextArea` (une seule bordure focus sur le composant).",
+    "Aucune logique fonctionnelle modifiée : envoi, Brain, raccourcis clavier, suggestions conservés.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.27.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.27",
+  date: "2026-08-26",
+  title: "Input and question bar UI overhaul",
+  items: [
+    "`Input` : removed `overflow-hidden` (glow visible), `gap-4`, `pl-2` space before right action, single container focus.",
+    "`TextArea` : `rounded-2xl`, `overflow-hidden`, subtler glow, single container focus.",
+    "`HeroBriefingCard` : right Brain button no longer cut off and follows theme with no inner border.",
+    "`BrainChat` : removed double focus around the `TextArea` (single focus border on the component).",
+    "No functional logic changed: send, Brain, keyboard shortcuts, suggestions preserved.",
+    "Validation: build, lint.",
+    "Version badge bottom-right: v1.9.27.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.27",
+  date: "2026-08-26",
+  title: "Rediseño UI de barras de entrada y pregunta",
+  items: [
+    "`Input` : eliminado `overflow-hidden` (glow visible), `gap-4`, espacio `pl-2` antes de la acción derecha, focus único en el contenedor.",
+    "`TextArea` : `rounded-2xl`, `overflow-hidden`, glow más sutil, focus contenedor único.",
+    "`HeroBriefingCard` : el botón Brain derecho ya no se corta y sigue el tema sin borde interno.",
+    "`BrainChat` : eliminado el doble focus alrededor del `TextArea` (único borde focus en el componente).",
+    "Sin cambios en la lógica funcional: envío, Brain, atajos, sugerencias conservados.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.27.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.27",
+  date: "2026-08-26",
+  title: "UI-Überarbeitung der Eingabe- und Fragelbalken",
+  items: [
+    "`Input` : `overflow-hidden` entfernt (Glow sichtbar), `gap-4`, `pl-2` Abstand vor rechter Aktion, einzelner Container-Focus.",
+    "`TextArea` : `rounded-2xl`, `overflow-hidden`, dezenterer Glow, einzelner Container-Focus.",
+    "`HeroBriefingCard` : rechter Brain-Button wird nicht mehr abgeschnitten und folgt dem Theme ohne inneren Rand.",
+    "`BrainChat` : doppelter Focus um `TextArea` entfernt (einziger Focus-Rand am Komponenten).",
+    "Keine funktionale Logik geändert: Senden, Brain, Tastenkürzel, Vorschläge erhalten.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.27.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.26",
   date: "2026-08-26",
   title: "Audit et robustesse du chargement des images",

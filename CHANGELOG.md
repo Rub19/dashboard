@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.27 — 2026-08-26
+
+**ETHONE — Refonte UI des barres de saisie et question**
+
+- `Input` : suppression de `overflow-hidden` (glow visible), `gap-4`, espace `pl-2` avant l'action droite, focus unique au conteneur.
+- `TextArea` : `rounded-2xl`, `overflow-hidden`, glow plus subtil, focus conteneur unique.
+- `HeroBriefingCard` : le bouton Brain de droite ne dépasse plus et suit le thème sans bordure interne.
+- `BrainChat` : suppression du focus double autour du `TextArea`.
+- Aucune logique fonctionnelle modifiée : envoi, Brain, raccourcis clavier, suggestions conservés.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.26 — 2026-08-26
 
 **ETHONE — Audit et robustesse du chargement des images**

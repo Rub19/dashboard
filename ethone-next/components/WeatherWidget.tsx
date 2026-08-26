@@ -32,6 +32,8 @@ export type WeatherData = {
   isDay?: boolean;
   uvIndex?: number;
   uv?: number;
+  precipitationProbability?: number;
+  precipitation?: number;
   sunrise?: string;
   sunset?: string;
   pressure?: number;

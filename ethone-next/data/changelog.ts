@@ -7206,6 +7206,66 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.65",
+  date: "2026-08-26",
+  title: "Météo Home — état vide, pluie, ville partagée",
+  items: [
+    "Ajout de `precipitationProbability` et `precipitation` au type `WeatherData`.",
+    "Affichage du % de pluie dans `WeatherHomeWidget`.",
+    "État vide avec 'Configurer la ville' si `liveWeatherCity` n'est pas définie.",
+    "État 'Données météo indisponibles' si une ville est définie mais les données manquent.",
+    "La page `/weather` met à jour `settings.liveWeatherCity`, donc le widget Home reflète la ville recherchée grâce au cache partagé.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.65.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.65",
+  date: "2026-08-26",
+  title: "Home weather — empty state, rain, shared city",
+  items: [
+    "Added `precipitationProbability` and `precipitation` to `WeatherData`.",
+    "Rain percentage shown in `WeatherHomeWidget`.",
+    "Empty state with 'Configure city' when `liveWeatherCity` is not set.",
+    "'Weather data unavailable' state when a city is set but data is missing.",
+    "`/weather` page updates `settings.liveWeatherCity`, so the Home widget reflects the searched city via shared cache.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.65.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.65",
+  date: "2026-08-26",
+  title: "Home clima — estado vacío, lluvia, ciudad compartida",
+  items: [
+    "Añadidos `precipitationProbability` y `precipitation` a `WeatherData`.",
+    "Porcentaje de lluvia mostrado en `WeatherHomeWidget`.",
+    "Estado vacío con 'Configurar ciudad' si `liveWeatherCity` no está definida.",
+    "Estado 'Datos del tiempo no disponibles' si hay ciudad pero faltan datos.",
+    "La página `/weather` actualiza `settings.liveWeatherCity`, así el widget Home refleja la ciudad buscada vía caché compartida.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.65.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.65",
+  date: "2026-08-26",
+  title: "Home-Wetter — Leerzustand, Regen, geteilte Stadt",
+  items: [
+    "`precipitationProbability` und `precipitation` zu `WeatherData` hinzugefügt.",
+    "Regenprozent in `WeatherHomeWidget` angezeigt.",
+    "Leerzustand mit 'Stadt konfigurieren' wenn `liveWeatherCity` nicht gesetzt.",
+    "'Wetterdaten nicht verfügbar' wenn Stadt gesetzt, aber Daten fehlen.",
+    "`/weather` aktualisiert `settings.liveWeatherCity`, damit das Home-Widget die gesuchte Stadt über geteilten Cache widerspiegelt.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.65.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.64",
   date: "2026-08-26",
   title: "Dynamic Island 2.0 — étape 7 : intégration du store",

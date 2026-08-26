@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.65 — 2026-08-26
+
+**ETHONE — Météo Home : état vide, pluie, ville partagée**
+
+- Ajout de `precipitationProbability` et `precipitation` au type `WeatherData`.
+- Affichage du % de pluie dans `WeatherHomeWidget`.
+- État vide "Configurer la ville" si `liveWeatherCity` n'est pas définie.
+- État "Données météo indisponibles" si une ville est définie mais les données manquent.
+- La page `/weather` met à jour `settings.liveWeatherCity`, donc le widget Home reflète la ville recherchée grâce au cache partagé.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.64 — 2026-08-26
 
 **ETHONE — Dynamic Island 2.0 : étape 7 — intégration du store**

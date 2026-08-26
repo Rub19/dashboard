@@ -13,8 +13,7 @@ import HeroBriefingCard from "@/components/HeroBriefingCard";
 import SystemControlCard from "@/components/SystemControlCard";
 import { DayTimelineCard, RecentNotesCard } from "@/components/ProductivityCards";
 import TasksWidget from "@/components/TasksWidget";
-import WeatherHomeWidget from "@/components/WeatherHomeWidget";
-import type { WeatherData } from "@/components/WeatherWidget";
+
 import { useCloudTasks } from "@/lib/hooks/useCloudTasks";
 import { useHomeData } from "@/lib/hooks/useDashboard";
 import { useLiveData } from "@/lib/hooks/useLiveData";
@@ -59,16 +58,15 @@ const WIDGET_COL_SPAN: Record<string, string> = {
   recent: "col-span-12 sm:col-span-6 lg:col-span-4",
   brain: "col-span-12 sm:col-span-6 lg:col-span-6",
   bills: "col-span-12 sm:col-span-6 lg:col-span-6",
-  weather: "col-span-12 sm:col-span-6 lg:col-span-4",
   live: "col-span-12",
   connections: "col-span-12",
 };
 
 const WIDGET_PRIORITY_SCORES: Record<string, Record<string, number>> = {
-  morning: { daystream: 95, productivity: 85, hero: 75, brain: 65, recent: 55, weather: 60, connections: 50, bills: 40, live: 35, system: 20 },
-  work: { productivity: 95, brain: 85, hero: 75, daystream: 70, weather: 60, recent: 60, connections: 50, bills: 40, live: 35, system: 20 },
-  evening: { live: 95, brain: 85, hero: 70, daystream: 60, recent: 55, weather: 55, connections: 45, productivity: 40, bills: 35, system: 20 },
-  night: { hero: 95, brain: 80, recent: 65, connections: 55, weather: 60, bills: 50, system: 40, daystream: 30, productivity: 20, live: 15 },
+  morning: { daystream: 95, productivity: 85, hero: 75, brain: 65, recent: 55, connections: 50, bills: 40, live: 35, system: 20 },
+  work: { productivity: 95, brain: 85, hero: 75, daystream: 70, recent: 60, connections: 50, bills: 40, live: 35, system: 20 },
+  evening: { live: 95, brain: 85, hero: 70, daystream: 60, recent: 55, connections: 45, productivity: 40, bills: 35, system: 20 },
+  night: { hero: 95, brain: 80, recent: 65, connections: 55, bills: 50, system: 40, daystream: 30, productivity: 20, live: 15 },
 };
 
 function getDayPeriod(hour: number) {
@@ -81,8 +79,7 @@ function getDayPeriod(hour: number) {
 const DEFAULT_WIDGETS: WidgetLayout[] = [
   { id: "hero", x: 0, y: 0, w: 12, h: 2, visible: true },
   { id: "system", x: 0, y: 1, w: 4, h: 1, visible: true },
-  { id: "weather", x: 4, y: 1, w: 4, h: 1, visible: true },
-  { id: "daystream", x: 8, y: 1, w: 4, h: 1, visible: true },
+  { id: "daystream", x: 4, y: 1, w: 4, h: 1, visible: true },
   { id: "productivity", x: 0, y: 2, w: 4, h: 1, visible: true },
   { id: "recent", x: 4, y: 2, w: 4, h: 1, visible: true },
   { id: "brain", x: 0, y: 3, w: 6, h: 1, visible: true },
@@ -129,7 +126,7 @@ export default function DashboardOverview() {
     const base = [...merged, ...extras];
     const seen = new Set<string>();
     const sanitized = base.filter((w) => {
-      if (!w.id || seen.has(w.id)) return false;
+      if (!w.id || w.id === "weather" || seen.has(w.id)) return false;
       seen.add(w.id);
       return true;
     });
@@ -184,7 +181,6 @@ export default function DashboardOverview() {
           recent: { label: i18n("recent"), icon: "history" },
           brain: { label: i18n("brain"), icon: "brain" },
           bills: { label: i18n("billsTitle"), icon: "bills" },
-          weather: { label: i18n("weather", "Météo"), icon: "cloud" },
           live: { label: i18n("live"), icon: "radio" },
           connections: { label: i18n("services", "Services"), icon: "plug" },
         };
@@ -301,14 +297,6 @@ export default function DashboardOverview() {
           <BentoCard title={i18n("billsTitle")} icon="bills" scrollable={false} className={homeCardClass}>
             <BillsWidget />
           </BentoCard>
-        );
-      case "weather":
-        return (
-          <WeatherHomeWidget
-            data={(live.weather as unknown as WeatherData | null) ?? null}
-            loading={live.loading}
-            className={homeCardClass}
-          />
         );
       case "connections":
         return (

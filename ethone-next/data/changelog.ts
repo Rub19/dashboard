@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.82",
+  date: "2026-08-26",
+  title: "Home — suppression météo et ajustement cartes Riot",
+  items: [
+    "Suppression du widget météo en bas de la page Home (WeatherHomeWidget).",
+    "Suppression de `weather` des grilles et des priorités par défaut du dashboard.",
+    "Les cartes Valorant et LoL ne sont plus en mode `compact` pour correspondre aux autres cartes du LiveBentoGrid.",
+    "Suppression de l'affichage de l'erreur globale sur les cartes Riot : elles affichent maintenant l'état hors-ligne/configuration proprement.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.82.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.82",
+  date: "2026-08-26",
+  title: "Home — remove weather and adjust Riot cards",
+  items: [
+    "Removed the bottom weather widget from the Home page (WeatherHomeWidget).",
+    "Removed `weather` from default dashboard grids and priorities.",
+    "Valorant and LoL cards are no longer `compact` to match the other LiveBentoGrid cards.",
+    "Removed the global error display on Riot cards: they now show a clean offline/configuration state.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.82.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.82",
+  date: "2026-08-26",
+  title: "Inicio — eliminar clima y ajustar tarjetas Riot",
+  items: [
+    "Eliminado el widget del clima inferior de la página de inicio (WeatherHomeWidget).",
+    "Eliminado `weather` de las grillas y prioridades por defecto del dashboard.",
+    "Las tarjetas Valorant y LoL ya no están en modo `compact` para coincidir con las demás tarjetas de LiveBentoGrid.",
+    "Eliminado el error global en las tarjetas Riot: ahora muestran un estado limpio de desconexión/configuración.",
+    "Validación : build, lint.",
+    "Versión : v1.9.82.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.82",
+  date: "2026-08-26",
+  title: "Startseite — Wetter entfernen und Riot-Karten anpassen",
+  items: [
+    "Wetter-Widget unten auf der Startseite entfernt (WeatherHomeWidget).",
+    "`weather` aus Standard-Dashboard-Rastern und -Prioritäten entfernt.",
+    "Valorant- und LoL-Karten sind nicht mehr `compact`, um den anderen LiveBentoGrid-Karten zu entsprechen.",
+    "Globale Fehleranzeige auf Riot-Karten entfernt: sie zeigen jetzt einen sauberen Offline/Konfigurations-Status.",
+    "Validierung: build, lint.",
+    "Version: v1.9.82.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.81",
   date: "2026-08-26",
   title: "Spotify — correction du bouton like",

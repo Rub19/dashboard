@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.82 — 2026-08-26
+
+**ETHONE — Home : météo supprimée et cartes Riot ajustées**
+
+- `components/DashboardOverview.tsx` :
+  - Suppression du widget `weather` (WeatherHomeWidget) de la home.
+  - Suppression de `weather` des grilles, priorités et liste de widgets par défaut.
+- `components/LiveBentoGrid.tsx` :
+  - Les cartes `RiotGamingCard` (Valorant/LoL) ne sont plus en mode `compact` pour correspondre aux autres.
+  - L'erreur globale n'est plus transmise aux cartes Riot ; elles affichent un état `Hors ligne`/`Configurer` propre si aucune donnée.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.81 — 2026-08-26
 
 **ETHONE — Spotify : correction du bouton like**

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.16 — 2026-08-26
+
+**ETHONE — Fichiers v2 : cartes et liste**
+
+- Refonte complète de `components/FileCard.tsx`.
+- Cartes grille modernes avec media 4:3, fallback icône, badge favori, actions au hover.
+- Vue liste repensée, colonnes alignées, groupe icône + nom, actions à droite.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.15 — 2026-08-26
 
 **ETHONE — Fichiers : premier rework UI**

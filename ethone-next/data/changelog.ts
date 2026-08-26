@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.16",
+  date: "2026-08-26",
+  title: "Fichiers v2 — cartes et liste",
+  items: [
+    "Refonte complète de `components/FileCard.tsx`.",
+    "Cartes grille plus modernes : media 4:3, fallback icône propre, badge favori, actions au hover.",
+    "Vue liste plus propre : alignement colonnes, icône + nom groupés, actions à droite.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.16.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.16",
+  date: "2026-08-26",
+  title: "Files v2 — cards and list",
+  items: [
+    "Full rework of `components/FileCard.tsx`.",
+    "Modern grid cards: 4:3 media, clean icon fallback, favorite badge, hover actions.",
+    "Cleaner list view: aligned columns, icon + name grouped, right-side actions.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.16.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.16",
+  date: "2026-08-26",
+  title: "Ficheros v2 — tarjetas y lista",
+  items: [
+    "Refactorización completa de `components/FileCard.tsx`.",
+    "Tarjetas de cuadrícula más modernas: media 4:3, icono de reserva limpio, badge de favorito, acciones al pasar el cursor.",
+    "Vista de lista más limpia: columnas alineadas, icono + nombre agrupados, acciones a la derecha.",
+    "Validación : build, lint.",
+    "Versión : v1.10.16.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.16",
+  date: "2026-08-26",
+  title: "Dateien v2 — Karten und Liste",
+  items: [
+    "Vollständige Überarbeitung von `components/FileCard.tsx`.",
+    "Moderne Rasterkarten: 4:3-Medien, sauberes Icon-Fallback, Favoriten-Badge, Hover-Aktionen.",
+    "Sauberere Listenansicht: ausgerichtete Spalten, Icon + Name gruppiert, Aktionen rechts.",
+    "Validierung: build, lint.",
+    "Version: v1.10.16.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.15",
   date: "2026-08-26",
   title: "Fichiers — premier rework UI (header + empty state)",

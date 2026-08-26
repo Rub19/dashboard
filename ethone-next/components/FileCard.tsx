@@ -57,13 +57,6 @@ export default function FileCard({
   const isAudio = file.mimeType.startsWith("audio/");
   const isVisual = isImage || isVideo || isAudio;
 
-  const imageFallback = (
-    <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-[var(--text-muted)]">
-      <Icon name={iconName} className="h-10 w-10" />
-      <span className="text-[10px] uppercase tracking-wider">{file.mimeType || "-"}</span>
-    </div>
-  );
-
   const actionIcon = (name: string, label: string, onClick: () => void, variant: "default" | "danger" = "default") => (
     <button
       type="button"
@@ -79,30 +72,41 @@ export default function FileCard({
     </button>
   );
 
-  const gridContent = (
-    <div className="relative flex h-full flex-col overflow-hidden">
-      <div
-        className="relative flex w-full items-center justify-center bg-[var(--bg-main)] p-4"
-        style={{ aspectRatio: "4/3" }}
-      >
-        {isVisual && (file.thumbnailLink || file.iconUrl) ? (
-          <SafeImage
-            candidates={[file.thumbnailLink, file.iconUrl]}
-            alt={file.name}
-            size={256}
-            className="h-full w-full rounded-xl object-cover"
-            iconClassName="h-10 w-10 text-[var(--accent-primary)]"
-            loading="lazy"
-            fallback="none"
-          />
-        ) : (
-          imageFallback
-        )}
-        {file.isFavorite && (
-          <Icon name="heart" className="absolute right-2 top-2 h-4 w-4 text-[var(--danger)]" />
-        )}
-      </div>
+  const gridMedia = (
+    <div
+      className={cn(
+        "relative flex w-full items-center justify-center overflow-hidden rounded-xl bg-[var(--bg-main)]",
+        isGrid ? "p-3" : "p-2",
+      )}
+      style={{ aspectRatio: "4/3" }}
+    >
+      {isVisual && (file.thumbnailLink || file.iconUrl) ? (
+        <SafeImage
+          candidates={[file.thumbnailLink, file.iconUrl]}
+          alt={file.name}
+          size={256}
+          className="h-full w-full object-cover"
+          iconClassName="h-8 w-8 text-[var(--accent-primary)]"
+          loading="lazy"
+          fallback="none"
+        />
+      ) : (
+        <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-[var(--text-muted)]">
+          <Icon name={iconName} className="h-12 w-12" />
+          <span className="text-[9px] uppercase tracking-wider opacity-60">{file.mimeType || "—"}</span>
+        </div>
+      )}
+      {file.isFavorite && (
+        <div className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[var(--panel-bg)]/80 backdrop-blur-sm">
+          <Icon name="heart" className="h-3.5 w-3.5 text-[var(--danger)]" />
+        </div>
+      )}
+    </div>
+  );
 
+  const gridContent = (
+    <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)] shadow-sm transition-all duration-150 hover:border-[var(--accent-primary)]/30 hover:shadow-md">
+      {gridMedia}
       <div className="flex flex-1 flex-col justify-between p-3">
         <div className="min-w-0">
           <p className="line-clamp-2 text-sm font-medium text-[var(--text-primary)]" title={file.name}>
@@ -114,7 +118,7 @@ export default function FileCard({
               : `${formatBytes(file.size)} · ${formatDateShort(file.updatedAt)}`}
           </p>
         </div>
-        <div onClick={(e) => e.stopPropagation()} className="mt-2 flex items-center gap-0.5">
+        <div className="mt-2 flex items-center gap-0.5 opacity-60 transition-opacity group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
           {actionIcon(file.isFavorite ? "heart" : "heart-off", file.isFavorite ? i18n("removeFromFavorites") : i18n("addToFavorites"), onFavorite)}
           {!file.isFolder && clientId && actionIcon("download", i18n("download"), onDownload)}
           {trashed
@@ -128,33 +132,35 @@ export default function FileCard({
 
   const listContent = (
     <>
-      <Checkbox
-        checked={selected ?? false}
-        onCheckedChange={onToggle ?? (() => {})}
-        aria-label={i18n("select")}
-        onClick={(e) => e.stopPropagation()}
-      />
-      <button type="button" onClick={onOpen} className="focus:outline-none">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[var(--bg-main)] text-[var(--text-muted)]">
-          <SafeImage
-            candidates={[file.thumbnailLink, file.iconUrl]}
-            alt={file.name}
-            size={40}
-            className="h-full w-full object-contain p-1"
-            iconClassName="h-5 w-5"
-            loading="lazy"
-            fallback="none"
-          />
-        </div>
-      </button>
-      <button type="button" onClick={onOpen} className="min-w-0 flex-1 text-left focus:outline-none">
-        <p className="truncate text-sm font-medium text-[var(--text-primary)]" title={file.name}>
-          {file.name}
-        </p>
-        <p className="truncate text-[11px] text-[var(--text-muted)] sm:hidden">
-          {file.isFolder ? i18n("folder") : `${formatBytes(file.size)} · ${formatDateShort(file.updatedAt)}`}
-        </p>
-      </button>
+      <div className="flex items-center gap-3">
+        <Checkbox
+          checked={selected ?? false}
+          onCheckedChange={onToggle ?? (() => {})}
+          aria-label={i18n("select")}
+          onClick={(e) => e.stopPropagation()}
+        />
+        <button type="button" onClick={onOpen} className="focus:outline-none">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[var(--bg-main)] text-[var(--text-muted)]">
+            <SafeImage
+              candidates={[file.thumbnailLink, file.iconUrl]}
+              alt={file.name}
+              size={40}
+              className="h-full w-full object-contain p-1"
+              iconClassName="h-5 w-5"
+              loading="lazy"
+              fallback="none"
+            />
+          </div>
+        </button>
+        <button type="button" onClick={onOpen} className="min-w-0 flex-1 text-left focus:outline-none">
+          <p className="truncate text-sm font-medium text-[var(--text-primary)]" title={file.name}>
+            {file.name}
+          </p>
+          <p className="truncate text-[11px] text-[var(--text-muted)] sm:hidden">
+            {file.isFolder ? i18n("folder") : `${formatBytes(file.size)} · ${formatDateShort(file.updatedAt)}`}
+          </p>
+        </button>
+      </div>
       {!file.isFolder ? (
         <>
           <span className="hidden truncate text-right text-xs text-[var(--text-muted)] sm:block">{formatBytes(file.size)}</span>
@@ -184,8 +190,8 @@ export default function FileCard({
       className={cn(
         "group select-none transition-[border-color,box-shadow,background-color] duration-150",
         isGrid
-          ? "h-full cursor-pointer overflow-hidden rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)] shadow-sm hover:border-[var(--accent-primary)]/40 hover:shadow-md"
-          : "grid cursor-pointer grid-cols-[1.5rem_2.5rem_minmax(0,1fr)_4rem] items-center gap-3 rounded-xl border-b border-[var(--panel-border)]/[0.08] px-3 py-2.5 last:border-b-0 hover:bg-[var(--panel-bg)]/[0.4] sm:grid-cols-[1.5rem_2.5rem_minmax(0,1fr)_6rem_6rem_7rem]",
+          ? "h-full cursor-pointer"
+          : "grid cursor-pointer grid-cols-[1fr] items-center gap-3 rounded-xl border-b border-[var(--panel-border)]/[0.08] px-3 py-2.5 last:border-b-0 hover:bg-[var(--panel-bg)]/[0.4] sm:grid-cols-[minmax(0,1fr)_6rem_6rem_7rem]",
         selected && "bg-[var(--accent-primary)]/5 hover:bg-[var(--accent-primary)]/10",
       )}
     >

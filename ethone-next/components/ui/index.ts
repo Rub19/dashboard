@@ -26,6 +26,9 @@ export type { ModalProps } from "./Modal";
 export { default as Badge } from "./Badge";
 export type { BadgeVariant } from "./Badge";
 
+export { default as Card } from "./Card";
+export type { CardProps, CardVariant } from "./Card";
+
 export { default as StatusIndicator } from "./StatusIndicator";
 export type { StatusIndicatorState } from "./StatusIndicator";
 

@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.60",
+  date: "2026-08-26",
+  title: "UI polish — étape 4 : système de cards",
+  items: [
+    "Nouveau composant `Card` avec variants : default, primary, secondary, interactive, widget, status.",
+    "Radius, padding, border, background, ombre et hover unifiés.",
+    "Export ajouté dans `components/ui/index.ts`.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.60.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.60",
+  date: "2026-08-26",
+  title: "UI polish — step 4: card system",
+  items: [
+    "New `Card` component with variants: default, primary, secondary, interactive, widget, status.",
+    "Unified radius, padding, border, background, shadow and hover.",
+    "Added export in `components/ui/index.ts`.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.60.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.60",
+  date: "2026-08-26",
+  title: "UI polish — paso 4: sistema de cards",
+  items: [
+    "Nuevo componente `Card` con variantes: default, primary, secondary, interactive, widget, status.",
+    "Radio, padding, borde, fondo, sombra y hover unificados.",
+    "Export añadido en `components/ui/index.ts`.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.60.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.60",
+  date: "2026-08-26",
+  title: "UI polish — Schritt 4: Card-System",
+  items: [
+    "Neue `Card`-Komponente mit Varianten: default, primary, secondary, interactive, widget, status.",
+    "Vereinheitlichter Radius, Padding, Border, Hintergrund, Schatten und Hover.",
+    "Export in `components/ui/index.ts` hinzugefügt.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.60.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.59",
   date: "2026-08-26",
   title: "UI polish — étape 3 : boutons",

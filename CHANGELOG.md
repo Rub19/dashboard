@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.60 — 2026-08-26
+
+**ETHONE — UI polish : étape 4 — système de cards**
+
+- Nouveau composant `Card` avec variants : `default`, `primary`, `secondary`, `interactive`, `widget`, `status`.
+- Radius, padding, border, background, ombre et hover unifiés.
+- Export ajouté dans `components/ui/index.ts`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.59 — 2026-08-26
 
 **ETHONE — UI polish : étape 3 — boutons**

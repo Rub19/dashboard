@@ -210,7 +210,6 @@ function IslandExpandedHeader({
           />
         ))}
       </div>
-      <span className="text-[10px] font-medium text-[var(--text-muted)]">{viewLabel(selected, i18n)}</span>
     </div>
   );
 }

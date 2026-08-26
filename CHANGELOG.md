@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.44 — 2026-08-26
+
+**ETHONE — Dynamic Island : label Spotify dupliqué retiré**
+
+- Suppression du label `Spotify` en double dans l'en-tête étendu de la Dynamic Island.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.43 — 2026-08-26
 
 **ETHONE — Flyouts Dock : correction position initiale**

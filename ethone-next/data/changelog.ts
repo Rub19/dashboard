@@ -7206,6 +7206,50 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.44",
+  date: "2026-08-26",
+  title: "Dynamic Island — label Spotify dupliqué retiré",
+  items: [
+    "Suppression du label `Spotify` en double dans l'en-tête étendu de la Dynamic Island.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.44.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.44",
+  date: "2026-08-26",
+  title: "Dynamic Island — removed duplicate Spotify label",
+  items: [
+    "Removed the duplicated `Spotify` label in the expanded Dynamic Island header.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.44.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.44",
+  date: "2026-08-26",
+  title: "Dynamic Island — etiqueta Spotify duplicada eliminada",
+  items: [
+    "Eliminada la etiqueta duplicada `Spotify` en el encabezado expandido de la Dynamic Island.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.44.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.44",
+  date: "2026-08-26",
+  title: "Dynamic Island — doppeltes Spotify-Label entfernt",
+  items: [
+    "Doppeltes `Spotify`-Label im erweiterten Dynamic-Island-Header entfernt.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.44.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.43",
   date: "2026-08-26",
   title: "Flyouts Dock — correction position initiale",

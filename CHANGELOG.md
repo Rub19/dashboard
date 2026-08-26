@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.15 — 2026-08-26
+
+**ETHONE — Fichiers : premier rework UI**
+
+- `app/files/page.tsx` : header simplifié (titre + badge stockage, chemin plus fin).
+- Empty state repensée avec une card centrée, icône ETHONE et espacements aérés.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.14 — 2026-08-26
 
 **ETHONE — UI : tooltips qui disparaissent proprement**

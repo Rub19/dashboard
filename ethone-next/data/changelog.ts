@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.15",
+  date: "2026-08-26",
+  title: "Fichiers — premier rework UI (header + empty state)",
+  items: [
+    "`app/files/page.tsx` : header simplifié avec titre + badge stockage, chemin plus fin.",
+    "Empty state repensée : card centrée, icône ETHONE, espacements plus aérés.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.15.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.15",
+  date: "2026-08-26",
+  title: "Files — first UI rework (header + empty state)",
+  items: [
+    "`app/files/page.tsx`: cleaner header with title + storage badge, finer breadcrumb.",
+    "Empty state redesigned: centered card, ETHONE icon, better spacing.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.15.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.15",
+  date: "2026-08-26",
+  title: "Ficheros — primer rework UI (header + empty state)",
+  items: [
+    "`app/files/page.tsx` : header simplificado con título + badge de almacenamiento, ruta más fina.",
+    "Empty state rediseñado: tarjeta centrada, icono ETHONE, espaciado mejorado.",
+    "Validación : build, lint.",
+    "Versión : v1.10.15.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.15",
+  date: "2026-08-26",
+  title: "Dateien — erster UI-Rework (Header + Empty State)",
+  items: [
+    "`app/files/page.tsx`: schlichtere Header mit Titel + Speicher-Badge, feinere Pfadnavigation.",
+    "Empty State neu gestaltet: zentrierte Karte, ETHONE-Icon, bessere Abstände.",
+    "Validierung: build, lint.",
+    "Version: v1.10.15.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.14",
   date: "2026-08-26",
   title: "UI — tooltips qui disparaissent proprement",

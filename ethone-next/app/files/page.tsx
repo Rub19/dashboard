@@ -432,19 +432,18 @@ export default function FilesPage() {
       <div className="shrink-0 mb-3 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-3 shadow-sm backdrop-blur-[var(--panel-blur)]">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
-            <h1 className="flex items-center gap-2 text-base font-semibold">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
-                <Icon name="files" className="h-4 w-4" />
-              </span>
-              {i18n("filesTitle")}
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg font-semibold tracking-tight text-[var(--text-primary)]">
+                {i18n("filesTitle")}
+              </h1>
               {quota && (
                 <span className="hidden items-center gap-1.5 rounded-full border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] px-2 py-0.5 text-[10px] font-normal text-[var(--text-muted)] sm:inline-flex">
                   {formatBytes(quota.used)} / {formatBytes(quota.total)}
                 </span>
               )}
-            </h1>
+            </div>
             {parentId !== null ? (
-              <nav aria-label={i18n("folders")} className="mt-1 flex flex-wrap items-center gap-1 text-xs text-[var(--text-muted)]">
+              <nav aria-label={i18n("folders")} className="mt-0.5 flex flex-wrap items-center gap-1 text-[11px] text-[var(--text-muted)]">
                 <button type="button" onClick={() => setParentId(null)} className="hover:text-[var(--text-primary)]">{i18n("filesTitle")}</button>
                 {path.map((folder) => (
                   <span key={folder.driveFileId} className="flex items-center gap-1">
@@ -462,7 +461,7 @@ export default function FilesPage() {
                 <span className="text-[var(--text-primary)]">{files.find((f) => f.driveFileId === parentId)?.name}</span>
               </nav>
             ) : (
-              <p className="mt-1 text-[11px] text-[var(--text-muted)]">
+              <p className="mt-0.5 text-[11px] text-[var(--text-muted)]">
                 {clientId ? i18n("driveConnected", "Google Drive connecté") : i18n("noDriveConnected", "Aucun Drive connecté")}
               </p>
             )}
@@ -768,12 +767,12 @@ export default function FilesPage() {
             ))}
           </>
         ) : filteredFiles.length === 0 ? (
-          <div className="col-span-full flex flex-col items-center justify-center gap-6 p-8 text-center">
-            <div className="flex h-20 w-20 items-center justify-center rounded-3xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] text-[var(--accent-primary)] shadow-sm">
-              <Icon name={trashed ? "trash-2" : showDuplicates ? "copy" : showFolders ? "folder" : clientId ? "cloud-upload" : "cloud"} className="h-9 w-9" />
-            </div>
-            <div>
-              <p className="text-base font-semibold text-[var(--text-primary)]">
+          <div className="col-span-full flex min-h-[50vh] flex-col items-center justify-center p-6">
+            <div className="w-full max-w-xl rounded-3xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.25] p-8 text-center shadow-sm backdrop-blur-[var(--panel-blur)]">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+                <Icon name={trashed ? "trash-2" : showDuplicates ? "copy" : showFolders ? "folder" : clientId ? "cloud-upload" : "cloud"} className="h-8 w-8" />
+              </div>
+              <p className="mt-4 text-base font-semibold text-[var(--text-primary)]">
                 {!clientId ? i18n("connectToStart", "Connectez un Drive pour commencer") : showDuplicates ? i18n("noDuplicates", "Aucun doublon détecté") : showFolders ? i18n("noFolders", "Aucun dossier") : i18n("noFiles", "Aucun fichier")}
               </p>
               <p className="mx-auto mt-1 max-w-sm text-xs text-[var(--text-muted)]">
@@ -785,28 +784,30 @@ export default function FilesPage() {
                       ? i18n("noFoldersDescription", "Créez un dossier pour organiser vos fichiers.")
                       : i18n("noFilesDescription", "Importez, créez un dossier ou ajoutez un lien pour commencer.")}
               </p>
-            </div>
 
-            {!clientId ? (
-              <Button onClick={connectDrive} leftIcon={<Icon name="cloud" className="h-4 w-4" />}>
-                {i18n("connectDrive", "Connecter Google Drive")}
-              </Button>
-            ) : (
-              <div className="w-full max-w-md space-y-4">
-                <FileUploadZone
-                  onFiles={(files) => { setAddTab("upload"); setDroppedFiles(files); setAddOpen(true); }}
-                  onClick={() => { setAddTab("upload"); setAddOpen(true); }}
-                />
-                <div className="flex flex-wrap items-center justify-center gap-2">
-                  <Button size="sm" onClick={() => { setAddTab("folder"); setAddOpen(true); }} leftIcon={<Icon name="folder-plus" className="h-4 w-4" />}>
-                    {i18n("createFolder")}
-                  </Button>
-                  <Button size="sm" variant="secondary" onClick={() => { setAddTab("link"); setAddOpen(true); }} leftIcon={<Icon name="link" className="h-4 w-4" />}>
-                    {i18n("addLink", "Ajouter un lien")}
+              {!clientId ? (
+                <div className="mt-5">
+                  <Button onClick={connectDrive} leftIcon={<Icon name="cloud" className="h-4 w-4" />}>
+                    {i18n("connectDrive", "Connecter Google Drive")}
                   </Button>
                 </div>
-              </div>
-            )}
+              ) : (
+                <div className="mt-5 space-y-3">
+                  <FileUploadZone
+                    onFiles={(files) => { setAddTab("upload"); setDroppedFiles(files); setAddOpen(true); }}
+                    onClick={() => { setAddTab("upload"); setAddOpen(true); }}
+                  />
+                  <div className="flex flex-wrap items-center justify-center gap-2">
+                    <Button size="sm" onClick={() => { setAddTab("folder"); setAddOpen(true); }} leftIcon={<Icon name="folder-plus" className="h-4 w-4" />}>
+                      {i18n("createFolder")}
+                    </Button>
+                    <Button size="sm" variant="secondary" onClick={() => { setAddTab("link"); setAddOpen(true); }} leftIcon={<Icon name="link" className="h-4 w-4" />}>
+                      {i18n("addLink", "Ajouter un lien")}
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         ) : (
           filteredFiles.map((file, i) => (

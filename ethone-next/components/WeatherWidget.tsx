@@ -15,7 +15,35 @@ export type ForecastDay = {
   weatherCode?: number;
 };
 
+export type HourlyForecast = {
+  time: string;
+  temperature?: number;
+  weatherCode?: number;
+  precipitation?: number;
+  precipitationProbability?: number;
+  isDay?: boolean;
+};
+
+export type DailyForecast = {
+  date: string;
+  min?: number;
+  max?: number;
+  weatherCode?: number;
+  precipitationProbability?: number;
+  sunrise?: string;
+  sunset?: string;
+};
+
+export type AirQualityDetails = {
+  aqi?: number;
+  pm10?: number;
+  pm25?: number;
+};
+
 export type WeatherData = {
+  updatedAt?: string;
+  latitude?: number;
+  longitude?: number;
   temperature?: number;
   temperatureC?: number;
   apparentTemperature?: number;
@@ -29,11 +57,15 @@ export type WeatherData = {
   humidityPercent?: number;
   windSpeedKmh?: number;
   windSpeed?: number;
+  windDirection?: number;
+  windGustsKmh?: number;
   isDay?: boolean;
   uvIndex?: number;
   uv?: number;
   precipitationProbability?: number;
   precipitation?: number;
+  visibility?: number;
+  dewPoint?: number;
   sunrise?: string;
   sunset?: string;
   pressure?: number;
@@ -41,6 +73,9 @@ export type WeatherData = {
   airQuality?: number;
   airQualityIndex?: number;
   airQualityLabel?: string;
+  airQualityDetails?: AirQualityDetails;
+  hourly?: HourlyForecast[];
+  daily?: DailyForecast[];
   forecast?: ForecastDay[];
   iconUrl?: string;
 };

@@ -63,7 +63,7 @@ import { supabaseRoute } from "./routes/supabase.js";
 import { todoistOAuthDisconnectRoute, todoistOAuthExchangeRoute, todoistTasksRoute } from "./routes/todoist-oauth.js";
 import { trackerLolRoute, trackerRoute, trackerValorantRoute, trackerValorantMatchesRoute, trackerLolMatchesRoute, trackerApexMatchesRoute } from "./routes/tracker.js";
 import { twitchRoute } from "./routes/twitch.js";
-import { weatherRoute } from "./routes/weather.js";
+import { weatherRoute, geocodeRoute } from "./routes/weather.js";
 import { billsScanRoute } from "./routes/bills-scan.js";
 import { youtubeActivityRoute, youtubeOAuthDisconnectRoute, youtubeOAuthExchangeRoute } from "./routes/youtube-oauth.js";
 import { rssRoute } from "./routes/rss.js";
@@ -158,6 +158,7 @@ export const ROUTES = Object.freeze([
   route("catalog.profile", "/api/catalog/profile", catalogProfileRoute, { service: "catalog" }),
   route("supabase.public-profile", "/api/supabase/public-profile", supabaseRoute, { service: "supabase", rateLimit: "strict" }),
   route("weather.forecast", "/api/weather", weatherRoute, { service: "weather" }),
+  route("weather.geocode", "/api/geocode", geocodeRoute, { service: "weather" }),
   route("bills.scan", "/api/bills/scan", billsScanRoute, { method: "POST", service: "bills", rateLimit: "strict" }),
   route("rss", "/api/rss", rssRoute, { service: "rss" }),
   route("minecraft.profile", "/api/minecraft/profile", minecraftRoute, { service: "minecraft" }),

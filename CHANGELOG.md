@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.69 — 2026-08-26
+
+**ETHONE — Rework complet de la page Météo**
+
+- Worker météo enrichi : horaires 24h, 7 jours, vent, AQI PM2.5/PM10, précipitations, etc.
+- Nouvelle route `/api/geocode` pour les suggestions de villes.
+- Refonte de `components/WeatherPage.tsx` : hero, horaires, 7 jours, conditions, vent, AQI, soleil, précipitations, conseil Brain.
+- Types `WeatherData` enrichis (`hourly`, `daily`, `airQualityDetails`).
+- Validation : `npm run build`, `npm run lint`, tests Worker.
+
 ## v1.9.68 — 2026-08-26
 
 **ETHONE — Header Météo : couleurs et composants partagés**

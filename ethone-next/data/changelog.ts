@@ -7206,6 +7206,70 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.69",
+  date: "2026-08-26",
+  title: "Météo — rework complet de la page",
+  items: [
+    "Worker météo enrichi : horaires 24h, 7 jours, vent rafales/direction, humidité, pression, UV, visibilité, point de rosée, précipitations, AQI PM2.5/PM10.",
+    "Nouvelle route `/api/geocode` pour les suggestions de villes.",
+    "Types `WeatherData` mis à jour avec `hourly`, `daily`, `airQualityDetails`.",
+    "Refonte complète de `WeatherPage.tsx` : hero, horaires, 7 jours, conditions, vent, AQI, soleil, précipitations, conseil Brain.",
+    "Animations Framer Motion discrètes, `prefers-reduced-motion` non requis (composants clients).",
+    "Skeleton local, pas de loading global.",
+    "Validation : build, lint, tests Worker.",
+    "Version affichée en bas à droite : v1.9.69.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.69",
+  date: "2026-08-26",
+  title: "Weather — full page rework",
+  items: [
+    "Weather Worker enriched: 24h hourly, 7-day, wind gusts/direction, humidity, pressure, UV, visibility, dew point, precipitation, AQI PM2.5/PM10.",
+    "New `/api/geocode` route for city suggestions.",
+    "`WeatherData` type updated with `hourly`, `daily`, `airQualityDetails`.",
+    "Full `WeatherPage.tsx` redesign: hero, hourly, 7-day, conditions, wind, AQI, sun, precipitation, Brain advice.",
+    "Subtle Framer Motion animations.",
+    "Local skeleton, no global loading.",
+    "Validation: build, lint, Worker tests.",
+    "Version badge bottom-right: v1.9.69.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.69",
+  date: "2026-08-26",
+  title: "Clima — rediseño completo de la página",
+  items: [
+    "Worker de clima enriquecido: 24h horario, 7 días, ráfagas/dirección del viento, humedad, presión, UV, visibilidad, punto de rocío, precipitación, AQI PM2.5/PM10.",
+    "Nueva ruta `/api/geocode` para sugerencias de ciudades.",
+    "Tipo `WeatherData` actualizado con `hourly`, `daily`, `airQualityDetails`.",
+    "Rediseño completo de `WeatherPage.tsx`: hero, horario, 7 días, condiciones, viento, AQI, sol, precipitaciones, consejo Brain.",
+    "Animaciones Framer Motion sutiles.",
+    "Skeleton local, sin loading global.",
+    "Validación: build, lint, tests Worker.",
+    "Versión mostrada abajo a la derecha : v1.9.69.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.69",
+  date: "2026-08-26",
+  title: "Wetter — kompletter Seiten-Redesign",
+  items: [
+    "Wetter-Worker erweitert: 24h-Stunden, 7 Tage, Windböen/Richtung, Luftfeuchtigkeit, Druck, UV, Sichtweite, Taupunkt, Niederschlag, AQI PM2.5/PM10.",
+    "Neue `/api/geocode`-Route für Städtevorschläge.",
+    "`WeatherData`-Typ mit `hourly`, `daily`, `airQualityDetails` aktualisiert.",
+    "Kompletter Redesign von `WeatherPage.tsx`: Hero, stündlich, 7 Tage, Bedingungen, Wind, AQI, Sonne, Niederschlag, Brain-Tipp.",
+    "Dezente Framer Motion-Animationen.",
+    "Lokales Skeleton, kein globales Loading.",
+    "Validierung: build, lint, Worker-Tests.",
+    "Version unten rechts: v1.9.69.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.68",
   date: "2026-08-26",
   title: "Header Météo — couleurs et composants partagés",

@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { useRouter, usePathname } from "next/navigation";
+import { useAnimatedSidebar } from "@/components/motion/animated-sidebar";
 import {
   CheckCircle2,
   Loader2,
@@ -202,6 +204,7 @@ export default function StatusBar() {
       .map(([k]) => k)
       .join(", ")
   );
+  const { open, isMobile } = useAnimatedSidebar();
 
   const systemOk = online;
   const alertCount = online ? 0 : 1;
@@ -227,10 +230,14 @@ export default function StatusBar() {
   }
 
   return (
-    <footer
+    <motion.footer
       data-v8-status-bar
       data-status-bar
-      className="fixed bottom-3 left-3 right-3 z-0 h-auto select-none bg-transparent px-0 text-xs text-[var(--text-primary)] pointer-events-none"
+      className="fixed bottom-3 right-3 z-0 h-auto select-none bg-transparent px-0 text-xs text-[var(--text-primary)] pointer-events-none"
+      animate={{
+        left: open && !isMobile ? "calc(var(--sidebar-width) + 0.75rem)" : "0.75rem",
+      }}
+      transition={{ duration: 0.32, ease: [0.32, 0.72, 0, 1] }}
     >
       <div className="flex w-full items-end justify-between">
         <div className="pointer-events-auto flex min-w-0 items-center gap-2 bg-transparent px-0 py-0">
@@ -334,6 +341,6 @@ export default function StatusBar() {
           />
         </div>
       </div>
-    </footer>
+    </motion.footer>
   );
 }

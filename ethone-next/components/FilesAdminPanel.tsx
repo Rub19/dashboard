@@ -1,14 +1,22 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { fetchWorker } from "@/lib/api";
-import Card3D from "@/components/Card3D";
+import { cn } from "@/lib/utils";
 import { Icon } from "@/lib/icons";
 import { formatBytes } from "@/lib/files";
 import Input from "@/components/Input";
 import Select from "@/components/ui/Select";
+
+function Card({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <div className={cn("rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)] p-[var(--panel-padding)] shadow-sm", className)}>
+      {children}
+    </div>
+  );
+}
 
 const STORAGE_CAP = 10 * 1024 * 1024 * 1024;
 
@@ -193,20 +201,20 @@ export default function FilesAdminPanel() {
       </div>
 
       {errors.length > 0 && (
-        <Card3D>
+        <Card>
           <div className="flex items-start gap-2 text-sm text-red-400">
             <Icon name="alert-triangle" className="mt-0.5 h-4 w-4 shrink-0" />
             <p>
               {i18n("error")}: {errors.join(", ")}
             </p>
           </div>
-        </Card3D>
+        </Card>
       )}
 
       {loading ? (
         <div className="space-y-3">
           {[...Array(3)].map((_, i) => (
-            <Card3D key={i}>
+            <Card key={i}>
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 animate-pulse rounded-[var(--panel-radius)] bg-[var(--border)]" />
                 <div className="min-w-0 flex-1 space-y-2">
@@ -214,24 +222,24 @@ export default function FilesAdminPanel() {
                   <div className="h-2.5 w-1/4 animate-pulse rounded bg-[var(--border)]" />
                 </div>
               </div>
-            </Card3D>
+            </Card>
           ))}
         </div>
       ) : tab === "stats" ? (
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {stats.map((s) => (
-              <Card3D key={s.label}>
+              <Card key={s.label}>
                 <div className="flex items-start justify-between">
                   <Icon name={s.icon} className="h-4 w-4 text-[var(--accent)]" />
                   <span className={`text-2xl font-bold ${s.warn ? "text-amber-400" : ""}`}>{s.value}</span>
                 </div>
                 <p className="mt-2 text-xs text-[var(--text-muted)]">{s.label}</p>
-              </Card3D>
+              </Card>
             ))}
           </div>
 
-          <Card3D>
+          <Card>
             <div className="flex items-center justify-between text-sm">
               <span className="text-[var(--text-muted)]">{i18n("storageUsed")}</span>
               <span className="font-medium">{dashboard ? formatBytes(dashboard.totalSize) : "-"} / {formatBytes(STORAGE_CAP)}</span>
@@ -243,7 +251,7 @@ export default function FilesAdminPanel() {
               />
             </div>
             <p className="mt-1 text-right text-[10px] text-[var(--text-muted)]">{usagePct}%</p>
-          </Card3D>
+          </Card>
 
           {expiredCount > 0 && (
             <button
@@ -257,7 +265,7 @@ export default function FilesAdminPanel() {
             </button>
           )}
 
-          <Card3D>
+          <Card>
             <p className="mb-2 text-sm font-medium">{i18n("topFiles")}</p>
             {dashboard?.topFiles?.length ? (
               <div className="space-y-2">
@@ -271,7 +279,7 @@ export default function FilesAdminPanel() {
             ) : (
               <p className="text-sm text-[var(--text-muted)]">{i18n("noFiles")}</p>
             )}
-          </Card3D>
+          </Card>
         </div>
       ) : (
         <div className="space-y-3">
@@ -298,9 +306,9 @@ export default function FilesAdminPanel() {
           </div>
 
           {items.length === 0 ? (
-            <Card3D>
+            <Card>
               <p className="text-sm text-[var(--text-muted)]">{tab === "shares" ? i18n("noShares") : i18n("noDrops")}</p>
-            </Card3D>
+            </Card>
           ) : (
             items.map((item) => {
               const isShare = tab === "shares";
@@ -308,7 +316,7 @@ export default function FilesAdminPanel() {
               const drop = !isShare ? (item as Drop) : null;
               const label = share?.fileName || drop?.title || item.slug;
               return (
-                <Card3D key={item.id}>
+                <Card key={item.id}>
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
                       <p className="truncate font-medium">{label}</p>
@@ -327,7 +335,7 @@ export default function FilesAdminPanel() {
                       <Icon name="trash-2" className="h-4 w-4" />
                     </button>
                   </div>
-                </Card3D>
+                </Card>
               );
             })
           )}

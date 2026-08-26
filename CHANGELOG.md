@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.9 — 2026-08-26
+
+**ETHONE — Admin Fichiers : cartes plates**
+
+- `components/FilesAdminPanel.tsx` : remplacement de `Card3D` par des cartes plates normales.
+- Suppression des effets 3D, glow radial et `preserve-3d` dans ce panel.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.8 — 2026-08-26
 
 **ETHONE — Fichiers : préfixe https automatique pour les liens**

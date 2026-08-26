@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.9",
+  date: "2026-08-26",
+  title: "Admin Fichiers — cartes plates",
+  items: [
+    "`FilesAdminPanel` : remplacement des `Card3D` par des cartes plates normales.",
+    "Plus d’effet 3D, de glow radial ou de `preserve-3d` dans le panel admin.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.9.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.9",
+  date: "2026-08-26",
+  title: "Files Admin — flat cards",
+  items: [
+    "`FilesAdminPanel`: replaced `Card3D` with normal flat cards.",
+    "No more 3D effect, radial glow or `preserve-3d` in the admin panel.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.9.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.9",
+  date: "2026-08-26",
+  title: "Admin Archivos — tarjetas planas",
+  items: [
+    "`FilesAdminPanel`: `Card3D` reemplazadas por tarjetas planas normales.",
+    "Sin más efecto 3D, glow radial o `preserve-3d` en el panel admin.",
+    "Validación : build, lint.",
+    "Versión : v1.10.9.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.9",
+  date: "2026-08-26",
+  title: "Dateien-Admin — flache Karten",
+  items: [
+    "`FilesAdminPanel`: `Card3D` durch normale flache Karten ersetzt.",
+    "Kein 3D-Effekt, radialer Glow oder `preserve-3d` mehr im Admin-Panel.",
+    "Validierung: build, lint.",
+    "Version: v1.10.9.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.8",
   date: "2026-08-26",
   title: "Fichiers — préfixe https automatique pour les liens",

@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.50 — 2026-08-26
+
+**ETHONE — Dynamic Island Spotify : bouton play + pochettes**
+
+- Suppression de `npLoading` sur les boutons play/précédent/suivant pour arrêter le clignotement à chaque refetch.
+- `timeoutMs` des `SafeImage` Spotify passé à 8000 ms pour laisser plus de temps aux pochettes.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.49 — 2026-08-26
 
 **ETHONE — Dynamic Island Spotify : taille augmentée**

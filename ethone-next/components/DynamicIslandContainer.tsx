@@ -94,7 +94,7 @@ function SpotifyCompact({
         iconClassName="h-6 w-6 text-[var(--text-muted)]"
         loading="eager"
         priority
-        timeoutMs={3000}
+        timeoutMs={8000}
       />
       <div className="min-w-0 flex-1 overflow-hidden px-4 text-center">
         <p className="truncate text-xs font-semibold leading-tight text-[var(--text-primary)]" title={trackTitle}>
@@ -600,7 +600,7 @@ export default function DynamicIslandContainer() {
                     iconClassName="h-6 w-6 text-[var(--accent-primary)]"
                     loading="eager"
                     priority
-                    timeoutMs={3000}
+                    timeoutMs={8000}
                   />
                   <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5">
                     <p className="break-words text-sm font-semibold leading-snug text-[var(--text-primary)]">
@@ -655,7 +655,7 @@ export default function DynamicIslandContainer() {
                   <button
                     type="button"
                     onClick={() => spotifyControl("previous")}
-                    disabled={pendingSpotify || npLoading}
+                    disabled={pendingSpotify}
                     className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
                     aria-label={i18n("previous")}
                   >
@@ -664,7 +664,7 @@ export default function DynamicIslandContainer() {
                   <button
                     type="button"
                     onClick={togglePlay}
-                    disabled={pendingSpotify || npLoading}
+                    disabled={pendingSpotify}
                     className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-lg transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
                     aria-label={nowPlaying?.isPlaying ? i18n("pause") : i18n("play")}
                   >
@@ -673,7 +673,7 @@ export default function DynamicIslandContainer() {
                   <button
                     type="button"
                     onClick={() => spotifyControl("next")}
-                    disabled={pendingSpotify || npLoading}
+                    disabled={pendingSpotify}
                     className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
                     aria-label={i18n("next")}
                   >

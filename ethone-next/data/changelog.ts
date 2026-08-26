@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.50",
+  date: "2026-08-26",
+  title: "Dynamic Island Spotify — bouton play + pochettes",
+  items: [
+    "Suppression de `npLoading` sur les boutons play/précédent/suivant pour arrêter le clignotement à chaque refetch.",
+    "`timeoutMs` des `SafeImage` Spotify passé à 8000 ms pour laisser plus de temps aux pochettes.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.50.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.50",
+  date: "2026-08-26",
+  title: "Dynamic Island Spotify — play button + covers",
+  items: [
+    "Removed `npLoading` from play/previous/next buttons to stop flicker on each refetch.",
+    "Spotify `SafeImage` `timeoutMs` raised to 8000 ms to give covers more time to load.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.50.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.50",
+  date: "2026-08-26",
+  title: "Dynamic Island Spotify — botón play + portadas",
+  items: [
+    "Eliminado `npLoading` de los botones play/anterior/siguiente para evitar parpadeo en cada refetch.",
+    "`timeoutMs` de `SafeImage` Spotify subido a 8000 ms para dar más tiempo a las portadas.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.50.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.50",
+  date: "2026-08-26",
+  title: "Dynamic Island Spotify — Play-Button + Cover",
+  items: [
+    "`npLoading` von Play/Vor/Zurück-Buttons entfernt, um Flackern bei jedem Refetch zu stoppen.",
+    "Spotify `SafeImage` `timeoutMs` auf 8000 ms erhöht, damit Cover mehr Zeit zum Laden haben.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.50.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.49",
   date: "2026-08-26",
   title: "Dynamic Island Spotify — taille augmentée",

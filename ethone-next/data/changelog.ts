@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.58",
+  date: "2026-08-26",
+  title: "UI polish — étape 2 : badges unifiés",
+  items: [
+    "`ConnectionBadge` devient un wrapper autour du composant `Badge` unifié.",
+    "Toutes les variantes de connexion utilisent maintenant le même design system de badges.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.58.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.58",
+  date: "2026-08-26",
+  title: "UI polish — step 2: unified badges",
+  items: [
+    "`ConnectionBadge` is now a wrapper around the unified `Badge` component.",
+    "All connection variants now use the same badge design system.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.58.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.58",
+  date: "2026-08-26",
+  title: "UI polish — paso 2: badges unificados",
+  items: [
+    "`ConnectionBadge` ahora es un wrapper del componente `Badge` unificado.",
+    "Todas las variantes de conexión usan el mismo sistema de badges.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.58.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.58",
+  date: "2026-08-26",
+  title: "UI polish — Schritt 2: vereinheitlichte Badges",
+  items: [
+    "`ConnectionBadge` ist jetzt ein Wrapper um die vereinheitlichte `Badge`-Komponente.",
+    "Alle Verbindungsvarianten nutzen jetzt das gleiche Badge-Designsystem.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.58.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.57",
   date: "2026-08-26",
   title: "UI polish — étape 1 : système de badges",

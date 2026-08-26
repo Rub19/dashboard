@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.58 — 2026-08-26
+
+**ETHONE — UI polish : étape 2 — badges unifiés**
+
+- `ConnectionBadge` devient un wrapper autour du composant `Badge` unifié.
+- Toutes les variantes de connexion utilisent maintenant le même design system de badges.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.57 — 2026-08-26
 
 **ETHONE — UI polish : étape 1 — système de badges**

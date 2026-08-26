@@ -27,30 +27,34 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClass: Record<ButtonVariant, string> = {
   primary: cn(
-    "liquid-glass-btn liquid-glass-accent text-[var(--accent-contrast)]",
-    "shadow-[0_0_15px_var(--glow-color)]",
+    "border border-[var(--accent-primary)] bg-[var(--accent-primary)] text-[var(--accent-contrast)]",
+    "shadow-[0_0_12px_var(--glow-color)]",
     "hover:brightness-110",
   ),
   secondary: cn(
-    "liquid-glass-btn text-[var(--text-primary)]",
-    "hover:border-[var(--accent-primary)]/30 hover:bg-[var(--accent-primary)]/10",
+    "border border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--text-primary)]",
+    "hover:border-[var(--accent-primary)]/30 hover:bg-[var(--text-primary)]/[0.04]",
   ),
   outline: cn(
-    "liquid-glass-btn text-[var(--accent-primary)]",
-    "border-[var(--accent-primary)]/50",
+    "border border-[var(--accent-primary)]/50 bg-transparent text-[var(--accent-primary)]",
     "hover:bg-[var(--accent-primary)]/10",
   ),
-  ghost: "liquid-glass-btn liquid-glass-btn-ghost",
+  ghost: cn(
+    "bg-transparent text-[var(--text-primary)]",
+    "hover:bg-[var(--text-primary)]/[0.05]",
+  ),
   danger: cn(
-    "liquid-glass-btn liquid-glass-btn-danger",
+    "border border-[var(--danger)]/40 bg-[var(--danger)]/15 text-[var(--danger)]",
     "shadow-lg shadow-[var(--danger)]/20",
   ),
   success: cn(
-    "liquid-glass-btn text-[var(--text-primary)]",
-    "bg-[var(--success)]/15 border-[var(--success)]/40",
+    "border border-[var(--success)]/40 bg-[var(--success)]/15 text-[var(--text-primary)]",
     "hover:bg-[var(--success)]/25 hover:border-[var(--success)]/60",
   ),
-  liquid: cn("liquid-glass-btn text-[var(--text-primary)]"),
+  liquid: cn(
+    "border border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--text-primary)]",
+    "hover:bg-[var(--text-primary)]/[0.04]",
+  ),
 };
 
 const defaultHaptic: Record<ButtonVariant, HapticProfile> = {

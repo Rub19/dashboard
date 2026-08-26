@@ -589,8 +589,8 @@ export default function DynamicIslandContainer() {
             tabIndex={0}
             role="button"
           >
-            <DynamicIslandView id="spotify" data-testid="dynamic-island-spotify" className="w-[min(92vw,360px)] sm:w-[420px]">
-              <div onClick={stopPropagation} className="flex w-full flex-col gap-5 p-1">
+            <DynamicIslandView id="spotify" data-testid="dynamic-island-spotify" className="w-[min(92vw,320px)] sm:w-[380px]">
+              <div onClick={stopPropagation} className="flex w-full flex-col gap-4 p-1">
                 <IslandExpandedHeader
                   activeViews={activeViews}
                   selected={selectedView ?? "spotify"}
@@ -618,9 +618,9 @@ export default function DynamicIslandContainer() {
                     <SafeImage
                       candidates={[nowPlaying?.cover, nowPlaying?.artworkUrl, ...(nowPlaying?.covers || [])]}
                       alt={nowPlaying?.title || "Spotify"}
-                      size={80}
-                      className="h-20 w-20 shrink-0 rounded-2xl object-cover shadow-lg ring-1 ring-[var(--text-primary)]/10"
-                      iconClassName="h-7 w-7 text-[var(--accent-primary)]"
+                      size={72}
+                      className="h-[72px] w-[72px] shrink-0 rounded-2xl object-cover shadow-lg ring-1 ring-[var(--text-primary)]/10"
+                      iconClassName="h-6 w-6 text-[var(--accent-primary)]"
                       loading="eager"
                       priority
                       timeoutMs={8000}
@@ -642,15 +642,15 @@ export default function DynamicIslandContainer() {
                       onClick={toggleLike}
                       disabled={likeLoading || !nowPlaying?.id}
                       className={cn(
-                        "flex h-8 w-8 items-center justify-center rounded-full transition-all duration-200",
+                        "flex h-8 w-8 items-center justify-center rounded-full transition-transform duration-150 active:scale-90",
                         isSaved
-                          ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/25"
-                          : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--accent-primary)]",
+                          ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/25 hover:scale-110"
+                          : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--accent-primary)] hover:scale-110",
                       )}
                       aria-label={isSaved ? i18n("unlike") : i18n("like")}
                       title={isSaved ? i18n("unlike") : i18n("like")}
                     >
-                      <Icon name="heart" pack="phosphor" className={cn("h-4 w-4", isSaved && "fill-current")} />
+                      <Icon name="heart" pack="phosphor" className={cn("h-4 w-4 transition-transform", isSaved && "fill-current")} />
                     </button>
                   </motion.div>
                 </AnimatePresence>
@@ -658,10 +658,10 @@ export default function DynamicIslandContainer() {
                 <AudioVisualizer
                   seed={nowPlaying?.id || nowPlaying?.title || ""}
                   isPlaying={!!nowPlaying?.isPlaying}
-                  bars={18}
+                  bars={20}
                   barWidth={2}
-                  gap={2}
-                  className="h-4 opacity-80"
+                  gap={1.5}
+                  className="h-3.5 opacity-80"
                   color="var(--accent-primary)"
                 />
 
@@ -686,7 +686,7 @@ export default function DynamicIslandContainer() {
                     type="button"
                     onClick={() => spotifyControl("previous")}
                     disabled={pendingSpotify}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-all duration-150 hover:scale-110 hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] active:scale-95 disabled:opacity-40"
                     aria-label={i18n("previous")}
                   >
                     <Icon name="skipBack" pack="phosphor" className="h-5 w-5" />
@@ -695,7 +695,7 @@ export default function DynamicIslandContainer() {
                     type="button"
                     onClick={togglePlay}
                     disabled={pendingSpotify}
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-md transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-md shadow-[var(--accent-primary)]/20 transition-all duration-150 hover:scale-105 active:scale-95 disabled:opacity-40"
                     aria-label={nowPlaying?.isPlaying ? i18n("pause") : i18n("play")}
                   >
                     {nowPlaying?.isPlaying ? <Icon name="pause" pack="phosphor" className="h-5 w-5" /> : <Icon name="play" pack="phosphor" className="h-5 w-5 fill-current" />}
@@ -704,7 +704,7 @@ export default function DynamicIslandContainer() {
                     type="button"
                     onClick={() => spotifyControl("next")}
                     disabled={pendingSpotify}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-all duration-150 hover:scale-110 hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] active:scale-95 disabled:opacity-40"
                     aria-label={i18n("next")}
                   >
                     <Icon name="skipForward" pack="phosphor" className="h-5 w-5" />

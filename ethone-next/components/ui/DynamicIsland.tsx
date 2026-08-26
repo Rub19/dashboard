@@ -26,20 +26,19 @@ type IslandContextValue = {
 
 const IslandContext = createContext<IslandContextValue | null>(null);
 
-// Shell physics in Apple's duration/bounce form one long perceptual glide with
-// barely-there bounce, identical in both directions. The shell animates real
-// width/height (not transforms), so slots are never scale-distorted.
+// Shell physics: light, fast spring with minimal bounce. The shell animates
+// real width/height (not transforms), so slots are never scale-distorted.
 const SHELL_SPRING = {
   type: "spring",
-  duration: 0.8,
-  bounce: 0.2,
+  duration: 0.55,
+  bounce: 0.12,
 } as const;
 
 // Content gets a touch more life than the shell.
 const CONTENT_SPRING = {
   type: "spring",
-  duration: 0.8,
-  bounce: 0.35,
+  duration: 0.55,
+  bounce: 0.18,
 } as const;
 
 // Constant radius — never animated. The browser clamps it to half the shell
@@ -176,8 +175,7 @@ export function DynamicIsland({
         }
         transition={reduce ? { duration: 0 } : SHELL_SPRING}
         style={{ borderRadius: RADIUS }}
-        whileHover={reduce ? undefined : { scale: 1.03 }}
-        whileTap={reduce ? undefined : { scale: 0.97 }}
+        whileTap={reduce ? undefined : { scale: 0.98 }}
         onClick={onClick}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}

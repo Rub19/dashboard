@@ -1,16 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useReducedMotion } from "framer-motion";
-
-function hashString(str: string): number {
-  let h = 0;
-  for (let i = 0; i < str.length; i++) {
-    h = (h << 5) - h + str.charCodeAt(i);
-    h |= 0;
-  }
-  return Math.abs(h);
-}
 
 function clamp(v: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, v));
@@ -27,7 +18,6 @@ export interface AudioVisualizerProps {
 }
 
 export default function AudioVisualizer({
-  seed = "",
   isPlaying = false,
   bars = 18,
   color,
@@ -36,7 +26,6 @@ export default function AudioVisualizer({
   gap = 2,
 }: AudioVisualizerProps) {
   const barRefs = useRef<HTMLDivElement[]>([]);
-  const seedHash = useMemo(() => hashString(seed || "ethone"), [seed]);
   const reducedMotion = useReducedMotion() ?? false;
 
   const current = useRef<Float32Array | null>(null);
@@ -58,7 +47,7 @@ export default function AudioVisualizer({
       current.current = new Float32Array(bars).fill(0.15);
     }
     targets.current = new Float32Array(bars);
-    phases.current = new Float32Array(bars).map((_, i) => i * 0.45 + (seedHash % 1000) / 1000);
+    phases.current = new Float32Array(bars).map((_, i) => i * 0.47 + 0.13);
 
     const update = () => {
       if (!running.current || !current.current || !targets.current || !phases.current) return;
@@ -69,14 +58,15 @@ export default function AudioVisualizer({
       for (let i = 0; i < bars; i++) {
         const phase = phases.current[i];
         if (isPlayingRef.current) {
-          const a = 0.5 + 0.5 * Math.sin(t * 2.2 + phase);
-          const b = 0.5 + 0.5 * Math.sin(t * 1.3 + phase * 1.7);
-          const c = 0.5 + 0.5 * Math.sin(t * 3.1 + phase * 2.3);
-          targets.current[i] = clamp(0.15 + 0.85 * ((a + b + c) / 3), 0.1, 1);
+          const a = 0.5 + 0.5 * Math.sin(t * 2.1 + phase);
+          const b = 0.5 + 0.5 * Math.sin(t * 1.5 + phase * 1.9);
+          const c = 0.5 + 0.5 * Math.sin(t * 3.3 + phase * 2.4);
+          const d = 0.5 + 0.5 * Math.sin(t * 0.7 + phase * 0.5);
+          targets.current[i] = clamp(0.15 + 0.85 * ((a + b + c + d) / 4), 0.1, 1);
         } else {
           targets.current[i] = 0.15;
         }
-        current.current[i] += (targets.current[i] - current.current[i]) * 0.18;
+        current.current[i] += (targets.current[i] - current.current[i]) * 0.16;
         if (Math.abs(current.current[i] - 0.15) > 0.01) settled = false;
 
         const el = barRefs.current[i];
@@ -101,7 +91,7 @@ export default function AudioVisualizer({
       running.current = false;
       cancelAnimationFrame(raf.current);
     };
-  }, [bars, seedHash, reducedMotion]);
+  }, [bars, reducedMotion]);
 
   useEffect(() => {
     if (reducedMotion || !isPlaying) return;

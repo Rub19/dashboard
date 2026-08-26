@@ -7206,6 +7206,66 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.83",
+  date: "2026-08-26",
+  title: "Dynamic Island — polish final",
+  items: [
+    "Ressorts du shell et du contenu plus légers et rapides (spring 0.55s, bounce réduit).",
+    "Vue Spotify étendue plus compacte : 380px, gap 4, pochette 72x72, waveform h-3.5.",
+    "Waveform plus naturel : 4 couches sinusoïdales, pas de redémarrage au changement de morceau.",
+    "Micro-animations sur like, play/pause, précédent/suivant.",
+    "Suppression du hover scale excessif sur le shell de l'île.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.83.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.83",
+  date: "2026-08-26",
+  title: "Dynamic Island — final polish",
+  items: [
+    "Lighter, faster shell and content springs (0.55s, reduced bounce).",
+    "More compact expanded Spotify view: 380px, gap 4, 72x72 cover, h-3.5 waveform.",
+    "More natural waveform: 4 sinusoid layers, no restart on track change.",
+    "Micro-animations on like, play/pause, previous/next.",
+    "Removed excessive hover scale on the island shell.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.83.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.83",
+  date: "2026-08-26",
+  title: "Dynamic Island — polish final",
+  items: [
+    "Muelles del shell y contenido más ligeros y rápidos (0.55s, rebote reducido).",
+    "Vista Spotify extendida más compacta: 380px, gap 4, portada 72x72, waveform h-3.5.",
+    "Waveform más natural: 4 capas sinusoidales, sin reinicio al cambiar de pista.",
+    "Micro-animaciones en like, play/pause, anterior/siguiente.",
+    "Eliminación del hover scale excesivo en el shell de la isla.",
+    "Validación : build, lint.",
+    "Versión : v1.9.83.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.83",
+  date: "2026-08-26",
+  title: "Dynamic Island — finaler Polish",
+  items: [
+    "Leichtere, schnellere Shell- und Content-Springs (0,55s, reduzierter Bounce).",
+    "Kompaktere erweiterte Spotify-Ansicht: 380px, gap 4, 72x72 Cover, h-3.5 Wellenform.",
+    "Natürlichere Wellenform: 4 Sinus-Schichten, kein Neustart beim Trackwechsel.",
+    "Mikro-Animationen für Like, Play/Pause, Vor/Zurück.",
+    "Entfernung des übermäßigen Hover-Scalings auf der Island-Shell.",
+    "Validierung: build, lint.",
+    "Version: v1.9.83.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.82",
   date: "2026-08-26",
   title: "Home — suppression météo et ajustement cartes Riot",

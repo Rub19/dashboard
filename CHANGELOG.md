@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.83 — 2026-08-26
+
+**ETHONE — Dynamic Island : polish final**
+
+- `components/ui/DynamicIsland.tsx` : ressorts plus légers et rapides (`0.55s`, `bounce` réduit), suppression du hover scale global.
+- `components/DynamicIslandContainer.tsx` : vue Spotify étendue plus compacte (`380px`, `gap-4`, pochette `72x72`), waveform `h-3.5`, micro-animations sur like et contrôles.
+- `components/AudioVisualizer.tsx` : waveform plus naturelle avec 4 couches sinusoïdales, pas de redémarrage au changement de morceau.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.82 — 2026-08-26
 
 **ETHONE — Home : météo supprimée et cartes Riot ajustées**

@@ -332,42 +332,49 @@ export default function WeatherPage() {
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden p-4 sm:p-6">
       <div className="mx-auto flex h-full w-full max-w-7xl flex-col">
-        <header className="shrink-0 mb-5 flex flex-col gap-4 border-b border-[var(--text-primary)]/[0.06] pb-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">{i18n("weather", "Météo")}</h1>
-            <p className="text-sm text-[var(--text-muted)]">{i18n("weatherDescription", "Météo actuelle et prévisions")}</p>
-          </div>
+        <Card variant="default" padding="md" className="mb-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3 sm:items-center">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+                <Icon pack="phosphor" name="cloudSun" className="h-5 w-5" />
+              </div>
+              <div>
+                <h1 className="text-lg font-semibold tracking-tight text-[var(--text-primary)]">{i18n("weather", "Météo")}</h1>
+                <p className="text-xs text-[var(--text-muted)]">{i18n("weatherDescription", "Météo actuelle et prévisions")}</p>
+              </div>
+            </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <form onSubmit={handleSubmit} className="flex items-center gap-2">
-              <SearchInput
-                value={query}
-                onChange={(e) => handleQueryChange(e.target.value)}
-                onSearch={(value) => {
-                  const term = value.trim();
-                  if (term.length < 2) return;
-                  isUserEditingRef.current = true;
-                  setSearchTerm(term);
-                }}
-                placeholder={i18n("city", "Ville")}
-                inputSize="compact"
-                className="min-w-0 w-40 sm:w-56"
-              />
+            <div className="flex flex-wrap items-center gap-2">
+              <form onSubmit={handleSubmit} className="flex items-center gap-2">
+                <SearchInput
+                  value={query}
+                  onChange={(e) => handleQueryChange(e.target.value)}
+                  onSearch={(value) => {
+                    const term = value.trim();
+                    if (term.length < 2) return;
+                    isUserEditingRef.current = true;
+                    setSearchTerm(term);
+                  }}
+                  placeholder={i18n("city", "Ville")}
+                  inputSize="compact"
+                  className="min-w-0 w-40 sm:w-56"
+                />
 
-              <IconButton type="button" variant="ghost" size="sm" onClick={handleGeolocate} aria-label={i18n("geolocate", "Géolocalisation")} haptic="light">
-                <Icon pack="phosphor" name="navigation" className="h-4 w-4" />
-              </IconButton>
+                <IconButton type="button" variant="ghost" size="sm" onClick={handleGeolocate} aria-label={i18n("geolocate", "Géolocalisation")} haptic="light">
+                  <Icon pack="phosphor" name="navigation" className="h-4 w-4" />
+                </IconButton>
 
-              <Button type="submit" variant="primary" size="sm" haptic="light">
-                {i18n("search", "Rechercher")}
+                <Button type="submit" variant="primary" size="sm" haptic="light">
+                  {i18n("search", "Rechercher")}
+                </Button>
+              </form>
+
+              <Button type="button" variant="liquid" size="sm" onClick={handleRefresh} isLoading={refreshing} leftIcon={<Icon pack="phosphor" name="arrowsClockwise" className="h-3.5 w-3.5" />}>
+                {i18n("refresh", "Actualiser")}
               </Button>
-            </form>
-
-            <Button type="button" variant="liquid" size="sm" onClick={handleRefresh} isLoading={refreshing} leftIcon={<Icon pack="phosphor" name="arrowsClockwise" className="h-3.5 w-3.5" />}>
-              {i18n("refresh", "Actualiser")}
-            </Button>
+            </div>
           </div>
-        </header>
+        </Card>
 
         <div className="text-[11px] text-[var(--text-muted)] sm:text-right">
           {i18n("lastUpdated", "Dernière mise à jour")} : {lastUpdatedText}

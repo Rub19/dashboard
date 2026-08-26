@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.75 — 2026-08-26
+
+**ETHONE — En-tête de la page Météo en carte**
+
+- `components/WeatherPage.tsx` : l'en-tête est maintenant rendu comme une `Card`.
+- Titre et sous-titre plus compacts avec une icône météo.
+- Boutons Rechercher / Actualiser conservés à droite.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.74 — 2026-08-26
 
 **ETHONE — Mini visualiseur dans la Dynamic Island compacte**

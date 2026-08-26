@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.75",
+  date: "2026-08-26",
+  title: "Météo — en-tête en carte",
+  items: [
+    "L'en-tête de la page `/weather` est maintenant présenté comme une carte `Card`.",
+    "Titre et sous-titre compactés avec une icône météo.",
+    "Boutons de recherche et actualiser conservés à droite.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.75.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.75",
+  date: "2026-08-26",
+  title: "Weather — card-style header",
+  items: [
+    "The `/weather` page header is now rendered as a `Card`.",
+    "Title and subtitle compacted with a weather icon.",
+    "Search and refresh buttons kept on the right.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.75.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.75",
+  date: "2026-08-26",
+  title: "Tiempo — encabezado tipo tarjeta",
+  items: [
+    "El encabezado de la página `/weather` ahora se muestra como una `Card`.",
+    "Título y subtítulo compactados con un icono del tiempo.",
+    "Botones de búsqueda y actualizar conservados a la derecha.",
+    "Validación : build, lint.",
+    "Versión : v1.9.75.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.75",
+  date: "2026-08-26",
+  title: "Wetter — Header als Karte",
+  items: [
+    "Der Header der `/weather`-Seite wird jetzt als `Card` dargestellt.",
+    "Titel und Untertitel kompakt mit Wettersymbol.",
+    "Such- und Aktualisieren-Buttons bleiben rechts.",
+    "Validierung: build, lint.",
+    "Version: v1.9.75.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.74",
   date: "2026-08-26",
   title: "Dynamic Island — visualiseur compact",

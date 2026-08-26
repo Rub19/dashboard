@@ -9,7 +9,7 @@ import FileUploader from "@/components/FileUploader";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 
-type TabId = "upload" | "link" | "drive" | "folder";
+export type TabId = "upload" | "link" | "drive" | "folder";
 
 export type FileAddModalProps = {
   open: boolean;
@@ -21,6 +21,7 @@ export type FileAddModalProps = {
   onConnectDrive: () => void;
   loading?: boolean;
   initialFiles?: File[];
+  initialTab?: TabId;
 };
 
 export default function FileAddModal({
@@ -33,9 +34,10 @@ export default function FileAddModal({
   onConnectDrive,
   loading,
   initialFiles,
+  initialTab = "upload",
 }: FileAddModalProps) {
   const i18n = useI18n();
-  const [tab, setTab] = useState<TabId>("upload");
+  const [tab, setTab] = useState<TabId>(initialFiles?.length ? "upload" : initialTab);
   const [folderName, setFolderName] = useState("");
   const [linkUrl, setLinkUrl] = useState("");
   const [busy, setBusy] = useState(false);

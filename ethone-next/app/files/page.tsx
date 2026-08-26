@@ -18,7 +18,7 @@ import { useSelection } from "@/lib/hooks/useSelection";
 import BulkActionBar from "@/components/BulkActionBar";
 import { formatBytes, sortFiles } from "@/lib/files";
 import FilesAdminPanel from "@/components/FilesAdminPanel";
-import FileAddModal from "@/components/FileAddModal";
+import FileAddModal, { type TabId } from "@/components/FileAddModal";
 import FilePreview from "@/components/FilePreview";
 import FileCard from "@/components/FileCard";
 import FileDropOverlay from "@/components/FileDropOverlay";
@@ -97,6 +97,7 @@ export default function FilesPage() {
 
   const [modal, setModal] = useState<Modal>(null);
   const [addOpen, setAddOpen] = useState(false);
+  const [addTab, setAddTab] = useState<TabId>("upload");
   const [adminOpen, setAdminOpen] = useState(false);
   const [previewFile, setPreviewFile] = useState<CloudFile | null>(null);
   const [droppedFiles, setDroppedFiles] = useState<File[]>([]);
@@ -427,70 +428,72 @@ export default function FilesPage() {
 
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
-      <div className="shrink-0 mb-4 flex flex-col gap-3 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.25] p-3 shadow-sm backdrop-blur-[var(--panel-blur)] sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
-            <Icon name="files" className="h-5 w-5" />
+      <div className="shrink-0 mb-4 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-3 shadow-sm backdrop-blur-[var(--panel-blur)]">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+              <Icon name="files" className="h-5 w-5" />
+            </div>
+            <div>
+              <h1 className="text-base font-semibold leading-tight">{i18n("filesTitle")}</h1>
+              <p className="text-[10px] text-[var(--text-muted)]">
+                {clientId ? i18n("driveConnected", "Google Drive connecté") : i18n("noDriveConnected", "Aucun Drive connecté")}
+              </p>
+            </div>
+            {quota && (
+              <div className="hidden items-center gap-1.5 rounded-full border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] px-2.5 py-1 text-[10px] sm:flex">
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]" />
+                <span className="text-[var(--text-muted)]">{formatBytes(quota.used)}</span>
+                <span className="text-[var(--text-muted)]/60">/</span>
+                <span className="text-[var(--text-primary)]">{formatBytes(quota.total)}</span>
+              </div>
+            )}
           </div>
-          <div>
-            <h1 className="text-base font-semibold leading-tight">{i18n("filesTitle")}</h1>
-            <p className="text-[10px] text-[var(--text-muted)]">
-              {clientId ? i18n("driveConnected", "Google Drive connecté") : i18n("noDriveConnected", "Aucun Drive connecté")}
-            </p>
-          </div>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button
-            size="sm"
-            onClick={() => setAddOpen(true)}
-            leftIcon={<Icon name="plus" className="h-4 w-4" />}
-          >
-            {i18n("add", "Ajouter")}
-          </Button>
-          {clientId && (
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              size="sm"
+              onClick={() => { setAddTab("upload"); setAddOpen(true); }}
+              leftIcon={<Icon name="plus" className="h-4 w-4" />}
+            >
+              {i18n("add", "Ajouter")}
+            </Button>
+            {clientId && (
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => { setForm({ visibility: "public" }); setModal({ type: "drop" }); }}
+                leftIcon={<Icon name="inbox" className="h-4 w-4" />}
+              >
+                {i18n("createDrop")}
+              </Button>
+            )}
             <Button
               size="sm"
               variant="ghost"
-              onClick={() => { setForm({ visibility: "public" }); setModal({ type: "drop" }); }}
-              leftIcon={<Icon name="inbox" className="h-4 w-4" />}
+              onClick={() => setAdminOpen(true)}
+              leftIcon={<Icon name="shield" className="h-4 w-4" />}
             >
-              {i18n("createDrop")}
+              {i18n("admin")}
             </Button>
-          )}
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => setAdminOpen(true)}
-            leftIcon={<Icon name="shield" className="h-4 w-4" />}
-          >
-            {i18n("admin")}
-          </Button>
-          <button
-            type="button"
-            onClick={reload}
-            className="rounded-[var(--panel-radius)] p-2 text-[var(--text-muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]"
-            aria-label={i18n("refresh")}
-          >
-            <Icon name="refresh-cw" className="h-4 w-4" />
-          </button>
+            <button
+              type="button"
+              onClick={reload}
+              className="rounded-[var(--panel-radius)] p-2 text-[var(--text-muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]"
+              aria-label={i18n("refresh")}
+            >
+              <Icon name="refresh-cw" className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </div>
       <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
-      {quota && (
-        <div className="rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)] p-3 shadow-sm">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-[var(--muted)]">{i18n("storageUsed")}</span>
-              <span className="font-medium">{formatBytes(quota.used)} / {formatBytes(quota.total)}</span>
-            </div>
-            <div className="h-2 w-full overflow-hidden rounded-xl bg-[var(--text-primary)]/[0.08]">
-              <div className="h-full rounded-xl bg-[var(--accent-primary)]" style={{ width: `${quotaPercent}%` }} />
-            </div>
-          </div>
+      {quota && quotaPercent >= 90 && (
+        <div className="rounded-2xl border border-[var(--danger)]/20 bg-[var(--danger)]/10 p-3 text-xs text-[var(--danger)]">
+          {i18n("storageAlmostFull", "Stockage presque plein")}: {formatBytes(quota.used)} / {formatBytes(quota.total)}
         </div>
       )}
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="sticky top-0 z-10 mb-3 flex flex-wrap items-center gap-2 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.6] p-2 shadow-sm backdrop-blur-[var(--panel-blur)]">
         <TabList
           tabs={[
             { id: "all", label: i18n("all"), content: null },
@@ -752,23 +755,40 @@ export default function FilesPage() {
             ))}
           </>
         ) : filteredFiles.length === 0 ? (
-          <EmptyState
-            className="col-span-full"
-            icon={trashed ? "trash-2" : showDuplicates ? "copy" : showFolders ? "folder" : "inbox"}
-            title={i18n("noFiles")}
-            description={showDuplicates ? i18n("noDuplicates", "Aucun doublon détecté") : i18n("noFilesDescription", "Aucun fichier à afficher")}
-            action={
-              !clientId ? (
+          <div className="col-span-full flex flex-col items-center justify-center gap-5 rounded-2xl border border-dashed border-[var(--panel-border)]/[0.3] bg-[var(--panel-bg)]/[0.4] p-8 text-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+              <Icon name={trashed ? "trash-2" : showDuplicates ? "copy" : showFolders ? "folder" : "inbox"} className="h-7 w-7" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-[var(--text-primary)]">
+                {i18n("noFiles")}
+              </p>
+              <p className="mt-1 max-w-sm text-xs text-[var(--text-muted)]">
+                {showDuplicates
+                  ? i18n("noDuplicates", "Aucun doublon détecté")
+                  : i18n("noFilesDescription", "Aucun fichier à afficher")}
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {!clientId ? (
                 <Button size="sm" variant="secondary" onClick={connectDrive} leftIcon={<Icon name="cloud" className="h-4 w-4" />}>
                   {i18n("connectDrive")}
                 </Button>
               ) : (
-                <Button size="sm" onClick={() => setAddOpen(true)} leftIcon={<Icon name="plus" className="h-4 w-4" />}>
-                  {i18n("add", "Ajouter")}
-                </Button>
-              )
-            }
-          />
+                <>
+                  <Button size="sm" onClick={() => { setAddTab("upload"); setAddOpen(true); }} leftIcon={<Icon name="upload" className="h-4 w-4" />}>
+                    {i18n("uploadFile", "Importer")}
+                  </Button>
+                  <Button size="sm" variant="secondary" onClick={() => { setAddTab("folder"); setAddOpen(true); }} leftIcon={<Icon name="folder-plus" className="h-4 w-4" />}>
+                    {i18n("createFolder")}
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={() => { setAddTab("link"); setAddOpen(true); }} leftIcon={<Icon name="link" className="h-4 w-4" />}>
+                    {i18n("addLink", "Ajouter un lien")}
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
         ) : (
           filteredFiles.map((file, i) => (
             <motion.div
@@ -956,7 +976,7 @@ export default function FilesPage() {
 
       {clientId && (
         <FileDropOverlay
-          onDrop={(files) => { setDroppedFiles(files); setAddOpen(true); }}
+          onDrop={(files) => { setAddTab("upload"); setDroppedFiles(files); setAddOpen(true); }}
           disabled={!clientId}
         />
       )}
@@ -982,6 +1002,7 @@ export default function FilesPage() {
 
       <FileAddModal
         open={addOpen}
+        initialTab={addTab}
         onClose={() => { setAddOpen(false); setDroppedFiles([]); }}
         clientId={clientId}
         parentId={parentId}

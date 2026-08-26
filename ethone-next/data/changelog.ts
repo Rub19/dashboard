@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.3",
+  date: "2026-08-26",
+  title: "Fichiers — vrai rework : header + empty state",
+  items: [
+    "Header refondu : titre, badge de stockage, boutons et barre d’outils sticky en une ligne.",
+    "Empty state enrichi : icône, texte et 3 CTA (Importer, Créer un dossier, Ajouter un lien).",
+    "`FileAddModal` accepte un onglet initial (`initialTab`) pour ouvrir directement la bonne section.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.3.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.3",
+  date: "2026-08-26",
+  title: "Files — real rework: header + empty state",
+  items: [
+    "Redesigned header: title, storage badge, buttons and sticky toolbar in one line.",
+    "Richer empty state: icon, text and 3 CTAs (Import, Create folder, Add link).",
+    "`FileAddModal` now accepts an initial tab (`initialTab`) to open the right section directly.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.3.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.3",
+  date: "2026-08-26",
+  title: "Archivos — rework real: header + empty state",
+  items: [
+    "Header rediseñado: título, insignia de almacenamiento, botones y barra de herramientas fija en una línea.",
+    "Empty state más rico: icono, texto y 3 CTAs (Importar, Crear carpeta, Añadir enlace).",
+    "`FileAddModal` ahora acepta una pestaña inicial (`initialTab`) para abrir la sección correcta directamente.",
+    "Validación : build, lint.",
+    "Versión : v1.10.3.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.3",
+  date: "2026-08-26",
+  title: "Dateien — echtes Rework: Header + Empty State",
+  items: [
+    "Header überarbeitet: Titel, Speicher-Badge, Buttons und sticky Toolbar in einer Zeile.",
+    "Bereicherter Empty State: Icon, Text und 3 CTAs (Importieren, Ordner erstellen, Link hinzufügen).",
+    "`FileAddModal` akzeptiert jetzt einen initialen Tab (`initialTab`), um direkt den richtigen Bereich zu öffnen.",
+    "Validierung: build, lint.",
+    "Version: v1.10.3.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.2",
   date: "2026-08-26",
   title: "Fichiers — redesign de la tuile FileCard",

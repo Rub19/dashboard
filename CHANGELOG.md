@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.3 — 2026-08-26
+
+**ETHONE — Fichiers : vrai rework, phase 1 header + empty state**
+
+- `app/files/page.tsx` : header refondu avec badge de stockage, barre d’outils sticky.
+- `app/files/page.tsx` : empty state enrichi avec 3 actions (Importer, Créer un dossier, Ajouter un lien).
+- `components/FileAddModal.tsx` : ajout de la prop `initialTab`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.2 — 2026-08-26
 
 **ETHONE — Fichiers : redesign de la tuile `FileCard`**

@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.33",
+  date: "2026-08-26",
+  title: "Mobile login pass 6 — focus au changement de mode",
+  items: [
+    "Mise au point automatique du premier champ email (ou équivalent) à chaque changement de mode d'authentification.",
+    "Le passage à l'étape OTP code garde le focus géré par le composant OTP.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.33.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.33",
+  date: "2026-08-26",
+  title: "Mobile login pass 6 — focus on mode change",
+  items: [
+    "Auto-focus the first email field (or equivalent) on every auth mode change.",
+    "Switching to OTP code step keeps focus handled by the OTP component.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.33.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.33",
+  date: "2026-08-26",
+  title: "Mobile login pass 6 — focus al cambiar de modo",
+  items: [
+    "Enfoque automático del primer campo de email (o equivalente) en cada cambio de modo de autenticación.",
+    "Al pasar al paso de código OTP, el focus sigue gestionado por el componente OTP.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.33.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.33",
+  date: "2026-08-26",
+  title: "Mobile Login Pass 6 — Fokus beim Modus-Wechsel",
+  items: [
+    "Automatischer Fokus auf das erste E-Mail-Feld (oder Equivalent) bei jedem Wechsel des Authentifizierungsmodus.",
+    "Wechsel zum OTP-Code-Schritt behält den Fokus durch die OTP-Komponente.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.33.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.32",
   date: "2026-08-26",
   title: "Mobile login pass 5 — fix build + reduced motion",

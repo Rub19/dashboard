@@ -177,6 +177,8 @@ export default function LoginPage() {
   const reduced = !!useReducedMotion();
   const visual = useVisualViewport();
   const cardRef = useRef<HTMLDivElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const didMountRef = useRef(false);
   const keyboardOpen = visual.height > 0 && visual.height < 640;
   const isMobile = useIsMobile(768);
   const isLandscape = useMediaQuery("(orientation: landscape)");
@@ -231,6 +233,18 @@ export default function LoginPage() {
     }, 8000);
     return () => clearTimeout(t);
   }, [authState, session, i18n, showError]);
+
+  useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      return;
+    }
+    if (mode === "otp" && otpStep === "code") return;
+    const t = setTimeout(() => {
+      emailRef.current?.focus();
+    }, 0);
+    return () => clearTimeout(t);
+  }, [mode, otpStep]);
 
   useEffect(() => {
     if (!cardRef.current) return;
@@ -597,6 +611,7 @@ export default function LoginPage() {
                 <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-email">{i18n("email", "E-mail")}</label>
                 <Input
                   id="auth-email"
+                  ref={emailRef}
                   type="email"
                   inputSize="large"
                   autoComplete="email"

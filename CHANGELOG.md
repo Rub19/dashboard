@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.33 — 2026-08-26
+
+**ETHONE — Mobile login pass 6 (focus au changement de mode)**
+
+- Mise au point automatique du premier champ email (ou équivalent) à chaque changement de mode d'authentification.
+- Le passage à l'étape OTP code garde le focus géré par le composant OTP.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.32 — 2026-08-26
 
 **ETHONE — Mobile login pass 5 (fix build + reduced motion)**

@@ -137,7 +137,7 @@ function WeatherDetailContent({
   const i18n = useI18n();
   const { settings } = useSettings();
 
-  const { refs, floatingStyles, placement: actualPlacement } = useFloating({
+  const { refs, floatingStyles, placement: actualPlacement, isPositioned } = useFloating({
     open,
     onOpenChange: (next) => {
       if (!next) onClose();
@@ -181,7 +181,7 @@ function WeatherDetailContent({
       {open && (
         <div
           ref={refs.setFloating as unknown as React.Ref<HTMLDivElement>}
-          style={floatingStyles}
+          style={{ ...floatingStyles, visibility: isPositioned ? "visible" : "hidden" }}
           className="v8-panel z-[var(--z-popover)] w-80 max-w-[calc(100vw-1rem)] overflow-hidden p-4"
           role="dialog"
           aria-modal="true"

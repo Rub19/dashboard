@@ -82,6 +82,15 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
 
   function handleEnter() {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const padding = 12;
+      const gap = 8;
+      const width = 320; // w-80
+      const left = Math.min(rect.left, window.innerWidth - width - padding);
+      const bottom = window.innerHeight - rect.top - gap;
+      setPos({ left: Math.max(padding, left), bottom });
+    }
     setOpen(true);
   }
 

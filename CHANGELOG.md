@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.43 — 2026-08-26
+
+**ETHONE — Flyouts Dock : correction position initiale**
+
+- `DockMediaFlyout` : la position est calculée au moment du survol, plus de pop à gauche avant placement correct.
+- `WeatherDetailPopover` : reste `hidden` tant que `useFloating` n'a pas finalisé le placement.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.42 — 2026-08-26
 
 **ETHONE — Dynamic Island Spotify : taille + refresh album**

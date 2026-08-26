@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.43",
+  date: "2026-08-26",
+  title: "Flyouts Dock — correction position initiale",
+  items: [
+    "`DockMediaFlyout` : la position est calculée au moment du survol, plus de pop à gauche avant placement correct.",
+    "`WeatherDetailPopover` : reste `hidden` tant que `useFloating` n'a pas finalisé le placement.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.43.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.43",
+  date: "2026-08-26",
+  title: "Dock flyouts — initial position fix",
+  items: [
+    "`DockMediaFlyout` : position is computed on hover, no more left pop before correct placement.",
+    "`WeatherDetailPopover` : stays `hidden` until `useFloating` has finalized placement.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.43.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.43",
+  date: "2026-08-26",
+  title: "Dock flyouts — corrección posición inicial",
+  items: [
+    "`DockMediaFlyout` : la posición se calcula al pasar el ratón, sin más pop a la izquierda antes de la colocación correcta.",
+    "`WeatherDetailPopover` : permanece `hidden` hasta que `useFloating` ha finalizado el posicionamiento.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.43.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.43",
+  date: "2026-08-26",
+  title: "Dock-Flyouts — Anfangsposition korrigiert",
+  items: [
+    "`DockMediaFlyout` : Position wird beim Hover berechnet, kein Pop mehr links vor der korrekten Platzierung.",
+    "`WeatherDetailPopover` : bleibt `hidden`, bis `useFloating` die Platzierung finalisiert hat.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.43.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.42",
   date: "2026-08-26",
   title: "Dynamic Island Spotify — taille + refresh album",

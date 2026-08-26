@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.20",
+  date: "2026-08-26",
+  title: "Fichiers v2 — polish final",
+  items: [
+    "Alignement des colonnes liste entre `FileCard` et l’en-tête de `app/files/page.tsx`.",
+    "Correction de `text-[var(--muted)]` en `text-[var(--text-muted)]` pour respecter le thème.",
+    "Espacement principal légèrement resserré et padding interne ajouté.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.20.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.20",
+  date: "2026-08-26",
+  title: "Files v2 — final polish",
+  items: [
+    "List column alignment between `FileCard` and `app/files/page.tsx` header.",
+    "Fixed `text-[var(--muted)]` to `text-[var(--text-muted)]` for theme consistency.",
+    "Tightened main spacing and added inner padding.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.20.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.20",
+  date: "2026-08-26",
+  title: "Ficheros v2 — polish final",
+  items: [
+    "Alineación de columnas de lista entre `FileCard` y el encabezado de `app/files/page.tsx`.",
+    "Corrección de `text-[var(--muted)]` a `text-[var(--text-muted)]` para respetar el tema.",
+    "Espaciado principal ligeramente ajustado y padding interno añadido.",
+    "Validación : build, lint.",
+    "Versión : v1.10.20.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.20",
+  date: "2026-08-26",
+  title: "Dateien v2 — finaler Feinschliff",
+  items: [
+    "Listen-Spaltenausrichtung zwischen `FileCard` und Header von `app/files/page.tsx`.",
+    "Korrektur von `text-[var(--muted)]` zu `text-[var(--text-muted)]` für Theme-Konsistenz.",
+    "Hauptabstand leicht verringert und innerer Padding hinzugefügt.",
+    "Validierung: build, lint.",
+    "Version: v1.10.20.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.19",
   date: "2026-08-26",
   title: "Fichiers v2 — drag & drop overlay",

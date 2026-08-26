@@ -74,10 +74,7 @@ export default function FileCard({
 
   const gridMedia = (
     <div
-      className={cn(
-        "relative flex w-full items-center justify-center overflow-hidden rounded-xl bg-[var(--bg-main)]",
-        isGrid ? "p-3" : "p-2",
-      )}
+      className="relative flex w-full items-center justify-center overflow-hidden rounded-xl bg-[var(--bg-main)] p-3"
       style={{ aspectRatio: "4/3" }}
     >
       {isVisual && (file.thumbnailLink || file.iconUrl) ? (
@@ -132,35 +129,33 @@ export default function FileCard({
 
   const listContent = (
     <>
-      <div className="flex items-center gap-3">
-        <Checkbox
-          checked={selected ?? false}
-          onCheckedChange={onToggle ?? (() => {})}
-          aria-label={i18n("select")}
-          onClick={(e) => e.stopPropagation()}
-        />
-        <button type="button" onClick={onOpen} className="focus:outline-none">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[var(--bg-main)] text-[var(--text-muted)]">
-            <SafeImage
-              candidates={[file.thumbnailLink, file.iconUrl]}
-              alt={file.name}
-              size={40}
-              className="h-full w-full object-contain p-1"
-              iconClassName="h-5 w-5"
-              loading="lazy"
-              fallback="none"
-            />
-          </div>
-        </button>
-        <button type="button" onClick={onOpen} className="min-w-0 flex-1 text-left focus:outline-none">
-          <p className="truncate text-sm font-medium text-[var(--text-primary)]" title={file.name}>
-            {file.name}
-          </p>
-          <p className="truncate text-[11px] text-[var(--text-muted)] sm:hidden">
-            {file.isFolder ? i18n("folder") : `${formatBytes(file.size)} · ${formatDateShort(file.updatedAt)}`}
-          </p>
-        </button>
-      </div>
+      <Checkbox
+        checked={selected ?? false}
+        onCheckedChange={onToggle ?? (() => {})}
+        aria-label={i18n("select")}
+        onClick={(e) => e.stopPropagation()}
+      />
+      <button type="button" onClick={onOpen} className="focus:outline-none">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[var(--bg-main)] text-[var(--text-muted)]">
+          <SafeImage
+            candidates={[file.thumbnailLink, file.iconUrl]}
+            alt={file.name}
+            size={40}
+            className="h-full w-full object-contain p-1"
+            iconClassName="h-5 w-5"
+            loading="lazy"
+            fallback="none"
+          />
+        </div>
+      </button>
+      <button type="button" onClick={onOpen} className="min-w-0 flex-1 text-left focus:outline-none">
+        <p className="truncate text-sm font-medium text-[var(--text-primary)]" title={file.name}>
+          {file.name}
+        </p>
+        <p className="truncate text-[11px] text-[var(--text-muted)] sm:hidden">
+          {file.isFolder ? i18n("folder") : `${formatBytes(file.size)} · ${formatDateShort(file.updatedAt)}`}
+        </p>
+      </button>
       {!file.isFolder ? (
         <>
           <span className="hidden truncate text-right text-xs text-[var(--text-muted)] sm:block">{formatBytes(file.size)}</span>
@@ -191,7 +186,7 @@ export default function FileCard({
         "group select-none transition-[border-color,box-shadow,background-color] duration-150",
         isGrid
           ? "h-full cursor-pointer"
-          : "grid cursor-pointer grid-cols-[1fr] items-center gap-3 rounded-xl border-b border-[var(--panel-border)]/[0.08] px-3 py-2.5 last:border-b-0 hover:bg-[var(--panel-bg)]/[0.4] sm:grid-cols-[minmax(0,1fr)_6rem_6rem_7rem]",
+          : "grid cursor-pointer grid-cols-[1.5rem_2.5rem_minmax(0,1fr)_4rem] items-center gap-3 rounded-xl border-b border-[var(--panel-border)]/[0.08] px-3 py-2.5 last:border-b-0 hover:bg-[var(--panel-bg)]/[0.4] sm:grid-cols-[1.5rem_2.5rem_minmax(0,1fr)_6rem_6rem_7rem]",
         selected && "bg-[var(--accent-primary)]/5 hover:bg-[var(--accent-primary)]/10",
       )}
     >

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.20 — 2026-08-26
+
+**ETHONE — Fichiers v2 : polish final**
+
+- Alignement des colonnes liste entre `FileCard` et l’en-tête `app/files/page.tsx`.
+- Correction de `text-[var(--muted)]` en `text-[var(--text-muted)]`.
+- Espacement principal resserré, padding interne ajouté.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.19 — 2026-08-26
 
 **ETHONE — Fichiers v2 : drag & drop overlay**

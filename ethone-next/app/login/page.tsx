@@ -6,6 +6,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
+import useVisualViewport from "@/lib/hooks/useVisualViewport";
 import { authLog } from "@/lib/auth-log";
 import { cn } from "@/lib/utils";
 import { required, email as emailValidator, minLength, maxLength, passwordStrength, match, validate } from "@/lib/form-validation";
@@ -23,6 +24,7 @@ import Switch from "@/components/Switch";
 import GoogleIcon from "@/components/icons/GoogleIcon";
 import GithubIcon from "@/components/icons/GithubIcon";
 import { Icon } from "@/lib/icons";
+import { triggerHaptic } from "@/lib/haptics";
 
 type AuthMode = "password" | "otp" | "register";
 type OtpStep = "email" | "code";
@@ -91,8 +93,10 @@ function OtpInput({ value, onChange, disabled, error }: OtpInputProps) {
         <input
           key={i}
           ref={(el) => { inputsRef.current[i] = el; }}
-          type="text"
+          type="tel"
           inputMode="numeric"
+          pattern="\d*"
+          autoComplete={i === 0 ? "one-time-code" : "off"}
           maxLength={1}
           value={d}
           disabled={disabled}
@@ -170,6 +174,9 @@ export default function LoginPage() {
   const { session, signInOtp, verifyOtp } = useAuth();
   const online = useOnlineStatus();
   const reduced = !!useReducedMotion();
+  const visual = useVisualViewport();
+  const cardRef = useRef<HTMLDivElement>(null);
+  const keyboardOpen = visual.height > 0 && visual.height < 640;
 
   const [mode, setMode] = useState<AuthMode>("password");
   const [otpStep, setOtpStep] = useState<OtpStep>("email");
@@ -216,6 +223,23 @@ export default function LoginPage() {
     }, 8000);
     return () => clearTimeout(t);
   }, [authState, session, i18n, showError]);
+
+  useEffect(() => {
+    if (!cardRef.current) return;
+    const card = cardRef.current;
+    const onFocus = (e: Event) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      const tag = target.tagName.toLowerCase();
+      if (tag === "input" || tag === "textarea" || tag === "button") {
+        requestAnimationFrame(() => {
+          target.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        });
+      }
+    };
+    card.addEventListener("focusin", onFocus);
+    return () => card.removeEventListener("focusin", onFocus);
+  }, []);
 
   const resetForm = useCallback(() => {
     setAuthState("idle");
@@ -417,7 +441,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col overflow-hidden bg-[var(--background)] lg:flex-row">
+    <div className="relative flex min-h-dvh w-full flex-col overflow-hidden bg-[var(--background)] lg:flex-row">
       <div className="absolute right-[calc(1rem+env(safe-area-inset-right))] top-[calc(1rem+env(safe-area-inset-top))] z-30">
         <LanguageSwitcher />
       </div>
@@ -457,10 +481,10 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div className="relative flex w-full flex-col items-center justify-center bg-gradient-to-b from-[var(--surface)]/50 via-[var(--background)] to-[var(--background)] px-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-[calc(1.5rem+env(safe-area-inset-top))] sm:px-6 sm:pb-8 md:w-3/5 lg:w-1/2 lg:p-10">
-        <div className="relative w-full max-w-md">
-          <div className="pointer-events-none absolute -inset-1 rounded-[2.25rem] bg-gradient-to-br from-[var(--accent)]/20 via-transparent to-[var(--accent)]/10 blur-2xl" />
+      <div className={cn("relative flex w-full flex-col items-center px-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-[calc(1.5rem+env(safe-area-inset-top))] sm:px-6 sm:pb-8 md:w-3/5 lg:w-1/2 lg:p-10", keyboardOpen ? "justify-start overflow-y-auto" : "justify-center overflow-hidden")}>
+        <div className="relative w-full max-w-md">          <div className="pointer-events-none absolute -inset-1 rounded-[2.25rem] bg-gradient-to-br from-[var(--accent)]/20 via-transparent to-[var(--accent)]/10 blur-2xl" />
           <motion.div
+            ref={cardRef}
             initial={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : 20, scale: reduced ? 1 : 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
@@ -491,7 +515,7 @@ export default function LoginPage() {
                     <button
                       key={m}
                       type="button"
-                      onClick={() => setModeAndReset(m)}
+                      onClick={() => { triggerHaptic("light"); setModeAndReset(m); }}
                       disabled={isLoading}
                       className={cn(
                         "relative z-10 select-none rounded-xl px-1 py-2.5 text-[10px] font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-raised)] sm:px-2 sm:text-xs",
@@ -533,7 +557,17 @@ export default function LoginPage() {
               )}
             </AnimatePresence>
 
-            <form onSubmit={handleSubmit} className="mt-5 space-y-4" noValidate>
+            <AnimatePresence mode="wait">
+              <motion.form
+                key={`${mode}-${otpStep}`}
+                onSubmit={handleSubmit}
+                noValidate
+                initial={{ opacity: reduced ? 1 : 0, x: reduced ? 0 : 16 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: reduced ? 1 : 0, x: reduced ? 0 : -16 }}
+                transition={{ duration: reduced ? 0 : 0.2, ease: "easeOut" }}
+                className="mt-5 space-y-4"
+              >
               <div className="space-y-1.5">
                 <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-email">{i18n("email", "E-mail")}</label>
                 <Input
@@ -595,7 +629,7 @@ export default function LoginPage() {
                         error={!!error && !password}
                         inputClassName="text-base"
                         right={(
-                          <button type="button" tabIndex={-1} onClick={() => setShowPassword((v) => !v)} aria-label={i18n("togglePassword", "Afficher ou masquer le mot de passe")} aria-pressed={showPassword} className="-mr-1 flex h-10 w-10 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] active:scale-95">
+                          <button type="button" tabIndex={-1} onClick={() => { triggerHaptic("light"); setShowPassword((v) => !v); }} aria-label={i18n("togglePassword", "Afficher ou masquer le mot de passe")} aria-pressed={showPassword} className="-mr-1 flex h-10 w-10 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] active:scale-95">
                             <Icon name={showPassword ? "eye-off" : "eye"} className="h-5 w-5" />
                           </button>
                         )}
@@ -633,7 +667,7 @@ export default function LoginPage() {
                       disabled={isLoading || isSuccess}
                       inputClassName="text-base"
                       right={(
-                        <button type="button" tabIndex={-1} onClick={() => setShowPassword((v) => !v)} aria-label={i18n("togglePassword", "Afficher ou masquer le mot de passe")} aria-pressed={showPassword} className="-mr-1 flex h-10 w-10 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] active:scale-95">
+                        <button type="button" tabIndex={-1} onClick={() => { triggerHaptic("light"); setShowPassword((v) => !v); }} aria-label={i18n("togglePassword", "Afficher ou masquer le mot de passe")} aria-pressed={showPassword} className="-mr-1 flex h-10 w-10 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] active:scale-95">
                           <Icon name={showPassword ? "eye-off" : "eye"} className="h-5 w-5" />
                         </button>
                       )}
@@ -688,15 +722,16 @@ export default function LoginPage() {
                   )}
                 </div>
               )}
-            </form>
+              </motion.form>
+            </AnimatePresence>
 
             <div className="mt-6 text-center text-xs text-[var(--text-muted)]">
               {mode === "register" ? (
-                <button type="button" onClick={() => setModeAndReset("password")} className="h-10 rounded-lg px-3 py-2 text-[var(--accent-primary)] transition-all hover:opacity-80 active:scale-95">
+                <button type="button" onClick={() => { triggerHaptic("light"); setModeAndReset("password"); }} className="h-10 rounded-lg px-3 py-2 text-[var(--accent-primary)] transition-all hover:opacity-80 active:scale-95">
                   {i18n("alreadyHaveAccount", "Déjà un compte ? Se connecter")}
                 </button>
               ) : (
-                <button type="button" onClick={() => setModeAndReset("register")} className="h-10 rounded-lg px-3 py-2 text-[var(--accent-primary)] transition-all hover:opacity-80 active:scale-95">
+                <button type="button" onClick={() => { triggerHaptic("light"); setModeAndReset("register"); }} className="h-10 rounded-lg px-3 py-2 text-[var(--accent-primary)] transition-all hover:opacity-80 active:scale-95">
                   {i18n("createAccount", "Créer un compte")}
                 </button>
               )}

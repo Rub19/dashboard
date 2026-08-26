@@ -1,6 +1,7 @@
 "use client";
 
 import { useId } from "react";
+import { triggerHaptic } from "@/lib/haptics";
 
 type SwitchSize = "sm" | "md" | "lg";
 
@@ -55,7 +56,7 @@ export default function Switch({
         aria-disabled={disabled}
         disabled={disabled}
         data-state={checked ? "checked" : "unchecked"}
-        onClick={() => onChange(!checked)}
+        onClick={() => { triggerHaptic("light"); onChange(!checked); }}
         className={`relative flex min-h-[44px] min-w-[44px] items-center rounded-full border border-[var(--border)] bg-[var(--surface-raised)] shadow-[inset_0_1px_2px_rgba(0,0,0,0.3)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] data-[state=checked]:border-[var(--accent-primary)] data-[state=checked]:bg-[var(--accent-primary)] ${classes.track}`}
       >
         <span

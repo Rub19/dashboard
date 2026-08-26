@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.29 — 2026-08-26
+
+**ETHONE — Mobile login pass 2 (clavier, viewport, OTP, haptics)**
+
+- Nouveau hook `useVisualViewport` pour adapter le login au clavier iOS.
+- Page login en `min-h-dvh` et `justify-start` lorsque le clavier est ouvert.
+- Scroll automatique du champ actif dans la vue sur focus.
+- Transitions animées du contenu du formulaire entre les tabs (opacity + translateX).
+- Haptic `light` sur les tabs, le switch, l'œil mot de passe et les liens d'action.
+- Champ OTP : `type='tel'`, `pattern='\d*'`, `autoComplete='one-time-code'` pour iOS.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.28 — 2026-08-26
 
 **ETHONE — Mobile login screen rework (passe 1)**

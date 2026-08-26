@@ -7206,6 +7206,70 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.29",
+  date: "2026-08-26",
+  title: "Mobile login pass 2 — clavier, viewport, OTP, haptics",
+  items: [
+    "Nouveau hook `useVisualViewport` pour adapter le login au clavier iOS.",
+    "Page login en `min-h-dvh` et `justify-start` lorsque le clavier est ouvert.",
+    "Scroll automatique du champ actif dans la vue sur focus.",
+    "Transitions animées du contenu du formulaire entre les tabs (opacity + translateX).",
+    "Haptic `light` sur les tabs, le switch, l'œil mot de passe et les liens d'action.",
+    "Champ OTP : `type='tel'`, `pattern='\\d*'`, `autoComplete='one-time-code'` pour iOS.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.29.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.29",
+  date: "2026-08-26",
+  title: "Mobile login pass 2 — keyboard, viewport, OTP, haptics",
+  items: [
+    "New `useVisualViewport` hook to adapt login to the iOS keyboard.",
+    "Login page uses `min-h-dvh` and `justify-start` when the keyboard is open.",
+    "Auto-scroll active input into view on focus.",
+    "Animated form content transitions between tabs (opacity + translateX).",
+    "Light haptic feedback on tabs, switch, password eye and action links.",
+    "OTP field: `type='tel'`, `pattern='\\d*'`, `autoComplete='one-time-code'` for iOS.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.29.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.29",
+  date: "2026-08-26",
+  title: "Mobile login pass 2 — teclado, viewport, OTP, haptics",
+  items: [
+    "Nuevo hook `useVisualViewport` para adaptar el login al teclado iOS.",
+    "Página login en `min-h-dvh` y `justify-start` cuando el teclado está abierto.",
+    "Scroll automático del campo activo en la vista al hacer focus.",
+    "Transiciones animadas del contenido del formulario entre tabs (opacity + translateX).",
+    "Haptic `light` en tabs, switch, ojo contraseña y enlaces de acción.",
+    "Campo OTP : `type='tel'`, `pattern='\\d*'`, `autoComplete='one-time-code'` para iOS.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.29.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.29",
+  date: "2026-08-26",
+  title: "Mobile Login Pass 2 — Tastatur, Viewport, OTP, Haptics",
+  items: [
+    "Neuer Hook `useVisualViewport` zur Anpassung des Logins an die iOS-Tastatur.",
+    "Login-Seite `min-h-dvh` und `justify-start` wenn die Tastatur offen ist.",
+    "Automatisches Scrollen des aktiven Felds in die Ansicht bei Fokus.",
+    "Animierte Formular-Content-Übergänge zwischen den Tabs (opacity + translateX).",
+    "Leichter Haptic-Feedback auf Tabs, Switch, Passwort-Auge und Aktionslinks.",
+    "OTP-Feld: `type='tel'`, `pattern='\\d*'`, `autoComplete='one-time-code'` für iOS.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.29.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.28",
   date: "2026-08-26",
   title: "Mobile login screen rework — passe 1",

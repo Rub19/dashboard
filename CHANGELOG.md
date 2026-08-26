@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.66 — 2026-08-26
+
+**ETHONE — Correction : fichiers manquants dans les commits v1.9.55 à v1.9.65**
+
+- Les nouveaux fichiers créés localement n'avaient pas été poussés dans Git :
+  - `AudioVisualizer.tsx`
+  - `components/ui/Card.tsx`
+  - `WeatherHomeWidget.tsx`
+  - `lib/hooks/useDynamicIslandQueue.ts`
+  - `lib/stores/dynamic-island-queue.ts`
+- Ajout de ces fichiers pour que le build Cloudflare Pages fonctionne.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.65 — 2026-08-26
 
 **ETHONE — Météo Home : état vide, pluie, ville partagée**

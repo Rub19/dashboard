@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.66",
+  date: "2026-08-26",
+  title: "Correction — fichiers manquants dans les commits v1.9.55 à v1.9.65",
+  items: [
+    "Les nouveaux fichiers créés localement (AudioVisualizer, Card, WeatherHomeWidget, useDynamicIslandQueue, dynamic-island-queue) n'avaient pas été poussés dans Git.",
+    "Ajout de ces fichiers pour que le build Cloudflare Pages fonctionne.",
+    "Build Cloudflare : correction du déploiement.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.66.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.66",
+  date: "2026-08-26",
+  title: "Fix — missing files in commits v1.9.55 to v1.9.65",
+  items: [
+    "New files created locally (AudioVisualizer, Card, WeatherHomeWidget, useDynamicIslandQueue, dynamic-island-queue) were not committed to Git.",
+    "Added these files so Cloudflare Pages build succeeds.",
+    "Cloudflare build: deployment fixed.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.66.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.66",
+  date: "2026-08-26",
+  title: "Corrección — archivos faltantes en commits v1.9.55 a v1.9.65",
+  items: [
+    "Archivos nuevos creados localmente (AudioVisualizer, Card, WeatherHomeWidget, useDynamicIslandQueue, dynamic-island-queue) no se habían commiteado en Git.",
+    "Se agregan para que el build de Cloudflare Pages funcione.",
+    "Build de Cloudflare: despliegue corregido.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.66.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.66",
+  date: "2026-08-26",
+  title: "Fix — fehlende Dateien in Commits v1.9.55 bis v1.9.65",
+  items: [
+    "Neue lokal erstellte Dateien (AudioVisualizer, Card, WeatherHomeWidget, useDynamicIslandQueue, dynamic-island-queue) wurden nicht in Git commited.",
+    "Diese Dateien wurden hinzugefügt, damit der Cloudflare Pages Build funktioniert.",
+    "Cloudflare Build: Deployment repariert.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.66.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.65",
   date: "2026-08-26",
   title: "Météo Home — état vide, pluie, ville partagée",

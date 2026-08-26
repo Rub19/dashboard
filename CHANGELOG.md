@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.68 — 2026-08-26
+
+**ETHONE — Header Météo : couleurs et composants partagés**
+
+- Header de la page `/weather` refait avec `Button` et `IconButton` partagés.
+- Bouton _Rechercher_ en accent `primary`.
+- Bouton _Géolocalisation_ en `ghost`.
+- Séparateur fin sous le header et alignement amélioré.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.67 — 2026-08-26
 
 **ETHONE — Dynamic Island : réveil depuis IDLE**

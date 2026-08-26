@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.68",
+  date: "2026-08-26",
+  title: "Header Météo — couleurs et composants partagés",
+  items: [
+    "Header de la page Météo repassé avec `Button` et `IconButton` partagés.",
+    "Bouton Rechercher en accent `primary`.",
+    "Bouton Géolocalisation en `ghost`.",
+    "Séparateur fin sous le header et alignement amélioré.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.68.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.68",
+  date: "2026-08-26",
+  title: "Weather header — colors and shared components",
+  items: [
+    "Weather page header updated with shared `Button` and `IconButton`.",
+    "Search button uses `primary` accent.",
+    "Geolocation button uses `ghost` style.",
+    "Slim header border and improved alignment.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.68.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.68",
+  date: "2026-08-26",
+  title: "Header del tiempo — colores y componentes compartidos",
+  items: [
+    "Header de la página del tiempo con `Button` e `IconButton` compartidos.",
+    "Botón Buscar en acento `primary`.",
+    "Botón Geolocalización en estilo `ghost`.",
+    "Borde fino bajo el header y mejor alineación.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.68.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.68",
+  date: "2026-08-26",
+  title: "Wetter-Header — Farben und geteilte Komponenten",
+  items: [
+    "Wetterseiten-Header mit geteilten `Button` und `IconButton` aktualisiert.",
+    "Such-Button mit `primary`-Akzent.",
+    "Geolokalisierungs-Button im `ghost`-Stil.",
+    "Feine Header-Linie und bessere Ausrichtung.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.68.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.67",
   date: "2026-08-26",
   title: "Dynamic Island — réveil depuis IDLE",

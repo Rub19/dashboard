@@ -8,6 +8,8 @@ import { useToast } from "@/components/ToastProvider";
 import { fetchWorkerCached } from "@/lib/hooks/useCachedFetch";
 import { Icon } from "@/lib/icons";
 import SearchInput from "@/components/ui/SearchInput";
+import Button from "@/components/ui/Button";
+import IconButton from "@/components/ui/IconButton";
 import WeatherMetricCard from "@/components/WeatherMetricCard";
 import WeatherForecastList from "@/components/WeatherForecastList";
 import { weatherIconFromCode, weatherIconColor, type WeatherData } from "@/components/WeatherWidget";
@@ -229,9 +231,9 @@ export default function WeatherPage() {
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden p-4 sm:p-6">
       <div className="mx-auto flex h-full w-full max-w-7xl flex-col">
-      <header className="shrink-0 mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <header className="shrink-0 mb-5 flex flex-col gap-4 border-b border-[var(--text-primary)]/[0.06] pb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">{i18n("weather")}</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">{i18n("weather")}</h1>
           <p className="text-sm text-[var(--text-muted)]">{i18n("weatherDescription")}</p>
         </div>
 
@@ -250,21 +252,20 @@ export default function WeatherPage() {
             className="min-w-0 flex-1"
           />
 
-          <button
+          <IconButton
             type="button"
+            variant="ghost"
+            size="sm"
             onClick={handleGeolocate}
-            className="flex h-8 w-8 items-center justify-center rounded-xl text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
             aria-label={i18n("geolocate")}
+            haptic="light"
           >
-            <Icon pack="phosphor" name="navigation" className="h-3.5 w-3.5" />
-          </button>
+            <Icon pack="phosphor" name="navigation" className="h-4 w-4" />
+          </IconButton>
 
-          <button
-            type="submit"
-            className="rounded-lg border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.04] px-3.5 py-1.5 text-xs font-semibold text-[var(--text-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08] active:scale-95"
-          >
+          <Button type="submit" variant="primary" size="sm" haptic="light">
             {i18n("search")}
-          </button>
+          </Button>
         </form>
       </header>
 

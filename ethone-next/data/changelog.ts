@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.94",
+  date: "2026-08-26",
+  title: "Fichiers — cartes plates",
+  items: [
+    "Remplacement des `Card3D` par des cartes plates dans `FileCard`.",
+    "Skeleton et quota dupliquent le style de carte plate.",
+    "Suppression de l'import `Card3D` dans `app/files/page.tsx`.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.94.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.94",
+  date: "2026-08-26",
+  title: "Files — flat cards",
+  items: [
+    "Replaced `Card3D` with flat cards in `FileCard`.",
+    "Skeleton and quota cards now use the same flat style.",
+    "Removed `Card3D` import from `app/files/page.tsx`.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.94.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.94",
+  date: "2026-08-26",
+  title: "Archivos — tarjetas planas",
+  items: [
+    "Reemplazo de `Card3D` por tarjetas planas en `FileCard`.",
+    "Skeleton y tarjeta de cuota usan el mismo estilo plano.",
+    "Eliminado el import `Card3D` de `app/files/page.tsx`.",
+    "Validación : build, lint.",
+    "Versión : v1.9.94.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.94",
+  date: "2026-08-26",
+  title: "Dateien — flache Karten",
+  items: [
+    "`Card3D` durch flache Karten in `FileCard` ersetzt.",
+    "Skeleton und Quota-Karte verwenden denselben flachen Stil.",
+    "`Card3D`-Import aus `app/files/page.tsx` entfernt.",
+    "Validierung: build, lint.",
+    "Version: v1.9.94.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.93",
   date: "2026-08-26",
   title: "Fichiers — phase 10 : suggestions Brain",

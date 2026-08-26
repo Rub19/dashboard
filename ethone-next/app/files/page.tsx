@@ -10,7 +10,6 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { fetchWorker } from "@/lib/api";
 import { cn } from "@/lib/utils";
-import Card3D from "@/components/Card3D";
 import { Icon } from "@/lib/icons";
 import Modal from "@/components/ui/Modal";
 import TabList from "@/components/tabs/TabList";
@@ -454,7 +453,7 @@ export default function FilesPage() {
       </div>
       <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6">
       {quota && (
-        <Card3D>
+        <div className="rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)] p-3 shadow-sm">
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <span className="text-[var(--muted)]">{i18n("storageUsed")}</span>
@@ -464,7 +463,7 @@ export default function FilesPage() {
               <div className="h-full rounded-xl bg-[var(--accent-primary)]" style={{ width: `${quotaPercent}%` }} />
             </div>
           </div>
-        </Card3D>
+        </div>
       )}
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -716,7 +715,10 @@ export default function FilesPage() {
         {loading ? (
           <>
             {[...Array(viewMode === "list" ? 4 : 8)].map((_, i) => (
-              <Card3D key={i} className="h-full">
+              <div
+                key={i}
+                className="h-full min-w-0 overflow-hidden rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)] p-[var(--panel-padding)] shadow-sm"
+              >
                 <div className={cn("h-full animate-pulse", viewMode === "grid" && "flex flex-col items-center justify-center gap-2")}>
                   <div className={cn("shrink-0 rounded-[var(--panel-radius)] bg-[var(--border)]", viewMode === "grid" ? "h-14 w-14" : "h-10 w-10")} />
                   <div className="space-y-2">
@@ -724,7 +726,7 @@ export default function FilesPage() {
                     <div className="h-2.5 w-20 rounded bg-[var(--border)]" />
                   </div>
                 </div>
-              </Card3D>
+              </div>
             ))}
           </>
         ) : filteredFiles.length === 0 ? (

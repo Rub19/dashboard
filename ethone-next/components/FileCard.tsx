@@ -1,6 +1,5 @@
 "use client";
 
-import Card3D from "@/components/Card3D";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
@@ -173,7 +172,11 @@ export default function FileCard({
   );
 
   return (
-    <Card3D className="h-full">
+    <div
+      className={cn(
+        "v8-card h-full min-w-0 overflow-hidden rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)] p-[var(--panel-padding)] shadow-sm transition-[border-color,box-shadow] duration-150 hover:border-[var(--accent-primary)]/30 hover:shadow-md",
+      )}
+    >
       <div
         className={cn(
           "flex h-full min-w-0 transition-colors",
@@ -211,6 +214,6 @@ export default function FileCard({
 
         {actions}
       </div>
-    </Card3D>
+    </div>
   );
 }

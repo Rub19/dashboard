@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.94 — 2026-08-26
+
+**ETHONE — Fichiers : cartes plates**
+
+- `components/FileCard.tsx` : suppression de `Card3D` au profit d'une carte plate.
+- `app/files/page.tsx` : le skeleton de chargement et la jauge de quota utilisent le même style de carte plate.
+- `Card3D` n'est plus importé dans la page Fichiers.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.93 — 2026-08-26
 
 **ETHONE — Fichiers : phase 10 suggestions Brain**

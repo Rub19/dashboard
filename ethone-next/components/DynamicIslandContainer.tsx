@@ -558,8 +558,8 @@ export default function DynamicIslandContainer() {
             tabIndex={0}
             role="button"
           >
-            <DynamicIslandView id="spotify" data-testid="dynamic-island-spotify" className="w-[min(92vw,340px)] sm:w-[400px]">
-              <div onClick={stopPropagation} className="flex w-full flex-col gap-4">
+            <DynamicIslandView id="spotify" data-testid="dynamic-island-spotify" className="w-[min(92vw,360px)] sm:w-[420px]">
+              <div onClick={stopPropagation} className="flex w-full flex-col gap-5 p-1">
                 <IslandExpandedHeader
                   activeViews={activeViews}
                   selected={selectedView ?? "spotify"}
@@ -579,15 +579,15 @@ export default function DynamicIslandContainer() {
                   <SafeImage
                     candidates={[nowPlaying?.cover, nowPlaying?.artworkUrl, ...(nowPlaying?.covers || [])]}
                     alt={nowPlaying?.title || "Spotify"}
-                    size={56}
-                    className="h-14 w-14 shrink-0 rounded-xl object-cover shadow-lg ring-1 ring-[var(--text-primary)]/10"
-                    iconClassName="h-6 w-6 text-[var(--accent-primary)]"
+                    size={80}
+                    className="h-20 w-20 shrink-0 rounded-2xl object-cover shadow-lg ring-1 ring-[var(--text-primary)]/10"
+                    iconClassName="h-7 w-7 text-[var(--accent-primary)]"
                     loading="eager"
                     priority
                     timeoutMs={8000}
                   />
-                  <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5">
-                    <p className="break-words text-sm font-semibold leading-snug text-[var(--text-primary)]">
+                  <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
+                    <p className="line-clamp-2 text-sm font-semibold leading-snug text-[var(--text-primary)]">
                       {nowPlaying?.title || "Spotify"}
                     </p>
                     <p className="truncate text-xs text-[var(--text-muted)]">
@@ -602,20 +602,15 @@ export default function DynamicIslandContainer() {
                     onClick={toggleLike}
                     disabled={likeLoading || !nowPlaying?.id}
                     className={cn(
-                      "flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200",
+                      "flex h-8 w-8 items-center justify-center rounded-full transition-all duration-200",
                       isSaved
                         ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/25"
-                        : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--accent-contrast)]",
+                        : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--accent-primary)]",
                     )}
                     aria-label={isSaved ? i18n("unlike") : i18n("like")}
                     title={isSaved ? i18n("unlike") : i18n("like")}
                   >
-                    <motion.div
-                      whileTap={{ scale: 1.2 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                    >
-                      <Icon name="heart" pack="phosphor" className={cn("h-4 w-4", isSaved && "fill-current")} />
-                    </motion.div>
+                    <Icon name="heart" pack="phosphor" className={cn("h-4 w-4", isSaved && "fill-current")} />
                   </button>
                 </div>
 
@@ -635,7 +630,7 @@ export default function DynamicIslandContainer() {
                   <VolumeSlider value={localVolume} onChange={onSpotifyVolume} data-testid="dynamic-island-volume" />
                 </div>
 
-                <div className="flex items-center justify-center gap-3">
+                <div className="flex items-center justify-center gap-6">
                   <button
                     type="button"
                     onClick={() => spotifyControl("previous")}
@@ -649,7 +644,7 @@ export default function DynamicIslandContainer() {
                     type="button"
                     onClick={togglePlay}
                     disabled={pendingSpotify}
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-lg transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-md transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
                     aria-label={nowPlaying?.isPlaying ? i18n("pause") : i18n("play")}
                   >
                     {nowPlaying?.isPlaying ? <Icon name="pause" pack="phosphor" className="h-5 w-5" /> : <Icon name="play" pack="phosphor" className="h-5 w-5 fill-current" />}

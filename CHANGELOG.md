@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.54 — 2026-08-26
+
+**ETHONE — Dynamic Island 2.0 : étape 2 — mini-player Spotify premium**
+
+- Expanded Spotify retravaillé : pochette 80×80 `rounded-2xl`, textes mieux espacés.
+- Contrôles équilibrés : previous / play / next en 36×36, play avec accent seul.
+- Suppression du `motion.div` sur le cœur pour éviter un remount à chaque render.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.53 — 2026-08-26
 
 **ETHONE — Dynamic Island 2.0 : étape 1 — compact et ouverture contrôlée**

@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.54",
+  date: "2026-08-26",
+  title: "Dynamic Island 2.0 — étape 2 : mini-player Spotify premium",
+  items: [
+    "Expanded Spotify retravaillé : pochette 80×80 `rounded-2xl`, textes mieux espacés.",
+    "Contrôles équilibrés : previous / play / next en 36×36, play avec accent seul.",
+    "Suppression du `motion.div` sur le cœur pour éviter un remount à chaque render.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.54.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.54",
+  date: "2026-08-26",
+  title: "Dynamic Island 2.0 — step 2: premium Spotify mini-player",
+  items: [
+    "Reworked Spotify expanded view: 80×80 `rounded-2xl` cover, better text spacing.",
+    "Balanced controls: previous / play / next at 36×36, only play is accented.",
+    "Removed `motion.div` on the heart to avoid remount on each render.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.54.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.54",
+  date: "2026-08-26",
+  title: "Dynamic Island 2.0 — paso 2: mini reproductor Spotify premium",
+  items: [
+    "Vista expandida de Spotify rediseñada: portada 80×80 `rounded-2xl`, textos mejor espaciados.",
+    "Controles equilibrados: previous / play / next en 36×36, solo play con acento.",
+    "Eliminado el `motion.div` del corazón para evitar remount en cada render.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.54.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.54",
+  date: "2026-08-26",
+  title: "Dynamic Island 2.0 — Schritt 2: Premium Spotify Mini-Player",
+  items: [
+    "Spotify-Expanded überarbeitet: 80×80 `rounded-2xl` Cover, besserer Textabstand.",
+    "Ausgewogene Steuerung: previous / play / next 36×36, nur play mit Akzent.",
+    "`motion.div` beim Herz entfernt, um Remount bei jedem Render zu vermeiden.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.54.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.53",
   date: "2026-08-26",
   title: "Dynamic Island 2.0 — étape 1 : compact et ouverture contrôlée",

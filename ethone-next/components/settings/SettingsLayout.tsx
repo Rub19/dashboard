@@ -372,8 +372,8 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
 
           <div
             className={cn(
-              "transition-[opacity,transform] duration-300 ease-out will-change-transform",
-              isNavigating ? "translate-y-1 opacity-90" : "translate-y-0 opacity-100"
+              "transition-opacity duration-250 ease-out",
+              isNavigating ? "opacity-90" : "opacity-100"
             )}
           >
             <SettingsContent

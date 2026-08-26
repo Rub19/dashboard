@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.89 — 2026-08-26
+
+**ETHONE — Fichiers : phase 6 menu contextuel moderne**
+
+- `components/ContextMenu.tsx` : refonte visuelle.
+  - Fond glass, ombre portée, coins arrondis, animation d'apparition `framer-motion`.
+  - Item actif surligné avec `var(--accent-primary)`.
+  - Effet haptique au clic.
+  - Respect `prefers-reduced-motion`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.88 — 2026-08-26
 
 **ETHONE — Fichiers : phase 5 drag & drop global**

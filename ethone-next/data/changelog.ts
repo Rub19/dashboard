@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.89",
+  date: "2026-08-26",
+  title: "Fichiers — phase 6 : menu contextuel moderne",
+  items: [
+    "Refonte visuelle du composant `ContextMenu` : fond glass, ombre portée, coins arrondis, animation d'apparition.",
+    "Item actif surligné avec la couleur d'accent du thème.",
+    "Effet haptique au clic d'une option.",
+    "Respecte `prefers-reduced-motion`.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.89.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.89",
+  date: "2026-08-26",
+  title: "Files — phase 6: modern context menu",
+  items: [
+    "Visual refresh of the `ContextMenu` component: glass background, drop shadow, rounded corners, enter animation.",
+    "Active item highlighted with the theme accent color.",
+    "Haptic effect when clicking an option.",
+    "Respects `prefers-reduced-motion`.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.89.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.89",
+  date: "2026-08-26",
+  title: "Archivos — fase 6: menú contextual moderno",
+  items: [
+    "Rediseño visual del componente `ContextMenu`: fondo glass, sombra, esquinas redondeadas, animación de aparición.",
+    "Elemento activo resaltado con el color de acento del tema.",
+    "Efecto háptico al hacer clic en una opción.",
+    "Respeta `prefers-reduced-motion`.",
+    "Validación : build, lint.",
+    "Versión : v1.9.89.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.89",
+  date: "2026-08-26",
+  title: "Dateien — Phase 6: modernes Kontextmenü",
+  items: [
+    "Visuelles Redesign der `ContextMenu`-Komponente: Glass-Hintergrund, Schatten, abgerundete Ecken, Erscheinungsanimation.",
+    "Aktives Element wird mit der Akzentfarbe des Themes hervorgehoben.",
+    "Haptischer Effekt beim Klicken einer Option.",
+    "Respektiert `prefers-reduced-motion`.",
+    "Validierung: build, lint.",
+    "Version: v1.9.89.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.88",
   date: "2026-08-26",
   title: "Fichiers — phase 5 : drag & drop global",

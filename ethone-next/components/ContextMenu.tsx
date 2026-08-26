@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback, type ReactNode } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useLayer } from "@/components/LayerProvider";
 import { Icon } from "@/lib/icons";
+import { hapticLightImpact } from "@/lib/haptics";
 
 export type ContextMenuItem = {
   id: string;
@@ -23,6 +25,7 @@ export default function ContextMenu({
   items: ContextMenuItem[];
 }) {
   const i18n = useI18n();
+  const reduce = useReducedMotion() ?? false;
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [adjusted, setAdjusted] = useState({ x: 0, y: 0 });
@@ -114,10 +117,15 @@ export default function ContextMenu({
   return (
     <div onContextMenu={handleContextMenu} className="contents">
       {children}
+      <AnimatePresence>
       {open && (
-        <div
+        <motion.div
           ref={menuRef}
-          className="v8-context-menu ethone-context-menu fixed z-[var(--z-modal)] min-w-[10rem] max-w-[18rem] rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-1 shadow-[var(--shadow)] outline-none backdrop-blur-[var(--panel-blur)]"
+          initial={reduce ? { opacity: 0 } : { opacity: 0, y: -4, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={reduce ? { opacity: 0 } : { opacity: 0, y: -4, scale: 0.97 }}
+          transition={reduce ? { duration: 0 } : { duration: 0.12, ease: "easeOut" }}
+          className="v8-context-menu ethone-context-menu fixed z-[var(--z-modal)] min-w-[12rem] max-w-[20rem] overflow-hidden rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.92] p-1 shadow-2xl shadow-black/20 outline-none backdrop-blur-2xl"
           style={{ left: adjusted.x, top: adjusted.y }}
           role="menu"
           aria-label={i18n("actions")}
@@ -196,13 +204,14 @@ export default function ContextMenu({
                 tabIndex={-1}
                 onClick={() => {
                   if (item.disabled) return;
+                  hapticLightImpact();
                   close();
                   item.onClick?.();
                 }}
                 onMouseEnter={() => setActiveId(item.id)}
                 onPointerEnter={() => setActiveId(item.id)}
-                className={`flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-left text-sm transition-colors hover:bg-[var(--panel-bg)] focus:bg-[var(--panel-bg)] disabled:opacity-40 disabled:hover:bg-transparent ${
-                  item.id === activeId ? "bg-[var(--panel-bg)]" : ""
+                className={`flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-left text-sm transition-colors hover:bg-[var(--accent-primary)]/10 disabled:opacity-40 disabled:hover:bg-transparent ${
+                  item.id === activeId ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]" : ""
                 } ${item.danger ? "text-[var(--danger)]" : "text-[var(--text-primary)]"}`}
               >
                 {item.icon && <Icon name={item.icon} className="h-4 w-4 text-[var(--text-muted)]" />}
@@ -210,8 +219,9 @@ export default function ContextMenu({
               </button>
             )
           )}
-        </div>
+        </motion.div>
       )}
+    </AnimatePresence>
     </div>
   );
 }

@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.55",
+  date: "2026-08-26",
+  title: "Dynamic Island 2.0 — étape 3 : visualiseur audio",
+  items: [
+    "Ajout du composant `AudioVisualizer` déterministe et subtil (14 barres, animation générée).",
+    "Intégration dans le mini-player Spotify expanded.",
+    "Respect de `prefers-reduced-motion` : pas d'animation si l'utilisateur l'a désactivée.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.55.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.55",
+  date: "2026-08-26",
+  title: "Dynamic Island 2.0 — step 3: audio visualizer",
+  items: [
+    "Added deterministic and subtle `AudioVisualizer` component (14 bars, generated animation).",
+    "Integrated into the Spotify expanded mini-player.",
+    "Respects `prefers-reduced-motion`.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.55.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.55",
+  date: "2026-08-26",
+  title: "Dynamic Island 2.0 — paso 3: visualizador de audio",
+  items: [
+    "Añadido componente `AudioVisualizer` determinista y sutil (14 barras, animación generada).",
+    "Integrado en el mini reproductor Spotify expandido.",
+    "Respeta `prefers-reduced-motion`.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.55.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.55",
+  date: "2026-08-26",
+  title: "Dynamic Island 2.0 — Schritt 3: Audio-Visualizer",
+  items: [
+    "Deterministische, dezente `AudioVisualizer`-Komponente hinzugefügt (14 Balken, generierte Animation).",
+    "In den Spotify-Expanded Mini-Player integriert.",
+    "Berücksichtigt `prefers-reduced-motion`.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.55.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.54",
   date: "2026-08-26",
   title: "Dynamic Island 2.0 — étape 2 : mini-player Spotify premium",

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.55 — 2026-08-26
+
+**ETHONE — Dynamic Island 2.0 : étape 3 — visualiseur audio**
+
+- Ajout du composant `AudioVisualizer` déterministe et subtil (14 barres, animation générée).
+- Intégration dans le mini-player Spotify expanded.
+- Respect de `prefers-reduced-motion`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.54 — 2026-08-26
 
 **ETHONE — Dynamic Island 2.0 : étape 2 — mini-player Spotify premium**

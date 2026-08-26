@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { Icon } from "@/lib/icons";
 
 import LiveMediaProgress from "@/components/LiveMediaProgress";
+import AudioVisualizer from "@/components/AudioVisualizer";
 import { DynamicIsland, DynamicIslandView } from "@/components/ui/DynamicIsland";
 import { useNowPlaying } from "@/lib/hooks/useNowPlaying";
 import { useFocus } from "@/components/FocusProvider";
@@ -614,12 +615,18 @@ export default function DynamicIslandContainer() {
                   </button>
                 </div>
 
+                <AudioVisualizer
+                  seed={nowPlaying?.id || nowPlaying?.title || ""}
+                  isPlaying={!!nowPlaying?.isPlaying}
+                  bars={14}
+                />
+
                 {nowPlaying?.durationMs !== undefined && (
                   <div className="space-y-2" onPointerDown={stopPropagation}>
                     <LiveMediaProgress
                       progressMs={nowPlaying.progressMs ?? 0}
                       durationMs={nowPlaying.durationMs}
-                      isPlaying={!!nowPlaying.isPlaying}
+                      isPlaying={!!nowPlaying?.isPlaying}
                       onSeek={onSpotifySeek}
                       data-testid="dynamic-island-progress"
                     />

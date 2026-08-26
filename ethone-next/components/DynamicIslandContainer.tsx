@@ -353,7 +353,7 @@ export default function DynamicIslandContainer() {
   // The compact pill shows the active activity, or a default ETHONE clock
   // capsule when the island is visible but no specific activity is present.
   const compact = useMemo(() => {
-    const base = "flex h-[38px] w-full items-center justify-center gap-2 px-1 text-[var(--text-primary)]";
+    const base = "flex h-[38px] w-full items-center justify-center gap-2 whitespace-nowrap px-1 text-[var(--text-primary)]";
     if (!selectedView) {
       return (
         <div className={cn(base)}>
@@ -393,7 +393,7 @@ export default function DynamicIslandContainer() {
         return (
           <div className={cn(base)}>
             <Icon name="arrows-clockwise" pack="phosphor" className={cn("h-3.5 w-3.5 text-[var(--info)]", syncing && "animate-spin")} />
-            <span className="text-xs font-medium tabular-nums">
+            <span className="text-xs leading-none font-medium tabular-nums">
               {syncing
                 ? i18n("syncing", "Synchronisation")
                 : pendingCount > 0
@@ -401,7 +401,7 @@ export default function DynamicIslandContainer() {
                   : i18n("synced", "Synchronisé")}
             </span>
             {pendingCount > 0 && (
-              <span className="ml-1 rounded-full bg-[var(--info)]/20 px-1.5 py-0.5 text-[10px] text-[var(--info)]">
+              <span className="ml-1 inline-flex h-5 items-center rounded-full bg-[var(--info)]/20 px-1.5 text-[10px] leading-none text-[var(--info)]">
                 {pendingCount}
               </span>
             )}

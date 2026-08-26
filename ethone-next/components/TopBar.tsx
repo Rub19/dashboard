@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { AnimatedSidebarTrigger, useAnimatedSidebar } from "@/components/motion/animated-sidebar";
-import SystemStatusPills from "@/components/SystemStatusPills";
 import CommandBarTrigger from "@/components/CommandBarTrigger";
 import NotificationCenter from "@/components/NotificationCenter";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -203,14 +202,12 @@ function TopBar() {
           </nav>
         </div>
 
-        {/* Center — System status */}
-        <div className="col-start-2 hidden min-w-0 items-center justify-center justify-self-center lg:flex lg:-ml-8 pointer-events-auto">
-          <SystemStatusPills />
-        </div>
+        {/* Center — reserved for Dynamic Island */}
+        <div className="col-start-2 hidden min-w-0 items-center justify-center justify-self-center lg:flex pointer-events-none" />
 
         {/* Right — Quick tools, palette, profile */}
-        <div className="col-start-3 flex min-w-0 items-center justify-end gap-2 sm:gap-3 justify-self-end pointer-events-auto">
-          <div className="hidden items-center gap-1.5 sm:gap-2 md:flex pointer-events-auto">
+        <div className="col-start-3 flex min-w-0 items-center justify-end gap-2.5 sm:gap-4 justify-self-end pointer-events-auto">
+          <div className="hidden items-center gap-2 sm:gap-3 md:flex pointer-events-auto">
             <WeatherQuickButton />
             <ThemeToggle />
             <FocusToggle />

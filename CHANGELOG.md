@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.4 — 2026-08-26
+
+**ETHONE — Fichiers : phase 2, vue liste en colonnes**
+
+- `components/FileCard.tsx` : refonte de la vue liste avec une grille CSS.
+  - Colonmes alignées : Nom, Taille, Date, Actions.
+  - Mobile : métas cachées, nom compact.
+- `app/files/page.tsx` : header de liste affiché pour repérer les colonmes.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.3 — 2026-08-26
 
 **ETHONE — Fichiers : vrai rework, phase 1 header + empty state**

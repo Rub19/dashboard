@@ -175,44 +175,77 @@ export default function FileCard({
           : "border-[var(--panel-border)]/[0.12]",
       )}
     >
-      <div
-        className={cn(
-          "flex h-full min-w-0",
-          isGrid ? "flex-col items-center justify-between text-center" : "flex-col items-start gap-3 sm:flex-row sm:items-center",
-        )}
-      >
-        {!isGrid && (
+      {isGrid ? (
+        <div className="flex h-full min-w-0 flex-col items-center justify-between text-center p-1">
+          <button
+            type="button"
+            onClick={onOpen}
+            className="flex w-full min-w-0 flex-col items-center gap-3 text-left focus:outline-none"
+          >
+            {iconPreview}
+            <div className="min-w-0 flex-1">
+              <p className="line-clamp-2 text-sm font-medium text-[var(--text-primary)]" title={file.name}>
+                {file.name}
+              </p>
+              <p className="truncate text-[11px] text-[var(--text-muted)]">
+                {file.isFolder
+                  ? i18n("folder")
+                  : `${formatBytes(file.size)} · ${formatDateShort(file.updatedAt)}`}
+              </p>
+            </div>
+          </button>
+          {actions}
+        </div>
+      ) : (
+        <div className="grid h-full min-w-0 grid-cols-[1.5rem_2.5rem_minmax(0,1fr)_4rem] items-center gap-3 sm:grid-cols-[1.5rem_2.5rem_minmax(0,1fr)_6rem_6rem_7rem]">
           <Checkbox
             checked={selected ?? false}
             onCheckedChange={onToggle ?? (() => {})}
             aria-label={i18n("select")}
             onClick={(e) => e.stopPropagation()}
           />
-        )}
-
-        <button
-          type="button"
-          onClick={onOpen}
-          className={cn(
-            "flex min-w-0 text-left focus:outline-none",
-            isGrid ? "w-full flex-col items-center gap-3" : "flex-1 items-center gap-3",
-          )}
-        >
-          {iconPreview}
-          <div className="min-w-0 flex-1">
-            <p className={cn("font-medium text-[var(--text-primary)]", isGrid ? "line-clamp-2 text-sm" : "truncate")} title={file.name}>
+          <button
+            type="button"
+            onClick={onOpen}
+            className="focus:outline-none"
+          >
+            {iconPreview}
+          </button>
+          <button
+            type="button"
+            onClick={onOpen}
+            className="min-w-0 text-left focus:outline-none"
+          >
+            <p className="truncate text-sm font-medium text-[var(--text-primary)]" title={file.name}>
               {file.name}
             </p>
-            <p className="truncate text-[11px] text-[var(--text-muted)]">
+            <p className="truncate text-[11px] text-[var(--text-muted)] sm:hidden">
               {file.isFolder
                 ? i18n("folder")
                 : `${formatBytes(file.size)} · ${formatDateShort(file.updatedAt)}`}
             </p>
+          </button>
+          {!file.isFolder && (
+            <>
+              <p className="hidden truncate text-right text-xs text-[var(--text-muted)] sm:block">
+                {formatBytes(file.size)}
+              </p>
+              <p className="hidden truncate text-right text-xs text-[var(--text-muted)] sm:block">
+                {formatDateShort(file.updatedAt)}
+              </p>
+            </>
+          )}
+          {file.isFolder && (
+            <>
+              <span className="hidden text-right text-xs text-[var(--text-muted)] sm:block">—</span>
+              <span className="hidden text-right text-xs text-[var(--text-muted)] sm:block">—</span>
+            </>
+          )}
+          <div onClick={(e) => e.stopPropagation()} className="flex items-center justify-end gap-0.5">
+            {actions}
           </div>
-        </button>
-
-        {actions}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

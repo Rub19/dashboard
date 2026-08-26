@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.4",
+  date: "2026-08-26",
+  title: "Fichiers — phase 2 : vue liste en colonnes",
+  items: [
+    "Refonte de `FileCard` en vue liste avec une grille CSS.",
+    "Colonnes alignées : Nom, Taille, Date, Actions.",
+    "Header de liste affiché en haut pour repérer les colonnes.",
+    "Vue mobile adaptée (métas cachées, nom sous forme compacte).",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.4.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.4",
+  date: "2026-08-26",
+  title: "Files — phase 2: list view with columns",
+  items: [
+    "Redesigned `FileCard` list view with a CSS grid.",
+    "Aligned columns: Name, Size, Date, Actions.",
+    "List header displayed at the top to identify columns.",
+    "Mobile-friendly (hidden meta, compact name).",
+    "Validation: build, lint.",
+    "Version badge: v1.10.4.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.4",
+  date: "2026-08-26",
+  title: "Archivos — fase 2: vista lista en columnas",
+  items: [
+    "`FileCard` rediseñado en vista lista con una cuadrícula CSS.",
+    "Columnas alineadas: Nombre, Tamaño, Fecha, Acciones.",
+    "Encabezado de lista en la parte superior para identificar las columnas.",
+    "Adaptado a móvil (metas ocultas, nombre compacto).",
+    "Validación : build, lint.",
+    "Versión : v1.10.4.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.4",
+  date: "2026-08-26",
+  title: "Dateien — Phase 2: Listenansicht mit Spalten",
+  items: [
+    "`FileCard` Listenansicht mit CSS-Grid neu gestaltet.",
+    "Ausgerichtete Spalten: Name, Größe, Datum, Aktionen.",
+    "Listen-Header oben zur Spaltenerkennung.",
+    "Mobil angepasst (versteckte Metas, kompakter Name).",
+    "Validierung: build, lint.",
+    "Version: v1.10.4.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.3",
   date: "2026-08-26",
   title: "Fichiers — vrai rework : header + empty state",

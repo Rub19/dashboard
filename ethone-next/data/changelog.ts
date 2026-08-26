@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.57",
+  date: "2026-08-26",
+  title: "UI polish — étape 1 : système de badges",
+  items: [
+    "Extension du composant `Badge` avec les variants : online, offline, new, synced, connected, beta, pro, brain.",
+    "Les couleurs restent basées sur les variables du thème (success, info, warning, danger, accent).",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.57.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.57",
+  date: "2026-08-26",
+  title: "UI polish — step 1: badge system",
+  items: [
+    "Extended `Badge` component with variants: online, offline, new, synced, connected, beta, pro, brain.",
+    "Colors remain based on theme variables (success, info, warning, danger, accent).",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.57.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.57",
+  date: "2026-08-26",
+  title: "UI polish — paso 1: sistema de badges",
+  items: [
+    "Componente `Badge` extendido con variantes: online, offline, new, synced, connected, beta, pro, brain.",
+    "Los colores siguen basados en las variables del tema (success, info, warning, danger, accent).",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.57.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.57",
+  date: "2026-08-26",
+  title: "UI polish — Schritt 1: Badge-System",
+  items: [
+    "`Badge`-Komponente erweitert mit Varianten: online, offline, new, synced, connected, beta, pro, brain.",
+    "Farben bleiben auf Theme-Variablen (success, info, warning, danger, accent) basiert.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.57.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.56",
   date: "2026-08-26",
   title: "Dynamic Island 2.0 — étape 4 : transitions musicales",

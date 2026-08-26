@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.57 — 2026-08-26
+
+**ETHONE — UI polish : étape 1 — système de badges**
+
+- Extension du composant `Badge` avec les variants : `online`, `offline`, `new`, `synced`, `connected`, `beta`, `pro`, `brain`.
+- Les couleurs restent basées sur les variables du thème.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.56 — 2026-08-26
 
 **ETHONE — Dynamic Island 2.0 : étape 4 — transitions musicales**

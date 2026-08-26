@@ -10,7 +10,15 @@ export type BadgeVariant =
   | "success"
   | "warning"
   | "danger"
-  | "muted";
+  | "muted"
+  | "online"
+  | "offline"
+  | "new"
+  | "synced"
+  | "connected"
+  | "beta"
+  | "pro"
+  | "brain";
 
 type BadgeProps = {
   children: React.ReactNode;
@@ -29,6 +37,14 @@ const VARIANTS: Record<BadgeVariant, string> = {
   warning: "border-[var(--warning)]/20 bg-[var(--warning)]/10 text-[var(--warning)]",
   danger: "border-[var(--danger)]/20 bg-[var(--danger)]/10 text-[var(--danger)]",
   muted: "border-transparent bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)]",
+  online: "border-transparent bg-[var(--success)]/15 text-[var(--success)]",
+  offline: "border-transparent bg-[var(--text-muted)]/10 text-[var(--text-muted)]",
+  new: "border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/12 text-[var(--accent-primary)]",
+  synced: "border-[var(--info)]/25 bg-[var(--info)]/12 text-[var(--info)]",
+  connected: "border-[var(--success)]/25 bg-[var(--success)]/12 text-[var(--success)]",
+  beta: "border-[var(--warning)]/25 bg-[var(--warning)]/12 text-[var(--warning)]",
+  pro: "border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/12 text-[var(--accent-primary)]",
+  brain: "border-[var(--info)]/25 bg-[var(--info)]/12 text-[var(--info)]",
 };
 
 const SIZES = {

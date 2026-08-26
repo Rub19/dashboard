@@ -124,11 +124,11 @@ export function useNowPlaying(pollMs = 30000) {
 
   useEffect(() => {
     if (!path) return;
-    // The Dynamic Island opts into a 1s watcher so it can detect a new track
+    // The Dynamic Island opts into a sub-second watcher so it can detect a new track
     // or a resumed play state without requiring a manual Settings test.
     const islandWatcher = basePollMs <= 1000;
     if (!data?.isPlaying && !islandWatcher) return;
-    const intervalMs = islandWatcher ? 1000 : Math.min(5000, basePollMs);
+    const intervalMs = islandWatcher ? Math.max(500, basePollMs) : Math.min(5000, basePollMs);
     const interval = setInterval(() => refresh(), intervalMs);
     return () => clearInterval(interval);
   }, [data?.isPlaying, basePollMs, path, refresh]);

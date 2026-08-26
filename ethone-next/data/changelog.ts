@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.42",
+  date: "2026-08-26",
+  title: "Dynamic Island Spotify — taille + refresh album",
+  items: [
+    "La pillule Spotify/Now Playing est plus large (`min-w-[min(90vw,380px)]`) et plus haute (`min-h-[56px]`) avec une pochette 40x40.",
+    "Le polling du now-playing est passé à 500 ms quand la Dynamic Island est active pour rafraîchir l'album/pochette plus souvent.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.42.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.42",
+  date: "2026-08-26",
+  title: "Dynamic Island Spotify — size + album refresh",
+  items: [
+    "The Spotify/Now Playing pill is now wider (`min-w-[min(90vw,380px)]`) and taller (`min-h-[56px]`) with a 40x40 cover.",
+    "Now-playing polling is now 500 ms when the Dynamic Island is active, to refresh the album/cover more often.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.42.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.42",
+  date: "2026-08-26",
+  title: "Dynamic Island Spotify — tamaño + refresco de álbum",
+  items: [
+    "La píldora Spotify/Now Playing es más ancha (`min-w-[min(90vw,380px)]`) y más alta (`min-h-[56px]`) con una portada de 40x40.",
+    "El polling de now-playing pasa a 500 ms cuando la Dynamic Island está activa, para refrescar el álbum/portada más a menudo.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.42.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.42",
+  date: "2026-08-26",
+  title: "Dynamic Island Spotify — Größe + Album-Refresh",
+  items: [
+    "Die Spotify/Now-Playing-Pille ist jetzt breiter (`min-w-[min(90vw,380px)]`) und höher (`min-h-[56px]`) mit einem 40x40-Cover.",
+    "Now-Playing-Polling ist jetzt 500 ms, wenn die Dynamic Island aktiv ist, um Album/Cover häufiger zu aktualisieren.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.42.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.41",
   date: "2026-08-26",
   title: "TopBar — retour au bouton Dynamic Island",

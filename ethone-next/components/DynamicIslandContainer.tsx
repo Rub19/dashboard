@@ -86,13 +86,13 @@ function SpotifyCompact({
   const shouldMarquee = trackTitle.length > 24;
 
   return (
-    <div className="flex min-h-[48px] min-w-[min(88vw,340px)] items-center gap-2.5 px-3">
+    <div className="flex min-h-[56px] min-w-[min(90vw,380px)] items-center gap-3.5 px-4">
       <SafeImage
         candidates={coverCandidates}
         alt={trackTitle}
-        size={32}
-        className="h-8 w-8 shrink-0 rounded-lg object-cover shadow-[0_0_14px_var(--glow-color)] ring-1 ring-[var(--accent-primary)]/25"
-        iconClassName="h-4 w-4 text-[var(--accent-primary)]"
+        size={40}
+        className="h-10 w-10 shrink-0 rounded-lg object-cover shadow-[0_0_14px_var(--glow-color)] ring-1 ring-[var(--accent-primary)]/25"
+        iconClassName="h-5 w-5 text-[var(--accent-primary)]"
         loading="eager"
         priority
         timeoutMs={3000}
@@ -221,7 +221,7 @@ export default function DynamicIslandContainer() {
   const { settings } = useSettings();
   const { success: showSuccess, error: showError } = useToast();
   const focus = useFocus();
-  const { nowPlaying, loading: npLoading, refetch: refetchNowPlaying } = useNowPlaying(1000);
+  const { nowPlaying, loading: npLoading, refetch: refetchNowPlaying } = useNowPlaying(500);
   const isThinking = useBrainActivityStore((s) => s.isThinking);
   const { visible } = useDynamicIslandStore();
   const { pendingCount, syncing, lastSync, syncError, sync } = useActivityJournal();

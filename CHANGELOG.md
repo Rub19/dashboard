@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.42 — 2026-08-26
+
+**ETHONE — Dynamic Island Spotify : taille + refresh album**
+
+- La pillule Spotify/Now Playing est plus large et plus haute (`min-h-[56px]`, `min-w-[min(90vw,380px)]`) avec une pochette 40x40.
+- Le polling now-playing est passé à 500 ms quand la Dynamic Island est active pour rafraîchir l'album/pochette plus souvent.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.41 — 2026-08-26
 
 **ETHONE — TopBar : retour au bouton Dynamic Island**

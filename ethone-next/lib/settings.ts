@@ -61,7 +61,19 @@ export type SoundPack =
   | "mechanical"
   | "liquid";
 
-export type SoundAmbient = "none" | "pink" | "brown" | "white" | "rain" | "drone";
+export type SoundAmbient =
+  | "none"
+  | "pink"
+  | "brown"
+  | "white"
+  | "rain"
+  | "drone"
+  | "fireplace"
+  | "ocean"
+  | "forest"
+  | "cafe"
+  | "night"
+  | "wind";
 
 export type SoundVolumeCategory = "interface" | "notifications" | "brain" | "system";
 

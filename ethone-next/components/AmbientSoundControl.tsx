@@ -8,15 +8,36 @@ import { useSettings } from "@/components/SettingsProvider";
 import { cn } from "@/lib/utils";
 import type { SoundAmbient } from "@/lib/settings";
 
-const AMBIENT_SOUNDS = ["none", "rain", "pink", "brown", "white", "drone"] as const;
+const AMBIENT_SOUNDS = ["none", "rain", "wind", "ocean", "fireplace", "forest", "cafe", "night", "pink", "brown", "white", "drone"] as const;
 
 const AMBIENT_ICONS: Record<string, string> = {
   none: "volume-x",
   rain: "cloud-rain",
+  wind: "wind",
+  ocean: "waves",
+  fireplace: "flame",
+  forest: "trees",
+  cafe: "coffee",
+  night: "moon",
   pink: "sparkles",
   brown: "coffee",
   white: "wind",
   drone: "disc",
+};
+
+const AMBIENT_LABELS: Record<string, string> = {
+  none: "Aucun",
+  rain: "Pluie",
+  wind: "Vent",
+  ocean: "Océan",
+  fireplace: "Cheminée",
+  forest: "Forêt",
+  cafe: "Café",
+  night: "Nuit",
+  pink: "Rose",
+  brown: "Brun",
+  white: "Blanc",
+  drone: "Drone",
 };
 
 export type AmbientSoundControlProps = {
@@ -74,12 +95,12 @@ export default function AmbientSoundControl({ value, onChange, compact }: Ambien
     <div
       className={cn(
         "flex w-full gap-2",
-        compact ? "overflow-x-auto no-scrollbar" : "grid grid-cols-3 sm:grid-cols-6"
+        compact ? "overflow-x-auto no-scrollbar" : "grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6"
       )}
     >
       {AMBIENT_SOUNDS.map((id) => {
         const active = current === id;
-        const label = i18n(`ambientSound${id.charAt(0).toUpperCase() + id.slice(1)}`);
+        const label = i18n(`ambientSound${id.charAt(0).toUpperCase() + id.slice(1)}`, AMBIENT_LABELS[id] ?? id);
         return (
           <button
             key={id}

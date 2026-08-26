@@ -616,6 +616,14 @@ function createAmbientBuffer(ctx: BaseAudioContext, type: SoundAmbient): AudioBu
     }
   } else if (type === "rain") {
     renderRainLayer(data, ctx.sampleRate);
+  } else if (type === "fireplace") {
+    renderFireplace(data, ctx.sampleRate);
+  } else if (type === "ocean") {
+    renderOcean(data, ctx.sampleRate);
+  } else if (type === "wind") {
+    renderWind(data, ctx.sampleRate);
+  } else if (["forest", "cafe", "night"].includes(type)) {
+    renderColorScene(data, ctx.sampleRate, type as "forest" | "cafe" | "night");
   } else {
     for (let i = 0; i < length; i++) data[i] = 0;
   }
@@ -673,6 +681,115 @@ function renderRainLayer(data: Float32Array, sampleRate: number): void {
     const modulation = 0.8 + 0.13 * Math.sin(time * 0.22) + 0.07 * Math.sin(time * 0.05) + Math.random() * 0.05;
 
     data[i] = Math.max(-1, Math.min(1, (brown * 0.42 + pink * 0.32 + droplet * 0.85) * modulation * 0.55));
+  }
+}
+
+function renderBrownNoise(data: Float32Array, scale = 0.6): number {
+  let last = 0;
+  for (let i = 0; i < data.length; i++) {
+    const white = Math.random() * 2 - 1;
+    last = (last + 0.08 * white) / 1.08;
+    data[i] = last * scale;
+  }
+  return 0;
+}
+
+function renderPinkNoise(data: Float32Array, scale = 0.1): void {
+  let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+  for (let i = 0; i < data.length; i++) {
+    const white = Math.random() * 2 - 1;
+    b0 = 0.99886 * b0 + white * 0.0555179;
+    b1 = 0.99332 * b1 + white * 0.0750759;
+    b2 = 0.969 * b2 + white * 0.153852;
+    b3 = 0.8665 * b3 + white * 0.3104856;
+    b4 = 0.55 * b4 + white * 0.5329522;
+    b5 = -0.7616 * b5 - white * 0.016898;
+    const out = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * scale;
+    b6 = white * 0.115926;
+    data[i] = out;
+  }
+}
+
+function renderFireplace(data: Float32Array, sampleRate: number): void {
+  renderBrownNoise(data, 0.45);
+  const length = data.length;
+  const crackles: { start: number; amp: number; decay: number }[] = [];
+  let t = Math.floor(sampleRate * 0.2);
+  while (t < length) {
+    t += Math.floor(sampleRate * (0.15 + Math.random() * 1.1));
+    if (t >= length) break;
+    crackles.push({ start: t, amp: 0.3 + Math.random() * 0.5, decay: Math.exp(-1 / (sampleRate * 0.018)) });
+  }
+  crackles.sort((a, b) => a.start - b.start);
+  let next = 0;
+  let env = 0;
+  for (let i = 0; i < length; i++) {
+    while (next < crackles.length && i >= crackles[next].start) {
+      env += crackles[next].amp;
+      next++;
+    }
+    env *= crackles[next - 1]?.decay ?? 0.95;
+    const snap = (Math.random() * 2 - 1) * env * 0.9;
+    data[i] = Math.max(-1, Math.min(1, data[i] * (1 + env * 0.4) + snap));
+  }
+}
+
+function renderOcean(data: Float32Array, sampleRate: number): void {
+  renderPinkNoise(data, 0.08);
+  const length = data.length;
+  for (let i = 0; i < length; i++) {
+    const t = i / sampleRate;
+    const wave = 0.5 + 0.5 * Math.sin(t * 0.08) * (0.7 + 0.3 * Math.sin(t * 0.03));
+    data[i] *= wave;
+  }
+}
+
+function renderWind(data: Float32Array, sampleRate: number): void {
+  renderPinkNoise(data, 0.1);
+  const length = data.length;
+  let gust = 0;
+  for (let i = 0; i < length; i++) {
+    const t = i / sampleRate;
+    const target = 0.6 + 0.4 * Math.sin(t * 0.2) + 0.2 * Math.sin(t * 1.1) + (Math.random() - 0.5) * 0.15;
+    gust += (target - gust) * 0.0015;
+    data[i] *= Math.max(0.3, gust);
+  }
+}
+
+function renderColorScene(data: Float32Array, sampleRate: number, type: "forest" | "cafe" | "night"): void {
+  renderBrownNoise(data, type === "night" ? 0.35 : 0.5);
+  const length = data.length;
+  const interval = type === "night" ? 1.8 : type === "cafe" ? 0.9 : 1.4;
+  const events: { start: number; amp: number; freq: number; decay: number }[] = [];
+  let t = Math.floor(sampleRate * 0.5);
+  while (t < length) {
+    t += Math.floor(sampleRate * (interval * 0.5 + Math.random() * interval));
+    if (t >= length) break;
+    events.push({
+      start: t,
+      amp: 0.15 + Math.random() * 0.25,
+      freq: type === "night" ? 4500 + Math.random() * 2500 : 2000 + Math.random() * 6000,
+      decay: Math.exp(-1 / (sampleRate * (type === "night" ? 0.04 : 0.025))),
+    });
+  }
+  events.sort((a, b) => a.start - b.start);
+  let phase = 0;
+  let next = 0;
+  let env = 0;
+  let active: { freq: number; decay: number } | null = null;
+  for (let i = 0; i < length; i++) {
+    while (next < events.length && i >= events[next].start) {
+      active = { freq: events[next].freq, decay: events[next].decay };
+      env += events[next].amp;
+      next++;
+    }
+    if (active) {
+      phase += (active.freq / sampleRate) * Math.PI * 2;
+      env *= active.decay;
+      if (env < 0.001) active = null;
+    }
+    const burst = Math.sin(phase) * env * 0.7;
+    data[i] = Math.max(-1, Math.min(1, data[i] + burst));
   }
 }
 
@@ -776,8 +893,21 @@ export function SoundProvider({ children }: { children: ReactNode }) {
 
       const filter = ctx.createBiquadFilter();
       filter.type = "lowpass";
-      filter.frequency.value =
-        type === "rain" ? 850 : type === "drone" ? 420 : type === "brown" ? 500 : 1800;
+      const filterFreq: Record<SoundAmbient, number> = {
+        none: 1800,
+        rain: 850,
+        drone: 420,
+        brown: 500,
+        white: 2400,
+        pink: 1800,
+        fireplace: 700,
+        ocean: 650,
+        wind: 1400,
+        forest: 2200,
+        cafe: 2400,
+        night: 1600,
+      };
+      filter.frequency.value = filterFreq[type] ?? 1800;
       filter.Q.value = 0.7;
 
       const state: AmbientState = { type, source: null, gain: ambientGain, filter, nodes: [] };

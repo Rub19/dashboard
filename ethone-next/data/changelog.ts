@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.31",
+  date: "2026-08-26",
+  title: "Mobile login pass 4 — landscape, offline, OTP auto",
+  items: [
+    "Mode compact paysage mobile : padding, logo, titre, tabs et espacements réduits.",
+    "Bannière hors ligne sur la page login quand `navigator.onLine` est faux.",
+    "Auto-soumission du formulaire OTP dès que 6 chiffres sont saisis.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.31.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.31",
+  date: "2026-08-26",
+  title: "Mobile login pass 4 — landscape, offline, OTP auto",
+  items: [
+    "Compact landscape mobile mode : reduced padding, logo, title, tabs and spacing.",
+    "Offline banner on the login page when `navigator.onLine` is false.",
+    "Auto-submit OTP form as soon as 6 digits are entered.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.31.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.31",
+  date: "2026-08-26",
+  title: "Mobile login pass 4 — landscape, offline, OTP auto",
+  items: [
+    "Modo paisaje móvil compacto : padding, logo, título, tabs y espaciados reducidos.",
+    "Banner sin conexión en la página de login cuando `navigator.onLine` es falso.",
+    "Auto-envío del formulario OTP en cuanto se introducen 6 dígitos.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.31.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.31",
+  date: "2026-08-26",
+  title: "Mobile Login Pass 4 — Landscape, Offline, OTP Auto",
+  items: [
+    "Kompakter mobiler Querformat-Modus : reduzierte Padding, Logo, Titel, Tabs und Abstände.",
+    "Offline-Banner auf der Login-Seite wenn `navigator.onLine` false ist.",
+    "OTP-Formular wird automatisch abgesendet sobald 6 Ziffern eingegeben sind.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.31.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.30",
   date: "2026-08-26",
   title: "Mobile login pass 3 — finitions",

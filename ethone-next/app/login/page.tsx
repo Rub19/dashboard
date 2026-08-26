@@ -7,6 +7,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import useVisualViewport from "@/lib/hooks/useVisualViewport";
+import { useMediaQuery, useIsMobile } from "@/lib/hooks/useMediaQuery";
 import { authLog } from "@/lib/auth-log";
 import { cn } from "@/lib/utils";
 import { required, email as emailValidator, minLength, maxLength, passwordStrength, match, validate } from "@/lib/form-validation";
@@ -177,6 +178,9 @@ export default function LoginPage() {
   const visual = useVisualViewport();
   const cardRef = useRef<HTMLDivElement>(null);
   const keyboardOpen = visual.height > 0 && visual.height < 640;
+  const isMobile = useIsMobile(768);
+  const isLandscape = useMediaQuery("(orientation: landscape)");
+  const compactLandscape = isMobile && isLandscape;
 
   const [mode, setMode] = useState<AuthMode>("password");
   const [otpStep, setOtpStep] = useState<OtpStep>("email");
@@ -327,6 +331,12 @@ export default function LoginPage() {
     setAuthState("success");
     success(i18n("loginSuccess", "Connexion réussie"));
   };
+
+  useEffect(() => {
+    if (mode !== "otp" || otpStep !== "code" || code.length !== 6 || authState !== "idle" || error) return;
+    authLog("OTP auto-submitted");
+    handleVerifyOtp();
+  }, [mode, otpStep, code, authState, error]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handlePassword = async (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -486,13 +496,23 @@ export default function LoginPage() {
       </div>
 
       <div className={cn("relative flex w-full flex-col items-center px-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-[calc(1.5rem+env(safe-area-inset-top))] sm:px-6 sm:pb-8 md:w-3/5 lg:w-1/2 lg:p-10", keyboardOpen ? "justify-start overflow-y-auto" : "justify-center overflow-hidden")}>
+        {!online && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4 flex w-full max-w-md items-center gap-2 rounded-xl border border-[var(--warning)]/20 bg-[var(--warning)]/10 p-3 text-xs text-[var(--warning)]"
+          >
+            <Icon name="wifi-off" className="h-4 w-4 shrink-0" />
+            <span>{i18n("offline", "Vous êtes hors ligne. Vérifiez votre connexion.")}</span>
+          </motion.div>
+        )}
         <div className="relative w-full max-w-md">          <div className="pointer-events-none absolute -inset-1 rounded-[2.25rem] bg-gradient-to-br from-[var(--accent)]/20 via-transparent to-[var(--accent)]/10 blur-2xl" />
           <motion.div
             ref={cardRef}
             initial={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : 20, scale: reduced ? 1 : 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="relative overflow-hidden rounded-[2rem] border border-[var(--border)] bg-[var(--surface)]/85 p-6 backdrop-blur-2xl sm:p-8 lg:p-10"
+            className={cn("relative overflow-hidden rounded-[2rem] border border-[var(--border)] bg-[var(--surface)]/85 p-6 backdrop-blur-2xl sm:p-8 lg:p-10", compactLandscape && "p-4 sm:p-5 lg:p-5")}
             style={{ boxShadow: "inset 0 1px 1px rgba(255,255,255,0.06), 0 25px 50px -12px rgba(0,0,0,0.5)" }}
           >
             <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/40 to-transparent" />
@@ -502,16 +522,16 @@ export default function LoginPage() {
               <motion.div
                 animate={reduced ? undefined : { scale: [1, 1.04, 1], opacity: [0.85, 1, 0.85] }}
                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--accent)]/10 ring-1 ring-[var(--accent)]/20 shadow-[0_0_24px_-8px_var(--accent)]"
+                className={cn("relative flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--accent)]/10 ring-1 ring-[var(--accent)]/20 shadow-[0_0_24px_-8px_var(--accent)]", compactLandscape && "h-12 w-12")}
               >
                 <BrandMark size={38} />
               </motion.div>
-              <h2 className="mt-4 text-2xl font-bold tracking-tight text-[var(--foreground)]">{i18n("welcomeBack", "Bienvenue")}</h2>
-              <p className="mt-1.5 max-w-[16rem] text-sm leading-relaxed text-[var(--text-muted)]">{i18n("loginDescription", "Connectez-vous à votre environnement.")}</p>
+              <h2 className={cn("mt-4 text-2xl font-bold tracking-tight text-[var(--foreground)]", compactLandscape && "mt-2 text-xl")}>{i18n("welcomeBack", "Bienvenue")}</h2>
+              <p className={cn("mt-1.5 max-w-[16rem] text-sm leading-relaxed text-[var(--text-muted)]", compactLandscape && "hidden sm:block")}>{i18n("loginDescription", "Connectez-vous à votre environnement.")}</p>
             </div>
 
-            <div className="mt-6">
-              <div className="relative grid grid-cols-3 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]/60 p-1 shadow-[inset_0_1px_2px_rgba(0,0,0,0.2)]">
+            <div className={cn("mt-6", compactLandscape && "mt-4")}>
+              <div className={cn("relative grid grid-cols-3 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]/60 p-1 shadow-[inset_0_1px_2px_rgba(0,0,0,0.2)]", compactLandscape && "rounded-xl")}>
                 {(["password", "otp", "register"] as AuthMode[]).map((m) => {
                   const active = mode === m;
                   const label = m === "password" ? i18n("password", "Mot de passe") : m === "otp" ? i18n("otp", "OTP") : i18n("register", "Inscription");
@@ -523,6 +543,7 @@ export default function LoginPage() {
                       disabled={isLoading}
                       className={cn(
                         "relative z-10 select-none rounded-xl px-1 py-2.5 text-[10px] font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-raised)] sm:px-2 sm:text-xs",
+                        compactLandscape && "py-2",
                         active ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--foreground)]"
                       )}
                     >
@@ -551,7 +572,7 @@ export default function LoginPage() {
                   animate={{ opacity: 1, height: "auto", y: 0 }}
                   exit={{ opacity: 0, height: 0, y: -8 }}
                   transition={{ duration: reduced ? 0 : 0.2 }}
-                  className="mt-5 overflow-hidden"
+                  className={cn("mt-5 overflow-hidden", compactLandscape && "mt-3")}
                 >
                   <div className="flex items-start gap-2 rounded-xl border border-[var(--danger)]/20 bg-[var(--danger)]/10 p-3 text-xs text-[var(--danger)]">
                     <Icon name="alert-circle" className="mt-0.5 h-4 w-4 shrink-0 text-[var(--danger)]" />
@@ -570,7 +591,7 @@ export default function LoginPage() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: reduced ? 1 : 0, x: reduced ? 0 : -16 }}
                 transition={{ duration: reduced ? 0 : 0.2, ease: "easeOut" }}
-                className="mt-5 space-y-4"
+                className={cn("mt-5 space-y-4", compactLandscape && "mt-3 space-y-3")}
               >
               <div className="space-y-1.5">
                 <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-email">{i18n("email", "E-mail")}</label>
@@ -701,7 +722,7 @@ export default function LoginPage() {
               </Button>
 
               {mode !== "register" && (
-                <div className="relative flex items-center py-2">
+                <div className={cn("relative flex items-center py-2", compactLandscape && "py-1.5")}>
                   <div className="flex-1 border-t border-[var(--border)]" />
                   <span className="px-3 text-[10px] text-[var(--text-muted)]">{i18n("or", "ou")}</span>
                   <div className="flex-1 border-t border-[var(--border)]" />
@@ -729,7 +750,7 @@ export default function LoginPage() {
               </motion.form>
             </AnimatePresence>
 
-            <div className="mt-6 text-center text-xs text-[var(--text-muted)]">
+            <div className={cn("mt-6 text-center text-xs text-[var(--text-muted)]", compactLandscape && "mt-4")}>
               {mode === "register" ? (
                 <button type="button" onClick={() => { triggerHaptic("light"); setModeAndReset("password"); }} className="h-10 rounded-lg px-3 py-2 text-[var(--accent-primary)] transition-all hover:opacity-80 active:scale-95">
                   {i18n("alreadyHaveAccount", "Déjà un compte ? Se connecter")}

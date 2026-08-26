@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.31 — 2026-08-26
+
+**ETHONE — Mobile login pass 4 (landscape, offline, OTP auto)**
+
+- Mode compact paysage mobile : padding, logo, titre, tabs et espacements réduits.
+- Bannière hors ligne sur la page login quand `navigator.onLine` est faux.
+- Auto-soumission du formulaire OTP dès que 6 chiffres sont saisis.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.30 — 2026-08-26
 
 **ETHONE — Mobile login pass 3 (finitions)**

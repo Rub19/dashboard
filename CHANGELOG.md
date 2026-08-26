@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.19 — 2026-08-26
+
+**ETHONE — Fichiers v2 : drag & drop overlay**
+
+- Polish de `components/FileDropOverlay.tsx`.
+- Overlay plus subtil (backdrop-blur-xl), zone de drop plus compacte.
+- Bordure dashed 2px, glow et animation conservés.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.18 — 2026-08-26
 
 **ETHONE — Fichiers v2 : menu Ajouter**

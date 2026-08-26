@@ -85,7 +85,7 @@ export default function FileDropOverlay({ onDrop, disabled }: FileDropOverlayPro
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: reduce ? 0 : 0.2 }}
-          className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-[var(--background)]/70 p-6 backdrop-blur-md"
+          className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-[var(--background)]/60 p-6 backdrop-blur-xl"
           onClick={() => setDragging(false)}
           onDragEnter={(e) => e.preventDefault()}
           onDragOver={(e) => e.preventDefault()}
@@ -115,9 +115,9 @@ export default function FileDropOverlay({ onDrop, disabled }: FileDropOverlayPro
               scale: reduce ? { duration: 0 } : { type: "spring", stiffness: 320, damping: 26 },
               boxShadow: reduce ? { duration: 0 } : { repeat: Infinity, duration: 2.2, ease: "easeInOut" },
             }}
-            className="flex h-[min(80vh,480px)] w-[min(92vw,680px)] flex-col items-center justify-center rounded-3xl border border-dashed border-[var(--accent-primary)]/[0.4] bg-[var(--panel-bg)]/[0.85] p-10 text-center"
+            className="flex h-[min(70vh,420px)] w-[min(92vw,600px)] flex-col items-center justify-center rounded-3xl border-2 border-dashed border-[var(--accent-primary)]/[0.5] bg-[var(--panel-bg)]/[0.9] p-10 text-center"
           >
-            <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+            <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-2xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
               <Upload className="h-10 w-10" />
             </div>
             <h3 className="text-lg font-semibold text-[var(--text-primary)]">

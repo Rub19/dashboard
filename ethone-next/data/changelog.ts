@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.19",
+  date: "2026-08-26",
+  title: "Fichiers v2 — drag & drop overlay",
+  items: [
+    "Polish de `components/FileDropOverlay.tsx`.",
+    "Overlay plus subtil (backdrop-blur-xl), zone de drop plus compacte, bordure dashed 2px.",
+    "Glow et animation de respiration conservés.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.19.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.19",
+  date: "2026-08-26",
+  title: "Files v2 — drag & drop overlay",
+  items: [
+    "Polished `components/FileDropOverlay.tsx`.",
+    "More subtle overlay (backdrop-blur-xl), smaller drop zone, 2px dashed border.",
+    "Glow and breathing animation preserved.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.19.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.19",
+  date: "2026-08-26",
+  title: "Ficheros v2 — overlay de arrastrar y soltar",
+  items: [
+    "Pulido de `components/FileDropOverlay.tsx`.",
+    "Overlay más sutil (backdrop-blur-xl), zona de drop más compacta, borde dashed 2px.",
+    "Glow y animación de respiración conservados.",
+    "Validación : build, lint.",
+    "Versión : v1.10.19.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.19",
+  date: "2026-08-26",
+  title: "Dateien v2 — Drag & Drop Overlay",
+  items: [
+    "Feinschliff von `components/FileDropOverlay.tsx`.",
+    "Subtileres Overlay (backdrop-blur-xl), kompaktere Drop-Zone, 2px dashed Rahmen.",
+    "Glow und Atemanimation erhalten.",
+    "Validierung: build, lint.",
+    "Version: v1.10.19.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.18",
   date: "2026-08-26",
   title: "Fichiers v2 — menu Ajouter",

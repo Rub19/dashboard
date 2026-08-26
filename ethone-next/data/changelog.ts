@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.56",
+  date: "2026-08-26",
+  title: "Dynamic Island 2.0 — étape 4 : transitions musicales",
+  items: [
+    "Le visualiseur audio n'est plus recréé quand le morceau change.",
+    "Pochette + titres/artiste/album entourent un `AnimatePresence` avec crossfade slide sur changement de piste.",
+    "`AudioVisualizer` garde son état interne et ses phases initiales même si le `seed` change.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.56.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.56",
+  date: "2026-08-26",
+  title: "Dynamic Island 2.0 — step 4: music transitions",
+  items: [
+    "Audio visualizer is no longer recreated when the track changes.",
+    "Cover + title/artist/album wrapped in `AnimatePresence` with crossfade slide on track change.",
+    "`AudioVisualizer` keeps its internal state and initial phases even if `seed` changes.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.56.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.56",
+  date: "2026-08-26",
+  title: "Dynamic Island 2.0 — paso 4: transiciones musicales",
+  items: [
+    "El visualizador de audio ya no se recrea cuando cambia la canción.",
+    "Portada + título/artista/álbum envueltos en `AnimatePresence` con crossfade slide al cambiar de pista.",
+    "`AudioVisualizer` mantiene su estado interno y fases iniciales incluso si `seed` cambia.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.56.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.56",
+  date: "2026-08-26",
+  title: "Dynamic Island 2.0 — Schritt 4: Musiktransitionen",
+  items: [
+    "Audio-Visualizer wird bei Liedwechsel nicht mehr neu erstellt.",
+    "Cover + Titel/Künstler/Album in `AnimatePresence` mit Crossfade-Slide beim Liedwechsel.",
+    "`AudioVisualizer` behält seinen internen Zustand und Initialphasen auch wenn `seed` sich ändert.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.56.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.55",
   date: "2026-08-26",
   title: "Dynamic Island 2.0 — étape 3 : visualiseur audio",

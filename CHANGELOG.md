@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.56 — 2026-08-26
+
+**ETHONE — Dynamic Island 2.0 : étape 4 — transitions musicales**
+
+- Le visualiseur audio n'est plus recréé quand le morceau change.
+- Pochette + titres/artiste/album entourés d'un `AnimatePresence` avec crossfade slide sur changement de piste.
+- `AudioVisualizer` garde son état interne et ses phases initiales même si le `seed` change.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.55 — 2026-08-26
 
 **ETHONE — Dynamic Island 2.0 : étape 3 — visualiseur audio**

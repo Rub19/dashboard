@@ -576,44 +576,53 @@ export default function DynamicIslandContainer() {
                   </span>
                 </div>
 
-                <div className="flex items-center gap-4">
-                  <SafeImage
-                    candidates={[nowPlaying?.cover, nowPlaying?.artworkUrl, ...(nowPlaying?.covers || [])]}
-                    alt={nowPlaying?.title || "Spotify"}
-                    size={80}
-                    className="h-20 w-20 shrink-0 rounded-2xl object-cover shadow-lg ring-1 ring-[var(--text-primary)]/10"
-                    iconClassName="h-7 w-7 text-[var(--accent-primary)]"
-                    loading="eager"
-                    priority
-                    timeoutMs={8000}
-                  />
-                  <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
-                    <p className="line-clamp-2 text-sm font-semibold leading-snug text-[var(--text-primary)]">
-                      {nowPlaying?.title || "Spotify"}
-                    </p>
-                    <p className="truncate text-xs text-[var(--text-muted)]">
-                      {nowPlaying?.artist || i18n("spotifyPlaying")}
-                    </p>
-                    <p className="truncate text-[10px] text-[var(--accent-primary)]/80">
-                      {nowPlaying?.album || i18n("spotify", "Spotify")}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={toggleLike}
-                    disabled={likeLoading || !nowPlaying?.id}
-                    className={cn(
-                      "flex h-8 w-8 items-center justify-center rounded-full transition-all duration-200",
-                      isSaved
-                        ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/25"
-                        : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--accent-primary)]",
-                    )}
-                    aria-label={isSaved ? i18n("unlike") : i18n("like")}
-                    title={isSaved ? i18n("unlike") : i18n("like")}
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={nowPlaying?.id || nowPlaying?.title || "spotify"}
+                    initial={{ opacity: 0, x: 14 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -14 }}
+                    transition={{ duration: 0.25, ease: EASE_OUT }}
+                    className="flex items-center gap-4"
                   >
-                    <Icon name="heart" pack="phosphor" className={cn("h-4 w-4", isSaved && "fill-current")} />
-                  </button>
-                </div>
+                    <SafeImage
+                      candidates={[nowPlaying?.cover, nowPlaying?.artworkUrl, ...(nowPlaying?.covers || [])]}
+                      alt={nowPlaying?.title || "Spotify"}
+                      size={80}
+                      className="h-20 w-20 shrink-0 rounded-2xl object-cover shadow-lg ring-1 ring-[var(--text-primary)]/10"
+                      iconClassName="h-7 w-7 text-[var(--accent-primary)]"
+                      loading="eager"
+                      priority
+                      timeoutMs={8000}
+                    />
+                    <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
+                      <p className="line-clamp-2 text-sm font-semibold leading-snug text-[var(--text-primary)]">
+                        {nowPlaying?.title || "Spotify"}
+                      </p>
+                      <p className="truncate text-xs text-[var(--text-muted)]">
+                        {nowPlaying?.artist || i18n("spotifyPlaying")}
+                      </p>
+                      <p className="truncate text-[10px] text-[var(--accent-primary)]/80">
+                        {nowPlaying?.album || i18n("spotify", "Spotify")}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={toggleLike}
+                      disabled={likeLoading || !nowPlaying?.id}
+                      className={cn(
+                        "flex h-8 w-8 items-center justify-center rounded-full transition-all duration-200",
+                        isSaved
+                          ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/25"
+                          : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--accent-primary)]",
+                      )}
+                      aria-label={isSaved ? i18n("unlike") : i18n("like")}
+                      title={isSaved ? i18n("unlike") : i18n("like")}
+                    >
+                      <Icon name="heart" pack="phosphor" className={cn("h-4 w-4", isSaved && "fill-current")} />
+                    </button>
+                  </motion.div>
+                </AnimatePresence>
 
                 <AudioVisualizer
                   seed={nowPlaying?.id || nowPlaying?.title || ""}

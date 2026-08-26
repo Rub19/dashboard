@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.53",
+  date: "2026-08-26",
+  title: "Dynamic Island 2.0 — étape 1 : compact et ouverture contrôlée",
+  items: [
+    "Suppression de l'ouverture automatique au survol de la Dynamic Island.",
+    "La Dynamic Island ne s'ouvre maintenant que sur clic / focus / interaction explicite.",
+    "Compact Spotify retravaillé : pillule fine 38 px, seulement icône + titre.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.53.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.53",
+  date: "2026-08-26",
+  title: "Dynamic Island 2.0 — step 1: compact and controlled open",
+  items: [
+    "Removed hover auto-open on the Dynamic Island.",
+    "The Dynamic Island now only opens on click / focus / explicit interaction.",
+    "Spotify compact reworked: 38 px thin pill, icon + title only.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.53.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.53",
+  date: "2026-08-26",
+  title: "Dynamic Island 2.0 — paso 1: compacta y apertura controlada",
+  items: [
+    "Eliminada la apertura automática al pasar el ratón sobre la Dynamic Island.",
+    "La Dynamic Island ahora solo se abre con clic / focus / interacción explícita.",
+    "Spotify compacto rediseñado: píldora fina de 38 px, solo icono + título.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.53.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.53",
+  date: "2026-08-26",
+  title: "Dynamic Island 2.0 — Schritt 1: kompakt und kontrolliertes Öffnen",
+  items: [
+    "Automatisches Öffnen beim Hover der Dynamic Island entfernt.",
+    "Dynamic Island öffnet sich jetzt nur per Klick / Fokus / expliziter Interaktion.",
+    "Spotify-Kompakt überarbeitet: 38 px feine Pille, nur Icon + Titel.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.53.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.52",
   date: "2026-08-26",
   title: "Spotify — ralentissement du polling pour éviter le rate limit",

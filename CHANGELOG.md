@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.53 — 2026-08-26
+
+**ETHONE — Dynamic Island 2.0 : étape 1 — compact et ouverture contrôlée**
+
+- Suppression de l'ouverture automatique au survol de la Dynamic Island.
+- La Dynamic Island ne s'ouvre maintenant que sur clic / focus / interaction explicite.
+- Compact Spotify retravaillé : pillule fine 38 px, seulement icône + titre.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.52 — 2026-08-26
 
 **ETHONE — Spotify : ralentissement du polling**

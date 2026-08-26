@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.93",
+  date: "2026-08-26",
+  title: "Fichiers — phase 10 : suggestions Brain",
+  items: [
+    "Section `Suggestions Brain` affichant jusqu'à 5 fichiers ayant un `brainSummary`.",
+    "S'affiche uniquement à la racine, sans filtres actifs.",
+    "Même carte et actions que les fichiers récents.",
+    "Préparation pour une future recherche sémantique Brain.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.93.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.93",
+  date: "2026-08-26",
+  title: "Files — phase 10: Brain suggestions",
+  items: [
+    "New `Brain suggestions` section showing up to 5 files with a `brainSummary`.",
+    "Only visible at root level, without active filters.",
+    "Same cards and actions as recent files.",
+    "Preparation for future Brain semantic search.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.93.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.93",
+  date: "2026-08-26",
+  title: "Archivos — fase 10: sugerencias Brain",
+  items: [
+    "Nueva sección `Sugerencias Brain` mostrando hasta 5 archivos con `brainSummary`.",
+    "Visible solo en la raíz, sin filtros activos.",
+    "Mismas tarjetas y acciones que archivos recientes.",
+    "Preparación para futura búsqueda semántica Brain.",
+    "Validación : build, lint.",
+    "Versión : v1.9.93.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.93",
+  date: "2026-08-26",
+  title: "Dateien — Phase 10: Brain-Vorschläge",
+  items: [
+    "Neuer Bereich `Brain-Vorschläge` mit bis zu 5 Dateien, die ein `brainSummary` haben.",
+    "Nur auf Root-Ebene sichtbar, ohne aktive Filter.",
+    "Gleiche Karten und Aktionen wie bei kürzlich verwendeten Dateien.",
+    "Vorbereitung für zukünftige Brain-Semantik-Suche.",
+    "Validierung: build, lint.",
+    "Version: v1.9.93.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.92",
   date: "2026-08-26",
   title: "Fichiers — phase 9 : empty states et apparition des cartes",

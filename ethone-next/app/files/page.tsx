@@ -187,6 +187,14 @@ export default function FilesPage() {
       .slice(0, 5);
   }, [files, query, favorites, trashed, showFolders, parentId]);
 
+  const brainPicks = useMemo(() => {
+    if (query || favorites || trashed || showFolders || parentId) return [];
+    return [...files]
+      .filter((f) => !f.isFolder && !f.trashed && f.brainSummary?.trim())
+      .sort((a, b) => getFileTime(b) - getFileTime(a))
+      .slice(0, 5);
+  }, [files, query, favorites, trashed, showFolders, parentId]);
+
   const { selected, selectedItems, hasSelection, isAllSelected, toggle, selectAll, clear, isSelected } = useSelection<CloudFile>(filteredFiles);
 
   const path = useMemo(() => folderPath(files, parentId), [files, parentId]);
@@ -604,6 +612,36 @@ export default function FilesPage() {
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
             {recentFiles.map((file) => (
               <ContextMenu key={`recent-${file.id}`} items={fileContextItems(file)}>
+                <FileCard
+                  file={file}
+                  viewMode="grid"
+                  trashed={trashed}
+                  clientId={clientId}
+                  onOpen={() => openFile(file)}
+                  onDownload={() => downloadDriveFile(file)}
+                  onShare={() => openShare(file)}
+                  onRename={() => { setForm({ name: file.name }); setModal({ type: "rename", file }); }}
+                  onMove={() => setModal({ type: "move", file })}
+                  onFavorite={() => favoriteFile(file.driveFileId, !file.isFavorite)}
+                  onTrash={() => trashFile(file.driveFileId)}
+                  onDelete={() => deleteFile(file.driveFileId)}
+                  onRestore={() => restoreFile(file.driveFileId)}
+                />
+              </ContextMenu>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {brainPicks.length > 0 && (
+        <section className="space-y-2" aria-label={i18n("brainPicks", "Suggestions Brain")}>
+          <div className="flex items-center gap-2">
+            <Icon name="brain" className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">{i18n("brainPicks", "Suggestions Brain")}</h2>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            {brainPicks.map((file) => (
+              <ContextMenu key={`brain-${file.id}`} items={fileContextItems(file)}>
                 <FileCard
                   file={file}
                   viewMode="grid"

@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.93 — 2026-08-26
+
+**ETHONE — Fichiers : phase 10 suggestions Brain**
+
+- `app/files/page.tsx` : section `Suggestions Brain`.
+  - Affiche jusqu'à 5 fichiers ayant un `brainSummary`.
+  - S'affiche à la racine, sans filtres actifs.
+  - Préparation pour une future recherche sémantique via ETHONE Brain.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.92 — 2026-08-26
 
 **ETHONE — Fichiers : phase 9 empty states et apparition des cartes**

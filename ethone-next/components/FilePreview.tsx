@@ -220,6 +220,16 @@ export default function FilePreview({
                       {i18n("download")}
                     </Button>
                   )}
+                  {file.webViewLink && (
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => navigator.clipboard.writeText(file.webViewLink || "").catch(() => {})}
+                      leftIcon={<Icon name="link" className="h-4 w-4" />}
+                    >
+                      {i18n("copyLink", "Copier le lien")}
+                    </Button>
+                  )}
                   <Button size="sm" variant="secondary" onClick={onShare} leftIcon={<Icon name="share-2" className="h-4 w-4" />}>
                     {i18n("share")}
                   </Button>

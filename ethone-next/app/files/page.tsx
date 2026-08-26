@@ -402,6 +402,9 @@ export default function FilesPage() {
       { id: "move", label: i18n("move"), icon: "folder-input", onClick: () => setModal({ type: "move", file }) },
       { id: "favorite", label: file.isFavorite ? i18n("removeFromFavorites") : i18n("addToFavorites"), icon: file.isFavorite ? "heart-off" : "heart", onClick: () => favoriteFile(file.driveFileId, !file.isFavorite) },
       { id: "copy-name", label: i18n("copyName"), icon: "copy", onClick: () => navigator.clipboard.writeText(file.name).then(() => success(i18n("copied"))).catch(() => {}) },
+      ...(file.webViewLink
+        ? [{ id: "copy-link", label: i18n("copyLink", "Copier le lien"), icon: "link", onClick: () => navigator.clipboard.writeText(file.webViewLink || "").then(() => success(i18n("copied"))).catch(() => {}) }]
+        : []),
       { id: "sep", label: "", separator: true },
       ...(trashed
         ? [

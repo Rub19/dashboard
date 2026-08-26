@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.99 — 2026-08-26
+
+**ETHONE — Fichiers : action Copier le lien**
+
+- `app/files/page.tsx` : ajout de `Copier le lien` dans le menu contextuel quand `webViewLink` est disponible.
+- `components/FilePreview.tsx` : ajout d’un bouton `Copier le lien` dans le drawer.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.98 — 2026-08-26
 
 **ETHONE — Fichiers : aperçu enrichi**

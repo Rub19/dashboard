@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.99",
+  date: "2026-08-26",
+  title: "Fichiers — action Copier le lien",
+  items: [
+    "Ajout de l’action `Copier le lien` dans le menu contextuel (si `webViewLink` est présent).",
+    "Ajout du bouton `Copier le lien` dans le drawer `FilePreview`.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.99.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.99",
+  date: "2026-08-26",
+  title: "Files — copy link action",
+  items: [
+    "Added `Copy link` action in the context menu when `webViewLink` is present.",
+    "Added `Copy link` button in the `FilePreview` drawer.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.99.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.99",
+  date: "2026-08-26",
+  title: "Archivos — acción copiar enlace",
+  items: [
+    "Añadida acción `Copiar enlace` en el menú contextual cuando `webViewLink` está presente.",
+    "Añadido botón `Copiar enlace` en el drawer `FilePreview`.",
+    "Validación : build, lint.",
+    "Versión : v1.9.99.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.99",
+  date: "2026-08-26",
+  title: "Dateien — Link kopieren",
+  items: [
+    "Aktion `Link kopieren` im Kontextmenü hinzugefügt, wenn `webViewLink` vorhanden ist.",
+    "Button `Link kopieren` im `FilePreview`-Drawer hinzugefügt.",
+    "Validierung: build, lint.",
+    "Version: v1.9.99.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.98",
   date: "2026-08-26",
   title: "Fichiers — aperçu enrichi (image, PDF, vidéo, audio)",

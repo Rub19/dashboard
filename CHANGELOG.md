@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.41 — 2026-08-26
+
+**ETHONE — TopBar : retour au bouton Dynamic Island**
+
+- Le switch de la TopBar est remplacé par l'icône œil/œil-barré d'origine.
+- La TopBar reste au-dessus et la Dynamic Island en dessous.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.40 — 2026-08-26
 
 **ETHONE — TopBar au-dessus de la Dynamic Island**

@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.41",
+  date: "2026-08-26",
+  title: "TopBar — retour au bouton Dynamic Island",
+  items: [
+    "Le switch de la TopBar est remplacé par l'icône œil/œil-barré d'origine.",
+    "La TopBar reste au-dessus et la Dynamic Island en dessous.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.41.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.41",
+  date: "2026-08-26",
+  title: "TopBar — revert to Dynamic Island icon button",
+  items: [
+    "The TopBar switch is back to the original eye/eye-off icon button.",
+    "TopBar stays above and Dynamic Island stays below.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.41.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.41",
+  date: "2026-08-26",
+  title: "TopBar — volver al botón Dynamic Island",
+  items: [
+    "El switch de la TopBar vuelve a ser el botón de icono ojo/ojo-tachado original.",
+    "La TopBar sigue arriba y la Dynamic Island abajo.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.41.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.41",
+  date: "2026-08-26",
+  title: "TopBar — Dynamic Island Icon-Button zurück",
+  items: [
+    "Der TopBar-Switch ist wieder der ursprüngliche Auge/Auge-durchgestrichen-Icon-Button.",
+    "TopBar bleibt oben und Dynamic Island bleibt unten.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.41.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.40",
   date: "2026-08-26",
   title: "TopBar au-dessus de la Dynamic Island",

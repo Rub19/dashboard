@@ -13,7 +13,6 @@ import BrandMark from "@/components/BrandMark";
 import Tooltip from "@/components/Tooltip";
 import IconButton from "@/components/ui/IconButton";
 import Button from "@/components/ui/Button";
-import Switch from "@/components/Switch";
 
 const UserProfileDropdown = dynamic(() => import("@/components/UserProfileDropdown"), {
   ssr: false,
@@ -146,16 +145,19 @@ const FocusToggle = memo(function FocusToggle() {
 });
 
 const DynamicIslandToggle = memo(function DynamicIslandToggle() {
-  const { visible, setVisible } = useDynamicIslandStore();
+  const { visible, toggle } = useDynamicIslandStore();
 
   return (
-    <Switch
-      checked={visible}
-      onChange={setVisible}
-      size="sm"
-      labels
-      aria-label="Dynamic Island"
-    />
+    <Tooltip label="Dynamic Island" position="bottom">
+      <IconButton
+        size="lg"
+        variant="ghost"
+        onClick={toggle}
+        aria-label={visible ? "Masquer la Dynamic Island" : "Afficher la Dynamic Island"}
+      >
+        <Icon pack="lucide" name={visible ? "eye" : "eye-off"} className="h-5 w-5" />
+      </IconButton>
+    </Tooltip>
   );
 });
 

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.73 — 2026-08-26
+
+**ETHONE — Sidebar : animations plus fluides**
+
+- `components/motion/shared-layout-bg.tsx` : remplacement du morphing `layoutId` par un fade/scale léger.
+- `components/motion/animated-sidebar.tsx` : fond d'onglet actif en fade simple, ressort sidebar adouci.
+- Ajout de `will-change-transform` sur le panneau sidebar.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.72 — 2026-08-26
 
 **ETHONE — Rework de la Dynamic Island**

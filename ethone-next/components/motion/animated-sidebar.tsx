@@ -49,9 +49,9 @@ const PANEL_TRANSITION = {
 // Smooth, slightly bouncy rail morph that never snaps at the zero-width boundary.
 const SIDEBAR_MORPH_TRANSITION = {
   type: "spring",
-  stiffness: 280,
-  damping: 26,
-  mass: 0.9,
+  stiffness: 220,
+  damping: 34,
+  mass: 0.8,
 } as const;
 
 const SUBMENU_TRANSITION = {
@@ -340,7 +340,7 @@ export const AnimatedSidebar = forwardRef<HTMLElement, AnimatedSidebarProps>(
             context.reduce ? REDUCED_TRANSITION : PANEL_TRANSITION
           }
           className={cn(
-            "sticky top-0 flex h-full w-full flex-col overflow-hidden",
+            "sticky top-0 flex h-full w-full flex-col overflow-hidden will-change-transform",
             collapsible === "offcanvas" && "w-[var(--sidebar-width)]",
             variant === "sidebar" &&
               (side === "left" ? "border-border border-r" : "border-border border-l"),
@@ -853,8 +853,9 @@ export function AnimatedSidebarMenuButton({
     <>
       {isActive ? (
         <motion.span
-          layoutId="activeSidebarTab"
-          transition={context.reduce ? { duration: 0 } : SPRING_LAYOUT}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={context.reduce ? { duration: 0 } : { duration: 0.18, ease: EASE_OUT }}
           className="absolute inset-0 rounded-2xl border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 shadow-[0_0_15px_var(--glow-color)]"
         />
       ) : null}

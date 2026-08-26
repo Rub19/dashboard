@@ -7206,6 +7206,66 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.73",
+  date: "2026-08-26",
+  title: "Sidebar — animations fluides",
+  items: [
+    "`shared-layout-bg` : retrait du `layoutId` pour un fade/scale léger à la place d'un morphing coûteux.",
+    "`shared-layout-bg` : suppression de `layoutRoot` et du wrapper `motion.*` inutile.",
+    "`animated-sidebar` : fond d'élément actif en fade sans `layoutId`.",
+    "`animated-sidebar` : ressort de la sidebar adouci (moins de rebond).",
+    "`will-change-transform` sur le panneau sidebar.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.73.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.73",
+  date: "2026-08-26",
+  title: "Sidebar — smoother animations",
+  items: [
+    "`shared-layout-bg`: removed `layoutId` in favor of a lightweight fade/scale.",
+    "`shared-layout-bg`: removed `layoutRoot` and unnecessary `motion.*` wrapper.",
+    "`animated-sidebar`: active item background now fades without `layoutId`.",
+    "`animated-sidebar`: softened sidebar spring (less bounce).",
+    "`will-change-transform` on the sidebar panel.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.73.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.73",
+  date: "2026-08-26",
+  title: "Sidebar — animaciones fluidas",
+  items: [
+    "`shared-layout-bg` : eliminado `layoutId` en favor de un fade/scale ligero.",
+    "`shared-layout-bg` : eliminado `layoutRoot` y el wrapper `motion.*` innecesario.",
+    "`animated-sidebar` : fondo del elemento activo en fade sin `layoutId`.",
+    "`animated-sidebar` : resorte de la sidebar suavizado (menos rebote).",
+    "`will-change-transform` en el panel de la sidebar.",
+    "Validación : build, lint.",
+    "Versión : v1.9.73.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.73",
+  date: "2026-08-26",
+  title: "Sidebar — flüssigere Animationen",
+  items: [
+    "`shared-layout-bg`: `layoutId` entfernt, stattdessen leichter Fade/Scale.",
+    "`shared-layout-bg`: `layoutRoot` und unnötiger `motion.*`-Wrapper entfernt.",
+    "`animated-sidebar`: Hintergrund des aktiven Elements mit Fade ohne `layoutId`.",
+    "`animated-sidebar`: Sidebar-Feder weicher (weniger Rückprall).",
+    "`will-change-transform` auf dem Sidebar-Panel.",
+    "Validierung: build, lint.",
+    "Version: v1.9.73.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.72",
   date: "2026-08-26",
   title: "ETHONE — Rework de la Dynamic Island",

@@ -1,12 +1,7 @@
 "use client";
 // beui.dev/components/motion/shared-layout-bg
 
-import {
-  AnimatePresence,
-  type HTMLMotionProps,
-  motion,
-  useReducedMotion,
-} from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   Children,
   cloneElement,
@@ -17,10 +12,9 @@ import {
   type ReactNode,
   type Ref,
   isValidElement,
-  useId,
   useState,
 } from "react";
-import { EASE_OUT, SPRING_LAYOUT } from "@/lib/ease";
+import { EASE_OUT } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 
 export interface SharedLayoutBgProps
@@ -51,19 +45,7 @@ export const SharedLayoutBg = forwardRef<HTMLElement, SharedLayoutBgProps>(
     forwardedRef,
   ) {
     const [activeId, setActiveId] = useState<string | null>(null);
-    const uid = useId();
-    const reduce = useReducedMotion();
-
-    const pill = activeId !== null ? (
-      <motion.div
-        layoutId={`shared-bg-${uid}`}
-        transition={reduce ? { duration: 0 } : { ...SPRING_LAYOUT, opacity: { duration: 0 } }}
-        className={cn(
-          "pointer-events-none h-full w-full rounded-2xl bg-[var(--accent-primary)]/[0.06]",
-          pillClassName,
-        )}
-      />
-    ) : null;
+    const reduce = useReducedMotion() ?? false;
 
     const renderedChildren = Children.toArray(children)
       .filter(isValidElement)
@@ -92,17 +74,18 @@ export const SharedLayoutBg = forwardRef<HTMLElement, SharedLayoutBgProps>(
               )}
               style={{ left: -inset, right: -inset }}
             >
-              <AnimatePresence mode="popLayout" initial={false}>
+              <AnimatePresence initial={false}>
                 {activeId === childKey && (
                   <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.12, ease: EASE_OUT }}
-                    className="h-full w-full"
-                  >
-                    {pill}
-                  </motion.div>
+                    initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.96 }}
+                    animate={reduce ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+                    exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.96 }}
+                    transition={reduce ? { duration: 0 } : { duration: 0.15, ease: EASE_OUT }}
+                    className={cn(
+                      "h-full w-full rounded-2xl bg-[var(--accent-primary)]/[0.06]",
+                      pillClassName,
+                    )}
+                  />
                 )}
               </AnimatePresence>
             </div>
@@ -117,25 +100,23 @@ export const SharedLayoutBg = forwardRef<HTMLElement, SharedLayoutBgProps>(
     };
 
     return as === "ul" ? (
-      <motion.ul
-        {...(props as HTMLMotionProps<"ul">)}
+      <ul
+        {...(props as HTMLAttributes<HTMLUListElement>)}
         ref={forwardedRef as Ref<HTMLUListElement>}
-        layoutRoot
         onMouseLeave={handleMouseLeave}
         className={cn("flex w-full flex-col", className)}
       >
         {renderedChildren}
-      </motion.ul>
+      </ul>
     ) : (
-      <motion.div
-        {...(props as HTMLMotionProps<"div">)}
+      <div
+        {...(props as HTMLAttributes<HTMLDivElement>)}
         ref={forwardedRef as Ref<HTMLDivElement>}
-        layoutRoot
         onMouseLeave={handleMouseLeave}
         className={cn("flex w-full flex-col", className)}
       >
         {renderedChildren}
-      </motion.div>
+      </div>
     );
   },
 );

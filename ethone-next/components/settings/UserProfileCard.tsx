@@ -7,6 +7,7 @@ import { User, Key, Camera, Eye, EyeOff } from "lucide-react";
 import { useProfile } from "@/lib/hooks/useProfile";
 import { useAuth } from "@/components/AuthProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useSettings } from "@/components/SettingsProvider";
 import { USER_STATUS_CONFIG } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/lib/icons";
@@ -19,8 +20,8 @@ function maskId(id: string) {
   return id.slice(0, 2) + "•".repeat(id.length - 4) + id.slice(-2);
 }
 
-const actionBtnClass =
-  "relative inline-flex items-center justify-center whitespace-nowrap h-9 px-3 text-xs gap-2 rounded-xl font-semibold transition-all duration-150 ease-out focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:outline-none bg-[var(--text-primary)]/4 text-[var(--text-primary)] border border-[var(--panel-border)] hover:bg-[var(--text-primary)]/8 hover:border-[var(--accent-primary)]/40";
+const linkBtnClass =
+  "relative inline-flex items-center justify-center whitespace-nowrap h-9 px-3 text-xs gap-2 rounded-xl font-semibold transition-all duration-150 ease-out focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/60 focus-visible:outline-none border border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--text-primary)] hover:border-[var(--accent-primary)]/30 hover:bg-[var(--text-primary)]/[0.04]";
 
 export default function UserProfileCard({
   onEditProfile,
@@ -33,6 +34,7 @@ export default function UserProfileCard({
   const { user } = useAuth();
   const { profile } = useProfile();
   const { profile: discordProfile } = useDiscordOAuth();
+  const { settings } = useSettings();
 
   const meta = (user?.user_metadata || {}) as Record<string, unknown>;
   const discordName =
@@ -67,7 +69,8 @@ export default function UserProfileCard({
 
   const [masked, setMasked] = useState(true);
 
-  const statusConfig = USER_STATUS_CONFIG["online"] || USER_STATUS_CONFIG.online;
+  const statusKey = (settings.status as keyof typeof USER_STATUS_CONFIG) ?? "online";
+  const statusConfig = USER_STATUS_CONFIG[statusKey] ?? USER_STATUS_CONFIG.online;
 
   const handleChangePassword = useCallback(() => {
     if (onChangePassword) {
@@ -104,17 +107,22 @@ export default function UserProfileCard({
               "absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-[var(--bg-main)]",
               statusConfig.dot,
             )}
-            title={i18n("statusVerified", "Vérifiée")}
+            title={i18n(statusConfig.labelKey)}
           />
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <h3 className="truncate text-base font-bold text-[var(--text-primary)]">{displayName}</h3>
             {/* Session badge */}
             <div className="inline-flex items-center gap-1.5 rounded-full border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-2 py-0.5">
               <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]" />
-              <span className="text-[10px] font-medium text-[var(--accent-primary)]">{i18n("sessionVerified", "Vérifiée")}</span>
+              <span className="text-[10px] font-medium text-[var(--accent-primary)]">{i18n("sessionVerified", "Session")}</span>
+            </div>
+            {/* Status badge */}
+            <div className={cn("inline-flex items-center gap-1.5 rounded-full border border-[var(--panel-border)] px-2 py-0.5", statusConfig.bg, statusConfig.text)}>
+              <Icon name={statusConfig.icon} className="h-3 w-3" />
+              <span className="text-[10px] font-medium">{i18n(statusConfig.labelKey)}</span>
             </div>
           </div>
           {email && (
@@ -142,7 +150,7 @@ export default function UserProfileCard({
         <Link
           href="/profile"
           onClick={onEditProfile}
-          className={actionBtnClass}
+          className={linkBtnClass}
         >
           <Camera className="h-3.5 w-3.5" />
           <span className="truncate">{i18n("editProfile", "Modifier le profil")}</span>
@@ -150,7 +158,7 @@ export default function UserProfileCard({
 
         <Link
           href={isDiscordLinked ? "/connections" : "/connections?link=discord"}
-          className={actionBtnClass}
+          className={linkBtnClass}
         >
           <Icon name="discord" pack="brand" className="h-3.5 w-3.5" />
           <span className="truncate">

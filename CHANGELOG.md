@@ -4,12 +4,15 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## v1.9.21 — 2026-08-26
 
-**ETHONE — Refonte Settings phase 1**
+**ETHONE — Refonte Settings (layout, champs, profil et statut)**
 
 - Nouvelle grille des champs : label à gauche, control à droite avec largeur fixe.
 - Suppression de l'espacement vide entre labels et controls.
 - Barre de recherche Settings plus large avec placeholder explicite.
 - Bouton **Enregistrer** désactivé tant qu'il n'y a aucune modification.
+- Sélecteur de statut en 5 colonnes avec icônes, responsive mobile (1 par ligne).
+- Carte **Profil** affiche le statut actuel, les badges de session et de présence.
+- Boutons d'action du profil alignés avec le design system ETHONE.
 - Validation : `npm run build`, `npm run lint`.
 
 ## v1.9.20 — 2026-08-25

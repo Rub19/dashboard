@@ -6,6 +6,7 @@ import Select from "@/components/ui/Select";
 import { Checkbox } from "@/components/ui/Checkbox";
 import Slider from "@/components/ui/Slider";
 import { cn } from "@/lib/utils";
+import { Icon } from "@/lib/icons";
 import Input from "@/components/Input";
 
 type AriaProps = {
@@ -60,7 +61,7 @@ export function ButtonGridControl<T extends string>({
 }: {
   value: T;
   onChange: (v: T) => void;
-  options: { id: T; label: string }[];
+  options: { id: T; label: string; icon?: string }[];
   cols?: number;
 } & AriaProps) {
   const id = useId();
@@ -107,7 +108,7 @@ export function ButtonGridControl<T extends string>({
       : cols === 4
         ? "grid-cols-2 sm:grid-cols-4"
         : cols === 5
-          ? "grid-cols-2 sm:grid-cols-5"
+          ? "grid-cols-1 sm:grid-cols-5"
           : "grid-cols-3";
 
   return (
@@ -128,12 +129,13 @@ export function ButtonGridControl<T extends string>({
             onClick={() => onChange(opt.id)}
             aria-pressed={active}
             className={cn(
-              "group relative flex min-h-[44px] items-center justify-center gap-1 rounded-full border px-2 py-1 text-[11px] font-medium transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
+              "group relative flex min-h-[44px] items-center justify-center gap-1.5 rounded-full border px-2 py-1 text-[11px] font-medium transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
               active
                 ? "border-[var(--accent-primary)] bg-[var(--accent-primary)] text-[var(--accent-contrast)]"
                 : "border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--text-primary)] hover:border-[var(--accent-primary)]/50"
             )}
           >
+            {opt.icon && <Icon name={opt.icon} className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />}
             <span className="relative z-10 truncate">{opt.label}</span>
           </button>
         );

@@ -46,7 +46,7 @@ export type FieldDef =
   | (BaseFieldDef & { type: "range"; min?: number; max?: number; unit?: string })
   | (BaseFieldDef & {
       type: "button-grid";
-      options: { id: string; label: string }[];
+      options: { id: string; label: string; icon?: string }[];
       cols?: number;
     })
   | (BaseFieldDef & {

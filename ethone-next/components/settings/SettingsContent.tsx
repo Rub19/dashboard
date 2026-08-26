@@ -945,12 +945,16 @@ export default function SettingsContent({
         key: "status",
         label: i18n("status"),
         type: "button-grid",
-        options: makeOptions([...STATUSES], true),
-        cols: 3,
+        options: STATUSES.map((s) => ({
+          id: s.id,
+          label: i18n(s.label),
+          icon: USER_STATUS_CONFIG[s.id].icon,
+        })),
+        cols: 5,
         keywords: ["compte", "statut", "présence"],
       },
     ],
-    [i18n, makeOptions]
+    [i18n]
   );
 
   const securityFields: FieldDef[] = useMemo(

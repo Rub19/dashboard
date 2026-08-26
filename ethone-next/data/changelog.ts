@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.76",
+  date: "2026-08-26",
+  title: "Activity Hub — première passe",
+  items: [
+    "Retrait de `LiveWidgets` de la page `/activity` pour un vrai Activity Hub.",
+    "Nouvel en-tête `Card` pour `ActivityHub` avec icône et indicateur de synchronisation.",
+    "5 métriques : Aujourd'hui, Cette semaine, Série active, Moyenne/jour, Sessions.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.76.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.76",
+  date: "2026-08-26",
+  title: "Activity Hub — first pass",
+  items: [
+    "Removed `LiveWidgets` from `/activity` for a real Activity Hub.",
+    "New `Card` header for `ActivityHub` with icon and sync indicator.",
+    "5 metrics: Today, This Week, Active streak, Average/day, Sessions.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.76.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.76",
+  date: "2026-08-26",
+  title: "Activity Hub — primera pasada",
+  items: [
+    "Eliminado `LiveWidgets` de la página `/activity` para un Activity Hub real.",
+    "Nuevo encabezado `Card` para `ActivityHub` con icono e indicador de sincronización.",
+    "5 métricas : Hoy, Esta semana, Racha activa, Media/día, Sesiones.",
+    "Validación : build, lint.",
+    "Versión : v1.9.76.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.76",
+  date: "2026-08-26",
+  title: "Activity Hub — erster Schritt",
+  items: [
+    "`LiveWidgets` von `/activity` entfernt für einen echten Activity Hub.",
+    "Neuer `Card`-Header für `ActivityHub` mit Icon und Synchronisierungsindikator.",
+    "5 Metriken: Heute, Diese Woche, Aktive Serie, Durchschnitt/Tag, Sitzungen.",
+    "Validierung: build, lint.",
+    "Version: v1.9.76.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.75",
   date: "2026-08-26",
   title: "Météo — en-tête en carte",

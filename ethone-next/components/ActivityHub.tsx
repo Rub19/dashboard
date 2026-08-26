@@ -12,6 +12,7 @@ import { Icon } from "@/lib/icons";
 import Input from "@/components/Input";
 import Select from "@/components/ui/Select";
 import AnimatedFilterTabs from "@/components/ui/AnimatedFilterTabs";
+import Card from "@/components/ui/Card";
 import ActivityHeatmap from "./ActivityHeatmap";
 
 function dateKey(iso = ""): string {
@@ -308,17 +309,22 @@ export default function ActivityHub() {
     periodStart.setDate(periodStart.getDate() - periodDays);
     let activeDays = 0;
     let totalActions = 0;
+    let sessions = 0;
     for (let i = 0; i < periodDays; i++) {
       const key = dateKey(addDays(periodStart, i + 1).toISOString());
       const count = counts.get(key) || 0;
       totalActions += count;
       if (count > 0) activeDays++;
     }
+    for (const e of entries) {
+      const ts = new Date(e.timestamp);
+      if (ts >= periodStart && e.eventType === "route:home") sessions++;
+    }
     const average = activeDays > 0 ? (totalActions / activeDays).toFixed(1) : "0";
     const successRate = periodDays > 0 ? Math.round((activeDays / periodDays) * 100) : 0;
 
-    return { todayCount, yesterdayCount, diff, streak, record, weekTotal, average, successRate };
-  }, [counts, periodDays, todayDate]);
+    return { todayCount, yesterdayCount, diff, streak, record, weekTotal, average, successRate, sessions, activeDays };
+  }, [counts, periodDays, todayDate, entries]);
 
   const grouped = useMemo(() => {
     const map = new Map<string, ActivityEntry[]>();
@@ -363,49 +369,80 @@ export default function ActivityHub() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">{i18n("activityJournal")}</h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">{i18n("activityJournalDescription")}</p>
+      <Card variant="default" padding="md">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex items-start gap-3 sm:items-center">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+              <Icon name="activity" pack="phosphor" className="h-5 w-5" />
+            </div>
+            <div>
+              <h1 className="text-lg font-semibold text-[var(--text-primary)]">{i18n("activityJournal", "Activité")}</h1>
+              <p className="text-xs text-[var(--text-muted)]">{i18n("activityJournalDescription", "Votre historique et votre activité ETHONE.")}</p>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:flex-wrap">
+            <AnimatedFilterTabs tabs={periodTabs} activeId={period} onChange={setPeriod} />
+            <div className="flex items-center gap-2 ml-auto">
+              {syncing ? (
+                <span className="inline-flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  {i18n("syncing", "Synchronisation...")}
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 text-[11px] text-[var(--success)]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)]" />
+                  {i18n("synced", "Synchronisé")}
+                </span>
+              )}
+            </div>
+          </div>
         </div>
-        <AnimatedFilterTabs tabs={periodTabs} activeId={period} onChange={setPeriod} />
-      </div>
+      </Card>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
         {mounted ? (
           <>
             <StatCard
-              label={i18n("today")}
+              label={i18n("today", "Aujourd'hui")}
               value={stats.todayCount}
               sub={diffText}
               icon={<Activity className="h-5 w-5 text-[var(--accent-primary)]" />}
               tone="emerald"
             />
             <StatCard
-              label={i18n("currentStreak")}
-              value={`${stats.streak}j`}
-              sub={`${i18n("record") || "Record"}: ${stats.record}j`}
-              icon={<Flame className="h-5 w-5 text-amber-400" />}
-              tone="amber"
-            />
-            <StatCard
-              label={i18n("averagePerDay") || "Moyenne / jour"}
-              value={stats.average}
-              sub={`${stats.weekTotal} ${i18n("thisWeek") || "cette semaine"}`}
+              label={i18n("thisWeek", "Cette semaine")}
+              value={stats.weekTotal}
+              sub={i18n("last7Days") || "7 derniers jours"}
               icon={<TrendingUp className="h-5 w-5 text-[var(--info)]" />}
               tone="cyan"
             />
             <StatCard
-              label={i18n("successRate") || "Taux de succès"}
-              value={`${stats.successRate}%`}
-              sub={i18n("consistency")}
+              label={i18n("currentStreak", "Série active")}
+              value={`${stats.streak}j`}
+              sub={`${i18n("record", "Record")}: ${stats.record}j`}
+              icon={<Flame className="h-5 w-5 text-amber-400" />}
+              tone="amber"
+            />
+            <StatCard
+              label={i18n("averagePerDay", "Moyenne / jour")}
+              value={stats.average}
+              sub={`${stats.activeDays} ${i18n("activeDays", "jours actifs")}`}
               icon={<CheckCircle2 className="h-5 w-5 text-purple-400" />}
               tone="purple"
+            />
+            <StatCard
+              label={i18n("sessions", "Sessions")}
+              value={stats.sessions}
+              sub={i18n("recentSessions") || "ouvertures"}
+              icon={<Icon name="home" pack="phosphor" className="h-5 w-5 text-[var(--success)]" />}
+              tone="emerald"
             />
           </>
         ) : (
           <>
+            <StatSkeleton />
             <StatSkeleton />
             <StatSkeleton />
             <StatSkeleton />

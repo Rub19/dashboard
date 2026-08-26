@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.76 — 2026-08-26
+
+**ETHONE — Activity Hub : première passe**
+
+- `app/activity/page.tsx` : retrait de `LiveWidgets`, conteneur dédié au Activity Hub.
+- `components/ActivityHub.tsx` : nouvel en-tête en `Card` avec icône et indicateur de synchronisation.
+- 5 métriques d'aperçu : Aujourd'hui, Cette semaine, Série active, Moyenne/jour, Sessions.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.75 — 2026-08-26
 
 **ETHONE — En-tête de la page Météo en carte**

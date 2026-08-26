@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.70",
+  date: "2026-08-26",
+  title: "TopBar — température météo déplacée dans les status pills",
+  items: [
+    "La température météo est désormais une pill `SystemStatusPills` avec espacement et séparateurs.",
+    "Évite le chevauchement avec les autres éléments de la topbar.",
+    "Suppression du `WeatherQuickButton` du groupe droit.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.70.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.70",
+  date: "2026-08-26",
+  title: "TopBar — weather temperature moved to status pills",
+  items: [
+    "Weather temperature is now a `SystemStatusPills` pill with spacing and separators.",
+    "Prevents overlap with other topbar items.",
+    "Removed `WeatherQuickButton` from the right group.",
+    "Validation: build, lint.",
+    "Version badge bottom-right: v1.9.70.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.70",
+  date: "2026-08-26",
+  title: "TopBar — temperatura movida a las status pills",
+  items: [
+    "La temperatura del clima ahora es una pill de `SystemStatusPills` con espaciado y separadores.",
+    "Evita la superposición con otros elementos de la topbar.",
+    "Eliminado `WeatherQuickButton` del grupo derecho.",
+    "Validación: build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.70.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.70",
+  date: "2026-08-26",
+  title: "TopBar — Wettertemperatur in Status-Pills verschoben",
+  items: [
+    "Wettertemperatur ist jetzt eine `SystemStatusPills`-Pill mit Abstand und Trennstrichen.",
+    "Verhindert Überlappung mit anderen TopBar-Elementen.",
+    "`WeatherQuickButton` aus der rechten Gruppe entfernt.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.70.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.69",
   date: "2026-08-26",
   title: "Météo — rework complet de la page",

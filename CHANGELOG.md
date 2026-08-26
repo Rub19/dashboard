@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.70 — 2026-08-26
+
+**ETHONE — TopBar : température météo intégrée aux status pills**
+
+- La température est désormais dans `SystemStatusPills`, avec séparateurs, plutôt que dans le groupe de droite.
+- Suppression de `WeatherQuickButton` de `TopBar`.
+- Évite les chevauchements avec l'horloge et les autres éléments.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.69 — 2026-08-26
 
 **ETHONE — Rework complet de la page Météo**

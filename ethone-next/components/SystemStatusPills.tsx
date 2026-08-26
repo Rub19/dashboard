@@ -6,7 +6,9 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useActiveProfile } from "@/components/SettingsProvider";
 import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { useLiveData } from "@/lib/hooks/useLiveData";
 import Clock from "@/components/Clock";
+import WeatherDetailPopover from "@/components/WeatherDetailPopover";
 
 function useOnlineStatus() {
   const [online, setOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
@@ -51,6 +53,28 @@ function Separator() {
   return <span className="h-3 w-[1px] bg-[var(--text-primary)]/10" />;
 }
 
+function WeatherStatusPill() {
+  const i18n = useI18n();
+  const { weather } = useLiveData(300000);
+  const [open, setOpen] = useState(false);
+  const [buttonEl, setButtonEl] = useState<HTMLElement | null>(null);
+
+  const temp = typeof weather?.temperature === "number" ? `${weather.temperature}°C` : "--";
+
+  return (
+    <div ref={setButtonEl}>
+      <StatusPill
+        icon={<Cloud className="h-3 w-3 text-[var(--accent-primary)]" />}
+        onClick={() => setOpen((v) => !v)}
+        title={i18n("weather", "Météo")}
+      >
+        <span className="font-mono text-[var(--text-primary)]">{temp}</span>
+      </StatusPill>
+      <WeatherDetailPopover open={open} onClose={() => setOpen(false)} referenceRef={buttonEl} weather={weather} />
+    </div>
+  );
+}
+
 function SystemStatusPills() {
   const i18n = useI18n();
   const { activeProfile } = useActiveProfile();
@@ -88,6 +112,10 @@ function SystemStatusPills() {
       >
         {syncLabel}
       </StatusPill>
+
+      <Separator />
+
+      <WeatherStatusPill />
 
       <Separator />
 

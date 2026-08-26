@@ -12,24 +12,20 @@ import UserProfileDropdownSkeleton from "@/components/UserProfileDropdownSkeleto
 import BrandMark from "@/components/BrandMark";
 import Tooltip from "@/components/Tooltip";
 import IconButton from "@/components/ui/IconButton";
-import Button from "@/components/ui/Button";
 
 const UserProfileDropdown = dynamic(() => import("@/components/UserProfileDropdown"), {
   ssr: false,
   loading: () => <UserProfileDropdownSkeleton />,
 });
-import { memo, useState } from "react";
+import { memo } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { useLiveData } from "@/lib/hooks/useLiveData";
 import { useSettings } from "@/components/SettingsProvider";
 import { useFocus } from "@/components/FocusProvider";
 import { useDynamicIslandStore } from "@/lib/stores/dynamic-island";
-import WeatherDetailPopover from "@/components/WeatherDetailPopover";
 import SupportButton from "@/components/dashboard/SupportButton";
 import SystemStatusPills from "@/components/SystemStatusPills";
 import { Icon } from "@/lib/icons";
 import { PREMIUM_THEMES, THEME_DEFINITIONS, resolvePremiumTheme } from "@/lib/theme-engine";
-import { cn } from "@/lib/utils";
 
 const ROUTE_LABELS: Record<string, string> = {
   "/": "home",
@@ -67,42 +63,6 @@ const SidebarTopToggle = memo(function SidebarTopToggle() {
         <Icon pack="lucide" name={open ? "panel-left-close" : "panel-left-open"} className="h-4 w-4" />
       </AnimatedSidebarTrigger>
     </Tooltip>
-  );
-});
-
-const WeatherQuickButton = memo(function WeatherQuickButton() {
-  const { weather } = useLiveData(300000);
-  const temp = typeof weather?.temperature === "number" ? `${weather.temperature}°C` : "--";
-  const [open, setOpen] = useState(false);
-  const [buttonEl, setButtonEl] = useState<HTMLButtonElement | null>(null);
-
-  return (
-    <>
-      <Button
-        ref={setButtonEl}
-        type="button"
-        variant="ghost"
-        size="md"
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
-        data-tooltip="Météo"
-        data-tooltip-position="bottom"
-        leftIcon={<Icon pack="lucide" name="cloud-sun" className="h-4 w-4 text-[var(--text-muted)]" />}
-        rightIcon={
-          <Icon
-            pack="lucide"
-            name="chevron-down"
-            className={cn(
-              "h-3 w-3 text-[var(--text-muted)] transition-transform duration-200",
-              open && "rotate-180",
-            )}
-          />
-        }
-      >
-        <span className="hidden font-mono lg:inline">{temp}</span>
-      </Button>
-      <WeatherDetailPopover open={open} onClose={() => setOpen(false)} referenceRef={buttonEl} weather={weather} />
-    </>
   );
 });
 
@@ -211,7 +171,6 @@ function TopBar() {
         {/* Right — Quick tools, palette, profile */}
         <div className="col-start-3 flex min-w-0 items-center justify-end gap-2.5 sm:gap-4 justify-self-end pointer-events-auto">
           <div className="hidden items-center gap-2 sm:gap-3 md:flex pointer-events-auto">
-            <WeatherQuickButton />
             <ThemeToggle />
             <FocusToggle />
             <DynamicIslandToggle />

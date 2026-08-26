@@ -737,7 +737,9 @@ export default function FilesPage() {
             description={showDuplicates ? i18n("noDuplicates", "Aucun doublon détecté") : i18n("noFilesDescription", "Aucun fichier à afficher")}
             action={
               !clientId ? (
-                <Button size="sm" onClick={connectDrive}>{i18n("connectDrive")}</Button>
+                <Button size="sm" variant="secondary" onClick={connectDrive} leftIcon={<Icon name="cloud" className="h-4 w-4" />}>
+                  {i18n("connectDrive")}
+                </Button>
               ) : (
                 <Button size="sm" onClick={() => setAddOpen(true)} leftIcon={<Icon name="plus" className="h-4 w-4" />}>
                   {i18n("add", "Ajouter")}

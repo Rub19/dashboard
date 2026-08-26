@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.95",
+  date: "2026-08-26",
+  title: "Fichiers — effets visuels épurés",
+  items: [
+    "Onglet Upload de `FileAddModal` : message de connexion plus discret, bouton secondaire.",
+    "Page Fichiers : bouton `Connecter Google Drive` en style secondaire.",
+    "`FileUploadZone` : suppression du glow et des couleurs zinc, style plus plat.",
+    "`FileDropOverlay` : suppression du halo vert et du rebond, bordure plus subtile.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.95.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.95",
+  date: "2026-08-26",
+  title: "Files — cleaned up visual effects",
+  items: [
+    "FileAddModal Upload tab: more discreet connection message, secondary button.",
+    "Files page: `Connect Google Drive` button in secondary style.",
+    "`FileUploadZone`: removed glow and zinc colors, flatter styling.",
+    "`FileDropOverlay`: removed green halo and bounce, subtler border.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.95.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.95",
+  date: "2026-08-26",
+  title: "Archivos — efectos visuales limpios",
+  items: [
+    "Pestaña Subir de `FileAddModal`: mensaje de conexión más discreto, botón secundario.",
+    "Página Archivos: botón `Conectar Google Drive` en estilo secundario.",
+    "`FileUploadZone`: eliminado el glow y colores zinc, estilo más plano.",
+    "`FileDropOverlay`: eliminado el halo verde y el rebote, borde más sutil.",
+    "Validación : build, lint.",
+    "Versión : v1.9.95.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.95",
+  date: "2026-08-26",
+  title: "Dateien — visuelle Effekte bereinigt",
+  items: [
+    "FileAddModal Upload-Tab: dezentere Verbindungsmeldung, sekundärer Button.",
+    "Dateien-Seite: `Google Drive verbinden`-Button im sekundären Stil.",
+    "`FileUploadZone`: Glow und Zink-Farben entfernt, flacherer Stil.",
+    "`FileDropOverlay`: grüner Halo und Wackeln entfernt, subtilerer Rand.",
+    "Validierung: build, lint.",
+    "Version: v1.9.95.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.94",
   date: "2026-08-26",
   title: "Fichiers — cartes plates",

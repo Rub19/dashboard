@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.95 — 2026-08-26
+
+**ETHONE — Fichiers : effets visuels épurés**
+
+- `FileAddModal` : onglet Upload plus discret quand aucun Drive n'est connecté.
+- `app/files/page.tsx` : bouton `Connecter Google Drive` en style secondaire.
+- `FileUploadZone` : suppression du glow, des couleurs zinc et de l'effet flashy.
+- `FileDropOverlay` : suppression du halo vert et du rebond, bordure plus subtile.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.94 — 2026-08-26
 
 **ETHONE — Fichiers : cartes plates**

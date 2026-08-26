@@ -105,15 +105,11 @@ export default function FileDropOverlay({ onDrop, disabled }: FileDropOverlayPro
             initial={{ scale: 0.96 }}
             exit={{ scale: 0.96 }}
             transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 320, damping: 26 }}
-            className="flex h-[min(80vh,480px)] w-[min(92vw,680px)] flex-col items-center justify-center rounded-3xl border-2 border-dashed border-[var(--accent-primary)] bg-[var(--panel-bg)]/[0.6] p-10 text-center shadow-2xl shadow-[var(--accent-primary)]/10"
+            className="flex h-[min(80vh,480px)] w-[min(92vw,680px)] flex-col items-center justify-center rounded-3xl border border-dashed border-[var(--accent-primary)]/[0.4] bg-[var(--panel-bg)]/[0.85] p-10 text-center"
           >
-            <motion.div
-              animate={{ y: [0, -6, 0] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-              className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] ring-1 ring-[var(--accent-primary)]"
-            >
+            <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
               <Upload className="h-10 w-10" />
-            </motion.div>
+            </div>
             <h3 className="text-lg font-semibold text-[var(--text-primary)]">
               {i18n("dropToUpload", "Relâchez pour téléverser")}
             </h3>

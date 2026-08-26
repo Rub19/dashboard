@@ -76,10 +76,10 @@ export default function FileAddModal({
           {tab === "upload" && (
             <div className="space-y-3">
               {!clientId ? (
-                <div className="rounded-xl border border-[var(--panel-border)]/50 bg-[var(--panel-bg)]/50 p-6 text-center">
+                <div className="rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-6 text-center">
                   <Icon name="cloud" className="mx-auto mb-2 h-8 w-8 text-[var(--text-muted)]" />
                   <p className="text-sm text-[var(--text-muted)]">{i18n("connectDriveToUpload", "Connectez Google Drive pour téléverser des fichiers.")}</p>
-                  <Button onClick={onConnectDrive} className="mt-3" leftIcon={<Icon name="cloud" className="h-4 w-4" />}>
+                  <Button size="sm" variant="secondary" onClick={onConnectDrive} className="mt-3" leftIcon={<Icon name="cloud" className="h-4 w-4" />}>
                     {i18n("connectDrive", "Connecter Drive")}
                   </Button>
                 </div>

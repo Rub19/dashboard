@@ -78,16 +78,13 @@ export default function FileUploadZone({
       onDragOver={handleDragOver}
       onDrop={handleDrop}
       animate={{
-        scale: dragging ? 1.01 : 1,
-        boxShadow: dragging
-          ? "0 0 30px var(--glow-color)"
-          : "0 0 0 rgba(0,0,0,0)",
+        scale: dragging ? 1.005 : 1,
       }}
-      transition={{ duration: 0.25, ease: "easeOut" }}
-      className={`group relative flex min-h-[12rem] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 p-8 text-center transition-all duration-300 select-none ${
+      transition={{ duration: 0.2, ease: "easeOut" }}
+      className={`group relative flex min-h-[12rem] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 p-8 text-center transition-colors duration-200 select-none ${
         dragging
-          ? "border-solid border-[var(--accent-primary)] bg-[var(--accent-primary)] shadow-[0_0_30px_var(--glow-color)]"
-          : "border-dashed border-zinc-700/60 bg-zinc-950/70 hover:border-zinc-500/60 hover:bg-zinc-900/50"
+          ? "border-solid border-[var(--accent-primary)] bg-[var(--accent-primary)]/10"
+          : "border-dashed border-[var(--panel-border)]/[0.4] bg-[var(--panel-bg)]/[0.4] hover:border-[var(--text-primary)]/[0.3] hover:bg-[var(--panel-bg)]/[0.6]"
       } ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
     >
       <AnimatePresence mode="wait">
@@ -100,13 +97,9 @@ export default function FileUploadZone({
             transition={{ duration: 0.2 }}
             className="flex flex-col items-center gap-3"
           >
-            <motion.div
-              animate={{ y: [0, -4, 0] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-              className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] ring-1 ring-[var(--accent-primary)]"
-            >
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
               <Upload className="h-7 w-7" />
-            </motion.div>
+            </div>
             <h3 className="text-base font-bold text-[var(--text-primary)]">Relâchez pour téléverser</h3>
             {dragMeta && (
               <div className="flex items-center gap-2 rounded-full border border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 px-3 py-1 text-[var(--accent-primary)]">
@@ -127,7 +120,7 @@ export default function FileUploadZone({
             transition={{ duration: 0.2 }}
             className="flex flex-col items-center gap-3"
           >
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[var(--text-primary)]/[0.06] bg-[var(--text-primary)]/[0.03] text-[var(--text-muted)] ring-1 ring-white/5 transition-colors group-hover:text-[var(--accent-primary)]">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[var(--panel-border)]/[0.2] bg-[var(--panel-bg)] text-[var(--text-muted)] transition-colors group-hover:text-[var(--accent-primary)]">
               <UploadCloud className="h-7 w-7" />
             </div>
             <h3 className="text-sm font-medium text-[var(--text-primary)]">

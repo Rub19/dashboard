@@ -62,6 +62,8 @@ export default function FilePreview({
   const i18n = useI18n();
   const reduce = useReducedMotion() ?? false;
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [text, setText] = useState<string | null>(null);
+  const [textLoading, setTextLoading] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -75,9 +77,11 @@ export default function FilePreview({
   useEffect(() => {
     if (!open || !file || !clientId || file.isFolder) {
       setPreviewUrl(null);
+      setText(null);
       return;
     }
     let cancelled = false;
+    setText(null);
     fetchWorker(`/api/google-drive/download?clientId=${encodeURIComponent(clientId)}&fileId=${encodeURIComponent(file.driveFileId)}`)
       .then((res) => {
         if (cancelled) return;
@@ -90,12 +94,51 @@ export default function FilePreview({
     return () => { cancelled = true; };
   }, [open, file, clientId]);
 
+  useEffect(() => {
+    if (!open || !previewUrl || !file || file.isFolder) return;
+    const mime = file.mimeType || "";
+    const isTextType =
+      mime.startsWith("text/") ||
+      mime.includes("json") ||
+      mime.includes("javascript") ||
+      mime.includes("xml") ||
+      mime.includes("csv") ||
+      mime.includes("markdown") ||
+      mime.includes("typescript");
+    if (!isTextType) {
+      setText(null);
+      return;
+    }
+    let cancelled = false;
+    setTextLoading(true);
+    fetch(previewUrl)
+      .then((r) => r.text())
+      .then((t) => {
+        if (!cancelled) setText(t.length > 8000 ? `${t.slice(0, 8000)}…` : t);
+      })
+      .catch(() => {
+        if (!cancelled) setText(null);
+      })
+      .finally(() => {
+        if (!cancelled) setTextLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [open, previewUrl, file]);
+
   if (!file) return null;
 
   const isImage = file.mimeType.startsWith("image/");
   const isVideo = file.mimeType.startsWith("video/");
   const isAudio = file.mimeType.startsWith("audio/");
   const isPDF = file.mimeType === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+  const isText =
+    file.mimeType.startsWith("text/") ||
+    file.mimeType.includes("json") ||
+    file.mimeType.includes("javascript") ||
+    file.mimeType.includes("xml") ||
+    file.mimeType.includes("csv") ||
+    file.mimeType.includes("markdown") ||
+    file.mimeType.includes("typescript");
   const icon = mimeIcon(file.mimeType, file.isFolder);
 
   return (
@@ -171,6 +214,23 @@ export default function FilePreview({
                         className="h-full w-full rounded-2xl border-0 bg-[var(--bg-main)]"
                         allow="autoplay"
                       />
+                    ) : isText && (text || textLoading) ? (
+                      textLoading ? (
+                        <div className="flex h-full items-center justify-center text-[var(--text-muted)]">
+                          <Icon name="loader-2" className="h-6 w-6 animate-spin" />
+                        </div>
+                      ) : (
+                        <pre className="h-full w-full overflow-auto rounded-2xl bg-[var(--bg-main)] p-3 text-left font-mono text-[11px] text-[var(--text-primary)]">
+                          {text}
+                        </pre>
+                      )
+                    ) : file.webViewLink ? (
+                      <div className="flex h-full flex-col items-center justify-center gap-3 text-[var(--text-muted)]">
+                        <Icon name={icon} className="h-14 w-14" />
+                        <Button size="sm" variant="secondary" onClick={() => window.open(file.webViewLink, "_blank")} leftIcon={<Icon name="external-link" className="h-4 w-4" />}>
+                          {i18n("openInDrive", "Ouvrir dans Drive")}
+                        </Button>
+                      </div>
                     ) : (
                       <div className="flex flex-col items-center gap-2 text-[var(--text-muted)]">
                         <Icon name={icon} className="h-14 w-14" />

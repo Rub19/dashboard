@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.6 — 2026-08-26
+
+**ETHONE — Fichiers : phase 4, aperçu texte et liens**
+
+- `components/FilePreview.tsx` :
+  - Aperçu texte/code/JSON/CSV avec limite de 8000 caractères.
+  - Bouton `Ouvrir dans Drive` pour les fichiers avec `webViewLink`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.5 — 2026-08-26
 
 **ETHONE — Fichiers : phase 3, drag & drop revisité**

@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.6",
+  date: "2026-08-26",
+  title: "Fichiers — phase 4 : aperçu texte et liens",
+  items: [
+    "`FilePreview` affiche maintenant un aperçu texte pour fichiers texte/code/JSON/CSV.",
+    "Bouton `Ouvrir dans Drive` pour les fichiers disposant d’un `webViewLink`.",
+    "Chargement du contenu texte avec limite de 8000 caractères.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.6.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.6",
+  date: "2026-08-26",
+  title: "Files — phase 4: text and link preview",
+  items: [
+    "`FilePreview` now renders text/code/JSON/CSV previews.",
+    "`Open in Drive` button for files with a `webViewLink`.",
+    "Text content is fetched with an 8000 character limit.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.6.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.6",
+  date: "2026-08-26",
+  title: "Archivos — fase 4: vista previa de texto y enlaces",
+  items: [
+    "`FilePreview` ahora muestra vista previa de texto/código/JSON/CSV.",
+    "Botón `Abrir en Drive` para archivos con `webViewLink`.",
+    "Contenido de texto cargado con límite de 8000 caracteres.",
+    "Validación : build, lint.",
+    "Versión : v1.10.6.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.6",
+  date: "2026-08-26",
+  title: "Dateien — Phase 4: Text- und Link-Vorschau",
+  items: [
+    "`FilePreview` rendert jetzt Text-/Code-/JSON-/CSV-Vorschauen.",
+    "`In Drive öffnen`-Button für Dateien mit `webViewLink`.",
+    "Textinhalt wird mit einem Limit von 8000 Zeichen geladen.",
+    "Validierung: build, lint.",
+    "Version: v1.10.6.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.5",
   date: "2026-08-26",
   title: "Fichiers — phase 3 : drag & drop revisité",

@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.74 — 2026-08-26
+
+**ETHONE — Mini visualiseur dans la Dynamic Island compacte**
+
+- `components/DynamicIslandContainer.tsx` : `SpotifyCompact` inclut maintenant un mini `AudioVisualizer` (8 barres, 1.5 px).
+- Le visualiseur est actif quand la musique joue et se fige en pause.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.73 — 2026-08-26
 
 **ETHONE — Sidebar : animations plus fluides**

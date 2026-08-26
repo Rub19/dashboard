@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.74",
+  date: "2026-08-26",
+  title: "Dynamic Island — visualiseur compact",
+  items: [
+    "`SpotifyCompact` : mini `AudioVisualizer` intégré dans la Dynamic Island compacte.",
+    "Le mini visualiseur est animé quand la musique joue et s'arrête en pause.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.74.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.74",
+  date: "2026-08-26",
+  title: "Dynamic Island — compact visualizer",
+  items: [
+    "`SpotifyCompact`: mini `AudioVisualizer` integrated into the compact Dynamic Island.",
+    "The mini visualizer animates while music is playing and pauses when stopped.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.74.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.74",
+  date: "2026-08-26",
+  title: "Dynamic Island — visualizador compacto",
+  items: [
+    "`SpotifyCompact` : mini `AudioVisualizer` integrado en la Dynamic Island compacta.",
+    "El mini visualizador se anima cuando suena música y se detiene en pausa.",
+    "Validación : build, lint.",
+    "Versión : v1.9.74.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.74",
+  date: "2026-08-26",
+  title: "Dynamic Island — kompakter Visualizer",
+  items: [
+    "`SpotifyCompact`: Mini `AudioVisualizer` in der kompakten Dynamic Island.",
+    "Der Mini-Visualizer bewegt sich beim Abspielen und pausiert bei Stopp.",
+    "Validierung: build, lint.",
+    "Version: v1.9.74.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.73",
   date: "2026-08-26",
   title: "Sidebar — animations fluides",

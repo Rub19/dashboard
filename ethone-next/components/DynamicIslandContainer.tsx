@@ -65,10 +65,12 @@ function SpotifyCompact({
   title,
   coverCandidates,
   fallback,
+  isPlaying,
 }: {
   title?: string;
   coverCandidates: (string | undefined)[];
   fallback: string;
+  isPlaying?: boolean;
 }) {
   const trackTitle = title || fallback;
 
@@ -88,6 +90,15 @@ function SpotifyCompact({
       <span className="min-w-0 flex-1 truncate text-[10px] font-medium text-[var(--text-primary)]" title={trackTitle}>
         {trackTitle}
       </span>
+      <AudioVisualizer
+        isPlaying={!!isPlaying}
+        bars={8}
+        barWidth={1.5}
+        gap={1.5}
+        className="h-3 w-10 shrink-0 opacity-70"
+        color="var(--accent-primary)"
+        seed={trackTitle}
+      />
     </div>
   );
 }
@@ -349,6 +360,7 @@ export default function DynamicIslandContainer() {
             title={nowPlaying?.title}
             coverCandidates={[nowPlaying?.cover, nowPlaying?.artworkUrl, ...(nowPlaying?.covers || [])]}
             fallback={i18n("spotify", "Spotify")}
+            isPlaying={nowPlaying?.isPlaying}
           />
         );
       case "pomodoro":

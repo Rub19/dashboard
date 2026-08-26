@@ -962,6 +962,7 @@ export default function FilesPage() {
           open={!!previewFile}
           onClose={() => setPreviewFile(null)}
           file={previewFile}
+          clientId={clientId || undefined}
           location={previewLocation}
           trashed={trashed}
           onDownload={() => downloadDriveFile(previewFile)}

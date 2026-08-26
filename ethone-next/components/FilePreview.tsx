@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { X } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { fetchWorker } from "@/lib/api";
 import { Icon } from "@/lib/icons";
 import Button from "@/components/ui/Button";
 import SafeImage from "@/components/SafeImage";
@@ -29,6 +30,7 @@ export type FilePreviewProps = {
   open: boolean;
   onClose: () => void;
   file: CloudFile | null;
+  clientId?: string;
   location?: string;
   onDownload: () => void;
   onShare: () => void;
@@ -45,6 +47,7 @@ export default function FilePreview({
   open,
   onClose,
   file,
+  clientId,
   location,
   onDownload,
   onShare,
@@ -58,6 +61,7 @@ export default function FilePreview({
 }: FilePreviewProps) {
   const i18n = useI18n();
   const reduce = useReducedMotion() ?? false;
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -68,9 +72,30 @@ export default function FilePreview({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open, onClose]);
 
+  useEffect(() => {
+    if (!open || !file || !clientId || file.isFolder) {
+      setPreviewUrl(null);
+      return;
+    }
+    let cancelled = false;
+    fetchWorker(`/api/google-drive/download?clientId=${encodeURIComponent(clientId)}&fileId=${encodeURIComponent(file.driveFileId)}`)
+      .then((res) => {
+        if (cancelled) return;
+        const url = res?.data?.url || (typeof res?.data === "string" ? res.data : null);
+        setPreviewUrl(url || null);
+      })
+      .catch(() => {
+        if (!cancelled) setPreviewUrl(null);
+      });
+    return () => { cancelled = true; };
+  }, [open, file, clientId]);
+
   if (!file) return null;
 
   const isImage = file.mimeType.startsWith("image/");
+  const isVideo = file.mimeType.startsWith("video/");
+  const isAudio = file.mimeType.startsWith("audio/");
+  const isPDF = file.mimeType === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
   const icon = mimeIcon(file.mimeType, file.isFolder);
 
   return (
@@ -117,14 +142,34 @@ export default function FilePreview({
               <div className="flex-1 space-y-6 overflow-y-auto os-scroll p-5">
                 <div className="flex flex-col items-center gap-4">
                   <div className="relative flex h-48 w-full items-center justify-center overflow-hidden rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--bg-main)]">
-                    {isImage && file.thumbnailLink ? (
+                    {isImage && (previewUrl || file.thumbnailLink) ? (
                       <SafeImage
-                        candidates={[file.thumbnailLink, file.webViewLink, file.iconUrl]}
+                        candidates={[previewUrl, file.thumbnailLink, file.webViewLink, file.iconUrl].filter(Boolean) as string[]}
                         alt={file.name}
                         size={256}
                         className="h-full w-full object-contain"
                         iconClassName="h-12 w-12 text-[var(--accent-primary)]"
                         loading="eager"
+                      />
+                    ) : isVideo && previewUrl ? (
+                      <video
+                        src={previewUrl}
+                        controls
+                        className="h-full w-full rounded-2xl bg-black"
+                        aria-label={file.name}
+                      >
+                        {i18n("browserDoesNotSupportVideo", "Votre navigateur ne prend pas en charge la lecture vidéo.")}
+                      </video>
+                    ) : isAudio && previewUrl ? (
+                      <audio src={previewUrl} controls className="w-full" aria-label={file.name}>
+                        {i18n("browserDoesNotSupportAudio", "Votre navigateur ne prend pas en charge la lecture audio.")}
+                      </audio>
+                    ) : isPDF && previewUrl ? (
+                      <iframe
+                        src={previewUrl}
+                        title={file.name}
+                        className="h-full w-full rounded-2xl border-0 bg-[var(--bg-main)]"
+                        allow="autoplay"
                       />
                     ) : (
                       <div className="flex flex-col items-center gap-2 text-[var(--text-muted)]">

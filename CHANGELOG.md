@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.98 — 2026-08-26
+
+**ETHONE — Fichiers : aperçu enrichi**
+
+- `components/FilePreview.tsx` :
+  - Récupère une URL directe via `/api/google-drive/download`.
+  - Aperçu natif pour les images, les vidéos et les fichiers audio.
+  - Aperçu PDF dans une `<iframe>`.
+  - Fallback icône + métadonnées pour les fichiers non pris en charge.
+- `app/files/page.tsx` : passe `clientId` à `FilePreview`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.97 — 2026-08-26
 
 **ETHONE — Fichiers : audit final et finitions**

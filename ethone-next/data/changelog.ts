@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.98",
+  date: "2026-08-26",
+  title: "Fichiers — aperçu enrichi (image, PDF, vidéo, audio)",
+  items: [
+    "`FilePreview` récupère une URL directe via l’API Google Drive.",
+    "Aperçu natif pour les images, les vidéos et les fichiers audio.",
+    "Aperçu PDF via `<iframe>`.",
+    "Fichiers non pris en charge : icône et métadonnées comme avant.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.98.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.98",
+  date: "2026-08-26",
+  title: "Files — rich preview for images, PDF, video, audio",
+  items: [
+    "`FilePreview` fetches a direct URL via the Google Drive API.",
+    "Native preview for images, videos and audio files.",
+    "PDF preview via `<iframe>`.",
+    "Unsupported files still show icon and metadata.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.98.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.98",
+  date: "2026-08-26",
+  title: "Archivos — vista previa enriquecida (imagen, PDF, vídeo, audio)",
+  items: [
+    "`FilePreview` obtiene una URL directa a través de la API de Google Drive.",
+    "Vista previa nativa para imágenes, vídeos y archivos de audio.",
+    "Vista previa de PDF a través de `<iframe>`.",
+    "Archivos no compatibles siguen mostrando icono y metadatos.",
+    "Validación : build, lint.",
+    "Versión : v1.9.98.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.98",
+  date: "2026-08-26",
+  title: "Dateien — erweiterte Vorschau (Bild, PDF, Video, Audio)",
+  items: [
+    "`FilePreview` ruft eine direkte URL über die Google Drive API ab.",
+    "Native Vorschau für Bilder, Videos und Audiodateien.",
+    "PDF-Vorschau über `<iframe>`.",
+    "Nicht unterstützte Dateien zeigen weiterhin Icon und Metadaten.",
+    "Validierung: build, lint.",
+    "Version: v1.9.98.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.97",
   date: "2026-08-26",
   title: "Fichiers — audit final et finitions",

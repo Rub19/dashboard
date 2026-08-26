@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.52",
+  date: "2026-08-26",
+  title: "Spotify — ralentissement du polling pour éviter le rate limit",
+  items: [
+    "`useNowPlaying` dans la Dynamic Island repassé à 2000 ms pour respecter la limite de 60 requêtes/minute du worker.",
+    "Corrigé les erreurs `RATE_LIMITED` (429) observées dans Network.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.52.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.52",
+  date: "2026-08-26",
+  title: "Spotify — slower polling to avoid rate limit",
+  items: [
+    "`useNowPlaying` in the Dynamic Island set back to 2000 ms to respect the worker's 60 requests/minute limit.",
+    "Fixed `RATE_LIMITED` (429) errors observed in Network.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.52.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.52",
+  date: "2026-08-26",
+  title: "Spotify — polling más lento para evitar rate limit",
+  items: [
+    "`useNowPlaying` en la Dynamic Island vuelto a 2000 ms para respetar el límite de 60 peticiones/minuto del worker.",
+    "Corregidos los errores `RATE_LIMITED` (429) observados en Network.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.52.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.52",
+  date: "2026-08-26",
+  title: "Spotify — langsameres Polling gegen Rate-Limit",
+  items: [
+    "`useNowPlaying` im Dynamic Island auf 2000 ms zurückgesetzt, um das Worker-Limit von 60 Anfragen/Minute einzuhalten.",
+    "`RATE_LIMITED`-Fehler (429) im Network behoben.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.52.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.51",
   date: "2026-08-26",
   title: "Dynamic Island — Spotify prioritaire sur la synchro",

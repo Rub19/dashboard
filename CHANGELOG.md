@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.52 — 2026-08-26
+
+**ETHONE — Spotify : ralentissement du polling**
+
+- `useNowPlaying` dans la Dynamic Island repassé à 2000 ms pour respecter la limite de 60 requêtes/minute du worker.
+- Correction des erreurs `RATE_LIMITED` (429) dans Network.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.51 — 2026-08-26
 
 **ETHONE — Dynamic Island : Spotify prioritaire sur la synchro**

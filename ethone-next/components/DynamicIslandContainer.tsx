@@ -217,7 +217,7 @@ export default function DynamicIslandContainer() {
   const { settings } = useSettings();
   const { success: showSuccess, error: showError } = useToast();
   const focus = useFocus();
-  const { nowPlaying, loading: npLoading, refetch: refetchNowPlaying } = useNowPlaying(500);
+  const { nowPlaying, loading: npLoading, refetch: refetchNowPlaying } = useNowPlaying(2000);
   const isThinking = useBrainActivityStore((s) => s.isThinking);
   const { visible } = useDynamicIslandStore();
   const { pendingCount, syncing, lastSync, syncError, sync } = useActivityJournal();

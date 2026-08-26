@@ -81,6 +81,7 @@ function SpotifyCompact({
         loading="eager"
         priority
         timeoutMs={8000}
+        crossOrigin="anonymous"
       />
       <span className="min-w-0 flex-1 truncate text-[10px] font-medium text-[var(--text-primary)]" title={trackTitle}>
         {trackTitle}
@@ -583,6 +584,7 @@ export default function DynamicIslandContainer() {
                       loading="eager"
                       priority
                       timeoutMs={8000}
+                      crossOrigin="anonymous"
                     />
                     <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
                       <p className="line-clamp-2 text-sm font-semibold leading-snug text-[var(--text-primary)]">

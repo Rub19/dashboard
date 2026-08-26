@@ -217,6 +217,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
           iconClassName="h-3 w-3"
           loading="eager"
           priority
+          crossOrigin="anonymous"
         />
 
         {isPlaying && hasTrack && (
@@ -249,6 +250,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                 <SafeImage
                   className="h-12 w-12 shrink-0 rounded-xl border border-white/10 bg-[var(--text-primary)]/[0.05]"
                   iconClassName="h-5 w-5"
+                  crossOrigin="anonymous"
                 />
                 <div className="min-w-0 flex-1">
                   <h4 className="truncate text-xs font-bold text-[var(--text-primary)]">{i18n("noLive")}</h4>
@@ -275,6 +277,7 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
                     iconClassName="h-6 w-6"
                     loading="eager"
                     priority
+                    crossOrigin="anonymous"
                   />
                   <div className="min-w-0 flex-1">
                     <h4 className="truncate text-xs font-bold text-[var(--text-primary)]">{title || "—"}</h4>

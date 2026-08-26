@@ -92,7 +92,7 @@ function normalizeTrack(payload) {
   const artists = Array.isArray(item.artists) ? item.artists.map((artist) => safeText(artist?.name, 80)).filter(Boolean).join(", ") : "";
   const images = sortBySize(imageSources(item));
   const covers = images
-    .map((img) => safePublicUrl(img?.url, ["scdn.co", "spotifycdn.com", "spotify.com"]))
+    .map((img) => safePublicUrl(img?.url))
     .filter(Boolean);
   return Object.freeze({
     playing: payload.is_playing === true,
@@ -124,7 +124,7 @@ async function fetchAlbumImages(env, accessToken, albumId) {
     });
     const images = Array.isArray(response.data?.images) ? response.data.images : [];
     return sortBySize(images)
-      .map((img) => safePublicUrl(img?.url, ["scdn.co", "spotifycdn.com", "spotify.com"]))
+      .map((img) => safePublicUrl(img?.url))
       .filter(Boolean);
   } catch {
     return [];
@@ -144,7 +144,7 @@ async function fetchShowImages(env, accessToken, showId) {
     });
     const images = Array.isArray(response.data?.images) ? response.data.images : [];
     return sortBySize(images)
-      .map((img) => safePublicUrl(img?.url, ["scdn.co", "spotifycdn.com", "spotify.com"]))
+      .map((img) => safePublicUrl(img?.url))
       .filter(Boolean);
   } catch {
     return [];
@@ -165,7 +165,7 @@ async function fetchTrackImages(env, accessToken, trackId) {
     const item = response.data;
     const images = imageSources(item);
     const covers = sortBySize(images)
-      .map((img) => safePublicUrl(img?.url, ["scdn.co", "spotifycdn.com", "spotify.com"]))
+      .map((img) => safePublicUrl(img?.url))
       .filter(Boolean);
     if (covers.length > 0) return covers;
     if (item?.album?.id) return await fetchAlbumImages(env, accessToken, item.album.id);

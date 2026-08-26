@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.71",
+  date: "2026-08-26",
+  title: "Dock / Dynamic Island — pochettes musicales",
+  items: [
+    "Worker Spotify : `safePublicUrl` ne filtre plus les hôtes des images now-playing (pochette d'album / podcast).",
+    "Worker Lanyard : `artworkUrl` Spotify non filtré par hôte.",
+    "`DockMediaFlyout` et `DynamicIslandContainer` passent `crossOrigin=\"anonymous\"` sur `SafeImage`.",
+    "Validation : build, lint, tests Worker, déploiement Worker.",
+    "Version affichée en bas à droite : v1.9.71.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.71",
+  date: "2026-08-26",
+  title: "Dock / Dynamic Island — music covers",
+  items: [
+    "Spotify Worker: `safePublicUrl` no longer filters now-playing image hosts (album / podcast covers).",
+    "Lanyard Worker: Spotify `artworkUrl` no longer filtered by host.",
+    "`DockMediaFlyout` and `DynamicIslandContainer` set `crossOrigin=\"anonymous\"` on `SafeImage`.",
+    "Validation: build, lint, Worker tests, Worker deploy.",
+    "Version badge bottom-right: v1.9.71.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.71",
+  date: "2026-08-26",
+  title: "Dock / Dynamic Island — carátulas",
+  items: [
+    "Worker Spotify: `safePublicUrl` ya no filtra los hosts de imágenes now-playing (carátulas de álbum / podcast).",
+    "Worker Lanyard: `artworkUrl` de Spotify no filtrado por host.",
+    "`DockMediaFlyout` y `DynamicIslandContainer` usan `crossOrigin=\"anonymous\"` en `SafeImage`.",
+    "Validación: build, lint, tests Worker, despliegue Worker.",
+    "Versión mostrada abajo a la derecha : v1.9.71.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.71",
+  date: "2026-08-26",
+  title: "Dock / Dynamic Island — Album-Cover",
+  items: [
+    "Spotify Worker: `safePublicUrl` filtert jetzt nicht mehr die Hosts von now-playing Bildern (Album / Podcast Cover).",
+    "Lanyard Worker: Spotify `artworkUrl` nicht mehr nach Host gefiltert.",
+    "`DockMediaFlyout` und `DynamicIslandContainer` setzen `crossOrigin=\"anonymous\"` auf `SafeImage`.",
+    "Validierung: build, lint, Worker-Tests, Worker-Deploy.",
+    "Version unten rechts: v1.9.71.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.70",
   date: "2026-08-26",
   title: "TopBar — température météo déplacée dans les status pills",

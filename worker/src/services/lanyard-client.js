@@ -50,8 +50,8 @@ export async function getLanyardPresence(env, userId) {
       title: safeText(spotify.song, 180),
       artist: safeText(spotify.artist, 160),
       album: safeText(spotify.album, 160),
-      artworkUrl: safePublicUrl(spotify.album_art_url, ["scdn.co", "spotifycdn.com", "spotify.com"]),
-      covers: [safePublicUrl(spotify.album_art_url, ["scdn.co", "spotifycdn.com", "spotify.com"])].filter(Boolean),
+      artworkUrl: safePublicUrl(spotify.album_art_url),
+      covers: [safePublicUrl(spotify.album_art_url)].filter(Boolean),
       startedAt: Number(spotify.timestamps?.start) || null,
       endsAt: Number(spotify.timestamps?.end) || null
     }) : null

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.71 — 2026-08-26
+
+**ETHONE — Pochettes musicales : Dock et Dynamic Island**
+
+- Worker Spotify : `safePublicUrl` ne filtre plus les hôtes des images now-playing (pochettes d'albums / podcasts).
+- Worker Lanyard : `artworkUrl` Spotify non filtré par hôte.
+- `DockMediaFlyout` et `DynamicIslandContainer` : `crossOrigin="anonymous"` sur `SafeImage`.
+- Validation : `npm run build`, `npm run lint`, `npm test` Worker, `wrangler deploy`.
+
 ## v1.9.70 — 2026-08-26
 
 **ETHONE — TopBar : température météo intégrée aux status pills**

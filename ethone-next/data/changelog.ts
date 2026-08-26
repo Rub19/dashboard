@@ -7206,6 +7206,66 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.85",
+  date: "2026-08-26",
+  title: "Fichiers — phase 2 : aperçu rapide",
+  items: [
+    "Nouveau panneau latéral `FilePreview` pour les fichiers (image, métadonnées, actions rapides).",
+    "Clic sur un fichier = ouverture de l'aperçu au lieu du téléchargement direct.",
+    "Actions dans l'aperçu : télécharger, partager, renommer, déplacer, favori, corbeille/supprimer/restaurer.",
+    "Informations détaillées : nom, type, taille, dates, emplacement.",
+    "Fermeture avec `Esc` ou clic sur le backdrop.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.85.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.85",
+  date: "2026-08-26",
+  title: "Files — phase 2: quick preview",
+  items: [
+    "New `FilePreview` side panel for files (image, metadata, quick actions).",
+    "Clicking a file now opens the preview instead of direct download.",
+    "Actions in the preview: download, share, rename, move, favorite, trash/delete/restore.",
+    "Detailed info: name, type, size, dates, location.",
+    "Close with Esc or backdrop click.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.85.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.85",
+  date: "2026-08-26",
+  title: "Archivos — fase 2: vista rápida",
+  items: [
+    "Nuevo panel lateral `FilePreview` para archivos (imagen, metadatos, acciones rápidas).",
+    "Hacer clic en un archivo abre la vista previa en lugar de descargar directamente.",
+    "Acciones en la vista previa: descargar, compartir, renombrar, mover, favorito, papelera/eliminar/restaurar.",
+    "Información detallada: nombre, tipo, tamaño, fechas, ubicación.",
+    "Cierre con `Esc` o clic en el fondo.",
+    "Validación : build, lint.",
+    "Versión : v1.9.85.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.85",
+  date: "2026-08-26",
+  title: "Dateien — Phase 2: Schnellvorschau",
+  items: [
+    "Neues seitliches `FilePreview`-Panel für Dateien (Bild, Metadaten, Schnellaktionen).",
+    "Klick auf eine Datei öffnet die Vorschau statt direkten Downloads.",
+    "Aktionen in der Vorschau: herunterladen, teilen, umbenennen, verschieben, favorisieren, löschen/restore.",
+    "Detaillierte Infos: Name, Typ, Größe, Datum, Speicherort.",
+    "Schließen mit `Esc` oder Backdrop-Klick.",
+    "Validierung: build, lint.",
+    "Version: v1.9.85.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.84",
   date: "2026-08-26",
   title: "Fichiers — phase 1 : layout + modale Ajouter",

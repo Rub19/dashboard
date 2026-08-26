@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.85 — 2026-08-26
+
+**ETHONE — Fichiers : phase 2 aperçu rapide**
+
+- `components/FilePreview.tsx` : panneau latéral d'aperçu avec image, métadonnées (type, taille, dates, emplacement) et actions rapides.
+- `app/files/page.tsx` : clic sur un fichier ouvre le panneau d'aperçu. Dossiers : navigation conservée.
+- Actions d'aperçu : télécharger, partager, renommer, déplacer, favori, corbeille/supprimer/restaurer.
+- Fermeture via `Esc` ou clic sur le fond.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.84 — 2026-08-26
 
 **ETHONE — Fichiers : phase 1 layout + modale Ajouter**

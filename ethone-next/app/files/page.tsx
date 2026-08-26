@@ -18,6 +18,7 @@ import BulkActionBar from "@/components/BulkActionBar";
 import { formatBytes, mimeIcon, sortFiles } from "@/lib/files";
 import FilesAdminPanel from "@/components/FilesAdminPanel";
 import FileAddModal from "@/components/FileAddModal";
+import FilePreview from "@/components/FilePreview";
 import Input from "@/components/Input";
 import Button from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
@@ -93,6 +94,7 @@ export default function FilesPage() {
   const [modal, setModal] = useState<Modal>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
+  const [previewFile, setPreviewFile] = useState<CloudFile | null>(null);
   const [form, setForm] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [sort, setSort] = useState<"name" | "size" | "date" | "type">("name");
@@ -119,6 +121,17 @@ export default function FilesPage() {
   const { selected, selectedItems, hasSelection, isAllSelected, toggle, selectAll, clear, isSelected } = useSelection<CloudFile>(filteredFiles);
 
   const path = useMemo(() => folderPath(files, parentId), [files, parentId]);
+
+  const previewLocation = useMemo(() => {
+    if (!previewFile) return "";
+    const parts = [i18n("filesTitle")];
+    const current = path.map((p) => p.name);
+    if (previewFile.driveParentId) {
+      const parent = files.find((f) => f.driveFileId === previewFile.driveParentId);
+      if (parent) current.push(parent.name);
+    }
+    return [...parts, ...current].join(" / ");
+  }, [previewFile, files, path, i18n]);
 
   const quotaPercent = quota && quota.total ? Math.min(100, Math.round((quota.used / quota.total) * 100)) : 0;
 
@@ -287,8 +300,8 @@ export default function FilesPage() {
   function openFile(file: CloudFile) {
     if (file.isFolder) {
       setParentId(file.driveFileId);
-    } else if (clientId) {
-      downloadDriveFile(file);
+    } else {
+      setPreviewFile(file);
     }
   }
 
@@ -760,6 +773,24 @@ export default function FilesPage() {
               </form>
             )}
       </Modal>
+
+      {previewFile && (
+        <FilePreview
+          open={!!previewFile}
+          onClose={() => setPreviewFile(null)}
+          file={previewFile}
+          location={previewLocation}
+          trashed={trashed}
+          onDownload={() => downloadDriveFile(previewFile)}
+          onShare={() => openShare(previewFile)}
+          onRename={() => { setForm({ name: previewFile.name }); setModal({ type: "rename", file: previewFile }); }}
+          onMove={() => setModal({ type: "move", file: previewFile })}
+          onFavorite={() => favoriteFile(previewFile.driveFileId, !previewFile.isFavorite)}
+          onTrash={() => trashFile(previewFile.driveFileId)}
+          onDelete={() => deleteFile(previewFile.driveFileId)}
+          onRestore={() => restoreFile(previewFile.driveFileId)}
+        />
+      )}
 
       <FileAddModal
         open={addOpen}

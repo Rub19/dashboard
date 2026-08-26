@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.13 — 2026-08-26
+
+**ETHONE — Switch : taille corrigée**
+
+- `components/Switch.tsx` : suppression des `min-h-[44px] min-w-[44px]` qui rendaient le switch démesuré.
+- `app/login/page.tsx` : switch `Rester connecté` repassé en taille `md`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.12 — 2026-08-26
 
 **ETHONE — Shell : suppression du fond noir en bas**

@@ -57,7 +57,7 @@ export default function Switch({
         disabled={disabled}
         data-state={checked ? "checked" : "unchecked"}
         onClick={() => { triggerHaptic("light"); onChange(!checked); }}
-        className={`relative flex min-h-[44px] min-w-[44px] items-center rounded-full border border-[var(--border)] bg-[var(--surface-raised)] shadow-[inset_0_1px_2px_rgba(0,0,0,0.3)] transition-colors motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] data-[state=checked]:border-[var(--accent-primary)] data-[state=checked]:bg-[var(--accent-primary)] ${classes.track}`}
+        className={`relative flex items-center rounded-full border border-[var(--border)] bg-[var(--surface-raised)] shadow-[inset_0_1px_2px_rgba(0,0,0,0.3)] transition-colors motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] data-[state=checked]:border-[var(--accent-primary)] data-[state=checked]:bg-[var(--accent-primary)] ${classes.track}`}
       >
         <span
           className={`absolute left-[3px] top-1/2 -translate-y-1/2 rounded-full bg-[var(--text-primary)] shadow-[0_1px_3px_rgba(0,0,0,0.3)] transition-transform duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none ${

@@ -692,7 +692,7 @@ export default function LoginPage() {
                     </div>
                   )}
                   <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
-                    <Switch checked={rememberMe} onChange={setRememberMe} label={i18n("rememberMe", "Rester connecté")} id="remember-me" size="lg" />
+                    <Switch checked={rememberMe} onChange={setRememberMe} label={i18n("rememberMe", "Rester connecté")} id="remember-me" size="md" />
                     {mode === "password" && (
                       <button type="button" onClick={() => router.push("/password-recovery")} disabled={isLoading || isSuccess} className="text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] disabled:opacity-40">
                         {i18n("forgotPassword", "Mot de passe oublié ?")}

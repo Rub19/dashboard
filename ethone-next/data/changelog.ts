@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.13",
+  date: "2026-08-26",
+  title: "Switch — taille corrigée et login ajusté",
+  items: [
+    "`components/Switch.tsx` : suppression des `min-h-[44px] min-w-[44px]` qui forçaient le switch à être démesuré.",
+    "`app/login/page.tsx` : passage du switch `Rester connecté` en taille `md`.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.13.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.13",
+  date: "2026-08-26",
+  title: "Switch — fixed size and login usage",
+  items: [
+    "`components/Switch.tsx`: removed `min-h-[44px] min-w-[44px]` that forced the switch to be oversized.",
+    "`app/login/page.tsx`: `Rester connecté` switch now uses `md` size.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.13.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.13",
+  date: "2026-08-26",
+  title: "Switch — tamaño corregido y login ajustado",
+  items: [
+    "`components/Switch.tsx`: eliminados `min-h-[44px] min-w-[44px]` que forzaban el switch a ser desproporcionado.",
+    "`app/login/page.tsx`: switch `Permanecer conectado` ahora usa tamaño `md`.",
+    "Validación : build, lint.",
+    "Versión : v1.10.13.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.13",
+  date: "2026-08-26",
+  title: "Switch — Größe korrigiert und Login angepasst",
+  items: [
+    "`components/Switch.tsx`: `min-h-[44px] min-w-[44px]` entfernt, das den Switch übermäßig groß zwang.",
+    "`app/login/page.tsx`: `Angemeldet bleiben`-Switch verwendet nun Größe `md`.",
+    "Validierung: build, lint.",
+    "Version: v1.10.13.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.12",
   date: "2026-08-26",
   title: "Shell — suppression du fond noir en bas",

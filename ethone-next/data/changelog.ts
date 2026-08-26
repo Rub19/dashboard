@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.39",
+  date: "2026-08-26",
+  title: "Mobile login pass 9 — autocomplétion",
+  items: [
+    "Ajout de l'attribut `name` sur tous les champs du login (email, password, username, new-password, confirm-password).",
+    "Amélioration de l'autocomplétion et du remplissage par les gestionnaires de mots de passe.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.39.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.39",
+  date: "2026-08-26",
+  title: "Mobile login pass 9 — autocompletion",
+  items: [
+    "Added `name` attribute to all login fields (email, password, username, new-password, confirm-password).",
+    "Improved autocompletion and password manager support.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.39.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.39",
+  date: "2026-08-26",
+  title: "Mobile login pass 9 — autocompletado",
+  items: [
+    "Añadido el atributo `name` a todos los campos de login (email, password, username, new-password, confirm-password).",
+    "Mejora de la autocompletación y el soporte de gestores de contraseñas.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.39.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.39",
+  date: "2026-08-26",
+  title: "Mobile Login Pass 9 — Autovervollständigung",
+  items: [
+    "`name`-Attribut zu allen Login-Feldern hinzugefügt (email, password, username, new-password, confirm-password).",
+    "Verbesserte Autovervollständigung und Passwort-Manager-Unterstützung.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.39.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.38",
   date: "2026-08-26",
   title: "Mobile login pass 8 — accessibilité",

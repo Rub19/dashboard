@@ -616,6 +616,7 @@ export default function LoginPage() {
                 <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-email">{i18n("email", "E-mail")}</label>
                 <Input
                   id="auth-email"
+                  name="email"
                   ref={emailRef}
                   type="email"
                   inputSize="large"
@@ -667,6 +668,7 @@ export default function LoginPage() {
                       <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-password">{i18n("password", "Mot de passe")}</label>
                       <Input
                         id="auth-password"
+                        name="password"
                         type={showPassword ? "text" : "password"}
                         inputSize="large"
                         autoComplete="current-password"
@@ -704,12 +706,13 @@ export default function LoginPage() {
                 <motion.div key="register" initial={{ opacity: reduced ? 1 : 0 }} animate={{ opacity: 1 }} className="space-y-4">
                   <div className="space-y-1.5">
                     <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-username">{i18n("username", "Nom d'utilisateur")}</label>
-                    <Input id="auth-username" type="text" inputSize="large" autoComplete="username" autoCorrect="off" autoCapitalize="off" spellCheck="false" enterKeyHint="next" icon="user" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="rub19" disabled={isLoading || isSuccess} inputClassName="text-base sm:text-sm" />
+                    <Input id="auth-username" name="username" type="text" inputSize="large" autoComplete="username" autoCorrect="off" autoCapitalize="off" spellCheck="false" enterKeyHint="next" icon="user" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="rub19" disabled={isLoading || isSuccess} inputClassName="text-base sm:text-sm" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-password-register">{i18n("password", "Mot de passe")}</label>
                     <Input
                       id="auth-password-register"
+                      name="new-password"
                       type={showPassword ? "text" : "password"}
                       inputSize="large"
                       autoComplete="new-password"
@@ -732,7 +735,7 @@ export default function LoginPage() {
                   </div>
                   <div className="space-y-1.5">
                     <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-confirm">{i18n("confirmPassword", "Confirmer le mot de passe")}</label>
-                    <Input id="auth-confirm" type="password" inputSize="large" autoComplete="new-password" autoCorrect="off" autoCapitalize="off" spellCheck="false" enterKeyHint="go" icon="lock" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" disabled={isLoading || isSuccess} inputClassName="text-base sm:text-sm" />
+                    <Input id="auth-confirm" name="confirm-password" type="password" inputSize="large" autoComplete="new-password" autoCorrect="off" autoCapitalize="off" spellCheck="false" enterKeyHint="go" icon="lock" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" disabled={isLoading || isSuccess} inputClassName="text-base sm:text-sm" />
                   </div>
                 </motion.div>
               )}

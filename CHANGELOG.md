@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.39 — 2026-08-26
+
+**ETHONE — Mobile login pass 9 (autocomplétion)**
+
+- Ajout de l'attribut `name` sur tous les champs du login (email, password, username, new-password, confirm-password).
+- Amélioration de l'autocomplétion et du remplissage par les gestionnaires de mots de passe.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.38 — 2026-08-26
 
 **ETHONE — Mobile login pass 8 (accessibilité)**

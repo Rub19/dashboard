@@ -54,10 +54,10 @@ export default function FileAddModal({
   }
 
   const tabs = [
-    { id: "upload", label: i18n("uploadFile", "Téléverser"), content: null },
-    { id: "link", label: i18n("addLink", "Lien"), content: null },
+    { id: "upload", label: i18n("importFile", "Importer un fichier"), content: null },
+    { id: "link", label: i18n("addLink", "Ajouter un lien"), content: null },
     { id: "drive", label: i18n("drive", "Google Drive"), content: null },
-    { id: "folder", label: i18n("createFolder", "Dossier"), content: null },
+    { id: "folder", label: i18n("createFolder", "Créer un dossier"), content: null },
   ];
 
   return (

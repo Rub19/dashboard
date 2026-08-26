@@ -104,9 +104,22 @@ export default function FilesPage() {
   const [submitting, setSubmitting] = useState(false);
   const [sort, setSort] = useState<"name" | "size" | "date" | "type">("name");
   const [showFolders, setShowFolders] = useState(false);
-  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
+  const [viewMode, setViewMode] = useState<"list" | "grid">(() => {
+    try {
+      const saved = localStorage.getItem("ethone.files.viewMode");
+      return saved === "grid" ? "grid" : "list";
+    } catch {
+      return "list";
+    }
+  });
   const [showDuplicates, setShowDuplicates] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("ethone.files.viewMode", viewMode);
+    } catch {}
+  }, [viewMode]);
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -383,7 +396,7 @@ export default function FilesPage() {
 
   function fileContextItems(file: CloudFile) {
     return [
-      { id: "open", label: file.isFolder ? i18n("open") : i18n("download"), icon: file.isFolder ? "folder-open" : "download", onClick: () => openFile(file) },
+      { id: "open", label: file.isFolder ? i18n("open") : i18n("preview", "Aperçu"), icon: file.isFolder ? "folder-open" : "eye", onClick: () => openFile(file) },
       { id: "share", label: i18n("share"), icon: "share-2", onClick: () => openShare(file) },
       { id: "rename", label: i18n("rename"), icon: "pencil", onClick: () => { setForm({ name: file.name }); setModal({ type: "rename", file }); } },
       { id: "move", label: i18n("move"), icon: "folder-input", onClick: () => setModal({ type: "move", file }) },
@@ -671,7 +684,7 @@ export default function FilesPage() {
         />
       )}
 
-      {!loading && (
+      {!loading && filteredFiles.length > 0 && (
         <Checkbox
           checked={isAllSelected}
           onCheckedChange={(checked) => (checked ? selectAll() : clear())}

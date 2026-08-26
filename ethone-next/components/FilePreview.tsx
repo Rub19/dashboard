@@ -171,7 +171,7 @@ export default function FilePreview({
 
                 <div className="grid grid-cols-2 gap-2">
                   {!file.isFolder && (
-                    <Button size="sm" onClick={onDownload} leftIcon={<Icon name="download" className="h-4 w-4" />}>
+                    <Button size="sm" variant="secondary" onClick={onDownload} leftIcon={<Icon name="download" className="h-4 w-4" />}>
                       {i18n("download")}
                     </Button>
                   )}

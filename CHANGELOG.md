@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.97 — 2026-08-26
+
+**ETHONE — Fichiers : audit final et finitions**
+
+- `FileAddModal` : labels des onglets plus clairs (Importer un fichier, Ajouter un lien, Créer un dossier).
+- `app/files/page.tsx` : menu contextuel affiche `Aperçu` pour les fichiers.
+- `FilePreview.tsx` : bouton `Télécharger` en style secondaire.
+- `app/files/page.tsx` : préférence grille/liste persistée dans `localStorage`.
+- `Tout sélectionner` masqué quand aucun fichier n’est affiché.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.96 — 2026-08-26
 
 **ETHONE — Fichiers : correction du skeleton de chargement**

@@ -7206,6 +7206,66 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.97",
+  date: "2026-08-26",
+  title: "Fichiers — audit final et finitions",
+  items: [
+    "Labels du menu `Ajouter` alignés : Importer un fichier, Ajouter un lien, Google Drive, Créer un dossier.",
+    "Menu contextuel : `Aperçu` pour les fichiers au lieu de `Télécharger`.",
+    "Drawer de prévisualisation : bouton Télécharger en style secondaire.",
+    "Préférence grille/liste persistée dans `localStorage`.",
+    "`Tout sélectionner` masqué quand aucun fichier n’est affiché.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.97.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.97",
+  date: "2026-08-26",
+  title: "Files — final audit and polish",
+  items: [
+    "Add menu labels aligned: Import a file, Add a link, Google Drive, Create a folder.",
+    "Context menu: `Preview` for files instead of `Download`.",
+    "Preview drawer: Download button in secondary style.",
+    "Grid/list preference persisted in `localStorage`.",
+    "`Select all` hidden when no files are shown.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.97.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.97",
+  date: "2026-08-26",
+  title: "Archivos — auditoría final y acabado",
+  items: [
+    "Etiquetas del menú Añadir alineadas: Importar archivo, Añadir enlace, Google Drive, Crear carpeta.",
+    "Menú contextual: `Vista previa` para archivos en lugar de `Descargar`.",
+    "Drawer de vista previa: botón Descargar en estilo secundario.",
+    "Preferencia de cuadrícula/lista guardada en `localStorage`.",
+    "`Seleccionar todo` oculto cuando no hay archivos.",
+    "Validación : build, lint.",
+    "Versión : v1.9.97.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.97",
+  date: "2026-08-26",
+  title: "Dateien — abschließende Prüfung und Feinschliff",
+  items: [
+    "Hinzufügen-Menü-Labels angeglichen: Datei importieren, Link hinzufügen, Google Drive, Ordner erstellen.",
+    "Kontextmenü: `Vorschau` für Dateien statt `Herunterladen`.",
+    "Vorschau-Drawer: Download-Button im sekundären Stil.",
+    "Raster/Liste-Präferenz in `localStorage` gespeichert.",
+    "`Alle auswählen` ausgeblendet, wenn keine Dateien angezeigt werden.",
+    "Validierung: build, lint.",
+    "Version: v1.9.97.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.96",
   date: "2026-08-26",
   title: "Fichiers — correction du skeleton de chargement",

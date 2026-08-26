@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.96",
+  date: "2026-08-26",
+  title: "Fichiers — correction du skeleton de chargement",
+  items: [
+    "Le `Tout sélectionner` est maintenant caché pendant le chargement.",
+    "Skeleton de chargement plus visible avec `text-primary` au lieu de `border`.",
+    "Layout du skeleton en liste corrigé (icône à gauche du texte).",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.96.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.96",
+  date: "2026-08-26",
+  title: "Files — loading skeleton fix",
+  items: [
+    "`Select all` is now hidden while loading.",
+    "Loading skeleton is more visible, using `text-primary` instead of `border`.",
+    "Fixed list skeleton layout (icon to the left of text).",
+    "Validation: build, lint.",
+    "Version badge: v1.9.96.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.96",
+  date: "2026-08-26",
+  title: "Archivos — corrección del skeleton de carga",
+  items: [
+    "`Seleccionar todo` ahora se oculta durante la carga.",
+    "El skeleton de carga es más visible, usando `text-primary` en lugar de `border`.",
+    "Layout del skeleton en lista corregido (icono a la izquierda del texto).",
+    "Validación : build, lint.",
+    "Versión : v1.9.96.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.96",
+  date: "2026-08-26",
+  title: "Dateien — Lade-Skeleton korrigiert",
+  items: [
+    "`Alle auswählen` wird beim Laden ausgeblendet.",
+    "Lade-Skeleton ist jetzt besser sichtbar, mit `text-primary` statt `border`.",
+    "Listen-Skeleton-Layout korrigiert (Icon links vom Text).",
+    "Validierung: build, lint.",
+    "Version: v1.9.96.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.95",
   date: "2026-08-26",
   title: "Fichiers — effets visuels épurés",

@@ -671,12 +671,14 @@ export default function FilesPage() {
         />
       )}
 
-      <Checkbox
-        checked={isAllSelected}
-        onCheckedChange={(checked) => (checked ? selectAll() : clear())}
-        label={i18n("selectAll")}
-        className="text-sm text-[var(--muted)]"
-      />
+      {!loading && (
+        <Checkbox
+          checked={isAllSelected}
+          onCheckedChange={(checked) => (checked ? selectAll() : clear())}
+          label={i18n("selectAll")}
+          className="text-sm text-[var(--muted)]"
+        />
+      )}
 
       {parentId !== null && (
         <nav aria-label={i18n("folders")} className="flex flex-wrap items-center gap-2 text-sm text-[var(--muted)]">
@@ -719,11 +721,11 @@ export default function FilesPage() {
                 key={i}
                 className="h-full min-w-0 overflow-hidden rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)] p-[var(--panel-padding)] shadow-sm"
               >
-                <div className={cn("h-full animate-pulse", viewMode === "grid" && "flex flex-col items-center justify-center gap-2")}>
-                  <div className={cn("shrink-0 rounded-[var(--panel-radius)] bg-[var(--border)]", viewMode === "grid" ? "h-14 w-14" : "h-10 w-10")} />
+                <div className={cn("h-full animate-pulse", viewMode === "grid" ? "flex flex-col items-center justify-center gap-2" : "flex items-center gap-3")}>
+                  <div className={cn("shrink-0 rounded-[var(--panel-radius)] bg-[var(--text-primary)]/[0.08]", viewMode === "grid" ? "h-14 w-14" : "h-10 w-10")} />
                   <div className="space-y-2">
-                    <div className="h-3.5 w-32 rounded bg-[var(--border)]" />
-                    <div className="h-2.5 w-20 rounded bg-[var(--border)]" />
+                    <div className="h-3.5 w-32 rounded bg-[var(--text-primary)]/[0.08]" />
+                    <div className="h-2.5 w-20 rounded bg-[var(--text-primary)]/[0.08]" />
                   </div>
                 </div>
               </div>

@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.96 — 2026-08-26
+
+**ETHONE — Fichiers : correction du skeleton de chargement**
+
+- `app/files/page.tsx` :
+  - Le `Tout sélectionner` est caché pendant le chargement.
+  - Le skeleton de chargement est plus visible (`bg-[var(--text-primary)]/[0.08]`).
+  - Layout du skeleton en liste corrigé : icône à gauche, texte à droite.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.95 — 2026-08-26
 
 **ETHONE — Fichiers : effets visuels épurés**

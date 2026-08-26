@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.46 — 2026-08-26
+
+**ETHONE — Pochettes d'album : correction chargement**
+
+- `ClientImage` / `SafeImage` : `crossOrigin` devient optionnel et désactivé par défaut.
+- Cela corrige les pochettes Spotify/i.scdn.co qui ne s'affichaient pas à cause du CORS imposé.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.45 — 2026-08-26
 
 **ETHONE — Dynamic Island Spotify : design compact refondu**

@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.46",
+  date: "2026-08-26",
+  title: "Pochettes d'album — correction chargement",
+  items: [
+    "`ClientImage` / `SafeImage` : `crossOrigin` devient optionnel et désactivé par défaut.",
+    "Cela corrige les pochettes Spotify/i.scdn.co qui ne s'affichaient pas à cause du CORS imposé.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.46.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.46",
+  date: "2026-08-26",
+  title: "Album covers — loading fix",
+  items: [
+    "`ClientImage` / `SafeImage` : `crossOrigin` is now optional and off by default.",
+    "This fixes Spotify/i.scdn.co covers that did not display due to forced CORS.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.46.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.46",
+  date: "2026-08-26",
+  title: "Portadas de álbum — corrección de carga",
+  items: [
+    "`ClientImage` / `SafeImage` : `crossOrigin` es ahora opcional y desactivado por defecto.",
+    "Esto corrige las portadas de Spotify/i.scdn.co que no se mostraban por CORS forzado.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.46.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.46",
+  date: "2026-08-26",
+  title: "Album-Cover — Ladekorrektur",
+  items: [
+    "`ClientImage` / `SafeImage` : `crossOrigin` ist jetzt optional und standardmäßig deaktiviert.",
+    "Damit werden Spotify/i.scdn.co-Cover angezeigt, die zuvor wegen erzwungenem CORS nicht geladen wurden.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.46.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.45",
   date: "2026-08-26",
   title: "Dynamic Island Spotify — design compact refondu",

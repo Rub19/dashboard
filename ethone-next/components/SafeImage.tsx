@@ -19,6 +19,7 @@ export type SafeImageProps = {
   sizes?: string;
   loading?: "eager" | "lazy";
   timeoutMs?: number;
+  crossOrigin?: "anonymous" | "use-credentials";
 };
 
 export default function SafeImage({
@@ -35,6 +36,7 @@ export default function SafeImage({
   sizes,
   loading,
   timeoutMs,
+  crossOrigin,
 }: SafeImageProps) {
   let fallbackNode: React.ReactNode = null;
 
@@ -91,6 +93,7 @@ export default function SafeImage({
       priority={priority}
       loading={loading}
       timeoutMs={timeoutMs}
+      crossOrigin={crossOrigin}
     />
   );
 }

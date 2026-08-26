@@ -18,6 +18,7 @@ type ClientImageProps = {
   priority?: boolean;
   loading?: "eager" | "lazy";
   onResolve?: (src: string) => void;
+  crossOrigin?: "anonymous" | "use-credentials";
 };
 
 type ImageStatus = "idle" | "loading" | "ok" | "error";
@@ -111,6 +112,7 @@ export default function ClientImage({
   priority,
   loading,
   onResolve,
+  crossOrigin,
 }: ClientImageProps) {
   const sources = useMemo(
     () => (candidates ? candidates : src ? [src] : []).filter(isValidImageUrl),
@@ -216,7 +218,7 @@ export default function ClientImage({
         onError={handleError}
         loading={priority ? "eager" : loading}
         decoding={priority ? "sync" : "async"}
-        crossOrigin="anonymous"
+        crossOrigin={crossOrigin}
         referrerPolicy="no-referrer"
       />
     </span>

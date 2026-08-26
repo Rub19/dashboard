@@ -233,14 +233,14 @@ export default function StatusBar() {
     <motion.footer
       data-v8-status-bar
       data-status-bar
-      className="fixed bottom-3 right-3 z-0 h-auto select-none bg-transparent px-0 text-xs text-[var(--text-primary)] pointer-events-none"
+      className="fixed bottom-0 right-0 z-0 h-10 select-none border-t border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.7] px-4 text-xs text-[var(--text-primary)] backdrop-blur-[var(--panel-blur)] pointer-events-none"
       animate={{
-        left: open && !isMobile ? "calc(var(--sidebar-width) + 0.75rem)" : "0.75rem",
+        left: open && !isMobile ? "var(--sidebar-width)" : "0rem",
       }}
       transition={{ duration: 0.32, ease: [0.32, 0.72, 0, 1] }}
     >
-      <div className="flex w-full items-end justify-between">
-        <div className="pointer-events-auto flex min-w-0 items-center gap-2 bg-transparent px-0 py-0">
+      <div className="flex h-full w-full items-center justify-between">
+        <div className="pointer-events-auto flex min-w-0 items-center gap-2 px-0 py-0">
           <span
             className="hidden select-none rounded-lg bg-transparent px-2 py-0.5 text-[10px] font-semibold tracking-wide text-[var(--text-muted)] sm:inline-flex"
             aria-label={i18n("appName", "ETHONE")}

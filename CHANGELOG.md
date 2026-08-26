@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.25 — 2026-08-27
+
+**ETHONE — Bandeau de statut bas de page**
+
+- `StatusBar` passe en bandeau fixe en bas de page.
+- Fond `panel-bg`/70, bordure haute, `backdrop-blur`.
+- S’adapte à l’ouverture/fermeture de la sidebar.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.24 — 2026-08-27
 
 **ETHONE — Riot Gaming Card : dimensions et persistence des clés**

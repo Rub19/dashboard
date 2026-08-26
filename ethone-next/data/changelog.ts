@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.25",
+  date: "2026-08-27",
+  title: "Bandeau de statut bas de page",
+  items: [
+    "`StatusBar` passe en bandeau fixe en bas de page.",
+    "Fond `panel-bg`/70, bordure haute, backdrop-blur.",
+    "Ne flotte plus : occupe toute la largeur restante, s'adapte à la sidebar.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.25.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.25",
+  date: "2026-08-27",
+  title: "Bottom status bar strip",
+  items: [
+    "`StatusBar` is now a fixed bottom strip.",
+    "`panel-bg`/70 background, top border, backdrop-blur.",
+    "No longer floating: spans the available width and adjusts to sidebar.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.25.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.25",
+  date: "2026-08-27",
+  title: "Barra de estado inferior",
+  items: [
+    "`StatusBar` ahora es una barra fija en la parte inferior.",
+    "Fondo `panel-bg`/70, borde superior, backdrop-blur.",
+    "Ya no flota : ocupa el ancho disponible y se adapta a la barra lateral.",
+    "Validación : build, lint.",
+    "Versión : v1.10.25.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.25",
+  date: "2026-08-27",
+  title: "Untere Statusleiste",
+  items: [
+    "`StatusBar` ist jetzt ein fixer unterer Balken.",
+    "Hintergrund `panel-bg`/70, oberer Rand, Backdrop-Blur.",
+    "Schwebt nicht mehr : nutzt die verfügbare Breite und passt sich der Seitenleiste an.",
+    "Validierung: build, lint.",
+    "Version: v1.10.25.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.24",
   date: "2026-08-27",
   title: "Riot Gaming Card — dimensions et persistence clés",

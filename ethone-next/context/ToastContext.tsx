@@ -196,31 +196,31 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
   const success = useCallback(
     (title: string, description?: string) =>
-      show({ title, description, type: "success" }),
+      show({ title, description, type: "success", icon: <Icon name="check" pack="phosphor" className="h-5 w-5" /> }),
     [show]
   );
 
   const error = useCallback(
     (title: string, description?: string) =>
-      show({ title, description, type: "error" }),
+      show({ title, description, type: "error", icon: <Icon name="x" pack="phosphor" className="h-5 w-5" /> }),
     [show]
   );
 
   const info = useCallback(
     (title: string, description?: string) =>
-      show({ title, description, type: "info" }),
+      show({ title, description, type: "info", icon: <Icon name="info" pack="phosphor" className="h-5 w-5" /> }),
     [show]
   );
 
   const warning = useCallback(
     (title: string, description?: string) =>
-      show({ title, description, type: "warning" }),
+      show({ title, description, type: "warning", icon: <Icon name="warning" pack="phosphor" className="h-5 w-5" /> }),
     [show]
   );
 
   const loading = useCallback(
     (title: string, description?: string) =>
-      show({ title, description, type: "loading" }),
+      show({ title, description, type: "loading", icon: <Icon name="loader-2" pack="phosphor" className="h-5 w-5" /> }),
     [show]
   );
 

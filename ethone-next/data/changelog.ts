@@ -7206,6 +7206,50 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.67",
+  date: "2026-08-26",
+  title: "Dynamic Island — réveil depuis IDLE",
+  items: [
+    "La Dynamic Island repasse automatiquement en COMPACT quand une activité redevient active après un état IDLE.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.67.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.67",
+  date: "2026-08-26",
+  title: "Dynamic Island — wake-up from IDLE",
+  items: [
+    "Dynamic Island now auto-switches back to COMPACT when an activity becomes active again after IDLE.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.67.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.67",
+  date: "2026-08-26",
+  title: "Dynamic Island — reactivación desde IDLE",
+  items: [
+    "La Dynamic Island vuelve automáticamente a COMPACT cuando una actividad se reactiva tras estar en IDLE.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.67.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.67",
+  date: "2026-08-26",
+  title: "Dynamic Island — Aufwachen aus IDLE",
+  items: [
+    "Die Dynamic Island schaltet automatisch zurück auf COMPACT, wenn eine Aktivität nach IDLE wieder aktiv wird.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.67.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.66",
   date: "2026-08-26",
   title: "Correction — fichiers manquants dans les commits v1.9.55 à v1.9.65",

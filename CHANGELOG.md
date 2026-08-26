@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.67 — 2026-08-26
+
+**ETHONE — Dynamic Island : réveil depuis IDLE**
+
+- La Dynamic Island repasse automatiquement en COMPACT quand une activité redevient active après un état IDLE.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.66 — 2026-08-26
 
 **ETHONE — Correction : fichiers manquants dans les commits v1.9.55 à v1.9.65**

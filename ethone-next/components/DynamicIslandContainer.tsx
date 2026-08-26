@@ -269,13 +269,17 @@ export default function DynamicIslandContainer() {
       return;
     }
 
+    if (mode === "IDLE") {
+      setMode("COMPACT");
+    }
+
     if (!userSelected) {
       if (topView !== selectedView) setSelectedView(topView);
     } else if (selectedView && !activeViews.includes(selectedView)) {
       setUserSelected(false);
       if (topView !== selectedView) setSelectedView(topView);
     }
-  }, [activeViews, top, selectedView, userSelected]);
+  }, [activeViews, top, selectedView, userSelected, mode]);
 
   // Escape collapses
   useEffect(() => {

@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.26 — 2026-08-27
+
+**ETHONE — Opacité dock légèrement augmentée**
+
+- `.v8-dock` : opacité du fond passée de 70% à 85%.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.25 — 2026-08-27
 
 **ETHONE — Bandeau de statut bas de page**

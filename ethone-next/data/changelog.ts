@@ -7206,6 +7206,50 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.26",
+  date: "2026-08-27",
+  title: "Opacité dock légèrement augmentée",
+  items: [
+    "`.v8-dock` : opacité du fond passée de 70% à 85%.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.26.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.26",
+  date: "2026-08-27",
+  title: "Dock opacity slightly increased",
+  items: [
+    "`.v8-dock` background opacity from 70% to 85%.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.26.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.26",
+  date: "2026-08-27",
+  title: "Opacidad del dock ligeramente aumentada",
+  items: [
+    "`.v8-dock` : opacidad del fondo de 70% a 85%.",
+    "Validación : build, lint.",
+    "Versión : v1.10.26.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.26",
+  date: "2026-08-27",
+  title: "Dock-Opazität leicht erhöht",
+  items: [
+    "`.v8-dock` Hintergrundopazität von 70% auf 85%.",
+    "Validierung: build, lint.",
+    "Version: v1.10.26.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.25",
   date: "2026-08-27",
   title: "Bandeau de statut bas de page",

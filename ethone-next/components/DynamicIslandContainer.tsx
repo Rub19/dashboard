@@ -6,7 +6,7 @@ import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import SafeImage from "@/components/SafeImage";
 import { useRouter } from "next/navigation";
-import { Icon } from "@/lib/icons";
+import { Icon, type IconPack } from "@/lib/icons";
 
 import LiveMediaProgress from "@/components/LiveMediaProgress";
 import AudioVisualizer from "@/components/AudioVisualizer";
@@ -40,6 +40,8 @@ function viewLabel(view: IslandView, i18n: (key: string, fallback?: string) => s
       return i18n("sync", "Synchronisation");
     case "upload":
       return i18n("upload", "Upload");
+    case "notification":
+      return i18n("notification", "Notification");
     default:
       return "";
   }
@@ -128,6 +130,8 @@ function IslandBubble({
       <Icon name="arrows-clockwise" pack="phosphor" className={iconClass} />
     ) : view === "upload" ? (
       <Icon name="upload-cloud" pack="phosphor" className={iconClass} />
+    ) : view === "notification" ? (
+      <Icon name="bell" pack="phosphor" className={iconClass} />
     ) : (
       <Icon name="sparkles" pack="phosphor" className={iconClass} />
     );
@@ -163,6 +167,10 @@ function IslandExpandedHeader({
       <Icon name="brain" pack="phosphor" className="h-3.5 w-3.5 text-[var(--info)]" />
     ) : selected === "sync" ? (
       <Icon name="arrows-clockwise" pack="phosphor" className="h-3.5 w-3.5 text-[var(--info)]" />
+    ) : selected === "upload" ? (
+      <Icon name="upload-cloud" pack="phosphor" className="h-3.5 w-3.5 text-[var(--info)]" />
+    ) : selected === "notification" ? (
+      <Icon name="bell" pack="phosphor" className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
     ) : (
       <Icon name="sparkles" pack="phosphor" className="h-3.5 w-3.5 text-[var(--text-muted)]" />
     );
@@ -329,9 +337,8 @@ export default function DynamicIslandContainer() {
     const base = "flex h-full w-full items-center justify-center gap-2 whitespace-nowrap px-1 text-[var(--text-primary)]";
     if (!selectedView) {
       return (
-        <div className={cn(base)}>
-          <Icon name="sparkles" pack="phosphor" className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
-          <span className="text-xs font-medium tabular-nums">{clock}</span>
+        <div className="flex h-full w-full items-center justify-center px-4">
+          <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]/60 shadow-[0_0_8px_var(--glow-color)]" aria-hidden="true" />
         </div>
       );
     }
@@ -397,10 +404,31 @@ export default function DynamicIslandContainer() {
             )}
           </div>
         );
+      case "notification": {
+        const note = (top?.content as { icon?: string; pack?: string; title?: string; message?: string; variant?: string } | undefined) || {};
+        const noteColor =
+          note.variant === "success"
+            ? "text-[var(--success)]"
+            : note.variant === "warning"
+              ? "text-[var(--warning)]"
+              : note.variant === "error"
+                ? "text-[var(--danger)]"
+                : "text-[var(--accent-primary)]";
+        return (
+          <div className={cn(base)}>
+            <Icon
+              name={note.icon || "sparkles"}
+              pack={(note.pack as IconPack) || "phosphor"}
+              className={cn("h-3.5 w-3.5", noteColor)}
+            />
+            <span className="text-xs font-medium tabular-nums">{note.title || i18n("notification", "Notification")}</span>
+          </div>
+        );
+      }
       default:
         return null;
     }
-  }, [clock, selectedView, nowPlaying, focus, i18n, syncing, pendingCount, uploadingCount, completedCount, errorCount]);
+  }, [selectedView, top, nowPlaying, focus, i18n, syncing, pendingCount, uploadingCount, completedCount, errorCount]);
 
   // Spotify controls
   const spotifyControl = useCallback(
@@ -618,7 +646,11 @@ export default function DynamicIslandContainer() {
                 <AudioVisualizer
                   seed={nowPlaying?.id || nowPlaying?.title || ""}
                   isPlaying={!!nowPlaying?.isPlaying}
-                  bars={14}
+                  bars={18}
+                  barWidth={2}
+                  gap={2}
+                  className="h-4 opacity-80"
+                  color="var(--accent-primary)"
                 />
 
                 {nowPlaying?.durationMs !== undefined && (
@@ -692,7 +724,7 @@ export default function DynamicIslandContainer() {
                   />
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
                   {focus.state.paused ? (
                     <button
                       type="button"
@@ -712,16 +744,14 @@ export default function DynamicIslandContainer() {
                       {i18n("pause")}
                     </button>
                   )}
-                  {(focus.state.phase === "shortBreak" || focus.state.phase === "longBreak") && (
-                    <button
-                      type="button"
-                      onClick={() => focus.skipBreak()}
-                      className="flex items-center gap-1.5 rounded-xl border border-[var(--text-primary)]/[0.08] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--text-primary)]/20 hover:text-[var(--text-primary)]"
-                    >
-                      <Icon name="chevron-right" pack="phosphor" className="h-3.5 w-3.5" />
-                      {i18n("skip")}
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => focus.stop()}
+                    className="flex items-center gap-1.5 rounded-xl border border-[var(--danger)]/20 px-3 py-1.5 text-xs font-medium text-[var(--danger)] transition-colors hover:bg-[var(--danger)]/10 hover:text-[var(--danger)]"
+                  >
+                    <Icon name="stop" pack="phosphor" className="h-3.5 w-3.5" />
+                    {i18n("stop")}
+                  </button>
                 </div>
               </div>
             </DynamicIslandView>
@@ -816,6 +846,40 @@ export default function DynamicIslandContainer() {
                 />
                 <UploadIslandView />
               </div>
+            </DynamicIslandView>
+
+            <DynamicIslandView id="notification" className="w-[min(92vw,260px)] sm:w-[320px]">
+              {(() => {
+                const note = (top?.content as { icon?: string; pack?: string; title?: string; message?: string; variant?: string } | undefined) || {};
+                const noteVariant =
+                  note.variant === "success"
+                    ? { color: "text-[var(--success)]", bg: "bg-[var(--success)]/15" }
+                    : note.variant === "warning"
+                      ? { color: "text-[var(--warning)]", bg: "bg-[var(--warning)]/15" }
+                      : note.variant === "error"
+                        ? { color: "text-[var(--danger)]", bg: "bg-[var(--danger)]/15" }
+                        : { color: "text-[var(--accent-primary)]", bg: "bg-[var(--accent-primary)]/15" };
+                return (
+                  <div onClick={stopPropagation} className="flex w-full flex-col items-center gap-3 text-center">
+                    <IslandExpandedHeader
+                      activeViews={activeViews}
+                      selected={selectedView ?? "notification"}
+                      onSelect={selectView}
+                    />
+                    <div className={cn("flex h-12 w-12 items-center justify-center rounded-full", noteVariant.bg)}>
+                      <Icon
+                        name={note.icon || "sparkles"}
+                        pack={(note.pack as IconPack) || "phosphor"}
+                        className={cn("h-6 w-6", noteVariant.color)}
+                      />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-[var(--text-primary)]">{note.title || i18n("notification", "Notification")}</p>
+                      {note.message && <p className="text-xs text-[var(--text-muted)]">{note.message}</p>}
+                    </div>
+                  </div>
+                );
+              })()}
             </DynamicIslandView>
           </DynamicIsland>
         </motion.div>

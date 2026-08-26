@@ -2,6 +2,8 @@
 
 import { create } from "zustand";
 
+const DISMISS_TIMERS = new Map<string, number>();
+
 export type IslandView =
   | "spotify"
   | "pomodoro"
@@ -52,13 +54,18 @@ function computeTop(queue: IslandEvent[]): IslandEvent | null {
   return sorted[0];
 }
 
-export const useIslandQueueStore = create<QueueState>((set) => ({
+export const useIslandQueueStore = create<QueueState>((set, get) => ({
   queue: [],
   top: null,
   register: (event) =>
     set((state) => {
+      DISMISS_TIMERS.delete(event.id);
       const filtered = state.queue.filter((e) => e.id !== event.id && e.type !== event.type);
       const queue = [...filtered, event];
+      if (event.duration && event.duration > 0) {
+        const timer = window.setTimeout(() => get().unregister(event.id), event.duration);
+        DISMISS_TIMERS.set(event.id, timer);
+      }
       return { queue, top: computeTop(queue) };
     }),
   unregister: (idOrType) =>

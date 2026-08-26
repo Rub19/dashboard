@@ -7206,6 +7206,70 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.72",
+  date: "2026-08-26",
+  title: "ETHONE — Rework de la Dynamic Island",
+  items: [
+    "Refonte de `components/DynamicIslandContainer` : modes compact/expanded plus cohérents.",
+    "Shell `ui/DynamicIsland` : rendu OLED noir profond, reflet subtil, glow selon l'accent.",
+    "Waveform `AudioVisualizer` : animation organique, mise en pause réelle quand la musique est arrêtée, respect de `prefers-reduced-motion`.",
+    "Notifications transitives via `useIslandNotify` et `useIslandQueueStore` (auto-dismiss).",
+    "Timer : bouton Arrêter ajouté.",
+    "Mini-player : waveform intégré, contrôles, pochette.",
+    "Validation : build, lint.",
+    "Version affichée : v1.9.72.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.72",
+  date: "2026-08-26",
+  title: "ETHONE — Dynamic Island Rework",
+  items: [
+    "Reworked `components/DynamicIslandContainer` for more consistent compact/expanded modes.",
+    "`ui/DynamicIsland` shell: deep OLED black, subtle sheen, accent glow.",
+    "`AudioVisualizer` waveform: organic animation, real pause when music is stopped, respects `prefers-reduced-motion`.",
+    "Transient notifications via `useIslandNotify` and `useIslandQueueStore` (auto-dismiss).",
+    "Timer: added Stop button.",
+    "Mini-player: integrated waveform, controls, cover art.",
+    "Validation: build, lint.",
+    "Version badge: v1.9.72.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.72",
+  date: "2026-08-26",
+  title: "ETHONE — Rework de la Dynamic Island",
+  items: [
+    "Refactorización de `components/DynamicIslandContainer` para modos compact/expanded más coherentes.",
+    "Shell `ui/DynamicIsland` : fondo OLED negro profundo, reflejo sutil, glow del acento.",
+    "Waveform `AudioVisualizer` : animación orgánica, pausa real cuando la música se detiene, respeta `prefers-reduced-motion`.",
+    "Notificaciones transitorias con `useIslandNotify` y `useIslandQueueStore` (auto-dismiss).",
+    "Timer : botón Detener añadido.",
+    "Mini-player : waveform integrado, controles, carátula.",
+    "Validación : build, lint.",
+    "Versión : v1.9.72.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.72",
+  date: "2026-08-26",
+  title: "ETHONE — Dynamic Island Rework",
+  items: [
+    "`components/DynamicIslandContainer` überarbeitet für konsistentere kompakte/erweiterte Modi.",
+    "`ui/DynamicIsland` Shell: tiefes OLED-Schwarz, subtiler Schein, Akzent-Glow.",
+    "`AudioVisualizer` Waveform: organische Animation, echte Pause bei gestoppter Musik, beachtet `prefers-reduced-motion`.",
+    "Vorübergehende Benachrichtigungen über `useIslandNotify` und `useIslandQueueStore` (Auto-Dismiss).",
+    "Timer: Stop-Taste hinzugefügt.",
+    "Mini-Player: integrierte Waveform, Steuerung, Cover.",
+    "Validierung: build, lint.",
+    "Version: v1.9.72.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.71",
   date: "2026-08-26",
   title: "Dock / Dynamic Island — pochettes musicales",

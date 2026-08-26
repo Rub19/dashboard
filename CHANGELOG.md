@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.72 — 2026-08-26
+
+**ETHONE — Rework de la Dynamic Island**
+
+- Refonte de `components/DynamicIslandContainer` : modes compact/expanded plus cohérents.
+- `components/ui/DynamicIsland` : shell OLED noir profond, reflet subtil, glow selon l'accent.
+- `components/AudioVisualizer` : waveform organique, vraie pause quand la musique s'arrête, respect de `prefers-reduced-motion`.
+- Notifications transitives via `useIslandNotify` et `useIslandQueueStore` (auto-dismiss).
+- Timer : bouton Arrêter dans la Dynamic Island.
+- Mini-player Spotify : waveform intégré, contrôles, pochette.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.71 — 2026-08-26
 
 **ETHONE — Pochettes musicales : Dock et Dynamic Island**

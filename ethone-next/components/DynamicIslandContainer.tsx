@@ -24,22 +24,11 @@ import { useActivityJournal } from "@/lib/hooks/useActivityJournal";
 import { cn } from "@/lib/utils";
 import VolumeSlider from "@/components/VolumeSlider";
 import UploadIslandView from "@/components/UploadIslandView";
-
-type View = "spotify" | "pomodoro" | "brain" | "sync" | "upload";
+import { useDynamicIslandQueue, type IslandView, type IslandEvent } from "@/lib/hooks/useDynamicIslandQueue";
 
 const EASE_OUT = [0.16, 1, 0.3, 1] as const;
-const VIEW_PRIORITY: Record<View, number> = {
-  brain: 5, // critical / activity
-  pomodoro: 4, // action required / activity
-  upload: 3, // ongoing upload
-  spotify: 2, // information contextuelle, mais préféré à sync
-  sync: 1, // activité en cours
-};
-const VIEW_ORDER: View[] = (Object.keys(VIEW_PRIORITY) as View[]).sort(
-  (a, b) => VIEW_PRIORITY[b] - VIEW_PRIORITY[a],
-);
 
-function viewLabel(view: View, i18n: (key: string, fallback?: string) => string) {
+function viewLabel(view: IslandView, i18n: (key: string, fallback?: string) => string) {
   switch (view) {
     case "spotify":
       return i18n("spotify", "Spotify");
@@ -107,7 +96,7 @@ function IslandBubble({
   size = "sm",
   pulse,
 }: {
-  view: View;
+  view: IslandView;
   active?: boolean;
   onClick?: (e: React.MouseEvent) => void;
   size?: "sm" | "md";
@@ -158,9 +147,9 @@ function IslandExpandedHeader({
   onSelect,
   className,
 }: {
-  activeViews: View[];
-  selected: View;
-  onSelect: (view: View) => void;
+  activeViews: IslandView[];
+  selected: IslandView;
+  onSelect: (view: IslandView) => void;
   className?: string;
 }) {
   const i18n = useI18n();
@@ -220,10 +209,9 @@ export default function DynamicIslandContainer() {
   type IslandMode = "IDLE" | "COMPACT" | "EXPANDED" | "INTERACTIVE";
   const [mode, setMode] = useState<IslandMode>("IDLE");
   const expanded = mode === "EXPANDED" || mode === "INTERACTIVE";
-  const [selectedView, setSelectedView] = useState<View | null>(null);
+  const [selectedView, setSelectedView] = useState<IslandView | null>(null);
   const [userSelected, setUserSelected] = useState(false);
-  const [activeViews, setActiveViews] = useState<View[]>([]);
-  const prevActiveRef = useRef<Set<View>>(new Set());
+  const { activeViews, top, register, unregister } = useDynamicIslandQueue();
   const isInitialMount = useRef(true);
   const islandLeaveTimer = useRef<number | null>(null);
   const islandRef = useRef<HTMLDivElement | null>(null);
@@ -244,53 +232,50 @@ export default function DynamicIslandContainer() {
   const brainActive = isThinking;
   const syncActive = syncing || pendingCount > 0;
 
+  // Register / unregister island events from the priority queue.
   useEffect(() => {
-    // Don't react to activity changes while now-playing data is still
-    // loading. Otherwise a refetch that temporarily clears the track would
-    // be treated as "new activity" when the data comes back and the island
-    // would auto-expand.
     if (npLoading) return;
 
-    const nextActive = new Set<View>();
-    if (brainActive) nextActive.add("brain");
-    if (pomodoroActive) nextActive.add("pomodoro");
-    if (uploadActive) nextActive.add("upload");
-    if (syncActive) nextActive.add("sync");
-    if (spotifyActive) nextActive.add("spotify");
+    if (brainActive) register({ id: "brain", type: "brain" } as IslandEvent);
+    else unregister("brain");
 
-    const nextActiveViews = VIEW_ORDER.filter((v) => nextActive.has(v));
-    setActiveViews(nextActiveViews);
+    if (pomodoroActive) register({ id: "pomodoro", type: "pomodoro" } as IslandEvent);
+    else unregister("pomodoro");
 
-    const newViews = VIEW_ORDER.filter(
-      (v) => nextActive.has(v) && !prevActiveRef.current.has(v),
-    );
+    if (uploadActive) register({ id: "upload", type: "upload" } as IslandEvent);
+    else unregister("upload");
 
-    if (newViews.length > 0) {
-      // A new event just started: select it, but stay compact.
-      // Priority order guarantees the most important event is selected.
-      setSelectedView(newViews[0]);
-    }
+    if (syncActive) register({ id: "sync", type: "sync" } as IslandEvent);
+    else unregister("sync");
 
-    // On initial mount, or when the user hasn't explicitly chosen, follow
-    // the highest-priority active view.
-    if (!userSelected || isInitialMount.current) {
-      const top = nextActiveViews[0] ?? null;
-      if (top !== selectedView) setSelectedView(top);
-    } else if (selectedView && !nextActive.has(selectedView)) {
-      const fallback = nextActiveViews[0] ?? null;
-      setSelectedView(fallback);
-      if (!fallback) setMode("IDLE");
-    }
+    if (spotifyActive) register({ id: "spotify", type: "spotify" } as IslandEvent);
+    else unregister("spotify");
+  }, [brainActive, pomodoroActive, syncActive, spotifyActive, uploadActive, npLoading, register, unregister]);
+
+  // Sync selected view with the top of the queue.
+  useEffect(() => {
+    const topView = top?.type ?? null;
 
     if (isInitialMount.current) {
-      setMode(nextActive.size > 0 ? "COMPACT" : "IDLE");
+      setMode(activeViews.length > 0 ? "COMPACT" : "IDLE");
       isInitialMount.current = false;
+      if (topView !== selectedView) setSelectedView(topView);
+      return;
     }
 
-    if (nextActive.size === 0) setMode("IDLE");
+    if (activeViews.length === 0) {
+      setMode("IDLE");
+      if (selectedView !== null) setSelectedView(null);
+      return;
+    }
 
-    prevActiveRef.current = nextActive;
-  }, [brainActive, pomodoroActive, syncActive, spotifyActive, uploadActive, selectedView, npLoading, userSelected]);
+    if (!userSelected) {
+      if (topView !== selectedView) setSelectedView(topView);
+    } else if (selectedView && !activeViews.includes(selectedView)) {
+      setUserSelected(false);
+      if (topView !== selectedView) setSelectedView(topView);
+    }
+  }, [activeViews, top, selectedView, userSelected]);
 
   // Escape collapses
   useEffect(() => {
@@ -301,7 +286,7 @@ export default function DynamicIslandContainer() {
     return () => window.removeEventListener("keydown", onKey);
   }, [activeViews.length]);
 
-  const selectView = useCallback((view: View) => {
+  const selectView = useCallback((view: IslandView) => {
     setUserSelected(true);
     setSelectedView(view);
     setMode("EXPANDED");

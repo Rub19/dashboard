@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.64",
+  date: "2026-08-26",
+  title: "Dynamic Island 2.0 — étape 7 : intégration du store",
+  items: [
+    "`DynamicIslandContainer` branché sur `useIslandQueueStore` via `useDynamicIslandQueue`.",
+    "Les événements sont enregistrés/désenregistrés selon les activités en cours.",
+    "La priorité et le `selectedView` sont désormais dérivés de la file centralisée.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.64.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.64",
+  date: "2026-08-26",
+  title: "Dynamic Island 2.0 — step 7: store integration",
+  items: [
+    "`DynamicIslandContainer` now uses `useIslandQueueStore` through `useDynamicIslandQueue`.",
+    "Events are registered/unregistered based on current activities.",
+    "Priority and `selectedView` are now derived from the centralized queue.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.64.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.64",
+  date: "2026-08-26",
+  title: "Dynamic Island 2.0 — paso 7: integración del store",
+  items: [
+    "`DynamicIslandContainer` conectado a `useIslandQueueStore` vía `useDynamicIslandQueue`.",
+    "Los eventos se registran/desregistran según las actividades en curso.",
+    "La prioridad y el `selectedView` se derivan ahora de la cola centralizada.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.64.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.64",
+  date: "2026-08-26",
+  title: "Dynamic Island 2.0 — Schritt 7: Store-Integration",
+  items: [
+    "`DynamicIslandContainer` ist jetzt über `useDynamicIslandQueue` an `useIslandQueueStore` angebunden.",
+    "Events werden basierend auf aktuellen Aktivitäten registriert/deregistriert.",
+    "Priorität und `selectedView` leiten sich jetzt aus der zentralen Warteschlange ab.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.64.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.63",
   date: "2026-08-26",
   title: "Widget météo compact pour le Home",

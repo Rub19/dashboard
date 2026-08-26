@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.64 — 2026-08-26
+
+**ETHONE — Dynamic Island 2.0 : étape 7 — intégration du store**
+
+- `DynamicIslandContainer` branché sur `useIslandQueueStore` via `useDynamicIslandQueue`.
+- Les événements sont enregistrés/désenregistrés selon les activités en cours.
+- La priorité et le `selectedView` sont désormais dérivés de la file centralisée.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.63 — 2026-08-26
 
 **ETHONE — Widget météo compact pour le Home**

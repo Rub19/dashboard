@@ -115,7 +115,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = "v1.10.16";
+  const VERSION_LABEL = "v1.10.17";
 
   const menuItems = [
     {

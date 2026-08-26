@@ -141,6 +141,60 @@ export default function FilePreview({
     file.mimeType.includes("typescript");
   const icon = mimeIcon(file.mimeType, file.isFolder);
 
+  const renderMedia = () => {
+    if (isImage && (previewUrl || file.thumbnailLink)) {
+      return (
+        <SafeImage
+          candidates={[previewUrl, file.thumbnailLink, file.webViewLink, file.iconUrl].filter(Boolean) as string[]}
+          alt={file.name}
+          size={512}
+          className="h-full w-full object-contain"
+          iconClassName="h-12 w-12 text-[var(--accent-primary)]"
+          loading="eager"
+        />
+      );
+    }
+    if (isVideo && previewUrl) {
+      return <video src={previewUrl} controls className="h-full w-full rounded-2xl bg-black" aria-label={file.name} />;
+    }
+    if (isAudio && previewUrl) {
+      return <audio src={previewUrl} controls className="w-full" aria-label={file.name} />;
+    }
+    if (isPDF && previewUrl) {
+      return <iframe src={previewUrl} title={file.name} className="h-full w-full rounded-2xl border-0 bg-[var(--bg-main)]" allow="autoplay" />;
+    }
+    if (isText && (text || textLoading)) {
+      if (textLoading) {
+        return (
+          <div className="flex h-full items-center justify-center text-[var(--text-muted)]">
+            <Icon name="loader-2" className="h-6 w-6 animate-spin" />
+          </div>
+        );
+      }
+      return (
+        <pre className="h-full w-full overflow-auto rounded-2xl bg-[var(--bg-main)] p-4 text-left font-mono text-[11px] text-[var(--text-primary)]">
+          {text}
+        </pre>
+      );
+    }
+    if (file.webViewLink) {
+      return (
+        <div className="flex h-full flex-col items-center justify-center gap-3 text-[var(--text-muted)]">
+          <Icon name={icon} className="h-14 w-14" />
+          <Button size="sm" variant="secondary" onClick={() => window.open(file.webViewLink, "_blank")} leftIcon={<Icon name="external-link" className="h-4 w-4" />}>
+            {i18n("openInDrive", "Ouvrir dans Drive")}
+          </Button>
+        </div>
+      );
+    }
+    return (
+      <div className="flex flex-col items-center gap-2 text-[var(--text-muted)]">
+        <Icon name={icon} className="h-14 w-14" />
+        <span className="text-[10px] uppercase tracking-wider">{file.mimeType || "-"}</span>
+      </div>
+    );
+  };
+
   return (
     <AnimatePresence>
       {open && (
@@ -158,122 +212,45 @@ export default function FilePreview({
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={
-              reduce
-                ? { duration: 0.15 }
-                : { type: "spring", stiffness: 320, damping: 28 }
-            }
-            className="fixed right-0 top-0 z-[var(--z-modal)] h-full w-full border-l border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)] shadow-2xl shadow-black/20 backdrop-blur-2xl sm:w-[420px]"
+            transition={reduce ? { duration: 0.15 } : { type: "spring", stiffness: 320, damping: 28 }}
+            className="fixed right-0 top-0 z-[var(--z-modal)] h-full w-full border-l border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)] shadow-2xl shadow-black/20 backdrop-blur-2xl sm:w-[480px]"
             role="dialog"
             aria-modal="true"
             aria-label={i18n("filePreview", "Aperçu")}
           >
             <div className="flex h-full flex-col">
-              <div className="flex items-center justify-between border-b border-[var(--panel-border)]/[0.12] px-4 py-3">
-                <span className="text-sm font-semibold">{i18n("filePreview")}</span>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={onClose}
-                  leftIcon={<X className="h-4 w-4" />}
-                  aria-label={i18n("close")}
-                >
+              <div className="flex items-center justify-between gap-3 border-b border-[var(--panel-border)]/[0.12] px-4 py-3">
+                <div className="min-w-0">
+                  <h2 className="truncate text-sm font-semibold" title={file.name}>{file.name}</h2>
+                  <p className="text-[11px] text-[var(--text-muted)]">{formatBytes(file.size)} · {file.mimeType || "-"}</p>
+                </div>
+                <Button size="sm" variant="ghost" onClick={onClose} leftIcon={<X className="h-4 w-4" />} aria-label={i18n("close")}>
                   {i18n("close")}
                 </Button>
               </div>
 
-              <div className="flex-1 space-y-6 overflow-y-auto os-scroll p-5">
-                <div className="flex flex-col items-center gap-4">
-                  <div className="relative flex h-48 w-full items-center justify-center overflow-hidden rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--bg-main)]">
-                    {isImage && (previewUrl || file.thumbnailLink) ? (
-                      <SafeImage
-                        candidates={[previewUrl, file.thumbnailLink, file.webViewLink, file.iconUrl].filter(Boolean) as string[]}
-                        alt={file.name}
-                        size={256}
-                        className="h-full w-full object-contain"
-                        iconClassName="h-12 w-12 text-[var(--accent-primary)]"
-                        loading="eager"
-                      />
-                    ) : isVideo && previewUrl ? (
-                      <video
-                        src={previewUrl}
-                        controls
-                        className="h-full w-full rounded-2xl bg-black"
-                        aria-label={file.name}
-                      >
-                        {i18n("browserDoesNotSupportVideo", "Votre navigateur ne prend pas en charge la lecture vidéo.")}
-                      </video>
-                    ) : isAudio && previewUrl ? (
-                      <audio src={previewUrl} controls className="w-full" aria-label={file.name}>
-                        {i18n("browserDoesNotSupportAudio", "Votre navigateur ne prend pas en charge la lecture audio.")}
-                      </audio>
-                    ) : isPDF && previewUrl ? (
-                      <iframe
-                        src={previewUrl}
-                        title={file.name}
-                        className="h-full w-full rounded-2xl border-0 bg-[var(--bg-main)]"
-                        allow="autoplay"
-                      />
-                    ) : isText && (text || textLoading) ? (
-                      textLoading ? (
-                        <div className="flex h-full items-center justify-center text-[var(--text-muted)]">
-                          <Icon name="loader-2" className="h-6 w-6 animate-spin" />
-                        </div>
-                      ) : (
-                        <pre className="h-full w-full overflow-auto rounded-2xl bg-[var(--bg-main)] p-3 text-left font-mono text-[11px] text-[var(--text-primary)]">
-                          {text}
-                        </pre>
-                      )
-                    ) : file.webViewLink ? (
-                      <div className="flex h-full flex-col items-center justify-center gap-3 text-[var(--text-muted)]">
-                        <Icon name={icon} className="h-14 w-14" />
-                        <Button size="sm" variant="secondary" onClick={() => window.open(file.webViewLink, "_blank")} leftIcon={<Icon name="external-link" className="h-4 w-4" />}>
-                          {i18n("openInDrive", "Ouvrir dans Drive")}
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center gap-2 text-[var(--text-muted)]">
-                        <Icon name={icon} className="h-14 w-14" />
-                        <span className="text-[10px] uppercase tracking-wider">{file.mimeType || "-"}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="w-full text-center">
-                    <h2 className="break-words text-base font-semibold" title={file.name}>
-                      {file.name}
-                    </h2>
-                    <p className="mt-1 text-xs text-[var(--text-muted)]">
-                      {formatBytes(file.size)} · {file.mimeType || "-"}
-                    </p>
-                  </div>
+              <div className="min-h-0 flex-1 overflow-y-auto os-scroll p-4">
+                <div className="relative flex h-56 w-full items-center justify-center overflow-hidden rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--bg-main)] sm:h-72">
+                  {renderMedia()}
                 </div>
 
-                <div className="space-y-3 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-4 text-sm">
-                  <div className="flex justify-between gap-3">
-                    <span className="text-[var(--text-muted)]">{i18n("type", "Type")}</span>
-                    <span className="text-right">{file.isFolder ? i18n("folder") : file.mimeType || "-"}</span>
-                  </div>
-                  <div className="flex justify-between gap-3">
-                    <span className="text-[var(--text-muted)]">{i18n("size", "Taille")}</span>
-                    <span className="text-right">{formatBytes(file.size)}</span>
-                  </div>
-                  <div className="flex justify-between gap-3">
-                    <span className="text-[var(--text-muted)]">{i18n("modified", "Modifié")}</span>
-                    <span className="text-right">{formatDate(file.updatedAt)}</span>
-                  </div>
-                  <div className="flex justify-between gap-3">
-                    <span className="text-[var(--text-muted)]">{i18n("created", "Créé")}</span>
-                    <span className="text-right">{formatDate(file.createdAt)}</span>
-                  </div>
-                  {location && (
-                    <div className="flex justify-between gap-3">
-                      <span className="text-[var(--text-muted)]">{i18n("location", "Emplacement")}</span>
-                      <span className="truncate text-right">{location}</span>
+                <div className="mt-4 space-y-3 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-4 text-sm">
+                  {[
+                    { label: i18n("type", "Type"), value: file.isFolder ? i18n("folder") : file.mimeType || "-" },
+                    { label: i18n("size", "Taille"), value: formatBytes(file.size) },
+                    { label: i18n("modified", "Modifié"), value: formatDate(file.updatedAt) },
+                    { label: i18n("created", "Créé"), value: formatDate(file.createdAt) },
+                    ...(location ? [{ label: i18n("location", "Emplacement"), value: location }] : []),
+                  ].map((row) => (
+                    <div key={row.label} className="flex justify-between gap-3">
+                      <span className="text-[var(--text-muted)]">{row.label}</span>
+                      <span className="truncate text-right">{row.value}</span>
                     </div>
-                  )}
+                  ))}
                 </div>
+              </div>
 
+              <div className="shrink-0 border-t border-[var(--panel-border)]/[0.12] p-4">
                 <div className="grid grid-cols-2 gap-2">
                   {!file.isFolder && (
                     <Button size="sm" variant="secondary" onClick={onDownload} leftIcon={<Icon name="download" className="h-4 w-4" />}>
@@ -299,12 +276,7 @@ export default function FilePreview({
                   <Button size="sm" variant="ghost" onClick={onMove} leftIcon={<Icon name="folder-input" className="h-4 w-4" />}>
                     {i18n("move")}
                   </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={onFavorite}
-                    leftIcon={<Icon name={file.isFavorite ? "heart" : "heart-off"} className="h-4 w-4" />}
-                  >
+                  <Button size="sm" variant="ghost" onClick={onFavorite} leftIcon={<Icon name={file.isFavorite ? "heart" : "heart-off"} className="h-4 w-4" />}>
                     {file.isFavorite ? i18n("removeFromFavorites") : i18n("addToFavorites")}
                   </Button>
                   {trashed ? (

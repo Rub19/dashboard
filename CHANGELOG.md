@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.17 — 2026-08-26
+
+**ETHONE — Fichiers v2 : preview panel**
+
+- Refonte de `components/FilePreview.tsx`.
+- Panel plus large (480px) avec header nom + méta, zone média claire.
+- Métadonnées regroupées, actions fixes en bas.
+- Fallbacks image / vidéo / audio / PDF / texte / Drive conservés.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.16 — 2026-08-26
 
 **ETHONE — Fichiers v2 : cartes et liste**

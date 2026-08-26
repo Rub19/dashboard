@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.17",
+  date: "2026-08-26",
+  title: "Fichiers v2 — preview panel",
+  items: [
+    "Refonte de `components/FilePreview.tsx`.",
+    "Panel plus large (480px), header avec nom + méta, zone média claire.",
+    "Métadonnées regroupées dans une card, actions fixes en bas.",
+    "Fallbacks image / vidéo / audio / PDF / texte / Drive conservés.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.17.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.17",
+  date: "2026-08-26",
+  title: "Files v2 — preview panel",
+  items: [
+    "Rework of `components/FilePreview.tsx`.",
+    "Larger panel (480px), header with name + meta, clearer media area.",
+    "Metadata grouped in a card, sticky bottom actions.",
+    "Image / video / audio / PDF / text / Drive fallbacks preserved.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.17.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.17",
+  date: "2026-08-26",
+  title: "Ficheros v2 — panel de previsualización",
+  items: [
+    "Refactorización de `components/FilePreview.tsx`.",
+    "Panel más ancho (480px), encabezado con nombre + meta, zona multimedia clara.",
+    "Metadatos agrupados en una tarjeta, acciones fijas abajo.",
+    "Fallbacks imagen / vídeo / audio / PDF / texto / Drive conservados.",
+    "Validación : build, lint.",
+    "Versión : v1.10.17.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.17",
+  date: "2026-08-26",
+  title: "Dateien v2 — Vorschau-Panel",
+  items: [
+    "Überarbeitung von `components/FilePreview.tsx`.",
+    "Größeres Panel (480px), Header mit Name + Meta, klarer Medienbereich.",
+    "Metadaten in einer Card gruppiert, feste Aktionen unten.",
+    "Bild / Video / Audio / PDF / Text / Drive-Fallbacks erhalten.",
+    "Validierung: build, lint.",
+    "Version: v1.10.17.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.16",
   date: "2026-08-26",
   title: "Fichiers v2 — cartes et liste",

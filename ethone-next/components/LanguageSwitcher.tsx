@@ -50,7 +50,7 @@ export default function LanguageSwitcher() {
         </button>
       </PopoverTrigger>
 
-      <PopoverContent className="min-w-[11rem] max-w-none overflow-hidden rounded-lg border border-[var(--panel-border)] bg-[var(--background)] p-1.5 shadow-2xl backdrop-blur-xl">
+      <PopoverContent className="min-w-[11rem] max-w-[calc(100dvw-2rem)] overflow-hidden rounded-lg border border-[var(--panel-border)] bg-[var(--background)] p-1.5 shadow-2xl backdrop-blur-xl">
         <div role="listbox" aria-label={i18n("language")}>
           {LANGUAGES.map((lang) => {
           const active = lang === current;

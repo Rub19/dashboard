@@ -205,10 +205,14 @@ export default function LoginPage() {
     return () => clearInterval(t);
   }, [resendIn]);
 
+  const successRedirected = useRef(false);
+
   useEffect(() => {
-    if (authState === "success" && session) {
-      authLog("Redirecting");
-      router.replace("/");
+    if (authState === "success" && session && !successRedirected.current) {
+      successRedirected.current = true;
+      authLog("Redirecting soon");
+      const t = setTimeout(() => router.replace("/"), 900);
+      return () => clearTimeout(t);
     }
   }, [authState, session, router]);
 
@@ -582,7 +586,7 @@ export default function LoginPage() {
                   placeholder="nom@exemple.com"
                   disabled={isLoading || isSuccess}
                   error={!!error && !email}
-                  inputClassName="text-base"
+                  inputClassName="text-base sm:text-sm"
                 />
               </div>
 
@@ -627,7 +631,7 @@ export default function LoginPage() {
                         placeholder="••••••••"
                         disabled={isLoading || isSuccess}
                         error={!!error && !password}
-                        inputClassName="text-base"
+                        inputClassName="text-base sm:text-sm"
                         right={(
                           <button type="button" tabIndex={-1} onClick={() => { triggerHaptic("light"); setShowPassword((v) => !v); }} aria-label={i18n("togglePassword", "Afficher ou masquer le mot de passe")} aria-pressed={showPassword} className="-mr-1 flex h-10 w-10 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] active:scale-95">
                             <Icon name={showPassword ? "eye-off" : "eye"} className="h-5 w-5" />
@@ -651,7 +655,7 @@ export default function LoginPage() {
                 <motion.div key="register" initial={{ opacity: reduced ? 1 : 0 }} animate={{ opacity: 1 }} className="space-y-4">
                   <div className="space-y-1.5">
                     <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-username">{i18n("username", "Nom d'utilisateur")}</label>
-                    <Input id="auth-username" type="text" inputSize="large" autoComplete="username" icon="user" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="rub19" disabled={isLoading || isSuccess} inputClassName="text-base" />
+                    <Input id="auth-username" type="text" inputSize="large" autoComplete="username" icon="user" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="rub19" disabled={isLoading || isSuccess} inputClassName="text-base sm:text-sm" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-password-register">{i18n("password", "Mot de passe")}</label>
@@ -665,7 +669,7 @@ export default function LoginPage() {
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
                       disabled={isLoading || isSuccess}
-                      inputClassName="text-base"
+                      inputClassName="text-base sm:text-sm"
                       right={(
                         <button type="button" tabIndex={-1} onClick={() => { triggerHaptic("light"); setShowPassword((v) => !v); }} aria-label={i18n("togglePassword", "Afficher ou masquer le mot de passe")} aria-pressed={showPassword} className="-mr-1 flex h-10 w-10 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] active:scale-95">
                           <Icon name={showPassword ? "eye-off" : "eye"} className="h-5 w-5" />
@@ -675,7 +679,7 @@ export default function LoginPage() {
                   </div>
                   <div className="space-y-1.5">
                     <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-confirm">{i18n("confirmPassword", "Confirmer le mot de passe")}</label>
-                    <Input id="auth-confirm" type="password" inputSize="large" autoComplete="new-password" icon="lock" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" disabled={isLoading || isSuccess} inputClassName="text-base" />
+                    <Input id="auth-confirm" type="password" inputSize="large" autoComplete="new-password" icon="lock" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" disabled={isLoading || isSuccess} inputClassName="text-base sm:text-sm" />
                   </div>
                 </motion.div>
               )}
@@ -684,7 +688,7 @@ export default function LoginPage() {
                 type="submit"
                 variant="primary"
                 size="lg"
-                className="h-12 w-full text-base active:scale-[0.98]"
+                className="h-12 w-full text-base sm:text-sm active:scale-[0.98]"
                 isLoading={isLoading}
                 disabled={isLoading || isSuccess || (mode === "otp" && otpStep === "code" ? code.length !== 6 : false)}
                 rightIcon={!isLoading && !isSuccess ? <Icon name="arrow-right" className="h-5 w-5" /> : undefined}
@@ -706,14 +710,14 @@ export default function LoginPage() {
 
               {mode !== "register" && (
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <Button type="button" variant="secondary" size="md" className="h-12 w-full text-base active:scale-[0.98]" onClick={() => handleOAuth("google")} leftIcon={<GoogleIcon className="h-5 w-5" />} disabled={isLoading || isSuccess}>
+                  <Button type="button" variant="secondary" size="md" className="h-12 w-full text-base sm:text-sm active:scale-[0.98]" onClick={() => handleOAuth("google")} leftIcon={<GoogleIcon className="h-5 w-5" />} disabled={isLoading || isSuccess}>
                     Google
                   </Button>
-                  <Button type="button" variant="secondary" size="md" className="h-12 w-full text-base active:scale-[0.98]" onClick={() => handleOAuth("github")} leftIcon={<GithubIcon className="h-5 w-5" />} disabled={isLoading || isSuccess}>
+                  <Button type="button" variant="secondary" size="md" className="h-12 w-full text-base sm:text-sm active:scale-[0.98]" onClick={() => handleOAuth("github")} leftIcon={<GithubIcon className="h-5 w-5" />} disabled={isLoading || isSuccess}>
                     GitHub
                   </Button>
                   {passkeyReady && (
-                    <Button type="button" variant="secondary" size="md" className="col-span-1 h-12 w-full text-base active:scale-[0.98] sm:col-span-2" onClick={handlePasskey} leftIcon={<Icon name="key-round" className="h-5 w-5" />} disabled={isLoading || isSuccess}>
+                    <Button type="button" variant="secondary" size="md" className="col-span-1 h-12 w-full text-base sm:text-sm active:scale-[0.98] sm:col-span-2" onClick={handlePasskey} leftIcon={<Icon name="key-round" className="h-5 w-5" />} disabled={isLoading || isSuccess}>
                       {i18n("passkey", "Se connecter avec un passkey")}
                     </Button>
                   )}

@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.30",
+  date: "2026-08-26",
+  title: "Mobile login pass 3 — finitions",
+  items: [
+    "Language switcher : limite de largeur du dropdown à `100dvw - 2rem` pour éviter tout débordement.",
+    "Inputs et boutons login : `text-base` sur mobile, `sm:text-sm` sur desktop.",
+    "Délai de 900 ms avant la redirection après connexion réussie, pour montrer brièvement le check.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.30.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.30",
+  date: "2026-08-26",
+  title: "Mobile login pass 3 — polish",
+  items: [
+    "Language switcher : dropdown max-width clamped to `100dvw - 2rem` to avoid overflow.",
+    "Login inputs and buttons : `text-base` on mobile, `sm:text-sm` on desktop.",
+    "900 ms delay before redirect after successful login to briefly show the check.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.30.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.30",
+  date: "2026-08-26",
+  title: "Mobile login pass 3 — ajustes",
+  items: [
+    "Language switcher : ancho del dropdown limitado a `100dvw - 2rem` para evitar desbordamiento.",
+    "Inputs y botones login : `text-base` en móvil, `sm:text-sm` en desktop.",
+    "Retraso de 900 ms antes de redirigir tras login exitoso para mostrar el check.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.30.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.30",
+  date: "2026-08-26",
+  title: "Mobile Login Pass 3 — Feinschliff",
+  items: [
+    "Language switcher : Dropdown-Breite auf `100dvw - 2rem` begrenzt, um Überlappung zu vermeiden.",
+    "Login-Inputs und Buttons : `text-base` auf Mobile, `sm:text-sm` auf Desktop.",
+    "900 ms Verzögerung vor der Weiterleitung nach erfolgreichem Login, um den Haken kurz anzuzeigen.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.30.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.29",
   date: "2026-08-26",
   title: "Mobile login pass 2 — clavier, viewport, OTP, haptics",

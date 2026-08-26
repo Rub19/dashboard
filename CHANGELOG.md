@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.30 — 2026-08-26
+
+**ETHONE — Mobile login pass 3 (finitions)**
+
+- Language switcher : limite de largeur du dropdown à `100dvw - 2rem` pour éviter tout débordement.
+- Inputs et boutons login : `text-base` sur mobile, `sm:text-sm` sur desktop.
+- Délai de 900 ms avant la redirection après connexion réussie, pour montrer brièvement le check.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.29 — 2026-08-26
 
 **ETHONE — Mobile login pass 2 (clavier, viewport, OTP, haptics)**

@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.23 — 2026-08-27
+
+**ETHONE — Topbar responsive, sidebar ouverte**
+
+- Masquage des textes topbar jusqu’à `2xl` : `Soutenir`, `Commandes`, nom profil.
+- Pills de statut système masqués jusqu’à `2xl`.
+- Corrige le chevauchement quand la sidebar est ouverte sur résolutions moyennes.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.22 — 2026-08-27
 
 **ETHONE — Suppression des cartes 3D sauf connexions**

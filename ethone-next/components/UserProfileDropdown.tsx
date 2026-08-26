@@ -115,7 +115,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = "v1.10.22";
+  const VERSION_LABEL = "v1.10.23";
 
   const menuItems = [
     {
@@ -214,8 +214,8 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                 }`}
               />
             </div>
-            <div className="pointer-events-none hidden min-w-0 flex-col text-left xl:flex">
-              <span className="pointer-events-none max-w-[14ch] truncate text-sm font-bold leading-tight text-[var(--text-primary)] 2xl:max-w-[24ch]">
+            <div className="pointer-events-none hidden min-w-0 flex-col text-left 2xl:flex">
+              <span className="pointer-events-none max-w-[14ch] truncate text-sm font-bold leading-tight text-[var(--text-primary)]">
                 {displayName}
               </span>
             </div>

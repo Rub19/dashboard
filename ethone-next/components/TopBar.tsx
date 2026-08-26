@@ -164,7 +164,7 @@ function TopBar() {
         </div>
 
         {/* Center — system status pills */}
-        <div className="pointer-events-auto col-start-2 hidden items-center justify-center justify-self-center lg:flex">
+        <div className="pointer-events-auto col-start-2 hidden items-center justify-center justify-self-center 2xl:flex">
           <SystemStatusPills />
         </div>
 

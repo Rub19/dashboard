@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.23",
+  date: "2026-08-27",
+  title: "Topbar responsive — sidebar ouverte",
+  items: [
+    "Masquage des textes topbar jusqu’à `2xl` (Soutenir, Commandes, nom profil).",
+    "Pills de statut système masqués jusqu’à `2xl`.",
+    "Corrige le chevauchement quand la sidebar est ouverte sur les résolutions moyennes.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.23.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.23",
+  date: "2026-08-27",
+  title: "Topbar responsive — sidebar open",
+  items: [
+    "Topbar text labels hidden until `2xl` (Soutenir, Commandes, profile name).",
+    "System status pills hidden until `2xl`.",
+    "Fixes overlap when sidebar is open on medium screens.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.23.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.23",
+  date: "2026-08-27",
+  title: "Topbar responsive — barra lateral abierta",
+  items: [
+    "Textos de topbar ocultos hasta `2xl` (Soutenir, Commandes, nombre de perfil).",
+    "Pills de estado del sistema ocultas hasta `2xl`.",
+    "Corrección del solapamiento cuando la barra lateral está abierta en pantallas medianas.",
+    "Validación : build, lint.",
+    "Versión : v1.10.23.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.23",
+  date: "2026-08-27",
+  title: "Topbar responsive — Seitenleiste offen",
+  items: [
+    "Topbar-Texte bis `2xl` ausgeblendet (Soutenir, Commandes, Profilname).",
+    "Systemstatus-Pills bis `2xl` ausgeblendet.",
+    "Überlappung behoben, wenn Seitenleiste auf mittleren Bildschirmen geöffnet ist.",
+    "Validierung: build, lint.",
+    "Version: v1.10.23.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.22",
   date: "2026-08-27",
   title: "Suppression des cartes 3D sauf connexions",

@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.49 — 2026-08-26
+
+**ETHONE — Dynamic Island Spotify : taille augmentée**
+
+- Hauteur augmentée à 64 px, largeur maximum à 95 vw / 440 px.
+- Pochette 40×40 arrondie (`rounded-xl`) et badge horaire plus grand.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.48 — 2026-08-26
 
 **ETHONE — TopBar : info système de retour**

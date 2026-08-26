@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.49",
+  date: "2026-08-26",
+  title: "Dynamic Island Spotify — taille augmentée",
+  items: [
+    "Hauteur augmentée à 64 px, largeur maximum à 95 vw / 440 px.",
+    "Pochette 40×40 arrondie (`rounded-xl`) et badge horaire plus grand.",
+    "Titres et artistes en `text-xs`/`text-[11px]` pour remplir l'espace.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.49.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.49",
+  date: "2026-08-26",
+  title: "Dynamic Island Spotify — larger size",
+  items: [
+    "Height raised to 64 px, max width to 95 vw / 440 px.",
+    "40×40 rounded cover (`rounded-xl`) and larger time badge.",
+    "Title and artist in `text-xs`/`text-[11px]` to fill the space.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.49.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.49",
+  date: "2026-08-26",
+  title: "Dynamic Island Spotify — tamaño aumentado",
+  items: [
+    "Altura aumentada a 64 px, ancho máximo a 95 vw / 440 px.",
+    "Portada 40×40 redondeada (`rounded-xl`) y badge de hora más grande.",
+    "Título y artista en `text-xs`/`text-[11px]` para llenar el espacio.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.49.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.49",
+  date: "2026-08-26",
+  title: "Dynamic Island Spotify — vergrößert",
+  items: [
+    "Höhe auf 64 px, max. Breite auf 95 vw / 440 px erhöht.",
+    "40×40 abgerundetes Cover (`rounded-xl`) und größerer Zeit-Badge.",
+    "Titel und Künstler in `text-xs`/`text-[11px]` für bessere Raumnutzung.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.49.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.48",
   date: "2026-08-26",
   title: "TopBar — info système de retour",

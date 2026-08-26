@@ -85,25 +85,25 @@ function SpotifyCompact({
   const trackTitle = title || fallback;
 
   return (
-    <div className="flex min-h-[56px] min-w-[min(90vw,380px)] items-center justify-between gap-0 px-0 py-3">
+    <div className="flex min-h-[64px] min-w-[min(95vw,440px)] items-center justify-between gap-0 px-0 py-3.5">
       <SafeImage
         candidates={coverCandidates}
         alt={trackTitle}
-        size={36}
-        className="h-9 w-9 shrink-0 rounded-lg object-cover bg-[var(--panel-bg)]"
-        iconClassName="h-5 w-5 text-[var(--text-muted)]"
+        size={40}
+        className="h-10 w-10 shrink-0 rounded-xl object-cover bg-[var(--panel-bg)]"
+        iconClassName="h-6 w-6 text-[var(--text-muted)]"
         loading="eager"
         priority
         timeoutMs={3000}
       />
-      <div className="min-w-0 flex-1 overflow-hidden px-3 text-center">
-        <p className="truncate text-[11px] font-semibold leading-tight text-[var(--text-primary)]" title={trackTitle}>
+      <div className="min-w-0 flex-1 overflow-hidden px-4 text-center">
+        <p className="truncate text-xs font-semibold leading-tight text-[var(--text-primary)]" title={trackTitle}>
           {trackTitle}
         </p>
-        <p className="mt-0.5 truncate text-[10px] text-[var(--text-primary)]/85">{artist || fallback}</p>
+        <p className="mt-0.5 truncate text-[11px] text-[var(--text-primary)]/85">{artist || fallback}</p>
       </div>
-      <span className="flex h-8 shrink-0 items-center gap-1 rounded-md border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.04] px-2.5 py-1.5 font-mono text-[10px] tabular-nums text-[var(--text-primary)]/80">
-        <Icon name="clock" pack="phosphor" className="h-3 w-3" />
+      <span className="flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.04] px-3 py-2 font-mono text-[11px] tabular-nums text-[var(--text-primary)]/80">
+        <Icon name="clock" pack="phosphor" className="h-4 w-4" />
         {clock}
       </span>
     </div>

@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.40 — 2026-08-26
+
+**ETHONE — TopBar au-dessus de la Dynamic Island**
+
+- La TopBar est remontée tout en haut (suppression du `mt-12` lié à la Dynamic Island).
+- La Dynamic Island est maintenant positionnée sous la TopBar.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.39 — 2026-08-26
 
 **ETHONE — Mobile login pass 9 (autocomplétion)**

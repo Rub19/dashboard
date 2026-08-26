@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.40",
+  date: "2026-08-26",
+  title: "TopBar au-dessus de la Dynamic Island",
+  items: [
+    "La TopBar est remontée tout en haut (plus de `mt-12` lié à la Dynamic Island).",
+    "La Dynamic Island est maintenant positionnée sous la TopBar.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.40.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.40",
+  date: "2026-08-26",
+  title: "TopBar above Dynamic Island",
+  items: [
+    "The TopBar is now at the very top (no `mt-12` linked to the Dynamic Island).",
+    "The Dynamic Island is now positioned below the TopBar.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.40.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.40",
+  date: "2026-08-26",
+  title: "TopBar sobre Dynamic Island",
+  items: [
+    "La TopBar ahora está arriba del todo (sin `mt-12` ligado a la Dynamic Island).",
+    "La Dynamic Island ahora está posicionada debajo de la TopBar.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.40.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.40",
+  date: "2026-08-26",
+  title: "TopBar über Dynamic Island",
+  items: [
+    "Die TopBar ist jetzt ganz oben (kein `mt-12` abhängig von der Dynamic Island).",
+    "Die Dynamic Island ist jetzt unter der TopBar positioniert.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.40.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.39",
   date: "2026-08-26",
   title: "Mobile login pass 9 — autocomplétion",

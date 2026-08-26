@@ -161,15 +161,11 @@ const DynamicIslandToggle = memo(function DynamicIslandToggle() {
 
 function TopBar() {
   const { home, page } = useBreadcrumb();
-  const { visible } = useDynamicIslandStore();
 
   return (
     <header
       data-v8-topbar
-      className={cn(
-        "pointer-events-none relative z-40 shrink-0 select-none border-0 border-b border-[var(--text-primary)]/[0.05] bg-[var(--panel-bg)] px-4 pt-safe backdrop-blur-[var(--panel-blur)]",
-        visible ? "mt-12" : ""
-      )}
+      className="pointer-events-none relative z-40 shrink-0 select-none border-0 border-b border-[var(--text-primary)]/[0.05] bg-[var(--panel-bg)] px-4 pt-safe backdrop-blur-[var(--panel-blur)]"
     >
       {/* Mobile: compact header with logo, page title, search, notifications, profile */}
       <div className="pointer-events-auto flex h-14 items-center justify-between md:hidden">

@@ -77,10 +77,12 @@ export default function FileUploadZone({
       onDragLeave={handleDragLeave}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
+      initial={{ boxShadow: "0 0 0 rgba(0,0,0,0)" }}
       animate={{
         scale: dragging ? 1.005 : 1,
+        boxShadow: dragging ? "0 0 32px var(--glow-color)" : "0 0 0 rgba(0,0,0,0)",
       }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
       className={`group relative flex min-h-[12rem] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 p-8 text-center transition-colors duration-200 select-none ${
         dragging
           ? "border-solid border-[var(--accent-primary)] bg-[var(--accent-primary)]/10"

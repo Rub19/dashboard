@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.5",
+  date: "2026-08-26",
+  title: "Fichiers — phase 3 : drag & drop revisité",
+  items: [
+    "`FileDropOverlay` : glow pulsant avec la couleur du thème pendant le survol.",
+    "`FileUploadZone` : glow d’accent lorsque des fichiers sont déposés dans la zone.",
+    "Transitions douces et feedback visuel renforcé sans effet flashy.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.5.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.5",
+  date: "2026-08-26",
+  title: "Files — phase 3: drag & drop polish",
+  items: [
+    "`FileDropOverlay`: pulsing glow using the theme color while dragging over the page.",
+    "`FileUploadZone`: accent glow when dropping files in the upload zone.",
+    "Smooth transitions and enhanced visual feedback without flashiness.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.5.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.5",
+  date: "2026-08-26",
+  title: "Archivos — fase 3: drag & drop pulido",
+  items: [
+    "`FileDropOverlay`: brillo pulsante con el color del tema al arrastrar sobre la página.",
+    "`FileUploadZone`: brillo de acento al soltar archivos en la zona de subida.",
+    "Transiciones suaves y feedback visual reforzado sin exceso.",
+    "Validación : build, lint.",
+    "Versión : v1.10.5.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.5",
+  date: "2026-08-26",
+  title: "Dateien — Phase 3: Drag & Drop verfeinert",
+  items: [
+    "`FileDropOverlay`: pulsierendes Glow in der Theme-Farbe beim Ziehen über die Seite.",
+    "`FileUploadZone`: Akzent-Glow beim Ablegen von Dateien in der Upload-Zone.",
+    "Sanfte Übergänge und verstärktes visuelles Feedback ohne Aufdringlichkeit.",
+    "Validierung: build, lint.",
+    "Version: v1.10.5.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.4",
   date: "2026-08-26",
   title: "Fichiers — phase 2 : vue liste en colonnes",

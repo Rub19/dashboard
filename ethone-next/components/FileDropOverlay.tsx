@@ -101,10 +101,20 @@ export default function FileDropOverlay({ onDrop, disabled }: FileDropOverlayPro
           aria-hidden="true"
         >
           <motion.div
-            animate={{ scale: 1 }}
-            initial={{ scale: 0.96 }}
-            exit={{ scale: 0.96 }}
-            transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 320, damping: 26 }}
+            animate={{
+              scale: 1,
+              boxShadow: [
+                "0 0 0 rgba(0,0,0,0)",
+                "0 0 60px var(--glow-color)",
+                "0 0 0 rgba(0,0,0,0)",
+              ],
+            }}
+            initial={{ scale: 0.96, boxShadow: "0 0 0 rgba(0,0,0,0)" }}
+            exit={{ scale: 0.96, boxShadow: "0 0 0 rgba(0,0,0,0)" }}
+            transition={{
+              scale: reduce ? { duration: 0 } : { type: "spring", stiffness: 320, damping: 26 },
+              boxShadow: reduce ? { duration: 0 } : { repeat: Infinity, duration: 2.2, ease: "easeInOut" },
+            }}
             className="flex h-[min(80vh,480px)] w-[min(92vw,680px)] flex-col items-center justify-center rounded-3xl border border-dashed border-[var(--accent-primary)]/[0.4] bg-[var(--panel-bg)]/[0.85] p-10 text-center"
           >
             <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">

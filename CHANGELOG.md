@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.5 — 2026-08-26
+
+**ETHONE — Fichiers : phase 3, drag & drop revisité**
+
+- `components/FileDropOverlay.tsx` : glow pulsant avec la couleur du thème pendant le drag.
+- `components/FileUploadZone.tsx` : glow d’accent au survol de la zone.
+- Transitions et feedback renforcés, sans effet flashy.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.4 — 2026-08-26
 
 **ETHONE — Fichiers : phase 2, vue liste en colonnes**

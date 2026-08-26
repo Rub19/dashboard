@@ -7151,4 +7151,76 @@ CHANGELOG_BY_LANG.en.unshift(v412_en, v411_en, v410_en, v409_en, v408_en, v407_e
 CHANGELOG_BY_LANG.es.unshift(v412_es, v411_es, v410_es, v409_es, v408_es, v407_es, v406_es, v405_es, v404_es, v403_es, v402_es, v401_es, v400_es, v399_es, v398_es, v397_es, v396_es, v395_es, v375_es, v374_es, v373_es, v372_es, v371_es, v370_es, v369_es, v368_es, v367_es, v366_es, v365_es, v364_es, v363_es, v362_es, v361_es, v360_es, v359_es);
 CHANGELOG_BY_LANG.de.unshift(v412_de, v411_de, v410_de, v409_de, v408_de, v407_de, v406_de, v405_de, v404_de, v403_de, v402_de, v401_de, v400_de, v399_de, v398_de, v397_de, v396_de, v395_de, v375_de, v374_de, v373_de, v372_de, v371_de, v370_de, v369_de, v368_de, v367_de, v366_de, v365_de, v364_de, v363_de, v362_de, v361_de, v360_de, v359_de);
 
+CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.23",
+  date: "2026-08-26",
+  title: "Polish visuel global — header, dock, barre d'état et sidebar",
+  items: [
+    "TopBar : marge dynamique lorsque le Dynamic Island est visible pour éviter le chevauchement.",
+    "Dynamic Island : compact plus fin et mieux centré.",
+    "Dock remonté pour ne plus masquer la barre d'état ni le contenu bas.",
+    "Shell : padding bas augmenté pour laisser respirer dock + status bar.",
+    "DashboardOverview : rangées de cartes égalisées avec auto-rows-fr.",
+    "Sidebar : profil et boutons de pied mieux séparés et encadrés.",
+    "Suppression de la carte nowplaying dans LiveWidgets.",
+    "Confettis de soutien rendus au-dessus du Modal de remerciement.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.23.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.23",
+  date: "2026-08-26",
+  title: "Global visual polish — header, dock, status bar and sidebar",
+  items: [
+    "TopBar: dynamic margin when the Dynamic Island is visible to avoid overlap.",
+    "Dynamic Island: slimmer, better centered compact mode.",
+    "Dock raised so it no longer covers the status bar or bottom content.",
+    "Shell: increased bottom padding to make room for dock + status bar.",
+    "DashboardOverview: card rows equalized with auto-rows-fr.",
+    "Sidebar: profile and footer buttons better separated and framed.",
+    "Removed nowplaying card from LiveWidgets.",
+    "Support confetti rendered above the thank-you Modal.",
+    "Validation: build, lint.",
+    "Version badge bottom-right: v1.9.23.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.23",
+  date: "2026-08-26",
+  title: "Pulido visual global — header, dock, barra de estado y sidebar",
+  items: [
+    "TopBar : margen dinámico cuando el Dynamic Island es visible para evitar solapamiento.",
+    "Dynamic Island : modo compacto más fino y centrado.",
+    "Dock elevado para no cubrir la barra de estado ni el contenido inferior.",
+    "Shell : padding inferior aumentado para dejar espacio al dock + status bar.",
+    "DashboardOverview : filas de tarjetas igualadas con auto-rows-fr.",
+    "Sidebar : perfil y botones del pie mejor separados y enmarcados.",
+    "Eliminada la tarjeta nowplaying de LiveWidgets.",
+    "Confetis de apoyo mostrados encima del Modal de agradecimiento.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.23.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.23",
+  date: "2026-08-26",
+  title: "Globales visuelles Polishing — Header, Dock, Statusleiste und Sidebar",
+  items: [
+    "TopBar: dynamischer Abstand, wenn die Dynamic Island sichtbar ist, um Überlappung zu vermeiden.",
+    "Dynamic Island: schmalere und besser zentrierte Kompaktansicht.",
+    "Dock angehoben, damit es Statusleiste und unteren Inhalt nicht verdeckt.",
+    "Shell: erhöhter unterer Abstand für Dock + Statusleiste.",
+    "DashboardOverview: Kartenreihen mit auto-rows-fr gleichmäßig angepasst.",
+    "Sidebar: Profil und Fußzeilen-Buttons besser getrennt und gerahmt.",
+    "Nowplaying-Karte aus LiveWidgets entfernt.",
+    "Support-Konfetti werden über dem Dankeschön-Modal gerendert.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.23.",
+  ],
+});
+
 export const CHANGELOG = CHANGELOG_BY_LANG.fr;

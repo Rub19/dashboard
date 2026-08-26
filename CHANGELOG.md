@@ -2,6 +2,20 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.23 — 2026-08-26
+
+**ETHONE — Polish visuel global : header, dock, barre d'état et sidebar**
+
+- `TopBar` : marge dynamique quand le Dynamic Island est visible pour éviter le chevauchement.
+- `DynamicIsland` : compact plus fin et mieux centré.
+- `Dock` remonté pour ne plus masquer la barre d'état ni le contenu bas.
+- `Shell` : padding bas augmenté pour laisser respirer dock + status bar.
+- `DashboardOverview` : rangées de cartes égalisées avec `auto-rows-fr`.
+- `Sidebar` : profil et boutons de pied mieux séparés et encadrés.
+- Suppression de la carte `nowplaying` dans `LiveWidgets`.
+- Confettis de soutien rendus au-dessus du `Modal` de remerciement.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.22 — 2026-08-26
 
 **ETHONE — Full Settings rework : ambient audio, recherche, toasts et layout**

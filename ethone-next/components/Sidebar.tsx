@@ -153,7 +153,7 @@ const SidebarProfile = memo(function SidebarProfile({ collapsed }: { collapsed: 
   return (
     <div
       className={cn(
-        "flex items-center gap-2.5 rounded-xl border-transparent bg-transparent",
+        "mb-2 flex items-center gap-2.5 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/50",
         collapsed ? "justify-center p-0" : "p-2"
       )}
     >
@@ -191,7 +191,7 @@ const SidebarFooter = memo(function SidebarFooter() {
   const { collapsed } = useAnimatedSidebarPanel();
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-3">
       <SidebarProfile collapsed={collapsed} />
 
       <div

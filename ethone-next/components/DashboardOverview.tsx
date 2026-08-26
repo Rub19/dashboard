@@ -412,7 +412,7 @@ export default function DashboardOverview() {
               animate="visible"
               variants={gridVariants}
               data-home-grid
-              className={cn("grid w-full h-auto grid-cols-12", densityGap)}
+              className={cn("grid w-full h-auto auto-rows-fr grid-cols-12", densityGap)}
             >
               {widgets.map(
                 (w, i) =>

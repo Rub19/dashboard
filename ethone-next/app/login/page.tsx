@@ -47,7 +47,10 @@ function OtpInput({ value, onChange, disabled, error }: OtpInputProps) {
 
   useEffect(() => {
     if (!disabled) inputsRef.current[0]?.focus();
-  }, [disabled]);
+    // Intentionally run only once when the component mounts; avoid stealing
+    // focus on every disabled/loading state change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const update = useCallback((nextDigits: string[]) => {
     setDigits(nextDigits);
@@ -415,7 +418,7 @@ export default function LoginPage() {
 
   return (
     <div className="relative flex min-h-screen w-full flex-col overflow-hidden bg-[var(--background)] lg:flex-row">
-      <div className="absolute right-4 top-4 z-30">
+      <div className="absolute right-[calc(1rem+env(safe-area-inset-right))] top-[calc(1rem+env(safe-area-inset-top))] z-30">
         <LanguageSwitcher />
       </div>
 
@@ -454,7 +457,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div className="relative flex w-full flex-col items-center justify-center p-4 sm:p-6 md:w-3/5 lg:w-1/2 lg:p-10">
+      <div className="relative flex w-full flex-col items-center justify-center bg-gradient-to-b from-[var(--surface)]/50 via-[var(--background)] to-[var(--background)] px-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-[calc(1.5rem+env(safe-area-inset-top))] sm:px-6 sm:pb-8 md:w-3/5 lg:w-1/2 lg:p-10">
         <div className="relative w-full max-w-md">
           <div className="pointer-events-none absolute -inset-1 rounded-[2.25rem] bg-gradient-to-br from-[var(--accent)]/20 via-transparent to-[var(--accent)]/10 blur-2xl" />
           <motion.div
@@ -468,9 +471,13 @@ export default function LoginPage() {
             <div className="pointer-events-none absolute right-0 top-0 h-32 w-32 rounded-full bg-[var(--accent)]/10 blur-3xl" />
 
             <div className="relative flex flex-col items-center text-center">
-              <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--accent)]/10 ring-1 ring-[var(--accent)]/20 shadow-[0_0_24px_-8px_var(--accent)]">
+              <motion.div
+                animate={reduced ? undefined : { scale: [1, 1.04, 1], opacity: [0.85, 1, 0.85] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--accent)]/10 ring-1 ring-[var(--accent)]/20 shadow-[0_0_24px_-8px_var(--accent)]"
+              >
                 <BrandMark size={38} />
-              </div>
+              </motion.div>
               <h2 className="mt-4 text-2xl font-bold tracking-tight text-[var(--foreground)]">{i18n("welcomeBack", "Bienvenue")}</h2>
               <p className="mt-1.5 max-w-[16rem] text-sm leading-relaxed text-[var(--text-muted)]">{i18n("loginDescription", "Connectez-vous à votre environnement.")}</p>
             </div>
@@ -491,7 +498,14 @@ export default function LoginPage() {
                         active ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--foreground)]"
                       )}
                     >
-                      {label}
+                      {active && (
+                        <motion.span
+                          layoutId="activeAuthTab"
+                          transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                          className="absolute inset-0 z-0 rounded-xl bg-[var(--accent)]/10"
+                        />
+                      )}
+                      <span className="relative z-10">{label}</span>
                     </button>
                   );
                 })}
@@ -525,6 +539,7 @@ export default function LoginPage() {
                 <Input
                   id="auth-email"
                   type="email"
+                  inputSize="large"
                   autoComplete="email"
                   inputMode="email"
                   icon="mail"
@@ -533,6 +548,7 @@ export default function LoginPage() {
                   placeholder="nom@exemple.com"
                   disabled={isLoading || isSuccess}
                   error={!!error && !email}
+                  inputClassName="text-base"
                 />
               </div>
 
@@ -569,6 +585,7 @@ export default function LoginPage() {
                       <Input
                         id="auth-password"
                         type={showPassword ? "text" : "password"}
+                        inputSize="large"
                         autoComplete="current-password"
                         icon="lock"
                         value={password}
@@ -576,16 +593,17 @@ export default function LoginPage() {
                         placeholder="••••••••"
                         disabled={isLoading || isSuccess}
                         error={!!error && !password}
+                        inputClassName="text-base"
                         right={(
-                          <button type="button" tabIndex={-1} onClick={() => setShowPassword((v) => !v)} aria-label={i18n("togglePassword", "Afficher ou masquer le mot de passe")} aria-pressed={showPassword} className="text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)]">
-                            <Icon name={showPassword ? "eye-off" : "eye"} className="h-4 w-4" />
+                          <button type="button" tabIndex={-1} onClick={() => setShowPassword((v) => !v)} aria-label={i18n("togglePassword", "Afficher ou masquer le mot de passe")} aria-pressed={showPassword} className="-mr-1 flex h-10 w-10 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] active:scale-95">
+                            <Icon name={showPassword ? "eye-off" : "eye"} className="h-5 w-5" />
                           </button>
                         )}
                       />
                     </div>
                   )}
-                  <div className="flex items-center justify-between">
-                    <Switch checked={rememberMe} onChange={setRememberMe} label={i18n("rememberMe", "Rester connecté")} id="remember-me" />
+                  <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+                    <Switch checked={rememberMe} onChange={setRememberMe} label={i18n("rememberMe", "Rester connecté")} id="remember-me" size="lg" />
                     {mode === "password" && (
                       <button type="button" onClick={() => router.push("/password-recovery")} className="text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)]">
                         {i18n("forgotPassword", "Mot de passe oublié ?")}
@@ -599,29 +617,31 @@ export default function LoginPage() {
                 <motion.div key="register" initial={{ opacity: reduced ? 1 : 0 }} animate={{ opacity: 1 }} className="space-y-4">
                   <div className="space-y-1.5">
                     <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-username">{i18n("username", "Nom d'utilisateur")}</label>
-                    <Input id="auth-username" type="text" autoComplete="username" icon="user" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="rub19" disabled={isLoading || isSuccess} />
+                    <Input id="auth-username" type="text" inputSize="large" autoComplete="username" icon="user" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="rub19" disabled={isLoading || isSuccess} inputClassName="text-base" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-password-register">{i18n("password", "Mot de passe")}</label>
                     <Input
                       id="auth-password-register"
                       type={showPassword ? "text" : "password"}
+                      inputSize="large"
                       autoComplete="new-password"
                       icon="lock"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
                       disabled={isLoading || isSuccess}
+                      inputClassName="text-base"
                       right={(
-                        <button type="button" tabIndex={-1} onClick={() => setShowPassword((v) => !v)} aria-label={i18n("togglePassword", "Afficher ou masquer le mot de passe")} aria-pressed={showPassword} className="text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)]">
-                          <Icon name={showPassword ? "eye-off" : "eye"} className="h-4 w-4" />
+                        <button type="button" tabIndex={-1} onClick={() => setShowPassword((v) => !v)} aria-label={i18n("togglePassword", "Afficher ou masquer le mot de passe")} aria-pressed={showPassword} className="-mr-1 flex h-10 w-10 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] active:scale-95">
+                          <Icon name={showPassword ? "eye-off" : "eye"} className="h-5 w-5" />
                         </button>
                       )}
                     />
                   </div>
                   <div className="space-y-1.5">
                     <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-confirm">{i18n("confirmPassword", "Confirmer le mot de passe")}</label>
-                    <Input id="auth-confirm" type="password" autoComplete="new-password" icon="lock" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" disabled={isLoading || isSuccess} />
+                    <Input id="auth-confirm" type="password" inputSize="large" autoComplete="new-password" icon="lock" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" disabled={isLoading || isSuccess} inputClassName="text-base" />
                   </div>
                 </motion.div>
               )}
@@ -630,10 +650,10 @@ export default function LoginPage() {
                 type="submit"
                 variant="primary"
                 size="lg"
-                className="w-full"
+                className="h-12 w-full text-base active:scale-[0.98]"
                 isLoading={isLoading}
                 disabled={isLoading || isSuccess || (mode === "otp" && otpStep === "code" ? code.length !== 6 : false)}
-                rightIcon={!isLoading && !isSuccess ? <Icon name="arrow-right" className="h-4 w-4" /> : undefined}
+                rightIcon={!isLoading && !isSuccess ? <Icon name="arrow-right" className="h-5 w-5" /> : undefined}
               >
                 {isSuccess ? (
                   <span className="inline-flex items-center gap-2">
@@ -651,20 +671,20 @@ export default function LoginPage() {
               )}
 
               {mode !== "register" && (
-                <div className="grid grid-cols-2 gap-3">
-                  <Button type="button" variant="secondary" size="md" className="w-full" onClick={() => handleOAuth("google")} leftIcon={<GoogleIcon className="h-4 w-4" />} disabled={isLoading || isSuccess}>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <Button type="button" variant="secondary" size="md" className="h-12 w-full text-base active:scale-[0.98]" onClick={() => handleOAuth("google")} leftIcon={<GoogleIcon className="h-5 w-5" />} disabled={isLoading || isSuccess}>
                     Google
                   </Button>
-                  <Button type="button" variant="secondary" size="md" className="w-full" onClick={() => handleOAuth("github")} leftIcon={<GithubIcon className="h-4 w-4" />} disabled={isLoading || isSuccess}>
+                  <Button type="button" variant="secondary" size="md" className="h-12 w-full text-base active:scale-[0.98]" onClick={() => handleOAuth("github")} leftIcon={<GithubIcon className="h-5 w-5" />} disabled={isLoading || isSuccess}>
                     GitHub
                   </Button>
                   {passkeyReady && (
-                    <Button type="button" variant="secondary" size="md" className="col-span-2 w-full" onClick={handlePasskey} leftIcon={<Icon name="key-round" className="h-4 w-4" />} disabled={isLoading || isSuccess}>
+                    <Button type="button" variant="secondary" size="md" className="col-span-1 h-12 w-full text-base active:scale-[0.98] sm:col-span-2" onClick={handlePasskey} leftIcon={<Icon name="key-round" className="h-5 w-5" />} disabled={isLoading || isSuccess}>
                       {i18n("passkey", "Se connecter avec un passkey")}
                     </Button>
                   )}
                   {!passkeyReady && (
-                    <p className="col-span-2 text-center text-xs text-[var(--text-muted)]">{i18n("passkeyUnsupported", "Les passkeys ne sont pas disponibles sur ce navigateur.")}</p>
+                    <p className="col-span-1 text-center text-xs text-[var(--text-muted)] sm:col-span-2">{i18n("passkeyUnsupported", "Les passkeys ne sont pas disponibles sur ce navigateur.")}</p>
                   )}
                 </div>
               )}
@@ -672,11 +692,11 @@ export default function LoginPage() {
 
             <div className="mt-6 text-center text-xs text-[var(--text-muted)]">
               {mode === "register" ? (
-                <button type="button" onClick={() => setModeAndReset("password")} className="text-[var(--accent-primary)] transition-opacity hover:opacity-80">
+                <button type="button" onClick={() => setModeAndReset("password")} className="h-10 rounded-lg px-3 py-2 text-[var(--accent-primary)] transition-all hover:opacity-80 active:scale-95">
                   {i18n("alreadyHaveAccount", "Déjà un compte ? Se connecter")}
                 </button>
               ) : (
-                <button type="button" onClick={() => setModeAndReset("register")} className="text-[var(--accent-primary)] transition-opacity hover:opacity-80">
+                <button type="button" onClick={() => setModeAndReset("register")} className="h-10 rounded-lg px-3 py-2 text-[var(--accent-primary)] transition-all hover:opacity-80 active:scale-95">
                   {i18n("createAccount", "Créer un compte")}
                 </button>
               )}

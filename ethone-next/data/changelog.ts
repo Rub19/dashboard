@@ -7206,6 +7206,78 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.28",
+  date: "2026-08-26",
+  title: "Mobile login screen rework — passe 1",
+  items: [
+    "Safe areas iOS / Dynamic Island sur la page login et le switcher de langue.",
+    "Inputs login en `inputSize=large` + `text-base` pour éviter le zoom Safari iOS.",
+    "Zones tactiles élargies pour l'œil du mot de passe, les boutons et le switch.",
+    "Segmented control des tabs avec background animé `layoutId`.",
+    "Fond mobile dégradé subtil et glow du logo respirant (respecte `prefers-reduced-motion`).",
+    "OTP : `OtpInput` ne focus plus à chaque changement de `disabled`, évite les boucles de renvoi.",
+    "Boutons `active:scale-[0.98]` et `h-12` sur mobile.",
+    "Lien 'mot de passe oublié' passe en colonne sur petits écrans.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.28.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.28",
+  date: "2026-08-26",
+  title: "Mobile login screen rework — pass 1",
+  items: [
+    "iOS / Dynamic Island safe areas on login page and language switcher.",
+    "Login inputs use `inputSize=large` + `text-base` to prevent Safari iOS zoom.",
+    "Expanded touch targets for password eye, buttons and switch.",
+    "Auth tabs segmented control with animated `layoutId` background.",
+    "Subtle mobile gradient background and breathing logo glow (respects `prefers-reduced-motion`).",
+    "OTP : `OtpInput` no longer refocuses on every `disabled` change, prevents resend loops.",
+    "Buttons `active:scale-[0.98]` and `h-12` on mobile.",
+    "Forgot password link stacks on small screens.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.28.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.28",
+  date: "2026-08-26",
+  title: "Rediseño mobile login — paso 1",
+  items: [
+    "Safe areas iOS / Dynamic Island en login y selector de idioma.",
+    "Inputs de login `inputSize=large` + `text-base` para evitar el zoom de Safari iOS.",
+    "Zonas táctiles ampliadas para el ojo de contraseña, botones y switch.",
+    "Control segmentado de tabs con fondo animado `layoutId`.",
+    "Fondo degradado sutil móvil y aura del logo respirando (respeta `prefers-reduced-motion`).",
+    "OTP : `OtpInput` ya no enfoca en cada cambio de `disabled`, evita bucles de reenvío.",
+    "Botones `active:scale-[0.98]` y `h-12` en móvil.",
+    "Enlace 'olvidé mi contraseña' en columna en pantallas pequeñas.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.28.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.28",
+  date: "2026-08-26",
+  title: "Mobile Login-Überarbeitung — Pass 1",
+  items: [
+    "iOS / Dynamic Island Safe Areas auf Login-Seite und Sprachumschalter.",
+    "Login-Inputs `inputSize=large` + `text-base` gegen Safari-iOS-Zoom.",
+    "Größere Touch-Ziele für Passwort-Auge, Buttons und Switch.",
+    "Segmentiertes Tab-Control mit animiertem `layoutId`-Hintergrund.",
+    "Subtiler mobiler Gradient-Hintergrund und atmendes Logo-Glow (beachtet `prefers-reduced-motion`).",
+    "OTP : `OtpInput` fokussiert nicht mehr bei jeder `disabled`-Änderung, verhindert Resend-Loops.",
+    "Buttons `active:scale-[0.98]` und `h-12` auf Mobile.",
+    "Passwort-vergessen-Link bricht auf kleinen Bildschirmen um.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.28.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.27",
   date: "2026-08-26",
   title: "Refonte UI des barres de saisie et question",

@@ -43,7 +43,7 @@ export default function LanguageSwitcher() {
           aria-label={i18n("language")}
           aria-haspopup="listbox"
           aria-expanded={open}
-          className="flex h-9 items-center gap-2 rounded-full border border-[var(--text-primary)]/[0.06] bg-[var(--surface)]/60 px-3 text-xs font-medium text-[var(--text-primary)] transition-all hover:border-[var(--text-primary)]/15 hover:bg-[var(--text-primary)]/[0.08] active:scale-95 cursor-pointer select-none"
+          className="flex h-11 min-h-[44px] items-center gap-2 rounded-full border border-[var(--text-primary)]/[0.06] bg-[var(--surface)]/60 px-3 text-xs font-medium text-[var(--text-primary)] transition-all hover:border-[var(--text-primary)]/15 hover:bg-[var(--text-primary)]/[0.08] active:scale-95 cursor-pointer select-none"
         >
           <FlagIcon code={current} className="h-5 w-6" />
           <span className="pointer-events-none hidden uppercase 2xl:inline">{current}</span>

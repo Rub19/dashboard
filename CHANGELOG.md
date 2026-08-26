@@ -2,6 +2,20 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.28 — 2026-08-26
+
+**ETHONE — Mobile login screen rework (passe 1)**
+
+- Safe areas iOS / Dynamic Island sur la page login et le switcher de langue.
+- Inputs login en `inputSize=large` + `text-base` pour éviter le zoom Safari iOS.
+- Zones tactiles élargies pour l'œil du mot de passe, les boutons et le switch.
+- Segmented control des tabs avec background animé `layoutId`.
+- Fond mobile dégradé subtil et glow du logo respirant (respecte `prefers-reduced-motion`).
+- OTP : `OtpInput` ne focus plus à chaque changement de `disabled`, évite les boucles de renvoi.
+- Boutons `active:scale-[0.98]` et `h-12` sur mobile.
+- Lien "mot de passe oublié" passe en colonne sur petits écrans.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.27 — 2026-08-26
 
 **ETHONE — Refonte UI des barres de saisie et question**

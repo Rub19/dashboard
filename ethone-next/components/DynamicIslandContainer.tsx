@@ -83,29 +83,26 @@ function SpotifyCompact({
   fallback: string;
 }) {
   const trackTitle = title || fallback;
-  const shouldMarquee = trackTitle.length > 24;
 
   return (
-    <div className="flex min-h-[56px] min-w-[min(90vw,380px)] items-center gap-3.5 px-4">
+    <div className="flex h-14 min-w-[min(90vw,380px)] items-center justify-between gap-4 pr-4">
       <SafeImage
         candidates={coverCandidates}
         alt={trackTitle}
-        size={40}
-        className="h-10 w-10 shrink-0 rounded-lg object-cover shadow-[0_0_14px_var(--glow-color)] ring-1 ring-[var(--accent-primary)]/25"
-        iconClassName="h-5 w-5 text-[var(--accent-primary)]"
+        size={56}
+        className="h-14 w-14 shrink-0 rounded-l-[32px] object-cover bg-[var(--text-primary)]/[0.04]"
+        iconClassName="h-6 w-6 text-[var(--accent-primary)]"
         loading="eager"
         priority
         timeoutMs={3000}
       />
-      <div className="min-w-0 flex-1 overflow-hidden">
-        <p className="ethone-track-title text-[11px] font-semibold leading-tight text-[var(--text-primary)]" title={trackTitle}>
-          <span className={cn("inline-block whitespace-nowrap", shouldMarquee && "ethone-track-title--marquee")}>
-            {trackTitle}
-          </span>
+      <div className="min-w-0 flex-1 overflow-hidden text-center">
+        <p className="truncate text-[11px] font-semibold leading-tight text-[var(--text-primary)]" title={trackTitle}>
+          {trackTitle}
         </p>
-        <p className="mt-0.5 truncate text-[10px] text-[var(--text-muted)]">{artist || fallback}</p>
+        <p className="mt-0.5 truncate text-[10px] text-[var(--text-primary)]/75">{artist || fallback}</p>
       </div>
-      <span className="flex shrink-0 items-center gap-1 rounded-md border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.04] px-1.5 py-1 font-mono text-[10px] tabular-nums text-[var(--text-muted)]">
+      <span className="flex h-7 shrink-0 items-center gap-1 rounded-md border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.04] px-2 py-1 font-mono text-[10px] tabular-nums text-[var(--text-primary)]/80">
         <Icon name="clock" pack="phosphor" className="h-3 w-3" />
         {clock}
       </span>

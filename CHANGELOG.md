@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.9.45 — 2026-08-26
+
+**ETHONE — Dynamic Island Spotify : design compact refondu**
+
+- Pochette album à gauche intégrée dans le capuchon de la pilule (`h-14 w-14 rounded-l-[32px]`) sans débordement.
+- Suppression du ring/shadow interne de l'icône, plus de double bordure.
+- Texte centré, plus lisible, artiste en `text-primary`/75.
+- Badge horaire centré avec marges régulières.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.9.44 — 2026-08-26
 
 **ETHONE — Dynamic Island : label Spotify dupliqué retiré**

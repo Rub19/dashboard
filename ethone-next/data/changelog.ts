@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.9.45",
+  date: "2026-08-26",
+  title: "Dynamic Island Spotify — design compact refondu",
+  items: [
+    "Pochette album à gauche intégrée dans le capuchon de la pilule (`h-14 w-14 rounded-l-[32px]`) sans débordement.",
+    "Suppression du ring/shadow interne de l'icône, plus de double bordure.",
+    "Texte (titre + artiste) centré, plus lisible, artiste en `text-primary`/75.",
+    "Badge horaire `h-7` centré et marges régulières.",
+    "Validation : build, lint.",
+    "Version affichée en bas à droite : v1.9.45.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.9.45",
+  date: "2026-08-26",
+  title: "Dynamic Island Spotify — compact design refactored",
+  items: [
+    "Album cover on the left integrated into the pill cap (`h-14 w-14 rounded-l-[32px]`) without overflow.",
+    "Removed inner icon ring/shadow, no more double border.",
+    "Centered text (title + artist), more readable, artist in `text-primary`/75.",
+    "Time badge `h-7`, centered, regular margins.",
+    "Validation : build, lint.",
+    "Version badge bottom-right: v1.9.45.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.9.45",
+  date: "2026-08-26",
+  title: "Dynamic Island Spotify — diseño compacto refactorizado",
+  items: [
+    "Portada del álbum a la izquierda integrada en el capuchón de la píldora (`h-14 w-14 rounded-l-[32px]`) sin desbordamiento.",
+    "Eliminado el ring/sombra interno del icono, sin doble borde.",
+    "Texto (título + artista) centrado, más legible, artista en `text-primary`/75.",
+    "Badge de hora `h-7`, centrado, márgenes regulares.",
+    "Validación : build, lint.",
+    "Versión mostrada abajo a la derecha : v1.9.45.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.9.45",
+  date: "2026-08-26",
+  title: "Dynamic Island Spotify — kompaktes Design überarbeitet",
+  items: [
+    "Album-Cover links in die Pillenkappe integriert (`h-14 w-14 rounded-l-[32px]`) ohne Überlappung.",
+    "Innerer Icon-Ring/Schatten entfernt, kein doppelter Rand mehr.",
+    "Text (Titel + Künstler) zentriert, besser lesbar, Künstler in `text-primary`/75.",
+    "Zeit-Badge `h-7`, zentriert, regelmäßige Abstände.",
+    "Validierung: build, lint.",
+    "Version unten rechts: v1.9.45.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.9.44",
   date: "2026-08-26",
   title: "Dynamic Island — label Spotify dupliqué retiré",

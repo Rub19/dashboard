@@ -642,9 +642,7 @@ export default function FilesPage() {
                   clientId={clientId}
                   onOpen={() => openFile(file)}
                   onDownload={() => downloadDriveFile(file)}
-                  onShare={() => openShare(file)}
-                  onRename={() => { setForm({ name: file.name }); setModal({ type: "rename", file }); }}
-                  onMove={() => setModal({ type: "move", file })}
+
                   onFavorite={() => favoriteFile(file.driveFileId, !file.isFavorite)}
                   onTrash={() => trashFile(file.driveFileId)}
                   onDelete={() => deleteFile(file.driveFileId)}
@@ -672,9 +670,7 @@ export default function FilesPage() {
                   clientId={clientId}
                   onOpen={() => openFile(file)}
                   onDownload={() => downloadDriveFile(file)}
-                  onShare={() => openShare(file)}
-                  onRename={() => { setForm({ name: file.name }); setModal({ type: "rename", file }); }}
-                  onMove={() => setModal({ type: "move", file })}
+
                   onFavorite={() => favoriteFile(file.driveFileId, !file.isFavorite)}
                   onTrash={() => trashFile(file.driveFileId)}
                   onDelete={() => deleteFile(file.driveFileId)}
@@ -792,9 +788,6 @@ export default function FilesPage() {
                 onToggle={() => toggle(file.id)}
                 onOpen={() => openFile(file)}
                 onDownload={() => downloadDriveFile(file)}
-                onShare={() => openShare(file)}
-                onRename={() => { setForm({ name: file.name }); setModal({ type: "rename", file }); }}
-                onMove={() => setModal({ type: "move", file })}
                 onFavorite={() => favoriteFile(file.driveFileId, !file.isFavorite)}
                 onTrash={() => trashFile(file.driveFileId)}
                 onDelete={() => deleteFile(file.driveFileId)}

@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.2 — 2026-08-26
+
+**ETHONE — Fichiers : redesign de la tuile `FileCard`**
+
+- `components/FileCard.tsx` : refonte de l’apparence des tuiles.
+  - Aperçu visuel via `thumbnailLink` / `iconUrl` (miniatures et icônes Google Drive).
+  - Meilleure hiérarchie en liste et en grille.
+  - État de sélection avec bordure d’accent.
+  - Actions visibles limitées (favori, télécharger, corbeille/restaurer), le reste reste dans le menu contextuel.
+- `app/files/page.tsx` : ajustement des props transmises à `FileCard`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.1 — 2026-08-26
 
 **ETHONE — Fichiers : recherche par type, extension et résumé**

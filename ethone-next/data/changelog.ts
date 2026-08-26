@@ -7206,6 +7206,66 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.2",
+  date: "2026-08-26",
+  title: "Fichiers — redesign de la tuile FileCard",
+  items: [
+    "Nouvel aspect des cartes/tuiles de fichiers.",
+    "Aperçu visuel via `thumbnailLink` et `iconUrl` (images et icônes Google Drive).",
+    "Mise en page plus aérée : icône plus grande en grille, informations plus lisibles.",
+    "État de sélection avec bordure et ring d’accent.",
+    "Actions visibles réduites (favori, télécharger, corbeille/restaurer), le reste reste dans le menu contextuel.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.2.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.2",
+  date: "2026-08-26",
+  title: "Files — FileCard tile redesign",
+  items: [
+    "New file card/tile appearance.",
+    "Visual preview via `thumbnailLink` and `iconUrl` (images and Google Drive icons).",
+    "More airy layout: larger icon in grid, clearer information.",
+    "Selected state with accent border and ring.",
+    "Visible actions reduced (favorite, download, trash/restore), the rest stays in the context menu.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.2.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.2",
+  date: "2026-08-26",
+  title: "Archivos — rediseño de tarjeta FileCard",
+  items: [
+    "Nuevo aspecto de las tarjetas de archivos.",
+    "Vista previa visual a través de `thumbnailLink` e `iconUrl` (imágenes e iconos de Google Drive).",
+    "Diseño más aireado: icono más grande en cuadrícula, información más legible.",
+    "Estado de selección con borde y anillo de acento.",
+    "Acciones visibles reducidas (favorito, descargar, papelera/restaurar), el resto permanece en el menú contextual.",
+    "Validación : build, lint.",
+    "Versión : v1.10.2.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.2",
+  date: "2026-08-26",
+  title: "Dateien — FileCard-Kachel neu gestaltet",
+  items: [
+    "Neues Erscheinungsbild der Dateikacheln.",
+    "Visuelle Vorschau über `thumbnailLink` und `iconUrl` (Bilder und Google Drive-Icons).",
+    "Luftigeres Layout: größeres Icon im Raster, übersichtlichere Informationen.",
+    "Ausgewählter Zustand mit Akzent-Rand und Ring.",
+    "Sichtbare Aktionen reduziert (Favorit, Herunterladen, Papierkorb/Wiederherstellen), der Rest bleibt im Kontextmenü.",
+    "Validierung: build, lint.",
+    "Version: v1.10.2.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.1",
   date: "2026-08-26",
   title: "Fichiers — recherche par type, extension et résumé",

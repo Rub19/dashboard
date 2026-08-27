@@ -22,6 +22,7 @@ import OAuthHandler from "@/components/OAuthHandler";
 import UIProvider from "@/components/UIProvider";
 import NotificationBridge from "@/components/NotificationBridge";
 import BootProvider from "@/components/BootProvider";
+import PublicProfileProvider from "@/components/PublicProfileProvider";
 import { UploadQueueProvider } from "@/lib/upload-queue";
 
 const inter = Inter({
@@ -80,29 +81,31 @@ export default function RootLayout({
     >
       <body className="h-dvh max-h-dvh overflow-hidden bg-[var(--background)] text-[var(--foreground)]">
         <AuthProvider>
-          <SettingsProvider>
-            <LanguageProvider>
-              <FocusProvider>
-                <UIProvider>
-                  <CommandPaletteProvider>
-                    <SoundProvider>
-                      <ToastProvider>
-                        <HtmlLang />
-                        <OfflineIndicator />
-                        <ServiceWorker />
-                        <NotificationBridge />
-                        <VersionUpdateToast />
-                        <OAuthHandler />
-                        <UploadQueueProvider>
-                          <BootProvider>{children}</BootProvider>
-                        </UploadQueueProvider>
-                      </ToastProvider>
-                    </SoundProvider>
-                  </CommandPaletteProvider>
-                </UIProvider>
-              </FocusProvider>
-            </LanguageProvider>
-          </SettingsProvider>
+          <PublicProfileProvider>
+            <SettingsProvider>
+              <LanguageProvider>
+                <FocusProvider>
+                  <UIProvider>
+                    <CommandPaletteProvider>
+                      <SoundProvider>
+                        <ToastProvider>
+                          <HtmlLang />
+                          <OfflineIndicator />
+                          <ServiceWorker />
+                          <NotificationBridge />
+                          <VersionUpdateToast />
+                          <OAuthHandler />
+                          <UploadQueueProvider>
+                            <BootProvider>{children}</BootProvider>
+                          </UploadQueueProvider>
+                        </ToastProvider>
+                      </SoundProvider>
+                    </CommandPaletteProvider>
+                  </UIProvider>
+                </FocusProvider>
+              </LanguageProvider>
+            </SettingsProvider>
+          </PublicProfileProvider>
         </AuthProvider>
       </body>
     </html>

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ClientImage from "@/components/ClientImage";
 import { useRouter } from "next/navigation";
-import { ChevronRight, Sparkles, User as UserIcon } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Icon } from "@/lib/icons";
 import { useAuth } from "@/components/AuthProvider";
 import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
@@ -22,15 +22,6 @@ import { USER_STATUS_CONFIG } from "@/lib/settings";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/motion/Popover";
 import { cn } from "@/lib/utils";
 
-function initials(name?: string) {
-  if (!name) return "E";
-  return name
-    .split(/\s+/)
-    .map((part) => part[0] || "")
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-}
 
 const STATUS_KEYS = [
   "online",
@@ -107,7 +98,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = "v1.10.84";
+  const VERSION_LABEL = "v1.10.85";
 
   const menuItems = [
     {

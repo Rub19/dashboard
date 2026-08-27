@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { useActiveProfile } from "@/components/SettingsProvider";
 import { useProfile } from "@/lib/hooks/useProfile";
-import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
 
 export type UserIdentity = {
   displayName: string;
@@ -18,26 +17,24 @@ export function useUserIdentity(): UserIdentity {
   const { user } = useAuth();
   const { activeProfile } = useActiveProfile();
   const { profile: publicProfile } = useProfile();
-  const { profile: discordProfile } = useDiscordOAuth();
 
   const [cachedName, setCachedName] = useState<string>("");
   const [cachedAvatar, setCachedAvatar] = useState<string>("");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const savedName = localStorage.getItem("ethone_user_name");
-      const savedAvatar = localStorage.getItem("ethone_user_avatar");
-      if (savedName) setCachedName(savedName);
-      if (savedAvatar) setCachedAvatar(savedAvatar);
+      try {
+        const savedName = localStorage.getItem("ethone_user_name");
+        const savedAvatar = localStorage.getItem("ethone_user_avatar");
+        if (savedName) setCachedName(savedName);
+        if (savedAvatar) setCachedAvatar(savedAvatar);
+      } catch {
+        // ignore storage restrictions
+      }
     }
   }, []);
 
   const meta = useMemo(() => (user?.user_metadata || {}) as Record<string, unknown>, [user?.user_metadata]);
-
-  const discordName =
-    discordProfile?.user?.displayName ||
-    discordProfile?.user?.globalName ||
-    discordProfile?.user?.username;
 
   const fromMeta =
     (typeof meta.full_name === "string" ? meta.full_name : undefined) ||
@@ -51,19 +48,17 @@ export function useUserIdentity(): UserIdentity {
     publicProfile?.display_name ||
     publicProfile?.username ||
     activeProfile?.name ||
-    discordName ||
     fromMeta ||
     cachedName ||
     (user?.email ? user.email.split("@")[0] : "") ||
     "Rub";
 
-  // Resolution of avatar URL with priority on custom avatar, Google OAuth avatar, or Discord avatar
+  // Resolution of avatar URL with priority on custom avatar, Google OAuth avatar, or active profile
   const avatarUrl =
     publicProfile?.avatar_url ||
     (typeof meta.avatar_url === "string" ? meta.avatar_url : undefined) ||
     (typeof meta.picture === "string" ? meta.picture : undefined) ||
     (typeof meta.avatar === "string" ? meta.avatar : undefined) ||
-    discordProfile?.user?.avatarUrl ||
     (activeProfile as unknown as { avatar_url?: string; avatar?: string })?.avatar_url ||
     (activeProfile as unknown as { avatar_url?: string; avatar?: string })?.avatar ||
     cachedAvatar ||
@@ -71,11 +66,15 @@ export function useUserIdentity(): UserIdentity {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      if (displayName && displayName !== "Invité" && displayName !== "Utilisateur ETHONE") {
-        localStorage.setItem("ethone_user_name", displayName);
-      }
-      if (avatarUrl) {
-        localStorage.setItem("ethone_user_avatar", avatarUrl);
+      try {
+        if (displayName && displayName !== "Invité" && displayName !== "Utilisateur ETHONE") {
+          localStorage.setItem("ethone_user_name", displayName);
+        }
+        if (avatarUrl) {
+          localStorage.setItem("ethone_user_avatar", avatarUrl);
+        }
+      } catch {
+        // ignore
       }
     }
   }, [displayName, avatarUrl]);

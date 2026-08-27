@@ -21,10 +21,17 @@ type PublicProfileContextValue = {
 
 const PublicProfileContext = createContext<PublicProfileContextValue | null>(null);
 
+const DEFAULT_PUBLIC_PROFILE_CONTEXT: PublicProfileContextValue = {
+  profile: null,
+  loading: false,
+  error: null,
+  reload: async () => {},
+  save: async () => null,
+};
+
 export function usePublicProfileContext() {
   const value = useContext(PublicProfileContext);
-  if (!value) throw new Error("usePublicProfileContext must be used inside PublicProfileProvider");
-  return value;
+  return value || DEFAULT_PUBLIC_PROFILE_CONTEXT;
 }
 
 export default function PublicProfileProvider({ children }: { children: ReactNode }) {

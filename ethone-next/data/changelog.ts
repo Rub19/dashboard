@@ -7206,6 +7206,50 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.85",
+  date: "2026-08-27",
+  title: "Correction Critique : Écran d'Erreur Inattendue au Démarrage (PublicProfileProvider)",
+  items: [
+    "Résolution du crash bloquant au chargement initial causé par l'absence de PublicProfileProvider dans l'arbre React global.",
+    "Sécurisation de usePublicProfileContext() avec valeurs par défaut non-bloquantes (plus aucune exception fatale lancée).",
+    "Optimisation de useUserIdentity() avec gestion des erreurs de stockage sécurisée et nettoyage des imports superflus.",
+    "Version affichée : v1.10.85.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.85",
+  date: "2026-08-27",
+  title: "Critical Fix: Startup Unexpected Error Screen (PublicProfileProvider)",
+  items: [
+    "Fixed initial boot error boundary crash caused by missing PublicProfileProvider in global layout tree.",
+    "Hardened usePublicProfileContext() with non-throwing fallback defaults.",
+    "Streamlined useUserIdentity() with safe storage reads and removed redundant dependencies.",
+    "Version badge: v1.10.85.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.85",
+  date: "2026-08-27",
+  title: "Corrección Crítica: Error Inesperado al Iniciar (PublicProfileProvider)",
+  items: [
+    "Corrección del fallo de inicio envolviendo PublicProfileProvider a nivel global.",
+    "Versión: v1.10.85.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.85",
+  date: "2026-08-27",
+  title: "Kritischer Fix: Unerwarteter Startfehler-Bildschirm behoben",
+  items: [
+    "Behebt den Absturz beim Start durch globale Einbindung von PublicProfileProvider.",
+    "Version: v1.10.85.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.84",
   date: "2026-08-27",
   title: "Nouveau : Mode Vocal Interactif dans Brain (STT & Synthèse Vocale)",

@@ -20,7 +20,6 @@ import {
   BarChart3,
   Settings,
   PanelLeftClose,
-  User,
   Loader2,
   AlertCircle,
   WifiOff,

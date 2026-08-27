@@ -7206,6 +7206,56 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.48",
+  date: "2026-08-27",
+  title: "Refonte Intégrale du Tracker Valorant & Cache Haute Performance",
+  items: [
+    "Refonte visuelle Valorant conforme au design officiel : regroupement des parties par jour (ex: Aug 27), badges MVP/2nd/3rd, K/D, K/D/A, Damage Delta (DDΔ), HS% et ACS.",
+    "Indicateurs de victoire (lueur verte néon) et défaite (lueur rouge) avec avatars d'agents officiels et tags d'exploits (Ace, 4k, 3k, High KAST, Clutch).",
+    "Scoreboard interactif par match : affiche les 10 joueurs, agents, rangs, statistiques détaillées et équipes.",
+    "Cache multi-niveaux 15 minutes (LocalStorage + In-Memory) : navigation instantanée sans requêtes superflues vers l'API Riot/Henrik.",
+    "Validation : build Next.js 105/105 pages, TypeScript sans erreur.",
+    "Version affichée : v1.10.48.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.48",
+  date: "2026-08-27",
+  title: "Valorant Tracker Complete Overhaul & High Performance Caching",
+  items: [
+    "Full Valorant Tracker visual redesign matching official tracker: date-grouped days (Aug 27), MVP badges, K/D, K/D/A, Damage Delta (DDΔ), HS%, and ACS.",
+    "Neon victory (green) and defeat (red) glow indicators, official agent portraits, and accolade badges (Ace, 4k, 3k, High KAST, Clutch).",
+    "Interactive match scoreboard: displays all 10 players, agents, ranks, detailed combat stats, and team compositions.",
+    "15-minute multi-layer caching: instant navigation without unnecessary API requests.",
+    "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
+    "Version badge: v1.10.48.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.48",
+  date: "2026-08-27",
+  title: "Rediseño completo de Valorant Tracker y caché avanzada",
+  items: [
+    "Diseño de tracker oficial de Valorant, estadísticas reales por día y caché de 15 minutos.",
+    "Validación : build, lint.",
+    "Versión : v1.10.48.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.48",
+  date: "2026-08-27",
+  title: "Vollständiges Valorant Tracker Redesign & High-Performance Cache",
+  items: [
+    "Offizielles Valorant Tracker Design, echte Tagesstatistiken und 15-Minuten-Cache.",
+    "Validierung: build, lint.",
+    "Version: v1.10.48.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.47",
   date: "2026-08-27",
   title: "Correction de l'Ajout de Liens & Documents Externes dans les Dossiers",

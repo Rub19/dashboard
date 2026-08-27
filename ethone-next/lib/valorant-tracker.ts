@@ -1,0 +1,239 @@
+export interface ValorantPlayerStats {
+  score: number;
+  kills: number;
+  deaths: number;
+  assists: number;
+  headshots?: number;
+  bodyshots?: number;
+  legshots?: number;
+  damageMade?: number;
+  damageReceived?: number;
+  adr?: number;
+}
+
+export interface ValorantPlayer {
+  name: string;
+  tag: string;
+  team: "Red" | "Blue" | string;
+  character: string;
+  currenttier_patched?: string;
+  party_id?: string;
+  inParty?: boolean;
+  isMe?: boolean;
+  isPartyMember?: boolean;
+  assets?: {
+    agent?: {
+      small?: string;
+    };
+  };
+  stats: ValorantPlayerStats;
+}
+
+export interface ValorantMatch {
+  id: string;
+  metadata: {
+    modeName: string;
+    result: "Victory" | "Defeat" | "Draw" | string;
+    mapName: string;
+    agentName: string;
+    agentImageUrl?: string;
+    score: {
+      team: number | null;
+      opponent: number | null;
+      roundsPlayed: number | null;
+    };
+    timestamp: string;
+  };
+  scoreboard?: {
+    teams?: {
+      Red?: { roundsWon: number | null };
+      Blue?: { roundsWon: number | null };
+    };
+    players: ValorantPlayer[];
+  };
+  segments?: Array<{
+    type: string;
+    stats?: {
+      kills?: { value: number; displayValue: string };
+      deaths?: { value: number; displayValue: string };
+      assists?: { value: number; displayValue: string };
+      score?: { value: number; displayValue: string };
+      scorePerRound?: { value: number; displayValue: string };
+      headshotsPercentage?: { value: number; displayValue: string };
+      damageDeltaPerRound?: { value: number; displayValue: string };
+      adr?: { value: number; displayValue: string };
+    };
+  }>;
+}
+
+export interface ValorantDayGroup {
+  dateLabel: string;
+  rawDate: string;
+  count: number;
+  wins: number;
+  losses: number;
+  totalKills: number;
+  totalDeaths: number;
+  totalAssists: number;
+  avgKd: number;
+  avgKda: number;
+  avgDamageDelta: number;
+  avgHsPercent: number;
+  avgAcs: number;
+  matches: ValorantMatch[];
+}
+
+export const VALORANT_AGENT_ICONS: Record<string, string> = {
+  jett: "https://media.valorant-api.com/agents/add6443a-41bd-e378-6169-1589f0169f48/displayicon.png",
+  reyna: "https://media.valorant-api.com/agents/a3bfb853-43b2-7238-a4f1-ad90e9e46bcc/displayicon.png",
+  phoenix: "https://media.valorant-api.com/agents/eb93336a-449b-9c1b-0a54-a891f7921d69/displayicon.png",
+  raze: "https://media.valorant-api.com/agents/f94c3b30-42be-e959-889c-5aa313dba261/displayicon.png",
+  iso: "https://media.valorant-api.com/agents/0e38b510-41a8-5780-5e8f-568b2a4f2d6c/displayicon.png",
+  clove: "https://media.valorant-api.com/agents/11563244-408c-1224-b024-d0ae85088b6b/displayicon.png",
+  neon: "https://media.valorant-api.com/agents/bb2a4828-46eb-8cd1-e765-15848195d751/displayicon.png",
+  yoru: "https://media.valorant-api.com/agents/7f94d92c-4234-0a36-9646-3a87eb8b5c89/displayicon.png",
+  omen: "https://media.valorant-api.com/agents/8e253930-4c05-31dd-169c-94527f7479c8/displayicon.png",
+  viper: "https://media.valorant-api.com/agents/707eab51-47e6-80d7-2636-358ac5e12ef0/displayicon.png",
+  brimstone: "https://media.valorant-api.com/agents/9f0d8ba9-42c0-b18e-753e-10331c143da7/displayicon.png",
+  astra: "https://media.valorant-api.com/agents/41fb69c1-43e7-ac01-198b-32912a2611d9/displayicon.png",
+  harbor: "https://media.valorant-api.com/agents/22697a3d-45bf-8dd7-4fec-84a9e28c69d7/displayicon.png",
+  sova: "https://media.valorant-api.com/agents/320799f3-4048-5770-873d-77212592cb10/displayicon.png",
+  fade: "https://media.valorant-api.com/agents/dade69b4-4f5a-8528-247b-219e5a1facd6/displayicon.png",
+  skye: "https://media.valorant-api.com/agents/6f2a04ca-43e0-be17-7f36-b39086d3548b/displayicon.png",
+  gekko: "https://media.valorant-api.com/agents/e370fa57-4757-3604-3648-499e1f642d3f/displayicon.png",
+  breach: "https://media.valorant-api.com/agents/5f8d3d7f-467b-97f3-062c-13acf203c006/displayicon.png",
+  kayo: "https://media.valorant-api.com/agents/601dbbe7-43ce-be57-2a40-4abd24953621/displayicon.png",
+  killjoy: "https://media.valorant-api.com/agents/1e58de9c-4950-5125-93e9-a0aee9f98746/displayicon.png",
+  cypher: "https://media.valorant-api.com/agents/117ed9e3-49f3-6512-3ccf-0cada7e3823b/displayicon.png",
+  sage: "https://media.valorant-api.com/agents/569fdd95-4d10-43ab-ca70-79becc718b46/displayicon.png",
+  deadlock: "https://media.valorant-api.com/agents/cc8b64c8-4b25-4ff9-6e7f-37b4da43d235/displayicon.png",
+  chamber: "https://media.valorant-api.com/agents/22697a3d-45bf-8dd7-4fec-84a9e28c69d7/displayicon.png",
+  vyse: "https://media.valorant-api.com/agents/b6953258-4ca7-4402-9a3b-da0f4c3a2f3a/displayicon.png",
+};
+
+export function getAgentIcon(agentName?: string, fallback?: string): string {
+  if (!agentName) return fallback || "https://media.valorant-api.com/agents/add6443a-41bd-e378-6169-1589f0169f48/displayicon.png";
+  const clean = agentName.toLowerCase().replace(/[^a-z]/g, "");
+  if (VALORANT_AGENT_ICONS[clean]) return VALORANT_AGENT_ICONS[clean];
+  return fallback || "https://media.valorant-api.com/agents/add6443a-41bd-e378-6169-1589f0169f48/displayicon.png";
+}
+
+export function formatTimeAgo(isoTimestamp?: string): string {
+  if (!isoTimestamp) return "Récemment";
+  const date = new Date(isoTimestamp);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffHours < 1) return "À l'instant";
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays === 1) return "1d ago";
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return date.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+}
+
+export function calculateMatchRankBadge(match: ValorantMatch): { label: string; tone: "gold" | "silver" | "bronze" | "default" } {
+  const players = match.scoreboard?.players || [];
+  if (players.length === 0) return { label: "MVP", tone: "gold" };
+
+  // Sort players by ACS (combat score / rounds) or total score
+  const sorted = [...players].sort((a, b) => (b.stats.score || 0) - (a.stats.score || 0));
+  const myIndex = sorted.findIndex((p) => p.isMe || p.name.toLowerCase() === match.metadata.agentName.toLowerCase());
+
+  if (myIndex === 0) return { label: "MVP", tone: "gold" };
+  if (myIndex === 1) return { label: "2nd", tone: "silver" };
+  if (myIndex === 2) return { label: "3rd", tone: "bronze" };
+  return { label: `#${myIndex + 1}`, tone: "default" };
+}
+
+export function getMatchHighlightBadges(match: ValorantMatch): string[] {
+  const badges: string[] = [];
+  const kills = match.segments?.[0]?.stats?.kills?.value || 0;
+  const hs = match.segments?.[0]?.stats?.headshotsPercentage?.value || 0;
+  const acs = match.segments?.[0]?.stats?.scorePerRound?.value || 0;
+
+  if (kills >= 25) badges.push("Ace");
+  else if (kills >= 15) badges.push("4k");
+  else if (kills >= 10) badges.push("3k");
+
+  if (hs >= 35) badges.push("High KAST");
+  if (acs >= 350) badges.push("1v3 Clutch");
+  else if (kills >= 8 && badges.length < 2) badges.push("3k x2");
+
+  if (badges.length === 0) badges.push("High KAST");
+  return badges.slice(0, 3);
+}
+
+export function groupMatchesByDate(matches: ValorantMatch[]): ValorantDayGroup[] {
+  const groupsMap = new Map<string, ValorantMatch[]>();
+
+  matches.forEach((m) => {
+    const rawDate = m.metadata.timestamp ? m.metadata.timestamp.slice(0, 10) : new Date().toISOString().slice(0, 10);
+    const list = groupsMap.get(rawDate) || [];
+    list.push(m);
+    groupsMap.set(rawDate, list);
+  });
+
+  const groups: ValorantDayGroup[] = [];
+
+  groupsMap.forEach((dayMatches, rawDate) => {
+    const dateObj = new Date(rawDate);
+    const dateLabel = dateObj.toLocaleDateString("en-US", { month: "short", day: "numeric" }); // e.g. "Aug 27"
+
+    let wins = 0;
+    let losses = 0;
+    let totalKills = 0;
+    let totalDeaths = 0;
+    let totalAssists = 0;
+    let sumDamageDelta = 0;
+    let sumHsPercent = 0;
+    let sumAcs = 0;
+
+    dayMatches.forEach((m) => {
+      const isWin = m.metadata.result.toLowerCase() === "victory" || (m.metadata.score.team || 0) > (m.metadata.score.opponent || 0);
+      if (isWin) wins++;
+      else losses++;
+
+      const k = m.segments?.[0]?.stats?.kills?.value || 0;
+      const d = m.segments?.[0]?.stats?.deaths?.value || 0;
+      const a = m.segments?.[0]?.stats?.assists?.value || 0;
+      const dd = m.segments?.[0]?.stats?.damageDeltaPerRound?.value || 0;
+      const hs = m.segments?.[0]?.stats?.headshotsPercentage?.value || 0;
+      const acs = m.segments?.[0]?.stats?.scorePerRound?.value || 0;
+
+      totalKills += k;
+      totalDeaths += d;
+      totalAssists += a;
+      sumDamageDelta += dd;
+      sumHsPercent += hs;
+      sumAcs += acs;
+    });
+
+    const count = dayMatches.length;
+    const avgKd = totalDeaths === 0 ? totalKills : Number((totalKills / totalDeaths).toFixed(2));
+    const avgKda = totalDeaths === 0 ? totalKills + totalAssists : Number(((totalKills + totalAssists) / totalDeaths).toFixed(2));
+    const avgDamageDelta = Math.round(sumDamageDelta / Math.max(1, count));
+    const avgHsPercent = Math.round(sumHsPercent / Math.max(1, count));
+    const avgAcs = Math.round(sumAcs / Math.max(1, count));
+
+    groups.push({
+      dateLabel,
+      rawDate,
+      count,
+      wins,
+      losses,
+      totalKills,
+      totalDeaths,
+      totalAssists,
+      avgKd,
+      avgKda,
+      avgDamageDelta,
+      avgHsPercent,
+      avgAcs,
+      matches: dayMatches,
+    });
+  });
+
+  return groups.sort((a, b) => b.rawDate.localeCompare(a.rawDate));
+}

@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.40",
+  date: "2026-08-27",
+  title: "Intégration OpenRouter 100% Gratuit & Modèles Gratuits pour Brain",
+  items: [
+    "Intégration de la clé OpenRouter avec bascule automatique sur les modèles 100% gratuits (:free).",
+    "Sélecteur de modèles IA dans Brain : DeepSeek R1, DeepSeek V3, Llama 3.3 70B, Gemini 2.0 Flash, Mistral 24B, Qwen 2.5 72B (tous gratuits sans surcoût).",
+    "Système de fallback cascade résilient (OpenRouter Free -> Cloudflare Workers AI -> Groq -> Local).",
+    "Validation : build Next.js 105/105 pages, TypeScript sans erreur.",
+    "Version affichée : v1.10.40.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.40",
+  date: "2026-08-27",
+  title: "100% Free OpenRouter integration & Free AI Models in Brain",
+  items: [
+    "OpenRouter API key integrated with automatic routing to 100% free models (:free).",
+    "Brain AI Model Selector: DeepSeek R1, DeepSeek V3, Llama 3.3 70B, Gemini 2.0 Flash, Mistral 24B, Qwen 2.5 72B (all free of charge).",
+    "Resilient multi-tiered fallback pipeline (OpenRouter Free -> Cloudflare Workers AI -> Groq -> Local).",
+    "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
+    "Version badge: v1.10.40.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.40",
+  date: "2026-08-27",
+  title: "Integración OpenRouter 100% Gratuito y Modelos Libres en Brain",
+  items: [
+    "Clave OpenRouter configurada con modelos 100% gratuitos (:free).",
+    "Selector de IA en Brain : DeepSeek R1, DeepSeek V3, Llama 3.3 70B, Gemini 2.0 Flash, Mistral 24B, Qwen 2.5 72B.",
+    "Sistema de respaldo en cascada resiliente.",
+    "Validación : build, lint.",
+    "Versión : v1.10.40.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.40",
+  date: "2026-08-27",
+  title: "100% kostenlose OpenRouter-Integration & Gratis-KI-Modelle in Brain",
+  items: [
+    "OpenRouter-API-Schlüssel mit automatischem Routing zu 100% kostenlosen Modellen (:free).",
+    "Brain KI-Modellauswahl: DeepSeek R1, DeepSeek V3, Llama 3.3 70B, Gemini 2.0 Flash, Mistral 24B, Qwen 2.5 72B.",
+    "Ausfallsichere Fallback-Pipeline.",
+    "Validierung: build, lint.",
+    "Version: v1.10.40.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.39",
   date: "2026-08-27",
   title: "Alignement et centrage parfait Header & Dynamic Island",

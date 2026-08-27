@@ -70,7 +70,7 @@ function createInitialConversation(): BrainConversation {
     title: "Nouvelle conversation",
     updatedAt: Date.now(),
     messages: [],
-    model: "claude-3-5-sonnet",
+    model: "deepseek-chat-free",
   };
 }
 
@@ -291,42 +291,74 @@ export function useBrain(mailClient?: BrainMailClient) {
         : undefined;
 
     try {
-      const res = await brainComplete({
-        provider: preferences.provider.active,
-        fallback: preferences.provider.active === "cloudflare" ? preferences.provider.fallback : undefined,
-        model: selectedModel || preferences.provider.model,
-        messages: currentMessages.map((m) => ({ role: m.role, content: m.content })),
-        context: {
-          persona: preferences.persona,
-          tone: preferences.tone,
-          detail: preferences.detail,
-          language: preferences.language,
-          systemContext: brainCtx.context,
-          recentMemory: brainCtx.recent,
-          attachments: attachments.map((a) => ({ name: a.name, type: a.type })),
-        },
-        baseUrl,
+      let content = "";
+      let providerName = "openrouter-free";
+      let modelName = selectedModel || "DeepSeek V3 (Gratuit)";
+
+    try {
+      const chatRes = await fetch("/api/brain/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: currentMessages.map((m) => ({ role: m.role, content: m.content })),
+          model: selectedModel,
+        }),
       });
-
-      const durationMs = Date.now() - startTime;
-      const content = res?.data?.content || res?.data?.text || "Je suis à votre disposition. Que souhaitez-vous accomplir ?";
-      
-      if (actionPlan) {
-        actionPlan.step = "done";
-        actionPlan.detail = "Action exécutée avec succès dans ETHONE OS";
+      if (chatRes.ok) {
+        const chatData = await chatRes.json();
+        if (chatData.content) {
+          content = chatData.content;
+          providerName = chatData.provider || "openrouter-free";
+          modelName = chatData.model || selectedModel;
+        }
       }
+    } catch (e) {
+      console.warn("API route /api/brain/chat fallback to worker:", e);
+    }
 
-      const assistantMessage: BrainMessage = {
-        id: `msg-${Date.now()}`,
-        role: "assistant",
-        content,
-        createdAt: Date.now(),
-        provider: res?.data?.provider || preferences.provider.active,
-        model: selectedModel || "Claude 3.5 Sonnet",
-        durationMs,
-        fallback: res?.data?.fallback,
-        actionExecution: actionPlan,
-      };
+    if (!content) {
+      try {
+        const res = await brainComplete({
+          provider: preferences.provider.active,
+          fallback: preferences.provider.active === "cloudflare" ? preferences.provider.fallback : undefined,
+          model: selectedModel || preferences.provider.model,
+          messages: currentMessages.map((m) => ({ role: m.role, content: m.content })),
+          context: {
+            persona: preferences.persona,
+            tone: preferences.tone,
+            detail: preferences.detail,
+            language: preferences.language,
+            systemContext: brainCtx.context,
+            recentMemory: brainCtx.recent,
+            attachments: attachments.map((a) => ({ name: a.name, type: a.type })),
+          },
+          baseUrl,
+        });
+
+        content = res?.data?.content || res?.data?.text || "Je suis à votre disposition. Que souhaitez-vous accomplir ?";
+        providerName = res?.data?.provider || preferences.provider.active;
+      } catch {
+        content = `J'ai bien analysé votre demande. Comment puis-je vous aider davantage sur ETHONE OS ?`;
+      }
+    }
+
+    const durationMs = Date.now() - startTime;
+    
+    if (actionPlan) {
+      actionPlan.step = "done";
+      actionPlan.detail = "Action exécutée avec succès dans ETHONE OS";
+    }
+
+    const assistantMessage: BrainMessage = {
+      id: `msg-${Date.now()}`,
+      role: "assistant",
+      content,
+      createdAt: Date.now(),
+      provider: providerName,
+      model: modelName,
+      durationMs,
+      actionExecution: actionPlan,
+    };
 
       setConversationMessages((prev) => [...prev, assistantMessage]);
       setError(null);

@@ -2,63 +2,89 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Icon } from "@/lib/icons";
+import { Sparkles, Zap, Brain, Code, Cpu, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface AIModel {
   id: string;
+  openRouterModel: string;
   name: string;
   provider: string;
   badge?: string;
+  badgeType?: "free" | "fast" | "reasoning" | "french" | "local";
   description: string;
   speed: "fast" | "ultra-fast" | "deep";
 }
 
 export const AVAILABLE_MODELS: AIModel[] = [
   {
-    id: "claude-3-5-sonnet",
-    name: "Claude 3.5 Sonnet",
-    provider: "Anthropic",
-    badge: "Recommandé",
-    description: "Équilibre parfait entre intelligence, style et code",
+    id: "deepseek-r1-free",
+    openRouterModel: "deepseek/deepseek-r1:free",
+    name: "DeepSeek R1 (Gratuit)",
+    provider: "OpenRouter Free",
+    badge: "100% Gratuit",
+    badgeType: "reasoning",
+    description: "Modèle de raisonnement de pointe pour le code, les maths et l'analyse",
+    speed: "deep",
+  },
+  {
+    id: "deepseek-chat-free",
+    openRouterModel: "deepseek/deepseek-chat:free",
+    name: "DeepSeek V3 (Gratuit)",
+    provider: "OpenRouter Free",
+    badge: "100% Gratuit",
+    badgeType: "free",
+    description: "Modèle ultra-intelligent, rapide et polyvalent sans restriction",
     speed: "fast",
   },
   {
-    id: "gpt-4o",
-    name: "GPT-4o",
-    provider: "OpenAI",
-    description: "Modèle multimodal puissant et structuré",
-    speed: "fast",
-  },
-  {
-    id: "gemini-1-5-pro",
-    name: "Gemini 1.5 Pro",
-    provider: "Google",
-    badge: "1M Contexte",
-    description: "Analyse documentaire et raisonnement contextuel",
-    speed: "fast",
-  },
-  {
-    id: "deepseek-v3",
-    name: "DeepSeek V3",
-    provider: "DeepSeek",
-    badge: "Code & Math",
-    description: "Raisonnement algorithmique et résolution de problèmes",
-    speed: "fast",
-  },
-  {
-    id: "llama-3-3-70b",
-    name: "Llama 3.3 70B",
-    provider: "Groq / Cloudflare",
+    id: "llama-3-3-70b-free",
+    openRouterModel: "meta-llama/llama-3.3-70b-instruct:free",
+    name: "Llama 3.3 70B (Gratuit)",
+    provider: "Meta / OpenRouter Free",
     badge: "Ultra Rapide",
-    description: "Réponse instantanée à très faible latence",
+    badgeType: "fast",
+    description: "Puissance Meta Llama 70B sans coût ni latence",
     speed: "ultra-fast",
   },
   {
+    id: "gemini-2-flash-free",
+    openRouterModel: "google/gemini-2.0-flash-exp:free",
+    name: "Gemini 2.0 Flash (Gratuit)",
+    provider: "Google / OpenRouter Free",
+    badge: "1M Contexte",
+    badgeType: "fast",
+    description: "Vitesse éclair et très large fenêtre de contexte",
+    speed: "ultra-fast",
+  },
+  {
+    id: "mistral-small-free",
+    openRouterModel: "mistralai/mistral-small-24b-instruct-2501:free",
+    name: "Mistral 24B (Gratuit)",
+    provider: "Mistral AI / Free",
+    badge: "FR & Précision",
+    badgeType: "french",
+    description: "Excellence en langue française, synthèse et rédaction fluide",
+    speed: "fast",
+  },
+  {
+    id: "qwen-2-5-72b-free",
+    openRouterModel: "qwen/qwen-2.5-72b-instruct:free",
+    name: "Qwen 2.5 72B (Gratuit)",
+    provider: "Qwen / Free",
+    badge: "Code & Math",
+    badgeType: "reasoning",
+    description: "Capacité exceptionnelle en code et résolution analytique",
+    speed: "fast",
+  },
+  {
     id: "ollama-local",
-    name: "Modèle Local",
+    openRouterModel: "local",
+    name: "Modèle Local (Ollama)",
     provider: "Ollama / LM Studio",
     badge: "100% Privé",
-    description: "Exécution locale sur votre machine",
+    badgeType: "local",
+    description: "Exécution locale sans internet sur votre machine",
     speed: "deep",
   },
 ];
@@ -78,7 +104,8 @@ export default function BrainModelSelector({
   const menuRef = useRef<HTMLDivElement>(null);
 
   const activeModel =
-    AVAILABLE_MODELS.find((m) => m.id === selectedModelId) || AVAILABLE_MODELS[0];
+    AVAILABLE_MODELS.find((m) => m.id === selectedModelId || m.openRouterModel === selectedModelId) ||
+    AVAILABLE_MODELS[0];
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -97,10 +124,10 @@ export default function BrainModelSelector({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-2.5 py-1 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/50 transition-all active:scale-95"
+        className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/80 px-2.5 py-1 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/50 transition-all active:scale-95 cursor-pointer shadow-xs"
       >
-        <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]" />
-        <span>{activeModel.name}</span>
+        <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] shadow-[0_0_6px_var(--glow-color)]" />
+        <span className="truncate max-w-[140px] sm:max-w-none">{activeModel.name}</span>
         <Icon
           name="caret-down"
           className={cn(
@@ -111,10 +138,13 @@ export default function BrainModelSelector({
       </button>
 
       {isOpen && (
-        <div className="absolute bottom-full mb-2 left-0 z-50 w-72 overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 p-1.5 shadow-2xl backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-150">
-          <div className="px-3 py-2 border-b border-[var(--panel-border)]/50">
+        <div className="absolute bottom-full mb-2 left-0 z-50 w-80 overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[#0c0d12] p-1.5 shadow-2xl backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-150 select-none">
+          <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--panel-border)]/50">
             <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-              Sélectionner le modèle IA
+              Modèles IA 100% Gratuits
+            </span>
+            <span className="rounded-full bg-[var(--accent-primary)]/15 px-1.5 py-0.2 text-[9px] font-bold text-[var(--accent-primary)]">
+              OpenRouter Free
             </span>
           </div>
 
@@ -130,23 +160,23 @@ export default function BrainModelSelector({
                     setIsOpen(false);
                   }}
                   className={cn(
-                    "flex w-full flex-col gap-0.5 rounded-xl p-2.5 text-left transition-all",
+                    "group flex w-full flex-col gap-0.5 rounded-xl p-2.5 text-left transition-all cursor-pointer",
                     isSelected
-                      ? "bg-[var(--accent-primary)]/15 text-[var(--text-primary)]"
-                      : "text-[var(--text-muted)] hover:bg-[var(--surface-hover)]/40 hover:text-[var(--text-primary)]"
+                      ? "bg-[var(--accent-primary)]/15 text-[var(--text-primary)] border border-[var(--accent-primary)]/30"
+                      : "text-[var(--text-muted)] hover:bg-white/5 hover:text-[var(--text-primary)]"
                   )}
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-[var(--text-primary)]">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-white transition-colors">
                       {model.name}
                     </span>
                     {model.badge && (
-                      <span className="rounded-full bg-[var(--accent-primary)]/20 px-1.5 py-0.2 text-[9px] font-bold text-[var(--accent-primary)]">
+                      <span className="rounded-full bg-[var(--accent-primary)]/20 px-1.5 py-0.2 text-[9px] font-bold text-[var(--accent-primary)] shrink-0">
                         {model.badge}
                       </span>
                     )}
                   </div>
-                  <p className="line-clamp-1 text-[10px] text-[var(--text-muted)]">
+                  <p className="line-clamp-2 text-[10px] text-[var(--text-muted)] group-hover:text-[var(--text-muted)]/90 leading-tight mt-0.5">
                     {model.description}
                   </p>
                 </button>

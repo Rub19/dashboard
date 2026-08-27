@@ -4,6 +4,7 @@ import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import ServiceIcon from "@/components/ServiceIcon";
 import { cn } from "@/lib/utils";
 import type { BrainAttachment } from "@/lib/hooks/useBrain";
 
@@ -109,7 +110,7 @@ export default function BrainContextDrawer({
                   <button
                     type="button"
                     onClick={() => onRemoveAttachment(att.id)}
-                    className="p-1 text-[var(--text-muted)] hover:text-[var(--danger)] transition-colors"
+                    className="p-1 text-[var(--text-muted)] hover:text-[var(--danger)] transition-colors cursor-pointer"
                   >
                     <Icon name="x" className="h-3 w-3" />
                   </button>
@@ -126,23 +127,22 @@ export default function BrainContextDrawer({
           </span>
           <div className="grid grid-cols-2 gap-2">
             {[
-              { name: "Spotify", connected: true, icon: "music" },
-              { name: "Google Drive", connected: false, icon: "hard-drive" },
-              { name: "Discord", connected: false, icon: "chat-circle" },
-              { name: "GitHub", connected: true, icon: "code" },
+              { id: "spotify", name: "Spotify", connected: true },
+              { id: "google-drive", name: "Google Drive", connected: false },
+              { id: "discord", name: "Discord", connected: false },
+              { id: "github", name: "GitHub", connected: true },
             ].map((s) => (
               <div
-                key={s.name}
-                className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5"
+                key={s.id}
+                className="flex items-center gap-2 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-2.5 shadow-xs transition-all hover:bg-[var(--surface-raised)]"
               >
-                <Icon
-                  name={s.icon}
-                  className={cn(
-                    "h-4 w-4",
-                    s.connected ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]"
-                  )}
+                <ServiceIcon
+                  id={s.id}
+                  icon={s.id}
+                  className="h-4 w-4 shrink-0"
+                  colored={s.connected}
                 />
-                <span className="text-[11px] font-medium truncate text-[var(--text-primary)]">
+                <span className="text-[11px] font-semibold truncate text-[var(--text-primary)]">
                   {s.name}
                 </span>
               </div>

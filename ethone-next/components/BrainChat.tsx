@@ -2,7 +2,21 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Icon } from "@/lib/icons";
+import {
+  FileEdit,
+  Calendar,
+  Activity,
+  FileText,
+  Brain,
+  Sparkles,
+  Copy,
+  Check,
+  CheckCircle2,
+  List,
+  Trash2,
+  SlidersHorizontal,
+  File,
+} from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { useAuth } from "@/components/AuthProvider";
@@ -96,13 +110,13 @@ export default function BrainChat({
               className="md:hidden flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               title="Menu des discussions"
             >
-              <Icon name="list" className="h-4 w-4" />
+              <List className="h-4 w-4" />
             </button>
           )}
 
           <div className="flex items-center gap-2.5">
             <div className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-bold">
-              <Icon name="brain" className="h-4 w-4" />
+              <Brain className="h-4 w-4" />
               <span
                 className={cn(
                   "absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--panel-bg)]",
@@ -135,9 +149,9 @@ export default function BrainChat({
           <button
             type="button"
             onClick={() => brain.clearChat()}
-            className="flex h-8 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] px-2.5 text-xs font-medium text-[var(--text-muted)] hover:border-[var(--danger)]/50 hover:text-[var(--danger)] transition-colors"
+            className="flex h-8 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] px-2.5 text-xs font-medium text-[var(--text-muted)] hover:border-[var(--danger)]/50 hover:text-[var(--danger)] transition-colors cursor-pointer"
           >
-            <Icon name="trash" className="h-3.5 w-3.5" />
+            <Trash2 className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">Effacer</span>
           </button>
 
@@ -145,10 +159,10 @@ export default function BrainChat({
             <button
               type="button"
               onClick={onToggleContext}
-              className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+              className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
               title="Contexte et mémoire"
             >
-              <Icon name="sliders-horizontal" className="h-4 w-4" />
+              <SlidersHorizontal className="h-4 w-4" />
             </button>
           )}
         </div>
@@ -170,7 +184,7 @@ export default function BrainChat({
             className="flex items-center gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-3.5 w-fit"
           >
             <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]">
-              <Icon name="brain" className="h-3.5 w-3.5 animate-pulse" />
+              <Brain className="h-3.5 w-3.5 animate-pulse" />
             </span>
             <div className="flex items-center gap-1.5">
               <span className="text-xs font-medium text-[var(--text-muted)]">Brain réfléchit</span>
@@ -218,7 +232,7 @@ export default function BrainChat({
     return (
       <div className="my-auto flex flex-col items-center justify-center text-center py-12 px-4 space-y-6">
         <div className="relative flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-to-br from-[var(--accent-primary)]/20 to-[var(--accent-primary)]/5 text-[var(--accent-primary)] shadow-2xl ring-2 ring-[var(--accent-primary)]/20">
-          <Icon name="brain" className="h-8 w-8" />
+          <Brain className="h-8 w-8" />
           <div className="absolute -inset-1 rounded-3xl bg-[var(--accent-primary)]/10 blur-xl -z-10" />
         </div>
 
@@ -234,25 +248,28 @@ export default function BrainChat({
         {/* Quick Starter Prompts */}
         <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 max-w-lg w-full">
           {[
-            { label: "Créer une note de réunion", icon: "note", prompt: "Crée une note résumant mes points clés d'aujourd'hui" },
-            { label: "Planifier ma journée", icon: "calendar", prompt: "Aide-moi à organiser mes tâches prioritaires" },
-            { label: "Résumer mon activité récente", icon: "activity", prompt: "Fais un récapitulatif de mon activité sur ETHONE" },
-            { label: "Analyser un document", icon: "file-text", prompt: "Je voudrais analyser un fichier avec toi" },
-          ].map((item) => (
-            <button
-              key={item.label}
-              type="button"
-              onClick={() => brain.send(item.prompt)}
-              className="group flex items-center gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-left transition-all hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)]/60 active:scale-95 shadow-sm"
-            >
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-raised)] text-[var(--accent-primary)] group-hover:scale-105 transition-transform">
-                <Icon name={item.icon} className="h-4 w-4" />
-              </span>
-              <span className="text-xs font-semibold text-[var(--text-primary)]">
-                {item.label}
-              </span>
-            </button>
-          ))}
+            { label: "Créer une note de réunion", icon: FileEdit, prompt: "Crée une note résumant mes points clés d'aujourd'hui" },
+            { label: "Planifier ma journée", icon: Calendar, prompt: "Aide-moi à organiser mes tâches prioritaires" },
+            { label: "Résumer mon activité récente", icon: Activity, prompt: "Fais un récapitulatif de mon activité sur ETHONE" },
+            { label: "Analyser un document", icon: FileText, prompt: "Je voudrais analyser un fichier avec toi" },
+          ].map((item) => {
+            const IconComp = item.icon;
+            return (
+              <button
+                key={item.label}
+                type="button"
+                onClick={() => brain.send(item.prompt)}
+                className="group flex items-center gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-left transition-all hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)]/60 active:scale-95 shadow-sm cursor-pointer"
+              >
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-raised)] text-[var(--accent-primary)] group-hover:scale-110 transition-transform shadow-xs">
+                  <IconComp className="h-4 w-4" />
+                </span>
+                <span className="text-xs font-semibold text-[var(--text-primary)]">
+                  {item.label}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
     );
@@ -285,7 +302,7 @@ export default function BrainChat({
                   key={att.id}
                   className="inline-flex items-center gap-1 rounded-full bg-black/20 px-2.5 py-0.5 text-[11px] font-medium"
                 >
-                  <Icon name="file" className="h-3 w-3" />
+                  <File className="h-3 w-3" />
                   {att.name}
                 </span>
               ))}
@@ -309,7 +326,7 @@ export default function BrainChat({
           <div className="flex items-center gap-3 px-2 text-[10px] text-[var(--text-muted)]">
             {/* Model & Latency badge */}
             <span className="flex items-center gap-1 font-semibold text-[var(--accent-primary)]">
-              <Icon name="sparkles" className="h-3 w-3" />
+              <Sparkles className="h-3 w-3" />
               {m.model || "Claude 3.5 Sonnet"}
               {m.durationMs && ` · ${m.durationMs}ms`}
             </span>
@@ -319,30 +336,34 @@ export default function BrainChat({
               <button
                 type="button"
                 onClick={() => handleCopy(m.content, m.id)}
-                className="hover:text-[var(--text-primary)] transition-colors flex items-center gap-0.5"
+                className="hover:text-[var(--text-primary)] transition-colors flex items-center gap-0.5 cursor-pointer"
                 title="Copier"
               >
-                <Icon name="copy" className="h-3 w-3" />
+                {copiedId === m.id ? (
+                  <Check className="h-3 w-3 text-[var(--success)]" />
+                ) : (
+                  <Copy className="h-3 w-3" />
+                )}
                 <span>{copiedId === m.id ? "Copié !" : "Copier"}</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleCreateNoteFromMessage(m.content)}
-                className="hover:text-[var(--text-primary)] transition-colors flex items-center gap-0.5"
+                className="hover:text-[var(--text-primary)] transition-colors flex items-center gap-0.5 cursor-pointer"
                 title="Transformer en Note"
               >
-                <Icon name="note" className="h-3 w-3" />
+                <FileEdit className="h-3 w-3" />
                 <span>Créer Note</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleCreateTaskFromMessage(m.content)}
-                className="hover:text-[var(--text-primary)] transition-colors flex items-center gap-0.5"
+                className="hover:text-[var(--text-primary)] transition-colors flex items-center gap-0.5 cursor-pointer"
                 title="Ajouter en Tâche"
               >
-                <Icon name="check-circle" className="h-3 w-3" />
+                <CheckCircle2 className="h-3 w-3" />
                 <span>Créer Tâche</span>
               </button>
             </div>

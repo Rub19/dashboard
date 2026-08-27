@@ -7206,6 +7206,51 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.67",
+  date: "2026-08-27",
+  title: "Perfectionnement des Formulations Françaises des Brain Insights",
+  items: [
+    "Reformulation grammaticale naturelle des analyses d'activité ('Votre activité est principalement concentrée la nuit / en soirée / le matin / l'après-midi').",
+    "Correction des intitulés de catégories et des sources dominantes pour une lecture fluide et élégante.",
+    "Validation : build Next.js 105/105 pages, 100% tests unitaires, 0 erreur.",
+    "Version affichée : v1.10.67.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.67",
+  date: "2026-08-27",
+  title: "Polished French Phrasing for Brain Insights",
+  items: [
+    "Improved grammar and natural phrasing in time-of-day activity analysis and top category breakdown.",
+    "Validation: Next.js 105/105 pages build, 100% unit tests passed, 0 errors.",
+    "Version badge: v1.10.67.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.67",
+  date: "2026-08-27",
+  title: "Perfeccionamiento de redacción en Brain Insights",
+  items: [
+    "Frases gramaticales mejoradas en análisis de actividad y categorías.",
+    "Validación : build, lint, tests.",
+    "Versión : v1.10.67.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.67",
+  date: "2026-08-27",
+  title: "Sprachliches Feintuning für Brain Insights",
+  items: [
+    "Verbesserte Formulierungen bei den Aktivitätsanalysen.",
+    "Validierung: build, lint, tests.",
+    "Version: v1.10.67.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.66",
   date: "2026-08-27",
   title: "Enrichissement Carte Minecraft 3D & Suppression de la Barre de Défilement",

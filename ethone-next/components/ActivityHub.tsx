@@ -523,9 +523,8 @@ export default function ActivityHub() {
     if (top && top.percent > 0) {
       items.push({
         icon: "star",
-        title: i18n("insightTopCategory", "{{category}} en tête").replace("{{category}}", top.label),
-        desc: i18n("insightTopCategoryDesc", "{{percent}}% de votre activité concerne cette catégorie.")
-          .replace("{{percent}}", String(top.percent)),
+        title: `${top.label} est votre catégorie principale`,
+        desc: `${top.percent}% de vos activités récentes concernent cette catégorie.`,
       });
     }
 
@@ -538,17 +537,18 @@ export default function ActivityHub() {
       else periods.night++;
     }
     const peak = Object.entries(periods).sort((a, b) => b[1] - a[1])[0];
-    const periodLabels: Record<string, string> = {
-      morning: i18n("morning", "le matin"),
-      afternoon: i18n("afternoon", "l'après-midi"),
-      evening: i18n("evening", "le soir"),
-      night: i18n("night", "la nuit"),
+    const periodInSentence: Record<string, string> = {
+      morning: "le matin",
+      afternoon: "l'après-midi",
+      evening: "en soirée",
+      night: "la nuit",
     };
     if (peak && peak[1] > 0) {
+      const periodStr = periodInSentence[peak[0]] || "la nuit";
       items.push({
         icon: "clock",
-        title: i18n("insightPeakTime", "Votre activité est concentrée {{period}}").replace("{{period}}", periodLabels[peak[0]]),
-        desc: i18n("insightPeakTimeDesc", "C'est la période où vous utilisez le plus ETHONE."),
+        title: `Votre activité est principalement concentrée ${periodStr}`,
+        desc: "C'est la plage horaire durant laquelle vous utilisez le plus votre espace ETHONE.",
       });
     }
 
@@ -556,10 +556,12 @@ export default function ActivityHub() {
     for (const e of filteredEntries) sources.set(e.source, (sources.get(e.source) || 0) + 1);
     const topSource = Array.from(sources.entries()).sort((a, b) => b[1] - a[1])[0];
     if (topSource && topSource[1] >= 2) {
+      const srcRaw = topSource[0];
+      const srcName = srcRaw.toLowerCase() === "ethone" ? "ETHONE" : capitalize(srcRaw);
       items.push({
         icon: "plug",
-        title: i18n("insightTopSource", "{{source}} est votre source la plus active").replace("{{source}}", capitalize(topSource[0])),
-        desc: i18n("insightTopSourceDesc", "{{count}} événements enregistrés.").replace("{{count}}", String(topSource[1])),
+        title: `${srcName} est votre source la plus active`,
+        desc: `${topSource[1]} événements et synchronisations enregistrés.`,
       });
     }
 
@@ -571,16 +573,16 @@ export default function ActivityHub() {
       totalDays++;
     }
     if (totalDays > 0 && weekend / totalDays > 0.55) {
+      const pct = Math.round((weekend / totalDays) * 100);
       items.push({
         icon: "calendar",
-        title: i18n("insightWeekend", "Votre activité est plus élevée le week-end"),
-        desc: i18n("insightWeekendDesc", "{{percent}}% des événements ont lieu en fin de semaine.")
-          .replace("{{percent}}", String(Math.round((weekend / totalDays) * 100))),
+        title: "Votre activité est plus élevée le week-end",
+        desc: `${pct}% des événements et tâches ont lieu en fin de semaine.`,
       });
     }
 
     return items;
-  }, [filteredEntries, categoryBreakdown, i18n]);
+  }, [filteredEntries, categoryBreakdown]);
 
   const toggleChip = (id: string) => {
     if (id === "all") {

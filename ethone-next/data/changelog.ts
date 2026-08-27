@@ -7206,6 +7206,52 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.42",
+  date: "2026-08-27",
+  title: "Correction du tri chronologique du Changelog (Versions récentes en haut)",
+  items: [
+    "Refonte de l'algorithme de tri du Changelog : tri strict par date décroissante et semver (compareChangelogEntries).",
+    "Les versions récentes (août 27, v1.10.x) s'affichent désormais en haut et les anciennes versions historiques (août 18, v323, v322) sont reléguées en bas.",
+    "Validation : build Next.js 105/105 pages, TypeScript sans erreur.",
+    "Version affichée : v1.10.42.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.42",
+  date: "2026-08-27",
+  title: "Changelog Chronological Sorting Fix (Newest versions on top)",
+  items: [
+    "Reworked changelog sorting algorithm: strictly descending by date and semver (compareChangelogEntries).",
+    "Recent updates (Aug 27, v1.10.x) now correctly render at the very top, while legacy entries (Aug 18, v323, v322) are placed at the bottom.",
+    "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
+    "Version badge: v1.10.42.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.42",
+  date: "2026-08-27",
+  title: "Corrección del orden cronológico del Changelog",
+  items: [
+    "Ordenación estricta por fecha descendente y semver.",
+    "Validación : build, lint.",
+    "Versión : v1.10.42.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.42",
+  date: "2026-08-27",
+  title: "Changelog Chronologische Sortierungskorrektur",
+  items: [
+    "Strikte absteigende Sortierung nach Datum und Semver.",
+    "Validierung: build, lint.",
+    "Version: v1.10.42.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.41",
   date: "2026-08-27",
   title: "Support Clé OpenRouter dans le Worker & Variables d'environnement",

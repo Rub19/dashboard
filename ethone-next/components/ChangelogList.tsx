@@ -7,19 +7,44 @@ import { useSettings } from "@/components/SettingsProvider";
 import { cn } from "@/lib/utils";
 import type { ChangelogEntry } from "@/data/changelog";
 
-function parseVersion(v: string) {
-  const parts = v.replace(/^v/, "").split(".").map(Number);
-  return parts;
+function parseSemver(v: string): number[] {
+  const clean = String(v || "").replace(/^v/i, "").trim();
+  return clean.split(".").map((part) => {
+    const n = parseInt(part, 10);
+    return isNaN(n) ? 0 : n;
+  });
 }
 
-function compareVersion(a: string, b: string) {
-  const av = parseVersion(a);
-  const bv = parseVersion(b);
-  for (let i = 0; i < Math.max(av.length, bv.length); i++) {
-    const x = av[i] || 0;
-    const y = bv[i] || 0;
-    if (x !== y) return x - y;
+function compareChangelogEntries(a: ChangelogEntry, b: ChangelogEntry): number {
+  // 1. Tri primaire : par date décroissante (les plus récentes en premier)
+  const timeA = a.date ? new Date(a.date).getTime() : 0;
+  const timeB = b.date ? new Date(b.date).getTime() : 0;
+  if (!isNaN(timeA) && !isNaN(timeB) && timeA !== timeB) {
+    return timeB - timeA;
   }
+
+  // 2. Tri secondaire : par version semver décroissante si dates identiques
+  const va = parseSemver(a.version);
+  const vb = parseSemver(b.version);
+
+  // Versions modernes avec points (ex: 1.10.41 vs 1.10.40)
+  if (va.length > 1 && vb.length > 1) {
+    for (let i = 0; i < Math.max(va.length, vb.length); i++) {
+      const x = va[i] || 0;
+      const y = vb[i] || 0;
+      if (x !== y) return y - x;
+    }
+  }
+
+  // Si l'une est semver moderne (v1.10.x) et l'autre est un entier historique (v323)
+  if (va.length > 1 && vb.length === 1) return -1; // a est plus récent
+  if (va.length === 1 && vb.length > 1) return 1;  // b est plus récent
+
+  // Si les deux sont des entiers historiques (v358 vs v323)
+  if (va.length === 1 && vb.length === 1) {
+    return (vb[0] || 0) - (va[0] || 0);
+  }
+
   return 0;
 }
 
@@ -235,7 +260,7 @@ interface ChangelogListProps {
 }
 
 export default function ChangelogList({ entries, limit, compact, className }: ChangelogListProps) {
-  const sorted = useMemo(() => [...entries].sort((a, b) => compareVersion(b.version, a.version)), [entries]);
+  const sorted = useMemo(() => [...entries].sort(compareChangelogEntries), [entries]);
   const visible = limit ? sorted.slice(0, limit) : sorted;
 
   return (

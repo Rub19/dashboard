@@ -7206,6 +7206,50 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.98",
+  date: "2026-08-27",
+  title: "Identité Utilisateur : Restauration du Pseudo 'Rub' & Avatar ETHONE Dédié",
+  items: [
+    "Suppression de l'écrasement automatique du nom d'affichage par le nom complet du compte Google ('Rubens Lespinasse').",
+    "Restauration du pseudo ETHONE officiel 'Rub' et des initiales élégantes.",
+    "Suppression de l'import forcé de la photo de profil Google pour préserver l'avatar ETHONE personnalisé.",
+    "Version affichée : v1.10.98.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.98",
+  date: "2026-08-27",
+  title: "User Identity: Restored 'Rub' Username & Dedicated ETHONE Avatar",
+  items: [
+    "Prevented Google OAuth full name ('Rubens Lespinasse') from overriding the official ETHONE username.",
+    "Restored 'Rub' username and dedicated clean initials avatar badge.",
+    "Eliminated forced Google account photo sync to protect custom ETHONE profile avatar.",
+    "Version badge: v1.10.98.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.98",
+  date: "2026-08-27",
+  title: "Identidad de Usuario: Nombre 'Rub' y Avatar Restaurados",
+  items: [
+    "Restauración del nombre de usuario 'Rub' y avatar personalizado de ETHONE.",
+    "Versión: v1.10.98.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.98",
+  date: "2026-08-27",
+  title: "Benutzeridentität: 'Rub'-Benutzername & ETHONE-Avatar wiederhergestellt",
+  items: [
+    "Wiederherstellung des offiziellen 'Rub'-Benutzernamens und des ETHONE-Avatars.",
+    "Version: v1.10.98.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.97",
   date: "2026-08-27",
   title: "Header Responsive : Résolution du Chevauchement des Boutons et Pilules Système",

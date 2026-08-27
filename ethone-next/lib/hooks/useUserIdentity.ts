@@ -26,8 +26,19 @@ export function useUserIdentity(): UserIdentity {
       try {
         const savedName = localStorage.getItem("ethone_user_name");
         const savedAvatar = localStorage.getItem("ethone_user_avatar");
-        if (savedName) setCachedName(savedName);
-        if (savedAvatar) setCachedAvatar(savedAvatar);
+        // Clear old auto-imported Google full name and photo
+        if (savedName && savedName !== "Rubens Lespinasse") {
+          setCachedName(savedName);
+        } else if (savedName === "Rubens Lespinasse") {
+          localStorage.setItem("ethone_user_name", "Rub");
+          setCachedName("Rub");
+        }
+        if (savedAvatar && !savedAvatar.includes("googleusercontent.com")) {
+          setCachedAvatar(savedAvatar);
+        } else if (savedAvatar?.includes("googleusercontent.com")) {
+          localStorage.removeItem("ethone_user_avatar");
+          setCachedAvatar("");
+        }
       } catch {
         // ignore storage restrictions
       }
@@ -36,32 +47,29 @@ export function useUserIdentity(): UserIdentity {
 
   const meta = useMemo(() => (user?.user_metadata || {}) as Record<string, unknown>, [user?.user_metadata]);
 
-  const fromMeta =
-    (typeof meta.full_name === "string" ? meta.full_name : undefined) ||
-    (typeof meta.name === "string" ? meta.name : undefined) ||
-    (typeof meta.username === "string" ? meta.username : undefined) ||
-    (typeof meta.user_name === "string" ? meta.user_name : undefined) ||
-    (typeof meta.preferred_username === "string" ? meta.preferred_username : undefined);
+  const customFromMeta =
+    (typeof meta.custom_display_name === "string" ? meta.custom_display_name : undefined) ||
+    (typeof meta.display_name === "string" ? meta.display_name : undefined) ||
+    (typeof meta.username === "string" ? meta.username : undefined);
 
-  // Resolution of display name with priority on explicitly chosen profile/display_name
+  // Resolution of display name with priority on explicitly chosen profile/display_name ("Rub")
   const displayName =
     publicProfile?.display_name ||
     publicProfile?.username ||
     activeProfile?.name ||
-    fromMeta ||
+    customFromMeta ||
     cachedName ||
+    (user?.email && (user.email.startsWith("rub19") || user.email.startsWith("rub")) ? "Rub" : undefined) ||
     (user?.email ? user.email.split("@")[0] : "") ||
     "Rub";
 
-  // Resolution of avatar URL with priority on custom avatar, Google OAuth avatar, or active profile
+  // Resolution of avatar URL: only custom user uploaded avatar or profile avatar, never force Google OAuth photo
   const avatarUrl =
-    publicProfile?.avatar_url ||
-    (typeof meta.avatar_url === "string" ? meta.avatar_url : undefined) ||
-    (typeof meta.picture === "string" ? meta.picture : undefined) ||
-    (typeof meta.avatar === "string" ? meta.avatar : undefined) ||
+    (publicProfile?.avatar_url && !publicProfile.avatar_url.includes("googleusercontent.com") ? publicProfile.avatar_url : undefined) ||
     (activeProfile as unknown as { avatar_url?: string; avatar?: string })?.avatar_url ||
     (activeProfile as unknown as { avatar_url?: string; avatar?: string })?.avatar ||
-    cachedAvatar ||
+    (typeof meta.custom_avatar_url === "string" ? meta.custom_avatar_url : undefined) ||
+    (cachedAvatar && !cachedAvatar.includes("googleusercontent.com") ? cachedAvatar : undefined) ||
     undefined;
 
   useEffect(() => {
@@ -70,7 +78,7 @@ export function useUserIdentity(): UserIdentity {
         if (displayName && displayName !== "Invité" && displayName !== "Utilisateur ETHONE") {
           localStorage.setItem("ethone_user_name", displayName);
         }
-        if (avatarUrl) {
+        if (avatarUrl && !avatarUrl.includes("googleusercontent.com")) {
           localStorage.setItem("ethone_user_avatar", avatarUrl);
         }
       } catch {

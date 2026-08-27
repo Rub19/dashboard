@@ -44,28 +44,27 @@ export default function UserProfileCard({
 
   const isDiscordLinked = Boolean(discordProfile?.connected);
 
-  const fromMeta =
-    (typeof meta.full_name === "string" ? meta.full_name : undefined) ||
-    (typeof meta.name === "string" ? meta.name : undefined) ||
-    (typeof meta.username === "string" ? meta.username : undefined) ||
-    (typeof meta.user_name === "string" ? meta.user_name : undefined) ||
-    (typeof meta.preferred_username === "string" ? meta.preferred_username : undefined);
+  const customFromMeta =
+    (typeof meta.custom_display_name === "string" ? meta.custom_display_name : undefined) ||
+    (typeof meta.display_name === "string" ? meta.display_name : undefined) ||
+    (typeof meta.username === "string" ? meta.username : undefined);
 
   const displayName =
     profile?.display_name ||
     profile?.username ||
     discordName ||
-    fromMeta ||
+    customFromMeta ||
+    (user?.email && (user.email.startsWith("rub19") || user.email.startsWith("rub")) ? "Rub" : undefined) ||
     (user?.email ? user.email.split("@")[0] : "") ||
-    i18n("guest", "Utilisateur");
+    "Rub";
 
   const email = user?.email || "";
   const rawPublicId = profile?.public_id || user?.id || "local";
   const avatarUrl =
-    profile?.avatar_url ||
+    (profile?.avatar_url && !profile.avatar_url.includes("googleusercontent.com") ? profile.avatar_url : undefined) ||
     discordProfile?.user?.avatarUrl ||
-    (typeof meta.avatar_url === "string" ? meta.avatar_url : undefined) ||
-    (typeof meta.picture === "string" ? meta.picture : undefined);
+    (typeof meta.custom_avatar_url === "string" ? meta.custom_avatar_url : undefined) ||
+    undefined;
 
   const [masked, setMasked] = useState(true);
 

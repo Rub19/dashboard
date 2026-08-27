@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.39",
+  date: "2026-08-27",
+  title: "Alignement et centrage parfait Header & Dynamic Island",
+  items: [
+    "Centrage absolu des pilules d'état système (TopBar) sur l'axe vertical central (50% viewport).",
+    "Alignement parfait au pixel près entre la Dynamic Island et le Header supérieur.",
+    "Refonte complète de la popup de mise à jour de version avec physique de ressort, lueur néon verte et accès Changelog direct.",
+    "Validation : build Next.js 105/105 pages, TypeScript sans erreur.",
+    "Version affichée : v1.10.39.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.39",
+  date: "2026-08-27",
+  title: "Perfect alignment and centering for Header & Dynamic Island",
+  items: [
+    "Absolute 50% viewport centering for TopBar system status pills.",
+    "Pixel-perfect vertical axis alignment between Dynamic Island and TopBar.",
+    "Full redesign of the version update popup with spring physics, neon aura, and direct changelog preview.",
+    "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
+    "Version badge: v1.10.39.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.39",
+  date: "2026-08-27",
+  title: "Alineación y centrado perfecto de Header & Dynamic Island",
+  items: [
+    "Centrado absoluto al 50% de las píldoras de estado del sistema en la TopBar.",
+    "Alineación perfecta entre la Dynamic Island y el encabezado superior.",
+    "Rediseño completo del popup de actualización con físicas spring y acceso al Changelog.",
+    "Validación : build, lint.",
+    "Versión : v1.10.39.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.39",
+  date: "2026-08-27",
+  title: "Perfekte Ausrichtung und Zentrierung von Header & Dynamic Island",
+  items: [
+    "Absolute 50%-Zentrierung der Systemstatus-Pills in der TopBar.",
+    "Pixelgenaue vertikale Ausrichtung zwischen Dynamic Island und TopBar.",
+    "Komplettes Redesign des Update-Popups mit Spring-Physik und direktem Changelog-Zugriff.",
+    "Validierung: build, lint.",
+    "Version: v1.10.39.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.38",
   date: "2026-08-27",
   title: "Rework Header, Mail, Connexions Riot Tracker, Notifications & Animations Dock",

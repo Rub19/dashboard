@@ -179,9 +179,9 @@ function TopBar() {
       </div>
 
       {/* Desktop Bar */}
-      <div className="pointer-events-none hidden h-14 grid-cols-[auto_1fr_auto] items-center gap-x-4 md:grid">
+      <div className="relative pointer-events-none hidden h-14 w-full items-center justify-between md:flex">
         {/* Left: Sidebar toggle + Breadcrumb */}
-        <div className="pointer-events-auto col-start-1 flex min-w-0 items-center gap-3">
+        <div className="pointer-events-auto flex min-w-0 items-center gap-3 z-10">
           <SidebarTopToggle />
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-semibold text-[var(--text-muted)]">
             <Link
@@ -197,15 +197,15 @@ function TopBar() {
           </nav>
         </div>
 
-        {/* Center: System status pills (Workspace, Sync, Weather, Clock) */}
-        <div className="pointer-events-auto col-start-2 flex items-center justify-center">
+        {/* Center: System status pills (Workspace, Sync, Weather, Clock) - Exactly aligned on 50% viewport center */}
+        <div className="pointer-events-auto absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center z-0">
           <SystemStatusPills />
         </div>
 
         {/* Right: Quick Tools & Unified Controls */}
-        <div className="pointer-events-auto col-start-3 flex items-center justify-end gap-2">
+        <div className="pointer-events-auto flex items-center justify-end gap-2 ml-auto z-10">
           {/* Quick Tool Icons */}
-          <div className="hidden lg:flex items-center gap-1.5">
+          <div className="hidden xl:flex items-center gap-1.5">
             <FeedbackButton />
             <FocusToggle />
             <DynamicIslandToggle />

@@ -190,12 +190,24 @@ export default function IntegrationsSettings() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Search Bar in Header */}
+            <div className="relative min-w-[200px] sm:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--text-muted)]" />
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Rechercher une intégration..."
+                className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 py-2 pl-9 pr-3 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none backdrop-blur-md"
+              />
+            </div>
+
             <button
               type="button"
               onClick={testAll}
               disabled={testingAll}
-              className="flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3.5 py-2 text-xs font-bold text-[var(--accent-contrast)] shadow-md hover:scale-105 transition-all active:scale-95 disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3.5 py-2 text-xs font-bold text-[var(--accent-contrast)] shadow-md hover:scale-105 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
             >
               <Zap className={cn("h-3.5 w-3.5", testingAll && "animate-spin")} />
               <span>{testingAll ? "Test global en cours..." : "Tester toutes"}</span>
@@ -207,7 +219,7 @@ export default function IntegrationsSettings() {
                   setSearch("");
                   setFilter("all");
                 }}
-                className="flex items-center gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all"
+                className="flex items-center gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
               >
                 <RefreshCcw className="h-3 w-3" />
                 <span>Effacer filtres</span>

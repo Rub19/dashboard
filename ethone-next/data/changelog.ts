@@ -7206,6 +7206,56 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.53",
+  date: "2026-08-27",
+  title: "Recherche Connexions, Résolution Clés API Riot & Sélection Discord Lanyard/OAuth",
+  items: [
+    "Barre de recherche instantanée intégrée dans le header et la toolbar de la page Connexions (/connections).",
+    "Correction majeure de la récupération des clés API Henrik (Valorant) et Riot (LoL) dans le backend Worker.",
+    "Résolution du problème d'affichage du tiroir de gestion (le haut n'est plus tronqué, padding sécurisé et header visible).",
+    "Ajout du sélecteur de mode pour Discord : choix direct entre Lanyard (ID utilisateur en direct) et OAuth2 officiel.",
+    "Validation : build Next.js 105/105 pages, TypeScript sans erreur.",
+    "Version affichée : v1.10.53.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.53",
+  date: "2026-08-27",
+  title: "Connections Search, Riot API Keys Worker Fix & Discord Lanyard/OAuth Choice",
+  items: [
+    "Instant search bar added to the header and toolbar of the Connections page (/connections).",
+    "Critical backend fix in Worker for Henrik (Valorant) and Riot (LoL) API credentials discovery.",
+    "Fixed drawer header cutoff (added safe area padding and clean full-viewport positioning).",
+    "Added Discord connection mode switch: choose between real-time Lanyard (Discord ID) and official OAuth2.",
+    "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
+    "Version badge: v1.10.53.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.53",
+  date: "2026-08-27",
+  title: "Búsqueda en Conexiones, corrección de claves Riot y selector Discord Lanyard/OAuth",
+  items: [
+    "Barra de búsqueda en Conexiones y solución para claves API de Riot/Henrik.",
+    "Validación : build, lint.",
+    "Versión : v1.10.53.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.53",
+  date: "2026-08-27",
+  title: "Verbindungen-Suche, Riot-API-Key-Fix & Discord Lanyard/OAuth-Auswahl",
+  items: [
+    "Suchleiste auf der Verbindungsseite und Korrektur für Riot/Henrik-Schlüssel.",
+    "Validierung: build, lint.",
+    "Version: v1.10.53.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.52",
   date: "2026-08-27",
   title: "Correction Critique des Saccades & Écrans Noirs lors du Défilement des Paramètres",

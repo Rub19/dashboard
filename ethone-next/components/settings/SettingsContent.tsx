@@ -1357,7 +1357,7 @@ export default function SettingsContent({
               </div>
               <div>
                 <h4 className="text-base font-bold text-[var(--text-primary)]">ETHONE OS Desktop & Web</h4>
-                <p className="text-xs text-[var(--text-muted)]">Version 1.10.52 (Turbopack / Next.js 16)</p>
+                <p className="text-xs text-[var(--text-muted)]">Version 1.10.53 (Turbopack / Next.js 16)</p>
               </div>
             </div>
             <p className="text-xs text-[var(--text-muted)] leading-relaxed">

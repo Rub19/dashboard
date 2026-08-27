@@ -20,6 +20,8 @@ import {
   Check,
   Loader2,
   Key,
+  Shield,
+  Radio,
 } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
@@ -95,6 +97,7 @@ export default function ConnectionDetailDrawer({
   const [saving, setSaving] = useState(false);
   const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});
   const [copied, setCopied] = useState<string | null>(null);
+  const [discordMode, setDiscordMode] = useState<"lanyard" | "oauth">("lanyard");
 
   // Field values
   const publicFieldDefs = useMemo(() => PUBLIC_FIELDS[integration.id] || [], [integration.id]);
@@ -120,8 +123,6 @@ export default function ConnectionDetailDrawer({
   const isConnected = status === "connected";
   const variant =
     status === "connected" ? "success" : status === "error" ? "danger" : "muted";
-  const statusDot: import("@/components/ui/StatusIndicator").StatusIndicatorState =
-    status === "connected" ? "connected" : status === "error" ? "error" : status === "unavailable" ? "warning" : "idle";
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -196,272 +197,330 @@ export default function ConnectionDetailDrawer({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[var(--z-drawer)]" aria-modal="true" role="dialog">
+        <div className="fixed inset-0 z-50 overflow-hidden" aria-modal="true" role="dialog">
+          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={onClose}
-            className="absolute inset-0 bg-[var(--background)]/70 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/80 backdrop-blur-md"
           />
+
+          {/* Drawer Sliding from Right with Full Viewport Fit & Safe Padding */}
           <motion.div
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 32 }}
+            transition={{ type: "spring", stiffness: 320, damping: 30 }}
             onClick={(e) => e.stopPropagation()}
-            className="absolute right-0 top-0 h-full w-full max-w-xl border-l border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-2xl backdrop-blur-2xl"
+            className="fixed right-0 top-0 bottom-0 h-full w-full max-w-xl border-l border-[var(--panel-border)] bg-[var(--panel-bg)]/98 shadow-2xl backdrop-blur-2xl flex flex-col z-50 overflow-hidden"
           >
-            <div className="flex h-full flex-col">
-              {/* Header */}
-              <div className="flex items-start justify-between border-b border-[var(--panel-border)] p-5">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--surface-raised)] border border-[var(--panel-border)]">
-                    <ServiceIcon id={integration.id} icon={integration.icon} className="h-6 w-6" colored />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h2 className="text-base font-bold text-[var(--text-primary)]">{integration.name}</h2>
-                      {config?.badge && (
-                        <span className="rounded-md border border-[var(--panel-border)] bg-[var(--surface-raised)] px-1.5 py-0.2 font-mono text-[9px] text-[var(--text-muted)]">
-                          {config.badge}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                      {config?.description || i18n(integration.description, integration.description)}
-                    </p>
-                  </div>
+            {/* Header: Always perfectly positioned with safe area padding */}
+            <div className="flex shrink-0 items-start justify-between border-b border-[var(--panel-border)] p-4 sm:p-5 bg-black/20 pt-[max(1.25rem,env(safe-area-inset-top))]">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--surface-raised)] border border-[var(--panel-border)] shadow-sm">
+                  <ServiceIcon id={integration.id} icon={integration.icon} className="h-6 w-6" colored />
                 </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    hapticLightImpact();
-                    onClose();
-                  }}
-                  className="flex h-9 w-9 items-center justify-center rounded-xl text-[var(--text-muted)] transition hover:bg-[var(--surface-hover)]/40 hover:text-[var(--text-primary)]"
-                  aria-label={i18n("close", "Fermer")}
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-
-              {/* Scrollable */}
-              <div className="flex-1 space-y-6 overflow-y-auto p-5 no-scrollbar">
-                {/* Status bar */}
-                <div className="flex items-center justify-between">
+                <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <Badge variant={variant} dot size="md">
-                      {statusLabel}
-                    </Badge>
-                    {health && health.ms > 0 && (
-                      <span className="rounded-md border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-2 py-0.5 text-[10px] font-mono text-[var(--accent-primary)]">
-                        ⚡ {health.ms}ms
+                    <h2 className="text-base font-bold text-[var(--text-primary)] truncate">{integration.name}</h2>
+                    {config?.badge && (
+                      <span className="rounded-md border border-[var(--panel-border)] bg-[var(--surface-raised)] px-1.5 py-0.2 font-mono text-[9px] text-[var(--text-muted)]">
+                        {config.badge}
                       </span>
                     )}
                   </div>
+                  <p className="text-xs text-[var(--text-muted)] mt-0.5 truncate">
+                    {config?.description || i18n(integration.description, integration.description)}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  hapticLightImpact();
+                  onClose();
+                }}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[var(--text-muted)] transition hover:bg-[var(--surface-hover)]/40 hover:text-[var(--text-primary)] cursor-pointer"
+                aria-label={i18n("close", "Fermer")}
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
 
-                  <button
-                    type="button"
-                    onClick={onGuide}
-                    className="inline-flex items-center gap-1.5 text-xs text-[var(--accent-primary)] hover:underline font-semibold"
-                  >
-                    <HelpCircle className="h-3.5 w-3.5" />
-                    <span>Guide de configuration</span>
-                  </button>
+            {/* Scrollable Content */}
+            <div className="flex-1 space-y-6 overflow-y-auto p-4 sm:p-6 os-scroll pb-[max(5rem,env(safe-area-inset-bottom))]">
+              {/* Status & Quick Guide */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Badge variant={variant} dot size="md">
+                    {statusLabel}
+                  </Badge>
+                  {health && health.ms > 0 && (
+                    <span className="rounded-md border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-2 py-0.5 text-[10px] font-mono text-[var(--accent-primary)]">
+                      ⚡ {health.ms}ms
+                    </span>
+                  )}
                 </div>
 
-                {/* Configuration / Credentials Form */}
-                {hasFields && (
-                  <Section title="Configuration & Identifiants API">
-                    <div className="space-y-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-4">
-                      {/* Public Fields (e.g. Username, Tag, City, Handle) */}
-                      {publicFieldDefs.map((f) => (
-                        <div key={f.key as string} className="space-y-1">
-                          <label className="text-xs font-bold text-[var(--text-primary)]">
-                            {f.key === "liveTrackerRiotName"
-                              ? "Nom Riot (ex: Ruben)"
-                              : f.key === "liveTrackerRiotTag"
-                              ? "Tag Riot (ex: EUW ou FR1)"
-                              : f.key}
-                          </label>
+                <button
+                  type="button"
+                  onClick={onGuide}
+                  className="inline-flex items-center gap-1.5 text-xs text-[var(--accent-primary)] hover:underline font-semibold cursor-pointer"
+                >
+                  <HelpCircle className="h-3.5 w-3.5" />
+                  <span>Guide de configuration</span>
+                </button>
+              </div>
+
+              {/* Discord Mode Switch if Discord */}
+              {integration.id === "discord" && (
+                <div className="space-y-3 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
+                      <Radio className="h-4 w-4" /> Mode de Connexion Discord
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setDiscordMode("lanyard")}
+                      className={cn(
+                        "rounded-xl py-2 px-3 text-xs font-bold transition-all border text-center cursor-pointer",
+                        discordMode === "lanyard"
+                          ? "bg-indigo-600 border-indigo-400 text-white shadow-md"
+                          : "bg-white/5 border-white/10 text-zinc-400 hover:text-white"
+                      )}
+                    >
+                      Lanyard (ID Discord)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDiscordMode("oauth")}
+                      className={cn(
+                        "rounded-xl py-2 px-3 text-xs font-bold transition-all border text-center cursor-pointer",
+                        discordMode === "oauth"
+                          ? "bg-indigo-600 border-indigo-400 text-white shadow-md"
+                          : "bg-white/5 border-white/10 text-zinc-400 hover:text-white"
+                      )}
+                    >
+                      OAuth2 (Officiel)
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-zinc-400 leading-relaxed">
+                    {discordMode === "lanyard"
+                      ? "Synchronisation temps réel de votre statut, musique Spotify et jeu en cours via Lanyard sans permission invasive."
+                      : "Connexion officielle Discord pour accéder à votre profil complet et serveurs."}
+                  </p>
+                </div>
+              )}
+
+              {/* Configuration / Credentials Form */}
+              {hasFields && (integration.id !== "discord" || discordMode === "lanyard") && (
+                <Section title="Configuration & Identifiants API">
+                  <div className="space-y-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-4">
+                    {/* Public Fields */}
+                    {publicFieldDefs.map((f) => (
+                      <div key={String(f.key)} className="space-y-1">
+                        <label className="block text-xs font-semibold text-[var(--text-primary)]">
+                          {i18n(f.label, f.label)}
+                        </label>
+                        {f.options && f.options.length > 0 ? (
+                          <select
+                            value={publicValues[f.key as string] || f.options[0]}
+                            onChange={(e) =>
+                              setPublicValues((p) => ({ ...p, [f.key as string]: e.target.value }))
+                            }
+                            className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3 py-2 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none"
+                          >
+                            {f.options.map((opt) => (
+                              <option key={opt} value={opt}>
+                                {opt}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
                           <input
                             type="text"
                             value={publicValues[f.key as string] || ""}
                             onChange={(e) =>
-                              setPublicValues((prev) => ({ ...prev, [f.key as string]: e.target.value }))
+                              setPublicValues((p) => ({ ...p, [f.key as string]: e.target.value }))
                             }
-                            placeholder={
-                              f.key === "liveTrackerRiotName"
-                                ? "Entrez votre nom Riot..."
-                                : f.key === "liveTrackerRiotTag"
-                                ? "Entrez votre tag (sans le #)..."
-                                : "Valeur..."
-                            }
-                            className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 text-xs text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none"
+                            placeholder={f.key === "liveLanyardUserId" ? "Ex: 123456789012345678" : `Entrez ${i18n(f.label, f.label)}...`}
+                            className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3 py-2 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
                           />
-                        </div>
-                      ))}
+                        )}
+                      </div>
+                    ))}
 
-                      {/* Secret API Keys (e.g. henrikApiKey, riotApiKey) */}
-                      {credFieldDefs.map((f) => (
-                        <div key={f.key as string} className="space-y-1">
-                          <div className="flex items-center justify-between">
-                            <label className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1">
+                    {/* Credential Fields (API Keys) */}
+                    {credFieldDefs.map((f) => {
+                      const isPwd = f.type === "password";
+                      const show = showPassword[f.key as string];
+                      return (
+                        <div key={String(f.key)} className="space-y-1">
+                          <label className="block text-xs font-semibold text-[var(--text-primary)] flex items-center justify-between">
+                            <span className="flex items-center gap-1.5">
                               <Key className="h-3 w-3 text-[var(--accent-primary)]" />
-                              {f.key === "henrikApiKey"
-                                ? "Clé API Henrik (Valorant)"
-                                : f.key === "riotApiKey"
-                                ? "Clé API Riot (League of Legends)"
-                                : f.label || (f.key as string)}
-                            </label>
-                            {credentials.connected[integration.id] && (
-                              <span className="text-[10px] text-[var(--success)] font-medium">● Clé enregistrée</span>
-                            )}
-                          </div>
+                              {i18n(f.label, f.label)}
+                            </span>
+                          </label>
                           <div className="relative">
                             <input
-                              type={showPassword[f.key as string] ? "text" : "password"}
+                              type={isPwd && !show ? "password" : "text"}
                               value={credValues[f.key as string] || ""}
                               onChange={(e) =>
-                                setCredValues((prev) => ({ ...prev, [f.key as string]: e.target.value }))
+                                setCredValues((p) => ({ ...p, [f.key as string]: e.target.value }))
                               }
-                              placeholder={
-                                f.key === "henrikApiKey"
-                                  ? "Collez votre clé API Henrik..."
-                                  : f.key === "riotApiKey"
-                                  ? "Collez votre clé API Riot..."
-                                  : "Collez votre clé API secrète..."
-                              }
-                              className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2 pr-16 text-xs text-[var(--text-primary)] font-mono focus:border-[var(--accent-primary)] focus:outline-none"
+                              placeholder={`Collez votre ${i18n(f.label, f.label)}...`}
+                              className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] py-2 pl-3 pr-9 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
                             />
-                            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                            {isPwd && (
                               <button
                                 type="button"
                                 onClick={() =>
-                                  setShowPassword((prev) => ({
-                                    ...prev,
-                                    [f.key as string]: !prev[f.key as string],
-                                  }))
+                                  setShowPassword((p) => ({ ...p, [f.key as string]: !show }))
                                 }
-                                className="p-1 text-[var(--text-muted)] hover:text-white"
-                                title="Afficher/Masquer"
+                                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                               >
-                                {showPassword[f.key as string] ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                                {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                               </button>
-                            </div>
+                            )}
                           </div>
                         </div>
-                      ))}
+                      );
+                    })}
 
-                      {/* Save Button */}
-                      <button
-                        type="button"
-                        onClick={handleSaveCredentials}
-                        disabled={saving}
-                        className="w-full mt-2 flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] py-2.5 px-4 text-xs font-bold text-[var(--accent-contrast)] shadow-md hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-50"
-                      >
-                        {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-                        <span>Enregistrer les identifiants</span>
-                      </button>
-                    </div>
-                  </Section>
-                )}
-
-                {/* State Section */}
-                <Section title={i18n("state", "État du service")}>
-                  <div className="grid gap-2 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3.5 text-xs">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[var(--text-muted)]">{i18n("status", "Statut")}</span>
-                      <StatusIndicator state={statusDot} label={statusLabel} />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[var(--text-muted)]">{i18n("lastSync", "Dernière synchronisation")}</span>
-                      <span className="text-[var(--text-primary)]">
-                        {lastSync ? relativeTime(lastSync, i18n) : "À l'instant"}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[var(--text-muted)]">{i18n("latency", "Latence")}</span>
-                      <span className="text-[var(--text-primary)] font-mono">{health && health.ms > 0 ? `${health.ms} ms` : "32 ms"}</span>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={handleSaveCredentials}
+                      disabled={saving}
+                      className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] py-2 px-3 text-xs font-bold text-[var(--accent-contrast)] shadow-md hover:opacity-90 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+                    >
+                      {saving ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Save className="h-3.5 w-3.5" />
+                      )}
+                      <span>{saving ? "Enregistrement..." : "Enregistrer les identifiants"}</span>
+                    </button>
                   </div>
                 </Section>
+              )}
 
-                {/* Capabilities */}
-                <Section title={i18n("capabilities", "Fonctionnalités & Intégration Brain")}>
-                  <ul className="space-y-2">
-                    {capabilities.map((cap, idx) => (
-                      <li key={idx} className="flex items-center gap-2.5 text-xs text-[var(--text-primary)]">
-                        <Activity className="h-3.5 w-3.5 text-[var(--accent-primary)] shrink-0" />
-                        <span>{cap}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </Section>
-
-                {/* Logs */}
-                <Section title={i18n("technicalDetails", "Détails techniques")}>
-                  <button
-                    type="button"
-                    onClick={() => setLogsOpen((v) => !v)}
-                    className="flex w-full items-center justify-between rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-xs text-[var(--text-primary)] transition hover:bg-[var(--surface-raised)]"
-                    aria-expanded={logsOpen}
-                  >
-                    <span>{i18n("viewLogs", "Voir les logs & payload JSON")}</span>
-                    {logsOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-                  </button>
-                  <AnimatePresence>
-                    {logsOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="overflow-hidden"
-                      >
-                        <pre className="max-h-48 overflow-auto rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] p-3 font-mono text-[10px] text-[var(--text-primary)]">
-                          {logs || '{\n  "status": "ok",\n  "provider": "' + integration.id + '"\n}'}
-                        </pre>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </Section>
-              </div>
-
-              {/* Footer actions */}
-              <div className="border-t border-[var(--panel-border)] p-5">
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={onTest}
-                    className="flex items-center justify-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-3 py-2.5 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all active:scale-95"
-                  >
-                    <RefreshCw className="h-3.5 w-3.5" />
-                    <span>Tester la connexion</span>
-                  </button>
-
-                  {isConnected ? (
-                    <button
-                      type="button"
-                      onClick={onDisconnect}
-                      className="flex items-center justify-center gap-1.5 rounded-xl border border-[var(--danger)]/30 bg-[var(--danger)]/10 px-3 py-2.5 text-xs font-semibold text-[var(--danger)] hover:bg-[var(--danger)]/20 transition-all active:scale-95"
-                    >
-                      <Unplug className="h-3.5 w-3.5" />
-                      <span>Déconnecter</span>
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={onConnect || handleSaveCredentials}
-                      className="flex items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3 py-2.5 text-xs font-bold text-[var(--accent-contrast)] shadow-md hover:scale-[1.02] transition-all active:scale-95"
-                    >
-                      <Plug className="h-3.5 w-3.5" />
-                      <span>Connecter</span>
-                    </button>
-                  )}
+              {/* Status Section */}
+              <Section title="État du service">
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-3">
+                    <span className="text-[var(--text-muted)] block text-[10px]">Statut</span>
+                    <span className="font-semibold text-[var(--text-primary)] mt-0.5 flex items-center gap-1.5">
+                      <span
+                        className={cn(
+                          "h-2 w-2 rounded-full",
+                          status === "connected"
+                            ? "bg-emerald-400"
+                            : status === "error"
+                            ? "bg-rose-400"
+                            : "bg-zinc-500"
+                        )}
+                      />
+                      {statusLabel}
+                    </span>
+                  </div>
+                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-3">
+                    <span className="text-[var(--text-muted)] block text-[10px]">Dernière synchronisation</span>
+                    <span className="font-semibold text-[var(--text-primary)] mt-0.5 block">
+                      {lastSync ? relativeTime(lastSync, i18n) : "À l'instant"}
+                    </span>
+                  </div>
+                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-3">
+                    <span className="text-[var(--text-muted)] block text-[10px]">Latence</span>
+                    <span className="font-mono font-semibold text-[var(--text-primary)] mt-0.5 block">
+                      {health ? `${health.ms} ms` : "—"}
+                    </span>
+                  </div>
+                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-3">
+                    <span className="text-[var(--text-muted)] block text-[10px]">Intégration Brain</span>
+                    <span className="font-semibold text-emerald-400 mt-0.5 block">
+                      Active
+                    </span>
+                  </div>
                 </div>
-              </div>
+              </Section>
+
+              {/* Capabilities */}
+              {capabilities.length > 0 && (
+                <Section title="Fonctionnalités & Intégration Brain">
+                  <div className="space-y-1.5">
+                    {capabilities.map((c) => (
+                      <div
+                        key={c}
+                        className="flex items-center gap-2 text-xs text-[var(--text-primary)]"
+                      >
+                        <Activity className="h-3.5 w-3.5 text-[var(--accent-primary)] shrink-0" />
+                        <span>{i18n(c, c)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </Section>
+              )}
+
+              {/* Technical logs */}
+              {logs && (
+                <Section title="Détails techniques">
+                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] p-3">
+                    <button
+                      type="button"
+                      onClick={() => setLogsOpen(!logsOpen)}
+                      className="flex w-full items-center justify-between text-xs font-semibold text-[var(--text-primary)]"
+                    >
+                      <span>Voir les logs & payload JSON</span>
+                      {logsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                    </button>
+                    {logsOpen && (
+                      <pre className="mt-2 max-h-48 overflow-auto rounded-lg bg-black/60 p-2 font-mono text-[10px] text-zinc-300 no-scrollbar">
+                        {logs}
+                      </pre>
+                    )}
+                  </div>
+                </Section>
+              )}
+            </div>
+
+            {/* Bottom Actions Bar */}
+            <div className="border-t border-[var(--panel-border)] p-4 bg-black/40 flex items-center justify-between gap-3 shrink-0">
+              <button
+                type="button"
+                onClick={onTest}
+                className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-4 py-2.5 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-all active:scale-95 cursor-pointer"
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                <span>Tester la connexion</span>
+              </button>
+
+              {isConnected ? (
+                <button
+                  type="button"
+                  onClick={onDisconnect}
+                  className="flex items-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-2.5 text-xs font-bold text-rose-300 hover:bg-rose-500/20 transition-all active:scale-95 cursor-pointer"
+                >
+                  <Unplug className="h-3.5 w-3.5" />
+                  <span>Déconnecter</span>
+                </button>
+              ) : (
+                onConnect && (
+                  <button
+                    type="button"
+                    onClick={onConnect}
+                    className="flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-4 py-2.5 text-xs font-bold text-[var(--accent-contrast)] shadow-md hover:opacity-90 transition-all active:scale-95 cursor-pointer"
+                  >
+                    <Plug className="h-3.5 w-3.5" />
+                    <span>Connecter</span>
+                  </button>
+                )
+              )}
             </div>
           </motion.div>
         </div>

@@ -28,6 +28,25 @@ export async function getUserProviderCredential(env, userId, provider) {
   if (!origin || !userId) return null;
   try {
     const secret = requireSecret(env, "SUPABASE_SECRET_KEY");
+    // Query direct table first
+    const tablePath = `/rest/v1/user_provider_credentials?owner_id=eq.${encodeURIComponent(userId)}&provider=eq.${encodeURIComponent(provider)}&select=credential`;
+    const response = await requestExternal(new URL(tablePath, origin), {
+      env,
+      expectedOrigin: origin,
+      service: "supabase",
+      dedupeKey: `cred:table:${userId}:${provider}`,
+      headers: serviceHeaders(secret),
+      retries: 1,
+      maxBytes: 8192
+    });
+    const rows = Array.isArray(response.data) ? response.data : [];
+    if (rows.length > 0 && rows[0]?.credential && typeof rows[0].credential === "object") {
+      return rows[0].credential;
+    }
+  } catch {}
+
+  try {
+    const secret = requireSecret(env, "SUPABASE_SECRET_KEY");
     const response = await requestExternal(new URL("/rest/v1/rpc/get_provider_credential", origin), {
       env,
       expectedOrigin: origin,

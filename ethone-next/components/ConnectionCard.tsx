@@ -65,8 +65,8 @@ export default function ConnectionCard({
   const isConnected = isConfigured(integration, settings, credentialConnected, oauthConnected);
   const isOauth = integration.status === "oauth";
 
-  const handleQuickConnect = async (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleQuickConnect = async (e?: React.MouseEvent) => {
+    e?.stopPropagation();
     if (!OAUTH_PROVIDERS[integration.id]) {
       setDrawerOpen(true);
       return;
@@ -74,7 +74,8 @@ export default function ConnectionCard({
     const currentId =
       clientId ||
       (settings as unknown as Record<string, string>)[`${integration.id}ClientId`] ||
-      (integration.id === "spotify" ? "6619fbf6315e4e68948dc08532251912" : "");
+      (integration.id === "spotify" ? "6619fbf6315e4e68948dc08532251912" : "") ||
+      (OAUTH_PROVIDERS[integration.id] ? "6619fbf6315e4e68948dc08532251912" : "");
     if (!currentId.trim()) {
       setDrawerOpen(true);
       return;
@@ -85,7 +86,8 @@ export default function ConnectionCard({
       if (integration.id === "youtube") update({ liveYoutubeClientId: currentId } as never);
       if (integration.id === "google-calendar") update({ calendarClientId: currentId } as never);
       if (integration.id === "google-drive") update({ driveClientId: currentId } as never);
-      window.location.href = await startOAuthConnect(integration.id, currentId, { provider: integration.id, clientId: currentId });
+      const authUrl = await startOAuthConnect(integration.id, currentId, { provider: integration.id, clientId: currentId });
+      window.location.href = authUrl;
     } catch (err) {
       showError(err instanceof Error ? err.message : "Erreur de connexion");
       setConnecting(false);
@@ -238,7 +240,7 @@ export default function ConnectionCard({
         health={health}
         history={[]}
         onTest={() => onTest?.(integration.id)}
-        onConnect={() => {}}
+        onConnect={() => handleQuickConnect()}
         onDisconnect={() => onDisconnect?.(integration.id)}
         onGuide={() => setShowGuide(true)}
       />

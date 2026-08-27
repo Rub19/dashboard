@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.11.03",
+  date: "2026-08-27",
+  title: "Connexions & Spotify : Résolution du Flux OAuth & Bouton Connecter Actif",
+  items: [
+    "Correction du bouton Connecter dans le tiroir de détails des intégrations (ConnectionDetailDrawer).",
+    "Prise en charge complète du dialogue d'autorisation Spotify (`show_dialog=true`) pour choisir ou changer de compte.",
+    "Gestion robuste des retours d'authentification OAuth et des erreurs d'accès.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.11.03",
+  date: "2026-08-27",
+  title: "Connections & Spotify: OAuth Flow Fixed & Active Drawer Connect Button",
+  items: [
+    "Fixed Connect button in the ConnectionDetailDrawer panel.",
+    "Added Spotify authorization consent dialog support (`show_dialog=true`).",
+    "Robust OAuth callback and error recovery.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.11.03",
+  date: "2026-08-27",
+  title: "Conexiones y Spotify: Corrección de OAuth y Botón Conectar",
+  items: [
+    "Corrección del botón Conectar en el panel de detalles de integración.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.11.03",
+  date: "2026-08-27",
+  title: "Verbindungen & Spotify: OAuth-Fehlerbehebung",
+  items: [
+    "Verbindungsknopf im Detail-Panel repariert und Spotify OAuth optimiert.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.11.02",
   date: "2026-08-27",
   title: "Animations Globales : Calibrage Soyeux, Doux & Organique",

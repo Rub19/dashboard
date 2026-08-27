@@ -566,16 +566,23 @@ export default function ConnectionDetailDrawer({
                   <span>Déconnecter</span>
                 </button>
               ) : (
-                onConnect && (
-                  <button
-                    type="button"
-                    onClick={onConnect}
-                    className="flex items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 py-2.5 text-xs font-bold text-[var(--accent-contrast)] shadow-md hover:opacity-90 transition-all active:scale-95 cursor-pointer"
-                  >
-                    <Plug className="h-3.5 w-3.5" />
-                    <span>Connecter</span>
-                  </button>
-                )
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (integration.status === "oauth") {
+                      onConnect?.();
+                    } else if (hasFields) {
+                      handleSaveCredentials();
+                    } else {
+                      onConnect?.();
+                    }
+                  }}
+                  disabled={saving}
+                  className="flex items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 py-2.5 text-xs font-bold text-[var(--accent-contrast)] shadow-md hover:opacity-90 transition-all active:scale-95 cursor-pointer disabled:opacity-50"
+                >
+                  {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plug className="h-3.5 w-3.5" />}
+                  <span>Connecter</span>
+                </button>
               )}
             </div>
           </motion.div>

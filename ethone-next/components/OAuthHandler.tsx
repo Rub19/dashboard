@@ -14,9 +14,20 @@ export default function OAuthHandler() {
 
   useEffect(() => {
     if (handled.current) return;
+    if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
     const rawState = params.get("state");
+    const errorParam = params.get("error") || params.get("error_description");
+    if (errorParam) {
+      handled.current = true;
+      setStatus(`Connexion refusée : ${errorParam}`);
+      const url = new URL(window.location.href);
+      url.search = "";
+      window.history.replaceState({}, "", url);
+      setTimeout(() => setStatus(null), 5000);
+      return;
+    }
 
     if (!code || !rawState) return;
     const state = parseOAuthState(rawState);
@@ -37,6 +48,10 @@ export default function OAuthHandler() {
       const verifier = typeof window !== "undefined" ? localStorage.getItem(`ethone:oauth:verifier:${provider}`) : null;
       if (!verifier) {
         setStatus("Code verifier manquant, reconnectez-vous.");
+        const url = new URL(window.location.href);
+        url.search = "";
+        window.history.replaceState({}, "", url);
+        setTimeout(() => setStatus(null), 5000);
         return;
       }
       token = { codeVerifier: verifier };

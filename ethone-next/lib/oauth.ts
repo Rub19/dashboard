@@ -115,12 +115,15 @@ export function buildAuthUrl(provider: string, clientId: string, state?: object,
   url.searchParams.set("client_id", clientId);
   url.searchParams.set("redirect_uri", REDIRECT_URI);
   url.searchParams.set("response_type", "code");
-  const stateValue = state ? encodeURIComponent(JSON.stringify(state)) : provider;
+  const stateValue = state ? JSON.stringify(state) : provider;
   url.searchParams.set("state", stateValue);
   if (cfg.scopes) url.searchParams.set("scope", cfg.scopes);
   if (codeChallenge) {
     url.searchParams.set("code_challenge_method", "S256");
     url.searchParams.set("code_challenge", codeChallenge);
+  }
+  if (provider === "spotify") {
+    url.searchParams.set("show_dialog", "true");
   }
   if (provider.startsWith("google")) {
     url.searchParams.set("access_type", "offline");
@@ -154,7 +157,14 @@ export async function exchangeCode(
 
 export function parseOAuthState(value: string) {
   try {
-    return JSON.parse(decodeURIComponent(value));
+    let raw = value;
+    try {
+      raw = decodeURIComponent(raw);
+    } catch {}
+    try {
+      raw = decodeURIComponent(raw);
+    } catch {}
+    return JSON.parse(raw);
   } catch {
     return { provider: value, clientId: "" };
   }

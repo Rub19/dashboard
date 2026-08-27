@@ -133,8 +133,10 @@ function Dock() {
   }
 
   function handleOpenNotifications() {
+    hapticLightImpact();
     if (typeof window !== "undefined") {
       window.dispatchEvent(new CustomEvent("v8:open-notifications"));
+      window.dispatchEvent(new CustomEvent("ethone:open-notifications"));
     }
   }
 

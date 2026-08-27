@@ -48,6 +48,21 @@ export default function NotificationCenter() {
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    function handleToggleOpen() {
+      setOpen((v) => !v);
+    }
+    function handleForceOpen() {
+      setOpen(true);
+    }
+    window.addEventListener("v8:open-notifications", handleToggleOpen);
+    window.addEventListener("ethone:open-notifications", handleForceOpen);
+    return () => {
+      window.removeEventListener("v8:open-notifications", handleToggleOpen);
+      window.removeEventListener("ethone:open-notifications", handleForceOpen);
+    };
+  }, []);
+
+  useEffect(() => {
     if (open && searchRef.current) {
       setTimeout(() => searchRef.current?.focus(), 50);
     }

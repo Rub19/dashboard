@@ -7206,6 +7206,52 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.77",
+  date: "2026-08-27",
+  title: "Correction de l'Ouverture des Notifications depuis le Dock Flottant",
+  items: [
+    "Connexion de l'événement global ethone/v8:open-notifications dans le panneau de notifications.",
+    "Ouverture/Fermeture instantanée au clic sur la cloche du dock avec retour haptique.",
+    "Validation : build Next.js 105/105 pages, 100% tests unitaires, 0 erreur.",
+    "Version affichée : v1.10.77.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.77",
+  date: "2026-08-27",
+  title: "Dock Notification Button Toggle Fix",
+  items: [
+    "Connected global open notifications event listener to Notification Center.",
+    "Instant toggle when clicking the bell button in the dock with haptic feedback.",
+    "Validation: Next.js 105/105 pages build, 100% unit tests passed, 0 errors.",
+    "Version badge: v1.10.77.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.77",
+  date: "2026-08-27",
+  title: "Corrección del botón de notificaciones del Dock",
+  items: [
+    "Apertura instantánea desde el dock flotante.",
+    "Validación : build, lint, tests.",
+    "Versión : v1.10.77.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.77",
+  date: "2026-08-27",
+  title: "Dock-Benachrichtigungsbutton Fix",
+  items: [
+    "Sofortiges Öffnen über das schwebende Dock.",
+    "Validierung: build, lint, tests.",
+    "Version: v1.10.77.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.76",
   date: "2026-08-27",
   title: "Refonte Intégrale de Mission Control (HUD VisionOS, Scroll Fluide & Animations)",

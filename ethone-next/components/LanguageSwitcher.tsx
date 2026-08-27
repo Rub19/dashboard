@@ -4,9 +4,10 @@ import { useState } from "react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { Check } from "lucide-react";
+import { Icon } from "@/lib/icons";
 import FlagIcon, { LANGUAGES, LANGUAGE_LABELS, type Language } from "@/components/FlagIcon";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/motion/Popover";
+import { cn } from "@/lib/utils";
 
 export default function LanguageSwitcher() {
   const i18n = useI18n();
@@ -31,53 +32,58 @@ export default function LanguageSwitcher() {
       trigger="click"
       side="bottom"
       align="end"
-      sideOffset={8}
-      panelRadius={8}
+      sideOffset={10}
+      panelRadius={16}
       gooStrength={0}
     >
       <PopoverTrigger>
         <button
           type="button"
-          data-tooltip={i18n("language")}
-          data-tooltip-position="bottom"
           aria-label={i18n("language")}
           aria-haspopup="listbox"
           aria-expanded={open}
-          className="flex h-11 min-h-[44px] items-center gap-2 rounded-full border border-[var(--text-primary)]/[0.06] bg-[var(--surface)]/60 px-3 text-xs font-medium text-[var(--text-primary)] transition-all motion-reduce:transition-none hover:border-[var(--text-primary)]/15 hover:bg-[var(--text-primary)]/[0.08] active:scale-95 cursor-pointer select-none"
+          className="flex h-9 items-center gap-2 rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 px-2.5 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] transition-all active:scale-95 cursor-pointer select-none shadow-sm"
         >
-          <FlagIcon code={current} className="h-5 w-6" />
-          <span className="pointer-events-none hidden uppercase 2xl:inline">{current}</span>
+          <FlagIcon code={current} className="h-4 w-5 rounded-sm overflow-hidden" />
+          <span className="uppercase text-[11px] text-[var(--text-muted)] font-bold">
+            {current}
+          </span>
         </button>
       </PopoverTrigger>
 
-      <PopoverContent className="min-w-[11rem] max-w-[calc(100dvw-2rem)] overflow-hidden rounded-lg border border-[var(--panel-border)] bg-[var(--background)] p-1.5 shadow-2xl backdrop-blur-xl">
-        <div role="listbox" aria-label={i18n("language")}>
+      <PopoverContent className="w-52 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 p-1.5 shadow-2xl backdrop-blur-2xl">
+        <div role="listbox" aria-label={i18n("language")} className="space-y-1">
+          <div className="px-2.5 py-1.5 border-b border-[var(--panel-border)]/50">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+              Langue de l&apos;interface
+            </span>
+          </div>
+
           {LANGUAGES.map((lang) => {
-          const active = lang === current;
-          return (
-            <button
-              key={lang}
-              type="button"
-              role="option"
-              aria-selected={active}
-              onClick={() => select(lang)}
-              className={`group flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors motion-reduce:transition-none ${
-                active
-                  ? "bg-[var(--text-primary)]/[0.08] text-[var(--text-primary)] ring-1 ring-[var(--panel-border)]/10"
-                  : "text-[var(--text-primary)] hover:bg-[var(--text-primary)]/[0.06]"
-              }`}
-            >
-              <FlagIcon code={lang} className="h-4 w-5" />
-              <span className="pointer-events-none uppercase">{lang}</span>
-              <span className={active ? "pointer-events-none text-[var(--text-muted)]" : "pointer-events-none text-[var(--text-muted)]"}>
-                {LANGUAGE_LABELS[lang]}
-              </span>
-              {active && (
-                <Check className="pointer-events-none ml-auto h-4 w-4 text-[var(--accent)]" />
-              )}
-            </button>
-          );
-        })}
+            const active = lang === current;
+            return (
+              <button
+                key={lang}
+                type="button"
+                role="option"
+                aria-selected={active}
+                onClick={() => select(lang)}
+                className={cn(
+                  "flex w-full items-center justify-between rounded-xl px-2.5 py-2 text-xs font-medium transition-all",
+                  active
+                    ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-bold shadow-sm"
+                    : "text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
+                )}
+              >
+                <div className="flex items-center gap-2">
+                  <FlagIcon code={lang} className="h-3.5 w-4.5 rounded-sm" />
+                  <span>{LANGUAGE_LABELS[lang]}</span>
+                </div>
+
+                {active && <Icon name="check" className="h-3.5 w-3.5 text-[var(--accent-primary)]" />}
+              </button>
+            );
+          })}
         </div>
       </PopoverContent>
     </Popover>

@@ -3,11 +3,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ClientImage from "@/components/ClientImage";
 import { useRouter } from "next/navigation";
-import { User } from "lucide-react";
 import { Icon } from "@/lib/icons";
 import { useAuth } from "@/components/AuthProvider";
 import { useActiveProfile, useSettings } from "@/components/SettingsProvider";
 import { useProfile } from "@/lib/hooks/useProfile";
+import { useFocus } from "@/components/FocusProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
@@ -18,9 +18,8 @@ import {
   type ChangelogEntry,
 } from "@/data/changelog";
 import { USER_STATUS_CONFIG } from "@/lib/settings";
-import { setNativePresence } from "@/lib/apple";
-import { hapticSelectionTick } from "@/lib/haptics";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/motion/Popover";
+import { cn } from "@/lib/utils";
 
 function initials(name?: string) {
   if (!name) return "E";
@@ -45,6 +44,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
   const router = useRouter();
   const toast = useToast();
   const { setOpen: setCommandOpen } = useCommandPalette();
+  const focus = useFocus();
 
   const [open, setOpen] = useState(false);
   const [isChangelogOpen, setIsChangelogOpen] = useState(false);
@@ -60,12 +60,16 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     publicProfile?.display_name ||
     activeProfile?.name ||
     user?.email ||
-    i18n("guest", "Invité");
+    "Utilisateur ETHONE";
   const avatarUrl = publicProfile?.avatar_url;
   const email = user?.email || "";
 
-  const currentStatus =
-    settings.status in USER_STATUS_CONFIG ? settings.status : "online";
+  const isFocusRunning = focus.state.phase !== "idle";
+  const currentStatus = isFocusRunning
+    ? "focus"
+    : settings.status in USER_STATUS_CONFIG
+    ? settings.status
+    : "online";
 
   const [storage, setStorage] = useState({ used: 1.2, total: 10 });
 
@@ -92,21 +96,17 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
       if (!email) return;
       try {
         await navigator.clipboard.writeText(email);
-      } catch {
-        // clipboard permission fallback
-      }
-      toast.success(i18n("emailCopied", "✓ Adresse copiée"));
+      } catch {}
+      toast.success("Adresse e-mail copiée !");
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     },
-    [email, toast, i18n]
+    [email, toast]
   );
 
   const handleStatusChange = useCallback(
     (st: keyof typeof USER_STATUS_CONFIG) => {
-      void hapticSelectionTick();
       update({ status: st });
-      void setNativePresence(USER_STATUS_CONFIG[st].presence);
     },
     [update]
   );
@@ -120,41 +120,34 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
   const menuItems = [
     {
       id: "profile",
-      label: i18n("profile", "Mon profil"),
-      description: i18n("profileDesc", "Gérer vos informations personnelles"),
+      label: "Mon Profil",
+      description: "Informations personnelles & compte",
       icon: "user",
       action: () => router.push("/settings?category=profile"),
     },
     {
       id: "settings",
-      label: i18n("settings", "Réglages"),
-      description: i18n("settingsDesc", "Préférences globales et personnalisation"),
+      label: "Réglages Système",
+      description: "Centre de contrôle & personnalisation",
       kbd: "⌘,",
-      icon: "settings",
+      icon: "sliders-horizontal",
       action: () => router.push("/settings"),
     },
     {
       id: "security",
-      label: i18n("security", "Sécurité"),
-      description: i18n("securityDesc", "Authentification, 2FA et sessions"),
-      badge: i18n("active", "Actif"),
+      label: "Sécurité & Sessions",
+      description: "Appareils connectés & authentification",
+      badge: "Actif",
       badgeClass: "text-[var(--success)] bg-[var(--success)]/10 border-[var(--success)]/25",
-      icon: "shield-check",
+      icon: "shield",
       action: () => router.push("/settings?category=security"),
     },
     {
-      id: "billing",
-      label: i18n("billing", "Facturation"),
-      description: i18n("billingDesc", "Abonnement et historique des paiements"),
-      icon: "credit-card",
-      action: () => router.push("/settings?tab=billing"),
-    },
-    {
       id: "shortcuts",
-      label: i18n("shortcuts", "Raccourcis"),
-      description: i18n("shortcutsDesc", "Palette de commandes rapides"),
+      label: "Command Palette",
+      description: "Recherche globale & raccourcis",
       kbd: "⌘K",
-      icon: "command",
+      icon: "terminal",
       action: () => setCommandOpen(true),
     },
   ];
@@ -170,148 +163,108 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
         open={open}
         onOpenChange={(next) => {
           setOpen(next);
-          if (!next) {
-            setConfirmSignOut(false);
-          }
+          if (!next) setConfirmSignOut(false);
         }}
         trigger="click"
         side="bottom"
         align="end"
         sideOffset={10}
-        panelRadius={16}
+        panelRadius={20}
         gooStrength={0}
       >
-        {/* Trigger */}
+        {/* Trigger Button */}
         <PopoverTrigger>
           <button
             type="button"
             data-testid={dataTestId}
-            data-tooltip="Profil"
-            data-tooltip-position="bottom"
-            className="group relative flex h-9 items-center gap-2.5 rounded-full border border-[var(--text-primary)]/[0.08] bg-[var(--surface)]/80 pl-1.5 pr-3 text-[var(--text-primary)] transition-all hover:border-[var(--text-primary)]/20 active:scale-95 cursor-pointer select-none"
-            aria-label={i18n("profile", "Profil")}
+            aria-label="Menu profil utilisateur"
             aria-expanded={open}
-            aria-haspopup="true"
+            className="group relative flex h-9 items-center gap-2 rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 px-2 text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] transition-all active:scale-95 cursor-pointer select-none shadow-sm"
           >
-            <div className="pointer-events-none relative flex h-7 w-7 shrink-0 items-center justify-center">
-              <div className="pointer-events-none flex h-full w-full items-center justify-center overflow-hidden rounded-full border border-[var(--text-primary)]/10 bg-gradient-to-tr from-[var(--accent-primary)] to-[var(--info)] text-[var(--accent-primary)]">
+            <div className="relative flex h-6 w-6 shrink-0 items-center justify-center">
+              <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-lg bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-bold text-xs">
                 {avatarUrl ? (
                   <ClientImage
                     src={avatarUrl}
                     alt=""
-                    width={36}
-                    height={36}
-                    className="pointer-events-none h-full w-full object-cover"
-                    fallback={<User className="pointer-events-none h-4 w-4" />}
+                    width={24}
+                    height={24}
+                    className="h-full w-full object-cover"
+                    fallback={<span>{initials(displayName)}</span>}
                   />
                 ) : (
-                  <User className="pointer-events-none h-4 w-4" />
+                  <span>{initials(displayName)}</span>
                 )}
               </div>
               <span
-                className={`pointer-events-none absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--background)] ${
-                  USER_STATUS_CONFIG[currentStatus as keyof typeof USER_STATUS_CONFIG].dot
-                }`}
+                className={cn(
+                  "absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border border-[var(--panel-bg)]",
+                  USER_STATUS_CONFIG[currentStatus as keyof typeof USER_STATUS_CONFIG]?.dot || "bg-emerald-400"
+                )}
               />
             </div>
-            <div className="pointer-events-none hidden min-w-0 flex-col text-left 2xl:flex">
-              <span className="pointer-events-none max-w-[14ch] truncate text-sm font-bold leading-tight text-[var(--text-primary)]">
-                {displayName}
-              </span>
-            </div>
+
+            <span className="hidden xl:inline text-xs font-semibold max-w-[12ch] truncate">
+              {displayName}
+            </span>
+
             <Icon
-              name="chevron-down"
-              pack="phosphor"
-              className={`pointer-events-none h-4 w-4 text-[var(--text-muted)] transition-transform motion-reduce:transition-none ${
+              name="caret-down"
+              className={cn(
+                "h-3 w-3 text-[var(--text-muted)] transition-transform duration-200",
                 open ? "rotate-180" : ""
-              }`}
+              )}
             />
           </button>
         </PopoverTrigger>
 
-        {/* Dropdown Content */}
-        <PopoverContent className="w-[360px] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-3.5 shadow-[0_16px_50px_var(--glow-color)] backdrop-blur-2xl">
-          <div
-            data-testid={`${dataTestId}-menu`}
-            data-open={open}
-            className="flex w-full flex-col gap-2.5 select-none"
-          >
-            {/* 1. Header du profil */}
-            <div className="flex items-center gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02] p-2.5">
-              <div className="relative flex h-12 w-12 shrink-0 items-center justify-center">
-                <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-xl border border-[var(--panel-border)] bg-gradient-to-tr from-[var(--accent-primary)]/20 to-[var(--accent-secondary)]/20 text-[var(--text-primary)]">
+        {/* User Popover Panel */}
+        <PopoverContent className="w-[340px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 p-3.5 shadow-2xl backdrop-blur-2xl">
+          <div className="flex w-full flex-col gap-3 select-none">
+            {/* User Header Profile */}
+            <div className="flex items-center gap-3 rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-2.5">
+              <div className="relative flex h-11 w-11 shrink-0 items-center justify-center">
+                <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-xl bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] font-bold text-sm">
                   {avatarUrl ? (
                     <ClientImage
                       src={avatarUrl}
                       alt=""
-                      width={48}
-                      height={48}
+                      width={44}
+                      height={44}
                       className="h-full w-full object-cover"
-                      fallback={
-                        <span className="text-sm font-bold">
-                          {initials(displayName)}
-                        </span>
-                      }
+                      fallback={<span>{initials(displayName)}</span>}
                     />
                   ) : (
-                    <span className="text-sm font-bold">
-                      {initials(displayName)}
-                    </span>
+                    <span>{initials(displayName)}</span>
                   )}
                 </div>
-                <span
-                  className={`absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-[var(--panel-bg)] ${
-                    USER_STATUS_CONFIG[currentStatus as keyof typeof USER_STATUS_CONFIG].dot
-                  }`}
-                />
               </div>
 
-              <div className="flex min-w-0 flex-1 flex-col gap-1">
+              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="truncate text-xs font-bold text-[var(--text-primary)] max-w-[150px]">
+                  <span className="truncate text-xs font-bold text-[var(--text-primary)]">
                     {displayName}
                   </span>
-                  <div className="inline-flex items-center gap-1 rounded-full border border-[var(--success)]/25 bg-[var(--success)]/10 px-1.5 py-0.5 text-[9px] font-medium text-[var(--success)]">
-                    <Icon
-                      pack="phosphor"
-                      name="shield-check"
-                      className="h-3 w-3 shrink-0"
-                    />
-                    <span>{i18n("verifiedAccount", "Compte vérifié")}</span>
-                  </div>
+                  <span className="rounded-full bg-[var(--success)]/15 px-1.5 py-0.2 text-[9px] font-bold text-[var(--success)]">
+                    ✓ Vérifié
+                  </span>
                 </div>
 
                 {email && (
                   <button
                     type="button"
                     onClick={copyEmail}
-                    className="group/copy flex items-center gap-1.5 rounded-md text-left text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent-primary)] min-h-[24px]"
-                    title={i18n("copyEmail", "Copier l'adresse email")}
-                    aria-label={i18n("copyEmail", "Copier l'adresse email")}
+                    className="flex items-center gap-1 text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
                   >
-                    <span className="truncate font-mono text-[11px] max-w-[200px]">
-                      {email}
-                    </span>
-                    <Icon
-                      pack="phosphor"
-                      name={copied ? "check" : "copy"}
-                      className={`h-3 w-3 shrink-0 transition-colors ${
-                        copied
-                          ? "text-[var(--accent-primary)]"
-                          : "text-[var(--text-muted)] group-hover/copy:text-[var(--text-primary)]"
-                      }`}
-                    />
+                    <span className="truncate max-w-[170px]">{email}</span>
+                    <Icon name={copied ? "check" : "copy"} className="h-3 w-3" />
                   </button>
                 )}
               </div>
             </div>
 
-            {/* 2. Statuts de présence (5 options) */}
-            <div
-              role="radiogroup"
-              aria-label={i18n("presenceStatus", "Statut de présence")}
-              className="grid grid-cols-5 gap-1 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02] p-1 text-[10px]"
-            >
+            {/* Status Selector Bar */}
+            <div className="grid grid-cols-5 gap-1 rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-1">
               {STATUS_KEYS.map((st) => {
                 const cfg = USER_STATUS_CONFIG[st];
                 const isSelected = currentStatus === st;
@@ -319,235 +272,102 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                   <button
                     key={st}
                     type="button"
-                    role="radio"
-                    aria-checked={isSelected}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleStatusChange(st);
-                    }}
-                    aria-label={i18n(cfg.labelKey)}
-                    title={i18n(cfg.labelKey)}
-                    className={`group/st relative flex flex-col items-center justify-center gap-1 rounded-lg px-1 py-1.5 min-h-[44px] sm:min-h-[36px] transition-all motion-reduce:transition-none ${
+                    onClick={() => handleStatusChange(st)}
+                    className={cn(
+                      "flex flex-col items-center justify-center gap-1 rounded-lg py-1.5 text-[10px] font-semibold transition-all",
                       isSelected
-                        ? "bg-[var(--text-primary)]/[0.08] font-bold text-[var(--text-primary)] shadow-xs ring-1 ring-[var(--panel-border)]"
-                        : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)]"
-                    }`}
+                        ? "bg-[var(--surface-raised)] text-[var(--text-primary)] shadow-sm"
+                        : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                    )}
                   >
-                    <span
-                      className={`h-2.5 w-2.5 rounded-full ${cfg.dot} ring-2 ring-[var(--panel-bg)] transition-transform motion-reduce:transform-none ${
-                        isSelected
-                          ? "scale-110"
-                          : "opacity-80 group-hover/st:opacity-100"
-                      }`}
-                    />
-                    <span className="truncate text-[10px] leading-tight">
-                      {i18n(cfg.labelKey)}
-                    </span>
+                    <span className={cn("h-2 w-2 rounded-full", cfg.dot)} />
+                    <span className="truncate">{i18n(cfg.labelKey)}</span>
                   </button>
                 );
               })}
             </div>
 
-            {/* 3. Stockage */}
-            <div className="flex flex-col gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.02] p-2.5">
+            {/* Storage Estimation Bar */}
+            <div className="flex flex-col gap-1 rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-2.5">
               <div className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2 text-[var(--text-primary)]">
-                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]">
-                    <Icon name="hard-drive" pack="phosphor" className="h-3.5 w-3.5" />
-                  </div>
-                  <span className="font-semibold text-[11px]">
-                    {i18n("storage", "Stockage")}
-                  </span>
-                </div>
-                <span className="font-mono text-[11px] text-[var(--text-muted)]">
-                  {storage.used.toFixed(1)} GB / {storage.total} GB
+                <span className="font-semibold text-[11px] text-[var(--text-primary)]">
+                  Stockage Cloud
+                </span>
+                <span className="font-mono text-[10px] text-[var(--text-muted)]">
+                  {storage.used.toFixed(1)} Go / {storage.total} Go
                 </span>
               </div>
-
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--text-primary)]/[0.08]">
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
                 <div
-                  className="h-full rounded-full bg-[var(--accent-primary)] transition-all duration-300 motion-reduce:transition-none"
+                  className="h-full rounded-full bg-[var(--accent-primary)] transition-all duration-300"
                   style={{ width: `${storagePercent}%` }}
                 />
               </div>
-
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpen(false);
-                  router.push("/settings?category=workspace");
-                }}
-                className="group/store mt-0.5 flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-[11px] font-medium text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/[0.04] hover:text-[var(--text-primary)] min-h-[36px] sm:min-h-[30px]"
-              >
-                <span>{i18n("manageStorage", "Gérer le stockage")}</span>
-                <Icon
-                  pack="phosphor"
-                  name="caret-right"
-                  className="h-3 w-3 opacity-60 transition-transform group-hover/store:translate-x-0.5 motion-reduce:transform-none"
-                />
-              </button>
             </div>
 
-            {/* 4. Nouveautés / Changelog */}
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setOpen(false);
-                setIsChangelogOpen(true);
-              }}
-              className="group flex w-full items-center justify-between gap-3 rounded-xl border border-[var(--accent-primary)]/25 bg-gradient-to-r from-[var(--accent-primary)]/[0.08] to-transparent p-2.5 text-left transition-all hover:border-[var(--accent-primary)]/40 hover:bg-[var(--accent-primary)]/[0.12] min-h-[44px]"
-            >
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]">
-                  <Icon name="sparkles" pack="phosphor" className="h-4 w-4" />
-                </div>
-                <div className="flex flex-col min-w-0">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="text-xs font-semibold text-[var(--text-primary)]">
-                      {i18n("releaseNotes", "Notes de version")}
-                    </span>
-                    <span className="inline-flex items-center rounded-md border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 px-1.5 py-0.5 font-mono text-[9px] font-bold text-[var(--accent-primary)]">
-                      {VERSION_LABEL} • {i18n("newBadge", "NOUVEAU")}
-                    </span>
-                  </div>
-                  <p className="truncate text-[11px] text-[var(--text-muted)]">
-                    {i18n(
-                      "releaseNotesDesc",
-                      "Découvrez les dernières améliorations d'ETHONE"
-                    )}
-                  </p>
-                </div>
-              </div>
-              <Icon
-                pack="phosphor"
-                name="caret-right"
-                className="h-3.5 w-3.5 shrink-0 text-[var(--text-muted)] opacity-60 transition-all group-hover:opacity-100 group-hover:translate-x-0.5 motion-reduce:transform-none"
-              />
-            </button>
-
-            {/* 5. Section Compte & Raccourcis */}
-            <div className="flex flex-col gap-0.5">
+            {/* Navigation Menu List */}
+            <div className="space-y-0.5">
               {menuItems.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setOpen(false);
-                      item.action();
-                    }}
-                    className="group flex w-full items-center justify-between gap-2.5 rounded-xl border border-transparent p-2 text-left text-xs transition-all hover:border-[var(--panel-border)] hover:bg-[var(--text-primary)]/[0.04] min-h-[44px]"
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] text-[var(--text-muted)] transition-colors group-hover:bg-[var(--text-primary)]/[0.06] group-hover:text-[var(--text-primary)]">
-                        <Icon pack="phosphor" name={item.icon} className="h-4 w-4" />
-                      </div>
-                      <div className="flex flex-col min-w-0">
-                        <span className="font-medium text-[var(--text-primary)] truncate">
-                          {item.label}
-                        </span>
-                        <span className="text-[10px] text-[var(--text-muted)] truncate">
-                          {item.description}
-                        </span>
-                      </div>
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => {
+                    setOpen(false);
+                    item.action();
+                  }}
+                  className="flex w-full items-center justify-between rounded-xl p-2 text-xs text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] transition-colors"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <Icon name={item.icon} className="h-4 w-4 text-[var(--accent-primary)]" />
+                    <div className="flex flex-col text-left min-w-0">
+                      <span className="font-semibold text-[var(--text-primary)] truncate">
+                        {item.label}
+                      </span>
+                      <span className="text-[10px] text-[var(--text-muted)] truncate">
+                        {item.description}
+                      </span>
                     </div>
+                  </div>
 
-                    <div className="flex items-center gap-2 shrink-0">
-                      {item.badge && (
-                        <span
-                          className={`rounded-md border px-1.5 py-0.5 font-mono text-[9px] font-bold ${item.badgeClass}`}
-                        >
-                          {item.badge}
-                        </span>
-                      )}
-
-                      {item.kbd && (
-                        <kbd className="rounded-md border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.04] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)]">
-                          {item.kbd}
-                        </kbd>
-                      )}
-
-                      <Icon
-                        pack="phosphor"
-                        name="caret-right"
-                        className="h-3.5 w-3.5 text-[var(--text-muted)] opacity-40 transition-all group-hover:opacity-100 group-hover:translate-x-0.5 motion-reduce:transform-none"
-                      />
-                    </div>
-                  </button>
+                  {item.kbd && (
+                    <kbd className="rounded bg-[var(--surface-raised)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)]">
+                      {item.kbd}
+                    </kbd>
+                  )}
+                </button>
               ))}
             </div>
 
-            {/* 6. Déconnexion avec confirmation propre */}
-            <div className="border-t border-[var(--panel-border)] pt-2">
+            {/* Sign Out Section */}
+            <div className="border-t border-[var(--panel-border)]/60 pt-2">
               {!confirmSignOut ? (
                 <button
                   type="button"
-                  data-testid="profile-logout-button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setConfirmSignOut(true);
-                  }}
-                  className="group flex w-full items-center justify-between rounded-xl border border-transparent p-2 text-xs text-[var(--danger)] transition-all hover:border-[var(--danger)]/20 hover:bg-[var(--danger)]/10 hover:text-[var(--danger)] min-h-[44px]"
+                  onClick={() => setConfirmSignOut(true)}
+                  className="flex w-full items-center gap-2.5 rounded-xl p-2 text-xs font-semibold text-[var(--danger)] hover:bg-[var(--danger)]/10 transition-colors"
                 >
-                  <div className="flex items-center gap-2.5">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--danger)]/30 bg-[var(--danger)]/10 text-[var(--danger)] transition-colors group-hover:bg-[var(--danger)]/20 group-hover:text-[var(--danger)]">
-                      <Icon name="log-out" pack="phosphor" className="h-4 w-4" />
-                    </div>
-                    <div className="flex flex-col text-left">
-                      <span className="font-semibold">
-                        {i18n("signOut", "Se déconnecter")}
-                      </span>
-                      <span className="text-[10px] text-[var(--danger)]/70">
-                        {i18n("quitSession", "Fermer la session active")}
-                      </span>
-                    </div>
-                  </div>
-                  <Icon
-                    pack="phosphor"
-                    name="caret-right"
-                    className="h-3.5 w-3.5 opacity-40 transition-transform group-hover:translate-x-0.5 motion-reduce:transform-none"
-                  />
+                  <Icon name="sign-out" className="h-4 w-4" />
+                  <span>Se déconnecter</span>
                 </button>
               ) : (
-                <div className="flex flex-col gap-2 rounded-xl border border-[var(--danger)]/30 bg-[var(--danger)]/10 p-3 transition-all motion-reduce:transition-none">
-                  <div className="flex items-center gap-2 text-[var(--danger)]">
-                    <Icon name="alert-triangle" pack="phosphor" className="h-4 w-4 shrink-0" />
-                    <span className="text-xs font-semibold">
-                      {i18n(
-                        "confirmSignOutTitle",
-                        "Se déconnecter d'ETHONE ?"
-                      )}
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-[var(--text-muted)] leading-snug">
-                    {i18n(
-                      "confirmSignOutDesc",
-                      "Vous devrez vous reconnecter pour accéder à votre espace."
-                    )}
-                  </p>
-                  <div className="flex items-center gap-2 pt-1">
+                <div className="flex flex-col gap-2 rounded-xl border border-[var(--danger)]/30 bg-[var(--danger)]/10 p-2.5">
+                  <span className="text-xs font-bold text-[var(--danger)]">
+                    Confirmer la déconnexion ?
+                  </span>
+                  <div className="flex items-center gap-2">
                     <button
                       type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setConfirmSignOut(false);
-                      }}
-                      className="flex-1 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-bg)] py-2 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--text-primary)]/[0.06] transition-colors min-h-[40px]"
+                      onClick={() => setConfirmSignOut(false)}
+                      className="flex-1 rounded-lg border border-[var(--panel-border)] py-1 text-xs font-medium text-[var(--text-primary)]"
                     >
-                      {i18n("cancel", "Annuler")}
+                      Annuler
                     </button>
                     <button
                       type="button"
-                      data-testid="profile-logout-confirm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleSignOut();
-                      }}
-                      className="flex-1 rounded-lg border border-[var(--danger)]/40 bg-[var(--danger)] px-3 py-2 text-xs font-semibold text-[var(--accent-contrast)] hover:bg-[var(--danger)]/90 transition-colors shadow-sm min-h-[40px]"
+                      onClick={handleSignOut}
+                      className="flex-1 rounded-lg bg-[var(--danger)] py-1 text-xs font-bold text-[var(--accent-contrast)]"
                     >
-                      {i18n("signOut", "Se déconnecter")}
+                      Déconnexion
                     </button>
                   </div>
                 </div>

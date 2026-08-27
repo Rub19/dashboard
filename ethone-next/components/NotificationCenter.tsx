@@ -9,23 +9,15 @@ import { useIsMobile } from "@/lib/hooks/useMediaQuery";
 import { usePresence } from "@/components/PresenceProvider";
 import NotificationItem from "@/components/NotificationItem";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/motion/Popover";
-import Input from "@/components/Input";
+import { Icon } from "@/lib/icons";
 import Modal from "@/components/ui/Modal";
-import AnimatedFilterTabs from "@/components/ui/AnimatedFilterTabs";
-import EthoneGlyph, { type EthoneGlyphName } from "@/components/icons/EthoneGlyph";
+import { cn } from "@/lib/utils";
 
-const FILTERS: { id: string; labelKey: string; icon: EthoneGlyphName }[] = [
-  { id: "all", labelKey: "all", icon: "inbox" },
-  { id: "unread", labelKey: "unread", icon: "mail-open" },
-  { id: "important", labelKey: "important", icon: "star" },
-];
-
-function normalizeText(text: string) {
-  return text
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
-}
+const FILTERS = [
+  { id: "all", label: "Toutes", icon: "tray" },
+  { id: "unread", label: "Non lues", icon: "envelope" },
+  { id: "important", label: "Importantes", icon: "star" },
+] as const;
 
 export default function NotificationCenter() {
   const i18n = useI18n();
@@ -51,62 +43,26 @@ export default function NotificationCenter() {
   }, [open]);
 
   useEffect(() => {
-    function onOpen() {
-      setOpen(true);
-    }
-    window.addEventListener("v8:open-notifications", onOpen);
-    return () => window.removeEventListener("v8:open-notifications", onOpen);
-  }, []);
-
-  useEffect(() => {
     if (unreadCount > 0) setNotification("important", 5000);
     else if (importantCount > 0) setNotification("important");
     else setNotification("idle");
   }, [unreadCount, importantCount, setNotification]);
 
-  const filterCounts = useMemo(() => {
-    return FILTERS.map((f) => {
-      let count = activeItems.length;
-      if (f.id === "unread") count = activeItems.filter((n) => !n.read).length;
-      else if (f.id === "important") count = activeItems.filter((n) => n.priority === "critical" || n.priority === "important").length;
-      return { id: f.id, count };
-    });
-  }, [activeItems]);
-
-  const filterTabs = useMemo(
-    () =>
-      FILTERS.map((f) => ({
-        id: f.id,
-        label: i18n(f.labelKey),
-        count: filterCounts.find((c) => c.id === f.id)?.count || undefined,
-        icon: <EthoneGlyph name={f.icon} className="h-3 w-3" />,
-      })),
-    [filterCounts, i18n]
-  );
-
   const filtered = useMemo(() => {
-    let list = activeItems;
-
+    let list = [...activeItems];
     if (filter === "unread") list = list.filter((n) => !n.read);
     else if (filter === "important") list = list.filter((n) => n.priority === "critical" || n.priority === "important");
 
-    const q = normalizeText(query.trim());
+    const q = query.trim().toLowerCase();
     if (q) {
       list = list.filter(
         (n) =>
-          normalizeText(n.title).includes(q) ||
-          normalizeText(n.message).includes(q) ||
-          normalizeText(n.source || "").includes(q) ||
-          normalizeText(n.category).includes(q)
+          n.title?.toLowerCase().includes(q) ||
+          n.message?.toLowerCase().includes(q) ||
+          n.source?.toLowerCase().includes(q)
       );
     }
-    const sorted = list.sort((a, b) => b.timestamp - a.timestamp);
-    const seen = new Set<string>();
-    return sorted.filter((n) => {
-      if (!n.id || seen.has(n.id)) return false;
-      seen.add(n.id);
-      return true;
-    });
+    return list.sort((a, b) => b.timestamp - a.timestamp);
   }, [activeItems, filter, query]);
 
   function onOpenItem(n: Notification) {
@@ -114,108 +70,102 @@ export default function NotificationCenter() {
       window.open(n.data.url, "_blank");
     } else if (n.data?.route && typeof n.data.route === "string") {
       router.push(n.data.route === "home" ? "/" : `/${n.data.route}/`);
+      setOpen(false);
     }
   }
 
-  const header = (
-    <div className="flex items-start justify-between gap-3">
-      <div>
-        <h3 className="text-base font-semibold text-[var(--text-primary)]">{i18n("notifications")}</h3>
-        <p className="text-xs text-[var(--text-muted)]">
-          {unreadCount > 0 ? (
-            <>
-              {unreadCount} {i18n("unread")}
-              {importantCount > 0 && (
-                <>
-                  {" "}
-                  · {importantCount} {i18n("importantCount")}
-                </>
-              )}
-            </>
-          ) : importantCount > 0 ? (
-            <>
-              {importantCount} {i18n("importantCount")}
-            </>
-          ) : (
-            i18n("allCaughtUp")
-          )}
-        </p>
-      </div>
-      <div className="flex items-center gap-1">
-        <button
-          type="button"
-          onClick={markAllRead}
-          disabled={unreadCount === 0}
-          className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-[var(--background)]/50 text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-hover)] disabled:cursor-not-allowed disabled:opacity-40"
-          aria-label={i18n("markAllRead")}
-          title={i18n("markAllRead")}
-        >
-          <EthoneGlyph name="mail-open" className="h-4 w-4" />
-        </button>
-        <button
-          type="button"
-          onClick={clear}
-          disabled={activeItems.length === 0}
-          className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--danger)]/20 bg-[var(--danger)]/10 text-[var(--danger)] transition-colors hover:bg-[var(--danger)]/20 disabled:cursor-not-allowed disabled:opacity-40"
-          aria-label={i18n("clearAll")}
-          title={i18n("clearAll")}
-        >
-          <EthoneGlyph name="trash" className="h-4 w-4" />
-        </button>
-      </div>
-    </div>
-  );
-
-  const search = (
-    <Input
-      ref={searchRef}
-      type="search"
-      icon="search"
-      clearable
-      value={query}
-      onChange={(e) => setQuery(e.target.value)}
-      placeholder={i18n("search")}
-      className="w-full"
-    />
-  );
-
-  const list = (
-    <div className="min-h-0 flex-1 overflow-y-auto pr-1 [-webkit-overflow-scrolling:touch]">
-      <AnimatePresence initial={false} mode="popLayout">
-        {filtered.length === 0 ? (
-          <motion.div
-            key="empty"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="flex h-32 flex-col items-center justify-center gap-2.5 text-center"
-          >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--text-muted)]">
-              <EthoneGlyph name="bell-off" className="h-4 w-4" />
-            </div>
-            <p className="text-sm text-[var(--text-muted)]">{i18n("noNotifications")}</p>
-          </motion.div>
-        ) : (
-          <div key="list" className="space-y-2">
-            {filtered.map((n) => (
-              <NotificationItem key={n.id} n={n} onOpen={onOpenItem} />
-            ))}
-          </div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-
   const content = (
-    <div className="flex h-full flex-col gap-2.5">
-      {header}
-      {search}
-      <AnimatedFilterTabs
-        tabs={filterTabs}
-        activeId={filter}
-        onChange={setFilter}
-      />
-      {list}
+    <div className="flex h-full flex-col gap-3 select-none">
+      {/* Header with Title & Action Controls */}
+      <div className="flex items-center justify-between border-b border-[var(--panel-border)]/60 pb-3">
+        <div>
+          <h3 className="text-sm font-bold text-[var(--text-primary)]">Notifications</h3>
+          <p className="text-[10px] text-[var(--text-muted)]">
+            {unreadCount > 0
+              ? `${unreadCount} non lue${unreadCount > 1 ? "s" : ""}`
+              : "Toutes les notifications sont lues"}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={markAllRead}
+            disabled={unreadCount === 0}
+            className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--accent-primary)]/40 transition-all disabled:opacity-40"
+            title="Tout marquer comme lu"
+          >
+            <Icon name="check" className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={clear}
+            disabled={activeItems.length === 0}
+            className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:text-[var(--danger)] hover:border-[var(--danger)]/40 transition-all disabled:opacity-40"
+            title="Tout effacer"
+          >
+            <Icon name="trash" className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Search Input */}
+      <div className="relative">
+        <Icon
+          name="magnifying-glass"
+          className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--text-muted)]"
+        />
+        <input
+          ref={searchRef}
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Rechercher dans les notifications..."
+          className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 py-1.5 pl-8 pr-2.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
+        />
+      </div>
+
+      {/* Filter Tabs */}
+      <div className="flex items-center gap-1 p-1 rounded-xl bg-[var(--surface-raised)]/50 border border-[var(--panel-border)]/60">
+        {FILTERS.map((f) => (
+          <button
+            key={f.id}
+            type="button"
+            onClick={() => setFilter(f.id)}
+            className={cn(
+              "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1 text-xs font-semibold transition-all",
+              filter === f.id
+                ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-sm"
+                : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+            )}
+          >
+            <Icon name={f.icon} className="h-3.5 w-3.5" />
+            <span>{f.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Notifications List */}
+      <div className="min-h-0 flex-1 overflow-y-auto os-scroll pr-1 max-h-[360px] space-y-2">
+        <AnimatePresence mode="popLayout">
+          {filtered.length === 0 ? (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex h-36 flex-col items-center justify-center gap-2 text-center text-xs text-[var(--text-muted)]"
+            >
+              <Icon name="bell-slash" className="h-6 w-6 opacity-60 text-[var(--text-muted)]" />
+              <span>Aucune notification</span>
+            </motion.div>
+          ) : (
+            filtered.map((n) => (
+              <NotificationItem key={n.id} n={n} onOpen={onOpenItem} />
+            ))
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 
@@ -226,34 +176,27 @@ export default function NotificationCenter() {
       trigger="click"
       side="bottom"
       align="end"
-      sideOffset={8}
-      panelRadius={16}
+      sideOffset={10}
+      panelRadius={20}
       gooStrength={0}
     >
       <PopoverTrigger>
         <button
           type="button"
-          data-tooltip={i18n("notifications")}
-          className="relative flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-all hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] active:scale-95 cursor-pointer select-none"
-          aria-label={i18n("notifications")}
+          aria-label="Notifications"
+          className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] transition-all active:scale-95 cursor-pointer shadow-sm"
         >
-          <EthoneGlyph name="bell" className="pointer-events-none h-5 w-5" />
+          <Icon name="bell" className="h-4 w-4 pointer-events-none" />
           {unreadCount > 0 && (
-            <span
-              data-notification-badge
-              className="pointer-events-none absolute right-1.5 top-1.5 flex h-4 min-w-[1rem] items-center justify-center rounded-lg bg-[var(--accent-primary)] px-1 text-[10px] font-bold text-[var(--accent-contrast)]"
-            >
-              {unreadCount > 99 ? "99+" : unreadCount}
+            <span className="absolute -top-1 -right-1 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-[var(--accent-primary)] px-1 text-[9px] font-bold text-[var(--accent-contrast)] shadow-md">
+              {unreadCount > 9 ? "9+" : unreadCount}
             </span>
-          )}
-          {unreadCount === 0 && importantCount > 0 && (
-            <span className="pointer-events-none absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-[var(--warning)]" />
           )}
         </button>
       </PopoverTrigger>
 
       {!isMobile && (
-        <PopoverContent className="w-96 max-w-[calc(100vw-1rem)] max-h-[min(80vh,44rem)] overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--background)] p-4 shadow-2xl backdrop-blur-2xl">
+        <PopoverContent className="w-96 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 p-4 shadow-2xl backdrop-blur-2xl">
           {content}
         </PopoverContent>
       )}
@@ -262,7 +205,7 @@ export default function NotificationCenter() {
         <Modal
           isOpen={open}
           onClose={() => setOpen(false)}
-          title={i18n("notifications")}
+          title="Notifications"
           size="sm"
           position="bottom"
           hideFooter

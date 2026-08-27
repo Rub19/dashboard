@@ -372,6 +372,66 @@ export default function DynamicIslandContainer() {
         </div>
       );
     }
+
+    // Split Island when Pomodoro is active along with Spotify or Brain
+    if (pomodoroActive && (spotifyActive || brainActive)) {
+      return (
+        <div className="flex h-10 items-center justify-between gap-3 px-1">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              selectView("pomodoro");
+            }}
+            className="flex items-center gap-1.5 hover:opacity-80 transition-opacity"
+          >
+            <Icon name="timer" pack="phosphor" className="h-3.5 w-3.5 text-[var(--accent)]" />
+            <span className="text-xs font-semibold tabular-nums">
+              {focus.format(focus.state.remaining)}
+            </span>
+          </button>
+
+          <span className="h-3.5 w-[1px] bg-[var(--text-primary)]/20" />
+
+          {spotifyActive ? (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                selectView("spotify");
+              }}
+              className="flex items-center gap-1.5 hover:opacity-80 transition-opacity"
+            >
+              <AudioVisualizer
+                isPlaying={!!nowPlaying?.isPlaying}
+                bars={4}
+                barWidth={1.5}
+                gap={1}
+                minHeight={0.2}
+                className="h-3 w-3.5"
+                color="var(--accent-primary)"
+              />
+              <span className="text-xs font-semibold max-w-[80px] truncate text-[var(--accent-primary)]">
+                {nowPlaying?.title || "Spotify"}
+              </span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                selectView("brain");
+              }}
+              className="flex items-center gap-1 hover:opacity-80 transition-opacity"
+            >
+              <Icon name="brain" pack="phosphor" className="h-3.5 w-3.5 text-[var(--info)] animate-pulse" />
+              <span className="text-xs font-semibold text-[var(--info)]">Brain</span>
+            </button>
+          )}
+        </div>
+      );
+    }
+
     switch (selectedView) {
       case "spotify":
         return (

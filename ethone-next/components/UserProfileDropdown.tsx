@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ClientImage from "@/components/ClientImage";
 import { useRouter } from "next/navigation";
+import { ChevronRight } from "lucide-react";
 import { Icon } from "@/lib/icons";
 import { useAuth } from "@/components/AuthProvider";
 import { useActiveProfile, useSettings } from "@/components/SettingsProvider";
@@ -138,7 +139,6 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
       label: "Sécurité & Sessions",
       description: "Appareils connectés & authentification",
       badge: "Actif",
-      badgeClass: "text-[var(--success)] bg-[var(--success)]/10 border-[var(--success)]/25",
       icon: "shield",
       action: () => router.push("/settings?category=security"),
     },
@@ -254,7 +254,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                   <button
                     type="button"
                     onClick={copyEmail}
-                    className="flex items-center gap-1 text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                    className="flex items-center gap-1 text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
                   >
                     <span className="truncate max-w-[170px]">{email}</span>
                     <Icon name={copied ? "check" : "copy"} className="h-3 w-3" />
@@ -274,10 +274,10 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                     type="button"
                     onClick={() => handleStatusChange(st)}
                     className={cn(
-                      "flex flex-col items-center justify-center gap-1 rounded-lg py-1.5 text-[10px] font-semibold transition-all",
+                      "flex flex-col items-center justify-center gap-1 rounded-lg py-1.5 text-[10px] font-semibold transition-all cursor-pointer",
                       isSelected
-                        ? "bg-[var(--surface-raised)] text-[var(--text-primary)] shadow-sm"
-                        : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                        ? "bg-[var(--surface-raised)] text-[var(--text-primary)] shadow-sm scale-100"
+                        : "text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] hover:scale-105"
                     )}
                   >
                     <span className={cn("h-2 w-2 rounded-full", cfg.dot)} />
@@ -305,8 +305,8 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
               </div>
             </div>
 
-            {/* Navigation Menu List */}
-            <div className="space-y-0.5">
+            {/* Navigation Menu List with Distinct Hover Indicators */}
+            <div className="space-y-1">
               {menuItems.map((item) => (
                 <button
                   key={item.id}
@@ -315,25 +315,33 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                     setOpen(false);
                     item.action();
                   }}
-                  className="flex w-full items-center justify-between rounded-xl p-2 text-xs text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] transition-colors"
+                  className="group relative flex w-full items-center justify-between rounded-xl border border-transparent p-2.5 text-xs text-[var(--text-muted)] transition-all duration-150 hover:border-[var(--accent-primary)]/40 hover:bg-gradient-to-r hover:from-[var(--accent-primary)]/10 hover:via-[var(--surface-raised)] hover:to-transparent hover:text-[var(--text-primary)] hover:shadow-xs cursor-pointer overflow-hidden"
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <Icon name={item.icon} className="h-4 w-4 text-[var(--accent-primary)]" />
+                  {/* Left glowing hover pill */}
+                  <div className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-[var(--accent-primary)] opacity-0 shadow-[0_0_8px_var(--glow-color)] transition-all duration-150 group-hover:opacity-100" />
+
+                  <div className="flex items-center gap-2.5 min-w-0 pl-1">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-raised)] text-[var(--accent-primary)] transition-transform duration-150 group-hover:scale-110 group-hover:bg-[var(--accent-primary)]/20 shadow-xs">
+                      <Icon name={item.icon} className="h-4 w-4" />
+                    </div>
                     <div className="flex flex-col text-left min-w-0">
-                      <span className="font-semibold text-[var(--text-primary)] truncate">
+                      <span className="font-bold text-[var(--text-primary)] group-hover:text-white transition-colors truncate">
                         {item.label}
                       </span>
-                      <span className="text-[10px] text-[var(--text-muted)] truncate">
+                      <span className="text-[10px] text-[var(--text-muted)] group-hover:text-[var(--text-muted)]/90 truncate">
                         {item.description}
                       </span>
                     </div>
                   </div>
 
-                  {item.kbd && (
-                    <kbd className="rounded bg-[var(--surface-raised)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)]">
-                      {item.kbd}
-                    </kbd>
-                  )}
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {item.kbd && (
+                      <kbd className="rounded-lg border border-[var(--panel-border)]/60 bg-[var(--surface-raised)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)] transition-colors group-hover:border-[var(--accent-primary)]/40 group-hover:text-[var(--accent-primary)]">
+                        {item.kbd}
+                      </kbd>
+                    )}
+                    <ChevronRight className="h-3.5 w-3.5 text-[var(--accent-primary)] opacity-0 -translate-x-1 transition-all duration-150 group-hover:opacity-100 group-hover:translate-x-0" />
+                  </div>
                 </button>
               ))}
             </div>
@@ -344,10 +352,16 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                 <button
                   type="button"
                   onClick={() => setConfirmSignOut(true)}
-                  className="flex w-full items-center gap-2.5 rounded-xl p-2 text-xs font-semibold text-[var(--danger)] hover:bg-[var(--danger)]/10 transition-colors"
+                  className="group relative flex w-full items-center justify-between rounded-xl border border-transparent p-2.5 text-xs font-semibold text-[var(--danger)] transition-all duration-150 hover:border-[var(--danger)]/30 hover:bg-[var(--danger)]/10 cursor-pointer overflow-hidden"
                 >
-                  <Icon name="sign-out" className="h-4 w-4" />
-                  <span>Se déconnecter</span>
+                  <div className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-[var(--danger)] opacity-0 shadow-[0_0_8px_rgba(239,68,68,0.5)] transition-all duration-150 group-hover:opacity-100" />
+                  <div className="flex items-center gap-2.5 pl-1">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--danger)]/15 text-[var(--danger)] transition-transform duration-150 group-hover:scale-110">
+                      <Icon name="sign-out" className="h-4 w-4" />
+                    </div>
+                    <span>Se déconnecter</span>
+                  </div>
+                  <ChevronRight className="h-3.5 w-3.5 text-[var(--danger)] opacity-0 -translate-x-1 transition-all duration-150 group-hover:opacity-100 group-hover:translate-x-0" />
                 </button>
               ) : (
                 <div className="flex flex-col gap-2 rounded-xl border border-[var(--danger)]/30 bg-[var(--danger)]/10 p-2.5">
@@ -358,14 +372,14 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                     <button
                       type="button"
                       onClick={() => setConfirmSignOut(false)}
-                      className="flex-1 rounded-lg border border-[var(--panel-border)] py-1 text-xs font-medium text-[var(--text-primary)]"
+                      className="flex-1 rounded-lg border border-[var(--panel-border)] py-1 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--surface-hover)] cursor-pointer"
                     >
                       Annuler
                     </button>
                     <button
                       type="button"
                       onClick={handleSignOut}
-                      className="flex-1 rounded-lg bg-[var(--danger)] py-1 text-xs font-bold text-[var(--accent-contrast)]"
+                      className="flex-1 rounded-lg bg-[var(--danger)] py-1 text-xs font-bold text-[var(--accent-contrast)] hover:opacity-90 cursor-pointer"
                     >
                       Déconnexion
                     </button>

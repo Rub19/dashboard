@@ -94,9 +94,10 @@ export default function FileAddModal({
       title={i18n("add", "Ajouter un élément")}
       size="md"
       hideFooter
+      className="!bg-[#0e0e13] border border-[var(--panel-border)] shadow-2xl"
       contentClassName="p-0"
     >
-      <div className="p-5">
+      <div className="p-5 bg-[#0e0e13]">
         {/* Modern Tab Selector Grid */}
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {actions.map((a) => (
@@ -105,10 +106,10 @@ export default function FileAddModal({
               type="button"
               onClick={() => setTab(a.id)}
               className={cn(
-                "group relative flex flex-col items-center gap-1.5 rounded-2xl border p-3.5 text-center transition-all duration-150 active:scale-98",
+                "group relative flex flex-col items-center gap-1.5 rounded-2xl border p-3.5 text-center transition-all duration-150 active:scale-98 cursor-pointer",
                 tab === a.id
-                  ? "border-[var(--accent-primary)]/50 bg-[var(--accent-primary)]/[0.1] text-[var(--accent-primary)] shadow-[0_0_20px_var(--glow-color)]"
-                  : "border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.3] text-[var(--text-muted)] hover:border-[var(--panel-border)]/[0.25] hover:bg-[var(--panel-bg)]/[0.6] hover:text-[var(--text-primary)]"
+                  ? "border-[var(--accent-primary)]/60 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] shadow-md"
+                  : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:border-[var(--accent-primary)]/30 hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
               )}
             >
               <div className={cn("transition-transform group-hover:scale-110", tab === a.id && "text-[var(--accent-primary)]")}>
@@ -121,12 +122,12 @@ export default function FileAddModal({
         </div>
 
         {/* Tab Content Box */}
-        <div className="mt-4 min-h-[220px] rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.2] p-5">
+        <div className="mt-4 min-h-[220px] rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-5">
           {tab === "upload" && (
             <div className="space-y-4">
               {!clientId ? (
                 <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[var(--panel-border)]/[0.15] bg-[var(--panel-bg)]/[0.5] text-[var(--accent-primary)]">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--accent-primary)] shadow-sm">
                     <Cloud className="h-7 w-7" />
                   </div>
                   <div>
@@ -230,7 +231,7 @@ export default function FileAddModal({
                 "flex h-16 w-16 items-center justify-center rounded-2xl border transition-all",
                 clientId
                   ? "border-[var(--success)]/30 bg-[var(--success)]/10 text-[var(--success)] shadow-sm"
-                  : "border-[var(--panel-border)]/[0.15] bg-[var(--panel-bg)]/[0.5] text-[var(--text-muted)]"
+                  : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)]"
               )}>
                 <Cloud className="h-8 w-8" />
               </div>

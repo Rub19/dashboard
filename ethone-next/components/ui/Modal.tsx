@@ -107,7 +107,7 @@ export default function Modal({
           exit={{ opacity: 0 }}
           transition={reduce ? { duration: 0 } : { duration: 0.18, ease: EASE_OUT }}
           onClick={() => closeOnBackdrop && onClose()}
-          className={`fixed inset-0 z-[var(--z-modal)] flex justify-center bg-[var(--background)]/70 p-4 backdrop-blur-md ${positionOuter[position]}`}
+          className={`fixed inset-0 z-[var(--z-modal)] flex justify-center bg-black/75 p-4 backdrop-blur-md ${positionOuter[position]}`}
         >
           <motion.div
             ref={trapRef}
@@ -120,7 +120,7 @@ export default function Modal({
             exit={{ scale: 0.98, y: 8, opacity: 0 }}
             transition={reduce ? { duration: 0 } : { duration: 0.18, ease: EASE_OUT }}
             onClick={(event) => event.stopPropagation()}
-            className={`liquid-glass-modal relative w-full overflow-hidden p-4 sm:p-6 ${positionInner[position]} ${fullScreen ? "h-[calc(100dvh-2rem)] sm:h-auto sm:max-h-[90vh]" : "max-h-[90dvh] sm:max-h-[90vh]"} ${fullScreen ? "w-full sm:max-w-6xl" : sizeMap[size]} ${className}`}
+            className={`liquid-glass-modal relative w-full overflow-hidden bg-[#0e0e13] border border-[var(--panel-border)] shadow-2xl p-4 sm:p-6 ${positionInner[position]} ${fullScreen ? "h-[calc(100dvh-2rem)] sm:h-auto sm:max-h-[90vh]" : "max-h-[90dvh] sm:max-h-[90vh]"} ${fullScreen ? "w-full sm:max-w-6xl" : sizeMap[size]} ${className}`}
           >
             <div
               className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[var(--accent-primary)]/5 blur-3xl"

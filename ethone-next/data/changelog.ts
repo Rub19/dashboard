@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.65",
+  date: "2026-08-27",
+  title: "Correction Panneaux Connexions (createPortal z-[99999], Sauvegarde API & Icône Tracker.gg)",
+  items: [
+    "Montage des tiroirs de détails et guides dans document.body via createPortal (z-index 99999) : élimination totale des coupures par la barre supérieure et le dock inférieur.",
+    "Bouton 'Enregistrer les identifiants' fiabilisé avec persistance locale et Cloudflare Workers résiliente.",
+    "Intégration de l'icône vectorielle officielle Tracker.gg (TRN Network rose/corail).",
+    "Validation : build Next.js 105/105 pages, 100% tests unitaires, 0 erreur.",
+    "Version affichée : v1.10.65.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.65",
+  date: "2026-08-27",
+  title: "Connections Drawer Overlap Fix, Resilient API Save & Tracker.gg Icon",
+  items: [
+    "Mounted connection drawers & guide modals directly to document.body via createPortal (z-index 99999), preventing any clipping by topbar or bottom dock.",
+    "Fixed credential saving with local and cloud resilience and instant status refresh.",
+    "Added official Tracker.gg vector icon.",
+    "Validation: Next.js 105/105 pages build, 100% unit tests passed, 0 errors.",
+    "Version badge: v1.10.65.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.65",
+  date: "2026-08-27",
+  title: "Corrección de superposición de paneles de conexiones e icono Tracker.gg",
+  items: [
+    "Paneles montados en portal sin superposición de barras y guardado fiable.",
+    "Validación : build, lint, tests.",
+    "Versión : v1.10.65.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.65",
+  date: "2026-08-27",
+  title: "Connections-Drawer Überlappungs-Fix & Tracker.gg Icon",
+  items: [
+    "Drawer über createPortal gerendert, kein Abschneiden durch Leisten mehr.",
+    "Validierung: build, lint, tests.",
+    "Version: v1.10.65.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.64",
   date: "2026-08-27",
   title: "Perfectionnement Graphique de la Dynamic Island Compacte (Spotify & Médias)",

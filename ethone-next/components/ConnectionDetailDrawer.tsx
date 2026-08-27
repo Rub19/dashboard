@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
   RefreshCw,
   Plug,
   Unplug,
-  BookOpen,
   HelpCircle,
   Activity,
   ChevronDown,
@@ -20,7 +20,6 @@ import {
   Check,
   Loader2,
   Key,
-  Shield,
   Radio,
   CheckCircle2,
 } from "lucide-react";
@@ -28,15 +27,14 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useProviderCredentials } from "@/lib/hooks/useProviderCredentials";
-import { getCapabilities, getPermissions } from "@/lib/connection-capabilities";
+import { getCapabilities } from "@/lib/connection-capabilities";
 import { PUBLIC_FIELDS, CREDENTIAL_FIELDS } from "@/lib/connection-config";
 import type { Integration } from "@/lib/integrations";
 import type { IntegrationConfig } from "@/lib/integrations.config";
 import type { PingResult } from "@/lib/connection-config";
 import { hapticLightImpact } from "@/lib/haptics";
 import ServiceIcon from "@/components/ServiceIcon";
-import Badge from "@/components/ui/Badge";
-import { StatusIndicator } from "@/components/ui";
+import Badge, { type BadgeVariant } from "@/components/ui/Badge";
 import type { SyncEvent } from "@/components/ConnectionCard";
 import { cn } from "@/lib/utils";
 
@@ -83,7 +81,6 @@ export default function ConnectionDetailDrawer({
   status,
   health,
   lastSync,
-  history = [],
   onTest,
   onConnect,
   onDisconnect,
@@ -99,57 +96,62 @@ export default function ConnectionDetailDrawer({
   const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});
   const [copied, setCopied] = useState<string | null>(null);
   const [discordMode, setDiscordMode] = useState<"lanyard" | "oauth">("lanyard");
+  const [mounted, setMounted] = useState(false);
 
-  // Field definitions
-  const publicFieldDefs = useMemo(() => PUBLIC_FIELDS[integration.id] || [], [integration.id]);
-  const credFieldDefs = useMemo(() => CREDENTIAL_FIELDS[integration.id] || [], [integration.id]);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const publicFieldDefs = PUBLIC_FIELDS[integration.id] ?? [];
+  const credFieldDefs = CREDENTIAL_FIELDS[integration.id] ?? [];
 
   const [publicValues, setPublicValues] = useState<Record<string, string>>({});
   const [credValues, setCredValues] = useState<Record<string, string>>({});
 
-  // Restore values on open
   useEffect(() => {
     if (!isOpen) return;
 
-    const pub: Record<string, string> = {};
+    // Load initial public values
+    const initPublic: Record<string, string> = {};
     publicFieldDefs.forEach((f) => {
-      const stored = (settings as unknown as Record<string, string>)[f.key as string] || "";
-      pub[f.key as string] = stored;
-    });
-    setPublicValues(pub);
-
-    const cred: Record<string, string> = {};
-    credFieldDefs.forEach((f) => {
-      let saved = "";
-      if (typeof window !== "undefined") {
-        saved = localStorage.getItem(`ethone:cred:${integration.id}:${String(f.key)}`) || "";
+      const val = (settings as Record<string, unknown>)[f.key as string];
+      if (typeof val === "string" || typeof val === "number") {
+        initPublic[f.key as string] = String(val);
+      } else if (typeof window !== "undefined") {
+        const local = localStorage.getItem(`ethone:pub:${integration.id}:${String(f.key)}`);
+        if (local) initPublic[f.key as string] = local;
       }
-      cred[f.key as string] = saved;
     });
-    setCredValues(cred);
-  }, [publicFieldDefs, credFieldDefs, settings, integration.id, isOpen]);
+    setPublicValues(initPublic);
 
-  const isConnected = status === "connected";
-  const variant =
-    status === "connected" ? "success" : status === "error" ? "danger" : "muted";
-
-  useEffect(() => {
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape" && isOpen) onClose();
-    }
-    if (isOpen) document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [isOpen, onClose]);
+    // Load credential values from localStorage if existing
+    const initCreds: Record<string, string> = {};
+    credFieldDefs.forEach((f) => {
+      if (typeof window !== "undefined") {
+        const local = localStorage.getItem(`ethone:cred:${integration.id}:${String(f.key)}`);
+        if (local) initCreds[f.key as string] = local;
+      }
+    });
+    setCredValues(initCreds);
+  }, [isOpen, integration.id, settings]);
 
   const capabilities = useMemo(() => getCapabilities(integration.id), [integration.id]);
-  const permissions = useMemo(() => getPermissions(integration.id), [integration.id]);
+
+  const isConnected = status === "connected" || !!credentials.connected[integration.id];
+
+  const variant: BadgeVariant =
+    status === "connected"
+      ? "success"
+      : status === "error"
+      ? "danger"
+      : "muted";
 
   const statusLabel =
     status === "connected"
-      ? i18n("connectionOperational", "Opérationnel")
+      ? i18n("connected", "Connecté")
       : status === "error"
-        ? i18n("connectionFailed", "Erreur")
-        : i18n("notConfigured", "Non configuré");
+      ? i18n("connectionFailed", "Erreur")
+      : i18n("notConfigured", "Non configuré");
 
   const logs = useMemo(() => {
     if (!health) return "";
@@ -170,12 +172,17 @@ export default function ConnectionDetailDrawer({
 
   const handleSaveCredentials = async () => {
     setSaving(true);
+    hapticLightImpact();
     try {
-      // Save public fields in Settings
+      // Save public fields in Settings and localStorage
       if (publicFieldDefs.length > 0) {
         const patch: Record<string, string> = {};
         publicFieldDefs.forEach((f) => {
-          patch[f.key as string] = publicValues[f.key as string] || "";
+          const v = publicValues[f.key as string] || "";
+          patch[f.key as string] = v;
+          if (typeof window !== "undefined") {
+            localStorage.setItem(`ethone:pub:${integration.id}:${String(f.key)}`, v);
+          }
         });
         update(patch as never);
       }
@@ -193,9 +200,7 @@ export default function ConnectionDetailDrawer({
           }
         });
 
-        if (Object.keys(payload).length > 0) {
-          await credentials.save(integration.id, payload as never);
-        }
+        await credentials.save(integration.id, payload as never);
       }
 
       success("Identifiants enregistrés avec succès !");
@@ -209,11 +214,13 @@ export default function ConnectionDetailDrawer({
 
   const hasFields = publicFieldDefs.length > 0 || credFieldDefs.length > 0;
 
-  return (
+  if (!mounted || typeof document === "undefined" || !document.body) return null;
+
+  const drawerContent = (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[1000] overflow-hidden" aria-modal="true" role="dialog">
-          {/* Backdrop with strong blur and dimming */}
+        <div className="fixed inset-0 z-[99999] overflow-hidden" aria-modal="true" role="dialog">
+          {/* Backdrop with dark blur and dimming */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -223,26 +230,26 @@ export default function ConnectionDetailDrawer({
             className="fixed inset-0 bg-black/85 backdrop-blur-md"
           />
 
-          {/* Drawer Sliding from Right with Top Priority Z-Index */}
+          {/* Drawer Sliding from Right */}
           <motion.div
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 320, damping: 30 }}
             onClick={(e) => e.stopPropagation()}
-            className="fixed right-0 top-0 bottom-0 h-full w-full max-w-xl border-l border-[var(--panel-border)] bg-[var(--panel-bg)]/98 shadow-2xl backdrop-blur-2xl flex flex-col z-[1001] overflow-hidden"
+            className="fixed right-0 top-0 bottom-0 h-full w-full max-w-xl border-l border-[var(--panel-border)] bg-[#090d14] shadow-2xl backdrop-blur-2xl flex flex-col z-[100000] overflow-hidden"
           >
-            {/* Header: Fixed at top of drawer with safe spacing */}
-            <div className="flex shrink-0 items-start justify-between border-b border-[var(--panel-border)] px-5 py-4 bg-black/40">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--surface-raised)] border border-[var(--panel-border)] shadow-sm">
+            {/* Header: Safe top padding to clear topbar */}
+            <div className="flex shrink-0 items-center justify-between border-b border-[var(--panel-border)] px-6 py-5 bg-black/60 pt-[calc(1.25rem+env(safe-area-inset-top))]">
+              <div className="flex items-center gap-3.5 min-w-0">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--surface-raised)] border border-[var(--panel-border)] shadow-md">
                   <ServiceIcon id={integration.id} icon={integration.icon} className="h-6 w-6" colored />
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <h2 className="text-base font-bold text-[var(--text-primary)] truncate">{integration.name}</h2>
+                    <h2 className="text-lg font-extrabold text-[var(--text-primary)] truncate">{integration.name}</h2>
                     {config?.badge && (
-                      <span className="rounded-md border border-[var(--panel-border)] bg-[var(--surface-raised)] px-1.5 py-0.2 font-mono text-[9px] text-[var(--text-muted)]">
+                      <span className="rounded-md border border-[var(--panel-border)] bg-[var(--surface-raised)] px-1.5 py-0.5 font-mono text-[10px] font-bold text-[var(--text-muted)]">
                         {config.badge}
                       </span>
                     )}
@@ -258,7 +265,7 @@ export default function ConnectionDetailDrawer({
                   hapticLightImpact();
                   onClose();
                 }}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[var(--text-muted)] transition hover:bg-[var(--surface-hover)]/40 hover:text-[var(--text-primary)] cursor-pointer"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/5 border border-white/10 text-zinc-400 transition hover:bg-white/10 hover:text-white cursor-pointer"
                 aria-label={i18n("close", "Fermer")}
               >
                 <X className="h-5 w-5" />
@@ -266,7 +273,7 @@ export default function ConnectionDetailDrawer({
             </div>
 
             {/* Scrollable Content Body */}
-            <div className="flex-1 space-y-6 overflow-y-auto p-5 os-scroll">
+            <div className="flex-1 space-y-6 overflow-y-auto p-6 os-scroll">
               {/* Status & Quick Guide */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -285,7 +292,7 @@ export default function ConnectionDetailDrawer({
                   onClick={onGuide}
                   className="inline-flex items-center gap-1.5 text-xs text-[var(--accent-primary)] hover:underline font-semibold cursor-pointer"
                 >
-                  <HelpCircle className="h-3.5 w-3.5" />
+                  <HelpCircle className="h-4 w-4" />
                   <span>Guide de configuration</span>
                 </button>
               </div>
@@ -335,10 +342,10 @@ export default function ConnectionDetailDrawer({
               {/* Configuration / Credentials Form */}
               {hasFields && (integration.id !== "discord" || discordMode === "lanyard") && (
                 <Section title="Configuration & Identifiants API">
-                  <div className="space-y-3.5 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-4">
+                  <div className="space-y-4 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-4">
                     {/* Public Fields */}
                     {publicFieldDefs.map((f) => (
-                      <div key={String(f.key)} className="space-y-1">
+                      <div key={String(f.key)} className="space-y-1.5">
                         <label className="block text-xs font-semibold text-[var(--text-primary)]">
                           {i18n(f.label, f.label)}
                         </label>
@@ -363,80 +370,93 @@ export default function ConnectionDetailDrawer({
                             onChange={(e) =>
                               setPublicValues((p) => ({ ...p, [f.key as string]: e.target.value }))
                             }
-                            placeholder={f.key === "liveLanyardUserId" ? "Ex: 123456789012345678" : `Entrez ${i18n(f.label, f.label)}...`}
-                            className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3 py-2 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
+                            placeholder={`Entrez ${f.label}...`}
+                            className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3.5 py-2.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
                           />
                         )}
                       </div>
                     ))}
 
-                    {/* Credential Fields (API Keys) */}
+                    {/* Credential Fields */}
                     {credFieldDefs.map((f) => {
-                      const isPwd = f.type === "password";
-                      const show = showPassword[f.key as string];
-                      const hasSavedKey = Boolean(credValues[f.key as string]?.trim());
-
+                      const show = !!showPassword[f.key as string];
+                      const val = credValues[f.key as string] || "";
+                      const hasLocal = typeof window !== "undefined" && !!localStorage.getItem(`ethone:cred:${integration.id}:${String(f.key)}`);
                       return (
                         <div key={String(f.key)} className="space-y-1.5">
                           <div className="flex items-center justify-between">
-                            <label className="text-xs font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
+                            <label className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-primary)]">
                               <Key className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
                               <span>{i18n(f.label, f.label)}</span>
-                              {hasSavedKey && (
-                                <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-400 bg-emerald-500/10 px-1.5 py-0.2 rounded border border-emerald-500/20">
+                              {hasLocal && (
+                                <span className="inline-flex items-center gap-1 rounded bg-emerald-500/15 px-1.5 py-0.2 font-mono text-[9px] font-bold text-emerald-400">
                                   <CheckCircle2 className="h-2.5 w-2.5" /> Enregistrée
                                 </span>
                               )}
                             </label>
+
                             {f.portalUrl && (
                               <a
                                 href={f.portalUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--accent-primary)] hover:underline hover:opacity-90 transition-all bg-[var(--accent-primary)]/10 px-2 py-0.5 rounded-lg border border-[var(--accent-primary)]/20 cursor-pointer"
+                                className="inline-flex items-center gap-1 text-[11px] text-[var(--accent-primary)] hover:underline"
                               >
-                                <span>{f.portalLabel || "Obtenir la clé"}</span>
+                                <span>{f.portalLabel || `Obtenir clé ${integration.name}`}</span>
                                 <ExternalLink className="h-3 w-3" />
                               </a>
                             )}
                           </div>
+
                           <div className="relative">
                             <input
-                              type={isPwd && !show ? "password" : "text"}
-                              value={credValues[f.key as string] || ""}
+                              type={show ? "text" : "password"}
+                              value={val}
                               onChange={(e) =>
                                 setCredValues((p) => ({ ...p, [f.key as string]: e.target.value }))
                               }
-                              placeholder={`Collez votre ${i18n(f.label, f.label)}...`}
-                              className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] py-2 pl-3 pr-9 font-mono text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
+                              placeholder={`Entrez ${f.label}...`}
+                              className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] px-3.5 py-2.5 pr-20 text-xs font-mono text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
                             />
-                            {isPwd && (
+                            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                              {val && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleCopy(val, f.key as string)}
+                                  className="rounded-lg p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition cursor-pointer"
+                                  title="Copier"
+                                >
+                                  {copied === f.key ? (
+                                    <Check className="h-3.5 w-3.5 text-emerald-400" />
+                                  ) : (
+                                    <Copy className="h-3.5 w-3.5" />
+                                  )}
+                                </button>
+                              )}
                               <button
                                 type="button"
                                 onClick={() =>
-                                  setShowPassword((p) => ({ ...p, [f.key as string]: !show }))
+                                  setShowPassword((p) => ({ ...p, [f.key as string]: !p[f.key as string] }))
                                 }
-                                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
+                                className="rounded-lg p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition cursor-pointer"
+                                title={show ? "Masquer" : "Afficher"}
                               >
-                                {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                {show ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                               </button>
-                            )}
+                            </div>
                           </div>
                         </div>
                       );
                     })}
 
+                    {/* Save Button */}
                     <button
                       type="button"
                       onClick={handleSaveCredentials}
                       disabled={saving}
-                      className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl bg-[var(--accent-primary)] py-2.5 px-3 text-xs font-bold text-[var(--accent-contrast)] shadow-md hover:opacity-90 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+                      className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-xs font-bold text-white shadow-lg shadow-emerald-600/30 transition hover:bg-emerald-500 active:scale-98 disabled:opacity-50 cursor-pointer"
                     >
-                      {saving ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      ) : (
-                        <Save className="h-3.5 w-3.5" />
-                      )}
+                      {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                       <span>{saving ? "Enregistrement..." : "Enregistrer les identifiants"}</span>
                     </button>
                   </div>
@@ -445,38 +465,41 @@ export default function ConnectionDetailDrawer({
 
               {/* Status Section */}
               <Section title="État du service">
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-3">
-                    <span className="text-[var(--text-muted)] block text-[10px]">Statut</span>
-                    <span className="font-semibold text-[var(--text-primary)] mt-0.5 flex items-center gap-1.5">
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
+                    <span className="text-[10px] text-[var(--text-muted)]">Statut</span>
+                    <div className="mt-1 flex items-center gap-1.5 font-semibold text-[var(--text-primary)]">
                       <span
                         className={cn(
                           "h-2 w-2 rounded-full",
                           status === "connected"
                             ? "bg-emerald-400"
                             : status === "error"
-                            ? "bg-rose-400"
+                            ? "bg-rose-500"
                             : "bg-zinc-500"
                         )}
                       />
-                      {statusLabel}
+                      <span>{statusLabel}</span>
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
+                    <span className="text-[10px] text-[var(--text-muted)]">Dernière synchronisation</span>
+                    <span className="mt-1 block font-semibold text-[var(--text-primary)]">
+                      {lastSync ? relativeTime(lastSync, i18n) : "—"}
                     </span>
                   </div>
-                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-3">
-                    <span className="text-[var(--text-muted)] block text-[10px]">Dernière synchronisation</span>
-                    <span className="font-semibold text-[var(--text-primary)] mt-0.5 block">
-                      {lastSync ? relativeTime(lastSync, i18n) : "À l'instant"}
+
+                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
+                    <span className="text-[10px] text-[var(--text-muted)]">Latence</span>
+                    <span className="mt-1 block font-mono font-semibold text-[var(--text-primary)]">
+                      {health?.ms ? `${health.ms} ms` : "—"}
                     </span>
                   </div>
-                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-3">
-                    <span className="text-[var(--text-muted)] block text-[10px]">Latence</span>
-                    <span className="font-mono font-semibold text-[var(--text-primary)] mt-0.5 block">
-                      {health ? `${health.ms} ms` : "—"}
-                    </span>
-                  </div>
-                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/50 p-3">
-                    <span className="text-[var(--text-muted)] block text-[10px]">Intégration Brain</span>
-                    <span className="font-semibold text-emerald-400 mt-0.5 block">
+
+                  <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3">
+                    <span className="text-[10px] text-[var(--text-muted)]">Intégration Brain</span>
+                    <span className="mt-1 block font-semibold text-emerald-400">
                       Active
                     </span>
                   </div>
@@ -522,12 +545,12 @@ export default function ConnectionDetailDrawer({
               )}
             </div>
 
-            {/* Bottom Actions Bar: Always fixed at bottom of drawer */}
-            <div className="border-t border-[var(--panel-border)] px-5 py-4 bg-black/50 flex items-center justify-between gap-3 shrink-0">
+            {/* Bottom Actions Bar: Fully visible above dock with safe bottom spacing */}
+            <div className="border-t border-[var(--panel-border)] px-6 py-4 pb-[calc(1.25rem+env(safe-area-inset-bottom))] bg-[#070a10]/95 backdrop-blur-xl flex items-center justify-between gap-3 shrink-0 shadow-2xl">
               <button
                 type="button"
                 onClick={onTest}
-                className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)] px-4 py-2.5 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-all active:scale-95 cursor-pointer"
+                className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-bold text-white hover:bg-white/10 transition-all active:scale-95 cursor-pointer"
               >
                 <RefreshCw className="h-3.5 w-3.5" />
                 <span>Tester la connexion</span>
@@ -537,7 +560,7 @@ export default function ConnectionDetailDrawer({
                 <button
                   type="button"
                   onClick={onDisconnect}
-                  className="flex items-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-2.5 text-xs font-bold text-rose-300 hover:bg-rose-500/20 transition-all active:scale-95 cursor-pointer"
+                  className="flex items-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-2.5 text-xs font-bold text-rose-300 hover:bg-rose-500/20 transition-all active:scale-95 cursor-pointer"
                 >
                   <Unplug className="h-3.5 w-3.5" />
                   <span>Déconnecter</span>
@@ -547,7 +570,7 @@ export default function ConnectionDetailDrawer({
                   <button
                     type="button"
                     onClick={onConnect}
-                    className="flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-4 py-2.5 text-xs font-bold text-[var(--accent-contrast)] shadow-md hover:opacity-90 transition-all active:scale-95 cursor-pointer"
+                    className="flex items-center gap-2 rounded-xl bg-[var(--accent-primary)] px-4 py-2.5 text-xs font-bold text-[var(--accent-contrast)] shadow-md hover:opacity-90 transition-all active:scale-95 cursor-pointer"
                   >
                     <Plug className="h-3.5 w-3.5" />
                     <span>Connecter</span>
@@ -560,4 +583,6 @@ export default function ConnectionDetailDrawer({
       )}
     </AnimatePresence>
   );
+
+  return createPortal(drawerContent, document.body);
 }

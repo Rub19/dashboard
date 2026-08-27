@@ -28,6 +28,27 @@ function ValorantSvg({ className, color }: { className?: string; color?: string 
   );
 }
 
+function TrackerGgSvg({ className, color }: { className?: string; color?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden="true"
+    >
+      <rect width="24" height="24" rx="6" fill={color || "#FF2E55"} fillOpacity="0.16" />
+      <path
+        d="M12 3.5L19.5 7.8V16.2L12 20.5L4.5 16.2V7.8L12 3.5Z"
+        stroke={color || "#FF2E55"}
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="12" r="3.5" stroke={color || "#FF2E55"} strokeWidth="1.8" />
+      <circle cx="12" cy="12" r="1.3" fill={color || "#FF2E55"} />
+    </svg>
+  );
+}
+
 const OVERRIDES: Record<string, string> = {
   spotify: "tabler:brand-spotify",
   youtube: "tabler:brand-youtube",
@@ -62,8 +83,6 @@ const OVERRIDES: Record<string, string> = {
   email: "tabler:mail",
   weather: "tabler:cloud-sun",
   rss: "tabler:rss",
-  "tracker-gg": "simple-icons:trackeregg",
-  tracker: "simple-icons:trackeregg",
 };
 
 const COLORS: Record<string, string> = {
@@ -103,6 +122,8 @@ const COLORS: Record<string, string> = {
   riot: "#EB0029",
   riotgames: "#EB0029",
   "tracker-gg": "#FF2E55",
+  "tracker.gg": "#FF2E55",
+  tracker: "#FF2E55",
   valorant: "#FF4655",
 };
 
@@ -121,6 +142,10 @@ export default function ServiceIcon({
 
   if (id === "valorant") {
     return <ValorantSvg className={className} color={color} />;
+  }
+
+  if (id === "tracker-gg" || id === "tracker.gg" || id === "tracker") {
+    return <TrackerGgSvg className={className} color={color} />;
   }
 
   const iconId = OVERRIDES[id] || `lucide:${icon}`;

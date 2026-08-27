@@ -1,8 +1,9 @@
 "use client";
 
-import { Check, Copy, ExternalLink, X, BookOpen, Compass, ShieldCheck } from "lucide-react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import { Check, Copy, ExternalLink, X, Compass, ShieldCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useI18n } from "@/lib/hooks/useI18n";
 import { getConnectionGuide, type ConnectionGuide } from "@/config/connectionsGuide";
 import { getIntegrationConfig, type IntegrationConfig } from "@/lib/integrations.config";
 import { hapticLightImpact } from "@/lib/haptics";
@@ -23,10 +24,8 @@ function GuideSteps({
   copied: string | null;
   onCopy: (value: string, key: string) => void;
 }) {
-  const i18n = useI18n();
   const configSteps = config?.steps;
   const guideSteps = guide?.keyGuide.steps;
-  const title = config ? "Guide de configuration pas-à-pas" : "Comment obtenir vos accès & clés API ?";
   const dashboardUrl = config?.developerUrl || guide?.keyGuide.dashboardUrl;
   const dashboardText = config?.developerButtonLabel || guide?.keyGuide.linkText;
 
@@ -43,26 +42,28 @@ function GuideSteps({
             Accès direct au portail développeur
           </span>
         </div>
-        {dashboardUrl && (
+        {dashboardUrl ? (
           <a
             href={dashboardUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-[var(--accent-primary)] px-3 py-1.5 text-xs font-bold text-[var(--accent-contrast)] shadow-sm hover:opacity-90 transition-all cursor-pointer"
+            className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-[var(--accent-primary)] px-3 py-1.5 text-xs font-bold text-[var(--accent-contrast)] hover:opacity-90 transition-all shadow-sm shrink-0"
           >
-            <span>{dashboardText || "Ouvrir le portail"}</span>
-            <ExternalLink className="h-3 w-3" />
+            <span>{dashboardText || "Ouvrir la console"}</span>
+            <ExternalLink className="h-3.5 w-3.5" />
           </a>
+        ) : (
+          <span className="text-[11px] text-[var(--text-muted)]">Configuration locale</span>
         )}
       </div>
 
       {/* Redirect URI Box (if applicable) */}
-      {(config?.requiresRedirectUri || config?.category === "oauth" || guide?.badge === "OAUTH") && (
-        <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] p-3 space-y-1.5">
+      {config?.callbackPath && (
+        <div className="space-y-1.5 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-sunken)] p-3">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-[var(--text-primary)] flex items-center gap-1">
+            <span className="text-xs font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
               <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-              URI de redirection (Redirect / Callback URI)
+              URL de redirection (Redirect URI)
             </span>
             <button
               type="button"
@@ -98,75 +99,72 @@ function GuideSteps({
         </h5>
 
         {configSteps && configSteps.length > 0 ? (
-          <div className="space-y-2">
-            {configSteps.map((step, idx) => {
-              const copyValue =
-                step.copyValueType === "callback"
-                  ? `${origin}${config.callbackPath}`
-                  : step.copyValueType === "homepage"
-                  ? `${origin}/`
-                  : "";
-              const copyKey = `${config.id}-${step.copyValueType ?? "step"}-${idx}`;
-              return (
-                <div
-                  key={idx}
-                  className="flex gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-xs"
-                >
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 font-mono text-xs font-bold text-[var(--accent-primary)]">
-                    {idx + 1}
-                  </span>
-                  <div className="flex-1 space-y-1">
-                    <p className="font-semibold text-[var(--text-primary)]">{step.title}</p>
-                    <p className="text-[var(--text-muted)] leading-relaxed">{step.description}</p>
-                    {copyValue && (
-                      <div className="mt-2 flex items-center gap-2">
-                        <code className="flex-1 truncate rounded-lg border border-[var(--panel-border)] bg-black/50 px-2.5 py-1 font-mono text-[10px] text-[var(--accent-primary)]">
-                          {copyValue}
-                        </code>
-                        <button
-                          type="button"
-                          onClick={() => onCopy(copyValue, copyKey)}
-                          className="flex items-center gap-1 rounded-md bg-[var(--surface-raised)] border border-[var(--panel-border)] px-2 py-1 text-[10px] font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)] cursor-pointer"
-                        >
-                          {copied === copyKey ? (
-                            <Check className="h-3 w-3 text-emerald-400" />
-                          ) : (
-                            <Copy className="h-3 w-3" />
-                          )}
-                          <span>{copied === copyKey ? "Copié" : "Copier"}</span>
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        ) : guideSteps && guideSteps.length > 0 ? (
-          <div className="space-y-2">
-            {guideSteps.map((step, idx) => (
-              <div
+          <ol className="space-y-2.5">
+            {configSteps.map((step, idx) => (
+              <li
                 key={idx}
-                className="flex gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-xs"
+                className="flex items-start gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3"
               >
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--accent-primary)]/15 border border-[var(--accent-primary)]/30 font-mono text-xs font-bold text-[var(--accent-primary)]">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--accent-primary)] text-[10px] font-bold text-[var(--accent-contrast)]">
                   {idx + 1}
                 </span>
-                <p className="text-[var(--text-primary)] leading-relaxed self-center">{step}</p>
-              </div>
+                <div className="space-y-1 min-w-0 flex-1">
+                  <p className="text-xs font-bold text-[var(--text-primary)]">{step.title}</p>
+                  <p className="text-xs text-[var(--text-muted)] leading-relaxed">{step.description}</p>
+                  {step.copyValueType === "callback" && (
+                    <div className="mt-2 flex items-center justify-between rounded-lg border border-[var(--panel-border)] bg-black/50 p-2">
+                      <code className="text-[11px] font-mono text-[var(--accent-primary)] truncate">
+                        {redirectUri}
+                      </code>
+                      <button
+                        type="button"
+                        onClick={() => onCopy(redirectUri, `code-${idx}`)}
+                        className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
+                        title="Copier"
+                      >
+                        {copied === `code-${idx}` ? (
+                          <Check className="h-3.5 w-3.5 text-emerald-400" />
+                        ) : (
+                          <Copy className="h-3.5 w-3.5" />
+                        )}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </li>
             ))}
+          </ol>
+        ) : guideSteps && guideSteps.length > 0 ? (
+          <ol className="space-y-2.5">
+            {guideSteps.map((step, index) => (
+              <li
+                key={index}
+                className="flex items-start gap-3 rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-xs"
+              >
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--accent-primary)] text-[10px] font-bold text-[var(--accent-contrast)]">
+                  {index + 1}
+                </span>
+                <p className="text-xs text-[var(--text-primary)] leading-relaxed">{step}</p>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/30 p-4 text-center">
+            <p className="text-xs text-[var(--text-muted)]">
+              Entrez simplement vos identifiants ou clé API dans le formulaire pour activer le service.
+            </p>
           </div>
-        ) : null}
+        )}
       </div>
     </div>
   );
 }
 
-type ConnectionGuideModalProps = {
+export type ConnectionGuideModalProps = {
   isOpen: boolean;
   onClose: () => void;
   integrationId: string;
-  origin: string;
+  origin?: string;
   copied: string | null;
   onCopy: (value: string, key: string) => void;
 };
@@ -179,14 +177,21 @@ export default function ConnectionGuideModal({
   copied,
   onCopy,
 }: ConnectionGuideModalProps) {
-  const i18n = useI18n();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const config = getIntegrationConfig(integrationId);
   const guide = getConnectionGuide(integrationId);
 
-  return (
+  if (!mounted || typeof document === "undefined" || !document.body) return null;
+
+  const content = (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto" aria-modal="true" role="dialog">
+        <div className="fixed inset-0 z-[999999] overflow-y-auto" aria-modal="true" role="dialog">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -194,7 +199,7 @@ export default function ConnectionGuideModal({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/80 backdrop-blur-md"
+            className="fixed inset-0 bg-black/85 backdrop-blur-md"
           />
 
           {/* Modal Centered Container */}
@@ -205,10 +210,10 @@ export default function ConnectionGuideModal({
               exit={{ scale: 0.95, opacity: 0, y: 16 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-xl max-h-[85vh] flex flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/98 shadow-2xl backdrop-blur-2xl"
+              className="relative w-full max-w-xl max-h-[85vh] flex flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[#090d14] shadow-2xl backdrop-blur-2xl z-[1000000]"
             >
               {/* Header */}
-              <div className="flex shrink-0 items-start justify-between border-b border-[var(--panel-border)] p-4 sm:p-5 bg-black/20">
+              <div className="flex shrink-0 items-center justify-between border-b border-[var(--panel-border)] p-4 sm:p-5 bg-black/40">
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-raised)] border border-[var(--panel-border)] shadow-sm">
                     <ServiceIcon id={integrationId} icon="plug" className="h-5 w-5" colored />
@@ -249,7 +254,7 @@ export default function ConnectionGuideModal({
               </div>
 
               {/* Footer */}
-              <div className="border-t border-[var(--panel-border)] p-4 bg-black/40 flex justify-end shrink-0">
+              <div className="border-t border-[var(--panel-border)] p-4 bg-black/50 flex justify-end shrink-0">
                 <button
                   type="button"
                   onClick={onClose}
@@ -264,4 +269,6 @@ export default function ConnectionGuideModal({
       )}
     </AnimatePresence>
   );
+
+  return createPortal(content, document.body);
 }

@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.11.05",
+  date: "2026-08-27",
+  title: "CI/CD & Builds GitHub : Réparation Complète des Workflows (Web, iOS, Android)",
+  items: [
+    "Correction des linters et tests unitaires pour assurer le passage systématique des builds Web.",
+    "Correction de l'environnement d'exécution macOS pour le build natif iOS (`macos-14`).",
+    "Validation des composants et dépendances biométriques pour le build Android.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.11.05",
+  date: "2026-08-27",
+  title: "CI/CD & GitHub Builds: Complete Multiplatform Workflow Fix (Web, iOS, Android)",
+  items: [
+    "Fixed ESLint and unit test expectations for clean Web CI passes.",
+    "Fixed macOS runner configuration for native iOS compilation (`macos-14`).",
+    "Validated Kotlin/Compose biometric components for Android build.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.11.05",
+  date: "2026-08-27",
+  title: "CI/CD: Corrección de Compilación Multiplataforma",
+  items: [
+    "Corrección de los workflows de GitHub Actions para Web, iOS y Android.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.11.05",
+  date: "2026-08-27",
+  title: "CI/CD: GitHub Actions Workflow-Reparatur",
+  items: [
+    "Behebung der Build- und Test-Pipelines für Web, iOS und Android.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.11.04",
   date: "2026-08-27",
   title: "Ambiances Sonores : Restauration de l'Audibilité & Synthèse Audio Haute Définition",

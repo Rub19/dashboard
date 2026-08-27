@@ -1,4 +1,4 @@
-﻿package dev.ethone.app.ui.screens
+package dev.ethone.app.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -54,11 +54,9 @@ fun BentoGridScreen(
     }
 
     if (showAuth) {
-        val biometricPromptManager = remember { BiometricPromptManager() }
-        biometricPromptManager.showBiometricPrompt(
-            onSuccess = { showAuth = false },
-            onError = { showAuth = false },
-            onCancel = { showAuth = false }
+        BiometricPromptManager.BiometricDialog(
+            onAuthenticated = { showAuth = false },
+            onDismiss = { showAuth = false }
         )
     }
 }

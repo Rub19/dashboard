@@ -24,7 +24,7 @@ describe("oauth", () => {
     const res = await exchangeCode("github", "code-456", "client-123");
     expect(mockedFetchWorker).toHaveBeenCalledWith("/api/github/oauth/exchange", {
       method: "POST",
-      body: JSON.stringify({ code: "code-456", clientId: "client-123" }),
+      body: JSON.stringify({ code: "code-456", clientId: "client-123", redirectUri: "http://localhost/" }),
     });
     expect(res).toEqual({ data: { connected: true } });
   });

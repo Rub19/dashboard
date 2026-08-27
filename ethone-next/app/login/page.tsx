@@ -694,7 +694,7 @@ export default function LoginPage() {
                         className="flex items-center gap-1 text-zinc-400 hover:text-white transition-colors cursor-pointer"
                       >
                         <ChevronLeft className="h-3.5 w-3.5" />
-                        <span>Modifier l'adresse</span>
+                        <span>Modifier l&apos;adresse</span>
                       </button>
 
                       <button

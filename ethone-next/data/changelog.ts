@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.80",
+  date: "2026-08-27",
+  title: "Restauration Globale de la Photo de Profil et du Pseudo",
+  items: [
+    "Résolution multi-sources de l'avatar et du pseudo : profil public, compte Discord lié, métadonnées OAuth Google/Supabase et profils actifs.",
+    "Persistance et mise en cache locale instantanée pour un affichage sans aucun flash.",
+    "Affichage continu du nom d'utilisateur sur la barre supérieure dès les écrans mobiles/tablettes.",
+    "Validation : build Next.js 105/105 pages, 100% tests unitaires, 0 erreur.",
+    "Version affichée : v1.10.80.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.80",
+  date: "2026-08-27",
+  title: "Complete Restoration of User Profile Picture & Display Name",
+  items: [
+    "Multi-source avatar and username resolution from public profiles, linked Discord, Google/Supabase OAuth, and active workspace profiles.",
+    "Instant local persistence ensuring seamless flash-free rendering across reloads.",
+    "Persistent header display name across tablets, laptops, and wide screens.",
+    "Validation: Next.js 105/105 pages build, 100% unit tests passed, 0 errors.",
+    "Version badge: v1.10.80.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.80",
+  date: "2026-08-27",
+  title: "Restauración de foto de perfil y nombre de usuario",
+  items: [
+    "Resolución multi-fuente de avatar y nombre de perfil.",
+    "Validación : build, lint, tests.",
+    "Versión : v1.10.80.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.80",
+  date: "2026-08-27",
+  title: "Wiederherstellung von Profilbild und Anzeigename",
+  items: [
+    "Mehrstufige Erkennung von Avatar und Profilnamen.",
+    "Validierung: build, lint, tests.",
+    "Version: v1.10.80.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.79",
   date: "2026-08-27",
   title: "Sublimation du Bouton 'Nouveau Message' (ETHONE Mail)",

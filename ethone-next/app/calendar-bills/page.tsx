@@ -1,5 +1,5 @@
-import CalendarInvoicesPage from "@/components/CalendarInvoicesPage";
+import CalendarPage from "@/app/calendar/page";
 
 export default function CalendarBillsRoute() {
-  return <CalendarInvoicesPage />;
+  return <CalendarPage />;
 }

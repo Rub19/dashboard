@@ -206,30 +206,42 @@ export function Calendar({
               onClick={() => select(day)}
               aria-pressed={selected}
               className={cn(
-                "relative flex min-h-0 flex-col items-center justify-center rounded-xl text-sm transition-colors",
-                !inMonth && "pointer-events-none text-transparent",
+                "relative flex min-h-0 flex-col items-center justify-center rounded-2xl p-1 text-sm transition-all duration-200 cursor-pointer",
+                !inMonth && "pointer-events-none opacity-0",
                 selected
-                  ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] hover:bg-[var(--accent-primary)]"
+                  ? "border border-purple-400/60 bg-gradient-to-b from-purple-500/30 to-indigo-500/20 text-white shadow-[0_0_20px_rgba(168,85,247,0.35)] scale-[1.03]"
                   : isTodayCell
-                    ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] ring-1 ring-[var(--accent-primary)]/50 hover:bg-[var(--accent-primary)]/20"
-                    : "bg-[var(--text-primary)]/2 text-[var(--text-primary)] hover:bg-[var(--text-primary)]/6",
+                    ? "border border-cyan-500/40 bg-cyan-500/10 text-cyan-300 ring-1 ring-cyan-500/30 hover:bg-cyan-500/20"
+                    : "border border-white/[0.04] bg-white/[0.02] text-zinc-300 hover:border-white/15 hover:bg-white/[0.06] hover:scale-105",
+                marker && !selected && "border-white/10 bg-white/[0.05]"
               )}
             >
               <span
                 className={cn(
-                  "text-sm font-medium",
-                  selected ? "text-[var(--accent-contrast)]" : isTodayCell ? "text-[var(--accent-primary)]" : "",
+                  "text-xs font-bold",
+                  selected ? "text-white" : isTodayCell ? "text-cyan-300" : "text-zinc-200",
                 )}
               >
                 {day.day}
               </span>
               {marker && (
-                <span
-                  className={cn(
-                    "mt-0.5 h-1.5 w-1.5 rounded-full",
-                    TONE_CLASSES[marker.tone ?? "default"] ?? TONE_CLASSES.default,
+                <div className="mt-1 flex items-center gap-1">
+                  <span
+                    className={cn(
+                      "h-1.5 w-1.5 rounded-full shadow-[0_0_6px_currentColor]",
+                      marker.tone === "error"
+                        ? "bg-rose-500 text-rose-500"
+                        : marker.tone === "success"
+                        ? "bg-emerald-400 text-emerald-400"
+                        : "bg-purple-400 text-purple-400"
+                    )}
+                  />
+                  {marker.count && marker.count > 1 && (
+                    <span className="font-mono text-[9px] font-bold text-zinc-400">
+                      {marker.count}
+                    </span>
                   )}
-                />
+                </div>
               )}
             </button>
           );

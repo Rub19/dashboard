@@ -7206,6 +7206,56 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.46",
+  date: "2026-08-27",
+  title: "Refonte du Calendrier & Factures, Logos Réels des Marques & Assistant Brain Finance",
+  items: [
+    "Logos officiels des marques vectoriels haute définition (SimpleIcons) : ChatGPT, Claude, Cursor, GitHub, Spotify, Netflix, Discord Nitro, Apple One, Freebox, EDF, Navigo, etc.",
+    "Brain Finance Assistant (BrainFinanceAssistant) : analyse de budget mensuel/annuel, détection d'abonnements et création en langage naturel.",
+    "Carrousel d'abonnements populaires en 1 clic (ChatGPT, Netflix, Spotify, GitHub Copilot, iCloud...).",
+    "Design Calendrier Obsidian Glass : cellules interactives arrondies avec lueurs d'état et badges d'échéance.",
+    "Validation : build Next.js 105/105 pages, TypeScript sans erreur.",
+    "Version affichée : v1.10.46.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.46",
+  date: "2026-08-27",
+  title: "Calendar & Billing Rework, Official Brand Logos & Brain Finance Assistant",
+  items: [
+    "Official high-res vector brand logos: ChatGPT, Claude, Cursor, GitHub, Spotify, Netflix, Discord Nitro, Apple One, Freebox, EDF, Navigo, etc.",
+    "Brain Finance Assistant: monthly/annual budget analyzer, subscription detection, and natural language bill creation.",
+    "Instant 1-click popular subscription quick-add chips (ChatGPT, Netflix, Spotify, Copilot, iCloud...).",
+    "Obsidian Glass Calendar design: rounded glowing cells, state badges, and smooth animations.",
+    "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
+    "Version badge: v1.10.46.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.46",
+  date: "2026-08-27",
+  title: "Rediseño de Calendario y Facturas con logotipos y Asistente Brain Finance",
+  items: [
+    "Logos oficiales de marcas, asistente financiero Brain IA y vista Obsidian Glass.",
+    "Validación : build, lint.",
+    "Versión : v1.10.46.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.46",
+  date: "2026-08-27",
+  title: "Kalender & Rechnungen Redesign, Echte Markenlogos & Brain Finanzassistent",
+  items: [
+    "Offizielle Markenlogos, Brain Finanzanalyse und Obsidian Glass Kalender.",
+    "Validierung: build, lint.",
+    "Version: v1.10.46.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.45",
   date: "2026-08-27",
   title: "Refonte Complète de l'Espace Tâches & Générateur IA Intelligent",

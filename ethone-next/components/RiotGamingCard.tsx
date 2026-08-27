@@ -215,10 +215,10 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
           </button>
         </div>
       ) : !hasProfile ? (
-        /* Configured but waiting/fallback state -> show rich tracker card */
-        <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 py-2 text-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/5 shadow-inner">
-            <GameIcon game={game} className="h-7 w-7 text-white" />
+        /* Configured state -> prompt to open tracker with real data */
+        <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 py-3 text-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/5 shadow-inner">
+            <GameIcon game={game} className="h-6 w-6 text-white" />
           </div>
 
           <div>
@@ -226,23 +226,8 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
               {displayName} <span className="text-xs text-[var(--text-muted)] font-normal">#{displayTag}</span>
             </h4>
             <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
-              {game === "valorant" ? "Tracker Compétitif • Ascendant 2" : "Tracker Compétitif • Émeraude 1"}
+              {game === "valorant" ? "Tracker Officiel Riot Games" : "Tracker Officiel League"}
             </p>
-          </div>
-
-          <div className="grid grid-cols-3 gap-2 w-full">
-            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-2 text-center">
-              <p className="font-mono font-bold text-xs text-white">{game === "valorant" ? "64%" : "59%"}</p>
-              <p className="text-[9px] text-[var(--text-muted)]">Winrate</p>
-            </div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-2 text-center">
-              <p className="font-mono font-bold text-xs text-white">{game === "valorant" ? "1.42" : "3.28"}</p>
-              <p className="text-[9px] text-[var(--text-muted)]">KDA</p>
-            </div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-2 text-center">
-              <p className="font-mono font-bold text-xs text-white">{game === "valorant" ? "26.8%" : "8.2"}</p>
-              <p className="text-[9px] text-[var(--text-muted)]">{game === "valorant" ? "HS %" : "CS/m"}</p>
-            </div>
           </div>
 
           <button
@@ -252,14 +237,14 @@ export const RiotGamingCardContent = memo(function RiotGamingCardContent({
               onOpenTracker?.();
             }}
             className={cn(
-              "w-full rounded-xl py-2 px-3 text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95",
+              "w-full rounded-xl py-2 px-3 text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer shadow-md",
               game === "valorant"
-                ? "bg-rose-500/20 border border-rose-500/40 text-rose-300 hover:bg-rose-500/30"
-                : "bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30"
+                ? "bg-rose-600 text-white hover:bg-rose-500 shadow-rose-900/30"
+                : "bg-amber-600 text-white hover:bg-amber-500 shadow-amber-900/30"
             )}
           >
             <Activity className="h-3.5 w-3.5" />
-            <span>Voir l&apos;interface Tracker complète</span>
+            <span>Consulter mes statistiques réelles</span>
           </button>
         </div>
       ) : (

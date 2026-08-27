@@ -15,7 +15,11 @@ async function ownKeyTracker(env, auth) {
 async function ownKeyHenrik(env, auth) {
   if (!auth?.userId) return null;
   const credential = await getUserProviderCredential(env, auth.userId, "riot");
-  return typeof credential?.henrikApiKey === "string" ? credential.henrikApiKey : null;
+  if (typeof credential?.henrikApiKey === "string" && credential.henrikApiKey) return credential.henrikApiKey;
+  if (typeof credential?.apiKey === "string" && credential.apiKey) return credential.apiKey;
+  const valoCredential = await getUserProviderCredential(env, auth.userId, "valorant");
+  if (typeof valoCredential?.apiKey === "string" && valoCredential.apiKey) return valoCredential.apiKey;
+  return null;
 }
 
 async function ownKeyRiot(env, auth) {

@@ -7206,6 +7206,56 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.50",
+  date: "2026-08-27",
+  title: "Tracker Valorant Réel 100% Officiel (Zéro Placeholder) & Gestion des Erreurs API",
+  items: [
+    "Suppression définitive de toutes les données factices/placeholders dans TrackerModal et RiotGamingCard.",
+    "Intégration du tracker officiel Valorant avec gestion explicite des erreurs de clé API Henrik/Riot et notifications toast.",
+    "Détection automatique des identifiants et clés API enregistrées (Riot, Valorant, Henrik).",
+    "Affichage conforme au design officiel : dates groupées, K/D, K/D/A, DDΔ, HS%, ACS et tableau des scores 10 joueurs.",
+    "Validation : build Next.js 105/105 pages, TypeScript sans erreur.",
+    "Version affichée : v1.10.50.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.50",
+  date: "2026-08-27",
+  title: "100% Real Valorant Tracker (Zero Placeholders) & API Error Handling",
+  items: [
+    "Permanent removal of all fake demo/placeholder data across TrackerModal and RiotGamingCard.",
+    "Full integration with live Henrik/Riot API and actionable error notifications when keys or IDs fail.",
+    "Automatic credential discovery for saved Riot, Valorant, and Henrik API keys.",
+    "Official tracker design: date-grouped match history, combat stats, MVP tags, and 10-player scoreboard.",
+    "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
+    "Version badge: v1.10.50.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.50",
+  date: "2026-08-27",
+  title: "Tracker de Valorant 100% real y manejo de errores de API",
+  items: [
+    "Eliminación total de datos ficticios y conexión con API real de Riot/Henrik.",
+    "Validación : build, lint.",
+    "Versión : v1.10.50.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.50",
+  date: "2026-08-27",
+  title: "100% echter Valorant Tracker & API-Fehlerbehandlung",
+  items: [
+    "Vollständige Entfernung von Demodaten und Anbindung an die echte Riot/Henrik-API.",
+    "Validierung: build, lint.",
+    "Version: v1.10.50.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.49",
   date: "2026-08-27",
   title: "Auto-Masquage Intelligent du Dock sur Brain & Restauration Contextuelle",

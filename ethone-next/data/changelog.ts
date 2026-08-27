@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.88",
+  date: "2026-08-27",
+  title: "Calendrier & Factures : Logos des Marques, Ajout Ciblé, 22+ Abonnements & Rework Dropdown",
+  items: [
+    "Affichage des véritables logos de marques dans les cases du calendrier sous la date à la place d'une simple pastille verte.",
+    "Correction de l'ajout rapide : le clic sur un abonnement ou la commande IA prend désormais en compte le jour sélectionné (ex: le 31) au lieu de la date du jour.",
+    "Ajout d'un catalogue élargi de 22+ abonnements populaires (YouTube, Prime, Disney+, Apple Music, Midjourney, Claude Pro, etc.).",
+    "Raccourcissement et optimisation de la hauteur de la page Calendrier pour éviter tout débordement en bas de l'écran.",
+    "Rework global des menus déroulants (select) avec suppression de la flèche grise Windows et style moderne glassmorphic.",
+    "Version affichée : v1.10.88.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.88",
+  date: "2026-08-27",
+  title: "Calendar & Bills: Brand Logos, Targeted Date Quick-Add, 22+ Subscriptions & Sleek Dropdowns",
+  items: [
+    "Render actual brand logos inside calendar cells instead of generic green dots.",
+    "Quick-add recommendations now use the active selected calendar day (e.g. 31st) instead of always defaulting to today.",
+    "Expanded popular subscriptions library to 22+ top picks (YouTube, Prime, Disney+, Apple Music, Claude Pro, etc.).",
+    "Compacted calendar layout height to eliminate bottom overflow and clipping.",
+    "Global rework of all select dropdowns with custom modern chevrons and glassmorphic styling.",
+    "Version badge: v1.10.88.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.88",
+  date: "2026-08-27",
+  title: "Calendario y Facturas: Logos de marcas, 22+ suscripciones y dropdowns mejorados",
+  items: [
+    "Logos reales en las celdas del calendario, selección de fecha exacta para añadir suscripciones y diseño estilizado de select.",
+    "Versión: v1.10.88.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.88",
+  date: "2026-08-27",
+  title: "Kalender & Rechnungen: Markenlogos, 22+ Abonnements und überarbeitete Dropdowns",
+  items: [
+    "Echte Markenlogos in Kalenderzellen, gezieltes Hinzufügen auf das ausgewählte Datum und modernes Select-Design.",
+    "Version: v1.10.88.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.87",
   date: "2026-08-27",
   title: "Résolution des Connexions Spotify & Élimination de l'Erreur de Chargement",

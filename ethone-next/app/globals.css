@@ -53,7 +53,24 @@
   --input-radius: 0.75rem;
   --input-focus-ring: 0 0 0 3px color-mix(in srgb, var(--accent-primary) 20%, transparent);
   --input-focus-glow: 0 0 0 3px color-mix(in srgb, var(--accent-primary) 18%, transparent), 0 0 16px -4px var(--glow-color);
+}
 
+/* Global Modern Select styling (removes Windows gray arrow) */
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.6rem center;
+  background-size: 1rem;
+}
+
+select::-ms-expand {
+  display: none;
+}
+
+:root {
   /* Legacy semantic tokens */
   --surface-1: var(--surface);
   --surface-2: var(--surface-raised);

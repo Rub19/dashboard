@@ -23,6 +23,10 @@ export type CalendarMarker = {
   count?: number;
   /** Visual accent of the dot. */
   tone?: "default" | "success" | "warning" | "error" | "info";
+  /** Brand logos / images for the bills */
+  logos?: string[];
+  /** Bill labels */
+  labels?: string[];
 };
 
 export interface CalendarProps {
@@ -140,15 +144,15 @@ export function Calendar({
   return (
     <div
       className={cn(
-        "flex flex-col overflow-hidden rounded-2xl border border-[var(--text-primary)]/[0.08] bg-zinc-950/75 p-4 backdrop-blur-2xl",
+        "flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-zinc-950/80 p-3 sm:p-4 backdrop-blur-2xl shadow-xl",
         className,
       )}
     >
-      <div className="mb-4 flex shrink-0 items-center justify-between gap-3">
+      <div className="mb-2.5 flex shrink-0 items-center justify-between gap-2">
         <button
           type="button"
           onClick={() => nav(-1)}
-          className="rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/4 p-2 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
+          className="rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/4 p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] cursor-pointer"
           aria-label="Mois précédent"
         >
           <ChevronLeft className="h-4 w-4" />
@@ -160,14 +164,14 @@ export function Calendar({
               value={String(focused.month)}
               onChange={(v) => changeMonth(Number(v), focused.year)}
               options={monthOptions}
-              className="w-36"
+              className="w-32 sm:w-36"
               aria-label="Mois"
             />
             <Select
               value={String(focused.year)}
               onChange={(v) => changeMonth(focused.month, Number(v))}
               options={yearOptions}
-              className="w-28"
+              className="w-24 sm:w-28"
               aria-label="Année"
             />
           </div>
@@ -178,20 +182,20 @@ export function Calendar({
         <button
           type="button"
           onClick={() => nav(1)}
-          className="rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/4 p-2 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
+          className="rounded-xl border border-[var(--panel-border)] bg-[var(--text-primary)]/4 p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] cursor-pointer"
           aria-label="Mois suivant"
         >
           <ChevronRight className="h-4 w-4" />
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-1 text-center text-[11px] text-[var(--text-muted)]">
+      <div className="grid grid-cols-7 gap-1 text-center text-[10px] sm:text-[11px] font-semibold text-[var(--text-muted)] py-1">
         {weekdays.map((d) => (
           <div key={d}>{d}</div>
         ))}
       </div>
 
-      <div className="mt-1 grid min-h-0 flex-1 grid-cols-7 grid-rows-6 gap-1 overflow-hidden">
+      <div className="mt-0.5 grid min-h-0 flex-1 grid-cols-7 grid-rows-6 gap-1 sm:gap-1.5 overflow-hidden">
         {cells.map((day) => {
           const inMonth = isSameMonth(day, focused);
           const selected = value ? isSameDay(day, value) : false;
@@ -206,40 +210,68 @@ export function Calendar({
               onClick={() => select(day)}
               aria-pressed={selected}
               className={cn(
-                "relative flex min-h-0 flex-col items-center justify-center rounded-2xl p-1 text-sm transition-all duration-200 cursor-pointer",
+                "relative flex min-h-0 flex-col items-center justify-between rounded-xl sm:rounded-2xl p-1 sm:p-1.5 text-xs sm:text-sm transition-all duration-150 cursor-pointer overflow-hidden",
                 !inMonth && "pointer-events-none opacity-0",
                 selected
-                  ? "border border-purple-400/60 bg-gradient-to-b from-purple-500/30 to-indigo-500/20 text-white shadow-[0_0_20px_rgba(168,85,247,0.35)] scale-[1.03]"
+                  ? "border border-purple-400/70 bg-gradient-to-b from-purple-500/30 to-indigo-500/20 text-white shadow-[0_0_18px_rgba(168,85,247,0.4)] scale-[1.02]"
                   : isTodayCell
-                    ? "border border-cyan-500/40 bg-cyan-500/10 text-cyan-300 ring-1 ring-cyan-500/30 hover:bg-cyan-500/20"
-                    : "border border-white/[0.04] bg-white/[0.02] text-zinc-300 hover:border-white/15 hover:bg-white/[0.06] hover:scale-105",
-                marker && !selected && "border-white/10 bg-white/[0.05]"
+                    ? "border border-cyan-500/50 bg-cyan-500/10 text-cyan-300 ring-1 ring-cyan-500/30 hover:bg-cyan-500/20"
+                    : "border border-white/[0.04] bg-white/[0.02] text-zinc-300 hover:border-white/15 hover:bg-white/[0.06]",
+                marker && !selected && "border-white/10 bg-white/[0.04]"
               )}
             >
               <span
                 className={cn(
-                  "text-xs font-bold",
+                  "text-[11px] sm:text-xs font-bold leading-none",
                   selected ? "text-white" : isTodayCell ? "text-cyan-300" : "text-zinc-200",
                 )}
               >
                 {day.day}
               </span>
+
               {marker && (
-                <div className="mt-1 flex items-center gap-1">
-                  <span
-                    className={cn(
-                      "h-1.5 w-1.5 rounded-full shadow-[0_0_6px_currentColor]",
-                      marker.tone === "error"
-                        ? "bg-rose-500 text-rose-500"
-                        : marker.tone === "success"
-                        ? "bg-emerald-400 text-emerald-400"
-                        : "bg-purple-400 text-purple-400"
-                    )}
-                  />
-                  {marker.count && marker.count > 1 && (
-                    <span className="font-mono text-[9px] font-bold text-zinc-400">
-                      {marker.count}
-                    </span>
+                <div className="mt-0.5 flex max-w-full items-center justify-center gap-0.5 overflow-hidden">
+                  {marker.logos && marker.logos.length > 0 ? (
+                    <>
+                      {marker.logos.slice(0, 2).map((logoUrl, i) => (
+                        <div
+                          key={i}
+                          className="flex h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 items-center justify-center rounded-full bg-black/70 border border-white/20 p-0.5 shadow-xs"
+                        >
+                          <img
+                            src={logoUrl}
+                            alt=""
+                            className="h-full w-full object-contain"
+                            onError={(e) => {
+                              (e.target as HTMLElement).style.display = "none";
+                            }}
+                          />
+                        </div>
+                      ))}
+                      {marker.logos.length > 2 && (
+                        <span className="flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-purple-500/30 border border-purple-500/40 text-[8px] font-bold text-purple-200">
+                          +{marker.logos.length - 2}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <div className="flex items-center gap-1">
+                      <span
+                        className={cn(
+                          "h-1.5 w-1.5 rounded-full shadow-[0_0_6px_currentColor]",
+                          marker.tone === "error"
+                            ? "bg-rose-500 text-rose-500"
+                            : marker.tone === "success"
+                            ? "bg-emerald-400 text-emerald-400"
+                            : "bg-purple-400 text-purple-400"
+                        )}
+                      />
+                      {marker.count && marker.count > 1 && (
+                        <span className="font-mono text-[8px] font-bold text-zinc-400">
+                          {marker.count}
+                        </span>
+                      )}
+                    </div>
                   )}
                 </div>
               )}

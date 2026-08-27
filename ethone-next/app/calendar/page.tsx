@@ -18,6 +18,7 @@ import {
   parseISODate,
   type Bill,
 } from "@/lib/bills-manager";
+import { detectBrandMeta } from "@/lib/bills-brands";
 import { Sparkles, Calendar as CalendarIcon, CreditCard, DollarSign } from "lucide-react";
 
 function startOfDay(date: Date) {
@@ -54,14 +55,20 @@ function buildMarkers(bills: Bill[], focused: CalendarDate): CalendarMarker[] {
   const monthEnd = new Date(monthEndRaw);
   monthEnd.setHours(23, 59, 59, 999);
 
-  const dayMap = new Map<string, { count: number; hasUnpaid: boolean; hasPaid: boolean }>();
+  const dayMap = new Map<string, { count: number; hasUnpaid: boolean; hasPaid: boolean; logos: string[]; labels: string[] }>();
 
   for (const bill of bills) {
+    const meta = detectBrandMeta(bill.label);
+    const logo = meta.logo;
     for (const iso of billOccurrencesInMonth(bill, monthStart, monthEnd)) {
-      const current = dayMap.get(iso) ?? { count: 0, hasUnpaid: false, hasPaid: false };
+      const current = dayMap.get(iso) ?? { count: 0, hasUnpaid: false, hasPaid: false, logos: [], labels: [] };
       current.count += 1;
       if (bill.paid) current.hasPaid = true;
       else current.hasUnpaid = true;
+      if (logo && !current.logos.includes(logo)) {
+        current.logos.push(logo);
+      }
+      current.labels.push(bill.label);
       dayMap.set(iso, current);
     }
   }
@@ -70,6 +77,8 @@ function buildMarkers(bills: Bill[], focused: CalendarDate): CalendarMarker[] {
     date,
     count: meta.count,
     tone: meta.hasUnpaid ? "error" : meta.hasPaid ? "success" : "default",
+    logos: meta.logos,
+    labels: meta.labels,
   }));
 }
 
@@ -95,12 +104,12 @@ export default function CalendarPage() {
   const markers = useMemo(() => buildMarkers(bills, focused), [bills, focused]);
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-col gap-4 overflow-hidden p-4 sm:p-6 lg:p-8 space-y-2">
+    <div className="flex h-full min-h-0 w-full flex-col gap-3 overflow-hidden p-3 sm:p-4 lg:p-5">
       {/* Header */}
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between shrink-0">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between shrink-0">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
               Calendrier & Factures
             </h1>
             <span className="rounded-full border border-purple-500/30 bg-purple-500/10 px-2.5 py-0.5 font-mono text-[10px] font-bold text-purple-400">
@@ -115,11 +124,11 @@ export default function CalendarPage() {
 
       {/* Brain Finance Bar */}
       <div className="shrink-0">
-        <BrainFinanceAssistant bills={bills} onRefresh={reload} />
+        <BrainFinanceAssistant bills={bills} onRefresh={reload} selectedDate={selected} />
       </div>
 
       {/* Main Grid: Interactive Calendar + Billing Detail Panel */}
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 overflow-hidden lg:grid-cols-12">
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-hidden lg:grid-cols-12 pb-1">
         <div className="flex h-full min-h-0 flex-col lg:col-span-7 xl:col-span-8">
           <Calendar
             value={selected}

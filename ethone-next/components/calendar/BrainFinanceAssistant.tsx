@@ -8,17 +8,28 @@ import { addBill, type Bill, toISODate } from "@/lib/bills-manager";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
 
+import { CalendarDate, getLocalTimeZone } from "@internationalized/date";
+
 interface BrainFinanceAssistantProps {
   bills: Bill[];
   onRefresh: () => void;
+  selectedDate?: CalendarDate | null;
 }
 
-export default function BrainFinanceAssistant({ bills, onRefresh }: BrainFinanceAssistantProps) {
+export default function BrainFinanceAssistant({ bills, onRefresh, selectedDate }: BrainFinanceAssistantProps) {
   const { notify, success, error: showError } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [aiAdvice, setAiAdvice] = useState<string | null>(null);
+
+  // Target date based on calendar selection
+  const getTargetDate = () => {
+    if (selectedDate) {
+      return selectedDate.toDate(getLocalTimeZone());
+    }
+    return new Date();
+  };
 
   // Financial Stats
   const totalMonthly = bills.reduce((acc, b) => {
@@ -31,32 +42,48 @@ export default function BrainFinanceAssistant({ bills, onRefresh }: BrainFinance
   const unpaidCount = bills.filter((b) => !b.paid).length;
 
   const popularPicks = [
-    { key: "chatgpt", label: "ChatGPT Plus", amount: 20, currency: "$", logo: BILL_BRANDS.chatgpt.logo },
-    { key: "spotify", label: "Spotify", amount: 10.99, currency: "€", logo: BILL_BRANDS.spotify.logo },
-    { key: "netflix", label: "Netflix", amount: 13.49, currency: "€", logo: BILL_BRANDS.netflix.logo },
-    { key: "github", label: "GitHub Copilot", amount: 10, currency: "$", logo: BILL_BRANDS.github.logo },
-    { key: "discord", label: "Discord Nitro", amount: 9.99, currency: "€", logo: BILL_BRANDS.discord.logo },
-    { key: "apple", label: "iCloud 200 Go", amount: 2.99, currency: "€", logo: BILL_BRANDS.apple.logo },
-    { key: "cursor", label: "Cursor AI", amount: 20, currency: "$", logo: BILL_BRANDS.cursor.logo },
-    { key: "free", label: "Freebox Pop", amount: 39.99, currency: "€", logo: BILL_BRANDS.free.logo },
+    { key: "chatgpt", label: "ChatGPT Plus", amount: 20, currency: "$", logo: BILL_BRANDS.chatgpt?.logo || "https://cdn.simpleicons.org/openai/ffffff" },
+    { key: "spotify", label: "Spotify", amount: 10.99, currency: "€", logo: BILL_BRANDS.spotify?.logo || "https://cdn.simpleicons.org/spotify/1DB954" },
+    { key: "netflix", label: "Netflix", amount: 13.49, currency: "€", logo: BILL_BRANDS.netflix?.logo || "https://cdn.simpleicons.org/netflix/E50914" },
+    { key: "youtube", label: "YouTube Premium", amount: 12.99, currency: "€", logo: BILL_BRANDS.youtube?.logo || "https://cdn.simpleicons.org/youtube/FF0000" },
+    { key: "prime", label: "Amazon Prime", amount: 6.99, currency: "€", logo: BILL_BRANDS.prime?.logo || "https://cdn.simpleicons.org/amazonprime/00A8E1" },
+    { key: "disney", label: "Disney+", amount: 8.99, currency: "€", logo: BILL_BRANDS.disney?.logo || "https://cdn.simpleicons.org/disney/113CCF" },
+    { key: "applemusic", label: "Apple Music", amount: 10.99, currency: "€", logo: BILL_BRANDS.applemusic?.logo || "https://cdn.simpleicons.org/applemusic/FC3C44" },
+    { key: "apple", label: "iCloud 200 Go", amount: 2.99, currency: "€", logo: BILL_BRANDS.apple?.logo || "https://cdn.simpleicons.org/apple/ffffff" },
+    { key: "github", label: "GitHub Copilot", amount: 10, currency: "$", logo: BILL_BRANDS.github?.logo || "https://cdn.simpleicons.org/github/ffffff" },
+    { key: "discord", label: "Discord Nitro", amount: 9.99, currency: "€", logo: BILL_BRANDS.discord?.logo || "https://cdn.simpleicons.org/discord/ffffff" },
+    { key: "claude", label: "Claude Pro", amount: 20, currency: "$", logo: BILL_BRANDS.claude?.logo || "https://cdn.simpleicons.org/anthropic/ffffff" },
+    { key: "midjourney", label: "Midjourney", amount: 10, currency: "$", logo: BILL_BRANDS.midjourney?.logo || "https://cdn.simpleicons.org/midjourney/ffffff" },
+    { key: "cursor", label: "Cursor AI", amount: 20, currency: "$", logo: BILL_BRANDS.cursor?.logo || "https://cdn.simpleicons.org/cursor/ffffff" },
+    { key: "perplexity", label: "Perplexity Pro", amount: 20, currency: "$", logo: BILL_BRANDS.perplexity?.logo || "https://cdn.simpleicons.org/perplexity/22B8CD" },
+    { key: "playstation", label: "PlayStation Plus", amount: 8.99, currency: "€", logo: BILL_BRANDS.playstation?.logo || "https://cdn.simpleicons.org/playstation/003791" },
+    { key: "xbox", label: "Xbox Game Pass", amount: 14.99, currency: "€", logo: BILL_BRANDS.xbox?.logo || "https://cdn.simpleicons.org/xbox/107C10" },
+    { key: "free", label: "Freebox Pop", amount: 39.99, currency: "€", logo: BILL_BRANDS.free?.logo || "https://cdn.simpleicons.org/free/CC0000" },
+    { key: "adobe", label: "Adobe Cloud", amount: 24.99, currency: "€", logo: BILL_BRANDS.adobe?.logo || "https://cdn.simpleicons.org/adobe/FF0000" },
+    { key: "notion", label: "Notion Plus", amount: 10, currency: "€", logo: BILL_BRANDS.notion?.logo || "https://cdn.simpleicons.org/notion/ffffff" },
+    { key: "canal", label: "Canal+", amount: 22.99, currency: "€", logo: BILL_BRANDS.canal?.logo || "https://cdn.simpleicons.org/canalplus/ffffff" },
+    { key: "deezer", label: "Deezer", amount: 11.99, currency: "€", logo: BILL_BRANDS.deezer?.logo || "https://cdn.simpleicons.org/deezer/A238FF" },
+    { key: "crunchyroll", label: "Crunchyroll", amount: 6.49, currency: "€", logo: BILL_BRANDS.crunchyroll?.logo || "https://cdn.simpleicons.org/crunchyroll/F47521" },
   ];
 
   const handleQuickAddPopular = (brandKey: string) => {
     const brand = BILL_BRANDS[brandKey];
     if (!brand) return;
 
-    const todayDate = new Date();
+    const targetDate = getTargetDate();
     addBill({
       label: brand.name,
       amount: brand.defaultAmount || 10,
       currency: brand.currency || "€",
-      dueDate: toISODate(todayDate),
+      dueDate: toISODate(targetDate),
       paid: false,
       category: brand.category || "subscriptions",
       recurrence: "monthly",
     });
 
-    success("Abonnement ajouté", `${brand.name} (${brand.defaultAmount}${brand.currency})`);
+    const dayNumber = targetDate.getDate();
+    const monthName = targetDate.toLocaleString("fr-FR", { month: "short" });
+    success("Abonnement ajouté", `${brand.name} prévu le ${dayNumber} ${monthName} (${brand.defaultAmount}${brand.currency})`);
     onRefresh();
   };
 
@@ -65,23 +92,23 @@ export default function BrainFinanceAssistant({ bills, onRefresh }: BrainFinance
     setIsProcessing(true);
     try {
       const brand = detectBrandMeta(prompt);
-      // Simple regex extraction for amount if present
       const amountMatch = prompt.match(/(\d+([.,]\d+)?)\s*(€|\$|eur|usd)?/i);
       const extractedAmount = amountMatch ? parseFloat(amountMatch[1].replace(",", ".")) : brand.defaultAmount || 10;
       const extractedCurrency = prompt.includes("$") || prompt.toLowerCase().includes("usd") ? "$" : "€";
 
-      const todayDate = new Date();
+      const targetDate = getTargetDate();
       addBill({
         label: brand.name !== "Facture" ? brand.name : prompt.trim(),
         amount: extractedAmount,
         currency: extractedCurrency,
-        dueDate: toISODate(todayDate),
+        dueDate: toISODate(targetDate),
         paid: false,
         category: brand.category || "subscriptions",
         recurrence: "monthly",
       });
 
-      success("Facture créée par Brain", `${brand.name} : ${extractedAmount}${extractedCurrency}/mois`);
+      const dayNumber = targetDate.getDate();
+      success("Facture créée par Brain", `${brand.name} : ${extractedAmount}${extractedCurrency}/mois (le ${dayNumber})`);
       setPrompt("");
       onRefresh();
     } catch {

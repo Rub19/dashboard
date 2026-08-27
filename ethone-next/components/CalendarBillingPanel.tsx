@@ -19,7 +19,7 @@ import {
 } from "@/lib/bills-manager";
 import Select from "@/components/ui/Select";
 import Input from "@/components/Input";
-import { Check, Trash2, Plus, Calendar, CreditCard, Tag, Sparkles } from "lucide-react";
+import { Check, Trash2, Plus, Calendar, CreditCard, Tag, Sparkles, ChevronDown } from "lucide-react";
 import { hapticSuccessPattern, hapticRigidImpact } from "@/lib/haptics";
 import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/utils";
@@ -290,31 +290,37 @@ export default function CalendarBillingPanel({ date, bills, onChange }: Calendar
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="Montant"
-                className="w-full rounded-xl border border-white/15 bg-black/40 px-2.5 py-1.5 font-mono text-xs text-white placeholder-zinc-500 outline-none"
+                className="w-full rounded-xl border border-white/15 bg-black/40 px-2.5 py-1.5 font-mono text-xs text-white placeholder-zinc-500 outline-none focus:border-purple-500/50"
               />
 
-              <select
-                value={currency}
-                onChange={(e) => setCurrency(e.target.value)}
-                className="rounded-xl border border-white/15 bg-black/40 px-2 py-1.5 font-mono text-xs text-zinc-300 outline-none"
-              >
-                {CURRENCIES.map((c) => (
-                  <option key={c.id} value={c.id} className="bg-zinc-900 text-white">
-                    {c.label}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  value={currency}
+                  onChange={(e) => setCurrency(e.target.value)}
+                  className="w-full appearance-none rounded-xl border border-white/15 bg-black/40 px-2.5 py-1.5 pr-7 font-mono text-xs text-white outline-none focus:border-purple-500/50 cursor-pointer"
+                >
+                  {CURRENCIES.map((c) => (
+                    <option key={c.id} value={c.id} className="bg-zinc-900 text-white">
+                      {c.label} ({c.code})
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" />
+              </div>
 
-              <select
-                value={recurrence}
-                onChange={(e) => setRecurrence(e.target.value as typeof recurrence)}
-                className="rounded-xl border border-white/15 bg-black/40 px-2 py-1.5 text-xs text-zinc-300 outline-none"
-              >
-                <option value="monthly" className="bg-zinc-900 text-white">Mensuel</option>
-                <option value="yearly" className="bg-zinc-900 text-white">Annuel</option>
-                <option value="weekly" className="bg-zinc-900 text-white">Hebdo</option>
-                <option value="none" className="bg-zinc-900 text-white">Ponctuel</option>
-              </select>
+              <div className="relative">
+                <select
+                  value={recurrence}
+                  onChange={(e) => setRecurrence(e.target.value as typeof recurrence)}
+                  className="w-full appearance-none rounded-xl border border-white/15 bg-black/40 px-2.5 py-1.5 pr-7 text-xs text-white outline-none focus:border-purple-500/50 cursor-pointer"
+                >
+                  <option value="monthly" className="bg-zinc-900 text-white">Mensuel</option>
+                  <option value="yearly" className="bg-zinc-900 text-white">Annuel</option>
+                  <option value="weekly" className="bg-zinc-900 text-white">Hebdo</option>
+                  <option value="none" className="bg-zinc-900 text-white">Ponctuel</option>
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" />
+              </div>
             </div>
 
             <div className="flex items-center justify-end gap-2 pt-1">

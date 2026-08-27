@@ -23,8 +23,11 @@ import { useAuth } from "@/components/AuthProvider";
 import { useProfile } from "@/lib/hooks/useProfile";
 import { hapticSuccessPattern, hapticErrorPattern, hapticMediumImpact, hapticLightImpact } from "@/lib/haptics";
 import type { ReturnTypeOfUseBrain, BrainMessage } from "@/lib/hooks/useBrain";
+import { useVoiceMode } from "@/lib/hooks/useVoiceMode";
+import { useSettings } from "@/components/SettingsProvider";
 import BrainComposer from "./brain/BrainComposer";
 import BrainActionCard from "./brain/BrainActionCard";
+import BrainVoiceOverlay from "./brain/BrainVoiceOverlay";
 import { cn } from "@/lib/utils";
 
 interface BrainChatProps {
@@ -40,7 +43,8 @@ export default function BrainChat({
   onToggleContext,
   className = "",
 }: BrainChatProps) {
-  const i18n = useI18n();
+  const _i18n = useI18n();
+  const { settings } = useSettings();
   const { user } = useAuth();
   const { profile } = useProfile();
   const { success, error: showError } = useToast();
@@ -48,6 +52,35 @@ export default function BrainChat({
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const userName = profile?.display_name || user?.user_metadata?.full_name || "Utilisateur";
+
+  const langMap: Record<string, string> = {
+    fr: "fr-FR",
+    en: "en-US",
+    es: "es-ES",
+    de: "de-DE",
+  };
+  const currentLang = langMap[settings?.language || "fr"] || "fr-FR";
+
+  const voice = useVoiceMode({
+    lang: currentLang,
+    silenceMs: 1500,
+    onFinalTranscript: (text) => {
+      if (text.trim()) {
+        brain.send(text.trim());
+      }
+    },
+  });
+
+  const lastMessageCountRef = useRef(brain.messages.length);
+  useEffect(() => {
+    if (voice.isActive && brain.messages.length > lastMessageCountRef.current) {
+      const lastMsg = brain.messages[brain.messages.length - 1];
+      if (lastMsg && lastMsg.role === "assistant" && lastMsg.content) {
+        voice.speak(lastMsg.content);
+      }
+    }
+    lastMessageCountRef.current = brain.messages.length;
+  }, [brain.messages, voice.isActive, voice]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -223,8 +256,25 @@ export default function BrainChat({
               brain.send(s.title);
             }
           }}
+          voiceActive={voice.isActive}
+          onVoiceToggle={voice.toggleVoice}
+          voiceSupported={voice.isSupported}
         />
       </div>
+
+      {/* Voice Mode Fullscreen Overlay */}
+      <AnimatePresence>
+        {voice.isActive && (
+          <BrainVoiceOverlay
+            voiceState={brain.loading ? "thinking" : voice.voiceState}
+            interimText={voice.interimText}
+            finalText={voice.finalText}
+            error={voice.error}
+            onClose={voice.exitVoiceMode}
+            onStopSpeaking={voice.stopSpeaking}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 

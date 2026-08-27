@@ -16,6 +16,9 @@ interface BrainComposerProps {
   onRemoveAttachment: (id: string) => void;
   suggestions: { id: string; title: string; action?: string; parameters?: Record<string, unknown> }[];
   onSelectSuggestion: (s: { id: string; title: string; action?: string; parameters?: Record<string, unknown> }) => void;
+  voiceActive?: boolean;
+  onVoiceToggle?: () => void;
+  voiceSupported?: boolean;
 }
 
 export default function BrainComposer({
@@ -28,6 +31,9 @@ export default function BrainComposer({
   onRemoveAttachment,
   suggestions,
   onSelectSuggestion,
+  voiceActive = false,
+  onVoiceToggle,
+  voiceSupported = false,
 }: BrainComposerProps) {
   const [text, setText] = useState("");
   const [showPlusMenu, setShowPlusMenu] = useState(false);
@@ -220,6 +226,23 @@ export default function BrainComposer({
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Voice Mode Button */}
+            {voiceSupported && onVoiceToggle && (
+              <button
+                type="button"
+                onClick={onVoiceToggle}
+                title={voiceActive ? "Quitter le mode vocal" : "Mode vocal"}
+                className={cn(
+                  "flex h-8 w-8 items-center justify-center rounded-xl border transition-all active:scale-95",
+                  voiceActive
+                    ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] shadow-[0_0_12px_-2px_var(--glow-color)] animate-pulse"
+                    : "border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/60 text-[var(--text-muted)] hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)]"
+                )}
+              >
+                <Icon name={voiceActive ? "microphone-slash" : "microphone"} pack="phosphor" className="h-4 w-4" />
+              </button>
+            )}
+
             {/* Send CTA Button */}
             <button
               type="button"

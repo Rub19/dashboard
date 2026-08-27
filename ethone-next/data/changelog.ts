@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.84",
+  date: "2026-08-27",
+  title: "Nouveau : Mode Vocal Interactif dans Brain (STT & Synthèse Vocale)",
+  items: [
+    "Ajout du mode vocal complet dans Brain : parlez à l'IA sans écrire grâce à la reconnaissance vocale Web Speech API intégrée.",
+    "Synthèse vocale automatique : Brain vous répond à voix haute avec support multilingue (français, anglais, espagnol, allemand).",
+    "Overlay immersif plein écran avec visualiseur d'ondes audio et orbe animé pulsant en temps réel.",
+    "Détection automatique des silences (1.5s) pour un envoi fluide et transcription instantanée.",
+    "Version affichée : v1.10.84.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.84",
+  date: "2026-08-27",
+  title: "New: Interactive Voice Mode in Brain (STT & TTS)",
+  items: [
+    "Added full voice mode to Brain: talk to AI hands-free using native Web Speech API recognition.",
+    "Automatic Text-to-Speech: Brain replies aloud with multi-language voice support.",
+    "Immersive full-screen overlay with dynamic audio waveform and glowing pulsing orb.",
+    "Automatic silence detection (1.5s) for hands-free conversations.",
+    "Version badge: v1.10.84.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.84",
+  date: "2026-08-27",
+  title: "Nuevo: Modo de Voz Interactivo en Brain",
+  items: [
+    "Habla con Brain sin escribir gracias al reconocimiento de voz integrado.",
+    "Respuestas de voz automáticas y visualizador interactivo a pantalla completa.",
+    "Versión: v1.10.84.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.84",
+  date: "2026-08-27",
+  title: "Neu: Interaktiver Sprachmodus in Brain",
+  items: [
+    "Sprechen Sie mit Brain freihändig über die integrierte Spracherkennung.",
+    "Automatische Sprachausgabe und immersives Vollbild-Overlay mit Audiowellen.",
+    "Version: v1.10.84.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.83",
   date: "2026-08-27",
   title: "Correction CI/CD : Apostrophe Non Échappée dans MissionControl",

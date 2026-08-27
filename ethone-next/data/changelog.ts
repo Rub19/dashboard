@@ -7206,6 +7206,56 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.49",
+  date: "2026-08-27",
+  title: "Auto-Masquage Intelligent du Dock sur Brain & Restauration Contextuelle",
+  items: [
+    "Auto-hide intelligent du Dock : masquage automatique sur les pages avec barre de saisie au bas ou plein écran (/brain, /focus, /scratchpad) pour éviter tout chevauchement.",
+    "Restauration automatique du Dock lors du passage sur les pages standard (Dashboard, Tâches, Calendrier, Matches, Paramètres...).",
+    "Respect absolu du choix manuel : si l'utilisateur désactive volontairement le dock via l'icône, il reste masqué globalement.",
+    "Bouton pill discret au bas de l'écran permettant de réafficher le dock temporairement sur les pages immersives en 1 clic.",
+    "Validation : build Next.js 105/105 pages, TypeScript sans erreur.",
+    "Version affichée : v1.10.49.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.49",
+  date: "2026-08-27",
+  title: "Smart Auto-Hide Dock on Brain & Contextual Auto-Restore",
+  items: [
+    "Smart Dock auto-hide: automatically hides on pages with bottom input bars or fullscreen workspaces (/brain, /focus, /scratchpad) to prevent overlapping.",
+    "Automatic dock restoration when navigating back to standard pages (Dashboard, Tasks, Calendar, Matches, Settings...).",
+    "Preserves manual user preference: if explicitly hidden by user, remains hidden globally.",
+    "Discreet mini-pill trigger at the bottom edge to reveal dock on demand.",
+    "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
+    "Version badge: v1.10.49.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.49",
+  date: "2026-08-27",
+  title: "Ocultación automática del Dock en Brain y restauración inteligente",
+  items: [
+    "Ocultación automática del dock en Brain y Focus para evitar solapamientos.",
+    "Validación : build, lint.",
+    "Versión : v1.10.49.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.49",
+  date: "2026-08-27",
+  title: "Intelligentes Auto-Ausblenden des Docks auf Brain & automatische Wiederherstellung",
+  items: [
+    "Automatisches Ausblenden des Docks auf Brain und Focus zur Vermeidung von Überlagerungen.",
+    "Validierung: build, lint.",
+    "Version: v1.10.49.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.48",
   date: "2026-08-27",
   title: "Refonte Intégrale du Tracker Valorant & Cache Haute Performance",

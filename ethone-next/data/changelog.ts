@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.36",
+  date: "2026-08-27",
+  title: "Connexions : réaffichage de la liste",
+  items: [
+    "Réinitialise la recherche et le filtre après une déconnexion.",
+    "Réinitialise `search` / `filter` quand un `service` est passé dans l'URL.",
+    "Gère `?service` non trouvé ou sans catégorie.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.36.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.36",
+  date: "2026-08-27",
+  title: "Connections: reset list on disconnect",
+  items: [
+    "Reset search and filter after a disconnect.",
+    "Reset `search` / `filter` when a `service` query param is present.",
+    "Handle unknown or uncategorized `?service`.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.36.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.36",
+  date: "2026-08-27",
+  title: "Conexiones : restablecer lista al desconectar",
+  items: [
+    "Restablece la búsqueda y el filtro tras desconectar.",
+    "Restablece `search` / `filter` cuando hay un parámetro `service` en la URL.",
+    "Gestiona `?service` desconocido o sin categoría.",
+    "Validación : build, lint.",
+    "Versión : v1.10.36.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.36",
+  date: "2026-08-27",
+  title: "Verbindungen : Liste beim Trennen zurücksetzen",
+  items: [
+    "Suche und Filter nach dem Trennen zurücksetzen.",
+    "Suche / Filter zurücksetzen, wenn URL-Parameter `service` gesetzt ist.",
+    "Unbekanntes oder nicht kategorisiertes `?service` behandeln.",
+    "Validierung: build, lint.",
+    "Version: v1.10.36.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.35",
   date: "2026-08-27",
   title: "Dock masquable / bouton show dans StatusBar",

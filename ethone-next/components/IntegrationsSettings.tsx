@@ -50,11 +50,13 @@ export default function IntegrationsSettings() {
     const service = searchParams?.get("service");
     if (!service) return;
     const integration = INTEGRATIONS.find((i) => i.id === service);
-    if (!integration) return;
-    setHighlighted(service);
-    if (integration.category) {
-      setFilter(integration.category);
+    setSearch("");
+    if (!integration) {
+      setFilter("all");
+      return;
     }
+    setHighlighted(service);
+    setFilter(integration.category || "all");
     window.setTimeout(() => {
       const el = document.getElementById(service);
       if (el) {
@@ -175,6 +177,8 @@ export default function IntegrationsSettings() {
   const handleDisconnect = useCallback((id: string) => {
     setConnected((prev) => ({ ...prev, [id]: false }));
     setClientIds((prev) => ({ ...prev, [id]: "" }));
+    setSearch("");
+    setFilter("all");
   }, []);
 
   const handleSelectMyConnection = useCallback((id: string) => {

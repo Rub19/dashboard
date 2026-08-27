@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.36 — 2026-08-27
+
+**ETHONE — Connexions : réaffichage de la liste**
+
+- Réinitialise `search` / `filter` après une déconnexion.
+- Réinitialise `search` / `filter` quand un paramètre `service` est dans l’URL.
+- Gère les cas `?service` inconnu ou sans catégorie.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.35 — 2026-08-27
 
 **ETHONE — Dock masquable / bouton show dans StatusBar**

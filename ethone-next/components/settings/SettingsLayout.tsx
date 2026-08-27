@@ -31,6 +31,8 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
   const router = useRouter();
   const contentRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const mountedRef = useRef(false);
+  const urlReplaceTimerRef = useRef<number | null>(null);
 
   const sectionParam = typeof params?.section === "string" ? params.section : undefined;
   const [activeCategory, setActiveCategory] = useState(() =>
@@ -50,7 +52,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
     el.scrollIntoView({ behavior: "smooth", block: "start" });
     window.setTimeout(() => {
       isScrollingRef.current = false;
-    }, 600);
+    }, 450);
   }, []);
 
   const scrollToSearchResult = useCallback((result: { type: "section" | "field"; id: string; sectionId?: string }) => {
@@ -70,16 +72,19 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
     setShowSearchDropdown(false);
     window.setTimeout(() => {
       isScrollingRef.current = false;
-    }, 600);
+    }, 450);
   }, []);
 
+  // Initial scroll only once on mount
   useEffect(() => {
+    if (mountedRef.current) return;
+    mountedRef.current = true;
     const raw = initialSection ?? sectionParam;
     const category = resolveCategory(raw);
     setActiveCategory(category);
     const t = window.setTimeout(() => {
       scrollToCategory(raw || category);
-    }, 120);
+    }, 100);
     return () => window.clearTimeout(t);
   }, [initialSection, sectionParam, scrollToCategory]);
 
@@ -98,13 +103,25 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
   const handleCategoryInView = useCallback(
     (id: string) => {
       if (isScrollingRef.current) return;
-      setActiveCategory(id);
-      if (typeof window !== "undefined") {
-        window.history.replaceState(null, "", `/settings/${id}`);
-      }
+      setActiveCategory((prev) => {
+        if (prev === id) return prev;
+        if (typeof window !== "undefined") {
+          if (urlReplaceTimerRef.current) window.clearTimeout(urlReplaceTimerRef.current);
+          urlReplaceTimerRef.current = window.setTimeout(() => {
+            window.history.replaceState(null, "", `/settings/${id}`);
+          }, 250);
+        }
+        return id;
+      });
     },
     []
   );
+
+  useEffect(() => {
+    return () => {
+      if (urlReplaceTimerRef.current) window.clearTimeout(urlReplaceTimerRef.current);
+    };
+  }, []);
 
   const handleReset = useCallback(() => {
     setIsResetModalOpen(true);
@@ -332,7 +349,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
         />
       </div>
 
-      {/* Split view */}
+      {/* Split view with GPU-isolated smooth scrolling */}
       <div className="flex min-h-0 w-full flex-1 gap-4 overflow-hidden sm:gap-6">
         <aside className="hidden h-full w-64 shrink-0 overflow-y-auto pr-1 no-scrollbar md:block">
           <div className="sticky top-0 h-full max-h-full">
@@ -346,7 +363,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
 
         <main
           ref={contentRef}
-          className="min-h-0 w-full flex-1 overflow-y-auto os-scroll pb-8 pr-1 pt-4"
+          className="min-h-0 w-full flex-1 overflow-y-auto os-scroll pb-8 pr-1 pt-4 will-change-scroll transform-gpu overscroll-contain"
         >
           {/* Breadcrumb */}
           <nav

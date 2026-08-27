@@ -1357,7 +1357,7 @@ export default function SettingsContent({
               </div>
               <div>
                 <h4 className="text-base font-bold text-[var(--text-primary)]">ETHONE OS Desktop & Web</h4>
-                <p className="text-xs text-[var(--text-muted)]">Version 1.10.51 (Turbopack / Next.js 16)</p>
+                <p className="text-xs text-[var(--text-muted)]">Version 1.10.52 (Turbopack / Next.js 16)</p>
               </div>
             </div>
             <p className="text-xs text-[var(--text-muted)] leading-relaxed">
@@ -1484,21 +1484,29 @@ export default function SettingsContent({
   useEffect(() => {
     const root = contentRef?.current;
     if (!root) return;
+    let rafId: number | null = null;
+
     const observer = new IntersectionObserver(
       (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-        if (visible[0]) {
-          const id = visible[0].target.getAttribute("data-category");
-          if (id && onCategoryChange) onCategoryChange(id);
-        }
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+          const visible = entries
+            .filter((e) => e.isIntersecting)
+            .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+          if (visible[0]) {
+            const id = visible[0].target.getAttribute("data-category");
+            if (id && onCategoryChange) onCategoryChange(id);
+          }
+        });
       },
-      { root, rootMargin: "-20% 0px -70% 0px", threshold: 0 }
+      { root, rootMargin: "-10% 0px -60% 0px", threshold: 0 }
     );
     Object.values(categoryRefs.current).forEach((el) => el && observer.observe(el));
-    return () => observer.disconnect();
-  }, [contentRef, onCategoryChange, allVisibleSections]);
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      observer.disconnect();
+    };
+  }, [contentRef, onCategoryChange]);
 
   useEffect(() => {
     if (!form.query.trim()) {
@@ -1568,7 +1576,7 @@ export default function SettingsContent({
             key={category.id}
             data-category={category.id}
             ref={(el) => { categoryRefs.current[category.id] = el; }}
-            className="space-y-4"
+            className="space-y-4 transform-gpu"
           >
             {category.id === "advanced" && (
               <h2 className="sticky top-0 z-10 -mx-1 mb-2 flex items-center gap-2 rounded-[var(--panel-radius)] border border-[var(--text-primary)]/[0.06] bg-[var(--panel-bg)]/80 px-4 py-2 text-sm font-semibold text-[var(--text-primary)] backdrop-blur-[var(--panel-blur)]">

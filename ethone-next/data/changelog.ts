@@ -7206,6 +7206,56 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.52",
+  date: "2026-08-27",
+  title: "Correction Critique des Saccades & Écrans Noirs lors du Défilement des Paramètres",
+  items: [
+    "Élimination complète des écrans noirs et flashs de 2s lors du scroll dans les réglages.",
+    "Suppression de la boucle de rétroaction infinie entre useParams et window.history.replaceState.",
+    "Optimisation IntersectionObserver avec requestAnimationFrame et débounce de 250ms sur les URLs.",
+    "Accélération matérielle GPU (transform-gpu, will-change-scroll, overscroll-contain) sur le panneau des réglages.",
+    "Validation : build Next.js 105/105 pages, TypeScript sans erreur.",
+    "Version affichée : v1.10.52.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.52",
+  date: "2026-08-27",
+  title: "Critical Fix for Settings Scroll Stutter & 2s Black Screens",
+  items: [
+    "Completely eliminated black screens and 2-second render freezes when scrolling through Settings.",
+    "Removed router infinite feedback loops between useParams and window.history.replaceState.",
+    "Optimized IntersectionObserver with requestAnimationFrame and debounced URL state sync.",
+    "Added GPU hardware acceleration (transform-gpu, will-change-scroll) across settings sections.",
+    "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
+    "Version badge: v1.10.52.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.52",
+  date: "2026-08-27",
+  title: "Corrección de pantallas negras y parpadeos al hacer scroll en Ajustes",
+  items: [
+    "Corrección de congelamientos y optimización GPU en la página de ajustes.",
+    "Validación : build, lint.",
+    "Versión : v1.10.52.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.52",
+  date: "2026-08-27",
+  title: "Kritischer Fix für Bildschirmflackern und 2s Blackscreens beim Scrollen in den Einstellungen",
+  items: [
+    "Beseitigung von Rucklern und GPU-Optimierung für flüssiges Scrollen.",
+    "Validierung: build, lint.",
+    "Version: v1.10.52.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.51",
   date: "2026-08-27",
   title: "Refonte Intégrale du Tracker League of Legends (Design Tracker.gg Officiel & Zéro Placeholder)",

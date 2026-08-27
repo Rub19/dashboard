@@ -20,6 +20,7 @@ import HtmlLang from "@/components/HtmlLang";
 import CommandPaletteProvider from "@/components/CommandPaletteProvider";
 import OAuthHandler from "@/components/OAuthHandler";
 import UIProvider from "@/components/UIProvider";
+import NotificationBridge from "@/components/NotificationBridge";
 import BootProvider from "@/components/BootProvider";
 import { UploadQueueProvider } from "@/lib/upload-queue";
 
@@ -89,6 +90,7 @@ export default function RootLayout({
                         <HtmlLang />
                         <OfflineIndicator />
                         <ServiceWorker />
+                        <NotificationBridge />
                         <VersionUpdateToast />
                         <OAuthHandler />
                         <UploadQueueProvider>

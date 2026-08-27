@@ -6,6 +6,7 @@ import { Icon } from "@/lib/icons";
 import { useSound } from "@/lib/sound";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useIsMobile } from "@/lib/hooks/useMediaQuery";
+import { useNotifications } from "@/lib/hooks/useNotifications";
 import RichToast, { type RichToastVariant } from "@/components/RichToast";
 import FlagIcon, { LANGUAGE_LABELS, type Language } from "@/components/FlagIcon";
 import DiscordIcon from "@/components/DiscordIcon";
@@ -105,7 +106,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const { play } = useSound();
   const i18n = useI18n();
   const isMobile = useIsMobile();
+  const { add: addNotification } = useNotifications();
   const activeDedups = useRef<Map<string, string>>(new Map());
+  const lastNotified = useRef<Map<string, number>>(new Map());
 
   const show = useCallback(
     (input: ToastInput) => {
@@ -120,6 +123,23 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       if (input.dedupKey) {
         const existing = activeDedups.current.get(input.dedupKey);
         if (existing) sonnerToast.dismiss(existing);
+      }
+
+      if (title && (type === "error" || type === "warning")) {
+        const key = `${title}:${description ?? ""}:${type}`;
+        const now = Date.now();
+        const last = lastNotified.current.get(key);
+        if (!last || now - last > 2000) {
+          lastNotified.current.set(key, now);
+          addNotification({
+            title,
+            message: description ?? "",
+            category: type === "error" ? "security" : "system",
+            type,
+            priority: type === "error" ? "critical" : "important",
+            source: "ETHONE",
+          });
+        }
       }
 
       const sound = SOUND_MAP[type];
@@ -191,7 +211,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
       return id;
     },
-    [play]
+    [play, addNotification]
   );
 
   const success = useCallback(

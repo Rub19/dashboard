@@ -92,6 +92,16 @@ export default function UIProvider({ children }: { children: React.ReactNode }) 
   useNativeBehavior();
   useTouchInteractions();
   const haptics = useHaptics();
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!("serviceWorker" in navigator)) return;
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then((reg) => console.log("SW registered:", reg.scope))
+      .catch((err) => console.error("SW registration failed:", err));
+  }, []);
+
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const [tooltip, setTooltip] = useState<TooltipState>(null);
   const showTimer = useRef<ReturnType<typeof setTimeout> | null>(null);

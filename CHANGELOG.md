@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.33 — 2026-08-27
+
+**ETHONE — Centre de notifications fonctionnel**
+
+- Enregistrement du service worker pour le push / sync.
+- Récupération des notifications mail via `/api/mail/notifications`.
+- Notifications de connexion/déconnexion des intégrations.
+- Toast-bridge restreinte : seuls erreurs et warnings deviennent des notifications, avec déduplication 2s.
+- Catégories propres : `mail`, `integration`, `system`, `security`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.32 — 2026-08-27
 
 **ETHONE — Audit animations : login, settings, modals, inputs**

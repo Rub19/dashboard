@@ -7206,6 +7206,66 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.33",
+  date: "2026-08-27",
+  title: "Centre de notifications fonctionnel",
+  items: [
+    "Enregistrement du service worker pour le push et la sync.",
+    "Récupération des notifications mail (`/api/mail/notifications`) dans le centre.",
+    "Notifications de connexion/déconnexion des intégrations.",
+    "Pont toast : seules les erreurs et warnings deviennent des notifications, avec déduplication.",
+    "Catégories propres : mail, integration, system, security.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.33.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.33",
+  date: "2026-08-27",
+  title: "Notification center wired",
+  items: [
+    "Service worker registration for push and sync.",
+    "Mail notifications fetched from `/api/mail/notifications`.",
+    "Connection/disconnection notifications for integrations.",
+    "Toast bridge: only errors and warnings become notifications, with deduplication.",
+    "Clean categories: mail, integration, system, security.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.33.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.33",
+  date: "2026-08-27",
+  title: "Centro de notificaciones funcional",
+  items: [
+    "Registro del service worker para push y sync.",
+    "Notificaciones de mail obtenidas de `/api/mail/notifications`.",
+    "Notificaciones de conexión/desconexión de integraciones.",
+    "Puente de toasts : solo errores y warnings se convierten en notificaciones, con deduplicación.",
+    "Categorías limpias : mail, integration, system, security.",
+    "Validación : build, lint.",
+    "Versión : v1.10.33.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.33",
+  date: "2026-08-27",
+  title: "Benachrichtigungszentrum funktional",
+  items: [
+    "Service Worker Registrierung für Push und Sync.",
+    "Mail-Benachrichtigungen von `/api/mail/notifications`.",
+    "Verbindungs-/Trennungsbenachrichtigungen für Integrationen.",
+    "Toast-Bridge : nur Fehler und Warnungen werden zu Benachrichtigungen, mit Deduplizierung.",
+    "Saubere Kategorien : mail, integration, system, security.",
+    "Validierung: build, lint.",
+    "Version: v1.10.33.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.32",
   date: "2026-08-27",
   title: "Audit animations : login, settings, modals, inputs",

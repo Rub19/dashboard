@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useIntegrationStore } from "@/lib/hooks/useIntegrationStore";
 import { useI18n } from "@/lib/hooks/useI18n";
+import { useNotifications } from "@/lib/hooks/useNotifications";
 import { useGitHubStatus } from "@/lib/hooks/useGitHubStatus";
 import { useSettings } from "@/components/SettingsProvider";
 import { useToast } from "@/components/ToastProvider";
@@ -105,6 +106,7 @@ export default function ConnectionCard({
   onDisconnect?: (id: string) => void;
 }) {
   const i18n = useI18n();
+  const { add: addNotification } = useNotifications();
   const { settings, update } = useSettings();
   const { success, error: showError } = useToast();
   const { values: integrationValues, setField, setFields } = useIntegrationStore();
@@ -269,6 +271,13 @@ export default function ConnectionCard({
         setField(integration.id, "clientSecret", clientSecret.trim());
       }
       success(i18n("connectSuccess"));
+      addNotification({
+        title: "Connecté",
+        message: integration.name,
+        category: "integration",
+        type: "success",
+        priority: "normal",
+      });
       window.location.href = await startOAuthConnect(integration.id, trimmed, { provider: integration.id, clientId: trimmed });
     } catch (err) {
       showError(err instanceof Error ? err.message : i18n("error"));
@@ -312,6 +321,13 @@ export default function ConnectionCard({
       }
       onDisconnect?.(integration.id);
       success(i18n("disconnectSuccess"));
+      addNotification({
+        title: "Déconnecté",
+        message: integration.name,
+        category: "integration",
+        type: "info",
+        priority: "normal",
+      });
     } catch (err) {
       showError(err instanceof Error ? err.message : i18n("error"));
     } finally {

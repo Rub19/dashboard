@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.29",
+  date: "2026-08-27",
+  title: "Dashboard home scrollable",
+  items: [
+    "`DashboardOverview` devient scrollable (overflow-y-auto).",
+    "Ajout d'un padding bas (`pb-28`) pour ne pas masquer le contenu derrière le dock et la status bar.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.29.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.29",
+  date: "2026-08-27",
+  title: "Dashboard home scrollable",
+  items: [
+    "`DashboardOverview` is now scrollable (overflow-y-auto).",
+    "Added bottom padding (`pb-28`) to avoid content being hidden by the dock and status bar.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.29.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.29",
+  date: "2026-08-27",
+  title: "Dashboard home desplazable",
+  items: [
+    "`DashboardOverview` ahora es desplazable (overflow-y-auto).",
+    "Padding inferior (`pb-28`) para no ocultar contenido detrás del dock y la barra de estado.",
+    "Validación : build, lint.",
+    "Versión : v1.10.29.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.29",
+  date: "2026-08-27",
+  title: "Dashboard home scrollbar",
+  items: [
+    "`DashboardOverview` ist jetzt scrollbar (overflow-y-auto).",
+    "Unterer Padding (`pb-28`) hinzugefügt, damit Inhalte nicht hinter Dock und Statusleiste verdeckt werden.",
+    "Validierung: build, lint.",
+    "Version: v1.10.29.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.28",
   date: "2026-08-27",
   title: "StatusBar pleine opacité",

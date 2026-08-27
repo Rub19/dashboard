@@ -332,9 +332,9 @@ export default function DashboardOverview() {
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col">
+    <div className="flex h-full min-h-0 flex-col overflow-y-auto os-scroll">
       <PullToRefresh onRefresh={handleRefresh}>
-        <div className={cn("mx-auto w-full min-h-full px-2 sm:px-4", maxWClass)}>
+        <div className={cn("mx-auto w-full min-h-full px-2 pb-28 sm:px-4", maxWClass)}>
         <header className="shrink-0 mb-5 flex w-full items-center justify-between gap-4 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.25] p-4 shadow-sm backdrop-blur-[var(--panel-blur)]">
         <div className="min-w-0">
           <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--text-muted)]">

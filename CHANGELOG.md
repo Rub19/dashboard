@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.29 — 2026-08-27
+
+**ETHONE — Dashboard home scrollable**
+
+- `DashboardOverview` devient scrollable (`overflow-y-auto`).
+- Padding bas `pb-28` pour éviter que le dock / StatusBar ne cachent le contenu.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.28 — 2026-08-27
 
 **ETHONE — StatusBar pleine opacité**

@@ -4,14 +4,17 @@ import { useState, useCallback } from "react";
 import { Eye, EyeOff, Copy, Check } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
+import Input, { type InputSize } from "./Input";
 
 export type SecureInputProps = {
   value: string;
   onChange: (value: string) => void;
-  label: string;
+  label?: string;
   placeholder?: string;
   allowCopy?: boolean;
   disabled?: boolean;
+  inputSize?: InputSize;
+  error?: boolean;
   className?: string;
   type?: "text" | "password";
 };
@@ -19,10 +22,12 @@ export type SecureInputProps = {
 export default function SecureInput({
   value,
   onChange,
-  label,
+  label = "Mot de passe",
   placeholder,
   allowCopy = true,
   disabled = false,
+  inputSize = "default",
+  error,
   className = "",
 }: SecureInputProps) {
   const [visible, setVisible] = useState(false);
@@ -42,41 +47,47 @@ export default function SecureInput({
     }
   }, [value, notify]);
 
-  return (
-    <div className={`relative ${className}`}>
-      <input
-        type={visible ? "text" : "password"}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        disabled={disabled}
-        aria-label={label}
-        placeholder={placeholder || label}
-        className="w-full rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] px-3 py-2.5 pr-20 text-sm text-[var(--text-primary)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-white/20 focus:ring-1 focus:ring-white/15 focus:shadow-[0_0_15px_rgba(255,255,255,0.03)]"
-      />
-      <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1">
-        {allowCopy && value && (
-          <button
-            type="button"
-            onClick={handleCopy}
-            disabled={disabled}
-            className="rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/5 hover:text-[var(--text-primary)] disabled:opacity-40"
-            aria-label={i18n("copy")}
-            title={i18n("copy")}
-          >
-            {copied ? <Check className="h-3.5 w-3.5 text-[var(--success)]" /> : <Copy className="h-3.5 w-3.5" />}
-          </button>
-        )}
+  const trailingActions = (
+    <div className="flex items-center gap-1">
+      {allowCopy && value && (
         <button
           type="button"
-          onClick={() => setVisible((v) => !v)}
+          tabIndex={-1}
+          onClick={handleCopy}
           disabled={disabled}
-          className="rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/5 hover:text-[var(--text-primary)] disabled:opacity-40"
-          aria-label={visible ? i18n("hide") : i18n("show")}
-          title={visible ? i18n("hide") : i18n("show")}
+          className="flex h-6 w-6 items-center justify-center rounded-md text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
+          aria-label={i18n("copy", "Copier")}
+          title={i18n("copy", "Copier")}
         >
-          {visible ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+          {copied ? <Check className="h-3.5 w-3.5 text-[var(--success)]" /> : <Copy className="h-3.5 w-3.5" />}
         </button>
-      </div>
+      )}
+      <button
+        type="button"
+        tabIndex={-1}
+        onClick={() => setVisible((v) => !v)}
+        disabled={disabled}
+        className="flex h-6 w-6 items-center justify-center rounded-md text-[var(--text-muted)] transition-colors hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] disabled:opacity-40"
+        aria-label={visible ? i18n("hide", "Masquer") : i18n("show", "Afficher")}
+        title={visible ? i18n("hide", "Masquer") : i18n("show", "Afficher")}
+      >
+        {visible ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+      </button>
     </div>
+  );
+
+  return (
+    <Input
+      type={visible ? "text" : "password"}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      disabled={disabled}
+      aria-label={label}
+      placeholder={placeholder || label}
+      inputSize={inputSize}
+      error={error}
+      right={trailingActions}
+      className={className}
+    />
   );
 }

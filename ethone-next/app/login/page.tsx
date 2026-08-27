@@ -114,10 +114,11 @@ function OtpInput({ value, onChange, disabled, error }: OtpInputProps) {
           onKeyDown={(e) => handleKeyDown(i, e)}
           onPaste={handlePaste}
           className={cn(
-            "h-14 w-full rounded-xl border bg-transparent text-center text-xl font-semibold outline-none transition-all motion-reduce:transition-none",
-            error
-              ? "border-red-500/60 text-red-200 focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
-              : "border-white/[0.10] text-[var(--foreground)] focus:border-[var(--accent-primary)] focus:ring-2 focus:ring-[var(--accent-primary)]/20"
+            "h-14 w-full rounded-xl text-center text-xl font-bold outline-none transition-all duration-180 select-none",
+            "border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)]",
+            "hover:border-[var(--input-border-hover)] hover:bg-[var(--input-bg-hover)]",
+            "focus:border-[var(--accent-primary)] focus:bg-[var(--input-bg-focus)] focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent-primary)_18%,transparent),0_0_16px_-4px_var(--glow-color)]",
+            error && "border-[var(--danger)]/80 text-[var(--danger)] focus:border-[var(--danger)] focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--danger)_18%,transparent)]"
           )}
         />
       ))}

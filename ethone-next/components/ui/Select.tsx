@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 import { ChevronDown, Check } from "lucide-react";
 import { hapticLightImpact } from "@/lib/haptics";
+import { cn } from "@/lib/utils";
 
 export type SelectOption = {
   id: string;
@@ -19,6 +20,7 @@ type SelectProps = {
   placeholder?: string;
   label?: React.ReactNode;
   disabled?: boolean;
+  error?: boolean;
   className?: string;
   id?: string;
   "aria-label"?: string;
@@ -32,6 +34,7 @@ export default function Select({
   placeholder = "Sélectionner…",
   label,
   disabled = false,
+  error = false,
   className = "",
   id: providedId,
   "aria-label": ariaLabel,
@@ -62,7 +65,7 @@ export default function Select({
     const el = triggerRef.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
-    const width = Math.max(rect.width, 240);
+    const width = Math.max(rect.width, 220);
     const maxLeft = Math.max(8, (typeof window !== "undefined" ? window.innerWidth : 0) - width - 8);
     setPosition({
       top: rect.bottom + 6,
@@ -196,9 +199,9 @@ export default function Select({
         opacity: mounted ? 1 : 0,
         transform: mounted ? "translateY(0)" : "translateY(-6px)",
       }}
-      className="z-[var(--z-dropdown)] liquid-glass-select mt-1.5 min-w-[min(18rem,90vw)] max-w-[90vw] rounded-[var(--panel-radius)] transition-[opacity,transform] duration-150 ease-out"
+      className="z-[var(--z-dropdown)] rounded-2xl border border-[var(--panel-border)]/[0.2] bg-[var(--bg-main)]/95 shadow-2xl backdrop-blur-2xl transition-[opacity,transform] duration-150 ease-out overflow-hidden"
     >
-      <div role="group" className="max-h-64 overflow-y-auto p-1.5 no-scrollbar">
+      <div role="group" className="max-h-64 overflow-y-auto p-1.5 [scrollbar-width:thin]">
         {options.map((option, index) => {
           const isSelected = option.id === value;
           const isActive = index === activeIndex;
@@ -211,19 +214,19 @@ export default function Select({
               onMouseEnter={() => setActiveIndex(index)}
               onClick={() => selectOption(option)}
               tabIndex={-1}
-              className={`flex cursor-pointer items-center justify-between gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-base transition-colors ${
-                option.disabled
-                  ? "cursor-not-allowed opacity-40"
-                  : isSelected
-                    ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
-                    : isActive
-                      ? "bg-[var(--accent-primary)]/15 text-[var(--text-primary)]"
-                      : "text-[var(--text-muted)] hover:bg-[var(--accent-primary)]/15 hover:text-[var(--text-primary)]"
-              }`}
+              className={cn(
+                "flex cursor-pointer items-center justify-between gap-2 rounded-xl px-3 py-2 text-xs font-medium transition-all select-none",
+                option.disabled && "cursor-not-allowed opacity-40",
+                isSelected
+                  ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-semibold"
+                  : isActive
+                  ? "bg-[var(--panel-bg)] text-[var(--text-primary)]"
+                  : "text-[var(--text-muted)] hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]"
+              )}
             >
               <span className="truncate">{option.label}</span>
               {isSelected && (
-                <Check className="h-4 w-4 shrink-0 text-[var(--accent-primary)]" aria-hidden="true" />
+                <Check className="h-3.5 w-3.5 shrink-0 text-[var(--accent-primary)]" aria-hidden="true" />
               )}
             </div>
           );
@@ -233,9 +236,9 @@ export default function Select({
   );
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={cn("relative w-full", className)}>
       {label && (
-        <label id={labelId} htmlFor={id} className="mb-1.5 block text-xs font-medium text-[var(--text-muted)]">
+        <label id={labelId} htmlFor={id} className="mb-1.5 block text-xs font-semibold text-[var(--text-primary)] select-none">
           {label}
         </label>
       )}
@@ -255,21 +258,26 @@ export default function Select({
         aria-label={ariaLabel}
         aria-describedby={ariaDescribedBy}
         aria-labelledby={label ? labelId : undefined}
-        className={`flex h-11 min-h-[44px] w-full items-center justify-between gap-2 rounded-[var(--panel-radius)] px-3.5 text-left text-base font-medium focus:outline-none md:h-10 liquid-glass-select ${
-          disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
-        } ${
+        className={cn(
+          "flex h-11 min-h-[44px] w-full items-center justify-between gap-2 rounded-xl px-3.5 text-left text-xs sm:text-sm font-medium transition-all duration-180 select-none",
+          "border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)]",
+          "outline-none hover:border-[var(--input-border-hover)] hover:bg-[var(--input-bg-hover)]",
           open
-            ? "border-[var(--accent-primary)]/50 text-[var(--text-primary)] ring-1 ring-[var(--accent-primary)]/30"
-            : "text-[var(--text-primary)]"
-        }`}
+            ? "border-[var(--accent-primary)] bg-[var(--input-bg-focus)] shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent-primary)_18%,transparent),0_0_16px_-4px_var(--glow-color)]"
+            : "",
+          error && "border-[var(--danger)]/80 shadow-[0_0_0_3px_color-mix(in_srgb,var(--danger)_18%,transparent)]",
+          disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+        )}
       >
-        <span className="truncate">{selected ? selected.label : placeholder}</span>
+        <span className={cn("truncate", !selected && "text-[var(--text-muted)]/60 font-normal")}>
+          {selected ? selected.label : placeholder}
+        </span>
         <motion.span
           animate={{ rotate: open ? 180 : 0 }}
           transition={{ duration: 0.2 }}
-          className="shrink-0"
+          className="shrink-0 text-[var(--text-muted)]"
         >
-          <ChevronDown className="h-4 w-4 text-[var(--text-muted)]" aria-hidden="true" />
+          <ChevronDown className="h-4 w-4" aria-hidden="true" />
         </motion.span>
       </button>
 

@@ -5,7 +5,7 @@ import { Icon } from "@/lib/icons";
 import Input, { type InputProps } from "./Input";
 import Button from "./Button";
 
-type SearchInputProps = Omit<
+export type SearchInputProps = Omit<
   InputProps,
   "icon" | "clearable" | "type"
 > & {
@@ -15,7 +15,7 @@ type SearchInputProps = Omit<
 };
 
 const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
-  ({ onSearch, actionLabel, shortcut, right, className = "", onKeyDown, ...props }, ref) => {
+  ({ onSearch, actionLabel, shortcut = "Ctrl+K", right, className = "", onKeyDown, ...props }, ref) => {
     const localRef = useRef<HTMLInputElement>(null);
 
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -39,15 +39,11 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
             const input = localRef.current;
             if (input && onSearch) onSearch(input.value);
           }}
-          className="h-7 px-2 text-xs"
+          className="h-6 px-2 text-[10px] font-semibold"
         >
-          <Icon name="corner-down-left" className="h-3 w-3" />
-          <span className="hidden sm:inline">{actionLabel}</span>
+          <Icon name="corner-down-left" className="h-3 w-3 mr-1" />
+          <span>{actionLabel}</span>
         </Button>
-      ) : shortcut ? (
-        <kbd className="hidden rounded-md border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.05] px-1.5 py-0.5 text-[10px] font-medium text-[var(--text-muted)] sm:inline">
-          {shortcut}
-        </kbd>
       ) : null;
 
     return (
@@ -63,6 +59,7 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
         type="search"
         icon="search"
         clearable
+        shortcut={shortcut}
         onKeyDown={handleKeyDown}
         className={className}
         right={

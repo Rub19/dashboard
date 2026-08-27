@@ -31,6 +31,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import type { MailMessage, MailAttachment } from "@/lib/hooks/useMail";
 import { cn } from "@/lib/utils";
 import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
 
 function formatMailDate(iso: string) {
   try {
@@ -484,7 +485,7 @@ export default function MailDetailView({
       {onQuickReplySend && (
         <div className="border-t border-[var(--panel-border)]/[0.1] bg-[var(--panel-bg)]/[0.3] p-3.5 select-none">
           <div className="flex items-center gap-2">
-            <input
+            <Input
               type="text"
               value={quickReplyText}
               onChange={(e) => setQuickReplyText(e.target.value)}
@@ -496,7 +497,8 @@ export default function MailDetailView({
               }}
               placeholder={`Répondre rapidement à ${sender}...`}
               disabled={sendingQuick}
-              className="flex-1 rounded-xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.6] px-3.5 py-2 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none"
+              inputSize="compact"
+              className="flex-1 text-xs"
             />
             <Button
               type="button"

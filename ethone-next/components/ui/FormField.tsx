@@ -1,11 +1,13 @@
 "use client";
 
 import { Children, cloneElement, isValidElement, useId, type ReactElement, type ReactNode } from "react";
+import { AlertCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export type FormFieldProps = {
-  label?: string;
-  help?: string;
-  error?: string;
+  label?: ReactNode;
+  help?: ReactNode;
+  error?: ReactNode;
   required?: boolean;
   children: ReactNode;
   className?: string;
@@ -22,26 +24,27 @@ export default function FormField({
   const fallbackId = useId();
   const childArray = Children.toArray(children);
   const firstValidIndex = childArray.findIndex(isValidElement);
-  const field = firstValidIndex >= 0 ? (childArray[firstValidIndex] as ReactElement<{ id?: string }>) : null;
+  const field = firstValidIndex >= 0 ? (childArray[firstValidIndex] as ReactElement<{ id?: string; error?: boolean }>) : null;
   const childId = field?.props.id || fallbackId;
   const messageId = `${childId}-message`;
-  const hasMessage = help || error;
+  const hasMessage = Boolean(help || error);
 
   return (
-    <div className={`space-y-1.5 ${className}`}>
+    <div className={cn("space-y-1.5", className)}>
       {label && (
         <label
           htmlFor={childId}
-          className="text-sm font-medium text-[var(--text-primary)]"
+          className="block text-xs font-semibold text-[var(--text-primary)] select-none"
         >
           {label}
-          {required && <span className="ml-1 text-red-400">*</span>}
+          {required && <span className="ml-1 text-[var(--danger)] font-bold">*</span>}
         </label>
       )}
       {childArray.map((child, index) => {
         if (index === firstValidIndex && isValidElement(child)) {
           return cloneElement(child, {
             id: childId,
+            error: Boolean(error) || (child.props as { error?: boolean }).error,
             "aria-invalid": Boolean(error),
             "aria-describedby": hasMessage ? messageId : undefined,
           } as Partial<unknown>);
@@ -49,12 +52,16 @@ export default function FormField({
         return child;
       })}
       {hasMessage && (
-        <p
+        <div
           id={messageId}
-          className={`text-xs ${error ? "text-red-400" : "text-[var(--text-muted)]"}`}
+          className={cn(
+            "flex items-center gap-1.5 text-xs transition-all duration-150",
+            error ? "text-[var(--danger)] font-medium" : "text-[var(--text-muted)] text-[11px]"
+          )}
         >
-          {error || help}
-        </p>
+          {error && <AlertCircle className="h-3 w-3 shrink-0" />}
+          <span>{error || help}</span>
+        </div>
       )}
     </div>
   );

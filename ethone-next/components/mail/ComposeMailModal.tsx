@@ -358,11 +358,11 @@ export default function ComposeMailModal({
             {/* To Field */}
             <div className="flex items-center gap-2">
               <span className="w-12 shrink-0 font-semibold text-[var(--text-muted)]">À :</span>
-              <div className="flex flex-1 flex-wrap items-center gap-1.5 rounded-xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.3] p-1.5 focus-within:border-[var(--accent-primary)]">
+              <div className="flex flex-1 flex-wrap items-center gap-1.5 rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-2 focus-within:border-[var(--accent-primary)] focus-within:bg-[var(--input-bg-focus)] focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent-primary)_18%,transparent),0_0_16px_-4px_var(--glow-color)] transition-all duration-180">
                 {to.map((t, i) => (
                   <span
                     key={`${t}-${i}`}
-                    className="flex items-center gap-1 rounded-lg bg-[var(--accent-primary)]/15 px-2 py-0.5 text-xs font-medium text-[var(--accent-primary)]"
+                    className="flex items-center gap-1 rounded-lg bg-[var(--accent-primary)]/15 px-2 py-0.5 text-xs font-semibold text-[var(--accent-primary)]"
                   >
                     {t}
                     <button
@@ -381,7 +381,7 @@ export default function ComposeMailModal({
                   onKeyDown={(e) => handleKeyDown(e, to, setTo, toInput, setToInput)}
                   onBlur={() => addTag(to, setTo, toInput, setToInput)}
                   placeholder={to.length === 0 ? "destinataire@exemple.com" : ""}
-                  className="flex-1 min-w-[120px] bg-transparent text-xs text-[var(--text-primary)] focus:outline-none placeholder:text-[var(--text-muted)]"
+                  className="flex-1 min-w-[120px] bg-transparent text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)]/60 focus:outline-none border-0 p-0"
                 />
                 <div className="flex items-center gap-1 text-[10px] text-[var(--text-muted)]">
                   {!showCc && (
@@ -410,7 +410,7 @@ export default function ComposeMailModal({
             {showCc && (
               <div className="flex items-center gap-2">
                 <span className="w-12 shrink-0 font-semibold text-[var(--text-muted)]">Cc :</span>
-                <div className="flex flex-1 flex-wrap items-center gap-1.5 rounded-xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.3] p-1.5 focus-within:border-[var(--accent-primary)]">
+                <div className="flex flex-1 flex-wrap items-center gap-1.5 rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-2 focus-within:border-[var(--accent-primary)] focus-within:bg-[var(--input-bg-focus)] focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent-primary)_18%,transparent),0_0_16px_-4px_var(--glow-color)] transition-all duration-180">
                   {cc.map((c, i) => (
                     <span
                       key={`${c}-${i}`}
@@ -432,7 +432,7 @@ export default function ComposeMailModal({
                     onChange={(e) => setCcInput(e.target.value)}
                     onKeyDown={(e) => handleKeyDown(e, cc, setCc, ccInput, setCcInput)}
                     onBlur={() => addTag(cc, setCc, ccInput, setCcInput)}
-                    className="flex-1 min-w-[120px] bg-transparent text-xs text-[var(--text-primary)] focus:outline-none placeholder:text-[var(--text-muted)]"
+                    className="flex-1 min-w-[120px] bg-transparent text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)]/60 focus:outline-none border-0 p-0"
                   />
                 </div>
               </div>
@@ -442,7 +442,7 @@ export default function ComposeMailModal({
             {showBcc && (
               <div className="flex items-center gap-2">
                 <span className="w-12 shrink-0 font-semibold text-[var(--text-muted)]">Cci :</span>
-                <div className="flex flex-1 flex-wrap items-center gap-1.5 rounded-xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.3] p-1.5 focus-within:border-[var(--accent-primary)]">
+                <div className="flex flex-1 flex-wrap items-center gap-1.5 rounded-xl border border-[var(--input-border)] bg-[var(--input-bg)] p-2 focus-within:border-[var(--accent-primary)] focus-within:bg-[var(--input-bg-focus)] focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent-primary)_18%,transparent),0_0_16px_-4px_var(--glow-color)] transition-all duration-180">
                   {bcc.map((b, i) => (
                     <span
                       key={`${b}-${i}`}
@@ -464,7 +464,7 @@ export default function ComposeMailModal({
                     onChange={(e) => setBccInput(e.target.value)}
                     onKeyDown={(e) => handleKeyDown(e, bcc, setBcc, bccInput, setBccInput)}
                     onBlur={() => addTag(bcc, setBcc, bccInput, setBccInput)}
-                    className="flex-1 min-w-[120px] bg-transparent text-xs text-[var(--text-primary)] focus:outline-none placeholder:text-[var(--text-muted)]"
+                    className="flex-1 min-w-[120px] bg-transparent text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)]/60 focus:outline-none border-0 p-0"
                   />
                 </div>
               </div>

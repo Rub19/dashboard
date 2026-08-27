@@ -47,13 +47,18 @@ export async function providerCredentialsRoute({ request, env, auth, url }) {
   const provider = safeText(url.searchParams.get("provider"), 32);
 
   if (method === "GET") {
-    if (provider) {
-      if (!ALLOWED.has(provider)) throw httpError("INVALID_PARAMETER", 400, { detail: "provider" });
-      const rows = await supabaseRequest(env, `/rest/v1/user_provider_credentials?owner_id=eq.${encodeURIComponent(auth.userId)}&provider=eq.${encodeURIComponent(provider)}&select=provider`);
-      return { data: { provider, connected: Array.isArray(rows) && rows.length > 0 } };
+    try {
+      if (provider) {
+        if (!ALLOWED.has(provider)) throw httpError("INVALID_PARAMETER", 400, { detail: "provider" });
+        const rows = await supabaseRequest(env, `/rest/v1/user_provider_credentials?owner_id=eq.${encodeURIComponent(auth.userId)}&provider=eq.${encodeURIComponent(provider)}&select=provider`);
+        return { data: { provider, connected: Array.isArray(rows) && rows.length > 0 } };
+      }
+      const rows = await supabaseRequest(env, `/rest/v1/user_provider_credentials?owner_id=eq.${encodeURIComponent(auth.userId)}&select=provider`);
+      return { data: { providers: Array.isArray(rows) ? rows.map((r) => r.provider) : [] } };
+    } catch (err) {
+      if (err && typeof err === "object" && "status" in err && err.status === 400) throw err;
+      return { data: provider ? { provider, connected: false } : { providers: [] } };
     }
-    const rows = await supabaseRequest(env, `/rest/v1/user_provider_credentials?owner_id=eq.${encodeURIComponent(auth.userId)}&select=provider`);
-    return { data: { providers: Array.isArray(rows) ? rows.map((r) => r.provider) : [] } };
   }
 
   if (method === "POST") {

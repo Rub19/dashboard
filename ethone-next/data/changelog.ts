@@ -7206,6 +7206,56 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.86",
+  date: "2026-08-27",
+  title: "Audit & Optimisation Globale du Worker et du Client Fetch",
+  items: [
+    "Audit et refonte des politiques CORS du Worker Cloudflare pour autoriser tous les sous-domaines Pages et personnalisés sans blocage.",
+    "Passage en public des endpoints météo, Spotify now-playing, Steam, Twitch, flux RSS et présence.",
+    "Ajout d'un système de timeout et résilience réseau automatique (15s) sur tous les appels fetchWorker.",
+    "Sécurisation des routes API (connexions, profils et identifiants) pour éliminer les erreurs 500 et 401 intempestives.",
+    "Redéploiement complet du worker raspy-fog-bf5b sur Cloudflare.",
+    "Version affichée : v1.10.86.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.86",
+  date: "2026-08-27",
+  title: "Global Audit & Optimization of Cloudflare Worker & Fetch Client",
+  items: [
+    "Audited and updated Worker CORS policies to allow all Cloudflare Pages preview domains and custom domains.",
+    "Marked weather, Spotify now-playing, Steam, Twitch, RSS and presence APIs as public endpoints.",
+    "Added timeout controller (15s) and automatic network error recovery to fetchWorker.",
+    "Hardened connections, profiles and credentials routes to eliminate unexpected 500 and 401 errors.",
+    "Redeployed Cloudflare worker raspy-fog-bf5b.",
+    "Version badge: v1.10.86.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.86",
+  date: "2026-08-27",
+  title: "Auditoría Global y Optimización del Worker y Cliente Fetch",
+  items: [
+    "Políticas CORS actualizadas y endpoints públicos (clima, Spotify, Steam, Twitch, RSS) habilitados.",
+    "Mayor resiliencia con control de tiempo de espera de 15s en fetchWorker.",
+    "Versión: v1.10.86.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.86",
+  date: "2026-08-27",
+  title: "Globales Audit & Optimierung von Worker und Fetch-Client",
+  items: [
+    "Aktualisierte CORS-Richtlinien und Freigabe öffentlicher Endpunkte (Wetter, Spotify, Steam, Twitch, RSS).",
+    "Automatische 15s-Timeout-Absicherung für alle fetchWorker-Aufrufe.",
+    "Version: v1.10.86.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.85",
   date: "2026-08-27",
   title: "Correction Critique : Écran d'Erreur Inattendue au Démarrage (PublicProfileProvider)",

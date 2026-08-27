@@ -45,8 +45,12 @@ export async function profileRoute({ request, env, auth }) {
   const method = String(request.method || "GET").toUpperCase();
 
   if (method === "GET") {
-    const data = await supabaseRequest(env, `/rest/v1/ethone_public_profiles?user_id=eq.${encodeURIComponent(auth.userId)}&limit=1`);
-    return { data: Array.isArray(data) && data[0] ? data[0] : null };
+    try {
+      const data = await supabaseRequest(env, `/rest/v1/ethone_public_profiles?user_id=eq.${encodeURIComponent(auth.userId)}&limit=1`);
+      return { data: Array.isArray(data) && data[0] ? data[0] : null };
+    } catch {
+      return { data: null };
+    }
   }
 
   if (method === "POST" || method === "PATCH") {

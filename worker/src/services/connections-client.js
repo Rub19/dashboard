@@ -64,18 +64,25 @@ const PROVIDERS = [
 export async function listConnections(env, userId) {
   if (!userId) return [];
 
-  const [oauthRows, credentialRows] = await Promise.all([
-    supabaseRequest(env, `/rest/v1/user_oauth_tokens?owner_id=eq.${encodeURIComponent(userId)}&select=provider`),
-    supabaseRequest(env, `/rest/v1/user_provider_credentials?owner_id=eq.${encodeURIComponent(userId)}&select=provider`),
-  ]);
+  try {
+    const [oauthRows, credentialRows] = await Promise.all([
+      supabaseRequest(env, `/rest/v1/user_oauth_tokens?owner_id=eq.${encodeURIComponent(userId)}&select=provider`).catch(() => []),
+      supabaseRequest(env, `/rest/v1/user_provider_credentials?owner_id=eq.${encodeURIComponent(userId)}&select=provider`).catch(() => []),
+    ]);
 
-  const connected = new Set();
-  if (Array.isArray(oauthRows)) oauthRows.forEach((row) => connected.add(row.provider));
-  if (Array.isArray(credentialRows)) credentialRows.forEach((row) => connected.add(row.provider));
+    const connected = new Set();
+    if (Array.isArray(oauthRows)) oauthRows.forEach((row) => connected.add(row.provider));
+    if (Array.isArray(credentialRows)) credentialRows.forEach((row) => connected.add(row.provider));
 
-  const providers = [...new Set([...PROVIDERS, ...connected])];
-  return providers.map((provider) => ({
-    provider,
-    connected: connected.has(provider),
-  }));
+    const providers = [...new Set([...PROVIDERS, ...connected])];
+    return providers.map((provider) => ({
+      provider,
+      connected: connected.has(provider),
+    }));
+  } catch {
+    return PROVIDERS.map((provider) => ({
+      provider,
+      connected: false,
+    }));
+  }
 }

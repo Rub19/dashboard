@@ -15,7 +15,7 @@ function securityHeaders(response) {
   headers.set("content-security-policy", "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'");
   headers.set("permissions-policy", "camera=(), microphone=(), geolocation=()");
   headers.set("x-frame-options", "DENY");
-  headers.set("cross-origin-resource-policy", "same-site");
+  headers.set("cross-origin-resource-policy", "cross-origin");
   return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 }
 

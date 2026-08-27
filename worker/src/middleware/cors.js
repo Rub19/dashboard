@@ -16,43 +16,30 @@ const HEADERS = Object.freeze([
   "x-request-id"
 ]);
 
-function isLoopbackOrigin(origin) {
+function isAllowedOrigin(origin, env) {
+  if (!origin) return true;
   try {
     const url = new URL(origin);
-    if (url.protocol !== "http:" && url.protocol !== "https:") return false;
     const hostname = url.hostname.toLowerCase();
-    return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "[::1]";
+    if (hostname === "localhost" || hostname === "127.0.0.1" || hostname === "[::1]") return true;
+    if (hostname === "ethone.dev" || hostname.endsWith(".ethone.dev")) return true;
+    if (hostname.endsWith(".pages.dev")) return true;
+    if (hostname.endsWith(".workers.dev")) return true;
+    if (hostname === "rub19.github.io") return true;
   } catch {
     return false;
   }
-}
-
-function configuredOrigins(env) {
   const origins = String(env.ALLOWED_ORIGINS || "https://ethone.dev")
     .split(",")
-    .map((value) => value.trim())
+    .map((v) => v.trim())
     .filter(Boolean);
-  if (String(env.ENVIRONMENT || "production") !== "production") {
-    origins.push(
-      "http://127.0.0.1:4173",
-      "http://127.0.0.1:4179",
-      "http://127.0.0.1:3000",
-      "http://127.0.0.1:3001",
-      "http://127.0.0.1:3002",
-      "http://localhost:4173",
-      "http://localhost:4179",
-      "http://localhost:3000",
-      "http://localhost:3001",
-      "http://localhost:3002"
-    );
-  }
-  return new Set(origins);
+  return origins.includes(origin);
 }
 
 export function evaluateCors(request, env) {
   const origin = request.headers.get("origin");
   if (!origin) return Object.freeze({ origin: "", allowed: true });
-  const allowed = configuredOrigins(env).has(origin) || isLoopbackOrigin(origin);
+  const allowed = isAllowedOrigin(origin, env);
   return Object.freeze({ origin, allowed });
 }
 

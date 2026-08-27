@@ -2,7 +2,8 @@
 
 import { supabase } from "./supabase";
 
-export const WORKER_URL = process.env.NEXT_PUBLIC_WORKER_URL || "https://ethone.dev";
+export const WORKER_URL =
+  process.env.NEXT_PUBLIC_WORKER_URL || "https://raspy-fog-bf5b.rub19-mailpro.workers.dev";
 
 if (typeof window !== "undefined" && !WORKER_URL) {
   console.error(
@@ -50,8 +51,12 @@ function extractWorkerErrorDetail(detail: unknown): string {
 
 export async function getToken(): Promise<string | null> {
   if (typeof window === "undefined") return null;
-  const { data } = await supabase.auth.getSession();
-  return data.session?.access_token || null;
+  try {
+    const { data } = await supabase.auth.getSession();
+    return data.session?.access_token || null;
+  } catch {
+    return null;
+  }
 }
 
 export async function fetchWorker(
@@ -74,10 +79,24 @@ export async function fetchWorker(
     } catch {}
   }
 
-  const res = await fetch(`${WORKER_URL}${path}`, {
-    ...options,
-    headers,
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+  let res: Response;
+  try {
+    res = await fetch(`${WORKER_URL}${path}`, {
+      ...options,
+      headers,
+      signal: options.signal || controller.signal,
+    });
+  } catch (err: unknown) {
+    clearTimeout(timeoutId);
+    const isAbort = (err as Error)?.name === "AbortError";
+    const msg = isAbort ? "Délai d'attente dépassé (timeout 15s)" : "Impossible de joindre le serveur ETHONE";
+    throw new WorkerError(msg, isAbort ? 504 : 503, isAbort ? "TIMEOUT" : "NETWORK_ERROR", null, true);
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   if (!res.ok) {
     const text = await res.text().catch(() => "");

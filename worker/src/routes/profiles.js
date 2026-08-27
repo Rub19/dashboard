@@ -79,15 +79,24 @@ export async function profilesRoute({ request, env, auth, route }) {
   const action = route?.action || "";
 
   if (method === "GET") {
-    const data = await supabaseRequest(env, `/rest/v1/ethone_profiles?user_id=eq.${encodeURIComponent(auth.userId)}&order=created_at.asc`);
-    const list = Array.isArray(data) ? data : [];
-    const active = list.find((p) => p.is_active) || list[0] || null;
-    return {
-      data: {
-        list: list.map(profileView),
-        active: active ? profileView(active) : null
-      }
-    };
+    try {
+      const data = await supabaseRequest(env, `/rest/v1/ethone_profiles?user_id=eq.${encodeURIComponent(auth.userId)}&order=created_at.asc`);
+      const list = Array.isArray(data) ? data : [];
+      const active = list.find((p) => p.is_active) || list[0] || null;
+      return {
+        data: {
+          list: list.map(profileView),
+          active: active ? profileView(active) : null
+        }
+      };
+    } catch {
+      return {
+        data: {
+          list: [],
+          active: null
+        }
+      };
+    }
   }
 
   if (method === "POST" && action === "") {

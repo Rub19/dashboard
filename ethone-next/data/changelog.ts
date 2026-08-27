@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.11.02",
+  date: "2026-08-27",
+  title: "Animations Globales : Calibrage Soyeux, Doux & Organique",
+  items: [
+    "Harmonisation de tous les ressorts physiques (Springs) de l'OS pour éliminer toute sensation de rigidité ou d'agressivité.",
+    "Transition adoucie pour la Dynamic Island, la Command Palette, les modales et les surfaces interactives.",
+    "Nouvelles courbes cubiques douces assurant une fluidité permanente à 120 FPS.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.11.02",
+  date: "2026-08-27",
+  title: "Global Animations: Silky-Smooth, Calibrated & Organic Motion",
+  items: [
+    "Harmonized spring physics across the OS to remove harsh or aggressive snaps.",
+    "Softened transitions for Dynamic Island, Command Palette, modals, and interactive surfaces.",
+    "New gentle cubic curves ensuring consistent 120 FPS smoothness.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.11.02",
+  date: "2026-08-27",
+  title: "Animaciones Globales: Suavidad y Fluidez",
+  items: [
+    "Calibración de la física de animación para una experiencia visual sedosa y fluida.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.11.02",
+  date: "2026-08-27",
+  title: "Globale Animationen: Sanfte & geschmeidige Bewegung",
+  items: [
+    "Anpassung der Animationsphysik für maximale Geschmeidigkeit im gesamten System.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.11.01",
   date: "2026-08-27",
   title: "Sidebar & Navigation : Animation Douce, Fluide et Naturelle",

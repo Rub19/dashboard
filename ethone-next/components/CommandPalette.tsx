@@ -381,7 +381,7 @@ export default function CommandPalette() {
         aria-label={i18n("closeCommandPalette", "Close command palette")}
         initial={false}
         animate={{ opacity: open ? 1 : 0 }}
-        transition={{ duration: open ? 0.18 : 0.12, ease: EASE_OUT }}
+        transition={{ duration: open ? 0.22 : 0.16, ease: EASE_OUT }}
         onClick={() => setOpen(false)}
         className={cn(
           "absolute inset-0 bg-[var(--background)]/5 [backdrop-filter:blur(12px)_saturate(140%)] [-webkit-backdrop-filter:blur(12px)_saturate(140%)]",
@@ -398,9 +398,9 @@ export default function CommandPalette() {
           animate={{
             opacity: open ? 1 : 0,
             y: open || reduce ? 0 : -8,
-            scale: open || reduce ? 1 : 0.97,
+            scale: open || reduce ? 1 : 0.98,
           }}
-          transition={{ duration: reduce ? 0.1 : 0.15, ease: EASE_OUT }}
+          transition={{ duration: reduce ? 0.12 : (open ? 0.24 : 0.18), ease: EASE_OUT }}
           onKeyDown={onKeyDown}
           className={cn(
             "w-full max-w-xl overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] shadow-2xl will-change-transform",

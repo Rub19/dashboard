@@ -29,17 +29,17 @@ const IslandContext = createContext<IslandContextValue | null>(null);
 // Shell physics: ultra smooth spring with subtle inertia and organic damping
 const SHELL_SPRING = {
   type: "spring",
-  stiffness: 420,
-  damping: 32,
-  mass: 0.8,
+  stiffness: 280,
+  damping: 28,
+  mass: 0.7,
 } as const;
 
 // Content spring: synchronized with shell
 const CONTENT_SPRING = {
   type: "spring",
-  stiffness: 440,
-  damping: 34,
-  mass: 0.7,
+  stiffness: 300,
+  damping: 28,
+  mass: 0.65,
 } as const;
 
 const RADIUS = 32;

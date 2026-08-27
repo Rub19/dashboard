@@ -63,17 +63,24 @@ export type SoundPack =
 
 export type SoundAmbient =
   | "none"
+  | "rain"
+  | "storm"
+  | "forest"
+  | "ocean"
+  | "fireplace"
+  | "cafe"
+  | "wind"
+  | "blizzard"
+  | "night"
+  | "train"
+  | "city"
+  | "library"
+  | "space"
+  | "nature"
   | "pink"
   | "brown"
   | "white"
-  | "rain"
-  | "drone"
-  | "fireplace"
-  | "ocean"
-  | "forest"
-  | "cafe"
-  | "night"
-  | "wind";
+  | "drone";
 
 export type SoundVolumeCategory = "interface" | "notifications" | "brain" | "system";
 

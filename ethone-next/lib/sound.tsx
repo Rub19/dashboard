@@ -579,7 +579,7 @@ type AmbientState = {
 };
 
 function createAmbientBuffer(ctx: BaseAudioContext, type: SoundAmbient): AudioBuffer {
-  const duration = type === "rain" ? 16 : 4;
+  const duration = ["rain", "storm", "blizzard", "train", "ocean", "space"].includes(type) ? 16 : 6;
   const length = Math.floor(ctx.sampleRate * duration);
   const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
   const data = buffer.getChannelData(0);
@@ -589,39 +589,31 @@ function createAmbientBuffer(ctx: BaseAudioContext, type: SoundAmbient): AudioBu
       data[i] = (Math.random() * 2 - 1) * 0.12;
     }
   } else if (type === "pink") {
-    let b0 = 0,
-      b1 = 0,
-      b2 = 0,
-      b3 = 0,
-      b4 = 0,
-      b5 = 0,
-      b6 = 0;
-    for (let i = 0; i < length; i++) {
-      const white = Math.random() * 2 - 1;
-      b0 = 0.99886 * b0 + white * 0.0555179;
-      b1 = 0.99332 * b1 + white * 0.0750759;
-      b2 = 0.969 * b2 + white * 0.153852;
-      b3 = 0.8665 * b3 + white * 0.3104856;
-      b4 = 0.55 * b4 + white * 0.5329522;
-      b5 = -0.7616 * b5 - white * 0.016898;
-      data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.11;
-      b6 = white * 0.115926;
-    }
+    renderPinkNoise(data, 0.11);
   } else if (type === "brown") {
-    let last = 0;
-    for (let i = 0; i < length; i++) {
-      const white = Math.random() * 2 - 1;
-      last = (last + 0.08 * white) / 1.08;
-      data[i] = last * 0.6;
-    }
+    renderBrownNoise(data, 0.6);
   } else if (type === "rain") {
     renderRainLayer(data, ctx.sampleRate);
+  } else if (type === "storm") {
+    renderStorm(data, ctx.sampleRate);
   } else if (type === "fireplace") {
     renderFireplace(data, ctx.sampleRate);
   } else if (type === "ocean") {
     renderOcean(data, ctx.sampleRate);
   } else if (type === "wind") {
     renderWind(data, ctx.sampleRate);
+  } else if (type === "blizzard") {
+    renderBlizzard(data, ctx.sampleRate);
+  } else if (type === "train") {
+    renderTrain(data, ctx.sampleRate);
+  } else if (type === "city") {
+    renderCity(data, ctx.sampleRate);
+  } else if (type === "library") {
+    renderLibrary(data, ctx.sampleRate);
+  } else if (type === "space") {
+    renderSpace(data, ctx.sampleRate);
+  } else if (type === "nature") {
+    renderNature(data, ctx.sampleRate);
   } else if (["forest", "cafe", "night"].includes(type)) {
     renderColorScene(data, ctx.sampleRate, type as "forest" | "cafe" | "night");
   } else {
@@ -793,6 +785,91 @@ function renderColorScene(data: Float32Array, sampleRate: number, type: "forest"
   }
 }
 
+function renderStorm(data: Float32Array, sampleRate: number): void {
+  renderRainLayer(data, sampleRate);
+  const length = data.length;
+  // Natural spaced thunder strikes
+  const thunders = [
+    { start: Math.floor(sampleRate * 2.8), duration: sampleRate * 1.8, intensity: 0.85 },
+    { start: Math.floor(sampleRate * 9.5), duration: sampleRate * 2.4, intensity: 0.95 },
+  ];
+
+  for (const thunder of thunders) {
+    for (let i = 0; i < thunder.duration && thunder.start + i < length; i++) {
+      const idx = thunder.start + i;
+      const t = i / sampleRate;
+      const attack = Math.min(1, t * 15);
+      const decay = Math.exp(-t * 1.2);
+      const sub = Math.sin(2 * Math.PI * 48 * t) * 0.45;
+      const mid = Math.sin(2 * Math.PI * 92 * t + (Math.random() - 0.5) * 0.5) * 0.3;
+      const rumble = (sub + mid + (Math.random() * 2 - 1) * 0.25) * attack * decay * thunder.intensity;
+      data[idx] = Math.max(-1, Math.min(1, data[idx] * 0.8 + rumble));
+    }
+  }
+}
+
+function renderBlizzard(data: Float32Array, sampleRate: number): void {
+  renderPinkNoise(data, 0.12);
+  const length = data.length;
+  for (let i = 0; i < length; i++) {
+    const t = i / sampleRate;
+    const howl = 0.5 + 0.35 * Math.sin(t * 0.75) + 0.2 * Math.sin(t * 2.4) + 0.15 * Math.sin(t * 0.12);
+    data[i] = data[i] * Math.max(0.25, howl * 1.2);
+  }
+}
+
+function renderTrain(data: Float32Array, sampleRate: number): void {
+  renderBrownNoise(data, 0.35);
+  const length = data.length;
+  const tempo = 1.7; // ~102 bpm cadence
+  for (let i = 0; i < length; i++) {
+    const t = i / sampleRate;
+    const click = Math.pow(Math.max(0, Math.sin(2 * Math.PI * tempo * t)), 8) * 0.35;
+    const clack = Math.pow(Math.max(0, Math.sin(2 * Math.PI * tempo * t + 0.5)), 8) * 0.25;
+    data[i] = Math.max(-1, Math.min(1, data[i] + (click + clack) * (Math.random() * 0.4 + 0.8)));
+  }
+}
+
+function renderCity(data: Float32Array, sampleRate: number): void {
+  renderBrownNoise(data, 0.5);
+  const length = data.length;
+  for (let i = 0; i < length; i++) {
+    const t = i / sampleRate;
+    const traffic = 0.8 + 0.2 * Math.sin(t * 0.08) + 0.1 * Math.sin(t * 0.25);
+    data[i] = data[i] * traffic * 0.8;
+  }
+}
+
+function renderLibrary(data: Float32Array, sampleRate: number): void {
+  renderPinkNoise(data, 0.035);
+  const length = data.length;
+  for (let i = 0; i < length; i++) {
+    data[i] *= 0.65;
+  }
+}
+
+function renderSpace(data: Float32Array, sampleRate: number): void {
+  const length = data.length;
+  for (let i = 0; i < length; i++) {
+    const t = i / sampleRate;
+    const drone1 = Math.sin(2 * Math.PI * 55 * t) * 0.25; // 55Hz sub A
+    const drone2 = Math.sin(2 * Math.PI * 82.4 * t) * 0.18; // E
+    const drone3 = Math.sin(2 * Math.PI * 110 * t) * 0.12; // A2
+    const shimmer = Math.sin(2 * Math.PI * 220 * t + Math.sin(t * 0.3) * 2) * 0.06;
+    data[i] = drone1 + drone2 + drone3 + shimmer;
+  }
+}
+
+function renderNature(data: Float32Array, sampleRate: number): void {
+  renderBrownNoise(data, 0.3);
+  const length = data.length;
+  for (let i = 0; i < length; i++) {
+    const t = i / sampleRate;
+    const stream = 0.5 + 0.3 * Math.sin(t * 0.8) + 0.2 * Math.cos(t * 2.1);
+    data[i] = data[i] * stream * 0.9;
+  }
+}
+
 function isMediaActive(): boolean {
   if (typeof navigator !== "undefined" && navigator.mediaSession?.playbackState === "playing") return true;
   if (typeof document === "undefined") return false;
@@ -896,6 +973,7 @@ export function SoundProvider({ children }: { children: ReactNode }) {
       const filterFreq: Record<SoundAmbient, number> = {
         none: 1800,
         rain: 850,
+        storm: 900,
         drone: 420,
         brown: 500,
         white: 2400,
@@ -903,9 +981,15 @@ export function SoundProvider({ children }: { children: ReactNode }) {
         fireplace: 700,
         ocean: 650,
         wind: 1400,
+        blizzard: 1800,
         forest: 2200,
         cafe: 2400,
         night: 1600,
+        train: 1200,
+        city: 950,
+        library: 2000,
+        space: 600,
+        nature: 1900,
       };
       filter.frequency.value = filterFreq[type] ?? 1800;
       filter.Q.value = 0.7;

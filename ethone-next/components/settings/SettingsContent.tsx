@@ -47,6 +47,13 @@ import MaintenancePanel from "./MaintenancePanel";
 import LanguageControl from "./LanguageControl";
 import SoundPackControl from "./SoundPackControl";
 import AmbientSoundControl from "@/components/AmbientSoundControl";
+import SettingsOverview from "./SettingsOverview";
+import SoundscapeMixer from "./SoundscapeMixer";
+import DynamicIslandSettings from "./DynamicIslandSettings";
+import DockSettings from "./DockSettings";
+import ShortcutsSettings from "./ShortcutsSettings";
+import PerformanceSettings from "./PerformanceSettings";
+import PrivacySecuritySettings from "./PrivacySecuritySettings";
 import { CATEGORY_ORDER, sectionCategory } from "./SettingsNavigation";
 
 const THEMES = [
@@ -1065,22 +1072,302 @@ export default function SettingsContent({
 
   const mainSections: SectionDef[] = useMemo(
     () => [
-      { id: "appearance", label: i18n("appearance"), icon: "palette", category: "appearance", keywords: ["préférences", "apparence"], fields: [], children: <AppearanceSettings /> },
-      { id: "typography", label: i18n("typography"), icon: "type", category: "appearance", keywords: ["préférences", "typographie"], fields: typographyFields },
-      { id: "language", label: i18n("language"), icon: "globe", category: "language", keywords: ["préférences", "langue"], fields: languageFields },
-      { id: "density", label: i18n("density"), icon: "gauge", category: "appearance", keywords: ["préférences", "density", "densité"], fields: densityFields },
-      { id: "sound", label: i18n("sound"), icon: "volume", category: "audio", keywords: ["préférences", "son"], fields: soundFields },
-      { id: "account", label: i18n("account"), icon: "user", category: "profile", keywords: ["compte", "profil", "identité"], fields: accountFields, children: <UserProfileCard /> },
-      { id: "security", label: i18n("security"), icon: "shield", category: "security", keywords: ["sécurité", "2fa"], fields: securityFields },
-      { id: "notifications", label: i18n("notifications"), icon: "bell", category: "notifications", keywords: ["notifications"], fields: notificationsFields },
-      { id: "workspace", label: i18n("workspace"), icon: "layout-grid", category: "workspace", keywords: ["workspace", "intégrations", "dock", "brain"], fields: workspaceFields },
-      { id: "integrations", label: i18n("connectionsTitle") || "Intégrations", icon: "plug", category: "workspace", keywords: ["intégrations", "connexions", "workspace", "discord", "spotify"], fields: [], children: (
-        <div className="h-[28rem] overflow-hidden rounded-[var(--panel-radius)]">
-          <IntegrationsSettings />
-        </div>
-      ) },
+      {
+        id: "overview",
+        label: "Vue d'ensemble",
+        icon: "layout-dashboard",
+        category: "general",
+        keywords: ["général", "vue", "dashboard", "control center", "statut", "raccourcis"],
+        fields: [],
+        children: (
+          <SettingsOverview
+            onNavigate={(id) => {
+              const el = categoryRefs.current[id];
+              el?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+          />
+        ),
+      },
+      {
+        id: "account",
+        label: i18n("account"),
+        icon: "user",
+        category: "profile",
+        keywords: ["compte", "profil", "identité", "avatar", "pseudo"],
+        fields: accountFields,
+        children: <UserProfileCard />,
+      },
+      {
+        id: "appearance",
+        label: i18n("appearance"),
+        icon: "palette",
+        category: "appearance",
+        keywords: ["préférences", "apparence", "verre", "flou", "contraste"],
+        fields: [],
+        children: <AppearanceSettings />,
+      },
+      {
+        id: "typography",
+        label: i18n("typography"),
+        icon: "type",
+        category: "appearance",
+        keywords: ["préférences", "typographie", "police", "taille"],
+        fields: typographyFields,
+      },
+      {
+        id: "density",
+        label: i18n("density"),
+        icon: "gauge",
+        category: "appearance",
+        keywords: ["préférences", "density", "densité", "espacement"],
+        fields: densityFields,
+      },
+      {
+        id: "themes",
+        label: "Thèmes & Palettes",
+        icon: "sparkles",
+        category: "themes",
+        keywords: ["thème", "obsidian", "cyber", "aurora", "couleurs", "accents"],
+        fields: [],
+        children: <AppearanceSettings />,
+      },
+      {
+        id: "animations",
+        label: "Animations & Transitions",
+        icon: "zap",
+        category: "animations",
+        keywords: ["animations", "vitesse", "transitions", "motion", "ressorts"],
+        fields: [
+          {
+            key: "uiAnimations",
+            label: "Style d'animation",
+            type: "button-grid",
+            options: makeOptions([...UI_ANIMATION_STYLES], false),
+            cols: 3,
+            keywords: ["animation", "style", "fluide"],
+          },
+          {
+            key: "reducedMotion",
+            label: "Réduire les animations (prefers-reduced-motion)",
+            type: "toggle",
+            keywords: ["animation", "réduit", "accessibilité"],
+          },
+          {
+            key: "spotlightEnabled",
+            label: "Effet Spotlight au curseur",
+            type: "toggle",
+            keywords: ["animation", "spotlight", "glow"],
+          },
+          {
+            key: "ambientEffectsEnabled",
+            label: "Effets d'ambiance dynamiques",
+            type: "toggle",
+            keywords: ["animation", "ambiance", "auras"],
+          },
+        ],
+      },
+      {
+        id: "sound",
+        label: i18n("sound"),
+        icon: "volume-2",
+        category: "audio",
+        keywords: ["préférences", "son", "volume", "haptique", "packs"],
+        fields: soundFields,
+      },
+      {
+        id: "soundscapes",
+        label: "Soundscapes & Mixeur",
+        icon: "cloud-rain",
+        category: "soundscapes",
+        keywords: ["soundscape", "ambiance", "pluie", "orage", "mixeur", "forêt", "océan", "bruit"],
+        fields: [],
+        children: <SoundscapeMixer />,
+      },
+      {
+        id: "notifications",
+        label: i18n("notifications"),
+        icon: "bell",
+        category: "notifications",
+        keywords: ["notifications", "alertes", "push", "dnd"],
+        fields: notificationsFields,
+      },
+      {
+        id: "dynamic-island",
+        label: "Dynamic Island",
+        icon: "disc",
+        category: "dynamic-island",
+        keywords: ["dynamic island", "capsule", "preview", "simulateur", "spotify"],
+        fields: [],
+        children: <DynamicIslandSettings />,
+      },
+      {
+        id: "dock",
+        label: "Dock & Barre des tâches",
+        icon: "credit-card",
+        category: "dock",
+        keywords: ["dock", "taille", "verre", "magnify", "icônes"],
+        fields: [],
+        children: <DockSettings />,
+      },
+      {
+        id: "workspace",
+        label: i18n("workspace"),
+        icon: "layout-grid",
+        category: "workspace",
+        keywords: ["workspace", "intégrations", "dock", "brain", "grille"],
+        fields: workspaceFields,
+      },
+      {
+        id: "language",
+        label: i18n("language"),
+        icon: "globe",
+        category: "language",
+        keywords: ["préférences", "langue", "région", "date", "heure"],
+        fields: languageFields,
+      },
+      {
+        id: "integrations",
+        label: i18n("connectionsTitle") || "Connexions",
+        icon: "plug",
+        category: "connections",
+        keywords: ["intégrations", "connexions", "workspace", "discord", "spotify", "github"],
+        fields: [],
+        children: (
+          <div className="h-[28rem] overflow-hidden rounded-[var(--panel-radius)]">
+            <IntegrationsSettings />
+          </div>
+        ),
+      },
+      {
+        id: "privacy",
+        label: "Confidentialité & Données",
+        icon: "eye-off",
+        category: "privacy",
+        keywords: ["confidentialité", "télémétrie", "données", "brain", "historique"],
+        fields: [],
+        children: <PrivacySecuritySettings />,
+      },
+      {
+        id: "security",
+        label: i18n("security"),
+        icon: "shield",
+        category: "security",
+        keywords: ["sécurité", "2fa", "sessions", "mot de passe"],
+        fields: securityFields,
+        children: <PrivacySecuritySettings />,
+      },
+      {
+        id: "sync",
+        label: "Synchronisation Cloud",
+        icon: "arrows-clockwise",
+        category: "sync",
+        keywords: ["sync", "synchronisation", "cloud", "supabase", "état"],
+        fields: [],
+        children: (
+          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-5 flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-[var(--success)]/10 text-[var(--success)] flex items-center justify-center">
+                  <Icon name="arrows-clockwise" className="h-5 w-5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-[var(--text-primary)]">Supabase Cloud Sync</h4>
+                  <p className="text-xs text-[var(--text-muted)]">Base de données temps réel connectée</p>
+                </div>
+              </div>
+              <span className="rounded-full bg-[var(--success)]/20 px-2.5 py-1 text-xs font-bold text-[var(--success)]">
+                🟢 Synchronisé
+              </span>
+            </div>
+            <p className="text-xs text-[var(--text-muted)]">
+              Toutes vos notes, tâches, fichiers et préférences sont sauvegardés automatiquement et synchronisés instantanément sur tous vos appareils.
+            </p>
+          </div>
+        ),
+      },
+      {
+        id: "storage",
+        label: "Stockage & Cache",
+        icon: "hard-drive",
+        category: "storage",
+        keywords: ["stockage", "cache", "mémoire", "indexeddb"],
+        fields: [],
+        children: <PerformanceSettings />,
+      },
+      {
+        id: "performance",
+        label: "Performance & Diagnostic",
+        icon: "cpu",
+        category: "performance",
+        keywords: ["performance", "diagnostic", "cpu", "mémoire", "fps", "batterie"],
+        fields: [],
+        children: <PerformanceSettings />,
+      },
+      {
+        id: "accessibility",
+        label: "Accessibilité",
+        icon: "accessibility",
+        category: "accessibility",
+        keywords: ["accessibilité", "a11y", "contraste", "texte", "focus", "clavier"],
+        fields: [
+          {
+            key: "reducedMotion",
+            label: "Réduire les animations",
+            type: "toggle",
+            keywords: ["accessibilité", "motion", "mouvement"],
+          },
+          {
+            key: "fontSize",
+            label: "Taille du texte de l'interface (%)",
+            type: "range",
+            min: 80,
+            max: 130,
+            unit: "%",
+            keywords: ["accessibilité", "texte", "taille"],
+          },
+          {
+            key: "uiGlow",
+            label: "Effets lumineux et halos (Glow)",
+            type: "toggle",
+            keywords: ["accessibilité", "glow", "lumière"],
+          },
+        ],
+      },
+      {
+        id: "shortcuts",
+        label: "Raccourcis clavier",
+        icon: "keyboard",
+        category: "shortcuts",
+        keywords: ["raccourcis", "touches", "commandes", "clavier", "cheat sheet"],
+        fields: [],
+        children: <ShortcutsSettings />,
+      },
+      {
+        id: "about",
+        label: "À propos d'ETHONE OS",
+        icon: "info",
+        category: "about",
+        keywords: ["version", "à propos", "ethone", "système", "crédits"],
+        fields: [],
+        children: (
+          <div className="rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] p-5 flex flex-col gap-4">
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-2xl bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] flex items-center justify-center font-bold text-xl ring-1 ring-[var(--accent-primary)]/30">
+                E
+              </div>
+              <div>
+                <h4 className="text-base font-bold text-[var(--text-primary)]">ETHONE OS Desktop & Web</h4>
+                <p className="text-xs text-[var(--text-muted)]">Version 1.10.37 (Turbopack / Next.js 16)</p>
+              </div>
+            </div>
+            <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+              Système d&apos;exploitation web de productivité personnelle haute fidélité. Conçu pour la fluidité, le minimalisme sombre et la personnalisation intégrale.
+            </p>
+          </div>
+        ),
+      },
     ],
-    [i18n, typographyFields, languageFields, densityFields, soundFields, accountFields, securityFields, notificationsFields, workspaceFields]
+    [i18n, accountFields, appearanceFields, typographyFields, densityFields, soundFields, notificationsFields, workspaceFields, languageFields, securityFields, makeOptions]
   );
 
   const advancedSections: SectionDef[] = useMemo(

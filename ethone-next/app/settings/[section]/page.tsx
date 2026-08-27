@@ -2,14 +2,28 @@ import { SettingsFormProvider } from "@/components/settings/SettingsFormContext"
 import SettingsLayout from "@/components/settings/SettingsLayout";
 
 const SETTINGS_SECTIONS = [
+  "general",
   "profile",
   "appearance",
+  "themes",
+  "animations",
   "audio",
+  "soundscapes",
+  "notifications",
+  "dynamic-island",
+  "dock",
   "workspace",
   "language",
-  "notifications",
+  "connections",
+  "privacy",
   "security",
+  "sync",
+  "storage",
+  "performance",
+  "accessibility",
+  "shortcuts",
   "advanced",
+  "about",
 ];
 
 export function generateStaticParams() {

@@ -14,32 +14,60 @@ export type CategoryDef = {
 };
 
 export const CATEGORY_ORDER: CategoryDef[] = [
-  { id: "profile", label: "Général & Profil", description: "Compte et préférences générales", descriptionKey: "settingsNavProfile", icon: "user" },
-  { id: "appearance", label: "Apparence & Thèmes", description: "Thèmes, couleurs et animations", descriptionKey: "settingsNavAppearance", icon: "palette" },
-  { id: "audio", label: "Audio & Sons", description: "Sons et volume", descriptionKey: "settingsNavAudio", icon: "volume-2" },
-  { id: "workspace", label: "Espace de travail & Dock", description: "Dock, densité et layout", descriptionKey: "settingsNavWorkspace", icon: "layout-grid" },
-  { id: "language", label: "Langue & Région", description: "Langue, date et fuseau horaire", descriptionKey: "settingsNavLanguage", icon: "globe" },
-  { id: "notifications", label: "Notifications & Alertes", description: "Notifications Brain, Mail, sécurité", descriptionKey: "settingsNavNotifications", icon: "bell" },
-  { id: "security", label: "Sécurité, Sessions & Cloud", description: "Sessions, passkeys et accès", descriptionKey: "settingsNavSecurity", icon: "shield" },
-  { id: "advanced", label: "Avancé & Maintenance", description: "Cache, sync, diagnostics et logs", descriptionKey: "settingsNavAdvanced", icon: "sliders-horizontal" },
+  { id: "general", label: "Général", description: "Vue d'ensemble et contrôle central", descriptionKey: "settingsNavGeneral", icon: "layout-dashboard" },
+  { id: "profile", label: "Profil & Compte", description: "Identité, avatar et présence", descriptionKey: "settingsNavProfile", icon: "user" },
+  { id: "appearance", label: "Apparence", description: "Style visuel, densité et rayon", descriptionKey: "settingsNavAppearance", icon: "palette" },
+  { id: "themes", label: "Thèmes & Couleurs", description: "Obsidian, Cyber Neon, Aurora, Accents", descriptionKey: "settingsNavThemes", icon: "sparkles" },
+  { id: "animations", label: "Animations", description: "Vitesse, fluidité et transitions", descriptionKey: "settingsNavAnimations", icon: "zap" },
+  { id: "audio", label: "Audio & Sons", description: "Packs de sons et retours haptiques", descriptionKey: "settingsNavAudio", icon: "volume-2" },
+  { id: "soundscapes", label: "Ambiances & Mixeur", description: "14 ambiances continues et mixeur multi-pistes", descriptionKey: "settingsNavSoundscapes", icon: "cloud-rain" },
+  { id: "notifications", label: "Notifications", description: "Alertes, Ne pas déranger et canaux", descriptionKey: "settingsNavNotifications", icon: "bell" },
+  { id: "dynamic-island", label: "Dynamic Island", description: "Comportement, vitesse et prévisualisation", descriptionKey: "settingsNavIsland", icon: "disc" },
+  { id: "dock", label: "Dock", description: "Position, échelle, transparence et preview", descriptionKey: "settingsNavDock", icon: "credit-card" },
+  { id: "workspace", label: "Espace de travail", description: "Dispositions, widgets et démarrage", descriptionKey: "settingsNavWorkspace", icon: "layout-grid" },
+  { id: "language", label: "Langue & Région", description: "Langue, formats d'heure et date", descriptionKey: "settingsNavLanguage", icon: "globe" },
+  { id: "connections", label: "Connexions", description: "Spotify, Drive, Discord, GitHub, APIs", descriptionKey: "settingsNavConnections", icon: "plug" },
+  { id: "privacy", label: "Confidentialité", description: "Télémétrie, IA locale et données", descriptionKey: "settingsNavPrivacy", icon: "eye-off" },
+  { id: "security", label: "Sécurité & Sessions", description: "Mot de passe, 2FA, passkeys et sessions", descriptionKey: "settingsNavSecurity", icon: "shield" },
+  { id: "sync", label: "Synchronisation", description: "Supabase, état cloud et synchronisation", descriptionKey: "settingsNavSync", icon: "arrows-clockwise" },
+  { id: "storage", label: "Stockage & Cache", description: "Données locales, cache et nettoyage", descriptionKey: "settingsNavStorage", icon: "hard-drive" },
+  { id: "performance", label: "Performance", description: "Diagnostic, mémoire et mode économique", descriptionKey: "settingsNavPerformance", icon: "cpu" },
+  { id: "accessibility", label: "Accessibilité", description: "Contraste, taille du texte et focus", descriptionKey: "settingsNavA11y", icon: "accessibility" },
+  { id: "shortcuts", label: "Raccourcis clavier", description: "Commandes et combinaisons rapides", descriptionKey: "settingsNavShortcuts", icon: "keyboard" },
+  { id: "advanced", label: "Avancé & Maintenance", description: "Diagnostics avancés, exports bruts et reset", descriptionKey: "settingsNavAdvanced", icon: "sliders-horizontal" },
+  { id: "about", label: "À propos", description: "Version ETHONE, crédits et système", descriptionKey: "settingsNavAbout", icon: "info" },
 ];
 
 export const CATEGORY_SECTIONS: Record<string, string[]> = {
+  general: ["overview"],
   profile: ["account"],
   appearance: ["appearance", "typography", "density"],
+  themes: ["themes", "accents"],
+  animations: ["animations"],
   audio: ["sound"],
-  workspace: ["workspace", "integrations"],
+  soundscapes: ["soundscapes", "sound-mixer"],
+  notifications: ["notifications", "dnd"],
+  "dynamic-island": ["dynamic-island"],
+  dock: ["dock"],
+  workspace: ["workspace"],
   language: ["language"],
-  notifications: ["notifications"],
-  security: ["security"],
+  connections: ["integrations"],
+  privacy: ["privacy"],
+  security: ["security", "sessions"],
+  sync: ["sync"],
+  storage: ["storage"],
+  performance: ["performance"],
+  accessibility: ["accessibility"],
+  shortcuts: ["shortcuts"],
   advanced: ["presets", "ai", "live", "sound-preview", "raw-export", "density-custom", "maintenance"],
+  about: ["about"],
 };
 
 export function sectionCategory(id: string): string {
   for (const [category, sections] of Object.entries(CATEGORY_SECTIONS)) {
-    if (sections.includes(id)) return category;
+    if (category === id || sections.includes(id)) return category;
   }
-  return CATEGORY_ORDER[0]?.id ?? "profile";
+  return CATEGORY_ORDER[0]?.id ?? "general";
 }
 
 type SettingsNavigationProps = {

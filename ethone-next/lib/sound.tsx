@@ -631,11 +631,11 @@ function renderRainLayer(data: Float32Array, sampleRate: number): void {
   const dropDecay = Math.exp(-1 / (sampleRate * 0.06));
 
   const drops: { start: number; amp: number }[] = [];
-  let t = Math.floor(sampleRate * 0.3);
+  let t = Math.floor(sampleRate * 0.2);
   while (t < length) {
-    t += Math.floor(sampleRate * (0.05 + Math.random() * 0.32));
+    t += Math.floor(sampleRate * (0.04 + Math.random() * 0.25));
     if (t >= length) break;
-    drops.push({ start: t, amp: 0.25 + Math.random() * 0.55 });
+    drops.push({ start: t, amp: 0.3 + Math.random() * 0.6 });
   }
   drops.sort((a, b) => a.start - b.start);
 
@@ -653,7 +653,7 @@ function renderRainLayer(data: Float32Array, sampleRate: number): void {
   for (let i = 0; i < length; i++) {
     const white = Math.random() * 2 - 1;
 
-    brown = (brown + 0.03 * white) / 1.03;
+    brown = (brown + 0.04 * white) / 1.04;
 
     p0 = 0.99886 * p0 + white * 0.0555179;
     p1 = 0.99332 * p1 + white * 0.0750759;
@@ -661,7 +661,7 @@ function renderRainLayer(data: Float32Array, sampleRate: number): void {
     p3 = 0.8665 * p3 + white * 0.3104856;
     p4 = 0.55 * p4 + white * 0.5329522;
     p5 = -0.7616 * p5 - white * 0.016898;
-    const pink = (p0 + p1 + p2 + p3 + p4 + p5 + p6 + white * 0.5362) * 0.08;
+    const pink = (p0 + p1 + p2 + p3 + p4 + p5 + p6 + white * 0.5362) * 0.18;
     p6 = white * 0.115926;
 
     while (nextDrop < drops.length && i >= drops[nextDrop].start) {
@@ -672,13 +672,13 @@ function renderRainLayer(data: Float32Array, sampleRate: number): void {
     const droplet = dropEnv * white;
 
     const time = i / sampleRate;
-    const modulation = 0.8 + 0.13 * Math.sin(time * 0.22) + 0.07 * Math.sin(time * 0.05) + Math.random() * 0.05;
+    const modulation = 0.85 + 0.15 * Math.sin(time * 0.25) + 0.08 * Math.sin(time * 0.06);
 
-    data[i] = Math.max(-1, Math.min(1, (brown * 0.42 + pink * 0.32 + droplet * 0.85) * modulation * 0.55));
+    data[i] = Math.max(-1, Math.min(1, (brown * 0.55 + pink * 0.45 + droplet * 0.8) * modulation * 0.9));
   }
 }
 
-function renderBrownNoise(data: Float32Array, scale = 0.6): number {
+function renderBrownNoise(data: Float32Array, scale = 0.7): number {
   let last = 0;
   for (let i = 0; i < data.length; i++) {
     const white = Math.random() * 2 - 1;
@@ -688,7 +688,7 @@ function renderBrownNoise(data: Float32Array, scale = 0.6): number {
   return 0;
 }
 
-function renderPinkNoise(data: Float32Array, scale = 0.1): void {
+function renderPinkNoise(data: Float32Array, scale = 0.22): void {
   let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
   for (let i = 0; i < data.length; i++) {
     const white = Math.random() * 2 - 1;
@@ -705,14 +705,14 @@ function renderPinkNoise(data: Float32Array, scale = 0.1): void {
 }
 
 function renderFireplace(data: Float32Array, sampleRate: number): void {
-  renderBrownNoise(data, 0.45);
+  renderBrownNoise(data, 0.6);
   const length = data.length;
   const crackles: { start: number; amp: number; decay: number }[] = [];
   let t = Math.floor(sampleRate * 0.2);
   while (t < length) {
     t += Math.floor(sampleRate * (0.15 + Math.random() * 1.1));
     if (t >= length) break;
-    crackles.push({ start: t, amp: 0.3 + Math.random() * 0.5, decay: Math.exp(-1 / (sampleRate * 0.018)) });
+    crackles.push({ start: t, amp: 0.4 + Math.random() * 0.6, decay: Math.exp(-1 / (sampleRate * 0.018)) });
   }
   crackles.sort((a, b) => a.start - b.start);
   let next = 0;
@@ -729,17 +729,17 @@ function renderFireplace(data: Float32Array, sampleRate: number): void {
 }
 
 function renderOcean(data: Float32Array, sampleRate: number): void {
-  renderPinkNoise(data, 0.08);
+  renderPinkNoise(data, 0.22);
   const length = data.length;
   for (let i = 0; i < length; i++) {
     const t = i / sampleRate;
-    const wave = 0.5 + 0.5 * Math.sin(t * 0.08) * (0.7 + 0.3 * Math.sin(t * 0.03));
+    const wave = 0.4 + 0.6 * Math.sin(t * 0.12) * (0.7 + 0.3 * Math.sin(t * 0.04));
     data[i] *= wave;
   }
 }
 
 function renderWind(data: Float32Array, sampleRate: number): void {
-  renderPinkNoise(data, 0.1);
+  renderPinkNoise(data, 0.24);
   const length = data.length;
   let gust = 0;
   for (let i = 0; i < length; i++) {
@@ -946,13 +946,17 @@ export function SoundProvider({ children }: { children: ReactNode }) {
       const output = outputGainRef.current;
       if (!ctx || !output || type === "none") return;
 
+      if (ctx.state === "suspended") {
+        void ctx.resume();
+      }
+
       const master = settingsRef.current.masterVolume ? (settingsRef.current.soundVolume ?? 50) / 100 : 0;
       if (master <= 0) {
         stopAmbience();
         return;
       }
 
-      const target = (type === "drone" ? 0.08 : 0.06) * master;
+      const target = (type === "drone" ? 0.35 : 0.45) * master;
 
       if (ambientRef.current?.type === type) {
         const now = ctx.currentTime;
@@ -974,24 +978,24 @@ export function SoundProvider({ children }: { children: ReactNode }) {
       filter.type = "lowpass";
       const filterFreq: Record<SoundAmbient, number> = {
         none: 1800,
-        rain: 850,
-        storm: 900,
-        drone: 420,
-        brown: 500,
-        white: 2400,
-        pink: 1800,
-        fireplace: 700,
-        ocean: 650,
-        wind: 1400,
-        blizzard: 1800,
-        forest: 2200,
-        cafe: 2400,
-        night: 1600,
-        train: 1200,
-        city: 950,
-        library: 2000,
-        space: 600,
-        nature: 1900,
+        rain: 2200,
+        storm: 1800,
+        drone: 550,
+        brown: 800,
+        white: 3500,
+        pink: 2800,
+        fireplace: 1400,
+        ocean: 1200,
+        wind: 2200,
+        blizzard: 2400,
+        forest: 3200,
+        cafe: 3500,
+        night: 2600,
+        train: 1800,
+        city: 1600,
+        library: 2800,
+        space: 900,
+        nature: 2800,
       };
       filter.frequency.value = filterFreq[type] ?? 1800;
       filter.Q.value = 0.7;

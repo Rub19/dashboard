@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.11.04",
+  date: "2026-08-27",
+  title: "Ambiances Sonores : Restauration de l'Audibilité & Synthèse Audio Haute Définition",
+  items: [
+    "Ajustement du gain de sortie des ambiances sonores (Pluie, Vent, Océan, Cheminée, Forêt) pour une écoute claire et immersive.",
+    "Reprise automatique du contexte audio Web Audio API (`AudioContext.resume()`) lors de la sélection d'une ambiance.",
+    "Enrichissement des couches procédurales (gouttes de pluie, vagues de l'océan, bruits roses et bruns).",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.11.04",
+  date: "2026-08-27",
+  title: "Ambient Soundscapes: Restored Audibility & High-Definition Synthesis",
+  items: [
+    "Recalibrated ambient output gain (Rain, Wind, Ocean, Fireplace, Forest) for clear and immersive listening.",
+    "Automatic AudioContext resumption on ambiance selection.",
+    "Enriched procedural layers (rain droplets, ocean swells, pink and brown textures).",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.11.04",
+  date: "2026-08-27",
+  title: "Sonidos Ambientales: Restauración del Volumen y Claridad",
+  items: [
+    "Ajuste del volumen y síntesis de paisajes sonoros ambientales.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.11.04",
+  date: "2026-08-27",
+  title: "Klanglandschaften: Verbesserte Lautstärke & Audio-Synthese",
+  items: [
+    "Optimierte Ausgangsverstärkung für beruhigende Natur- und Hintergrundgeräusche.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.11.03",
   date: "2026-08-27",
   title: "Connexions & Spotify : Résolution du Flux OAuth & Bouton Connecter Actif",

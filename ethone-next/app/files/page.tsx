@@ -123,6 +123,7 @@ export default function FilesPage() {
     deleteFile,
     favoriteFile,
     createFolder,
+    createLink,
   } = useCloudFiles(clientId || undefined);
 
   const { create: createShare } = useShares();
@@ -320,10 +321,19 @@ export default function FilesPage() {
   }
 
   async function handleCreateFolder(name: string) {
-    if (!clientId) return;
     try {
       await createFolder(name, parentId);
       success(i18n("createFolder", "Dossier créé avec succès"));
+      await reload();
+    } catch (err) {
+      toastError(String(err));
+    }
+  }
+
+  async function handleCreateLink(url: string, title?: string) {
+    try {
+      await createLink(url, title, parentId);
+      success("Lien ajouté", title || url);
       await reload();
     } catch (err) {
       toastError(String(err));
@@ -480,6 +490,8 @@ export default function FilesPage() {
   function openFile(file: CloudFile) {
     if (file.isFolder) {
       setParentId(file.driveFileId);
+    } else if (file.webViewLink && (file.mimeType.includes("url") || file.mimeType.includes("uri-list") || file.name.endsWith(".url") || file.webViewLink.startsWith("http"))) {
+      window.open(file.webViewLink, "_blank", "noopener,noreferrer");
     } else {
       setPreviewFile(file);
     }
@@ -1353,6 +1365,7 @@ export default function FilesPage() {
           reload();
         }}
         onCreateFolder={handleCreateFolder}
+        onCreateLink={handleCreateLink}
         onConnectDrive={connectDrive}
       />
 

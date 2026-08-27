@@ -251,6 +251,52 @@ export function useCloudFiles(clientId?: string) {
     return res?.data;
   }
 
+  async function createLink(url: string, title?: string, targetParentId?: string | null) {
+    const parent = targetParentId !== undefined ? targetParentId : parentId;
+    let fallbackTitle = title?.trim();
+    if (!fallbackTitle) {
+      try {
+        fallbackTitle = new URL(url).hostname;
+      } catch {
+        fallbackTitle = url;
+      }
+    }
+    const linkFile: CloudFile = {
+      id: `link-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      driveFileId: `link-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      name: fallbackTitle || "Lien web",
+      mimeType: "text/uri-list",
+      isFolder: false,
+      size: 0,
+      webViewLink: url,
+      parentId: parent || null,
+      driveParentId: parent || null,
+      trashed: false,
+      tags: ["link"],
+      isFavorite: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    if (clientId) {
+      try {
+        await fetchWorker("/api/cloud/files/sync", {
+          method: "POST",
+          body: JSON.stringify({ clientId, files: [linkFile] }),
+        });
+      } catch {}
+    }
+
+    setFiles((prev) => [linkFile, ...prev]);
+    if (cache) {
+      const current = await cache.getFiles();
+      await cache.setFiles([linkFile, ...(current || [])] as Record<string, unknown>[]);
+    }
+    activityJournal.capture("v8.files.create", { ok: true, name: linkFile.name, link: url });
+    await reload();
+    return linkFile;
+  }
+
   const visibleFiles = useMemo(() => {
     if (favorites) return files;
     let list = files;
@@ -285,5 +331,6 @@ export function useCloudFiles(clientId?: string) {
     favoriteFile,
     createFolder,
     uploadFile,
+    createLink,
   };
 }

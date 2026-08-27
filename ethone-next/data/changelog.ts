@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.47",
+  date: "2026-08-27",
+  title: "Correction de l'Ajout de Liens & Documents Externes dans les Dossiers",
+  items: [
+    "Bug fix Fichiers (/files) : correction de la création de raccourcis web/liens externes dans les dossiers (createLink).",
+    "Prise en charge complète des liens web (Figma, Notion, GitHub, Docs) avec ouverture directe dans un nouvel onglet.",
+    "Création de dossiers et synchronisation cloud même en mode local déconnecté.",
+    "Validation : build Next.js 105/105 pages, TypeScript sans erreur.",
+    "Version affichée : v1.10.47.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.47",
+  date: "2026-08-27",
+  title: "External Links & File Shortcuts In Folders Bug Fix",
+  items: [
+    "Files Bug Fix: enabled real creation and persistence of web shortcuts/links in folders (createLink).",
+    "Direct new-tab opening for web links (Figma, Notion, GitHub, external docs).",
+    "Folder creation supported in both cloud-synced and local workspace modes.",
+    "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
+    "Version badge: v1.10.47.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.47",
+  date: "2026-08-27",
+  title: "Corrección de enlaces externos y carpetas en Archivos",
+  items: [
+    "Corrección de creación de enlaces y carpetas en el explorador de archivos.",
+    "Validación : build, lint.",
+    "Versión : v1.10.47.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.47",
+  date: "2026-08-27",
+  title: "Fehlerbehebung für externe Links und Ordner in Dateien",
+  items: [
+    "Erstellung von Weblinks und Ordnern im Datei-Explorer korrigiert.",
+    "Validierung: build, lint.",
+    "Version: v1.10.47.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.46",
   date: "2026-08-27",
   title: "Refonte du Calendrier & Factures, Logos Réels des Marques & Assistant Brain Finance",

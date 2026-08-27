@@ -19,6 +19,7 @@ export type FileAddModalProps = {
   parentId?: string | null;
   onUploadComplete: () => void;
   onCreateFolder: (name: string) => Promise<void> | void;
+  onCreateLink?: (url: string, title?: string) => Promise<void> | void;
   onConnectDrive: () => void;
   loading?: boolean;
   initialFiles?: File[];
@@ -40,6 +41,7 @@ export default function FileAddModal({
   parentId,
   onUploadComplete,
   onCreateFolder,
+  onCreateLink,
   onConnectDrive,
   loading,
   initialFiles,
@@ -71,7 +73,9 @@ export default function FileAddModal({
     if (!normalized) return;
     setBusy(true);
     try {
-      await navigator.clipboard.writeText(normalized).catch(() => {});
+      if (onCreateLink) {
+        await onCreateLink(normalized, linkTitle.trim() || undefined);
+      }
       setLinkUrl("");
       setLinkTitle("");
       onClose();

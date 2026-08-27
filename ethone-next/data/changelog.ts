@@ -7206,6 +7206,52 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.79",
+  date: "2026-08-27",
+  title: "Sublimation du Bouton 'Nouveau Message' (ETHONE Mail)",
+  items: [
+    "Refonte esthétique du bouton de rédaction : dégradé d'accent éclatant, typographie blanche ultra-lisible et halo dynamique.",
+    "Ajout d'un badge de raccourci clavier Ctrl+U et d'un conteneur d'icône stylisé.",
+    "Validation : build Next.js 105/105 pages, 100% tests unitaires, 0 erreur.",
+    "Version affichée : v1.10.79.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.79",
+  date: "2026-08-27",
+  title: "Polished 'New Message' Compose Button (ETHONE Mail)",
+  items: [
+    "Redesigned compose button with vibrant accent gradient, crisp high-contrast typography, and glow shadow.",
+    "Added stylish Ctrl+U keyboard shortcut badge and illuminated icon container.",
+    "Validation: Next.js 105/105 pages build, 100% unit tests passed, 0 errors.",
+    "Version badge: v1.10.79.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.79",
+  date: "2026-08-27",
+  title: "Nuevo diseño del botón 'Nuevo mensaje' en Mail",
+  items: [
+    "Botón brillante de alto contraste con atajo Ctrl+U.",
+    "Validación : build, lint, tests.",
+    "Versión : v1.10.79.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.79",
+  date: "2026-08-27",
+  title: "Neugestaltung des 'Neue Nachricht'-Buttons in Mail",
+  items: [
+    "Leuchtender Farbverlauf mit weißer, kontrastreicher Typografie.",
+    "Validierung: build, lint, tests.",
+    "Version: v1.10.79.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.78",
   date: "2026-08-27",
   title: "Audit et Application Stricte des Options Esthétiques & Animations",

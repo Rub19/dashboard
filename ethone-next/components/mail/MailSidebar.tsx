@@ -119,28 +119,38 @@ export default function MailSidebar({
         </div>
 
         {/* Compose Button */}
-        <Button
+        <button
           type="button"
-          variant="primary"
-          size={collapsed ? "sm" : "md"}
           onClick={onCompose}
           disabled={!canCompose}
-          leftIcon={<SquarePen className="h-4 w-4" />}
           className={cn(
-            "w-full shadow-md shadow-[var(--accent-primary)]/20 transition-all active:scale-95",
-            collapsed ? "h-10 w-10 p-0 justify-center mx-auto" : "justify-center"
+            "group relative flex items-center rounded-xl font-bold transition-all duration-200 cursor-pointer overflow-hidden active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed",
+            "bg-gradient-to-r from-[var(--accent-primary)] to-[var(--accent-secondary,var(--accent-primary))] text-white",
+            "border border-white/20 shadow-[0_4px_16px_var(--glow-color)] hover:shadow-[0_6px_24px_var(--glow-color)] hover:brightness-110",
+            collapsed ? "h-10 w-10 justify-center mx-auto p-0" : "w-full justify-between px-3.5 py-2.5"
           )}
           title="Nouveau message (Ctrl+U)"
         >
-          {!collapsed && (
-            <div className="flex items-center justify-between w-full">
-              <span>{i18n("newMessage", "Nouveau message")}</span>
-              <kbd className="hidden sm:inline-block rounded bg-white/20 px-1.5 py-0.5 font-mono text-[9px] font-normal text-white">
-                Ctrl+U
-              </kbd>
+          {/* Subtle sheen highlight animation on hover */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-white/0 via-white/15 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+          <div className="relative z-10 flex items-center gap-2.5 min-w-0">
+            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-black/20 text-white shadow-xs">
+              <SquarePen className="h-3.5 w-3.5" />
             </div>
+            {!collapsed && (
+              <span className="text-xs sm:text-sm font-bold text-white tracking-wide truncate">
+                {i18n("newMessage", "Nouveau message")}
+              </span>
+            )}
+          </div>
+
+          {!collapsed && (
+            <kbd className="relative z-10 hidden sm:inline-flex items-center rounded-md border border-white/20 bg-black/25 px-1.5 py-0.5 font-mono text-[9px] font-semibold text-white/90 shadow-inner">
+              Ctrl+U
+            </kbd>
           )}
-        </Button>
+        </button>
 
         {/* Navigation Folders */}
         <nav className="space-y-0.5" aria-label="Dossiers Mail">

@@ -112,7 +112,14 @@ function Dock() {
 
   function handleScrollTop() {
     if (typeof window === "undefined") return;
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    const main = document.getElementById("main-content");
+    if (!main) return;
+    const scroller = main.querySelector<HTMLElement>(".overflow-y-auto, .overflow-y-scroll, [data-v8-scroll]");
+    if (scroller) {
+      scroller.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }
 
   const dockButton =

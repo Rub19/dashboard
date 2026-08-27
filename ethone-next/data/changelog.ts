@@ -7206,6 +7206,50 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.34",
+  date: "2026-08-27",
+  title: "Dock : scroll to top fonctionnel",
+  items: [
+    "Cible le conteneur scrollable actif (`#main-content .overflow-y-auto`) au lieu de `window`.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.34.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.34",
+  date: "2026-08-27",
+  title: "Dock: working scroll to top",
+  items: [
+    "Targets the active scrollable container (`#main-content .overflow-y-auto`) instead of `window`.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.34.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.34",
+  date: "2026-08-27",
+  title: "Dock : scroll to top funcional",
+  items: [
+    "Apunta al contenedor desplazable activo (`#main-content .overflow-y-auto`) en lugar de `window`.",
+    "Validación : build, lint.",
+    "Versión : v1.10.34.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.34",
+  date: "2026-08-27",
+  title: "Dock : scroll to top funktioniert",
+  items: [
+    "Zielt auf den aktiven scrollbaren Container (`#main-content .overflow-y-auto`) statt `window`.",
+    "Validierung: build, lint.",
+    "Version: v1.10.34.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.33",
   date: "2026-08-27",
   title: "Centre de notifications fonctionnel",

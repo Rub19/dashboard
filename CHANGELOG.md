@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.34 — 2026-08-27
+
+**ETHONE — Dock : scroll to top fonctionnel**
+
+- Cible le conteneur scrollable actif (`#main-content .overflow-y-auto`) au lieu de `window.scrollTo`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.33 — 2026-08-27
 
 **ETHONE — Centre de notifications fonctionnel**

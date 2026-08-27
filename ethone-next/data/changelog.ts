@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.87",
+  date: "2026-08-27",
+  title: "Résolution des Connexions Spotify & Élimination de l'Erreur de Chargement",
+  items: [
+    "Suppression du blocage 'Erreur de chargement' dans la vue Intégrations : la grille des 35 services reste toujours accessible et active.",
+    "Correction de l'échange OAuth Spotify : passage d'un redirect_uri dynamique adapté à chaque domaine (localhost, pages.dev, custom).",
+    "Sécurisation de /api/connections : endpoint public non-bloquant avec fallback gracieux si non connecté.",
+    "Intégration d'un SVG natif pour l'icône Météo afin d'assurer son affichage immédiat dans la barre de connexions.",
+    "Redéploiement Cloudflare Worker raspy-fog-bf5b.",
+    "Version affichée : v1.10.87.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.87",
+  date: "2026-08-27",
+  title: "Spotify OAuth Fix & Non-Blocking Integrations Grid",
+  items: [
+    "Removed blocking 'Erreur de chargement' screen in Integrations settings: all 35 services remain available and interactive.",
+    "Fixed Spotify OAuth token exchange by forwarding dynamic redirect_uri matching the current domain.",
+    "Made /api/connections non-blocking and public with seamless fallback.",
+    "Added inline Weather SVG for instant rendering in active connections row.",
+    "Redeployed Cloudflare Worker raspy-fog-bf5b.",
+    "Version badge: v1.10.87.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.87",
+  date: "2026-08-27",
+  title: "Corrección de Spotify OAuth y cuadrícula de integraciones",
+  items: [
+    "Eliminado el bloqueo de error en integraciones y soporte dinámico de URI para Spotify.",
+    "Versión: v1.10.87.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.87",
+  date: "2026-08-27",
+  title: "Spotify OAuth Fix & Zuverlässige Integrationen-Ansicht",
+  items: [
+    "Blockierender Ladefehler behoben und dynamische Spotify OAuth Weiterleitungs-URI implementiert.",
+    "Version: v1.10.87.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.86",
   date: "2026-08-27",
   title: "Audit & Optimisation Globale du Worker et du Client Fetch",

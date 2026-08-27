@@ -27,11 +27,12 @@ function requireField(body, key, pattern) {
 
 export async function spotifyOAuthExchangeRoute({ request, env, auth }) {
   if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
-  const body = await readJsonBody(request, 3);
+  const body = await readJsonBody(request, 5);
   const code = requireField(body, "code", CODE_RE);
   const codeVerifier = requireField(body, "codeVerifier", VERIFIER_RE);
   const clientId = requireField(body, "clientId", PATTERNS.spotifyClientId);
-  await exchangeSpotifyCode(env, auth.userId, { code, codeVerifier, clientId });
+  const redirectUri = typeof body.redirectUri === "string" ? body.redirectUri : "https://ethone.dev/";
+  await exchangeSpotifyCode(env, auth.userId, { code, codeVerifier, clientId, redirectUri });
   return { data: { connected: true } };
 }
 

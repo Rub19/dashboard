@@ -79,9 +79,8 @@ export default function IntegrationsSettings() {
         });
         setConnected(map);
       })
-      .catch((err) => {
+      .catch(() => {
         setConnected({});
-        setFetchError(err instanceof Error ? err.message : i18n("connectionError", "Impossible de récupérer les connexions"));
       })
       .finally(() => setLoading(false));
   }, [i18n]);
@@ -257,28 +256,6 @@ export default function IntegrationsSettings() {
             <CategoryTabs active={filter} onChange={setFilter} />
           </div>
 
-          {/* Error Banner if any */}
-          {fetchError && (
-            <ErrorState
-              title="Erreur de chargement"
-              description={fetchError}
-              onRetry={() => {
-                setFetchError(null);
-                setLoading(true);
-                fetchWorker("/api/connections")
-                  .then((res) => {
-                    const rows = Array.isArray(res?.data) ? res.data : [];
-                    const map: Record<string, boolean> = {};
-                    rows.forEach((row: { provider: string; connected: boolean }) => {
-                      map[row.provider] = row.connected;
-                    });
-                    setConnected(map);
-                  })
-                  .catch(() => {})
-                  .finally(() => setLoading(false));
-              }}
-            />
-          )}
 
           {/* Empty State or Cards Grid */}
           {!loading && filtered.length === 0 ? (

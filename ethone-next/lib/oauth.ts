@@ -137,7 +137,7 @@ export async function exchangeCode(
 ) {
   const cfg = PROVIDERS[provider];
   if (!cfg) throw new Error("Unknown provider: " + provider);
-  const body: Record<string, string> = { code, clientId };
+  const body: Record<string, string> = { code, clientId, redirectUri: REDIRECT_URI };
   if (token) {
     if (typeof token === "string") {
       body.clientSecret = token;

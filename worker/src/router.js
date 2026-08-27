@@ -388,7 +388,7 @@ export const ROUTES = Object.freeze([
   route("mail.lists.send", "/api/mail/lists/send", mailListsRoute, { method: "POST", service: "mail", rateLimit: "standard" }),
 
   // Connections
-  route("connections.list", "/api/connections", connectionsListRoute, { service: "sync" }),
+  route("connections.list", "/api/connections", connectionsListRoute, { public: true, service: "sync", rateLimit: "edge" }),
   route("provider-credentials", "/api/provider-credentials", providerCredentialsRoute, { service: "sync" }),
   route("provider-credentials.post", "/api/provider-credentials", providerCredentialsRoute, { method: "POST", service: "sync", rateLimit: "strict" }),
   route("provider-credentials.delete", "/api/provider-credentials", providerCredentialsRoute, { method: "DELETE", service: "sync", rateLimit: "strict" }),

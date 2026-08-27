@@ -26,11 +26,11 @@ function expiryFrom(expiresInSeconds) {
   return new Date(Date.now() + seconds * 1000).toISOString();
 }
 
-export async function exchangeSpotifyCode(env, userId, { code, codeVerifier, clientId }) {
+export async function exchangeSpotifyCode(env, userId, { code, codeVerifier, clientId, redirectUri }) {
   const data = await tokenRequest(env, {
     grant_type: "authorization_code",
     code,
-    redirect_uri: REDIRECT_URI,
+    redirect_uri: redirectUri || REDIRECT_URI,
     client_id: clientId,
     code_verifier: codeVerifier
   });

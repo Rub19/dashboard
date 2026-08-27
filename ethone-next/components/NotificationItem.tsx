@@ -1,58 +1,39 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Check,
+  CheckCheck,
+  Archive,
+  Trash2,
+  MoreHorizontal,
+  Clock,
+  Star,
+  Bell,
+  BellOff,
+  ShieldAlert,
+  Activity,
+  Settings,
+  Brain,
+  Plug,
+  Mail,
+  ExternalLink,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import { useNotifications, type Notification, type SnoozeDuration } from "@/lib/hooks/useNotifications";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { Icon } from "@/lib/icons";
-import EthoneGlyph from "@/components/icons/EthoneGlyph";
-
-const CATEGORY_ICONS: Record<string, string> = {
-  mail: "mail",
-  security: "shield-alert",
-  tracker: "activity",
-  system: "settings",
-  brain: "brain",
-  integration: "plug",
-  important: "star",
-  messages: "mail",
-  activity: "activity",
-};
-
-const CATEGORY_TONES: Record<string, string> = {
-  security: "bg-[var(--danger)]/10 text-[var(--danger)]",
-  brain: "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]",
-  github: "bg-[var(--warning)]/10 text-[var(--warning)]",
-  integration: "bg-[var(--info)]/10 text-[var(--info)]",
-  system: "bg-[var(--text-muted)]/10 text-[var(--text-muted)]",
-  important: "bg-[var(--warning)]/10 text-[var(--warning)]",
-  messages: "bg-[var(--info)]/10 text-[var(--info)]",
-  activity: "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]",
-  tracker: "bg-[var(--danger)]/10 text-[var(--danger)]",
-  mail: "bg-[var(--info)]/10 text-[var(--info)]",
-};
-
-const PRIORITY_ACCENT: Record<string, string> = {
-  critical: "border-l-[var(--danger)]",
-  important: "border-l-[var(--warning)]",
-  normal: "border-l-[var(--info)]",
-  silent: "border-l-[var(--text-muted)]",
-};
-
-const PRIORITY_BADGE: Record<string, string> = {
-  critical: "bg-[var(--danger)]/10 text-[var(--danger)]",
-  important: "bg-[var(--warning)]/10 text-[var(--warning)]",
-  normal: "bg-[var(--info)]/10 text-[var(--info)]",
-  silent: "bg-[var(--text-muted)]/10 text-[var(--text-muted)]",
-};
+import { useToast } from "@/components/ToastProvider";
+import { cn } from "@/lib/utils";
 
 const SNOOZE_OPTIONS: SnoozeDuration[] = ["10m", "1h", "tonight", "tomorrow"];
 
 const SNOOZE_KEYS: Record<SnoozeDuration, string> = {
-  "10m": "snooze10m",
-  "1h": "snooze1h",
-  tonight: "snoozeTonight",
-  tomorrow: "snoozeTomorrow",
+  "10m": "10 minutes",
+  "1h": "1 heure",
+  tonight: "Ce soir",
+  tomorrow: "Demain",
 };
 
 function formatTime(ts: number) {
@@ -67,6 +48,26 @@ function formatTime(ts: number) {
   return `${d}j`;
 }
 
+function getIcon(category?: string, priority?: string) {
+  if (priority === "critical") return <ShieldAlert className="h-4 w-4 text-rose-400" />;
+  switch (category) {
+    case "security":
+      return <ShieldAlert className="h-4 w-4 text-rose-400" />;
+    case "brain":
+      return <Brain className="h-4 w-4 text-[var(--accent-primary)]" />;
+    case "tracker":
+      return <Activity className="h-4 w-4 text-amber-400" />;
+    case "system":
+      return <Settings className="h-4 w-4 text-sky-400" />;
+    case "integration":
+      return <Plug className="h-4 w-4 text-emerald-400" />;
+    case "mail":
+      return <Mail className="h-4 w-4 text-indigo-400" />;
+    default:
+      return <Bell className="h-4 w-4 text-[var(--accent-primary)]" />;
+  }
+}
+
 export default function NotificationItem({
   n,
   onOpen,
@@ -75,6 +76,7 @@ export default function NotificationItem({
   onOpen?: (n: Notification) => void;
 }) {
   const i18n = useI18n();
+  const { success } = useToast();
   const {
     markRead,
     archive,
@@ -88,6 +90,7 @@ export default function NotificationItem({
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [snoozeOpen, setSnoozeOpen] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -102,39 +105,45 @@ export default function NotificationItem({
     return () => document.removeEventListener("pointerdown", onPointerDown);
   }, [menuOpen]);
 
-  const iconName = n.icon || CATEGORY_ICONS[n.type || n.category] || "bell";
-  const iconTone = CATEGORY_TONES[n.type || n.category] || CATEGORY_TONES[n.category] || "bg-zinc-500/10 text-[var(--text-muted)]";
-  const accent = PRIORITY_ACCENT[n.priority] || PRIORITY_ACCENT.normal;
-  const badge = PRIORITY_BADGE[n.priority] || PRIORITY_BADGE.normal;
-
+  const isCritical = n.priority === "critical";
+  const isImportant = n.priority === "important";
   const isUnread = !n.read;
 
   function handleMarkRead(e: React.MouseEvent) {
     e.stopPropagation();
     markRead(n.id, !n.read);
+    success(n.read ? "Marqué comme non lu" : "Marqué comme lu");
   }
 
   function handleArchive(e: React.MouseEvent) {
     e.stopPropagation();
     archive(n.id);
+    success("Notification archivée");
   }
 
   function handleImportant(e: React.MouseEvent) {
     e.stopPropagation();
     markImportant(n.id);
     setMenuOpen(false);
+    success("Marqué comme important");
   }
 
   function handleDelete(e: React.MouseEvent) {
     e.stopPropagation();
     remove(n.id);
     setMenuOpen(false);
+    success("Notification supprimée");
   }
 
   function handleMute(e: React.MouseEvent) {
     e.stopPropagation();
-    if (isMuted(n.category)) unmuteCategory(n.category);
-    else muteCategory(n.category);
+    if (isMuted(n.category)) {
+      unmuteCategory(n.category);
+      success("Notifications rétablies pour cette catégorie");
+    } else {
+      muteCategory(n.category);
+      success("Catégorie mise en sourdine");
+    }
     setMenuOpen(false);
   }
 
@@ -143,77 +152,90 @@ export default function NotificationItem({
     snooze(n.id, duration);
     setMenuOpen(false);
     setSnoozeOpen(false);
+    success(`Rappel dans ${SNOOZE_KEYS[duration]}`);
   }
-
-  const categoryLabel = i18n(n.category) || n.category;
-  const priorityLabel = i18n(n.priority) || n.priority;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8, scale: 0.98 }}
-      transition={{ duration: 0.15, ease: "easeOut" as const }}
+      exit={{ opacity: 0, y: -6, scale: 0.98 }}
+      transition={{ duration: 0.15 }}
       onClick={() => onOpen?.(n)}
-      className={`group relative cursor-pointer overflow-hidden rounded-2xl v8-panel p-3.5 transition-all hover:border-[var(--text-primary)]/[0.14] hover:bg-[var(--text-primary)]/[0.06] active:scale-[0.99] ${
-        n.read ? "opacity-80" : ""
-      } ${accent} border-l-2`}
-      data-notification-item
+      className={cn(
+        "group relative flex flex-col gap-2 rounded-2xl border p-3.5 transition-all duration-150 cursor-pointer shadow-xs",
+        isCritical
+          ? "border-l-4 border-l-rose-500 border-rose-500/30 bg-rose-950/25 hover:bg-rose-950/35"
+          : isImportant
+          ? "border-l-4 border-l-amber-500 border-amber-500/30 bg-amber-950/20 hover:bg-amber-950/30"
+          : isUnread
+          ? "border-l-4 border-l-[var(--accent-primary)] border-[var(--panel-border)] bg-[var(--surface-raised)]/70 hover:bg-[var(--surface-raised)]"
+          : "border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 opacity-80"
+      )}
     >
-      <div className="flex items-start gap-3.5">
-        <span
-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--text-primary)]/[0.08] ${iconTone}`}
-        >
-          <Icon name={iconName} className="h-4 w-4" />
-        </span>
-
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-2">
-            <p className="truncate text-sm font-semibold text-[var(--text-primary)]" translate="no">
-              {n.title}
-            </p>
-            {isUnread && (
-              <span
-                className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[var(--accent)] shadow-[0_0_8px_var(--glow-color)]"
-                aria-hidden="true"
-              />
+      {/* Top Header Row: Icon + Title + Status Badges + Action Buttons */}
+      <div className="flex items-start justify-between gap-3">
+        {/* Left: Icon & Title */}
+        <div className="flex items-start gap-2.5 min-w-0 flex-1">
+          <div
+            className={cn(
+              "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border shadow-xs",
+              isCritical
+                ? "border-rose-500/40 bg-rose-500/20"
+                : isImportant
+                ? "border-amber-500/40 bg-amber-500/20"
+                : "border-[var(--panel-border)] bg-[var(--surface-raised)]"
             )}
+          >
+            {getIcon(n.category, n.priority)}
           </div>
 
-          <p className="mt-0.5 line-clamp-2 text-xs text-[var(--text-muted)]" translate="no">
-            {n.message}
-          </p>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h4 className="text-xs font-bold text-[var(--text-primary)] leading-snug break-words">
+                {n.title || "Notification ETHONE"}
+              </h4>
+              {isUnread && (
+                <span
+                  className="h-2 w-2 shrink-0 rounded-full bg-[var(--accent-primary)] shadow-[0_0_6px_var(--glow-color)]"
+                  title="Non lu"
+                />
+              )}
+            </div>
 
-          <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] text-[var(--text-muted)]">
-            <span className="font-medium text-[var(--text-primary)]">{n.source || categoryLabel}</span>
-            <span className="text-[var(--text-primary)]/20">·</span>
-            <span>{formatTime(n.timestamp)}</span>
-            <span
-              className={`rounded-md px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${badge}`}
-            >
-              {priorityLabel}
-            </span>
+            <div className="flex items-center gap-1.5 text-[10px] text-[var(--text-muted)] mt-0.5">
+              <span className="font-semibold text-[var(--text-primary)]/80">
+                {n.source || "ETHONE"}
+              </span>
+              <span>•</span>
+              <span>{formatTime(n.timestamp)}</span>
+            </div>
           </div>
         </div>
 
-        <div className="flex items-start gap-0.5 opacity-100 transition-opacity group-hover:opacity-100 md:opacity-0 md:group-hover:opacity-100">
+        {/* Right: Action Buttons Toolbar */}
+        <div className="flex items-center gap-1 shrink-0">
           <button
             type="button"
             onClick={handleMarkRead}
-            data-tooltip={isUnread ? i18n("markAsRead") : i18n("markAsUnread")}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
-            aria-label={isUnread ? i18n("markAsRead") : i18n("markAsUnread")}
+            className={cn(
+              "flex h-7 w-7 items-center justify-center rounded-lg border transition-all active:scale-95 cursor-pointer shadow-xs",
+              isUnread
+                ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/25"
+                : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-white"
+            )}
+            title={isUnread ? "Marquer comme lu" : "Marquer comme non lu"}
           >
-            <EthoneGlyph name={isUnread ? "check" : "mail-open"} className="h-4 w-4" />
+            {isUnread ? <Check className="h-3.5 w-3.5" /> : <CheckCheck className="h-3.5 w-3.5" />}
           </button>
+
           <button
             type="button"
             onClick={handleArchive}
-            data-tooltip={i18n("archive")}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
-            aria-label={i18n("archive")}
+            className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-white hover:border-[var(--accent-primary)]/40 transition-all active:scale-95 cursor-pointer shadow-xs"
+            title="Archiver"
           >
-            <EthoneGlyph name="archive" className="h-4 w-4" />
+            <Archive className="h-3.5 w-3.5" />
           </button>
 
           <div ref={menuRef} className="relative">
@@ -224,83 +246,116 @@ export default function NotificationItem({
                 setMenuOpen((v) => !v);
                 setSnoozeOpen(false);
               }}
-              data-tooltip={i18n("moreActions")}
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]"
-              aria-label={i18n("moreActions")}
-              aria-expanded={menuOpen}
+              className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-white hover:border-[var(--accent-primary)]/40 transition-all active:scale-95 cursor-pointer shadow-xs"
+              title="Plus d'actions"
             >
-              <EthoneGlyph name="more" className="h-4 w-4" />
+              <MoreHorizontal className="h-3.5 w-3.5" />
             </button>
 
             {menuOpen && (
-              <div className="absolute right-0 top-full z-[var(--z-dropdown)] mt-1.5 w-44 rounded-xl border border-[var(--text-primary)]/[0.1] bg-[var(--background)] p-1 shadow-2xl backdrop-blur-2xl">
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="absolute right-0 top-full z-[var(--z-dropdown)] mt-1.5 w-48 rounded-2xl border border-[var(--panel-border)] bg-[#0d0e12] p-1.5 shadow-2xl backdrop-blur-2xl text-xs space-y-0.5"
+              >
                 {snoozeOpen ? (
-                  <div className="space-y-0.5">
+                  <>
                     <button
                       type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSnoozeOpen(false);
-                      }}
-                      className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--text-muted)] hover:bg-[var(--surface-hover)]"
+                      onClick={() => setSnoozeOpen(false)}
+                      className="flex h-8 w-full items-center gap-2 rounded-xl px-2 text-[var(--text-muted)] hover:bg-white/5 cursor-pointer"
                     >
-                      <EthoneGlyph name="back" className="h-3.5 w-3.5" />
-                      {i18n("back")}
+                      <span>← Retour</span>
                     </button>
                     {SNOOZE_OPTIONS.map((dur) => (
                       <button
                         key={dur}
                         type="button"
                         onClick={(e) => handleSnooze(e, dur)}
-                        className="h-9 w-full rounded-lg px-2 text-left text-xs text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
+                        className="flex h-8 w-full items-center gap-2 rounded-xl px-2 text-white hover:bg-white/5 cursor-pointer"
                       >
-                        {i18n(SNOOZE_KEYS[dur])}
+                        <Clock className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
+                        <span>{SNOOZE_KEYS[dur]}</span>
                       </button>
                     ))}
-                  </div>
+                  </>
                 ) : (
-                  <div className="space-y-0.5">
+                  <>
                     <button
                       type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSnoozeOpen(true);
-                      }}
-                      className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
+                      onClick={() => setSnoozeOpen(true)}
+                      className="flex h-8 w-full items-center gap-2 rounded-xl px-2 text-[var(--text-primary)] hover:bg-white/5 cursor-pointer"
                     >
-                      <EthoneGlyph name="clock" className="h-3.5 w-3.5" />
-                      {i18n("snooze")}
+                      <Clock className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
+                      <span>Mettre en veille</span>
                     </button>
                     <button
                       type="button"
                       onClick={handleImportant}
-                      className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
+                      className="flex h-8 w-full items-center gap-2 rounded-xl px-2 text-[var(--text-primary)] hover:bg-white/5 cursor-pointer"
                     >
-                      <EthoneGlyph name="alert" className="h-3.5 w-3.5" />
-                      {i18n("markImportant")}
+                      <Star className="h-3.5 w-3.5 text-amber-400" />
+                      <span>Marquer comme important</span>
                     </button>
                     <button
                       type="button"
                       onClick={handleMute}
-                      className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
+                      className="flex h-8 w-full items-center gap-2 rounded-xl px-2 text-[var(--text-primary)] hover:bg-white/5 cursor-pointer"
                     >
-                      <EthoneGlyph name={isMuted(n.category) ? "bell" : "bell-off"} className="h-3.5 w-3.5" />
-                      {i18n(isMuted(n.category) ? "unmute" : "mute")}
+                      <BellOff className="h-3.5 w-3.5 text-sky-400" />
+                      <span>{isMuted(n.category) ? "Rétablir la catégorie" : "Muter la catégorie"}</span>
                     </button>
                     <button
                       type="button"
                       onClick={handleDelete}
-                      className="flex h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-xs text-[var(--danger)] hover:bg-[var(--danger)]/10"
+                      className="flex h-8 w-full items-center gap-2 rounded-xl px-2 text-rose-400 hover:bg-rose-500/15 cursor-pointer"
                     >
-                      <EthoneGlyph name="trash" className="h-3.5 w-3.5" />
-                      {i18n("delete")}
+                      <Trash2 className="h-3.5 w-3.5" />
+                      <span>Supprimer</span>
                     </button>
-                  </div>
+                  </>
                 )}
               </div>
             )}
           </div>
         </div>
+      </div>
+
+      {/* Notification Body / Message Text */}
+      {n.message && (
+        <p
+          className={cn(
+            "text-xs text-[var(--text-muted)] leading-relaxed pl-11 pr-2 break-words",
+            !expanded && "line-clamp-3"
+          )}
+        >
+          {n.message}
+        </p>
+      )}
+
+      {/* Priority Pill & Optional Actions Footer */}
+      <div className="flex items-center justify-between gap-2 pl-11 pt-1">
+        <div className="flex items-center gap-1.5">
+          {isCritical ? (
+            <span className="rounded-md border border-rose-500/40 bg-rose-500/20 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-rose-300">
+              CRITIQUE
+            </span>
+          ) : isImportant ? (
+            <span className="rounded-md border border-amber-500/40 bg-amber-500/20 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-amber-300">
+              IMPORTANT
+            </span>
+          ) : (
+            <span className="rounded-md border border-[var(--panel-border)] bg-[var(--surface-raised)] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              {n.category || "Système"}
+            </span>
+          )}
+        </div>
+
+        {n.data?.url || n.data?.route ? (
+          <span className="flex items-center gap-1 text-[10px] font-bold text-[var(--accent-primary)] hover:underline">
+            <span>Ouvrir</span>
+            <ExternalLink className="h-3 w-3" />
+          </span>
+        ) : null}
       </div>
     </motion.div>
   );

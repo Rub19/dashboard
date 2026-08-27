@@ -5,6 +5,7 @@ import { useTracker, type TrackerGame, type TrackerPlayer } from "@/lib/hooks/us
 import FlatCard from "@/components/FlatCard";
 import LiquidSidebar from "@/components/LiquidSidebar";
 import ValorantTrackerView from "@/components/tracker/ValorantTrackerView";
+import LolTrackerView from "@/components/tracker/LolTrackerView";
 import { Icon } from "@/lib/icons";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
@@ -68,6 +69,8 @@ export default function MatchesPage() {
       <div className="min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden">
         {tab === "valorant" ? (
           <ValorantTrackerView />
+        ) : tab === "lol" ? (
+          <LolTrackerView />
         ) : (
           <div className="h-full min-h-0 w-full flex flex-col overflow-hidden space-y-4">
             <div className="shrink-0 space-y-4">

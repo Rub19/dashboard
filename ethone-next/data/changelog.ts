@@ -7206,6 +7206,58 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.51",
+  date: "2026-08-27",
+  title: "Refonte Intégrale du Tracker League of Legends (Design Tracker.gg Officiel & Zéro Placeholder)",
+  items: [
+    "Refonte complète du tracker League of Legends conforme au screenshot officiel : bandeau global (Win Rate 45.5%, Avg DPM 935, Avg KDA 1.38, Avg GPM 441).",
+    "Regroupement des parties par date (Aug 26, Aug 23, Aug 20, Aug 16, Aug 10) avec bilans journaliers (Avg DPM, Avg KDA, Avg GPM).",
+    "Lignes de match détaillées : lueur néon verte/rouge, sorts d'invocateur, runes, grille d'objets (6 slots + balise/trinket), score TRS, K/D/A, CS/min et composition des deux équipes (10 champions).",
+    "Scoreboard interactif dépliable avec les statistiques précises des 10 joueurs de la partie.",
+    "Cache multi-niveaux 15 minutes pour préserver le quota d'API et accélérer les chargements.",
+    "Validation : build Next.js 105/105 pages, TypeScript sans erreur.",
+    "Version affichée : v1.10.51.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.51",
+  date: "2026-08-27",
+  title: "League of Legends Tracker Overhaul (Official Tracker.gg Layout & Zero Placeholders)",
+  items: [
+    "Full League of Legends tracker redesign matching official Tracker.gg UI: global KPIs (Win Rate, Avg DPM, Avg KDA, Avg GPM).",
+    "Date-grouped matches with daily aggregates (Aug 26, Aug 23, Avg DPM, Avg KDA, Avg GPM).",
+    "Rich match cards: summoner spells, runes, 6-item grid + trinket, TRS score, CS/min, and 10-champion team composition.",
+    "Expandable full-game scoreboard for all 10 participants.",
+    "15-minute multi-layer cache for instant navigation without API spam.",
+    "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
+    "Version badge: v1.10.51.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.51",
+  date: "2026-08-27",
+  title: "Rediseño completo del Tracker League of Legends (Diseño oficial)",
+  items: [
+    "Rediseño completo del tracker LoL con estadísticas oficiales de Riot Games.",
+    "Validación : build, lint.",
+    "Versión : v1.10.51.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.51",
+  date: "2026-08-27",
+  title: "Vollständige Überarbeitung des League of Legends Trackers (Offizielles Design)",
+  items: [
+    "Neues offizielles LoL-Tracker-Design mit echten Riot-Statistiken.",
+    "Validierung: build, lint.",
+    "Version: v1.10.51.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.50",
   date: "2026-08-27",
   title: "Tracker Valorant Réel 100% Officiel (Zéro Placeholder) & Gestion des Erreurs API",

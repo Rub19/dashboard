@@ -4,18 +4,8 @@ import { useMemo, useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
-  Trophy,
-  Target,
-  Flame,
   Shield,
-  Zap,
-  Activity,
-  Calendar,
-  Clock,
   RefreshCw,
-  ExternalLink,
-  ChevronRight,
-  TrendingUp,
   AlertCircle,
   Loader2,
 } from "lucide-react";
@@ -28,10 +18,16 @@ import {
   type ValorantMatch,
   groupMatchesByDate,
 } from "@/lib/valorant-tracker";
+import {
+  type LolMatch,
+  groupLolMatchesByDate,
+} from "@/lib/lol-tracker";
 import ValorantMatchRow from "@/components/tracker/ValorantMatchRow";
 import ValorantDayHeader from "@/components/tracker/ValorantDayHeader";
+import LolMatchRow from "@/components/tracker/LolMatchRow";
+import LolDayHeader from "@/components/tracker/LolDayHeader";
 
-const VALO_MODAL_CACHE_TTL = 15 * 60 * 1000;
+const TRACKER_MODAL_CACHE_TTL = 15 * 60 * 1000;
 
 export type TrackerModalProps = {
   isOpen: boolean;
@@ -61,17 +57,18 @@ export default function TrackerModal({
 
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
-  const [realMatches, setRealMatches] = useState<ValorantMatch[]>([]);
+  const [valoMatches, setValoMatches] = useState<ValorantMatch[]>([]);
+  const [lolMatches, setLolMatches] = useState<LolMatch[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const cacheKey = useMemo(
-    () => `ethone-modal-valo-cache:${effectiveName.toLowerCase().trim()}:${effectiveTag.toLowerCase().trim()}`,
-    [effectiveName, effectiveTag]
+    () => `ethone-modal-${game}-cache:${effectiveName.toLowerCase().trim()}:${effectiveTag.toLowerCase().trim()}`,
+    [game, effectiveName, effectiveTag]
   );
 
-  const fetchRealValorantMatches = useCallback(
+  const fetchRealMatches = useCallback(
     async (force = false) => {
-      if (!isVal || !effectiveName || !effectiveTag) return;
+      if (!effectiveName || !effectiveTag) return;
 
       // Check LocalStorage cache
       if (!force) {
@@ -79,8 +76,9 @@ export default function TrackerModal({
           const cached = localStorage.getItem(cacheKey);
           if (cached) {
             const parsed = JSON.parse(cached);
-            if (Date.now() - parsed.ts < VALO_MODAL_CACHE_TTL && Array.isArray(parsed.matches) && parsed.matches.length > 0) {
-              setRealMatches(parsed.matches);
+            if (Date.now() - parsed.ts < TRACKER_MODAL_CACHE_TTL && Array.isArray(parsed.matches) && parsed.matches.length > 0) {
+              if (isVal) setValoMatches(parsed.matches);
+              else setLolMatches(parsed.matches);
               setErrorMessage(null);
               return;
             }
@@ -95,33 +93,38 @@ export default function TrackerModal({
       try {
         const cleanName = effectiveName.trim();
         const cleanTag = effectiveTag.trim().replace(/^#/, "");
-        const res = await fetchWorker(
-          `/api/stats/valorant-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`
-        );
+        const endpoint = isVal
+          ? `/api/stats/valorant-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`
+          : `/api/stats/lol-matches?name=${encodeURIComponent(cleanName)}&tag=${encodeURIComponent(cleanTag)}`;
+
+        const res = await fetchWorker(endpoint);
 
         if (res?.error) {
-          const msg = res.error?.message || "Erreur de connexion aux serveurs Riot Games";
+          const msg = res.error?.message || `Erreur de connexion aux serveurs ${isVal ? "Valorant" : "League of Legends"}`;
           setErrorMessage(msg);
-          showToastError("Erreur API Valorant", msg);
+          showToastError(`Erreur API ${isVal ? "Valorant" : "LoL"}`, msg);
           return;
         }
 
-        const list = (res?.data?.matches || res?.data || res?.matches || res || []) as ValorantMatch[];
+        const list = (res?.data?.matches || res?.data || res?.matches || res || []) as any[];
         if (Array.isArray(list) && list.length > 0) {
-          setRealMatches(list);
+          if (isVal) setValoMatches(list as ValorantMatch[]);
+          else setLolMatches(list as LolMatch[]);
           setErrorMessage(null);
+
           try {
             localStorage.setItem(cacheKey, JSON.stringify({ matches: list, ts: Date.now() }));
           } catch {}
-          if (force) showToastSuccess("Matchs Valorant actualisés");
+          if (force) showToastSuccess(`Matchs ${isVal ? "Valorant" : "LoL"} actualisés`);
         } else {
-          setRealMatches([]);
-          setErrorMessage("Aucun match récent trouvé pour ce Riot ID.");
+          if (isVal) setValoMatches([]);
+          else setLolMatches([]);
+          setErrorMessage("Aucun match récent trouvé pour ce compte Riot.");
         }
       } catch (err: unknown) {
-        const msg = (err as Error)?.message || "Impossible de contacter l'API Henrik/Riot.";
+        const msg = (err as Error)?.message || "Impossible de contacter l'API Riot Games.";
         setErrorMessage(msg);
-        showToastError("Erreur Valorant Tracker", msg);
+        showToastError("Erreur Tracker", msg);
       } finally {
         setLoading(false);
         setSyncing(false);
@@ -131,19 +134,56 @@ export default function TrackerModal({
   );
 
   useEffect(() => {
-    if (isOpen && isVal) {
+    if (isOpen) {
       if (initialMatches && initialMatches.length > 0) {
-        setRealMatches(initialMatches as unknown as ValorantMatch[]);
+        if (isVal) setValoMatches(initialMatches as unknown as ValorantMatch[]);
+        else setLolMatches(initialMatches as unknown as LolMatch[]);
       } else {
-        fetchRealValorantMatches(false);
+        fetchRealMatches(false);
       }
     }
-  }, [isOpen, isVal, initialMatches, fetchRealValorantMatches]);
+  }, [isOpen, isVal, initialMatches, fetchRealMatches]);
 
-  const dayGroups = useMemo(() => {
+  const valoDayGroups = useMemo(() => {
     if (!isVal) return [];
-    return groupMatchesByDate(realMatches);
-  }, [isVal, realMatches]);
+    return groupMatchesByDate(valoMatches);
+  }, [isVal, valoMatches]);
+
+  const lolDayGroups = useMemo(() => {
+    if (isVal) return [];
+    return groupLolMatchesByDate(lolMatches);
+  }, [isVal, lolMatches]);
+
+  // LoL Top Summary banner
+  const lolTotalCount = lolMatches.length;
+  const lolWins = lolMatches.filter((m) => m.metadata?.result?.toLowerCase() === "victory").length;
+  const lolLosses = lolTotalCount - lolWins;
+  const lolWinRate = lolTotalCount > 0 ? ((lolWins / lolTotalCount) * 100).toFixed(1) : "0.0";
+
+  let lolSumDpm = 0;
+  let lolSumDmg = 0;
+  let lolSumKills = 0;
+  let lolSumDeaths = 0;
+  let lolSumAssists = 0;
+  let lolSumGpm = 0;
+  let lolSumGold = 0;
+
+  lolMatches.forEach((m) => {
+    const me = m.scoreboard?.players?.find((p) => p.isMe) || m.scoreboard?.players?.[0];
+    lolSumKills += me?.stats?.kills || 0;
+    lolSumDeaths += me?.stats?.deaths || 0;
+    lolSumAssists += me?.stats?.assists || 0;
+    lolSumDpm += me?.stats?.damagePerMin || 400;
+    lolSumDmg += me?.stats?.damage || 15000;
+    lolSumGpm += me?.stats?.goldPerMin || 350;
+    lolSumGold += me?.stats?.gold || 10000;
+  });
+
+  const lolAvgDpm = lolTotalCount > 0 ? Math.round(lolSumDpm / lolTotalCount) : 0;
+  const lolAvgDmgMatch = lolTotalCount > 0 ? (lolSumDmg / lolTotalCount).toFixed(1) : "0";
+  const lolAvgKda = lolSumDeaths === 0 ? (lolSumKills + lolSumAssists).toFixed(2) : ((lolSumKills + lolSumAssists) / lolSumDeaths).toFixed(2);
+  const lolAvgGpm = lolTotalCount > 0 ? Math.round(lolSumGpm / lolTotalCount) : 0;
+  const lolAvgGoldMatch = lolTotalCount > 0 ? (lolSumGold / lolTotalCount).toFixed(1) : "0";
 
   if (!isOpen) return null;
 
@@ -170,7 +210,14 @@ export default function TrackerModal({
           {/* Header */}
           <div className="flex shrink-0 items-center justify-between border-b border-white/10 p-4 sm:p-5 bg-black/30">
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-rose-500/30 bg-rose-500/10 text-rose-400 shadow-md">
+              <div
+                className={cn(
+                  "flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border shadow-md",
+                  isVal
+                    ? "border-rose-500/30 bg-rose-500/10 text-rose-400"
+                    : "border-amber-500/30 bg-amber-500/10 text-amber-400"
+                )}
+              >
                 <GameIcon game={game} className="h-6 w-6" />
               </div>
               <div>
@@ -191,11 +238,17 @@ export default function TrackerModal({
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => fetchRealValorantMatches(true)}
+                onClick={() => fetchRealMatches(true)}
                 disabled={loading || syncing}
                 className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold text-white hover:bg-white/10 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
               >
-                <RefreshCw className={cn("h-3.5 w-3.5 text-rose-400", syncing && "animate-spin")} />
+                <RefreshCw
+                  className={cn(
+                    "h-3.5 w-3.5",
+                    isVal ? "text-rose-400" : "text-amber-400",
+                    syncing && "animate-spin"
+                  )}
+                />
                 <span className="hidden sm:inline">{syncing ? "Synchro..." : "Actualiser"}</span>
               </button>
 
@@ -209,31 +262,93 @@ export default function TrackerModal({
             </div>
           </div>
 
-          {/* Main Content Area: Pure Real Valorant Tracker */}
-          <div className="min-h-0 flex-1 overflow-y-auto os-scroll p-4 sm:p-6 space-y-6">
+          {/* Main Content Area */}
+          <div className="min-h-0 flex-1 overflow-y-auto os-scroll p-4 sm:p-6 space-y-5">
+            {/* If LoL: Show Top Global Summary Banner */}
+            {!isVal && lolMatches.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="rounded-2xl border border-white/10 bg-[#0c1017]/85 p-3 backdrop-blur-xl">
+                  <span className="block text-[10px] font-bold text-zinc-400">
+                    Win Rate <span className="text-xs font-black text-white">{lolWinRate}%</span>
+                  </span>
+                  <div className="mt-1 flex items-center gap-1 font-mono text-[9px] font-bold">
+                    <span className="rounded bg-emerald-500/15 text-emerald-400 px-1 py-0.5">
+                      {lolWins} W
+                    </span>
+                    <span className="text-zinc-600">//</span>
+                    <span className="rounded bg-rose-500/15 text-rose-400 px-1 py-0.5">
+                      {lolLosses} L
+                    </span>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-[#0c1017]/85 p-3 backdrop-blur-xl">
+                  <span className="block text-[10px] font-bold text-zinc-400">
+                    Avg DPM <span className="text-xs font-black text-white">{lolAvgDpm}</span>
+                  </span>
+                  <span className="block mt-1 font-mono text-[9px] text-zinc-500 truncate">
+                    {lolAvgDmgMatch} Dmg/Match
+                  </span>
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-[#0c1017]/85 p-3 backdrop-blur-xl">
+                  <span className="block text-[10px] font-bold text-zinc-400">
+                    Avg KDA <span className="text-xs font-black text-white">{lolAvgKda}</span>
+                  </span>
+                  <span className="block mt-1 font-mono text-[9px] text-zinc-500 truncate">
+                    {lolSumKills} // {lolSumDeaths} // {lolSumAssists}
+                  </span>
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-[#0c1017]/85 p-3 backdrop-blur-xl">
+                  <span className="block text-[10px] font-bold text-zinc-400">
+                    Avg GPM <span className="text-xs font-black text-white">{lolAvgGpm}</span>
+                  </span>
+                  <span className="block mt-1 font-mono text-[9px] text-zinc-500 truncate">
+                    {lolAvgGoldMatch} Gold/Match
+                  </span>
+                </div>
+              </div>
+            )}
+
             {loading ? (
               <div className="flex flex-col items-center justify-center py-24 space-y-3">
-                <Loader2 className="h-8 w-8 animate-spin text-rose-400" />
+                <Loader2
+                  className={cn(
+                    "h-8 w-8 animate-spin",
+                    isVal ? "text-rose-400" : "text-amber-400"
+                  )}
+                />
                 <p className="text-xs font-medium text-zinc-400">
-                  Récupération de vos statistiques officielles Valorant...
+                  Récupération de vos statistiques officielles {isVal ? "Valorant" : "League of Legends"}...
                 </p>
               </div>
             ) : errorMessage ? (
               <div className="flex flex-col items-center justify-center py-20 text-center">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-rose-500/30 bg-rose-500/10 text-rose-400 mb-3 shadow-md">
+                <div
+                  className={cn(
+                    "flex h-14 w-14 items-center justify-center rounded-2xl border mb-3 shadow-md",
+                    isVal
+                      ? "border-rose-500/30 bg-rose-500/10 text-rose-400"
+                      : "border-amber-500/30 bg-amber-500/10 text-amber-400"
+                  )}
+                >
                   <AlertCircle className="h-7 w-7" />
                 </div>
-                <h4 className="text-sm font-bold text-white">Erreur de chargement des statistiques</h4>
+                <h4 className="text-sm font-bold text-white">Erreur de chargement</h4>
                 <p className="mt-1 max-w-sm text-xs text-zinc-400">{errorMessage}</p>
                 <button
                   type="button"
-                  onClick={() => fetchRealValorantMatches(true)}
-                  className="mt-4 rounded-xl bg-rose-600 px-4 py-2 text-xs font-bold text-white hover:bg-rose-500 transition-all cursor-pointer"
+                  onClick={() => fetchRealMatches(true)}
+                  className={cn(
+                    "mt-4 rounded-xl px-4 py-2 text-xs font-bold text-white transition-all cursor-pointer",
+                    isVal ? "bg-rose-600 hover:bg-rose-500" : "bg-amber-600 hover:bg-amber-500"
+                  )}
                 >
                   Réessayer
                 </button>
               </div>
-            ) : dayGroups.length === 0 ? (
+            ) : (isVal ? valoDayGroups.length === 0 : lolDayGroups.length === 0) ? (
               <div className="flex flex-col items-center justify-center py-20 text-center">
                 <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-zinc-400 mb-3">
                   <Shield className="h-7 w-7" />
@@ -243,16 +358,28 @@ export default function TrackerModal({
                   Configurez votre Riot Name et Riot TAG dans les paramètres pour charger vos statistiques.
                 </p>
               </div>
-            ) : (
-              dayGroups.map((group, gi) => (
+            ) : isVal ? (
+              valoDayGroups.map((group, gi) => (
                 <div key={group.rawDate || gi} className="space-y-2">
-                  {/* Day Group Header (Matches Screenshot) */}
                   <ValorantDayHeader group={group} />
-
-                  {/* Match Rows */}
                   <div className="space-y-2">
                     {group.matches.map((match, mi) => (
                       <ValorantMatchRow
+                        key={match.id || `${gi}-${mi}`}
+                        match={match}
+                        index={mi}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))
+            ) : (
+              lolDayGroups.map((group, gi) => (
+                <div key={group.rawDate || gi} className="space-y-2">
+                  <LolDayHeader group={group} />
+                  <div className="space-y-2">
+                    {group.matches.map((match, mi) => (
+                      <LolMatchRow
                         key={match.id || `${gi}-${mi}`}
                         match={match}
                         index={mi}

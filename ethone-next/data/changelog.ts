@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.55",
+  date: "2026-08-27",
+  title: "Boutons Directs d'Obtention de Clés API & Tutoriels Interactifs avec URI de Redirection",
+  items: [
+    "Ajout de boutons d'accès direct vers les portails développeurs sur chaque champ de clé API (HenrikDev, Riot Games, Steam, Last.fm, Google AI, OpenAI...).",
+    "Refonte complète de la modale de guide pas-à-pas avec boîte de copie 1-clic pour les URIs de redirection OAuth.",
+    "Instructions interactives adaptées et personnalisées pour chaque service (Valorant, LoL, Spotify, Google Calendar, Discord...).",
+    "Validation : build Next.js 105/105 pages, TypeScript sans erreur.",
+    "Version affichée : v1.10.55.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.55",
+  date: "2026-08-27",
+  title: "Direct API Key Portal Buttons & Interactive Setup Guides with 1-Click Redirect URIs",
+  items: [
+    "Added direct developer portal buttons for all API key fields (HenrikDev, Riot Games, Steam, Last.fm, OpenAI...).",
+    "Redesigned setup guide modal with 1-click copy for OAuth redirect URIs and step-by-step badges.",
+    "Tailored guides for every service with direct external dashboard navigation.",
+    "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
+    "Version badge: v1.10.55.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.55",
+  date: "2026-08-27",
+  title: "Botones directos para claves API y guías interactivas con URI de redirección",
+  items: [
+    "Acceso directo a consolas de desarrollo y guías paso a paso para cada conexión.",
+    "Validación : build, lint.",
+    "Versión : v1.10.55.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.55",
+  date: "2026-08-27",
+  title: "Direkte API-Schlüssel-Portal-Buttons & Interaktive Anleitungen mit Weiterleitungs-URIs",
+  items: [
+    "Direkter Zugriff auf Entwickler-Dashboards und Schritt-für-Schritt-Anleitungen.",
+    "Validierung: build, lint.",
+    "Version: v1.10.55.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.54",
   date: "2026-08-27",
   title: "Logos Officiels des Marques dans les Connexions (Riot Games, Tracker.gg, Plex, Linear...)",

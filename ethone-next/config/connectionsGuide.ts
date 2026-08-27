@@ -606,6 +606,42 @@ export const CONNECTION_GUIDES: Record<string, ConnectionGuide> = {
       ],
     },
   },
+  riot: {
+    id: "riot",
+    title: "Riot Games & Valorant",
+    badge: "CLOUD",
+    fields: [
+      { label: "Nom Riot (ex: Ruben)", placeholder: "Ruben", type: "text" },
+      { label: "Tag Riot (ex: EUW)", placeholder: "EUW", type: "text" },
+      { label: "Clé API Henrik (Valorant)", placeholder: "Votre clé API Henrik", type: "password" },
+      { label: "Clé API Riot (League of Legends)", placeholder: "Votre clé API Riot Games", type: "password" },
+    ],
+    keyGuide: {
+      dashboardUrl: "https://dash.henrikdev.xyz",
+      linkText: "Portail Développeur Henrik / Riot",
+      steps: [
+        "Pour Valorant : Rendez-vous sur https://dash.henrikdev.xyz, connectez-vous avec Discord et générez votre clé API Henrik gratuite.",
+        "Pour League of Legends : Rendez-vous sur https://developer.riotgames.com/, connectez-vous avec votre compte Riot Games et générez votre clé API développeur (Development API Key).",
+        "Renseignez votre Pseudo Riot Games et votre Tagline (ex: Rub19 #boss).",
+        "Collez les deux clés respectives ci-dessus et cliquez sur 'Enregistrer les identifiants'.",
+      ],
+    },
+  },
+  "tracker-gg": {
+    id: "tracker-gg",
+    title: "Tracker Network (TRN)",
+    badge: "CLOUD",
+    fields: [{ label: "Clé API Tracker.gg", placeholder: "Votre clé API TRN", type: "password" }],
+    keyGuide: {
+      dashboardUrl: "https://tracker.gg/developers",
+      linkText: "Tracker.gg Developers",
+      steps: [
+        "Rendez-vous sur le portail développeur Tracker.gg",
+        "Connectez-vous et demandez une clé API Tracker Network",
+        "Collez la clé ci-dessus",
+      ],
+    },
+  },
 };
 
 export function getConnectionGuide(id: string): ConnectionGuide | undefined {

@@ -16,77 +16,214 @@ export type CredentialFieldDef = {
   key: keyof ProviderCredential;
   label: string;
   type?: string;
+  portalUrl?: string;
+  portalLabel?: string;
 };
 
 export const PUBLIC_FIELDS: Record<string, PublicFieldDef[]> = {
-  discord: [{ key: "liveLanyardUserId", label: "liveLanyardUserId" }],
+  discord: [{ key: "liveLanyardUserId", label: "ID Utilisateur Discord" }],
   steam: [
-    { key: "liveSteamId", label: "liveSteamId" },
-    { key: "liveSteamAppId", label: "liveSteamAppId" },
+    { key: "liveSteamId", label: "Steam ID (64 bits)" },
+    { key: "liveSteamAppId", label: "Steam App ID (optionnel)" },
   ],
-  lastfm: [{ key: "liveLastfmUsername", label: "liveLastfmUsername" }],
-  twitch: [{ key: "liveTwitchLogin", label: "liveTwitchLogin" }],
+  lastfm: [{ key: "liveLastfmUsername", label: "Nom d'utilisateur Last.fm" }],
+  twitch: [{ key: "liveTwitchLogin", label: "Pseudo Twitch" }],
   riot: [
-    { key: "liveTrackerRiotName", label: "liveTrackerRiotName" },
-    { key: "liveTrackerRiotTag", label: "liveTrackerRiotTag" },
+    { key: "liveTrackerRiotName", label: "Nom Riot (ex: Ruben)" },
+    { key: "liveTrackerRiotTag", label: "Tag Riot (ex: EUW ou FR1)" },
   ],
   tracker: [
-    { key: "liveTrackerApexPlatform", label: "liveTrackerApexPlatform", options: ["origin", "xbl", "psn"] },
-    { key: "liveTrackerApexIdentifier", label: "liveTrackerApexIdentifier" },
+    { key: "liveTrackerApexPlatform", label: "Plateforme", options: ["origin", "xbl", "psn"] },
+    { key: "liveTrackerApexIdentifier", label: "Identifiant Apex" },
   ],
-  weather: [{ key: "liveWeatherCity", label: "liveWeatherCity" }],
-  rss: [{ key: "liveRssUrl", label: "liveRssUrl" }],
-  minecraft: [{ key: "liveMinecraftUsername", label: "liveMinecraftUsername" }],
-  bluesky: [{ key: "liveBlueskyHandle", label: "liveBlueskyHandle" }],
-  "lm-studio": [{ key: "liveLmStudioUrl", label: "liveLmStudioUrl" }],
-  ollama: [{ key: "liveOllamaUrl", label: "liveOllamaUrl" }],
+  weather: [{ key: "liveWeatherCity", label: "Ville (Météo)" }],
+  rss: [{ key: "liveRssUrl", label: "URL du flux RSS" }],
+  minecraft: [{ key: "liveMinecraftUsername", label: "Pseudo Minecraft" }],
+  bluesky: [{ key: "liveBlueskyHandle", label: "Handle Bluesky (ex: nom.bsky.social)" }],
+  "lm-studio": [{ key: "liveLmStudioUrl", label: "URL LM Studio (ex: http://localhost:1234)" }],
+  ollama: [{ key: "liveOllamaUrl", label: "URL Ollama (ex: http://localhost:11434)" }],
 };
 
 export const CREDENTIAL_FIELDS: Record<string, CredentialFieldDef[]> = {
-  steam: [{ key: "apiKey", label: "apiKey", type: "password" }],
-  lastfm: [{ key: "apiKey", label: "apiKey", type: "password" }],
+  steam: [
+    {
+      key: "apiKey",
+      label: "Clé Web API Steam",
+      type: "password",
+      portalUrl: "https://steamcommunity.com/dev/apikey",
+      portalLabel: "Obtenir clé Steam",
+    },
+  ],
+  lastfm: [
+    {
+      key: "apiKey",
+      label: "Clé API Last.fm",
+      type: "password",
+      portalUrl: "https://www.last.fm/api/account/create",
+      portalLabel: "Créer compte API",
+    },
+  ],
   twitch: [
-    { key: "clientId", label: "clientId" },
-    { key: "clientSecret", label: "clientSecret", type: "password" },
+    {
+      key: "clientId",
+      label: "Client ID Twitch",
+      portalUrl: "https://dev.twitch.tv/console/apps",
+      portalLabel: "Console Twitch",
+    },
+    { key: "clientSecret", label: "Client Secret Twitch", type: "password" },
   ],
   riot: [
-    { key: "henrikApiKey", label: "henrikApiKey", type: "password" },
-    { key: "riotApiKey", label: "riotApiKey", type: "password" },
+    {
+      key: "henrikApiKey",
+      label: "Clé API Henrik (Valorant)",
+      type: "password",
+      portalUrl: "https://dash.henrikdev.xyz",
+      portalLabel: "Obtenir clé Henrik",
+    },
+    {
+      key: "riotApiKey",
+      label: "Clé API Riot (League of Legends)",
+      type: "password",
+      portalUrl: "https://developer.riotgames.com/",
+      portalLabel: "Portail Riot Games",
+    },
   ],
-  tracker: [{ key: "apiKey", label: "apiKey", type: "password" }],
-  openai: [{ key: "apiKey", label: "apiKey", type: "password" }],
-  anthropic: [{ key: "apiKey", label: "apiKey", type: "password" }],
-  gemini: [{ key: "apiKey", label: "apiKey", type: "password" }],
-  groq: [{ key: "apiKey", label: "apiKey", type: "password" }],
+  tracker: [
+    {
+      key: "apiKey",
+      label: "Clé API Tracker Network",
+      type: "password",
+      portalUrl: "https://tracker.gg/developers",
+      portalLabel: "Portail TRN",
+    },
+  ],
+  openai: [
+    {
+      key: "apiKey",
+      label: "Clé API OpenAI",
+      type: "password",
+      portalUrl: "https://platform.openai.com/api-keys",
+      portalLabel: "Console OpenAI",
+    },
+  ],
+  anthropic: [
+    {
+      key: "apiKey",
+      label: "Clé API Anthropic (Claude)",
+      type: "password",
+      portalUrl: "https://console.anthropic.com/settings/keys",
+      portalLabel: "Console Anthropic",
+    },
+  ],
+  gemini: [
+    {
+      key: "apiKey",
+      label: "Clé API Google Gemini",
+      type: "password",
+      portalUrl: "https://aistudio.google.com/app/apikey",
+      portalLabel: "Google AI Studio",
+    },
+  ],
+  groq: [
+    {
+      key: "apiKey",
+      label: "Clé API Groq",
+      type: "password",
+      portalUrl: "https://console.groq.com/keys",
+      portalLabel: "Console Groq",
+    },
+  ],
   plex: [
     { key: "url", label: "URL Plex (optionnel)" },
-    { key: "apiKey", label: "Token Plex", type: "password" },
+    {
+      key: "apiKey",
+      label: "Token Plex",
+      type: "password",
+      portalUrl: "https://app.plex.tv/desktop/#!/settings/account",
+      portalLabel: "Compte Plex",
+    },
   ],
   jellyfin: [
     { key: "url", label: "URL Jellyfin" },
-    { key: "apiKey", label: "Clé API Jellyfin", type: "password" },
+    {
+      key: "apiKey",
+      label: "Clé API Jellyfin",
+      type: "password",
+      portalUrl: "https://jellyfin.org/docs/general/server/manage-users/",
+      portalLabel: "Doc Jellyfin",
+    },
   ],
   emby: [
     { key: "url", label: "URL Emby" },
-    { key: "apiKey", label: "Clé API Emby", type: "password" },
+    {
+      key: "apiKey",
+      label: "Clé API Emby",
+      type: "password",
+      portalUrl: "https://dev.emby.media/",
+      portalLabel: "Doc Emby",
+    },
   ],
-  linear: [{ key: "apiKey", label: "Token personnel Linear", type: "password" }],
-  clickup: [{ key: "apiKey", label: "Token personnel ClickUp", type: "password" }],
+  linear: [
+    {
+      key: "apiKey",
+      label: "Token personnel Linear",
+      type: "password",
+      portalUrl: "https://linear.app/settings/api",
+      portalLabel: "Paramètres API Linear",
+    },
+  ],
+  clickup: [
+    {
+      key: "apiKey",
+      label: "Token personnel ClickUp",
+      type: "password",
+      portalUrl: "https://app.clickup.com/settings/apps",
+      portalLabel: "Paramètres ClickUp",
+    },
+  ],
   jira: [
     { key: "domain", label: "Domaine (ex: mondomaine.atlassian.net)" },
     { key: "email", label: "Email Atlassian" },
-    { key: "apiKey", label: "Token API Jira", type: "password" },
+    {
+      key: "apiKey",
+      label: "Token API Jira",
+      type: "password",
+      portalUrl: "https://id.atlassian.com/manage-profile/security/api-tokens",
+      portalLabel: "Tokens Atlassian",
+    },
   ],
-  gitlab: [{ key: "apiKey", label: "Token personnel GitLab", type: "password" }],
+  gitlab: [
+    {
+      key: "apiKey",
+      label: "Token personnel GitLab",
+      type: "password",
+      portalUrl: "https://gitlab.com/-/profile/personal_access_tokens",
+      portalLabel: "Tokens GitLab",
+    },
+  ],
   obsidian: [
     { key: "url", label: "URL API locale (ex: http://localhost:27123)" },
-    { key: "apiKey", label: "Token Obsidian", type: "password" },
+    {
+      key: "apiKey",
+      label: "Token Obsidian",
+      type: "password",
+      portalUrl: "https://docs.obsidian.md/Plugins/Getting+started/Build+a+plugin",
+      portalLabel: "Doc Obsidian",
+    },
   ],
   vscode: [
     { key: "url", label: "URL VS Code Server / locale" },
     { key: "apiKey", label: "Token (optionnel)", type: "password" },
   ],
-  fitbit: [{ key: "apiKey", label: "Token Fitbit", type: "password" }],
+  fitbit: [
+    {
+      key: "apiKey",
+      label: "Token Fitbit",
+      type: "password",
+      portalUrl: "https://dev.fitbit.com/apps",
+      portalLabel: "Console Fitbit",
+    },
+  ],
 };
 
 export function isApiConfigured(

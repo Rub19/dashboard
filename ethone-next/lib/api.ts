@@ -63,6 +63,17 @@ export async function fetchWorker(
   headers.set("Content-Type", "application/json");
   if (token) headers.set("Authorization", `Bearer ${token}`);
 
+  if (typeof window !== "undefined") {
+    try {
+      const riotKey = localStorage.getItem("ethone:cred:riot:riotApiKey") || localStorage.getItem("ethone:cred:riot:apiKey");
+      const henrikKey = localStorage.getItem("ethone:cred:riot:henrikApiKey") || localStorage.getItem("ethone:cred:valorant:apiKey");
+      const trackerKey = localStorage.getItem("ethone:cred:tracker:apiKey") || localStorage.getItem("ethone:cred:tracker-gg:apiKey");
+      if (riotKey && !headers.has("x-riot-api-key")) headers.set("x-riot-api-key", riotKey);
+      if (henrikKey && !headers.has("x-henrik-api-key")) headers.set("x-henrik-api-key", henrikKey);
+      if (trackerKey && !headers.has("x-tracker-api-key")) headers.set("x-tracker-api-key", trackerKey);
+    } catch {}
+  }
+
   const res = await fetch(`${WORKER_URL}${path}`, {
     ...options,
     headers,

@@ -317,9 +317,12 @@ export function buildPingRequest(
     case "steam":
       if (!settings.liveSteamId) return null;
       return { path: `/api/steam/player?steamId=${q(settings.liveSteamId)}` };
-    case "riot":
+    case "riot": {
       if (!settings.liveTrackerRiotName || !settings.liveTrackerRiotTag) return null;
-      return { path: `/api/stats/valorant-profile?name=${q(settings.liveTrackerRiotName)}&tag=${q(settings.liveTrackerRiotTag)}` };
+      const cleanRiotName = settings.liveTrackerRiotName.trim();
+      const cleanRiotTag = settings.liveTrackerRiotTag.trim().replace(/^#/, "");
+      return { path: `/api/stats/valorant-profile?name=${q(cleanRiotName)}&tag=${q(cleanRiotTag)}` };
+    }
     case "minecraft":
       if (!settings.liveMinecraftUsername) return null;
       return { path: `/api/minecraft/profile?username=${q(settings.liveMinecraftUsername)}` };

@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.70",
+  date: "2026-08-27",
+  title: "Correction API Tracker Valorant & League of Legends (Support du '#' Riot Tag & En-têtes API Clés)",
+  items: [
+    "Correction de la validation backend Cloudflare Worker : support des Riot Tags commençant par '#' (ex: #boss, #EUW) sans erreur 400 'Un paramètre est invalide'.",
+    "Transmission automatique des clés API Riot Games et Henrik enregistrées depuis localStorage dans les requêtes de tracking.",
+    "Assainissement des noms et tags de joueurs dans useLiveData, useDashboard et buildPingRequest.",
+    "Validation : build Next.js 105/105 pages, 100% tests unitaires, 0 erreur.",
+    "Version affichée : v1.10.70.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.70",
+  date: "2026-08-27",
+  title: "Valorant & LoL Tracker Fix (Riot Tag '#' Support & API Header Forwarding)",
+  items: [
+    "Fixed Cloudflare Worker validation accepting tags with '#' without throwing 400 Invalid Parameter errors.",
+    "Auto-forwarded stored client credentials in headers for Valorant and LoL endpoints.",
+    "Sanitized Riot ID queries across live hooks and modals.",
+    "Validation: Next.js 105/105 pages build, 100% unit tests passed, 0 errors.",
+    "Version badge: v1.10.70.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.70",
+  date: "2026-08-27",
+  title: "Corrección de Tracker Valorant y LoL",
+  items: [
+    "Soporte de Riot Tag con almohadilla '#' y claves API automáticas.",
+    "Validación : build, lint, tests.",
+    "Versión : v1.10.70.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.70",
+  date: "2026-08-27",
+  title: "Valorant & LoL Tracker Fix",
+  items: [
+    "Unterstützung von '#' in Riot Tags und API-Schlüssel-Weiterleitung.",
+    "Validierung: build, lint, tests.",
+    "Version: v1.10.70.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.69",
   date: "2026-08-27",
   title: "Clarification Visuelle & État 'Lu' dans le Centre de Notifications",

@@ -242,16 +242,14 @@ export function useLiveData(pollMs = 60000) {
     ? `/api/bluesky/profile?handle=${encodeURIComponent(liveBlueskyHandle)}`
     : null;
 
-  const hasRiotId = liveTrackerRiotName && liveTrackerRiotTag;
+  const cleanRiotName = (liveTrackerRiotName || "").trim();
+  const cleanRiotTag = (liveTrackerRiotTag || "").trim().replace(/^#/, "");
+  const hasRiotId = Boolean(cleanRiotName && cleanRiotTag);
   const valorantPath = hasRiotId
-    ? `/api/stats/valorant-matches?name=${encodeURIComponent(liveTrackerRiotName)}&tag=${encodeURIComponent(
-        liveTrackerRiotTag
-      )}`
+    ? `/api/stats/valorant-matches?name=${encodeURIComponent(cleanRiotName)}&tag=${encodeURIComponent(cleanRiotTag)}`
     : null;
   const lolPath = hasRiotId
-    ? `/api/stats/lol-matches?name=${encodeURIComponent(liveTrackerRiotName)}&tag=${encodeURIComponent(
-        liveTrackerRiotTag
-      )}`
+    ? `/api/stats/lol-matches?name=${encodeURIComponent(cleanRiotName)}&tag=${encodeURIComponent(cleanRiotTag)}`
     : null;
 
   const calendarPath =

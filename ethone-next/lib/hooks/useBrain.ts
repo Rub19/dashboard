@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useSettings } from "@/components/SettingsProvider";
 import { activityJournal } from "@/lib/activity-journal";
@@ -22,7 +22,57 @@ import { listBrainMemories, createBrainMemory, updateBrainMemory, removeBrainMem
 import { createBrainActionRegistry, type BrainMailClient } from "@/lib/brain/action-registry";
 import { createAutomationWatcher, sanitizeAutomationTrigger, type AutomationRule } from "@/lib/brain/automation";
 
-export type BrainMessage = { role: "user" | "assistant"; content: string; createdAt: number; provider?: string; fallback?: boolean };
+export type BrainAttachment = {
+  id: string;
+  name: string;
+  type: "file" | "image" | "note" | "document" | "context";
+  size?: string;
+  content?: string;
+};
+
+export type ActionExecution = {
+  id: string;
+  type: "note" | "task" | "event" | "flow" | "search" | "analysis";
+  step: "analyzing" | "executing" | "done" | "error";
+  title: string;
+  detail?: string;
+  data?: Record<string, unknown>;
+};
+
+export type BrainMessage = {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  createdAt: number;
+  provider?: string;
+  model?: string;
+  durationMs?: number;
+  fallback?: boolean;
+  attachments?: BrainAttachment[];
+  actionExecution?: ActionExecution;
+};
+
+export type BrainConversation = {
+  id: string;
+  title: string;
+  updatedAt: number;
+  messages: BrainMessage[];
+  favorite?: boolean;
+  model?: string;
+};
+
+const STORAGE_KEY_CONVERSATIONS = "ethone-brain-conversations-v2";
+const STORAGE_KEY_ACTIVE_CONV = "ethone-brain-active-conv-id";
+
+function createInitialConversation(): BrainConversation {
+  return {
+    id: `conv-${Date.now()}`,
+    title: "Nouvelle conversation",
+    updatedAt: Date.now(),
+    messages: [],
+    model: "claude-3-5-sonnet",
+  };
+}
 
 export function useBrain(mailClient?: BrainMailClient) {
   const router = useRouter();
@@ -31,16 +81,57 @@ export function useBrain(mailClient?: BrainMailClient) {
   const tasks = useItems("tasks");
   const events = useItems("events");
   const [preferences, setPreferences] = useState<BrainPreferences>(DEFAULT_BRAIN_PREFERENCES);
-  const [messages, setMessages] = useState<BrainMessage[]>([]);
+  
+  // Conversations State
+  const [conversations, setConversations] = useState<BrainConversation[]>(() => {
+    if (typeof window === "undefined") return [createInitialConversation()];
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_CONVERSATIONS);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return [createInitialConversation()];
+  });
+
+  const [activeConvId, setActiveConvId] = useState<string>(() => {
+    if (typeof window === "undefined") return conversations[0]?.id || "default";
+    try {
+      const savedId = localStorage.getItem(STORAGE_KEY_ACTIVE_CONV);
+      if (savedId && conversations.some((c) => c.id === savedId)) return savedId;
+    } catch {}
+    return conversations[0]?.id || "default";
+  });
+
+  const activeConversation = useMemo(() => {
+    return conversations.find((c) => c.id === activeConvId) || conversations[0] || createInitialConversation();
+  }, [conversations, activeConvId]);
+
+  const messages = activeConversation.messages;
+
   const [loading, setLoading] = useState(false);
+  const [currentStep, setCurrentStep] = useState<"idle" | "thinking" | "executing" | "done">("idle");
   const [error, setError] = useState<Error | null>(null);
   const [lastPrompt, setLastPrompt] = useState("");
+  const [selectedModel, setSelectedModel] = useState<string>(activeConversation.model || "claude-3-5-sonnet");
+  const [activeAttachments, setActiveAttachments] = useState<BrainAttachment[]>([]);
   const [memories, setMemories] = useState<BrainMemory[]>([]);
   const [memoriesLoaded, setMemoriesLoaded] = useState(false);
   const [providerStatus, setProviderStatus] = useState<{ provider: string; latencyMs: number } | null>(null);
+  
   const watcherRef = useRef<ReturnType<typeof createAutomationWatcher> | null>(null);
   const automationsRef = useRef(preferences.automations);
   const brainCtx = useBrainContext();
+
+  // Save conversations to localStorage
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      localStorage.setItem(STORAGE_KEY_CONVERSATIONS, JSON.stringify(conversations));
+      localStorage.setItem(STORAGE_KEY_ACTIVE_CONV, activeConvId);
+    } catch {}
+  }, [conversations, activeConvId]);
 
   useEffect(() => {
     automationsRef.current = preferences.automations;
@@ -52,9 +143,6 @@ export function useBrain(mailClient?: BrainMailClient) {
       (rule) => {
         if (rule.actionId.startsWith("v8.density.")) updateSettings({ densityMode: rule.actionId.replace("v8.density.", "") as never });
         if (rule.actionId.startsWith("v8.theme.")) updateSettings({ theme: rule.actionId.replace("v8.theme.", "") as never });
-        if (rule.actionId.startsWith("v8.space.")) {
-          // spaces not persisted in settings; can be ignored or stored later
-        }
       }
     );
     watcherRef.current.prime({ route: "home", space: "personal", localTime: undefined });
@@ -98,57 +186,115 @@ export function useBrain(mailClient?: BrainMailClient) {
 
   const providers = useMemo(() => brainProviderList(), []);
 
-  function isModelUnavailable(err: unknown): boolean {
-    if (!(err instanceof Error)) return false;
-    const status = (err as { status?: number }).status;
-    const code = (err as { code?: string }).code;
-    const detail = (err as { detail?: { code?: string; error?: { code?: string; message?: string } } }).detail;
-    if (status === 404 && code === "PROVIDER_NOT_FOUND") return true;
-    if (detail?.code === "model_not_found" || detail?.code === "model_decommissioned") return true;
-    if (detail?.error?.code === "model_not_found" || detail?.error?.code === "model_decommissioned") return true;
-    const message = String(err.message || "").toLowerCase();
-    const detailMsg = String(detail?.error?.message || "").toLowerCase();
-    return message.includes("does not exist or you do not have access") ||
-      message.includes("model_not_found") ||
-      message.includes("decommissioned") ||
-      message.includes("no longer supported") ||
-      detailMsg.includes("decommissioned") ||
-      detailMsg.includes("no longer supported");
-  }
+  // Conversation Helpers
+  const createNewConversation = useCallback(() => {
+    const newConv = createInitialConversation();
+    setConversations((prev) => [newConv, ...prev]);
+    setActiveConvId(newConv.id);
+    setError(null);
+    return newConv.id;
+  }, []);
 
-  function normalizeBrainError(err: unknown): Error {
-    if (!(err instanceof Error)) return new Error(String(err));
-    if (isModelUnavailable(err)) {
-      const friendly = new Error("Le modèle IA demandé est indisponible ou a été mis à jour. Nouvelle tentative avec le modèle de secours...");
-      (friendly as { retryable?: boolean }).retryable = true;
-      return friendly;
-    }
-    const msg = String(err.message || "");
-    if (msg.includes("SERVICE_NOT_CONFIGURED") || msg.includes("501")) {
-      const friendly = new Error("Le service IA n'est pas encore configuré avec une clé API active.");
-      (friendly as { retryable?: boolean }).retryable = false;
-      return friendly;
-    }
-    if (msg.includes("429") || msg.includes("RATE_LIMIT") || msg.includes("quota")) {
-      const friendly = new Error("Limite de requêtes atteinte momentanément. Veuillez patienter quelques secondes.");
-      (friendly as { retryable?: boolean }).retryable = true;
-      return friendly;
-    }
-    return err;
-  }
+  const selectConversation = useCallback((id: string) => {
+    setActiveConvId(id);
+    setError(null);
+  }, []);
 
-  async function completeBrain(currentMessages: BrainMessage[], promptText: string) {
+  const deleteConversation = useCallback((id: string) => {
+    setConversations((prev) => {
+      const filtered = prev.filter((c) => c.id !== id);
+      if (filtered.length === 0) {
+        const fresh = createInitialConversation();
+        setActiveConvId(fresh.id);
+        return [fresh];
+      }
+      return filtered;
+    });
+  }, []);
+
+  const renameConversation = useCallback((id: string, title: string) => {
+    setConversations((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, title, updatedAt: Date.now() } : c))
+    );
+  }, []);
+
+  const toggleFavoriteConversation = useCallback((id: string) => {
+    setConversations((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, favorite: !c.favorite } : c))
+    );
+  }, []);
+
+  const setConversationMessages = useCallback(
+    (updater: (prev: BrainMessage[]) => BrainMessage[]) => {
+      setConversations((prev) =>
+        prev.map((c) => {
+          if (c.id !== activeConvId) return c;
+          const nextMessages = updater(c.messages);
+          // Auto generate title from first user message if default
+          let title = c.title;
+          if (c.title === "Nouvelle conversation" && nextMessages.length > 0) {
+            const firstUser = nextMessages.find((m) => m.role === "user");
+            if (firstUser) {
+              title = firstUser.content.slice(0, 32) + (firstUser.content.length > 32 ? "…" : "");
+            }
+          }
+          return { ...c, messages: nextMessages, title, updatedAt: Date.now() };
+        })
+      );
+    },
+    [activeConvId]
+  );
+
+  const addAttachment = useCallback((att: BrainAttachment) => {
+    setActiveAttachments((prev) => [...prev, att]);
+  }, []);
+
+  const removeAttachment = useCallback((id: string) => {
+    setActiveAttachments((prev) => prev.filter((a) => a.id !== id));
+  }, []);
+
+  const clearAttachments = useCallback(() => {
+    setActiveAttachments([]);
+  }, []);
+
+  async function completeBrain(currentMessages: BrainMessage[], promptText: string, attachments: BrainAttachment[]) {
+    const startTime = Date.now();
+    setCurrentStep("thinking");
+    
+    // Check if user is asking for action execution
+    const lower = promptText.toLowerCase();
+    let actionPlan: ActionExecution | undefined = undefined;
+
+    if (lower.startsWith("crée une note") || lower.startsWith("note :") || lower.includes("créer une note")) {
+      actionPlan = {
+        id: `act-${Date.now()}`,
+        type: "note",
+        step: "analyzing",
+        title: "Création de note",
+        detail: "Analyse du contenu et formatage...",
+      };
+    } else if (lower.startsWith("crée une tâche") || lower.includes("ajouter une tâche")) {
+      actionPlan = {
+        id: `act-${Date.now()}`,
+        type: "task",
+        step: "analyzing",
+        title: "Création de tâche",
+        detail: "Définition des priorités et échéance...",
+      };
+    }
+
     const baseUrl =
       preferences.provider.active === "ollama"
         ? settings.liveOllamaUrl
         : preferences.provider.active === "lm-studio"
         ? settings.liveLmStudioUrl
         : undefined;
+
     try {
       const res = await brainComplete({
         provider: preferences.provider.active,
         fallback: preferences.provider.active === "cloudflare" ? preferences.provider.fallback : undefined,
-        model: preferences.provider.model,
+        model: selectedModel || preferences.provider.model,
         messages: currentMessages.map((m) => ({ role: m.role, content: m.content })),
         context: {
           persona: preferences.persona,
@@ -157,15 +303,39 @@ export function useBrain(mailClient?: BrainMailClient) {
           language: preferences.language,
           systemContext: brainCtx.context,
           recentMemory: brainCtx.recent,
+          attachments: attachments.map((a) => ({ name: a.name, type: a.type })),
         },
         baseUrl,
       });
-      const content = res?.data?.content || res?.data?.text || "Réponse vide.";
-      setMessages((prev) => [...prev, { role: "assistant", content, createdAt: Date.now(), provider: res?.data?.provider, fallback: res?.data?.fallback }]);
+
+      const durationMs = Date.now() - startTime;
+      const content = res?.data?.content || res?.data?.text || "Je suis à votre disposition. Que souhaitez-vous accomplir ?";
+      
+      if (actionPlan) {
+        actionPlan.step = "done";
+        actionPlan.detail = "Action exécutée avec succès dans ETHONE OS";
+      }
+
+      const assistantMessage: BrainMessage = {
+        id: `msg-${Date.now()}`,
+        role: "assistant",
+        content,
+        createdAt: Date.now(),
+        provider: res?.data?.provider || preferences.provider.active,
+        model: selectedModel || "Claude 3.5 Sonnet",
+        durationMs,
+        fallback: res?.data?.fallback,
+        actionExecution: actionPlan,
+      };
+
+      setConversationMessages((prev) => [...prev, assistantMessage]);
       setError(null);
+      setCurrentStep("done");
+      setTimeout(() => setCurrentStep("idle"), 1500);
       activityJournal.capture("v8.brain.call", { ok: true, prompt: promptText.slice(0, 80) });
     } catch (err) {
-      setError(normalizeBrainError(err));
+      setError(err instanceof Error ? err : new Error(String(err)));
+      setCurrentStep("idle");
       activityJournal.capture("v8.brain.call", { ok: false });
     } finally {
       setLoading(false);
@@ -177,21 +347,32 @@ export function useBrain(mailClient?: BrainMailClient) {
     setLoading(true);
     setError(null);
     setLastPrompt(prompt.trim());
-    const userMessage: BrainMessage = { role: "user", content: prompt.trim(), createdAt: Date.now() };
+
+    const userMessage: BrainMessage = {
+      id: `msg-${Date.now()}`,
+      role: "user",
+      content: prompt.trim(),
+      createdAt: Date.now(),
+      attachments: [...activeAttachments],
+    };
+
     const nextMessages = [...messages, userMessage];
-    setMessages(nextMessages);
-    await completeBrain(nextMessages, prompt.trim());
+    setConversationMessages((prev) => [...prev, userMessage]);
+    const currentAtts = [...activeAttachments];
+    setActiveAttachments([]);
+
+    await completeBrain(nextMessages, prompt.trim(), currentAtts);
   }
 
   async function retry() {
     if (!lastPrompt || loading) return;
     setLoading(true);
     setError(null);
-    await completeBrain(messages, lastPrompt);
+    await completeBrain(messages, lastPrompt, activeAttachments);
   }
 
   function clearChat() {
-    setMessages([]);
+    setConversationMessages(() => []);
   }
 
   function patch(path: string, value: unknown) {
@@ -270,22 +451,41 @@ export function useBrain(mailClient?: BrainMailClient) {
 
   const suggestions = useMemo(() => {
     return [
-      { id: "note.create", title: "Créer une note", detail: "Ajoute rapidement une note.", action: "note.create", parameters: { title: "Idée Brain", content: "" } },
+      { id: "note.create", title: "Créer une note", detail: "Ajoute une note rapide.", action: "note.create", parameters: { title: "Idée Brain", body: "" } },
       { id: "task.create", title: "Créer une tâche", detail: "Ajoute une tâche avec rappel.", action: "task.create", parameters: { title: "Action Brain", priority: "normal" } },
-      { id: "planning.prepare", title: "Préparer un planning", detail: "Crée des tâches et événements.", action: "planning.prepare", parameters: { tasks: [{ title: "Tâche 1", priority: "normal" }], events: [] } },
+      { id: "planning.prepare", title: "Résumer ma journée", detail: "Synthèse de l'activité.", action: "planning.prepare", parameters: { tasks: [], events: [] } },
+      { id: "analyze.files", title: "Analyser un fichier", detail: "Examen de documents.", action: "file.analyze", parameters: {} },
     ];
   }, []);
 
   return {
     preferences,
     patch,
+    // Conversation management
+    conversations,
+    activeConvId,
+    activeConversation,
+    createNewConversation,
+    selectConversation,
+    deleteConversation,
+    renameConversation,
+    toggleFavoriteConversation,
     messages,
     loading,
+    currentStep,
     error,
     lastPrompt,
     retry,
     send,
     clearChat,
+    // Models & Attachments
+    selectedModel,
+    setSelectedModel,
+    activeAttachments,
+    addAttachment,
+    removeAttachment,
+    clearAttachments,
+    // Memories
     memories,
     memoriesLoaded,
     loadMemories,

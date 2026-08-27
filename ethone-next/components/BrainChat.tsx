@@ -1,545 +1,354 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useAuth } from "@/components/AuthProvider";
-import { useActiveProfile } from "@/components/SettingsProvider";
-import { useProfile } from "@/lib/hooks/useProfile";
-import type { BrainMessage, ReturnTypeOfUseBrain } from "@/lib/hooks/useBrain";
-import { useBrainActivityStore } from "@/lib/stores/brain-activity";
-import { useI18n } from "@/lib/hooks/useI18n";
-import { useNowPlaying } from "@/lib/hooks/useNowPlaying";
-import { hapticSuccessPattern, hapticErrorPattern, hapticMediumImpact, hapticLightImpact } from "@/lib/haptics";
-import { useToast } from "@/components/ToastProvider";
-import { useLiveData } from "@/lib/hooks/useLiveData";
-import { useUserData } from "@/lib/hooks/useUserData";
-import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "@/lib/icons";
-import {
-  MessageBubble,
-  MessageBubbleContent,
-  MessageBubbleGroup,
-} from "@/components/MessageBubble";
-import { motion } from "framer-motion";
-import TextArea from "@/components/Textarea";
+import { useI18n } from "@/lib/hooks/useI18n";
+import { useToast } from "@/components/ToastProvider";
+import { useAuth } from "@/components/AuthProvider";
+import { useProfile } from "@/lib/hooks/useProfile";
+import { hapticSuccessPattern, hapticErrorPattern, hapticMediumImpact, hapticLightImpact } from "@/lib/haptics";
+import type { ReturnTypeOfUseBrain, BrainMessage } from "@/lib/hooks/useBrain";
+import BrainComposer from "./brain/BrainComposer";
+import BrainActionCard from "./brain/BrainActionCard";
+import { cn } from "@/lib/utils";
 
-type ActionChip = {
-  id: string;
-  label: string;
-  icon: React.ReactNode;
-  onClick: () => void;
-};
-
-
-
-function extractContentActions(content: string, handlers: {
-  createNote: (title?: string) => void;
-  createTask: (title?: string) => void;
-  runFlow: (id?: string) => void;
-  openMail: () => void;
-  openPlanning: () => void;
-}): ActionChip[] {
-  const chips: ActionChip[] = [];
-  const lower = content.toLowerCase();
-  const has = (keys: string[]) => keys.some((k) => lower.includes(k));
-  if (has(["note", "noter", "noté"]) && !chips.find((c) => c.id === "note")) {
-    chips.push({
-      id: "note",
-      label: "Créer une note",
-      icon: <Icon name="file-plus" pack="phosphor" className="h-3.5 w-3.5" />,
-      onClick: () => handlers.createNote(),
-    });
-  }
-  if (has(["tâche", "task", "taches"]) && !chips.find((c) => c.id === "task")) {
-    chips.push({
-      id: "task",
-      label: "Ajouter une tâche",
-      icon: <Icon name="check-circle" pack="phosphor" className="h-3.5 w-3.5" />,
-      onClick: () => handlers.createTask(),
-    });
-  }
-  if (has(["flow", "focus", "studio", "personal", "gaming"]) && !chips.find((c) => c.id === "flow")) {
-    const flowId = ["focus", "studio", "personal", "gaming"].find((k) => lower.includes(k));
-    chips.push({
-      id: "flow",
-      label: "Lancer un Flow",
-      icon: <Icon name="zap" pack="phosphor" className="h-3.5 w-3.5" />,
-      onClick: () => handlers.runFlow(flowId),
-    });
-  }
-  if (has(["mail", "email", "courriel", "message"]) && !chips.find((c) => c.id === "mail")) {
-    chips.push({
-      id: "mail",
-      label: "Ouvrir le mail",
-      icon: <Icon name="mail" className="h-3.5 w-3.5" />,
-      onClick: () => handlers.openMail(),
-    });
-  }
-  if (has(["planning", "plan", "agenda", "calendrier"]) && !chips.find((c) => c.id === "planning")) {
-    chips.push({
-      id: "planning",
-      label: "Préparer le planning",
-      icon: <Icon name="clock-counter-clockwise" pack="phosphor" className="h-3.5 w-3.5" />,
-      onClick: () => handlers.openPlanning(),
-    });
-  }
-  return chips.slice(0, 4);
+interface BrainChatProps {
+  brain: ReturnTypeOfUseBrain;
+  onToggleSidebar?: () => void;
+  onToggleContext?: () => void;
+  className?: string;
 }
 
-function renderMarkdown(text: string) {
-  const parts: React.ReactNode[] = [];
-  const codeBlockRegex = /```([a-zA-Z0-9_+-]*)\n([\s\S]*?)```/g;
-  let last = 0;
-  let match;
-  while ((match = codeBlockRegex.exec(text)) !== null) {
-    if (match.index > last) parts.push(<MarkdownInline key={parts.length} text={text.slice(last, match.index)} />);
-    const lang = match[1] || "code";
-    const code = match[2];
-    parts.push(
-      <div key={parts.length} className="my-2 overflow-hidden rounded-lg border border-[var(--text-primary)]/10 bg-[var(--background)]/50">
-        <div className="flex items-center justify-between border-b border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.03] px-3 py-1.5 text-[10px] text-[var(--text-muted)]">
-          <span>{lang}</span>
-          <CopyButton text={code} />
-        </div>
-        <pre className="max-h-48 overflow-auto p-3 text-xs text-[var(--text-primary)]">
-          <code className="font-mono">{code}</code>
-        </pre>
-      </div>
-    );
-    last = match.index + match[0].length;
-  }
-  if (last < text.length) parts.push(<MarkdownInline key={parts.length} text={text.slice(last)} />);
-  if (parts.length === 0) parts.push(<MarkdownInline key={0} text={text} />);
-  return parts;
-}
-
-function MarkdownInline({ text }: { text: string }) {
-  const parts: React.ReactNode[] = [];
-  const inlineRegex = /(\*\*|\*|`|\_|\[)(?:(?!\1)[^\\]|\\.)*?\1/g;
-  let last = 0;
-  let match;
-  while ((match = inlineRegex.exec(text)) !== null) {
-    if (match.index > last) parts.push(<span key={parts.length}>{text.slice(last, match.index)}</span>);
-    const raw = match[0];
-    if (raw.startsWith("**") && raw.endsWith("**")) {
-      parts.push(<strong key={parts.length} className="font-semibold text-[var(--text-primary)]">{raw.slice(2, -2)}</strong>);
-    } else if ((raw.startsWith("*") && raw.endsWith("*")) || (raw.startsWith("_") && raw.endsWith("_"))) {
-      parts.push(<em key={parts.length} className="text-[var(--text-primary)]">{raw.slice(1, -1)}</em>);
-    } else if (raw.startsWith("`") && raw.endsWith("`")) {
-      parts.push(
-        <code key={parts.length} className="rounded bg-[var(--text-primary)]/[0.08] px-1 py-0.5 font-mono text-[11px] text-[var(--accent-primary)]">
-          {raw.slice(1, -1)}
-        </code>
-      );
-    }
-    last = match.index + raw.length;
-  }
-  if (last < text.length) parts.push(<span key={parts.length}>{text.slice(last)}</span>);
-  if (parts.length === 0) return <>{text}</>;
-  return <>{parts}</>;
-}
-
-function CopyButton({ text }: { text: string }) {
-  const i18n = useI18n();
-  const [copied, setCopied] = useState(false);
-  async function handleCopy() {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1200);
-    } catch {}
-  }
-  return (
-    <button type="button" onClick={handleCopy} className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
-      {copied ? i18n("copied", "Copié") : i18n("copy", "Copier")}
-    </button>
-  );
-}
-
-function TypingDots() {
-  return (
-    <div className="flex items-center gap-1.5 px-3 py-2 rounded-2xl border border-[var(--text-primary)]/[0.08] bg-[var(--background)]/80 w-fit">
-      {[0, 1, 2].map((i) => (
-        <motion.span
-          key={i}
-          className="h-1.5 w-1.5 rounded-full bg-[var(--text-muted)]"
-          animate={{ y: [0, -5, 0] }}
-          transition={{ repeat: Infinity, duration: 0.6, delay: i * 0.12, ease: "easeInOut" }}
-        />
-      ))}
-    </div>
-  );
-}
-
-export default function BrainChat({ brain, className = "" }: { brain: ReturnTypeOfUseBrain; className?: string }) {
+export default function BrainChat({
+  brain,
+  onToggleSidebar,
+  onToggleContext,
+  className = "",
+}: BrainChatProps) {
   const i18n = useI18n();
   const { user } = useAuth();
-  const { activeProfile } = useActiveProfile();
-  const { profile: publicProfile } = useProfile();
+  const { profile } = useProfile();
   const { success, error: showError } = useToast();
-  const { records } = useLiveData(60000);
-  const { items: flows } = useUserData("flow");
-  const { nowPlaying } = useNowPlaying();
-  const [activeWorkspace] = useLocalStorage<string>("ethone-active-workspace", "personal");
-  const setIsThinking = useBrainActivityStore((s) => s.setIsThinking);
-
-  useEffect(() => {
-    setIsThinking(brain.loading);
-  }, [brain.loading, setIsThinking]);
-
-  const [prompt, setPrompt] = useState("");
-  const [pending, setPending] = useState(false);
-  const [typed, setTyped] = useState<Record<number, number>>({});
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const userName = publicProfile?.display_name || activeProfile?.name || user?.user_metadata?.full_name || user?.email || i18n("guest");
-  const activeFlows = flows.filter((f) => f.count > 0).length;
-
-  const handleSend = useCallback(
-    (value = prompt) => {
-      const text = value.trim();
-      if (!text || pending) return;
-      setPrompt("");
-      setPending(true);
-      hapticMediumImpact();
-      brain
-        .send(text)
-        .then(() => {
-          setPending(false);
-          hapticSuccessPattern();
-        })
-        .catch((err) => {
-          setPending(false);
-          hapticErrorPattern();
-          showError(String(err));
-        });
-    },
-    [brain, pending, prompt, showError]
-  );
-
-  const handleExecute = useCallback(
-    async (actionId: string, parameters: Record<string, unknown> = {}) => {
-      hapticMediumImpact();
-      const res = await brain.executeAction(actionId, parameters, true);
-      if (res.ok) {
-        hapticSuccessPattern();
-        success(res.message || i18n("completed"));
-      } else {
-        hapticErrorPattern();
-        showError(res.message || i18n("error"));
-      }
-    },
-    [brain, i18n, showError, success]
-  );
-
-  const welcomeChips = useMemo<ActionChip[]>(() => {
-    return [
-      {
-        id: "note",
-        label: "Créer une nouvelle note",
-        icon: <Icon name="file-plus" pack="phosphor" className="h-3.5 w-3.5" />,
-        onClick: () => handleExecute("note.create", { title: "Idée Brain", body: "" }),
-      },
-      {
-        id: "flow",
-        label: `Lancer le flow ${i18n(activeWorkspace || "personal")}`,
-        icon: <Icon name="zap" pack="phosphor" className="h-3.5 w-3.5" />,
-        onClick: () => handleExecute("v8.space.focus", { space: activeWorkspace || "personal" }),
-      },
-      {
-        id: "media",
-        label: nowPlaying?.title ? `Résumé média : ${nowPlaying.title}` : "Résumé média",
-        icon: <Icon name="music" pack="phosphor" className="h-3.5 w-3.5" />,
-        onClick: () => handleSend(nowPlaying?.title ? `Résume le média en cours : ${nowPlaying.title}` : "Résume ma musique en cours"),
-      },
-      {
-        id: "activity",
-        label: "Rapport d'activité",
-        icon: <Icon name="clock-counter-clockwise" pack="phosphor" className="h-3.5 w-3.5" />,
-        onClick: () => handleSend("Fais-moi un rapport de mon activité récente"),
-      },
-    ];
-  }, [activeWorkspace, handleExecute, handleSend, i18n, nowPlaying]);
-
-  const actionHandlers = useMemo(
-    () => ({
-      createNote: (title?: string) => handleExecute("note.create", { title: title || "Note Brain", body: "" }),
-      createTask: (title?: string) => handleExecute("task.create", { title: title || "Tâche Brain", priority: "normal" }),
-      runFlow: (id?: string) => handleExecute("v8.space.focus", { space: id || activeWorkspace || "personal" }),
-      openMail: () => handleExecute("v8.navigate", { route: "mail" }),
-      openPlanning: () => handleExecute("planning.prepare", { tasks: [], events: [] }),
-    }),
-    [activeWorkspace, handleExecute]
-  );
+  const userName = profile?.display_name || user?.user_metadata?.full_name || "Utilisateur";
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [brain.messages, typed, pending]);
+  }, [brain.messages, brain.loading]);
 
-  useEffect(() => {
-    if (brain.messages.length === 0) return;
-    const lastIdx = brain.messages.length - 1;
-    const last = brain.messages[lastIdx];
-    if (last.role !== "assistant") return;
-    const full = last.content;
-    if (typed[lastIdx] >= full.length) return;
-    const interval = setInterval(() => {
-      setTyped((prev) => {
-        const next = (prev[lastIdx] || 0) + 2;
-        if (next >= full.length) {
-          clearInterval(interval);
-          return { ...prev, [lastIdx]: full.length };
-        }
-        return { ...prev, [lastIdx]: next };
+  const handleCopy = useCallback(async (text: string, id: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedId(id);
+      hapticLightImpact();
+      setTimeout(() => setCopiedId(null), 1500);
+    } catch {}
+  }, []);
+
+  const handleCreateNoteFromMessage = useCallback(
+    async (content: string) => {
+      hapticMediumImpact();
+      const res = await brain.executeAction("note.create", {
+        title: "Note issue de Brain",
+        body: content,
       });
-    }, 12);
-    return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [brain.messages]);
+      if (res.ok) {
+        hapticSuccessPattern();
+        success("Note créée avec succès dans ETHONE Notes !");
+      } else {
+        hapticErrorPattern();
+        showError(res.message || "Erreur lors de la création");
+      }
+    },
+    [brain, success, showError]
+  );
 
-  useEffect(() => {
-    const el = textareaRef.current;
-    if (!el) return;
-    el.style.height = "auto";
-    el.style.height = `${Math.min(el.scrollHeight, 144)}px`;
-  }, [prompt]);
-
-  function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  }
-
-  function displayedContent(m: BrainMessage, i: number) {
-    if (m.role !== "assistant") return m.content;
-    const idx = typed[i] ?? m.content.length;
-    return m.content.slice(0, idx);
-  }
-
-  function renderProviderBadge(m: BrainMessage, index: number) {
-    if (m.role !== "assistant" || index !== brain.messages.length - 1) return null;
-    if (!m.provider) return null;
-    const isFallback = m.fallback;
-    return (
-      <span
-        className={`mt-1 inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 text-[10px] ${
-          isFallback
-            ? "border-amber-500/30 bg-amber-500/10 text-amber-300"
-            : "border-purple-500/30 bg-purple-500/10 text-purple-300"
-        }`}
-      >
-        {isFallback ? <Icon name="zap" className="h-3 w-3" /> : <Icon name="sparkles" pack="phosphor" className="h-3 w-3" />}
-        {m.provider}
-      </span>
-    );
-  }
-
-  function buildWelcomeMessage() {
-    const h = new Date().getHours();
-    const greeting =
-      h < 6
-        ? i18n("greetingNight", "Bonne nuit")
-        : h < 12
-          ? i18n("greetingMorning", "Bonjour")
-          : h < 18
-            ? i18n("greetingAfternoon", "Bon après-midi")
-            : i18n("greetingEvening", "Bonsoir");
-    const health = records?.length ? "opérationnel" : "en cours d'initialisation";
-    const flowLine = activeFlows > 0 ? `, ${activeFlows} flow${activeFlows > 1 ? "s" : ""} actif${activeFlows > 1 ? "s" : ""}` : "";
-    const mediaLine = nowPlaying?.title ? `Tu écoutes/vois actuellement **${nowPlaying.title}**.` : "";
-    return `${greeting} ${userName}, ravi de te retrouver sur ETHONE OS. Système **${health}**${flowLine}. ${mediaLine}\n\nQue puis-je faire pour toi aujourd'hui ?`;
-  }
-
-  const welcomeMessage = buildWelcomeMessage();
-
-  function renderWelcome() {
-    return (
-      <MessageBubbleGroup className="px-2">
-        <MessageBubble align="start" variant="tint" animateIn>
-          <MessageBubbleContent>
-            <div className="leading-relaxed">{renderMarkdown(welcomeMessage)}</div>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {welcomeChips.map((chip) => (
-                <ActionChip key={chip.id} chip={chip} />
-              ))}
-            </div>
-          </MessageBubbleContent>
-        </MessageBubble>
-      </MessageBubbleGroup>
-    );
-  }
-
-  function renderMessage(m: BrainMessage, i: number) {
-    const isUser = m.role === "user";
-    const chips = isUser ? [] : extractContentActions(m.content, actionHandlers);
-    const hasCursor = !isUser && i === brain.messages.length - 1 && (typed[i] ?? 0) < m.content.length;
-
-    return (
-      <MessageBubble
-        key={i}
-        align={isUser ? "end" : "start"}
-        variant={isUser ? "solid" : "soft"}
-        animateIn
-      >
-        <MessageBubbleContent>
-          <div className="whitespace-pre-wrap">{renderMarkdown(displayedContent(m, i))}</div>
-          {hasCursor && (
-            <span className="ml-1 inline-block h-4 w-1.5 translate-y-0.5 animate-pulse rounded-sm bg-[var(--text-primary)]" />
-          )}
-        </MessageBubbleContent>
-        {renderProviderBadge(m, i)}
-        {!isUser && chips.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-2">
-            {chips.map((chip) => (
-              <ActionChip key={chip.id} chip={chip} />
-            ))}
-          </div>
-        )}
-      </MessageBubble>
-    );
-  }
+  const handleCreateTaskFromMessage = useCallback(
+    async (content: string) => {
+      hapticMediumImpact();
+      const res = await brain.executeAction("task.create", {
+        title: content.slice(0, 48),
+        priority: "normal",
+      });
+      if (res.ok) {
+        hapticSuccessPattern();
+        success("Tâche ajoutée à votre planning !");
+      } else {
+        hapticErrorPattern();
+        showError(res.message || "Erreur lors de la création");
+      }
+    },
+    [brain, success, showError]
+  );
 
   return (
-    <div className={`flex h-full min-h-0 flex-col ${className}`}>
-      <div className="flex items-center justify-between border-b border-[var(--panel-border)] bg-[var(--panel-bg)]/50 px-4 py-3">
-        <div className="flex items-center gap-2.5">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-purple-500/10 text-purple-400">
-            <Icon name="brain" className="h-4 w-4" />
-          </span>
-          <div>
-            <p className="text-sm font-semibold text-[var(--text-primary)]">{i18n("brainTitle")}</p>
-            <p className="text-[10px] text-[var(--text-muted)]">
-              {brain.loading ? i18n("thinking") : i18n("ready")}
-            </p>
+    <div className={cn("flex h-full min-h-0 flex-col bg-transparent", className)}>
+      {/* Header with Brain Identity & Status Indicator */}
+      <header className="flex items-center justify-between border-b border-[var(--panel-border)] bg-[var(--panel-bg)]/60 px-4 py-3 backdrop-blur-xl">
+        <div className="flex items-center gap-3">
+          {onToggleSidebar && (
+            <button
+              type="button"
+              onClick={onToggleSidebar}
+              className="md:hidden flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              title="Menu des discussions"
+            >
+              <Icon name="list" className="h-4 w-4" />
+            </button>
+          )}
+
+          <div className="flex items-center gap-2.5">
+            <div className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-bold">
+              <Icon name="brain" className="h-4 w-4" />
+              <span
+                className={cn(
+                  "absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--panel-bg)]",
+                  brain.loading
+                    ? "bg-amber-400 animate-ping"
+                    : "bg-[var(--success)]"
+                )}
+              />
+            </div>
+
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-[var(--text-primary)]">
+                  Brain Assistant
+                </span>
+                <span className="rounded-full bg-[var(--surface-raised)] px-2 py-0.5 text-[10px] font-semibold text-[var(--text-muted)]">
+                  {brain.selectedModel}
+                </span>
+              </div>
+              <p className="text-[10px] text-[var(--text-muted)]">
+                {brain.loading
+                  ? "● Réflexion & Analyse en cours..."
+                  : "● Prêt à agir sur ETHONE"}
+              </p>
+            </div>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={() => brain.clearChat()}
-          className="inline-flex h-7 items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--panel-bg)] px-2.5 py-1 text-[10px] font-medium text-[var(--text-muted)] transition-colors hover:border-[var(--danger)]/40 hover:text-[var(--danger)]"
-        >
-          <Icon name="x" pack="phosphor" className="h-3.5 w-3.5" />
-          {i18n("clear")}
-        </button>
-      </div>
 
-      <div className="flex-1 space-y-1 overflow-y-auto os-scroll p-4">
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => brain.clearChat()}
+            className="flex h-8 items-center gap-1.5 rounded-xl border border-[var(--panel-border)] px-2.5 text-xs font-medium text-[var(--text-muted)] hover:border-[var(--danger)]/50 hover:text-[var(--danger)] transition-colors"
+          >
+            <Icon name="trash" className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Effacer</span>
+          </button>
+
+          {onToggleContext && (
+            <button
+              type="button"
+              onClick={onToggleContext}
+              className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+              title="Contexte et mémoire"
+            >
+              <Icon name="sliders-horizontal" className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+      </header>
+
+      {/* Messages Scroll Area */}
+      <div className="flex-1 overflow-y-auto os-scroll p-4 sm:p-6 space-y-6 max-w-4xl mx-auto w-full">
         {brain.messages.length === 0 ? (
-          renderWelcome()
+          renderEmptyState()
         ) : (
-          <MessageBubbleGroup className="max-w-3xl mx-auto w-full">
-            {brain.messages.map((m, i) => renderMessage(m, i))}
-          </MessageBubbleGroup>
+          brain.messages.map((m) => renderMessage(m))
         )}
-        {pending && (
-          <div className="max-w-3xl mx-auto w-full px-2">
-            <TypingDots />
-          </div>
+
+        {/* Typing / Thinking Wave Indicator */}
+        {brain.loading && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 p-3.5 w-fit"
+          >
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]">
+              <Icon name="brain" className="h-3.5 w-3.5 animate-pulse" />
+            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-medium text-[var(--text-muted)]">Brain réfléchit</span>
+              <span className="flex gap-1">
+                {[0, 1, 2].map((i) => (
+                  <motion.span
+                    key={i}
+                    className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]"
+                    animate={{ y: [0, -4, 0] }}
+                    transition={{ repeat: Infinity, duration: 0.6, delay: i * 0.15 }}
+                  />
+                ))}
+              </span>
+            </div>
+          </motion.div>
         )}
+
         <div ref={bottomRef} />
       </div>
 
-      <div className="border-t border-[var(--panel-border)] bg-[var(--panel-bg)]/50 p-3">
-        <div className="max-w-3xl mx-auto w-full">
-          {brain.error && (
-            <div className="mb-3 flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 shadow-lg backdrop-blur-md">
-              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-300">
-                <Icon name="zap" pack="phosphor" className="h-3.5 w-3.5" />
-              </span>
-              <div className="min-w-0 flex-1 text-xs text-amber-200">
-                <p className="font-medium">{String(brain.error.message)}</p>
-                {(brain.error as { retryable?: boolean }).retryable && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (!brain.lastPrompt || pending) return;
-                      setPending(true);
-                      brain.retry().finally(() => setPending(false));
-                    }}
-                    disabled={pending || brain.loading}
-                    className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-[var(--warning)]/30 bg-[var(--warning)]/15 px-2.5 py-1.5 text-[10px] font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--warning)]/25 disabled:opacity-50"
-                  >
-                    <Icon name="rotate-cw" pack="phosphor" className="h-3 w-3" />
-                    Réessayer
-                  </button>
-                )}
-              </div>
-              <button
-                type="button"
-                onClick={() => brain.clearChat()}
-                className="shrink-0 text-[var(--warning)] transition-colors hover:text-[var(--text-primary)]"
-                aria-label={i18n("close")}
-              >
-                <Icon name="x" pack="phosphor" className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          )}
-
-          <div className="rounded-2xl bg-[var(--panel-bg)]/60 p-2">
-            <TextArea
-              ref={textareaRef}
-              rows={1}
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Poser une question ou un objectif..."
-              disabled={pending}
-              data-testid="brain-input"
-              className="min-h-0 flex-1 p-2"
-              inputClassName="resize-none min-h-[2.75rem] bg-transparent"
-              style={{ maxHeight: 144 }}
-            />
-            <div className="flex items-center justify-between px-1 pt-1">
-              <div className="flex flex-wrap gap-1.5">
-                {brain.suggestions.slice(0, 3).map((s) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    onClick={() => {
-                      hapticLightImpact();
-                      handleExecute(s.action, s.parameters);
-                    }}
-                    className="inline-flex h-7 items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-2 py-1 text-[10px] font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--accent-primary)]/40 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--accent-primary)]"
-                  >
-                    <Icon name="sparkles" pack="phosphor" className="h-3 w-3" />
-                    {s.title}
-                  </button>
-                ))}
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  hapticMediumImpact();
-                  handleSend();
-                }}
-                disabled={pending || !prompt.trim()}
-                data-testid="brain-send-btn"
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)] text-[var(--accent-contrast)] font-bold transition-all hover:scale-105 active:scale-95 disabled:opacity-40"
-                aria-label="Envoyer"
-              >
-                {pending ? <Icon name="loader-2" pack="phosphor" className="h-4 w-4 animate-spin" /> : <Icon name="arrow-up" pack="phosphor" className="h-4 w-4" />}
-              </button>
-            </div>
-          </div>
-        </div>
+      {/* Composer Input Area */}
+      <div className="border-t border-[var(--panel-border)] bg-[var(--panel-bg)]/60 backdrop-blur-2xl">
+        <BrainComposer
+          onSend={(t) => brain.send(t)}
+          loading={brain.loading}
+          selectedModel={brain.selectedModel}
+          onSelectModel={(id) => brain.setSelectedModel(id)}
+          attachments={brain.activeAttachments}
+          onAddAttachment={(att) => brain.addAttachment(att)}
+          onRemoveAttachment={(id) => brain.removeAttachment(id)}
+          suggestions={brain.suggestions}
+          onSelectSuggestion={(s) => {
+            if (s.action) {
+              brain.executeAction(s.action, s.parameters);
+            } else {
+              brain.send(s.title);
+            }
+          }}
+        />
       </div>
     </div>
   );
-}
 
-function ActionChip({ chip }: { chip: ActionChip }) {
-  return (
-    <button
-      type="button"
-      onClick={() => {
-        hapticLightImpact();
-        chip.onClick();
-      }}
-      className="group inline-flex items-center gap-1.5 rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-[var(--text-primary)]/[0.03] px-2.5 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--accent-primary)]/40 hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--accent-primary)] active:scale-[0.98]"
-    >
-      <span className="transition-transform group-hover:scale-110">{chip.icon}</span>
-      {chip.label}
-    </button>
-  );
+  function renderEmptyState() {
+    return (
+      <div className="my-auto flex flex-col items-center justify-center text-center py-12 px-4 space-y-6">
+        <div className="relative flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-to-br from-[var(--accent-primary)]/20 to-[var(--accent-primary)]/5 text-[var(--accent-primary)] shadow-2xl ring-2 ring-[var(--accent-primary)]/20">
+          <Icon name="brain" className="h-8 w-8" />
+          <div className="absolute -inset-1 rounded-3xl bg-[var(--accent-primary)]/10 blur-xl -z-10" />
+        </div>
+
+        <div className="space-y-1.5 max-w-md">
+          <h2 className="text-xl font-bold text-[var(--text-primary)]">
+            Bonjour, {userName}
+          </h2>
+          <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+            Brain est connecté à votre espace ETHONE. Demandez une synthèse, créez des notes ou des tâches, ou analysez des documents en langage naturel.
+          </p>
+        </div>
+
+        {/* Quick Starter Prompts */}
+        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 max-w-lg w-full">
+          {[
+            { label: "Créer une note de réunion", icon: "note", prompt: "Crée une note résumant mes points clés d'aujourd'hui" },
+            { label: "Planifier ma journée", icon: "calendar", prompt: "Aide-moi à organiser mes tâches prioritaires" },
+            { label: "Résumer mon activité récente", icon: "activity", prompt: "Fais un récapitulatif de mon activité sur ETHONE" },
+            { label: "Analyser un document", icon: "file-text", prompt: "Je voudrais analyser un fichier avec toi" },
+          ].map((item) => (
+            <button
+              key={item.label}
+              type="button"
+              onClick={() => brain.send(item.prompt)}
+              className="group flex items-center gap-3 rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/40 p-3 text-left transition-all hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)]/60 active:scale-95 shadow-sm"
+            >
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-raised)] text-[var(--accent-primary)] group-hover:scale-105 transition-transform">
+                <Icon name={item.icon} className="h-4 w-4" />
+              </span>
+              <span className="text-xs font-semibold text-[var(--text-primary)]">
+                {item.label}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  function renderMessage(m: BrainMessage) {
+    const isUser = m.role === "user";
+
+    return (
+      <motion.div
+        key={m.id}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={cn("flex flex-col gap-2", isUser ? "items-end" : "items-start")}
+      >
+        {/* Message Bubble Container */}
+        <div
+          className={cn(
+            "relative rounded-3xl p-4 max-w-[85%] text-sm leading-relaxed shadow-md",
+            isUser
+              ? "bg-[var(--accent-primary)] text-[var(--accent-contrast)] rounded-br-sm"
+              : "border border-[var(--panel-border)] bg-[var(--surface-raised)]/70 text-[var(--text-primary)] rounded-bl-sm backdrop-blur-xl"
+          )}
+        >
+          {/* Attachments if any */}
+          {m.attachments && m.attachments.length > 0 && (
+            <div className="mb-2 flex flex-wrap gap-1.5">
+              {m.attachments.map((att) => (
+                <span
+                  key={att.id}
+                  className="inline-flex items-center gap-1 rounded-full bg-black/20 px-2.5 py-0.5 text-[11px] font-medium"
+                >
+                  <Icon name="file" className="h-3 w-3" />
+                  {att.name}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Text Content */}
+          <div className="whitespace-pre-wrap">{m.content}</div>
+
+          {/* Action Card if triggered */}
+          {m.actionExecution && (
+            <BrainActionCard
+              action={m.actionExecution}
+              onOpenNote={() => brain.registry.execute("note.create", { title: "Note Brain" })}
+            />
+          )}
+        </div>
+
+        {/* Message Footer Info & Actions */}
+        {!isUser && (
+          <div className="flex items-center gap-3 px-2 text-[10px] text-[var(--text-muted)]">
+            {/* Model & Latency badge */}
+            <span className="flex items-center gap-1 font-semibold text-[var(--accent-primary)]">
+              <Icon name="sparkles" className="h-3 w-3" />
+              {m.model || "Claude 3.5 Sonnet"}
+              {m.durationMs && ` · ${m.durationMs}ms`}
+            </span>
+
+            {/* Quick Actions */}
+            <div className="flex items-center gap-1.5 ml-2">
+              <button
+                type="button"
+                onClick={() => handleCopy(m.content, m.id)}
+                className="hover:text-[var(--text-primary)] transition-colors flex items-center gap-0.5"
+                title="Copier"
+              >
+                <Icon name="copy" className="h-3 w-3" />
+                <span>{copiedId === m.id ? "Copié !" : "Copier"}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleCreateNoteFromMessage(m.content)}
+                className="hover:text-[var(--text-primary)] transition-colors flex items-center gap-0.5"
+                title="Transformer en Note"
+              >
+                <Icon name="note" className="h-3 w-3" />
+                <span>Créer Note</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleCreateTaskFromMessage(m.content)}
+                className="hover:text-[var(--text-primary)] transition-colors flex items-center gap-0.5"
+                title="Ajouter en Tâche"
+              >
+                <Icon name="check-circle" className="h-3 w-3" />
+                <span>Créer Tâche</span>
+              </button>
+            </div>
+          </div>
+        )}
+      </motion.div>
+    );
+  }
 }

@@ -7206,6 +7206,50 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.94",
+  date: "2026-08-27",
+  title: "Résolution CSP & Santé Worker : Déblocage des Avatars Google, Météo & Icônes",
+  items: [
+    "Mise à jour de la Content Security Policy (CSP) dans public/_headers pour autoriser connect-src https: wss:.",
+    "Déblocage des avatars Google (lh3.googleusercontent.com), météo Open-Meteo et serveurs d'icônes Iconify/SimpleSVG.",
+    "Correction du ping de statut worker (/api/health) en méthode GET pour éviter les erreurs 405 Method Not Allowed.",
+    "Version affichée : v1.10.94.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.94",
+  date: "2026-08-27",
+  title: "CSP & Worker Health Fix: Unblocked Google Avatars, Weather & Icon APIs",
+  items: [
+    "Updated Content Security Policy (CSP) in public/_headers to permit connect-src https: wss:.",
+    "Unblocked Google profile pictures, Open-Meteo forecast queries, and Iconify/SimpleSVG glyphs.",
+    "Corrected worker health ping to GET /api/health to eliminate 405 Method Not Allowed console errors.",
+    "Version badge: v1.10.94.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.94",
+  date: "2026-08-27",
+  title: "Corrección CSP y Estado del Worker: Avatares Google, Clima e Iconos Desbloqueados",
+  items: [
+    "Actualización de CSP y corrección del endpoint de salud del Worker.",
+    "Versión: v1.10.94.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.94",
+  date: "2026-08-27",
+  title: "CSP & Worker-Gesundheitskorrektur: Google-Avatare, Wetter & Icons entsperrt",
+  items: [
+    "CSP-Header aktualisiert und Worker-Health-Check auf GET korrigiert.",
+    "Version: v1.10.94.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.93",
   date: "2026-08-27",
   title: "Résolution des Widgets : Statuts Réels, Météo Fiabilisée & Liens Trackers",

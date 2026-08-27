@@ -56,10 +56,9 @@ function usePing() {
     setPinging(true);
     const start = typeof performance !== "undefined" ? performance.now() : Date.now();
     try {
-      await fetch(`${WORKER_URL}/health?cache=${Date.now()}`, {
-        method: "HEAD",
+      await fetch(`${WORKER_URL}/api/health`, {
+        method: "GET",
         cache: "no-store",
-        mode: "no-cors",
       });
       const end = typeof performance !== "undefined" ? performance.now() : Date.now();
       setPing(Math.round(end - start));

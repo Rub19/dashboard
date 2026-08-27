@@ -7206,6 +7206,56 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.45",
+  date: "2026-08-27",
+  title: "Refonte Complète de l'Espace Tâches & Générateur IA Intelligent",
+  items: [
+    "Refonte de l'interface Tâches (/tasks) : design Obsidian Glass 2026 avec 4 KPIs de productivité, barre de progression et recherche temps réel.",
+    "Assistant & Suggestions IA (AiTaskDrawer) : décomposition de projets et sprints en tâches concrètes via l'IA ou modèles pré-configurés (Dev, Focus, Sécurité, UI).",
+    "Double vue Liste & Kanban : tableau dynamique 3 colonnes (À faire, Prioritaire & Focus, Terminées).",
+    "Micro-interactions riches : sélection de priorité avec badge néon, raccourci vers le Mode Focus, édition rapide de titre et animations de complétion.",
+    "Validation : build Next.js 105/105 pages, TypeScript sans erreur.",
+    "Version affichée : v1.10.45.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.45",
+  date: "2026-08-27",
+  title: "Complete Tasks Workspace Rework & Intelligent AI Generator",
+  items: [
+    "Tasks Workspace Overhaul (/tasks): 2026 Obsidian Glass design with 4 productivity KPIs, progress velocity, and live search.",
+    "AI Task Assistant (AiTaskDrawer): natural language goal breakdown into structured tasks plus instant presets (Dev, Focus, Security, UI Polish).",
+    "Dual List & Kanban Views: interactive 3-column Kanban board with real-time state sync.",
+    "Rich micro-interactions: neon glowing priority tags, Focus mode launch shortcut, inline title editing, and Framer Motion spring list animations.",
+    "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
+    "Version badge: v1.10.45.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.45",
+  date: "2026-08-27",
+  title: "Rediseño del espacio de Tareas y Generador de IA",
+  items: [
+    "Diseño Obsidian Glass, vistas Lista y Kanban, asistente de IA para desglosar objetivos.",
+    "Validación : build, lint.",
+    "Versión : v1.10.45.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.45",
+  date: "2026-08-27",
+  title: "Komplettes Aufgaben-Workspace Redesign & KI-Assistent",
+  items: [
+    "Obsidian Glass Layout, Listen- und Kanban-Ansichten, KI-Aufgabengenerator.",
+    "Validierung: build, lint.",
+    "Version: v1.10.45.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.44",
   date: "2026-08-27",
   title: "Correction & Rendu Dynamique des Auras Chromatiques d'Ambiance",

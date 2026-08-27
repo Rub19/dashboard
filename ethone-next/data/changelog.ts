@@ -7206,6 +7206,52 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.75",
+  date: "2026-08-27",
+  title: "Rétablissement Permanent des Cartes 3D & Live dans l'Accueil",
+  items: [
+    "Suppression du masquage global dans LiveBentoGrid : affichage permanent de toutes les cartes 3D (Minecraft, Météo, Discord, Valorant, LoL).",
+    "Chaque carte gère son état et ses données de manière indépendante avec interaction directe.",
+    "Validation : build Next.js 105/105 pages, 100% tests unitaires, 0 erreur.",
+    "Version affichée : v1.10.75.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.75",
+  date: "2026-08-27",
+  title: "Permanent Restoration of 3D & Live Cards on Home Dashboard",
+  items: [
+    "Removed global empty state blocking in LiveBentoGrid: all 3D cards (Minecraft, Weather, Discord, Valorant, LoL) are now permanently visible.",
+    "Each card independently manages its own live data and interactive state.",
+    "Validation: Next.js 105/105 pages build, 100% unit tests passed, 0 errors.",
+    "Version badge: v1.10.75.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.75",
+  date: "2026-08-27",
+  title: "Restauración permanente de tarjetas 3D en Inicio",
+  items: [
+    "Visualización fija de todas las tarjetas (Minecraft, Clima, Discord, Valorant, LoL).",
+    "Validación : build, lint, tests.",
+    "Versión : v1.10.75.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.75",
+  date: "2026-08-27",
+  title: "Permanente Wiederherstellung der 3D-Karten auf der Startseite",
+  items: [
+    "Alle 3D-Karten (Minecraft, Wetter, Discord, Valorant, LoL) bleiben dauerhaft sichtbar.",
+    "Validierung: build, lint, tests.",
+    "Version: v1.10.75.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.74",
   date: "2026-08-27",
   title: "Correction du Bouton 'Remonter en Haut' du Dock Flottant",

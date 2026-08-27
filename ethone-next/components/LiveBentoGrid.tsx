@@ -52,24 +52,6 @@ const LiveBentoGrid = memo(function LiveBentoGrid({
   const router = useRouter();
   const handleConnect = useCallback(() => { router.push("/settings?category=integrations"); }, [router]);
   const childHeight = scrollable ? "h-full" : "h-auto min-h-0";
-  const connected = (records?.filter((r) => r.status === "connected").length ?? 0);
-  const widgetState = state ?? (loading ? "loading" : connected === 0 ? "disconnected" : undefined);
-  if (widgetState) {
-    return (
-      <BentoCard
-        title={i18n("live")}
-        icon="radio"
-        state={widgetState}
-        stateMessage={widgetState === "disconnected" ? i18n("liveDisconnected", "Aucune source live connectée") : undefined}
-        onAction={widgetState === "disconnected" ? handleConnect : undefined}
-        actionLabel={widgetState === "disconnected" ? i18n("connect", "Connecter") : undefined}
-        className={cn("h-full", className)}
-        scrollable={scrollable}
-      >
-        <div />
-      </BentoCard>
-    );
-  }
 
   return (
     <div className={cn(

@@ -7206,6 +7206,50 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.37",
+  date: "2026-08-27",
+  title: "Fix erreur de synchronisation des paramètres",
+  items: [
+    "`saveSettingsAsync` utilise `.maybeSingle()` pour éviter les faux positifs quand `select` ne retourne aucune ligne.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.37.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.37",
+  date: "2026-08-27",
+  title: "Fix settings sync false-positive error",
+  items: [
+    "`saveSettingsAsync` uses `.maybeSingle()` to avoid false positives when `select` returns no rows.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.37.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.37",
+  date: "2026-08-27",
+  title: "Fix error falsa de sincronización de ajustes",
+  items: [
+    "`saveSettingsAsync` usa `.maybeSingle()` para evitar falsos positivos cuando `select` no devuelve filas.",
+    "Validación : build, lint.",
+    "Versión : v1.10.37.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.37",
+  date: "2026-08-27",
+  title: "Fehlerhafte Einstellungssync-Fehler behoben",
+  items: [
+    "`saveSettingsAsync` verwendet `.maybeSingle()`, um Falschmeldungen zu vermeiden, wenn `select` keine Zeilen zurückgibt.",
+    "Validierung: build, lint.",
+    "Version: v1.10.37.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.36",
   date: "2026-08-27",
   title: "Connexions : réaffichage de la liste",

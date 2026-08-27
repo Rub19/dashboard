@@ -561,7 +561,7 @@ export async function saveSettingsAsync(settings: Settings, profileId?: string):
       .from("user_settings")
       .upsert(payload, { onConflict: "user_id" })
       .select("updated_at")
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
     if (data?.updated_at) setWriteAt(new Date(data.updated_at).getTime(), profileId);

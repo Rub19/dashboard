@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.37 — 2026-08-27
+
+**ETHONE — Fix erreur de synchronisation des paramètres**
+
+- `saveSettingsAsync` utilise `.maybeSingle()` pour éviter les faux positifs quand `select` ne retourne aucune ligne.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.36 — 2026-08-27
 
 **ETHONE — Connexions : réaffichage de la liste**

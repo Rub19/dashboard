@@ -179,43 +179,47 @@ function TopBar() {
       </div>
 
       {/* Desktop Bar */}
-      <div className="relative pointer-events-none hidden h-14 w-full items-center justify-between md:flex">
+      <div className="relative pointer-events-auto hidden h-14 w-full items-center justify-between gap-3 md:flex">
         {/* Left: Sidebar toggle + Breadcrumb */}
-        <div className="pointer-events-auto flex min-w-0 items-center gap-3 z-10">
+        <div className="flex min-w-0 shrink-0 items-center gap-2.5">
           <SidebarTopToggle />
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-semibold text-[var(--text-muted)]">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-muted)] max-w-[140px] sm:max-w-[200px] lg:max-w-[280px]">
             <Link
               href="/"
-              className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+              className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors shrink-0"
             >
               {home}
             </Link>
-            <ChevronRight className="h-3.5 w-3.5 text-[var(--text-muted)]/50" />
+            <ChevronRight className="h-3 w-3 text-[var(--text-muted)]/50 shrink-0" />
             <span className="font-bold text-[var(--text-primary)] truncate">
               {page}
             </span>
           </nav>
         </div>
 
-        {/* Center: System status pills (Workspace, Sync, Weather, Clock) - Exactly aligned on 50% viewport center */}
-        <div className="pointer-events-auto absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center z-0">
+        {/* Center: System status pills - only visible on wide viewports (2xl+) to never collide */}
+        <div className="hidden 2xl:flex items-center justify-center shrink-0">
           <SystemStatusPills />
         </div>
 
         {/* Right: Quick Tools & Unified Controls */}
-        <div className="pointer-events-auto flex items-center justify-end gap-2 ml-auto z-10">
+        <div className="flex items-center justify-end gap-1.5 shrink-0 ml-auto">
           {/* Quick Tool Icons */}
-          <div className="hidden xl:flex items-center gap-1.5">
+          <div className="hidden 2xl:flex items-center gap-1.5">
             <FeedbackButton />
             <FocusToggle />
             <DynamicIslandToggle />
             <ThemeToggle />
           </div>
 
-          <SupportModal />
+          <div className="hidden xl:inline-flex">
+            <SupportModal />
+          </div>
           <CommandBarTrigger />
           <NotificationCenter />
-          <LanguageSwitcher />
+          <div className="hidden lg:inline-flex">
+            <LanguageSwitcher />
+          </div>
           <UserProfileDropdown dataTestId="user-profile-trigger-desktop" />
         </div>
       </div>

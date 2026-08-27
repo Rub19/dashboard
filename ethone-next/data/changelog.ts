@@ -7206,6 +7206,50 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.97",
+  date: "2026-08-27",
+  title: "Header Responsive : Résolution du Chevauchement des Boutons et Pilules Système",
+  items: [
+    "Suppression du chevauchement dans la barre supérieure (TopBar) lors de l'ouverture de la console DevTools ou sur écrans compacts.",
+    "Remplacement du centrage absolu collisionnel par un flex layout fluide avec masque adaptatif sur les pilules système.",
+    "Priorisation responsive des boutons d'action rapide, du support et de la recherche pour une barre supérieure toujours propre.",
+    "Version affichée : v1.10.97.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.97",
+  date: "2026-08-27",
+  title: "Responsive Header: Resolved Button & System Status Overlap",
+  items: [
+    "Eliminated TopBar overlap collision when DevTools or compact viewports are open.",
+    "Replaced rigid absolute center layout with fluid responsive flex rules.",
+    "Intelligently prioritized actions and status pills across viewport breakpoints.",
+    "Version badge: v1.10.97.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.97",
+  date: "2026-08-27",
+  title: "Encabezado Responsivo: Sin Superposición de Botones",
+  items: [
+    "Corrección de superposición de botones en la barra superior al abrir la consola o cambiar de resolución.",
+    "Versión: v1.10.97.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.97",
+  date: "2026-08-27",
+  title: "Responsiver Header: Keine Überlappung der Schaltflächen",
+  items: [
+    "Überlappungen in der oberen Leiste bei geöffneter Entwicklerkonsole behoben.",
+    "Version: v1.10.97.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.96",
   date: "2026-08-27",
   title: "Boussole Météo : Flèche Directionnelle & Points Cardinaux",

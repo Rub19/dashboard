@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.78",
+  date: "2026-08-27",
+  title: "Audit et Application Stricte des Options Esthétiques & Animations",
+  items: [
+    "Application directe et immédiate des bascules : Aura néon, Sons d'interface, Spotlight, Effets d'ambiance et Flou d'interface.",
+    "Suppression matérielle du flou (backdrop-filter: none) et des halos lumineux lors de la désactivation.",
+    "Positionnement et illumination précise du curseur Spotlight au survol.",
+    "Validation : build Next.js 105/105 pages, 100% tests unitaires, 0 erreur.",
+    "Version affichée : v1.10.78.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.78",
+  date: "2026-08-27",
+  title: "Full Audit & Strict Enforcement of Aesthetic and Motion Options",
+  items: [
+    "Instant dynamic application of Neon Aura, Interface Sounds, Spotlight, Ambient Effects, and Interface Blur switches.",
+    "Hardware-level suppression of backdrop-filter and neon glow when toggled off.",
+    "Refined spotlight cursor lighting layer.",
+    "Validation: Next.js 105/105 pages build, 100% unit tests passed, 0 errors.",
+    "Version badge: v1.10.78.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.78",
+  date: "2026-08-27",
+  title: "Auditoría de opciones estéticas y de animación",
+  items: [
+    "Aplicación instantánea de todos los interruptores visuales.",
+    "Validación : build, lint, tests.",
+    "Versión : v1.10.78.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.78",
+  date: "2026-08-27",
+  title: "Audit & Durchsetzung der Ästhetik- und Animationsoptionen",
+  items: [
+    "Sofortige Reaktion aller visuellen Einstellungen und Schalter.",
+    "Validierung: build, lint, tests.",
+    "Version: v1.10.78.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.77",
   date: "2026-08-27",
   title: "Correction de l'Ouverture des Notifications depuis le Dock Flottant",

@@ -122,8 +122,43 @@
   }
 }
 
-[data-reduced-motion="true"] {
+[data-reduced-motion="true"],
+[data-ui-animations="reduced"] {
   --theme-transition: 0.01ms;
+}
+
+[data-reduced-motion="true"] *,
+[data-ui-animations="reduced"] * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* Flou d'interface désactivé */
+[data-interface-blur="false"],
+[data-interface-blur="false"] * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  --panel-blur: 0px !important;
+}
+
+/* Aura néon / Glow désactivé */
+[data-ui-glow="false"] {
+  --glow-color: transparent !important;
+}
+
+[data-ui-glow="false"] .shadow-glow,
+[data-ui-glow="false"] [class*="shadow-[0_0_"],
+[data-ui-glow="false"] [class*="drop-shadow-[0_0_"] {
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* Effets d'ambiance désactivés */
+[data-ambient-effects="false"] .v8-cosmic-background {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 html {

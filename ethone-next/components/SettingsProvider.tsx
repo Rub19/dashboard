@@ -256,6 +256,9 @@ export default function SettingsProvider({
     const accent = settings.accentColor === "custom" ? settings.customAccent : (ACCENTS[settings.accentColor] || def.accentPrimary);
     applyAccent(root, accent);
 
+    const glowColor = settings.uiGlow ? `color-mix(in srgb, ${accent} 35%, transparent)` : "transparent";
+    root.style.setProperty("--glow-color", glowColor);
+
     const densityValues = DENSITY_PRESETS[settings.densityMode as keyof typeof DENSITY_PRESETS] || DENSITY_PRESETS.comfortable;
 
     root.style.setProperty("--font-size", `${settings.fontSize}%`);

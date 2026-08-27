@@ -5,7 +5,7 @@ import { useSettings } from "./SettingsProvider";
 
 export default function Spotlight() {
   const { settings } = useSettings();
-  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const [pos, setPos] = useState({ x: -1000, y: -1000 });
   const [active, setActive] = useState(false);
 
   useEffect(() => {
@@ -30,10 +30,10 @@ export default function Spotlight() {
   return (
     <div
       aria-hidden="true"
-      className="v8-spotlight pointer-events-none fixed inset-0 -z-10 transition-opacity duration-500"
+      className="v8-spotlight pointer-events-none fixed inset-0 z-10 transition-opacity duration-300"
       style={{
         opacity: active ? 1 : 0,
-        background: `radial-gradient(600px circle at ${pos.x}px ${pos.y}px, color-mix(in srgb, var(--accent) 18%, transparent), transparent 40%)`,
+        background: `radial-gradient(450px circle at ${pos.x}px ${pos.y}px, color-mix(in srgb, var(--accent-primary) 12%, transparent), transparent 70%)`,
       }}
     />
   );

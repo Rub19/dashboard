@@ -56,7 +56,7 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
             (ref as React.MutableRefObject<HTMLInputElement | null>).current = node;
           }
         }}
-        type="search"
+        type="text"
         icon="search"
         clearable
         shortcut={shortcut}

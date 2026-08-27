@@ -7206,6 +7206,50 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.82",
+  date: "2026-08-27",
+  title: "Corrections : Double Croix Météo, Cercle Spotlight & Sidebar Avatar",
+  items: [
+    "Suppression de la double croix dans la barre de recherche météo : le champ était en type='search' (croix native navigateur) + bouton clear custom — passage en type='text' pour n'avoir qu'une seule croix.",
+    "Le cercle vert suivant le curseur est le Spotlight intentionnel, désactivable dans Paramètres > Apparence > Effet Spotlight.",
+    "La photo de profil et le pseudo sont maintenant correctement affichés dans la barre latérale via le hook useUserIdentity.",
+    "Version affichée : v1.10.82.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.82",
+  date: "2026-08-27",
+  title: "Fixes: Weather Double-X, Spotlight Circle & Sidebar Avatar",
+  items: [
+    "Removed duplicate X button in weather search: field was type='search' (browser native clear) + custom clear button — switched to type='text'.",
+    "Green cursor circle is the intentional Spotlight feature, toggleable in Settings > Appearance.",
+    "Profile picture and username now properly displayed in the sidebar via useUserIdentity hook.",
+    "Version badge: v1.10.82.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.82",
+  date: "2026-08-27",
+  title: "Correcciones: doble X en Météo, círculo cursor y avatar sidebar",
+  items: [
+    "Eliminada la X doble en la búsqueda del tiempo.",
+    "Versión : v1.10.82.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.82",
+  date: "2026-08-27",
+  title: "Korrekturen: Doppeltes X in Wetter, Cursor-Kreis & Sidebar-Avatar",
+  items: [
+    "Doppeltes Lösch-X in der Wettersuche entfernt.",
+    "Version: v1.10.82.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.81",
   date: "2026-08-27",
   title: "Affichage de la Photo de Profil & Pseudo dans la Barre Latérale (Sidebar)",

@@ -7206,6 +7206,55 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.76",
+  date: "2026-08-27",
+  title: "Refonte Intégrale de Mission Control (HUD VisionOS, Scroll Fluide & Animations)",
+  items: [
+    "Résolution du scroll : zone de défilement libre max-h-[92vh] avec scrollbars stylisées.",
+    "Design HUD nouvelle génération façon macOS Sequoia / VisionOS avec verre liquide, lueurs dynamiques et cartes d'espaces interactives.",
+    "Animations d'ouverture spring fluides (F2 ou raccourci dock) et raccourcis ESC instantanés.",
+    "Lanceur d'applications rapide avec indicateurs de statut en direct pour les 21 dashboards.",
+    "Validation : build Next.js 105/105 pages, 100% tests unitaires, 0 erreur.",
+    "Version affichée : v1.10.76.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.76",
+  date: "2026-08-27",
+  title: "Complete Mission Control Redesign (VisionOS HUD, Smooth Scroll & Animations)",
+  items: [
+    "Scroll issue resolved with a dedicated max-h-[92vh] container and custom scrollbars.",
+    "Next-gen HUD design inspired by macOS Sequoia & VisionOS with liquid glass and ambient glow.",
+    "Smooth spring open/close animations, keyboard shortcuts (F2/ESC), and 21-app quick launcher.",
+    "Validation: Next.js 105/105 pages build, 100% unit tests passed, 0 errors.",
+    "Version badge: v1.10.76.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.76",
+  date: "2026-08-27",
+  title: "Rediseño completo de Mission Control",
+  items: [
+    "Desplazamiento fluido y diseño HUD moderno con animación.",
+    "Validación : build, lint, tests.",
+    "Versión : v1.10.76.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.76",
+  date: "2026-08-27",
+  title: "Komplettes Redesign von Mission Control",
+  items: [
+    "Flüssiges Scrollen und modernes HUD-Design mit Animationen.",
+    "Validierung: build, lint, tests.",
+    "Version: v1.10.76.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.75",
   date: "2026-08-27",
   title: "Rétablissement Permanent des Cartes 3D & Live dans l'Accueil",

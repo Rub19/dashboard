@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.35",
+  date: "2026-08-27",
+  title: "Dock masquable / bouton show dans StatusBar",
+  items: [
+    "Bouton `EyeOff` dans le Dock pour cacher le dock via `dockVisible: false`.",
+    "Bouton `Dock` dans la StatusBar pour le réafficher quand il est caché.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.35.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.35",
+  date: "2026-08-27",
+  title: "Toggle dock visibility from StatusBar",
+  items: [
+    "`EyeOff` button in Dock to hide it via `dockVisible: false`.",
+    "`Dock` button in StatusBar to show it back when hidden.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.35.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.35",
+  date: "2026-08-27",
+  title: "Dock ocultable / botón show en StatusBar",
+  items: [
+    "Botón `EyeOff` en el Dock para ocultarlo con `dockVisible: false`.",
+    "Botón `Dock` en la StatusBar para mostrarlo de nuevo.",
+    "Validación : build, lint.",
+    "Versión : v1.10.35.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.35",
+  date: "2026-08-27",
+  title: "Dock ein-/ausblendbar / Show-Button in StatusBar",
+  items: [
+    "`EyeOff` Button im Dock, um es über `dockVisible: false` auszublenden.",
+    "`Dock` Button in der StatusBar, um es wieder anzuzeigen.",
+    "Validierung: build, lint.",
+    "Version: v1.10.35.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.34",
   date: "2026-08-27",
   title: "Dock : scroll to top fonctionnel",

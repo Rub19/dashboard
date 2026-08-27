@@ -2,7 +2,7 @@
 
 import { memo, useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { LayoutGrid, Search, Clock, AppWindow, Bell, Sliders, ChevronUp, Mail } from "lucide-react";
+import { LayoutGrid, Search, Clock, AppWindow, Bell, Sliders, ChevronUp, Mail, EyeOff } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
 import { useWindowManager } from "@/components/WindowManagerProvider";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
@@ -40,7 +40,7 @@ const ICONS: Record<string, string> = {
 };
 
 function Dock() {
-  const { settings } = useSettings();
+  const { settings, update } = useSettings();
   const router = useRouter();
   const { missionControl, toggleMissionControl } = useWindowManager();
   const { setOpen: setCommandOpen } = useCommandPalette();
@@ -272,6 +272,16 @@ function Dock() {
           className={dockButton}
         >
           <ChevronUp className="w-5 h-5" />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => update({ dockVisible: false })}
+          aria-label={i18n("hideDock", "Cacher le dock")}
+          title={i18n("hideDock", "Cacher le dock")}
+          className={dockButton}
+        >
+          <EyeOff className="w-5 h-5" />
         </button>
 
       </nav>

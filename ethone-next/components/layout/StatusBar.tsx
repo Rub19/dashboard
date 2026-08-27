@@ -16,10 +16,11 @@ import {
   AlertCircle,
   Circle,
   Radio,
+  PanelBottom,
 } from "lucide-react";
 import { useLiveWidgetStore } from "@/lib/hooks/useLiveWidgetStore";
 import { useAuth } from "@/components/AuthProvider";
-import { useActiveProfile } from "@/components/SettingsProvider";
+import { useActiveProfile, useSettings } from "@/components/SettingsProvider";
 import { useProfile } from "@/lib/hooks/useProfile";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useSyncStore, type SyncState } from "@/lib/stores/sync";
@@ -206,6 +207,7 @@ export default function StatusBar() {
       .join(", ")
   );
   const { open, isMobile } = useAnimatedSidebar();
+  const { settings, update } = useSettings();
 
   const systemOk = online;
   const alertCount = online ? 0 : 1;
@@ -283,6 +285,19 @@ export default function StatusBar() {
               className="rounded-lg p-1 text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
             >
               <Radio className="h-3.5 w-3.5" />
+            </button>
+          )}
+
+          {!settings.dockVisible && (
+            <button
+              type="button"
+              onClick={() => update({ dockVisible: true })}
+              className="flex items-center gap-1.5 rounded-lg border border-[var(--panel-border)]/50 bg-[var(--panel-bg)]/50 px-2.5 py-1 text-xs font-medium text-[var(--text-muted)] transition-all hover:text-[var(--text-primary)]"
+              aria-label={i18n("showDock", "Afficher le dock")}
+              title={i18n("showDock", "Afficher le dock")}
+            >
+              <PanelBottom className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{i18n("dock", "Dock")}</span>
             </button>
           )}
 

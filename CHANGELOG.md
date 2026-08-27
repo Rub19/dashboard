@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.35 — 2026-08-27
+
+**ETHONE — Dock masquable / bouton show dans StatusBar**
+
+- Bouton `EyeOff` dans le Dock pour cacher le dock (`dockVisible: false`).
+- Bouton `Dock` dans la StatusBar pour le réafficher quand il est caché.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.34 — 2026-08-27
 
 **ETHONE — Dock : scroll to top fonctionnel**

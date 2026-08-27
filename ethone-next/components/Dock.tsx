@@ -140,14 +140,24 @@ function Dock() {
 
   function handleScrollTop() {
     if (typeof window === "undefined") return;
-    const main = document.getElementById("main-content");
-    if (!main) return;
-    const scroller = main.querySelector<HTMLElement>(".overflow-y-auto, .overflow-y-scroll, [data-v8-scroll]");
-    if (scroller) {
-      scroller.scrollTo({ top: 0, behavior: "smooth" });
-    } else {
+    hapticLightImpact();
+
+    try {
       window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+      document.documentElement?.scrollTo({ top: 0, behavior: "smooth" });
+      document.body?.scrollTo({ top: 0, behavior: "smooth" });
+    } catch {}
+
+    try {
+      const scrollables = document.querySelectorAll<HTMLElement>(
+        "#main-content, #main-content *, .overflow-y-auto, .overflow-y-scroll, .overflow-auto, [data-v8-scroll], .os-scroll, main, main *"
+      );
+      scrollables.forEach((el) => {
+        if (el && el.scrollTop > 0) {
+          el.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      });
+    } catch {}
   }
 
   function handleHideDock() {

@@ -7206,6 +7206,52 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.74",
+  date: "2026-08-27",
+  title: "Correction du Bouton 'Remonter en Haut' du Dock Flottant",
+  items: [
+    "Résolution du scroll vers le haut : détection et défilement fluide (smooth scroll) de tous les conteneurs scrollables actifs et du viewport.",
+    "Ajout d'un retour haptique léger lors du clic sur le bouton.",
+    "Validation : build Next.js 105/105 pages, 100% tests unitaires, 0 erreur.",
+    "Version affichée : v1.10.74.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.74",
+  date: "2026-08-27",
+  title: "Scroll to Top Dock Button Fix",
+  items: [
+    "Fixed scroll to top button by scanning and smoothly scrolling all active scrolling containers and the window.",
+    "Added light haptic feedback on click.",
+    "Validation: Next.js 105/105 pages build, 100% unit tests passed, 0 errors.",
+    "Version badge: v1.10.74.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.74",
+  date: "2026-08-27",
+  title: "Corrección del botón volver arriba del Dock",
+  items: [
+    "Desplazamiento suave hacia arriba en todos los contenedores.",
+    "Validación : build, lint, tests.",
+    "Versión : v1.10.74.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.74",
+  date: "2026-08-27",
+  title: "Dock 'Nach oben scrollen' Fix",
+  items: [
+    "Sanftes Scrollen nach oben für alle aktiven Container.",
+    "Validierung: build, lint, tests.",
+    "Version: v1.10.74.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.73",
   date: "2026-08-27",
   title: "Correction Réactivité Suppression & Lecture des Notifications (Store Réactif Global)",

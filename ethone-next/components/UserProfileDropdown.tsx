@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ClientImage from "@/components/ClientImage";
 import { useRouter } from "next/navigation";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Sparkles } from "lucide-react";
 import { Icon } from "@/lib/icons";
 import { useAuth } from "@/components/AuthProvider";
 import { useActiveProfile, useSettings } from "@/components/SettingsProvider";
@@ -116,7 +116,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = "v1.10.37";
+  const VERSION_LABEL = "v1.10.38";
 
   const menuItems = [
     {
@@ -149,6 +149,14 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
       kbd: "⌘K",
       icon: "terminal",
       action: () => setCommandOpen(true),
+    },
+    {
+      id: "changelog",
+      label: "Notes de version",
+      description: "Nouveautés et journal des modifications",
+      badge: VERSION_LABEL,
+      icon: "sparkles",
+      action: () => setIsChangelogOpen(true),
     },
   ];
 
@@ -218,11 +226,11 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
           </button>
         </PopoverTrigger>
 
-        {/* User Popover Panel */}
-        <PopoverContent className="w-[340px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 p-3.5 shadow-2xl backdrop-blur-2xl">
+        {/* User Popover Panel (100% FULL OPAQUE SOLID DARK) */}
+        <PopoverContent className="w-[340px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[#0a0b0e] p-3.5 shadow-2xl z-[var(--z-dropdown)]">
           <div className="flex w-full flex-col gap-3 select-none">
             {/* User Header Profile */}
-            <div className="flex items-center gap-3 rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-2.5">
+            <div className="flex items-center gap-3 rounded-xl border border-[var(--panel-border)]/70 bg-[#121319] p-2.5 shadow-xs">
               <div className="relative flex h-11 w-11 shrink-0 items-center justify-center">
                 <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-xl bg-[var(--accent-primary)]/20 text-[var(--accent-primary)] font-bold text-sm">
                   {avatarUrl ? (
@@ -264,7 +272,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
             </div>
 
             {/* Status Selector Bar */}
-            <div className="grid grid-cols-5 gap-1 rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-1">
+            <div className="grid grid-cols-5 gap-1 rounded-xl border border-[var(--panel-border)]/70 bg-[#121319] p-1 shadow-xs">
               {STATUS_KEYS.map((st) => {
                 const cfg = USER_STATUS_CONFIG[st];
                 const isSelected = currentStatus === st;
@@ -288,7 +296,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
             </div>
 
             {/* Storage Estimation Bar */}
-            <div className="flex flex-col gap-1 rounded-xl border border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 p-2.5">
+            <div className="flex flex-col gap-1 rounded-xl border border-[var(--panel-border)]/70 bg-[#121319] p-2.5 shadow-xs">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-semibold text-[11px] text-[var(--text-primary)]">
                   Stockage Cloud
@@ -297,7 +305,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                   {storage.used.toFixed(1)} Go / {storage.total} Go
                 </span>
               </div>
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-black/40">
                 <div
                   className="h-full rounded-full bg-[var(--accent-primary)] transition-all duration-300"
                   style={{ width: `${storagePercent}%` }}
@@ -315,13 +323,13 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                     setOpen(false);
                     item.action();
                   }}
-                  className="group relative flex w-full items-center justify-between rounded-xl border border-transparent p-2.5 text-xs text-[var(--text-muted)] transition-all duration-150 hover:border-[var(--accent-primary)]/40 hover:bg-gradient-to-r hover:from-[var(--accent-primary)]/10 hover:via-[var(--surface-raised)] hover:to-transparent hover:text-[var(--text-primary)] hover:shadow-xs cursor-pointer overflow-hidden"
+                  className="group relative flex w-full items-center justify-between rounded-xl border border-transparent p-2.5 text-xs text-[var(--text-muted)] transition-all duration-150 hover:border-[var(--accent-primary)]/40 hover:bg-gradient-to-r hover:from-[var(--accent-primary)]/10 hover:via-[#161720] hover:to-transparent hover:text-[var(--text-primary)] hover:shadow-xs cursor-pointer overflow-hidden"
                 >
                   {/* Left glowing hover pill */}
                   <div className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-[var(--accent-primary)] opacity-0 shadow-[0_0_8px_var(--glow-color)] transition-all duration-150 group-hover:opacity-100" />
 
                   <div className="flex items-center gap-2.5 min-w-0 pl-1">
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-raised)] text-[var(--accent-primary)] transition-transform duration-150 group-hover:scale-110 group-hover:bg-[var(--accent-primary)]/20 shadow-xs">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#14151e] text-[var(--accent-primary)] transition-transform duration-150 group-hover:scale-110 group-hover:bg-[var(--accent-primary)]/20 shadow-xs">
                       <Icon name={item.icon} className="h-4 w-4" />
                     </div>
                     <div className="flex flex-col text-left min-w-0">
@@ -335,8 +343,13 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                   </div>
 
                   <div className="flex items-center gap-1.5 shrink-0">
+                    {item.badge && (
+                      <span className="rounded-md border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 px-1.5 py-0.5 font-mono text-[9px] font-bold text-[var(--accent-primary)]">
+                        {item.badge}
+                      </span>
+                    )}
                     {item.kbd && (
-                      <kbd className="rounded-lg border border-[var(--panel-border)]/60 bg-[var(--surface-raised)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)] transition-colors group-hover:border-[var(--accent-primary)]/40 group-hover:text-[var(--accent-primary)]">
+                      <kbd className="rounded-lg border border-[var(--panel-border)]/60 bg-[#14151e] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)] transition-colors group-hover:border-[var(--accent-primary)]/40 group-hover:text-[var(--accent-primary)]">
                         {item.kbd}
                       </kbd>
                     )}

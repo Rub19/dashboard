@@ -7206,6 +7206,74 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.38",
+  date: "2026-08-27",
+  title: "Rework Header, Mail, Connexions Riot Tracker, Notifications & Animations Dock",
+  items: [
+    "Rework complet des contrôles TopRight / Header (Soutenir, Commandes, Notifications, Langue, Profil).",
+    "Rework des paramètres de messagerie Mail (MailProfileButton, MailAliasSetup) en design Obsidian 2026.",
+    "Connexions : gestion des identifiants et clés API Riot Games (Valorant / LoL) et ouverture du Tracker de jeu.",
+    "Animations ultra-fluides du Dock (spring physics) et du bouton [Dock] dans la barre d'état inférieure.",
+    "Centre de notifications : suppression des troncatures de texte (Contrôl...), mise en valeur des alertes critiques, boutons marquer comme lu et archiver fiables.",
+    "Brain : ajout des icônes manquantes (note de réunion, logo officiel Discord) et enrichissement du tiroir de contexte.",
+    "Profil utilisateur : fond 100% opaque anti-transparence et accès direct aux notes de version / Changelog.",
+    "Validation : build Next.js 105/105 pages, TypeScript sans erreur.",
+    "Version affichée : v1.10.38.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.38",
+  date: "2026-08-27",
+  title: "Header rework, Mail settings, Riot Tracker connections, Notifications & Dock animations",
+  items: [
+    "Complete redesign of TopRight controls and Header (Support, Commands, Notifications, Language, Profile).",
+    "Redesign of Mail settings and profile modal (MailProfileButton, MailAliasSetup) in Obsidian 2026 aesthetic.",
+    "Connections: Riot Games (Valorant/LoL) API credentials management and interactive game Tracker modal.",
+    "Ultra-smooth spring animations for Dock entrance/exit and [Dock] button in the bottom status bar.",
+    "Notification Center: fixed text truncations, highlighted critical security alerts, reliable mark-as-read/archive actions.",
+    "Brain: fixed missing icons (meeting note prompt, official Discord brand logo) and enhanced context drawer.",
+    "User Profile: 100% solid opaque background preventing text bleed, added Changelog direct action.",
+    "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
+    "Version badge: v1.10.38.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.38",
+  date: "2026-08-27",
+  title: "Rediseño de Header, Ajustes de Mail, Conexiones Riot Tracker, Notificaciones y Animaciones Dock",
+  items: [
+    "Rediseño completo de los controles del Header (Soporte, Comandos, Notificaciones, Idioma, Perfil).",
+    "Rediseño de los ajustes de Mail (MailProfileButton, MailAliasSetup) en estilo Obsidian 2026.",
+    "Conexiones : gestión de credenciales Riot Games (Valorant / LoL) y modal interactivo de Tracker de juego.",
+    "Animaciones fluidas con físicas de resorte para el Dock y el botón [Dock] de la barra de estado.",
+    "Centro de notificaciones : corrección de textos cortados, alertas críticas destacadas y botones de acción funcionales.",
+    "Brain : iconos corregidos (nota de reunión, logo oficial Discord) y panel de contexto optimizado.",
+    "Perfil de usuario : fondo 100% opaco y acceso directo a las notas de versión / Changelog.",
+    "Validación : build, lint.",
+    "Versión : v1.10.38.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.38",
+  date: "2026-08-27",
+  title: "Header Rework, Mail-Einstellungen, Riot Tracker-Verbindungen, Benachrichtigungen & Dock-Animationen",
+  items: [
+    "Komplettes Redesign der oberen rechten Steuerelemente und des Headers.",
+    "Redesign der Mail-Einstellungen (MailProfileButton, MailAliasSetup) im Obsidian 2026-Look.",
+    "Verbindungen: Riot Games (Valorant/LoL) API-Schlüsselverwaltung und interaktives Spiel-Tracker-Modal.",
+    "Ultra-flüssige Spring-Animationen für das Dock und den [Dock]-Button in der unteren Statusleiste.",
+    "Benachrichtigungszentrum: Textkürzungen behoben, kritische Warnungen hervorgehoben, zuverlässige Aktionen.",
+    "Brain: Fehlende Symbole behoben (Meeting-Notiz, offizielles Discord-Logo) und Kontext-Drawer erweitert.",
+    "Benutzerprofil: 100% deckender Hintergrund und direkter Zugriff auf das Changelog.",
+    "Validierung: build, lint.",
+    "Version: v1.10.38.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.37",
   date: "2026-08-27",
   title: "Fix erreur de synchronisation des paramètres",

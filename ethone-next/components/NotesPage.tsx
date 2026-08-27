@@ -252,10 +252,23 @@ export default function NotesPage() {
           ))}
 
           {!loading && filtered.length === 0 && (
-            <div className="flex min-h-[160px] flex-col items-center justify-center gap-2 rounded-2xl v8-panel p-4 text-center text-[var(--text-muted)]">
-              <Icon name="notebook-pen" className="h-8 w-8" />
-              <p className="text-sm font-medium text-[var(--text-primary)]">{i18n("noNotes", "Aucune note")}</p>
-              <p className="text-xs text-[var(--text-muted)]">{i18n("notesEmptyHint", "Commencez une nouvelle note pour garder une trace de vos idées.")}</p>
+            <div className="flex min-h-[180px] flex-col items-center justify-center gap-2.5 rounded-2xl v8-panel p-6 text-center text-[var(--text-muted)]">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--accent-primary)] shadow-sm">
+                <Icon name="notebook-pen" className="h-6 w-6" />
+              </div>
+              <p className="text-sm font-bold text-[var(--text-primary)]">{i18n("noNotes", "Aucune note")}</p>
+              <p className="max-w-xs text-xs text-[var(--text-muted)]">{i18n("notesEmptyHint", "Commencez une nouvelle note pour garder une trace de vos idées.")}</p>
+              <button
+                type="button"
+                onClick={() => {
+                  const input = document.querySelector('input[placeholder*="Titre"]') as HTMLInputElement | null;
+                  input?.focus();
+                }}
+                className="mt-2 inline-flex items-center gap-1.5 rounded-xl border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 px-3.5 py-1.5 text-xs font-bold text-[var(--accent-primary)] shadow-sm transition-all hover:bg-[var(--accent-primary)]/25 active:scale-95 cursor-pointer"
+              >
+                <Icon name="plus" className="h-3.5 w-3.5" />
+                <span>{i18n("newNote", "Rédiger une note")}</span>
+              </button>
             </div>
           )}
         </div>

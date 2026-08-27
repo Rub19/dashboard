@@ -248,20 +248,21 @@ export function useCommandItems(setOpen: (v: boolean) => void): CommandItem[] {
     return [
       // Navigation
       navigateCmd("home.open", "Accueil", "/", "home", "H"),
+      navigateCmd("brain.open", "Brain (Assistant IA)", "/brain/", "brain", "B"),
+      navigateCmd("focus.open", "Focus Mode", "/focus/", "focus", "F"),
+      navigateCmd("notes.open", "Notes", "/notes/", "notebook-pen", "N"),
+      navigateCmd("tasks.open", "Tâches", "/tasks/", "circle-check", "T"),
+      navigateCmd("mail.open", "Mail", "/mail/", "mail", "M"),
+      navigateCmd("settings.open", "Réglages", "/settings/", "settings", "S"),
+      navigateCmd("calendar.open", "Agenda", "/calendar/", "calendar-days"),
+      navigateCmd("files.open", "Fichiers", "/files/", "folder"),
       navigateCmd("activity.open", "Activity Hub", "/activity/", "activity"),
       navigateCmd("connections.open", "Connexions", "/connections/", "plug"),
       navigateCmd("spaces.open", "Spaces", "/spaces/", "layout-grid"),
       navigateCmd("flows.open", "Flows", "/flows/", "workflow"),
       { id: "mission.open", label: "Mission Control", category: "Système", icon: <IconPlaceholder name="layout-dashboard" />, action: () => { toggleMissionControl(); setOpen(false); } },
-      navigateCmd("notes.open", "Notes", "/notes/", "notebook-pen"),
-      navigateCmd("tasks.open", "Tâches", "/tasks/", "circle-check"),
-      navigateCmd("calendar.open", "Agenda", "/calendar/", "calendar-days"),
-      navigateCmd("files.open", "Fichiers", "/files/", "folder"),
       navigateCmd("interactions.open", "Interactions", "/interactions/", "flame"),
-      navigateCmd("brain.open", "Brain", "/brain/", "brain"),
       navigateCmd("team.open", "Équipe", "/team/", "users"),
-      navigateCmd("mail.open", "Mail", "/mail/", "mail", "M"),
-      navigateCmd("settings.open", "Réglages", "/settings/", "settings", "S"),
       navigateCmd("changelog.open", "Notes de version", "/changelog/", "badge-check"),
       navigateCmd("profiles.open", "Changer de profil", "/profile-selection/", "layout-grid"),
       navigateCmd("security.open", "Sécurité", "/security/", "shield-check"),
@@ -282,11 +283,10 @@ export function useCommandItems(setOpen: (v: boolean) => void): CommandItem[] {
       { id: "tasks.new", label: "Nouvelle tâche", category: "Créer", icon: <IconPlaceholder name="list-plus" />, action: () => navigate("/tasks/") },
       { id: "calendar.new", label: "Nouvel événement", category: "Créer", icon: <IconPlaceholder name="calendar-plus" />, action: () => navigate("/calendar/") },
       { id: "files.new-link", label: "Ajouter un lien", category: "Créer", icon: <IconPlaceholder name="link-2" />, action: () => navigate("/files/?add=link") },
-      { id: "brain.note", label: "Capturer une note", category: "Créer", icon: <IconPlaceholder name="file-plus-2" />, action: () => navigate("/notes/") },
+      { id: "brain.ask", label: "Poser une question à Brain", category: "Créer", icon: <IconPlaceholder name="sparkles" />, action: () => navigate("/brain/") },
       { id: "mail.compose", label: "Nouveau mail", category: "Créer", icon: <IconPlaceholder name="mail-plus" />, action: () => navigate("/mail/") },
       { id: "files.upload", label: "Uploader un fichier", category: "Créer", icon: <IconPlaceholder name="upload" />, action: () => navigate("/files/") },
       { id: "new-interaction", label: "Nouvelle interaction", category: "Créer", icon: <IconPlaceholder name="interactions" />, action: () => navigate("/interactions/") },
-      { id: "new-task", label: "Nouvelle tâche (raccourci)", category: "Créer", icon: <IconPlaceholder name="plus" />, shortcut: "T", action: () => navigate("/tasks/") },
       { id: "billing.new", label: "Nouvelle facture", category: "Créer", icon: <IconPlaceholder name="receipt" />, action: () => navigate("/bills/") },
       { id: "drop.create", label: "Créer un drop", category: "Créer", icon: <IconPlaceholder name="share-2" />, action: () => navigate("/drop/") },
 
@@ -297,9 +297,9 @@ export function useCommandItems(setOpen: (v: boolean) => void): CommandItem[] {
       { id: "open-bills", label: "Factures (fenêtre)", category: "Fenêtres", icon: <IconPlaceholder name="app-window" />, action: () => open("/bills/", "Factures") },
 
       // Spaces
-      { id: "space.personal", label: "Space Personnel", category: "Spaces", icon: <IconPlaceholder name="user-round" />, action: () => activateSpace("personal") },
-      { id: "space.focus", label: "Space Focus", category: "Spaces", icon: <IconPlaceholder name="focus" />, action: () => activateSpace("focus") },
-      { id: "space.studio", label: "Space Studio", category: "Spaces", icon: <IconPlaceholder name="sparkles" />, action: () => activateSpace("studio") },
+      { id: "space.personal", label: "Espace Personnel", category: "Spaces", icon: <IconPlaceholder name="user-round" />, action: () => activateSpace("personal") },
+      { id: "space.focus", label: "Espace Focus", category: "Spaces", icon: <IconPlaceholder name="focus" />, action: () => activateSpace("focus") },
+      { id: "space.studio", label: "Espace Studio", category: "Spaces", icon: <IconPlaceholder name="sparkles" />, action: () => activateSpace("studio") },
 
       // Presets
       { id: "preset.productivity", label: "Preset Productivité", category: "Presets", icon: <IconPlaceholder name="circle-check" />, action: () => applyPreset("productivity") },
@@ -318,8 +318,8 @@ export function useCommandItems(setOpen: (v: boolean) => void): CommandItem[] {
       { id: "density.compact", label: "Densité compacte", category: "Réglages", icon: <IconPlaceholder name="rows-3" />, action: () => setDensity("compact") },
       { id: "density.ultra", label: "Densité ultra-compacte", category: "Réglages", icon: <IconPlaceholder name="list-collapse" />, action: () => setDensity("ultra") },
       { id: "density.custom", label: "Densité personnalisée", category: "Réglages", icon: <IconPlaceholder name="sliders-horizontal" />, action: () => setDensity("custom") },
-      { id: "theme.toggle", label: settings.darkMode ? "Passer en clair" : "Passer en sombre", category: "Réglages", icon: <IconPlaceholder name={settings.darkMode ? "sun" : "moon"} />, action: () => update({ darkMode: !settings.darkMode }) },
-      { id: "appearance.cycle", label: "Changer l'accent", category: "Réglages", icon: <IconPlaceholder name="palette" />, action: cycleAccent },
+      { id: "theme.toggle", label: settings.darkMode ? "Passer en mode clair" : "Passer en mode sombre", category: "Réglages", icon: <IconPlaceholder name={settings.darkMode ? "sun" : "moon"} />, action: () => update({ darkMode: !settings.darkMode }) },
+      { id: "appearance.cycle", label: "Changer l'accent de couleur", category: "Réglages", icon: <IconPlaceholder name="palette" />, action: cycleAccent },
       { id: "locale.cycle", label: "Changer de langue", category: "Réglages", icon: <IconPlaceholder name="languages" />, action: cycleLanguage },
       { id: "dock.scale", label: "Taille du Dock", category: "Réglages", icon: <IconPlaceholder name="dock" />, action: cycleDockScale },
       { id: "sidebar.toggle", label: "Basculer la barre latérale", category: "Réglages", icon: <IconPlaceholder name="panel-left" />, action: () => update({ sidebarVisible: !settings.sidebarVisible }) },
@@ -357,6 +357,7 @@ export function useCommandItems(setOpen: (v: boolean) => void): CommandItem[] {
       { id: "sync.refresh", label: "Synchroniser maintenant", category: "Système", icon: <IconPlaceholder name="cloud-cog" />, action: () => window.location.reload() },
       { id: "notifications.open", label: "Centre de notifications", category: "Système", icon: <IconPlaceholder name="bell" />, action: openNotificationCenter },
       { id: "activity.sync", label: "Sync activité", category: "Système", icon: <IconPlaceholder name="refresh-cw" />, action: syncActivity },
+      { id: "cache.clear", label: "Vider le cache et rafraîchir", category: "Système", icon: <IconPlaceholder name="trash" />, action: () => { try { localStorage.removeItem("ethone-dashboard-cache"); } catch {} window.location.reload(); } },
       { id: "network.refresh", label: "Rafraîchir le réseau", category: "Système", icon: <IconPlaceholder name="wifi" />, action: refreshNetwork },
 
       // Compte

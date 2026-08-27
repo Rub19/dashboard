@@ -5,6 +5,9 @@ import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { createPortal } from "react-dom";
 
+import { useRouter } from "next/navigation";
+import { useItems } from "@/lib/hooks/useItems";
+import { useTasks } from "@/lib/hooks/useTasks";
 import SearchInput from "@/components/ui/SearchInput";
 import { useCommandPalette } from "@/components/CommandPaletteProvider";
 import { useSettings, useActiveProfile } from "@/components/SettingsProvider";
@@ -16,9 +19,10 @@ import { EASE_OUT } from "@/lib/ease";
 import { useTouchCapable } from "@/lib/hooks/use-touch-capable";
 import { cn } from "@/lib/utils";
 
-const SECTION_ORDER = ["Navigation", "Actions Rapides", "Intégrations", "Thèmes & Apparence"];
+const SECTION_ORDER = ["Notes & Tâches", "Navigation", "Actions Rapides", "Intégrations", "Thèmes & Apparence"];
 
 const SECTION_MAP: Record<string, string> = {
+  "Notes & Tâches": "Notes & Tâches",
   Navigation: "Navigation",
   Créer: "Actions Rapides",
   Fenêtres: "Actions Rapides",
@@ -202,9 +206,49 @@ export default function CommandPalette() {
     [pathname, routeCategory, space, pinned, recent, frequency]
   );
 
+  const router = useRouter();
+  const { items: noteItems } = useItems("notes");
+  const { items: taskItems } = useTasks();
+
+  const userContentCommands = useMemo<CommandItem[]>(() => {
+    if (!query.trim()) return [];
+    const q = query.toLowerCase().trim();
+
+    const matchedNotes: CommandItem[] = noteItems
+      .filter((n) => (n.title && n.title.toLowerCase().includes(q)) || (n.body && n.body.toLowerCase().includes(q)))
+      .slice(0, 4)
+      .map((n) => ({
+        id: `note-item-${n.id}`,
+        label: `Note : ${n.title || "Sans titre"}`,
+        category: "Notes & Tâches",
+        icon: <Icon name="notebook-pen" className="h-4 w-4 text-emerald-400" />,
+        action: () => {
+          router.push(`/notes/?id=${n.id}`);
+          setOpen(false);
+        },
+      }));
+
+    const matchedTasks: CommandItem[] = taskItems
+      .filter((t) => (t.title && t.title.toLowerCase().includes(q)) || (t.description && t.description.toLowerCase().includes(q)))
+      .slice(0, 4)
+      .map((t) => ({
+        id: `task-item-${t.id}`,
+        label: `Tâche : ${t.title}`,
+        category: "Notes & Tâches",
+        icon: <Icon name={t.is_completed ? "check-circle" : "circle"} className="h-4 w-4 text-sky-400" />,
+        action: () => {
+          router.push(`/tasks/`);
+          setOpen(false);
+        },
+      }));
+
+    return [...matchedNotes, ...matchedTasks];
+  }, [noteItems, taskItems, query, router, setOpen]);
+
   const filtered = useMemo<CommandItem[]>(() => {
-    return searchCommands(COMMANDS as unknown as SearchableCommandItem[], query.trim(), context) as CommandItem[];
-  }, [COMMANDS, query, context]);
+    const base = searchCommands(COMMANDS as unknown as SearchableCommandItem[], query.trim(), context) as CommandItem[];
+    return [...userContentCommands, ...base];
+  }, [COMMANDS, query, context, userContentCommands]);
 
   useEffect(() => {
     if (!open || !filtered.length) return;

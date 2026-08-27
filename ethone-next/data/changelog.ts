@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.11.00",
+  date: "2026-08-27",
+  title: "ETHONE OS Milestone 1.11 : Command Palette Unifiée, Recherche Live & Cohérence Globale",
+  items: [
+    "Recherche Live unifiée dans la Command Palette (⌘K) : indexation en direct de vos Notes et Tâches avec ouverture instantanée.",
+    "Raccourcis clavier majeurs ajoutés dans la palette : ⌘B (Brain), ⌘F (Focus), ⌘N (Notes), ⌘T (Tâches), ⌘M (Mail), ⌘S (Settings), ⌘H (Home).",
+    "Actions rapides système : vidage de cache, bascule thème, déclenchement instantané de sessions Pomodoro & Deep Work.",
+    "Amélioration des Empty States avec boutons d'action concrets (CTA) et cohérence d'OS intégrée.",
+    "Version majeure : v1.11.00.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.11.00",
+  date: "2026-08-27",
+  title: "ETHONE OS Milestone 1.11: Unified Command Palette, Live Search & Cross-OS Cohesion",
+  items: [
+    "Unified live search in Command Palette (⌘K) indexing Notes & Tasks in real time with instant opening.",
+    "Added major keyboard shortcuts in palette: ⌘B (Brain), ⌘F (Focus), ⌘N (Notes), ⌘T (Tasks), ⌘M (Mail), ⌘S (Settings), ⌘H (Home).",
+    "Instant system actions: cache flush, theme toggle, quick Pomodoro & Deep Work triggers.",
+    "Polished actionable empty states across apps.",
+    "Major Milestone: v1.11.00.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.11.00",
+  date: "2026-08-27",
+  title: "ETHONE OS Milestone 1.11: Búsqueda Unificada y Paleta de Comandos Pro",
+  items: [
+    "Búsqueda en vivo de Notas y Tareas en la paleta de comandos (⌘K).",
+    "Nuevos atajos de teclado y acciones rápidas de productividad.",
+    "Versión: v1.11.00.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.11.00",
+  date: "2026-08-27",
+  title: "ETHONE OS Milestone 1.11: Einheitliche Befehlspalette & Live-Suche",
+  items: [
+    "Echtzeit-Suche für Notizen und Aufgaben in der Befehlspalette (⌘K).",
+    "Erweiterte Tastenkombinationen und Produktivitätsaktionen.",
+    "Version: v1.11.00.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.99",
   date: "2026-08-27",
   title: "Authentification : Transitions 120 FPS Ultra-Fluides sans Saccade",

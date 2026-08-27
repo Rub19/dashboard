@@ -714,84 +714,104 @@ export default function DynamicIslandContainer() {
             tabIndex={0}
             role="button"
           >
-            <DynamicIslandView id="spotify" data-testid="dynamic-island-spotify" className="w-[min(92vw,320px)] sm:w-[380px]">
-              <div onClick={stopPropagation} className="flex w-full flex-col gap-4 p-1">
+            <DynamicIslandView id="spotify" data-testid="dynamic-island-spotify" className="w-[min(94vw,340px)] sm:w-[400px]">
+              <div onClick={stopPropagation} className="flex w-full flex-col gap-3.5 p-1.5">
                 <IslandExpandedHeader
                   activeViews={activeViews}
                   selected={selectedView ?? "spotify"}
                   onSelect={selectView}
                 />
+
+                {/* Sub-Header: Source Badge & Live Time */}
                 <div className="flex items-center justify-between gap-2">
-                  <span className="rounded-lg border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/10 px-2 py-1 text-[10px] font-medium text-[var(--accent-primary)]">
-                    {nowPlaying?.source || "Spotify"}
-                  </span>
-                  <span className="flex items-center gap-1 rounded-lg border border-[var(--text-primary)]/10 bg-[var(--text-primary)]/[0.04] px-2 py-1 font-mono text-[10px] tabular-nums text-[var(--text-muted)]">
-                    <Icon name="clock" pack="phosphor" className="h-3 w-3" />
+                  <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold text-emerald-400 shadow-xs">
+                    <span className={cn("h-1.5 w-1.5 rounded-full bg-emerald-400", nowPlaying?.isPlaying && "animate-pulse")} />
+                    <span>{nowPlaying?.source || "Spotify"}</span>
+                    <span className="text-emerald-500/50">•</span>
+                    <span className="font-normal opacity-90">{nowPlaying?.isPlaying ? "Lecture en cours" : "En pause"}</span>
+                  </div>
+
+                  <span className="flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 font-mono text-[10px] tabular-nums text-zinc-400">
+                    <Icon name="clock" pack="phosphor" className="h-3 w-3 text-zinc-400" />
                     {clock}
                   </span>
                 </div>
 
+                {/* Main Track Details Card */}
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={nowPlaying?.id || nowPlaying?.title || "spotify"}
-                    initial={{ opacity: 0, x: 14 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -14 }}
-                    transition={{ duration: 0.25, ease: EASE_OUT }}
-                    className="flex items-center gap-4"
+                    initial={{ opacity: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.96 }}
+                    transition={{ duration: 0.2, ease: EASE_OUT }}
+                    className="relative flex items-center gap-3.5 rounded-2xl border border-white/5 bg-white/[0.03] p-2.5 backdrop-blur-md"
                   >
-                    <SafeImage
-                      candidates={[nowPlaying?.cover, nowPlaying?.artworkUrl, ...(nowPlaying?.covers || [])]}
-                      alt={nowPlaying?.title || "Spotify"}
-                      size={72}
-                      className="h-[72px] w-[72px] shrink-0 rounded-2xl object-cover shadow-lg ring-1 ring-[var(--text-primary)]/10"
-                      iconClassName="h-6 w-6 text-[var(--accent-primary)]"
-                      loading="eager"
-                      priority
-                      timeoutMs={8000}
-                      crossOrigin="anonymous"
-                    />
-                    <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
-                      <p className="line-clamp-2 text-sm font-semibold leading-snug text-[var(--text-primary)]">
-                        {nowPlaying?.title || "Spotify"}
+                    <div className="relative shrink-0">
+                      <SafeImage
+                        candidates={[nowPlaying?.cover, nowPlaying?.artworkUrl, ...(nowPlaying?.covers || [])]}
+                        alt={nowPlaying?.title || "Spotify"}
+                        size={68}
+                        className="h-[68px] w-[68px] rounded-xl object-cover shadow-lg ring-1 ring-white/15"
+                        iconClassName="h-6 w-6 text-emerald-400"
+                        loading="eager"
+                        priority
+                        timeoutMs={8000}
+                        crossOrigin="anonymous"
+                      />
+                      {nowPlaying?.isPlaying && (
+                        <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-black/80 border border-emerald-500/40 shadow-xs">
+                          <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5">
+                      <p className="line-clamp-1 text-sm font-bold tracking-tight text-white" title={nowPlaying?.title}>
+                        {nowPlaying?.title || "Aucun titre"}
                       </p>
-                      <p className="truncate text-xs text-[var(--text-muted)]">
+                      <p className="truncate text-xs font-medium text-zinc-300" title={nowPlaying?.artist}>
                         {nowPlaying?.artist || i18n("spotifyPlaying")}
                       </p>
-                      <p className="truncate text-[10px] text-[var(--accent-primary)]/80">
-                        {nowPlaying?.album || i18n("spotify", "Spotify")}
+                      <p className="truncate text-[10px] font-semibold text-emerald-400/90" title={nowPlaying?.album}>
+                        {nowPlaying?.album || "Spotify"}
                       </p>
                     </div>
+
                     <button
                       type="button"
                       onClick={toggleLike}
                       disabled={likeLoading || !nowPlaying?.id}
                       className={cn(
-                        "flex h-8 w-8 items-center justify-center rounded-full transition-transform duration-150 active:scale-90",
+                        "flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-all duration-150 active:scale-90 cursor-pointer",
                         isSaved
-                          ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/25 hover:scale-110"
-                          : "text-[var(--text-muted)] hover:bg-[var(--text-primary)]/10 hover:text-[var(--accent-primary)] hover:scale-110",
+                          ? "bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 hover:scale-110"
+                          : "text-zinc-400 hover:bg-white/10 hover:text-white hover:scale-110",
                       )}
                       aria-label={isSaved ? i18n("unlike") : i18n("like")}
                       title={isSaved ? i18n("unlike") : i18n("like")}
                     >
-                      <Icon name="heart" pack="phosphor" className={cn("h-4 w-4 transition-transform", isSaved && "fill-current")} />
+                      <Icon name="heart" pack="phosphor" className={cn("h-4 w-4 transition-transform", isSaved && "fill-current text-rose-500")} />
                     </button>
                   </motion.div>
                 </AnimatePresence>
 
-                <AudioVisualizer
-                  seed={nowPlaying?.id || nowPlaying?.title || ""}
-                  isPlaying={!!nowPlaying?.isPlaying}
-                  bars={20}
-                  barWidth={2}
-                  gap={1.5}
-                  className="h-3.5 opacity-80"
-                  color="var(--accent-primary)"
-                />
+                {/* Animated Audio Equalizer */}
+                <div className="py-0.5">
+                  <AudioVisualizer
+                    seed={nowPlaying?.id || nowPlaying?.title || ""}
+                    isPlaying={!!nowPlaying?.isPlaying}
+                    bars={24}
+                    barWidth={2}
+                    gap={2}
+                    className="h-3.5 opacity-90"
+                    color="#10b981"
+                  />
+                </div>
 
+                {/* Progress Slider with Timestamps */}
                 {nowPlaying?.durationMs !== undefined && (
-                  <div className="space-y-2" onPointerDown={stopPropagation}>
+                  <div className="space-y-1" onPointerDown={stopPropagation}>
                     <LiveMediaProgress
                       progressMs={nowPlaying.progressMs ?? 0}
                       durationMs={nowPlaying.durationMs}
@@ -802,35 +822,46 @@ export default function DynamicIslandContainer() {
                   </div>
                 )}
 
-                <div className="flex items-center justify-center" onPointerDown={stopPropagation}>
+                {/* Volume Slider */}
+                <div className="flex items-center justify-center pt-0.5" onPointerDown={stopPropagation}>
                   <VolumeSlider value={localVolume} onChange={onSpotifyVolume} data-testid="dynamic-island-volume" />
                 </div>
 
-                <div className="flex items-center justify-center gap-6">
+                {/* Media Playback Controls */}
+                <div className="flex items-center justify-center gap-5 pt-1">
                   <button
                     type="button"
                     onClick={() => spotifyControl("previous")}
                     disabled={pendingSpotify}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-all duration-150 hover:scale-110 hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] active:scale-95 disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-300 transition-all duration-150 hover:scale-110 hover:bg-white/10 hover:text-white active:scale-95 disabled:opacity-40 cursor-pointer"
                     aria-label={i18n("previous")}
+                    title="Piste précédente"
                   >
                     <Icon name="skipBack" pack="phosphor" className="h-5 w-5" />
                   </button>
+
                   <button
                     type="button"
                     onClick={togglePlay}
                     disabled={pendingSpotify}
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--accent-primary)] text-[var(--accent-contrast)] shadow-md shadow-[var(--accent-primary)]/20 transition-all duration-150 hover:scale-105 active:scale-95 disabled:opacity-40"
+                    className="flex h-11 w-11 items-center justify-center rounded-full bg-emerald-500 text-black font-bold shadow-lg shadow-emerald-500/30 transition-all duration-150 hover:scale-105 hover:bg-emerald-400 active:scale-95 disabled:opacity-40 cursor-pointer"
                     aria-label={nowPlaying?.isPlaying ? i18n("pause") : i18n("play")}
+                    title={nowPlaying?.isPlaying ? "Mettre en pause" : "Lire"}
                   >
-                    {nowPlaying?.isPlaying ? <Icon name="pause" pack="phosphor" className="h-5 w-5" /> : <Icon name="play" pack="phosphor" className="h-5 w-5 fill-current" />}
+                    {nowPlaying?.isPlaying ? (
+                      <Icon name="pause" pack="phosphor" className="h-5 w-5 fill-current" />
+                    ) : (
+                      <Icon name="play" pack="phosphor" className="h-5 w-5 fill-current ml-0.5" />
+                    )}
                   </button>
+
                   <button
                     type="button"
                     onClick={() => spotifyControl("next")}
                     disabled={pendingSpotify}
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-all duration-150 hover:scale-110 hover:bg-[var(--text-primary)]/10 hover:text-[var(--text-primary)] active:scale-95 disabled:opacity-40"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-300 transition-all duration-150 hover:scale-110 hover:bg-white/10 hover:text-white active:scale-95 disabled:opacity-40 cursor-pointer"
                     aria-label={i18n("next")}
+                    title="Piste suivante"
                   >
                     <Icon name="skipForward" pack="phosphor" className="h-5 w-5" />
                   </button>

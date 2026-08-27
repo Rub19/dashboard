@@ -7206,6 +7206,56 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.58",
+  date: "2026-08-27",
+  title: "Refonte Esthétique Dynamic Island Lecteur Audio — Timestamps Live, Visualiseur 24 Barres & Contrôles Glow",
+  items: [
+    "Ajout des timestamps en temps réel (temps écoulé et durée totale) sous la barre de progression.",
+    "Bouton de lecture principal agrandi avec lueur néon verte (glow) et micro-animations fluides.",
+    "Refonte de l'égaliseur audio dynamique (24 barres réactives avec oscillation organique).",
+    "Badge d'état de lecture Spotify vert émeraude avec indicateur pulsant.",
+    "Validation : build Next.js 105/105 pages, TypeScript sans erreur.",
+    "Version affichée : v1.10.58.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.58",
+  date: "2026-08-27",
+  title: "Dynamic Island Music Player Redesign — Live Timestamps, 24-Bar Visualizer & Neon Glow Controls",
+  items: [
+    "Added live progress and duration timestamps below the media progress bar.",
+    "Enhanced play/pause button with glowing neon green styling and micro-interactions.",
+    "Upgraded 24-bar reactive audio visualizer with organic wave motion.",
+    "Emerald Spotify playback badge with animated pulsing live dot.",
+    "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
+    "Version badge: v1.10.58.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.58",
+  date: "2026-08-27",
+  title: "Rediseño de Dynamic Island para música — Tiempos en vivo y nuevo visualizador",
+  items: [
+    "Tiempos en vivo, nuevo botón de reproducción con brillo y visualizador de 24 barras.",
+    "Validación : build, lint.",
+    "Versión : v1.10.58.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.58",
+  date: "2026-08-27",
+  title: "Dynamic Island Musik-Player Redesign — Live-Zeitstempel & 24-Balken Visualizer",
+  items: [
+    "Echtzeit-Zeitstempel, leuchtender Play-Button und 24-Balken Audio-Equalizer.",
+    "Validierung: build, lint.",
+    "Version: v1.10.58.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.57",
   date: "2026-08-27",
   title: "Correction Action 'Marquer comme lu' & Disparition Fluide des Notifications",

@@ -12,6 +12,14 @@ export interface LiveMediaProgressProps {
   "data-testid"?: string;
 }
 
+function formatMs(ms: number): string {
+  if (!ms || isNaN(ms) || ms < 0) return "0:00";
+  const totalSeconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
+
 export default function LiveMediaProgress({
   progressMs,
   durationMs,
@@ -25,14 +33,20 @@ export default function LiveMediaProgress({
   const thumbRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
   const startRef = useRef<{ progress: number; at: number } | null>(null);
+  const [currentProgress, setCurrentProgress] = useState(progressMs);
   const [dragging, setDragging] = useState(false);
   const [hovered, setHovered] = useState(false);
 
-  const updateVisuals = useCallback((value: number) => {
-    const pct = durationMs > 0 ? Math.min(100, Math.max(0, (value / durationMs) * 100)) : 0;
-    if (fillRef.current) fillRef.current.style.width = `${pct}%`;
-    if (thumbRef.current) thumbRef.current.style.left = `${pct}%`;
-  }, [durationMs]);
+  const updateVisuals = useCallback(
+    (value: number) => {
+      const clamped = Math.min(durationMs, Math.max(0, value));
+      setCurrentProgress(clamped);
+      const pct = durationMs > 0 ? (clamped / durationMs) * 100 : 0;
+      if (fillRef.current) fillRef.current.style.width = `${pct}%`;
+      if (thumbRef.current) thumbRef.current.style.left = `${pct}%`;
+    },
+    [durationMs]
+  );
 
   useEffect(() => {
     updateVisuals(progressMs);
@@ -66,7 +80,7 @@ export default function LiveMediaProgress({
       const rect = trackRef.current?.getBoundingClientRect();
       if (!rect) return progressMs;
       const pct = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-      return Math.round(pct * durationMs / 1000) * 1000;
+      return Math.round((pct * durationMs) / 1000) * 1000;
     },
     [durationMs, progressMs]
   );
@@ -110,7 +124,8 @@ export default function LiveMediaProgress({
   );
 
   return (
-    <div className={cn("space-y-2", className)} data-testid={testId}>
+    <div className={cn("space-y-1.5 w-full select-none", className)} data-testid={testId}>
+      {/* Progress Track */}
       <div
         ref={trackRef}
         onPointerDown={handlePointerDown}
@@ -119,32 +134,31 @@ export default function LiveMediaProgress({
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         className={cn(
-          "group relative h-1.5 w-full cursor-pointer rounded-full transition-[height] duration-200",
-          dragging || hovered ? "h-2" : "h-1.5",
+          "group relative h-1.5 w-full cursor-pointer rounded-full transition-[height] duration-200 py-1 -my-1",
+          dragging || hovered ? "h-2" : "h-1.5"
         )}
-        aria-label="Progression"
+        aria-label="Progression de lecture"
       >
-        <div className="absolute inset-0 rounded-full bg-[var(--text-primary)]/[0.04] backdrop-blur-sm" />
+        <div className="absolute inset-0 rounded-full bg-white/[0.08] backdrop-blur-sm" />
         <div
           ref={fillRef}
-          className="pointer-events-none absolute left-0 top-0 h-full rounded-full transition-[width] duration-75 ease-out will-change-[width]"
-          style={{
-            width: "0%",
-            backgroundColor: "color-mix(in srgb, var(--accent-color, var(--accent, #10b981)) 85%, transparent)",
-            boxShadow: "0 0 10px color-mix(in srgb, var(--accent-color, var(--accent, #10b981)) 30%, transparent)",
-          }}
+          className="pointer-events-none absolute left-0 top-0 h-full rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)] transition-[width] duration-75 ease-out will-change-[width]"
+          style={{ width: "0%" }}
         />
         <div
           ref={thumbRef}
           className={cn(
-            "pointer-events-none absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[var(--text-primary)]/[0.12] bg-[var(--text-primary)]/[0.08] shadow-md transition-transform duration-150 will-change-[left]",
-            dragging || hovered ? "scale-125" : "scale-100",
+            "pointer-events-none absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/20 bg-white shadow-md shadow-emerald-500/40 transition-transform duration-150 will-change-[left]",
+            dragging || hovered ? "scale-125" : "scale-100"
           )}
-          style={{
-            left: "0%",
-            boxShadow: "0 0 10px color-mix(in srgb, var(--accent-color, var(--accent, #10b981)) 35%, transparent)",
-          }}
+          style={{ left: "0%" }}
         />
+      </div>
+
+      {/* Timestamps */}
+      <div className="flex justify-between items-center text-[10px] font-mono text-[var(--text-muted)] px-0.5">
+        <span className="font-semibold">{formatMs(currentProgress)}</span>
+        <span>{formatMs(durationMs)}</span>
       </div>
     </div>
   );

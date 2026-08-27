@@ -7206,6 +7206,56 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.71",
+  date: "2026-08-27",
+  title: "Sublimation du Dock Flottant (Glassmorphism, Magnification & Ancrage Badge)",
+  items: [
+    "Repositionnement précis du point rouge de notification sur l'épaule de la cloche avec anneau sombre et effet de lueur pulsée.",
+    "Effet Glassmorphism et profondeur premium : fond #080c14/85, ombres profondes et contour subtil 1px.",
+    "Animation de magnification fluide (scale 1.15) au survol des icônes du dock.",
+    "Miniature Spotify raffinée avec anneau émeraude dynamique et égaliseur réactif.",
+    "Validation : build Next.js 105/105 pages, 100% tests unitaires, 0 erreur.",
+    "Version affichée : v1.10.71.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.71",
+  date: "2026-08-27",
+  title: "Floating Dock Polish (Glassmorphism, Magnification & Badge Anchoring)",
+  items: [
+    "Anchored notification dot directly on bell shoulder with ring and pulse glow.",
+    "Deep glassmorphic backdrop (#080c14/85), rim lighting and subtle glow.",
+    "Fluid macOS-style magnification (1.15x scale) on hover.",
+    "Polished Spotify media button with emerald playing glow.",
+    "Validation: Next.js 105/105 pages build, 100% unit tests passed, 0 errors.",
+    "Version badge: v1.10.71.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.71",
+  date: "2026-08-27",
+  title: "Mejora visual del Dock flotante",
+  items: [
+    "Efecto de cristal translúcido, ampliación al pasar el ratón y anclaje de notificaciones.",
+    "Validación : build, lint, tests.",
+    "Versión : v1.10.71.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.71",
+  date: "2026-08-27",
+  title: "Floating-Dock Design-Upgrade",
+  items: [
+    "Glassmorphism-Optik, Vergrößerungseffekt beim Hovern und präzise Benachrichtigungsmarkierung.",
+    "Validierung: build, lint, tests.",
+    "Version: v1.10.71.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.70",
   date: "2026-08-27",
   title: "Correction API Tracker Valorant & League of Legends (Support du '#' Riot Tag & En-têtes API Clés)",

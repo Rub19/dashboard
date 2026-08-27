@@ -169,7 +169,7 @@ function Dock() {
   }
 
   const dockButton =
-    "flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl text-[var(--text-muted)] transition-all hover:bg-[var(--text-primary)]/[0.08] hover:text-[var(--text-primary)] hover:scale-105 active:scale-95";
+    "group/dock-item relative flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl text-[var(--text-muted)] transition-all duration-200 ease-out hover:bg-white/[0.08] hover:text-white hover:scale-115 active:scale-95";
 
   return (
     <>
@@ -187,7 +187,7 @@ function Dock() {
               type="button"
               onClick={handleRestoreDock}
               title="Afficher le Dock"
-              className="flex items-center gap-1.5 rounded-full border border-white/10 bg-black/70 px-3 py-1 text-[10px] font-bold text-zinc-400 backdrop-blur-xl shadow-lg hover:border-purple-500/40 hover:bg-purple-500/10 hover:text-white transition-all active:scale-95 cursor-pointer"
+              className="flex items-center gap-1.5 rounded-full border border-white/15 bg-black/80 px-3.5 py-1.5 text-[10px] font-bold text-zinc-300 backdrop-blur-2xl shadow-xl hover:border-purple-500/40 hover:bg-purple-500/15 hover:text-white transition-all active:scale-95 cursor-pointer"
             >
               <ChevronUp className="h-3 w-3 text-purple-400" />
               <span>Dock</span>
@@ -249,7 +249,7 @@ function Dock() {
             )}
 
             <nav
-              className="pointer-events-auto inline-flex items-center gap-2 overflow-x-auto no-scrollbar v8-dock px-3 py-2 select-none backdrop-blur-2xl border border-[var(--panel-border)]/60 bg-[var(--panel-bg)]/80 shadow-2xl rounded-2xl"
+              className="pointer-events-auto inline-flex items-center gap-1.5 overflow-x-auto no-scrollbar v8-dock px-3.5 py-1.5 select-none backdrop-blur-2xl border border-white/10 bg-[#080c14]/85 shadow-[0_12px_40px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.05)] rounded-2xl"
               aria-label={i18n("dock")}
             >
               <DockMediaFlyout nowPlaying={spotifyNow} clientId={settings.liveSpotifyClientId} />
@@ -266,10 +266,10 @@ function Dock() {
                 aria-expanded={launcherOpen}
                 className={dockButton}
               >
-                <LayoutGrid className="w-5 h-5" />
+                <LayoutGrid className="w-4.5 h-4.5" />
               </button>
 
-              <div className="mx-1 h-6 w-[1px] shrink-0 bg-[var(--text-primary)]/[0.08]" aria-hidden="true" />
+              <div className="mx-0.5 h-5 w-[1px] shrink-0 bg-white/10" aria-hidden="true" />
 
               <button
                 type="button"
@@ -278,7 +278,7 @@ function Dock() {
                 aria-pressed={false}
                 className={dockButton}
               >
-                <Search className="w-5 h-5" />
+                <Search className="w-4.5 h-4.5" />
               </button>
 
               <button
@@ -288,7 +288,7 @@ function Dock() {
                 aria-label={i18n("dockPomodoro")}
                 className={dockButton}
               >
-                <Clock className="w-5 h-5" />
+                <Clock className="w-4.5 h-4.5" />
               </button>
 
               <button
@@ -301,7 +301,7 @@ function Dock() {
                 aria-label={i18n("dockMissionControl")}
                 className={dockButton}
               >
-                <AppWindow className="w-5 h-5" />
+                <AppWindow className="w-4.5 h-4.5" />
               </button>
 
               <button
@@ -311,14 +311,17 @@ function Dock() {
                   setLauncherOpen(false);
                 }}
                 aria-label={i18n("openNotifications")}
-                className={`relative ${dockButton}`}
+                className={dockButton}
               >
-                <Bell className="w-5 h-5" />
+                <Bell className="w-4.5 h-4.5" />
                 {unreadCount > 0 && (
                   <span
-                    className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-[var(--danger)] ring-2 ring-[var(--bg-surface)]"
+                    className="absolute right-1.5 top-1.5 flex h-2 w-2 items-center justify-center"
                     aria-hidden="true"
-                  />
+                  >
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-500 opacity-75" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500 ring-2 ring-[#080c14]" />
+                  </span>
                 )}
               </button>
 
@@ -331,7 +334,7 @@ function Dock() {
                 aria-label={i18n("openMail", "Ouvrir les mails")}
                 className={dockButton}
               >
-                <Mail className="w-5 h-5" />
+                <Mail className="w-4.5 h-4.5" />
               </button>
 
               <button
@@ -345,7 +348,7 @@ function Dock() {
                 aria-label={i18n("controlCenter")}
                 className={dockButton}
               >
-                <Sliders className="w-5 h-5" />
+                <Sliders className="w-4.5 h-4.5" />
               </button>
 
               <button
@@ -354,7 +357,7 @@ function Dock() {
                 aria-label={i18n("scrollToTop", "Remonter en haut")}
                 className={dockButton}
               >
-                <ChevronUp className="w-5 h-5" />
+                <ChevronUp className="w-4.5 h-4.5" />
               </button>
 
               <button
@@ -364,7 +367,7 @@ function Dock() {
                 title={i18n("hideDock", "Cacher le dock")}
                 className={dockButton}
               >
-                <EyeOff className="w-5 h-5" />
+                <EyeOff className="w-4.5 h-4.5" />
               </button>
             </nav>
 

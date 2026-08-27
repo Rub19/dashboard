@@ -207,29 +207,33 @@ export default function DockMediaFlyout({ nowPlaying, clientId }: DockMediaFlyou
         type="button"
         aria-label={buttonLabel}
         onClick={() => setOpen((v) => !v)}
-        className="relative flex h-11 w-11 flex-col items-center justify-center rounded-xl text-[var(--accent-primary)] transition-all hover:bg-[var(--text-primary)]/[0.08]"
+        className="group/media relative flex h-10 w-10 cursor-pointer flex-col items-center justify-center rounded-xl transition-all duration-200 ease-out hover:bg-white/[0.08] hover:scale-115 active:scale-95"
       >
-        <SafeImage
-          candidates={hasTrack ? coverCandidates : undefined}
-          alt={title}
-          size={48}
-          className="h-5 w-5 rounded object-cover transition-transform group-hover:scale-110"
-          iconClassName="h-3 w-3"
-          loading="eager"
-          priority
-          crossOrigin="anonymous"
-        />
+        <div className={`relative flex items-center justify-center overflow-hidden rounded-lg transition-all ${
+          isPlaying && hasTrack ? "ring-1 ring-emerald-500/70 shadow-[0_0_8px_rgba(16,185,129,0.3)]" : "ring-1 ring-white/10"
+        }`}>
+          <SafeImage
+            candidates={hasTrack ? coverCandidates : undefined}
+            alt={title}
+            size={48}
+            className="h-5.5 w-5.5 rounded-lg object-cover transition-transform group-hover/media:scale-105"
+            iconClassName="h-3.5 w-3.5"
+            loading="eager"
+            priority
+            crossOrigin="anonymous"
+          />
+        </div>
 
         {isPlaying && hasTrack && (
-          <span className="absolute bottom-1.5 flex h-1.5 items-end gap-0.5" aria-hidden="true">
-            <span className="h-1 w-0.5 animate-pulse rounded-lg bg-[var(--accent-primary)]" />
+          <span className="absolute -bottom-0.5 flex h-1.5 items-end gap-0.5" aria-hidden="true">
+            <span className="h-1 w-0.5 animate-pulse rounded-full bg-emerald-400" />
             <span
-              className="h-2.5 w-0.5 animate-pulse rounded-lg bg-[var(--accent-primary)]"
-              style={{ animationDelay: "75ms" }}
+              className="h-2 w-0.5 animate-pulse rounded-full bg-emerald-400"
+              style={{ animationDelay: "100ms" }}
             />
             <span
-              className="h-1 w-0.5 animate-pulse rounded-lg bg-[var(--accent-primary)]"
-              style={{ animationDelay: "150ms" }}
+              className="h-1 w-0.5 animate-pulse rounded-full bg-emerald-400"
+              style={{ animationDelay: "200ms" }}
             />
           </span>
         )}

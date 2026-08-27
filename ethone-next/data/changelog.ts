@@ -7206,6 +7206,50 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.27",
+  date: "2026-08-27",
+  title: "StatusBar plus sombre",
+  items: [
+    "Fond `StatusBar` passé de 70% à 90% d'opacité.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.27.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.27",
+  date: "2026-08-27",
+  title: "Darker StatusBar",
+  items: [
+    "`StatusBar` background from 70% to 90% opacity.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.27.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.27",
+  date: "2026-08-27",
+  title: "StatusBar más oscuro",
+  items: [
+    "Fondo `StatusBar` de 70% a 90% de opacidad.",
+    "Validación : build, lint.",
+    "Versión : v1.10.27.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.27",
+  date: "2026-08-27",
+  title: "Dunklere StatusBar",
+  items: [
+    "`StatusBar` Hintergrund von 70% auf 90% Opazität.",
+    "Validierung: build, lint.",
+    "Version: v1.10.27.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.26",
   date: "2026-08-27",
   title: "Opacité dock légèrement augmentée",

@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.27 — 2026-08-27
+
+**ETHONE — StatusBar plus sombre**
+
+- Fond `StatusBar` passé de 70% à 90% d’opacité.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.26 — 2026-08-27
 
 **ETHONE — Opacité dock légèrement augmentée**

@@ -862,7 +862,7 @@ export function AnimatedSidebarMenuButton({
       {icon ? (
         <span
           aria-hidden="true"
-          className="relative z-10 grid size-5 shrink-0 place-items-center"
+          className="relative z-10 grid size-6 shrink-0 place-items-center"
         >
           {icon}
         </span>

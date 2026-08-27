@@ -5,13 +5,26 @@ import ClientImage from "@/components/ClientImage";
 import { cloneElement, memo, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  PanelLeftClose,
+  Home,
+  BookOpen,
+  CheckCircle2,
+  CalendarDays,
+  Folder,
+  Mail,
+  Brain,
+  Timer,
+  CloudSun,
+  Activity,
+  Plug,
+  Boxes,
+  BarChart3,
   Settings,
+  PanelLeftClose,
   User,
   Loader2,
   AlertCircle,
-  CheckCircle2,
   WifiOff,
+  LucideIcon,
 } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useProfile } from "@/lib/hooks/useProfile";
@@ -20,7 +33,6 @@ import { ADMIN_EMAIL } from "@/lib/admin";
 import { useActiveProfile } from "@/components/SettingsProvider";
 import { useSyncStore } from "@/lib/stores/sync";
 import { cn } from "@/lib/utils";
-import { Icon } from "@/lib/icons";
 import BrandMark from "@/components/BrandMark";
 import {
   AnimatedSidebar,
@@ -35,7 +47,11 @@ import {
   useAnimatedSidebarPanel,
 } from "@/components/motion/animated-sidebar";
 
-type AppItem = { id: string; href: string; icon: string };
+type AppItem = {
+  id: string;
+  href: string;
+  icon: LucideIcon;
+};
 
 const SHORTCUTS: Record<string, string> = {
   home: "⌘1",
@@ -50,20 +66,20 @@ const SHORTCUTS: Record<string, string> = {
 };
 
 const APPS: AppItem[] = [
-  { id: "home", href: "/", icon: "home" },
-  { id: "notes", href: "/notes/", icon: "notes" },
-  { id: "tasks", href: "/tasks/", icon: "tasks" },
-  { id: "calendar", href: "/calendar/", icon: "calendar" },
-  { id: "files", href: "/files/", icon: "files" },
-  { id: "mail", href: "/mail/", icon: "mail" },
-  { id: "brain", href: "/brain/", icon: "brain" },
-  { id: "focus", href: "/focus/", icon: "focus" },
-  { id: "weather", href: "/weather/", icon: "cloudSun" },
-  { id: "activity", href: "/activity/", icon: "activity" },
-  { id: "connections", href: "/connections/", icon: "connections" },
-  { id: "plugins", href: "/plugins/", icon: "plugins" },
-  { id: "admin", href: "/admin/", icon: "bar-chart" },
-  { id: "settings", href: "/settings/", icon: "settings" },
+  { id: "home", href: "/", icon: Home },
+  { id: "notes", href: "/notes/", icon: BookOpen },
+  { id: "tasks", href: "/tasks/", icon: CheckCircle2 },
+  { id: "calendar", href: "/calendar/", icon: CalendarDays },
+  { id: "files", href: "/files/", icon: Folder },
+  { id: "mail", href: "/mail/", icon: Mail },
+  { id: "brain", href: "/brain/", icon: Brain },
+  { id: "focus", href: "/focus/", icon: Timer },
+  { id: "weather", href: "/weather/", icon: CloudSun },
+  { id: "activity", href: "/activity/", icon: Activity },
+  { id: "connections", href: "/connections/", icon: Plug },
+  { id: "plugins", href: "/plugins/", icon: Boxes },
+  { id: "admin", href: "/admin/", icon: BarChart3 },
+  { id: "settings", href: "/settings/", icon: Settings },
 ];
 
 const SidebarBrand = memo(function SidebarBrand() {
@@ -72,12 +88,12 @@ const SidebarBrand = memo(function SidebarBrand() {
     <Link
       href="/"
       className={cn(
-        "flex h-9 items-center gap-2 text-[var(--text-primary)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]",
+        "flex h-10 items-center gap-2.5 text-[var(--text-primary)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] transition-transform active:scale-95",
         collapsed && "justify-center"
       )}
       aria-label="ETHONE"
     >
-      <BrandMark size={28} className="shrink-0" />
+      <BrandMark size={32} className="shrink-0 drop-shadow-md" />
       {!collapsed && <span className="text-sm font-bold tracking-tight">ETHONE</span>}
     </Link>
   );
@@ -95,22 +111,22 @@ const SyncBadge = memo(function SyncBadge({ collapsed }: { collapsed: boolean })
 
   const config: Record<string, { icon: React.ReactElement<{ className?: string }>; label: string; dot: string }> = {
     syncing: {
-      icon: <Loader2 className="h-3 w-3 animate-spin text-[var(--accent-primary)]" />,
+      icon: <Loader2 className="h-4 w-4 animate-spin text-[var(--accent-primary)]" />,
       label: i18n("syncing", "Sync"),
       dot: "bg-[var(--accent-primary)]",
     },
     error: {
-      icon: <AlertCircle className="h-3 w-3 text-[var(--danger)]" />,
+      icon: <AlertCircle className="h-4 w-4 text-[var(--danger)]" />,
       label: i18n("error", "Erreur"),
       dot: "bg-[var(--danger)]",
     },
     offline: {
-      icon: <WifiOff className="h-3 w-3 text-[var(--warning)]" />,
+      icon: <WifiOff className="h-4 w-4 text-[var(--warning)]" />,
       label: i18n("offline", "Hors ligne"),
       dot: "bg-[var(--warning)]",
     },
     idle: {
-      icon: <CheckCircle2 className="h-3 w-3 text-[var(--accent-primary)]" />,
+      icon: <CheckCircle2 className="h-4 w-4 text-[var(--accent-primary)]" />,
       label: i18n("synced", "Sync"),
       dot: "bg-[var(--accent-primary)]",
     },
@@ -122,7 +138,7 @@ const SyncBadge = memo(function SyncBadge({ collapsed }: { collapsed: boolean })
     : statusConfig.label;
 
   const icon = cloneElement(statusConfig.icon, {
-    className: cn(statusConfig.icon.props.className, collapsed ? "h-4 w-4" : "h-3 w-3"),
+    className: cn(statusConfig.icon.props.className, collapsed ? "h-4 w-4" : "h-3.5 w-3.5"),
   });
 
   return (
@@ -153,12 +169,12 @@ const SidebarProfile = memo(function SidebarProfile({ collapsed }: { collapsed: 
   return (
     <div
       className={cn(
-        "mb-2 flex items-center gap-2.5 rounded-xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/50",
+        "mb-2 flex items-center gap-2.5 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/50",
         collapsed ? "justify-center p-0" : "p-2"
       )}
     >
       <div className={cn(
-        "relative flex shrink-0 items-center justify-center overflow-hidden rounded-lg border-transparent bg-transparent",
+        "relative flex shrink-0 items-center justify-center overflow-hidden rounded-xl border-transparent bg-transparent",
         collapsed ? "h-9 w-9" : "h-8 w-8"
       )}>
         {avatarUrl ? (
@@ -169,11 +185,11 @@ const SidebarProfile = memo(function SidebarProfile({ collapsed }: { collapsed: 
             height={32}
             className="h-full w-full object-cover"
             fallback={
-              <User className={cn("text-[var(--text-muted)]", collapsed ? "h-3.5 w-3.5" : "h-4 w-4")} />
+              <User className={cn("text-[var(--text-muted)]", collapsed ? "h-4 w-4" : "h-4 w-4")} />
             }
           />
         ) : (
-          <User className={cn("text-[var(--text-muted)]", collapsed ? "h-3.5 w-3.5" : "h-4 w-4")} />
+          <User className={cn("text-[var(--text-muted)]", collapsed ? "h-4 w-4" : "h-4 w-4")} />
         )}
         <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--background)] bg-[var(--accent-primary)]" aria-hidden="true" />
       </div>
@@ -207,21 +223,21 @@ const SidebarFooter = memo(function SidebarFooter() {
         <button
           type="button"
           onClick={() => router.push("/settings")}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border-transparent bg-transparent text-[var(--text-muted)] transition-colors hover:border-[var(--panel-border)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border-transparent bg-transparent text-[var(--text-muted)] transition-colors hover:border-[var(--panel-border)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] cursor-pointer"
           aria-label={i18n("settings")}
           title={i18n("settings")}
         >
-          <Settings className="h-4 w-4" />
+          <Settings className="h-4.5 w-4.5" strokeWidth={1.85} />
         </button>
 
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border-transparent bg-transparent text-[var(--text-muted)] transition-colors hover:border-[var(--panel-border)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)]"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border-transparent bg-transparent text-[var(--text-muted)] transition-colors hover:border-[var(--panel-border)] hover:bg-[var(--text-primary)]/[0.06] hover:text-[var(--text-primary)] cursor-pointer"
           aria-label={i18n("collapseSidebar", "Réduire")}
           title={i18n("collapseSidebar", "Réduire")}
         >
-          <PanelLeftClose className="h-4 w-4" />
+          <PanelLeftClose className="h-4.5 w-4.5" strokeWidth={1.85} />
         </button>
       </div>
     </div>
@@ -265,18 +281,26 @@ function Sidebar() {
         </AnimatedSidebarHeader>
         <AnimatedSidebarContent>
           <AnimatedSidebarMenu>
-            {visibleApps.map((app) => (
-              <AnimatedSidebarMenuItem key={app.id}>
-                <AnimatedSidebarMenuButton
-                  isActive={isActive(app)}
-                  icon={<Icon pack="phosphor" name={app.icon} className="h-5 w-5" />}
-                  shortcut={SHORTCUTS[app.id]}
-                  onSelect={() => router.push(app.href)}
-                >
-                  {i18n(app.id, app.id === "admin" ? "Admin" : app.id)}
-                </AnimatedSidebarMenuButton>
-              </AnimatedSidebarMenuItem>
-            ))}
+            {visibleApps.map((app) => {
+              const IconComponent = app.icon;
+              return (
+                <AnimatedSidebarMenuItem key={app.id}>
+                  <AnimatedSidebarMenuButton
+                    isActive={isActive(app)}
+                    icon={
+                      <IconComponent
+                        className="h-[21px] w-[21px] transition-transform duration-200 group-hover:scale-110"
+                        strokeWidth={1.9}
+                      />
+                    }
+                    shortcut={SHORTCUTS[app.id]}
+                    onSelect={() => router.push(app.href)}
+                  >
+                    {i18n(app.id, app.id === "admin" ? "Admin" : app.id)}
+                  </AnimatedSidebarMenuButton>
+                </AnimatedSidebarMenuItem>
+              );
+            })}
           </AnimatedSidebarMenu>
         </AnimatedSidebarContent>
         <AnimatedSidebarFooter className="mb-3 border-t border-[var(--panel-border)] pt-3">

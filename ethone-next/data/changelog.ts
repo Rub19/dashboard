@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.60",
+  date: "2026-08-27",
+  title: "Mise à Niveau Haute Définition des Icônes de la Barre Latérale (Lucide Vector Crisp 21px)",
+  items: [
+    "Remplacement des tracés fins par des icônes vectorielles natives Lucide haute résolution en 21px avec épaisseur de trait optimale (1.9px).",
+    "Agrandissement de la zone interactive des boutons et micro-animations de zoom tactile au survol.",
+    "Rendu net et précis sans effet de flou ou de pixellisation sur tous les écrans Retina et haute densité.",
+    "Validation : build Next.js 105/105 pages, TypeScript sans erreur.",
+    "Version affichée : v1.10.60.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.60",
+  date: "2026-08-27",
+  title: "High-DPI Vector Upgrade for Sidebar Icons (Lucide 21px Crisp)",
+  items: [
+    "Replaced thin glyphs with crisp native Lucide vector components rendered at 21px with 1.9px stroke width.",
+    "Enhanced button hitboxes and added smooth hover scale micro-animations.",
+    "Eliminated all pixelation and blur on Retina and high-density displays.",
+    "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
+    "Version badge: v1.10.60.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.60",
+  date: "2026-08-27",
+  title: "Mejora de alta resolución para los iconos de la barra lateral (Lucide 21px)",
+  items: [
+    "Iconos vectoriales nativos de alta definición en 21px con trazo nítido.",
+    "Validación : build, lint.",
+    "Versión : v1.10.60.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.60",
+  date: "2026-08-27",
+  title: "High-DPI Vektor-Upgrade für Sidebar-Icons (Lucide 21px)",
+  items: [
+    "Gestochen scharfe Lucide Vektorsymbole mit 21px und 1.9px Strichstärke.",
+    "Validierung: build, lint.",
+    "Version: v1.10.60.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.59",
   date: "2026-08-27",
   title: "Suppression de la Barre de Recherche Redondante dans les Connexions",

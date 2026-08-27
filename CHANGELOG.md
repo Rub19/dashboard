@@ -2,6 +2,14 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.30 — 2026-08-27
+
+**ETHONE — Files : suppression ancien écran Drive non connecté**
+
+- Remplacement de l’ancienne carte centrée `Connectez un Drive` par le composant `EmptyState` standard.
+- Séparation propre des états `clientId` et `!clientId`.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.29 — 2026-08-27
 
 **ETHONE — Dashboard home scrollable**

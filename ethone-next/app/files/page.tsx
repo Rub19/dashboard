@@ -767,31 +767,35 @@ export default function FilesPage() {
             ))}
           </>
         ) : filteredFiles.length === 0 ? (
-          <div className="col-span-full flex min-h-[50vh] flex-col items-center justify-center p-6">
-            <div className="w-full max-w-xl rounded-3xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.25] p-8 text-center shadow-sm backdrop-blur-[var(--panel-blur)]">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
-                <Icon name={trashed ? "trash-2" : showDuplicates ? "copy" : showFolders ? "folder" : clientId ? "cloud-upload" : "cloud"} className="h-8 w-8" />
-              </div>
-              <p className="mt-4 text-base font-semibold text-[var(--text-primary)]">
-                {!clientId ? i18n("connectToStart", "Connectez un Drive pour commencer") : showDuplicates ? i18n("noDuplicates", "Aucun doublon détecté") : showFolders ? i18n("noFolders", "Aucun dossier") : i18n("noFiles", "Aucun fichier")}
-              </p>
-              <p className="mx-auto mt-1 max-w-sm text-xs text-[var(--text-muted)]">
-                {!clientId
-                  ? i18n("connectToStartDescription", "Reliez votre Google Drive pour gérer, prévisualiser et partager vos fichiers.")
-                  : showDuplicates
+          !clientId ? (
+            <div className="col-span-full">
+              <EmptyState
+                icon="cloud"
+                title={i18n("connectToStart", "Connectez un Drive pour commencer")}
+                description={i18n("connectToStartDescription", "Reliez votre Google Drive pour gérer, prévisualiser et partager vos fichiers.")}
+                action={
+                  <Button onClick={connectDrive} leftIcon={<Icon name="cloud" className="h-4 w-4" />}>
+                    {i18n("connectDrive", "Connecter Google Drive")}
+                  </Button>
+                }
+              />
+            </div>
+          ) : (
+            <div className="col-span-full flex min-h-[50vh] flex-col items-center justify-center p-6">
+              <div className="w-full max-w-xl rounded-3xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.25] p-8 text-center shadow-sm backdrop-blur-[var(--panel-blur)]">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+                  <Icon name={trashed ? "trash-2" : showDuplicates ? "copy" : showFolders ? "folder" : "cloud-upload"} className="h-8 w-8" />
+                </div>
+                <p className="mt-4 text-base font-semibold text-[var(--text-primary)]">
+                  {showDuplicates ? i18n("noDuplicates", "Aucun doublon détecté") : showFolders ? i18n("noFolders", "Aucun dossier") : i18n("noFiles", "Aucun fichier")}
+                </p>
+                <p className="mx-auto mt-1 max-w-sm text-xs text-[var(--text-muted)]">
+                  {showDuplicates
                     ? i18n("noDuplicatesDescription", "Aucun doublon détecté.")
                     : showFolders
                       ? i18n("noFoldersDescription", "Créez un dossier pour organiser vos fichiers.")
                       : i18n("noFilesDescription", "Importez, créez un dossier ou ajoutez un lien pour commencer.")}
-              </p>
-
-              {!clientId ? (
-                <div className="mt-5">
-                  <Button onClick={connectDrive} leftIcon={<Icon name="cloud" className="h-4 w-4" />}>
-                    {i18n("connectDrive", "Connecter Google Drive")}
-                  </Button>
-                </div>
-              ) : (
+                </p>
                 <div className="mt-5 space-y-3">
                   <FileUploadZone
                     onFiles={(files) => { setAddTab("upload"); setDroppedFiles(files); setAddOpen(true); }}
@@ -806,9 +810,9 @@ export default function FilesPage() {
                     </Button>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
-          </div>
+          )
         ) : (
           filteredFiles.map((file, i) => (
             <motion.div

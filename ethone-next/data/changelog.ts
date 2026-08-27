@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.30",
+  date: "2026-08-27",
+  title: "Files : suppression ancien écran Drive non connecté",
+  items: [
+    "Remplacement de l'ancienne carte centrée `Connectez un Drive` par le composant `EmptyState` standard.",
+    "Séparation propre des états `clientId` / `!clientId`.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.30.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.30",
+  date: "2026-08-27",
+  title: "Files: remove old disconnected Drive screen",
+  items: [
+    "Replaced the old centered `Connect a Drive` card with the standard `EmptyState` component.",
+    "Clean separation of `clientId` and `!clientId` states.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.30.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.30",
+  date: "2026-08-27",
+  title: "Files : eliminar pantalla antigua de Drive desconectado",
+  items: [
+    "Reemplazo de la tarjeta antigua `Conecte un Drive` por el componente `EmptyState` estándar.",
+    "Separación limpia de los estados `clientId` y `!clientId`.",
+    "Validación : build, lint.",
+    "Versión : v1.10.30.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.30",
+  date: "2026-08-27",
+  title: "Files : alten getrennten Drive-Bildschirm entfernt",
+  items: [
+    "Alte zentrierte `Drive verbinden` Karte durch die Standard-`EmptyState` Komponente ersetzt.",
+    "Saubere Trennung der `clientId` und `!clientId` Zustände.",
+    "Validierung: build, lint.",
+    "Version: v1.10.30.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.29",
   date: "2026-08-27",
   title: "Dashboard home scrollable",

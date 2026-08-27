@@ -1,9 +1,8 @@
-package dev.ethone.app.ui.components
+﻿package dev.ethone.app.ui.components
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -14,31 +13,44 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Spa
-import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.ethone.app.ui.theme.EthoneBgRaised
+import dev.ethone.app.ui.theme.EthoneEmerald
+import dev.ethone.app.ui.theme.GlassBorder
 
-enum class BottomTab {
-    Home, Tasks, Brain, Notes, Settings
+enum class BottomTab(val label: String, val icon: ImageVector) {
+    Home("Home", Icons.Default.Home),
+    Brain("Brain", Icons.Default.AutoAwesome),
+    Tasks("Tâches", Icons.Default.CheckCircle),
+    Focus("Focus", Icons.Default.Timer),
+    Notes("Notes", Icons.Default.Description),
+    Settings("Réglages", Icons.Default.Settings)
 }
 
 @Composable
@@ -48,77 +60,60 @@ fun NativeFloatingDock(
     modifier: Modifier = Modifier
 ) {
     val haptic = LocalHapticFeedback.current
-    val tabs = listOf(
-        BottomTab.Home to Icons.Default.Home,
-        BottomTab.Tasks to Icons.Default.CheckCircle,
-        BottomTab.Brain to Icons.Default.Spa,
-        BottomTab.Notes to Icons.Outlined.Edit,
-        BottomTab.Settings to Icons.Default.Settings
-    )
 
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp)
-            .height(64.dp)
+            .padding(horizontal = 14.dp, vertical = 10.dp)
     ) {
-        LiquidGlassSurface(
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(56.dp)
-                .align(Alignment.BottomCenter)
-                .shadow(24.dp, shape = RoundedCornerShape(50)),
-            cornerRadius = 28.dp
+                .height(60.dp)
+                .clip(RoundedCornerShape(30.dp))
+                .border(0.8.dp, GlassBorder, RoundedCornerShape(30.dp))
+                .shadow(20.dp, shape = RoundedCornerShape(30.dp)),
+            color = EthoneBgRaised.copy(alpha = 0.92f),
+            shape = RoundedCornerShape(30.dp),
+            tonalElevation = 6.dp
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp)
             ) {
-                tabs.forEach { (tab, icon) ->
+                BottomTab.values().forEach { tab ->
                     val selected = tab == selectedTab
-                    val color by animateColorAsState(
-                        targetValue = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                        label = "tabColor"
-                    )
-                    val indicatorHeight by animateDpAsState(
-                        targetValue = if (selected) 4.dp else 0.dp,
-                        animationSpec = spring(dampingRatio = 0.75f, stiffness = 300f),
-                        label = "indicatorHeight"
+                    val iconColor by animateColorAsState(
+                        targetValue = if (selected) EthoneEmerald else MaterialTheme.colorScheme.onSurfaceVariant,
+                        label = "tabIconColor"
                     )
 
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
                         modifier = Modifier
+                            .clip(CircleShape)
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = null
                             ) {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                 onTabSelected(tab)
                             }
-                            .padding(8.dp)
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
                         Icon(
-                            imageVector = icon,
-                            contentDescription = tab.name,
-                            tint = color,
-                            modifier = Modifier.size(26.dp)
+                            imageVector = tab.icon,
+                            contentDescription = tab.label,
+                            tint = iconColor,
+                            modifier = Modifier.size(20.dp)
                         )
                         Text(
-                            text = tab.name,
-                            color = color,
-                            fontSize = 11.sp,
-                            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal
-                        )
-                        Box(
-                            modifier = Modifier
-                                .padding(top = 2.dp)
-                                .size(width = 18.dp, height = indicatorHeight)
-                                .background(
-                                    color = MaterialTheme.colorScheme.primary,
-                                    shape = RoundedCornerShape(50)
-                                )
+                            text = tab.label,
+                            fontSize = 10.sp,
+                            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+                            color = if (selected) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }

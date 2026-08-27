@@ -13,7 +13,7 @@ export interface CheckboxProps {
   onCheckedChange: (checked: boolean) => void;
   disabled?: boolean;
   indeterminate?: boolean;
-  label?: string;
+  label?: React.ReactNode;
   className?: string;
   id?: string;
   "aria-label"?: string;

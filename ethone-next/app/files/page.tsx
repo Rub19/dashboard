@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useCloudFiles, type CloudFile } from "@/lib/hooks/useCloudFiles";
 import { useUserState } from "@/lib/hooks/useUserState";
 import { useShares } from "@/lib/hooks/useShares";
@@ -16,7 +16,13 @@ import TabList from "@/components/tabs/TabList";
 import ContextMenu from "@/components/ContextMenu";
 import { useSelection } from "@/lib/hooks/useSelection";
 import BulkActionBar from "@/components/BulkActionBar";
-import { formatBytes, sortFiles } from "@/lib/files";
+import {
+  formatBytes,
+  sortFiles,
+  getFileCategory,
+  FILE_CATEGORIES,
+  type FileCategory,
+} from "@/lib/files";
 import FilesAdminPanel from "@/components/FilesAdminPanel";
 import FileAddModal, { type TabId } from "@/components/FileAddModal";
 import FilePreview from "@/components/FilePreview";
@@ -28,6 +34,32 @@ import Button from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
 import FileUploadZone from "@/components/FileUploadZone";
 import { Checkbox } from "@/components/ui/Checkbox";
+import {
+  Folder,
+  FolderPlus,
+  Plus,
+  Cloud,
+  CloudOff,
+  Search,
+  Sparkles,
+  Brain,
+  Clock,
+  Heart,
+  Trash2,
+  Copy,
+  SlidersHorizontal,
+  Grid2X2,
+  List as ListIcon,
+  RefreshCw,
+  Shield,
+  UploadCloud,
+  Inbox,
+  ArrowUpDown,
+  X,
+  ChevronRight,
+  HardDrive,
+  ExternalLink,
+} from "lucide-react";
 
 function folderPath(files: CloudFile[], folderId: string | null) {
   const path: CloudFile[] = [];
@@ -104,14 +136,16 @@ export default function FilesPage() {
   const [droppedFiles, setDroppedFiles] = useState<File[]>([]);
   const [form, setForm] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
-  const [sort, setSort] = useState<"name" | "size" | "date" | "type">("name");
-  const [showFolders, setShowFolders] = useState(false);
+  const [sort, setSort] = useState<"name" | "size" | "date" | "type">("date");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [viewTab, setViewTab] = useState<"all" | "folders" | "recent" | "favorites" | "trash">("all");
+  const [selectedCategory, setSelectedCategory] = useState<FileCategory>("all");
   const [viewMode, setViewMode] = useState<"list" | "grid">(() => {
     try {
       const saved = localStorage.getItem("ethone.files.viewMode");
       return saved === "grid" ? "grid" : "list";
     } catch {
-      return "list";
+      return "grid";
     }
   });
   const [showDuplicates, setShowDuplicates] = useState(false);
@@ -134,6 +168,8 @@ export default function FilesPage() {
           setAddOpen(false);
         } else if (previewFile) {
           setPreviewFile(null);
+        } else if (modal) {
+          setModal(null);
         }
       }
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
@@ -142,12 +178,13 @@ export default function FilesPage() {
       }
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "u") {
         e.preventDefault();
+        setAddTab("upload");
         setAddOpen(true);
       }
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [query, setQuery, addOpen, setAddOpen, previewFile, setPreviewFile]);
+  }, [query, setQuery, addOpen, previewFile, modal]);
 
   const { duplicateIds, duplicateCount } = useMemo(() => {
     const groups = new Map<string, CloudFile[]>();
@@ -167,16 +204,40 @@ export default function FilesPage() {
   }, [files]);
 
   const filteredFiles = useMemo(() => {
-    if (favorites) return sortFiles(files, sort);
-    let list = files.filter((f) => {
-      if (showFolders) return f.isFolder && (trashed ? f.trashed : !f.trashed);
-      return f.isFolder || (trashed ? f.trashed : !f.trashed);
-    });
-    if (parentId) {
-      list = list.filter((f) => (f.driveParentId || null) === parentId || (f.driveFileId === parentId && f.isFolder));
+    let list = [...files];
+
+    // Filter by tab
+    if (viewTab === "trash" || trashed) {
+      list = list.filter((f) => f.trashed);
     } else {
-      list = list.filter((f) => !f.driveParentId);
+      list = list.filter((f) => !f.trashed);
+
+      if (viewTab === "favorites" || favorites) {
+        list = list.filter((f) => f.isFavorite);
+      } else if (viewTab === "folders") {
+        list = list.filter((f) => f.isFolder);
+      } else if (viewTab === "recent") {
+        list = list.filter((f) => !f.isFolder);
+      }
     }
+
+    // Folder navigation hierarchy (if not in search, favorites or trash)
+    if (!query.trim() && viewTab !== "favorites" && viewTab !== "trash" && viewTab !== "recent") {
+      if (parentId) {
+        list = list.filter(
+          (f) => (f.driveParentId || null) === parentId || (f.driveFileId === parentId && f.isFolder)
+        );
+      } else if (viewTab !== "folders") {
+        list = list.filter((f) => !f.driveParentId);
+      }
+    }
+
+    // Category filter
+    if (selectedCategory !== "all") {
+      list = list.filter((f) => !f.isFolder && getFileCategory(f) === selectedCategory);
+    }
+
+    // Search query matching
     if (query.trim()) {
       const q = query.toLowerCase();
       const ext = q.startsWith(".") ? q.slice(1) : q;
@@ -186,14 +247,30 @@ export default function FilesPage() {
         const extMatch = name.includes(q) || name.endsWith(`.${ext}`);
         const mimeMatch = mime.includes(q);
         const summaryMatch = (f.brainSummary || "").toLowerCase().includes(q);
-        return extMatch || mimeMatch || summaryMatch;
+        const tagsMatch = f.tags?.some((t) => t.toLowerCase().includes(q));
+        return extMatch || mimeMatch || summaryMatch || tagsMatch;
       });
     }
+
+    // Duplicates filter
     if (showDuplicates) {
       list = list.filter((f) => !f.isFolder && duplicateIds.has(f.driveFileId));
     }
-    return sortFiles(list, sort);
-  }, [files, favorites, showFolders, parentId, trashed, query, sort, showDuplicates, duplicateIds]);
+
+    return sortFiles(list, sort, sortDirection);
+  }, [
+    files,
+    viewTab,
+    trashed,
+    favorites,
+    parentId,
+    selectedCategory,
+    query,
+    showDuplicates,
+    duplicateIds,
+    sort,
+    sortDirection,
+  ]);
 
   function getFileTime(file: CloudFile) {
     const raw = file.updatedAt || file.createdAt || 0;
@@ -202,28 +279,29 @@ export default function FilesPage() {
   }
 
   const recentFiles = useMemo(() => {
-    if (query || favorites || trashed || showFolders || parentId) return [];
+    if (query || viewTab !== "all" || parentId || selectedCategory !== "all") return [];
     return [...files]
       .filter((f) => !f.isFolder && !f.trashed)
       .sort((a, b) => getFileTime(b) - getFileTime(a))
-      .slice(0, 5);
-  }, [files, query, favorites, trashed, showFolders, parentId]);
+      .slice(0, 4);
+  }, [files, query, viewTab, parentId, selectedCategory]);
 
   const brainPicks = useMemo(() => {
-    if (query || favorites || trashed || showFolders || parentId) return [];
+    if (query || viewTab !== "all" || parentId || selectedCategory !== "all") return [];
     return [...files]
       .filter((f) => !f.isFolder && !f.trashed && f.brainSummary?.trim())
       .sort((a, b) => getFileTime(b) - getFileTime(a))
-      .slice(0, 5);
-  }, [files, query, favorites, trashed, showFolders, parentId]);
+      .slice(0, 4);
+  }, [files, query, viewTab, parentId, selectedCategory]);
 
-  const { selected, selectedItems, hasSelection, isAllSelected, toggle, selectAll, clear, isSelected } = useSelection<CloudFile>(filteredFiles);
+  const { selected, selectedItems, hasSelection, isAllSelected, toggle, selectAll, clear, isSelected } =
+    useSelection<CloudFile>(filteredFiles);
 
   const path = useMemo(() => folderPath(files, parentId), [files, parentId]);
 
   const previewLocation = useMemo(() => {
     if (!previewFile) return "";
-    const parts = [i18n("filesTitle")];
+    const parts = [i18n("filesTitle", "Fichiers")];
     const current = path.map((p) => p.name);
     if (previewFile.driveParentId) {
       const parent = files.find((f) => f.driveFileId === previewFile.driveParentId);
@@ -235,16 +313,17 @@ export default function FilesPage() {
   const quotaPercent = quota && quota.total ? Math.min(100, Math.round((quota.used / quota.total) * 100)) : 0;
 
   function connectDrive() {
-    const id = prompt(i18n("clientId"));
+    const id = prompt(i18n("clientId", "Entrez votre Client ID Google Drive :"));
     if (!id) return;
     setClientId(id);
+    success(i18n("driveConnected", "Google Drive configuré avec succès"));
   }
 
   async function handleCreateFolder(name: string) {
     if (!clientId) return;
     try {
       await createFolder(name, parentId);
-      success(i18n("createFolder"));
+      success(i18n("createFolder", "Dossier créé avec succès"));
       await reload();
     } catch (err) {
       toastError(String(err));
@@ -259,7 +338,7 @@ export default function FilesPage() {
       await renameFile(modal.file.driveFileId, form.name);
       setModal(null);
       setForm({});
-      success(i18n("rename"));
+      success(i18n("rename", "Élément renommé"));
       await reload();
     } catch (err) {
       toastError(String(err));
@@ -274,7 +353,7 @@ export default function FilesPage() {
     try {
       await moveFile(modal.file.driveFileId, targetId, modal.file.driveParentId);
       setModal(null);
-      success(i18n("move"));
+      success(i18n("move", "Fichier déplacé"));
       await reload();
     } catch (err) {
       toastError(String(err));
@@ -298,7 +377,7 @@ export default function FilesPage() {
       if (share?.slug) {
         const link = `${window.location.origin}/share/${share.slug}`;
         await navigator.clipboard.writeText(link).catch(() => {});
-        success(`${i18n("shareThis")}: ${link}`);
+        success(`Lien de partage copié : ${link}`);
       }
       setModal(null);
       setForm({});
@@ -326,7 +405,7 @@ export default function FilesPage() {
       if (drop?.slug) {
         const link = `${window.location.origin}/drop/${drop.slug}`;
         await navigator.clipboard.writeText(link).catch(() => {});
-        success(`${i18n("drop")}: ${link}`);
+        success(`Lien Drop créé : ${link}`);
       }
       setModal(null);
       setForm({});
@@ -340,7 +419,9 @@ export default function FilesPage() {
   async function downloadDriveFile(file: CloudFile) {
     if (!clientId) return;
     try {
-      const res = await fetchWorker(`/api/google-drive/download?clientId=${encodeURIComponent(clientId)}&fileId=${encodeURIComponent(file.driveFileId)}`);
+      const res = await fetchWorker(
+        `/api/google-drive/download?clientId=${encodeURIComponent(clientId)}&fileId=${encodeURIComponent(file.driveFileId)}`
+      );
       if (res?.data?.url) {
         window.open(res.data.url, "_blank");
       } else if (res?.data) {
@@ -359,7 +440,7 @@ export default function FilesPage() {
     try {
       await Promise.all(selectedItems.map((f) => trashFile(f.driveFileId)));
       clear();
-      success(i18n("trash"));
+      success(i18n("trash", "Éléments déplacés dans la corbeille"));
     } catch (err) {
       toastError(String(err));
     }
@@ -369,7 +450,7 @@ export default function FilesPage() {
     try {
       await Promise.all(selectedItems.map((f) => deleteFile(f.driveFileId)));
       clear();
-      success(i18n("deleted"));
+      success(i18n("deleted", "Éléments supprimés définitivement"));
     } catch (err) {
       toastError(String(err));
     }
@@ -379,7 +460,7 @@ export default function FilesPage() {
     try {
       await Promise.all(selectedItems.map((f) => favoriteFile(f.driveFileId, !f.isFavorite)));
       clear();
-      success(i18n("saved"));
+      success(i18n("saved", "Favoris mis à jour"));
     } catch (err) {
       toastError(String(err));
     }
@@ -406,605 +487,833 @@ export default function FilesPage() {
 
   function fileContextItems(file: CloudFile) {
     return [
-      { id: "open", label: file.isFolder ? i18n("open") : i18n("preview", "Aperçu"), icon: file.isFolder ? "folder-open" : "eye", onClick: () => openFile(file) },
-      { id: "share", label: i18n("share"), icon: "share-2", onClick: () => openShare(file) },
-      { id: "rename", label: i18n("rename"), icon: "pencil", onClick: () => { setForm({ name: file.name }); setModal({ type: "rename", file }); } },
-      { id: "move", label: i18n("move"), icon: "folder-input", onClick: () => setModal({ type: "move", file }) },
-      { id: "favorite", label: file.isFavorite ? i18n("removeFromFavorites") : i18n("addToFavorites"), icon: file.isFavorite ? "heart-off" : "heart", onClick: () => favoriteFile(file.driveFileId, !file.isFavorite) },
-      { id: "copy-name", label: i18n("copyName"), icon: "copy", onClick: () => navigator.clipboard.writeText(file.name).then(() => success(i18n("copied"))).catch(() => {}) },
+      {
+        id: "open",
+        label: file.isFolder ? i18n("open", "Ouvrir") : i18n("preview", "Aperçu"),
+        icon: file.isFolder ? "folder" : "image",
+        onClick: () => openFile(file),
+      },
+      { id: "share", label: i18n("share", "Partager"), icon: "share-2", onClick: () => openShare(file) },
+      {
+        id: "rename",
+        label: i18n("rename", "Renommer"),
+        icon: "pencil",
+        onClick: () => {
+          setForm({ name: file.name });
+          setModal({ type: "rename", file });
+        },
+      },
+      { id: "move", label: i18n("move", "Déplacer"), icon: "folder-plus", onClick: () => setModal({ type: "move", file }) },
+      {
+        id: "favorite",
+        label: file.isFavorite ? i18n("removeFromFavorites", "Retirer des favoris") : i18n("addToFavorites", "Ajouter aux favoris"),
+        icon: file.isFavorite ? "heart-off" : "heart",
+        onClick: () => favoriteFile(file.driveFileId, !file.isFavorite),
+      },
+      {
+        id: "copy-name",
+        label: i18n("copyName", "Copier le nom"),
+        icon: "copy",
+        onClick: () => navigator.clipboard.writeText(file.name).then(() => success(i18n("copied", "Copié"))).catch(() => {}),
+      },
       ...(file.webViewLink
-        ? [{ id: "copy-link", label: i18n("copyLink", "Copier le lien"), icon: "link", onClick: () => navigator.clipboard.writeText(file.webViewLink || "").then(() => success(i18n("copied"))).catch(() => {}) }]
+        ? [
+            {
+              id: "copy-link",
+              label: i18n("copyLink", "Copier le lien"),
+              icon: "link",
+              onClick: () =>
+                navigator.clipboard.writeText(file.webViewLink || "").then(() => success(i18n("copied", "Lien copié"))).catch(() => {}),
+            },
+          ]
         : []),
       { id: "sep", label: "", separator: true },
-      ...(trashed
+      ...(viewTab === "trash" || trashed
         ? [
-            { id: "restore", label: i18n("restore"), icon: "rotate-ccw", onClick: () => restoreFile(file.driveFileId) },
-            { id: "delete", label: i18n("delete"), icon: "trash", danger: true, onClick: () => deleteFile(file.driveFileId) },
+            { id: "restore", label: i18n("restore", "Restaurer"), icon: "rotate-ccw", onClick: () => restoreFile(file.driveFileId) },
+            { id: "delete", label: i18n("delete", "Supprimer définitivement"), icon: "trash-2", danger: true, onClick: () => deleteFile(file.driveFileId) },
           ]
         : [
-            { id: "trash", label: i18n("trash"), icon: "trash-2", danger: true, onClick: () => trashFile(file.driveFileId) },
+            { id: "trash", label: i18n("trash", "Mettre à la corbeille"), icon: "trash-2", danger: true, onClick: () => trashFile(file.driveFileId) },
           ]),
     ];
   }
 
+  const hasActiveFilters =
+    query.trim().length > 0 ||
+    selectedCategory !== "all" ||
+    showDuplicates ||
+    parentId !== null;
+
   return (
     <div className="h-full min-h-0 w-full flex flex-col overflow-hidden">
-      <div className="shrink-0 mb-3 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-3 shadow-sm backdrop-blur-[var(--panel-blur)]">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      {/* Header Bar */}
+      <div className="shrink-0 mb-3 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.45] p-3.5 shadow-sm backdrop-blur-[var(--panel-blur)]">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg font-semibold tracking-tight text-[var(--text-primary)]">
-                {i18n("filesTitle")}
+            {/* Title & Drive status badge */}
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-lg font-bold tracking-tight text-[var(--text-primary)]">
+                {i18n("filesTitle", "Fichiers")}
               </h1>
-              {quota && (
-                <span className="hidden items-center gap-1.5 rounded-full border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] px-2 py-0.5 text-[10px] font-normal text-[var(--text-muted)] sm:inline-flex">
-                  {formatBytes(quota.used)} / {formatBytes(quota.total)}
-                </span>
+              <button
+                type="button"
+                onClick={connectDrive}
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-medium transition-all hover:scale-105",
+                  clientId
+                    ? "border-[var(--success)]/30 bg-[var(--success)]/10 text-[var(--success)]"
+                    : "border-[var(--panel-border)]/[0.2] bg-[var(--panel-bg)]/[0.5] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                )}
+              >
+                <span className={cn("h-1.5 w-1.5 rounded-full", clientId ? "bg-[var(--success)]" : "bg-[var(--text-muted)]")} />
+                {clientId ? "Google Drive connecté" : "Connecter un Drive"}
+              </button>
+
+              {/* Storage Quota widget */}
+              {quota && quota.total > 0 && (
+                <div className="hidden items-center gap-2 rounded-xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.3] px-2.5 py-1 text-[10px] sm:inline-flex">
+                  <HardDrive className="h-3 w-3 text-[var(--text-muted)]" />
+                  <span className="font-mono text-[var(--text-muted)]">
+                    {formatBytes(quota.used)} / {formatBytes(quota.total)}
+                  </span>
+                  <div className="h-1.5 w-12 overflow-hidden rounded-full bg-[var(--panel-border)]/[0.3]">
+                    <div
+                      className={cn(
+                        "h-full rounded-full transition-all duration-300",
+                        quotaPercent >= 90 ? "bg-[var(--danger)]" : "bg-[var(--accent-primary)]"
+                      )}
+                      style={{ width: `${quotaPercent}%` }}
+                    />
+                  </div>
+                </div>
               )}
             </div>
-            {parentId !== null ? (
-              <nav aria-label={i18n("folders")} className="mt-0.5 flex flex-wrap items-center gap-1 text-[11px] text-[var(--text-muted)]">
-                <button type="button" onClick={() => setParentId(null)} className="hover:text-[var(--text-primary)]">{i18n("filesTitle")}</button>
-                {path.map((folder) => (
-                  <span key={folder.driveFileId} className="flex items-center gap-1">
-                    <Icon name="chevron-right" className="h-3 w-3" />
-                    <button
-                      type="button"
-                      onClick={() => setParentId(folder.driveFileId)}
-                      className="hover:text-[var(--text-primary)]"
-                    >
-                      {folder.name}
-                    </button>
-                  </span>
-                ))}
-                <Icon name="chevron-right" className="h-3 w-3" />
-                <span className="text-[var(--text-primary)]">{files.find((f) => f.driveFileId === parentId)?.name}</span>
-              </nav>
-            ) : (
-              <p className="mt-0.5 text-[11px] text-[var(--text-muted)]">
-                {clientId ? i18n("driveConnected", "Google Drive connecté") : i18n("noDriveConnected", "Aucun Drive connecté")}
-              </p>
-            )}
+
+            {/* Breadcrumb navigation */}
+            <nav aria-label="Breadcrumb" className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-[var(--text-muted)]">
+              <button
+                type="button"
+                onClick={() => setParentId(null)}
+                className={cn(
+                  "flex items-center gap-1 transition-colors hover:text-[var(--text-primary)]",
+                  !parentId && "font-semibold text-[var(--accent-primary)]"
+                )}
+              >
+                <Folder className="h-3.5 w-3.5" />
+                <span>Racine</span>
+              </button>
+              {path.map((folder) => (
+                <span key={folder.driveFileId} className="flex items-center gap-1">
+                  <ChevronRight className="h-3 w-3 opacity-40" />
+                  <button
+                    type="button"
+                    onClick={() => setParentId(folder.driveFileId)}
+                    className={cn(
+                      "transition-colors hover:text-[var(--text-primary)]",
+                      folder.driveFileId === parentId ? "font-semibold text-[var(--accent-primary)]" : ""
+                    )}
+                  >
+                    {folder.name}
+                  </button>
+                </span>
+              ))}
+            </nav>
           </div>
+
+          {/* Action CTAs */}
           <div className="flex flex-wrap items-center gap-2">
             <Button
               size="sm"
-              onClick={() => { setAddTab("upload"); setAddOpen(true); }}
-              leftIcon={<Icon name="plus" className="h-4 w-4" />}
+              onClick={() => {
+                setAddTab("upload");
+                setAddOpen(true);
+              }}
+              leftIcon={<Plus className="h-4 w-4" />}
+              className="shadow-sm shadow-[var(--accent-primary)]/20"
             >
               {i18n("add", "Ajouter")}
             </Button>
+
+            {clientId && (
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => {
+                  setAddTab("folder");
+                  setAddOpen(true);
+                }}
+                leftIcon={<FolderPlus className="h-4 w-4" />}
+              >
+                Nouveau dossier
+              </Button>
+            )}
+
             {clientId && (
               <Button
                 size="sm"
                 variant="ghost"
-                onClick={() => { setForm({ visibility: "public" }); setModal({ type: "drop" }); }}
-                leftIcon={<Icon name="inbox" className="h-4 w-4" />}
+                onClick={() => {
+                  setForm({ visibility: "public" });
+                  setModal({ type: "drop" });
+                }}
+                leftIcon={<Inbox className="h-4 w-4" />}
               >
-                {i18n("createDrop")}
+                {i18n("createDrop", "Drop")}
               </Button>
             )}
+
             <Button
               size="sm"
               variant="ghost"
               onClick={() => setAdminOpen(true)}
-              leftIcon={<Icon name="shield" className="h-4 w-4" />}
+              leftIcon={<Shield className="h-4 w-4" />}
             >
-              {i18n("admin")}
+              {i18n("admin", "Admin")}
             </Button>
+
             <button
               type="button"
               onClick={reload}
-              className="rounded-[var(--panel-radius)] p-2 text-[var(--text-muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]"
-              aria-label={i18n("refresh")}
+              className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] text-[var(--text-muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]"
+              aria-label={i18n("refresh", "Actualiser")}
+              title={i18n("refresh", "Actualiser")}
             >
-              <Icon name="refresh-cw" className="h-4 w-4" />
+              <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin text-[var(--accent-primary)]")} />
             </button>
           </div>
         </div>
 
-        <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[var(--panel-border)]/[0.12] pt-3">
-          <TabList
-            tabs={[
-              { id: "all", label: i18n("all"), content: null },
-              { id: "folders", label: i18n("folders"), content: null },
-              { id: "favorites", label: i18n("favorites"), content: null },
-              { id: "trash", label: i18n("trash"), content: null },
-            ]}
-            activeId={showFolders ? "folders" : favorites ? "favorites" : trashed ? "trash" : "all"}
-            onSelect={(id) => {
-              setShowFolders(id === "folders");
-              setFavorites(id === "favorites");
-              setTrashed(id === "trash");
-            }}
-          />
-          <Input
-            ref={searchRef}
-            type="search"
-            icon="search"
-            clearable
-            aria-label={i18n("searchFiles")}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={i18n("searchFiles")}
-            className="min-w-0 flex-1"
-          />
-          <Select
-            value={sort}
-            onChange={(value) => setSort(value as typeof sort)}
-            options={[
-              { id: "name", label: i18n("sortByName") },
-              { id: "size", label: i18n("sortBySize") },
-              { id: "date", label: i18n("sortByDate") },
-              { id: "type", label: i18n("sortByType") },
-            ]}
-            aria-label={i18n("sortBy")}
-            className="min-w-0"
-          />
-          {duplicateCount > 0 && (
+        {/* Navigation Tabs & Toolbar */}
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--panel-border)]/[0.1] pt-3">
+          {/* Main View Tabs */}
+          <div className="flex flex-wrap items-center gap-1 rounded-xl border border-[var(--panel-border)]/[0.1] bg-[var(--panel-bg)]/[0.3] p-1">
+            {[
+              { id: "all", label: "Tous", icon: "folder" },
+              { id: "folders", label: "Dossiers", icon: "folder" },
+              { id: "recent", label: "Récents", icon: "history" },
+              { id: "favorites", label: "Favoris", icon: "heart" },
+              { id: "trash", label: "Corbeille", icon: "trash-2" },
+            ].map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => {
+                  setViewTab(t.id as typeof viewTab);
+                  setTrashed(t.id === "trash");
+                  setFavorites(t.id === "favorites");
+                }}
+                className={cn(
+                  "flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition-all",
+                  viewTab === t.id
+                    ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-semibold shadow-sm"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                )}
+              >
+                <Icon name={t.icon} className="h-3.5 w-3.5" />
+                <span>{t.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Search, Sort, View Controls */}
+          <div className="flex flex-1 flex-wrap items-center justify-end gap-2">
+            {/* Search Input */}
+            <div className="relative min-w-[200px] flex-1 sm:max-w-xs">
+              <Input
+                ref={searchRef}
+                type="search"
+                icon="search"
+                clearable
+                aria-label={i18n("searchFiles", "Rechercher dans les fichiers")}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Rechercher... (Ctrl+K)"
+                className="w-full text-xs"
+              />
+            </div>
+
+            {/* Sort Select */}
+            <Select
+              value={sort}
+              onChange={(value) => setSort(value as typeof sort)}
+              options={[
+                { id: "date", label: "Date de modif." },
+                { id: "name", label: "Nom (A-Z)" },
+                { id: "size", label: "Taille" },
+                { id: "type", label: "Type" },
+              ]}
+              aria-label={i18n("sortBy", "Trier par")}
+              className="min-w-0 text-xs"
+            />
+
+            {/* Sort direction toggle */}
             <button
               type="button"
-              onClick={() => setShowDuplicates((s) => !s)}
-              className={cn(
-                "rounded-xl border px-2.5 py-1.5 text-xs font-medium transition-colors",
-                showDuplicates
-                  ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
-                  : "border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.25] text-[var(--text-muted)] hover:text-[var(--text-primary)]",
-              )}
-              aria-label={i18n("duplicates", "Doublons")}
-              title={i18n("duplicates", "Doublons")}
+              onClick={() => setSortDirection((d) => (d === "asc" ? "desc" : "asc"))}
+              className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.3] text-[var(--text-muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]"
+              title={sortDirection === "asc" ? "Ordre croissant" : "Ordre décroissant"}
             >
-              <Icon name="copy" className="mr-1.5 inline h-3.5 w-3.5" />
-              {duplicateCount} {i18n("duplicates", "doublons")}
+              <ArrowUpDown className={cn("h-3.5 w-3.5 transition-transform", sortDirection === "desc" && "rotate-180")} />
+            </button>
+
+            {/* Duplicates badge toggle if any */}
+            {duplicateCount > 0 && (
+              <button
+                type="button"
+                onClick={() => setShowDuplicates((s) => !s)}
+                className={cn(
+                  "flex items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-xs font-medium transition-colors",
+                  showDuplicates
+                    ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]"
+                    : "border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.3] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                )}
+                title="Afficher uniquement les doublons détectés"
+              >
+                <Copy className="h-3 w-3" />
+                <span>{duplicateCount} doublons</span>
+              </button>
+            )}
+
+            {/* Grid / List View Toggle */}
+            <div className="flex items-center gap-0.5 rounded-xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.3] p-0.5">
+              <button
+                type="button"
+                onClick={() => setViewMode("grid")}
+                className={cn(
+                  "rounded-lg p-1.5 transition-colors",
+                  viewMode === "grid"
+                    ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]"
+                    : "text-[var(--text-muted)] hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]"
+                )}
+                aria-label="Vue Grille"
+                title="Vue Grille"
+              >
+                <Grid2X2 className="h-3.5 w-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("list")}
+                className={cn(
+                  "rounded-lg p-1.5 transition-colors",
+                  viewMode === "list"
+                    ? "bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]"
+                    : "text-[var(--text-muted)] hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]"
+                )}
+                aria-label="Vue Liste"
+                title="Vue Liste"
+              >
+                <ListIcon className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Category Filter Chips Bar */}
+        <div className="mt-2.5 flex items-center gap-1.5 overflow-x-auto os-scroll pb-1">
+          {FILE_CATEGORIES.map((cat) => (
+            <button
+              key={cat.id}
+              type="button"
+              onClick={() => setSelectedCategory(cat.id)}
+              className={cn(
+                "flex shrink-0 items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-medium transition-all",
+                selectedCategory === cat.id
+                  ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-semibold shadow-sm"
+                  : "border-transparent bg-[var(--panel-bg)]/[0.25] text-[var(--text-muted)] hover:bg-[var(--panel-bg)]/[0.5] hover:text-[var(--text-primary)]"
+              )}
+            >
+              <Icon name={cat.icon} className="h-3 w-3" />
+              <span>{cat.label}</span>
+            </button>
+          ))}
+
+          {/* Reset filter button if any filter active */}
+          {hasActiveFilters && (
+            <button
+              type="button"
+              onClick={() => {
+                setQuery("");
+                setSelectedCategory("all");
+                setShowDuplicates(false);
+                setParentId(null);
+              }}
+              className="flex shrink-0 items-center gap-1 rounded-lg border border-[var(--danger)]/20 bg-[var(--danger)]/10 px-2.5 py-1 text-[11px] font-semibold text-[var(--danger)] transition-all hover:bg-[var(--danger)]/20"
+            >
+              <X className="h-3 w-3" />
+              <span>Réinitialiser filtres</span>
             </button>
           )}
-
-          <div className="flex items-center gap-1 rounded-xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.25] p-1">
-            <button
-              type="button"
-              onClick={() => setViewMode("list")}
-              className={cn(
-                "rounded-lg p-1.5 transition-colors",
-                viewMode === "list" ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]" : "text-[var(--text-muted)] hover:bg-[var(--panel-bg)]",
-              )}
-              aria-label={i18n("listView", "List")}
-              title={i18n("listView", "List")}
-            >
-              <Icon name="list" className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode("grid")}
-              className={cn(
-                "rounded-lg p-1.5 transition-colors",
-                viewMode === "grid" ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]" : "text-[var(--text-muted)] hover:bg-[var(--panel-bg)]",
-              )}
-              aria-label={i18n("gridView", "Grid")}
-              title={i18n("gridView", "Grid")}
-            >
-              <Icon name="grid-2x2" className="h-4 w-4" />
-            </button>
-          </div>
         </div>
       </div>
-      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-5 p-1">
-      {quota && quotaPercent >= 90 && (
-        <div className="rounded-2xl border border-[var(--danger)]/20 bg-[var(--danger)]/10 p-3 text-xs text-[var(--danger)]">
-          {i18n("storageAlmostFull", "Stockage presque plein")}: {formatBytes(quota.used)} / {formatBytes(quota.total)}
-        </div>
-      )}
 
-
-
-      <div className="flex flex-wrap items-center gap-2">
-        {(parentId !== null || query || showFolders || favorites || trashed || sort !== "name" || showDuplicates) && (
-          <>
-            {parentId !== null && (
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => setParentId(null)}
-                rightIcon={<Icon name="x" className="h-3 w-3" />}
-              >
-                {i18n("folder")}: {files.find((f) => f.driveFileId === parentId)?.name || "..."}
-              </Button>
-            )}
-            {query && (
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => setQuery("")}
-                rightIcon={<Icon name="x" className="h-3 w-3" />}
-              >
-                {i18n("search")}: {query}
-              </Button>
-            )}
-            {showFolders && (
-              <Button size="sm" variant="secondary" onClick={() => setShowFolders(false)} rightIcon={<Icon name="x" className="h-3 w-3" />}>
-                {i18n("folders")}
-              </Button>
-            )}
-            {favorites && (
-              <Button size="sm" variant="secondary" onClick={() => setFavorites(false)} rightIcon={<Icon name="x" className="h-3 w-3" />}>
-                {i18n("favorites")}
-              </Button>
-            )}
-            {trashed && (
-              <Button size="sm" variant="secondary" onClick={() => setTrashed(false)} rightIcon={<Icon name="x" className="h-3 w-3" />}>
-                {i18n("trash")}
-              </Button>
-            )}
-            {sort !== "name" && (
-              <Button size="sm" variant="secondary" onClick={() => setSort("name")} rightIcon={<Icon name="x" className="h-3 w-3" />}>
-                {i18n("sortBy")}: {i18n(sort)}
-              </Button>
-            )}
-            {showDuplicates && (
-              <Button size="sm" variant="secondary" onClick={() => setShowDuplicates(false)} rightIcon={<Icon name="x" className="h-3 w-3" />}>
-                {i18n("duplicates", "Doublons")}
-              </Button>
-            )}
-          </>
-        )}
-      </div>
-
-      {recentFiles.length > 0 && (
-        <section className="space-y-2" aria-label={i18n("recent", "Récents")}>
-          <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-[var(--accent-primary)]" />
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">{i18n("recent", "Récemment utilisés")}</h2>
-          </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-            {recentFiles.map((file) => (
-              <ContextMenu key={`recent-${file.id}`} items={fileContextItems(file)}>
-                <FileCard
-                  file={file}
-                  viewMode="grid"
-                  trashed={trashed}
-                  clientId={clientId}
-                  onOpen={() => openFile(file)}
-                  onDownload={() => downloadDriveFile(file)}
-
-                  onFavorite={() => favoriteFile(file.driveFileId, !file.isFavorite)}
-                  onTrash={() => trashFile(file.driveFileId)}
-                  onDelete={() => deleteFile(file.driveFileId)}
-                  onRestore={() => restoreFile(file.driveFileId)}
-                />
-              </ContextMenu>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {brainPicks.length > 0 && (
-        <section className="space-y-2" aria-label={i18n("brainPicks", "Suggestions Brain")}>
-          <div className="flex items-center gap-2">
-            <Icon name="brain" className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">{i18n("brainPicks", "Suggestions Brain")}</h2>
-          </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-            {brainPicks.map((file) => (
-              <ContextMenu key={`brain-${file.id}`} items={fileContextItems(file)}>
-                <FileCard
-                  file={file}
-                  viewMode="grid"
-                  trashed={trashed}
-                  clientId={clientId}
-                  onOpen={() => openFile(file)}
-                  onDownload={() => downloadDriveFile(file)}
-
-                  onFavorite={() => favoriteFile(file.driveFileId, !file.isFavorite)}
-                  onTrash={() => trashFile(file.driveFileId)}
-                  onDelete={() => deleteFile(file.driveFileId)}
-                  onRestore={() => restoreFile(file.driveFileId)}
-                />
-              </ContextMenu>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {hasSelection && (
-        <BulkActionBar
-          count={selected.size}
-          onFavorite={trashed ? undefined : bulkFavorite}
-          onDelete={trashed ? bulkDelete : bulkTrash}
-          onClear={clear}
-        />
-      )}
-
-      {!loading && filteredFiles.length > 0 && (
-        <Checkbox
-          checked={isAllSelected}
-          onCheckedChange={(checked) => (checked ? selectAll() : clear())}
-          label={i18n("selectAll")}
-          className="text-sm text-[var(--text-muted)]"
-        />
-      )}
-
-
-
-      {error && (
-        <EmptyState
-          icon="alert-circle"
-          title={i18n("error", "Erreur")}
-          description={error.message}
-          action={
-            <Button size="sm" onClick={reload} leftIcon={<Icon name="refresh-cw" className="h-4 w-4" />}>
-              {i18n("retry")}
+      {/* Main Explorer Content Area */}
+      <div className="min-h-0 w-full flex-1 overflow-y-auto os-scroll space-y-6 p-1">
+        {/* Storage Quota Warning banner if >= 90% */}
+        {quota && quotaPercent >= 90 && (
+          <div className="rounded-2xl border border-[var(--danger)]/30 bg-[var(--danger)]/10 p-3.5 text-xs text-[var(--danger)] flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <HardDrive className="h-4 w-4" />
+              <span>
+                <strong>Attention :</strong> Espace de stockage presque saturé ({quotaPercent}% utilisé — {formatBytes(quota.used)} / {formatBytes(quota.total)}).
+              </span>
+            </div>
+            <Button size="sm" variant="danger" onClick={() => setViewTab("trash")}>
+              Vider la corbeille
             </Button>
-          }
-        />
-      )}
-
-      {viewMode === "list" && !loading && filteredFiles.length > 0 && (
-        <div className="sticky top-0 z-10 hidden rounded-2xl border-b border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-[var(--panel-padding)] text-[11px] font-medium text-[var(--text-muted)] backdrop-blur-[var(--panel-blur)] sm:grid sm:grid-cols-[1.5rem_2.5rem_minmax(0,1fr)_6rem_6rem_7rem] sm:items-center sm:gap-3">
-          <span />
-          <span />
-          <span>{i18n("name", "Nom")}</span>
-          <span className="text-right">{i18n("size", "Taille")}</span>
-          <span className="text-right">{i18n("modified", "Date")}</span>
-          <span className="text-right">{i18n("actions", "Actions")}</span>
-        </div>
-      )}
-
-      <div className={cn("grid gap-3", viewMode === "list" ? "grid-cols-1" : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 auto-rows-fr")}>
-        {loading ? (
-          <>
-            {[...Array(viewMode === "list" ? 4 : 8)].map((_, i) => (
-              <div
-                key={i}
-                className="h-full min-w-0 overflow-hidden rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)] p-[var(--panel-padding)] shadow-sm"
-              >
-                <div className={cn("h-full animate-pulse", viewMode === "grid" ? "flex flex-col items-center justify-center gap-2" : "flex items-center gap-3")}>
-                  <div className={cn("shrink-0 rounded-[var(--panel-radius)] bg-[var(--text-primary)]/[0.08]", viewMode === "grid" ? "h-14 w-14" : "h-10 w-10")} />
-                  <div className="space-y-2">
-                    <div className="h-3.5 w-32 rounded bg-[var(--text-primary)]/[0.08]" />
-                    <div className="h-2.5 w-20 rounded bg-[var(--text-primary)]/[0.08]" />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </>
-        ) : filteredFiles.length === 0 ? (
-          !clientId ? (
-            <div className="col-span-full">
-              <EmptyState
-                icon="cloud"
-                title={i18n("connectToStart", "Connectez un Drive pour commencer")}
-                description={i18n("connectToStartDescription", "Reliez votre Google Drive pour gérer, prévisualiser et partager vos fichiers.")}
-                action={
-                  <Button onClick={connectDrive} leftIcon={<Icon name="cloud" className="h-4 w-4" />}>
-                    {i18n("connectDrive", "Connecter Google Drive")}
-                  </Button>
-                }
-              />
-            </div>
-          ) : (
-            <div className="col-span-full flex min-h-[50vh] flex-col items-center justify-center p-6">
-              <div className="w-full max-w-xl rounded-3xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.25] p-8 text-center shadow-sm backdrop-blur-[var(--panel-blur)]">
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
-                  <Icon name={trashed ? "trash-2" : showDuplicates ? "copy" : showFolders ? "folder" : "cloud-upload"} className="h-8 w-8" />
-                </div>
-                <p className="mt-4 text-base font-semibold text-[var(--text-primary)]">
-                  {showDuplicates ? i18n("noDuplicates", "Aucun doublon détecté") : showFolders ? i18n("noFolders", "Aucun dossier") : i18n("noFiles", "Aucun fichier")}
-                </p>
-                <p className="mx-auto mt-1 max-w-sm text-xs text-[var(--text-muted)]">
-                  {showDuplicates
-                    ? i18n("noDuplicatesDescription", "Aucun doublon détecté.")
-                    : showFolders
-                      ? i18n("noFoldersDescription", "Créez un dossier pour organiser vos fichiers.")
-                      : i18n("noFilesDescription", "Importez, créez un dossier ou ajoutez un lien pour commencer.")}
-                </p>
-                <div className="mt-5 space-y-3">
-                  <FileUploadZone
-                    onFiles={(files) => { setAddTab("upload"); setDroppedFiles(files); setAddOpen(true); }}
-                    onClick={() => { setAddTab("upload"); setAddOpen(true); }}
-                  />
-                  <div className="flex flex-wrap items-center justify-center gap-2">
-                    <Button size="sm" onClick={() => { setAddTab("folder"); setAddOpen(true); }} leftIcon={<Icon name="folder-plus" className="h-4 w-4" />}>
-                      {i18n("createFolder")}
-                    </Button>
-                    <Button size="sm" variant="secondary" onClick={() => { setAddTab("link"); setAddOpen(true); }} leftIcon={<Icon name="link" className="h-4 w-4" />}>
-                      {i18n("addLink", "Ajouter un lien")}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )
-        ) : (
-          filteredFiles.map((file, i) => (
-            <motion.div
-              key={file.id}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.15, delay: i * 0.02 }}
-              className="h-full"
-            >
-            <ContextMenu items={fileContextItems(file)}>
-              <FileCard
-                file={file}
-                viewMode={viewMode}
-                selected={isSelected(file.id)}
-                trashed={trashed}
-                clientId={clientId}
-                onToggle={() => toggle(file.id)}
-                onOpen={() => openFile(file)}
-                onDownload={() => downloadDriveFile(file)}
-                onFavorite={() => favoriteFile(file.driveFileId, !file.isFavorite)}
-                onTrash={() => trashFile(file.driveFileId)}
-                onDelete={() => deleteFile(file.driveFileId)}
-                onRestore={() => restoreFile(file.driveFileId)}
-              />
-            </ContextMenu>
-            </motion.div>
-          ))
+          </div>
         )}
-      </div>
+
+        {/* Smart Section: Récemment utilisés */}
+        {recentFiles.length > 0 && (
+          <section className="space-y-2.5" aria-label="Récents">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Clock className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
+                <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                  Récemment consultés
+                </h2>
+              </div>
+              <span className="text-[10px] text-[var(--text-muted)]">{recentFiles.length} fichiers</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              {recentFiles.map((file) => (
+                <ContextMenu key={`recent-${file.id}`} items={fileContextItems(file)}>
+                  <FileCard
+                    file={file}
+                    viewMode="grid"
+                    trashed={trashed}
+                    clientId={clientId}
+                    onOpen={() => openFile(file)}
+                    onDownload={() => downloadDriveFile(file)}
+                    onFavorite={() => favoriteFile(file.driveFileId, !file.isFavorite)}
+                    onTrash={() => trashFile(file.driveFileId)}
+                    onDelete={() => deleteFile(file.driveFileId)}
+                    onRestore={() => restoreFile(file.driveFileId)}
+                  />
+                </ContextMenu>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Smart Section: Suggestions ETHONE Brain */}
+        {brainPicks.length > 0 && (
+          <section className="space-y-2.5" aria-label="Suggestions Brain">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Brain className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
+                <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                  Suggestions ETHONE Brain
+                </h2>
+              </div>
+              <span className="rounded-md border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 px-1.5 py-0.5 text-[9px] font-semibold text-[var(--accent-primary)]">
+                IA analysée
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              {brainPicks.map((file) => (
+                <ContextMenu key={`brain-${file.id}`} items={fileContextItems(file)}>
+                  <FileCard
+                    file={file}
+                    viewMode="grid"
+                    trashed={trashed}
+                    clientId={clientId}
+                    onOpen={() => openFile(file)}
+                    onDownload={() => downloadDriveFile(file)}
+                    onFavorite={() => favoriteFile(file.driveFileId, !file.isFavorite)}
+                    onTrash={() => trashFile(file.driveFileId)}
+                    onDelete={() => deleteFile(file.driveFileId)}
+                    onRestore={() => restoreFile(file.driveFileId)}
+                  />
+                </ContextMenu>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Multi-Selection Bulk Action Bar */}
+        {hasSelection && (
+          <BulkActionBar
+            count={selected.size}
+            onFavorite={trashed ? undefined : bulkFavorite}
+            onDelete={trashed ? bulkDelete : bulkTrash}
+            onClear={clear}
+          />
+        )}
+
+        {/* Select All Checkbox & Count info */}
+        {!loading && filteredFiles.length > 0 && (
+          <div className="flex items-center justify-between px-1">
+            <Checkbox
+              checked={isAllSelected}
+              onCheckedChange={(checked) => (checked ? selectAll() : clear())}
+              label={
+                <span className="text-xs text-[var(--text-muted)]">
+                  Tout sélectionner ({filteredFiles.length} élément{filteredFiles.length > 1 ? "s" : ""})
+                </span>
+              }
+            />
+            <span className="text-[11px] text-[var(--text-muted)]">
+              {selected.size > 0 && `${selected.size} sélectionné${selected.size > 1 ? "s" : ""}`}
+            </span>
+          </div>
+        )}
+
+        {/* Error notification */}
+        {error && (
+          <EmptyState
+            icon="alert-circle"
+            title={i18n("error", "Erreur de chargement")}
+            description={error.message}
+            action={
+              <Button size="sm" onClick={reload} leftIcon={<RefreshCw className="h-4 w-4" />}>
+                {i18n("retry", "Réessayer")}
+              </Button>
+            }
+          />
+        )}
+
+        {/* List View Table Header */}
+        {viewMode === "list" && !loading && filteredFiles.length > 0 && (
+          <div className="sticky top-0 z-10 hidden rounded-xl border border-[var(--panel-border)]/[0.1] bg-[var(--panel-bg)]/[0.7] px-3 py-2 text-[11px] font-semibold text-[var(--text-muted)] backdrop-blur-xl sm:grid sm:grid-cols-[1.5rem_2.5rem_minmax(0,1fr)_6rem_6rem_7rem] sm:items-center sm:gap-3">
+            <span />
+            <span />
+            <span>Nom de l&apos;élément</span>
+            <span className="text-right">Taille</span>
+            <span className="text-right">Modifié le</span>
+            <span className="text-right">Actions</span>
+          </div>
+        )}
+
+        {/* Main Items Grid / List Container */}
+        <div
+          className={cn(
+            "grid gap-2.5",
+            viewMode === "list"
+              ? "grid-cols-1"
+              : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 auto-rows-fr"
+          )}
+        >
+          {loading ? (
+            <>
+              {[...Array(viewMode === "list" ? 6 : 10)].map((_, i) => (
+                <div
+                  key={i}
+                  className="overflow-hidden rounded-2xl border border-[var(--panel-border)]/[0.1] bg-[var(--panel-bg)]/[0.3] p-3 shadow-sm"
+                >
+                  <div
+                    className={cn(
+                      "animate-pulse",
+                      viewMode === "grid"
+                        ? "flex flex-col items-center gap-3"
+                        : "flex items-center gap-3"
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        "rounded-xl bg-[var(--text-primary)]/[0.08]",
+                        viewMode === "grid" ? "h-24 w-full" : "h-9 w-9 shrink-0"
+                      )}
+                    />
+                    <div className="w-full space-y-1.5">
+                      <div className="h-3.5 w-3/4 rounded bg-[var(--text-primary)]/[0.08]" />
+                      <div className="h-2.5 w-1/2 rounded bg-[var(--text-primary)]/[0.08]" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </>
+          ) : filteredFiles.length === 0 ? (
+            !clientId ? (
+              <div className="col-span-full">
+                <EmptyState
+                  icon="cloud"
+                  title="Connectez un Drive pour commencer"
+                  description="Reliez votre Google Drive pour gérer, prévisualiser, synchroniser et partager vos fichiers en toute fluidité."
+                  action={
+                    <Button onClick={connectDrive} leftIcon={<Cloud className="h-4 w-4" />}>
+                      Connecter Google Drive
+                    </Button>
+                  }
+                />
+              </div>
+            ) : (
+              <div className="col-span-full flex min-h-[40vh] flex-col items-center justify-center p-4">
+                <div className="w-full max-w-lg rounded-3xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.3] p-8 text-center shadow-xl backdrop-blur-2xl">
+                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] shadow-md">
+                    <Icon
+                      name={
+                        trashed
+                          ? "trash-2"
+                          : showDuplicates
+                          ? "copy"
+                          : viewTab === "folders"
+                          ? "folder"
+                          : viewTab === "favorites"
+                          ? "heart"
+                          : "cloud-upload"
+                      }
+                      className="h-8 w-8"
+                    />
+                  </div>
+                  <h3 className="mt-4 text-base font-bold text-[var(--text-primary)]">
+                    {showDuplicates
+                      ? "Aucun doublon détecté"
+                      : viewTab === "folders"
+                      ? "Aucun dossier trouvé"
+                      : viewTab === "favorites"
+                      ? "Aucun fichier favori"
+                      : viewTab === "trash"
+                      ? "La corbeille est vide"
+                      : query
+                      ? "Aucun résultat de recherche"
+                      : "Aucun fichier dans cet emplacement"}
+                  </h3>
+                  <p className="mx-auto mt-1 max-w-sm text-xs text-[var(--text-muted)]">
+                    {query
+                      ? "Essayez d'ajuster votre recherche ou de retirer certains filtres."
+                      : "Déposez un fichier directement ou cliquez sur le bouton ci-dessous pour ajouter du contenu."}
+                  </p>
+                  <div className="mt-6 space-y-3">
+                    <FileUploadZone
+                      compact
+                      onFiles={(files) => {
+                        setAddTab("upload");
+                        setDroppedFiles(files);
+                        setAddOpen(true);
+                      }}
+                      onClick={() => {
+                        setAddTab("upload");
+                        setAddOpen(true);
+                      }}
+                    />
+                    <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          setAddTab("folder");
+                          setAddOpen(true);
+                        }}
+                        leftIcon={<FolderPlus className="h-4 w-4" />}
+                      >
+                        Nouveau dossier
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => {
+                          setAddTab("link");
+                          setAddOpen(true);
+                        }}
+                        leftIcon={<ExternalLink className="h-4 w-4" />}
+                      >
+                        Ajouter un lien
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )
+          ) : (
+            filteredFiles.map((file, i) => (
+              <motion.div
+                key={file.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.15, delay: Math.min(i * 0.015, 0.2) }}
+                className="h-full"
+              >
+                <ContextMenu items={fileContextItems(file)}>
+                  <FileCard
+                    file={file}
+                    viewMode={viewMode}
+                    selected={isSelected(file.id)}
+                    trashed={trashed || viewTab === "trash"}
+                    clientId={clientId}
+                    onToggle={() => toggle(file.id)}
+                    onOpen={() => openFile(file)}
+                    onDownload={() => downloadDriveFile(file)}
+                    onFavorite={() => favoriteFile(file.driveFileId, !file.isFavorite)}
+                    onTrash={() => trashFile(file.driveFileId)}
+                    onDelete={() => deleteFile(file.driveFileId)}
+                    onRestore={() => restoreFile(file.driveFileId)}
+                  />
+                </ContextMenu>
+              </motion.div>
+            ))
+          )}
+        </div>
       </div>
 
+      {/* Global Modals */}
       <Modal
         isOpen={!!modal}
         onClose={() => setModal(null)}
         title={
-          modal?.type === "rename" ? i18n("renameFile") :
-          modal?.type === "move" ? i18n("moveTo") :
-          modal?.type === "share" ? i18n("shareFile") :
-          modal?.type === "drop" ? i18n("createDrop") : ""
+          modal?.type === "rename"
+            ? i18n("renameFile", "Renommer")
+            : modal?.type === "move"
+            ? i18n("moveTo", "Déplacer vers")
+            : modal?.type === "share"
+            ? i18n("shareFile", "Partager le fichier")
+            : modal?.type === "drop"
+            ? i18n("createDrop", "Créer un espace Drop")
+            : ""
         }
         size="md"
         hideFooter
       >
-            {modal?.type === "rename" && (
-              <form onSubmit={handleRename} className="space-y-4">
-                <Input
-                  autoFocus
-                  type="text"
-                  value={form.name || ""}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                />
-                <div className="flex justify-end gap-2">
-                  <button type="button" onClick={() => setModal(null)} className="rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--text-muted)] hover:bg-[var(--panel-bg)]">{i18n("cancel")}</button>
-                  <button type="submit" disabled={submitting} className="rounded-[var(--panel-radius)] bg-[var(--accent-primary)] px-3 py-2 text-sm font-semibold text-[var(--accent-contrast)] disabled:opacity-50">{i18n("save")}</button>
-                </div>
-              </form>
-            )}
+        {modal?.type === "rename" && (
+          <form onSubmit={handleRename} className="space-y-4">
+            <Input
+              autoFocus
+              type="text"
+              value={form.name || ""}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              aria-label="Nouveau nom"
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="ghost" onClick={() => setModal(null)}>
+                {i18n("cancel", "Annuler")}
+              </Button>
+              <Button type="submit" disabled={submitting || !form.name?.trim()}>
+                {i18n("save", "Enregistrer")}
+              </Button>
+            </div>
+          </form>
+        )}
 
-            {modal?.type === "move" && (
-              <div className="space-y-4">
-                <div className="max-h-60 space-y-1 overflow-auto">
-                  <button
-                    type="button"
-                    onClick={() => handleMove(null)}
-                    className="w-full rounded-[var(--panel-radius)] px-3 py-2 text-left text-sm hover:bg-[var(--panel-bg)]"
-                  >
-                    {i18n("filesTitle")}
-                  </button>
-                  {moveTargets.map((folder) => (
-                    <button
-                      key={folder.driveFileId}
-                      type="button"
-                      onClick={() => handleMove(folder.driveFileId)}
-                      className="flex w-full items-center gap-2 rounded-[var(--panel-radius)] px-3 py-2 text-left text-sm hover:bg-[var(--panel-bg)]"
-                    >
-                      <Icon name="folder" className="h-4 w-4" /> {folder.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+        {modal?.type === "move" && (
+          <div className="space-y-4">
+            <p className="text-xs text-[var(--text-muted)]">
+              Choisissez le dossier de destination pour <strong>{modal.file.name}</strong> :
+            </p>
+            <div className="max-h-60 space-y-1 overflow-auto os-scroll rounded-xl border border-[var(--panel-border)]/[0.1] bg-[var(--panel-bg)]/[0.3] p-2">
+              <button
+                type="button"
+                onClick={() => handleMove(null)}
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs transition-colors hover:bg-[var(--accent-primary)]/10 hover:text-[var(--accent-primary)]"
+              >
+                <Folder className="h-4 w-4 text-[var(--accent-primary)]" />
+                <span>Racine (Tous les fichiers)</span>
+              </button>
+              {moveTargets.map((folder) => (
+                <button
+                  key={folder.driveFileId}
+                  type="button"
+                  onClick={() => handleMove(folder.driveFileId)}
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs transition-colors hover:bg-[var(--accent-primary)]/10 hover:text-[var(--accent-primary)]"
+                >
+                  <Folder className="h-4 w-4 text-[var(--accent-primary)]" />
+                  <span className="truncate">{folder.name}</span>
+                </button>
+              ))}
+            </div>
+            <div className="flex justify-end">
+              <Button variant="ghost" onClick={() => setModal(null)}>
+                {i18n("cancel", "Annuler")}
+              </Button>
+            </div>
+          </div>
+        )}
 
-            {modal?.type === "share" && (
-              <form onSubmit={handleShare} className="space-y-4">
-                <p className="text-sm text-[var(--text-muted)]">{modal?.file?.name}</p>
-                <Select
-                  value={form.visibility || "public"}
-                  onChange={(value) => setForm({ ...form, visibility: value })}
-                  options={[
-                    { id: "public", label: i18n("public") },
-                    { id: "private", label: i18n("private") },
-                    { id: "password", label: i18n("password") },
-                  ]}
-                  aria-label={i18n("visibility")}
-                  className="w-full"
-                />
-                {form.visibility === "password" && (
-                  <Input
-                    type="password"
-                    value={form.password || ""}
-                    onChange={(e) => setForm({ ...form, password: e.target.value })}
-                    placeholder={i18n("password")}
-                  />
-                )}
-                <Input
-                  type="datetime-local"
-                  value={form.expiresAt || ""}
-                  onChange={(e) => setForm({ ...form, expiresAt: e.target.value })}
-                  inputSize="compact"
-                />
-                <Input
-                  type="number"
-                  value={form.maxDownloads || ""}
-                  onChange={(e) => setForm({ ...form, maxDownloads: e.target.value })}
-                  placeholder={i18n("maxDownloads")}
-                  inputSize="compact"
-                />
-                <div className="flex justify-end gap-2">
-                  <button type="button" onClick={() => setModal(null)} className="rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--text-muted)] hover:bg-[var(--panel-bg)]">{i18n("cancel")}</button>
-                  <button type="submit" disabled={submitting} className="rounded-[var(--panel-radius)] bg-[var(--accent-primary)] px-3 py-2 text-sm font-semibold text-[var(--accent-contrast)] disabled:opacity-50">{i18n("shareThis")}</button>
-                </div>
-              </form>
+        {modal?.type === "share" && (
+          <form onSubmit={handleShare} className="space-y-4">
+            <p className="text-xs font-medium text-[var(--text-primary)]">{modal?.file?.name}</p>
+            <Select
+              value={form.visibility || "public"}
+              onChange={(value) => setForm({ ...form, visibility: value })}
+              options={[
+                { id: "public", label: i18n("public", "Public (Lien ouvert)") },
+                { id: "password", label: i18n("password", "Protégé par mot de passe") },
+              ]}
+              aria-label={i18n("visibility", "Visibilité")}
+              className="w-full"
+            />
+            {form.visibility === "password" && (
+              <Input
+                type="password"
+                value={form.password || ""}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                placeholder="Mot de passe requis"
+              />
             )}
+            <Input
+              type="datetime-local"
+              value={form.expiresAt || ""}
+              onChange={(e) => setForm({ ...form, expiresAt: e.target.value })}
+              inputSize="compact"
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="ghost" onClick={() => setModal(null)}>
+                {i18n("cancel", "Annuler")}
+              </Button>
+              <Button type="submit" disabled={submitting}>
+                {i18n("shareThis", "Générer le lien")}
+              </Button>
+            </div>
+          </form>
+        )}
 
-            {modal?.type === "drop" && (
-              <form onSubmit={handleDrop} className="space-y-4">
-                <Input
-                  autoFocus
-                  type="text"
-                  value={form.title || ""}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  placeholder={i18n("title")}
-                />
-                <Input
-                  type="text"
-                  value={form.description || ""}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  placeholder={i18n("description")}
-                />
-                <Select
-                  value={form.visibility || "public"}
-                  onChange={(value) => setForm({ ...form, visibility: value })}
-                  options={[
-                    { id: "public", label: i18n("public") },
-                    { id: "password", label: i18n("password") },
-                  ]}
-                  aria-label={i18n("visibility")}
-                  className="w-full"
-                />
-                {form.visibility === "password" && (
-                  <Input
-                    type="password"
-                    value={form.password || ""}
-                    onChange={(e) => setForm({ ...form, password: e.target.value })}
-                    placeholder={i18n("password")}
-                  />
-                )}
-                <Input
-                  type="datetime-local"
-                  value={form.expiresAt || ""}
-                  onChange={(e) => setForm({ ...form, expiresAt: e.target.value })}
-                  inputSize="compact"
-                />
-                <Input
-                  type="number"
-                  value={form.maxFiles || ""}
-                  onChange={(e) => setForm({ ...form, maxFiles: e.target.value })}
-                  placeholder={i18n("maxFiles")}
-                  inputSize="compact"
-                />
-                <Input
-                  type="number"
-                  value={form.maxSize || ""}
-                  onChange={(e) => setForm({ ...form, maxSize: e.target.value })}
-                  placeholder={i18n("maxSize")}
-                  inputSize="compact"
-                />
-                <div className="flex justify-end gap-2">
-                  <button type="button" onClick={() => setModal(null)} className="rounded-[var(--panel-radius)] px-3 py-2 text-sm text-[var(--text-muted)] hover:bg-[var(--panel-bg)]">{i18n("cancel")}</button>
-                  <button type="submit" disabled={submitting} className="rounded-[var(--panel-radius)] bg-[var(--accent-primary)] px-3 py-2 text-sm font-semibold text-[var(--accent-contrast)] disabled:opacity-50">{i18n("create")}</button>
-                </div>
-              </form>
+        {modal?.type === "drop" && (
+          <form onSubmit={handleDrop} className="space-y-4">
+            <Input
+              autoFocus
+              type="text"
+              value={form.title || ""}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              placeholder={i18n("title", "Titre du Drop")}
+            />
+            <Input
+              type="text"
+              value={form.description || ""}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              placeholder={i18n("description", "Description")}
+            />
+            <Select
+              value={form.visibility || "public"}
+              onChange={(value) => setForm({ ...form, visibility: value })}
+              options={[
+                { id: "public", label: i18n("public", "Public") },
+                { id: "password", label: i18n("password", "Protégé par mot de passe") },
+              ]}
+              aria-label={i18n("visibility", "Visibilité")}
+              className="w-full"
+            />
+            {form.visibility === "password" && (
+              <Input
+                type="password"
+                value={form.password || ""}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                placeholder={i18n("password", "Mot de passe")}
+              />
             )}
+            <div className="flex justify-end gap-2">
+              <Button variant="ghost" onClick={() => setModal(null)}>
+                {i18n("cancel", "Annuler")}
+              </Button>
+              <Button type="submit" disabled={submitting || !form.title?.trim()}>
+                {i18n("create", "Créer")}
+              </Button>
+            </div>
+          </form>
+        )}
       </Modal>
 
+      {/* Screen File Drop Overlay */}
       {clientId && (
         <FileDropOverlay
-          onDrop={(files) => { setAddTab("upload"); setDroppedFiles(files); setAddOpen(true); }}
+          onDrop={(files) => {
+            setAddTab("upload");
+            setDroppedFiles(files);
+            setAddOpen(true);
+          }}
           disabled={!clientId}
         />
       )}
 
+      {/* Slide-over Quick Preview Drawer */}
       {previewFile && (
         <FilePreview
           open={!!previewFile}
@@ -1012,10 +1321,13 @@ export default function FilesPage() {
           file={previewFile}
           clientId={clientId || undefined}
           location={previewLocation}
-          trashed={trashed}
+          trashed={trashed || viewTab === "trash"}
           onDownload={() => downloadDriveFile(previewFile)}
           onShare={() => openShare(previewFile)}
-          onRename={() => { setForm({ name: previewFile.name }); setModal({ type: "rename", file: previewFile }); }}
+          onRename={() => {
+            setForm({ name: previewFile.name });
+            setModal({ type: "rename", file: previewFile });
+          }}
           onMove={() => setModal({ type: "move", file: previewFile })}
           onFavorite={() => favoriteFile(previewFile.driveFileId, !previewFile.isFavorite)}
           onTrash={() => trashFile(previewFile.driveFileId)}
@@ -1024,22 +1336,31 @@ export default function FilesPage() {
         />
       )}
 
+      {/* Add Content Modal */}
       <FileAddModal
         open={addOpen}
         initialTab={addTab}
-        onClose={() => { setAddOpen(false); setDroppedFiles([]); }}
+        onClose={() => {
+          setAddOpen(false);
+          setDroppedFiles([]);
+        }}
         clientId={clientId}
         parentId={parentId}
         initialFiles={droppedFiles}
-        onUploadComplete={() => { setDroppedFiles([]); success(i18n("uploadFile")); reload(); }}
+        onUploadComplete={() => {
+          setDroppedFiles([]);
+          success(i18n("uploadFile", "Téléversement terminé"));
+          reload();
+        }}
         onCreateFolder={handleCreateFolder}
         onConnectDrive={connectDrive}
       />
 
+      {/* Admin Panel Modal */}
       <Modal
         isOpen={adminOpen}
         onClose={() => setAdminOpen(false)}
-        title={i18n("filesAdminPanel")}
+        title={i18n("filesAdminPanel", "Administration des Fichiers")}
         size="lg"
         hideFooter
       >
@@ -1048,3 +1369,4 @@ export default function FilesPage() {
     </div>
   );
 }
+

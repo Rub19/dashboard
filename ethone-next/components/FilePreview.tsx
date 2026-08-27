@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { X } from "lucide-react";
+import { X, ExternalLink, Download, Share2, Pencil, FolderInput, Heart, RotateCcw, Trash2, Trash, Copy, Brain, FileCode, Tag } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { fetchWorker } from "@/lib/api";
 import { Icon } from "@/lib/icons";
 import Button from "@/components/ui/Button";
 import SafeImage from "@/components/SafeImage";
-import { formatBytes, mimeIcon } from "@/lib/files";
+import { formatBytes, mimeIcon, getFileExtension, getFileCategory } from "@/lib/files";
+import { cn } from "@/lib/utils";
 import type { CloudFile } from "@/lib/hooks/useCloudFiles";
 
 function formatDate(raw?: string) {
@@ -64,6 +65,7 @@ export default function FilePreview({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [text, setText] = useState<string | null>(null);
   const [textLoading, setTextLoading] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -96,15 +98,14 @@ export default function FilePreview({
 
   useEffect(() => {
     if (!open || !previewUrl || !file || file.isFolder) return;
-    const mime = file.mimeType || "";
+    const category = getFileCategory(file);
+    const mime = (file.mimeType || "").toLowerCase();
+    const ext = getFileExtension(file.name);
     const isTextType =
+      category === "code" ||
       mime.startsWith("text/") ||
-      mime.includes("json") ||
-      mime.includes("javascript") ||
-      mime.includes("xml") ||
-      mime.includes("csv") ||
-      mime.includes("markdown") ||
-      mime.includes("typescript");
+      ["txt", "md", "json", "js", "ts", "html", "css", "py", "sh", "sql", "csv", "yml", "yaml", "xml"].includes(ext);
+
     if (!isTextType) {
       setText(null);
       return;
@@ -114,7 +115,7 @@ export default function FilePreview({
     fetch(previewUrl)
       .then((r) => r.text())
       .then((t) => {
-        if (!cancelled) setText(t.length > 8000 ? `${t.slice(0, 8000)}…` : t);
+        if (!cancelled) setText(t.length > 20000 ? `${t.slice(0, 20000)}\n\n/* ... Fichier volumineux tronqué pour l'aperçu */` : t);
       })
       .catch(() => {
         if (!cancelled) setText(null);
@@ -127,70 +128,122 @@ export default function FilePreview({
 
   if (!file) return null;
 
-  const isImage = file.mimeType.startsWith("image/");
-  const isVideo = file.mimeType.startsWith("video/");
-  const isAudio = file.mimeType.startsWith("audio/");
-  const isPDF = file.mimeType === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
-  const isText =
-    file.mimeType.startsWith("text/") ||
-    file.mimeType.includes("json") ||
-    file.mimeType.includes("javascript") ||
-    file.mimeType.includes("xml") ||
-    file.mimeType.includes("csv") ||
-    file.mimeType.includes("markdown") ||
-    file.mimeType.includes("typescript");
-  const icon = mimeIcon(file.mimeType, file.isFolder);
+  const ext = getFileExtension(file.name);
+  const category = getFileCategory(file);
+  const isImage = file.mimeType?.startsWith("image/") || ["png", "jpg", "jpeg", "webp", "gif", "svg", "bmp", "avif"].includes(ext);
+  const isVideo = file.mimeType?.startsWith("video/") || ["mp4", "webm", "mkv", "mov"].includes(ext);
+  const isAudio = file.mimeType?.startsWith("audio/") || ["mp3", "wav", "ogg", "flac", "m4a"].includes(ext);
+  const isPDF = file.mimeType === "application/pdf" || ext === "pdf";
+  const isCodeOrText =
+    category === "code" ||
+    file.mimeType?.startsWith("text/") ||
+    ["txt", "md", "json", "js", "ts", "html", "css", "py", "sh", "sql", "csv", "yml", "yaml", "xml"].includes(ext);
+  const icon = mimeIcon(file.mimeType, file.isFolder, file.name);
+
+  function copyWebLink() {
+    if (!file?.webViewLink) return;
+    navigator.clipboard.writeText(file.webViewLink).then(() => {
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2000);
+    }).catch(() => {});
+  }
 
   const renderMedia = () => {
     if (isImage && (previewUrl || file.thumbnailLink)) {
       return (
-        <SafeImage
-          candidates={[previewUrl, file.thumbnailLink, file.webViewLink, file.iconUrl].filter(Boolean) as string[]}
-          alt={file.name}
-          size={512}
-          className="h-full w-full object-contain"
-          iconClassName="h-12 w-12 text-[var(--accent-primary)]"
-          loading="eager"
-        />
+        <div className="relative flex h-full w-full items-center justify-center p-3">
+          <SafeImage
+            candidates={[previewUrl, file.thumbnailLink, file.webViewLink, file.iconUrl].filter(Boolean) as string[]}
+            alt={file.name}
+            size={800}
+            className="h-full w-full max-h-[320px] object-contain rounded-xl"
+            iconClassName="h-14 w-14 text-[var(--accent-primary)]"
+            loading="eager"
+          />
+        </div>
       );
     }
     if (isVideo && previewUrl) {
-      return <video src={previewUrl} controls className="h-full w-full rounded-2xl bg-black" aria-label={file.name} />;
+      return (
+        <div className="flex h-full w-full items-center justify-center p-2">
+          <video
+            src={previewUrl}
+            controls
+            playsInline
+            className="max-h-[320px] w-full rounded-xl bg-black/90 shadow-md"
+            aria-label={file.name}
+          />
+        </div>
+      );
     }
     if (isAudio && previewUrl) {
-      return <audio src={previewUrl} controls className="w-full" aria-label={file.name} />;
+      return (
+        <div className="flex h-full w-full flex-col items-center justify-center gap-4 p-6">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] shadow-md">
+            <Icon name="music" className="h-8 w-8" />
+          </div>
+          <p className="text-xs font-semibold text-[var(--text-primary)]">{file.name}</p>
+          <audio src={previewUrl} controls className="w-full max-w-sm rounded-lg" aria-label={file.name} />
+        </div>
+      );
     }
     if (isPDF && previewUrl) {
-      return <iframe src={previewUrl} title={file.name} className="h-full w-full rounded-2xl border-0 bg-[var(--bg-main)]" allow="autoplay" />;
+      return (
+        <div className="h-full w-full p-2">
+          <iframe
+            src={previewUrl}
+            title={file.name}
+            className="h-full min-h-[320px] w-full rounded-xl border border-[var(--panel-border)]/[0.12] bg-[var(--bg-main)]"
+            allow="autoplay"
+          />
+        </div>
+      );
     }
-    if (isText && (text || textLoading)) {
+    if (isCodeOrText && (text || textLoading)) {
       if (textLoading) {
         return (
-          <div className="flex h-full items-center justify-center text-[var(--text-muted)]">
-            <Icon name="loader-2" className="h-6 w-6 animate-spin" />
+          <div className="flex h-full min-h-[220px] items-center justify-center text-[var(--text-muted)]">
+            <Icon name="loader-2" className="h-6 w-6 animate-spin text-[var(--accent-primary)]" />
           </div>
         );
       }
       return (
-        <pre className="h-full w-full overflow-auto rounded-2xl bg-[var(--bg-main)] p-4 text-left font-mono text-[11px] text-[var(--text-primary)]">
-          {text}
-        </pre>
+        <div className="h-full w-full p-2">
+          <pre className="max-h-[320px] w-full overflow-auto rounded-xl border border-[var(--panel-border)]/[0.12] bg-[var(--bg-main)]/[0.9] p-3 text-left font-mono text-[11px] leading-relaxed text-[var(--text-primary)] os-scroll selection:bg-[var(--accent-primary)]/20">
+            {text}
+          </pre>
+        </div>
       );
     }
     if (file.webViewLink) {
       return (
-        <div className="flex h-full flex-col items-center justify-center gap-3 text-[var(--text-muted)]">
-          <Icon name={icon} className="h-14 w-14" />
-          <Button size="sm" variant="secondary" onClick={() => window.open(file.webViewLink, "_blank")} leftIcon={<Icon name="external-link" className="h-4 w-4" />}>
-            {i18n("openInDrive", "Ouvrir dans Drive")}
+        <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-[var(--text-muted)]">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[var(--panel-border)]/[0.15] bg-[var(--panel-bg)]">
+            <Icon name={icon} className="h-8 w-8 text-[var(--accent-primary)]" />
+          </div>
+          <span className="text-xs font-medium text-[var(--text-primary)]">{file.name}</span>
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={() => window.open(file.webViewLink, "_blank")}
+            leftIcon={<ExternalLink className="h-3.5 w-3.5" />}
+          >
+            {i18n("openInDrive", "Ouvrir dans Google Drive")}
           </Button>
         </div>
       );
     }
     return (
-      <div className="flex flex-col items-center gap-2 text-[var(--text-muted)]">
-        <Icon name={icon} className="h-14 w-14" />
-        <span className="text-[10px] uppercase tracking-wider">{file.mimeType || "-"}</span>
+      <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-[var(--text-muted)]">
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[var(--panel-border)]/[0.15] bg-[var(--panel-bg)]">
+          <Icon name={icon} className="h-8 w-8" />
+        </div>
+        <div className="text-center">
+          <p className="text-xs font-semibold text-[var(--text-primary)]">{file.name}</p>
+          <span className="mt-1 inline-block rounded-md border border-[var(--panel-border)]/[0.1] bg-[var(--panel-bg)] px-2 py-0.5 text-[9px] font-mono uppercase text-[var(--text-muted)]">
+            {ext || file.mimeType || "Fichier"}
+          </span>
+        </div>
       </div>
     );
   };
@@ -204,7 +257,7 @@ export default function FilePreview({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: reduce ? 0 : 0.2 }}
-            className="fixed inset-0 z-[var(--z-modal-backdrop)] bg-[var(--background)]/40 backdrop-blur-sm"
+            className="fixed inset-0 z-[var(--z-modal-backdrop)] bg-[var(--background)]/50 backdrop-blur-md"
             onClick={onClose}
             aria-hidden="true"
           />
@@ -212,88 +265,187 @@ export default function FilePreview({
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={reduce ? { duration: 0.15 } : { type: "spring", stiffness: 320, damping: 28 }}
-            className="fixed right-0 top-0 z-[var(--z-modal)] h-full w-full border-l border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)] shadow-2xl shadow-black/20 backdrop-blur-2xl sm:w-[480px]"
+            transition={reduce ? { duration: 0.15 } : { type: "spring", stiffness: 320, damping: 30 }}
+            className="fixed right-0 top-0 z-[var(--z-modal)] flex h-full w-full flex-col border-l border-[var(--panel-border)]/[0.15] bg-[var(--panel-bg)]/[0.95] shadow-2xl shadow-black/40 backdrop-blur-3xl sm:w-[500px]"
             role="dialog"
             aria-modal="true"
-            aria-label={i18n("filePreview", "Aperçu")}
+            aria-label={i18n("filePreview", "Aperçu du fichier")}
           >
-            <div className="flex h-full flex-col">
-              <div className="flex items-center justify-between gap-3 border-b border-[var(--panel-border)]/[0.12] px-4 py-3">
-                <div className="min-w-0">
-                  <h2 className="truncate text-sm font-semibold" title={file.name}>{file.name}</h2>
-                  <p className="text-[11px] text-[var(--text-muted)]">{formatBytes(file.size)} · {file.mimeType || "-"}</p>
+            {/* Header */}
+            <div className="flex items-center justify-between gap-3 border-b border-[var(--panel-border)]/[0.12] px-5 py-4">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="rounded-lg border border-[var(--accent-primary)]/20 bg-[var(--accent-primary)]/10 px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-primary)] uppercase">
+                    {ext || (file.isFolder ? "Dossier" : "Fichier")}
+                  </span>
+                  <h2 className="truncate text-sm font-semibold tracking-tight text-[var(--text-primary)]" title={file.name}>
+                    {file.name}
+                  </h2>
                 </div>
-                <Button size="sm" variant="ghost" onClick={onClose} leftIcon={<X className="h-4 w-4" />} aria-label={i18n("close")}>
-                  {i18n("close")}
-                </Button>
+                <p className="mt-0.5 text-[11px] text-[var(--text-muted)]">
+                  {formatBytes(file.size)} • {file.mimeType || "application/octet-stream"}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.5] text-[var(--text-muted)] transition-colors hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)]"
+                aria-label={i18n("close")}
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Content Body */}
+            <div className="min-h-0 flex-1 overflow-y-auto os-scroll space-y-4 p-5">
+              {/* Media viewer box */}
+              <div className="relative min-h-[200px] w-full overflow-hidden rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--bg-main)]/[0.6] shadow-inner">
+                {renderMedia()}
               </div>
 
-              <div className="min-h-0 flex-1 overflow-y-auto os-scroll p-4">
-                <div className="relative flex h-56 w-full items-center justify-center overflow-hidden rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--bg-main)] sm:h-72">
-                  {renderMedia()}
+              {/* Brain Summary section if present */}
+              {file.brainSummary && (
+                <div className="rounded-2xl border border-[var(--accent-primary)]/25 bg-[var(--accent-primary)]/[0.06] p-4 shadow-sm">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-[var(--accent-primary)]">
+                    <Brain className="h-4 w-4" />
+                    <span>Résumé ETHONE Brain</span>
+                  </div>
+                  <p className="mt-2 text-xs leading-relaxed text-[var(--text-primary)]">
+                    {file.brainSummary}
+                  </p>
                 </div>
+              )}
 
-                <div className="mt-4 space-y-3 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.4] p-4 text-sm">
+              {/* Tags section if present */}
+              {file.tags && file.tags.length > 0 && (
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                    <Tag className="h-3 w-3" />
+                    <span>Tags</span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {file.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-lg border border-[var(--panel-border)]/[0.15] bg-[var(--panel-bg)] px-2 py-0.5 text-[11px] text-[var(--text-primary)]"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Metadata Details Table */}
+              <div className="space-y-2.5 rounded-2xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.3] p-4 text-xs">
+                <h3 className="font-semibold uppercase tracking-wider text-[10px] text-[var(--text-muted)]">
+                  Informations
+                </h3>
+                <div className="space-y-2 pt-1 divide-y divide-[var(--panel-border)]/[0.06]">
                   {[
-                    { label: i18n("type", "Type"), value: file.isFolder ? i18n("folder") : file.mimeType || "-" },
+                    { label: i18n("type", "Type"), value: file.isFolder ? i18n("folder") : file.mimeType || "—" },
                     { label: i18n("size", "Taille"), value: formatBytes(file.size) },
-                    { label: i18n("modified", "Modifié"), value: formatDate(file.updatedAt) },
-                    { label: i18n("created", "Créé"), value: formatDate(file.createdAt) },
+                    { label: i18n("modified", "Modifié le"), value: formatDate(file.updatedAt) },
+                    { label: i18n("created", "Créé le"), value: formatDate(file.createdAt) },
                     ...(location ? [{ label: i18n("location", "Emplacement"), value: location }] : []),
+                    ...(file.driveFileId ? [{ label: "Identifiant Cloud", value: file.driveFileId }] : []),
                   ].map((row) => (
-                    <div key={row.label} className="flex justify-between gap-3">
+                    <div key={row.label} className="flex items-center justify-between gap-3 pt-2 first:pt-0">
                       <span className="text-[var(--text-muted)]">{row.label}</span>
-                      <span className="truncate text-right">{row.value}</span>
+                      <span className="truncate text-right font-medium text-[var(--text-primary)]" title={String(row.value)}>
+                        {row.value}
+                      </span>
                     </div>
                   ))}
                 </div>
               </div>
+            </div>
 
-              <div className="shrink-0 border-t border-[var(--panel-border)]/[0.12] p-4">
-                <div className="grid grid-cols-2 gap-2">
-                  {!file.isFolder && (
-                    <Button size="sm" variant="secondary" onClick={onDownload} leftIcon={<Icon name="download" className="h-4 w-4" />}>
-                      {i18n("download")}
-                    </Button>
-                  )}
-                  {file.webViewLink && (
+            {/* Footer Action Buttons */}
+            <div className="shrink-0 border-t border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.7] p-4 backdrop-blur-md">
+              <div className="grid grid-cols-2 gap-2">
+                {!file.isFolder && (
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={onDownload}
+                    leftIcon={<Download className="h-3.5 w-3.5" />}
+                  >
+                    {i18n("download", "Télécharger")}
+                  </Button>
+                )}
+                {file.webViewLink && (
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={copyWebLink}
+                    leftIcon={<Copy className="h-3.5 w-3.5" />}
+                  >
+                    {copiedLink ? i18n("copied", "Copié !") : i18n("copyLink", "Copier lien")}
+                  </Button>
+                )}
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={onShare}
+                  leftIcon={<Share2 className="h-3.5 w-3.5" />}
+                >
+                  {i18n("share", "Partager")}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={onFavorite}
+                  leftIcon={<Heart className={cn("h-3.5 w-3.5", file.isFavorite && "fill-current text-[var(--danger)]")} />}
+                >
+                  {file.isFavorite ? i18n("removeFromFavorites", "Favori") : i18n("addToFavorites", "Ajouter favori")}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={onRename}
+                  leftIcon={<Pencil className="h-3.5 w-3.5" />}
+                >
+                  {i18n("rename", "Renommer")}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={onMove}
+                  leftIcon={<FolderInput className="h-3.5 w-3.5" />}
+                >
+                  {i18n("move", "Déplacer")}
+                </Button>
+                {trashed ? (
+                  <>
                     <Button
                       size="sm"
-                      variant="secondary"
-                      onClick={() => navigator.clipboard.writeText(file.webViewLink || "").catch(() => {})}
-                      leftIcon={<Icon name="link" className="h-4 w-4" />}
+                      variant="ghost"
+                      onClick={onRestore}
+                      leftIcon={<RotateCcw className="h-3.5 w-3.5" />}
                     >
-                      {i18n("copyLink", "Copier le lien")}
+                      {i18n("restore", "Restaurer")}
                     </Button>
-                  )}
-                  <Button size="sm" variant="secondary" onClick={onShare} leftIcon={<Icon name="share-2" className="h-4 w-4" />}>
-                    {i18n("share")}
-                  </Button>
-                  <Button size="sm" variant="ghost" onClick={onRename} leftIcon={<Icon name="pencil" className="h-4 w-4" />}>
-                    {i18n("rename")}
-                  </Button>
-                  <Button size="sm" variant="ghost" onClick={onMove} leftIcon={<Icon name="folder-input" className="h-4 w-4" />}>
-                    {i18n("move")}
-                  </Button>
-                  <Button size="sm" variant="ghost" onClick={onFavorite} leftIcon={<Icon name={file.isFavorite ? "heart" : "heart-off"} className="h-4 w-4" />}>
-                    {file.isFavorite ? i18n("removeFromFavorites") : i18n("addToFavorites")}
-                  </Button>
-                  {trashed ? (
-                    <>
-                      <Button size="sm" variant="ghost" onClick={onRestore} leftIcon={<Icon name="rotate-ccw" className="h-4 w-4" />}>
-                        {i18n("restore")}
-                      </Button>
-                      <Button size="sm" variant="danger" onClick={onDelete} leftIcon={<Icon name="trash" className="h-4 w-4" />}>
-                        {i18n("delete")}
-                      </Button>
-                    </>
-                  ) : (
-                    <Button size="sm" variant="ghost" onClick={onTrash} leftIcon={<Icon name="trash-2" className="h-4 w-4" />}>
-                      {i18n("trash")}
+                    <Button
+                      size="sm"
+                      variant="danger"
+                      onClick={onDelete}
+                      leftIcon={<Trash className="h-3.5 w-3.5" />}
+                    >
+                      {i18n("delete", "Supprimer")}
                     </Button>
-                  )}
-                </div>
+                  </>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={onTrash}
+                    leftIcon={<Trash2 className="h-3.5 w-3.5 text-[var(--danger)]" />}
+                    className="text-[var(--danger)] hover:bg-[var(--danger)]/10"
+                  >
+                    {i18n("trash", "Mettre à la corbeille")}
+                  </Button>
+                )}
               </div>
             </div>
           </motion.aside>
@@ -302,3 +454,4 @@ export default function FilePreview({
     </AnimatePresence>
   );
 }
+

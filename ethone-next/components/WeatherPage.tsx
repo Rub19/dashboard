@@ -7,6 +7,7 @@ import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
 import { fetchWeatherSafe } from "@/lib/weather-service";
 import { Icon } from "@/lib/icons";
+import { Navigation } from "lucide-react";
 import { cn } from "@/lib/utils";
 import SearchInput from "@/components/ui/SearchInput";
 import Button from "@/components/ui/Button";
@@ -573,22 +574,34 @@ export default function WeatherPage() {
                 <Card variant="default" padding="md">
                   <h3 className="mb-3 text-sm font-semibold text-[var(--text-primary)]">{i18n("wind", "Vent")}</h3>
                   <div className="flex items-center gap-4">
-                    <div className="relative h-20 w-20 rounded-full border border-[var(--panel-border)] bg-[var(--panel-bg)]">
-                      <div className="absolute inset-0 m-auto h-px w-3/4 bg-[var(--text-primary)]/[0.1]" />
-                      <div className="absolute inset-0 m-auto h-3/4 w-px bg-[var(--text-primary)]/[0.1]" />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div
-                          className="flex flex-col items-center transition-transform duration-500"
-                          style={{ transform: `rotate(${windDir ?? 0}deg)` }}
-                        >
-                          <Icon pack="phosphor" name="arrowUp" className="h-5 w-5 text-[var(--accent-primary)]" />
-                        </div>
+                    <div className="relative flex h-20 w-20 items-center justify-center rounded-full border border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-inner">
+                      {/* Cardinal direction markers */}
+                      <span className="absolute top-1 text-[8px] font-bold text-[var(--text-muted)]">N</span>
+                      <span className="absolute right-1.5 text-[8px] font-bold text-[var(--text-muted)]">E</span>
+                      <span className="absolute bottom-1 text-[8px] font-bold text-[var(--text-muted)]">S</span>
+                      <span className="absolute left-1.5 text-[8px] font-bold text-[var(--text-muted)]">O</span>
+
+                      {/* Compass crosshairs */}
+                      <div className="absolute inset-0 m-auto h-px w-3/4 bg-[var(--text-primary)]/[0.08]" />
+                      <div className="absolute inset-0 m-auto h-3/4 w-px bg-[var(--text-primary)]/[0.08]" />
+
+                      {/* Directional needle */}
+                      <div
+                        className="relative z-10 flex items-center justify-center transition-transform duration-700 ease-out"
+                        style={{ transform: `rotate(${windDir ?? 0}deg)` }}
+                      >
+                        <Navigation className="h-6 w-6 text-emerald-400 fill-emerald-400/25 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)]" />
                       </div>
                     </div>
                     <div className="flex-1 space-y-1">
-                      <div className="text-2xl font-bold text-[var(--text-primary)]">{wind !== undefined ? `${Math.round(wind)}` : "—"} <span className="text-sm font-medium text-[var(--text-muted)]">km/h</span></div>
-                      {windGusts !== undefined && <p className="text-xs text-[var(--text-muted)]">Rafales {Math.round(windGusts)} km/h</p>}
-                      <p className="text-xs text-[var(--text-muted)]">{windDirectionLabel(windDir)}</p>
+                      <div className="text-2xl font-bold text-[var(--text-primary)]">
+                        {wind !== undefined ? `${Math.round(wind)}` : "—"}{" "}
+                        <span className="text-sm font-medium text-[var(--text-muted)]">km/h</span>
+                      </div>
+                      {windGusts !== undefined && (
+                        <p className="text-xs text-[var(--text-muted)]">Rafales {Math.round(windGusts)} km/h</p>
+                      )}
+                      <p className="text-xs font-semibold text-emerald-400">{windDirectionLabel(windDir)}</p>
                     </div>
                   </div>
                 </Card>

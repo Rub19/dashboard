@@ -7206,6 +7206,48 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.96",
+  date: "2026-08-27",
+  title: "Boussole Météo : Flèche Directionnelle & Points Cardinaux",
+  items: [
+    "Correction du cadran de vent dans la page Météo : remplacement de l'icône manquante par une flèche directionnelle fluide (Navigation) avec points cardinaux N/E/S/O.",
+    "Orientation en direct selon la direction du vent en degrés avec animation fluide et halo lumineux vert.",
+    "Version affichée : v1.10.96.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.96",
+  date: "2026-08-27",
+  title: "Weather Wind Compass: Directional Needle & Cardinal Marks",
+  items: [
+    "Fixed the wind compass in the Weather page: replaced missing icon with a smooth directional navigation needle with N/E/S/W cardinal markers.",
+    "Live rotational direction according to real wind azimuth in degrees with emerald accent styling.",
+    "Version badge: v1.10.96.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.96",
+  date: "2026-08-27",
+  title: "Brújula de Viento: Aguja Direccional y Puntos Cardinales",
+  items: [
+    "Corrección de la brújula de viento en la página del clima con flecha direccional fluida y puntos cardinales.",
+    "Versión: v1.10.96.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.96",
+  date: "2026-08-27",
+  title: "Wetter-Windkompass: Richtungsnadel & Himmelsrichtungen",
+  items: [
+    "Windkompass auf der Wetterseite korrigiert: flüssige Richtungsnadel mit N/O/S/W-Markierungen.",
+    "Version: v1.10.96.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.95",
   date: "2026-08-27",
   title: "Connexion Spotify Instantanée & Sidebar 120 FPS Ultra-Fluide",

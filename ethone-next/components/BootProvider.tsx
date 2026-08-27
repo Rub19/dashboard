@@ -121,11 +121,7 @@ export default function BootProvider({ children }: { children: ReactNode }) {
         router.replace("/");
       }
     } else {
-      setState("unauthenticated");
-      if (!publicRoute) {
-        setState("recovering");
-        router.replace("/login");
-      }
+      setState("ready");
     }
   }, [authLoading, authError, session, profileLoaded, publicRoute, router]);
 
@@ -310,16 +306,6 @@ export default function BootProvider({ children }: { children: ReactNode }) {
     return (
       <BootContext.Provider value={{ state, retry, continueOffline }}>
         <Loading message={message} progress={bootProgress} />
-      </BootContext.Provider>
-    );
-  }
-
-  const isAuthenticated = state === "authenticated" || session !== null;
-
-  if (!isAuthenticated && !publicRoute) {
-    return (
-      <BootContext.Provider value={{ state, retry, continueOffline }}>
-        <Loading message="Redirection..." progress={100} />
       </BootContext.Provider>
     );
   }

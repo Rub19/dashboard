@@ -36,20 +36,21 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
   const [activeCategory, setActiveCategory] = useState(() =>
     resolveCategory(initialSection ?? sectionParam)
   );
+  const isScrollingRef = useRef(false);
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
-  const [isNavigating, setIsNavigating] = useState(false);
   const [searchResults, setSearchResults] = useState<{ type: "section" | "field"; id: string; label: string | null; sectionId?: string }[]>([]);
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
-  const [, startTransition] = useTransition();
 
   const scrollToCategory = useCallback((id: string) => {
     const el =
       (contentRef.current?.querySelector(`[data-section="${id}"]`) as HTMLElement | null) ||
       (contentRef.current?.querySelector(`[data-category="${id}"]`) as HTMLElement | null);
     if (!el) return;
-    requestAnimationFrame(() => {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
+    isScrollingRef.current = true;
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.setTimeout(() => {
+      isScrollingRef.current = false;
+    }, 600);
   }, []);
 
   const scrollToSearchResult = useCallback((result: { type: "section" | "field"; id: string; sectionId?: string }) => {
@@ -63,11 +64,13 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
       el = contentRef.current?.querySelector(`[data-section="${CSS.escape(result.sectionId)}"]`) as HTMLElement | null;
     }
     if (!el) return;
-    requestAnimationFrame(() => {
-      el?.scrollIntoView({ behavior: "smooth", block: "center" });
-      el?.focus({ preventScroll: true });
-    });
+    isScrollingRef.current = true;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.focus({ preventScroll: true });
     setShowSearchDropdown(false);
+    window.setTimeout(() => {
+      isScrollingRef.current = false;
+    }, 600);
   }, []);
 
   useEffect(() => {
@@ -83,26 +86,24 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
   const handleSelectCategory = useCallback(
     (id: string) => {
       if (id === activeCategory) return;
-      setIsNavigating(true);
-      startTransition(() => {
-        router.push(`/settings/${id}`, { scroll: false });
-      });
-      // The active category is updated by the params effect / scrollspy.
-      // The visual transition is driven by isNavigating.
-      window.setTimeout(() => {
-        setIsNavigating(false);
-        scrollToCategory(id);
-      }, 300);
+      setActiveCategory(id);
+      if (typeof window !== "undefined") {
+        window.history.replaceState(null, "", `/settings/${id}`);
+      }
+      scrollToCategory(id);
     },
-    [activeCategory, router, scrollToCategory]
+    [activeCategory, scrollToCategory]
   );
 
   const handleCategoryInView = useCallback(
     (id: string) => {
-      if (isNavigating) return;
+      if (isScrollingRef.current) return;
       setActiveCategory(id);
+      if (typeof window !== "undefined") {
+        window.history.replaceState(null, "", `/settings/${id}`);
+      }
     },
-    [isNavigating]
+    []
   );
 
   const handleReset = useCallback(() => {
@@ -370,17 +371,10 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
             </ol>
           </nav>
 
-          <div
-            className={cn(
-              "transition-opacity duration-300 ease-out",
-              isNavigating ? "opacity-60" : "opacity-100"
-            )}
-          >
-            <SettingsContent
-              contentRef={contentRef}
-              onCategoryChange={handleCategoryInView}
-            />
-          </div>
+          <SettingsContent
+            contentRef={contentRef}
+            onCategoryChange={handleCategoryInView}
+          />
         </main>
       </div>
 

@@ -128,11 +128,6 @@ export default function SettingsNavigation({
     [activeIndex, direction, focusIndex, onSelect]
   );
 
-  useEffect(() => {
-    // Restore focus on the active button when the active category changes externally.
-    if (activeIndex >= 0) focusIndex(activeIndex);
-  }, [activeIndex, focusIndex]);
-
   const commonItem = (cat: CategoryDef, index: number) => {
     const isActive = active === cat.id;
     return (

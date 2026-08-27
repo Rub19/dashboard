@@ -1,10 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, usePathname } from "next/navigation";
 import { useAnimatedSidebar } from "@/components/motion/animated-sidebar";
 import { EASE_DRAWER } from "@/lib/ease";
+import { hapticLightImpact } from "@/lib/haptics";
 import {
   CheckCircle2,
   Loader2,
@@ -288,18 +289,28 @@ export default function StatusBar() {
             </button>
           )}
 
-          {!settings.dockVisible && (
-            <button
-              type="button"
-              onClick={() => update({ dockVisible: true })}
-              className="flex items-center gap-1.5 rounded-lg border border-[var(--panel-border)]/50 bg-[var(--panel-bg)]/50 px-2.5 py-1 text-xs font-medium text-[var(--text-muted)] transition-all hover:text-[var(--text-primary)]"
-              aria-label={i18n("showDock", "Afficher le dock")}
-              title={i18n("showDock", "Afficher le dock")}
-            >
-              <PanelBottom className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{i18n("dock", "Dock")}</span>
-            </button>
-          )}
+          <AnimatePresence>
+            {!settings.dockVisible && (
+              <motion.button
+                key="status-dock-btn"
+                initial={{ opacity: 0, scale: 0.85, y: 6 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.85, y: 6 }}
+                transition={{ type: "spring", stiffness: 450, damping: 28 }}
+                type="button"
+                onClick={() => {
+                  hapticLightImpact();
+                  update({ dockVisible: true });
+                }}
+                className="flex items-center gap-1.5 rounded-xl border border-[var(--panel-border)]/70 bg-[var(--surface-raised)]/70 px-2.5 py-1 text-xs font-semibold text-[var(--text-muted)] transition-all hover:border-[var(--accent-primary)]/40 hover:bg-[var(--accent-primary)]/15 hover:text-[var(--text-primary)] hover:scale-105 active:scale-95 cursor-pointer shadow-xs"
+                aria-label={i18n("showDock", "Afficher le dock")}
+                title={i18n("showDock", "Afficher le dock")}
+              >
+                <PanelBottom className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
+                <span className="hidden sm:inline">{i18n("dock", "Dock")}</span>
+              </motion.button>
+            )}
+          </AnimatePresence>
 
           <StatusPill
             icon={

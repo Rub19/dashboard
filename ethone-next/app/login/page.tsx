@@ -1,13 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback, type ChangeEvent, type ClipboardEvent, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/components/ToastProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
-import useVisualViewport from "@/lib/hooks/useVisualViewport";
-import { useMediaQuery, useIsMobile } from "@/lib/hooks/useMediaQuery";
 import { authLog } from "@/lib/auth-log";
 import { cn } from "@/lib/utils";
 import { required, email as emailValidator, minLength, maxLength, passwordStrength, match, validate } from "@/lib/form-validation";
@@ -19,162 +17,63 @@ import {
 } from "@/lib/auth";
 import BrandMark from "@/components/BrandMark";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
 import Switch from "@/components/Switch";
 import GoogleIcon from "@/components/icons/GoogleIcon";
 import GithubIcon from "@/components/icons/GithubIcon";
-import { Icon } from "@/lib/icons";
 import { triggerHaptic } from "@/lib/haptics";
+import AuthInputField from "@/components/auth/AuthInputField";
+import OtpCodeInput from "@/components/auth/OtpCodeInput";
+import PasswordStrengthMeter from "@/components/auth/PasswordStrengthMeter";
+import {
+  Mail,
+  Lock,
+  User,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  Check,
+  KeyRound,
+  AlertCircle,
+  Loader2,
+  ChevronLeft,
+  Sparkles,
+  ShieldCheck,
+} from "lucide-react";
 
 type AuthMode = "password" | "otp" | "register";
 type OtpStep = "email" | "code";
 type AuthState = "idle" | "loading" | "verifying" | "success" | "error";
-
-type OtpInputProps = {
-  value: string;
-  onChange: (value: string) => void;
-  disabled?: boolean;
-  error?: boolean;
-};
-
-function OtpInput({ value, onChange, disabled, error }: OtpInputProps) {
-  const [digits, setDigits] = useState<string[]>(Array(6).fill(""));
-  const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
-
-  useEffect(() => {
-    const next = value.replace(/\D/g, "").slice(0, 6).split("");
-    while (next.length < 6) next.push("");
-    setDigits(next);
-  }, [value]);
-
-  useEffect(() => {
-    if (!disabled) inputsRef.current[0]?.focus();
-    // Intentionally run only once when the component mounts; avoid stealing
-    // focus on every disabled/loading state change.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const update = useCallback((nextDigits: string[]) => {
-    setDigits(nextDigits);
-    onChange(nextDigits.join(""));
-  }, [onChange]);
-
-  const handleChange = (index: number, raw: string) => {
-    if (disabled) return;
-    const char = raw.replace(/\D/g, "").slice(-1);
-    const next = [...digits];
-    next[index] = char;
-    update(next);
-    if (char && index < 5) inputsRef.current[index + 1]?.focus();
-  };
-
-  const handleKeyDown = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
-    if (disabled) return;
-    if (e.key === "Backspace" && digits[index] === "" && index > 0) {
-      inputsRef.current[index - 1]?.focus();
-      return;
-    }
-    if (e.key === "ArrowLeft" && index > 0) inputsRef.current[index - 1]?.focus();
-    if (e.key === "ArrowRight" && index < 5) inputsRef.current[index + 1]?.focus();
-    if (e.key === " " || e.code === "Space") {
-      e.preventDefault();
-      return;
-    }
-  };
-
-  const handlePaste = (e: ClipboardEvent<HTMLInputElement>) => {
-    if (disabled) return;
-    e.preventDefault();
-    const text = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6).split("");
-    const next = Array(6).fill("").map((_, i) => text[i] ?? "");
-    update(next);
-    inputsRef.current[Math.min(text.length, 5)]?.focus();
-  };
-
-  return (
-    <div className="grid grid-cols-6 gap-2" aria-label="Code OTP à six chiffres" role="group">
-      {digits.map((d, i) => (
-        <input
-          key={i}
-          ref={(el) => { inputsRef.current[i] = el; }}
-          type="tel"
-          inputMode="numeric"
-          pattern="\d*"
-          autoComplete={i === 0 ? "one-time-code" : "off"}
-          autoCorrect="off"
-          autoCapitalize="off"
-          spellCheck="false"
-          enterKeyHint="next"
-          maxLength={1}
-          value={d}
-          disabled={disabled}
-          aria-label={`Chiffre ${i + 1}`}
-          onChange={(e) => handleChange(i, e.target.value)}
-          onKeyDown={(e) => handleKeyDown(i, e)}
-          onPaste={handlePaste}
-          className={cn(
-            "h-14 w-full rounded-xl text-center text-xl font-bold outline-none transition-all duration-180 select-none",
-            "border border-[var(--input-border)] bg-[var(--input-bg)] text-[var(--text-primary)]",
-            "hover:border-[var(--input-border-hover)] hover:bg-[var(--input-bg-hover)]",
-            "focus:border-[var(--accent-primary)] focus:bg-[var(--input-bg-focus)] focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent-primary)_18%,transparent),0_0_16px_-4px_var(--glow-color)]",
-            error && "border-[var(--danger)]/80 text-[var(--danger)] focus:border-[var(--danger)] focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--danger)_18%,transparent)]"
-          )}
-        />
-      ))}
-    </div>
-  );
-}
 
 function maskEmail(email: string) {
   const at = email.indexOf("@");
   if (at <= 0) return email;
   const local = email.slice(0, at);
   const domain = email.slice(at + 1);
-  const maskedLocal = local.length > 2 ? `${local.slice(0, 1)}${"•".repeat(local.length - 2)}${local.slice(-1)}` : `${local.slice(0, 1)}${"•"}`;
-  const dot = domain.lastIndexOf(".");
-  const domainName = dot > 0 ? domain.slice(0, dot) : domain;
-  const tld = dot > 0 ? domain.slice(dot) : "";
-  const maskedDomain = domainName.length > 2 ? `${domainName.slice(0, 1)}${"•".repeat(domainName.length - 2)}${domainName.slice(-1)}` : "••";
-  return `${maskedLocal}@${maskedDomain}${tld}`;
+  const maskedLocal = local.length > 2 ? `${local.slice(0, 1)}${"•".repeat(Math.min(local.length - 2, 5))}${local.slice(-1)}` : `${local.slice(0, 1)}••`;
+  return `${maskedLocal}@${domain}`;
 }
 
 function humanError(err: unknown, i18n: (key: string, fallback?: string) => string) {
   const errObj = typeof err === "object" && err !== null ? (err as { status?: number; name?: string; message?: string }) : null;
-  const isNetwork =
-    errObj?.status === 0 ||
-    errObj?.name === "AbortError" ||
-    err instanceof TypeError;
-  const msg = err instanceof Error ? err.message : (errObj?.message ? String(errObj.message) : String(err));
+  const msg = err instanceof Error ? err.message : errObj?.message ? String(errObj.message) : String(err || "");
   const lower = msg.toLowerCase();
+
   if (lower.includes("rate") || lower.includes("trop de") || lower.includes("too many")) {
     return i18n("tooManyAttempts", "Trop de tentatives. Veuillez patienter quelques instants.");
   }
   if (lower.includes("expir")) {
     return i18n("otpExpired", "Ce code a expiré. Demandez-en un nouveau.");
   }
-  if (lower.includes("invalid") || lower.includes("incorrect") || lower.includes("wrong") || lower.includes("invalide") || lower.includes("code")) {
-    return i18n("invalidCode", "Ce code est incorrect. Vérifiez votre e-mail et réessayez.");
+  if (lower.includes("invalid") || lower.includes("incorrect") || lower.includes("wrong") || lower.includes("invalide")) {
+    return i18n("invalidCredentials", "Identifiants ou code incorrects.");
   }
-  if (isNetwork || lower.includes("network") || lower.includes("fetch") || lower.includes("worker") || lower.includes("impossible de contacter")) {
-    return i18n("networkError", "Impossible de contacter ETHONE. Vérifiez votre connexion.");
+  if (lower.includes("already registered") || lower.includes("déjà utilisé")) {
+    return i18n("emailTaken", "Cette adresse e-mail est déjà associée à un compte.");
   }
-  if (lower.includes("session")) {
-    return i18n("sessionError", "Le code est valide, mais la session n'a pas pu être créée. Réessayez.");
+  if (lower.includes("network") || lower.includes("fetch") || lower.includes("offline")) {
+    return i18n("networkError", "Impossible de contacter les serveurs ETHONE. Vérifiez votre connexion.");
   }
-  return i18n("unknownAuthError", "Échec de connexion. Veuillez réessayer.");
-}
-
-function useOnlineStatus() {
-  const [online, setOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
-  useEffect(() => {
-    const on = () => setOnline(true);
-    const off = () => setOnline(false);
-    window.addEventListener("online", on);
-    window.addEventListener("offline", off);
-    return () => { window.removeEventListener("online", on); window.removeEventListener("offline", off); };
-  }, []);
-  return online;
+  return i18n("unknownAuthError", "Une erreur est survenue lors de l'authentification.");
 }
 
 export default function LoginPage() {
@@ -182,17 +81,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { success, error: showError } = useToast();
   const { session, signInOtp, verifyOtp } = useAuth();
-  const online = useOnlineStatus();
   const reduced = !!useReducedMotion();
-  const visual = useVisualViewport();
-  const cardRef = useRef<HTMLDivElement>(null);
-  const emailRef = useRef<HTMLInputElement>(null);
-  const didMountRef = useRef(false);
-  const viewportHeight = typeof window !== "undefined" ? window.innerHeight : visual.height;
-  const keyboardOpen = visual.height > 0 && visual.height < viewportHeight * 0.75;
-  const isMobile = useIsMobile(768);
-  const isLandscape = useMediaQuery("(orientation: landscape)");
-  const compactLandscape = isMobile && isLandscape;
 
   const [mode, setMode] = useState<AuthMode>("password");
   const [otpStep, setOtpStep] = useState<OtpStep>("email");
@@ -205,73 +94,35 @@ export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [code, setCode] = useState("");
   const [maskedEmail, setMaskedEmail] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [resendIn, setResendIn] = useState(0);
+  const [oauthLoading, setOauthLoading] = useState<string | null>(null);
 
   const [passkeyReady, setPasskeyReady] = useState(false);
+  const emailInputRef = useRef<HTMLInputElement>(null);
+  const successRedirected = useRef(false);
 
   useEffect(() => {
-    if (typeof window !== "undefined") setPasskeyReady(!!window.PublicKeyCredential);
+    if (typeof window !== "undefined") {
+      setPasskeyReady(!!window.PublicKeyCredential);
+    }
   }, []);
 
   useEffect(() => {
     if (resendIn <= 0) return;
-    const t = setInterval(() => setResendIn((v) => v - 1), 1000);
-    return () => clearInterval(t);
+    const timer = setInterval(() => setResendIn((v) => v - 1), 1000);
+    return () => clearInterval(timer);
   }, [resendIn]);
-
-  const successRedirected = useRef(false);
 
   useEffect(() => {
     if (authState === "success" && session && !successRedirected.current) {
       successRedirected.current = true;
-      authLog("Redirecting soon");
-      const t = setTimeout(() => router.replace("/"), 900);
-      return () => clearTimeout(t);
+      authLog("Redirecting to app dashboard");
+      const timer = setTimeout(() => router.replace("/"), 750);
+      return () => clearTimeout(timer);
     }
   }, [authState, session, router]);
-
-  useEffect(() => {
-    if (authState !== "success") return;
-    const t = setTimeout(() => {
-      if (!session) {
-        setAuthState("error");
-        setError(i18n("sessionTimeout", "La session n'a pas pu être créée. Réessayez."));
-        showError(i18n("error"));
-      }
-    }, 8000);
-    return () => clearTimeout(t);
-  }, [authState, session, i18n, showError]);
-
-  useEffect(() => {
-    if (!didMountRef.current) {
-      didMountRef.current = true;
-      return;
-    }
-    if (mode === "otp" && otpStep === "code") return;
-    const t = setTimeout(() => {
-      emailRef.current?.focus();
-    }, 0);
-    return () => clearTimeout(t);
-  }, [mode, otpStep]);
-
-  useEffect(() => {
-    if (!cardRef.current) return;
-    const card = cardRef.current;
-    const onFocus = (e: Event) => {
-      const target = e.target as HTMLElement | null;
-      if (!target || !keyboardOpen) return;
-      const tag = target.tagName.toLowerCase();
-      if (tag === "input" || tag === "textarea" || tag === "button") {
-        requestAnimationFrame(() => {
-          target.scrollIntoView({ block: "center", behavior: "smooth" });
-        });
-      }
-    };
-    card.addEventListener("focusin", onFocus);
-    return () => card.removeEventListener("focusin", onFocus);
-  }, [keyboardOpen]);
 
   const resetForm = useCallback(() => {
     setAuthState("idle");
@@ -279,146 +130,149 @@ export default function LoginPage() {
     setCode("");
   }, []);
 
-  const setModeAndReset = useCallback((next: AuthMode) => {
-    setMode(next);
-    setOtpStep("email");
-    resetForm();
+  const setModeAndReset = useCallback(
+    (next: AuthMode) => {
+      setMode(next);
+      setOtpStep("email");
+      resetForm();
+      setMaskedEmail("");
+      setResendIn(0);
+    },
+    [resetForm]
+  );
 
-    setMaskedEmail("");
-    setResendIn(0);
-  }, [resetForm]);
-
-  const runWithLoading = async (fn: () => Promise<{ ok: boolean; error?: Error | null }>, onSuccess?: () => void) => {
-    setAuthState("loading");
-    setError(null);
-    try {
-      const { ok, error: err } = await fn();
-      if (!ok || err) throw err || new Error("unknown");
-      setAuthState("success");
-      onSuccess?.();
-    } catch (err) {
-      setAuthState("error");
-      const human = humanError(err, i18n);
-      setError(human);
-      showError(i18n("error"));
-    }
-  };
-
-  const handleSendOtp = async (e?: React.FormEvent) => {
+  const handleSendOtp = async (e?: FormEvent) => {
     e?.preventDefault();
-    authLog("OTP requested");
-    const emailError = validate(email, [required(i18n("fieldRequired")), emailValidator(i18n("emailInvalid"))]);
-    if (emailError) {
-      setError(emailError);
-      showError(i18n("error"));
+    const emailErr = validate(email, [required("L'adresse e-mail est requise"), emailValidator("E-mail invalide")]);
+    if (emailErr) {
+      setError(emailErr);
+      triggerHaptic("error");
       return;
     }
+
     setAuthState("loading");
     setError(null);
+    authLog("Requesting OTP code for:", email);
+
     const result = await signInOtp(email);
     if (!result.error) {
       setMaskedEmail(maskEmail(email));
       setOtpStep("code");
       setResendIn(60);
       setAuthState("idle");
-      success(i18n("otpSent", "Code envoyé"));
+      triggerHaptic("success");
+      success("Code de sécurité envoyé", "Consultez votre boîte de réception.");
       return;
     }
+
     setAuthState("error");
+    triggerHaptic("error");
     const human = humanError(result.error, i18n);
     setError(human);
-    showError(i18n("error"));
   };
 
-  const handleVerifyOtp = async (e?: React.FormEvent) => {
-    e?.preventDefault();
-    const codeError = validate(code, [required(i18n("fieldRequired")), minLength(6, i18n("invalidCode"))]);
-    if (codeError) {
-      setAuthState("error");
-      setError(codeError);
-      showError(i18n("error"));
-      return;
-    }
+  const handleVerifyOtp = async (codeToVerify?: string) => {
+    const activeCode = codeToVerify || code;
+    if (activeCode.length !== 6) return;
+
     setAuthState("verifying");
     setError(null);
-    authLog("OTP verification started");
-    const result = await verifyOtp(email, code, rememberMe);
+    authLog("Verifying OTP code...");
+
+    const result = await verifyOtp(email, activeCode, rememberMe);
     if (result.error) {
-      authLog("OTP verification result", "error");
       setAuthState("error");
-      const human = humanError(result.error, i18n);
-      setError(human);
-      showError(i18n("error"));
+      triggerHaptic("error");
+      setError(humanError(result.error, i18n));
       return;
     }
-    authLog("OTP verification result", "success");
+
     setAuthState("success");
-    success(i18n("loginSuccess", "Connexion réussie"));
+    triggerHaptic("success");
+    success("Connexion réussie", "Bienvenue sur ETHONE.");
   };
 
-  useEffect(() => {
-    if (mode !== "otp" || otpStep !== "code" || code.length !== 6 || authState !== "idle" || error) return;
-    authLog("OTP auto-submitted");
-    handleVerifyOtp();
-  }, [mode, otpStep, code, authState, error]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const handlePassword = async (e?: React.FormEvent) => {
+  const handlePasswordLogin = async (e?: FormEvent) => {
     e?.preventDefault();
-    const emailError = validate(email, [required(i18n("fieldRequired")), emailValidator(i18n("emailInvalid"))]);
-    const passwordError = validate(password, [required(i18n("fieldRequired"))]);
-    const firstError = emailError || passwordError;
-    if (firstError) {
-      setAuthState("error");
-      setError(firstError);
-      showError(i18n("error"));
+    const emailErr = validate(email, [required("L'adresse e-mail est requise"), emailValidator("E-mail invalide")]);
+    const passErr = validate(password, [required("Le mot de passe est requis")]);
+    if (emailErr || passErr) {
+      setError(emailErr || passErr);
+      triggerHaptic("error");
       return;
     }
-    await runWithLoading(() => signInWithPassword(email, password, rememberMe), () => success(i18n("loginSuccess", "Connexion réussie")));
-  };
 
-  const handleRegister = async (e?: React.FormEvent) => {
-    e?.preventDefault();
-    const usernameError = validate(username.trim(), [
-      required(i18n("fieldRequired")),
-      minLength(2, i18n("usernameInvalid")),
-      maxLength(64, i18n("usernameInvalid")),
-    ]);
-    const emailError = validate(email, [required(i18n("fieldRequired")), emailValidator(i18n("emailInvalid"))]);
-    const passwordError = validate(password, [required(i18n("fieldRequired")), passwordStrength(i18n("passwordRequirement"))]);
-    const confirmError = validate(confirmPassword, [required(i18n("fieldRequired")), match(() => password, i18n("passwordMismatch"))]);
-    const firstError = usernameError || emailError || passwordError || confirmError;
-    if (firstError) {
-      setAuthState("error");
-      setError(firstError);
-      showError(i18n("error"));
-      return;
-    }
     setAuthState("loading");
     setError(null);
+
+    const res = await signInWithPassword(email, password, rememberMe);
+    if (!res.ok || res.error) {
+      setAuthState("error");
+      triggerHaptic("error");
+      setError(humanError(res.error, i18n));
+      return;
+    }
+
+    setAuthState("success");
+    triggerHaptic("success");
+    success("Connexion réussie", "Bienvenue sur ETHONE.");
+  };
+
+  const handleRegister = async (e?: FormEvent) => {
+    e?.preventDefault();
+    const usernameErr = validate(username.trim(), [
+      required("Le nom d'utilisateur est requis"),
+      minLength(2, "2 caractères minimum"),
+      maxLength(32, "32 caractères maximum"),
+    ]);
+    const emailErr = validate(email, [required("L'adresse e-mail est requise"), emailValidator("E-mail invalide")]);
+    const passErr = validate(password, [required("Le mot de passe est requis"), passwordStrength("8+ caractères requis")]);
+    const confirmErr = validate(confirmPassword, [
+      required("Confirmez votre mot de passe"),
+      match(() => password, "Les mots de passe ne correspondent pas"),
+    ]);
+
+    const firstErr = usernameErr || emailErr || passErr || confirmErr;
+    if (firstErr) {
+      setError(firstErr);
+      triggerHaptic("error");
+      return;
+    }
+
+    setAuthState("loading");
+    setError(null);
+
     const { ok, session: newSession, error: err } = await signUpWithPassword(email, password, username.trim());
     if (!ok || err) {
       setAuthState("error");
+      triggerHaptic("error");
       setError(humanError(err, i18n));
-      showError(i18n("error"));
       return;
     }
+
     if (newSession) {
       setAuthState("success");
-      success(i18n("loginSuccess", "Connexion réussie"));
+      triggerHaptic("success");
+      success("Compte créé", "Bienvenue sur ETHONE.");
     } else {
       setAuthState("idle");
-      success(i18n("checkEmail"));
+      triggerHaptic("success");
+      success("E-mail de confirmation envoyé", "Vérifiez vos e-mails pour activer votre compte.");
     }
   };
 
-  const handleOAuth = async (provider: "google" | "github" | "discord") => {
+  const handleOAuth = async (provider: "google" | "github") => {
+    setOauthLoading(provider);
     setAuthState("loading");
     setError(null);
+    triggerHaptic("light");
+
     const { ok, url, error: err } = await signInWithOAuth(provider);
     if (!ok || err || !url) {
       setAuthState("error");
+      setOauthLoading(null);
+      triggerHaptic("error");
       setError(humanError(err, i18n));
-      showError(i18n("error"));
       return;
     }
     window.location.href = url;
@@ -426,379 +280,663 @@ export default function LoginPage() {
 
   const handlePasskey = async () => {
     if (!passkeyReady) return;
-    const emailError = validate(email, [required(i18n("fieldRequired")), emailValidator(i18n("emailInvalid"))]);
-    if (emailError) {
-      setError(emailError);
-      showError(i18n("error"));
+    const emailErr = validate(email, [required("L'adresse e-mail est requise"), emailValidator("E-mail invalide")]);
+    if (emailErr) {
+      setError(emailErr);
+      triggerHaptic("error");
       return;
     }
+
     setAuthState("loading");
     setError(null);
+    triggerHaptic("medium");
+
     try {
       const { ok, error: err } = await signInWithPasskey(email);
-      if (!ok || err) throw err || new Error("unknown");
+      if (!ok || err) throw err || new Error("Passkey failed");
       setAuthState("success");
-      success(i18n("loginSuccess", "Connexion réussie"));
+      triggerHaptic("success");
+      success("Passkey validé", "Connexion à ETHONE...");
     } catch (err) {
       setAuthState("error");
-      const human = humanError(err, i18n);
-      setError(human);
-      showError(i18n("error"));
+      triggerHaptic("error");
+      setError(humanError(err, i18n));
     }
-  };
-
-  const handleResend = async () => {
-    if (resendIn > 0) return;
-    await handleSendOtp();
-  };
-
-  const handleBackToEmail = () => {
-    setOtpStep("email");
-    resetForm();
-
-    setResendIn(0);
   };
 
   const isLoading = authState === "loading" || authState === "verifying";
   const isSuccess = authState === "success";
 
-  const submitLabel = (() => {
-    if (isSuccess) return i18n("loginSuccess", "Connecté");
-    if (isLoading) return mode === "otp" && otpStep === "code" ? i18n("verifying", "Vérification…") : i18n("loading", "Chargement…");
-    if (mode === "otp") return otpStep === "email" ? i18n("continue", "Continuer") : i18n("verify", "Vérifier");
-    if (mode === "register") return i18n("create", "Créer un compte");
-    return i18n("signIn", "Se connecter");
-  })();
+  const headerTitle = useMemo(() => {
+    if (mode === "otp") {
+      return otpStep === "code" ? "Vérification du code" : "Connexion sans mot de passe";
+    }
+    if (mode === "register") {
+      return "Créer votre espace";
+    }
+    return "Bienvenue sur ETHONE";
+  }, [mode, otpStep]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (mode === "otp" && otpStep === "code") handleVerifyOtp(e);
-    else if (mode === "otp") handleSendOtp(e);
-    else if (mode === "register") handleRegister(e);
-    else handlePassword(e);
-  };
+  const headerSubtitle = useMemo(() => {
+    if (mode === "otp" && otpStep === "code") {
+      return `Code sécurisé envoyé à ${maskedEmail}`;
+    }
+    if (mode === "otp") {
+      return "Recevez un code instantané à 6 chiffres par e-mail.";
+    }
+    if (mode === "register") {
+      return "Configurez votre profil pour démarrer sur l'OS.";
+    }
+    return "Connectez-vous à votre environnement numérique unifié.";
+  }, [mode, otpStep, maskedEmail]);
 
   return (
-    <div className="relative flex min-h-dvh w-full flex-col overflow-hidden bg-[var(--background)] lg:flex-row">
-      <div className="absolute right-[calc(1rem+env(safe-area-inset-right))] top-[calc(1rem+env(safe-area-inset-top))] z-30">
+    <div className="relative flex min-h-dvh w-full overflow-hidden bg-[#07090d] text-white selection:bg-emerald-500/30 selection:text-emerald-200">
+      {/* Top right language switcher */}
+      <div className="absolute right-4 top-4 z-40 sm:right-6 sm:top-6">
         <LanguageSwitcher />
       </div>
 
-      <div className="relative hidden w-2/5 flex-col justify-between overflow-hidden p-8 lg:flex lg:w-1/2 lg:p-10 md:flex">
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[var(--surface)] via-[var(--background)] to-[var(--surface-raised)]" />
-        <motion.div
-          animate={reduced ? undefined : { x: [0, 20, -20, 0], y: [0, -20, 20, 0] }}
-          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-          className="pointer-events-none absolute -bottom-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-[var(--accent)]/15 blur-[140px]"
-        />
-        <motion.div
-          animate={reduced ? undefined : { x: [0, -20, 20, 0], y: [0, 20, -20, 0] }}
-          transition={{ duration: 34, repeat: Infinity, ease: "linear" }}
-          className="pointer-events-none absolute -left-40 -top-40 h-[24rem] w-[24rem] rounded-full bg-[var(--accent)]/10 blur-[120px]"
-        />
+      {/* Left side: Premium OS Hero Presentation (Desktop only) */}
+      <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden p-10 lg:flex xl:p-14 select-none">
+        {/* Subtle Ambient Radial Lighting */}
+        <div className="pointer-events-none absolute -left-20 -top-20 h-[36rem] w-[36rem] rounded-full bg-emerald-500/[0.04] blur-[140px]" />
+        <div className="pointer-events-none absolute -bottom-20 -right-20 h-[36rem] w-[36rem] rounded-full bg-cyan-500/[0.04] blur-[140px]" />
+
+        {/* Brand Header */}
         <div className="z-10 flex items-center gap-3">
-          <BrandMark size={34} />
-          <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold tracking-tight text-[var(--foreground)]">ETHONE</span>
-            <span className="rounded border border-[var(--border)] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">OS</span>
+          <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl bg-white/[0.04] border border-white/10 shadow-lg">
+            <BrandMark size={28} />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xl font-bold tracking-tight text-white font-mono">ETHONE</span>
+            <span className="rounded-lg border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-400">
+              OS
+            </span>
           </div>
         </div>
-        <div className="z-10 max-w-md">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[var(--accent)]">{i18n("environmentPersonal", "Environnement personnel")}</p>
-          <h1 className="mt-5 text-4xl font-bold tracking-tighter text-[var(--foreground)] md:text-5xl lg:text-6xl">ETHONE</h1>
-          <p className="mt-4 text-base font-light leading-relaxed text-[var(--text-muted)] md:text-lg lg:text-xl">
-            {i18n("yourDigitalEnvironment", "Votre environnement numérique")}{" "}
-            <span className="font-medium text-[var(--foreground)]">{i18n("reinventedAroundYou", "Réinventé autour de vous.")}</span>
+
+        {/* Main Hero Content */}
+        <div className="z-10 max-w-lg space-y-4">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1 text-[11px] font-medium tracking-wide text-zinc-300 backdrop-blur-md">
+            <Sparkles className="h-3.5 w-3.5 text-emerald-400" />
+            <span>Environnement personnel unifié</span>
+          </div>
+
+          <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl xl:text-6xl leading-[1.1]">
+            Votre espace, <br />
+            <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
+              réinventé pour vous.
+            </span>
+          </h1>
+
+          <p className="text-base text-zinc-400 font-light leading-relaxed">
+            Notes, tâches, calendrier, finances, musique, fichiers et IA locale réunis dans un système fluide et instantané.
           </p>
         </div>
-        <div className="z-10 text-xs text-[var(--text-muted)]">
-          <span className="inline-flex items-center gap-2.5 rounded-full border border-[var(--border)] bg-[var(--surface)]/60 px-4 py-2 shadow-lg backdrop-blur-md">
-            <span className={cn("h-2 w-2 rounded-full", online ? "bg-[var(--success)]" : "bg-[var(--warning)]")} />
-            {online ? i18n("systemOperational", "ETHONE opérationnel") : i18n("offline", "Hors ligne")}
-          </span>
+
+        {/* System Status Pill */}
+        <div className="z-10 flex items-center gap-3 text-xs text-zinc-400">
+          <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1.5 backdrop-blur-md">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+            </span>
+            <span className="font-mono text-[11px] text-zinc-300">ETHONE Cloud & IA opérationnels</span>
+          </div>
         </div>
       </div>
 
-      <div className={cn("relative flex w-full flex-col items-center px-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-[calc(1.5rem+env(safe-area-inset-top))] sm:px-6 sm:pb-8 md:w-3/5 lg:w-1/2 lg:p-10", keyboardOpen ? "justify-start overflow-y-auto" : "justify-center overflow-hidden")}>
-        {!online && (
+      {/* Right side: Auth Form Card */}
+      <div className="relative flex flex-1 items-center justify-center p-4 sm:p-8 lg:w-1/2">
+        <div className="relative w-full max-w-[440px]">
+          {/* Card Ambient Glow */}
+          <div className="pointer-events-none absolute -inset-1 rounded-[2.5rem] bg-gradient-to-br from-emerald-500/10 via-transparent to-cyan-500/10 blur-xl" />
+
+          {/* Main Glass Card */}
           <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-4 flex w-full max-w-md items-center gap-2 rounded-xl border border-[var(--warning)]/20 bg-[var(--warning)]/10 p-3 text-xs text-[var(--warning)]"
-          >
-            <Icon name="wifi-off" className="h-4 w-4 shrink-0" />
-            <span>{i18n("offline", "Vous êtes hors ligne. Vérifiez votre connexion.")}</span>
-          </motion.div>
-        )}
-        <div className="relative w-full max-w-md">          <div className="pointer-events-none absolute -inset-1 rounded-[2.25rem] bg-gradient-to-br from-[var(--accent)]/20 via-transparent to-[var(--accent)]/10 blur-2xl" />
-          <motion.div
-            ref={cardRef}
-            initial={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : 20, scale: reduced ? 1 : 0.98 }}
+            initial={reduced ? undefined : { opacity: 0, y: 16, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: reduced ? 0 : 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className={cn("relative overflow-hidden rounded-[2rem] border border-[var(--border)] bg-[var(--surface)]/85 p-6 backdrop-blur-2xl sm:p-8 lg:p-10", compactLandscape && "p-4 sm:p-5 lg:p-5")}
-            style={{ boxShadow: "inset 0 1px 1px rgba(255,255,255,0.06), 0 25px 50px -12px rgba(0,0,0,0.5)" }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="relative overflow-hidden rounded-[2.25rem] border border-white/10 bg-[#0d1016]/90 p-6 sm:p-9 shadow-2xl backdrop-blur-2xl"
           >
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/40 to-transparent" />
-            <div className="pointer-events-none absolute right-0 top-0 h-32 w-32 rounded-full bg-[var(--accent)]/10 blur-3xl" />
-
-            <div className="relative flex flex-col items-center text-center">
+            {/* Top Card Icon & Title */}
+            <div className="text-center space-y-3">
               <motion.div
-                animate={reduced ? undefined : { scale: [1, 1.04, 1], opacity: [0.85, 1, 0.85] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                className={cn("relative flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--accent)]/10 ring-1 ring-[var(--accent)]/20 shadow-[0_0_24px_-8px_var(--accent)]", compactLandscape && "h-12 w-12")}
+                animate={
+                  isSuccess
+                    ? { scale: [1, 1.1, 1], rotate: [0, 5, 0] }
+                    : isLoading
+                    ? { scale: [1, 1.04, 1] }
+                    : {}
+                }
+                transition={{ duration: 0.6, repeat: isLoading ? Infinity : 0 }}
+                className={cn(
+                  "mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border transition-all duration-300 shadow-lg",
+                  isSuccess
+                    ? "border-emerald-400/50 bg-emerald-500/20 text-emerald-300 shadow-emerald-500/20"
+                    : "border-white/10 bg-white/[0.04] text-white shadow-black/40"
+                )}
               >
-                <BrandMark size={38} />
+                {isSuccess ? (
+                  <Check className="h-7 w-7 text-emerald-400" />
+                ) : (
+                  <BrandMark size={36} />
+                )}
               </motion.div>
-              <h2 className={cn("mt-4 text-2xl font-bold tracking-tight text-[var(--foreground)]", compactLandscape && "mt-2 text-xl")}>{i18n("welcomeBack", "Bienvenue")}</h2>
-              <p className={cn("mt-1.5 max-w-[16rem] text-sm leading-relaxed text-[var(--text-muted)]", compactLandscape && "hidden sm:block")}>{i18n("loginDescription", "Connectez-vous à votre environnement.")}</p>
-            </div>
 
-            <div className={cn("mt-6", compactLandscape && "mt-4")}>
-              <div className={cn("relative grid grid-cols-3 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]/60 p-1 shadow-[inset_0_1px_2px_rgba(0,0,0,0.2)]", compactLandscape && "rounded-xl")}>
-                {(["password", "otp", "register"] as AuthMode[]).map((m) => {
-                  const active = mode === m;
-                  const label = m === "password" ? i18n("password", "Mot de passe") : m === "otp" ? i18n("otp", "OTP") : i18n("register", "Inscription");
-                  return (
-                    <button
-                      key={m}
-                      type="button"
-                      onClick={() => { triggerHaptic("light"); setModeAndReset(m); }}
-                      disabled={isLoading}
-                      aria-pressed={active}
-                      className={cn(
-                        "relative z-10 select-none rounded-xl px-1 py-2.5 text-[10px] font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-raised)] sm:px-2 sm:text-xs",
-                        compactLandscape && "py-2",
-                        active ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] hover:text-[var(--foreground)]"
-                      )}
-                    >
-                      {active && (
-                        <motion.span
-                          layoutId="activeAuthTab"
-                          transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                          className="absolute inset-0 z-0 rounded-xl bg-[var(--accent)]/10"
-                        />
-                      )}
-                      <span className="relative z-10">{label}</span>
-                    </button>
-                  );
-                })}
+              <div>
+                <h2 className="text-2xl font-bold tracking-tight text-white">
+                  {headerTitle}
+                </h2>
+                <p className="mt-1 text-xs text-zinc-400 leading-relaxed">
+                  {headerSubtitle}
+                </p>
               </div>
             </div>
 
+            {/* Mode Selector Tabs (only when in root mode or register) */}
+            {!(mode === "otp" && otpStep === "code") && (
+              <div className="mt-6">
+                <div className="relative grid grid-cols-3 rounded-2xl border border-white/10 bg-white/[0.03] p-1 shadow-inner">
+                  {(["password", "otp", "register"] as AuthMode[]).map((m) => {
+                    const active = mode === m;
+                    const label =
+                      m === "password"
+                        ? "Mot de passe"
+                        : m === "otp"
+                        ? "Code OTP"
+                        : "S'inscrire";
+
+                    return (
+                      <button
+                        key={m}
+                        type="button"
+                        onClick={() => {
+                          triggerHaptic("light");
+                          setModeAndReset(m);
+                        }}
+                        disabled={isLoading}
+                        aria-pressed={active}
+                        className={cn(
+                          "relative z-10 select-none rounded-xl py-2 text-xs font-medium transition-colors cursor-pointer",
+                          active
+                            ? "text-white font-semibold"
+                            : "text-zinc-400 hover:text-white"
+                        )}
+                      >
+                        {active && (
+                          <motion.span
+                            layoutId="activeAuthTab"
+                            transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                            className="absolute inset-0 z-0 rounded-xl bg-white/10 border border-white/15 shadow-sm"
+                          />
+                        )}
+                        <span className="relative z-10">{label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Error Notification Banner */}
             <AnimatePresence mode="wait">
               {error && (
                 <motion.div
                   key="error"
                   role="alert"
-                  aria-live="polite"
-                  aria-atomic="true"
-                  initial={{ opacity: 0, height: 0, y: -8 }}
+                  initial={{ opacity: 0, height: 0, y: -6 }}
                   animate={{ opacity: 1, height: "auto", y: 0 }}
-                  exit={{ opacity: 0, height: 0, y: -8 }}
-                  transition={{ duration: reduced ? 0 : 0.18, ease: [0.16, 1, 0.3, 1] }}
-                  className={cn("mt-5 overflow-hidden", compactLandscape && "mt-3")}
+                  exit={{ opacity: 0, height: 0, y: -6 }}
+                  transition={{ duration: 0.18 }}
+                  className="mt-4 overflow-hidden"
                 >
-                  <div className="flex items-start gap-2 rounded-xl border border-[var(--danger)]/20 bg-[var(--danger)]/10 p-3 text-xs text-[var(--danger)]">
-                    <Icon name="alert-circle" className="mt-0.5 h-4 w-4 shrink-0 text-[var(--danger)]" />
-                    <span>{error}</span>
+                  <div className="flex items-start gap-2.5 rounded-2xl border border-rose-500/20 bg-rose-500/10 p-3.5 text-xs text-rose-300">
+                    <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-400" />
+                    <span className="leading-snug">{error}</span>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            <AnimatePresence mode="wait">
-              <motion.form
-                key={`${mode}-${otpStep}`}
-                onSubmit={handleSubmit}
-                noValidate
-                initial={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : -12 }}
-                transition={{ duration: reduced ? 0 : 0.2, ease: [0.16, 1, 0.3, 1] }}
-                className={cn("mt-5 space-y-4", compactLandscape && "mt-3 space-y-3")}
-              >
-              <div className="space-y-1.5">
-                <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-email">{i18n("email", "E-mail")}</label>
-                <Input
-                  id="auth-email"
-                  name="email"
-                  ref={emailRef}
-                  type="email"
-                  inputSize="large"
-                  autoComplete="email"
-                  inputMode="email"
-                  autoCorrect="off"
-                  autoCapitalize="off"
-                  spellCheck="false"
-                  enterKeyHint="next"
-                  icon="mail"
-                  value={email}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                  placeholder="nom@exemple.com"
-                  disabled={isLoading || isSuccess}
-                  error={!!error && !email}
-                  inputClassName="text-base sm:text-sm"
-                />
-              </div>
+            {/* Dynamic Form Content */}
+            <div className="mt-5">
+              <AnimatePresence mode="wait">
+                {/* 1. PASSWORD LOGIN FLOW */}
+                {mode === "password" && (
+                  <motion.form
+                    key="password-flow"
+                    onSubmit={handlePasswordLogin}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 10 }}
+                    transition={{ duration: 0.18 }}
+                    className="space-y-4"
+                  >
+                    <AuthInputField
+                      id="login-email"
+                      label="Adresse e-mail"
+                      type="email"
+                      autoComplete="email"
+                      placeholder="nom@exemple.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      disabled={isLoading || isSuccess}
+                      leftIcon={<Mail className="h-4 w-4" />}
+                      ref={emailInputRef}
+                    />
 
-              {mode === "otp" && otpStep === "code" && (
-                <motion.div
-                  key="otp"
-                  initial={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : -12 }}
-                  transition={{ duration: reduced ? 0 : 0.18, ease: [0.16, 1, 0.3, 1] }}
-                  className="space-y-4"
-                >
-                  <div className="text-center">
-                    <p className="text-xs font-medium text-[var(--foreground)]">{i18n("codeSent", "Code envoyé")}</p>
-                    <p className="text-[11px] text-[var(--text-muted)]">{i18n("codeSentTo", "Nous avons envoyé un code à")} <span className="text-[var(--foreground)]">{maskedEmail}</span></p>
-                  </div>
-                  <OtpInput value={code} onChange={setCode} disabled={isLoading || isSuccess} error={!!error} />
-                  <div className="flex items-center justify-between">
-                    <button type="button" onClick={handleBackToEmail} disabled={isLoading} className="flex items-center gap-1 text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] disabled:opacity-50">
-                      <Icon name="chevron-left" className="h-3.5 w-3.5" /> {i18n("changeEmail", "Modifier l'adresse")}
-                    </button>
-                    <button type="button" onClick={handleResend} disabled={isLoading || resendIn > 0} className="text-xs text-[var(--accent-primary)] transition-opacity hover:opacity-80 disabled:opacity-40">
-                      {resendIn > 0 ? i18n("resendIn", `Renvoyer dans ${resendIn} s`) : i18n("resendCode", "Renvoyer le code")}
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-
-              {(mode === "password" || (mode === "otp" && otpStep === "email")) && (
-                <motion.div key="password" initial={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : 4 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reduced ? 0 : 0.15, ease: [0.16, 1, 0.3, 1] }} className="space-y-4">
-                  {mode === "password" && (
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-password">{i18n("password", "Mot de passe")}</label>
-                      <Input
-                        id="auth-password"
-                        name="password"
-                        type={showPassword ? "text" : "password"}
-                        inputSize="large"
-                        autoComplete="current-password"
-                        autoCorrect="off"
-                        autoCapitalize="off"
-                        spellCheck="false"
-                        enterKeyHint="go"
-                        icon="lock"
-                        value={password}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                        placeholder="••••••••"
-                        disabled={isLoading || isSuccess}
-                        error={!!error && !password}
-                        inputClassName="text-base sm:text-sm"
-                        right={(
-                          <button type="button" tabIndex={-1} onClick={() => { triggerHaptic("light"); setShowPassword((v) => !v); }} aria-label={i18n("togglePassword", "Afficher ou masquer le mot de passe")} aria-pressed={showPassword} className="-mr-1 flex h-10 w-10 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] active:scale-95">
-                            <Icon name={showPassword ? "eye-off" : "eye"} className="h-5 w-5" />
-                          </button>
-                        )}
-                      />
-                    </div>
-                  )}
-                  <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
-                    <Switch checked={rememberMe} onChange={setRememberMe} label={i18n("rememberMe", "Rester connecté")} id="remember-me" size="md" />
-                    {mode === "password" && (
-                      <button type="button" onClick={() => router.push("/password-recovery")} disabled={isLoading || isSuccess} className="text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] disabled:opacity-40">
-                        {i18n("forgotPassword", "Mot de passe oublié ?")}
-                      </button>
-                    )}
-                  </div>
-                </motion.div>
-              )}
-
-              {mode === "register" && (
-                <motion.div key="register" initial={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : 4 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reduced ? 0 : 0.15, ease: [0.16, 1, 0.3, 1] }} className="space-y-4">
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-username">{i18n("username", "Nom d'utilisateur")}</label>
-                    <Input id="auth-username" name="username" type="text" inputSize="large" autoComplete="username" autoCorrect="off" autoCapitalize="off" spellCheck="false" enterKeyHint="next" icon="user" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="rub19" disabled={isLoading || isSuccess} inputClassName="text-base sm:text-sm" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-password-register">{i18n("password", "Mot de passe")}</label>
-                    <Input
-                      id="auth-password-register"
-                      name="new-password"
+                    <AuthInputField
+                      id="login-password"
+                      label="Mot de passe"
                       type={showPassword ? "text" : "password"}
-                      inputSize="large"
-                      autoComplete="new-password"
-                      autoCorrect="off"
-                      autoCapitalize="off"
-                      spellCheck="false"
-                      enterKeyHint="next"
-                      icon="lock"
+                      autoComplete="current-password"
+                      placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
                       disabled={isLoading || isSuccess}
-                      inputClassName="text-base sm:text-sm"
-                      right={(
-                        <button type="button" tabIndex={-1} onClick={() => { triggerHaptic("light"); setShowPassword((v) => !v); }} aria-label={i18n("togglePassword", "Afficher ou masquer le mot de passe")} aria-pressed={showPassword} className="-mr-1 flex h-10 w-10 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] active:scale-95">
-                          <Icon name={showPassword ? "eye-off" : "eye"} className="h-5 w-5" />
+                      leftIcon={<Lock className="h-4 w-4" />}
+                      rightElement={
+                        <button
+                          type="button"
+                          onClick={() => {
+                            triggerHaptic("light");
+                            setShowPassword((v) => !v);
+                          }}
+                          className="text-zinc-400 hover:text-white transition-colors p-1"
+                          aria-label="Afficher ou masquer le mot de passe"
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
                         </button>
-                      )}
+                      }
                     />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-confirm">{i18n("confirmPassword", "Confirmer le mot de passe")}</label>
-                    <Input id="auth-confirm" name="confirm-password" type="password" inputSize="large" autoComplete="new-password" autoCorrect="off" autoCapitalize="off" spellCheck="false" enterKeyHint="go" icon="lock" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" disabled={isLoading || isSuccess} inputClassName="text-base sm:text-sm" />
-                  </div>
-                </motion.div>
-              )}
 
-              <Button
-                type="submit"
-                variant="primary"
-                size="lg"
-                className="h-12 w-full text-base sm:text-sm active:scale-[0.98]"
-                isLoading={isLoading}
-                disabled={isLoading || isSuccess || (mode === "otp" && otpStep === "code" ? code.length !== 6 : false)}
-                rightIcon={!isLoading && !isSuccess ? <Icon name="arrow-right" className="h-5 w-5" /> : undefined}
-              >
-                {isSuccess ? (
-                  <span className="inline-flex items-center gap-2">
-                    <Icon name="check" className="h-4 w-4" /> {submitLabel}
+                    <div className="flex items-center justify-between pt-0.5 text-xs text-zinc-400">
+                      <Switch
+                        id="remember-me-toggle"
+                        checked={rememberMe}
+                        onChange={setRememberMe}
+                        label="Rester connecté"
+                        size="md"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => router.push("/password-recovery")}
+                        className="text-xs text-zinc-400 hover:text-emerald-400 transition-colors"
+                      >
+                        Mot de passe oublié ?
+                      </button>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isLoading || isSuccess}
+                      className={cn(
+                        "mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-semibold text-white shadow-lg transition-all duration-150 active:scale-[0.98] cursor-pointer",
+                        isSuccess
+                          ? "bg-emerald-500 shadow-emerald-500/30"
+                          : "bg-gradient-to-r from-emerald-500 to-teal-500 hover:opacity-95 shadow-emerald-500/20",
+                        isLoading && "opacity-80"
+                      )}
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span>Connexion en cours...</span>
+                        </>
+                      ) : isSuccess ? (
+                        <>
+                          <Check className="h-4 w-4" />
+                          <span>Connecté !</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Se connecter</span>
+                          <ArrowRight className="h-4 w-4" />
+                        </>
+                      )}
+                    </button>
+                  </motion.form>
+                )}
+
+                {/* 2. OTP FLOW (EMAIL STEP) */}
+                {mode === "otp" && otpStep === "email" && (
+                  <motion.form
+                    key="otp-email-flow"
+                    onSubmit={handleSendOtp}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 10 }}
+                    transition={{ duration: 0.18 }}
+                    className="space-y-4"
+                  >
+                    <AuthInputField
+                      id="otp-email"
+                      label="Adresse e-mail"
+                      type="email"
+                      autoComplete="email"
+                      placeholder="nom@exemple.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      disabled={isLoading || isSuccess}
+                      leftIcon={<Mail className="h-4 w-4" />}
+                      ref={emailInputRef}
+                    />
+
+                    <div className="pt-0.5">
+                      <Switch
+                        id="remember-me-otp"
+                        checked={rememberMe}
+                        onChange={setRememberMe}
+                        label="Rester connecté sur cet appareil"
+                        size="md"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isLoading || isSuccess}
+                      className={cn(
+                        "mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-semibold text-white shadow-lg transition-all duration-150 active:scale-[0.98] cursor-pointer",
+                        "bg-gradient-to-r from-emerald-500 to-teal-500 hover:opacity-95 shadow-emerald-500/20",
+                        isLoading && "opacity-80"
+                      )}
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span>Envoi du code...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Recevoir le code de connexion</span>
+                          <ArrowRight className="h-4 w-4" />
+                        </>
+                      )}
+                    </button>
+                  </motion.form>
+                )}
+
+                {/* 3. OTP FLOW (CODE VERIFICATION STEP) */}
+                {mode === "otp" && otpStep === "code" && (
+                  <motion.div
+                    key="otp-code-flow"
+                    initial={{ opacity: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.96 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-5"
+                  >
+                    <OtpCodeInput
+                      value={code}
+                      onChange={setCode}
+                      onComplete={handleVerifyOtp}
+                      disabled={isLoading || isSuccess}
+                      error={!!error}
+                      state={authState}
+                    />
+
+                    <div className="flex items-center justify-between text-xs pt-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          triggerHaptic("light");
+                          setOtpStep("email");
+                          setCode("");
+                          setError(null);
+                        }}
+                        disabled={isLoading}
+                        className="flex items-center gap-1 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                      >
+                        <ChevronLeft className="h-3.5 w-3.5" />
+                        <span>Modifier l'adresse</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleSendOtp}
+                        disabled={isLoading || resendIn > 0}
+                        className={cn(
+                          "transition-colors cursor-pointer",
+                          resendIn > 0
+                            ? "text-zinc-500 cursor-not-allowed"
+                            : "text-emerald-400 hover:text-emerald-300 font-medium"
+                        )}
+                      >
+                        {resendIn > 0 ? `Renvoyer (${resendIn}s)` : "Renvoyer le code"}
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleVerifyOtp()}
+                      disabled={isLoading || isSuccess || code.length !== 6}
+                      className={cn(
+                        "mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-semibold text-white shadow-lg transition-all duration-150 active:scale-[0.98] cursor-pointer",
+                        isSuccess
+                          ? "bg-emerald-500 shadow-emerald-500/30"
+                          : "bg-gradient-to-r from-emerald-500 to-teal-500 hover:opacity-95 shadow-emerald-500/20",
+                        (isLoading || code.length !== 6) && "opacity-60 cursor-not-allowed"
+                      )}
+                    >
+                      {authState === "verifying" ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span>Vérification du code...</span>
+                        </>
+                      ) : isSuccess ? (
+                        <>
+                          <Check className="h-4 w-4" />
+                          <span>Code accepté !</span>
+                        </>
+                      ) : (
+                        <>
+                          <ShieldCheck className="h-4 w-4" />
+                          <span>Valider le code</span>
+                        </>
+                      )}
+                    </button>
+                  </motion.div>
+                )}
+
+                {/* 4. REGISTER FLOW */}
+                {mode === "register" && (
+                  <motion.form
+                    key="register-flow"
+                    onSubmit={handleRegister}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 10 }}
+                    transition={{ duration: 0.18 }}
+                    className="space-y-3.5"
+                  >
+                    <AuthInputField
+                      id="register-username"
+                      label="Nom d'utilisateur"
+                      type="text"
+                      autoComplete="username"
+                      placeholder="alex2026"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      disabled={isLoading || isSuccess}
+                      leftIcon={<User className="h-4 w-4" />}
+                    />
+
+                    <AuthInputField
+                      id="register-email"
+                      label="Adresse e-mail"
+                      type="email"
+                      autoComplete="email"
+                      placeholder="nom@exemple.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      disabled={isLoading || isSuccess}
+                      leftIcon={<Mail className="h-4 w-4" />}
+                    />
+
+                    <div className="space-y-1.5">
+                      <AuthInputField
+                        id="register-password"
+                        label="Mot de passe"
+                        type={showPassword ? "text" : "password"}
+                        autoComplete="new-password"
+                        placeholder="••••••••"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        disabled={isLoading || isSuccess}
+                        leftIcon={<Lock className="h-4 w-4" />}
+                        rightElement={
+                          <button
+                            type="button"
+                            onClick={() => {
+                              triggerHaptic("light");
+                              setShowPassword((v) => !v);
+                            }}
+                            className="text-zinc-400 hover:text-white transition-colors p-1"
+                            aria-label="Afficher ou masquer le mot de passe"
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </button>
+                        }
+                      />
+                      <PasswordStrengthMeter password={password} />
+                    </div>
+
+                    <AuthInputField
+                      id="register-confirm-password"
+                      label="Confirmer le mot de passe"
+                      type="password"
+                      autoComplete="new-password"
+                      placeholder="••••••••"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      disabled={isLoading || isSuccess}
+                      leftIcon={<Lock className="h-4 w-4" />}
+                    />
+
+                    <button
+                      type="submit"
+                      disabled={isLoading || isSuccess}
+                      className={cn(
+                        "mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-semibold text-white shadow-lg transition-all duration-150 active:scale-[0.98] cursor-pointer",
+                        isSuccess
+                          ? "bg-emerald-500 shadow-emerald-500/30"
+                          : "bg-gradient-to-r from-emerald-500 to-teal-500 hover:opacity-95 shadow-emerald-500/20",
+                        isLoading && "opacity-80"
+                      )}
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span>Création en cours...</span>
+                        </>
+                      ) : isSuccess ? (
+                        <>
+                          <Check className="h-4 w-4" />
+                          <span>Espace créé !</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Créer mon espace ETHONE</span>
+                          <ArrowRight className="h-4 w-4" />
+                        </>
+                      )}
+                    </button>
+                  </motion.form>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Social Authentication & Alternative Methods (only in login modes) */}
+            {mode !== "register" && !(mode === "otp" && otpStep === "code") && (
+              <div className="mt-6 space-y-4">
+                <div className="relative flex items-center">
+                  <div className="flex-1 border-t border-white/10" />
+                  <span className="px-3 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">
+                    ou continuer avec
                   </span>
-                ) : submitLabel}
-              </Button>
-
-              {mode !== "register" && (
-                <div className={cn("relative flex items-center py-2", compactLandscape && "py-1.5")}>
-                  <div className="flex-1 border-t border-[var(--border)]" />
-                  <span className="px-3 text-[10px] text-[var(--text-muted)]">{i18n("or", "ou")}</span>
-                  <div className="flex-1 border-t border-[var(--border)]" />
+                  <div className="flex-1 border-t border-white/10" />
                 </div>
-              )}
 
-              {mode !== "register" && (
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <Button type="button" variant="secondary" size="md" className="h-12 w-full text-base sm:text-sm active:scale-[0.98]" onClick={() => handleOAuth("google")} leftIcon={<GoogleIcon className="h-5 w-5" />} disabled={isLoading || isSuccess}>
-                    Google
-                  </Button>
-                  <Button type="button" variant="secondary" size="md" className="h-12 w-full text-base sm:text-sm active:scale-[0.98]" onClick={() => handleOAuth("github")} leftIcon={<GithubIcon className="h-5 w-5" />} disabled={isLoading || isSuccess}>
-                    GitHub
-                  </Button>
-                  {passkeyReady && (
-                    <Button type="button" variant="secondary" size="md" className="col-span-1 h-12 w-full text-base sm:text-sm active:scale-[0.98] sm:col-span-2" onClick={handlePasskey} leftIcon={<Icon name="key-round" className="h-5 w-5" />} disabled={isLoading || isSuccess}>
-                      {i18n("passkey", "Se connecter avec un passkey")}
-                    </Button>
-                  )}
-                  {!passkeyReady && (
-                    <p className="col-span-1 text-center text-xs text-[var(--text-muted)] sm:col-span-2">{i18n("passkeyUnsupported", "Les passkeys ne sont pas disponibles sur ce navigateur.")}</p>
-                  )}
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => handleOAuth("google")}
+                    disabled={isLoading || isSuccess}
+                    className="flex h-11 items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.035] px-4 text-xs font-medium text-white transition-all duration-150 hover:bg-white/[0.07] hover:border-white/20 active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+                  >
+                    {oauthLoading === "google" ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <GoogleIcon className="h-4 w-4" />
+                    )}
+                    <span>Google</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleOAuth("github")}
+                    disabled={isLoading || isSuccess}
+                    className="flex h-11 items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.035] px-4 text-xs font-medium text-white transition-all duration-150 hover:bg-white/[0.07] hover:border-white/20 active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+                  >
+                    {oauthLoading === "github" ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <GithubIcon className="h-4 w-4 text-white" />
+                    )}
+                    <span>GitHub</span>
+                  </button>
                 </div>
-              )}
-              </motion.form>
-            </AnimatePresence>
 
-            <div className={cn("mt-6 text-center text-xs text-[var(--text-muted)]", compactLandscape && "mt-4")}>
+                {passkeyReady && (
+                  <button
+                    type="button"
+                    onClick={handlePasskey}
+                    disabled={isLoading || isSuccess}
+                    className="flex h-11 w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-4 text-xs font-medium text-zinc-300 transition-all duration-150 hover:bg-white/[0.06] hover:text-white active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+                  >
+                    <KeyRound className="h-4 w-4 text-emerald-400" />
+                    <span>Se connecter avec une clé de sécurité (Passkey)</span>
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Bottom Footer Switcher */}
+            <div className="mt-6 text-center text-xs text-zinc-400">
               {mode === "register" ? (
-                <button type="button" onClick={() => { triggerHaptic("light"); setModeAndReset("password"); }} disabled={isLoading || isSuccess} className="h-10 rounded-lg px-3 py-2 text-[var(--accent-primary)] transition-all hover:opacity-80 active:scale-95 disabled:opacity-40 disabled:active:scale-100">
-                  {i18n("alreadyHaveAccount", "Déjà un compte ? Se connecter")}
+                <button
+                  type="button"
+                  onClick={() => {
+                    triggerHaptic("light");
+                    setModeAndReset("password");
+                  }}
+                  disabled={isLoading}
+                  className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors cursor-pointer"
+                >
+                  Déjà un compte ? Se connecter
                 </button>
               ) : (
-                <button type="button" onClick={() => { triggerHaptic("light"); setModeAndReset("register"); }} disabled={isLoading || isSuccess} className="h-10 rounded-lg px-3 py-2 text-[var(--accent-primary)] transition-all hover:opacity-80 active:scale-95 disabled:opacity-40 disabled:active:scale-100">
-                  {i18n("createAccount", "Créer un compte")}
+                <button
+                  type="button"
+                  onClick={() => {
+                    triggerHaptic("light");
+                    setModeAndReset("register");
+                  }}
+                  disabled={isLoading}
+                  className="text-zinc-400 hover:text-emerald-400 transition-colors cursor-pointer"
+                >
+                  Pas encore de compte ?{" "}
+                  <span className="text-emerald-400 font-medium">Créer un compte</span>
                 </button>
               )}
             </div>

@@ -7206,6 +7206,53 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.91",
+  date: "2026-08-27",
+  title: "Refonte Complète de l'Authentification : Login, OTP 6 Chiffres, Inscription & UX 2026",
+  items: [
+    "Refonte visuelle et architecturale de /login, /register et /auth avec design sombre premium, micro-particules et typographie soignée.",
+    "Nouveau système d'authentification OTP à 6 cases individuelles avec validation automatique instantanée au 6ème chiffre, collage intelligent et navigation clavier.",
+    "Formulaire d'inscription progressif avec jauge dynamique de robustesse de mot de passe et validation en temps réel.",
+    "Micro-animations d'état (validation, erreurs douces, compteurs de renvoi, transitions sans rechargement).",
+    "Boutons sociaux (Google, GitHub) et Passkey modernisés avec feedback immédiat.",
+    "Version affichée : v1.10.91.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.91",
+  date: "2026-08-27",
+  title: "Complete Auth Redesign: Login, 6-Digit Auto-OTP, Progressive Register & 2026 UX",
+  items: [
+    "Complete visual & architectural overhaul of /login, /register, and /auth with dark glassmorphism, ambient lighting, and sleek layout.",
+    "6-digit individual OTP input with auto-advance, smart paste, keyboard arrow navigation, and instant auto-submit on 6th digit.",
+    "Progressive registration flow featuring real-time password strength meter and rule validation.",
+    "Seamless non-reloading state transitions, resend countdown cooldown, and humanized inline error alerts.",
+    "Version badge: v1.10.91.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.91",
+  date: "2026-08-27",
+  title: "Rediseño completo de Autenticación: Login, OTP de 6 dígitos y Registro",
+  items: [
+    "Nueva interfaz de inicio de sesión, OTP con verificación automática en el 6.º dígito y registro progresivo.",
+    "Versión: v1.10.91.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.91",
+  date: "2026-08-27",
+  title: "Vollständige Überarbeitung der Authentifizierung: Login, 6-Stelliger OTP & Registrierung",
+  items: [
+    "Premium Dark-Glassmorphism Login, 6-stelliger OTP-Eingabe mit automatischer Validierung und Passwort-Stärkeanzeige.",
+    "Version: v1.10.91.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.90",
   date: "2026-08-27",
   title: "Passe Globale de Fluidité Ultra, Performance 60 FPS & Finition UX",

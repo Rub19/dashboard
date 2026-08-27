@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { fetchWorkerCached } from "@/lib/hooks/useCachedFetch";
+import { fetchWeatherSafe } from "@/lib/weather-service";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useConnections } from "./useConnections";
@@ -313,7 +314,7 @@ export function useLiveData(pollMs = 60000) {
         ] = await Promise.allSettled([
           nowPlayingPath ? fetchOptional(nowPlayingPath) : Promise.resolve(null),
           lanyardPath ? fetchOptional(lanyardPath) : Promise.resolve(null),
-          weatherPath ? fetchOptional(weatherPath) : Promise.resolve(null),
+          weatherPath ? fetchWeatherSafe(liveWeatherCity || "Paris") : Promise.resolve(null),
           githubPath ? fetchOptional(githubPath) : Promise.resolve(null),
           todoistPath ? fetchOptional(todoistPath) : Promise.resolve(null),
           youtubePath ? fetchOptional(youtubePath) : Promise.resolve(null),

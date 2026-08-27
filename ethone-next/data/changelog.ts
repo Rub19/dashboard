@@ -7206,6 +7206,50 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.89",
+  date: "2026-08-27",
+  title: "Résolution Météo & Fallback Intelligent Open-Meteo Direct",
+  items: [
+    "Création du service météo unifié avec double couche de secours (Worker Cloudflare + Open-Meteo API direct).",
+    "Élimination totale de l'erreur 'Météo indisponible' lors de la recherche de villes composées (ex: Brive-la-Gaillarde).",
+    "Synchronisation automatique avec le widget météo du dock et de la page d'accueil.",
+    "Version affichée : v1.10.89.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.89",
+  date: "2026-08-27",
+  title: "Weather Service Resolution & Intelligent Direct Fallback",
+  items: [
+    "Unified weather service with two-layer resilience (Cloudflare Worker + Direct Open-Meteo API).",
+    "Resolved 'Météo indisponible' errors across all multi-word city queries (e.g. Brive-la-Gaillarde).",
+    "Synchronized live dock and home widgets.",
+    "Version badge: v1.10.89.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.89",
+  date: "2026-08-27",
+  title: "Corrección del servicio meteorológico con respaldo directo Open-Meteo",
+  items: [
+    "Servicio meteorológico unificado y eliminación de errores de búsqueda para cualquier ciudad.",
+    "Versión: v1.10.89.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.89",
+  date: "2026-08-27",
+  title: "Wetterdienst-Optimierung & Direkter Open-Meteo Fallback",
+  items: [
+    "Zuverlässiger Wetterdienst mit nahtloser Ausfallsicherung für alle Stadtnamen.",
+    "Version: v1.10.89.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.88",
   date: "2026-08-27",
   title: "Calendrier & Factures : Logos des Marques, Ajout Ciblé, 22+ Abonnements & Rework Dropdown",

@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useSettings } from "@/components/SettingsProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
-import { fetchWorkerCached } from "@/lib/hooks/useCachedFetch";
+import { fetchWeatherSafe } from "@/lib/weather-service";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import SearchInput from "@/components/ui/SearchInput";
@@ -172,9 +172,9 @@ export default function WeatherPage() {
     setError(null);
     async function run() {
       try {
-        const res = (await fetchWorkerCached(`/api/weather?city=${encodeURIComponent(searchTerm)}`)) as { data?: WeatherData } | null;
+        const data = await fetchWeatherSafe(searchTerm);
         if (cancelled) return;
-        const data = res?.data || null;
+        if (!data) throw new Error("Weather not found");
         setWeather(data);
         setLastUpdated(new Date());
         if (data?.city && settings.liveWeatherCity !== searchTerm) {
@@ -232,8 +232,8 @@ export default function WeatherPage() {
     setRefreshing(true);
     setError(null);
     try {
-      const res = (await fetchWorkerCached(`/api/weather?city=${encodeURIComponent(searchTerm)}`, undefined, 0)) as { data?: WeatherData } | null;
-      const data = res?.data || null;
+      const data = await fetchWeatherSafe(searchTerm);
+      if (!data) throw new Error("Weather not found");
       setWeather(data);
       setLastUpdated(new Date());
       success(i18n("weatherRefreshed", "Météo actualisée"));

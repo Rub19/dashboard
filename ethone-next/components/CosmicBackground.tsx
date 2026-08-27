@@ -8,10 +8,52 @@ function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 
+const AURA_CONFIGS: Record<string, { hues: number[]; accent: string; bgGlow: string }> = {
+  classic: {
+    hues: [265, 280, 250],
+    accent: "#8b5cf6",
+    bgGlow:
+      "radial-gradient(ellipse at 50% 10%, rgba(139, 92, 246, 0.18) 0%, rgba(9, 9, 11, 0.8) 50%, rgb(6, 7, 10) 100%)",
+  },
+  boreal: {
+    hues: [160, 185, 200],
+    accent: "#06b6d4",
+    bgGlow:
+      "radial-gradient(ellipse at 25% 15%, rgba(6, 182, 212, 0.2) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(16, 185, 129, 0.18) 0%, transparent 55%), rgb(5, 8, 12)",
+  },
+  cyberpunk: {
+    hues: [330, 345, 290],
+    accent: "#f43f5e",
+    bgGlow:
+      "radial-gradient(ellipse at 75% 15%, rgba(244, 63, 94, 0.2) 0%, transparent 60%), radial-gradient(ellipse at 20% 30%, rgba(168, 85, 247, 0.16) 0%, transparent 55%), rgb(8, 5, 10)",
+  },
+  eclipse: {
+    hues: [38, 48, 260],
+    accent: "#f59e0b",
+    bgGlow:
+      "radial-gradient(ellipse at 50% 85%, rgba(245, 158, 11, 0.18) 0%, transparent 60%), radial-gradient(ellipse at 50% 10%, rgba(99, 102, 241, 0.15) 0%, transparent 55%), rgb(7, 6, 10)",
+  },
+  emerald: {
+    hues: [150, 165, 140],
+    accent: "#10b981",
+    bgGlow:
+      "radial-gradient(ellipse at 50% 15%, rgba(16, 185, 129, 0.2) 0%, rgba(9, 9, 11, 0.8) 55%, rgb(4, 8, 7) 100%)",
+  },
+  mineral: {
+    hues: [200, 215, 230],
+    accent: "#38bdf8",
+    bgGlow:
+      "radial-gradient(circle at 50% 15%, rgba(56, 189, 248, 0.2) 0%, rgba(9, 9, 11, 0.8) 55%, rgb(5, 7, 12) 100%)",
+  },
+};
+
 export default function CosmicBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { settings } = useSettings();
   const { quality, isVisible, pixelRatio } = useCosmicPerformance(settings.backgroundQuality);
+
+  const currentAura = settings.aura || "classic";
+  const auraConfig = AURA_CONFIGS[currentAura] || AURA_CONFIGS.classic;
 
   useEffect(() => {
     if (quality === "static" || !settings.ambientEffectsEnabled) return;
@@ -23,7 +65,7 @@ export default function CosmicBackground() {
     let raf = 0;
     let running = true;
     let elapsed = 0;
-    let accent = "#8b5cf6";
+    let accent = auraConfig.accent;
 
     const densityByQuality = {
       high: { stars: 220, rings: 4, glows: 3, speed: 1 },
@@ -42,12 +84,6 @@ export default function CosmicBackground() {
     let rings: Ring[] = [];
     let glows: Glow[] = [];
 
-    function readAccent() {
-      if (typeof document !== "undefined") {
-        accent = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#8b5cf6";
-      }
-    }
-
     function resize() {
       if (!canvas) return;
       const w = window.innerWidth;
@@ -58,7 +94,7 @@ export default function CosmicBackground() {
       canvas.style.height = `${h}px`;
       context.setTransform(1, 0, 0, 1, 0, 0);
       context.scale(pixelRatio, pixelRatio);
-      readAccent();
+      accent = auraConfig.accent;
       initScene(w, h);
     }
 
@@ -81,16 +117,17 @@ export default function CosmicBackground() {
           ry: Math.min(w, h) * scale * 0.35,
           angle: (Math.PI / 4) * i,
           speed: (Math.random() * 0.1 + 0.05) * (i % 2 === 0 ? 1 : -1) * density.speed,
-          alpha: 0.08 - i * 0.015,
+          alpha: 0.1 - i * 0.018,
         };
       });
 
-      glows = Array.from({ length: density.glows }, () => ({
+      const possibleHues = auraConfig.hues;
+      glows = Array.from({ length: density.glows }, (_, i) => ({
         x: Math.random() * w,
         y: Math.random() * h * 0.6,
-        r: Math.min(w, h) * (0.2 + Math.random() * 0.3),
-        hue: 260 + Math.random() * 40,
-        alpha: 0.08 + Math.random() * 0.08,
+        r: Math.min(w, h) * (0.28 + Math.random() * 0.35),
+        hue: possibleHues[i % possibleHues.length],
+        alpha: 0.12 + Math.random() * 0.08,
         speed: Math.random() * 0.2 + 0.1,
       }));
     }
@@ -107,23 +144,23 @@ export default function CosmicBackground() {
       const h = canvas.height / pixelRatio;
       elapsed += 1;
 
-      context.fillStyle = "#000000";
+      context.fillStyle = "#08090d";
       context.fillRect(0, 0, w, h);
 
-      // Soft nebula glows
+      // Soft nebula glows matched to selected Aura
       for (const glow of glows) {
-        const x = glow.x + Math.sin(elapsed * 0.001 * glow.speed) * 20;
-        const y = glow.y + Math.cos(elapsed * 0.001 * glow.speed) * 15;
+        const x = glow.x + Math.sin(elapsed * 0.001 * glow.speed) * 25;
+        const y = glow.y + Math.cos(elapsed * 0.001 * glow.speed) * 20;
         const gradient = context.createRadialGradient(x, y, 0, x, y, glow.r);
-        gradient.addColorStop(0, `hsla(${glow.hue}, 70%, 55%, ${glow.alpha})`);
-        gradient.addColorStop(0.5, `hsla(${glow.hue}, 70%, 35%, ${glow.alpha * 0.3})`);
+        gradient.addColorStop(0, `hsla(${glow.hue}, 75%, 55%, ${glow.alpha})`);
+        gradient.addColorStop(0.5, `hsla(${glow.hue}, 70%, 35%, ${glow.alpha * 0.35})`);
         gradient.addColorStop(1, "hsla(0, 0%, 0%, 0)");
         context.fillStyle = gradient;
         context.fillRect(0, 0, w, h);
       }
 
       // Orbit rings
-      context.lineWidth = 1;
+      context.lineWidth = 1.2;
       for (const ring of rings) {
         ring.angle += ring.speed * 0.005;
         context.save();
@@ -137,7 +174,7 @@ export default function CosmicBackground() {
         context.restore();
       }
 
-      // Stars
+      // Twinkling Stars
       for (const star of stars) {
         star.pulse += 0.02 * star.speed;
         const twinkle = 0.6 + 0.4 * Math.sin(star.pulse);
@@ -166,16 +203,15 @@ export default function CosmicBackground() {
       document.removeEventListener("visibilitychange", onVisibility);
       cancelAnimationFrame(raf);
     };
-  }, [quality, isVisible, pixelRatio, settings.ambientEffectsEnabled]);
+  }, [quality, isVisible, pixelRatio, settings.ambientEffectsEnabled, currentAura, auraConfig]);
 
   if (!settings.ambientEffectsEnabled || quality === "static") {
     return (
       <div
         aria-hidden="true"
-        className="v8-cosmic-background pointer-events-none fixed inset-0 -z-10"
+        className="v8-cosmic-background pointer-events-none fixed inset-0 -z-10 transition-all duration-700"
         style={{
-          backgroundImage:
-            "radial-gradient(ellipse at top, rgba(88, 28, 135, 0.2) 0%, rgb(9, 9, 11) 50%, rgb(0, 0, 0) 100%)",
+          backgroundImage: auraConfig.bgGlow,
         }}
       />
     );
@@ -185,7 +221,7 @@ export default function CosmicBackground() {
     <canvas
       ref={canvasRef}
       aria-hidden="true"
-      className="v8-cosmic-background pointer-events-none fixed inset-0 -z-10"
+      className="v8-cosmic-background pointer-events-none fixed inset-0 -z-10 transition-all duration-700"
       data-quality={quality}
     />
   );

@@ -93,7 +93,12 @@ const SystemControlCard = memo(function SystemControlCard({ className = "", scro
         </div>
 
         <div className="space-y-2">
-          <p className="text-xs font-medium text-[var(--text-muted)]">{i18n("aura")}</p>
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-medium text-[var(--text-muted)]">{i18n("aura")}</p>
+            <span className="text-[10px] font-mono font-semibold text-[var(--text-muted)] uppercase tracking-wider">
+              {i18n(`aura${(settings.aura || "classic").charAt(0).toUpperCase()}${(settings.aura || "classic").slice(1)}`)}
+            </span>
+          </div>
           <div className="-m-1 flex flex-wrap items-center justify-center gap-2 p-1 sm:justify-start">
             {AURAS.map((aura) => {
               const active = settings.aura === aura;
@@ -107,15 +112,25 @@ const SystemControlCard = memo(function SystemControlCard({ className = "", scro
                   title={i18n(key)}
                   aria-label={i18n(key)}
                   style={{ backgroundColor: palette.background }}
-                  className={`flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--text-primary)]/[0.08] transition-all duration-150 hover:scale-110 active:scale-95 sm:h-8 sm:w-8 ${
-                    active ? "ring-2 ring-inset ring-[var(--accent-primary)] shadow-sm" : "opacity-70 hover:opacity-100 hover:border-[var(--accent-primary)]/40"
+                  className={`group relative flex h-9 w-9 items-center justify-center rounded-xl border transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer ${
+                    active
+                      ? "border-white/30 ring-2 ring-inset ring-white/40 shadow-[0_0_12px_rgba(255,255,255,0.15)]"
+                      : "border-white/10 opacity-75 hover:opacity-100 hover:border-white/25"
                   }`}
                 >
                   <span
-                    className="h-2.5 w-2.5 rounded-full"
-                    style={{ backgroundColor: palette.accent }}
+                    className={`h-3 w-3 rounded-full transition-all duration-200 ${
+                      active ? "scale-110 shadow-[0_0_8px_currentColor]" : "group-hover:scale-105"
+                    }`}
+                    style={{ backgroundColor: palette.accent, color: palette.accent }}
                     aria-hidden="true"
                   />
+                  {active && (
+                    <span
+                      className="absolute inset-0 rounded-xl border border-white/40 animate-pulse pointer-events-none"
+                      aria-hidden="true"
+                    />
+                  )}
                 </button>
               );
             })}

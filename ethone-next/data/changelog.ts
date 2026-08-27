@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.44",
+  date: "2026-08-27",
+  title: "Correction & Rendu Dynamique des Auras Chromatiques d'Ambiance",
+  items: [
+    "Explication & Bug Fix Auras : correction du masquage de l'arrière-plan Cosmique dans le conteneur principal Shell.",
+    "CosmicBackground dynamique : intégration des 6 auras (Classique, Boréale, Cyberpunk, Éclipse, Émeraude, Minérale) dans le moteur de particules et nébuleuses.",
+    "Boutons de sélection d'aura enrichis dans SystemControlCard avec label actif, pulsation lumineuse et auras néon.",
+    "Validation : build Next.js 105/105 pages, TypeScript sans erreur.",
+    "Version affichée : v1.10.44.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.44",
+  date: "2026-08-27",
+  title: "Aura Chromatic Moods Bug Fix & Dynamic Ambient Engine",
+  items: [
+    "Aura Bug Fix: resolved background occluding issue in Shell main container allowing cosmic auras to shine through.",
+    "Dynamic CosmicBackground: integrated all 6 Auras (Classic, Boreal, Cyberpunk, Eclipse, Emerald, Mineral) into nebulae and orbit engine.",
+    "Upgraded Aura selector pills in SystemControlCard with active aura badge and glowing neon aura dots.",
+    "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
+    "Version badge: v1.10.44.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.44",
+  date: "2026-08-27",
+  title: "Corrección y renderizado dinámico de Auras",
+  items: [
+    "Corrección de fondo en Shell y CosmicBackground adaptativo para las 6 auras.",
+    "Validación : build, lint.",
+    "Versión : v1.10.44.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.44",
+  date: "2026-08-27",
+  title: "Aura Chromatisches Moods Bugfix & Dynamic Engine",
+  items: [
+    "Behebung der Hintergrundüberlagerung und dynamische CosmicBackground-Integration für 6 Auras.",
+    "Validierung: build, lint.",
+    "Version: v1.10.44.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.43",
   date: "2026-08-27",
   title: "Refonte des Notifications Toast Obsidian Glass 2026 & Nouvelles Alertes",

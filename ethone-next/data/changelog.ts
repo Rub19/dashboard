@@ -7206,6 +7206,52 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.81",
+  date: "2026-08-27",
+  title: "Affichage de la Photo de Profil & Pseudo dans la Barre Latérale (Sidebar)",
+  items: [
+    "Connexion du hook universel useUserIdentity dans la barre latérale pour afficher l'avatar Google et le pseudo choisi.",
+    "Bouton profil interactif dans la barre latérale avec redirection vers la gestion de profil.",
+    "Validation : build Next.js 105/105 pages, 100% tests unitaires, 0 erreur.",
+    "Version affichée : v1.10.81.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.81",
+  date: "2026-08-27",
+  title: "Profile Picture & Username Display in Navigation Sidebar",
+  items: [
+    "Connected useUserIdentity hook in the sidebar to render the user Google avatar and custom display name.",
+    "Interactive profile action in sidebar footer linking to profile management.",
+    "Validation: Next.js 105/105 pages build, 100% unit tests passed, 0 errors.",
+    "Version badge: v1.10.81.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.81",
+  date: "2026-08-27",
+  title: "Foto de perfil y nombre en la barra lateral",
+  items: [
+    "Visualización de la foto de perfil en la barra lateral.",
+    "Validación : build, lint, tests.",
+    "Versión : v1.10.81.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.81",
+  date: "2026-08-27",
+  title: "Profilbild & Benutzername in der Seitenleiste",
+  items: [
+    "Vollständige Anzeige des Profilbilds in der Navigationsleiste.",
+    "Validierung: build, lint, tests.",
+    "Version: v1.10.81.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.80",
   date: "2026-08-27",
   title: "Restauration Globale de la Photo de Profil et du Pseudo",

@@ -27,10 +27,9 @@ import {
   LucideIcon,
 } from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
-import { useProfile } from "@/lib/hooks/useProfile";
+import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
 import { useAuth } from "@/components/AuthProvider";
 import { ADMIN_EMAIL } from "@/lib/admin";
-import { useActiveProfile } from "@/components/SettingsProvider";
 import { useSyncStore } from "@/lib/stores/sync";
 import { cn } from "@/lib/utils";
 import BrandMark from "@/components/BrandMark";
@@ -158,47 +157,46 @@ const SyncBadge = memo(function SyncBadge({ collapsed }: { collapsed: boolean })
 });
 
 const SidebarProfile = memo(function SidebarProfile({ collapsed }: { collapsed: boolean }) {
-  const { user } = useAuth();
-  const { activeProfile } = useActiveProfile();
-  const { profile: publicProfile } = useProfile();
-
-  const displayName =
-    publicProfile?.display_name || activeProfile?.name || user?.email || "Invité";
-  const avatarUrl = publicProfile?.avatar_url;
+  const router = useRouter();
+  const { displayName, avatarUrl, initials } = useUserIdentity();
 
   return (
-    <div
+    <button
+      type="button"
+      onClick={() => router.push("/settings?category=profile")}
       className={cn(
-        "mb-2 flex items-center gap-2.5 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/50",
-        collapsed ? "justify-center p-0" : "p-2"
+        "group mb-2 flex w-full items-center gap-2.5 rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/50 transition-all hover:border-[var(--accent-primary)]/40 hover:bg-[var(--surface-hover)] cursor-pointer",
+        collapsed ? "justify-center p-1.5" : "p-2"
       )}
+      title={`Profil : ${displayName}`}
+      aria-label={`Profil : ${displayName}`}
     >
       <div className={cn(
-        "relative flex shrink-0 items-center justify-center overflow-hidden rounded-xl border-transparent bg-transparent",
+        "relative flex shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--text-primary)]/[0.08] bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-bold text-xs",
         collapsed ? "h-9 w-9" : "h-8 w-8"
       )}>
         {avatarUrl ? (
           <ClientImage
             src={avatarUrl}
             alt={displayName}
-            width={32}
-            height={32}
-            className="h-full w-full object-cover"
+            width={36}
+            height={36}
+            className="h-full w-full object-cover rounded-xl"
             fallback={
-              <User className={cn("text-[var(--text-muted)]", collapsed ? "h-4 w-4" : "h-4 w-4")} />
+              <span className="font-bold text-xs">{initials}</span>
             }
           />
         ) : (
-          <User className={cn("text-[var(--text-muted)]", collapsed ? "h-4 w-4" : "h-4 w-4")} />
+          <span className="font-bold text-xs">{initials}</span>
         )}
-        <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--background)] bg-[var(--accent-primary)]" aria-hidden="true" />
+        <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--background)] bg-emerald-400" aria-hidden="true" />
       </div>
       {!collapsed && (
-        <span className="min-w-0 flex-1 truncate text-[11px] font-medium text-[var(--text-primary)]">
+        <span className="min-w-0 flex-1 truncate text-[11px] font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors text-left">
           {displayName}
         </span>
       )}
-    </div>
+    </button>
   );
 });
 

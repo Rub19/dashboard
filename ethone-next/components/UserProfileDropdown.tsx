@@ -6,9 +6,8 @@ import { useRouter } from "next/navigation";
 import { ChevronRight, Sparkles, User as UserIcon } from "lucide-react";
 import { Icon } from "@/lib/icons";
 import { useAuth } from "@/components/AuthProvider";
-import { useActiveProfile, useSettings } from "@/components/SettingsProvider";
-import { useProfile } from "@/lib/hooks/useProfile";
-import { useDiscordOAuth } from "@/lib/hooks/useDiscordOAuth";
+import { useUserIdentity } from "@/lib/hooks/useUserIdentity";
+import { useSettings } from "@/components/SettingsProvider";
 import { useFocus } from "@/components/FocusProvider";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useToast } from "@/components/ToastProvider";
@@ -53,68 +52,9 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
   const [copied, setCopied] = useState(false);
   const [confirmSignOut, setConfirmSignOut] = useState(false);
 
-  const { user, signOut } = useAuth();
-  const { activeProfile } = useActiveProfile();
-  const { profile: publicProfile } = useProfile();
-  const { profile: discordProfile } = useDiscordOAuth();
+  const { signOut } = useAuth();
+  const { displayName, avatarUrl, email, initials } = useUserIdentity();
   const { settings, update } = useSettings();
-
-  const [cachedName, setCachedName] = useState<string>("");
-  const [cachedAvatar, setCachedAvatar] = useState<string>("");
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedName = localStorage.getItem("ethone_user_name");
-      const savedAvatar = localStorage.getItem("ethone_user_avatar");
-      if (savedName) setCachedName(savedName);
-      if (savedAvatar) setCachedAvatar(savedAvatar);
-    }
-  }, []);
-
-  const meta = (user?.user_metadata || {}) as Record<string, unknown>;
-  const discordName =
-    discordProfile?.user?.displayName ||
-    discordProfile?.user?.globalName ||
-    discordProfile?.user?.username;
-
-  const fromMeta =
-    (typeof meta.full_name === "string" ? meta.full_name : undefined) ||
-    (typeof meta.name === "string" ? meta.name : undefined) ||
-    (typeof meta.username === "string" ? meta.username : undefined) ||
-    (typeof meta.user_name === "string" ? meta.user_name : undefined) ||
-    (typeof meta.preferred_username === "string" ? meta.preferred_username : undefined);
-
-  const displayName =
-    publicProfile?.display_name ||
-    publicProfile?.username ||
-    discordName ||
-    fromMeta ||
-    activeProfile?.name ||
-    cachedName ||
-    (user?.email ? user.email.split("@")[0] : "") ||
-    "Utilisateur ETHONE";
-
-  const avatarUrl =
-    publicProfile?.avatar_url ||
-    discordProfile?.user?.avatarUrl ||
-    (typeof meta.avatar_url === "string" ? meta.avatar_url : undefined) ||
-    (activeProfile as unknown as { avatar_url?: string; avatar?: string })?.avatar_url ||
-    (activeProfile as unknown as { avatar_url?: string; avatar?: string })?.avatar ||
-    cachedAvatar ||
-    undefined;
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (displayName && displayName !== "Utilisateur ETHONE") {
-        localStorage.setItem("ethone_user_name", displayName);
-      }
-      if (avatarUrl) {
-        localStorage.setItem("ethone_user_avatar", avatarUrl);
-      }
-    }
-  }, [displayName, avatarUrl]);
-
-  const email = user?.email || "";
 
   const isFocusRunning = focus.state.phase !== "idle";
   const currentStatus = isFocusRunning
@@ -167,7 +107,7 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
     return CHANGELOG_BY_LANG[settings.language] || CHANGELOG;
   }, [settings.language]);
 
-  const VERSION_LABEL = "v1.10.80";
+  const VERSION_LABEL = "v1.10.81";
 
   const menuItems = [
     {
@@ -249,10 +189,10 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                     width={24}
                     height={24}
                     className="h-full w-full object-cover"
-                    fallback={<span>{initials(displayName)}</span>}
+                    fallback={<span>{initials}</span>}
                   />
                 ) : (
-                  <span>{initials(displayName)}</span>
+                  <span>{initials}</span>
                 )}
               </div>
               <span
@@ -291,10 +231,10 @@ export default function UserProfileDropdown({ dataTestId = "user-profile-trigger
                       width={44}
                       height={44}
                       className="h-full w-full object-cover"
-                      fallback={<span>{initials(displayName)}</span>}
+                      fallback={<span>{initials}</span>}
                     />
                   ) : (
-                    <span>{initials(displayName)}</span>
+                    <span>{initials}</span>
                   )}
                 </div>
               </div>

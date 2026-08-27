@@ -7206,6 +7206,52 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.61",
+  date: "2026-08-27",
+  title: "Véritable Logo Poing Officiel Riot Games avec Découpes des Doigts",
+  items: [
+    "Intégration du tracé vectoriel exact et officiel du poing Riot Games (4 doigts distincts avec fentes d'espacement et pouce inférieur).",
+    "Résolution du problème de silhouette pleine sans découpe.",
+    "Validation : build Next.js 105/105 pages, TypeScript sans erreur.",
+    "Version affichée : v1.10.61.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.61",
+  date: "2026-08-27",
+  title: "Official Riot Games Fist Logo Vector with Finger Slits & Thumb",
+  items: [
+    "Integrated the authentic official Riot Games fist vector with all 4 distinct finger cutouts and bottom thumb.",
+    "Fixed solid silhouette rendering.",
+    "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
+    "Version badge: v1.10.61.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.61",
+  date: "2026-08-27",
+  title: "Logo oficial del puño de Riot Games con recortes de dedos",
+  items: [
+    "Vector oficial exacto de Riot Games con separación de dedos y pulgar.",
+    "Validación : build, lint.",
+    "Versión : v1.10.61.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.61",
+  date: "2026-08-27",
+  title: "Offizielles Riot Games Faust-Logo mit Fingeraussparungen",
+  items: [
+    "Exakter offizieller Vektor mit 4 Fingern und Daumen.",
+    "Validierung: build, lint.",
+    "Version: v1.10.61.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.60",
   date: "2026-08-27",
   title: "Mise à Niveau Haute Définition des Icônes de la Barre Latérale (Lucide Vector Crisp 21px)",

@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.57",
+  date: "2026-08-27",
+  title: "Correction Action 'Marquer comme lu' & Disparition Fluide des Notifications",
+  items: [
+    "Le clic sur le bouton '✓' marque désormais la notification comme lue ET la fait disparaître de la vue active avec une animation fluide.",
+    "Bouton Corbeille direct '🗑' pour supprimer définitivement une notification en 1 clic.",
+    "Suppression des toasts confus 'Marqué comme non lu' lors du traitement d'une notification.",
+    "Validation : build Next.js 105/105 pages, TypeScript sans erreur.",
+    "Version affichée : v1.10.57.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.57",
+  date: "2026-08-27",
+  title: "Notification 'Mark as Read' Fix & Smooth Dismissal",
+  items: [
+    "Clicking '✓' now marks the notification as read AND smoothly dismisses it from the active list.",
+    "Direct trash button '🗑' to permanently delete notifications with 1 click.",
+    "Fixed misleading 'Marked as unread' toasts when interacting with notifications.",
+    "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
+    "Version badge: v1.10.57.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.57",
+  date: "2026-08-27",
+  title: "Corrección de descarte y marcado de notificaciones leídas",
+  items: [
+    "Descarte fluido de notificaciones leídas y botón de papelera directa.",
+    "Validación : build, lint.",
+    "Versión : v1.10.57.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.57",
+  date: "2026-08-27",
+  title: "Fix für 'Als gelesen markieren' & Flüssiges Entfernen von Benachrichtigungen",
+  items: [
+    "Reibungsloses Entfernen gelesener Benachrichtigungen und direkter Lösch-Button.",
+    "Validierung: build, lint.",
+    "Version: v1.10.57.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.56",
   date: "2026-08-27",
   title: "Correction Affichage Tiroir (z-index 1000), Persistance des Clés API & Vrai Logo Riot Games",

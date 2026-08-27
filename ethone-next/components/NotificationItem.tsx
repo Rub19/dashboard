@@ -111,8 +111,8 @@ export default function NotificationItem({
 
   function handleMarkRead(e: React.MouseEvent) {
     e.stopPropagation();
-    markRead(n.id, !n.read);
-    success(n.read ? "Marqué comme non lu" : "Marqué comme lu");
+    archive(n.id);
+    success("Notification marquée comme lue");
   }
 
   function handleArchive(e: React.MouseEvent) {
@@ -218,24 +218,19 @@ export default function NotificationItem({
           <button
             type="button"
             onClick={handleMarkRead}
-            className={cn(
-              "flex h-7 w-7 items-center justify-center rounded-lg border transition-all active:scale-95 cursor-pointer shadow-xs",
-              isUnread
-                ? "border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/25"
-                : "border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-white"
-            )}
-            title={isUnread ? "Marquer comme lu" : "Marquer comme non lu"}
+            className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/25 transition-all active:scale-95 cursor-pointer shadow-xs"
+            title="Marquer comme lu et masquer"
           >
-            {isUnread ? <Check className="h-3.5 w-3.5" /> : <CheckCheck className="h-3.5 w-3.5" />}
+            <Check className="h-3.5 w-3.5" />
           </button>
 
           <button
             type="button"
-            onClick={handleArchive}
-            className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-white hover:border-[var(--accent-primary)]/40 transition-all active:scale-95 cursor-pointer shadow-xs"
-            title="Archiver"
+            onClick={handleDelete}
+            className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--panel-border)] bg-[var(--surface-raised)] text-[var(--text-muted)] hover:text-rose-400 hover:border-rose-500/40 transition-all active:scale-95 cursor-pointer shadow-xs"
+            title="Supprimer la notification"
           >
-            <Archive className="h-3.5 w-3.5" />
+            <Trash2 className="h-3.5 w-3.5" />
           </button>
 
           <div ref={menuRef} className="relative">

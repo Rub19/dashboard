@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.28 — 2026-08-27
+
+**ETHONE — StatusBar pleine opacité**
+
+- Fond `StatusBar` passé en opacité pleine (`bg-[var(--panel-bg)]`).
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.27 — 2026-08-27
 
 **ETHONE — StatusBar plus sombre**

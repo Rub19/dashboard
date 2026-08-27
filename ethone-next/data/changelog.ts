@@ -7206,6 +7206,50 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.28",
+  date: "2026-08-27",
+  title: "StatusBar pleine opacité",
+  items: [
+    "Fond `StatusBar` passé en pleine opacité.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.28.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.28",
+  date: "2026-08-27",
+  title: "StatusBar full opacity",
+  items: [
+    "`StatusBar` background set to full opacity.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.28.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.28",
+  date: "2026-08-27",
+  title: "StatusBar opacidad completa",
+  items: [
+    "Fondo `StatusBar` a opacidad completa.",
+    "Validación : build, lint.",
+    "Versión : v1.10.28.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.28",
+  date: "2026-08-27",
+  title: "StatusBar volle Opazität",
+  items: [
+    "`StatusBar` Hintergrund auf volle Opazität gesetzt.",
+    "Validierung: build, lint.",
+    "Version: v1.10.28.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.27",
   date: "2026-08-27",
   title: "StatusBar plus sombre",

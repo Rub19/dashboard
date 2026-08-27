@@ -233,7 +233,7 @@ export default function StatusBar() {
     <motion.footer
       data-v8-status-bar
       data-status-bar
-      className="fixed bottom-0 right-0 z-0 h-10 select-none border-t border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.9] px-4 text-xs text-[var(--text-primary)] backdrop-blur-[var(--panel-blur)] pointer-events-none"
+      className="fixed bottom-0 right-0 z-0 h-10 select-none border-t border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)] px-4 text-xs text-[var(--text-primary)] backdrop-blur-[var(--panel-blur)] pointer-events-none"
       animate={{
         left: open && !isMobile ? "var(--sidebar-width)" : "0rem",
       }}

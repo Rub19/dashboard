@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.64",
+  date: "2026-08-27",
+  title: "Perfectionnement Graphique de la Dynamic Island Compacte (Spotify & Médias)",
+  items: [
+    "Affichage enrichi du titre et du nom d'artiste avec typographie nette et espacée.",
+    "Bordure néon émeraude réactive sur la pochette d'album pendant la lecture en cours.",
+    "Visualiseur audio vert émeraude lissé avec lueur dynamique et barre de progression continue.",
+    "Validation : build Next.js 105/105 pages, 100% tests unitaires, 0 erreur.",
+    "Version affichée : v1.10.64.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.64",
+  date: "2026-08-27",
+  title: "Visual Polish for Compact Dynamic Island (Spotify & Media)",
+  items: [
+    "Enriched title and artist name display with crisp typography.",
+    "Subtle reactive emerald glow on album artwork when playing.",
+    "Polished 5-bar emerald visualizer and continuous live progress bar.",
+    "Validation: Next.js 105/105 pages build, 100% unit tests, 0 errors.",
+    "Version badge: v1.10.64.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.64",
+  date: "2026-08-27",
+  title: "Pulido visual de Dynamic Island compacta (Spotify)",
+  items: [
+    "Mejora visual de la carátula y visualizador de audio esmeralda.",
+    "Validación : build, lint, tests.",
+    "Versión : v1.10.64.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.64",
+  date: "2026-08-27",
+  title: "Visuelles Feintuning der kompakten Dynamic Island (Spotify)",
+  items: [
+    "Verbesserte Anzeige von Titel, Interpret und Smaragd-Audio-Visualizer.",
+    "Validierung: build, lint, tests.",
+    "Version: v1.10.64.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.63",
   date: "2026-08-27",
   title: "Mise à Niveau de Sécurité Next.js 16.3.3 (Correction Vulnérabilités Snyk)",

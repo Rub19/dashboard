@@ -65,11 +65,13 @@ function useIslandClock() {
 
 function SpotifyCompact({
   title,
+  artist,
   coverCandidates,
   fallback,
   isPlaying,
 }: {
   title?: string;
+  artist?: string;
   coverCandidates: (string | undefined)[];
   fallback: string;
   isPlaying?: boolean;
@@ -77,29 +79,41 @@ function SpotifyCompact({
   const trackTitle = title || fallback;
 
   return (
-    <div className="flex h-10 min-w-[130px] max-w-[240px] items-center gap-2.5 px-0.5 select-none">
-      <SafeImage
-        candidates={coverCandidates}
-        alt={trackTitle}
-        size={24}
-        className="h-6 w-6 shrink-0 rounded-lg object-cover ring-1 ring-white/10 bg-[var(--surface-raised)]"
-        iconClassName="h-3.5 w-3.5 text-[var(--accent-primary)]"
-        loading="eager"
-        priority
-        timeoutMs={8000}
-        crossOrigin="anonymous"
-      />
-      <span className="min-w-0 flex-1 truncate text-xs font-semibold tracking-tight text-[var(--text-primary)]" title={trackTitle}>
-        {trackTitle}
-      </span>
+    <div className="flex h-10 min-w-[130px] max-w-[260px] items-center gap-2.5 px-0.5 select-none">
+      <div className="relative shrink-0">
+        <SafeImage
+          candidates={coverCandidates}
+          alt={trackTitle}
+          size={24}
+          className={cn(
+            "h-6 w-6 shrink-0 rounded-lg object-cover bg-[var(--surface-raised)] transition-all duration-200",
+            isPlaying
+              ? "ring-1 ring-emerald-500/60 shadow-[0_0_8px_rgba(16,185,129,0.35)]"
+              : "ring-1 ring-white/10"
+          )}
+          iconClassName="h-3.5 w-3.5 text-emerald-400"
+          loading="eager"
+          priority
+          timeoutMs={8000}
+          crossOrigin="anonymous"
+        />
+      </div>
+      <div className="min-w-0 flex-1 truncate text-xs font-semibold tracking-tight text-white flex items-center gap-1.5" title={artist ? `${trackTitle} • ${artist}` : trackTitle}>
+        <span className="truncate">{trackTitle}</span>
+        {artist && (
+          <span className="truncate text-[11px] font-normal text-zinc-400 shrink-0">
+            • {artist}
+          </span>
+        )}
+      </div>
       <AudioVisualizer
         isPlaying={!!isPlaying}
         bars={5}
         barWidth={2}
         gap={1.5}
-        minHeight={0.2}
-        className="h-3.5 w-5 shrink-0 opacity-90"
-        color="var(--accent-primary)"
+        minHeight={0.25}
+        className="h-3.5 w-5 shrink-0 opacity-95 drop-shadow-[0_0_4px_rgba(16,185,129,0.4)]"
+        color="#10b981"
         seed={trackTitle}
       />
     </div>
@@ -437,6 +451,7 @@ export default function DynamicIslandContainer() {
         return (
           <SpotifyCompact
             title={nowPlaying?.title}
+            artist={nowPlaying?.artist}
             coverCandidates={[nowPlaying?.cover, nowPlaying?.artworkUrl, ...(nowPlaying?.covers || [])]}
             fallback={i18n("spotify", "Spotify")}
             isPlaying={nowPlaying?.isPlaying}

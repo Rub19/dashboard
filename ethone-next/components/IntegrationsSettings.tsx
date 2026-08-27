@@ -251,20 +251,9 @@ export default function IntegrationsSettings() {
             />
           )}
 
-          {/* Filter Toolbar & Instant Search */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          {/* Filter Toolbar */}
+          <div className="flex items-center justify-between gap-3">
             <CategoryTabs active={filter} onChange={setFilter} />
-
-            <div className="relative min-w-[240px] sm:max-w-xs">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--text-muted)]" />
-              <input
-                type="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Rechercher une intégration..."
-                className="w-full rounded-xl border border-[var(--panel-border)] bg-[var(--surface-raised)]/60 py-2 pl-9 pr-3 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none backdrop-blur-md"
-              />
-            </div>
           </div>
 
           {/* Error Banner if any */}

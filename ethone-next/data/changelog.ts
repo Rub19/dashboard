@@ -7206,6 +7206,52 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.59",
+  date: "2026-08-27",
+  title: "Suppression de la Barre de Recherche Redondante dans les Connexions",
+  items: [
+    "Suppression de la barre de recherche secondaire située à droite des onglets de catégories.",
+    "Conservation de la barre de recherche principale et épurée dans l'en-tête supérieur.",
+    "Validation : build Next.js 105/105 pages, TypeScript sans erreur.",
+    "Version affichée : v1.10.59.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.59",
+  date: "2026-08-27",
+  title: "Removal of Redundant Search Bar in Connections Page",
+  items: [
+    "Removed duplicate search input from the category tabs bar.",
+    "Preserved single clean search bar in the top header.",
+    "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
+    "Version badge: v1.10.59.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.59",
+  date: "2026-08-27",
+  title: "Eliminación de barra de búsqueda redundante en Conexiones",
+  items: [
+    "Eliminación del campo de búsqueda duplicado en la fila de categorías.",
+    "Validación : build, lint.",
+    "Versión : v1.10.59.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.59",
+  date: "2026-08-27",
+  title: "Entfernung der redundanten Suchleiste auf der Verbindungen-Seite",
+  items: [
+    "Entfernung des doppelten Suchfeldes in der Kategorieleiste.",
+    "Validierung: build, lint.",
+    "Version: v1.10.59.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.58",
   date: "2026-08-27",
   title: "Refonte Esthétique Dynamic Island Lecteur Audio — Timestamps Live, Visualiseur 24 Barres & Contrôles Glow",

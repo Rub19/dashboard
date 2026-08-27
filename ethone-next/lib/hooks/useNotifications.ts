@@ -243,6 +243,69 @@ function mergeLists(local: Notification[], remote: Notification[]): Notification
   return [...map.values()].sort((a, b) => b.timestamp - a.timestamp).slice(0, MAX_ITEMS);
 }
 
+// Module-level reactive singleton store for 100% synchronized state across all components
+let globalItems: Notification[] = [];
+let globalLoaded = false;
+let globalRemoteLoaded = false;
+let globalMuted: Set<NotificationCategory> = new Set();
+const subscribers = new Set<(items: Notification[]) => void>();
+const mutedSubscribers = new Set<(muted: Set<NotificationCategory>) => void>();
+
+function getGlobalItems(): Notification[] {
+  if (!globalLoaded && isClient()) {
+    const local = load();
+    globalItems = mergeLists([], local).filter((n) => !n.demo);
+    globalMuted = loadMuted();
+    globalLoaded = true;
+  }
+  return globalItems;
+}
+
+function setGlobalItems(next: Notification[], shouldPersist = true) {
+  globalItems = next;
+  globalLoaded = true;
+  if (shouldPersist) {
+    save(next);
+    saveAsync(next);
+    postToWorker({ type: "SYNC_NOTIFICATIONS", items: next });
+  }
+  subscribers.forEach((cb) => {
+    try {
+      cb(globalItems);
+    } catch {}
+  });
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("ethone:notifications-changed", { detail: globalItems }));
+  }
+}
+
+function setGlobalMuted(next: Set<NotificationCategory>) {
+  globalMuted = next;
+  saveMuted(next);
+  mutedSubscribers.forEach((cb) => {
+    try {
+      cb(globalMuted);
+    } catch {}
+  });
+}
+
+// Service worker message handler attached once
+if (isClient()) {
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.addEventListener("message", (event: MessageEvent) => {
+      const data = event.data;
+      if (!data || typeof data !== "object") return;
+      if (data.type === "PUSH_NOTIFICATION" && data.item) {
+        const merged = mergeLists(getGlobalItems(), [data.item as Notification]);
+        setGlobalItems(merged, true);
+      } else if (data.type === "SYNC_NOTIFICATIONS" && Array.isArray(data.items)) {
+        const merged = mergeLists(getGlobalItems(), data.items as Notification[]);
+        setGlobalItems(merged, true);
+      }
+    });
+  }
+}
+
 export type NotificationInput = Partial<Omit<Notification, "id">> & {
   title: string;
   message: string;
@@ -250,82 +313,45 @@ export type NotificationInput = Partial<Omit<Notification, "id">> & {
 };
 
 export function useNotifications() {
-  const [items, setItems] = useState<Notification[]>([]);
-  const [loaded, setLoaded] = useState(false);
-  const [muted, setMutedState] = useState<Set<NotificationCategory>>(() => loadMuted());
+  const [items, setItems] = useState<Notification[]>(() => getGlobalItems());
+  const [muted, setMutedState] = useState<Set<NotificationCategory>>(() => globalMuted);
+
+  useEffect(() => {
+    setItems(getGlobalItems());
+    setMutedState(globalMuted);
+
+    const handleItemsChange = (newItems: Notification[]) => {
+      setItems([...newItems]);
+    };
+    const handleMutedChange = (newMuted: Set<NotificationCategory>) => {
+      setMutedState(new Set(newMuted));
+    };
+
+    subscribers.add(handleItemsChange);
+    mutedSubscribers.add(handleMutedChange);
+
+    if (!globalRemoteLoaded && isClient()) {
+      globalRemoteLoaded = true;
+      loadAsync().then((remote) => {
+        if (remote && remote.length > 0) {
+          const cleaned = remote.filter((n) => !n.demo);
+          const merged = mergeLists(getGlobalItems(), cleaned);
+          setGlobalItems(merged, true);
+        }
+      });
+      postToWorker({ type: "REQUEST_SYNC" });
+    }
+
+    return () => {
+      subscribers.delete(handleItemsChange);
+      mutedSubscribers.delete(handleMutedChange);
+    };
+  }, []);
 
   const isMuted = useCallback(
     (category: NotificationCategory) => muted.has(category),
     [muted]
   );
-
-  const persist = useCallback(
-    (next: Notification[]) => {
-      save(next);
-      saveAsync(next);
-      postToWorker({ type: "SYNC_NOTIFICATIONS", items: next });
-    },
-    []
-  );
-
-  useEffect(() => {
-    const local = load();
-    const unique = mergeLists([], local);
-    const withoutDemo = unique.filter((n) => !n.demo);
-    if (withoutDemo.length !== local.length) {
-      save(withoutDemo);
-      saveAsync(withoutDemo);
-    }
-    setItems(withoutDemo);
-    setLoaded(true);
-    loadAsync().then((remote) => {
-      if (remote && remote.length > 0) {
-        const cleaned = remote.filter((n) => !n.demo);
-        setItems((prev) => mergeLists(prev, cleaned));
-      }
-    });
-
-    function onMessage(event: MessageEvent) {
-      const data = event.data;
-      if (!data || typeof data !== "object") return;
-      if (data.type === "PUSH_NOTIFICATION" && data.item) {
-        setItems((prev) => {
-          const merged = mergeLists(prev, [data.item as Notification]);
-          save(merged);
-          saveAsync(merged);
-          return merged;
-        });
-      } else if (data.type === "SYNC_NOTIFICATIONS" && Array.isArray(data.items)) {
-        setItems((prev) => {
-          const merged = mergeLists(prev, data.items as Notification[]);
-          save(merged);
-          saveAsync(merged);
-          return merged;
-        });
-      }
-    }
-
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.addEventListener("message", onMessage);
-    }
-
-    return () => {
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.removeEventListener("message", onMessage);
-      }
-    };
-  }, [persist]);
-
-  useEffect(() => {
-    if (!loaded) return;
-    postToWorker({ type: "REQUEST_SYNC" });
-  }, [loaded]);
-
-  useEffect(() => {
-    if (!loaded) return;
-    save(items);
-    saveAsync(items);
-  }, [items, loaded]);
 
   const activeItems = useMemo(() => {
     const seen = new Set<string>();
@@ -358,30 +384,30 @@ export function useNotifications() {
         archived: input.archived ?? false,
       });
 
+      const current = getGlobalItems();
+      const existing = current.find((n) => n.id === record.id);
       let next: Notification[];
-      setItems((prev) => {
-        const existing = prev.find((n) => n.id === record.id);
-        if (existing) {
-          next = prev.map((n) => (n.id === record.id ? mergeRecord(n, record) : n));
+      if (existing) {
+        next = current.map((n) => (n.id === record.id ? mergeRecord(n, record) : n));
+      } else {
+        const duplicate = current.find(
+          (n) =>
+            !n.archived &&
+            n.title === record.title &&
+            n.message === record.message &&
+            n.type === record.type &&
+            n.category === record.category &&
+            n.priority === record.priority &&
+            Math.abs(record.timestamp - n.timestamp) < DEDUPE_MS
+        );
+        if (duplicate) {
+          next = current.map((n) => (n.id === duplicate.id ? mergeRecord(n, record) : n));
         } else {
-          const duplicate = prev.find(
-            (n) =>
-              !n.archived &&
-              n.title === record.title &&
-              n.message === record.message &&
-              n.type === record.type &&
-              n.category === record.category &&
-              n.priority === record.priority &&
-              Math.abs(record.timestamp - n.timestamp) < DEDUPE_MS
-          );
-          if (duplicate) {
-            next = prev.map((n) => (n.id === duplicate.id ? mergeRecord(n, record) : n));
-          } else {
-            next = [record, ...prev].slice(0, MAX_ITEMS);
-          }
+          next = [record, ...current].slice(0, MAX_ITEMS);
         }
-        return next;
-      });
+      }
+
+      setGlobalItems(next, true);
 
       setTimeout(() => {
         postToWorker({ type: "PUSH_NOTIFICATION", item: record });
@@ -395,102 +421,83 @@ export function useNotifications() {
   const markRead = useCallback(
     (id: string | string[], read = true) => {
       const ids = Array.isArray(id) ? id : [id];
-      setItems((prev) => {
-        const next = prev.map((n) => (ids.includes(n.id) ? { ...n, read } : n));
-        persist(next);
-        return next;
-      });
+      const current = getGlobalItems();
+      const next = current.map((n) => (ids.includes(n.id) ? { ...n, read } : n));
+      setGlobalItems(next, true);
     },
-    [persist]
+    []
   );
 
   const markAllRead = useCallback(() => {
-    setItems((prev) => {
-      const next = prev.map((n) => (n.archived ? n : { ...n, read: true }));
-      persist(next);
-      return next;
-    });
-  }, [persist]);
+    const current = getGlobalItems();
+    const next = current.map((n) => (n.archived ? n : { ...n, read: true }));
+    setGlobalItems(next, true);
+  }, []);
 
   const archive = useCallback(
     (id: string | string[]) => {
       const ids = Array.isArray(id) ? id : [id];
-      setItems((prev) => {
-        const next = prev.map((n) =>
-          ids.includes(n.id) ? { ...n, archived: true, read: true, snoozedUntil: undefined } : n
-        );
-        persist(next);
-        return next;
-      });
+      const current = getGlobalItems();
+      const next = current.map((n) =>
+        ids.includes(n.id) ? { ...n, archived: true, read: true, snoozedUntil: undefined } : n
+      );
+      setGlobalItems(next, true);
     },
-    [persist]
+    []
   );
 
   const remove = useCallback(
     (id: string | string[]) => {
       const ids = Array.isArray(id) ? id : [id];
-      setItems((prev) => {
-        const next = prev.filter((n) => !ids.includes(n.id));
-        persist(next);
-        return next;
-      });
+      const current = getGlobalItems();
+      const next = current.filter((n) => !ids.includes(n.id));
+      setGlobalItems(next, true);
     },
-    [persist]
+    []
   );
 
   const clear = useCallback(() => {
-    setItems([]);
-    persist([]);
-  }, [persist]);
+    setGlobalItems([], true);
+  }, []);
 
   const snooze = useCallback(
     (id: string, duration: SnoozeDuration) => {
       const until = snoozeWakeTimestamp(duration);
       if (!until) return false;
-      setItems((prev) => {
-        const next = prev.map((n) =>
-          n.id === id ? { ...n, snoozedUntil: until, read: true } : n
-        );
-        persist(next);
-        return next;
-      });
+      const current = getGlobalItems();
+      const next = current.map((n) =>
+        n.id === id ? { ...n, snoozedUntil: until, read: true } : n
+      );
+      setGlobalItems(next, true);
       return true;
     },
-    [persist]
+    []
   );
 
   const markImportant = useCallback(
     (id: string | string[]) => {
       const ids = Array.isArray(id) ? id : [id];
-      setItems((prev) => {
-        const next = prev.map((n) => (ids.includes(n.id) ? { ...n, priority: "important" as const } : n));
-        persist(next);
-        return next;
-      });
+      const current = getGlobalItems();
+      const next = current.map((n) => (ids.includes(n.id) ? { ...n, priority: "important" as const } : n));
+      setGlobalItems(next, true);
     },
-    [persist]
+    []
   );
 
   const muteCategory = useCallback(
     (category: NotificationCategory) => {
-      setMutedState((prev) => {
-        const next = new Set(prev);
-        next.add(category);
-        saveMuted(next);
-        return next;
-      });
+      const next = new Set(globalMuted);
+      next.add(category);
+      setGlobalMuted(next);
     },
     []
   );
 
   const unmuteCategory = useCallback(
     (category: NotificationCategory) => {
-      setMutedState((prev) => {
-        const next = new Set(prev);
-        next.delete(category);
-        saveMuted(next);
-        return next;
-      });
+      const next = new Set(globalMuted);
+      next.delete(category);
+      setGlobalMuted(next);
     },
     []
   );

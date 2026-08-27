@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.73",
+  date: "2026-08-27",
+  title: "Correction Réactivité Suppression & Lecture des Notifications (Store Réactif Global)",
+  items: [
+    "Refonte de useNotifications avec un singleton réactif partagé entre tous les composants.",
+    "Suppression (Corbeille) et archivage (Lu) instantanés en direct dans le panneau de notifications sans rechargement.",
+    "Synchronisation immédiate des compteurs de badge (TopBar & Dock).",
+    "Validation : build Next.js 105/105 pages, 100% tests unitaires, 0 erreur.",
+    "Version affichée : v1.10.73.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.73",
+  date: "2026-08-27",
+  title: "Notification Delete & Read Action Fix (Global Reactive Store)",
+  items: [
+    "Refactored useNotifications with a unified reactive singleton store across all components.",
+    "Instant real-time removal when clicking Trash or Mark as Read in Notification Center.",
+    "Synced badge counts across TopBar and Dock.",
+    "Validation: Next.js 105/105 pages build, 100% unit tests passed, 0 errors.",
+    "Version badge: v1.10.73.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.73",
+  date: "2026-08-27",
+  title: "Corrección de eliminación de notificaciones en tiempo real",
+  items: [
+    "Store reactivo unificado para notificaciones instantáneas.",
+    "Validación : build, lint, tests.",
+    "Versión : v1.10.73.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.73",
+  date: "2026-08-27",
+  title: "Benachrichtigungs-Löschung & Lesestatus-Fix",
+  items: [
+    "Globaler reaktiver Zustand für sofortige Listen-Aktualisierung.",
+    "Validierung: build, lint, tests.",
+    "Version: v1.10.73.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.72",
   date: "2026-08-27",
   title: "Résolution Synchronisation Journal d'Activité & Dynamic Island (Zéro Erreur Fetch)",

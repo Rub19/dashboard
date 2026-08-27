@@ -9,6 +9,8 @@ export type MailAttachment = {
   filename: string;
   size: number;
   mime_type: string;
+  content?: string;
+  url?: string;
 };
 
 export type MailMessage = {

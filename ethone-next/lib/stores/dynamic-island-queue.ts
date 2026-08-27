@@ -10,6 +10,7 @@ export type IslandView =
   | "brain"
   | "sync"
   | "upload"
+  | "mail"
   | "notification"
   | "timer"
   | "call"
@@ -19,6 +20,7 @@ export const ISLAND_VIEW_PRIORITY: Record<IslandView, number> = {
   system: 8,
   call: 7,
   notification: 6,
+  mail: 6,
   timer: 5,
   brain: 5,
   pomodoro: 4,

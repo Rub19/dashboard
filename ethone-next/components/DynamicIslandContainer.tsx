@@ -40,6 +40,8 @@ function viewLabel(view: IslandView, i18n: (key: string, fallback?: string) => s
       return i18n("sync", "Synchronisation");
     case "upload":
       return i18n("upload", "Upload");
+    case "mail":
+      return i18n("mail", "Mail");
     case "notification":
       return i18n("notification", "Notification");
     default:
@@ -128,6 +130,7 @@ function IslandBubble({
     view === "brain" && !active && "text-[var(--info)] hover:text-[var(--info)]",
     view === "sync" && !active && "text-[var(--info)] hover:text-[var(--info)]",
     view === "upload" && !active && "text-[var(--info)] hover:text-[var(--info)]",
+    view === "mail" && !active && "text-[var(--accent-primary)] hover:text-[var(--accent-primary)]",
   );
 
   const icon =
@@ -141,6 +144,8 @@ function IslandBubble({
       <Icon name="arrows-clockwise" pack="phosphor" className={iconClass} />
     ) : view === "upload" ? (
       <Icon name="upload-cloud" pack="phosphor" className={iconClass} />
+    ) : view === "mail" ? (
+      <Icon name="envelope-simple" pack="phosphor" className={iconClass} />
     ) : view === "notification" ? (
       <Icon name="bell" pack="phosphor" className={iconClass} />
     ) : (
@@ -180,6 +185,8 @@ function IslandExpandedHeader({
       <Icon name="arrows-clockwise" pack="phosphor" className="h-3.5 w-3.5 text-[var(--info)]" />
     ) : selected === "upload" ? (
       <Icon name="upload-cloud" pack="phosphor" className="h-3.5 w-3.5 text-[var(--info)]" />
+    ) : selected === "mail" ? (
+      <Icon name="envelope-simple" pack="phosphor" className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
     ) : selected === "notification" ? (
       <Icon name="bell" pack="phosphor" className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
     ) : (
@@ -416,6 +423,51 @@ export default function DynamicIslandContainer() {
             )}
           </div>
         );
+      case "mail": {
+        const mailContent = (top?.content as {
+          icon?: string;
+          title?: string;
+          sender?: string;
+          subject?: string;
+          unreadCount?: number;
+          status?: "sending" | "sent" | "error" | "syncing" | "received";
+        } | undefined) || {};
+
+        return (
+          <div className={cn(base)}>
+            <Icon
+              name={
+                mailContent.status === "syncing"
+                  ? "arrows-clockwise"
+                  : mailContent.status === "sending"
+                  ? "paper-plane-tilt"
+                  : mailContent.status === "error"
+                  ? "warning-circle"
+                  : "envelope-simple"
+              }
+              pack="phosphor"
+              className={cn(
+                "h-3.5 w-3.5",
+                mailContent.status === "error"
+                  ? "text-[var(--danger)]"
+                  : mailContent.status === "syncing"
+                  ? "animate-spin text-[var(--info)]"
+                  : mailContent.status === "sending"
+                  ? "animate-pulse text-[var(--accent-primary)]"
+                  : "text-[var(--accent-primary)]"
+              )}
+            />
+            <span className="max-w-[140px] truncate text-xs font-medium tabular-nums">
+              {mailContent.sender || mailContent.title || (mailContent.status === "sending" ? "Envoi..." : mailContent.status === "syncing" ? "Synchro..." : i18n("mail", "Mail"))}
+            </span>
+            {(mailContent.unreadCount ?? 0) > 0 && (
+              <span className="ml-1 rounded-full bg-[var(--accent-primary)] px-1.5 py-0.2 text-[10px] font-bold text-[var(--accent-contrast)]">
+                {mailContent.unreadCount}
+              </span>
+            )}
+          </div>
+        );
+      }
       case "notification": {
         const note = (top?.content as { icon?: string; pack?: string; title?: string; message?: string; variant?: string } | undefined) || {};
         const noteColor =
@@ -858,6 +910,62 @@ export default function DynamicIslandContainer() {
                 />
                 <UploadIslandView />
               </div>
+            </DynamicIslandView>
+
+            <DynamicIslandView id="mail" className="w-[min(92vw,280px)] sm:w-[340px]">
+              {(() => {
+                const mail = (top?.content as {
+                  title?: string;
+                  sender?: string;
+                  subject?: string;
+                  unreadCount?: number;
+                  status?: "sending" | "sent" | "error" | "syncing" | "received";
+                  actionUrl?: string;
+                } | undefined) || {};
+
+                return (
+                  <div onClick={stopPropagation} className="flex w-full flex-col items-center gap-3 text-center">
+                    <IslandExpandedHeader
+                      activeViews={activeViews}
+                      selected={selectedView ?? "mail"}
+                      onSelect={selectView}
+                    />
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] shadow-sm">
+                      <Icon
+                        name={
+                          mail.status === "syncing"
+                            ? "arrows-clockwise"
+                            : mail.status === "sending"
+                            ? "paper-plane-tilt"
+                            : mail.status === "error"
+                            ? "warning-circle"
+                            : "envelope-simple"
+                        }
+                        pack="phosphor"
+                        className={cn("h-6 w-6", mail.status === "syncing" && "animate-spin")}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm font-semibold text-[var(--text-primary)]">
+                        {mail.sender || mail.title || (mail.status === "sending" ? "Envoi du message..." : mail.status === "syncing" ? "Synchronisation..." : "Boîte de réception")}
+                      </p>
+                      {mail.subject && (
+                        <p className="line-clamp-2 max-w-[280px] text-xs text-[var(--text-muted)]">
+                          {mail.subject}
+                        </p>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => router.push("/mail")}
+                      className="flex items-center gap-1.5 rounded-xl bg-[var(--accent-primary)] px-3.5 py-1.5 text-xs font-semibold text-[var(--accent-contrast)] transition-all hover:scale-105"
+                    >
+                      <Icon name="envelope-simple" pack="phosphor" className="h-3.5 w-3.5" />
+                      <span>{i18n("openMail", "Ouvrir Mail")}</span>
+                    </button>
+                  </div>
+                );
+              })()}
             </DynamicIslandView>
 
             <DynamicIslandView id="notification" className="w-[min(92vw,260px)] sm:w-[320px]">

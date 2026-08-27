@@ -1,14 +1,29 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Paperclip, Sparkles, Send, Loader2, Shuffle } from "lucide-react";
+import {
+  X,
+  Paperclip,
+  Sparkles,
+  Send,
+  Loader2,
+  Shuffle,
+  Maximize2,
+  Minimize2,
+  Trash2,
+  Check,
+  FileText,
+  Clock,
+  Plus,
+} from "lucide-react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import Button from "@/components/ui/Button";
 import Select, { type SelectOption } from "@/components/ui/Select";
 import Input from "@/components/Input";
 import TextArea from "@/components/Textarea";
-import { type MailAlias } from "@/lib/hooks/useMail";
+import type { MailAlias } from "@/lib/hooks/useMail";
+import { cn } from "@/lib/utils";
 
 export type ComposeState = {
   to: string[];
@@ -33,6 +48,14 @@ type ComposeMailModalProps = {
   createAlias?: (input: string | { alias?: string; display_name?: string; random?: boolean }) => Promise<MailAlias | null | undefined>;
 };
 
+function formatFileSize(bytes: number) {
+  if (!bytes || bytes === 0) return "0 Ko";
+  const k = 1024;
+  const sizes = ["Octets", "Ko", "Mo", "Go"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
+}
+
 export default function ComposeMailModal({
   open,
   onClose,
@@ -40,76 +63,82 @@ export default function ComposeMailModal({
   onSend,
   onSave,
   onAiAssist,
-  loading,
+  loading = false,
   aliases = [],
   createAlias,
 }: ComposeMailModalProps) {
   const i18n = useI18n();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [to, setTo] = useState<string[]>(initial?.to ?? []);
   const [toInput, setToInput] = useState("");
   const [cc, setCc] = useState<string[]>(initial?.cc ?? []);
   const [ccInput, setCcInput] = useState("");
+  const [showCc, setShowCc] = useState(false);
   const [bcc, setBcc] = useState<string[]>(initial?.bcc ?? []);
   const [bccInput, setBccInput] = useState("");
+  const [showBcc, setShowBcc] = useState(false);
   const [subject, setSubject] = useState(initial?.subject ?? "");
   const [body, setBody] = useState(initial?.body ?? "");
   const [attachments, setAttachments] = useState(initial?.attachments ?? []);
   const [aiLoading, setAiLoading] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
   const [fromAliasId, setFromAliasId] = useState<string>(initial?.aliasId ?? "");
   const [newAliasInput, setNewAliasInput] = useState("");
   const [showAliasCreate, setShowAliasCreate] = useState(false);
   const [aliasLoading, setAliasLoading] = useState(false);
   const [aliasError, setAliasError] = useState<string | null>(null);
-  const aliasInitRef = useRef(false);
 
+  // Sync initial state on open
+  useEffect(() => {
+    if (open) {
+      setTo(initial?.to ?? []);
+      setCc(initial?.cc ?? []);
+      setBcc(initial?.bcc ?? []);
+      setShowCc(!!(initial?.cc && initial.cc.length > 0));
+      setShowBcc(!!(initial?.bcc && initial.bcc.length > 0));
+      setSubject(initial?.subject ?? "");
+      setBody(initial?.body ?? "");
+      setAttachments(initial?.attachments ?? []);
+      const primary = aliases.find((a) => a.is_primary) ?? aliases[0];
+      setFromAliasId(initial?.aliasId || primary?.id || "");
+    }
+  }, [open, initial, aliases]);
+
+  // Alias Options
   const aliasOptions = useMemo<SelectOption[]>(() => {
     const list = aliases.map((a) => ({
       id: a.id,
-      label: `${a.alias}${a.display_name ? ` · ${a.display_name}` : ""}`,
+      label: `${a.alias}${a.display_name ? ` (${a.display_name})` : ""}`,
     }));
     if (createAlias) {
       list.push({
         id: "new",
-        label: `+ ${i18n("newAlias") || "Nouvelle adresse"}`,
+        label: `+ Créer un nouvel alias...`,
       });
     }
     return list;
-  }, [aliases, createAlias, i18n]);
+  }, [aliases, createAlias]);
 
+  // Auto-save drafts every 30 seconds if modified
   useEffect(() => {
-    if (!open) {
-      aliasInitRef.current = false;
-      return;
-    }
-    if (aliasInitRef.current) return;
-    aliasInitRef.current = true;
-
-    if (aliases.length && !fromAliasId) {
-      const primary = aliases.find((a) => a.is_primary) ?? aliases[0];
-      setFromAliasId(primary.id);
-      setShowAliasCreate(false);
-    } else if (!aliases.length) {
-      setShowAliasCreate(true);
-    }
-  }, [open, aliases, fromAliasId]);
-
-  useEffect(() => {
-    if (!open) {
-      setFromAliasId(initial?.aliasId ?? "");
-      setNewAliasInput("");
-      setShowAliasCreate(false);
-      setAliasError(null);
-      setAliasLoading(false);
-      aliasInitRef.current = false;
-    }
-  }, [open, initial?.aliasId]);
+    if (!open || !onSave || (!subject && !body && to.length === 0)) return;
+    const interval = setInterval(() => {
+      onSave({ to, cc, bcc, subject, body, attachments, aliasId: fromAliasId });
+      setLastSaved(new Date());
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [open, onSave, to, cc, bcc, subject, body, attachments, fromAliasId]);
 
   function addTag(list: string[], setList: (v: string[]) => void, input: string, setInput: (v: string) => void) {
-    const value = input.trim();
+    const value = input.trim().replace(/,$/, "");
     if (!value) return;
-    setList([...list, value]);
+    if (!list.includes(value)) {
+      setList([...list, value]);
+    }
     setInput("");
   }
 
@@ -122,32 +151,37 @@ export default function ComposeMailModal({
     list: string[],
     setList: (v: string[]) => void,
     input: string,
-    setInput: (v: string) => void,
+    setInput: (v: string) => void
   ) {
-    if (e.key === "Enter" || e.key === ",") {
-      e.preventDefault();
-      addTag(list, setList, input, setInput);
-    } else if (e.key === "Backspace" && !input && list.length) {
+    if (e.key === "Enter" || e.key === "," || e.key === "Tab") {
+      if (input.trim()) {
+        e.preventDefault();
+        addTag(list, setList, input, setInput);
+      }
+    } else if (e.key === "Backspace" && !input && list.length > 0) {
       setList(list.slice(0, -1));
     }
   }
 
-  function handleFileChange(files: FileList | null) {
+  const handleFiles = useCallback((files: FileList | null) => {
     if (!files) return;
-    Array.from(files)
-      .slice(0, 10)
-      .forEach((file) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64 = String(reader.result || "").split(",")[1] || "";
-          setAttachments((prev) => [
-            ...prev,
-            { filename: file.name, size: file.size, mime_type: file.type || "application/octet-stream", content: base64 },
-          ]);
-        };
-        reader.readAsDataURL(file);
-      });
-  }
+    Array.from(files).forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64 = String(reader.result || "").split(",")[1] || "";
+        setAttachments((prev) => [
+          ...prev,
+          {
+            filename: file.name,
+            size: file.size,
+            mime_type: file.type || "application/octet-stream",
+            content: base64,
+          },
+        ]);
+      };
+      reader.readAsDataURL(file);
+    });
+  }, []);
 
   async function handleAi() {
     if (!onAiAssist || !body.trim()) return;
@@ -158,12 +192,6 @@ export default function ComposeMailModal({
     } finally {
       setAiLoading(false);
     }
-  }
-
-  function handleGenerateRandom() {
-    const local = `u-${Math.random().toString(36).slice(2, 8)}`;
-    setNewAliasInput(local);
-    setAliasError(null);
   }
 
   async function handleCreateAlias() {
@@ -179,27 +207,7 @@ export default function ComposeMailModal({
         setShowAliasCreate(false);
         setNewAliasInput("");
       } else {
-        setAliasError(i18n("aliasUnavailable") || "Cet alias n'est pas disponible.");
-      }
-    } catch (err) {
-      setAliasError(String(err));
-    } finally {
-      setAliasLoading(false);
-    }
-  }
-
-  async function handleCreateRandomAlias() {
-    if (!createAlias) return;
-    setAliasLoading(true);
-    setAliasError(null);
-    try {
-      const created = await createAlias({ random: true });
-      if (created?.id) {
-        setFromAliasId(created.id);
-        setShowAliasCreate(false);
-        setNewAliasInput("");
-      } else {
-        setAliasError(i18n("aliasCreationFailed") || "Impossible de créer un alias aléatoire.");
+        setAliasError("Cet alias n'est pas disponible.");
       }
     } catch (err) {
       setAliasError(String(err));
@@ -209,309 +217,397 @@ export default function ComposeMailModal({
   }
 
   async function handleSend() {
-    if (!to.length && !cc.length && !bcc.length) return;
+    // Add any remaining text in inputs
+    const finalTo = [...to];
+    if (toInput.trim() && !finalTo.includes(toInput.trim())) finalTo.push(toInput.trim());
+
+    if (finalTo.length === 0 && cc.length === 0 && bcc.length === 0) return;
     if (!fromAliasId) return;
-    await onSend({ to, cc, bcc, subject, body, attachments, aliasId: fromAliasId });
-    if (!loading) onClose();
+
+    await onSend({
+      to: finalTo,
+      cc,
+      bcc,
+      subject: subject.trim() || "(Sans objet)",
+      body,
+      attachments,
+      aliasId: fromAliasId,
+    });
   }
 
-  function handleClose() {
-    onClose();
+  // Global Ctrl+Enter to send
+  function handleFormKeyDown(e: React.KeyboardEvent) {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+      e.preventDefault();
+      handleSend();
+    }
   }
 
-  const hasAliases = aliases.length > 0;
-  const canSend = (to.length || cc.length || bcc.length) && fromAliasId;
+  if (!open) return null;
 
   return (
     <AnimatePresence>
-      {open && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
-            onClick={handleClose}
-          />
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.98 }}
-            className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-[var(--z-modal)] flex h-[min(640px,90vh)] max-h-[90vh] w-[min(560px,96vw)] flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)]/95 shadow-2xl backdrop-blur-2xl"
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between border-b border-[var(--text-primary)]/[0.06] px-4 py-3">
-              <h2 className="text-sm font-semibold text-[var(--text-primary)]">{i18n("newMessage") || "Nouveau message"}</h2>
-              <Button
+      <div
+        className="fixed inset-0 z-[var(--z-modal)] pointer-events-none flex items-end justify-end p-4 sm:p-6"
+        onKeyDown={handleFormKeyDown}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 40, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 40, scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 350, damping: 28 }}
+          className={cn(
+            "pointer-events-auto flex flex-col overflow-hidden rounded-2xl border border-[var(--panel-border)]/[0.2] bg-[var(--bg-main)]/[0.95] shadow-2xl backdrop-blur-2xl transition-all duration-200",
+            isFullscreen
+              ? "fixed inset-4 z-50 rounded-3xl"
+              : "h-[min(650px,85vh)] w-[min(600px,94vw)]"
+          )}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setIsDragOver(true);
+          }}
+          onDragLeave={() => setIsDragOver(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setIsDragOver(false);
+            handleFiles(e.dataTransfer.files);
+          }}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-[var(--panel-border)]/[0.1] bg-[var(--panel-bg)]/[0.4] px-4 py-3 select-none">
+            <div className="flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] font-bold text-xs">
+                @
+              </span>
+              <h2 className="text-xs font-bold text-[var(--text-primary)]">
+                {subject ? subject : "Nouveau message"}
+              </h2>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <button
                 type="button"
-                variant="ghost"
-                size="sm"
-                onClick={handleClose}
-                className="h-8 w-8 p-0 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                onClick={() => setIsFullscreen((f) => !f)}
+                className="rounded-lg p-1.5 text-[var(--text-muted)] hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)] transition-colors"
+                title={isFullscreen ? "Réduire" : "Plein écran"}
+              >
+                {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded-lg p-1.5 text-[var(--text-muted)] hover:bg-[var(--panel-bg)] hover:text-[var(--text-primary)] transition-colors"
+                title="Fermer"
               >
                 <X className="h-4 w-4" />
-              </Button>
+              </button>
+            </div>
+          </div>
+
+          {/* Form Fields */}
+          <div className="shrink-0 space-y-1.5 border-b border-[var(--panel-border)]/[0.1] p-3 text-xs">
+            {/* From (Alias) */}
+            <div className="flex items-center gap-2">
+              <span className="w-12 shrink-0 font-semibold text-[var(--text-muted)]">De :</span>
+              {aliases.length > 0 ? (
+                <div className="flex-1">
+                  <Select
+                    value={fromAliasId || (showAliasCreate ? "new" : "")}
+                    onChange={(val) => {
+                      if (val === "new") {
+                        setShowAliasCreate(true);
+                      } else {
+                        setFromAliasId(val);
+                        setShowAliasCreate(false);
+                      }
+                    }}
+                    options={aliasOptions}
+                    className="w-full text-xs"
+                  />
+                </div>
+              ) : (
+                <span className="text-[var(--text-muted)]">Aucun alias configuré</span>
+              )}
             </div>
 
-            {/* Fields */}
-            <div className="shrink-0 space-y-1 border-b border-[var(--text-primary)]/[0.06] px-4 py-2">
-              {/* From / alias */}
-              <div className="flex flex-col gap-1 py-2.5">
-                <div className="flex items-center gap-2">
-                  <span className="shrink-0 text-sm font-medium text-[var(--text-muted)]">{i18n("from") || "De"}</span>
-                  {hasAliases ? (
-                    <Select
-                      value={fromAliasId || (showAliasCreate ? "new" : "")}
-                      onChange={(value) => {
-                        if (value === "new") {
-                          setFromAliasId("");
-                          setShowAliasCreate(true);
-                          setAliasError(null);
-                        } else {
-                          setFromAliasId(value);
-                          setShowAliasCreate(false);
-                        }
-                      }}
-                      options={aliasOptions}
-                      placeholder={i18n("selectAlias") || "Choisir une adresse"}
-                      aria-label={i18n("from") || "De"}
-                      className="min-w-0 flex-1"
-                    />
-                  ) : (
-                    <span className="text-sm text-[var(--text-muted)]">{i18n("noAlias") || "Aucune adresse"}</span>
-                  )}
-                </div>
-
-                {showAliasCreate && (
-                  <div className="mt-1 flex flex-wrap items-center gap-2">
-                    <Input
-                      type="text"
-                      value={newAliasInput}
-                      onChange={(e) => setNewAliasInput(e.target.value.replace(/[^a-zA-Z0-9._-]/g, ""))}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          handleCreateAlias();
-                        }
-                      }}
-                      placeholder={i18n("aliasPlaceholder") || "votre-nom"}
-                      disabled={aliasLoading}
-                      inputSize="compact"
-                      className="min-w-0 flex-1"
-                    />
-                    <span className="text-sm text-[var(--text-muted)]">@ethone.dev</span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleGenerateRandom}
-                      disabled={aliasLoading}
-                      leftIcon={<Shuffle className="h-3 w-3" />}
-                      className="rounded-md px-2 py-1 text-[var(--text-primary)]"
-                    >
-                      {i18n("random") || "Aléatoire"}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleCreateRandomAlias}
-                      disabled={aliasLoading}
-                      className="rounded-md px-2 py-1 text-[var(--text-primary)]"
-                    >
-                      {i18n("randomFull") || "Tout aléatoire"}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="primary"
-                      size="sm"
-                      onClick={handleCreateAlias}
-                      disabled={aliasLoading || !newAliasInput.trim()}
-                      isLoading={aliasLoading}
-                      className="rounded-md px-2 py-1"
-                    >
-                      {i18n("create") || "Créer"}
-                    </Button>
-                  </div>
-                )}
-
-                {aliasError && <p className="text-sm text-rose-400">{aliasError}</p>}
-              </div>
-
-              <div className="flex items-center gap-2 py-2.5">
-                <span className="shrink-0 text-sm font-medium text-[var(--text-muted)]">{i18n("to") || "À"}</span>
-                <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1">
-                  {to.map((t, i) => (
-                    <span
-                      key={`${t}-${i}`}
-                      className="flex items-center gap-1 rounded-md bg-[var(--accent-primary)] px-2 py-1 text-sm text-[var(--accent-primary)]"
-                    >
-                      {t}
-                      <button type="button" onClick={() => removeTag(to, setTo, i)} className="text-[var(--accent-primary)] hover:text-[var(--text-primary)]">
-                        &times;
-                      </button>
-                    </span>
-                  ))}
-                  <Input
-                    type="text"
-                    value={toInput}
-                    onChange={(e) => setToInput(e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(e, to, setTo, toInput, setToInput)}
-                    placeholder={to.length ? "" : i18n("emailPlaceholder")}
-                    inputSize="compact"
-                    className="min-w-0 flex-1"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 py-2.5">
-                <span className="shrink-0 text-sm font-medium text-[var(--text-muted)]">{i18n("cc") || "Cc"}</span>
-                <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1">
-                  {cc.map((c, i) => (
-                    <span
-                      key={`${c}-${i}`}
-                      className="flex items-center gap-1 rounded-md bg-[var(--text-primary)]/[0.06] px-2 py-1 text-sm text-[var(--text-primary)]"
-                    >
-                      {c}
-                      <button type="button" onClick={() => removeTag(cc, setCc, i)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
-                        &times;
-                      </button>
-                    </span>
-                  ))}
-                  <Input
-                    type="text"
-                    value={ccInput}
-                    onChange={(e) => setCcInput(e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(e, cc, setCc, ccInput, setCcInput)}
-                    inputSize="compact"
-                    className="min-w-0 flex-1"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 py-2.5">
-                <span className="shrink-0 text-sm font-medium text-[var(--text-muted)]">{i18n("bcc") || "Cci"}</span>
-                <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1">
-                  {bcc.map((b, i) => (
-                    <span
-                      key={`${b}-${i}`}
-                      className="flex items-center gap-1 rounded-md bg-[var(--text-primary)]/[0.06] px-2 py-1 text-sm text-[var(--text-primary)]"
-                    >
-                      {b}
-                      <button type="button" onClick={() => removeTag(bcc, setBcc, i)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
-                        &times;
-                      </button>
-                    </span>
-                  ))}
-                  <Input
-                    type="text"
-                    value={bccInput}
-                    onChange={(e) => setBccInput(e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(e, bcc, setBcc, bccInput, setBccInput)}
-                    inputSize="compact"
-                    className="min-w-0 flex-1"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 py-2.5">
-                <span className="shrink-0 text-sm font-medium text-[var(--text-muted)]">{i18n("subject") || "Objet"}</span>
+            {/* Inline Alias Creation */}
+            {showAliasCreate && (
+              <div className="ml-14 flex items-center gap-2 pt-1">
                 <Input
                   type="text"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  className="min-w-0 flex-1"
+                  value={newAliasInput}
+                  onChange={(e) => setNewAliasInput(e.target.value.toLowerCase().replace(/[^a-z0-9._-]/g, ""))}
+                  placeholder="nouvel-alias"
+                  inputSize="compact"
+                  className="flex-1 text-xs"
                 />
+                <span className="text-[var(--text-muted)]">@ethone.dev</span>
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="sm"
+                  onClick={handleCreateAlias}
+                  disabled={!newAliasInput.trim() || aliasLoading}
+                  isLoading={aliasLoading}
+                >
+                  Créer
+                </Button>
               </div>
-            </div>
+            )}
 
-            {/* Editor */}
-            <div className="flex min-h-0 flex-1 p-4">
-              <TextArea
-                value={body}
-                onChange={(e) => setBody(e.target.value)}
-                placeholder={i18n("composePlaceholder") || "Écrivez votre message..."}
-                className="h-full w-full"
-                inputClassName="resize-none overflow-y-auto"
-              />
-            </div>
-
-            {attachments.length > 0 && (
-              <div className="flex flex-wrap gap-2 px-4 pb-2">
-                {attachments.map((a, i) => (
+            {/* To Field */}
+            <div className="flex items-center gap-2">
+              <span className="w-12 shrink-0 font-semibold text-[var(--text-muted)]">À :</span>
+              <div className="flex flex-1 flex-wrap items-center gap-1.5 rounded-xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.3] p-1.5 focus-within:border-[var(--accent-primary)]">
+                {to.map((t, i) => (
                   <span
-                    key={`${a.filename}-${i}`}
-                    className="flex items-center gap-1 rounded-md border border-[var(--text-primary)]/[0.08] bg-[var(--text-primary)]/[0.03] px-2 py-1 text-xs text-[var(--text-primary)]"
+                    key={`${t}-${i}`}
+                    className="flex items-center gap-1 rounded-lg bg-[var(--accent-primary)]/15 px-2 py-0.5 text-xs font-medium text-[var(--accent-primary)]"
                   >
-                    {a.filename}
+                    {t}
                     <button
                       type="button"
-                      onClick={() => setAttachments(attachments.filter((_, idx) => idx !== i))}
-                      className="text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                      onClick={() => removeTag(to, setTo, i)}
+                      className="hover:text-[var(--text-primary)]"
                     >
                       &times;
                     </button>
                   </span>
                 ))}
+                <input
+                  type="text"
+                  value={toInput}
+                  onChange={(e) => setToInput(e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(e, to, setTo, toInput, setToInput)}
+                  onBlur={() => addTag(to, setTo, toInput, setToInput)}
+                  placeholder={to.length === 0 ? "destinataire@exemple.com" : ""}
+                  className="flex-1 min-w-[120px] bg-transparent text-xs text-[var(--text-primary)] focus:outline-none placeholder:text-[var(--text-muted)]"
+                />
+                <div className="flex items-center gap-1 text-[10px] text-[var(--text-muted)]">
+                  {!showCc && (
+                    <button
+                      type="button"
+                      onClick={() => setShowCc(true)}
+                      className="hover:text-[var(--text-primary)] px-1"
+                    >
+                      Cc
+                    </button>
+                  )}
+                  {!showBcc && (
+                    <button
+                      type="button"
+                      onClick={() => setShowBcc(true)}
+                      className="hover:text-[var(--text-primary)] px-1"
+                    >
+                      Cci
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* CC Field */}
+            {showCc && (
+              <div className="flex items-center gap-2">
+                <span className="w-12 shrink-0 font-semibold text-[var(--text-muted)]">Cc :</span>
+                <div className="flex flex-1 flex-wrap items-center gap-1.5 rounded-xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.3] p-1.5 focus-within:border-[var(--accent-primary)]">
+                  {cc.map((c, i) => (
+                    <span
+                      key={`${c}-${i}`}
+                      className="flex items-center gap-1 rounded-lg bg-[var(--panel-border)]/[0.2] px-2 py-0.5 text-xs font-medium text-[var(--text-primary)]"
+                    >
+                      {c}
+                      <button
+                        type="button"
+                        onClick={() => removeTag(cc, setCc, i)}
+                        className="text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                      >
+                        &times;
+                      </button>
+                    </span>
+                  ))}
+                  <input
+                    type="text"
+                    value={ccInput}
+                    onChange={(e) => setCcInput(e.target.value)}
+                    onKeyDown={(e) => handleKeyDown(e, cc, setCc, ccInput, setCcInput)}
+                    onBlur={() => addTag(cc, setCc, ccInput, setCcInput)}
+                    className="flex-1 min-w-[120px] bg-transparent text-xs text-[var(--text-primary)] focus:outline-none placeholder:text-[var(--text-muted)]"
+                  />
+                </div>
               </div>
             )}
 
-            {/* Footer */}
-            <div className="flex items-center justify-between border-t border-[var(--text-primary)]/[0.06] px-4 py-3">
-              <div className="flex items-center gap-1">
-                <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="h-9 w-9 p-0 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                  >
-                    <Paperclip className="h-4 w-4" />
-                  </Button>
-                <input ref={fileInputRef} type="file" multiple className="hidden" onChange={(e) => handleFileChange(e.target.files)} />
-
-                {onAiAssist && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleAi}
-                    disabled={aiLoading}
-                    className="h-9 w-9 p-0 text-[var(--text-muted)] hover:text-[var(--accent-primary)]"
-                  >
-                    {aiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                  </Button>
-                )}
-
-                {onSave && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onSave({ to, cc, bcc, subject, body, attachments, aliasId: fromAliasId })}
-                    disabled={loading || !fromAliasId}
-                    className="rounded px-2 py-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                  >
-                    {i18n("saveDraft") || "Brouillon"}
-                  </Button>
-                )}
+            {/* BCC Field */}
+            {showBcc && (
+              <div className="flex items-center gap-2">
+                <span className="w-12 shrink-0 font-semibold text-[var(--text-muted)]">Cci :</span>
+                <div className="flex flex-1 flex-wrap items-center gap-1.5 rounded-xl border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.3] p-1.5 focus-within:border-[var(--accent-primary)]">
+                  {bcc.map((b, i) => (
+                    <span
+                      key={`${b}-${i}`}
+                      className="flex items-center gap-1 rounded-lg bg-[var(--panel-border)]/[0.2] px-2 py-0.5 text-xs font-medium text-[var(--text-primary)]"
+                    >
+                      {b}
+                      <button
+                        type="button"
+                        onClick={() => removeTag(bcc, setBcc, i)}
+                        className="text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                      >
+                        &times;
+                      </button>
+                    </span>
+                  ))}
+                  <input
+                    type="text"
+                    value={bccInput}
+                    onChange={(e) => setBccInput(e.target.value)}
+                    onKeyDown={(e) => handleKeyDown(e, bcc, setBcc, bccInput, setBccInput)}
+                    onBlur={() => addTag(bcc, setBcc, bccInput, setBccInput)}
+                    className="flex-1 min-w-[120px] bg-transparent text-xs text-[var(--text-primary)] focus:outline-none placeholder:text-[var(--text-muted)]"
+                  />
+                </div>
               </div>
+            )}
+
+            {/* Subject */}
+            <div className="flex items-center gap-2">
+              <span className="w-12 shrink-0 font-semibold text-[var(--text-muted)]">Objet :</span>
+              <Input
+                type="text"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                placeholder="Objet du message"
+                inputSize="compact"
+                className="flex-1 text-xs"
+              />
+            </div>
+          </div>
+
+          {/* Editor Body */}
+          <div className="relative flex min-h-0 flex-1 p-3">
+            <TextArea
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              placeholder="Rédigez votre message ici..."
+              className="h-full w-full"
+              inputClassName="resize-none font-sans text-xs leading-relaxed text-[var(--text-primary)] [scrollbar-width:thin]"
+            />
+
+            {/* Drag & drop overlay indicator */}
+            {isDragOver && (
+              <div className="absolute inset-2 flex items-center justify-center rounded-2xl border-2 border-dashed border-[var(--accent-primary)] bg-[var(--bg-main)]/90 backdrop-blur-sm">
+                <p className="flex items-center gap-2 text-sm font-semibold text-[var(--accent-primary)]">
+                  <Paperclip className="h-5 w-5" />
+                  Déposez les pièces jointes ici
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Attachments Pills */}
+          {attachments.length > 0 && (
+            <div className="flex flex-wrap gap-2 border-t border-[var(--panel-border)]/[0.1] bg-[var(--panel-bg)]/[0.2] p-2.5">
+              {attachments.map((a, i) => (
+                <div
+                  key={`${a.filename}-${i}`}
+                  className="flex items-center gap-2 rounded-lg border border-[var(--panel-border)]/[0.12] bg-[var(--panel-bg)]/[0.6] px-2.5 py-1 text-xs text-[var(--text-primary)]"
+                >
+                  <Paperclip className="h-3.5 w-3.5 text-[var(--accent-primary)]" />
+                  <span className="truncate max-w-[150px] font-medium">{a.filename}</span>
+                  <span className="text-[10px] text-[var(--text-muted)] font-mono">
+                    ({formatFileSize(a.size)})
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setAttachments(attachments.filter((_, idx) => idx !== i))}
+                    className="text-[var(--text-muted)] hover:text-[var(--danger)]"
+                  >
+                    &times;
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Footer Bar */}
+          <div className="flex items-center justify-between border-t border-[var(--panel-border)]/[0.1] bg-[var(--panel-bg)]/[0.4] px-4 py-3 select-none">
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+                leftIcon={<Paperclip className="h-4 w-4" />}
+                className="text-xs"
+                title="Ajouter des fichiers"
+              >
+                Joindre
+              </Button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                className="hidden"
+                onChange={(e) => handleFiles(e.target.files)}
+              />
+
+              {onAiAssist && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleAi}
+                  disabled={aiLoading || !body.trim()}
+                  leftIcon={aiLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5 text-purple-400" />}
+                  className="text-xs text-purple-300 hover:text-purple-200"
+                  title="Améliorer le message avec l'IA"
+                >
+                  IA Assistant
+                </Button>
+              )}
+
+              {lastSaved && (
+                <span className="hidden sm:inline-flex items-center gap-1 font-mono text-[10px] text-[var(--text-muted)]">
+                  <Clock className="h-3 w-3" />
+                  Enregistré à {lastSaved.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                </span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              {onSave && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onSave({ to, cc, bcc, subject, body, attachments, aliasId: fromAliasId })}
+                  disabled={loading}
+                  className="text-xs"
+                >
+                  Brouillon
+                </Button>
+              )}
 
               <Button
                 type="button"
                 variant="primary"
                 size="md"
                 onClick={handleSend}
-                disabled={loading || !canSend}
+                disabled={loading || (!to.length && !toInput.trim()) || !fromAliasId}
                 isLoading={loading}
                 leftIcon={<Send className="h-3.5 w-3.5" />}
+                className="shadow-md shadow-[var(--accent-primary)]/20"
               >
-                {i18n("send") || "Envoyer"}
+                <span>Envoyer</span>
+                <kbd className="hidden sm:inline-block ml-1 rounded bg-white/20 px-1 py-0.2 font-mono text-[9px] text-white">
+                  Ctrl+Enter
+                </kbd>
               </Button>
             </div>
-          </motion.div>
-        </>
-      )}
+          </div>
+        </motion.div>
+      </div>
     </AnimatePresence>
   );
 }

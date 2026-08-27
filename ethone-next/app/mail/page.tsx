@@ -1,10 +1,11 @@
-﻿"use client";
+"use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useI18n } from "@/lib/hooks/useI18n";
 import { useMail, type MailMessage } from "@/lib/hooks/useMail";
 import { useToast } from "@/components/ToastProvider";
 import { useUserState } from "@/lib/hooks/useUserState";
+import { useIslandQueueStore } from "@/lib/stores/dynamic-island-queue";
 import MailSidebar, { FOLDERS, type MailFolder } from "@/components/mail/MailSidebar";
 import MailThreadList from "@/components/mail/MailThreadList";
 import MailDetailView from "@/components/mail/MailDetailView";
@@ -22,6 +23,9 @@ function formatMailDate(iso: string) {
 export default function MailPage() {
   const i18n = useI18n();
   const { success, error: toastError } = useToast();
+  const registerIsland = useIslandQueueStore((s) => s.register);
+  const unregisterIsland = useIslandQueueStore((s) => s.unregister);
+
   const {
     messages,
     folder,
@@ -30,12 +34,14 @@ export default function MailPage() {
     setSearch,
     unread,
     loading,
+    labels,
     getThread,
     sendMail,
     saveDraft,
     setFlags,
     moveMessages,
     createLabel,
+    bulkAction,
     aliases,
     aliasesLoading,
     createAlias,
@@ -43,6 +49,7 @@ export default function MailPage() {
   } = useMail();
 
   const [activeThread, setActiveThread] = useState<MailMessage[] | null>(null);
+  const [activeLabel, setActiveLabel] = useState<string | undefined>();
   const [composeOpen, setComposeOpen] = useState(false);
   const [composeInitial, setComposeInitial] = useState<Partial<ComposeState>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -51,10 +58,18 @@ export default function MailPage() {
   const [composeInReplyTo, setComposeInReplyTo] = useState<string | undefined>();
   const [composeReferences, setComposeReferences] = useState<string[] | undefined>();
 
+  // Filter messages based on active folder and label
   const folderMessages = useMemo(() => {
-    if (folder === "inbox") return messages.filter((m) => m.folder === "inbox" || m.folder === "archive" || m.folder === "sent");
-    return messages.filter((m) => m.folder === folder);
-  }, [messages, folder]);
+    let list = messages;
+    if (activeLabel) {
+      list = list.filter((m) => m.labels?.includes(activeLabel));
+    } else if (folder === "inbox") {
+      list = list.filter((m) => m.folder === "inbox" || m.folder === "archive" || m.folder === "sent");
+    } else {
+      list = list.filter((m) => m.folder === folder);
+    }
+    return list;
+  }, [messages, folder, activeLabel]);
 
   const groupedFolderMessages = useMemo(() => {
     const map = new Map<string, MailMessage[]>();
@@ -112,13 +127,19 @@ export default function MailPage() {
 
   function handleFolderChange(newFolder: MailFolder) {
     setFolder(newFolder);
+    setActiveLabel(undefined);
     closeThread();
   }
 
-  function openCompose(mode: "new" | "reply" | "forward") {
-    setComposeOpen(true);
+  function handleSelectLabel(labelId: string | undefined) {
+    setActiveLabel(labelId);
+    closeThread();
+  }
+
+  function openCompose(mode: "new" | "reply" | "replyAll" | "forward") {
     const last = activeThread?.[activeThread.length - 1];
     const first = activeThread?.[0];
+
     if (mode === "new" || !last || !first) {
       setComposeInitial({ to: [], cc: [], bcc: [], subject: "", body: "" });
       setComposeInReplyTo(undefined);
@@ -130,7 +151,19 @@ export default function MailPage() {
         cc: [],
         bcc: [],
         subject,
-        body: `\n\n----- Original Message -----\n${i18n("from")}: ${last.from_name || last.from_address}\n${i18n("date")}: ${formatMailDate(last.received_at)}\n${i18n("subject")}: ${first.subject}\n\n${last.body_text || last.snippet || ""}`,
+        body: `\n\n----- Message d'origine -----\nDe : ${last.from_name || last.from_address}\nDate : ${formatMailDate(last.received_at)}\nObjet : ${first.subject}\n\n${last.body_text || last.snippet || ""}`,
+      });
+      setComposeInReplyTo(last.headers?.["Message-ID"] || undefined);
+      setComposeReferences([...(last.headers?.["References"] ? [last.headers["References"]] : []), last.headers?.["Message-ID"] || ""].filter(Boolean));
+    } else if (mode === "replyAll") {
+      const subject = first.subject.startsWith("Re:") ? first.subject : `Re: ${first.subject}`;
+      const allTo = Array.from(new Set([last.from_address, ...(first.to_addresses || [])]));
+      setComposeInitial({
+        to: allTo,
+        cc: first.cc_addresses || [],
+        bcc: [],
+        subject,
+        body: `\n\n----- Message d'origine -----\nDe : ${last.from_name || last.from_address}\nDate : ${formatMailDate(last.received_at)}\nObjet : ${first.subject}\n\n${last.body_text || last.snippet || ""}`,
       });
       setComposeInReplyTo(last.headers?.["Message-ID"] || undefined);
       setComposeReferences([...(last.headers?.["References"] ? [last.headers["References"]] : []), last.headers?.["Message-ID"] || ""].filter(Boolean));
@@ -139,8 +172,8 @@ export default function MailPage() {
         to: [],
         cc: [],
         bcc: [],
-        subject: `Fwd: ${first.subject}`,
-        body: `\n\n----- Forwarded Message -----\n${i18n("from")}: ${last.from_name || last.from_address}\n${i18n("date")}: ${formatMailDate(last.received_at)}\n${i18n("subject")}: ${first.subject}\n\n${last.body_text || last.snippet || ""}`,
+        subject: first.subject.startsWith("Fwd:") ? first.subject : `Fwd: ${first.subject}`,
+        body: `\n\n----- Message transféré -----\nDe : ${last.from_name || last.from_address}\nDate : ${formatMailDate(last.received_at)}\nObjet : ${first.subject}\n\n${last.body_text || last.snippet || ""}`,
       });
     }
     setComposeDraftId(undefined);
@@ -151,6 +184,20 @@ export default function MailPage() {
     if (!state.to.length && !state.cc.length && !state.bcc.length) return;
     if (!state.subject && !state.body) return;
     setSubmitting(true);
+
+    // Notify Dynamic Island - Sending
+    registerIsland({
+      id: "mail-sending",
+      type: "mail",
+      priority: 7,
+      content: {
+        title: "Envoi en cours...",
+        sender: state.to.join(", "),
+        subject: state.subject,
+        status: "sending",
+      },
+    });
+
     try {
       await sendMail({
         to: state.to,
@@ -165,13 +212,103 @@ export default function MailPage() {
         draft_id: composeDraftId,
         alias_id: state.aliasId,
       });
-      success(i18n("sent"));
+
+      // Update Dynamic Island - Sent
+      registerIsland({
+        id: "mail-sending",
+        type: "mail",
+        priority: 7,
+        duration: 3500,
+        content: {
+          title: "Message envoyé !",
+          sender: state.to.join(", "),
+          subject: state.subject,
+          status: "sent",
+        },
+      });
+
+      success(i18n("sent", "Message envoyé"));
       setComposeOpen(false);
       closeThread();
     } catch (err) {
+      registerIsland({
+        id: "mail-sending",
+        type: "mail",
+        priority: 7,
+        duration: 4000,
+        content: {
+          title: "Échec de l'envoi",
+          subject: String(err),
+          status: "error",
+        },
+      });
       toastError(String(err));
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleQuickReplySend(text: string) {
+    const last = activeThread?.[activeThread.length - 1];
+    const first = activeThread?.[0];
+    const primary = aliases.find((a) => a.is_primary) || aliases[0];
+    if (!last || !first || !primary) return;
+
+    registerIsland({
+      id: "mail-sending",
+      type: "mail",
+      priority: 7,
+      content: {
+        title: "Envoi de la réponse...",
+        sender: last.from_address,
+        subject: `Re: ${first.subject}`,
+        status: "sending",
+      },
+    });
+
+    try {
+      await sendMail({
+        to: [last.from_address],
+        cc: [],
+        bcc: [],
+        subject: first.subject.startsWith("Re:") ? first.subject : `Re: ${first.subject}`,
+        text,
+        html: text.replace(/\n/g, "<br>"),
+        in_reply_to: last.headers?.["Message-ID"] || undefined,
+        references: [...(last.headers?.["References"] ? [last.headers["References"]] : []), last.headers?.["Message-ID"] || ""].filter(Boolean),
+        alias_id: primary.id,
+      });
+
+      registerIsland({
+        id: "mail-sending",
+        type: "mail",
+        priority: 7,
+        duration: 3500,
+        content: {
+          title: "Réponse envoyée !",
+          sender: last.from_address,
+          status: "sent",
+        },
+      });
+
+      success("Réponse envoyée");
+      if (last.thread_id) {
+        const full = await getThread(last.thread_id);
+        setActiveThread(full);
+      }
+    } catch (err) {
+      registerIsland({
+        id: "mail-sending",
+        type: "mail",
+        priority: 7,
+        duration: 4000,
+        content: {
+          title: "Échec de l'envoi",
+          subject: String(err),
+          status: "error",
+        },
+      });
+      toastError(String(err));
     }
   }
 
@@ -188,7 +325,7 @@ export default function MailPage() {
         alias_id: state.aliasId,
       });
       if (draft?.id) setComposeDraftId(draft.id);
-      success(i18n("saved"));
+      success(i18n("saved", "Brouillon enregistré"));
     } catch (err) {
       toastError(String(err));
     }
@@ -202,24 +339,52 @@ export default function MailPage() {
     }
   }
 
-  async function handleArchive() {
-    const last = activeThread?.[activeThread?.length - 1 || 0];
-    if (!last) return;
+  async function handleToggleReadMsg(msg: MailMessage) {
     try {
-      await moveMessages([last.id], "archive");
-      success(i18n("moveTo"));
-      closeThread();
+      await setFlags([msg.id], { is_read: !msg.is_read });
     } catch (err) {
       toastError(String(err));
     }
   }
 
+  async function handleArchiveMsg(msg: MailMessage) {
+    try {
+      await moveMessages([msg.id], "archive");
+      success("Archivé");
+      if (activeThread?.some((m) => m.id === msg.id)) closeThread();
+    } catch (err) {
+      toastError(String(err));
+    }
+  }
+
+  async function handleTrashMsg(msg: MailMessage) {
+    try {
+      await moveMessages([msg.id], "trash");
+      success("Déplacé vers la corbeille");
+      if (activeThread?.some((m) => m.id === msg.id)) closeThread();
+    } catch (err) {
+      toastError(String(err));
+    }
+  }
+
+  async function handleArchive() {
+    const last = activeThread?.[activeThread?.length - 1 || 0];
+    if (!last) return;
+    await handleArchiveMsg(last);
+  }
+
   async function handleTrash() {
     const last = activeThread?.[activeThread?.length - 1 || 0];
     if (!last) return;
+    await handleTrashMsg(last);
+  }
+
+  async function handleSpam() {
+    const last = activeThread?.[activeThread?.length - 1 || 0];
+    if (!last) return;
     try {
-      await moveMessages([last.id], "trash");
-      success(i18n("moveTo"));
+      await moveMessages([last.id], "spam");
+      success("Signalé comme spam");
       closeThread();
     } catch (err) {
       toastError(String(err));
@@ -229,18 +394,24 @@ export default function MailPage() {
   async function handleToggleRead() {
     const last = activeThread?.[activeThread?.length - 1 || 0];
     if (!last) return;
-    try {
-      await setFlags([last.id], { is_read: !last.is_read });
-    } catch (err) {
-      toastError(String(err));
-    }
+    await handleToggleReadMsg(last);
   }
 
   async function handleToggleStarThread() {
     const last = activeThread?.[activeThread?.length - 1 || 0];
     if (!last) return;
+    await handleToggleStar(last);
+  }
+
+  async function handleBulkAction(action: "read" | "unread" | "star" | "unstar" | "archive" | "trash", messageIds: string[]) {
     try {
-      await setFlags([last.id], { is_starred: !last.is_starred });
+      if (action === "read") await setFlags(messageIds, { is_read: true });
+      else if (action === "unread") await setFlags(messageIds, { is_read: false });
+      else if (action === "star") await setFlags(messageIds, { is_starred: true });
+      else if (action === "unstar") await setFlags(messageIds, { is_starred: false });
+      else if (action === "archive") await moveMessages(messageIds, "archive");
+      else if (action === "trash") await moveMessages(messageIds, "trash");
+      success("Actions groupées appliquées");
     } catch (err) {
       toastError(String(err));
     }
@@ -256,12 +427,69 @@ export default function MailPage() {
     }
   }
 
+  // Keyboard Navigation & Shortcuts
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      const target = e.target as HTMLElement;
+      const isInput = target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable;
+
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "u") {
+        e.preventDefault();
+        openCompose("new");
+        return;
+      }
+
+      if (isInput) return;
+
+      if (e.key === "c") {
+        e.preventDefault();
+        openCompose("new");
+      } else if (e.key === "r" && activeThread) {
+        e.preventDefault();
+        openCompose("reply");
+      } else if (e.key === "e" && activeThread) {
+        e.preventDefault();
+        handleArchive();
+      } else if ((e.key === "d" || e.key === "#") && activeThread) {
+        e.preventDefault();
+        handleTrash();
+      } else if (e.key === "s" && activeThread) {
+        e.preventDefault();
+        handleToggleStarThread();
+      } else if (e.key === "Escape") {
+        if (composeOpen) setComposeOpen(false);
+        else if (activeThread) closeThread();
+      } else if (e.key === "j" || e.key === "ArrowDown") {
+        e.preventDefault();
+        const currentIndex = groupedFolderMessages.findIndex(
+          (t) => (t[0]?.thread_id || t[0]?.id) === activeThreadId
+        );
+        if (currentIndex < groupedFolderMessages.length - 1) {
+          openThread(groupedFolderMessages[currentIndex + 1]);
+        } else if (currentIndex === -1 && groupedFolderMessages.length > 0) {
+          openThread(groupedFolderMessages[0]);
+        }
+      } else if (e.key === "k" || e.key === "ArrowUp") {
+        e.preventDefault();
+        const currentIndex = groupedFolderMessages.findIndex(
+          (t) => (t[0]?.thread_id || t[0]?.id) === activeThreadId
+        );
+        if (currentIndex > 0) {
+          openThread(groupedFolderMessages[currentIndex - 1]);
+        }
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeThread, groupedFolderMessages, composeOpen]);
+
   const activeThreadId = activeThread?.[0]?.thread_id || activeThread?.[0]?.id;
 
   if (aliasesLoading) {
     return (
       <div className="flex h-full min-h-0 w-full items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-600 border-t-purple-500" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--panel-border)] border-t-[var(--accent-primary)]" />
       </div>
     );
   }
@@ -278,7 +506,8 @@ export default function MailPage() {
   }
 
   return (
-    <div className="flex h-full min-h-0 w-full gap-3 overflow-hidden">
+    <div className="flex h-full min-h-0 w-full gap-3 overflow-hidden p-2 select-none">
+      {/* 1. Sidebar */}
       <MailSidebar
         active={folder as MailFolder}
         onChange={handleFolderChange}
@@ -287,12 +516,16 @@ export default function MailPage() {
         onCompose={() => openCompose("new")}
         canCompose={aliases.length > 0}
         aliases={aliases}
+        labels={labels}
+        activeLabel={activeLabel}
+        onSelectLabel={handleSelectLabel}
         createAlias={createAlias}
         updateAlias={updateAlias}
       />
 
+      {/* 2. Mail Thread List */}
       <MailThreadList
-        title={i18n(folder) || folder}
+        title={activeLabel ? `Étiquette : ${activeLabel}` : i18n(folder, folder)}
         grouped={groupedFolderMessages}
         activeThreadId={activeThreadId}
         loading={loading}
@@ -300,18 +533,27 @@ export default function MailPage() {
         onSearch={setSearch}
         onSelect={openThread}
         onToggleStar={handleToggleStar}
+        onToggleRead={handleToggleReadMsg}
+        onArchive={handleArchiveMsg}
+        onTrash={handleTrashMsg}
+        onBulkAction={handleBulkAction}
       />
 
+      {/* 3. Reading Pane */}
       <MailDetailView
         thread={activeThread}
         onReply={() => openCompose("reply")}
+        onReplyAll={() => openCompose("replyAll")}
         onForward={() => openCompose("forward")}
         onArchive={handleArchive}
         onTrash={handleTrash}
+        onSpam={handleSpam}
         onToggleRead={handleToggleRead}
         onToggleStar={handleToggleStarThread}
+        onQuickReplySend={handleQuickReplySend}
       />
 
+      {/* 4. Modern Composer */}
       <ComposeMailModal
         open={composeOpen}
         onClose={() => setComposeOpen(false)}

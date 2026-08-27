@@ -7206,6 +7206,52 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.69",
+  date: "2026-08-27",
+  title: "Clarification Visuelle & État 'Lu' dans le Centre de Notifications",
+  items: [
+    "Atténuation visuelle instantanée des notifications lues (fond adouci, retrait de la barre d'alerte, coche double).",
+    "Explication du fonctionnement des filtres ('Toutes' = historique complet, 'Non lues' = éléments actifs).",
+    "Validation : build Next.js 105/105 pages, 100% tests unitaires, 0 erreur.",
+    "Version affichée : v1.10.69.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.69",
+  date: "2026-08-27",
+  title: "Visual Read State & Distinction in Notification Center",
+  items: [
+    "Instant visual dimming and double-checkmark indicator for read notifications.",
+    "Clear distinction between 'All' history tab and 'Unread' active filter.",
+    "Validation: Next.js 105/105 pages build, 100% unit tests passed, 0 errors.",
+    "Version badge: v1.10.69.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.69",
+  date: "2026-08-27",
+  title: "Clarificación visual de notificaciones leídas",
+  items: [
+    "Atenuación visual de notificaciones leídas.",
+    "Validación : build, lint, tests.",
+    "Versión : v1.10.69.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.69",
+  date: "2026-08-27",
+  title: "Visuelle Unterscheidung gelesener Benachrichtigungen",
+  items: [
+    "Gelesene Mitteilungen werden sofort optisch gedimmt.",
+    "Validierung: build, lint, tests.",
+    "Version: v1.10.69.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.68",
   date: "2026-08-27",
   title: "Animation Ultra-Fluide des Onglets de Catégories dans Connexions",

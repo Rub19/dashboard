@@ -164,13 +164,13 @@ export default function NotificationItem({
       onClick={() => onOpen?.(n)}
       className={cn(
         "group relative flex flex-col gap-2 rounded-2xl border p-3.5 transition-all duration-150 cursor-pointer shadow-xs",
-        isCritical
-          ? "border-l-4 border-l-rose-500 border-rose-500/30 bg-rose-950/25 hover:bg-rose-950/35"
-          : isImportant
-          ? "border-l-4 border-l-amber-500 border-amber-500/30 bg-amber-950/20 hover:bg-amber-950/30"
-          : isUnread
-          ? "border-l-4 border-l-[var(--accent-primary)] border-[var(--panel-border)] bg-[var(--surface-raised)]/70 hover:bg-[var(--surface-raised)]"
-          : "border-[var(--panel-border)]/60 bg-[var(--surface-raised)]/40 hover:bg-[var(--surface-raised)]/70 opacity-80"
+        isUnread
+          ? isCritical
+            ? "border-l-4 border-l-rose-500 border-rose-500/30 bg-rose-950/25 hover:bg-rose-950/35"
+            : isImportant
+            ? "border-l-4 border-l-amber-500 border-amber-500/30 bg-amber-950/20 hover:bg-amber-950/30"
+            : "border-l-4 border-l-[var(--accent-primary)] border-[var(--panel-border)] bg-[var(--surface-raised)]/70 hover:bg-[var(--surface-raised)]"
+          : "border-[var(--panel-border)]/40 bg-[var(--surface-raised)]/25 hover:bg-[var(--surface-raised)]/50 opacity-60 hover:opacity-90"
       )}
     >
       {/* Top Header Row: Icon + Title + Status Badges + Action Buttons */}
@@ -180,19 +180,24 @@ export default function NotificationItem({
           <div
             className={cn(
               "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border shadow-xs",
-              isCritical
-                ? "border-rose-500/40 bg-rose-500/20"
-                : isImportant
-                ? "border-amber-500/40 bg-amber-500/20"
-                : "border-[var(--panel-border)] bg-[var(--surface-raised)]"
+              isUnread
+                ? isCritical
+                  ? "border-rose-500/40 bg-rose-500/20"
+                  : isImportant
+                  ? "border-amber-500/40 bg-amber-500/20"
+                  : "border-[var(--panel-border)] bg-[var(--surface-raised)]"
+                : "border-[var(--panel-border)]/40 bg-white/[0.02]"
             )}
           >
-            {getIcon(n.category, n.priority)}
+            {getIcon(n.category, isUnread ? n.priority : undefined)}
           </div>
 
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
-              <h4 className="text-xs font-bold text-[var(--text-primary)] leading-snug break-words">
+              <h4 className={cn(
+                "text-xs font-bold leading-snug break-words",
+                isUnread ? "text-[var(--text-primary)]" : "text-[var(--text-muted)] line-through opacity-75"
+              )}>
                 {n.title || "Notification ETHONE"}
               </h4>
               {isUnread && (
@@ -215,14 +220,23 @@ export default function NotificationItem({
 
         {/* Right: Action Buttons Toolbar */}
         <div className="flex items-center gap-1 shrink-0">
-          <button
-            type="button"
-            onClick={handleMarkRead}
-            className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/25 transition-all active:scale-95 cursor-pointer shadow-xs"
-            title="Marquer comme lu et masquer"
-          >
-            <Check className="h-3.5 w-3.5" />
-          </button>
+          {isUnread ? (
+            <button
+              type="button"
+              onClick={handleMarkRead}
+              className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--accent-primary)]/40 bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/25 transition-all active:scale-95 cursor-pointer shadow-xs"
+              title="Marquer comme lu et masquer"
+            >
+              <Check className="h-3.5 w-3.5" />
+            </button>
+          ) : (
+            <span
+              className="flex h-7 w-7 items-center justify-center rounded-lg text-emerald-400/60"
+              title="Déjà lue"
+            >
+              <CheckCheck className="h-3.5 w-3.5" />
+            </span>
+          )}
 
           <button
             type="button"

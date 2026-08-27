@@ -152,7 +152,7 @@ function Dock() {
 
     try {
       const scrollables = document.querySelectorAll<HTMLElement>(
-        "#main-content, #main-content *, .overflow-y-auto, .overflow-y-scroll, .overflow-auto, [data-v8-scroll], .os-scroll, main, main *"
+        "#main-content, .overflow-y-auto, [data-v8-scroll], main, .os-scroll"
       );
       scrollables.forEach((el) => {
         if (el && el.scrollTop > 0) {
@@ -181,7 +181,7 @@ function Dock() {
   }
 
   const dockButton =
-    "group/dock-item relative flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl text-[var(--text-muted)] transition-all duration-200 ease-out hover:bg-white/[0.08] hover:text-white hover:scale-115 active:scale-95";
+    "group/dock-item relative flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl text-[var(--text-muted)] transition-all duration-150 ease-out hover:bg-white/[0.08] hover:text-white hover:scale-110 active:scale-95 will-change-transform";
 
   return (
     <>

@@ -46,10 +46,11 @@ const RADIUS = 32;
 const PILL_WIDTH = 130;
 const PILL_HEIGHT = 40;
 
-/** Tracks the natural size of the content so the shell can spring to it. */
+/** Tracks the natural size of the content so the shell can spring to it with zero layout jank. */
 function useContentSize() {
   const ref = useRef<HTMLDivElement | null>(null);
   const [size, setSize] = useState<{ width: number; height: number } | null>(null);
+  const rafId = useRef<number | null>(null);
 
   useLayoutEffect(() => {
     const el = ref.current;
@@ -60,11 +61,22 @@ function useContentSize() {
   useEffect(() => {
     const el = ref.current;
     if (!el || typeof ResizeObserver === "undefined") return;
-    const observer = new ResizeObserver(() => {
-      setSize({ width: el.offsetWidth, height: el.offsetHeight });
+    const observer = new ResizeObserver((entries) => {
+      if (rafId.current) cancelAnimationFrame(rafId.current);
+      rafId.current = requestAnimationFrame(() => {
+        const entry = entries[0];
+        if (entry) {
+          const w = Math.round(entry.contentRect.width || el.offsetWidth);
+          const h = Math.round(entry.contentRect.height || el.offsetHeight);
+          setSize((prev) => (prev?.width === w && prev?.height === h ? prev : { width: w, height: h }));
+        }
+      });
     });
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (rafId.current) cancelAnimationFrame(rafId.current);
+    };
   }, []);
 
   return [ref, size] as const;
@@ -89,26 +101,25 @@ function Slot({
       initial={
         reduce
           ? { opacity: 0 }
-          : { opacity: 0, scale: 0.94, y: -6, filter: "blur(4px)" }
+          : { opacity: 0, scale: 0.96, y: -4 }
       }
       animate={
         reduce
           ? { opacity: 1 }
-          : { opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }
+          : { opacity: 1, scale: 1, y: 0 }
       }
       exit={
         reduce
-          ? { opacity: 0, transition: { duration: 0.1 } }
+          ? { opacity: 0, transition: { duration: 0.08 } }
           : {
               opacity: 0,
-              scale: 0.94,
-              y: -4,
-              filter: "blur(3px)",
+              scale: 0.96,
+              y: -3,
               transition: { duration: 0.1, ease: EASE_OUT },
             }
       }
-      transition={reduce ? { duration: 0.15 } : CONTENT_SPRING}
-      style={{ transformOrigin: "top center" }}
+      transition={reduce ? { duration: 0.12 } : CONTENT_SPRING}
+      style={{ transformOrigin: "top center", willChange: "transform, opacity" }}
       className={cn("flex items-center justify-center", className)}
     >
       {children}

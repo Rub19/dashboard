@@ -123,14 +123,39 @@ select::-ms-expand {
   --v8-spotlight-x: 50%;
   --v8-spotlight-y: 50%;
 
-  --theme-transition: 0.22s;
+  /* ETHONE Unified Design Motion System */
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  --motion-micro: 120ms;
+  --motion-short: 180ms;
+  --motion-normal: 240ms;
+  --motion-emphasis: 320ms;
+  --theme-transition: 0.2s;
 
   color-scheme: dark;
-  transition:
-    background-color var(--theme-transition) ease,
-    border-color var(--theme-transition) ease,
-    color var(--theme-transition) ease,
-    box-shadow var(--theme-transition) ease;
+}
+
+body {
+  transition: background-color var(--theme-transition) ease;
+}
+
+/* GPU Acceleration & Layout Containment Utilities */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-composite {
+  will-change: transform, opacity;
+}
+
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 300px;
 }
 
 @media (prefers-reduced-motion: reduce) {

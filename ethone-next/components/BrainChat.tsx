@@ -82,8 +82,28 @@ export default function BrainChat({
     lastMessageCountRef.current = brain.messages.length;
   }, [brain.messages, voice.isActive, voice]);
 
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const isAutoScrollEnabledRef = useRef(true);
+  const scrollRafRef = useRef<number | null>(null);
+
+  const handleScroll = useCallback(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const isNearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 140;
+    isAutoScrollEnabledRef.current = isNearBottom;
+  }, []);
+
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (!isAutoScrollEnabledRef.current) return;
+    if (scrollRafRef.current) cancelAnimationFrame(scrollRafRef.current);
+    scrollRafRef.current = requestAnimationFrame(() => {
+      if (bottomRef.current) {
+        bottomRef.current.scrollIntoView({ behavior: brain.loading ? "auto" : "smooth" });
+      }
+    });
+    return () => {
+      if (scrollRafRef.current) cancelAnimationFrame(scrollRafRef.current);
+    };
   }, [brain.messages, brain.loading]);
 
   const handleCopy = useCallback(async (text: string, id: string) => {
@@ -202,7 +222,11 @@ export default function BrainChat({
       </header>
 
       {/* Messages Scroll Area */}
-      <div className="flex-1 overflow-y-auto os-scroll p-4 sm:p-6 space-y-6 max-w-4xl mx-auto w-full">
+      <div
+        ref={scrollContainerRef}
+        onScroll={handleScroll}
+        className="flex-1 overflow-y-auto os-scroll p-4 sm:p-6 space-y-6 max-w-4xl mx-auto w-full overscroll-contain"
+      >
         {brain.messages.length === 0 ? (
           renderEmptyState()
         ) : (

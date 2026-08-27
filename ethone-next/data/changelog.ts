@@ -7206,6 +7206,52 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.90",
+  date: "2026-08-27",
+  title: "Passe Globale de Fluidité Ultra, Performance 60 FPS & Finition UX",
+  items: [
+    "Optimisation de la Dynamic Island : élimination du re-render chaque seconde grâce à IslandLiveClock mémoïsé et suppression des filtres flou pour des transitions 60 FPS pures.",
+    "Refonte de l'autoscroll Brain Chat avec conscience du scroll utilisateur et synchronisation RAF anti-saccades.",
+    "Optimisation du Dock : nettoyage du sélecteur DOM scroll-to-top et accélération matérielle will-change-transform.",
+    "Intégration du Design Motion System ETHONE dans globals.css (--ease-spring, --ease-out-expo, timings standardisés) et suppression des recalculs de style superflus.",
+    "Version affichée : v1.10.90.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.90",
+  date: "2026-08-27",
+  title: "Ultra Fluidity, 60 FPS Performance & UX Polish Global Pass",
+  items: [
+    "Optimized Dynamic Island: eliminated 1s re-render cascades via memoized IslandLiveClock and pure GPU transforms.",
+    "Reworked Brain Chat autoscroll with user-scroll awareness and RAF synchronization.",
+    "Dock performance enhancements: cleaned up DOM traversal and added will-change hardware acceleration.",
+    "Integrated unified ETHONE Design Motion System tokens in globals.css and eliminated cascading style recalcs.",
+    "Version badge: v1.10.90.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.90",
+  date: "2026-08-27",
+  title: "Pase global de fluidez ultra, rendimiento 60 FPS y acabado UX",
+  items: [
+    "Optimización de Dynamic Island, Dock, Brain Chat y tokens de animación para máxima respuesta.",
+    "Versión: v1.10.90.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.90",
+  date: "2026-08-27",
+  title: "Ultra-Flüssigkeit, 60 FPS Performance & UX-Feinschliff",
+  items: [
+    "Optimierung von Dynamic Island, Dock, Brain Chat und einheitliches Motion-System für native Reaktivität.",
+    "Version: v1.10.90.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.89",
   date: "2026-08-27",
   title: "Résolution Météo & Fallback Intelligent Open-Meteo Direct",

@@ -7206,6 +7206,62 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.32",
+  date: "2026-08-27",
+  title: "Audit animations : login, settings, modals, inputs",
+  items: [
+    "Audit et correction des animations sur la page de login (entrance, transition formulaire, OTP, focus clavier).",
+    "Ajustement des transitions dans Settings (changement de catégorie, navigation, sections).",
+    "Fluidité des modales, onglets, inputs et StatusBar via tokens de easing et `useReducedMotion`.",
+    "Nettoyage de `transition-all` et remplacement par des transitions ciblées.",
+    "Validation : build, lint.",
+    "Version affichée : v1.10.32.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.32",
+  date: "2026-08-27",
+  title: "Animation audit: login, settings, modals, inputs",
+  items: [
+    "Audited and fixed animations on the login page (entrance, form swap, OTP, keyboard focus).",
+    "Tweaked Settings transitions (category change, navigation, sections).",
+    "Improved fluidity for modals, tabs, inputs and StatusBar using easing tokens and `useReducedMotion`.",
+    "Replaced `transition-all` with targeted transitions.",
+    "Validation: build, lint.",
+    "Version badge: v1.10.32.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.32",
+  date: "2026-08-27",
+  title: "Auditoría de animaciones : login, ajustes, modales, inputs",
+  items: [
+    "Auditoría y corrección de animaciones en la página de login (entrada, cambio de formulario, OTP, foco teclado).",
+    "Ajuste de transiciones en Ajustes (cambio de categoría, navegación, secciones).",
+    "Fluidez de modales, pestañas, inputs y StatusBar con tokens de easing y `useReducedMotion`.",
+    "Limpieza de `transition-all` y reemplazo por transiciones dirigidas.",
+    "Validación : build, lint.",
+    "Versión : v1.10.32.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.32",
+  date: "2026-08-27",
+  title: "Animations-Audit: Login, Einstellungen, Modals, Inputs",
+  items: [
+    "Animationen auf der Login-Seite geprüft und korrigiert (Eingang, Formularwechsel, OTP, Tastaturfokus).",
+    "Einstellungen-Übergänge angepasst (Kategoriewechsel, Navigation, Abschnitte).",
+    "Flüssigkeit von Modals, Tabs, Inputs und StatusBar durch Easing-Tokens und `useReducedMotion`.",
+    "`transition-all` durch gezielte Übergänge ersetzt.",
+    "Validierung: build, lint.",
+    "Version: v1.10.32.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.31",
   date: "2026-08-27",
   title: "Fix déconnexion connexions OAuth",

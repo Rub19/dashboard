@@ -118,7 +118,7 @@ export default function SettingsNavigation({
         onClick={() => onSelect(cat.id)}
         onKeyDown={handleKeyDown}
         className={cn(
-          "group flex min-h-[44px] w-full items-start gap-3 rounded-[var(--panel-radius)] px-3 py-2 text-left text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
+          "group flex min-h-[44px] w-full items-start gap-3 rounded-[var(--panel-radius)] px-3 py-2 text-left text-sm font-medium transition-[color,background-color,border-color] duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
           isActive
             ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
             : "text-[var(--text-muted)] hover:bg-[var(--surface-hover)]/30 hover:text-[var(--text-primary)]"
@@ -174,7 +174,7 @@ export default function SettingsNavigation({
               onClick={() => onSelect(cat.id)}
               onKeyDown={handleKeyDown}
               className={cn(
-                "flex shrink-0 snap-start items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] min-h-[44px] min-w-[44px] touch-manipulation",
+                "flex shrink-0 snap-start items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-[color,background-color,border-color] duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] min-h-[44px] min-w-[44px] touch-manipulation",
                 isActive
                   ? "border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
                   : "border-transparent text-[var(--text-muted)] hover:bg-[var(--surface-hover)]/30 hover:text-[var(--text-primary)]"

@@ -2,11 +2,12 @@
 
 import { useEffect, useId, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { X } from "lucide-react";
 import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 import Button from "@/components/ui/Button";
 import { hapticLightImpact } from "@/lib/haptics";
+import { EASE_OUT } from "@/lib/ease";
 
 export type ModalProps = {
   isOpen: boolean;
@@ -72,6 +73,7 @@ export default function Modal({
   const [mounted, setMounted] = useState(false);
   const titleId = useId();
   const descId = useId();
+  const reduce = useReducedMotion();
   const trapRef = useFocusTrap<HTMLDivElement>(isOpen);
 
   useEffect(() => {
@@ -103,7 +105,7 @@ export default function Modal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.15 }}
+          transition={reduce ? { duration: 0 } : { duration: 0.18, ease: EASE_OUT }}
           onClick={() => closeOnBackdrop && onClose()}
           className={`fixed inset-0 z-[var(--z-modal)] flex justify-center bg-[var(--background)]/70 p-4 backdrop-blur-md ${positionOuter[position]}`}
         >
@@ -113,10 +115,10 @@ export default function Modal({
             aria-modal="true"
             aria-labelledby={titleId}
             aria-describedby={description ? descId : undefined}
-            initial={{ scale: 0.95, y: 12, opacity: 0 }}
+            initial={{ scale: 0.98, y: 8, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
-            exit={{ scale: 0.95, y: 12, opacity: 0 }}
-            transition={{ duration: 0.15, ease: "easeOut" }}
+            exit={{ scale: 0.98, y: 8, opacity: 0 }}
+            transition={reduce ? { duration: 0 } : { duration: 0.18, ease: EASE_OUT }}
             onClick={(event) => event.stopPropagation()}
             className={`liquid-glass-modal relative w-full overflow-hidden p-4 sm:p-6 ${positionInner[position]} ${fullScreen ? "h-[calc(100dvh-2rem)] sm:h-auto sm:max-h-[90vh]" : "max-h-[90dvh] sm:max-h-[90vh]"} ${fullScreen ? "w-full sm:max-w-6xl" : sizeMap[size]} ${className}`}
           >

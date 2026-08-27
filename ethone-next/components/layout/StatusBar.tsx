@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter, usePathname } from "next/navigation";
 import { useAnimatedSidebar } from "@/components/motion/animated-sidebar";
+import { EASE_DRAWER } from "@/lib/ease";
 import {
   CheckCircle2,
   Loader2,
@@ -237,7 +238,7 @@ export default function StatusBar() {
       animate={{
         left: open && !isMobile ? "var(--sidebar-width)" : "0rem",
       }}
-      transition={{ duration: 0.32, ease: [0.32, 0.72, 0, 1] }}
+      transition={{ duration: 0.32, ease: EASE_DRAWER }}
     >
       <div className="flex h-full w-full items-center justify-between">
         <div className="pointer-events-auto flex min-w-0 items-center gap-2 px-0 py-0">

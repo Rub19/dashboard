@@ -10,7 +10,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { EASE_OUT } from "@/lib/ease";
+import { EASE_OUT, SPRING_LAYOUT } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 
 type Variant = "pill" | "underline" | "segment";
@@ -30,12 +30,7 @@ function useTabs() {
   return ctx;
 }
 
-const transition: Transition = {
-  type: "spring",
-  stiffness: 170,
-  damping: 24,
-  mass: 1.2,
-};
+const transition: Transition = SPRING_LAYOUT;
 
 export function Tabs({
   defaultValue,
@@ -189,7 +184,7 @@ export function TabsContent({ value, children, className }: { value: string; chi
       key={value}
       initial={{ opacity: 0, y: reduce ? 0 : 4 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.18, ease: EASE_OUT }}
+      transition={{ duration: 0.15, ease: EASE_OUT }}
       className={cn("mt-4", className)}
     >
       {children}

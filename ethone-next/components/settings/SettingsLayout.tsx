@@ -92,7 +92,7 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
       window.setTimeout(() => {
         setIsNavigating(false);
         scrollToCategory(id);
-      }, 120);
+      }, 300);
     },
     [activeCategory, router, scrollToCategory]
   );
@@ -372,8 +372,8 @@ export default function SettingsLayout({ initialSection }: { initialSection?: st
 
           <div
             className={cn(
-              "transition-opacity duration-250 ease-out",
-              isNavigating ? "opacity-90" : "opacity-100"
+              "transition-opacity duration-300 ease-out",
+              isNavigating ? "opacity-60" : "opacity-100"
             )}
           >
             <SettingsContent

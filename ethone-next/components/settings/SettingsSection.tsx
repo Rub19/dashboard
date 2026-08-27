@@ -1,7 +1,7 @@
 "use client";
 
 import { memo } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Icon } from "@/lib/icons";
 
 function SettingsSection({
@@ -19,15 +19,16 @@ function SettingsSection({
   modifiedCount?: number;
   visible?: boolean;
 }) {
+  const reduced = useReducedMotion();
   if (!visible) return null;
 
   return (
     <motion.div
       id={`section-${id}`}
       data-section={id}
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: reduced ? 0 : 0.25, ease: [0.16, 1, 0.3, 1] }}
       className="overflow-hidden rounded-2xl border border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-sm backdrop-blur-[var(--panel-blur)]"
     >
       <div className="flex items-center justify-between border-b border-[var(--panel-border)] px-4 py-3">

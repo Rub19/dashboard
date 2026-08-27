@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## v1.10.32 — 2026-08-27
+
+**ETHONE — Audit animations : login, settings, modals, inputs**
+
+- Audit et correction des animations sur la page de login (entrance, transition formulaire, OTP, focus clavier).
+- Ajustement des transitions dans Settings (changement de catégorie, navigation, sections).
+- Fluidité des modales, onglets, inputs et StatusBar via tokens de easing et `useReducedMotion`.
+- Nettoyage de `transition-all` et remplacement par des transitions ciblées.
+- Validation : `npm run build`, `npm run lint`.
+
 ## v1.10.31 — 2026-08-27
 
 **ETHONE — Fix déconnexion connexions OAuth**

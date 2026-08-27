@@ -77,6 +77,10 @@ function OtpInput({ value, onChange, disabled, error }: OtpInputProps) {
     }
     if (e.key === "ArrowLeft" && index > 0) inputsRef.current[index - 1]?.focus();
     if (e.key === "ArrowRight" && index < 5) inputsRef.current[index + 1]?.focus();
+    if (e.key === " " || e.code === "Space") {
+      e.preventDefault();
+      return;
+    }
   };
 
   const handlePaste = (e: ClipboardEvent<HTMLInputElement>) => {
@@ -183,7 +187,8 @@ export default function LoginPage() {
   const cardRef = useRef<HTMLDivElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const didMountRef = useRef(false);
-  const keyboardOpen = visual.height > 0 && visual.height < 640;
+  const viewportHeight = typeof window !== "undefined" ? window.innerHeight : visual.height;
+  const keyboardOpen = visual.height > 0 && visual.height < viewportHeight * 0.75;
   const isMobile = useIsMobile(768);
   const isLandscape = useMediaQuery("(orientation: landscape)");
   const compactLandscape = isMobile && isLandscape;
@@ -255,17 +260,17 @@ export default function LoginPage() {
     const card = cardRef.current;
     const onFocus = (e: Event) => {
       const target = e.target as HTMLElement | null;
-      if (!target) return;
+      if (!target || !keyboardOpen) return;
       const tag = target.tagName.toLowerCase();
       if (tag === "input" || tag === "textarea" || tag === "button") {
         requestAnimationFrame(() => {
-          target.scrollIntoView({ block: "nearest", behavior: "smooth" });
+          target.scrollIntoView({ block: "center", behavior: "smooth" });
         });
       }
     };
     card.addEventListener("focusin", onFocus);
     return () => card.removeEventListener("focusin", onFocus);
-  }, []);
+  }, [keyboardOpen]);
 
   const resetForm = useCallback(() => {
     setAuthState("idle");
@@ -529,7 +534,7 @@ export default function LoginPage() {
             ref={cardRef}
             initial={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : 20, scale: reduced ? 1 : 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            transition={{ duration: reduced ? 0 : 0.35, ease: [0.16, 1, 0.3, 1] }}
             className={cn("relative overflow-hidden rounded-[2rem] border border-[var(--border)] bg-[var(--surface)]/85 p-6 backdrop-blur-2xl sm:p-8 lg:p-10", compactLandscape && "p-4 sm:p-5 lg:p-5")}
             style={{ boxShadow: "inset 0 1px 1px rgba(255,255,255,0.06), 0 25px 50px -12px rgba(0,0,0,0.5)" }}
           >
@@ -590,7 +595,7 @@ export default function LoginPage() {
                   initial={{ opacity: 0, height: 0, y: -8 }}
                   animate={{ opacity: 1, height: "auto", y: 0 }}
                   exit={{ opacity: 0, height: 0, y: -8 }}
-                  transition={{ duration: reduced ? 0 : 0.2 }}
+                  transition={{ duration: reduced ? 0 : 0.18, ease: [0.16, 1, 0.3, 1] }}
                   className={cn("mt-5 overflow-hidden", compactLandscape && "mt-3")}
                 >
                   <div className="flex items-start gap-2 rounded-xl border border-[var(--danger)]/20 bg-[var(--danger)]/10 p-3 text-xs text-[var(--danger)]">
@@ -606,10 +611,10 @@ export default function LoginPage() {
                 key={`${mode}-${otpStep}`}
                 onSubmit={handleSubmit}
                 noValidate
-                initial={{ opacity: reduced ? 1 : 0, x: reduced ? 0 : 16 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: reduced ? 1 : 0, x: reduced ? 0 : -16 }}
-                transition={{ duration: reduced ? 0 : 0.2, ease: "easeOut" }}
+                initial={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : -12 }}
+                transition={{ duration: reduced ? 0 : 0.2, ease: [0.16, 1, 0.3, 1] }}
                 className={cn("mt-5 space-y-4", compactLandscape && "mt-3 space-y-3")}
               >
               <div className="space-y-1.5">
@@ -642,7 +647,7 @@ export default function LoginPage() {
                   initial={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : -12 }}
-                  transition={{ duration: reduced ? 0 : 0.2 }}
+                  transition={{ duration: reduced ? 0 : 0.18, ease: [0.16, 1, 0.3, 1] }}
                   className="space-y-4"
                 >
                   <div className="text-center">
@@ -662,7 +667,7 @@ export default function LoginPage() {
               )}
 
               {(mode === "password" || (mode === "otp" && otpStep === "email")) && (
-                <motion.div key="password" initial={{ opacity: reduced ? 1 : 0 }} animate={{ opacity: 1 }} className="space-y-4">
+                <motion.div key="password" initial={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : 4 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reduced ? 0 : 0.15, ease: [0.16, 1, 0.3, 1] }} className="space-y-4">
                   {mode === "password" && (
                     <div className="space-y-1.5">
                       <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-password">{i18n("password", "Mot de passe")}</label>
@@ -703,7 +708,7 @@ export default function LoginPage() {
               )}
 
               {mode === "register" && (
-                <motion.div key="register" initial={{ opacity: reduced ? 1 : 0 }} animate={{ opacity: 1 }} className="space-y-4">
+                <motion.div key="register" initial={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : 4 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reduced ? 0 : 0.15, ease: [0.16, 1, 0.3, 1] }} className="space-y-4">
                   <div className="space-y-1.5">
                     <label className="block text-xs font-medium text-[var(--text-muted)]" htmlFor="auth-username">{i18n("username", "Nom d'utilisateur")}</label>
                     <Input id="auth-username" name="username" type="text" inputSize="large" autoComplete="username" autoCorrect="off" autoCapitalize="off" spellCheck="false" enterKeyHint="next" icon="user" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="rub19" disabled={isLoading || isSuccess} inputClassName="text-base sm:text-sm" />

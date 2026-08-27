@@ -468,7 +468,7 @@ export default function LoginPage() {
                         {active && (
                           <motion.span
                             layoutId="activeAuthTab"
-                            transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                             className="absolute inset-0 z-0 rounded-xl bg-white/10 border border-white/15 shadow-sm"
                           />
                         )}
@@ -486,10 +486,10 @@ export default function LoginPage() {
                 <motion.div
                   key="error"
                   role="alert"
-                  initial={{ opacity: 0, height: 0, y: -6 }}
+                  initial={{ opacity: 0, height: 0, y: -4 }}
                   animate={{ opacity: 1, height: "auto", y: 0 }}
-                  exit={{ opacity: 0, height: 0, y: -6 }}
-                  transition={{ duration: 0.18 }}
+                  exit={{ opacity: 0, height: 0, y: -4 }}
+                  transition={{ duration: 0.16, ease: "easeOut" }}
                   className="mt-4 overflow-hidden"
                 >
                   <div className="flex items-start gap-2.5 rounded-2xl border border-rose-500/20 bg-rose-500/10 p-3.5 text-xs text-rose-300">
@@ -502,16 +502,16 @@ export default function LoginPage() {
 
             {/* Dynamic Form Content */}
             <div className="mt-5">
-              <AnimatePresence mode="wait">
+              <AnimatePresence mode="wait" initial={false}>
                 {/* 1. PASSWORD LOGIN FLOW */}
                 {mode === "password" && (
                   <motion.form
                     key="password-flow"
                     onSubmit={handlePasswordLogin}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 10 }}
-                    transition={{ duration: 0.18 }}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
                     className="space-y-4"
                   >
                     <AuthInputField
@@ -609,10 +609,10 @@ export default function LoginPage() {
                   <motion.form
                     key="otp-email-flow"
                     onSubmit={handleSendOtp}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 10 }}
-                    transition={{ duration: 0.18 }}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
                     className="space-y-4"
                   >
                     <AuthInputField
@@ -666,10 +666,10 @@ export default function LoginPage() {
                 {mode === "otp" && otpStep === "code" && (
                   <motion.div
                     key="otp-code-flow"
-                    initial={{ opacity: 0, scale: 0.96 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.96 }}
-                    transition={{ duration: 0.2 }}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
                     className="space-y-5"
                   >
                     <OtpCodeInput
@@ -749,10 +749,10 @@ export default function LoginPage() {
                   <motion.form
                     key="register-flow"
                     onSubmit={handleRegister}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 10 }}
-                    transition={{ duration: 0.18 }}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
                     className="space-y-3.5"
                   >
                     <AuthInputField

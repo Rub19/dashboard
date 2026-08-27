@@ -7206,6 +7206,50 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.99",
+  date: "2026-08-27",
+  title: "Authentification : Transitions 120 FPS Ultra-Fluides sans Saccade",
+  items: [
+    "Optimisation complète des transitions entre les onglets 'Mot de passe', 'Code OTP' et 'S'inscrire'.",
+    "Remplacement des ressorts décalés par des courbes de Bézier ultra-fluides [0.16, 1, 0.3, 1] et suppression des délais de transition bloquants.",
+    "Transitions instantanées et naturelles lors du passage d'une étape OTP à l'autre.",
+    "Version affichée : v1.10.99.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.99",
+  date: "2026-08-27",
+  title: "Authentication: Ultra-Smooth 120 FPS Tab Transitions",
+  items: [
+    "Completely polished transitions across 'Password', 'OTP Code', and 'Register' modes.",
+    "Replaced heavy springs with buttery smooth cubic-bezier easing [0.16, 1, 0.3, 1] with zero latency gaps.",
+    "Instant, natural navigation between OTP email input and 6-digit code verification.",
+    "Version badge: v1.10.99.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.99",
+  date: "2026-08-27",
+  title: "Autenticación: Transiciones Ultra-Fluidas a 120 FPS",
+  items: [
+    "Optimización de transiciones entre contraseña, OTP y registro sin tirones.",
+    "Versión: v1.10.99.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.99",
+  date: "2026-08-27",
+  title: "Authentifizierung: Flüssige 120 FPS Übergänge",
+  items: [
+    "Flüssigere Übergänge zwischen Passwort-, OTP- und Registrierungsmodi ohne Ruckeln.",
+    "Version: v1.10.99.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.98",
   date: "2026-08-27",
   title: "Identité Utilisateur : Restauration du Pseudo 'Rub' & Avatar ETHONE Dédié",

@@ -7206,6 +7206,46 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.11.01",
+  date: "2026-08-27",
+  title: "Sidebar & Navigation : Animation Douce, Fluide et Naturelle",
+  items: [
+    "Adoucissement complet de l'animation de la barre latérale (Sidebar) lors de l'ouverture et de la fermeture.",
+    "Suppression des coupures brusques de texte et des effets de rebond saccadés pour une transition ultra-soyeuse à 120 FPS.",
+    "Synchronisation des libellés, logos et profil avec un estompage progressif naturel.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.11.01",
+  date: "2026-08-27",
+  title: "Sidebar & Navigation: Silky-Smooth, Natural Animation",
+  items: [
+    "Completely softened and smoothed sidebar expand/collapse transitions.",
+    "Eliminated jarring cuts and bouncy springs for a calm 120 FPS motion.",
+    "Harmonized labels, brand mark, and profile fade-ins.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.11.01",
+  date: "2026-08-27",
+  title: "Barra Lateral: Animación Suave y Fluida",
+  items: [
+    "Suavizado de las animaciones de apertura y cierre de la barra lateral.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.11.01",
+  date: "2026-08-27",
+  title: "Seitenleiste: Sanfte und flüssige Animation",
+  items: [
+    "Sanftere Übergänge beim Öffnen und Schließen der Seitenleiste.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.11.00",
   date: "2026-08-27",
   title: "ETHONE OS Milestone 1.11 : Command Palette Unifiée, Recherche Live & Cohérence Globale",

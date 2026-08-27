@@ -80,6 +80,8 @@ const APPS: AppItem[] = [
   { id: "settings", href: "/settings/", icon: Settings },
 ];
 
+import { motion } from "framer-motion";
+
 const SidebarBrand = memo(function SidebarBrand() {
   const { collapsed } = useAnimatedSidebarPanel();
   return (
@@ -92,7 +94,20 @@ const SidebarBrand = memo(function SidebarBrand() {
       aria-label="ETHONE"
     >
       <BrandMark size={32} className="shrink-0 drop-shadow-md" />
-      {!collapsed && <span className="text-sm font-bold tracking-tight">ETHONE</span>}
+      <motion.span
+        initial={false}
+        animate={{
+          opacity: collapsed ? 0 : 1,
+          x: collapsed ? -6 : 0,
+        }}
+        transition={{ duration: 0.24, ease: [0.25, 1, 0.5, 1] }}
+        className={cn(
+          "text-sm font-bold tracking-tight whitespace-nowrap",
+          collapsed && "pointer-events-none"
+        )}
+      >
+        ETHONE
+      </motion.span>
     </Link>
   );
 });
@@ -190,11 +205,20 @@ const SidebarProfile = memo(function SidebarProfile({ collapsed }: { collapsed: 
         )}
         <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--background)] bg-emerald-400" aria-hidden="true" />
       </div>
-      {!collapsed && (
-        <span className="min-w-0 flex-1 truncate text-[11px] font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors text-left">
-          {displayName}
-        </span>
-      )}
+      <motion.span
+        initial={false}
+        animate={{
+          opacity: collapsed ? 0 : 1,
+          x: collapsed ? -6 : 0,
+        }}
+        transition={{ duration: 0.24, ease: [0.25, 1, 0.5, 1] }}
+        className={cn(
+          "min-w-0 flex-1 truncate text-[11px] font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors text-left whitespace-nowrap",
+          collapsed && "pointer-events-none"
+        )}
+      >
+        {displayName}
+      </motion.span>
     </button>
   );
 });

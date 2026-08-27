@@ -42,19 +42,24 @@ const MOBILE_QUERY = "(max-width: 767px)";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
 
 const PANEL_TRANSITION = {
-  duration: 0.2,
-  ease: [0.16, 1, 0.3, 1],
+  duration: 0.32,
+  ease: [0.25, 1, 0.5, 1],
 } as const;
 
-// Fast, ultra-fluid transition that never causes layout thrashing
+// Calm, silky-smooth sidebar morph without jarring snap
 const SIDEBAR_MORPH_TRANSITION = {
-  duration: 0.2,
-  ease: [0.16, 1, 0.3, 1],
+  duration: 0.32,
+  ease: [0.25, 1, 0.5, 1],
+} as const;
+
+const LABEL_TRANSITION = {
+  duration: 0.24,
+  ease: [0.25, 1, 0.5, 1],
 } as const;
 
 const SUBMENU_TRANSITION = {
-  duration: 0.16,
-  ease: [0.16, 1, 0.3, 1],
+  duration: 0.22,
+  ease: [0.25, 1, 0.5, 1],
 } as const;
 
 const SUBMENU_VARIANTS: Variants = {
@@ -627,8 +632,6 @@ export const AnimatedSidebarMenuItem = forwardRef<
     <motion.li
       {...props}
       ref={forwardedRef}
-      layout="position"
-      transition={SPRING_LAYOUT}
       data-slot="sidebar-menu-item"
       className={cn("relative", className)}
     />
@@ -869,12 +872,12 @@ export function AnimatedSidebarMenuButton({
         initial={false}
         animate={{
           opacity: panel.collapsed ? 0 : 1,
-          x: panel.collapsed ? 12 : 0,
+          x: panel.collapsed ? -8 : 0,
         }}
-        transition={context.reduce ? REDUCED_TRANSITION : SPRING_SWAP}
+        transition={context.reduce ? REDUCED_TRANSITION : LABEL_TRANSITION}
         className={cn(
-          "relative z-10 min-w-0 flex-1 truncate",
-          panel.collapsed && "pointer-events-none hidden"
+          "relative z-10 min-w-0 flex-1 truncate whitespace-nowrap",
+          panel.collapsed && "pointer-events-none"
         )}
       >
         {children}
@@ -893,7 +896,7 @@ export function AnimatedSidebarMenuButton({
             rotate: ariaExpanded ? 90 : 0,
             x: panel.collapsed ? 4 : 0,
           }}
-          transition={context.reduce ? { duration: 0 } : SPRING_LAYOUT}
+          transition={context.reduce ? { duration: 0 } : LABEL_TRANSITION}
           className="relative z-10 grid size-4 shrink-0 place-items-center text-[var(--text-muted)]"
         >
           <ChevronRight className="size-3.5" />
@@ -903,7 +906,7 @@ export function AnimatedSidebarMenuButton({
   );
 
   const interactiveClassName = cn(
-    "group relative flex w-full min-w-0 overflow-hidden rounded-2xl py-2.5 text-[13px] font-medium outline-none transition-all duration-200",
+    "group relative flex w-full min-w-0 overflow-hidden rounded-2xl py-2.5 text-[13px] font-medium outline-none transition-colors duration-150",
     panel.collapsed
       ? "items-center justify-center gap-0 px-0"
       : "items-center gap-3 px-3.5 text-left",

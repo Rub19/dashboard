@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.54",
+  date: "2026-08-27",
+  title: "Logos Officiels des Marques dans les Connexions (Riot Games, Tracker.gg, Plex, Linear...)",
+  items: [
+    "Intégration du logo vectoriel officiel rouge Riot Games dans les cartes et modales de connexion.",
+    "Ajout des logos officiels pour Tracker.gg, Plex, Jellyfin, Emby, Linear, ClickUp, Obsidian, Todoist, Anthropic, Gemini, Groq et Ollama.",
+    "Rendu net avec couleurs fidèles de chaque marque (Rouge Riot #EB0029, TRN #FF2E55, Violet Obsidian #7C3AED...).",
+    "Validation : build Next.js 105/105 pages, TypeScript sans erreur.",
+    "Version affichée : v1.10.54.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.54",
+  date: "2026-08-27",
+  title: "Official Brand Logos in Connections (Riot Games, Tracker.gg, Plex, Linear...)",
+  items: [
+    "Added official vector Riot Games logo across connection cards and modals.",
+    "Added official logos for Tracker.gg, Plex, Jellyfin, Emby, Linear, ClickUp, Obsidian, Todoist, Anthropic, Gemini, Groq, and Ollama.",
+    "Crisp rendering with authentic brand color palettes.",
+    "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
+    "Version badge: v1.10.54.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.54",
+  date: "2026-08-27",
+  title: "Logotipos oficiales en Conexiones (Riot Games, Tracker.gg, Plex...)",
+  items: [
+    "Logotipos oficiales añadidos para Riot Games y otras plataformas.",
+    "Validación : build, lint.",
+    "Versión : v1.10.54.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.54",
+  date: "2026-08-27",
+  title: "Offizielle Markenlogos in den Verbindungen (Riot Games, Tracker.gg, Plex...)",
+  items: [
+    "Offizielle Logos für Riot Games und weitere Dienste hinzugefügt.",
+    "Validierung: build, lint.",
+    "Version: v1.10.54.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.53",
   date: "2026-08-27",
   title: "Recherche Connexions, Résolution Clés API Riot & Sélection Discord Lanyard/OAuth",

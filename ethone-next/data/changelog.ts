@@ -7206,6 +7206,52 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.41",
+  date: "2026-08-27",
+  title: "Support Clé OpenRouter dans le Worker & Variables d'environnement",
+  items: [
+    "Support natif de la variable d'environnement OPENROUTER_API_KEY dans le backend Cloudflare Worker (askOpenRouter).",
+    "Routage automatique et fallbacks gratuits synchronisés entre Next.js et Cloudflare Worker.",
+    "Validation : build Next.js 105/105 pages, TypeScript sans erreur.",
+    "Version affichée : v1.10.41.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.41",
+  date: "2026-08-27",
+  title: "OpenRouter API Key support in Cloudflare Worker & Environment",
+  items: [
+    "Native support for OPENROUTER_API_KEY in the Cloudflare Worker backend (askOpenRouter).",
+    "Synchronized automatic free routing and fallbacks between Next.js and Worker.",
+    "Validation: Next.js 105/105 pages build, 0 TypeScript errors.",
+    "Version badge: v1.10.41.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.41",
+  date: "2026-08-27",
+  title: "Soporte clave OpenRouter en Cloudflare Worker",
+  items: [
+    "Soporte nativo de OPENROUTER_API_KEY en el Worker de Cloudflare.",
+    "Validación : build, lint.",
+    "Versión : v1.10.41.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.41",
+  date: "2026-08-27",
+  title: "OpenRouter API-Schlüssel-Unterstützung im Cloudflare Worker",
+  items: [
+    "Native Unterstützung für OPENROUTER_API_KEY im Cloudflare Worker-Backend.",
+    "Validierung: build, lint.",
+    "Version: v1.10.41.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.40",
   date: "2026-08-27",
   title: "Intégration OpenRouter 100% Gratuit & Modèles Gratuits pour Brain",

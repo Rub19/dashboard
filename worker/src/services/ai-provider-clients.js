@@ -268,11 +268,15 @@ export async function askDeepSeek(env, { model, messages, context }) {
 }
 
 export async function askOpenRouter(env, { model, messages, context }) {
-  const apiKey = await requireApiKey(env, env.__AUTH_USER_ID, "openrouter");
+  const apiKey = env.OPENROUTER_API_KEY || (await requireApiKey(env, env.__AUTH_USER_ID, "openrouter").catch(() => null));
+  if (!apiKey) throw httpError("SERVICE_NOT_CONFIGURED", 501, { detail: "openrouter_api_key_missing" });
+
   const chatMessages = sanitizeMessages(messages);
   if (!chatMessages.length) throw httpError("INVALID_REQUEST", 400);
 
   const contextJson = buildContext(context);
+  const targetModel = safeText(model, 80) || "deepseek/deepseek-chat:free";
+
   const response = await requestExternal(new URL("https://openrouter.ai/api/v1/chat/completions"), {
     env,
     expectedOrigin: "https://openrouter.ai",
@@ -285,21 +289,30 @@ export async function askOpenRouter(env, { model, messages, context }) {
       "X-Title": "ETHONE",
     },
     body: JSON.stringify({
-      model: safeText(model, 80) || "openai/gpt-4o-mini",
-      max_tokens: 1024,
+      model: targetModel,
+      models: [
+        "deepseek/deepseek-r1:free",
+        "deepseek/deepseek-chat:free",
+        "meta-llama/llama-3.3-70b-instruct:free",
+        "google/gemini-2.0-flash-exp:free",
+        "mistralai/mistral-small-24b-instruct-2501:free",
+        "qwen/qwen-2.5-72b-instruct:free",
+        "openrouter/free"
+      ],
+      max_tokens: 1500,
       temperature: 0.4,
       messages: [
         { role: "system", content: `${SYSTEM_PROMPT}\n\nContexte : ${contextJson}` },
         ...chatMessages
       ]
     }),
-    timeoutMs: 15000,
+    timeoutMs: 20000,
     maxBytes: 512 * 1024,
     retries: 0,
   });
   const content = safeText(response.data?.choices?.[0]?.message?.content, 4000);
   if (!content) throw httpError("UPSTREAM_INVALID_RESPONSE", 502);
-  return Object.freeze({ content, model: response.data?.model || safeText(model, 80) || "openai/gpt-4o-mini", provider: "openrouter" });
+  return Object.freeze({ content, model: response.data?.model || targetModel, provider: "openrouter" });
 }
 
 function safeUrl(input) {

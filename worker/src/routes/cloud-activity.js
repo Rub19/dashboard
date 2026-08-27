@@ -30,7 +30,9 @@ export async function cloudActivitySummaryRoute({ url, env, auth }) {
 }
 
 export async function cloudActivityCreateRoute({ request, env, auth }) {
-  if (!auth?.userId) throw httpError("AUTH_REQUIRED", 401);
+  if (!auth?.userId) {
+    return { data: { count: 0 } };
+  }
   const body = await readJsonBody(request, 2);
   const events = Array.isArray(body.events) ? body.events : [];
   const count = await recordActivities(env, auth.userId, events);

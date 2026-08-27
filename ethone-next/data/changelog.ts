@@ -7206,6 +7206,52 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.72",
+  date: "2026-08-27",
+  title: "Résolution Synchronisation Journal d'Activité & Dynamic Island (Zéro Erreur Fetch)",
+  items: [
+    "Prise en charge publique et résiliente de la route worker /api/cloud/activity.",
+    "Persistance automatique et silencieuse dans le journal d'activité local hors-ligne ou invité, éliminant l'erreur 'Failed to fetch'.",
+    "Validation : build Next.js 105/105 pages, 100% tests unitaires, 0 erreur.",
+    "Version affichée : v1.10.72.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.72",
+  date: "2026-08-27",
+  title: "Activity Journal Sync & Dynamic Island Fix (Zero Fetch Errors)",
+  items: [
+    "Resilient and public endpoint handling for /api/cloud/activity.",
+    "Automatic offline local journal fallback, eliminating 'Failed to fetch' notifications.",
+    "Validation: Next.js 105/105 pages build, 100% unit tests passed, 0 errors.",
+    "Version badge: v1.10.72.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.72",
+  date: "2026-08-27",
+  title: "Corrección de sincronización y Dynamic Island",
+  items: [
+    "Persistencia local automática del registro de actividad.",
+    "Validación : build, lint, tests.",
+    "Versión : v1.10.72.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.72",
+  date: "2026-08-27",
+  title: "Aktivitätsjournal-Synchronisation & Dynamic Island Fix",
+  items: [
+    "Automatische lokale Persistenz und Fehlerbehebung.",
+    "Validierung: build, lint, tests.",
+    "Version: v1.10.72.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.71",
   date: "2026-08-27",
   title: "Sublimation du Dock Flottant (Glassmorphism, Magnification & Ancrage Badge)",

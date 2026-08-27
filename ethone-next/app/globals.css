@@ -2189,12 +2189,26 @@ html {
    UI animations / glow / sound / spotlight
    ============================================================ */
 
-[data-ui-animations="smooth"] * {
-  transition-duration: 200ms;
+[data-ui-animations="smooth"] button,
+[data-ui-animations="smooth"] a,
+[data-ui-animations="smooth"] input,
+[data-ui-animations="smooth"] select,
+[data-ui-animations="smooth"] textarea,
+[data-ui-animations="smooth"] [role="button"],
+[data-ui-animations="smooth"] [role="tab"],
+[data-ui-animations="smooth"] .transition-colors,
+[data-ui-animations="smooth"] .transition-all {
+  transition-duration: 180ms;
   transition-timing-function: var(--ease-out);
 }
-[data-ui-animations="snappy"] * {
-  transition-duration: 120ms;
+[data-ui-animations="snappy"] button,
+[data-ui-animations="snappy"] a,
+[data-ui-animations="snappy"] input,
+[data-ui-animations="snappy"] select,
+[data-ui-animations="snappy"] textarea,
+[data-ui-animations="snappy"] [role="button"],
+[data-ui-animations="snappy"] [role="tab"] {
+  transition-duration: 100ms;
   transition-timing-function: var(--ease-snap);
 }
 [data-ui-animations="reduced"] * {
@@ -2432,7 +2446,6 @@ html[data-zen-mode="true"] [data-v8-main] {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
   -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
   overscroll-behavior: contain;
 }
 

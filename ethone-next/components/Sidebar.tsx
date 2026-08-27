@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import ClientImage from "@/components/ClientImage";
-import { cloneElement, memo, useMemo } from "react";
+import { cloneElement, memo, useMemo, useRef, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Home,
@@ -260,11 +260,27 @@ function Sidebar() {
     );
   }
 
+  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handlePointerEnter = useCallback(() => {
+    if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+    hoverTimerRef.current = setTimeout(() => {
+      setOpen(true);
+    }, 120);
+  }, [setOpen]);
+
+  const handlePointerLeave = useCallback(() => {
+    if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+    hoverTimerRef.current = setTimeout(() => {
+      setOpen(false);
+    }, 180);
+  }, [setOpen]);
+
   return (
     <div
-      className="relative z-[var(--z-sidebar)] hidden h-full min-h-0 w-auto shrink-0 pointer-events-auto md:block"
-      onPointerEnter={() => setOpen(true)}
-      onPointerLeave={() => setOpen(false)}
+      className="relative z-[var(--z-sidebar)] hidden h-full min-h-0 w-auto shrink-0 pointer-events-auto md:block will-change-transform"
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
     >
       <AnimatedSidebar
         collapsible="icon"
@@ -281,7 +297,7 @@ function Sidebar() {
             {visibleApps.map((app) => {
               const IconComponent = app.icon;
               return (
-                <AnimatedSidebarMenuItem key={app.id}>
+                <AnimatedSidebarMenuItem key={app.id} onMouseEnter={() => router.prefetch(app.href)}>
                   <AnimatedSidebarMenuButton
                     isActive={isActive(app)}
                     icon={

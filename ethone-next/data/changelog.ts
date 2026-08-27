@@ -7206,6 +7206,54 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.92",
+  date: "2026-08-27",
+  title: "Audit & Optimisation Fluidité : Requêtes Worker, Défilement 60 FPS & Sidebar",
+  items: [
+    "Suppression du polling agressif de NowPlaying et réduction de la charge sur le Cloudflare Worker.",
+    "Mise en cache en mémoire des tokens Supabase pour éliminer les verrous de stockage sur chaque appel API.",
+    "Suppression du sélecteur universel CSS wildcard (*) sur les animations pour libérer le thread principal.",
+    "Amélioration du scroll natif dans toutes les pages (.os-scroll) sans interpolation saccadée.",
+    "Débouncing du survol de la Sidebar et préchargement instantané des routes au survol.",
+    "Version affichée : v1.10.92.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.92",
+  date: "2026-08-27",
+  title: "Fluidity Audit & Fix: Worker Throttling, 60 FPS Scrolling & Sidebar Polish",
+  items: [
+    "Eliminated aggressive NowPlaying polling and drastically reduced Cloudflare Worker request volume.",
+    "In-memory caching of Supabase auth tokens to prevent storage lock contention during API calls.",
+    "Removed universal CSS wildcard (*) animation rules to liberate the main thread.",
+    "Restored buttery native momentum scrolling in all pages (.os-scroll).",
+    "Debounced sidebar hover expansion and enabled instant route prefetching on menu hover.",
+    "Version badge: v1.10.92.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.92",
+  date: "2026-08-27",
+  title: "Optimización de Fluidez: Peticiones Worker, Scroll a 60 FPS y Barra Lateral",
+  items: [
+    "Eliminación del polling excesivo al Worker, scroll suave nativo y optimización de la barra lateral.",
+    "Versión: v1.10.92.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.92",
+  date: "2026-08-27",
+  title: "Flüssigkeits-Audit: Worker-Optimierung, 60 FPS Scrolling & Sidebar-Tuning",
+  items: [
+    "Reduzierung der Worker-Abrufe, Entfernung von CPU-lastigen Wildcard-CSS-Regeln und flüssigeres Scrollen.",
+    "Version: v1.10.92.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.91",
   date: "2026-08-27",
   title: "Refonte Complète de l'Authentification : Login, OTP 6 Chiffres, Inscription & UX 2026",

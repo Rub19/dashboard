@@ -49,11 +49,29 @@ function extractWorkerErrorDetail(detail: unknown): string {
   return "";
 }
 
+let cachedToken: string | null = null;
+let cachedTokenExpires = 0;
+
+if (typeof window !== "undefined") {
+  try {
+    supabase.auth.onAuthStateChange((_event, session) => {
+      cachedToken = session?.access_token || null;
+      cachedTokenExpires = Date.now() + 60000;
+    });
+  } catch {}
+}
+
 export async function getToken(): Promise<string | null> {
   if (typeof window === "undefined") return null;
+  const now = Date.now();
+  if (cachedToken !== null && now < cachedTokenExpires) {
+    return cachedToken;
+  }
   try {
     const { data } = await supabase.auth.getSession();
-    return data.session?.access_token || null;
+    cachedToken = data.session?.access_token || null;
+    cachedTokenExpires = now + 15000;
+    return cachedToken;
   } catch {
     return null;
   }

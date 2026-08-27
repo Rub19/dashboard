@@ -7206,6 +7206,52 @@ CHANGELOG_BY_LANG.es.unshift({
 });
 
 CHANGELOG_BY_LANG.fr.unshift({
+  version: "v1.10.95",
+  date: "2026-08-27",
+  title: "Connexion Spotify Instantanée & Sidebar 120 FPS Ultra-Fluide",
+  items: [
+    "Connexion Spotify directe : intégration automatique du Client ID public officiel sans blocage sur l'écran de chargement.",
+    "Résolution du retour OAuth : détection immédiate du callback Spotify dans OAuthHandler avec nettoyage d'URL et notification toast.",
+    "Bypass du splash de démarrage lors des retours d'authentification pour afficher directement le dashboard.",
+    "Optimisation Sidebar : remplacement des ressorts physiques lourds par une transition cubique GPU instantanée à 0.2s.",
+    "Version affichée : v1.10.95.",
+  ],
+});
+
+CHANGELOG_BY_LANG.en.unshift({
+  version: "v1.10.95",
+  date: "2026-08-27",
+  title: "Instant Spotify Connect & Ultra-Fluid 120 FPS Sidebar",
+  items: [
+    "Instant Spotify connection: automatic public Client ID fallback without getting stuck on loading splash.",
+    "OAuth return handler: immediate Spotify callback resolution with URL cleanup and toast confirmation.",
+    "Boot splash screen bypass during OAuth redirects for an immediate transition into ETHONE.",
+    "Sidebar fluidity overhaul: replaced heavy spring layout morphs with hardware-accelerated 0.2s cubic-bezier transitions.",
+    "Version badge: v1.10.95.",
+  ],
+});
+
+CHANGELOG_BY_LANG.es.unshift({
+  version: "v1.10.95",
+  date: "2026-08-27",
+  title: "Conexión Spotify Instantánea y Barra Lateral 120 FPS Ultra Fluida",
+  items: [
+    "Conexión instantánea de Spotify y optimización de rendimiento de la barra lateral.",
+    "Versión: v1.10.95.",
+  ],
+});
+
+CHANGELOG_BY_LANG.de.unshift({
+  version: "v1.10.95",
+  date: "2026-08-27",
+  title: "Sofortige Spotify-Verbindung & Ultra-flüssige 120 FPS Sidebar",
+  items: [
+    "Sofortige Spotify-Anmeldung und flüssige Hardware-beschleunigte Sidebar-Animationen.",
+    "Version: v1.10.95.",
+  ],
+});
+
+CHANGELOG_BY_LANG.fr.unshift({
   version: "v1.10.94",
   date: "2026-08-27",
   title: "Résolution CSP & Santé Worker : Déblocage des Avatars Google, Météo & Icônes",

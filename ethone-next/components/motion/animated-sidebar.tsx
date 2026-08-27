@@ -42,21 +42,19 @@ const MOBILE_QUERY = "(max-width: 767px)";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
 
 const PANEL_TRANSITION = {
-  duration: 0.42,
-  ease: EASE_DRAWER,
+  duration: 0.2,
+  ease: [0.16, 1, 0.3, 1],
 } as const;
 
-// Smooth, slightly bouncy rail morph that never snaps at the zero-width boundary.
+// Fast, ultra-fluid transition that never causes layout thrashing
 const SIDEBAR_MORPH_TRANSITION = {
-  type: "spring",
-  stiffness: 220,
-  damping: 34,
-  mass: 0.8,
+  duration: 0.2,
+  ease: [0.16, 1, 0.3, 1],
 } as const;
 
 const SUBMENU_TRANSITION = {
-  duration: 0.18,
-  ease: EASE_OUT,
+  duration: 0.16,
+  ease: [0.16, 1, 0.3, 1],
 } as const;
 
 const SUBMENU_VARIANTS: Variants = {

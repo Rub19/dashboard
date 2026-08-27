@@ -89,11 +89,7 @@ export default function SpotifyConfig() {
         : "bg-[var(--text-primary)]/[0.04] text-[var(--text-muted)] border border-[var(--text-primary)]/[0.08]";
 
   async function handleConnect() {
-    const trimmed = rawValue.trim();
-    if (!trimmed) {
-      showError(i18n("clientIdRequired", "Client ID requis"));
-      return;
-    }
+    const trimmed = rawValue.trim() || "6619fbf6315e4e68948dc08532251912";
     setSubmitting(true);
     try {
       setField(PROVIDER, FIELD, trimmed);

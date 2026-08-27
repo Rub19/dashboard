@@ -20,37 +20,47 @@ export default function OAuthHandler() {
 
     if (!code || !rawState) return;
     const state = parseOAuthState(rawState);
-    const { provider, clientId } = state;
-    if (!provider || !clientId) return;
+    const provider = state?.provider;
+    if (!provider) return;
+    
+    const resolvedClientId =
+      state?.clientId ||
+      (typeof window !== "undefined" ? localStorage.getItem(`ethone:clientId:${provider}`) : "") ||
+      (provider === "spotify" ? "6619fbf6315e4e68948dc08532251912" : "");
+
+    if (!resolvedClientId) return;
     handled.current = true;
 
     const clientSecret = getField(provider, "clientSecret");
     let token: string | { codeVerifier?: string; clientSecret?: string } | undefined = clientSecret || undefined;
     if (provider === "spotify") {
-      const verifier = localStorage.getItem(`ethone:oauth:verifier:${provider}`);
+      const verifier = typeof window !== "undefined" ? localStorage.getItem(`ethone:oauth:verifier:${provider}`) : null;
       if (!verifier) {
         setStatus("Code verifier manquant, reconnectez-vous.");
         return;
       }
       token = { codeVerifier: verifier };
     }
-    exchangeCode(provider, code, clientId, token)
+    exchangeCode(provider, code, resolvedClientId, token)
       .then(() => {
-        localStorage.setItem(`ethone:clientId:${provider}`, clientId);
-        setUserState(`clientId:${provider}`, clientId).catch(() => {});
-        if (provider === "spotify") update({ liveSpotifyClientId: clientId });
-        if (provider === "youtube") update({ liveYoutubeClientId: clientId });
-        if (provider === "reddit") update({ liveRedditClientId: clientId });
-        if (provider === "google-calendar") update({ calendarClientId: clientId });
-        if (provider === "google-drive") update({ driveClientId: clientId });
-        setStatus("Connecté avec succès.");
+        try {
+          localStorage.setItem(`ethone:clientId:${provider}`, resolvedClientId);
+          localStorage.removeItem(`ethone:oauth:verifier:${provider}`);
+        } catch {}
+        setUserState(`clientId:${provider}`, resolvedClientId).catch(() => {});
+        if (provider === "spotify") update({ liveSpotifyClientId: resolvedClientId, liveNowPlayingSource: "spotify" } as never);
+        if (provider === "youtube") update({ liveYoutubeClientId: resolvedClientId } as never);
+        if (provider === "reddit") update({ liveRedditClientId: resolvedClientId } as never);
+        if (provider === "google-calendar") update({ calendarClientId: resolvedClientId } as never);
+        if (provider === "google-drive") update({ driveClientId: resolvedClientId } as never);
+        setStatus("✨ Connecté avec succès !");
       })
       .catch((err) => setStatus(err.message || "Échec de connexion"))
       .finally(() => {
         const url = new URL(window.location.href);
         url.search = "";
         window.history.replaceState({}, "", url);
-        setTimeout(() => setStatus(null), 3000);
+        setTimeout(() => setStatus(null), 4000);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [update]);

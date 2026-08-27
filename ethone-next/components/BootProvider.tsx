@@ -189,7 +189,11 @@ export default function BootProvider({ children }: { children: ReactNode }) {
       const authResolved = !authLoading && !authError;
       const canShowApp = authResolved && profileLoaded;
 
-      if (donationReturnRef.current && canShowApp) {
+      const isOAuthOrReturn =
+        donationReturnRef.current ||
+        (typeof window !== "undefined" && (new URLSearchParams(window.location.search).has("code") || new URLSearchParams(window.location.search).has("state")));
+
+      if (isOAuthOrReturn && (authResolved || !session)) {
         setBootProgress(100);
         setBootReady(true);
         return;

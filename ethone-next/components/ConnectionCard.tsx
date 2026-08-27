@@ -71,7 +71,10 @@ export default function ConnectionCard({
       setDrawerOpen(true);
       return;
     }
-    const currentId = clientId || (settings as unknown as Record<string, string>)[`${integration.id}ClientId`] || "";
+    const currentId =
+      clientId ||
+      (settings as unknown as Record<string, string>)[`${integration.id}ClientId`] ||
+      (integration.id === "spotify" ? "6619fbf6315e4e68948dc08532251912" : "");
     if (!currentId.trim()) {
       setDrawerOpen(true);
       return;
